@@ -35,6 +35,163 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<Button name="PartyPetBuffButtonTemplate" inherits="PartyBuffButtonTemplate" virtual="true" hidden="true">
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetUnitDebuff("partypet"..this:GetParent():GetParent():GetID(), this:GetID());
+			</OnEnter>
+		</Scripts>
+	</Button>
+	<Button name="PartyMemberPetFrameTemplate" frameStrata="LOW" toplevel="true" virtual="true">
+		<Size>
+			<AbsDimension x="64" y="26"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="20" y="-47"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="3" right="33" top="3" bottom="3"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentPortrait">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="3" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame setAllPoints="true">
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\TargetingFrame\UI-PartyFrame">
+									<Size>
+										<AbsDimension x="64" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+								<FontString name="$parentName" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="25" y="21"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="35" y="4"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="23" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEvent>
+						UnitFrameHealthBar_Update(this, arg1);
+					</OnEvent>
+					<OnValueChanged>
+						UnitFrameHealthBar_OnValueChanged(arg1);
+					</OnValueChanged>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<Button name="$parentDebuff1" inherits="PartyPetBuffButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="24" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff2" inherits="PartyPetBuffButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff3" inherits="PartyPetBuffButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff4" inherits="PartyPetBuffButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				local id = this:GetParent():GetID();
+				local prefix = "PartyMemberFrame"..id.."PetFrame";
+				UnitFrame_Initialize("partypet"..id,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
+					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"));
+				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), TEXT(DEAD));
+				getglobal(prefix.."Name"):Hide();
+			</OnLoad>
+			<OnShow>
+				UnitFrame_Update();
+			</OnShow>
+			<OnEvent>
+				UnitFrame_OnEvent(event);
+			</OnEvent>
+			<OnEnter>
+				UnitFrame_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				UnitFrame_OnLeave();
+			</OnLeave>
+			<OnUpdate>
+				UnitFrame_OnUpdate(arg1);
+			</OnUpdate>
+			<OnClick>
+				PartyMemberPetFrame_OnClick();
+			</OnClick>
+		</Scripts>
+	</Button>
 	<Button name="PartyMemberFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" virtual="true">
 		<Size>
 			<AbsDimension x="128" y="53"/>
@@ -136,6 +293,18 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
+								<Texture name="$parentDisconnect" file="Interface\CharacterFrame\Disconnect-Icon" hidden="true">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT">
+											<Offset>
+												<AbsDimension x="-7" y="-1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -224,6 +393,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<Button name="$parentPetFrame" inherits="PartyMemberPetFrameTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -266,27 +436,27 @@
 	</Button>
 	<Button name="PartyMemberFrame2" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="2">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame1" relativePoint="BOTTOMLEFT">
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame1PetFrame" relativePoint="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="0" y="-10"/>
+					<AbsDimension x="-23" y="-10"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
 	</Button>
 	<Button name="PartyMemberFrame3" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="3">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame2" relativePoint="BOTTOMLEFT">
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame2PetFrame" relativePoint="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="0" y="-10"/>
+					<AbsDimension x="-23" y="-10"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
 	</Button>
 	<Button name="PartyMemberFrame4" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="4">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame3" relativePoint="BOTTOMLEFT">
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame3PetFrame" relativePoint="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="0" y="-10"/>
+					<AbsDimension x="-23" y="-10"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

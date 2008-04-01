@@ -36,6 +36,7 @@ function GossipFrameUpdate()
 	else
 		GossipFramePortrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 	end
+	GossipGreetingScrollFrame:UpdateScrollChildRect();
 end
 
 function GossipTitleButton_OnClick()

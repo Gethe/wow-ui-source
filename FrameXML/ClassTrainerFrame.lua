@@ -74,7 +74,7 @@ function ClassTrainerFrame_Update()
 	end
 
 	-- ScrollFrame update
-	FauxScrollFrame_Update(ClassTrainerListScrollFrame, numTrainerServices, CLASS_TRAINER_SKILLS_DISPLAYED, CLASS_TRAINER_SKILL_HEIGHT, ClassTrainerSkillHighlightFrame, 293, 316 )
+	FauxScrollFrame_Update(ClassTrainerListScrollFrame, numTrainerServices, CLASS_TRAINER_SKILLS_DISPLAYED, CLASS_TRAINER_SKILL_HEIGHT, nil, nil, nil, ClassTrainerSkillHighlightFrame, 293, 316 )
 	
 	--ClassTrainerUsedButton:Show();
 	ClassTrainerMoneyFrame:Show();

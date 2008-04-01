@@ -105,7 +105,7 @@ function QuestLog_Update()
 	QuestLogCountMiddle:SetWidth(QuestLogQuestCount:GetWidth());
 
 	-- ScrollFrame update
-	FauxScrollFrame_Update(QuestLogListScrollFrame, numEntries, QUESTS_DISPLAYED, QUESTLOG_QUEST_HEIGHT, QuestLogHighlightFrame, 293, 316 )
+	FauxScrollFrame_Update(QuestLogListScrollFrame, numEntries, QUESTS_DISPLAYED, QUESTLOG_QUEST_HEIGHT, nil, nil, nil, QuestLogHighlightFrame, 293, 316 )
 	
 	-- Update the quest listing
 	QuestLogHighlightFrame:Hide();

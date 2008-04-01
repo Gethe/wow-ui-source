@@ -5,7 +5,7 @@ function PetPaperDollFrame_OnLoad()
 	this:RegisterEvent("PET_UI_UPDATE");
 	this:RegisterEvent("PET_BAR_UPDATE");
 	this:RegisterEvent("PET_UI_CLOSE");
-	this:RegisterEvent("PLAYER_PET_CHANGED");
+	this:RegisterEvent("UNIT_PET");
 	this:RegisterEvent("UNIT_PET_EXPERIENCE");
 	this:RegisterEvent("UNIT_MODEL_CHANGED");
 	this:RegisterEvent("UNIT_LEVEL");
@@ -29,7 +29,7 @@ function PetPaperDollFrame_OnLoad()
 end
 
 function PetPaperDollFrame_OnEvent()
-	if ( event == "PET_UI_UPDATE" or event == "PLAYER_PET_CHANGED" or event == "PET_BAR_UPDATE" ) then
+	if ( event == "PET_UI_UPDATE" or event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") ) then
 		if ( PetPaperDollFrame:IsVisible() and not HasPetUI() ) then
 			ToggleCharacter("PetPaperDollFrame");
 		end

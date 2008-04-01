@@ -45,9 +45,9 @@
 		<Scripts>
 			<OnClick>
 				if ( this:GetChecked() ) then
-					PlaySound("igMainMenuOptionCheckBoxOff");
-				else
 					PlaySound("igMainMenuOptionCheckBoxOn");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOff");
 				end
 			</OnClick>
 			<OnEnter>
@@ -314,7 +314,29 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="OptionsFrameMultiSampleDropDown" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="15" y="-5"/>
+									<AbsDimension x="15" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+								OptionsFrame_UpdateCheckboxes();
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton17" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton10" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="5" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -330,9 +352,9 @@
 						<Scripts>
 							<OnClick>
 								if ( this:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
-								else
 									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
 								end
 								OptionsFrame_UpdateUIScaleControls();
 							</OnClick>	
@@ -484,9 +506,9 @@
 							</OnShow>
 							<OnClick>
 								if ( this:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
-								else
 									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
 								end
 								OptionsFrame_UpdateGammaControls();
 							</OnClick>
@@ -538,11 +560,11 @@
 						<Scripts>
 							<OnClick>
 								if ( this:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
-								else
 									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
 								end
-								OptionsFrame_UpdateShaderOptions(this:GetChecked());
+								OptionsFrame_UpdateCheckboxes();
 							</OnClick>	
 						</Scripts>
 					</CheckButton>
@@ -593,11 +615,11 @@
 						<Scripts>
 							<OnClick>
 								if ( this:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
-								else
 									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
 								end
-								OptionsFrame_UpdatePhongShading();
+								OptionsFrame_UpdateCheckboxes();
 							</OnClick>	
 						</Scripts>
 					</CheckButton>
@@ -654,11 +676,11 @@
 						<Scripts>
 							<OnClick>
 								if ( this:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
-								else
 									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
 								end
-								OptionsFrame_UpdateBuffering(this:GetChecked());
+								OptionsFrame_UpdateCheckboxes();
 							</OnClick>	
 						</Scripts>
 					</CheckButton>
@@ -694,11 +716,11 @@
 						<Scripts>
 							<OnClick>
 								if ( this:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
-								else
 									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
 								end
-								OptionsFrame_UpdateFixLag(this:GetChecked());
+								OptionsFrame_UpdateCheckboxes();
 							</OnClick>	
 						</Scripts>
 					</CheckButton>
@@ -781,6 +803,7 @@
 			<OnShow>
 				OptionsFrame_Load();
 				UpdateMicroButtons();
+				Disable_BagButtons();
 			</OnShow>
 			<OnHide>
 				OptionsFrame_Cancel();

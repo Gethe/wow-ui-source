@@ -16,6 +16,7 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 		BattlefieldFrame_EnterBattlefield();
 	end,
 	timeout = 0,
+	whileDead = 1,
 	exclusive = 1
 };
 
@@ -1022,6 +1023,24 @@ StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1
 };
+StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
+	text = TEXT(AREA_SPIRIT_HEAL),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	OnShow = function()
+		this.timeleft = GetAreaSpiritHealerTime();
+	end,
+	OnAccept = function()
+		AcceptAreaSpiritHeal();
+		getglobal(this:GetParent():GetName().."Button1"):Hide();
+		getglobal(this:GetParent():GetName().."Button2"):Hide();
+		return 1;
+	end,
+	timeout = 0,
+	whileDead = 1,
+	interruptCinematic = 1,
+	notClosableByLogout = 1
+};
 StaticPopupDialogs["REPLACE_ENCHANT"] = {
 	text = TEXT(REPLACE_ENCHANT),
 	button1 = TEXT(YES),
@@ -1247,7 +1266,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 		 (which == "RESURRECT") or
 		 (which == "RESURRECT_NO_SICKNESS") or
 		 (which == "INSTANCE_BOOT") or
-		 (which == "CONFIRM_SUMMON") ) then
+		 (which == "CONFIRM_SUMMON") or
+		 (which == "AREA_SPIRIT_HEAL") ) then
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
@@ -1419,7 +1439,8 @@ function StaticPopup_OnUpdate(elapsed)
 			 (which == "QUIT") or
 			 (which == "DUEL_OUTOFBOUNDS") or
 			 (which == "INSTANCE_BOOT") or
-			 (which == "CONFIRM_SUMMON") ) then
+			 (which == "CONFIRM_SUMMON") or
+			 (which == "AREA_SPIRIT_HEAL") ) then
 			local text = getglobal(this:GetName().."Text");
 			local hasText = nil;
 			if ( text:GetText() ~= " " ) then
@@ -1542,10 +1563,6 @@ function StaticPopup_OnClick(dialog, index)
 			OnCancel(dialog.data, "clicked");
 		end
 	end
-	-- this if is a temporary hack; it will be going away once ForcedLogout is completely implemented!
---	if ( (index ~= 2) and (dialog.which == "CAMP") ) then
---		return;
---	end
 
 	if ( not dontHide ) then
 		dialog:Hide();
@@ -1556,7 +1573,7 @@ function StaticPopup_Visible(which)
 	for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 		local frame = getglobal("StaticPopup"..index);
 		if( frame:IsVisible() and (frame.which == which) ) then 
-			return 1;
+			return frame:GetName();
 		end
 	end
 	return nil;

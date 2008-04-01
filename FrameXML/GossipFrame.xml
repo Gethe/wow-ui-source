@@ -230,11 +230,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnShow>
-								this:UpdateScrollChildRect();
-							</OnShow>
-						</Scripts>
 						<ScrollChild>
 							<Frame name="GossipGreetingScrollChildFrame">
 								<Size>

@@ -579,6 +579,9 @@
 	<Binding name="TOGGLERAIDTAB">
 		ToggleFriendsFrame(4);
 	</Binding>
+	<Binding name="TOGGLEWORLDSTATESCORES">
+		ToggleWorldStateScoreFrame();
+	</Binding>
 	<!-- Misc -->
 	<Binding name="MINIMAPZOOMIN" header="MISC">
 		Minimap_ZoomIn();

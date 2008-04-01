@@ -1,4 +1,4 @@
-BATTLEFIELD_ZONES_DISPLAYED = 3;
+BATTLEFIELD_ZONES_DISPLAYED = 12;
 BATTLEFIELD_ZONES_HEIGHT = 20;
 BATTLEFIELD_SHUTDOWN_TIMER = 0;
 BATTLEFIELD_TIMER_THRESHOLDS = {600, 300, 60, 15};
@@ -37,18 +37,13 @@ function BattlefieldFrame_OnEvent()
 	end
 end
 
---[[function BattlefieldFrame_SetTimerThreshold()
-	if ( BATTLEFIELD_SHUTDOWN_TIMER <  ) then
-	
-	end
-end
-]]
-
 function BattlefieldFrame_OnUpdate(elapsed)
 	if ( BATTLEFIELD_SHUTDOWN_TIMER == 0 ) then
 		return;
 	end
 	BATTLEFIELD_SHUTDOWN_TIMER = BATTLEFIELD_SHUTDOWN_TIMER - elapsed;
+	-- Set the time for the score frame
+	WorldStateScoreFrameTimer:SetText(SecondsToTimeAbbrev(BATTLEFIELD_SHUTDOWN_TIMER));
 	-- Check if I should send a message only once every 3 seconds (BATTLEFIELD_TIMER_DELAY)
 	BattlefieldFrame.timerDelay = BattlefieldFrame.timerDelay + elapsed;
 	if ( BattlefieldFrame.timerDelay < BATTLEFIELD_TIMER_DELAY ) then
@@ -68,17 +63,20 @@ function BattlefieldFrame_OnUpdate(elapsed)
 			if ( PREVIOUS_BATTLEFIELD_MOD ~= currentMod ) then
 				-- Print message
 				local info = ChatTypeInfo["SYSTEM"];
-				local string = "Not enough players. Server will shut down in "..SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold);
+				local string;
+				if ( GetBattlefieldWinner() ) then
+					string = format(INSTANCE_COMPLETE_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
+				else
+					string = format(INSTANCE_SHUTDOWN_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
+				end
 				DEFAULT_CHAT_FRAME:AddMessage(string, info.r, info.g, info.b, info.id);
 				PREVIOUS_BATTLEFIELD_MOD = currentMod;
-			else
-				-- Do nothing
+				
 			end
 		end
 	else
 		BATTLEFIELD_SHUTDOWN_TIMER = 0;
 	end
-	
 end
 
 function BattlefieldFrame_UpdateStatus()
@@ -97,20 +95,22 @@ function BattlefieldFrame_UpdateStatus()
 	elseif ( status == "queued" ) then
 		-- Update queue info show button on minimap
 		local waitTime = GetBattlefieldEstimatedWaitTime();
+		local timeInQueue = GetBattlefieldTimeWaited()/1000;
 		if ( waitTime == 0 ) then
 			waitTime = UNAVAILABLE;
 		elseif ( waitTime < 60000 ) then 
 			waitTime = LESS_THAN_ONE_MINUTE;
 		else
-			waitTime = SecondsToTime(waitTime/1000);
+			waitTime = SecondsToTime(waitTime/1000, 1);
 		end
-		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime);
+		MiniMapBattlefieldFrame.waitTime = waitTime;
+		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime, SecondsToTime(timeInQueue)).."\n"..RIGHT_CLICK_MESSAGE;
 
 		UIFrameFadeIn(MiniMapBattlefieldFrame, CHAT_FRAME_FADE_TIME);
 		BattlegroundShineFadeIn();
 	elseif ( status == "confirm" ) then
 		-- Have been accepted show enter battleground dialog
-		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration()/1000));
+		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration()/1000)).."\n"..RIGHT_CLICK_MESSAGE;
 		StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName);
 		MiniMapBattlefieldFrame:Show();
 	elseif ( status == "active" ) then
@@ -122,11 +122,6 @@ function BattlefieldFrame_UpdateStatus()
 		MiniMapBattlefieldFrame:Show();
 	elseif ( status == "error" ) then
 		-- Should never happen haha
-	end
-
-	-- append right click message to tooltip
-	if ( MiniMapBattlefieldFrame.tooltip ) then
-		MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n"..RIGHT_CLICK_MESSAGE;
 	end
 	
 	-- Set minimap icon here since it bugs out on login
@@ -147,6 +142,8 @@ function BattlefieldFrame_Update()
 	BattlefieldFrameFrameLabel:SetText(mapName);
 
 	-- Setup instance buttons
+	-- add one to battlefields because of the fake "first available" button
+	local numBattlefields = GetNumBattlefields() + 1;
 	for i=1, BATTLEFIELD_ZONES_DISPLAYED, 1 do
 		zoneIndex = zoneOffset + i;
 		button = getglobal("BattlefieldZone"..i);
@@ -158,13 +155,19 @@ function BattlefieldFrame_Update()
 			-- The first entry in the list is always "first available"
 			buttonName:SetText(FIRST_AVAILABLE);
 			buttonHighlightText:SetText(FIRST_AVAILABLE);
+			-- Set tooltip
+			button.title = FIRST_AVAILABLE;
+			button.tooltip = NEWBIE_TOOLTIP_FIRST_AVAILABLE;
 			button:Show();
-		elseif ( zoneIndex > GetNumBattlefields()+1 ) then
+		elseif ( zoneIndex > numBattlefields ) then
 			button:Hide();
 		else
 			instanceID = GetBattlefieldInstanceInfo(zoneIndex - 1);
 			buttonName:SetText(mapName.." "..instanceID);
 			buttonHighlightText:SetText(mapName.." "..instanceID);
+			-- Set tooltip
+			button.title = mapName.." "..instanceID;
+			button.tooltip = NEWBIE_TOOLTIP_ENTER_BATTLEGROUND;
 			button:Show();
 		end
 		
@@ -187,12 +190,17 @@ function BattlefieldFrame_Update()
 		end
 	end
 	
-	-- Set map point
-	mapX = BATTLEFIELD_MAP_WIDTH * mapX;
-	mapY = -BATTLEFIELD_MAP_HEIGHT * mapY;
-	BattlefieldMarker:SetPoint("CENTER", "BattlefieldFrameMap1", "TOPLEFT", mapX, mapY);
 	BattlefieldFrameZoneDescription:SetText(mapDescription);
-	FauxScrollFrame_Update(BattlefieldListScrollFrame, GetNumBattlefields()+1, BATTLEFIELD_ZONES_DISPLAYED, BATTLEFIELD_ZONES_HEIGHT);
+
+	-- Enable or disable the group join button
+	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
+		-- If this is true then can join as a group
+		BattlefieldFrameGroupJoinButton:Enable();
+	else
+		BattlefieldFrameGroupJoinButton:Disable();
+	end
+
+	FauxScrollFrame_Update(BattlefieldListScrollFrame, numBattlefields, BATTLEFIELD_ZONES_DISPLAYED, BATTLEFIELD_ZONES_HEIGHT, "BattlefieldZone", 293, 315);
 end
 
 function BattlefieldButton_OnClick(id)
@@ -200,8 +208,13 @@ function BattlefieldButton_OnClick(id)
 	BattlefieldFrame_Update();
 end
 
-function BattlefieldFrameJoinButton_OnClick()
-	JoinBattlefield(GetSelectedBattlefield());
+function BattlefieldFrameJoinButton_OnClick(joinAsGroup)
+	if ( joinAsGroup ) then
+		JoinBattlefield(GetSelectedBattlefield(), 1);
+	else
+		JoinBattlefield(GetSelectedBattlefield());
+	end
+	
 	HideUIPanel(BattlefieldFrame);
 end
 

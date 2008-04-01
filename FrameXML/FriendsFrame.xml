@@ -2587,7 +2587,7 @@
 									GameTooltip_AddNewbieTip(PUBLIC_NOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDPUBLICNOTE, 1);
 								else
 									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-									GameTooltip:SetText(GUILDNOTE_BUTTON_TOOLTIP);
+									GameTooltip:SetText(PUBLICNOTE_BUTTON_TOOLTIP);
 								end
 							</OnEnter>
 							<OnLeave>

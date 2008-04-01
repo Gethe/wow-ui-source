@@ -5,7 +5,7 @@ function PetStable_OnLoad()
 	this:RegisterEvent("PET_STABLE_UPDATE");
 	this:RegisterEvent("PET_STABLE_UPDATE_PAPERDOLL");
 	this:RegisterEvent("PET_STABLE_CLOSED");
-	this:RegisterEvent("PLAYER_PET_CHANGED");
+	this:RegisterEvent("UNIT_PET");
 end
 
 function PetStable_OnEvent()
@@ -17,7 +17,7 @@ function PetStable_OnEvent()
 		end
 
 		PetStable_Update();
-	elseif ( event == "PET_STABLE_UPDATE" or event == "PLAYER_PET_CHANGED" ) then
+	elseif ( event == "PET_STABLE_UPDATE" or (event == "UNIT_PET" and arg1 == "player") ) then
 		PetStable_Update();
 	elseif ( event == "PET_STABLE_UPDATE_PAPERDOLL" ) then
 		-- So warlock pets don't show

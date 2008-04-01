@@ -379,7 +379,7 @@
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="UIParent" relativePoint="TOPRIGHT">
 				<Offset>
-					<AbsDimension x="-205" y="-13"/>
+					<AbsDimension x="-175" y="-13"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

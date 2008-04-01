@@ -83,15 +83,7 @@
 				end
 			</OnLoad>
 			<OnEnter>
-				local x, y = this:GetCenter();
-				local parentX, parentY = this:GetParent():GetCenter();
-				if ( x > parentX ) then
-					WorldMapTooltip:SetOwner(this, "ANCHOR_LEFT");
-				else
-					WorldMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
-				end
-				WorldMapTooltip:SetText(UnitName(this.unit));
-				WorldMapTooltip:Show();
+				WorldMapUnit_OnEnter();
 			</OnEnter>
 			<OnLeave>
 				WorldMapTooltip:Hide();
@@ -782,6 +774,9 @@
 			<OnEvent>
 				WorldMapFrame_OnEvent();
 			</OnEvent>
+			<OnUpdate>
+				RequestBattlefieldPositions();
+			</OnUpdate>
 			<OnKeyDown>
 				local toggleKey1, toggleKey2 = GetBindingKey("TOGGLEWORLDMAP");
 				local screenshotKey = GetBindingKey("SCREENSHOT");

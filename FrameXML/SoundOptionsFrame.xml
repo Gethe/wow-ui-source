@@ -241,6 +241,7 @@
 			</OnEvent>
 			<OnShow>
 				SoundOptionsFrame_Load();
+				Disable_BagButtons();
 			</OnShow>
 			<OnKeyDown>
 				if ( arg1 == "ESCAPE" ) then

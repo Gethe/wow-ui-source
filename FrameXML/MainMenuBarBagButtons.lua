@@ -84,3 +84,29 @@ end
 function ItemAnim_OnAnimFinished()
 	this:Hide();
 end
+
+function Disable_BagButtons()
+	MainMenuBarBackpackButton:Disable();
+	SetDesaturation(MainMenuBarBackpackButtonIconTexture, 1);
+	CharacterBag0Slot:Disable();
+	SetDesaturation(CharacterBag0SlotIconTexture, 1);
+	CharacterBag1Slot:Disable();
+	SetDesaturation(CharacterBag1SlotIconTexture, 1);
+	CharacterBag2Slot:Disable();
+	SetDesaturation(CharacterBag2SlotIconTexture, 1);
+	CharacterBag3Slot:Disable();
+	SetDesaturation(CharacterBag3SlotIconTexture, 1);
+end
+
+function Enable_BagButtons()
+	MainMenuBarBackpackButton:Enable();
+	SetDesaturation(MainMenuBarBackpackButtonIconTexture, nil);
+	CharacterBag0Slot:Enable();
+	SetDesaturation(CharacterBag0SlotIconTexture, nil);
+	CharacterBag1Slot:Enable();
+	SetDesaturation(CharacterBag1SlotIconTexture, nil);
+	CharacterBag2Slot:Enable();
+	SetDesaturation(CharacterBag2SlotIconTexture, nil);
+	CharacterBag3Slot:Enable();
+	SetDesaturation(CharacterBag3SlotIconTexture, nil);
+end

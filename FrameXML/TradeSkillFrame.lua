@@ -80,7 +80,7 @@ function TradeSkillFrame_Update()
 		TradeSkillCollapseAllButton:Enable();
 	end
 	-- ScrollFrame update
-	FauxScrollFrame_Update(TradeSkillListScrollFrame, numTradeSkills, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, TradeSkillHighlightFrame, 293, 316 );
+	FauxScrollFrame_Update(TradeSkillListScrollFrame, numTradeSkills, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316 );
 	
 	TradeSkillHighlightFrame:Hide();
 	for i=1, TRADE_SKILLS_DISPLAYED, 1 do

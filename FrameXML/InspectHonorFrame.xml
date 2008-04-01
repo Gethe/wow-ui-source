@@ -132,101 +132,11 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="InspectHonorFrameCurrentHKTitle" inherits="GameFontHighlightSmall" text="HONORABLE_KILLS">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameCurrentSessionTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-3"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameCurrentDKTitle" inherits="GameFontHighlightSmall" text="DISHONORABLE_KILLS">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameCurrentHKTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameCurrentHKValue" inherits="GameFontGreenSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameCurrentHKTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameCurrentDKValue" inherits="GameFontRedSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameCurrentDKTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<FontString name="InspectHonorFrameYesterdayTitle" inherits="GameFontNormal" text="HONOR_YESTERDAY">
 					<Anchors>
 						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameCurrentSessionTitle" relativePoint="BOTTOMLEFT">
 							<Offset>
 								<AbsDimension x="0" y="-45"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameYesterdayHKTitle" inherits="GameFontHighlightSmall" text="HONORABLE_KILLS">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameYesterdayTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-3"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameYesterdayDKTitle" inherits="GameFontHighlightSmall" text="DISHONORABLE_KILLS">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameYesterdayHKTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameYesterdayContributionTitle" inherits="GameFontHighlightSmall" text="HONOR_CONTRIBUTION_POINTS">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameYesterdayDKTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameYesterdayHKValue" inherits="GameFontGreenSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameYesterdayHKTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameYesterdayDKValue" inherits="GameFontRedSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameYesterdayDKTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameYesterdayContributionValue" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameYesterdayContributionTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -240,137 +150,11 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="InspectHonorFrameLastWeekHKTitle" inherits="GameFontHighlightSmall" text="HONORABLE_KILLS">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameLastWeekTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLastWeekDKTitle" inherits="GameFontHighlightSmall" text="DISHONORABLE_KILLS">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameLastWeekHKTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLastWeekContributionTitle" inherits="GameFontHighlightSmall" text="HONOR_CONTRIBUTION_POINTS">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameLastWeekDKTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLastWeekStandingTitle" inherits="GameFontHighlightSmall" text="HONOR_STANDING">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameLastWeekContributionTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLastWeekHKValue" inherits="GameFontGreenSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameLastWeekHKTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLastWeekDKValue" inherits="GameFontRedSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameLastWeekDKTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLastWeekContributionValue" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameLastWeekContributionTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLastWeekStandingValue" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameLastWeekStandingTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<FontString name="InspectHonorFrameLifeTimeTitle" inherits="GameFontNormal" text="HONOR_LIFETIME">
 					<Anchors>
 						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameLastWeekTitle" relativePoint="BOTTOMLEFT">
 							<Offset>
 								<AbsDimension x="0" y="-97"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLifeTimeHKTitle" inherits="GameFontHighlightSmall" text="HONORABLE_KILLS">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameLifeTimeTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLifeTimeDKTitle" inherits="GameFontHighlightSmall" text="DISHONORABLE_KILLS">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameLifeTimeHKTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLifeTimeRankTitle" inherits="GameFontHighlightSmall" text="HONOR_HIGHEST_RANK">
-					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameLifeTimeDKTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLifeTimeHKValue" inherits="GameFontGreenSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameLifeTimeHKTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLifeTimeDKValue" inherits="GameFontRedSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameLifeTimeDKTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="InspectHonorFrameLifeTimeRankValue" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="InspectHonorFrameLifeTimeRankTitle" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="278" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -391,6 +175,136 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame name="InspectHonorFrameCurrentHK" inherits="HonorFrameHKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameCurrentSessionTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameCurrentDK" inherits="HonorFrameDKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameCurrentHK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameYesterdayHK" inherits="HonorFrameHKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameYesterdayTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameYesterdayDK" inherits="HonorFrameDKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameYesterdayHK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameYesterdayContribution" inherits="HonorFrameContributionButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameYesterdayDK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLastWeekHK" inherits="HonorFrameHKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLastWeekDK" inherits="HonorFrameDKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekHK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLastWeekContribution" inherits="HonorFrameContributionButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekDK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLastWeekStanding" inherits="HonorFrameStandingButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekContribution" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLifeTimeHK" inherits="HonorFrameHKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLifeTimeTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLifeTimeDK" inherits="HonorFrameDKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLifeTimeHK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLifeTimeRank" inherits="HonorFrameRankButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLifeTimeDK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameRankButton" enableMouse="true" hidden="false">
+				<Size>
+					<AbsDimension x="10" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="InspectHonorFramePvPIcon"/>
+					<Anchor point="RIGHT" relativeTo="InspectHonorFrameCurrentPVPRank"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(RANK, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						GameTooltip:AddLine(NEWBIE_TOOLTIP_RANK, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				InspectHonorFrame_OnLoad();

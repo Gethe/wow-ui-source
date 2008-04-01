@@ -848,6 +848,7 @@
 				UIOptionsFrame_Load();
 				MultiActionBar_Update();
 				MultiActionBar_ShowAllGrids();
+				Disable_BagButtons();
 			</OnShow>
 			<OnHide>
 				ShowUIPanel(GameMenuFrame);

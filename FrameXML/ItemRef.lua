@@ -4,7 +4,14 @@ function SetItemRef(link, button)
 		local name = strsub(link, 8);
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsShiftKeyDown() ) then
-				SendWho("n-"..name);
+				local staticPopup = StaticPopup_Visible("ADD_IGNORE");
+				if ( staticPopup ) then
+					-- If add ignore dialog is up then enter the name into the editbox
+					getglobal(staticPopup.."EditBox"):SetText(name);
+				else
+					SendWho("n-"..name);
+				end
+				
 			elseif ( button == "RightButton" ) then
 				FriendsFrame_ShowDropdown(name, 1);
 			else

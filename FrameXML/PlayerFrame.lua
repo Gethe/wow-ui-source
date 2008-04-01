@@ -17,6 +17,7 @@ function PlayerFrame_OnLoad()
 	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	this:RegisterEvent("PARTY_LEADER_CHANGED");
 	this:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
+	this:RegisterEvent("RAID_ROSTER_UPDATE");
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	-- This is for debug feedback for Q/A
 	this:RegisterEvent("PLAYER_REGEN_DISABLED");
@@ -108,7 +109,7 @@ function PlayerFrame_OnEvent(event)
 		PlayerFrame_UpdateStatus();
 		return;
 	end
-	if ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" ) then
+	if ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
 		PlayerFrame_UpdatePartyLeader();
 		return;
 	end
@@ -117,9 +118,9 @@ function PlayerFrame_OnEvent(event)
 		local lootMaster;
 		lootMethod, lootMaster = GetLootMethod();
 		if ( lootMaster == 0 and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
-			getglobal("PlayerMasterIcon"):Show();
+			PlayerMasterIcon:Show();
 		else
-			getglobal("PlayerMasterIcon"):Hide();
+			PlayerMasterIcon:Hide();
 		end
 		return;
 	end

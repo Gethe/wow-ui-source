@@ -20,6 +20,7 @@
 				ButtonPulse_OnUpdate(arg1);
 				UnitPopup_OnUpdate(arg1);
 				BattlefieldFrame_OnUpdate(arg1);
+				RequestBattlefieldPositions();
 			</OnUpdate>
 			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
 			<OnShow>
@@ -28,6 +29,26 @@
 					this.firstTimeLoaded = nil;
 				end
 			</OnShow>
+		</Scripts>
+	</Frame>
+	<Frame name="LowHealthFrame" toplevel="true" parent="WorldFrame" setAllPoints="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\FullScreenTextures\LowHealth" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="OutOfControlFrame" toplevel="true" parent="UIParent" setAllPoints="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\FullScreenTextures\OutOfControl" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				SHOW_FULLSCREEN_STATUS = "1";
+				RegisterForSave("SHOW_FULLSCREEN_STATUS");
+			</OnLoad>
 		</Scripts>
 	</Frame>
 </Ui>

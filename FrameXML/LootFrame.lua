@@ -58,6 +58,9 @@ function LootFrame_OnEvent(event)
 		ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedLootButton, 0, 0);
 		return;
 	end
+	if ( event == "UPDATE_MASTER_LOOT_LIST" ) then
+		UIDropDownMenu_Refresh(GroupLootDropDown);
+	end
 end
 
 function LootFrame_Update()

@@ -632,13 +632,9 @@ function GetSlashCmdTarget(msg)
 			target = nil;
 		end
 	end
-	if ( target == "player" or
-		 target == "party1" or
-		 target == "party2" or
-		 target == "party3" or
-		 target == "party4" or
-		 target == "party5" or
-		 target == "target" ) then
+	if ( target and (target == "player" or target == "target" or
+	     strfind(target, "^party[1-4]") or
+		 strfind(target, "^raid[0-9]")) ) then
 		target = UnitName(target);
 	end
 	return target;
@@ -717,7 +713,13 @@ SlashCmdList["FOLLOW"] = function(msg)
 	if ( GetSlashCmdTarget(msg) ) then
 		FollowByName(GetSlashCmdTarget(msg));
 	else
-		FollowUnit("target");
+		if ( not UnitExists("target") ) then
+			UIErrorsFrame:AddMessage(ERR_GENERIC_NO_TARGET, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+		elseif ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") ) then
+			FollowUnit("target");
+		else
+			UIErrorsFrame:AddMessage(ERR_INVALID_FOLLOW_TARGET, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+		end
 	end
 end
 
@@ -1457,9 +1459,6 @@ end
 
 function ChatFrame_OnHyperlinkShow(link, button)
 	SetItemRef(link, button);
-end
-
-function ChatFrame_OnHyperlinkHide()
 end
 
 function ChatFrame_OnMouseWheel(value)

@@ -22,15 +22,6 @@ function HealthBar_OnValueChanged(value, smooth)
 			g = value * 2;
 		end
 	else
-		-- Stay green until less than 20% health
-		--if(value > 0.2) then
-		--	r = 0.0;
-		--	g = 1.0;
-		--else
-		--	r = 1.0;
-		--	g = 0.0;
-		--end
-		
 		r = 0.0;
 		g = 1.0;
 	end
