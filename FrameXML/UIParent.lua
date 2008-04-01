@@ -512,7 +512,8 @@ function UIParent_OnEvent(event)
 	end
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Get multi-actionbar states (before CloseAllWindows() since that may be hooked by AddOns)
-		SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
+		-- We don't want to call this, as the values GetActionBarToggles() returns are incorrect if it's called before the client mirrors SetActionBarToggles values from the server.
+		-- SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		MultiActionBar_Update();
 
 		-- Close any windows that were previously open
@@ -2334,6 +2335,11 @@ function tContains(table, item)
 end
 
 function MouseIsOver(frame, topOffset, bottomOffset, leftOffset, rightOffset)
+	-- Don't honor this if options frame is up. Might want to extend this to all center frames
+	if ( InterfaceOptionsFrame:IsShown() ) then
+		return nil;
+	end
+	
 	local x, y = GetCursorPosition();
 	x = x / frame:GetEffectiveScale();
 	y = y / frame:GetEffectiveScale();
@@ -2614,6 +2620,20 @@ function GetBindingText(name, prefix, returnAbbr)
 	if ( not prefix ) then
 		prefix = "";
 	end
+
+	-- fix for bug 103620: mouse buttons are not being translated properly
+	if ( tempName == "LeftButton" ) then
+		tempName = "BUTTON1";
+	elseif ( tempName == "RightButton" ) then
+		tempName = "BUTTON2";
+	elseif ( tempName == "MiddleButton" ) then
+		tempName = "BUTTON3";
+	elseif ( tempName == "Button4" ) then
+		tempName = "BUTTON4";
+	elseif ( tempName == "Button5" ) then
+		tempName = "BUTTON5";
+	end
+
 	local localizedName = nil;
 	if ( IsMacClient() ) then
 		-- see if there is a mac specific name for the key
@@ -2639,15 +2659,15 @@ function GetBindingFromClick(input)
 	-- MUST BE IN THIS ORDER (ALT, CTRL, SHIFT)
 	if ( IsAltKeyDown() ) then
 		fullInput = fullInput.."ALT-";
-		end
+	end
 
 	if ( IsControlKeyDown() ) then
 		fullInput = fullInput.."CTRL-"
-		end
+	end
 
 	if ( IsShiftKeyDown() ) then
 		fullInput = fullInput.."SHIFT-"
-		end
+	end
 
 	if ( input == "LeftButton" ) then
 		fullInput = fullInput.."BUTTON1";
@@ -2659,9 +2679,9 @@ function GetBindingFromClick(input)
 		fullInput = fullInput.."BUTTON4";
 	elseif ( input == "Button5" ) then
 		fullInput = fullInput.."BUTTON5";
-			else
+	else
 		fullInput = fullInput..input;
-			end
+	end
 
 	return GetBindingByKey(fullInput);
 end

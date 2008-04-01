@@ -370,18 +370,18 @@
 			<Layer level="ARTWORK">
 				<FontString name="$parentPrefixText" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentGoldButton" relativePoint="LEFT">
+						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="0" y="0"/>
+								<AbsDimension x="-4" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentSuffixText" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="RIGHT">
+						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="-13" y="0"/>
+								<AbsDimension x="0" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -391,8 +391,6 @@
 		<Scripts>
 			<OnLoad>
 				SmallMoneyFrame_OnLoad();
-				local copperButton = getglobal(this:GetName().."CopperButton");
-				copperButton:SetPoint("RIGHT", this:GetName().."SuffixText", "LEFT", 0, 0);
 			</OnLoad>
 		</Scripts>
 	</Frame>

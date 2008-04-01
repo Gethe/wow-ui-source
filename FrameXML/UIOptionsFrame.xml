@@ -593,10 +593,10 @@
 				InterfaceOptionsFrame_OnHide();
 			</OnHide>
 			<OnLoad>
-				InterfaceOptionsFrame_OnLoad();
+				InterfaceOptionsFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-			
+				InterfaceOptionsFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Frame>

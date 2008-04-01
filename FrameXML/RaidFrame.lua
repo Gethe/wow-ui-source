@@ -2,7 +2,8 @@
 MAX_RAID_MEMBERS = 40;
 NUM_RAID_GROUPS = 8;
 MEMBERS_PER_RAID_GROUP = 5;
-MAX_RAID_INFOS = 10;
+MAX_RAID_INFOS = 20;
+MAX_RAID_INFOS_DISPLAYED = 4;
 
 function RaidFrame_OnLoad()
 	this:RegisterEvent("PLAYER_LOGIN");
@@ -105,30 +106,53 @@ end
 -- Populates Raid Info Data
 function RaidInfoFrame_Update()
 	local savedInstances = GetNumSavedInstances();
-	local instanceName, instanceID, instanceReset;
+	local instanceName, instanceID, instanceReset, width;
+	local frameName, frameID, frameReset;
 	if ( savedInstances > 0 ) then
-		--RaidInfoScrollFrameScrollUpButton:SetPoint("BOTTOM", RaidInfoScrollFrame, "TOP", 0, 16);
-		for i=1, MAX_RAID_INFOS do
-			if ( i <=  savedInstances) then
-				instanceName, instanceID, instanceReset = GetSavedInstanceInfo(i);
-				getglobal("RaidInfoInstance"..i.."Name"):SetText(instanceName);
-				getglobal("RaidInfoInstance"..i.."ID"):SetText(instanceID);
-				getglobal("RaidInfoInstance"..i.."Reset"):SetText(RESETS_IN.." "..SecondsToTime(instanceReset));
-				getglobal("RaidInfoInstance"..i):Show();
-			else
-				getglobal("RaidInfoInstance"..i):Hide();
-			end
-			
-		end
-		if ( savedInstances > 4 ) then
+		if ( savedInstances > MAX_RAID_INFOS_DISPLAYED ) then
+			width = 205;
 			RaidInfoScrollFrameTop:Show();
 			RaidInfoScrollFrameBottom:Show();
 			RaidInfoScrollFrameScrollBar:Show();
-			RaidInfoScrollFrameScrollBar:SetPoint("TOPLEFT", RaidInfoScrollFrame, "TOPRIGHT", 8, -3);
+			RaidInfoFrame.scrolling = 1;
 		else
+			width = 230;
 			RaidInfoScrollFrameTop:Hide();
 			RaidInfoScrollFrameBottom:Hide();
 			RaidInfoScrollFrameScrollBar:Hide();
+			RaidInfoFrame.scrolling = nil;
+		end
+		for i=1, MAX_RAID_INFOS do
+			local frame = getglobal("RaidInfoInstance"..i);
+			if ( i <=  savedInstances) then
+				instanceName, instanceID, instanceReset = GetSavedInstanceInfo(i);
+				 
+				if ( not frame ) then
+					local name =  "RaidInfoInstance"..i;
+					frame = CreateFrame("FRAME", name, RaidInfoScrollChildFrame, "RaidInfoInstanceTemplate");
+					frame:SetPoint("TOPLEFT", "RaidInfoInstance"..i-1, "BOTTOMLEFT", 0, 5);
+				end
+
+				frameName = getglobal("RaidInfoInstance"..i.."Name");
+				frameID = getglobal("RaidInfoInstance"..i.."ID");
+				frameReset = getglobal("RaidInfoInstance"..i.."Reset");
+
+				frameName:SetText(instanceName);
+				frameID:SetText(instanceID);
+				frameReset:SetText(RESETS_IN.." "..SecondsToTime(instanceReset));
+				if ( RaidInfoFrame.scrolling ) then
+					frameName:SetWidth(180);
+				else
+					frameName:SetWidth(190);
+				end
+				frame:SetWidth(width);
+				frame:Show();
+			else
+				if ( frame ) then
+					frame:Hide();
+				end
+			end
+			
 		end
 	end
 end

@@ -10,7 +10,7 @@ end
 
 function MicroButtonTooltipText(text, action)
 	if ( GetBindingKey(action) ) then
-		return text.." "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey(action)..")"..FONT_COLOR_CODE_CLOSE;
+		return text.." "..NORMAL_FONT_COLOR_CODE.."("..GetBindingText(GetBindingKey(action), "KEY_")..")"..FONT_COLOR_CODE_CLOSE;
 	else
 		return text;
 	end

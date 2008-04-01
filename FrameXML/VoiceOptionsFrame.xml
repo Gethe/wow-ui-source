@@ -448,11 +448,7 @@
 										this:RegisterForClicks("AnyUp");
 									</OnLoad>
 									<OnEnter>
-										if ( this.tooltip ) then
-											GameTooltip:SetOwner(this);
-											GameTooltip:SetText(this.tooltip);
-											GameTooltip:Show();
-										end
+										VoiceChatOptionsFrameBindingButton_OnEnter();
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();

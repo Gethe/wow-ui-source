@@ -342,6 +342,23 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
+			<Button name="MacroEditButton" inherits="UIPanelButtonTemplate" text="CHANGE_MACRO_NAME_ICON">
+				<Size>
+					<AbsDimension x="170" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground">
+						<Offset>
+							<AbsDimension x="51" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MacroEditButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
 			<ScrollFrame name="MacroFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="286" y="85"/>
@@ -465,23 +482,6 @@
 						MacroFrame_SaveMacro();
 						MacroFrame_SetCharacterMacros();
 						MacroFrame_Update();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="MacroEditButton" inherits="UIPanelButtonTemplate" text="CHANGE_MACRO_NAME_ICON">
-				<Size>
-					<AbsDimension x="170" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground">
-						<Offset>
-							<AbsDimension x="51" y="-30"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						MacroEditButton_OnClick();
 					</OnClick>
 				</Scripts>
 			</Button>

@@ -343,23 +343,22 @@ function MoneyFrame_Update(frameName, money)
 	local prefixText = getglobal(frameName.."PrefixText");
 	if ( prefixText ) then
 		if ( prefixText:GetText() ) then
-			local attachButtonName;
+			local attachButton;
 			if ( goldButton:IsShown() ) then
-				attachButtonName = "GoldButton";
+				attachButton = goldButton;
 			elseif ( silverButton:IsShown() ) then
-				attachButtonName = "SilverButton";
+				attachButton = silverButton;
 			elseif ( copperButton:IsShown() ) then
-				attachButtonName = "CopperButton";
+				attachButton = copperButton;
 			end
 
-			prefixText:ClearAllPoints();
-			if ( attachButtonName ) then
+			--prefixText:ClearAllPoints();
+			if ( attachButton ) then
 				width = width + prefixText:GetWidth();
 				prefixText:Show();
-				prefixText:SetPoint("RIGHT", frameName..attachButtonName, "LEFT", spacing, 0);
+				attachButton:SetPoint("LEFT", frameName.."PrefixText", "RIGHT", 0, 0);
 			else
 				prefixText:Hide();
-				prefixText:SetPoint("RIGHT", frameName.."GoldButton", "RIGHT", 0, 0);
 			end
 		else
 			prefixText:Hide();
@@ -368,8 +367,22 @@ function MoneyFrame_Update(frameName, money)
 	local suffixText = getglobal(frameName.."SuffixText");
 	if ( suffixText ) then
 		if ( suffixText:GetText() ) then
-			width = width + suffixText:GetWidth();
-			suffixText:Show();
+			local attachButtonName;
+			if ( copperButton:IsShown() ) then
+				attachButtonName = "CopperButton";
+			elseif ( silverButton:IsShown() ) then
+				attachButtonName = "SilverButton";
+			elseif ( goldButton:IsShown() ) then
+				attachButtonName = "GoldButton";
+			end
+
+			if ( attachButtonName ) then
+				width = width + suffixText:GetWidth();
+				suffixText:Show();
+				suffixText:SetPoint("LEFT", frameName..attachButtonName, "RIGHT", 0, 0);
+			else
+				suffixText:Hide();
+			end
 		else
 			suffixText:Hide();
 		end

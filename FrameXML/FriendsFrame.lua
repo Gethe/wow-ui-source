@@ -169,7 +169,6 @@ end
 
 function FriendsList_Update()
 	local numFriends = GetNumFriends();
-	debugprint("updating!")
 	local nameLocationText, infoText, noteText, noteHiddenText;
 	local name, level, class, area, connected, status, note;
 	local friendButton;
@@ -228,12 +227,10 @@ function FriendsList_Update()
 				noteText:SetFormattedText(FRIENDS_LIST_NOTE_OFFLINE_TEMPLATE, note);
 			end
 			noteHiddenText:SetText(note);
-			debugprint("Resetting width!");
 			local width = noteHiddenText:GetWidth() + infoText:GetWidth();
 			local friendButtonWidth = friendButton:GetWidth();
 			if ( FriendsFrameFriendsScrollFrameScrollBarTop:IsVisible() ) then
 				friendButtonWidth = friendButtonWidth - FriendsFrameFriendsScrollFrameScrollBarTop:GetWidth();
-			debugprint("Scrollbar visible!");
 			end
 			if ( width > friendButtonWidth ) then
 				width = friendButtonWidth - infoText:GetWidth();

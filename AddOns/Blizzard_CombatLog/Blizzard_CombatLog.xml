@@ -25,7 +25,7 @@
 		<NormalFont inherits="GameFontDisable"/>
 		<HighlightFont inherits="GameFontHighlight"/>
 	</Button>
-	<Frame name="CombatLogQuickButtonFrame_Custom" parent="ChatFrame2" hidden="true">
+	<Frame name="CombatLogQuickButtonFrame_Custom" parent="ChatFrame2" hidden="false">
 		<Size>
 			<AbsDimension x="65" y="24"/>
 		</Size>

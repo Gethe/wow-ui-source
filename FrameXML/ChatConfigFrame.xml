@@ -32,7 +32,7 @@
 	<Button name="ConfigFilterButtonTemplate" inherits="ConfigCategoryButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				ChatConfigFilter_OnClick(this:GetID());
+				ChatConfigFilter_OnClick(this:GetID()+FauxScrollFrame_GetOffset(ChatConfigCombatSettingsFiltersScrollFrame));
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -466,7 +466,7 @@
 							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton1, "BOTTOMLEFT", 0, -1);
 							ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton1, "BOTTOMRIGHT", 0, -1);
 							ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
-							ChatConfigFrame:SetHeight(475);
+							ChatConfigFrame:SetHeight(495);
 						end
 						ChatConfigFrameHeaderText:SetText(format(CHATCONFIG_HEADER, FCF_GetCurrentChatFrame().name));
 						ChatConfigFrameHeader:SetWidth(ChatConfigFrameHeaderText:GetWidth()+200);
@@ -1859,6 +1859,7 @@
 				<Scripts>
 					<OnClick>
 						ChatConfigCancel_OnClick();
+						PlaySound("gsTitleOptionOK");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1878,6 +1879,7 @@
 						HideUIPanel(ChatConfigFrame);
 						Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings);
 						Blizzard_CombatLog_Refilter();
+						PlaySound("gsTitleOptionOK");
 					</OnClick>
 				</Scripts>
 			</Button>

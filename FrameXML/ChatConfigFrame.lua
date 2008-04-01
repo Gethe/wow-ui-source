@@ -138,27 +138,33 @@ CHAT_CONFIG_OTHER_COMBAT = {
 		func = function (checked) ToggleChatMessageGroup(checked, "SKILL"); end;
 	},
 	[5] = {
+		text = ITEM_LOOT,
+		type = "LOOT",
+		checked = function () return IsListeningForMessageType("ITEM"); end;
+		func = function (checked) ToggleChatMessageGroup(checked, "ITEM"); end;
+	},
+	[6] = {
 		text = MONEY_LOOT,
 		type = "MONEY",
 		checked = function () return IsListeningForMessageType("MONEY"); end;
 		func = function (checked) ToggleChatMessageGroup(checked, "MONEY"); end;
 	},
-	[6] = {
+	[7] = {
 		type = "TRADESKILLS",
 		checked = function () return IsListeningForMessageType("TRADESKILLS"); end;
 		func = function (checked) ToggleChatMessageGroup(checked, "TRADESKILLS"); end;
 	},
-	[7] = {
+	[8] = {
 		type = "OPENING",
 		checked = function () return IsListeningForMessageType("OPENING"); end;
 		func = function (checked) ToggleChatMessageGroup(checked, "OPENING"); end;
 	},
-	[8] = {
+	[9] = {
 		type = "PET_INFO",
 		checked = function () return IsListeningForMessageType("PET_INFO"); end;
 		func = function (checked) ToggleChatMessageGroup(checked, "PET_INFO"); end;
 	},
-	[9] = {
+	[10] = {
 		type = "COMBAT_MISC_INFO",
 		checked = function () return IsListeningForMessageType("COMBAT_MISC_INFO"); end;
 		func = function (checked) ToggleChatMessageGroup(checked, "COMBAT_MISC_INFO"); end;
@@ -263,7 +269,7 @@ COMBAT_CONFIG_MESSAGESOURCES_BY = {
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_NEUTRAL_UNITS); end;
 		tooltip = FILTER_BY_NEUTRAL_COMBATLOG_TOOLTIP;
 	},
-	[6] = {
+	[7] = {
 		text = COMBATLOG_FILTER_STRING_UNKNOWN_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_UNKNOWN_UNITS); end;
 		disabled = function () return UsesGUID("SOURCE"); end;
@@ -656,7 +662,6 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 	local checkBoxName, checkBox, check;
 	local width, height;
 	local padding = 8;
-	local count = 0;
 	local text;
 	frame.checkBoxTable = checkBoxTable;
 	if ( title ) then
@@ -665,34 +670,34 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 	for index, value in ipairs(checkBoxTable) do
 		--If no checkbox then create it
 		checkBoxName = checkBoxNameString..index;
-		if ( not getglobal(checkBoxName) ) then
+		checkBox = getglobal(checkBoxName);
+		if ( not checkBox ) then
 			checkBox = CreateFrame("Frame", checkBoxName, frame, checkBoxTemplate);
-			if ( not width ) then
-				width = checkBox:GetWidth();
-				height = checkBox:GetHeight();
-			end
-			if ( index > 1 ) then
-				checkBox:SetPoint("TOPLEFT", checkBoxNameString..(index-1), "BOTTOMLEFT", 0, 0);
-			else
-				checkBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4);
-			end
-			if ( value.text ) then
-				text = value.text;
-			else
-				text = getglobal(value.type);
-			end
-			getglobal(checkBoxName.."CheckText"):SetText(text);
-			check = getglobal(checkBoxName.."Check");
-			check.func = value.func;
-			check:SetID(index);
-			check.tooltip = value.tooltip;
-			count = count+1;
 		end
+		if ( not width ) then
+			width = checkBox:GetWidth();
+			height = checkBox:GetHeight();
+		end
+		if ( index > 1 ) then
+			checkBox:SetPoint("TOPLEFT", checkBoxNameString..(index-1), "BOTTOMLEFT", 0, 0);
+		else
+			checkBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4);
+		end
+		if ( value.text ) then
+			text = value.text;
+		else
+			text = getglobal(value.type);
+		end
+		getglobal(checkBoxName.."CheckText"):SetText(text);
+		check = getglobal(checkBoxName.."Check");
+		check.func = value.func;
+		check:SetID(index);
+		check.tooltip = value.tooltip;
 	end
 	--Set Parent frame dimensions
-	if ( count > 0 ) then
+	if ( #checkBoxTable > 0 ) then
 		frame:SetWidth(width+padding);
-		frame:SetHeight(count*height+padding);
+		frame:SetHeight(#checkBoxTable*height+padding);
 	end
 end
 
@@ -861,6 +866,15 @@ function ChatConfig_UpdateCheckboxes(frame)
 			end
 		end
 	end
+	-- Hide remaining checkboxes
+	local count = #checkBoxTable+1;
+	repeat
+		checkBox = getglobal(checkBoxNameString..count);
+		if ( checkBox ) then
+			checkBox:Hide();
+		end
+		count = count+1;
+	until not checkBox;
 end
 
 function ChatConfig_UpdateSwatches(frame)
@@ -1434,17 +1448,31 @@ function ChatConfig_UpdateFilterList()
 end
 
 function ChatConfigFilter_OnClick(id)
-	ChatConfigCombatSettingsFilters.selectedFilter = id+FauxScrollFrame_GetOffset(ChatConfigCombatSettingsFiltersScrollFrame);
-	CHATCONFIG_SELECTED_FILTER = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter];
-	CHATCONFIG_SELECTED_FILTER_FILTERS = CHATCONFIG_SELECTED_FILTER.filters;
-	CHATCONFIG_SELECTED_FILTER_COLORS = CHATCONFIG_SELECTED_FILTER.colors;
-	CHATCONFIG_SELECTED_FILTER_SETTINGS = CHATCONFIG_SELECTED_FILTER.settings;
-	
+	if ( #Blizzard_CombatLog_Filters.filters > 0 ) then
+		ChatConfigCombatSettingsFilters.selectedFilter = id;
+		CHATCONFIG_SELECTED_FILTER = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter];
+		CHATCONFIG_SELECTED_FILTER_FILTERS = CHATCONFIG_SELECTED_FILTER.filters;
+		CHATCONFIG_SELECTED_FILTER_COLORS = CHATCONFIG_SELECTED_FILTER.colors;
+		CHATCONFIG_SELECTED_FILTER_SETTINGS = CHATCONFIG_SELECTED_FILTER.settings;
+	end
 	ChatConfig_UpdateFilterList();
 	ChatConfig_UpdateCombatSettings();
 end
 
 function ChatConfig_UpdateCombatSettings()
+	if ( #Blizzard_CombatLog_Filters.filters == 0 ) then
+		ChatConfigCombatSettingsFiltersCopyFilterButton:Disable();
+		ChatConfigCombatSettingsFiltersDeleteButton:Disable();
+		ChatConfig_UpdateCombatTabs(0);
+		for index, value in ipairs(COMBAT_CONFIG_TABS) do
+			getglobal(value.frame):Hide();
+		end
+		return;
+	else
+		ChatConfigCombatSettingsFiltersCopyFilterButton:Enable();
+		ChatConfigCombatSettingsFiltersDeleteButton:Enable();
+	end
+	
 	ChatConfig_UpdateCheckboxes(CombatConfigMessageSourcesDoneBy);
 	ChatConfig_UpdateCheckboxes(CombatConfigMessageSourcesDoneTo);
 	
@@ -1481,13 +1509,10 @@ end
 function IsMessageDoneBy(filter)
 	local sourceFlags;
 	if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags ) then
-		CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags = {};
+		return true;
 	end
 	sourceFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags;
 
-	if ( not sourceFlags ) then
-		return true;
-	end
 	return sourceFlags[filter];
 end
 
@@ -1496,7 +1521,7 @@ function IsMessageDoneTo(filter)
 
 	if ( UsesGUID( "SOURCE" ) or UsesGUID("DEST") ) then 
 		if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags ) then
-			CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags = {};
+			return true;
 		end
 		destFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags;
 	else
@@ -1504,10 +1529,6 @@ function IsMessageDoneTo(filter)
 		destFlags = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter].filters[2].destFlags;
 	end
 
-
-	if ( not destFlags ) then
-		return true;
-	end
 	return destFlags[filter];
 end
 
@@ -1561,7 +1582,10 @@ function ChatConfig_UpdateCombatTabs(selectedTabID)
 		tab = getglobal(CHAT_CONFIG_COMBAT_TAB_NAME..index);
 		text = getglobal(CHAT_CONFIG_COMBAT_TAB_NAME..index.."Text");
 		frame = getglobal(value.frame);
-		if ( index == selectedTabID ) then
+		if ( #Blizzard_CombatLog_Filters.filters == 0 ) then
+			tab:SetAlpha(0.75);
+			text:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		elseif ( index == selectedTabID ) then
 			tab:SetAlpha(1.0);
 			text:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			frame:Show();
@@ -1602,6 +1626,10 @@ function CombatConfig_CreateCombatFilter(name, filter)
 	ChatConfigCombatSettingsFiltersScrollFrameScrollBar:SetValue(0);
 	-- Select the new filter
 	ChatConfigFilter_OnClick(#Blizzard_CombatLog_Filters.filters);
+	-- If creating a filter when there wasn't any before then update the tabs with the first one selected
+	if ( #Blizzard_CombatLog_Filters.filters == 1 ) then
+		ChatConfig_UpdateCombatTabs(1);
+	end
 end
 
 function CombatConfig_DeleteCurrentCombatFilter()
@@ -1613,7 +1641,13 @@ function CombatConfig_DeleteCurrentCombatFilter()
 end
 
 function CombatConfig_SetCombatFiltersToDefault()
-	Blizzard_CombatLog_Filters = CopyTable(Blizzard_CombatLog_Filter_Defaults);	
+	Blizzard_CombatLog_Filters = CopyTable(Blizzard_CombatLog_Filter_Defaults);
+	-- Have to call this because of the way the upvalues are setup in the combatlog
+	Blizzard_CombatLog_RefreshGlobalLinks();
+	Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[1]
+	ChatConfig_UpdateFilterList();
+	ChatConfigFilter_OnClick(1);
+	ChatConfig_UpdateCombatTabs(1);
 end
 
 function ChatConfig_MoveFilterUp()
@@ -1654,8 +1688,17 @@ end
 function ChatConfigCancel_OnClick()
 	-- Copy the old settings back in place
 	Blizzard_CombatLog_Filters = CopyTable(CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS);
-	
+	-- Have to call this because of the way the upvalues are setup in the combatlog
+	Blizzard_CombatLog_RefreshGlobalLinks();
+
 	CHATCONFIG_SELECTED_FILTER = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter];
+	-- Handle the case where the selected filter no longer exists!!!
+	if ( not CHATCONFIG_SELECTED_FILTER ) then
+		ChatConfigFilter_OnClick(1);
+		HideUIPanel(ChatConfigFrame);
+		return;
+	end
+
 	CHATCONFIG_SELECTED_FILTER_FILTERS = CHATCONFIG_SELECTED_FILTER.filters;
 	CHATCONFIG_SELECTED_FILTER_COLORS = CHATCONFIG_SELECTED_FILTER.colors;
 	CHATCONFIG_SELECTED_FILTER_SETTINGS = CHATCONFIG_SELECTED_FILTER.settings;

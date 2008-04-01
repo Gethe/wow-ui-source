@@ -78,11 +78,11 @@
             </Button>
             <Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER">
                 <Anchors>
-                    <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="62" y="60"/>
-                        </Offset>
-                    </Anchor>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="11" y="46"/>
+						</Offset>
+					</Anchor>
                 </Anchors>
                 <Scripts>
 					<OnEnter>
@@ -98,7 +98,7 @@
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT">
                         <Offset>
-                            <AbsDimension x="-16" y="0"/>
+                            <AbsDimension x="-15" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -116,7 +116,7 @@
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
                         <Offset>
-                            <AbsDimension x="-16" y="0"/>
+                            <AbsDimension x="-15" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -134,7 +134,7 @@
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="CharacterFrameTab3" relativePoint="RIGHT">
                         <Offset>
-                            <AbsDimension x="-16" y="0"/>
+                            <AbsDimension x="-15" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -152,7 +152,7 @@
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="CharacterFrameTab4" relativePoint="RIGHT">
                         <Offset>
-                            <AbsDimension x="-16" y="0"/>
+                            <AbsDimension x="-15" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>

@@ -72,12 +72,13 @@ function InterfaceOptionsFrame_SetCurrentToDefaults ()
 	end
 end
 
-function InterfaceOptionsFrame_OnLoad ()
+function InterfaceOptionsFrame_OnLoad (self)
 	--Make sure all the UVars get their default values set, since systems that require them to be defined will be loaded before anything in UIOptionsPanels
+	self:RegisterEvent("VARIABLES_LOADED");
 	InterfaceOptionsFrame_InitializeUVars();
-	PanelTemplates_SetNumTabs(this, 2);
+	PanelTemplates_SetNumTabs(self, 2);
 	InterfaceOptionsFrame.selectedTab = 1;
-	PanelTemplates_UpdateTabs(this);	
+	PanelTemplates_UpdateTabs(self);	
 end
 
 function InterfaceOptionsFrame_OnShow ()
@@ -99,6 +100,52 @@ function InterfaceOptionsFrame_OnHide ()
 	end
 	
 	UpdateMicroButtons();
+end
+
+uvarInfo = {
+	["SIMPLE_CHAT"] = { default = "0", cvar = "useSimpleChat", event = "SIMPLE_CHAT_TEXT" },
+	["CHAT_LOCKED"] = { default = "0", cvar = "chatLocked", event = "CHAT_LOCKED_TEXT" },
+	["REMOVE_CHAT_DELAY"] = { default = "0", cvar = "removeChatDelay", event = "REMOVE_CHAT_DELAY_TEXT" },
+	["SHOW_NEWBIE_TIPS"] = { default = "1", cvar = "showNewbieTips", event = "SHOW_NEWBIE_TIPS_TEXT" },
+	["LOCK_ACTIONBAR"] = { default = "0", cvar = "lockActionBars", event = "LOCK_ACTIONBAR_TEXT" },
+	["SHOW_BUFF_DURATIONS"] = { default = "0", cvar = "buffDurations", event = "SHOW_BUFF_DURATION_TEXT" },
+	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", event = "ALWAYS_SHOW_MULTIBARS_TEXT" },
+	["SHOW_PARTY_PETS"] = { default = "1", cvar = "showPartyPets", event = "SHOW_PARTY_PETS_TEXT" },
+	["QUEST_FADING_DISABLE"] = { default = "0", cvar = "questFadingDisable", event = "SHOW_QUEST_FADING_TEXT" },
+	["SHOW_PARTY_BACKGROUND"] = { default = "0", cvar = "showPartyBackground", event = "SHOW_PARTY_BACKGROUND_TEXT" },
+	["HIDE_PARTY_INTERFACE"] = { default = "0", cvar = "hidePartyInRaid", event = "HIDE_PARTY_INTERFACE_TEXT" },
+	["SHOW_TARGET_OF_TARGET"] = { default = "0", cvar = "showTargetOfTarget", event = "SHOW_TARGET_OF_TARGET_TEXT" },
+	["SHOW_TARGET_OF_TARGET_STATE"] = { default = "5", cvar = "targetOfTargetMode", event = "SHOW_TARGET_OF_TARGET_STATE" },
+	["WORLD_PVP_OBJECTIVES_DISPLAY"] = { default = "2", cvar = "displayWorldPVPObjectives", event = "WORLD_PVP_OBJECTIVES_DISPLAY" },
+	["AUTO_QUEST_WATCH"] = { default = "1", cvar = "autoQuestWatch", event = "AUTO_QUEST_WATCH_TEXT" },
+	["LOOT_UNDER_MOUSE"] = { default = "0", cvar = "lootUnderMouse", event = "LOOT_UNDER_MOUSE_TEXT" },
+	["AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "autoLootCorpse", event = "AUTO_LOOT_DEFAULT_TEXT" },
+	
+	["SHOW_COMBAT_TEXT"] = { default = "0", cvar = "enableCombatText", event = "SHOW_COMBAT_TEXT_TEXT" },
+	["COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"] = { default = "1", cvar = "fctLowManaHealth", event = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
+	["COMBAT_TEXT_SHOW_AURAS"] = { default = "1", cvar = "fctAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
+	["COMBAT_TEXT_SHOW_AURA_FADE"] = { default = "1", cvar = "fctAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
+	["COMBAT_TEXT_SHOW_COMBAT_STATE"] = { default = "1", cvar = "fctCombatState", event = "COMBAT_TEXT_SHOW_COMBAT_STATE_TEXT" },
+	["COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"] = { default = "0", cvar = "fctDodgeParryMiss", event = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS_TEXT" },
+	["COMBAT_TEXT_SHOW_RESISTANCES"] = { default = "0", cvar = "fctDamageReduction", event = "COMBAT_TEXT_SHOW_RESISTANCES_TEXT" },
+	["COMBAT_TEXT_SHOW_REPUTATION"] = { default = "0", cvar = "fctRepChanges", event = "COMBAT_TEXT_SHOW_REPUTATION_TEXT" },
+	["COMBAT_TEXT_SHOW_REACTIVES"] = { default = "0", cvar = "fctReactives", event = "COMBAT_TEXT_SHOW_REACTIVES_TEXT" },
+	["COMBAT_TEXT_SHOW_FRIENDLY_NAMES"] = { default = "0", cvar = "fctFriendlyHealers", event = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES_TEXT" },
+	["COMBAT_TEXT_SHOW_COMBO_POINTS"] = { default = "0", cvar = "fctComboPoints", event = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT" },
+	["COMBAT_TEXT_SHOW_MANA"] = { default = "0", cvar = "fctEnergyGains", event = "COMBAT_TEXT_SHOW_MANA_TEXT" },
+	["COMBAT_TEXT_FLOAT_MODE"] = { default = "1", cvar = "combatTextFloatMode", event = "COMBAT_TEXT_FLOAT_MODE" },
+	["COMBAT_TEXT_SHOW_HONOR_GAINED"] = { default = "1", cvar = "fctHonorGains", event = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
+	["SHOW_MULTI_ACTIONBAR_1"] = { default = "0", cvar = "bottomLeftActionBar", func = function() InterfaceOptions_UpdateMultiActionBars() end },
+	["SHOW_MULTI_ACTIONBAR_2"] = { default = "0", cvar = "bottomRightActionBar", func = function() InterfaceOptions_UpdateMultiActionBars() end },
+	["SHOW_MULTI_ACTIONBAR_3"] = { default = "0", cvar = "rightActionBar", func = function() InterfaceOptions_UpdateMultiActionBars() end },
+	["SHOW_MULTI_ACTIONBAR_4"] = { default = "0", cvar = "rightTwoActionBar", func = function() InterfaceOptions_UpdateMultiActionBars() end },
+	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", func = function() MultiActionBar_UpdateGridVisibility(); InterfaceOptions_UpdateMultiActionBars(); end },
+}
+
+ function InterfaceOptionsFrame_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		InterfaceOptionsFrame_LoadUVars();
+	end
 end
 
 function InterfaceOptionsFrame_Show ()
@@ -646,39 +693,26 @@ function InterfaceOptionsFrame_SetupBlizzardPanel (frame)
 end
 
 function InterfaceOptionsFrame_InitializeUVars ()
-	-- UVars that keep settings
-	SIMPLE_CHAT = "0";
-	CHAT_LOCKED = "0"
-	REMOVE_CHAT_DELAY = "0";
-	SHOW_NEWBIE_TIPS = "1";
-	LOCK_ACTIONBAR = "0";
-	SHOW_BUFF_DURATIONS = "0";
-	ALWAYS_SHOW_MULTIBARS = "0";
-	SHOW_PARTY_PETS = "1";
-	QUEST_FADING_DISABLE = "0";
-	SHOW_PARTY_BACKGROUND = "0";
-	HIDE_PARTY_INTERFACE = "0";
-	SHOW_TARGET_OF_TARGET = "0";
-	SHOW_TARGET_OF_TARGET_STATE = "5";
-	WORLD_PVP_OBJECTIVES_DISPLAY = "2";
-	AUTO_QUEST_WATCH = "1";
-	LOOT_UNDER_MOUSE = "0";
-	AUTO_LOOT_DEFAULT = "0";
-	SHOW_PARTY_TEXT = "0";
-	
-	-- Combat text uvars
-	SHOW_COMBAT_TEXT = "0";
-	COMBAT_TEXT_SHOW_LOW_HEALTH_MANA = "1";
-	COMBAT_TEXT_SHOW_AURAS = "1";
-	COMBAT_TEXT_SHOW_AURA_FADE = "0";
-	COMBAT_TEXT_SHOW_COMBAT_STATE = "1";
-	COMBAT_TEXT_SHOW_DODGE_PARRY_MISS = "0";
-	COMBAT_TEXT_SHOW_RESISTANCES = "0";
-	COMBAT_TEXT_SHOW_REPUTATION = "0";
-	COMBAT_TEXT_SHOW_REACTIVES = "0";
-	COMBAT_TEXT_SHOW_FRIENDLY_NAMES = "0";
-	COMBAT_TEXT_SHOW_COMBO_POINTS = "0";
-	COMBAT_TEXT_SHOW_MANA = "0";
-	COMBAT_TEXT_FLOAT_MODE = "1";
-	COMBAT_TEXT_SHOW_HONOR_GAINED = "1";
+	-- Setup UVars that keep settings
+	for uvar, setting in next, uvarInfo do
+		setglobal(uvar, setting.default);
+	end
+end
+
+function InterfaceOptionsFrame_LoadUVars ()
+	local variable, cvarValue
+	for uvar, setting in next, uvarInfo do
+		variable = getglobal(uvar);
+		cvarValue = GetCVar(setting.cvar);
+		if ( cvarValue == setting.default and variable ~= setting.default ) then
+			SetCVar(setting.cvar, variable, setting.event)
+			if ( setting.func ) then
+				setting.func()
+			end
+		elseif ( cvarValue ~= setting.default or ( not ( getglobal(uvar) ) ) ) then
+			if ( setting.func ) then
+				setting.func()
+			end
+		end
+	end
 end

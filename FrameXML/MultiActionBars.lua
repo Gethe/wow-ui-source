@@ -1,10 +1,5 @@
 NUM_MULTIBAR_BUTTONS = 12;
 
--- Multi Actionbar Toggles and Temp State Variables
-SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = nil;
-STATE_MultiBar1, STATE_MultiBar2, STATE_MultiBar3, STATE_MultiBar4, STATE_AlwaysShowMultibars = nil;
-
-
 function MultiActionBarFrame_OnLoad()
 	-- Hack no longer needed here.
 	-- This is where i will load the actionbar states

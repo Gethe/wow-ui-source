@@ -360,7 +360,9 @@ function VoiceChatOptionsFrameBindingButton_BindButton()
 	end
 	if ( PUSH_TO_TALK_BUTTON ~= "" ) then
 		SetCVar("PushToTalkButton", PUSH_TO_TALK_BUTTON);
-		this:SetText(GetBindingText(PUSH_TO_TALK_BUTTON, "KEY_"));
+		local bindingText = GetBindingText(PUSH_TO_TALK_BUTTON, "KEY_");
+		this:SetText(bindingText);
+		VoiceOptionsFrameType1KeyBindingButtonHiddenText:SetText(bindingText);
 
 		this:UnlockHighlight();
 		this.buttonPressed = nil;
@@ -375,6 +377,9 @@ function VoiceChatOptionsFrameBindingButton_BindButton()
 		VoiceOptionsFrameBindingOutput.fade = VOICE_OPTIONS_BINDING_FADE;
 	end
 	VoiceChatOptionsFrameBindingButton_SetTooltip();
+	if ( GameTooltip:GetOwner() == this ) then
+		VoiceChatOptionsFrameBindingButton_OnEnter();
+	end
 end
 
 function VoiceChatOptionsFrameBindingButton_OnKeyUp(button)
@@ -432,6 +437,14 @@ function VoiceChatOptionsFrameBindingButton_SetTooltip()
 		this.tooltip = VoiceOptionsFrameType1KeyBindingButtonHiddenText:GetText();
 	else
 		this.tooltip = nil;
+	end
+end
+
+function VoiceChatOptionsFrameBindingButton_OnEnter()
+	if ( this.tooltip ) then
+		GameTooltip:SetOwner(this);
+		GameTooltip:SetText(this.tooltip);
+		GameTooltip:Show();
 	end
 end
 

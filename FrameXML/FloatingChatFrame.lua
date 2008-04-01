@@ -682,8 +682,8 @@ function FCF_OnUpdate(elapsed)
 		if ( FCF_IsValidChatFrame(chatFrame) ) then
 			--Tab height
 			local yOffset = 45;
-			if ( IsCombatLog(chatFrame) and IsAddOnLoaded("Blizzard_CombatLog") ) then
-				yOffset = yOffset + CombatLogQuickButtonFrame:GetHeight();				
+			if ( IsCombatLog(chatFrame) ) then
+				yOffset = yOffset + CombatLogQuickButtonFrame_Custom:GetHeight();				
 			end
 			if ( (MouseIsOver(chatFrame, yOffset, -10, -5, 5) or chatFrame.resizing) ) then
 				-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay

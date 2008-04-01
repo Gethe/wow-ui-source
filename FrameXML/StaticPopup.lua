@@ -870,6 +870,7 @@ StaticPopupDialogs["PARTY_INVITE"] = {
 	OnHide = function()
 		if ( not StaticPopupDialogs["PARTY_INVITE"].inviteAccepted ) then
 			DeclineGroup();
+			this:Hide();
 		end
 	end,
 	timeout = 60,

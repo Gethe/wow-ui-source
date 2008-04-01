@@ -226,7 +226,6 @@ end
 DisplayPanelOptions = {
 	buffDurations = { text = "SHOW_BUFF_DURATION_TEXT", default = "0" },
 	rotateMinimap = { text = "ROTATE_MINIMAP", default = "0" },
-	scriptErrors = { text = "SHOW_LUA_ERRORS", default = "0" },
 	screenEdgeFlash = { text = "SHOW_FULLSCREEN_STATUS_TEXT", default="1" },
 	showLootSpam = { text = "SHOW_LOOT_SPAM", default="1" },
 	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS", default="0" },
@@ -317,8 +316,25 @@ SocialPanelOptions = {
 	guildMemberNotify = { text="GUILDMEMBER_ALERT", default="1" },
 	guildRecruitmentChannel = { text="AUTO_JOIN_GUILD_CHANNEL", default="1" },
 	showChatIcons = { text="SHOW_CHAT_ICONS", default="0" },
+	useSimpleChat = { text="SIMPLE_CHAT_TEXT", default="0" },
 	chatLocked = { text="CHAT_LOCKED_TEXT", default="0" },	
 }
+
+function InterfaceOptionsSocialPanel_OnLoad (panel)
+	panel.okay = function (self)
+		for _, control in next, self.controls do
+			securecall(BlizzardOptionsPanel_UpdateCurrentControlValue, control);
+		end
+		
+		if ( InterfaceOptionsSocialPanelSimpleChat:GetChecked() ) then
+			SIMPLE_CHAT = "1";
+			FCF_Set_SimpleChat();
+		else
+			SIMPLE_CHAT = "0";
+			FCF_Set_NormalChat();
+		end
+	end
+end
 
 -- [[ ActionBars Options Panel ]] --
 
@@ -696,6 +712,7 @@ HelpPanelOptions = {
 	showGameTips = { text = "SHOW_TIPOFTHEDAY_TEXT", default="1" },
 	UberTooltips = { text = "USE_UBERTOOLTIPS", default="1" },
 	showNewbieTips = { text = "SHOW_NEWBIE_TIPS_TEXT", default="1" },
+	scriptErrors = { text = "SHOW_LUA_ERRORS", default = "0" },
 }
 
 function InterfaceOptionsHelpPanel_OnLoad (panel)

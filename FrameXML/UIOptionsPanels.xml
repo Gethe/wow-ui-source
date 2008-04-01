@@ -744,25 +744,9 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
-			<CheckButton name="$parentShowLuaErrors" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRotateMinimap" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "scriptErrors";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>				
 			<CheckButton name="$parentScreenEdgeFlash" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowLuaErrors" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentRotateMinimap" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -967,6 +951,7 @@
 				this.name = SOCIAL_LABEL;
 				this.options = SocialPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
+				InterfaceOptionsSocialPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				BlizzardOptionsPanel_OnShow(self);
@@ -993,7 +978,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentProfanityFilter" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1009,7 +994,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentChatBubbles" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1025,7 +1010,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPartyChat" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1042,7 +1027,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSpamFilter" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1059,7 +1044,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentChatHoverDelay" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1075,7 +1060,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentGuildMemberAlert" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1092,7 +1077,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentGuildRecruitment" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1104,11 +1089,28 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
-			<CheckButton name="$parentLockChatSettings" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentSimpleChat" inherits="InterfaceOptionsCheckButtonTemplate">				
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowChatIcons" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.type = CONTROLTYPE_CHECKBOX;
+						this.cvar = "useSimpleChat";
+						this.uvar = "SIMPLE_CHAT";
+						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>			
+			<CheckButton name="$parentLockChatSettings" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSimpleChat" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2747,6 +2749,22 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
+			<CheckButton name="$parentShowLuaErrors" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBeginnerTooltips" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.type = CONTROLTYPE_CHECKBOX;
+						this.cvar = "scriptErrors";
+						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>				
 			<Button name="$parentResetTutorials" inherits="UIPanelButtonTemplate" text="RESET_TUTORIALS">
 				<Size>
 					<AbsDimension x="96" y="22"/>

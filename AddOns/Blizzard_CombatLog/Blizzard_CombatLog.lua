@@ -26,7 +26,6 @@ AURA_TYPE_BUFF = "BUFF";
 AURA_TYPE_DEBUFF = "DEBUFF"
 
 -- Message Limit
-COMBATLOG_MESSAGE_LIMIT = 300;
 COMBATLOG_LIMIT_PER_FRAME = 5;
 COMBATLOG_HIGHLIGHT_MULTIPLIER = 1.5;
 
@@ -166,6 +165,15 @@ COMBATLOG_EVENT_LIST = {
 	["UNIT_DESTROYED"] = true
 };
 
+COMBATLOG_FLAG_LIST = {
+	[COMBATLOG_FILTER_MINE] = true,
+	[COMBATLOG_FILTER_MY_PET] = true,
+	[COMBATLOG_FILTER_FRIENDLY_UNITS] = true,
+	[COMBATLOG_FILTER_HOSTILE_UNITS] = true,
+	[COMBATLOG_FILTER_HOSTILE_PLAYERS] = true,
+	[COMBATLOG_FILTER_NEUTRAL_UNITS] = true,
+	[COMBATLOG_FILTER_UNKNOWN_UNITS] = true,
+};
 
 -- 
 -- 	Creates an empty filter
@@ -192,8 +200,19 @@ function Blizzard_CombatLog_GenerateFullEventList ( )
 	for event, v in pairs ( COMBATLOG_EVENT_LIST ) do
 		eventList[event] = true;
 	end
-
 	return eventList;
+end
+
+function Blizzard_CombatLog_GenerateFullFlagList(flag)
+	local flagList = {};
+	for k, v in pairs(COMBATLOG_FLAG_LIST) do
+		if ( flag ) then
+			flagList[k] = true
+		else
+			flagList[k] = false;
+		end
+	end
+	return flagList;
 end
 
 --
@@ -308,7 +327,6 @@ local SCHOOL_MASK_NATURE = SCHOOL_MASK_NATURE
 local SCHOOL_MASK_FROST = SCHOOL_MASK_FROST
 local SCHOOL_MASK_SHADOW = SCHOOL_MASK_SHADOW
 local SCHOOL_MASK_ARCANE = SCHOOL_MASK_ARCANE
-local COMBATLOG_MESSAGE_LIMIT = COMBATLOG_MESSAGE_LIMIT
 local COMBATLOG_LIMIT_PER_FRAME = COMBATLOG_LIMIT_PER_FRAME
 local COMBATLOG_HIGHLIGHT_MULTIPLIER = COMBATLOG_HIGHLIGHT_MULTIPLIER
 local COMBATLOG_DEFAULT_COLORS = COMBATLOG_DEFAULT_COLORS
@@ -510,13 +528,13 @@ Blizzard_CombatLog_Filter_Defaults = {
 			filters = {
 				[1] = {
 					eventList = Blizzard_CombatLog_GenerateFullEventList();
-					sourceFlags = nil;
+					sourceFlags = Blizzard_CombatLog_GenerateFullFlagList(true);
 					destFlags = nil;
 				};
 				[2] = {
 					eventList = Blizzard_CombatLog_GenerateFullEventList();
 					sourceFlags = nil;
-					destFlags = nil;
+					destFlags = Blizzard_CombatLog_GenerateFullFlagList(true);
 				};
 			};
 		};
@@ -542,15 +560,7 @@ Blizzard_CombatLog_Filter_Defaults = {
 			filters = {
 				[1] = {
 					eventList = Blizzard_CombatLog_GenerateFullEventList();
-					sourceFlags = {
-						[COMBATLOG_FILTER_MINE] = false,
-						[COMBATLOG_FILTER_MY_PET] = false,
-						[COMBATLOG_FILTER_FRIENDLY_UNITS] = false,
-						[COMBATLOG_FILTER_HOSTILE_UNITS] = false,
-						[COMBATLOG_FILTER_HOSTILE_PLAYERS] = false,
-						[COMBATLOG_FILTER_NEUTRAL_UNITS] = false,
-						[COMBATLOG_FILTER_UNKNOWN_UNITS] = false,
-					};
+					sourceFlags = Blizzard_CombatLog_GenerateFullFlagList(false);
 					destFlags = nil;
 				};
 				[2] = {
@@ -589,9 +599,7 @@ Blizzard_CombatLog_Filter_Defaults = {
 						["UNIT_DIED"] = true,
 						["UNIT_DESTROYED"] = true
 					};
-					sourceFlags = {
-						[COMBATLOG_FILTER_EVERYTHING] = true,
-					};
+					sourceFlags = Blizzard_CombatLog_GenerateFullFlagList(true);
 					destFlags = nil;
 				};
 				[2] = {
@@ -601,9 +609,7 @@ Blizzard_CombatLog_Filter_Defaults = {
 						["UNIT_DESTROYED"] = true
 					};
 					sourceFlags = nil;
-					destFlags = {
-						[COMBATLOG_FILTER_EVERYTHING] = true,  
-					};
+					destFlags = Blizzard_CombatLog_GenerateFullFlagList(true);
 				};
 			};
 		};
@@ -622,6 +628,9 @@ _G.Blizzard_CombatLog_Filters = Blizzard_CombatLog_Filters
 -- 	config - the configuration array we are about to apply
 -- 
 function Blizzard_CombatLog_ApplyFilters(config)
+	if ( not config ) then
+		return;
+	end
 	CombatLogResetFilter()
 
 	-- Loop over all associated filters
@@ -629,7 +638,7 @@ function Blizzard_CombatLog_ApplyFilters(config)
 		local eList
 		if ( v.eventList ) then
 			for k2,v2 in pairs(v.eventList) do 
-				if ( v2 ) then
+				if ( v2 == true ) then
 					eList = eList and (eList .. "," .. k2) or k2
 				end
 			end
@@ -671,7 +680,8 @@ function Blizzard_CombatLog_ApplyFilters(config)
 			sourceFlags = nil;
 		end
 
-		if ( sourceFlags ~= 0 and destFlags ~= 0 ) then
+		if ( sourceFlags == 0 or destFlags == 0 ) then
+		else 
 			CombatLogAddFilter(eList, sourceFlags, destFlags);
 		end
 	end
@@ -688,21 +698,19 @@ function Blizzard_CombatLog_Refilter()
 	local count = CombatLogGetNumEntries();
 	local valid;
 	
-	-- index can be 
-	--  positive starting from the oldest entries
-	--  negative starting from the newest entries
-	if ( count < COMBATLOG_MESSAGE_LIMIT ) then
-		valid = CombatLogSetCurrentEntry(1); 
-	else
-		valid = CombatLogSetCurrentEntry(-COMBATLOG_MESSAGE_LIMIT); 
+	-- We're now allowing an unlimited number of MaxLines
+	-- CombatLogGetRetentionTime() will now be honored over the MaxLines
+	if ( count > COMBATLOG:GetMaxLines() ) then
+		COMBATLOG:SetMaxLines(count);
 	end
+	valid = CombatLogSetCurrentEntry(1); 
 
 	-- Clear the combat log
 	COMBATLOG:Clear();
 	
 	-- Moved setting the max value here, since we don't really need to reset the max every frame, do we?
 	-- We can't add events while refiltering (:AddFilter short circuits) so this should be safe optimization.
-	CombatLogQuickButtonFrameProgressBar:SetMinMaxValues(0, min(count, COMBATLOG_MESSAGE_LIMIT));	
+	CombatLogQuickButtonFrameProgressBar:SetMinMaxValues(0, count);	
 	CombatLogQuickButtonFrameProgressBar:SetValue(0);
 	CombatLogQuickButtonFrameProgressBar:Show();
 
@@ -755,7 +763,7 @@ function Blizzard_CombatLog_HasEvent ( settings, ... )
 		if ( filter.eventList ) then
 			for i = 1, select("#", ...) do
 				local event = select(i, ...)
-				if ( filter.eventList[event] ) then
+				if ( filter.eventList[event] == true ) then
 					return true
 				end
 			end
@@ -1505,14 +1513,12 @@ do
 				text = BLIZZARD_COMBAT_LOG_MENU_RESET;
 				func = function () Blizzard_CombatLog_UnitMenuClick ("RESET", unitName, unitGUID, special); end;
 			},
-			[8] = {
-				text = "--------- Temporary Adjustments ---------";
-				disabled = true;
-			},
 		};		
+		--[[
 		-- These 2 calls update the menus in their respective do-end blocks
 		unitMenu[9] = Blizzard_CombatLog_FormattingMenu(Blizzard_CombatLog_Filters.currentFilter);
 		unitMenu[10] = Blizzard_CombatLog_MessageTypesMenu(Blizzard_CombatLog_Filters.currentFilter);
+		]]
 
 		if ( unitGUID ~= UnitGUID("player") ) then
 			table.insert(unitMenu, 4, {
@@ -1596,8 +1602,7 @@ function Blizzard_CombatLog_UnitMenuClick(event, unitName, unitGUID, unitFlags)
 	elseif ( event == "RESET" ) then
 		Blizzard_CombatLog_PreviousSettings = Blizzard_CombatLog_CurrentSettings;
 		Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[Blizzard_CombatLog_Filters.currentFilter];
-		--CombatLogAddFilter(nil, nil, COMBATLOG_FILTER_MINE)
-		--CombatLogAddFilter(nil, COMBATLOG_FILTER_MINE, nil)
+		Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings);
 	else
 		-- Copy the current settings
 		Blizzard_CombatLog_PreviousSettings = Blizzard_CombatLog_CurrentSettings;
@@ -2939,12 +2944,12 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 
 	-- Whole line coloring
 	if ( settings.lineColoring ) then
-		if ( lineColorPriority == 3 or ( not sourceName and not destName) ) then
+		if ( settings.lineColorPriority == 3 or ( not sourceName and not destName) ) then
 			lineColor = CombatLog_Color_ColorArrayByEventType( event, filterSettings );
 		else
-			if ( ( lineColorPriority == 1 and sourceName ) or not destName ) then
+			if ( ( settings.lineColorPriority == 1 and sourceName ) or not destName ) then
 				lineColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
-			elseif ( ( lineColorPriority == 2 and destName ) or not sourceName ) then
+			elseif ( ( settings.lineColorPriority == 2 and destName ) or not sourceName ) then
 				lineColor = CombatLog_Color_ColorArrayByUnitType( destFlags, filterSettings );
 			else
 				lineColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
@@ -3190,7 +3195,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		end
 		if ( extraSpellName and settings.spellBraces ) then 
 			extraSpellNameStr = string_gsub(_G[textModeString .. "BRACE_SPELL"], "$spellName", extraSpellNameStr);
-			extraSpellNameStr = string_gsub(spellNameStr, "$braceColor", braceColor);
+			extraSpellNameStr = string_gsub(extraSpellNameStr, "$braceColor", braceColor); 
 		end
 
 		-- Build item braces
@@ -3397,6 +3402,10 @@ function Blizzard_CombatLog_QuickButtonFrame_OnEvent(event)
 			Blizzard_CombatLog_UnitTokens[k] = nil;
 		end
 		Blizzard_CombatLog_Update_QuickButtons();
+		--Hide the quick button frame if chatframe1 is selected and the combat log is docked
+		if ( COMBATLOG.isDocked and SELECTED_CHAT_FRAME == ChatFrame1 ) then
+			this:Hide();
+		end
 	end
 end
 
@@ -3404,14 +3413,18 @@ end
 -- BUG: Since we're futzing with the frame height, the combat log tab fades out on hover while other tabs remain faded in. This bug is in the stock version, as well.
 
 local function Blizzard_CombatLog_AdjustCombatLogHeight()
+	if ( SIMPLE_CHAT == "1" ) then
+		return;
+	end
+	
 	-- This prevents improper positioning of the frame due to the scale not yet being set.
 	-- This whole method of resizing the frame and extending the background to preserve visual continuity really screws with repositioning after 
 	-- a reload. I'm not sure it's going to work well in the long run.
 	if UIParent:GetScale() ~= tonumber(GetCVar("uiScale")) then return end
 	
-	local heightChange = CombatLogQuickButtonFrame:GetHeight()
-	local yOffset = 3
-	local xOffset = 2
+	local heightChange = CombatLogQuickButtonFrame:GetHeight();
+	local yOffset = 3;
+	local xOffset = 2;
 	
 	local oldPoint,relativeTo,relativePoint,xOfs,yOfs;
 	for i=1, COMBATLOG:GetNumPoints() do
@@ -3420,17 +3433,7 @@ local function Blizzard_CombatLog_AdjustCombatLogHeight()
 			break;
 		end
 	end	
-	if ( not COMBATLOG.isDocked ) then
-		local chatTab = _G[COMBATLOG:GetName().."Tab"]
-		local x,y = chatTab:GetCenter();
-		if ( x and y ) then
-			x = x - (chatTab:GetWidth()/2);
-			y = y - (chatTab:GetHeight()/2);
-			COMBATLOG:ClearAllPoints();
-			COMBATLOG:SetPoint("TOPLEFT", "UIParent", "BOTTOMLEFT", x, y-heightChange-3);
-			--ChatFrame1:AddMessage("Setting up point: " .. x .. "," .. y)
-		end		
-	else
+	if ( COMBATLOG.isDocked ) then
 		yOfs = 0
 		COMBATLOG:SetPoint("TOPLEFT", relativeTo, relativePoint, xOfs, yOfs - heightChange )
 	end
@@ -3460,7 +3463,7 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad()
 	local show, hide = COMBATLOG:GetScript("OnShow"), COMBATLOG:GetScript("OnHide")
 	COMBATLOG:SetScript("OnShow", function()
 		CombatLogQuickButtonFrame_Custom:Show()
-		Blizzard_CombatLog_AdjustCombatLogHeight()
+		--Blizzard_CombatLog_AdjustCombatLogHeight()
 		return show and show()
 	end)
 
@@ -3541,8 +3544,8 @@ function SetItemRef(link, text, button)
 				return;
 			end
 		-- Show Popup Menu
-		elseif( button == "RightButton") then
-				EasyMenu(Blizzard_CombatLog_CreateSpellMenu(text, spellId, event), CombatLogDropDown, "cursor", nil, nil, "MENU");
+		elseif( button == "RightButton" and event ) then
+			EasyMenu(Blizzard_CombatLog_CreateSpellMenu(text, spellId, event), CombatLogDropDown, "cursor", nil, nil, "MENU");
 			return;
 		end
 	elseif ( strsub(link, 1,6) == "action" ) then 
@@ -3558,6 +3561,16 @@ function SetItemRef(link, text, button)
 			end
 			return;
 		end
+	elseif ( strsub(link, 1, 4) == "item") then
+		local _, itemId = strsplit(":", link);
+
+		if ( button == "LeftButton" ) then
+			if ( IsModifiedClick("CHATLINK") ) then
+				name, link = GetItemInfo(itemId);
+				ChatEdit_InsertLink (link);
+				return;
+			end
+		end 
 	end
 	oldSetItemRef(link, text, button);
 end
@@ -3591,12 +3604,11 @@ function Blizzard_CombatLog_Update_QuickButtons()
 				else
 					button:SetPoint("LEFT", CombatLogQuickButtonFrame, "LEFT", 3, 0);
 				end
-				if ( Blizzard_CombatLog_Filters.currentFilter == index and not Blizzard_CombatLog_CurrentSettings.isTemp ) then
+				if ( Blizzard_CombatLog_Filters.currentFilter == index and (Blizzard_CombatLog_CurrentSettings and not Blizzard_CombatLog_CurrentSettings.isTemp) ) then
 					button:LockHighlight();
 				else
 					button:UnlockHighlight();
 				end
-				buttonIndex = buttonIndex + 1;
 				filter.onQuickBar = true;
 			else
 				-- Don't show anymore buttons if the maxwidth has been exceeded
@@ -3604,6 +3616,7 @@ function Blizzard_CombatLog_Update_QuickButtons()
 				button:Hide();
 				filter.onQuickBar = false;
 			end
+			buttonIndex = buttonIndex + 1;
 		else
 			filter.onQuickBar = false;
 			if ( button ) then
@@ -3611,6 +3624,15 @@ function Blizzard_CombatLog_Update_QuickButtons()
 			end
 		end
 	end
+
+	-- Hide remaining buttons
+	repeat
+		button = getglobal(baseName.."Button"..buttonIndex);
+		if ( button ) then
+			button:Hide();
+		end
+		buttonIndex = buttonIndex+1;
+	until not button;
 end
 _G.Blizzard_CombatLog_Update_QuickButtons = Blizzard_CombatLog_Update_QuickButtons
 
@@ -3638,4 +3660,9 @@ function ShowQuickButton(filter)
 	end;
 end
 
-
+function Blizzard_CombatLog_RefreshGlobalLinks()
+	-- Have to do this becuase Blizzard_CombatLog_Filters is a reference to the _G.Blizzard_CombatLog_Filters
+	Blizzard_CombatLog_Filters = _G.Blizzard_CombatLog_Filters;
+	Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[Blizzard_CombatLog_Filters.currentFilter];
+	_G.Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_CurrentSettings;
+end

@@ -9,7 +9,7 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="160" y="16"/>
+						<AbsDimension x="190" y="16"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -21,9 +21,9 @@
 				</FontString>
 				<FontString name="$parentID" inherits="GameFontDisableSmall">
 					<Anchors>
-						<Anchor point="TOPRIGHT">
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="-28" y="-13"/>
+								<AbsDimension x="0" y="-1"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -170,7 +170,10 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="RaidInfoInstanceLabel" inherits="GameFontDisableSmall" text="INSTANCE">
+						<FontString name="RaidInfoInstanceLabel" inherits="GameFontDisableSmall" text="INSTANCE" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="195" y="12"/>
+							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="RaidInfoSubheader" relativePoint="BOTTOMLEFT">
 									<Offset>
@@ -181,11 +184,7 @@
 						</FontString>
 						<FontString name="RaidInfoIDLabel" inherits="GameFontDisableSmall" text="ID">
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="RaidInfoInstanceLabel" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="110" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" relativeTo="RaidInfoInstanceLabel" relativePoint="RIGHT"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -200,15 +199,13 @@
 							</Anchor>
 						</Anchors>
 					</Button>
-					<ScrollFrame name="RaidInfoScrollFrame" inherits="UIPanelScrollFrameTemplate">
+					<ScrollFrame name="RaidInfoScrollFrame">
 						<Size>
-							<AbsDimension x="210" y="173"/>
+							<AbsDimension x="235" y="158"/>
 						</Size>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-39" y="12"/>
-								</Offset>
+							<Anchor point="TOPLEFT">
+								<Offset x="21" y="-70"/>
 							</Anchor>
 						</Anchors>
 						<Layers>
@@ -218,9 +215,9 @@
 										<AbsDimension x="30" y="125"/>
 									</Size>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+										<Anchor point="TOPRIGHT">
 											<Offset>
-												<AbsDimension x="1" y="16"/>
+												<AbsDimension x="6" y="23"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -231,9 +228,9 @@
 										<AbsDimension x="30" y="105"/>
 									</Size>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+										<Anchor point="BOTTOMRIGHT">
 											<Offset>
-												<AbsDimension x="1" y="-2"/>
+												<AbsDimension x="6" y="-13"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -241,98 +238,34 @@
 								</Texture>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate">
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Slider>
+						</Frames>
 						<ScrollChild>
 							<Frame name="RaidInfoScrollChildFrame" enableMouse="true">
-								<Size>
-									<AbsDimension x="223" y="40"/>
-								</Size>
+								<Size x="220" y="40"/>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
 								<Frames>
 									<Frame name="RaidInfoInstance1" inherits="RaidInfoInstanceTemplate">
 										<Anchors>
 											<Anchor point="TOPLEFT">
 												<Offset>
-													<AbsDimension x="0" y="-5"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance2" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance1" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="5"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance3" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance2" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="5"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance4" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance3" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="5"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance5" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance4" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="5"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance6" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance5" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="5"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance7" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance6" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="5"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance8" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance7" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="5"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance9" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance8" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="5"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance10" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance1" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="5"/>
+													<AbsDimension x="0" y="0"/>
 												</Offset>
 											</Anchor>
 										</Anchors>
@@ -340,6 +273,35 @@
 								</Frames>
 							</Frame>
 						</ScrollChild>
+						<Scripts>
+							<OnLoad>
+								ScrollFrame_OnLoad();
+							</OnLoad>
+							<OnScrollRangeChanged>
+								ScrollFrame_OnScrollRangeChanged(arg2);
+							</OnScrollRangeChanged>
+							<!--  The code to disable the ScrollDownButton is pretty hacked, but it works -->
+							<OnVerticalScroll>
+								local scrollbar = getglobal(this:GetName().."ScrollBar");
+								scrollbar:SetValue(arg1);
+								local min;
+								local max;
+								min, max = scrollbar:GetMinMaxValues();
+								if ( arg1 == 0 ) then
+									getglobal(scrollbar:GetName().."ScrollUpButton"):Disable();
+								else
+									getglobal(scrollbar:GetName().."ScrollUpButton"):Enable();
+								end
+								if ((scrollbar:GetValue() - max) == 0) then
+									getglobal(scrollbar:GetName().."ScrollDownButton"):Disable();
+								else
+									getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
+								end
+							</OnVerticalScroll>
+							<OnMouseWheel>
+								ScrollFrameTemplate_OnMouseWheel(arg1);
+							</OnMouseWheel>
+						</Scripts>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>

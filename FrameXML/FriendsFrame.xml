@@ -829,7 +829,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( UnitCanCooperate("player", "target") ) then
+								if ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") ) then
 									AddFriend("target");
 								else
 									StaticPopup_Show("ADD_FRIEND");
@@ -4317,7 +4317,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="11" y="47"/>
+							<AbsDimension x="11" y="46"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -4353,7 +4353,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="FriendsFrameTab1" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-14" y="0"/>
+							<AbsDimension x="-15" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -4370,7 +4370,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-14" y="0"/>
+							<AbsDimension x="-15" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -4395,7 +4395,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-14" y="0"/>
+							<AbsDimension x="-15" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -4418,7 +4418,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="FriendsFrameTab4" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-14" y="0"/>
+							<AbsDimension x="-15" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

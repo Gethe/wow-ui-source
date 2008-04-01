@@ -567,7 +567,6 @@
 				Disable_BagButtons();
 			</OnShow>
 			<OnHide>
-				OptionsFrame_Cancel();
 				UpdateMicroButtons();
 				ShowUIPanel(GameMenuFrame);
 			</OnHide>
