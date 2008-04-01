@@ -945,9 +945,11 @@ function OpenColorPicker(info)
 	ColorPickerFrame.hasOpacity = info.hasOpacity;
 	ColorPickerFrame.opacityFunc = info.opacityFunc;
 	ColorPickerFrame.opacity = info.opacity;
-	ColorPickerFrame:SetColorRGB(info.r, info.g, info.b);
 	ColorPickerFrame.previousValues = {r = info.r, g = info.g, b = info.b, opacity = info.opacity};
 	ColorPickerFrame.cancelFunc = info.cancelFunc;
+	ColorPickerFrame.extraInfo = info.extraInfo;
+	-- This must come last, since it triggers a call to ColorPickerFrame.func()
+	ColorPickerFrame:SetColorRGB(info.r, info.g, info.b);
 	ShowUIPanel(ColorPickerFrame);
 end
 

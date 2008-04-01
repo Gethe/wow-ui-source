@@ -83,7 +83,7 @@ COMBATLOG_DEFAULT_SETTINGS = {
 	abilityHighlighting = true;
 	actionColoring = false;
 	actionActorColoring = false;
-	actionHighlighting = true;
+	actionHighlighting = false;
 	amountColoring = false;
 	amountActorColoring = false;
 	amountSchoolColoring = false;
@@ -680,8 +680,7 @@ function Blizzard_CombatLog_ApplyFilters(config)
 			sourceFlags = nil;
 		end
 
-		if ( sourceFlags == 0 or destFlags == 0 ) then
-		else 
+		if ( sourceFlags ~= 0 and destFlags ~= 0 ) then
 			CombatLogAddFilter(eList, sourceFlags, destFlags);
 		end
 	end
@@ -1480,7 +1479,7 @@ end
 do
 	function Blizzard_CombatLog_CreateUnitMenu(unitName, unitGUID, special)
 		local displayName = unitName;
-		if ( unitGUID == UnitGUID("player") ) then
+		if ( (unitGUID == UnitGUID("player")) and (getglobal("COMBAT_LOG_UNIT_YOU_ENABLED") == "1") ) then
 			displayName = UNIT_YOU;
 		end
 
@@ -3420,9 +3419,10 @@ local function Blizzard_CombatLog_AdjustCombatLogHeight()
 	-- This prevents improper positioning of the frame due to the scale not yet being set.
 	-- This whole method of resizing the frame and extending the background to preserve visual continuity really screws with repositioning after 
 	-- a reload. I'm not sure it's going to work well in the long run.
-	if UIParent:GetScale() ~= tonumber(GetCVar("uiScale")) then return end
+	local uiScale = tonumber(GetCVar("uiScale"));
+	--if UIParent:GetScale() ~= uiScale then return end
 	
-	local heightChange = CombatLogQuickButtonFrame:GetHeight();
+	local heightChange = CombatLogQuickButtonFrame:GetHeight()*uiScale;
 	local yOffset = 3;
 	local xOffset = 2;
 	
@@ -3433,12 +3433,13 @@ local function Blizzard_CombatLog_AdjustCombatLogHeight()
 			break;
 		end
 	end	
+	
 	if ( COMBATLOG.isDocked ) then
-		yOfs = 0
-		COMBATLOG:SetPoint("TOPLEFT", relativeTo, relativePoint, xOfs, yOfs - heightChange )
+		yOfs = 0;
+		COMBATLOG:SetPoint("TOPLEFT", relativeTo, relativePoint, xOfs/uiScale, (yOfs - heightChange)/uiScale );
 	end
-	_G[COMBATLOG:GetName().."Background"]:SetPoint("TOPLEFT", COMBATLOG, "TOPLEFT", xOffset * -1, yOffset + heightChange);
-	_G[COMBATLOG:GetName().."Background"]:SetPoint("TOPRIGHT", COMBATLOG, "TOPRIGHT", xOffset, yOffset + heightChange);
+	_G[COMBATLOG:GetName().."Background"]:SetPoint("TOPLEFT", COMBATLOG, "TOPLEFT", (xOffset * -1)/uiScale, (yOffset + heightChange)/uiScale);
+	_G[COMBATLOG:GetName().."Background"]:SetPoint("TOPRIGHT", COMBATLOG, "TOPRIGHT", xOffset/uiScale, (yOffset + heightChange)/uiScale);
 end
 
 -- On Load

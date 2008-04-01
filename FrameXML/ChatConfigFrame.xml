@@ -74,14 +74,20 @@
 		</Size>
 		<Scripts>
 			<OnClick>
-				if ( this.func ) then
-					this.func(this:GetChecked());
+				local checked = self:GetChecked();
+				if ( self.func ) then
+					self.func(checked);
+					if ( checked ) then
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						return;
+					end
+					PlaySound("igMainMenuOptionCheckBoxOff");
 				end
 			</OnClick>
 			<OnEnter>
-				if (this.tooltip) then
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -519,6 +525,8 @@
 						ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
 						ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsRight);
 						ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsCreatureLeft);
+						ChatConfigFrameDefaultButton:Show();
+						CombatLogDefaultButton:Hide();
 					</OnShow>
 				</Scripts>
 			</Frame>
@@ -543,6 +551,8 @@
 						CreateChatChannelList(GetChannelList());
 						ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigCheckBoxWithSwatchTemplate");
 						ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+						ChatConfigFrameDefaultButton:Show();
+						CombatLogDefaultButton:Hide();
 					</OnShow>
 				</Scripts>
 			</Frame>
@@ -582,6 +592,8 @@
 						ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCombat);
 						ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
 						ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
+						ChatConfigFrameDefaultButton:Show();
+						CombatLogDefaultButton:Hide();
 					</OnShow>
 				</Scripts>
 			</Frame>
@@ -1692,9 +1704,9 @@
 										CombatConfig_SetFilterName(this:GetText());
 										this:HighlightText(0, -1);
 									</OnEnterPressed>
-									<OnMouseUp>
-										this:HighlightText(0, -1);
-									</OnMouseUp>
+									<OnEditFocusGained>
+										this:HighlightText();
+									</OnEditFocusGained>
 								</Scripts>
 							</EditBox>
 							<Button name="$parentSaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
@@ -1823,6 +1835,8 @@
 					<OnShow>
 						ChatConfigBackgroundFrame:SetPoint("TOPLEFT", ChatConfigCategoryFrame, "TOPRIGHT", 1, -135);
 						ChatConfig_ShowCombatTabs();
+						ChatConfigFrameDefaultButton:Hide();
+						CombatLogDefaultButton:Show();
 					</OnShow>
 					<OnHide>
 						ChatConfigBackgroundFrame:SetPoint("TOPLEFT", ChatConfigCategoryFrame, "TOPRIGHT", 1, 0);
@@ -1830,7 +1844,7 @@
 					</OnHide>
 				</Scripts>
 			</Frame>
-			<Button name="$parentDefaultButton" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
+			<Button name="$parentDefaultButton" inherits="UIPanelButtonGrayTemplate" text="CHAT_DEFAULTS">
 				<Size>
 					<AbsDimension x="130" y="22"/>
 				</Size>
@@ -1841,11 +1855,26 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						StaticPopup_Show("RESET_CHAT");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CombatLogDefaultButton" inherits="UIPanelButtonGrayTemplate" text="COMBATLOG_DEFAULTS">
+				<Size>
+					<AbsDimension x="170" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentDefaultButton">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
 						StaticPopup_Show("CONFIRM_COMBAT_FILTER_DEFAULTS");
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL" hidden="true">
 				<Size>
 					<AbsDimension x="78" y="22"/>
 				</Size>
@@ -1868,7 +1897,7 @@
 					<AbsDimension x="78" y="22"/>
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentCancelButton" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeTo="$parentCancelButton" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-11" y="0"/>
 						</Offset>

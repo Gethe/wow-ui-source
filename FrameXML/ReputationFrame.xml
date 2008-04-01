@@ -654,7 +654,7 @@
 					<Layer level="ARTWORK">
 						<FontString name="ReputationDetailFactionName" inherits="GameFontNormal" justifyH="LEFT">
 							<Size>
-								<AbsDimension x="0" y="12"/>
+								<AbsDimension x="160" y="0"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT">

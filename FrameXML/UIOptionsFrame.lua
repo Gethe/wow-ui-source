@@ -568,8 +568,8 @@ end
 -------------------------------------------------------------------------------------------------
 
 
-function InterfaceOptions_AddCategory (frame)
-	if ( issecure() ) then
+function InterfaceOptions_AddCategory (frame, addOn)
+	if ( issecure() and ( not addOn ) ) then
 		local parent = frame.parent;
 		if ( parent ) then
 			for i = 1, #blizzardCategories do

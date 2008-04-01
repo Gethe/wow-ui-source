@@ -539,7 +539,10 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="OptionsFrameDefaults" inherits="GameMenuButtonTemplate" text="DEFAULTS">
+			<Button name="OptionsFrameDefaults" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
+				<Size>
+					<AbsDimension x="144" y="21"/>
+				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="OptionsFrame" relativePoint="BOTTOMLEFT">
 						<Offset x="12" y="16"/>

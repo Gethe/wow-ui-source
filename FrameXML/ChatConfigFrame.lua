@@ -1231,7 +1231,14 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
 		end;
 	messageTypeColorSwatch = function() 
-			ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetColorRGB());
+			local messageTypes = ColorPickerFrame.extraInfo;
+			if ( messageTypes ) then
+				for index, value in pairs(messageTypes) do
+					ChangeChatColor(FCF_StripChatMsg(value), ColorPickerFrame:GetColorRGB());
+				end
+			else
+				ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetColorRGB());
+			end
 			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
 		end;
 	messageTypeColorCancel = function() 
@@ -1269,10 +1276,15 @@ end
 
 function MessageTypeColor_OpenColorPicker(self)
 	local info = UIDropDownMenu_CreateInfo();
-	info.r, info.g, info.b = GetMessageTypeColor(self.type);
+	local messageTypeTable;
+	info.r, info.g, info.b, messageTypeTable = GetMessageTypeColor(self.type);
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.messageTypeColorSwatch;
 	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.messageTypeColorCancel;
+	info.extraInfo = nil;
+	if ( messageTypeTable ) then
+		info.extraInfo = messageTypeTable;
+	end
 	OpenColorPicker(info);
 end
 
@@ -1286,7 +1298,8 @@ function GetMessageTypeColor(messageType)
 		type = messageType;
 	end
 	local info = ChatTypeInfo[FCF_StripChatMsg(type)];
-	return info.r, info.g, info.b;
+	
+	return info.r, info.g, info.b, group;
 end
 
 function GetChatUnitColor(type)
@@ -1486,6 +1499,16 @@ function ChatConfig_UpdateCombatSettings()
 	CombatConfig_Settings_Update();
 
 	CombatConfigSettingsNameEditBox:SetText(CHATCONFIG_SELECTED_FILTER.name);
+end
+
+function ChatConfig_UpdateChatSettings()
+	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
+	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsRight);
+	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsCreatureLeft);
+	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCombat);
+	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
+	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
 end
 
 function UsesGUID(direction)

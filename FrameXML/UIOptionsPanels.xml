@@ -13,7 +13,7 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnClick>
-				if ( this:GetChecked() ) then
+				if ( self:GetChecked() ) then
 					PlaySound("igMainMenuOptionCheckBoxOn");
 				else
 					PlaySound("igMainMenuOptionCheckBoxOff");

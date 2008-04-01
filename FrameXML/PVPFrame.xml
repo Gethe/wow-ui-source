@@ -597,9 +597,9 @@
 				</FontString>
 				<FontString name="$parentGamesLabel" inherits="GameFontDisableSmall" text="GAMES">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentStatsType" relativePoint="TOPRIGHT">
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOP">
 							<Offset>
-								<AbsDimension x="10" y="-20"/>
+								<AbsDimension x="-30" y="-55"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -615,9 +615,9 @@
 				</FontString>
 				<FontString name="$parentWinLossLabel" inherits="GameFontDisableSmall" text="WIN_LOSS">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentGamesLabel" relativePoint="RIGHT">
+						<Anchor point="CENTER" relativeTo="$parentGamesLabel" relativePoint="CENTER">
 							<Offset>
-								<AbsDimension x="7" y="0"/>
+								<AbsDimension x="52" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -651,9 +651,9 @@
 				</FontString>
 				<FontString name="$parentRankLabel" inherits="GameFontDisableSmall" text="RANK">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentWinLossLabel" relativePoint="RIGHT">
+						<Anchor point="CENTER" relativeTo="$parentWinLossLabel" relativePoint="CENTER">
 							<Offset>
-								<AbsDimension x="7" y="0"/>
+								<AbsDimension x="52" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -669,9 +669,9 @@
 				</FontString>
 				<FontString name="$parentRatingLabel" inherits="GameFontDisableSmall" text="ARENA_TEAM_RATING">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentRankLabel" relativePoint="RIGHT">
+						<Anchor point="CENTER" relativeTo="$parentRankLabel" relativePoint="CENTER">
 							<Offset>
-								<AbsDimension x="7" y="0"/>
+								<AbsDimension x="52" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

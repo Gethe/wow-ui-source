@@ -781,10 +781,6 @@ function Target_Spellbar_OnEvent()
 		-- The position depends on the classification of the target
 		Target_Spellbar_AdjustPosition();
 	end
-
-	if ( UnitIsUnit("player", "target") ) then
-		return;
-	end
 	CastingBarFrame_OnEvent(newevent, newarg1);
 end
 

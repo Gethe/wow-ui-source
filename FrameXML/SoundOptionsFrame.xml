@@ -322,7 +322,7 @@
 					</Slider>
 				</Frames>
 			</Frame>
-			<Button name="SoundOptionsFrameDefaults" inherits="GameMenuButtonTemplate" text="DEFAULTS">
+			<Button name="SoundOptionsFrameDefaults" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
 				<Size>
 					<AbsDimension x="100" y="21"/>
 				</Size>

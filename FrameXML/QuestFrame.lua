@@ -101,7 +101,6 @@ function QuestRewardCompleteButton_OnClick()
 			end
 		else
 			GetQuestReward(QuestFrameRewardPanel.itemChoice);
-			PlaySound("igQuestListComplete");
 		end
 	end
 end

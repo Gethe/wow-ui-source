@@ -288,7 +288,7 @@ function PaperDollFrame_SetRating(statFrame, ratingIndex)
 	if ( ratingIndex == CR_HIT_MELEE ) then
 		statFrame.tooltip2 = format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), ratingBonus, GetArmorPenetration());
 	elseif ( ratingIndex == CR_HIT_RANGED ) then
-		statFrame.tooltip2 = format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), ratingBonus);
+		statFrame.tooltip2 = format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), ratingBonus, GetArmorPenetration());
 	elseif ( ratingIndex == CR_DODGE ) then
 		statFrame.tooltip2 = format(CR_DODGE_TOOLTIP, ratingBonus);
 	elseif ( ratingIndex == CR_PARRY ) then
@@ -384,7 +384,6 @@ function PaperDollFrame_SetArmor(statFrame, unit)
 		unit = "player";
 	end
 	local base, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
-	local totalBufs = posBuff + negBuff;
 	getglobal(statFrame:GetName().."Label"):SetText(ARMOR_COLON);
 	local text = getglobal(statFrame:GetName().."StatText");
 
@@ -414,12 +413,12 @@ function PaperDollFrame_SetDefense(statFrame, unit)
 	elseif ( modifier < 0 ) then
 		negBuff = modifier;
 	end
-	PaperDollFrame_SetLabelAndText(statFrame, DEFENSE, ColorPaperDollStat(base, posBuff, negBuff));
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..DEFENSE.." "..(base + modifier)..FONT_COLOR_CODE_CLOSE;
-	--statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_DEFENSE_SKILL).." "..GetCombatRating(CR_DEFENSE_SKILL)..FONT_COLOR_CODE_CLOSE;
+	getglobal(statFrame:GetName().."Label"):SetText(DEFENSE_COLON);
+	local text = getglobal(statFrame:GetName().."StatText");
+
+	PaperDollFormatStat(DEFENSE, base, posBuff, negBuff, statFrame, text);
 	local defensePercent = GetDodgeBlockParryChanceFromDefense();
 	statFrame.tooltip2 = format(DEFAULT_STATDEFENSE_TOOLTIP, GetCombatRating(CR_DEFENSE_SKILL), GetCombatRatingBonus(CR_DEFENSE_SKILL), defensePercent, defensePercent);
-	--statFrame.tooltip2 = format(DEFAULT_STATDEFENSE_TOOLTIP, defensePercent, defensePercent, defensePercent);
 	statFrame:Show();
 end
 

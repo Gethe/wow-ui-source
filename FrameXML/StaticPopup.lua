@@ -626,6 +626,9 @@ StaticPopupDialogs["RESET_CHAT"] = {
 	whileDead = 1,
 	OnAccept = function()
 		FCF_ResetChatWindows();
+		if ( ChatConfigFrame:IsShown() ) then
+			ChatConfig_UpdateChatSettings();
+		end
 	end,
 	timeout = 0,
 	EditBoxOnEscapePressed = function ()
@@ -2040,17 +2043,18 @@ StaticPopupDialogs["CREATE_COMBAT_FILTER"] = {
 	OnAccept = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		CombatConfig_CreateCombatFilter(editBox:GetText());
-		editBox:SetText("");
 	end,
 	timeout = 0,
 	EditBoxOnEnterPressed = function(data)
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		CombatConfig_CreateCombatFilter(editBox:GetText());
-		editBox:SetText("");
 		this:GetParent():Hide();
 	end,
 	EditBoxOnEscapePressed = function ()
 		this:GetParent():Hide();
+	end,
+	OnHide = function ()
+		getglobal(this:GetName().."EditBox"):SetText("");
 	end,
 	hideOnEscape = 1
 };
@@ -2064,17 +2068,18 @@ StaticPopupDialogs["COPY_COMBAT_FILTER"] = {
 	OnAccept = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		CombatConfig_CreateCombatFilter(editBox:GetText(), this:GetParent().data);
-		editBox:SetText("");
 	end,
 	timeout = 0,
 	EditBoxOnEnterPressed = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		CombatConfig_CreateCombatFilter(editBox:GetText(), this:GetParent().data);
-		editBox:SetText("");
 		this:GetParent():Hide();
 	end,
 	EditBoxOnEscapePressed = function ()
 		this:GetParent():Hide();
+	end,
+	OnHide = function ()
+		getglobal(this:GetName().."EditBox"):SetText("");
 	end,
 	hideOnEscape = 1
 };

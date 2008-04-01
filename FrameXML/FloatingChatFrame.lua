@@ -546,6 +546,9 @@ function FCF_GetCurrentChatFrameID()
 end
 
 function FCF_GetCurrentChatFrame()
+	if ( not UIDropDownMenu_GetCurrentDropDown():GetParent() ) then
+		return;
+	end
 	local currentChatFrame = getglobal("ChatFrame"..UIDropDownMenu_GetCurrentDropDown():GetParent():GetID());
 	if ( not currentChatFrame ) then
 		currentChatFrame = getglobal("ChatFrame"..this:GetParent():GetID());
