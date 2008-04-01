@@ -8,7 +8,6 @@ function TradeFrame_OnLoad()
 	this:RegisterEvent("TRADE_TARGET_ITEM_CHANGED");
 	this:RegisterEvent("TRADE_PLAYER_ITEM_CHANGED");
 	this:RegisterEvent("TRADE_ACCEPT_UPDATE");
-	this:RegisterEvent("TRADE_MONEY_CHANGED");
 end
 
 function TradeFrame_OnShow()

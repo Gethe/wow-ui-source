@@ -53,7 +53,8 @@ function PetPaperDollFrame_OnHide()
 end
 
 function PetPaperDollFrame_Update()
-	if ( not HasPetUI() ) then
+	local hasPetUI, canGainXP = HasPetUI();
+	if ( not hasPetUI ) then
 		return;
 	end
 	PetModelFrame:SetUnit("pet");
@@ -73,6 +74,12 @@ function PetPaperDollFrame_Update()
 	PaperDollFrame_SetArmor("pet", "Pet");
 	PaperDollFrame_SetAttackBothHands("pet", "Pet");
 	PaperDollFrame_SetDefense("pet", "Pet");
+
+	if ( canGainXP ) then
+		PetPaperDollPetInfo:Show();
+	else
+		PetPaperDollPetInfo:Hide();
+	end
 end
 
 function PetPaperDollFrame_SetResistances()

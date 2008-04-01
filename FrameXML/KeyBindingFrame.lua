@@ -1,5 +1,5 @@
 KEY_BINDINGS_DISPLAYED = 17;
-KEY_BINDING_HEIGHT = 22;
+KEY_BINDING_HEIGHT = 25;
 
 function KeyBindingFrame_OnShow()
 	KeyBindingFrame_Update();
@@ -33,6 +33,9 @@ function KeyBindingFrame_GetLocalizedName(name, prefix)
 		dashIndex = 0;
 	else
 		modKeys = strsub(name, 1, dashIndex);
+		if ( GetLocale() == "deDE" and modKeys == "CTRL-" ) then
+			modKeys = "STRG-";
+		end
 	end
 
 	local variablePrefix = prefix;
@@ -41,16 +44,16 @@ function KeyBindingFrame_GetLocalizedName(name, prefix)
 	end
 	local localizedName = nil;
 	if ( IsMacClient() ) then
+		-- see if there is a mac specific name for the key
 		localizedName = getglobal(variablePrefix..tempName.."_MAC");
 	end
 	if ( not localizedName ) then
 		localizedName = getglobal(variablePrefix..tempName);
 	end
-	if ( localizedName ) then
-		return modKeys..localizedName;
-	else 
-		return name;
+	if ( not localizedName ) then
+		localizedName = tempName;
 	end
+	return modKeys..localizedName;
 end
 
 function KeyBindingFrame_Update()
@@ -88,25 +91,17 @@ function KeyBindingFrame_Update()
 				keyBindingButton2.commandName = commandName;
 				if ( binding1 ) then
 					keyBindingButton1:SetText(KeyBindingFrame_GetLocalizedName(binding1, "KEY_"));
-					--keyBindingButton1:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					--keyBindingButton1:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					keyBindingButton1NormalTexture:SetAlpha(1);
-					keyBindingButton1PushedTexture:SetAlpha(1);
+					keyBindingButton1:SetAlpha(1);
 				else
 					keyBindingButton1:SetText(NORMAL_FONT_COLOR_CODE..NOT_BOUND..FONT_COLOR_CODE_CLOSE);
-					--keyBindingButton1:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					--keyBindingButton1:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					keyBindingButton1NormalTexture:SetAlpha(0.8);
-					keyBindingButton1PushedTexture:SetAlpha(0.8);
+					keyBindingButton1:SetAlpha(0.8);
 				end
 				if ( binding2 ) then
 					keyBindingButton2:SetText(KeyBindingFrame_GetLocalizedName(binding2, "KEY_"));
-					keyBindingButton2NormalTexture:SetAlpha(1);
-					keyBindingButton2PushedTexture:SetAlpha(1);
+					keyBindingButton2:SetAlpha(1);
 				else
 					keyBindingButton2:SetText(NORMAL_FONT_COLOR_CODE..NOT_BOUND..FONT_COLOR_CODE_CLOSE);
-					keyBindingButton2NormalTexture:SetAlpha(0.8);
-					keyBindingButton2PushedTexture:SetAlpha(0.8);
+					keyBindingButton2:SetAlpha(0.8);
 				end
 				-- Set description
 				keyBindingDescription:SetText(KeyBindingFrame_GetLocalizedName(commandName, "BINDING_NAME_"));

@@ -7,6 +7,7 @@ SoundOptionsFrameCheckButtons["ENABLE_AMBIENCE"] = { index = 2, cvar = "EnableAm
 SoundOptionsFrameCheckButtons["ENABLE_ALL_SOUND"] = { index = 1, cvar = "MasterSoundEffects", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_ALL_SOUND};
 SoundOptionsFrameCheckButtons["ENABLE_SOUND_AT_CHARACTER"] = { index = 6, cvar = "SoundListenerAtCharacter", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_SOUND_AT_CHARACTER};
 SoundOptionsFrameCheckButtons["ENABLE_EMOTE_SOUNDS"] = { index = 7, cvar = "EmoteSounds", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_EMOTE_SOUNDS};
+SoundOptionsFrameCheckButtons["ENABLE_MUSIC_LOOPING"] = { index = 8, cvar = "SoundZoneMusicNoDelay", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_MUSIC_LOOPING};
 
 SoundOptionsFrameSliders = {
 	{ index = 2, text = SOUND_VOLUME, cvar = "SoundVolume", minValue = 0, maxValue = 1, valueStep = 0.1, initialValue = nil , tooltipText = OPTION_TOOLTIP_SOUND_VOLUME},
@@ -57,7 +58,7 @@ function SoundOptionsFrame_Load()
 				button:Disable();
 			end
 		end
-		if ( index == "ENABLE_ALL_SOUND" or index == "ENABLE_MUSIC" or index == "ENABLE_SOUND_AT_CHARACTER" or index == "ENABLE_EMOTE_SOUNDS") then
+		if ( index == "ENABLE_ALL_SOUND" or index == "ENABLE_MUSIC" or index == "ENABLE_SOUND_AT_CHARACTER" or index == "ENABLE_EMOTE_SOUNDS" or index == "ENABLE_MUSIC_LOOPING") then
 			string:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		end
 		button.tooltipText = value.tooltipText;

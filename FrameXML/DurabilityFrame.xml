@@ -177,6 +177,9 @@
 			<OnEvent>
 				DurabilityFrame_SetAlerts();
 			</OnEvent>
+			<OnUpdate>
+				DurabilityFrame_OnUpdate(arg1);
+			</OnUpdate>
 		</Scripts>
 	</Frame>
 </Ui>

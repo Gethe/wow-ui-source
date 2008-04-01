@@ -26,10 +26,6 @@ function ClassTrainerFrame_OnEvent()
 				ClassTrainerFrame_Update();
 			end
 		elseif ( event == "TRAINER_SHOW" ) then
-			--Hack for talent trainer
-			if ( IsTalentTrainerTabSelected() and CharacterFrame:IsVisible() ) then
-				HideUIPanel(CharacterFrame);
-			end
 			ShowUIPanel(this);
 			if ( not this:IsVisible() ) then
 				CloseTrainer();
@@ -42,9 +38,6 @@ function ClassTrainerFrame_OnEvent()
 			ClassTrainerListScrollFrameScrollBar:SetValue(0);
 
 			ClassTrainer_SelectFirstLearnableSkill();
-			ClassTrainerSortButton_OnShow(ClassTrainerAvailableButton, "available");
-			ClassTrainerSortButton_OnShow(ClassTrainerUnavailableButton, "unavailable");
-			ClassTrainerSortButton_OnShow(ClassTrainerUsedButton, "used");
 			ClassTrainerFrame_Update();
 			UpdateMicroButtons();
 		end
@@ -83,7 +76,7 @@ function ClassTrainerFrame_Update()
 	-- ScrollFrame update
 	FauxScrollFrame_Update(ClassTrainerListScrollFrame, numTrainerServices, CLASS_TRAINER_SKILLS_DISPLAYED, CLASS_TRAINER_SKILL_HEIGHT, ClassTrainerSkillHighlightFrame, 293, 316 )
 	
-	ClassTrainerUsedButton:Show();
+	--ClassTrainerUsedButton:Show();
 	ClassTrainerMoneyFrame:Show();
 	ClassTrainerSkillHighlightFrame:Hide();
 	-- Fill in the skill buttons
@@ -402,23 +395,6 @@ function ClassTrainerSkillButton_OnLeave()
 	getglobal(this:GetName().."SubText"):SetTextColor(this.r, this.g, this.b);
 end
 
-function ClassTrainerSortButton_OnClick(type)
-	if ( this:GetChecked() ) then
-		SetTrainerServiceTypeFilter(type, 1);
-	else
-		SetTrainerServiceTypeFilter(type, 0);
-	end
-	ClassTrainerListScrollFrameScrollBar:SetValue(0);
-end
-
-function ClassTrainerSortButton_OnShow(button, type)
-	if ( GetTrainerServiceTypeFilter(type) ) then
-		button:SetChecked(1);
-	else
-		button:SetChecked(0);
-	end
-end
-
 function ClassTrainerCollapseAllButton_OnClick()
 	if (this.collapsed) then
 		this.collapsed = nil;
@@ -462,4 +438,61 @@ function ClassTrainer_SetToClassTrainer()
 	ClassTrainerListScrollFrame:SetHeight(184);
 	ClassTrainerDetailScrollFrame:SetHeight(119);
 	ClassTrainerHorizontalBarLeft:SetPoint("TOPLEFT", "ClassTrainerFrame", "TOPLEFT", 15, -275);
+end
+
+-- Dropdown functions
+function ClassTrainerFrameFilterDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, ClassTrainerFrameFilterDropDown_Initialize);
+	UIDropDownMenu_SetText(FILTER, this);
+	UIDropDownMenu_SetWidth(130, ClassTrainerFrameFilterDropDown);
+end
+
+function ClassTrainerFrameFilterDropDown_Initialize()
+	-- Available button
+	local info = {};
+	local checked = nil;
+	if ( GetTrainerServiceTypeFilter("available") ) then
+		checked = 1;
+	end
+	info.text = GREEN_FONT_COLOR_CODE..AVAILABLE..FONT_COLOR_CODE_CLOSE;
+	info.value = "available";
+	info.func = ClassTrainerFrameFilterDropDown_OnClick;
+	info.checked = checked;
+	info.keepShownOnClick = 1;
+	UIDropDownMenu_AddButton(info);
+
+	-- Unavailable button
+	info = {};
+	checked = nil;
+	if ( GetTrainerServiceTypeFilter("unavailable") ) then
+		checked = 1;
+	end
+	info.text = RED_FONT_COLOR_CODE..UNAVAILABLE..FONT_COLOR_CODE_CLOSE;
+	info.value = "unavailable";
+	info.func = ClassTrainerFrameFilterDropDown_OnClick;
+	info.checked = checked;
+	info.keepShownOnClick = 1;
+	UIDropDownMenu_AddButton(info);
+
+	-- Unavailable button
+	info = {};
+	checked = nil;
+	if ( GetTrainerServiceTypeFilter("used") ) then
+		checked = 1;
+	end
+	info.text = GRAY_FONT_COLOR_CODE..USED..FONT_COLOR_CODE_CLOSE;
+	info.value = "used";
+	info.func = ClassTrainerFrameFilterDropDown_OnClick;
+	info.checked = checked;
+	info.keepShownOnClick = 1;
+	UIDropDownMenu_AddButton(info);
+end
+
+function ClassTrainerFrameFilterDropDown_OnClick()
+	if ( UIDropDownMenuButton_GetChecked() ) then
+		SetTrainerServiceTypeFilter(this.value, 0);
+	else
+		SetTrainerServiceTypeFilter(this.value, 1);
+	end
+	ClassTrainerListScrollFrameScrollBar:SetValue(0);
 end

@@ -54,15 +54,14 @@ function UnitFrame_OnEnter()
 
 	GameTooltip_SetDefaultAnchor(GameTooltip, this);
 	-- If showing newbie tips then only show the explanation
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
+	if ( SHOW_NEWBIE_TIPS == "1" and this:GetName() ~= "PartyMemberFrame1" and this:GetName() ~= "PartyMemberFrame2" and this:GetName() ~= "PartyMemberFrame3" and this:GetName() ~= "PartyMemberFrame4") then
 		if ( this:GetName() == "PlayerFrame" ) then
 			GameTooltip_AddNewbieTip(PARTY_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PARTYOPTIONS);
-		else
-			if ( UnitPlayerControlled("target") and not UnitIsUnit("target", "player") ) then
-				GameTooltip_AddNewbieTip(PLAYER_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PLAYEROPTIONS);
-			end
+			return;
+		elseif ( UnitPlayerControlled("target") and not UnitIsUnit("target", "player") and not UnitIsUnit("target", "pet") ) then
+			GameTooltip_AddNewbieTip(PLAYER_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PLAYEROPTIONS);
+			return;
 		end
-		return;
 	end
 	
 	if ( GameTooltip:SetUnit(this.unit) ) then
@@ -72,7 +71,8 @@ function UnitFrame_OnEnter()
 	end
 
 	this.r, this.g, this.b = GameTooltip_UnitColor(this.unit);
-	GameTooltip:SetBackdropColor(this.r, this.g, this.b);
+	--GameTooltip:SetBackdropColor(this.r, this.g, this.b);
+	GameTooltipTextLeft1:SetTextColor(this.r, this.g, this.b);
 end
 
 function UnitFrame_OnLeave()
@@ -104,7 +104,8 @@ function UnitFrame_OnUpdate(elapsed)
 		else
 			this.updateTooltip = nil;
 		end
-		GameTooltip:SetBackdropColor(this.r, this.g, this.b);
+		--GameTooltip:SetBackdropColor(this.r, this.g, this.b);
+		GameTooltipTextLeft1:SetTextColor(this.r, this.g, this.b);
 	else
 		this.updateTooltip = nil;
 	end
@@ -124,8 +125,14 @@ function UnitFrame_UpdateManaType()
 	end
 
 	-- Setup newbie tooltip
-	this.manabar.tooltipTitle = info.prefix;
-	this.manabar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR"..UnitPowerType(this.unit));
+	if ( this:GetName() == "PlayerFrame" ) then
+		this.manabar.tooltipTitle = info.prefix;
+		this.manabar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR"..UnitPowerType(this.unit));
+	else
+		this.manabar.tooltipTitle = nil;
+		this.manabar.tooltipText = nil;
+	end
+	
 end
 
 function UnitFrameHealthBar_Initialize(unit, statusbar, statustext)
@@ -135,8 +142,14 @@ function UnitFrameHealthBar_Initialize(unit, statusbar, statustext)
 	statusbar:RegisterEvent("UNIT_MAXHEALTH");
 
 	-- Setup newbie tooltip
-	statusbar.tooltipTitle = HEALTH;
-	statusbar.tooltipText = NEWBIE_TOOLTIP_HEALTHBAR;
+	if ( this:GetName() == "PlayerFrame" ) then
+		statusbar.tooltipTitle = HEALTH;
+		statusbar.tooltipText = NEWBIE_TOOLTIP_HEALTHBAR;
+	else
+		statusbar.tooltipTitle = nil;
+		statusbar.tooltipText = nil;
+	end
+	
 end
 
 function UnitFrameHealthBar_Update(statusbar, unit)

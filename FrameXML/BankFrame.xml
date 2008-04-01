@@ -172,7 +172,7 @@
 				</Anchors>
 			</Button>
 
-			<Button name="$parentItem1" inherits="BankItemButtonGenericTemplate" id="1">
+			<Button name="BankFrameItem1" inherits="BankItemButtonGenericTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -181,7 +181,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem2" inherits="BankItemButtonGenericTemplate" id="2">
+			<Button name="BankFrameItem2" inherits="BankItemButtonGenericTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem1" relativePoint="TOPRIGHT">
 						<Offset>
@@ -190,7 +190,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem3" inherits="BankItemButtonGenericTemplate" id="3">
+			<Button name="BankFrameItem3" inherits="BankItemButtonGenericTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem2" relativePoint="TOPRIGHT">
 						<Offset>
@@ -199,7 +199,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem4" inherits="BankItemButtonGenericTemplate" id="4">
+			<Button name="BankFrameItem4" inherits="BankItemButtonGenericTemplate" id="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem3" relativePoint="TOPRIGHT">
 						<Offset>
@@ -208,7 +208,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem5" inherits="BankItemButtonGenericTemplate" id="5">
+			<Button name="BankFrameItem5" inherits="BankItemButtonGenericTemplate" id="5">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem4" relativePoint="TOPRIGHT">
 						<Offset>
@@ -217,7 +217,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem6" inherits="BankItemButtonGenericTemplate" id="6">
+			<Button name="BankFrameItem6" inherits="BankItemButtonGenericTemplate" id="6">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem5" relativePoint="TOPRIGHT">
 						<Offset>
@@ -226,7 +226,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem7" inherits="BankItemButtonGenericTemplate" id="7">
+			<Button name="BankFrameItem7" inherits="BankItemButtonGenericTemplate" id="7">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem1" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -235,7 +235,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem8" inherits="BankItemButtonGenericTemplate" id="8">
+			<Button name="BankFrameItem8" inherits="BankItemButtonGenericTemplate" id="8">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem7" relativePoint="TOPRIGHT">
 						<Offset>
@@ -244,7 +244,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem9" inherits="BankItemButtonGenericTemplate" id="9">
+			<Button name="BankFrameItem9" inherits="BankItemButtonGenericTemplate" id="9">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem8" relativePoint="TOPRIGHT">
 						<Offset>
@@ -253,7 +253,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem10" inherits="BankItemButtonGenericTemplate" id="10">
+			<Button name="BankFrameItem10" inherits="BankItemButtonGenericTemplate" id="10">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem9" relativePoint="TOPRIGHT">
 						<Offset>
@@ -262,7 +262,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem11" inherits="BankItemButtonGenericTemplate" id="11">
+			<Button name="BankFrameItem11" inherits="BankItemButtonGenericTemplate" id="11">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem10" relativePoint="TOPRIGHT">
 						<Offset>
@@ -271,7 +271,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem12" inherits="BankItemButtonGenericTemplate" id="12">
+			<Button name="BankFrameItem12" inherits="BankItemButtonGenericTemplate" id="12">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem11" relativePoint="TOPRIGHT">
 						<Offset>
@@ -280,7 +280,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem13" inherits="BankItemButtonGenericTemplate" id="13">
+			<Button name="BankFrameItem13" inherits="BankItemButtonGenericTemplate" id="13">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem7" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -289,7 +289,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem14" inherits="BankItemButtonGenericTemplate" id="14">
+			<Button name="BankFrameItem14" inherits="BankItemButtonGenericTemplate" id="14">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem13" relativePoint="TOPRIGHT">
 						<Offset>
@@ -298,7 +298,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem15" inherits="BankItemButtonGenericTemplate" id="15">
+			<Button name="BankFrameItem15" inherits="BankItemButtonGenericTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem14" relativePoint="TOPRIGHT">
 						<Offset>
@@ -307,7 +307,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem16" inherits="BankItemButtonGenericTemplate" id="16">
+			<Button name="BankFrameItem16" inherits="BankItemButtonGenericTemplate" id="16">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem15" relativePoint="TOPRIGHT">
 						<Offset>
@@ -316,7 +316,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem17" inherits="BankItemButtonGenericTemplate" id="17">
+			<Button name="BankFrameItem17" inherits="BankItemButtonGenericTemplate" id="17">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem16" relativePoint="TOPRIGHT">
 						<Offset>
@@ -325,7 +325,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem18" inherits="BankItemButtonGenericTemplate" id="18">
+			<Button name="BankFrameItem18" inherits="BankItemButtonGenericTemplate" id="18">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem17" relativePoint="TOPRIGHT">
 						<Offset>
@@ -334,7 +334,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem19" inherits="BankItemButtonGenericTemplate" id="19">
+			<Button name="BankFrameItem19" inherits="BankItemButtonGenericTemplate" id="19">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem13" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -343,7 +343,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem20" inherits="BankItemButtonGenericTemplate" id="20">
+			<Button name="BankFrameItem20" inherits="BankItemButtonGenericTemplate" id="20">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem19" relativePoint="TOPRIGHT">
 						<Offset>
@@ -352,7 +352,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem21" inherits="BankItemButtonGenericTemplate" id="21">
+			<Button name="BankFrameItem21" inherits="BankItemButtonGenericTemplate" id="21">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem20" relativePoint="TOPRIGHT">
 						<Offset>
@@ -361,7 +361,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem22" inherits="BankItemButtonGenericTemplate" id="22">
+			<Button name="BankFrameItem22" inherits="BankItemButtonGenericTemplate" id="22">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem21" relativePoint="TOPRIGHT">
 						<Offset>
@@ -370,7 +370,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem23" inherits="BankItemButtonGenericTemplate" id="23">
+			<Button name="BankFrameItem23" inherits="BankItemButtonGenericTemplate" id="23">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem22" relativePoint="TOPRIGHT">
 						<Offset>
@@ -379,7 +379,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentItem24" inherits="BankItemButtonGenericTemplate" id="24">
+			<Button name="BankFrameItem24" inherits="BankItemButtonGenericTemplate" id="24">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem23" relativePoint="TOPRIGHT">
 						<Offset>
@@ -390,7 +390,7 @@
 			</Button>
 
 
-			<Button name="$parentBag1" inherits="BankItemButtonBagTemplate" id="5">
+			<Button name="BankFrameBag1" inherits="BankItemButtonBagTemplate" id="5">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameItem19" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -399,7 +399,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentBag2" inherits="BankItemButtonBagTemplate" id="6">
+			<Button name="BankFrameBag2" inherits="BankItemButtonBagTemplate" id="6">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameBag1" relativePoint="TOPRIGHT">
 						<Offset>
@@ -408,7 +408,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentBag3" inherits="BankItemButtonBagTemplate" id="7">
+			<Button name="BankFrameBag3" inherits="BankItemButtonBagTemplate" id="7">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameBag2" relativePoint="TOPRIGHT">
 						<Offset>
@@ -417,7 +417,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentBag4" inherits="BankItemButtonBagTemplate" id="8">
+			<Button name="BankFrameBag4" inherits="BankItemButtonBagTemplate" id="8">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameBag3" relativePoint="TOPRIGHT">
 						<Offset>
@@ -426,7 +426,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentBag5" inherits="BankItemButtonBagTemplate" id="9">
+			<Button name="BankFrameBag5" inherits="BankItemButtonBagTemplate" id="9">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameBag4" relativePoint="TOPRIGHT">
 						<Offset>
@@ -435,7 +435,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentBag6" inherits="BankItemButtonBagTemplate" id="10">
+			<Button name="BankFrameBag6" inherits="BankItemButtonBagTemplate" id="10">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BankFrameBag5" relativePoint="TOPRIGHT">
 						<Offset>
@@ -444,7 +444,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Frame name="$parentPurchaseInfo" hidden="false">
+			<Frame name="BankFramePurchaseInfo" hidden="false">
 				<Size>
 					<AbsDimension x="300" y="72"/>
 				</Size>
@@ -484,7 +484,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentPurchaseButton" inherits="UIPanelButtonTemplate" virtual="true" text="BANKSLOTPURCHASE">
+					<Button name="BankFramePurchaseButton" inherits="UIPanelButtonTemplate" virtual="true" text="BANKSLOTPURCHASE">
 						<Size>
 							<AbsDimension x="124" y="21"/>
 						</Size>
@@ -519,7 +519,7 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+			<Frame name="BankFrameMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>

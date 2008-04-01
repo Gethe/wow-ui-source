@@ -92,15 +92,29 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\Spellbook\UI-Spellbook-SpellBackground">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-3" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
 				<Texture name="$parentIconTexture" setAllPoints="true" hidden="true"/>
-				<FontString name="$parentSpellName" inherits="GameFontNormal" hidden="true" justifyH="LEFT">
+				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="3" hidden="true" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="103" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="4" y="4"/>
+								<AbsDimension x="4" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -362,7 +376,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="SpellButton2" inherits="SpellButtonTemplate" id="8">
+			<CheckButton name="SpellButton2" inherits="SpellButtonTemplate" id="7">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton1">
 						<Offset>
@@ -375,12 +389,12 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton1" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-7"/>
+							<AbsDimension x="0" y="-14"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="SpellButton4" inherits="SpellButtonTemplate" id="9">
+			<CheckButton name="SpellButton4" inherits="SpellButtonTemplate" id="8">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton3">
 						<Offset>
@@ -393,12 +407,12 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton3" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-7"/>
+							<AbsDimension x="0" y="-14"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="SpellButton6" inherits="SpellButtonTemplate" id="10">
+			<CheckButton name="SpellButton6" inherits="SpellButtonTemplate" id="9">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton5">
 						<Offset>
@@ -411,12 +425,12 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton5" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-7"/>
+							<AbsDimension x="0" y="-14"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="SpellButton8" inherits="SpellButtonTemplate" id="11">
+			<CheckButton name="SpellButton8" inherits="SpellButtonTemplate" id="10">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton7">
 						<Offset>
@@ -429,12 +443,12 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton7" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-7"/>
+							<AbsDimension x="0" y="-14"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="SpellButton10" inherits="SpellButtonTemplate" id="12">
+			<CheckButton name="SpellButton10" inherits="SpellButtonTemplate" id="11">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton9">
 						<Offset>
@@ -447,32 +461,14 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton9" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-7"/>
+							<AbsDimension x="0" y="-14"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="SpellButton12" inherits="SpellButtonTemplate" id="13">
+			<CheckButton name="SpellButton12" inherits="SpellButtonTemplate" id="12">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellButton11">
-						<Offset>
-							<AbsDimension x="157" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="SpellButton13" inherits="SpellButtonTemplate" id="7">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="SpellButton11" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="SpellButton14" inherits="SpellButtonTemplate" id="14">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="SpellButton13">
 						<Offset>
 							<AbsDimension x="157" y="0"/>
 						</Offset>

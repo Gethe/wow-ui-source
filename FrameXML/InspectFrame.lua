@@ -1,7 +1,7 @@
 
 function InspectUnit(unit)
 	HideUIPanel(InspectFrame);
-	if ( UnitExists(unit) and UnitIsPlayer(unit) ) then
+	if ( UnitExists(unit) and UnitIsPlayer(unit) and UnitCanCooperate("player", unit) ) then
 		NotifyInspect(unit);
 		InspectFrame.unit = unit;
 		ShowUIPanel(InspectFrame);

@@ -146,7 +146,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				ShowUIPanel(TutorialFrame);
+				TutorialFrame:Show();
 				this:ClearAllPoints();
 				this:Hide();
 				TutorialFrame_Update(this.id);

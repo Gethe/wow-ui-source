@@ -331,14 +331,14 @@ function AuctionFrameBrowse_Update()
 			duration = GetAuctionItemTimeLeft("list", offset + i);
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal("BrowseButton"..i.."Highlight");
-			if ( numBatchAuctions < NUM_BROWSE_TO_DISPLAY ) then
-				button:SetWidth(557);
-				buttonHighlight:SetWidth(523);
-				BrowseCurrentBidSort:SetWidth(173);
+			if ( numBatchAuctions <= NUM_BROWSE_TO_DISPLAY ) then
+				button:SetWidth(625);
+				buttonHighlight:SetWidth(589);
+				BrowseCurrentBidSort:SetWidth(207);
 			else
-				button:SetWidth(532);
-				buttonHighlight:SetWidth(502);
-				BrowseCurrentBidSort:SetWidth(157);
+				button:SetWidth(600);
+				buttonHighlight:SetWidth(562);
+				BrowseCurrentBidSort:SetWidth(184);
 			end
 			-- Set name and quality color
 			color = ITEM_QUALITY_COLORS[quality];
@@ -493,7 +493,7 @@ function AuctionFrameBid_Update()
 	local offset = FauxScrollFrame_GetOffset(BidScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
+	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, buttonHighlight;
 	BidBidButton:Disable();
 	BidBuyoutButton:Disable();
 	-- Update sort arrows
@@ -519,6 +519,17 @@ function AuctionFrameBid_Update()
 			buttonName = "BidButton"..i;
 			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("bidder", index);
 			duration = GetAuctionItemTimeLeft("bidder", offset + i);
+			-- Resize button if there isn't a scrollbar
+			buttonHighlight = getglobal("BidButton"..i.."Highlight");
+			if ( numBatchAuctions <= NUM_BIDS_TO_DISPLAY ) then
+				button:SetWidth(793);
+				buttonHighlight:SetWidth(758);
+				BidBidSort:SetWidth(169);
+			else
+				button:SetWidth(769);
+				buttonHighlight:SetWidth(735);
+				BidBidSort:SetWidth(145);
+			end
 			-- Set name and quality color
 			color = ITEM_QUALITY_COLORS[quality];
 			itemName = getglobal(buttonName.."Name");
@@ -689,6 +700,17 @@ function AuctionFrameAuctions_Update()
 			buttonName = "AuctionsButton"..i;
 			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("owner", offset + i);
 			duration = GetAuctionItemTimeLeft("owner", offset + i);
+			-- Resize button if there isn't a scrollbar
+			buttonHighlight = getglobal("AuctionsButton"..i.."Highlight");
+			if ( numBatchAuctions <= NUM_AUCTIONS_TO_DISPLAY ) then
+				auction:SetWidth(599);
+				buttonHighlight:SetWidth(565);
+				AuctionsBidSort:SetWidth(213);
+			else
+				auction:SetWidth(576);
+				buttonHighlight:SetWidth(543);
+				AuctionsBidSort:SetWidth(193);
+			end
 			-- Set name and quality color
 			color = ITEM_QUALITY_COLORS[quality];
 			itemName = getglobal(buttonName.."Name");

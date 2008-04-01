@@ -3,6 +3,16 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["CONFIRM_LEAVE_QUEUE"] = {
+	text = TEXT(CONFIRM_LEAVE_QUEUE),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	OnAccept = function()
+		CancelMeetingStoneRequest();
+	end,
+	timeout = 0,
+};
+
 StaticPopupDialogs["CLIENT_RESTART_ALERT"] = {
 	text = TEXT(CLIENT_RESTART_ALERT),
 	button1 = TEXT(OKAY),
@@ -375,6 +385,7 @@ StaticPopupDialogs["CAMP"] = {
 	OnHide = function()
 		if ( this.timeleft > 0 ) then
 			CancelLogout();
+			this:Hide();
 		end
 	end,
 	timeout = 20,
@@ -837,8 +848,8 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 };
 StaticPopupDialogs["XP_LOSS"] = {
 	text = TEXT(CONFIRM_XP_LOSS),
-	button1 = TEXT(YES),
-	button2 = TEXT(NO),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
 	OnAccept = function(data)
 		if ( data ) then
 			getglobal(this:GetParent():GetName().."Text"):SetText(format(TEXT(CONFIRM_XP_LOSS_AGAIN), data));
@@ -860,8 +871,8 @@ StaticPopupDialogs["XP_LOSS"] = {
 };
 StaticPopupDialogs["XP_LOSS_NO_SICKNESS"] = {
 	text = TEXT(CONFIRM_XP_LOSS_NO_SICKNESS),
-	button1 = TEXT(YES),
-	button2 = TEXT(NO),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
 	OnAccept = function(data)
 		if ( data ) then
 			getglobal(this:GetParent():GetName().."Text"):SetText(TEXT(CONFIRM_XP_LOSS_AGAIN_NO_SICKNESS));

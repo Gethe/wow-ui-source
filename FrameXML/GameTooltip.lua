@@ -16,6 +16,8 @@ ITEM_QUALITY6_TOOLTIP_BGCOLOR = { r = 0.28, g = 0.15, b = 0 };
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
 TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19 };
 
+DEFAULT_TOOLTIP_POSITION = -13;
+
 function GameTooltip_UnitColor(unit)
 	local r, g, b;
 	if ( UnitPlayerControlled(unit) ) then
@@ -27,8 +29,13 @@ function GameTooltip_UnitColor(unit)
 				g = 0.5;
 				b = 0.5;
 				]]
+				--[[
 				r = 0.0;
 				g = 0.0;
+				b = 1.0;
+				]]
+				r = 1.0;
+				g = 1.0;
 				b = 1.0;
 			else
 				r = FACTION_BAR_COLORS[2].r;
@@ -47,8 +54,13 @@ function GameTooltip_UnitColor(unit)
 			b = FACTION_BAR_COLORS[6].b;
 		else
 			-- All other players are blue (the usual state on the "blue" server)
+			--[[
 			r = 0.0;
 			g = 0.0;
+			b = 1.0;
+			]]
+			r = 1.0;
+			g = 1.0;
 			b = 1.0;
 		end
 	else
@@ -58,8 +70,13 @@ function GameTooltip_UnitColor(unit)
 			g = FACTION_BAR_COLORS[reaction].g;
 			b = FACTION_BAR_COLORS[reaction].b;
 		else
+			--[[
 			r = 0.0;
 			g = 0.0;
+			b = 1.0;
+			]]
+			r = 1.0;
+			g = 1.0;
 			b = 1.0;
 		end
 	end
@@ -68,7 +85,9 @@ end
 
 function GameTooltip_SetDefaultAnchor(tooltip, parent)		
 	tooltip:SetOwner(parent, "ANCHOR_NONE");
-	tooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -13, 64);
+	--tooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -13, 64);
+	tooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", DEFAULT_TOOLTIP_POSITION, 64);
+	tooltip.default = 1;
 end
 
 function GameTooltip_OnLoad()
@@ -83,7 +102,8 @@ function GameTooltip_OnEvent()
 			GameTooltip_SetDefaultAnchor(this, UIParent);
 			this:SetUnit("mouseover");
 			local r, g, b = GameTooltip_UnitColor("mouseover");
-			this:SetBackdropColor(r, g, b);
+			--this:SetBackdropColor(r, g, b);
+			getglobal(this:GetName().."TextLeft1"):SetTextColor(r, g, b);
 		else
 			this:FadeOut();
 		end
@@ -117,6 +137,7 @@ end
 function GameTooltip_OnHide()
 	this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+	this.default = nil;
 end
 
 function GameTooltip_AddNewbieTip(normalText, r, g, b, newbieText, noNormalText)

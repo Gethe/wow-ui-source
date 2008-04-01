@@ -295,4 +295,116 @@
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
+	<Button name="TabButtonTemplate" virtual="true">
+		<Size>
+            <AbsDimension x="115" y="32"/>
+        </Size>
+        <Layers>
+        	<Layer level="BACKGROUND">
+        		<Texture name="$parentLeftDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+        			<Size>
+        				<AbsDimension x="16" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="BOTTOMLEFT">
+        					<Offset>
+        						<AbsDimension x="0" y="-4"/>
+        					</Offset>
+        				</Anchor>
+        			</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddleDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+        			<Size>
+        				<AbsDimension x="32" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRightDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+        			<Size>
+        				<AbsDimension x="16" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentLeft" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+        			<Size>
+        				<AbsDimension x="16" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="BOTTOMLEFT"/>
+        			</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddle" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+        			<Size>
+        				<AbsDimension x="32" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRight" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+        			<Size>
+        				<AbsDimension x="16" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
+        		</Texture>
+        	</Layer>
+        </Layers>
+		<Scripts>
+			<OnLoad>
+				PanelTemplates_TabResize(0);
+				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+			</OnLoad>
+		</Scripts>
+		<NormalText name="$parentText" inherits="GameFontNormalSmall">
+			<Anchors>
+				<Anchor point="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+		<HighlightText inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightText>
+		<DisabledText inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</DisabledText>
+		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="5" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOM">
+					<Offset>
+						<AbsDimension x="2" y="-8"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+    </Button>
 </Ui>

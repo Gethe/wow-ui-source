@@ -463,6 +463,7 @@ function QuestFrameItems_Update(questState)
 			questItem:Show();
 			-- For the tooltip
 			questItem.rewardType = "spell";
+			SetItemButtonCount(questItem, 0);
 			SetItemButtonTexture(questItem, texture);
 			getglobal(questItemName..(rewardsCount + numQuestChoices + 1).."Name"):SetText(name);
 			if ( rewardsCount > 0 ) then

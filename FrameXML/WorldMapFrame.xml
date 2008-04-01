@@ -113,7 +113,7 @@
 				else
 					WorldMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
 				end
-				WorldMapTooltip:SetText(TEXT(CORPSE));
+				WorldMapTooltip:SetText(TEXT(CORPSE_RED));
 				WorldMapTooltip:Show();
 			</OnEnter>
 			<OnLeave>

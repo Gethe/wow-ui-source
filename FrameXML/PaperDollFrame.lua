@@ -434,6 +434,8 @@ function PaperDollFrame_SetDamage(unit, prefix)
 		damageFrame.offhandDamage = offhandDamageTooltip;
 		damageFrame.offhandAttackSpeed = offhandSpeed;
 		damageFrame.offhandDps = offhandDamagePerSecond;
+	else
+		damageFrame.offhandAttackSpeed = nil;
 	end
 	
 end

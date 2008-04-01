@@ -254,7 +254,7 @@
 				</Texture>
 				<Texture name="TalentFramePointsMiddle" file="Interface\Common\Common-Input-Border">
 					<Size>
-						<AbsDimension x="230" y="20"/>
+						<AbsDimension x="248" y="20"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="TalentFramePointsLeft" relativePoint="RIGHT"/>

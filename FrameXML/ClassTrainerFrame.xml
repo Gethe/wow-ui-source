@@ -325,7 +325,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="ClassTrainerCollapseAllButton" hidden="false" inherits="ClassTrainerSkillButtonTemplate">
+					<Button name="ClassTrainerCollapseAllButton" hidden="false" inherits="ClassTrainerSkillButtonTemplate" text="ALL">
 						<Size>
 							<AbsDimension x="40" y="22"/>
 						</Size>
@@ -338,7 +338,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName()):SetText(ALL);
+								ClassTrainerExpandTabMiddle:SetWidth(this:GetTextWidth() + 24);
 							</OnLoad>
 							<OnClick>
 								ClassTrainerCollapseAllButton_OnClick();
@@ -347,135 +347,22 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame name="ClassTrainerSortFrame">
-				<Size>
-					<AbsDimension x="252" y="32"/>
-				</Size>
+			<Frame name="ClassTrainerFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-40" y="-65"/>
+							<AbsDimension x="-26" y="-64"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="ClassTrainerSortFrameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-							<Size>
-								<AbsDimension x="12" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-							</Anchors>
-							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture name="ClassTrainerSortFrameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-							<Size>
-								<AbsDimension x="228" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="ClassTrainerSortFrameRight" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture name="ClassTrainerSortFrameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-							<Size>
-								<AbsDimension x="12" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="ClassTrainerSortFrameMiddle" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<CheckButton name="ClassTrainerAvailableButton" inherits="UICheckButtonTemplate">
-						<Size>
-							<AbsDimension x="25" y="25"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="ClassTrainerSortFrameLeft">
-								<Offset>
-									<AbsDimension x="15" y="2"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								local text = getglobal(this:GetName().."Text");
-								text:SetText(AVAILABLE);
-								text:SetTextColor(0, 1.0, 0);
-							</OnLoad>
-							<OnShow>
-								ClassTrainerSortButton_OnShow(this, "available");
-							</OnShow>
-							<OnClick>
-								ClassTrainerSortButton_OnClick("available")
-							</OnClick>
-						</Scripts>
-						<HitRectInsets>
-							<AbsInset left="0" right="0" top="0" bottom="0"/>
-						</HitRectInsets>
-					</CheckButton>
-					<CheckButton name="ClassTrainerUnavailableButton" inherits="UICheckButtonTemplate">
-						<Size>
-							<AbsDimension x="25" y="25"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="ClassTrainerAvailableButtonText" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="10" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								local text = getglobal(this:GetName().."Text");
-								text:SetText(UNAVAILABLE);
-								text:SetTextColor(1.0, 0, 0);
-
-							</OnLoad>
-							<OnShow>
-								ClassTrainerSortButton_OnShow(this, "unavailable");
-							</OnShow>
-							<OnClick>
-								ClassTrainerSortButton_OnClick("unavailable")
-							</OnClick>
-						</Scripts>
-						<HitRectInsets>
-							<AbsInset left="0" right="0" top="0" bottom="0"/>
-						</HitRectInsets>
-					</CheckButton>
-					<CheckButton name="ClassTrainerUsedButton" inherits="UICheckButtonTemplate">
-						<Size>
-							<AbsDimension x="25" y="25"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="ClassTrainerUnavailableButtonText" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="10" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								local text = getglobal(this:GetName().."Text");
-								text:SetText(USED);
-								text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-							</OnLoad>
-							<OnShow>
-								ClassTrainerSortButton_OnShow(this, "used");
-							</OnShow>
-							<OnClick>
-								ClassTrainerSortButton_OnClick("used")
-							</OnClick>
-						</Scripts>
-						<HitRectInsets>
-							<AbsInset left="0" right="0" top="0" bottom="0"/>
-						</HitRectInsets>
-					</CheckButton>
-				</Frames>
+				<Scripts>
+					<OnLoad>
+						ClassTrainerFrameFilterDropDown_OnLoad();
+					</OnLoad>
+					<OnShow>
+						ClassTrainerFrameFilterDropDown_OnLoad();
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Frame name="ClassTrainerSkillHighlightFrame" hidden="true">
 				<Size>

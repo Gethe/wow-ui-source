@@ -28,7 +28,7 @@ function RaidFrame_ShowSubFrame(frameName)
 end
 
 function FriendsFrame_OnLoad()
-	PanelTemplates_SetNumTabs(this, 5);
+	PanelTemplates_SetNumTabs(this, 4);
 	FriendsFrame.selectedTab = 1;
 	PanelTemplates_UpdateTabs(this);
 	this:RegisterEvent("FRIENDLIST_SHOW");
@@ -52,6 +52,7 @@ function FriendsFrame_OnShow()
 	FriendsFrame_Update();
 	UpdateMicroButtons();
 	PlaySound("igMainMenuOpen");
+	FriendsFrame.showFriendsList = 1;
 	GuildFrame.selectedGuildMember = 0;
 	SetGuildRosterSelection(0);
 	InGuildCheck();
@@ -59,22 +60,24 @@ end
 
 function FriendsFrame_Update()
 	if ( FriendsFrame.selectedTab == 1 ) then
-		ShowFriends();
-		FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
-		FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
-		FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-BotLeft");
-		FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-BotRight");
-		FriendsFrameTitleText:SetText(FRIENDS_LIST);
-		RaidFrame_ShowSubFrame("FriendsListFrame");
+		if ( FriendsFrame.showFriendsList ) then
+			ShowFriends();
+			FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
+			FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
+			FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-BotLeft");
+			FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-BotRight");
+			FriendsFrameTitleText:SetText(FRIENDS_LIST);
+			RaidFrame_ShowSubFrame("FriendsListFrame");
+		else
+			FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
+			FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
+			FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-IgnoreFrame-BotLeft");
+			FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-IgnoreFrame-BotRight");
+			IgnoreList_Update();
+			FriendsFrameTitleText:SetText(IGNORE_LIST);
+			RaidFrame_ShowSubFrame("IgnoreListFrame");
+		end
 	elseif ( FriendsFrame.selectedTab == 2 ) then
-		FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
-		FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
-		FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-IgnoreFrame-BotLeft");
-		FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-IgnoreFrame-BotRight");
-		IgnoreList_Update();
-		FriendsFrameTitleText:SetText(IGNORE_LIST);
-		RaidFrame_ShowSubFrame("IgnoreListFrame");
-	elseif ( FriendsFrame.selectedTab == 3 ) then
 		FriendsFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
 		FriendsFrameTopRight:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight");
 		FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotLeft");
@@ -82,7 +85,7 @@ function FriendsFrame_Update()
 		FriendsFrameTitleText:SetText(WHO_LIST);
 		WhoList_Update();
 		RaidFrame_ShowSubFrame("WhoFrame");
-	elseif ( FriendsFrame.selectedTab == 4 ) then
+	elseif ( FriendsFrame.selectedTab == 3 ) then
 		FriendsFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
 		FriendsFrameTopRight:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight");
 		FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\GuildFrame-BotLeft");
@@ -100,7 +103,7 @@ function FriendsFrame_Update()
 			GuildStatusFrame:Show();
 			GuildStatus_Update();
 		end
-	elseif ( FriendsFrame.selectedTab == 5 ) then
+	elseif ( FriendsFrame.selectedTab == 4 ) then
 		FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
 		FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
 		FriendsFrameBottomLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomLeft");
@@ -259,7 +262,7 @@ function WhoList_Update()
 		if ( not group  ) then
 			group = "";
 		end
-		getglobal("WhoFrameButton"..i.."Group"):SetText(getglobal(strupper(group)));
+		--getglobal("WhoFrameButton"..i.."Group"):SetText(getglobal(strupper(group)));
 		
 		-- If need scrollbar resize columns
 		if ( showScrollBar ) then
@@ -303,12 +306,12 @@ function WhoList_Update()
 	-- ScrollFrame update
 	FauxScrollFrame_Update(WhoListScrollFrame, numWhos, WHOS_TO_DISPLAY, FRIENDS_FRAME_WHO_HEIGHT );
 
-	PanelTemplates_SetTab(FriendsFrame, 3);
+	PanelTemplates_SetTab(FriendsFrame, 2);
 	ShowUIPanel(FriendsFrame);
 end
 
 function GuildPlayerStatus_Update()
-	PanelTemplates_SetTab(FriendsFrame, 4);
+	PanelTemplates_SetTab(FriendsFrame, 3);
 	ShowUIPanel(FriendsFrame);
 
 	FriendsFrame.playersInBotRank = 0;
@@ -381,23 +384,23 @@ function GuildPlayerStatus_Update()
 		getglobal("GuildFrameButton"..i.."Zone"):SetText(zone);
 		getglobal("GuildFrameButton"..i.."Level"):SetText(level);
 		getglobal("GuildFrameButton"..i.."Class"):SetText(class);
-		if ( not group ) then
-			group = "";
-		end
-		getglobal("GuildFrameButton"..i.."Group"):SetText(getglobal(strupper(group)));
+		--if ( not group ) then
+		--	group = "";
+		--end
+		--getglobal("GuildFrameButton"..i.."Group"):SetText(getglobal(strupper(group)));
 		
 		if ( not online ) then
 			getglobal("GuildFrameButton"..i.."Name"):SetTextColor(0.5, 0.5, 0.5);
 			getglobal("GuildFrameButton"..i.."Zone"):SetTextColor(0.5, 0.5, 0.5);
 			getglobal("GuildFrameButton"..i.."Level"):SetTextColor(0.5, 0.5, 0.5);
 			getglobal("GuildFrameButton"..i.."Class"):SetTextColor(0.5, 0.5, 0.5);
-			getglobal("GuildFrameButton"..i.."Group"):SetTextColor(0.5, 0.5, 0.5);
+			--getglobal("GuildFrameButton"..i.."Group"):SetTextColor(0.5, 0.5, 0.5);
 		else
 			getglobal("GuildFrameButton"..i.."Name"):SetTextColor(1.0, 0.82, 0.0);
 			getglobal("GuildFrameButton"..i.."Zone"):SetTextColor(1.0, 1.0, 1.0);
 			getglobal("GuildFrameButton"..i.."Level"):SetTextColor(1.0, 1.0, 1.0);
 			getglobal("GuildFrameButton"..i.."Class"):SetTextColor(1.0, 1.0, 1.0);
-			getglobal("GuildFrameButton"..i.."Group"):SetTextColor(1.0, 1.0, 1.0);
+			--getglobal("GuildFrameButton"..i.."Group"):SetTextColor(1.0, 1.0, 1.0);
 		end
 
 		-- If need scrollbar resize columns
@@ -451,7 +454,7 @@ function GuildPlayerStatus_Update()
 end
 
 function GuildStatus_Update()
-	PanelTemplates_SetTab(FriendsFrame, 4);
+	PanelTemplates_SetTab(FriendsFrame, 3);
 	ShowUIPanel(FriendsFrame);
 	
 	FriendsFrame.playersInBotRank = 0;
@@ -758,7 +761,7 @@ function ToggleFriendsFrame(tab)
 		end
 	else
 		-- If not in a guild don't do anything when they try to toggle the guild tab
-		if ( tab == 4 and not IsInGuild() ) then
+		if ( tab == 3 and not IsInGuild() ) then
 			return;
 		end
 		if ( tab == PanelTemplates_GetSelectedTab(FriendsFrame) and FriendsFrame:IsVisible() ) then
@@ -781,7 +784,7 @@ function WhoFrameEditBox_OnEnterPressed()
 end
 
 function ShowWhoPanel()
-	PanelTemplates_SetTab(FriendsFrame, 3);
+	PanelTemplates_SetTab(FriendsFrame, 2);
 	if ( FriendsFrame:IsVisible() ) then
 		FriendsFrame_OnShow();
 	else
@@ -790,7 +793,7 @@ function ShowWhoPanel()
 end
 
 function ShowIgnorePanel()
-	PanelTemplates_SetTab(FriendsFrame, 2);
+	--PanelTemplates_SetTab(FriendsFrame, 2);
 	if ( FriendsFrame:IsVisible() ) then
 		FriendsFrame_OnShow();
 	else
@@ -922,13 +925,13 @@ end
 
 function InGuildCheck()
 	if ( not IsInGuild() ) then
-		PanelTemplates_DisableTab( FriendsFrame, 4 )
-		if ( FriendsFrame.selectedTab == 4 ) then
+		PanelTemplates_DisableTab( FriendsFrame, 3 );
+		if ( FriendsFrame.selectedTab == 3 ) then
 			FriendsFrame.selectedTab = 1;
 			FriendsFrame_Update();
 		end
 	else
-		PanelTemplates_EnableTab( FriendsFrame, 4 )
+		PanelTemplates_EnableTab( FriendsFrame, 3 );
 		FriendsFrame_Update();
 	end
 end

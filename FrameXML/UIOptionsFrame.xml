@@ -3,7 +3,7 @@
 	<Script file="UIOptionsFrame.lua"/>
 	<Frame name="UIOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="500" y="575"/>
+			<AbsDimension x="500" y="590"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -158,7 +158,7 @@
 			</Frame>
 			<Frame name="UIOptionsFrameDisplay" inherits="OptionFrameBoxTemplate">
 				<Size>
-					<AbsDimension x="475" y="125"/>
+					<AbsDimension x="475" y="140"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameGeneral" relativePoint="BOTTOMLEFT">
@@ -308,6 +308,24 @@
 						</Size>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton11" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton30" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton9" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="-10" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton31" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton30" relativePoint="BOTTOM">
 								<Offset>
 									<AbsDimension x="0" y="4"/>
 								</Offset>

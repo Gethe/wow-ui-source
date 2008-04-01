@@ -13,12 +13,15 @@ INVENTORY_ALERT_STATUS_SLOTS[11] = {slot ="Ranged", showSeparate = 1};
 
 INVENTORY_ALERT_COLORS = {};
 INVENTORY_ALERT_COLORS[0] = nil;
+--INVENTORY_ALERT_COLORS[1] = {r = 0.18, g = 0.72, b = 0.18};
+--INVENTORY_ALERT_COLORS[2] = {r = 0.18, g = 0.72, b = 1};
 INVENTORY_ALERT_COLORS[1] = nil;
-INVENTORY_ALERT_COLORS[2] = {r = 0.18, g = 0.72, b = 1};
+INVENTORY_ALERT_COLORS[2] = nil;
 INVENTORY_ALERT_COLORS[3] = {r = 1, g = 0.82, b = 0.18};
 INVENTORY_ALERT_COLORS[4] = {r = 0.93, g = 0.07, b = 0.07};
 
 function DurabilityFrame_SetAlerts()
+	DurabilityFrame.enchantTimer = nil;
 	local texture, color, showDurability;
 	for index, value in INVENTORY_ALERT_STATUS_SLOTS do
 		texture = getglobal("Durability"..value.slot);
@@ -32,7 +35,11 @@ function DurabilityFrame_SetAlerts()
 			end
 		end
 
-		color = INVENTORY_ALERT_COLORS[GetInventoryAlertStatus(index)];
+		local alertStatus = GetInventoryAlertStatus(index);
+		color = INVENTORY_ALERT_COLORS[alertStatus];
+		if ( alertStatus == 1 ) then
+			--DurabilityFrame.enchantTimer = 1;
+		end
 		if ( color ) then
 			texture:SetVertexColor(color.r, color.g, color.b, 1.0);
 			if ( value.showSeparate ) then
@@ -54,6 +61,16 @@ function DurabilityFrame_SetAlerts()
 			else
 				getglobal("Durability"..value.slot):Hide();
 			end
+		end
+	end
+end
+
+function DurabilityFrame_OnUpdate(elapsed)
+	if ( DurabilityFrame.enchantTimer ) then
+		DurabilityFrame.enchantTimer = DurabilityFrame.enchantTimer - elapsed;
+		if ( DurabilityFrame.enchantTimer < 0 ) then
+			DurabilityFrame.enchantTimer = nil;
+			UpdateInventoryAlertStatus();
 		end
 	end
 end

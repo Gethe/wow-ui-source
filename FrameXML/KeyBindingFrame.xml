@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="KeyBindingFrame.lua"/>
-	<Button name="KeyBindingFrameBindingButtonTemplate" virtual="true">
+	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
 		<Scripts>
 			<OnClick>
 				KeyBindingButton_OnClick(arg1);
@@ -10,10 +10,9 @@
 				this:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp", "Button4Up", "Button5Up");
 			</OnLoad>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" inherits="UIPanelButtonUpTexture"/>
-		<PushedTexture name="$parentPushedTexture" inherits="UIPanelButtonDownTexture"/>
-		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
-		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		<NormalText inherits="GameFontHighlightSmall"/>
+		<DisabledText inherits="GameFontDisable"/>
+		<HighlightText inherits="GameFontHighlightSmall"/>
 	</Button>
 	<Frame name="KeyBindingFrameBindingTemplate" virtual="true">
 		<Size>
@@ -21,7 +20,10 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentDescription" inherits="GameFontNormalSmall">
+				<FontString name="$parentDescription" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="170" y="24"/>
+					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
@@ -53,9 +55,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<NormalText inherits="GameFontHighlightSmall"/>
-				<DisabledText inherits="GameFontDisable"/>
-				<HighlightText inherits="GameFontHighlightSmall"/>
 			</Button>
 			<Button name="$parentKey2Button" inherits="KeyBindingFrameBindingButtonTemplate" id="2">
 				<Size>
@@ -68,9 +67,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<NormalText inherits="GameFontHighlightSmall"/>
-				<DisabledText inherits="GameFontDisable"/>
-				<HighlightText inherits="GameFontHighlightSmall"/>
 			</Button>
 		</Frames>
 	</Frame>

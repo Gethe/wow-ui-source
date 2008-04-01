@@ -177,9 +177,8 @@ function PlayerFrame_OnClick(button)
 			TargetUnit("player");
 		end
 	else
-		UnitPopup_ShowMenu(this, "SELF", "player");
-		UnitPopup:ClearAllPoints();
-		UnitPopup:SetPoint("TOPLEFT", "PlayerFrame", "BOTTOMLEFT", 30, 24);
+		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
+		return;
 	end
 end
 
@@ -187,12 +186,6 @@ function PlayerFrame_OnReceiveDrag()
 	if ( CursorHasItem() ) then
 		AutoEquipCursorItem();
 	end
-end
-
-function LootThreshold_OnClick(id)
-	SetLootThreshold(id);
-	PlayerFrameLootThresholdPopup:Hide();
-	PlaySound("UChatScrollButton");
 end
 
 function PlayerFrame_UpdateStatus()
@@ -226,4 +219,12 @@ function PlayerFrame_UpdateStatus()
 		PlayerStatusGlow:Hide();
 		PlayerAttackBackground:Hide();
 	end
+end
+
+function PlayerFrameDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, PlayerFrameDropDown_Initialize, "MENU");
+end
+
+function PlayerFrameDropDown_Initialize()
+	UnitPopup_ShowMenu(PlayerFrameDropDown, "SELF", "player");
 end

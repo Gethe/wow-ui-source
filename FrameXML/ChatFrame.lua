@@ -401,7 +401,6 @@ EmoteList = {
 	"DANCE",
 	"APPLAUD",
 	"BEG",
-	"CHEER",
 	"CHICKEN",
 	"CRY",
 	"EAT",
@@ -424,13 +423,13 @@ EmoteList = {
 -- VoiceMacroList get sorted according to the client's locale. There's a lookup in
 -- SoundInterfaceVocal.cpp (s_voiceMacroLabels) that does the lookup.
 VoiceMacroList = {
-	"HELPME",
+	"HELP",
 	"INCOMING",
 	"CHARGE",
 	"FLEE",
-	"ATTACKMYTARGET",
+	"AID",
 	"OUTOFMANA",
-	"FOLLOWME",
+	"FOLLOW",
 	"WAITHERE",
 	"HEALME",
 	"CHEER",
@@ -445,6 +444,7 @@ VoiceMacroList = {
 	"CONGRATULATIONS",
 	"FLIRT",
 	"JOKE",
+	"TRAIN",
 };
 
 -- These are text emote tokens - add new ones at the bottom of the list!
@@ -606,10 +606,22 @@ EMOTE155_TOKEN = "TRAIN";
 
 function GetSlashCmdTarget(msg, nonPlayers)
 	local target = gsub(msg, "(%s*)([^%s]+)(.*)", "%2", 1);
-	if ( (strlen(target) <= 0) and (nonPlayers or UnitIsPlayer("target")) ) then
-		target = UnitName("target");
+	if ( target == "" ) then
+		target = "target";
 	end
-	if ( target and (strlen(target) == 0) ) then
+	if ( target == "player" or
+	     target == "pet" or
+		 target == "party1" or
+		 target == "party2" or
+		 target == "party3" or
+		 target == "party4" or
+		 target == "party5" or
+		 target == "target" ) then
+		if ( nonPlayers or UnitIsPlayer(target) ) then
+			target = UnitName(target);
+		end
+	end
+	if ( target and target == "" ) then
 		target = nil;
 	end
 	return target;
@@ -2011,6 +2023,22 @@ function ChatEdit_ParseText(editBox, send)
 
 	local i = 1;
 	local j = 1;
+	for index, value in VoiceMacroList do
+		j = 1;
+		local token = getglobal("VOICEMACRO_LABEL_"..value..j);
+		while ( token ) do
+			if ( "/"..strupper(token) == strupper(command) ) then
+				editBox:AddHistoryLine(text);
+				PlayVocalCategory(VoiceMacroList[index]);
+				ChatEdit_OnEscapePressed(editBox);
+				return;
+			end
+			j = j + 1;
+			token = getglobal("VOICEMACRO_LABEL_"..value..j);
+		end
+	end
+	
+	j = 1;
 	local cmdString = TEXT(getglobal("EMOTE"..i.."_CMD"..j));
 	while ( cmdString ) do
 		if ( strupper(cmdString) == command ) then
@@ -2031,28 +2059,6 @@ function ChatEdit_ParseText(editBox, send)
 		end
 	end
 
-	i = 1;
-	cmdString = TEXT(getglobal("SLASH_VOICEMACRO"..i));
-	while ( cmdString ) do
-		if( strupper(cmdString) == command ) then
-			for index, value in VoiceMacroList do
-				j = 1;
-				local token = getglobal("VOICEMACRO_LABEL_"..value..j);
-				while ( token ) do
-					if ( strupper(token) == strupper(msg) ) then
-						editBox:AddHistoryLine(text);
-						PlayVocalCategory(VoiceMacroList[index]);
-						ChatEdit_OnEscapePressed(editBox);
-						return;
-					end
-					j = j + 1;
-					token = getglobal("VOICEMACRO_LABEL_"..value..j);
-				end
-			end
-		end
-		i = i + 1;
-		cmdString = TEXT(getglobal("SLASH_VOICEMACRO"..i));
-	end
 
 	-- Unrecognized chat command, show simple help text
 	local info = ChatTypeInfo["SYSTEM"];
@@ -2231,7 +2237,7 @@ function VoiceMacroMenu_OnLoad()
 	UIMenu_Initialize();
 	this.parentMenu = "ChatMenu";
 	for index, value in VoiceMacroList do
-		local token = TEXT(SLASH_VOICEMACRO1).." "..TEXT(getglobal("VOICEMACRO_LABEL_"..value.."1"));
+		local token = "/"..TEXT(getglobal("VOICEMACRO_LABEL_"..value.."1"));
 		if ( token ) then
 			UIMenu_AddButton(token, nil, VoiceMacroMenu_Click);
 		end

@@ -178,9 +178,7 @@ function PartyMemberFrame_OnClick(partyFrame)
 			TargetUnit(unit);
 		end
 	else
-		UnitPopup_ShowMenu(partyFrame, "PARTY", unit);
-		UnitPopup:ClearAllPoints();
-		UnitPopup:SetPoint("TOPLEFT", partyFrame:GetName(), "BOTTOMLEFT", 30, 24);
+		ToggleDropDownMenu(1, nil, getglobal("PartyMemberFrame"..partyFrame:GetID().."DropDown"), partyFrame:GetName(), 47, 15);
 	end
 end
 
@@ -279,4 +277,18 @@ function PartyMemberHealthCheck()
 	else
 		getglobal(prefix.."Portrait"):SetVertexColor(1.0, 1.0, 1.0, 1.0);
 	end
+end
+
+function PartyFrameDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, PartyFrameDropDown_Initialize, "MENU");
+end
+
+function PartyFrameDropDown_Initialize()
+	local dropdown;
+	if ( UIDROPDOWNMENU_OPEN_MENU ) then
+		dropdown = getglobal(UIDROPDOWNMENU_OPEN_MENU);
+	else
+		dropdown = this;
+	end
+	UnitPopup_ShowMenu(dropdown, "PARTY", "party"..this:GetID());
 end

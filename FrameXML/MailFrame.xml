@@ -653,7 +653,9 @@
 											</OnEscapePressed>
 											<OnClick>
 												this:SetFocus();
-												SendMailPackageButton_OnClick();
+												if ( CursorHasItem() ) then
+													SendMailPackageButton_OnClick();
+												end
 											</OnClick>
 										</Scripts>
 										<FontString inherits="ItemTextFontNormal"/>
@@ -662,7 +664,9 @@
 								<Scripts>
 									<OnMouseUp>
 										SendMailBodyEditBox:SetFocus();
-										SendMailPackageButton_OnClick();
+										if ( CursorHasItem() ) then
+											SendMailPackageButton_OnClick();
+										end
 									</OnMouseUp> 
 								</Scripts>
 							</Frame>
@@ -1046,7 +1050,9 @@
 						SendMailRadioButton_OnClick(1);
 					</OnShow>
 					<OnMouseUp>
-						SendMailPackageButton_OnClick();
+						if ( CursorHasItem() ) then
+							SendMailPackageButton_OnClick();
+						end
 					</OnMouseUp> 
 				</Scripts>
 			</Frame>

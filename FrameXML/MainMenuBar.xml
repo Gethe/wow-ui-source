@@ -236,6 +236,7 @@
 						ShowTextStatusBarText(this);
 						ExhaustionTick.timer = 1;
 						GameTooltip_AddNewbieTip(XPBAR_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
+						GameTooltip.canAddRestStateLine = 1;
 					</OnEnter>
 					<OnLeave>
 						HideTextStatusBarText(this);

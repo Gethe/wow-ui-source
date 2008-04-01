@@ -26,6 +26,7 @@ function CraftFrame_OnLoad()
 	this:RegisterEvent("CRAFT_CLOSE");
 	this:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	this:RegisterEvent("SPELLS_CHANGED");
+	this:RegisterEvent("UNIT_PET_TRAINING_POINTS");
 	FauxScrollFrame_SetOffset(CraftListScrollFrame, 0);
 end
 
@@ -76,6 +77,8 @@ function CraftFrame_OnEvent()
 		SetPortraitTexture(CraftFramePortrait, "player");
 	elseif ( event == "SPELLS_CHANGED" ) then
 		CraftFrame_Update();
+	elseif ( event == "UNIT_PET_TRAINING_POINTS" ) then
+		Craft_UpdateTrainingPoints();
 	end
 end
 
@@ -88,12 +91,22 @@ function CraftFrame_Update()
 	CraftCreateButton:SetText(getglobal(GetCraftButtonToken()));
 	-- Set the craft skill line status bar info
 	local name, rank, maxRank = GetCraftDisplaySkillLine();
-	CraftRankFrameSkillName:SetText(name);
-	CraftRankFrame:SetStatusBarColor(0.0, 0.0, 1.0, 0.5);
-	CraftRankFrameBackground:SetVertexColor(0.0, 0.0, 0.75, 0.5);
-	CraftRankFrame:SetMinMaxValues(0, maxRank);
-	CraftRankFrame:SetValue(rank);
-	CraftRankFrameSkillRank:SetText(rank.."/"..maxRank);
+	if ( name ) then
+		CraftRankFrameSkillName:SetText(name);
+		CraftRankFrame:SetStatusBarColor(0.0, 0.0, 1.0, 0.5);
+		CraftRankFrameBackground:SetVertexColor(0.0, 0.0, 0.75, 0.5);
+		CraftRankFrame:SetMinMaxValues(0, maxRank);
+		CraftRankFrame:SetValue(rank);
+		CraftRankFrameSkillRank:SetText(rank.."/"..maxRank);
+		CraftRankFrame:Show();
+		CraftSkillBorderLeft:Show();
+		CraftSkillBorderRight:Show();
+	else
+		CraftRankFrame:Hide();
+		CraftSkillBorderLeft:Hide();
+		CraftSkillBorderRight:Hide();
+	end
+	
 
 	-- Hide the expand all button if less than 2 crafts learned	
 	if ( numCrafts <=1 ) then
@@ -185,6 +198,8 @@ function CraftFrame_Update()
 				end
 				if ( trainingPointCost > 0 ) then
 					craftButtonCost:SetText(format(TRAINER_LIST_TP, trainingPointCost));
+				else
+					craftButtonCost:SetText("");
 				end
 				craftButtonSubText:SetPoint("LEFT", "Craft"..i.."Text", "RIGHT", 10, 0);
 				-- Place the highlight and lock the highlight state
@@ -205,15 +220,7 @@ function CraftFrame_Update()
 	end
 	
 	-- If player has training points show them here
-	local totalPoints, spent = GetPetTrainingPoints();
-	if ( totalPoints > 0 ) then
-		CraftFramePointsLabel:Show();
-		CraftFramePointsText:Show();
-		CraftFramePointsText:SetText(totalPoints - spent);
-	else
-		CraftFramePointsLabel:Hide();
-		CraftFramePointsText:Hide();
-	end
+	Craft_UpdateTrainingPoints();
 
 	-- Set the expand/collapse all button texture
 	local numHeaders = 0;
@@ -398,4 +405,16 @@ function CraftCollapseAllButton_OnClick()
 		CraftListScrollFrameScrollBar:SetValue(0);
 		CollapseCraftSkillLine(0);
 	end
+end
+
+function Craft_UpdateTrainingPoints()
+	local totalPoints, spent = GetPetTrainingPoints();
+	if ( totalPoints > 0 ) then
+		CraftFramePointsLabel:Show();
+		CraftFramePointsText:Show();
+		CraftFramePointsText:SetText(totalPoints - spent);
+	else
+		CraftFramePointsLabel:Hide();
+		CraftFramePointsText:Hide();
+	end	
 end

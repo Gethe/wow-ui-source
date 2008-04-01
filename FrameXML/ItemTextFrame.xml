@@ -214,19 +214,30 @@
 					</OnScrollRangeChanged>
 				</Scripts>
 				<ScrollChild>
-					<SimpleHTML name="ItemTextPageText">
+					<Frame name="ItemTextPageScrollChild">
 						<Size>
-							<AbsDimension x="240" y="304"/>
+							<AbsDimension x="10" y="10"/>
 						</Size>
-						<FontString name="ItemTextFontString" inherits="ItemTextFontNormal">
-							<Size>
-								<AbsDimension x="240" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</FontString>
-					</SimpleHTML>
+						<Frames>
+							<SimpleHTML name="ItemTextPageText">
+								<Size>
+									<AbsDimension x="270" y="304"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-15"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<FontString name="ItemTextFontString" inherits="ItemTextFontNormal">
+									<Size>
+										<AbsDimension x="270" y="0"/>
+									</Size>
+								</FontString>
+							</SimpleHTML>
+						</Frames>
+					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
 			<StatusBar name="ItemTextStatusBar">

@@ -66,21 +66,25 @@ end
 
 function ExhaustionToolTipText()
 	-- If showing newbie tips then only show the explanation
-	if ( SHOW_NEWBIE_TIPS == "1" ) then
+	--[[if ( SHOW_NEWBIE_TIPS == "1" ) then
 		return;
 	end
+	]]
 
-	local x,y;
-	x,y = ExhaustionTick:GetCenter();
-	if ( ExhaustionTick:IsVisible() ) then
-		if ( x >= ( GetScreenWidth() / 2 ) ) then
-			GameTooltip:SetOwner(ExhaustionTick, "ANCHOR_LEFT");
+	if ( SHOW_NEWBIE_TIPS ~= "1" ) then
+		local x,y;
+		x,y = ExhaustionTick:GetCenter();
+		if ( ExhaustionTick:IsVisible() ) then
+			if ( x >= ( GetScreenWidth() / 2 ) ) then
+				GameTooltip:SetOwner(ExhaustionTick, "ANCHOR_LEFT");
+			else
+				GameTooltip:SetOwner(ExhaustionTick, "ANCHOR_RIGHT");
+			end
 		else
-			GameTooltip:SetOwner(ExhaustionTick, "ANCHOR_RIGHT");
+			GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
 		end
-	else
-		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
 	end
+	
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier;
 	exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
 
@@ -114,7 +118,15 @@ function ExhaustionToolTipText()
 		tooltipText = tooltipText..append;
 	end
 
-	GameTooltip:SetText(tooltipText);
+	if ( SHOW_NEWBIE_TIPS ~= "1" ) then
+		GameTooltip:SetText(tooltipText);
+	else
+		if ( GameTooltip.canAddRestStateLine ) then
+			GameTooltip:AddLine("\n"..tooltipText);
+			GameTooltip:Show();
+			GameTooltip.canAddRestStateLine = nil;
+		end
+	end
 
 --[[
 	if ((exhaustionStateID == 1) and (IsResting()) and (not exhaustionThreshold)) then

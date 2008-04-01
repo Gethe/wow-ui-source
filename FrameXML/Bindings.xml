@@ -560,17 +560,14 @@
 	<Binding name="TOGGLEFRIENDSTAB">
 		ToggleFriendsFrame(1);
 	</Binding>
-	<Binding name="TOGGLEIGNORETAB">
+	<Binding name="TOGGLEWHOTAB">
 		ToggleFriendsFrame(2);
 	</Binding>
-	<Binding name="TOGGLEWHOTAB">
+	<Binding name="TOGGLEGUILDTAB">
 		ToggleFriendsFrame(3);
 	</Binding>
-	<Binding name="TOGGLEGUILDTAB">
-		ToggleFriendsFrame(4);
-	</Binding>
 	<Binding name="TOGGLERAIDTAB">
-		ToggleFriendsFrame(5);
+		ToggleFriendsFrame(4);
 	</Binding>
 	<!-- Misc -->
 	<Binding name="MINIMAPZOOMIN" header="MISC">

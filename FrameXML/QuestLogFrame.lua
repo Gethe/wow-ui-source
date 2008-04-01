@@ -201,7 +201,9 @@ function QuestLog_Update()
 	end
 
 	-- Determine whether the selected quest is pushable or not
-	if ( GetQuestLogPushable() and GetNumPartyMembers() > 0 ) then
+	if ( numEntries == 0 ) then
+		QuestFramePushQuestButton:Disable();
+	elseif ( GetQuestLogPushable() and GetNumPartyMembers() > 0 ) then
 		QuestFramePushQuestButton:Enable();
 	else
 		QuestFramePushQuestButton:Disable();

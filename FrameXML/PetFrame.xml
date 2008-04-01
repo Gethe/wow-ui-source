@@ -32,7 +32,41 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="PetFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-20" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						PetFrameDropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Frame setAllPoints="true">
+				<Frame name="PetFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-10" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						PetFrameDropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>
@@ -80,7 +114,7 @@
 									<Anchors>
 										<Anchor point="CENTER" relativePoint="TOPLEFT">
 											<Offset>
-												<AbsDimension x="82" y="-35"/>
+												<AbsDimension x="82" y="-38"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -117,6 +151,10 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize();
+						this.textLockable = 1;
+					</OnLoad>
 					<OnEvent>
 						UnitFrameHealthBar_Update(this, arg1);
 					</OnEvent>
@@ -138,6 +176,10 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize();
+						this.textLockable = 1;
+					</OnLoad>
 					<OnEvent>
 						UnitFrameManaBar_Update(this, arg1);
 					</OnEvent>

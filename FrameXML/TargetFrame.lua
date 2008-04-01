@@ -120,9 +120,7 @@ end
 
 function TargetFrame_OnHide()
 	PlaySound("INTERFACESOUND_LOSTTARGETUNIT");
-	if ( UnitPopup.unit == "target" ) then
-		UnitPopup:Hide();
-	end
+	CloseDropDownMenus();
 end
 
 function TargetFrame_CheckLevel()
@@ -260,34 +258,7 @@ function TargetFrame_OnClick(button)
 			DropItemOnUnit("target");
 		end
 	else
-		local menu = nil;
-		if ( UnitIsEnemy("target", "player") ) then
-			return;
-		end
-		if ( UnitIsUnit("target", "player") ) then
-			menu = "SELF";
-		elseif ( UnitIsUnit("target", "pet") ) then
-			if(PetCanBeAbandoned()) then
-				if(PetCanBeRenamed()) then
-					menu = "PET_RENAME";
-				else
-					menu = "PET";
-				end
-			else
-				menu = "PET_NOABANDON";
-			end
-		elseif ( UnitIsPlayer("target") ) then
-			if ( UnitInParty("target") ) then
-				menu = "PARTY";
-			else
-				menu = "PLAYER";
-			end
-		end
-		if ( menu ) then
-			UnitPopup_ShowMenu(this, menu, "target");
-			UnitPopup:ClearAllPoints();
-			UnitPopup:SetPoint("TOPLEFT", this:GetName(), "BOTTOMRIGHT", 6, 6);
-		end
+		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "TargetFrame", 120, 10);
 	end
 end
 
@@ -368,5 +339,30 @@ function TargetHealthCheck()
 		end
 	else
 		TargetFrame_CheckFaction();
+	end
+end
+
+function TargetFrameDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, TargetFrameDropDown_Initialize, "MENU");
+end
+
+function TargetFrameDropDown_Initialize()
+	local menu = nil;
+	if ( UnitIsEnemy("target", "player") ) then
+		return;
+	end
+	if ( UnitIsUnit("target", "player") ) then
+		menu = "SELF";
+	elseif ( UnitIsUnit("target", "pet") ) then
+		menu = "PET";
+	elseif ( UnitIsPlayer("target") ) then
+		if ( UnitInParty("target") ) then
+			menu = "PARTY";
+		else
+			menu = "PLAYER";
+		end
+	end
+	if ( menu ) then
+		UnitPopup_ShowMenu(TargetFrameDropDown, menu, "target");
 	end
 end

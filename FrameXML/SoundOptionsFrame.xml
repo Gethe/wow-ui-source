@@ -17,7 +17,7 @@
 	</Slider>
 	<Frame name="SoundOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
 		<Size>
-			<AbsDimension x="350" y="265"/>
+			<AbsDimension x="350" y="305"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -125,6 +125,15 @@
 			<CheckButton name="SoundOptionsFrameCheckButton7" inherits="SoundOptionsCheckButtonTemplate" id="7">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SoundOptionsFrameCheckButton8" inherits="SoundOptionsCheckButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton7" relativePoint="BOTTOM">
 						<Offset>
 							<AbsDimension x="0" y="6"/>
 						</Offset>

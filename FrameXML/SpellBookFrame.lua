@@ -1,6 +1,6 @@
 MAX_SPELLS = 1024;
 MAX_SKILLLINE_TABS = 8;
-SPELLS_PER_PAGE = 14;
+SPELLS_PER_PAGE = 12;
 MAX_SPELL_PAGES = ceil(MAX_SPELLS / SPELLS_PER_PAGE);
 BOOKTYPE_SPELL = "spell";
 BOOKTYPE_PET = "pet";
@@ -296,6 +296,7 @@ function SpellButton_UpdateButton()
 		spellString:Hide();
 		subSpellString:Hide();
 		cooldown:Hide();
+		this:SetChecked(0);
 		getglobal(name.."NormalTexture"):SetVertexColor(1.0, 1.0, 1.0);
 		return;
 	else
@@ -340,7 +341,7 @@ function SpellButton_UpdateButton()
 	spellString:SetText(spellName);
 	subSpellString:SetText(subSpellName);
 	if ( subSpellName ~= "" ) then
-		spellString:SetPoint("LEFT", this:GetName(), "RIGHT", 4, 7);
+		spellString:SetPoint("LEFT", this:GetName(), "RIGHT", 4, 4);
 	else
 		spellString:SetPoint("LEFT", this:GetName(), "RIGHT", 4, 2);
 	end

@@ -111,6 +111,9 @@ info.hasColorSwatch = [nil, 1]  --  Show color swatch or not, for color selectio
 info.r = [1 - 255]  --  Red color value of the color swatch
 info.g = [1 - 255]  --  Green color value of the color swatch
 info.b = [1 - 255]  --  Blue color value of the color swatch
+info.textR = [1 - 255]  --  Red color value of the button text
+info.textG = [1 - 255]  --  Green color value of the button text
+info.textB = [1 - 255]  --  Blue color value of the button text
 info.swatchFunc = [function()]  --  Function called by the color picker on color change
 info.hasOpacity = [nil, 1]  --  Show the opacity slider on the colorpicker frame
 info.opacity = [0.0 - 1.0]  --  Percentatge of the opacity, 1.0 is fully shown, 0 is transparent
@@ -120,6 +123,9 @@ info.notClickable = [nil, 1]  --  Disable the button and color the font white
 info.notCheckable = [nil, 1]  --  Shrink the size of the buttons and don't display a check box
 info.owner = [Frame]  --  Dropdown frame that "owns" the current dropdownlist
 info.keepShownOnClick = [nil, 1]  --  Don't hide the dropdownlist after a button is clicked
+info.tooltipTitle = [nil, STRING] -- Title of the tooltip shown on mouseover
+info.tooltipText = [nil, STRING] -- Text of the tooltip shown on mouseover
+info.justifyH = [nil, "CENTER"] -- Justify button text
 ]]--
 
 function UIDropDownMenu_AddButton(info, level)
@@ -181,21 +187,29 @@ function UIDropDownMenu_AddButton(info, level)
 		if ( width > listFrame.maxWidth ) then
 			listFrame.maxWidth = width;
 		end
+		-- If a textR is set then set the vertex color of the button text
+		if ( info.textR ) then
+			normalText:SetTextColor(info.textR, info.textG, info.textB);
+			highlightText:SetTextColor(info.textR, info.textG, info.textB);
+		else
+			normalText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			highlightText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		end
 	else
 		button:SetText("");
 	end
 
-	if ( info.func ) then
-		button.func = info.func;
-	else
-		button.func = nil;
-	end
-
-	if ( info.owner ) then
-		button.owner = info.owner;
-	else
-		button.owner = nil;
-	end
+	-- Pass through attributes
+	button.func = info.func;
+	button.owner = info.owner;
+	button.hasOpacity = info.hasOpacity;
+	button.opacity = info.opacity;
+	button.opacityFunc = info.opacityFunc;
+	button.cancelFunc = info.cancelFunc;
+	button.swatchFunc = info.swatchFunc;
+	button.keepShownOnClick = info.keepShownOnClick;
+	button.tooltipTitle = info.tooltipTitle;
+	button.tooltipText = info.tooltipText;
 
 	if ( info.value ) then
 		button.value = info.value;
@@ -204,32 +218,7 @@ function UIDropDownMenu_AddButton(info, level)
 	else
 		button.value = nil;
 	end
-
-	if ( info.hasOpacity ) then
-		button.hasOpacity = 1;
-	else
-		button.hasOpacity = nil;
-	end
-
-	if ( info.opacity ) then
-		button.opacity = info.opacity;
-	else
-		button.opacity = nil;
-	end
-
-	if ( info.opacityFunc ) then
-		button.opacityFunc = info.opacityFunc;
-	else
-		button.opacityFunc = nil;
-	end
 	
-	-- A cancelFunc is called whenever the cancel button is clicked in the ColorPickerFrame
-	if ( info.cancelFunc ) then
-		button.cancelFunc = info.cancelFunc;
-	else
-		button.cancelFunc = nil;
-	end
-
 	-- Show the expand arrow if it has one
 	if ( info.hasArrow ) then
 		getglobal(listFrameName.."Button"..index.."ExpandArrow"):Show();
@@ -239,13 +228,23 @@ function UIDropDownMenu_AddButton(info, level)
 	button.hasArrow = info.hasArrow;
 	
 	-- If not checkable move everything over to the left to fill in the gap where the check would be
-	local xPos = 0;
+	local xPos = 5;
 	local yPos = -((button:GetID() - 1) * UIDROPDOWNMENU_BUTTON_HEIGHT) - UIDROPDOWNMENU_BORDER_HEIGHT;
+	normalText:ClearAllPoints();
+	highlightText:ClearAllPoints();
+	disabledText:ClearAllPoints();
 	if ( info.notCheckable ) then
+		if ( info.justifyH and info.justifyH == "CENTER" ) then
+			normalText:SetPoint("CENTER", button:GetName(), "CENTER", -7, 0);
+			highlightText:SetPoint("CENTER", button:GetName(), "CENTER", -7, 0);
+			disabledText:SetPoint("CENTER", button:GetName(), "CENTER", -7, 0);
+		else
+			normalText:SetPoint("LEFT", button:GetName(), "LEFT", 0, 0);
+			highlightText:SetPoint("LEFT", button:GetName(), "LEFT", 0, 0);
+			disabledText:SetPoint("LEFT", button:GetName(), "LEFT", 0, 0);
+		end
 		xPos = xPos + 10;
-		normalText:SetPoint("LEFT", button:GetName(), "LEFT", 0, 0);
-		highlightText:SetPoint("LEFT", button:GetName(), "LEFT", 0, 0);
-		disabledText:SetPoint("LEFT", button:GetName(), "LEFT", 0, 0);
+		
 	else
 		xPos = xPos + 12;
 		normalText:SetPoint("LEFT", button:GetName(), "LEFT", 27, 0);
@@ -307,13 +306,6 @@ function UIDropDownMenu_AddButton(info, level)
 		colorSwatch:Hide();
 	end
 
-	-- A swatchFunc is called whenever a color is set in the ColorPickerFrame
-	if ( info.swatchFunc ) then
-		button.swatchFunc = info.swatchFunc;
-	else
-		button.swatchFunc = nil;
-	end
-
 	-- If not clickable then disable the button and set it white
 	if ( info.notClickable ) then
 		info.disabled = 1;
@@ -330,13 +322,6 @@ function UIDropDownMenu_AddButton(info, level)
 	if ( info.disabled ) then
 		button:Disable();
 		invisibleButton:Show();
-	end
-
-	-- Down't hide the dropdownlist frame when a button is clicked
-	if ( info.keepShownOnClick ) then
-		button.keepShownOnClick = info.keepShownOnClick;
-	else
-		button.keepShownOnClick = nil;
 	end
 
 	-- Set the height of the listframe
@@ -534,21 +519,17 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		listFrame:Show();
 		-- Hack since GetCenter() is returning coords relative to 1024x768
 		local x, y = listFrame:GetCenter();
-		x = x/1024 * GetScreenWidth();
-		y = y/768 * GetScreenHeight();
-		
-		-- Determine whether the menu is off the screen or not
-		local uiScale = GetCVar("uiscale") + 0;
-		local screenWidth = GetScreenWidth();
-		if ( GetCVar("useUiScale") == "1" ) then
-			screenWidth = 1024 / uiScale;
+		-- Hack will fix this in next revision of dropdowns
+		if ( not x or not y ) then
+			listFrame:Hide();
+			return;
 		end
-		
+		-- Determine whether the menu is off the screen or not
 		local offscreenY, offscreenX;
 		if ( (y - listFrame:GetHeight()/2) < 0 ) then
 			offscreenY = 1;
 		end
-		if ( x + listFrame:GetWidth()/2 > screenWidth ) then
+		if ( x + listFrame:GetWidth()/2 > GetScreenWidth() ) then
 			offscreenX = 1;		
 		end
 		
@@ -694,4 +675,20 @@ function UIDropDownMenuButton_OpenColorPicker(button)
 	ColorPickerFrame.previousValues = {r = button.r, g = button.g, b = button.b, opacity = button.opacity};
 	ColorPickerFrame.cancelFunc = button.cancelFunc;
 	ShowUIPanel(ColorPickerFrame);
+end
+
+function UIDropDownMenu_DisableButton(level, id)
+	getglobal("DropDownList"..level.."Button"..id):Disable();
+end
+
+function UIDropDownMenu_EnableButton(level, id)
+	getglobal("DropDownList"..level.."Button"..id):Enable();
+end
+
+function UIDropDownMenu_SetButtonText(level, id, text, r, g, b)
+	getglobal("DropDownList"..level.."Button"..id):SetText(text);
+	if ( r ) then
+		getglobal("DropDownList"..level.."Button"..id.."NormalText"):SetTextColor(r, g, b);
+		getglobal("DropDownList"..level.."Button"..id.."HighlightText"):SetTextColor(r, g, b);
+	end
 end

@@ -192,6 +192,23 @@
 					</Frame>
 				</Frames>
 			</Frame>
+			<Frame name="TargetFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="10" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TargetFrameDropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<StatusBar name="TargetFrameHealthBar" inherits="TextStatusBar">
 				<Size>
 					<AbsDimension x="119" y="12"/>

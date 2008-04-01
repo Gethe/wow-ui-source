@@ -8,6 +8,7 @@
 		HIGHLIGHT_FONT_COLOR_CODE = "|cffffffff";
 		RED_FONT_COLOR_CODE = "|cffff2020";
 		GREEN_FONT_COLOR_CODE = "|cff20ff20";
+		GRAY_FONT_COLOR_CODE = "|cff808080";
 		FONT_COLOR_CODE_CLOSE = "|r";
 		NORMAL_FONT_COLOR = {r=1.0, g=0.82, b=0};
 		HIGHLIGHT_FONT_COLOR = {r=1.0, g=1.0, b=1.0};

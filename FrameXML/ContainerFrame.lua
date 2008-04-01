@@ -398,6 +398,16 @@ function updateContainerFrameAnchors()
 		freeScreenHeight = freeScreenHeight - frame:GetHeight() - VISIBLE_CONTAINER_SPACING;
 		index = index + 1;
 	end
+	-- This is used to position the unit tooltip
+	local oldContainerPosition = OPEN_CONTAINER_POSITION;
+	if ( index == 1 ) then
+		DEFAULT_TOOLTIP_POSITION = -13;
+	else
+		DEFAULT_TOOLTIP_POSITION = -((column + 1) * CONTAINER_WIDTH);
+	end
+	if ( DEFAULT_TOOLTIP_POSITION ~= oldContainerPosition and GameTooltip.default and GameTooltip:IsVisible() ) then
+		GameTooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", DEFAULT_TOOLTIP_POSITION, 64);
+	end
 end
 
 

@@ -19,7 +19,7 @@ OptionsFrameCheckButtons["HARDWARE_CURSOR"] = { index = 14, cvar = "gxCursor" , 
 OptionsFrameCheckButtons["PHONG_SHADING"] = { index = 15, cvar = "M2UsePixelShaders" , tooltipText = OPTION_TOOLTIP_PHONG_SHADING};
 
 OptionsFrameSliders = {
-	{ text = UI_SCALE, func = "uiscale", minValue = 0.64, maxValue = 1.0, valueStep = 0.05 , tooltipText = OPTION_TOOLTIP_UI_SCALE},
+	{ text = UI_SCALE, func = "uiscale", minValue = 0.64, maxValue = 1.0, valueStep = 0.01 , tooltipText = OPTION_TOOLTIP_UI_SCALE},
 	{ text = FARCLIP, func = "farclip", minValue = OPTIONS_FARCLIP_MIN, maxValue = OPTIONS_FARCLIP_MAX, valueStep = (OPTIONS_FARCLIP_MAX - OPTIONS_FARCLIP_MIN)/10 , tooltipText = OPTION_TOOLTIP_FARCLIP},
 	{ text = ENVIRONMENT_DETAIL, func = "WorldDetail", minValue = 0, maxValue = 2, valueStep = 1 , tooltipText = OPTION_TOOLTIP_ENVIRONMENT_DETAIL},
 	{ text = TERRAIN_MIP, func = "TerrainMip", minValue = 0, maxValue = 1, valueStep = 1 , tooltipText = OPTION_TOOLTIP_TERRAIN_TEXTURE, restartClient = 1, tooltipRequirement = OPTION_RESTART_REQUIREMENT},
@@ -55,6 +55,7 @@ function OptionsFrame_Load()
 		local string = getglobal("OptionsFrameCheckButton"..value.index.."Text");
 		local checked;
 		checked = GetCVar(value.cvar);
+
 		string:SetText(TEXT(getglobal(index)));
 		button.tooltipText = value.tooltipText;
 		button.tooltipRequirement = value.tooltipRequirement;
@@ -172,6 +173,9 @@ function OptionsFrame_Save()
 		else
 			value.value = "0";
 		end
+
+		SetCVar(value.cvar, value.value, index);
+		
 		if ( value.value ~= GetCVar(value.cvar) ) then
 			if ( button.gxRestart ) then
 				OptionsFrame.GXRestart = 1;
@@ -179,7 +183,7 @@ function OptionsFrame_Save()
 				OptionsFrame.ClientRestart = 1;
 			end
 		end
-		SetCVar(value.cvar, value.value, index);
+		
 		if ( index == "ENABLE_ALL_SHADERS" ) then
 			SetCVar("ffx", value.value);
 		end
@@ -370,6 +374,7 @@ function OptionsFrame_SetDefaults()
 	for index, value in OptionsFrameCheckButtons do
 		checkButton = getglobal("OptionsFrameCheckButton"..value.index);
 		checkButton:SetChecked(GetCVarDefault(value.cvar));
+		
 		if ( index == "ENABLE_ALL_SHADERS" ) then
 			enableShaders = checkButton:GetChecked();
 		elseif ( index == "VERTICAL_SYNC" ) then

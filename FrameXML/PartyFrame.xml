@@ -59,6 +59,23 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-20" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						PartyFrameDropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Frame setAllPoints="true">
 				<Frames>
 					<Frame setAllPoints="true">
@@ -144,7 +161,7 @@
 						PartyMemberHealthCheck();
 					</OnValueChanged>
 					<OnMouseUp>
-						PartyMemberFrame_OnClick(this:GetParent());
+						--PartyMemberFrame_OnClick(this:GetParent());
 					</OnMouseUp> 
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -165,7 +182,7 @@
 						UnitFrameManaBar_Update(this, arg1);
 					</OnEvent>
 					<OnMouseUp>
-						PartyMemberFrame_OnClick(this:GetParent());
+						--PartyMemberFrame_OnClick(this:GetParent());
 					</OnMouseUp> 
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -233,11 +250,6 @@
 			<OnClick>
 				PartyMemberFrame_OnClick();
 			</OnClick>
-			<OnHide>
-				if ( UnitPopup.unit == "party"..this:GetID() ) then
-					UnitPopup:Hide();
-				end
-			</OnHide>
 			<OnUpdate>
 				PartyMemberFrame_UpdateMemberHealth(arg1);
 			</OnUpdate>

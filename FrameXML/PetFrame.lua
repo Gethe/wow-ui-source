@@ -144,17 +144,7 @@ function PetFrame_OnClick(button)
 			TargetUnit("pet");
 		end
 	else
-		if(PetCanBeAbandoned()) then
-			if(PetCanBeRenamed()) then
-				UnitPopup_ShowMenu(this, "PET_RENAME", "pet");
-			else
-				UnitPopup_ShowMenu(this, "PET", "pet");
-			end
-		else
-			UnitPopup_ShowMenu(this, "PET_NOABANDON", "pet");
-		end
-		UnitPopup:ClearAllPoints();
-		UnitPopup:SetPoint("TOPLEFT", this:GetName(), "BOTTOMLEFT", 30, 24);
+		ToggleDropDownMenu(1, nil, PetFrameDropDown);
 	end
 end
 
@@ -193,5 +183,15 @@ function PetFrame_RefreshBuffs()
 		else
 			getglobal("PetDebuff"..i):Hide();
 		end
+	end
+end
+
+function PetFrameDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, PetFrameDropDown_Initialize, "MENU");
+end
+
+function PetFrameDropDown_Initialize()
+	if ( UnitExists("pet") ) then
+		UnitPopup_ShowMenu(PetFrameDropDown, "PET", "pet");
 	end
 end

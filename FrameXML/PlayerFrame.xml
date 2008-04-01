@@ -313,6 +313,23 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
+			<Frame name="PlayerFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-10" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						PlayerFrameDropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -341,88 +358,4 @@
 			</OnReceiveDrag>
 		</Scripts>
 	</Button>
-	<Button name="LootThresholdButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="64" y="12"/>
-		</Size>
-		<Scripts>
-			<OnClick>
-				LootThreshold_OnClick(this:GetID());
-			</OnClick>
-			<OnLoad>
-					local color = ITEM_QUALITY_COLORS[this:GetID()];
-					this:SetTextColor(color.r, color.g, color.b);
-			</OnLoad>
-		</Scripts>
-		<NormalText inherits="GameFontNormal"/>
-		<HighlightText inherits="GameFontHighlight"/>
-		<DisabledText inherits="GameFontDisable"/>
-	</Button>
-	<Frame name="PlayerFrameLootThresholdPopup" frameStrata="DIALOG" hidden="true" parent="UIParent">
-		<Size>
-			<AbsDimension x="150" y="106"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="LootThresholdTitle" inherits="GameFontHighlight" text="LOOT_THRESHOLD">
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-16"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="LootThresholdButton1" inherits="LootThresholdButtonTemplate" id="2" text="ITEM_QUALITY2_DESC">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="LootThresholdTitle" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="LootThresholdButton2" inherits="LootThresholdButtonTemplate" id="3" text="ITEM_QUALITY3_DESC">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="LootThresholdButton1" relativePoint="BOTTOM"/>
-				</Anchors>
-			</Button>
-			<Button name="LootThresholdButton3" inherits="LootThresholdButtonTemplate" id="4" text="ITEM_QUALITY4_DESC">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="LootThresholdButton2" relativePoint="BOTTOM"/>
-				</Anchors>
-			</Button>
-			<Button name="LootThresholdCloseButton" inherits="LootThresholdButtonTemplate" text="CANCEL">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="LootThresholdButton3" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlayerFrameLootThresholdPopup:Hide();
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-	</Frame>
 </Ui>

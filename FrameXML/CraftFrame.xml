@@ -131,7 +131,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
-				<Texture file="Interface\TradeSkillFrame\UI-TradeSkill-SkillBorder">
+				<Texture name="CraftSkillBorderRight" file="Interface\TradeSkillFrame\UI-TradeSkill-SkillBorder">
 					<Size>
 						<AbsDimension x="28" y="8"/>
 					</Size>

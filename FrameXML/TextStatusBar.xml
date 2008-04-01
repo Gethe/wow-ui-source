@@ -14,6 +14,16 @@
 				ShowTextStatusBarText(this);
 				if ( this.tooltipTitle ) then
 					GameTooltip_AddNewbieTip(this.tooltipTitle, 1.0, 1.0, 1.0, this.tooltipText, 1);
+				elseif ( this:GetParent() == TargetFrame ) then
+					GameTooltip_SetDefaultAnchor(GameTooltip, this);
+					if ( GameTooltip:SetUnit(TargetFrame.unit) ) then
+						TargetFrame.updateTooltip = TOOLTIP_UPDATE_TIME;
+					else
+						TargetFrame.updateTooltip = nil;
+					end
+
+					TargetFrame.r, TargetFrame.g, TargetFrame.b = GameTooltip_UnitColor(TargetFrame.unit);
+					GameTooltipTextLeft1:SetTextColor(TargetFrame.r, TargetFrame.g, TargetFrame.b);
 				end
 			</OnEnter>
 			<OnLeave>

@@ -125,10 +125,14 @@
 				end
 				getglobal(this:GetName().."Highlight"):Show();
 				UIDropDownMenu_StopCounting(this:GetParent());
+				if ( this.tooltipTitle ) then
+					GameTooltip_AddNewbieTip(this.tooltipTitle, 1.0, 1.0, 1.0, this.tooltipText, 1);
+				end
 			</OnEnter>
 			<OnLeave>
 				getglobal(this:GetName().."Highlight"):Hide();
 				UIDropDownMenu_StartCounting(this:GetParent());
+				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 		<NormalText name="$parentNormalText" inherits="GameFontHighlightSmall" justifyH="LEFT"/>

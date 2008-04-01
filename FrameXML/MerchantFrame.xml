@@ -3,7 +3,7 @@
 	<Script file="MerchantFrame.lua"/>
 	<Frame name="MerchantItemTemplate" virtual="true">	
 		<Size>
-			<AbsDimension x="153" y="37"/>
+			<AbsDimension x="153" y="44"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -21,24 +21,24 @@
 				</Texture>
 				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
 					<Size>
-						<AbsDimension x="128" y="64"/>
+						<AbsDimension x="128" y="78"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="-9" y="-10"/>
+								<AbsDimension x="-9" y="-18"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="90" y="30"/>
+						<AbsDimension x="100" y="30"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="-5" y="10"/>
+								<AbsDimension x="-5" y="7"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -96,7 +96,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="25"/>
+							<AbsDimension x="2" y="31"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -208,7 +208,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="24" y="-79"/>
+							<AbsDimension x="24" y="-80"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -226,7 +226,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MerchantItem1" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-6"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -262,7 +262,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MerchantItem5" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-7"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -280,7 +280,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MerchantItem7" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-7"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -288,24 +288,6 @@
 			<Frame name="MerchantItem10" inherits="MerchantItemTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MerchantItem9" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="12" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="MerchantItem11" inherits="MerchantItemTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MerchantItem9" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="MerchantItem12" inherits="MerchantItemTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MerchantItem11" relativePoint="TOPRIGHT">
 						<Offset>
 							<AbsDimension x="12" y="0"/>
 						</Offset>
@@ -395,9 +377,9 @@
 					<AbsDimension x="153" y="37"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MerchantItem12" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem10" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-49"/>
+							<AbsDimension x="0" y="-53"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

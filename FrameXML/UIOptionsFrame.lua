@@ -25,6 +25,8 @@ UIOptionsFrameCheckButtons["HEAD_BOB"] = { index = 26, cvar = "cameraBobbing", t
 UIOptionsFrameCheckButtons["WATER_COLLISION"] = { index = 27, cvar = "cameraWaterCollision", tooltipText = OPTION_TOOLTIP_WATER_COLLISION};
 UIOptionsFrameCheckButtons["SHOW_TUTORIALS"] = { index = 28, tooltipText = OPTION_TOOLTIP_SHOW_TUTORIALS};
 UIOptionsFrameCheckButtons["SHOW_NEWBIE_TIPS_TEXT"] = { index = 29, uvar = "SHOW_NEWBIE_TIPS", tooltipText = OPTION_TOOLTIP_SHOW_NEWBIE_TIPS};
+UIOptionsFrameCheckButtons["SHOW_CLOAK"] = { index = 30, func = ShowingCloak, setFunc = ShowCloak , tooltipText = OPTION_TOOLTIP_SHOW_CLOAK};
+UIOptionsFrameCheckButtons["SHOW_HELM"] = { index = 31, func = ShowingHelm , setFunc = ShowHelm, tooltipText = OPTION_TOOLTIP_SHOW_HELM};
 
 UIOptionsFrameSliders = {
 	{ text = MOUSE_SENSITIVITY, cvar = "mousespeed", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 , tooltipText = OPTION_TOOLTIP_MOUSE_SENSITIVITY},
@@ -65,7 +67,9 @@ function UIOptionsFrame_Load()
 		string = getglobal("UIOptionsFrameCheckButton"..value.index.."Text");
 		checked = nil;
 		button.disabled = nil;
-		if ( index == "SHOW_TUTORIALS" ) then
+		if ( value.func ) then
+			checked = value.func();
+		elseif ( index == "SHOW_TUTORIALS" ) then
 			if ( TutorialsEnabled() ) then
 				checked = 1;
 			end
@@ -107,7 +111,9 @@ function UIOptionsFrame_Save()
 		else
 			value.value = "0";
 		end
-		if ( value.uvar == "SIMPLE_CHAT" ) then
+		if ( value.setFunc ) then
+			value.setFunc(value.value);
+		elseif ( value.uvar == "SIMPLE_CHAT" ) then
 			SIMPLE_CHAT = value.value;
 			if ( value.value == "1" ) then
 				FCF_Set_SimpleChat();
@@ -184,6 +190,8 @@ function UIOptionsFrameClickCameraDropDown_Initialize()
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	end
+	info.tooltipTitle = CAMERA_SMART;
+	info.tooltipText = OPTION_TOOLTIP_CLICKCAMERA_SMART;
 	UIDropDownMenu_AddButton(info);
 
 	info = {};
@@ -193,6 +201,8 @@ function UIOptionsFrameClickCameraDropDown_Initialize()
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	end
+	info.tooltipTitle = CAMERA_LOCKED;
+	info.tooltipText = OPTION_TOOLTIP_CLICKCAMERA_LOCKED;
 	UIDropDownMenu_AddButton(info);
 
 	info = {};
@@ -202,6 +212,8 @@ function UIOptionsFrameClickCameraDropDown_Initialize()
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	end
+	info.tooltipTitle = CAMERA_NEVER;
+	info.tooltipText = OPTION_TOOLTIP_CLICKCAMERA_NEVER;
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -233,6 +245,8 @@ function UIOptionsFrameCameraDropDown_Initialize()
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	end
+	info.tooltipTitle = CAMERA_SMART;
+	info.tooltipText = OPTION_TOOLTIP_CAMERA_SMART;
 	UIDropDownMenu_AddButton(info);
 
 	info = {};
@@ -242,6 +256,8 @@ function UIOptionsFrameCameraDropDown_Initialize()
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	end
+	info.tooltipTitle = CAMERA_ALWAYS;
+	info.tooltipText = OPTION_TOOLTIP_CAMERA_ALWAYS;
 	UIDropDownMenu_AddButton(info);
 
 	info = {};
@@ -251,6 +267,8 @@ function UIOptionsFrameCameraDropDown_Initialize()
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	end
+	info.tooltipTitle = CAMERA_NEVER;
+	info.tooltipText = OPTION_TOOLTIP_CAMERA_NEVER;
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -268,7 +286,11 @@ function UIOptionsFrame_SetDefaults()
 	local checkButton, slider;
 	for index, value in UIOptionsFrameCheckButtons do
 		checkButton = getglobal("UIOptionsFrameCheckButton"..value.index);
-		if ( value.cvar ) then
+		if ( value.index == "SHOW_CLOAK" ) then
+			checkButton:SetChecked(1);
+		elseif ( value.index == "SHOW_HELM" ) then
+			checkButton:SetChecked(1);
+		elseif ( value.cvar ) then
 			OptionsFrame_EnableCheckBox(checkButton, GetCVarDefault(value.cvar));
 		elseif ( index == "SHOW_TUTORIALS" ) then
 			OptionsFrame_EnableCheckBox(checkButton, 1);

@@ -76,12 +76,18 @@ function BankFrame_OnLoad()
 	this:RegisterEvent("PLAYER_MONEY");
 end
 
-function UpdateBagSlotStatus(slots) 
+function UpdateBagSlotStatus() 
+	local purchaseFrame = BankFramePurchaseInfo;
+	if( purchaseFrame == nil ) then
+		return;
+	end
+	
+	local numSlots,full = GetNumBankSlots();
+	local button;
 	for i=1, NUM_BANKBAGSLOTS, 1 do
-		local button = getglobal("BankFrameBag"..i);
-		local tooltipText;
+		button = getglobal("BankFrameBag"..i);
 		if ( button ) then
-			if ( i <= slots ) then
+			if ( i <= numSlots ) then
 				SetItemButtonTextureVertexColor(button, 1.0,1.0,1.0);
 				button.tooltipText = BANK_BAG;
 			else
@@ -89,6 +95,21 @@ function UpdateBagSlotStatus(slots)
 				button.tooltipText = BANK_BAG_PURCHASE;
 			end
 		end
+	end
+
+	-- pass in # of current slots, returns cost of next slot
+	local cost = GetBankSlotCost(numSlots);
+	if( GetMoney() >= cost ) then
+		SetMoneyFrameColor("BankFrameDetailMoneyFrame", 1.0, 1.0, 1.0);
+	else
+		SetMoneyFrameColor("BankFrameDetailMoneyFrame", 1.0, 0.1, 0.1)
+	end
+	MoneyFrame_Update("BankFrameDetailMoneyFrame", cost);
+
+	if( full ) then
+		purchaseFrame:Hide();
+	else
+		purchaseFrame:Show();
 	end
 end
 
@@ -106,33 +127,11 @@ function BankFrame_OnEvent(event)
 		if ( not this:IsVisible() ) then
 			CloseBankFrame();
 		end
+		UpdateBagSlotStatus();
 	elseif ( event == "BANKFRAME_CLOSED" ) then
 		HideUIPanel(this);
 	elseif ( event == "PLAYER_MONEY" or event == "PLAYERBANKBAGSLOTS_CHANGED" ) then
-		local numSlots;
-		local full;
-		numSlots,full = GetNumBankSlots();
-		local purchaseFrame = getglobal("BankFramePurchaseInfo");
-		if( purchaseFrame == nil ) then
-			return;
-		end
-
-		-- pass in # of current slots, returns cost of next slot
-		local cost = GetBankSlotCost(numSlots);
-		if( GetMoney() >= cost ) then
-			SetMoneyFrameColor("BankFrameDetailMoneyFrame", 1.0, 1.0, 1.0);
-		else
-			SetMoneyFrameColor("BankFrameDetailMoneyFrame", 1.0, 0.1, 0.1)
-		end
-		MoneyFrame_Update("BankFrameDetailMoneyFrame", cost);
-
-		UpdateBagSlotStatus(numSlots);
-
-		if( full ) then
-			purchaseFrame:Hide();
-		else
-			purchaseFrame:Show();
-		end
+		UpdateBagSlotStatus();
 	end
 end
 
@@ -201,10 +200,11 @@ end
 function BankFrameItemButton_UpdateLock() 
 	local inventoryID = this:GetInventorySlot();
 	if ( IsInventoryItemLocked(inventoryID) ) then
-		--this:SetNormalTexture("Interface\\Buttons\\UI-Quickslot");
 		SetItemButtonDesaturated(this, 1, 0.5, 0.5, 0.5);
 	else 
-		--this:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
+		if ( this.isBag and ((this:GetID() - 4) > GetNumBankSlots()) ) then
+			return;	
+		end
 		SetItemButtonDesaturated(this, nil, 0.5, 0.5, 0.5);
 	end
 end

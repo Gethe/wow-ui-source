@@ -53,7 +53,6 @@ UIChildWindows = {
 
 UISpecialFrames = {
 	"ItemRefTooltip",
-	"TutorialFrame",
 	"ColorPickerFrame"
 };
 
@@ -61,7 +60,6 @@ UIMenus = {
 	"ChatMenu",
 	"EmoteMenu",
 	"LanguageMenu",
-	"UnitPopup",
 	"DropDownList1",
 	"DropDownList2"
 };
@@ -110,13 +108,20 @@ function UIParent_OnLoad()
 	this:RegisterEvent("CONFIRM_TALENT_WIPE");
 	this:RegisterEvent("CONFIRM_SUMMON");
 	this:RegisterEvent("BILLING_NAG_DIALOG");
+	this:RegisterEvent("VARIABLES_LOADED");
 end
 
 function UIParent_OnEvent(event)
+	if ( event == "VARIABLES_LOADED" ) then
+		LocalizeFrames();
+		return;
+	end
 	if ( event == "PLAYER_DEAD" ) then
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
-			StaticPopup_Show("DEATH");
+			if ( GetReleaseTimeRemaining() > 0 ) then
+				StaticPopup_Show("DEATH");
+			end
 		end
 		return;
 	end

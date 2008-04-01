@@ -88,10 +88,11 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="Value">
-		<xs:choice>
+		<xs:choice minOccurs="0">
 			<xs:element ref="AbsValue"/>
 			<xs:element ref="RelValue"/>
 		</xs:choice>
+		<xs:attribute name="val" type="xs:int" use="optional"/>
 	</xs:complexType>
 	<xs:element name="AbsDimension">
 		<xs:complexType>
@@ -106,10 +107,12 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="Dimension">
-		<xs:choice>
+		<xs:choice minOccurs="0">
 			<xs:element ref="AbsDimension"/>
 			<xs:element ref="RelDimension"/>
 		</xs:choice>
+		<xs:attribute name="x" type="xs:int" use="optional"/>
+		<xs:attribute name="y" type="xs:int" use="optional"/>
 	</xs:complexType>
 	<xs:element name="AbsInset">
 		<xs:complexType>
@@ -128,10 +131,14 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="Inset">
-		<xs:choice>
+		<xs:choice minOccurs="0">
 			<xs:element ref="AbsInset"/>
 			<xs:element ref="RelInset"/>
 		</xs:choice>
+		<xs:attribute name="left" type="xs:int" use="optional"/>
+		<xs:attribute name="right" type="xs:int" use="optional"/>
+		<xs:attribute name="top" type="xs:int" use="optional"/>
+		<xs:attribute name="bottom" type="xs:int" use="optional"/>
 	</xs:complexType>
 	<xs:simpleType name="ColorFloat">
 		<xs:restriction base="xs:float">

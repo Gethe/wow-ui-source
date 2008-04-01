@@ -105,23 +105,24 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentVariable" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="0" y="0"/>
+								<AbsDimension x="2" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="48" y="8"/>
+						<AbsDimension x="100" y="8"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="3" y="0"/>
+								<AbsDimension x="12" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<!--
 				<FontString name="$parentGroup" inherits="GameFontHighlightSmall" justifyH="CENTER">
 					<Size>
 						<AbsDimension x="45" y="14"/>
@@ -134,6 +135,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				-->
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -252,12 +254,12 @@
 				</FontString>
 				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="42" y="14"/>
+						<AbsDimension x="100" y="14"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="5" y="0"/>
+								<AbsDimension x="12" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -567,6 +569,40 @@
 			</Button>
 			<Frame name="FriendsListFrame" hidden="true" setAllPoints="true">
 				<Frames>
+					<Button name="FriendsFrameToggleTab1" inherits="TabButtonTemplate" text="FRIENDS" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="FriendsFrame">
+								<Offset>
+									<AbsDimension x="70" y="-39"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								PanelTemplates_SelectTab(this);
+								PanelTemplates_TabResize(0);
+								getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="FriendsFrameToggleTab2" inherits="TabButtonTemplate" text="IGNORE" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="FriendsFrameToggleTab1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								PanelTemplates_DeselectTab(this);
+							</OnShow>
+							<OnClick>
+								FriendsFrame.showFriendsList = nil;
+								FriendsFrame_Update();
+							</OnClick>
+						</Scripts>
+					</Button>
 					<Button name="FriendsFrameAddFriendButton" inherits="UIPanelButtonTemplate" text="ADD_FRIEND">
 						<Size>
 							<AbsDimension x="131" y="21"/>
@@ -804,6 +840,40 @@
 			</Frame>
 			<Frame name="IgnoreListFrame" hidden="true" setAllPoints="true">
 				<Frames>
+					<Button name="IgnoreFrameToggleTab1" inherits="TabButtonTemplate" text="FRIENDS" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="FriendsFrame">
+								<Offset>
+									<AbsDimension x="70" y="-39"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								PanelTemplates_DeselectTab(this);
+							</OnShow>
+							<OnClick>
+								FriendsFrame.showFriendsList = 1;
+								FriendsFrame_Update();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="IgnoreFrameToggleTab2" inherits="TabButtonTemplate" text="IGNORE" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="IgnoreFrameToggleTab1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								PanelTemplates_SelectTab(this);
+								PanelTemplates_TabResize(0);
+								getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+							</OnLoad>
+						</Scripts>
+					</Button>
 					<Button name="FriendsFrameIgnorePlayerButton" inherits="UIPanelButtonTemplate" text="IGNORE_PLAYER">
 						<Size>
 							<AbsDimension x="131" y="21"/>
@@ -1101,6 +1171,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<!--
 					<Frame name="WhoFrameLFGFrame">
 						<Size>
 							<AbsDimension x="210" y="23"/>
@@ -1189,6 +1260,7 @@
 							</CheckButton>
 						</Frames>
 					</Frame>
+					-->
 					<Button name="WhoFrameColumnHeader1" inherits="WhoFrameColumnHeaderTemplate" text="NAME">
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -1256,7 +1328,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(27);
+								WhoFrameColumn_SetWidth(32);
 								this.sortType = "level";
 							</OnLoad>
 						</Scripts>
@@ -1271,11 +1343,12 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(42);
+								WhoFrameColumn_SetWidth(92);
 								this.sortType = "class";
 							</OnLoad>
 						</Scripts>
 					</Button>
+					<!--
 					<Button name="WhoFrameColumnHeader5" inherits="WhoFrameColumnHeaderTemplate" text="GROUP">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader4" relativePoint="RIGHT">
@@ -1291,6 +1364,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
+					-->
 					<Button name="WhoFrameButton1" inherits="FriendsFrameWhoButtonTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="WhoFrame">
@@ -1768,7 +1842,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(27);
+										WhoFrameColumn_SetWidth(32);
 										this.sortType = "level";
 									</OnLoad>
 								</Scripts>
@@ -1783,11 +1857,12 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(42);
+										WhoFrameColumn_SetWidth(92);
 										this.sortType = "class";
 									</OnLoad>
 								</Scripts>
 							</Button>
+							<!--
 							<Button name="GuildFrameColumnHeader5" inherits="GuildFrameColumnHeaderTemplate" text="GROUP">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="GuildFrameColumnHeader4" relativePoint="RIGHT">
@@ -1803,6 +1878,7 @@
 									</OnLoad>
 								</Scripts>
 							</Button>
+							-->
 							<Button name="GuildFrameButton1" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="1">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GuildFrame">
@@ -2993,6 +3069,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
+			<!--
 			<Button name="FriendsFrameTab2" inherits="FriendsFrameTabTemplate" id="2" text="IGNORE">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="FriendsFrameTab1" relativePoint="RIGHT">
@@ -3010,9 +3087,10 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="WHO">
+			-->
+			<Button name="FriendsFrameTab2" inherits="FriendsFrameTabTemplate" id="2" text="WHO">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-14" y="0"/>
 						</Offset>
@@ -3027,9 +3105,9 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="GUILD">
+			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="GUILD">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-14" y="0"/>
 						</Offset>
@@ -3053,9 +3131,9 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="FriendsFrameTab5" inherits="FriendsFrameTabTemplate" id="5" text="RAID">
+			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="RAID">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab4" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-14" y="0"/>
 						</Offset>

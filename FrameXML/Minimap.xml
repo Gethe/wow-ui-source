@@ -40,7 +40,7 @@
 					<Layer level="BACKGROUND">
 						<FontString name="MinimapZoneText" inherits="GameFontNormal" nonspacewrap="true">
 							<Size>
-								<AbsDimension x="128" y="10"/>
+								<AbsDimension x="128" y="12"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOP"/>
@@ -172,6 +172,70 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
+					<Button name="MiniMapMeetingStoneFrame" enableMouse="true" hidden="false">
+						<Size>
+							<AbsDimension x="33" y="33"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="23" y="-65"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="MiniMapMeetingStoneIcon" file="Interface\Icons\INV_Misc_Rune_06">								
+									<Size>
+										<AbsDimension x="18" y="18"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="7" y="-6"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+									<Size>
+										<AbsDimension x="52" y="52"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:RegisterEvent("MEETINGSTONE_CHANGED");
+								this:SetFrameLevel(this:GetFrameLevel()+1)
+							</OnLoad>
+							<OnClick>
+								StaticPopup_Show("CONFIRM_LEAVE_QUEUE");
+							</OnClick>
+							<OnEvent>
+								if ( event == "MEETINGSTONE_CHANGED" ) then
+									if ( IsInMeetingStoneQueue() ) then
+										MiniMapMeetingStoneFrame:Show();
+									else
+										MiniMapMeetingStoneFrame:Hide();
+									end
+								end
+							</OnEvent>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
+								GameTooltip:SetText(GetMeetingStoneStatusText());								
+							</OnEnter>							
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>						
+						<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+					</Button>					
 					<Frame name="MiniMapMailFrame" enableMouse="true" hidden="false">
 						<Size>
 							<AbsDimension x="33" y="33"/>

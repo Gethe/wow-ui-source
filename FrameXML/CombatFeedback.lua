@@ -73,11 +73,7 @@ function CombatFeedback_OnCombatEvent(event, flags, amount, type)
 			if ( flags == "CRITICAL" or flags == "GLANCING" or flags == "CRUSHING" ) then
 				fontHeight = fontHeight * 1.5;
 			end
-			if ( amount < 0 ) then
-				r = 0.0;
-				g = 1.0;
-				b = 0.0;
-			elseif ( type > 0 ) then
+			if ( type > 0 ) then
 				r = 1.0;
 				g = 1.0;
 				b = 0.0;

@@ -3,6 +3,7 @@ function TabardFrame_OnLoad()
 	this:RegisterEvent("OPEN_TABARD_FRAME");
 	this:RegisterEvent("CLOSE_TABARD_FRAME");
 	this:RegisterEvent("TABARD_CANSAVE_CHANGED");
+	this:RegisterEvent("UNIT_MODEL_CHANGED");
 	TabardFrameCostFrame:SetBackdropBorderColor(0.4, 0.4, 0.4);
 	TabardFrameCostFrame:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	MoneyFrame_Update("TabardFrameCostMoneyFrame",GetTabardCreationCost());
@@ -34,6 +35,10 @@ function TabardFrame_OnEvent(event, unit)
 		HideUIPanel(TabardFrame);
 	elseif ( event == "TABARD_CANSAVE_CHANGED" ) then
 		TabardFrame_Update();
+	elseif ( event == "UNIT_MODEL_CHANGED" ) then
+		if ( unit == "player" ) then
+			TabardModel:SetUnit("player");
+		end
 	end
 end
 

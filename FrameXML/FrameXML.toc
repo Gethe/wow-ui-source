@@ -1,6 +1,7 @@
 # Do not delete the following line!
-## Interface: 4114
+## Interface: 4150
 Fonts.xml
+Localization.xml
 BasicControls.xml
 WorldFrame.xml
 UIParent.xml
@@ -55,7 +56,7 @@ QuestFrame.xml
 QuestLogFrame.xml
 QuestTimerFrame.xml
 ClassTrainerFrame.xml
-TalentTrainerFrame.xml
+#TalentTrainerFrame.xml
 TradeSkillFrame.xml
 MerchantFrame.xml
 TradeFrame.xml
@@ -89,4 +90,3 @@ TalentFrame.xml
 AuctionFrame.xml
 PetStable.xml
 DurabilityFrame.xml
-Localization.xml

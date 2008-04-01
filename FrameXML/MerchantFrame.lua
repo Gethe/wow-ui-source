@@ -1,4 +1,4 @@
-MERCHANT_ITEMS_PER_PAGE = 12;
+MERCHANT_ITEMS_PER_PAGE = 10;
 
 function MerchantFrame_OnLoad()
 	this:RegisterEvent("MERCHANT_UPDATE");
@@ -130,7 +130,7 @@ function MerchantFrame_Update()
 		MerchantBuyBackItemName:SetText("");
 		MerchantBuyBackItemMoneyFrame:Hide();
 		SetItemButtonTexture(MerchantBuyBackItemItemButton, "");
-		
+		SetItemButtonCount(MerchantBuyBackItemItemButton, 0);
 		-- Hide the tooltip upon sale
 		if ( GameTooltip:IsOwned(MerchantBuyBackItemItemButton) ) then
 			GameTooltip:Hide();
