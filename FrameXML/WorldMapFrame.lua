@@ -1,5 +1,5 @@
 NUM_WORLDMAP_DETAIL_TILES = 12;
-NUM_WORLDMAP_POIS = 32;
+NUM_WORLDMAP_POIS = 50;
 NUM_WORLDMAP_POI_COLUMNS = 4;
 WORLDMAP_POI_TEXTURE_WIDTH = 64;
 NUM_WORLDMAP_OVERLAYS = 40;
@@ -43,10 +43,11 @@ function WorldMapFrame_Update()
 	local name, description, textureIndex, x, y;
 	local worldMapPOI;
 	local x1, x2, y1, y2;
-	-- To be removed... eventually
+	--[[ To be removed... eventually
 	if ( numPOIs > NUM_WORLDMAP_POIS ) then
 		message("Not enough POI buttons, add more to the XML");
 	end
+	]]
 	for i=1, NUM_WORLDMAP_POIS, 1 do
 		worldMapPOI = getglobal("WorldMapFramePOI"..i);
 		if ( i <= numPOIs ) then

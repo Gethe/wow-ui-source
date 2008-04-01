@@ -721,6 +721,24 @@
 					<Button name="WorldMapFramePOI30" inherits="WorldMapFramePOIButtonTemplate"/>
 					<Button name="WorldMapFramePOI31" inherits="WorldMapFramePOIButtonTemplate"/>
 					<Button name="WorldMapFramePOI32" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI33" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI34" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI35" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI36" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI37" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI38" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI39" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI40" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI41" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI42" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI43" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI44" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI45" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI46" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI47" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI48" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI49" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Button name="WorldMapFramePOI50" inherits="WorldMapFramePOIButtonTemplate"/>
 				</Frames>
 				<Scripts>
 					<OnLoad>

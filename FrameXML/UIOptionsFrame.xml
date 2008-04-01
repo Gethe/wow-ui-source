@@ -275,6 +275,7 @@
 								if ( event == "VARIABLES_LOADED" ) then
 									UIOptionsFrameCheckButtons["SHOW_BUFF_DURATION_TEXT"].value = SHOW_BUFF_DURATIONS;
 									this:SetChecked(SHOW_BUFF_DURATIONS);
+									BuffButtons_UpdatePositions();
 								end
 							</OnEvent>
 							<OnClick>

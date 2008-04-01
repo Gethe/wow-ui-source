@@ -369,7 +369,12 @@ function ActionButton_SetTooltip()
 	if ( GetCVar("UberTooltips") == "1" ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, this);
 	else
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		if ( this:GetParent() == MultiBarBottomRight or this:GetParent() == MultiBarRight or this:GetParent() == MultiBarLeft ) then
+			GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+		else
+			GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		end
+		
 	end
 	
 	if ( GameTooltip:SetAction(ActionButton_GetPagedID(this)) ) then
