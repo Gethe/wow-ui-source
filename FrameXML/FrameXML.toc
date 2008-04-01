@@ -23,6 +23,7 @@ CoinPickupFrame.xml
 StackSplitFrame.xml
 FadingFrame.xml
 ZoneText.xml
+BattlefieldFrame.xml
 Minimap.xml
 GameTime.xml
 TextStatusBar.xml
@@ -50,9 +51,11 @@ PaperDollFrame.xml
 PetPaperDollFrame.xml
 SkillFrame.xml
 ReputationFrame.xml
+HonorFrame.xml
 MainMenuBarBagButtons.xml
 InspectFrame.xml
 InspectPaperDollFrame.xml
+InspectHonorFrame.xml
 QuestFrame.xml
 QuestLogFrame.xml
 QuestTimerFrame.xml
@@ -84,7 +87,6 @@ MacroFrame.xml
 ColorPickerFrame.xml
 GossipFrame.xml
 MailFrame.xml
-BattlefieldFrame.xml
 TalentFrame.xml
 AuctionFrame.xml
 PetStable.xml

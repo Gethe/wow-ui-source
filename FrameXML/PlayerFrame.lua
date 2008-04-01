@@ -124,6 +124,8 @@ function PlayerFrame_OnEvent(event)
 		return;
 	end
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		this.inCombat = nil;
+		this.onHateList = nil;
 		UnitFrame_UpdateManaType();
 		PlayerFrame_UpdateStatus();
 	end
@@ -198,7 +200,7 @@ function PlayerFrame_UpdateStatus()
 		PlayerAttackGlow:Hide();
 		PlayerStatusGlow:Show();
 		PlayerAttackBackground:Hide();
-	elseif ( this.inCombat ) then
+	elseif ( PlayerFrame.inCombat ) then
 		PlayerStatusTexture:SetVertexColor(1.0, 0.0, 0.0, 1.0);
 		PlayerStatusTexture:Show();
 		PlayerAttackIcon:Show();
@@ -207,7 +209,7 @@ function PlayerFrame_UpdateStatus()
 		PlayerRestGlow:Hide();
 		PlayerStatusGlow:Show();
 		PlayerAttackBackground:Show();
-	elseif ( this.onHateList ) then
+	elseif ( PlayerFrame.onHateList ) then
 		PlayerAttackIcon:Show();
 		PlayerRestIcon:Hide();
 		PlayerStatusGlow:Hide();

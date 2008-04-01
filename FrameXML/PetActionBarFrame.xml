@@ -62,8 +62,10 @@
 				end
 			</OnClick>
 			<OnDragStart>
-				this:SetChecked(0);
-				PickupPetAction(this:GetID());
+				if ( LOCK_ACTIONBAR ~= "1" ) then
+					this:SetChecked(0);
+					PickupPetAction(this:GetID());
+				end
 			</OnDragStart>
 			<OnReceiveDrag>
 				this:SetChecked(0);

@@ -1,103 +1,256 @@
-BATTLEFIELD_ZONES_DISPLAYED = 5;
+BATTLEFIELD_ZONES_DISPLAYED = 3;
 BATTLEFIELD_ZONES_HEIGHT = 20;
+BATTLEFIELD_SHUTDOWN_TIMER = 0;
+BATTLEFIELD_TIMER_THRESHOLDS = {600, 300, 60, 15};
+BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
+PREVIOUS_BATTLEFIELD_MOD = 0;
+BATTLEFIELD_TIMER_DELAY = 3;
+BATTLEFIELD_MAP_WIDTH = 320;
+BATTLEFIELD_MAP_HEIGHT = 213;
 
 function BattlefieldFrame_OnLoad()
 	this:RegisterEvent("BATTLEFIELDS_SHOW");
 	this:RegisterEvent("BATTLEFIELDS_CLOSED");
+	this:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+
+	BattlefieldFrame.timerDelay = 0;
 end
 
 function BattlefieldFrame_OnEvent()
 	if ( event == "BATTLEFIELDS_SHOW" ) then
 		ShowUIPanel(BattlefieldFrame);
+		
+		-- Default to first available
+		SetSelectedBattlefield(0);
+
 		if ( not BattlefieldFrame:IsVisible() ) then
 			CloseBattlefield();
 			return;
 		end
-
-		BattlefieldFrameJoinButton:Disable();
 		UpdateMicroButtons();
 		BattlefieldFrame_Update();
-	end
-	if ( event == "BATTLEFIELDS_CLOSED" ) then
+	elseif ( event == "BATTLEFIELDS_CLOSED" ) then
 		HideUIPanel(BattlefieldFrame);
+	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
+		BattlefieldFrame_UpdateStatus();
+		BattlefieldFrame_Update();
+	end
+end
+
+--[[function BattlefieldFrame_SetTimerThreshold()
+	if ( BATTLEFIELD_SHUTDOWN_TIMER <  ) then
+	
+	end
+end
+]]
+
+function BattlefieldFrame_OnUpdate(elapsed)
+	if ( BATTLEFIELD_SHUTDOWN_TIMER == 0 ) then
+		return;
+	end
+	BATTLEFIELD_SHUTDOWN_TIMER = BATTLEFIELD_SHUTDOWN_TIMER - elapsed;
+	-- Check if I should send a message only once every 3 seconds (BATTLEFIELD_TIMER_DELAY)
+	BattlefieldFrame.timerDelay = BattlefieldFrame.timerDelay + elapsed;
+	if ( BattlefieldFrame.timerDelay < BATTLEFIELD_TIMER_DELAY ) then
+		return;
+	else
+		BattlefieldFrame.timerDelay = 0
+	end
+	
+	local threshold = BATTLEFIELD_TIMER_THRESHOLDS[BATTLEFIELD_TIMER_THRESHOLD_INDEX];
+	if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
+		if ( BATTLEFIELD_SHUTDOWN_TIMER < threshold and BATTLEFIELD_TIMER_THRESHOLD_INDEX ~= getn(BATTLEFIELD_TIMER_THRESHOLDS) ) then
+			-- If timer past current threshold advance to the next one
+			BATTLEFIELD_TIMER_THRESHOLD_INDEX = BATTLEFIELD_TIMER_THRESHOLD_INDEX + 1;
+		else
+			-- See if time should be posted
+			local currentMod = floor(BATTLEFIELD_SHUTDOWN_TIMER/threshold);
+			if ( PREVIOUS_BATTLEFIELD_MOD ~= currentMod ) then
+				-- Print message
+				local info = ChatTypeInfo["SYSTEM"];
+				local string = "Not enough players. Server will shut down in "..SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold);
+				DEFAULT_CHAT_FRAME:AddMessage(string, info.r, info.g, info.b, info.id);
+				PREVIOUS_BATTLEFIELD_MOD = currentMod;
+			else
+				-- Do nothing
+			end
+		end
+	else
+		BATTLEFIELD_SHUTDOWN_TIMER = 0;
+	end
+	
+end
+
+function BattlefieldFrame_UpdateStatus()
+	local status, mapName, instanceID = GetBattlefieldStatus();
+	if ( instanceID ~= 0 ) then
+		mapName = mapName.." "..instanceID;
+	end
+	MiniMapBattlefieldFrame.status = status;
+	MiniMapBattlefieldFrame.mapName = mapName;
+	MiniMapBattlefieldFrame.instanceID = instanceID;
+
+	if ( status == "none" ) then
+		-- Clear everything out
+		MiniMapBattlefieldFrame:Hide();
+		StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY");
+	elseif ( status == "queued" ) then
+		-- Update queue info show button on minimap
+		local waitTime = GetBattlefieldEstimatedWaitTime();
+		if ( waitTime == 0 ) then
+			waitTime = UNAVAILABLE;
+		elseif ( waitTime < 60000 ) then 
+			waitTime = LESS_THAN_ONE_MINUTE;
+		else
+			waitTime = SecondsToTime(waitTime/1000);
+		end
+		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime);
+
+		UIFrameFadeIn(MiniMapBattlefieldFrame, CHAT_FRAME_FADE_TIME);
+		BattlegroundShineFadeIn();
+	elseif ( status == "confirm" ) then
+		-- Have been accepted show enter battleground dialog
+		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration()/1000));
+		StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName);
+		MiniMapBattlefieldFrame:Show();
+	elseif ( status == "active" ) then
+		-- In the battleground
+		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_IN_BATTLEFIELD, mapName);
+		BATTLEFIELD_SHUTDOWN_TIMER = GetBattlefieldInstanceExpiration()/1000;
+		BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
+		PREVIOUS_BATTLEFIELD_MOD = 0;
+		MiniMapBattlefieldFrame:Show();
+	elseif ( status == "error" ) then
+		-- Should never happen haha
+	end
+
+	-- append right click message to tooltip
+	if ( MiniMapBattlefieldFrame.tooltip ) then
+		MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n"..RIGHT_CLICK_MESSAGE;
+	end
+	
+	-- Set minimap icon here since it bugs out on login
+	if ( UnitFactionGroup("player") ) then
+		MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));
 	end
 end
 
 function BattlefieldFrame_Update()
 	local zoneIndex;
 	local zoneOffset = FauxScrollFrame_GetOffset(BattlefieldListScrollFrame);
-	local mapName, mapDescription, minLevel, maxLevel, mapID, mapX, mapY, mapFull;
 	local playerLevel = UnitLevel("player");
-	local button, buttonName, buttonLevel, buttonHighlight;
+	local button, buttonName, buttonStatus, buttonHighlight;
+	local instanceID;
+	local mapName, mapDescription, minLevel, maxLevel, mapID, mapX, mapY, mapFull = GetBattlefieldInfo();
+	
+	-- Set title text
+	BattlefieldFrameFrameLabel:SetText(mapName);
 
+	-- Setup instance buttons
 	for i=1, BATTLEFIELD_ZONES_DISPLAYED, 1 do
 		zoneIndex = zoneOffset + i;
-		button = getglobal("BattlefieldZone"..zoneIndex);
-		buttonName = getglobal("BattlefieldZone"..zoneIndex.."Name");
-		buttonLevel = getglobal("BattlefieldZone"..zoneIndex.."Level");
-		buttonHighlight = getglobal("BattlefieldZone"..zoneIndex.."Highlight");
+		button = getglobal("BattlefieldZone"..i);
+		buttonName = getglobal("BattlefieldZone"..i.."Text");
+		buttonStatus = getglobal("BattlefieldZone"..i.."Status");
+		buttonHighlightText = getglobal("BattlefieldZone"..i.."HighlightText");
 
-		if ( zoneIndex > GetNumBattlefields() ) then
+		if ( zoneIndex == 1 ) then
+			-- The first entry in the list is always "first available"
+			buttonName:SetText(FIRST_AVAILABLE);
+			buttonHighlightText:SetText(FIRST_AVAILABLE);
+			button:Show();
+		elseif ( zoneIndex > GetNumBattlefields()+1 ) then
 			button:Hide();
 		else
-			mapName, mapDescription, minLevel, maxLevel, mapID, mapX, mapY, mapFull = GetBattlefieldInfo(zoneIndex);
-
+			instanceID = GetBattlefieldInstanceInfo(zoneIndex - 1);
+			buttonName:SetText(mapName.." "..instanceID);
+			buttonHighlightText:SetText(mapName.." "..instanceID);
 			button:Show();
-
-			if ( mapFull ) then
-				buttonName:SetText(format(BATTLEFIELD_FULL, mapName));
-			else
-				buttonName:SetText(mapName);
-			end
-
-			buttonLevel:SetText(minLevel.." - "..maxLevel);
-			
-			if ( (playerLevel < minLevel) or (playerLevel > maxLevel) ) then
-				buttonName:SetTextColor(0.5, 0.5, 0.5);
-				buttonLevel:SetTextColor(0.5, 0.5, 0.5);
-				buttonHighlight:SetVertexColor(0.5, 0.5, 0.5);
-			elseif ( mapFull ) then
-				buttonName:SetTextColor(1.0, 0.0, 0.0);
-				buttonLevel:SetTextColor(1.0, 0.0, 0.0);
-				buttonHighlight:SetVertexColor(1.0, 0.0, 0.0);
-			else
-				buttonName:SetTextColor(0.0, 1.0, 0.0);
-				buttonLevel:SetTextColor(0.0, 1.0, 0.0);
-				buttonHighlight:SetVertexColor(0.0, 1.0, 0.0);
-			end
+		end
+		
+		-- Set queued status
+		if ( MiniMapBattlefieldFrame.instanceID == zoneIndex - 1 and MiniMapBattlefieldFrame.status == "queued" ) then
+			buttonStatus:SetText(BATTLEFIELD_QUEUE_STATUS);
+		elseif ( MiniMapBattlefieldFrame.instanceID == zoneIndex - 1 and MiniMapBattlefieldFrame.status == "confirm" ) then
+			buttonStatus:SetText(BATTLEFIELD_CONFIRM_STATUS);
+		else
+			buttonStatus:SetText("");
 		end
 
-		if ( zoneIndex == GetSelectedBattlefield() ) then
+		-- Set selected instance
+		if ( zoneIndex == 1 and GetSelectedBattlefield() == 0 ) then
+			button:LockHighlight();
+		elseif ( zoneIndex - 1 == GetSelectedBattlefield() ) then
 			button:LockHighlight();
 		else
 			button:UnlockHighlight();
 		end
 	end
-
-	if ( GetSelectedBattlefield() == 0 ) then
-		BattlefieldFrameZoneDescription:SetText("");
-		BattlefieldFrameJoinButton:Disable();
-	else
-		mapName, mapDescription, minLevel, maxLevel, mapID, mapX, mapY, mapFull = GetBattlefieldInfo(GetSelectedBattlefield());
-
-		BattlefieldFrameZoneDescription:SetText(mapDescription);
-		
-		if ( (playerLevel < minLevel) or (playerLevel > maxLevel) or (mapFull) ) then
-			BattlefieldFrameJoinButton:Disable();
-		else
-			BattlefieldFrameJoinButton:Enable();
-		end
-	end
-
-	FauxScrollFrame_Update(BattlefieldListScrollFrame, GetNumBattlefields(), BATTLEFIELD_ZONES_DISPLAYED, BATTLEFIELD_ZONES_HEIGHT);
+	
+	-- Set map point
+	mapX = BATTLEFIELD_MAP_WIDTH * mapX;
+	mapY = -BATTLEFIELD_MAP_HEIGHT * mapY;
+	BattlefieldMarker:SetPoint("CENTER", "BattlefieldFrameMap1", "TOPLEFT", mapX, mapY);
+	BattlefieldFrameZoneDescription:SetText(mapDescription);
+	FauxScrollFrame_Update(BattlefieldListScrollFrame, GetNumBattlefields()+1, BATTLEFIELD_ZONES_DISPLAYED, BATTLEFIELD_ZONES_HEIGHT);
 end
 
 function BattlefieldButton_OnClick(id)
-	SetSelectedBattlefield(FauxScrollFrame_GetOffset(BattlefieldListScrollFrame) + id);
+	SetSelectedBattlefield(FauxScrollFrame_GetOffset(BattlefieldListScrollFrame) + id - 1);
 	BattlefieldFrame_Update();
 end
 
 function BattlefieldFrameJoinButton_OnClick()
 	JoinBattlefield(GetSelectedBattlefield());
-	BattlefieldFrame:Hide();
+	HideUIPanel(BattlefieldFrame);
 end
+
+function MiniMapBattlefieldDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, MiniMapBattlefieldDropDown_Initialize, "MENU");
+end
+
+function MiniMapBattlefieldDropDown_Initialize()
+	local info;
+	if ( MiniMapBattlefieldFrame.status == "queued" ) then
+		info = {};
+		info.text = CHANGE_INSTANCE;
+		info.func = ShowBattlefieldList;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+		info = {};
+		info.text = LEAVE_QUEUE;
+		info.func = AcceptBattlefieldPort;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+	elseif ( MiniMapBattlefieldFrame.status == "confirm" ) then
+		info = {};
+		info.text = ENTER_BATTLE;
+		info.func = BattlefieldFrame_EnterBattlefield;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+		info = {};
+		info.text = LEAVE_QUEUE;
+		info.func = AcceptBattlefieldPort;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function BattlefieldFrame_EnterBattlefield()
+	AcceptBattlefieldPort(1);
+end
+
+function BattlegroundShineFadeIn()
+	-- Fade in the shine and then fade it out with the ComboPointShineFadeOut function
+	local fadeInfo = {};
+	fadeInfo.mode = "IN";
+	fadeInfo.timeToFade = 0.5;
+	fadeInfo.finishedFunc = BattlegroundShineFadeOut;
+	UIFrameFade(BattlegroundShine, fadeInfo);
+end
+
+--hack since a frame can't have a reference to itself in it
+function BattlegroundShineFadeOut()
+	UIFrameFadeOut(BattlegroundShine, 0.5);
+end
+

@@ -1,0 +1,421 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="HonorFrame.lua"/>
+	<Frame name="HonorFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true" id="5">
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="258" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-257"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="258" y="-257"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="HonorLevelText" inherits="GameFontNormalSmall" text="Level level race class">
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="CharacterNameText" relativePoint="BOTTOM">
+                            <Offset>
+                                <AbsDimension x="0" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="HonorGuildText" inherits="GameFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="HonorLevelText" relativePoint="BOTTOM">
+                            <Offset>
+                                <AbsDimension x="0" y="-1"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-96"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="275" y="-96"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+					<Size>
+						<AbsDimension x="256" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-352"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+					<Size>
+						<AbsDimension x="128" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="275" y="-352"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="HonorFrameCurrentPVPTitle" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-81"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameCurrentPVPRank" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="HonorFrameCurrentPVPTitle" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameCurrentSessionTitle" inherits="GameFontNormal" text="HONOR_THIS_SESSION">
+					<Anchors>
+						<Anchor point="TOPLEfT">
+							<Offset>
+								<AbsDimension x="36" y="-115"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameCurrentHKTitle" inherits="GameFontHighlightSmall" text="HONORABLE_KILLS">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameCurrentSessionTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameCurrentDKTitle" inherits="GameFontHighlightSmall" text="DISHONORABLE_KILLS">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameCurrentHKTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameCurrentHKValue" inherits="GameFontGreenSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameCurrentHKTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameCurrentDKValue" inherits="GameFontRedSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameCurrentDKTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameYesterdayTitle" inherits="GameFontNormal" text="HONOR_YESTERDAY">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameCurrentSessionTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-45"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameYesterdayHKTitle" inherits="GameFontHighlightSmall" text="HONORABLE_KILLS">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameYesterdayTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameYesterdayDKTitle" inherits="GameFontHighlightSmall" text="DISHONORABLE_KILLS">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameYesterdayHKTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameYesterdayContributionTitle" inherits="GameFontHighlightSmall" text="HONOR_CONTRIBUTION_POINTS">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameYesterdayDKTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameYesterdayHKValue" inherits="GameFontGreenSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameYesterdayHKTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameYesterdayDKValue" inherits="GameFontRedSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameYesterdayDKTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameYesterdayContributionValue" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameYesterdayContributionTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLastWeekTitle" inherits="GameFontNormal" text="HONOR_LASTWEEK">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameYesterdayTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-58"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLastWeekHKTitle" inherits="GameFontHighlightSmall" text="HONORABLE_KILLS">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameLastWeekTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLastWeekDKTitle" inherits="GameFontHighlightSmall" text="DISHONORABLE_KILLS">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameLastWeekHKTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLastWeekContributionTitle" inherits="GameFontHighlightSmall" text="HONOR_CONTRIBUTION_POINTS">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameLastWeekDKTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLastWeekStandingTitle" inherits="GameFontHighlightSmall" text="HONOR_STANDING">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameLastWeekContributionTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLastWeekHKValue" inherits="GameFontGreenSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameLastWeekHKTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLastWeekDKValue" inherits="GameFontRedSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameLastWeekDKTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLastWeekContributionValue" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameLastWeekContributionTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLastWeekStandingValue" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameLastWeekStandingTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLifeTimeTitle" inherits="GameFontNormal" text="HONOR_LIFETIME">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameLastWeekTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-97"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLifeTimeHKTitle" inherits="GameFontHighlightSmall" text="HONORABLE_KILLS">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameLifeTimeTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLifeTimeDKTitle" inherits="GameFontHighlightSmall" text="DISHONORABLE_KILLS">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameLifeTimeHKTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLifeTimeRankTitle" inherits="GameFontHighlightSmall" text="HONOR_HIGHEST_RANK">
+					<Anchors>
+						<Anchor point="TOPLEfT" relativeTo="HonorFrameLifeTimeDKTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLifeTimeHKValue" inherits="GameFontGreenSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameLifeTimeHKTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLifeTimeDKValue" inherits="GameFontRedSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameLifeTimeDKTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HonorFrameLifeTimeRankValue" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameLifeTimeRankTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="HonorFramePvPIcon">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="HonorFrameCurrentPVPTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-5" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				HonorFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				HonorFrame_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

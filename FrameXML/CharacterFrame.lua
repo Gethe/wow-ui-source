@@ -1,4 +1,4 @@
-CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame" };
+CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame", "HonorFrame" };
 
 function ToggleCharacter(tab)
 	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() ) then
@@ -41,6 +41,8 @@ function CharacterFrameTab_OnClick()
 		ToggleCharacter("ReputationFrame");	
 	elseif ( this:GetName() == "CharacterFrameTab4" ) then
 		ToggleCharacter("SkillFrame");	
+	elseif ( this:GetName() == "CharacterFrameTab5" ) then
+		ToggleCharacter("HonorFrame");	
 	end
 	PlaySound("igCharacterInfoTab");
 end
@@ -48,12 +50,13 @@ end
 function CharacterFrame_OnLoad()
 	this:RegisterEvent("UNIT_NAME_UPDATE");
 	this:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	this:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
 
 	SetTextStatusBarTextPrefix(PlayerFrameHealthBar, TEXT(HEALTH));
 	SetTextStatusBarTextPrefix(PlayerFrameManaBar, TEXT(MANA));
 	SetTextStatusBarTextPrefix(MainMenuExpBar, TEXT(XP));
 	-- Tab Handling code
-	PanelTemplates_SetNumTabs(this, 4);
+	PanelTemplates_SetNumTabs(this, 5);
 	PanelTemplates_SetTab(this, 1);
 end
 
@@ -71,6 +74,8 @@ function CharacterFrame_OnEvent(event)
 			CharacterNameText:SetText(UnitPVPName(arg1));
 		end
 		return;
+	elseif ( event == "PLAYER_PVP_RANK_CHANGED" ) then
+		CharacterNameText:SetText(UnitPVPName("player"));
 	end
 end
 

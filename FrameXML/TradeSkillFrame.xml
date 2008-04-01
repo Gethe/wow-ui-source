@@ -555,8 +555,10 @@
 								</Layers>
 								<Scripts>
 									<OnClick>
-										if ( IsShiftKeyDown() and ChatFrameEditBox:IsVisible() ) then
-											ChatFrameEditBox:Insert(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
+										if ( IsShiftKeyDown() ) then
+											if ( ChatFrameEditBox:IsVisible() ) then
+												ChatFrameEditBox:Insert(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
+											end
 										end
 									</OnClick>
 									<OnEnter>

@@ -157,6 +157,14 @@ function ShowPetActionBar()
 		PetActionBarFrame.timeToSlide = PETACTIONBAR_SLIDETIME;
 		PetActionBarFrame.yTarget = PETACTIONBAR_YPOS;
 		PetActionBarFrame.mode = "show";
+
+		-- Rare case
+		if ( GetNumShapeshiftForms() > 0 ) then
+			PETACTIONBAR_XPOS = getglobal("ShapeshiftButton"..GetNumShapeshiftForms()):GetRight() +20;
+		else
+			PETACTIONBAR_XPOS = 36
+		end
+
 		--Move the chat frame and edit box up a bit
 		FCF_UpdateDockPosition();
 		--Move the casting bar up

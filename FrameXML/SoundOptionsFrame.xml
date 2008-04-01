@@ -17,7 +17,7 @@
 	</Slider>
 	<Frame name="SoundOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
 		<Size>
-			<AbsDimension x="350" y="305"/>
+			<AbsDimension x="400" y="305"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -176,26 +176,32 @@
 					</Anchor>
 				</Anchors>
 			</Slider>
-			<Button name="SoundOptionsFrameOkay" inherits="GameMenuButtonTemplate" text="OKAY">
+			<Button name="SoundOptionsFrameDefaults" inherits="GameMenuButtonTemplate" text="DEFAULTS">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
+					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="16"/>
+							<AbsDimension x="16" y="16"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("gsTitleOptionOK");
-						HideUIPanel(SoundOptionsFrame);
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						SoundOptionsFrame_SetDefaults();
 					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="SoundOptionsFrameCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
+					<Anchor point="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="16"/>
+							<AbsDimension x="-16" y="16"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -204,6 +210,24 @@
 						PlaySound("gsTitleOptionExit");
 						HideUIPanel(SoundOptionsFrame);
 						SoundOptionsFrame_Cancel();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SoundOptionsFrameOkay" inherits="GameMenuButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="SoundOptionsFrameCancel" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						HideUIPanel(SoundOptionsFrame);
 					</OnClick>
 				</Scripts>
 			</Button>

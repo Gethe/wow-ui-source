@@ -65,6 +65,7 @@ ChatTypeInfo["COMBAT_CREATURE_VS_CREATURE_MISSES"]		= { sticky = 0 };
 ChatTypeInfo["COMBAT_FRIENDLY_DEATH"]					= { sticky = 0 };
 ChatTypeInfo["COMBAT_HOSTILE_DEATH"]					= { sticky = 0 };
 ChatTypeInfo["COMBAT_XP_GAIN"]							= { sticky = 0 };
+ChatTypeInfo["COMBAT_HONOR_GAIN"]						= { sticky = 0 };
 ChatTypeInfo["SPELL_SELF_DAMAGE"]						= { sticky = 0 };
 ChatTypeInfo["SPELL_SELF_BUFF"]							= { sticky = 0 };
 ChatTypeInfo["SPELL_PET_DAMAGE"]						= { sticky = 0 };
@@ -214,6 +215,9 @@ ChatTypeGroup["COMBAT_HOSTILE_DEATH"] = {
 ChatTypeGroup["COMBAT_XP_GAIN"] = {
 	"CHAT_MSG_COMBAT_XP_GAIN";
 }
+ChatTypeGroup["COMBAT_HONOR_GAIN"] = {
+	"CHAT_MSG_COMBAT_HONOR_GAIN";
+}
 ChatTypeGroup["SPELL_SELF_DAMAGE"] = {
 	"CHAT_MSG_SPELL_SELF_DAMAGE";
 };
@@ -348,6 +352,7 @@ CombatLogMenuChatTypeGroups[17] = "COMBAT_CREATURE_VS_CREATURE_MISSES";
 CombatLogMenuChatTypeGroups[18] = "COMBAT_FRIENDLY_DEATH";
 CombatLogMenuChatTypeGroups[19] = "COMBAT_HOSTILE_DEATH";
 CombatLogMenuChatTypeGroups[20] = "COMBAT_XP_GAIN";
+CombatLogMenuChatTypeGroups[21] = "COMBAT_HONOR_GAIN";
 
 SpellLogMenuChatTypeGroups = {};
 SpellLogMenuChatTypeGroups[1]  = "SPELL_SELF_DAMAGE";
@@ -1052,10 +1057,13 @@ SlashCmdList["RANDOM"] = function(msg)
 	local num1 = gsub(msg, "(%s*)(%d+)(.*)", "%2", 1);
 	local rest = gsub(msg, "(%s*)(%d+)(.*)", "%3", 1);
 	local num2 = "";
+	local numSubs;
 	if ( strlen(rest) > 0 ) then
-		num2 = gsub(msg, "(%s*)(%d+)([-%s]+)(%d+)(.*)", "%4", 1);
+		num2, numSubs = gsub(msg, "(%s*)(%d+)([-%s]+)(%d+)(.*)", "%4", 1);
+		if ( numSubs == 0 ) then
+			num2 = "";
+		end
 	end
-
 	if ( num1 == "" and num2 == "" ) then
 		RandomRoll("1", "100");
 	elseif ( num2 == "" ) then
@@ -1080,7 +1088,7 @@ SlashCmdList["CAST"] = function(msg)
 end
 
 SlashCmdList["PVP"] = function(msg)
-	EnablePVP();
+	TogglePVP();
 end
 
 SlashCmdList["RAID_INFO"] = function(msg)
@@ -2297,6 +2305,7 @@ function ChatFrame_ActivateCombatMessages(chatFrame)
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FRIENDLY_DEATH");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_HOSTILE_DEATH");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_XP_GAIN");
+	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_HONOR_GAIN");
 	ChatFrame_AddMessageGroup(chatFrame, "SPELL_SELF_DAMAGE");
 	ChatFrame_AddMessageGroup(chatFrame, "SPELL_SELF_BUFF");
 	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PET_DAMAGE");

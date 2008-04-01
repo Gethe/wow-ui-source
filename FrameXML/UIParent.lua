@@ -357,7 +357,7 @@ function UIParent_OnEvent(event)
 		return;
 	end
 	if ( event == "START_LOOT_ROLL" ) then
-		GroupLootFrame_OpenNewFrame(arg1);
+		GroupLootFrame_OpenNewFrame(arg1, arg2);
 		return;
 	end
 	if ( event == "CONFIRM_LOOT_ROLL" ) then
@@ -624,7 +624,8 @@ function MovePanelToCenter()
 	if ( UIParent.left ) then
 		SetCenterFrame(nil);
 		UIParent.left:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", 384, -104);
-		UIParent.center = UIParent.left
+		UIParent.left:Raise();
+		UIParent.center = UIParent.left;
 		UIParent.left = nil;
 	end
 end
@@ -731,6 +732,7 @@ function SecondsToTime(seconds)
 	local time = "";
 	local count = 0;
 	local tempTime;
+	seconds = floor(seconds);
 	if ( seconds > 86400  ) then
 		tempTime = floor(seconds / 86400);
 		time = tempTime.." "..GetText("DAYS_ABBR", nil, tempTime).." ";
@@ -743,13 +745,13 @@ function SecondsToTime(seconds)
 		seconds = mod(seconds, 3600);
 		count = count + 1;
 	end
-	if ( count < 2 and seconds > 60  ) then
+	if ( count < 2 and seconds >= 60  ) then
 		tempTime = floor(seconds / 60);
 		time = time..tempTime.." "..GetText("MINUTES_ABBR", nil, tempTime).." ";
 		seconds = mod(seconds, 60);
 		count = count + 1;
 	end
-	if ( count < 2 ) then
+	if ( count < 2 and seconds > 0 ) then
 		seconds = format("%d", seconds);
 		time = time..seconds.." "..GetText("SECONDS_ABBR", nil, seconds).." ";
 	end
@@ -1256,6 +1258,13 @@ function UIParent_ManageRightSideFrames()
 	local anchorX = 0;
 	local anchorY = 0;
 
+	-- Update group loot frame anchor
+	if ( MultiBarBottomRight:IsVisible() or MultiBarBottomLeft:IsVisible() ) then
+		GroupLootFrame1:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 102);
+	else
+		GroupLootFrame1:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 60);
+	end
+	
 	-- Update tutorial anchor
 	if ( MultiBarBottomRight:IsVisible() or MultiBarBottomLeft:IsVisible() ) then
 		TutorialFrameParent:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 94);
@@ -1292,4 +1301,7 @@ function UIParent_ManageRightSideFrames()
 		anchorY = anchorY - DurabilityFrame:GetHeight();
 	end
 	QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -anchorX, anchorY);
+
+	-- Update combat log anchor
+	FCF_UpdateCombatLogPosition();
 end

@@ -413,6 +413,14 @@ function SendMailFrame_Update()
 	if ( itemName ) then
 		SendMailCODButton:Enable();
 		SendMailCODButtonText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+
+		if ( SendMailSubjectEditBox:GetText() == "" ) then
+			if ( stackCount ~= "" ) then
+				SendMailSubjectEditBox:SetText(itemName.." ("..stackCount..")");	
+			else
+				SendMailSubjectEditBox:SetText(itemName);
+			end
+		end
 	else
 		SendMailRadioButton_OnClick(1);
 		SendMailCODButton:Disable();
@@ -425,6 +433,7 @@ function SendMailFrame_Update()
 	else
 		SetMoneyFrameColor("SendMailCostMoneyFrame", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	end
+
 	SendMailFrame_CanSend();
 end
 
@@ -567,6 +576,4 @@ function SendMailPackageButton_OnClick()
 	else
 		ClickSendMailItemButton();
 	end
-	
-	
 end

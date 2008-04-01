@@ -76,6 +76,48 @@
                     </OnLoad>
                 </Scripts>
             </Button>
+			<Button name="InspectFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER">
+                <Anchors>
+                    <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="60" y="61"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnClick>
+						InspectFrameTab_OnClick();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(TEXT(CHARACTER_INFO), "TOGGLECHARACTER0"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
+            <Button name="InspectFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="HONOR">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="InspectFrameTab1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnClick>
+						InspectFrameTab_OnClick();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(TEXT(HONOR), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
         </Frames>
         <Scripts>
 			<OnLoad>

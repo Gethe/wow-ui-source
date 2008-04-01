@@ -33,8 +33,8 @@ function KeyBindingFrame_GetLocalizedName(name, prefix)
 		dashIndex = 0;
 	else
 		modKeys = strsub(name, 1, dashIndex);
-		if ( GetLocale() == "deDE" and modKeys == "CTRL-" ) then
-			modKeys = "STRG-";
+		if ( GetLocale() == "deDE") then
+			modKeys = gsub(modKeys, "CTRL", "STRG");
 		end
 	end
 

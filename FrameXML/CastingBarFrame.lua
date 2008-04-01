@@ -148,7 +148,7 @@ function CastingBarFrame_UpdatePosition()
 	if ( PetActionBarFrame:IsVisible() or ShapeshiftBarFrame:IsVisible() ) then
 		castingBarPosition = castingBarPosition + 40;
 	end
-	if ( MultiBarBottomLeft:IsVisible() ) then
+	if ( MultiBarBottomLeft:IsVisible() or MultiBarBottomRight:IsVisible() ) then
 		castingBarPosition = castingBarPosition + 40;
 	end
 	CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, castingBarPosition);

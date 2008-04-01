@@ -27,9 +27,11 @@
 			<OnEnter>
 				WorldMapFrame.poiHighlight = 1;
 				if ( this.description and strlen(this.description) > 0) then
-					WorldMapFrameAreaLabel:SetText(this.name.."\n"..this.description);
+					WorldMapFrameAreaLabel:SetText(this.name);
+					WorldMapFrameAreaDescription:SetText(this.description);
 				else
 					WorldMapFrameAreaLabel:SetText(this.name);
+					WorldMapFrameAreaDescription:SetText("");
 				end
 			--[[
 				local x, y = this:GetCenter();
@@ -49,6 +51,7 @@
 			<OnLeave>
 				WorldMapFrame.poiHighlight = nil;
 				WorldMapFrameAreaLabel:SetText(WorldMapFrame.areaName);
+				WorldMapFrameAreaDescription:SetText("");
 				--WorldMapTooltip:Hide();
 			</OnLeave>
 			<OnClick>
@@ -624,6 +627,15 @@
 									<Anchor point="TOP">
 										<Offset>
 											<AbsDimension x="20" y="-20"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+							<FontString name="WorldMapFrameAreaDescription" inherits="SubZoneTextFont">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="WorldMapFrameAreaLabel" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>

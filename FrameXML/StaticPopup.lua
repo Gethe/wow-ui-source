@@ -3,6 +3,22 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
+	text = TEXT(CONFIRM_BATTLEFIELD_ENTRY),
+	button1 = TEXT(ENTER_BATTLE),
+	button2 = TEXT(HIDE),
+	OnAccept = function()
+		if ( data ) then
+			getglobal(this:GetParent():GetName().."Text"):SetText(format(TEXT(CONFIRM_XP_LOSS_AGAIN), data));
+			this:GetParent().data = nil;
+			return 1;
+		end
+		BattlefieldFrame_EnterBattlefield();
+	end,
+	timeout = 0,
+	exclusive = 1
+};
+
 StaticPopupDialogs["RENAME_GUILD"] = {
 	text = TEXT(RENAME_GUILD_LABEL),
 	button1 = TEXT(ACCEPT),
@@ -434,11 +450,20 @@ StaticPopupDialogs["PARTY_INVITE"] = {
 	button1 = TEXT(ACCEPT),
 	button2 = TEXT(DECLINE),
 	sound = "igPlayerInvite",
+	OnShow = function()
+		StaticPopupDialogs["PARTY_INVITE"].inviteAccepted = nil;
+	end,
 	OnAccept = function()
 		AcceptGroup();
+		StaticPopupDialogs["PARTY_INVITE"].inviteAccepted = 1;
 	end,
 	OnCancel = function()
 		DeclineGroup();
+	end,
+	OnHide = function()
+		if ( not StaticPopupDialogs["PARTY_INVITE"].inviteAccepted ) then
+			DeclineGroup();
+		end
 	end,
 	timeout = 60,
 	whileDead = 1

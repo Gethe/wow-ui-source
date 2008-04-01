@@ -89,10 +89,14 @@ function ActionBar_PageDown()
 	end
 	
 	if ( not prevPage ) then
-		CURRENT_ACTIONBAR_PAGE = NUM_ACTIONBAR_PAGES;
-	else
-		CURRENT_ACTIONBAR_PAGE = prevPage;
+		for i=NUM_ACTIONBAR_PAGES, 1, -1 do
+			if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
+				prevPage = i;
+				break;
+			end
+		end
 	end
+	CURRENT_ACTIONBAR_PAGE = prevPage;
 	ChangeActionBarPage();
 end
 

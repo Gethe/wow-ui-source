@@ -99,6 +99,14 @@ function MultiActionBar_UpdateGrid(barName, show)
 	end
 end
 
+function MultiActionBar_UpdateGridVisibility()
+	if ( ALWAYS_SHOW_MULTIBARS == "1" or ALWAYS_SHOW_MULTIBARS == 1 ) then
+		MultiActionBar_ShowAllGrids();
+	else
+		MultiActionBar_HideAllGrids();
+	end
+end
+
 function Multibar_EmptyFunc(show)
 	
 end
@@ -118,3 +126,4 @@ end
 function MultiBar4_IsVisible()
 	return SHOW_MULTI_ACTIONBAR_4;
 end
+

@@ -660,7 +660,6 @@
 								SHOW_MULTI_ACTIONBAR_2 = this:GetChecked();
 								MultiActionBar_Update();
 								UIParent_ManageRightSideFrames();
-								FCF_UpdateCombatLogPosition();
 							</OnClick>
 						</Scripts>
  					</CheckButton>
@@ -677,7 +676,6 @@
 								SHOW_MULTI_ACTIONBAR_3 = this:GetChecked();
 								MultiActionBar_Update();
 								UIParent_ManageRightSideFrames();
-								FCF_UpdateCombatLogPosition();
 								UIOptionsFrame_UpdateDependencies();
 							</OnClick>
 						</Scripts>
@@ -698,7 +696,32 @@
 								SHOW_MULTI_ACTIONBAR_4 = this:GetChecked();
 								MultiActionBar_Update();
 								UIParent_ManageRightSideFrames();
-								FCF_UpdateCombatLogPosition();
+							</OnClick>
+						</Scripts>
+ 					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton40" inherits="OptionsCheckButtonTemplate">
+ 						<Anchors>
+ 							<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCheckButton36">
+ 								<Offset>
+ 									<AbsDimension x="-10" y="-25"/>
+ 								</Offset>
+ 							</Anchor>
+ 						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterEvent("VARIABLES_LOADED");
+							</OnLoad>
+							<OnEvent>
+								if ( event == "VARIABLES_LOADED" ) then
+									UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"].value = ALWAYS_SHOW_MULTIBARS;
+									if ( ALWAYS_SHOW_MULTIBARS == "1" or ALWAYS_SHOW_MULTIBARS == 1 ) then
+										MultiActionBar_ShowAllGrids();
+									end
+								end
+							</OnEvent>
+							<OnClick>
+								ALWAYS_SHOW_MULTIBARS = this:GetChecked();
+								MultiActionBar_UpdateGridVisibility();
 							</OnClick>
 						</Scripts>
  					</CheckButton>

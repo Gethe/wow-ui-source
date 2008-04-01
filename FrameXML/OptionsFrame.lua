@@ -31,6 +31,8 @@ OptionsFrameSliders = {
 
 ANISOTROPIC_VALUES = {"1", "2", "4", "8", "16"};
 
+OPTIONS_FRAME_WIDTH = 495;
+
 function OptionsFrame_Init()
 	--[[for index, value in OptionsFrameCheckButtons do
 		local string = GetCVar(value.cvar);
@@ -170,6 +172,14 @@ function OptionsFrame_Load()
 	OptionsFrame_UpdatePhongShading();
 	-- Update fix lag
 	OptionsFrame_UpdateFixLag();
+
+	-- Resize the options frame
+	OptionsFrame:SetWidth(OPTIONS_FRAME_WIDTH);
+	OptionsFrameDisplay:SetWidth(OPTIONS_FRAME_WIDTH - 25);
+	OptionsFrameWorldAppearance:SetWidth(OPTIONS_FRAME_WIDTH - 25);
+	OptionsFrameBrightness:SetWidth(OPTIONS_FRAME_WIDTH - 25);
+	OptionsFramePixelShaders:SetWidth(OPTIONS_FRAME_WIDTH/2 - 13);
+	OptionsFrameMiscellaneous:SetWidth(OPTIONS_FRAME_WIDTH/2 - 13);
 end
 
 function OptionsFrame_Save()
@@ -229,6 +239,7 @@ function OptionsFrame_Save()
 	OptionsFrame.gamma = GetGamma();
 	OptionsFrame.desktopGamma = GetCVar("desktopGamma");
 	SetScreenResolution(UIDropDownMenu_GetSelectedID(OptionsFrameResolutionDropDown));
+	SetMultisampleFormat(UIDropDownMenu_GetSelectedID(OptionsFrameMultiSampleDropDown));
 	-- If this value has changed then do a RestartGx
 	if ( GetCVar("gxRefresh") ~= UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown) ) then
 		OptionsFrame.GXRestart = 1;
@@ -322,6 +333,45 @@ function OptionsFrameRefreshDropDown_OnClick()
 	UIDropDownMenu_SetSelectedValue(OptionsFrameRefreshDropDown, this.value);
 end
 
+function OptionsFrameMultiSampleDropDown_OnLoad()
+	UIDropDownMenu_SetSelectedID(this, GetCurrentMultisampleFormat());
+	UIDropDownMenu_Initialize(this, OptionsFrameMultiSampleDropDown_Initialize);
+	UIDropDownMenu_SetWidth(140, OptionsFrameMultiSampleDropDown);
+	UIDropDownMenu_SetAnchor(-5, 23, nil, "TOPRIGHT", "OptionsFrameMultiSampleDropDownRight", "BOTTOMRIGHT");
+end
+
+function OptionsFrameMultiSampleDropDown_Initialize()
+	OptionsFrame_GetMultisampleFormats(GetMultisampleFormats());
+end
+
+function OptionsFrame_GetMultisampleFormats(...)
+	local colorBits, depthBits, multiSample;
+	local info, checked;
+	local index = 1;
+	for i=1, arg.n, 3 do
+		colorBits = arg[i];
+		depthBits = arg[i+1];
+		multiSample = arg[i+2];
+		info = {};
+		info.text = format(MULTISAMPLING_FORMAT_STRING, colorBits, depthBits, multiSample);
+		info.func = OptionsFrameMultiSampleDropDown_OnClick;
+		
+		if ( index == UIDropDownMenu_GetSelectedID(OptionsFrameMultiSampleDropDown) ) then
+			checked = 1;
+			UIDropDownMenu_SetText(info.text, OptionsFrameMultiSampleDropDown);
+		else
+			checked = nil;
+		end
+		info.checked = checked;
+		UIDropDownMenu_AddButton(info);
+		index = index + 1;
+	end
+end
+
+function OptionsFrameMultiSampleDropDown_OnClick()
+	UIDropDownMenu_SetSelectedID(OptionsFrameMultiSampleDropDown, this:GetID());
+end
+
 function OptionsFrame_UpdateGammaControls()
 	local value = "0";
 	if ( OptionsFrameCheckButton1:GetChecked() ) then
@@ -359,8 +409,8 @@ end
 
 function OptionsFrame_UpdateBuffering(tripleBufferingEnabled)
 	if ( tripleBufferingEnabled ) then
-		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton13);
-		OptionsFrameCheckButton13:SetChecked(GetCVar(OptionsFrameCheckButtons["TRIPLE_BUFFER"].cvar));
+		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton13, OptionsFrameCheckButton13:GetChecked());
+		--OptionsFrameCheckButton13:SetChecked(GetCVar(OptionsFrameCheckButtons["TRIPLE_BUFFER"].cvar));
 	else
 		OptionsFrame_DisableCheckBox(OptionsFrameCheckButton13);
 	end
@@ -368,8 +418,8 @@ end
 
 function OptionsFrame_UpdatePhongShading()
 	if ( OptionsFrameCheckButton8:GetChecked() ) then
-		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton15);
-		OptionsFrameCheckButton15:SetChecked(GetCVar(OptionsFrameCheckButtons["PHONG_SHADING"].cvar));
+		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton15, OptionsFrameCheckButton15:GetChecked());
+		--OptionsFrameCheckButton15:SetChecked(GetCVar(OptionsFrameCheckButtons["PHONG_SHADING"].cvar));
 	else
 		OptionsFrame_DisableCheckBox(OptionsFrameCheckButton15);
 	end
@@ -377,8 +427,7 @@ end
 
 function OptionsFrame_UpdateFixLag()
 	if ( OptionsFrameCheckButton14:GetChecked() ) then
-		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton16);
-		OptionsFrameCheckButton16:SetChecked(GetCVar(OptionsFrameCheckButtons["FIX_LAG"].cvar));
+		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton16, OptionsFrameCheckButton16:GetChecked());
 	else
 		OptionsFrame_DisableCheckBox(OptionsFrameCheckButton16);
 	end
@@ -436,18 +485,20 @@ function OptionsFrame_SetDefaults()
 end
 
 function OptionsFrame_DisableCheckBox(checkBox)
-	checkBox:SetChecked(0);
+	--checkBox:SetChecked(0);
 	checkBox:Disable();
 	getglobal(checkBox:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 end
 
-function OptionsFrame_EnableCheckBox(checkBox, checked)
-	if ( checkBox:GetChecked() ) then
-		return;
-	end
+function OptionsFrame_EnableCheckBox(checkBox, checked, isWhite)
 	checkBox:SetChecked(checked);
 	checkBox:Enable();
-	getglobal(checkBox:GetName().."Text"):SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	if ( isWhite ) then
+		getglobal(checkBox:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	else
+		getglobal(checkBox:GetName().."Text"):SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+	
 end
 
 function OptionsFrame_DisableSlider(slider)

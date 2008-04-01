@@ -7,20 +7,11 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
+				<FontString name="$parentStatus" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="LEFT">
+						<Anchor point="RIGHT">
 							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentLevel" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="105" y="0"/>
+								<AbsDimension x="-10" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -28,6 +19,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
+			</OnLoad>
 			<OnClick>
 				BattlefieldButton_OnClick(this:GetID());
 			</OnClick>
@@ -44,13 +38,37 @@
 				</Anchor>
 			</Anchors>
 		</HighlightTexture>
+		<NormalText name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="0" y="0"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentHighlight">
+					<Offset>
+						<AbsDimension x="5" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+		<HighlightText name="$parentHighlightText" inherits="GameFontHighlight" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="0" y="0"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentHighlight">
+					<Offset>
+						<AbsDimension x="5" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightText>
 	</Button>
 	<ScrollFrame name="BattlefieldListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 					<Size>
-						<AbsDimension x="30" y="64"/>
+						<AbsDimension x="30" y="36"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
@@ -59,11 +77,11 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.5234375"/>
+					<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.28125"/>
 				</Texture>
 				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 					<Size>
-						<AbsDimension x="30" y="64"/>
+						<AbsDimension x="30" y="38"/>
 					</Size>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
@@ -72,7 +90,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.53125" right="1.0" top="0.5" bottom="1.0"/>
+					<TexCoords left="0.53125" right="1.0" top="0.703125" bottom="1.0"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -157,23 +175,14 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentLevelHeader" inherits="GameFontHighlight" text="BATTLEFIELD_LEVEL">
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNameHeader" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="75" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentZoneDescription" inherits="GameFontHighlight" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="293" y="16"/>
+						<AbsDimension x="293" y="48"/>
 					</Size>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="23" y="115"/>
+								<AbsDimension x="23" y="127"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -187,7 +196,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="15" y="-154"/>
+								<AbsDimension x="15" y="-122"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -213,7 +222,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="15" y="-373"/>
+								<AbsDimension x="15" y="-341"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -257,13 +266,41 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="BattlefieldMarker" file="Interface\CharacterFrame\UI-StateIcon">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5" right="1.0" top="0" bottom="0.5"/>
+				</Texture>
+				<Texture name="BattlefieldMarkerGlow" file="Interface\CharacterFrame\UI-StateIcon" hidden="false" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="BattlefieldMarker">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="0" b="0"/>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="BattlefieldZone1" inherits="BattlefieldButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BattlefieldFrame">
 						<Offset>
-							<AbsDimension x="28" y="-75"/>
+							<AbsDimension x="25" y="-76"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -286,27 +323,9 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="BattlefieldZone4" inherits="BattlefieldButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone3" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="BattlefieldZone5" inherits="BattlefieldButtonTemplate" id="5">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone4" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 			<ScrollFrame name="BattlefieldListScrollFrame" inherits="BattlefieldListScrollFrameTemplate">
 				<Size>
-					<AbsDimension x="296" y="89"/>
+					<AbsDimension x="296" y="57"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="BattlefieldFrame" relativePoint="TOPRIGHT">
@@ -321,23 +340,6 @@
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>
-			<Button name="BattlefieldFrameJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_JOIN">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="BattlefieldFrame" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="224" y="-420"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						BattlefieldFrameJoinButton_OnClick();
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button name="BattlefieldFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size>
 					<AbsDimension x="80" y="22"/>
@@ -352,6 +354,23 @@
 				<Scripts>
 					<OnClick>
 						HideUIPanel(this:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="BattlefieldFrameJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_JOIN">
+				<Size>
+					<AbsDimension x="112" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="BattlefieldFrameCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						BattlefieldFrameJoinButton_OnClick();
 					</OnClick>
 				</Scripts>
 			</Button>

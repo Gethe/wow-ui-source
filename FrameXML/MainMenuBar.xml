@@ -180,8 +180,8 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								PERFORMANCEBAR_LOW_LATENCY = 200;
-								PERFORMANCEBAR_MEDIUM_LATENCY = 500;
+								PERFORMANCEBAR_LOW_LATENCY = 300;
+								PERFORMANCEBAR_MEDIUM_LATENCY = 600;
 								PERFORMANCEBAR_UPDATE_INTERVAL = 10;
 								this.hover = nil;
 								this.updateInterval = 0;

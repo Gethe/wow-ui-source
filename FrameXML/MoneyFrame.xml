@@ -177,9 +177,13 @@
 					</Anchors>
 					<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 				</NormalTexture>
-				<NormalText name="$parentText" inherits="NumberFontNormal" justifyH="LEFT">
+				<NormalText name="$parentText" inherits="NumberFontNormal" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-13" y="0"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</NormalText>
 				<PushedTextOffset>
@@ -213,9 +217,13 @@
 					</Anchors>
 					<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 				</NormalTexture>
-				<NormalText name="$parentText" inherits="NumberFontNormal" justifyH="LEFT">
+				<NormalText name="$parentText" inherits="NumberFontNormal" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-13" y="0"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</NormalText>
 				<PushedTextOffset>
@@ -249,9 +257,13 @@
 					</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 				</NormalTexture>
-				<NormalText name="$parentText" inherits="NumberFontNormal" justifyH="LEFT">
+				<NormalText name="$parentText" inherits="NumberFontNormal" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-13" y="0"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</NormalText>
 				<PushedTextOffset>

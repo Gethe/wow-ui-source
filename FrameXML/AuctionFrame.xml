@@ -366,7 +366,7 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentBuyoutMoneyFrame" relativePoint="LEFT">
 						<Offset>
-							<AbsDimension x="-25" y="0"/>
+							<AbsDimension x="-5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2597,12 +2597,15 @@
 							</OnEvent>
 							<OnClick>
 								ClickAuctionSellItemButton();
+								AuctionsFrameAuctions_ValidateAuction();
 							</OnClick>
 							<OnDragStart>
 								ClickAuctionSellItemButton();
+								AuctionsFrameAuctions_ValidateAuction();
 							</OnDragStart>
 							<OnReceiveDrag>
 								ClickAuctionSellItemButton();
+								AuctionsFrameAuctions_ValidateAuction();
 							</OnReceiveDrag>
 							<OnEnter>
 								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");

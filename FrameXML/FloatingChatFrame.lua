@@ -839,7 +839,7 @@ function FCF_OnUpdate(elapsed)
 			end
 			
 			dockRegion = getglobal(value:GetName().."TabDockRegion");
-			if ( MouseIsOver(dockRegion) and MOVING_CHATFRAME ~= DEFAULT_CHAT_FRAME ) then
+			if ( MouseIsOver(dockRegion) and MOVING_CHATFRAME ~= DEFAULT_CHAT_FRAME and not UIOptionsFrame:IsVisible() ) then
 				dockRegion:Show();
 			else
 				dockRegion:Hide();
@@ -856,7 +856,7 @@ function FCF_OnUpdate(elapsed)
 		
 		-- New version of the crazy function
 		if ( FCF_IsValidChatFrame(chatFrame) ) then
-			if ( MouseIsOver(chatFrame, 45, -10, -5, 5) or chatFrame.resizing ) then
+			if ( (MouseIsOver(chatFrame, 45, -10, -5, 5) or chatFrame.resizing) and not UIOptionsFrame:IsVisible()) then
 				-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 				if ( chatFrame.hover ) then
 					if ( (chatFrame.oldX == xPos and chatFrame.oldy == yPos) or REMOVE_CHAT_DELAY == "1" ) then
@@ -1369,7 +1369,6 @@ function FCF_Set_SimpleChat()
 
 	FCF_UnDockFrame(ChatFrame2);
 	ChatFrame2:ClearAllPoints();
-	FCF_UpdateCombatLogPosition();
 	ChatFrame2:SetWidth(320);
 	ChatFrame2:SetHeight(120);
 	FCF_SetTabPosition(ChatFrame2, 0);
@@ -1386,6 +1385,9 @@ function FCF_Set_SimpleChat()
 	for i=3, NUM_CHAT_WINDOWS do
 		FCF_Close(getglobal("ChatFrame"..i));
 	end
+
+	-- Update all the anchors
+	UIParent_ManageRightSideFrames();
 end
 
 function FCF_Set_NormalChat()

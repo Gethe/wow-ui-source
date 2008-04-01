@@ -1,13 +1,14 @@
-
 BUFF_FLASH_TIME_ON = 0.75;
 BUFF_FLASH_TIME_OFF = 0.75;
 BUFF_MIN_ALPHA = 0.3;
 BUFF_WARNING_TIME = 31;
+BUFF_DURATION_WARNING_TIME = 60;
 
 function BuffFrame_OnLoad()
 	BuffFrameUpdateTime = 0;
 	BuffFrameFlashTime = 0;
 	BuffFrameFlashState = 1;
+	BUFF_ALPHA_VALUE = 1;
 
 	for i=1, 24 do
 		getglobal("BuffButton"..(i-1).."Duration"):SetPoint("TOP", "BuffButton"..(i-1), "BOTTOM", 0, 0);
@@ -35,6 +36,13 @@ function BuffFrame_OnUpdate(elapsed)
 			BuffFrameFlashTime = BuffFrameFlashTime - overtime;
 		end
 	end
+
+	if ( BuffFrameFlashState == 1 ) then
+		BUFF_ALPHA_VALUE = (BUFF_FLASH_TIME_ON - BuffFrameFlashTime) / BUFF_FLASH_TIME_ON;
+	else
+		BUFF_ALPHA_VALUE = BuffFrameFlashTime / BUFF_FLASH_TIME_ON;
+	end
+	BUFF_ALPHA_VALUE = (BUFF_ALPHA_VALUE * (1 - BUFF_MIN_ALPHA)) + BUFF_MIN_ALPHA;
 end
 
 function BuffButton_Update()
@@ -85,31 +93,12 @@ function BuffButton_OnUpdate()
 
 	local buffIndex = this.buffIndex;
 	local timeLeft = GetPlayerBuffTimeLeft(buffIndex);
-	local buffAlphaValue;
 	if ( timeLeft < BUFF_WARNING_TIME ) then
-		if ( BuffFrameFlashState == 1 ) then
-			buffAlphaValue = (BUFF_FLASH_TIME_ON - BuffFrameFlashTime) / BUFF_FLASH_TIME_ON;
-			buffAlphaValue = buffAlphaValue * (1 - BUFF_MIN_ALPHA) + BUFF_MIN_ALPHA;
-		else
-			buffAlphaValue = BuffFrameFlashTime / BUFF_FLASH_TIME_ON;
-			buffAlphaValue = (buffAlphaValue * (1 - BUFF_MIN_ALPHA)) + BUFF_MIN_ALPHA;
-			this:SetAlpha(BuffFrameFlashTime / BUFF_FLASH_TIME_ON);
-		end
-		this:SetAlpha(buffAlphaValue);
+		this:SetAlpha(BUFF_ALPHA_VALUE);
 	end
 
 	-- Update duration
-	if ( SHOW_BUFF_DURATIONS == "1" ) then
-		buffDuration:Show();
-		buffDuration:SetText(SecondsToTimeAbbrev(timeLeft));
-		if ( timeLeft < 60 ) then
-			buffDuration:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		else
-			buffDuration:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		end
-	else
-		buffDuration:Hide();
-	end
+	BuffFrame_UpdateDuration(this, timeLeft);
 
 	if ( BuffFrameUpdateTime > 0 ) then
 		return;
@@ -126,9 +115,105 @@ end
 function BuffButtons_UpdatePositions()
 	if ( SHOW_BUFF_DURATIONS == "1" ) then
 		BuffButton8:SetPoint("TOP", "BuffButton0", "BOTTOM", 0, -15);
-		BuffButton16:SetPoint("TOP", "BuffButton8", "BOTTOM", 0, -15);
+		BuffButton16:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPRIGHT", 0, -90);
 	else
 		BuffButton8:SetPoint("TOP", "BuffButton0", "BOTTOM", 0, -5);
-		BuffButton16:SetPoint("TOP", "BuffButton8", "BOTTOM", 0, -5);
+		BuffButton16:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPRIGHT", 0, -70);
+	end
+end
+
+function BuffFrame_Enchant_OnUpdate(elapsed)
+	local hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges = GetWeaponEnchantInfo();
+	
+	-- No enchants, kick out early
+	if ( not hasMainHandEnchant and not hasOffHandEnchant ) then
+		TempEnchant1:Hide();
+		TempEnchant1Duration:Hide();
+		TempEnchant2:Hide();
+		TempEnchant2Duration:Hide();
+		BuffFrame:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPRIGHT", 0, 0);
+		return;
+	end
+	-- Has enchants
+	local enchantButton;
+	local textureName;
+	local buffAlphaValue;
+	local enchantIndex = 0;
+	if ( hasOffHandEnchant ) then
+		enchantIndex = enchantIndex + 1;
+		textureName = GetInventoryItemTexture("player", 17);
+		TempEnchant1:SetID(17);
+		TempEnchant1Icon:SetTexture(textureName);
+		TempEnchant1:Show();
+		hasEnchant = 1;
+
+		-- Show buff durations if necessary
+		if ( offHandExpiration ) then
+			offHandExpiration = offHandExpiration/1000;
+		end
+		BuffFrame_UpdateDuration(TempEnchant1, offHandExpiration);
+
+		-- Handle flashing
+		if ( offHandExpiration and offHandExpiration < BUFF_WARNING_TIME ) then
+			TempEnchant1:SetAlpha(BUFF_ALPHA_VALUE);
+		end
+		
+	end
+	if ( hasMainHandEnchant ) then
+		enchantIndex = enchantIndex + 1;
+		enchantButton = getglobal("TempEnchant"..enchantIndex);
+		textureName = GetInventoryItemTexture("player", 16);
+		enchantButton:SetID(16);
+		getglobal(enchantButton:GetName().."Icon"):SetTexture(textureName);
+		enchantButton:Show();
+		hasEnchant = 1;
+
+		-- Show buff durations if necessary
+		if ( mainHandExpiration ) then
+			mainHandExpiration = mainHandExpiration/1000;
+		end
+		
+		BuffFrame_UpdateDuration(enchantButton, mainHandExpiration);
+
+		-- Handle flashing
+		if ( mainHandExpiration and mainHandExpiration < BUFF_WARNING_TIME ) then
+			enchantButton:SetAlpha(BUFF_ALPHA_VALUE);
+		end
+	end
+	--Hide unused enchants
+	for i=enchantIndex+1, 2 do
+		getglobal("TempEnchant"..i):Hide();
+		getglobal("TempEnchant"..i.."Duration"):Hide();
+	end
+
+	-- Position buff frame
+	TemporaryEnchantFrame:SetWidth(enchantIndex * 32);
+	BuffFrame:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPLEFT", -5, 0);
+end
+
+function BuffFrame_EnchantButton_OnUpdate()
+	-- Update duration
+	if ( GameTooltip:IsOwned(this) ) then
+		BuffFrame_EnchantButton_OnEnter();
+	end
+end
+
+function BuffFrame_EnchantButton_OnEnter()
+	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
+	GameTooltip:SetInventoryItem("player", this:GetID());
+end
+
+function BuffFrame_UpdateDuration(buffButton, timeLeft)
+	local duration = getglobal(buffButton:GetName().."Duration");
+	if ( SHOW_BUFF_DURATIONS == "1" and timeLeft ) then
+		duration:SetText(SecondsToTimeAbbrev(timeLeft));
+		if ( timeLeft < BUFF_DURATION_WARNING_TIME ) then
+			duration:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		else
+			duration:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		end
+		duration:Show();
+	else
+		duration:Hide();
 	end
 end

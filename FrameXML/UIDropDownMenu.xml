@@ -108,6 +108,7 @@
 				<Scripts>
 					<OnEnter>
 						UIDropDownMenu_StopCounting(this:GetParent():GetParent());
+						CloseDropDownMenus(this:GetParent():GetParent():GetID() + 1);
 					</OnEnter>
 					<OnLeave>
 						UIDropDownMenu_StartCounting(this:GetParent():GetParent());
@@ -122,6 +123,8 @@
 			<OnEnter>
 				if ( this.hasArrow ) then
 					ToggleDropDownMenu(this:GetParent():GetID() + 1, this.value);
+				else
+					CloseDropDownMenus(this:GetParent():GetID() + 1);
 				end
 				getglobal(this:GetName().."Highlight"):Show();
 				UIDropDownMenu_StopCounting(this:GetParent());

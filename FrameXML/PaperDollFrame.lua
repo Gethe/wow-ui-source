@@ -97,6 +97,8 @@ end
 
 function PaperDollFrame_SetLevel()
 	CharacterLevelText:SetText(format(TEXT(PLAYER_LEVEL),UnitLevel("player"), UnitRace("player"), UnitClass("player")));
+	-- Set it for the honor frame while we at it
+	HonorLevelText:SetText(format(TEXT(PLAYER_LEVEL),UnitLevel("player"), UnitRace("player"), UnitClass("player")));
 end
 
 --[[
@@ -114,8 +116,13 @@ function PaperDollFrame_SetGuild()
 	if ( guildName ) then
 		CharacterGuildText:Show();
 		CharacterGuildText:SetText(format(TEXT(GUILD_TITLE_TEMPLATE), title, guildName));
+		-- Set it for the honor frame while we're at it
+		HonorGuildText:Show();
+		HonorGuildText:SetText(format(TEXT(GUILD_TITLE_TEMPLATE), title, guildName));
 	else
 		CharacterGuildText:Hide();
+
+		HonorGuildText:Hide();
 	end
 end
 
@@ -688,7 +695,7 @@ end
 function PaperDollItemSlotButton_OnEnter()
 	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", this:GetID());
-    if ( not hasItem ) then
+	if ( not hasItem ) then
 		GameTooltip:SetText(TEXT(getglobal(strupper(strsub(this:GetName(), 10)))));
 	end
 	if ( hasCooldown ) then

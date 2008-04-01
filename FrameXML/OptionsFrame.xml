@@ -273,11 +273,48 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<CheckButton name="OptionsFrameCheckButton10" inherits="OptionsCheckButtonTemplate">
+					<Frame name="OptionsFrameMultiSampleDropDown" inherits="UIDropDownMenuTemplate" id="4">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="OptionsFrameRefreshDropDown" relativePoint="RIGHT">
 								<Offset>
 									<AbsDimension x="10" y="1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MULTISAMPLE">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								OptionsFrameMultiSampleDropDown_OnLoad();
+							</OnLoad>
+							<OnShow>
+								OptionsFrameMultiSampleDropDown_OnLoad();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(OPTION_TOOLTIP_MULTISAMPLING, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<CheckButton name="OptionsFrameCheckButton10" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="OptionsFrameMultiSampleDropDown" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

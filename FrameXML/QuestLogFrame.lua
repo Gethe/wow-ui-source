@@ -437,26 +437,29 @@ function QuestLogTitleButton_OnClick(button)
 	if ( button == "LeftButton" ) then
 		local questName = this:GetText();
 		local questIndex = this:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
-		if ( IsShiftKeyDown() and ChatFrameEditBox:IsVisible() ) then
-			-- Trim leading whitespace
-			ChatFrameEditBox:Insert(gsub(this:GetText(), " *(.*)", "%1"));
-		elseif ( IsShiftKeyDown() ) then
-			if ( IsQuestWatched(questIndex) ) then
-				RemoveQuestWatch(questIndex);
-				QuestWatch_Update();
+		if ( IsShiftKeyDown() ) then
+			if ( ChatFrameEditBox:IsVisible() ) then
+				-- Trim leading whitespace
+				ChatFrameEditBox:Insert(gsub(this:GetText(), " *(.*)", "%1"));
 			else
-				-- Set error if no objectives
-				if ( GetNumQuestLeaderBoards(questIndex) == 0 ) then
-					UIErrorsFrame:AddMessage(QUEST_WATCH_NO_OBJECTIVES, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
-					return;
+				-- Shift-click toggles quest-watch on this quest.
+				if ( IsQuestWatched(questIndex) ) then
+					RemoveQuestWatch(questIndex);
+					QuestWatch_Update();
+				else
+					-- Set error if no objectives
+					if ( GetNumQuestLeaderBoards(questIndex) == 0 ) then
+						UIErrorsFrame:AddMessage(QUEST_WATCH_NO_OBJECTIVES, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+						return;
+					end
+					-- Set an error message if trying to show too many quests
+					if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then
+						UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+						return;
+					end
+					AddQuestWatch(questIndex);
+					QuestWatch_Update();
 				end
-				-- Set an error message if trying to show too many quests
-				if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then
-					UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
-					return;
-				end
-				AddQuestWatch(questIndex);
-				QuestWatch_Update();
 			end
 		end
 		QuestLog_SetSelection(questIndex)

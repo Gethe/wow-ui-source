@@ -36,10 +36,12 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				if ( IsShiftKeyDown() and ChatFrameEditBox:IsVisible() ) then
-					local link = GetCraftReagentItemLink(GetCraftSelectionIndex(), this:GetID())
-					if ( link ) then
-						ChatFrameEditBox:Insert(link);
+				if ( IsShiftKeyDown() ) then
+					if ( ChatFrameEditBox:IsVisible() ) then
+						local link = GetCraftReagentItemLink(GetCraftSelectionIndex(), this:GetID())
+						if ( link ) then
+							ChatFrameEditBox:Insert(link);
+						end
 					end
 				end
 			</OnClick>
@@ -544,10 +546,12 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										if ( IsShiftKeyDown() and ChatFrameEditBox:IsVisible() ) then
-											local link = GetCraftItemLink(GetCraftSelectionIndex())
-											if ( link ) then
-												ChatFrameEditBox:Insert(link);
+										if ( IsShiftKeyDown() ) then
+											if ( ChatFrameEditBox:IsVisible() ) then
+												local link = GetCraftItemLink(GetCraftSelectionIndex())
+												if ( link ) then
+													ChatFrameEditBox:Insert(link);
+												end
 											end
 										end
 									</OnClick>

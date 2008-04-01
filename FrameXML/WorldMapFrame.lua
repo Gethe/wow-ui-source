@@ -43,11 +43,13 @@ function WorldMapFrame_Update()
 	local name, description, textureIndex, x, y;
 	local worldMapPOI;
 	local x1, x2, y1, y2;
-	--[[ To be removed... eventually
-	if ( numPOIs > NUM_WORLDMAP_POIS ) then
-		message("Not enough POI buttons, add more to the XML");
+
+	if ( GetCVar("errors") ~= "0" ) then
+		if ( numPOIs > NUM_WORLDMAP_POIS ) then
+			message("Not enough POI buttons, add more to the XML");
+		end
 	end
-	]]
+
 	for i=1, NUM_WORLDMAP_POIS, 1 do
 		worldMapPOI = getglobal("WorldMapFramePOI"..i);
 		if ( i <= numPOIs ) then

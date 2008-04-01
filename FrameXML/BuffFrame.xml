@@ -70,6 +70,42 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
+	<Button name="BuffButtonTempEnchant" inherits="BuffButtonTemplate" virtual="true" justifyH="LEFT">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\Buttons\UI-TempEnchant-Border">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+			</OnLoad>
+			<OnEvent>
+			</OnEvent>
+			<OnUpdate>
+				BuffFrame_EnchantButton_OnUpdate();
+			</OnUpdate>
+			<OnClick>
+			</OnClick>
+			<OnEnter>
+				BuffFrame_EnchantButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
 	<Frame name="BuffFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
 		<Size>
 			<AbsDimension x="50" y="50"/>
@@ -256,7 +292,7 @@
 			</Button>
 			<Button name="BuffButton16" inherits="BuffButtonHarmful" id="0">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="BuffButton8" relativePoint="BOTTOM">
+					<Anchor point="TOPRIGHT" relativeTo="BuffButton8" relativePoint="BOTTOM">
 						<Offset>
 							<AbsDimension x="0" y="-5"/>
 						</Offset>
@@ -333,6 +369,53 @@
 			</OnLoad>
 			<OnUpdate>
 				BuffFrame_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<Frame name="TemporaryEnchantFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
+		<Size>
+			<AbsDimension x="36" y="36"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="UIParent" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-205" y="-13"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="TempEnchant1Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="TempEnchant2Duration" inherits="BuffButtonDurationTemplate"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="TempEnchant1" inherits="BuffButtonTempEnchant">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TempEnchant2" inherits="BuffButtonTempEnchant">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="TempEnchant1" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				TempEnchant1Duration:SetPoint("TOP", "TempEnchant1", "BOTTOM", 0, 0);
+				TempEnchant2Duration:SetPoint("TOP", "TempEnchant2", "BOTTOM", 0, 0);
+			</OnLoad>
+			<OnUpdate>
+				BuffFrame_Enchant_OnUpdate(arg1);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

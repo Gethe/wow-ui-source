@@ -19,6 +19,7 @@
 				FCF_OnUpdate(arg1);
 				ButtonPulse_OnUpdate(arg1);
 				UnitPopup_OnUpdate(arg1);
+				BattlefieldFrame_OnUpdate(arg1);
 			</OnUpdate>
 			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
 			<OnShow>

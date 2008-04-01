@@ -34,6 +34,19 @@ function LootFrame_OnEvent(event)
 				button:Hide();
 			end
 		end
+		-- try to move second page of loot items to the first page
+		local button;
+		local allButtonsHidden = 1;
+
+		for index = 1, LOOTFRAME_NUMBUTTONS do
+			button = getglobal("LootButton"..index);
+			if ( button:IsVisible() ) then
+				allButtonsHidden = nil;
+			end
+		end
+		if ( allButtonsHidden and LootFrameDownButton:IsVisible() ) then
+			LootFrame_PageDown();
+		end
 		return;
 	end
 	if ( event == "LOOT_CLOSED" ) then
@@ -56,7 +69,7 @@ function LootFrame_Update()
 	end
 	local texture, item, quantity, quality;
 	local button, countString, color;
-	for index = 1, LOOTFRAME_NUMBUTTONS, 1 do
+	for index = 1, LOOTFRAME_NUMBUTTONS do
 		button = getglobal("LootButton"..index);
 		local slot = (numLootToShow * (LootFrame.page - 1)) + index;
 		if ( slot <= numLootItems ) then	
@@ -206,14 +219,17 @@ end
 
 function GroupLootDropDown_GiveLoot()
 	GiveMasterLoot(LootFrame.selectedSlot, this.value);
+	CloseDropDownMenus();
 end
 
-function GroupLootFrame_OpenNewFrame(id)
+function GroupLootFrame_OpenNewFrame(id, rollTime)
 	local frame;
 	for i=1, NUM_GROUP_LOOT_FRAMES do
 		frame = getglobal("GroupLootFrame"..i);
 		if ( not frame:IsVisible() ) then
 			frame.rollID = id;
+			frame.rollTime = rollTime;
+			getglobal("GroupLootFrame"..i.."Timer"):SetMinMaxValues(0, rollTime);
 			frame:Show();
 			return;
 		end

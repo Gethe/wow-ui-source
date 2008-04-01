@@ -35,7 +35,7 @@
 			</Anchors>
 		</NormalTexture>
     </Button>
-    <Frame name="InspectPaperDollFrame" setAllPoints="true" parent="InspectFrame">
+    <Frame name="InspectPaperDollFrame" setAllPoints="true" parent="InspectFrame" id="1">
         <Layers>
             <Layer level="BACKGROUND">
                 <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L1">
@@ -58,7 +58,7 @@
                         </Anchor>
                     </Anchors>
                 </Texture>
-                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L2">
+                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomLeft">
                     <Size>
                         <AbsDimension x="256" y="256"/>
                     </Size>
@@ -70,7 +70,7 @@
                         </Anchor>
                     </Anchors>
                 </Texture>
-                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-R2">
+                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomRight">
                     <Size>
                         <AbsDimension x="128" y="256"/>
                     </Size>

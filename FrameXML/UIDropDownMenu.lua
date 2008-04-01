@@ -460,6 +460,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	local listFrame = getglobal("DropDownList"..level);
 	local listFrameName = "DropDownList"..level;
 	local tempFrame;
+	local point, relativePoint, relativeTo;
 	if ( not dropDownFrame ) then
 		tempFrame = this:GetParent();
 	else
@@ -484,9 +485,26 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame:ClearAllPoints();
 			-- If there's no specified anchorName then use left side of the dropdown menu
 			if ( not anchorName ) then
-				anchorName = UIDROPDOWNMENU_OPEN_MENU.."Left"
+				-- See if the anchor was set manually using setanchor
+				if ( dropDownFrame.xOffset ) then
+					xOffset = dropDownFrame.xOffset;
+				end
+				if ( dropDownFrame.yOffset ) then
+					yOffset = dropDownFrame.yOffset;
+				end
+				if ( dropDownFrame.point ) then
+					point = dropDownFrame.point;
+				end
+				if ( dropDownFrame.relativeTo ) then
+					relativeTo = dropDownFrame.relativeTo;
+				else
+					relativeTo = UIDROPDOWNMENU_OPEN_MENU.."Left";
+				end
+				if ( dropDownFrame.relativePoint ) then
+					relativePoint = dropDownFrame.relativePoint;
+				end
 			elseif ( anchorName == "cursor" ) then
-				anchorName = "UIParent";
+				relativeTo = "UIParent";
 				local cursorX, cursorY = GetCursorPosition();
 				if ( not xOffset ) then
 					xOffset = 0;
@@ -496,12 +514,20 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 				end
 				xOffset = cursorX + xOffset;
 				yOffset = cursorY + yOffset;
+			else
+				relativeTo = anchorName;
 			end
 			if ( not xOffset or not yOffset ) then
 				xOffset = 8;
 				yOffset = 22;
 			end
-			listFrame:SetPoint("TOPLEFT", anchorName, "BOTTOMLEFT", xOffset, yOffset);
+			if ( not point ) then
+				point = "TOPLEFT";
+			end
+			if ( not relativePoint ) then
+				relativePoint = "BOTTOMLEFT";
+			end
+			listFrame:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset);
 		else
 			if ( not dropDownFrame ) then
 				dropDownFrame = getglobal(UIDROPDOWNMENU_OPEN_MENU);
@@ -658,6 +684,17 @@ function UIDropDownMenu_JustifyText(justification, frame)
 	elseif ( justification == "CENTER" ) then
 		text:SetPoint("CENTER", frame:GetName().."Middle", "CENTER", -5, 2);
 	end
+end
+
+function UIDropDownMenu_SetAnchor(xOffset, yOffset, dropdown, point, relativeTo, relativePoint)
+	if ( not dropdown ) then
+		dropdown = this;
+	end
+	dropdown.xOffset = xOffset;
+	dropdown.yOffset = yOffset;
+	dropdown.point = point;
+	dropdown.relativeTo = relativeTo;
+	dropdown.relativePoint = relativePoint;
 end
 
 function UIDropDownMenu_GetCurrentDropDown()

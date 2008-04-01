@@ -460,7 +460,7 @@
 						if ( key2 ) then
 							SetBinding(key2);
 						end
-						if ( KeyBindingFrame.keyID == 1 ) then
+						if ( key1 and KeyBindingFrame.keyID == 1 ) then
 							KeyBindingFrame_SetBinding(key1, nil, key1);
 							if ( key2 ) then
 								SetBinding(key2, KeyBindingFrame.selected);
@@ -469,7 +469,9 @@
 							if ( key1 ) then
 								KeyBindingFrame_SetBinding(key1, KeyBindingFrame.selected);
 							end
-							KeyBindingFrame_SetBinding(key2, nil, key2);
+							if ( key2 ) then
+								KeyBindingFrame_SetBinding(key2, nil, key2);
+							end
 						end
 						KeyBindingFrame_Update();
 						-- Button highlighting stuff

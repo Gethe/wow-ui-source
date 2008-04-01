@@ -106,7 +106,7 @@
 					</Anchor>
 				</Anchors>
 				<Frames>
-					<Frame name="MiniMapTrackingFrame" enableMouse="true" hidden="false">
+					<Frame name="MiniMapTrackingFrame" enableMouse="true" hidden="true">
 						<Size>
 							<AbsDimension x="33" y="33"/>
 						</Size>
@@ -172,7 +172,7 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<Button name="MiniMapMeetingStoneFrame" enableMouse="true" hidden="false">
+					<Button name="MiniMapMeetingStoneFrame" enableMouse="true" hidden="true">
 						<Size>
 							<AbsDimension x="33" y="33"/>
 						</Size>
@@ -296,6 +296,90 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
+					<Button name="MiniMapBattlefieldFrame" hidden="true">
+						<Size>
+							<AbsDimension x="33" y="33"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-13"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="MiniMapBattlefieldIcon" file="Interface\BattlefieldFrame\UI-Battlefield-Icon">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="-1" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+									<Size>
+										<AbsDimension x="52" y="52"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture name="BattlegroundShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="3" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="MiniMapBattlefieldDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+								<Scripts>
+									<OnLoad>
+										MiniMapBattlefieldDropDown_OnLoad();
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks("RightButtonUp");
+								this:SetFrameLevel(this:GetFrameLevel()+1);
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+								GameTooltip:SetText(this.tooltip);
+							</OnEnter>
+							<OnUpdate>
+								if ( GameTooltip:IsOwned(this) and MiniMapBattlefieldFrame.status == "confirm") then
+									this.tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, MiniMapBattlefieldFrame.mapName, SecondsToTime(GetBattlefieldPortExpiration()/1000));
+									GameTooltip:SetText(this.tooltip);
+								end
+							</OnUpdate>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
+							</OnClick>
+						</Scripts>
+					</Button>
 					<Model name="MiniMapPing" file="Interface\MiniMap\Ping\MinimapPing.mdx" scale="0.4" hidden="true">
 						<Size>
 							<AbsDimension x="50" y="50"/>

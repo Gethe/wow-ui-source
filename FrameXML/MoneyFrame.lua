@@ -9,6 +9,8 @@ COPPER_PER_SILVER = 100;
 SILVER_PER_GOLD = 100;
 COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 
+COIN_BUTTON_WIDTH = 32;
+
 MoneyTypeInfo = { };
 MoneyTypeInfo["PLAYER"] = {
 	UpdateFunc = function()
@@ -95,6 +97,7 @@ MoneyTypeInfo["AUCTION"] = {
 		return this.staticMoney;
 	end,
 	showSmallerCoins = 1,
+	fixedWidth = 1,
 	collapse = 1,
 	truncateSmallCoins = nil,
 };
@@ -237,6 +240,11 @@ function MoneyFrame_Update(frameName, money)
 	end
 
 	if ( silver > 0 or showLowerDenominations ) then
+		-- Exception if showLowerDenominations and fixedWidth
+		if ( showLowerDenominations and info.fixedWidth ) then
+			silverButton:SetWidth(COIN_BUTTON_WIDTH);
+		end
+		
 		width = width + silverButton:GetWidth();
 		goldButton:SetPoint("RIGHT", frameName.."SilverButton", "LEFT", spacing, 0);
 		if ( goldButton:IsVisible() ) then
@@ -252,6 +260,11 @@ function MoneyFrame_Update(frameName, money)
 
 	-- Used if we're not showing lower denominations
 	if ( (copper > 0 or showLowerDenominations or info.showSmallerCoins == "Backpack") and not truncateCopper) then
+		-- Exception if showLowerDenominations and fixedWidth
+		if ( showLowerDenominations and info.fixedWidth ) then
+			copperButton:SetWidth(COIN_BUTTON_WIDTH);
+		end
+		
 		width = width + copperButton:GetWidth();
 		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "LEFT", spacing, 0);
 		if ( silverButton:IsVisible() ) then

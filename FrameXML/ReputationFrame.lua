@@ -30,7 +30,7 @@ function ReputationFrame_Update()
 	local numFactions = GetNumFactions();
 	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame);
 	local factionIndex, factionStanding, factionBar, factionHeader, color;
-	local name, standingID, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed;
+	local name, description, standingID, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed;
 	local checkbox, check, rightBarTexture;
 
 	-- Update scroll frame
@@ -41,7 +41,7 @@ function ReputationFrame_Update()
 		factionBar = getglobal("ReputationBar"..i);
 		factionHeader = getglobal("ReputationHeader"..i);
 		if ( factionIndex <= numFactions ) then
-			name, standingID, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed = GetFactionInfo(factionIndex);
+			name, description, standingID, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed = GetFactionInfo(factionIndex);
 			if ( isHeader ) then
 				factionHeader:SetText(name);
 				if ( isCollapsed ) then

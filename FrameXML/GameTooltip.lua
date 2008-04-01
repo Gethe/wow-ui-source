@@ -86,7 +86,7 @@ end
 function GameTooltip_SetDefaultAnchor(tooltip, parent)		
 	tooltip:SetOwner(parent, "ANCHOR_NONE");
 	--tooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -13, 64);
-	tooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", DEFAULT_TOOLTIP_POSITION, 64);
+	tooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y);
 	tooltip.default = 1;
 end
 

@@ -21,7 +21,7 @@ end
 
 function MacroFrame_OnHide()
 	MacroPopupFrame:Hide();
-	if ( MacroFrame.textChanged and GetNumMacros() > 0) then
+	if ( MacroFrame.textChanged and MacroFrame.selectedMacro and GetNumMacros() > 0) then
 		EditMacro(MacroFrame.selectedMacro, nil, nil, MacroFrameText:GetText(), 1);		
 	end
 	MacroFrame.textChanged = nil;
@@ -98,7 +98,7 @@ function MacroFrame_AddMacroLine(line)
 end
 
 function MacroButton_OnClick()
-	if ( MacroFrame.textChanged ) then
+	if ( MacroFrame.textChanged and MacroFrame.selectedMacro ) then
 		EditMacro(MacroFrame.selectedMacro, nil, nil, MacroFrameText:GetText(), 1);		
 	end
 	MacroFrame.textChanged = nil;

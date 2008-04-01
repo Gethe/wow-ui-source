@@ -193,7 +193,6 @@ function HelpFrame_ShowFrame(key, ticketType)
 		HelpFrame.openFrame:Hide();
 	end
 	
-	
 	if ( key == "OpenTicket" and not PETITION_QUEUE_ACTIVE ) then
 		-- Petition queue is down show a dialog
 		HideUIPanel(HelpFrame);
@@ -417,11 +416,11 @@ function TicketStatusFrame_OnEvent()
 	else
 		if ( arg1 ~= 0 ) then		
 			this:Show();
-			BuffFrame:SetPoint("TOPRIGHT", this:GetParent():GetName(), "TOPRIGHT", -205, (-this:GetHeight()));
+			TemporaryEnchantFrame:SetPoint("TOPRIGHT", this:GetParent():GetName(), "TOPRIGHT", -205, (-this:GetHeight()));
 			refreshTime = GMTICKET_CHECK_INTERVAL;
 		else
 			this:Hide();
-			BuffFrame:SetPoint("TOPRIGHT", this:GetParent():GetName(), "TOPRIGHT", -205, -13);
+			TemporaryEnchantFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -205, -13);
 		end
 	end	
 end

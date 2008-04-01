@@ -193,6 +193,6 @@ function PetTab_Update()
 		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "LEFT", 0, 0);
 	else
 		CharacterFrameTab2:Show();
-		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "RIGHT", -15, 0);
+		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "RIGHT", -16, 0);
 	end
 end

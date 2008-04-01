@@ -170,13 +170,8 @@
 				this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 			</OnLoad>
 			<OnClick>
-				if ( CURRENT_ACTIONBAR_PAGE == 1 ) then
-					CURRENT_ACTIONBAR_PAGE = NUM_ACTIONBAR_PAGES;
-				else
-					CURRENT_ACTIONBAR_PAGE = CURRENT_ACTIONBAR_PAGE - 1;
-				end
+				ActionBar_PageUp()
 				PlaySound("UChatScrollButton");
-				ChangeActionBarPage();
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
@@ -203,13 +198,8 @@
 				this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 			</OnLoad>
 			<OnClick>
-				if ( CURRENT_ACTIONBAR_PAGE == NUM_ACTIONBAR_PAGES ) then
-					CURRENT_ACTIONBAR_PAGE = 1;
-				else
-					CURRENT_ACTIONBAR_PAGE = CURRENT_ACTIONBAR_PAGE + 1;
-				end
+				ActionBar_PageDown();
 				PlaySound("UChatScrollButton");
-				ChangeActionBarPage();
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>

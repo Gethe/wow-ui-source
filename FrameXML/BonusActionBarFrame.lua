@@ -217,6 +217,10 @@ function ShapeshiftBar_UpdatePosition()
 		ShapeshiftBarLeft:Hide();
 		ShapeshiftBarRight:Hide();
 		ShapeshiftBarMiddle:Hide();
+		for i=1, GetNumShapeshiftForms() do
+			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetWidth(50);
+			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetHeight(50);
+		end
 	else
 		ShapeshiftBarFrame:SetPoint("BOTTOMLEFT", "MainMenuBar", "TOPLEFT", 30, 0);
 		if ( GetNumShapeshiftForms() > 2 ) then
@@ -224,5 +228,9 @@ function ShapeshiftBar_UpdatePosition()
 		end
 		ShapeshiftBarLeft:Show();
 		ShapeshiftBarRight:Show();
+		for i=1, GetNumShapeshiftForms() do
+			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetWidth(64);
+			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetHeight(64);
+		end
 	end
 end

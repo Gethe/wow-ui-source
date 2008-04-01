@@ -91,8 +91,10 @@
 						this:SetFrameLevel(this:GetFrameLevel() + 2);
 					</OnLoad>
 					<OnClick>
-						if ( IsShiftKeyDown() and ChatFrameEditBox:IsVisible() ) then
-							ChatFrameEditBox:Insert(GetTradeTargetItemLink(this:GetParent():GetID()));
+						if ( IsShiftKeyDown() ) then
+							if ( ChatFrameEditBox:IsVisible() ) then
+								ChatFrameEditBox:Insert(GetTradeTargetItemLink(this:GetParent():GetID()));
+							end
 						else
 							ClickTargetTradeButton(this:GetParent():GetID());
 						end
@@ -117,8 +119,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						if ( IsShiftKeyDown() and ChatFrameEditBox:IsVisible() ) then
-							ChatFrameEditBox:Insert(GetTradePlayerItemLink(this:GetParent():GetID()));
+						if ( IsShiftKeyDown() ) then
+							if ( ChatFrameEditBox:IsVisible() ) then
+								ChatFrameEditBox:Insert(GetTradePlayerItemLink(this:GetParent():GetID()));
+							end
 						else
 							ClickTradeButton(this:GetParent():GetID());
 						end

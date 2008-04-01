@@ -540,6 +540,9 @@
 	<Binding name="TOGGLETALENTS">
 		ToggleTalentFrame();
 	</Binding>
+	<Binding name="TOGGLECHARACTER4">
+		ToggleCharacter("HonorFrame");
+	</Binding>
 	<Binding name="TOGGLECHARACTER3">
 		ToggleCharacter("PetPaperDollFrame");
 	</Binding>
