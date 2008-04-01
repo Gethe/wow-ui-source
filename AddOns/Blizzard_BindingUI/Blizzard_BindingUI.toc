@@ -1,0 +1,6 @@
+## Interface: 20300
+## Title: Blizzard Key Binding UI
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_BindingUI.xml
+Localization.lua

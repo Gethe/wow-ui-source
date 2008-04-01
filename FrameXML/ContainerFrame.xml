@@ -1,0 +1,253 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ContainerFrame.lua"/>
+	<Button name="ContainerFrameItemButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				local modifiedClick = IsModifiedClick();
+				-- If we can loot the item and autoloot toggle is active, then do a normal click
+				if ( arg1 ~= "LeftButton" and modifiedClick and IsModifiedClick("AUTOLOOTTOGGLE") ) then
+					local _, _, _, _, _, lootable = GetContainerItemInfo(this:GetParent():GetID(), this:GetID());
+					if ( lootable ) then
+						modifiedClick = false;
+					end
+				end
+				if ( modifiedClick ) then
+					ContainerFrameItemButton_OnModifiedClick(arg1);
+				else
+					ContainerFrameItemButton_OnClick(arg1);
+				end
+			</OnClick>
+			<OnLoad>
+				ContainerFrameItemButton_OnLoad();
+			</OnLoad>
+			<OnEnter>
+				ContainerFrameItemButton_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnHide>
+				if ( this.hasStackSplit and (this.hasStackSplit == 1) ) then
+					StackSplitFrame:Hide();
+				end
+			</OnHide>
+			<OnDragStart>
+				ContainerFrameItemButton_OnClick("LeftButton");
+			</OnDragStart>
+			<OnReceiveDrag>
+				ContainerFrameItemButton_OnClick("LeftButton");
+			</OnReceiveDrag>
+		</Scripts>
+	</Button>
+	<Frame name="ContainerFrameTemplate" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="256" y="256"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+                <Texture name="$parentPortrait">
+                    <Size>
+                        <AbsDimension x="40" y="40"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBackgroundTop" file="Interface\ContainerFrame\UI-Bag-Components">
+					<Size>
+						<AbsDimension x="256" y="512"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBackgroundMiddle1" file="Interface\ContainerFrame\UI-Bag-Components">
+					<Size>
+						<AbsDimension x="256" y="512"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBackgroundTop" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.3515625" bottom="0.8515625"/>
+				</Texture>
+				<Texture name="$parentBackgroundMiddle2" file="Interface\ContainerFrame\UI-Bag-Components" hidden="true">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.353515625" bottom="0.8515625"/>
+				</Texture>
+				<Texture name="$parentBackgroundBottom" file="Interface\ContainerFrame\UI-Bag-Components">
+					<Size>
+						<AbsDimension x="256" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.330078125" bottom="0.349609375"/>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="112" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="47" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="-216"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="$parentItem1" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem2" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem3" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem4" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem5" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem6" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem7" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem8" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem9" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem10" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem11" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem12" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem13" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem14" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem15" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem16" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem17" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem18" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem19" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem20" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem21" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem22" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem23" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem24" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem25" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem26" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem27" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem28" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem29" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem30" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem31" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem32" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem33" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem34" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
+
+			<Button name="$parentPortraitButton">
+				<Size>
+					<AbsDimension x="40" y="40"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="7" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+						if ( this:GetID() == 0 ) then
+							GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
+							if (GetBindingKey("TOGGLEBACKPACK")) then
+								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
+							end
+						elseif ( this:GetID() == KEYRING_CONTAINER ) then
+							GameTooltip:SetText(KEYRING, 1.0, 1.0, 1.0);
+							if (GetBindingKey("TOGGLEKEYRING")) then
+								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEKEYRING")..")"..FONT_COLOR_CODE_CLOSE)
+							end
+						elseif ( GameTooltip:SetInventoryItem("player", ContainerIDToInventoryID(this:GetID())) ) then
+							local binding = GetBindingKey("TOGGLEBAG"..(4 - this:GetID() + 1));
+							if ( binding ) then
+								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
+							end
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ToggleBag(this:GetParent():GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent>
+				ContainerFrame_OnEvent();
+			</OnEvent>
+			<OnLoad>
+				ContainerFrame_OnLoad();
+			</OnLoad>
+			<OnHide>
+				ContainerFrame_OnHide();
+			</OnHide>
+			<OnShow>
+				ContainerFrame_OnShow();
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<Frame name="ContainerFrame1" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame2" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame3" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame4" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame5" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame6" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame7" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame8" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame9" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame10" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame11" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame12" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+</Ui>

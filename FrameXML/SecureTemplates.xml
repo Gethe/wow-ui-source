@@ -1,0 +1,167 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- A base template for secure frames -->
+	<Frame name="SecureFrameTemplate" protected="true" virtual="true"/>
+	
+	<Script file="SecureTemplates.lua"/>
+	<Script file="SecureStateHeader.lua"/>
+	<Script file="SecureStateDriver.lua"/>
+
+	<!-- A button template for click-cast style action buttons -->
+	<Button name="SecureActionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SecureActionButton_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- A variant of SecureActionButtonTemplate used for unit buttons -->
+	<Button name="SecureUnitButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SecureUnitButton_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- A header template that manages a 'state' which can be used 
+	     with the secure action templates to create a variety of
+	     interactive controls.
+		 See SecureStateHeader.lua for details. -->
+	<Frame name="SecureStateHeaderTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Size x="2" y="2"/>
+		<Scripts>
+			<OnHide>
+				SecureStateHeader_OnHide(self);
+			</OnHide>
+			<OnAttributeChanged>
+				SecureStateHeader_OnAttributeChanged(self, name, value);
+			</OnAttributeChanged>
+		</Scripts>
+	</Frame>
+
+	<!-- Variant of the SecureStateHeaderTemplate which drives state
+	     transitions when stance/shapeshift/actionbar changes occur. -->
+	<Frame name="SecureStateDriverTemplate" inherits="SecureStateHeaderTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				SecureStateDriver_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<!-- Anchor/trigger buttons for a variety of drop down and pop up uses -->
+
+	<!-- Trigger from clicks -->
+	<Button name="SecureAnchorButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SecureStateAnchor_RunChild(self, button, "onclickbutton");
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- Trigger from mouseover -->
+	<Frame name="SecureAnchorEnterTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				if ( motion ) then
+					self:SetAttribute("_entered", true);
+					SecureStateAnchor_RunChild(self, "OnEnter", "onenterbutton");
+				end
+			</OnEnter>
+			<OnLeave>
+				if ( motion and self:GetAttribute("_entered") ) then
+					self:SetAttribute("_entered", nil);
+					SecureStateAnchor_RunChild(self, "OnLeave", "onleavebutton");
+				end
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
+	<!-- Trigger from mouse up and down -->
+	<Frame name="SecureAnchorUpDownTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnMouseDown>
+				SecureStateAnchor_RunChild(self, button, "onmousedownbutton");
+			</OnMouseDown>
+			<OnMouseUp>
+				SecureStateAnchor_RunChild(self, button, "onmouseupbutton");
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+	<!-- A popup radial menu button -->
+	<Button name="SecurePieButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SecurePieButton_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- A frame used for managing group members -->
+	<Frame name="SecureGroupHeaderTemplate" inherits="SecureFrameTemplate" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad>
+				SecureGroupHeader_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				SecureGroupHeader_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnShow>
+				SecureGroupHeader_Update(self);
+			</OnShow>
+			<OnAttributeChanged>
+				SecureGroupHeader_OnAttributeChanged(self, name, value);
+			</OnAttributeChanged>
+		</Scripts>
+	</Frame>
+
+	<!-- A frame used for managing party members -->
+	<Frame name="SecurePartyHeaderTemplate" inherits="SecureGroupHeaderTemplate" hidden="true" virtual="true">
+		<Attributes>
+			<Attribute name="showParty" type="boolean" value="true"/>
+		</Attributes>
+	</Frame>
+
+	<!-- A frame used for managing raid members -->
+	<Frame name="SecureRaidGroupHeaderTemplate" inherits="SecureGroupHeaderTemplate" hidden="true" virtual="true">
+		<Attributes>
+			<Attribute name="showRaid" type="boolean" value="true"/>
+		</Attributes>
+	</Frame>
+
+	<!-- A frame used for managing group pets -->
+	<Frame name="SecureGroupPetHeaderTemplate" inherits="SecureFrameTemplate" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad>
+				SecureGroupPetHeader_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				SecureGroupPetHeader_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnShow>
+				SecureGroupPetHeader_Update(self);
+			</OnShow>
+			<OnAttributeChanged>
+				SecureGroupPetHeader_OnAttributeChanged(self, name, value);
+			</OnAttributeChanged>
+		</Scripts>
+	</Frame>
+
+	<!-- A frame used for managing party pets -->
+	<Frame name="SecurePartyPetHeaderTemplate" inherits="SecureGroupPetHeaderTemplate" hidden="true" virtual="true">
+		<Attributes>
+			<Attribute name="showParty" type="boolean" value="true"/>
+		</Attributes>
+	</Frame>
+
+	<!-- A frame used for managing raid pets -->
+	<Frame name="SecureRaidPetHeaderTemplate" inherits="SecureGroupPetHeaderTemplate" hidden="true" virtual="true">
+		<Attributes>
+			<Attribute name="showRaid" type="boolean" value="true"/>
+		</Attributes>
+	</Frame>
+</Ui>

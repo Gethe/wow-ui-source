@@ -1,0 +1,316 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+   <Script file="AudioOptionsFrame.lua"/>
+   <Button name="AudioOptionsFrameTabButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="115" y="32"/>
+        </Size>
+        <Layers>
+        	<Layer level="BACKGROUND">
+        		<Texture name="$parentLeftDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="TOPLEFT">
+        					<Offset>
+        						<AbsDimension x="0" y="3"/>
+        					</Offset>
+        				</Anchor>
+        			</Anchors>
+					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddleDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
+        			<Size>
+        				<AbsDimension x="88" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRightDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentLeft" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="TOPLEFT"/>
+        			</Anchors>
+					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
+        			<Size>
+        				<AbsDimension x="88" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRight" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+        		</Texture>
+        	</Layer>
+        </Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 4);
+			</OnLoad>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(AudioOptionsFrame);
+				AudioOptionsFrameTab_OnClick();
+			</OnClick>
+			<OnShow>
+				PanelTemplates_TabResize(0);
+				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 30);
+			</OnShow>
+		</Scripts>
+		<ButtonText name="$parentText">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
+		<DisabledFont inherits="GameFontHighlightSmall"/>
+		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="10" y="2"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="RIGHT">
+					<Offset>
+						<AbsDimension x="-10" y="2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+    </Button>
+	<Slider name="AudioOptionsSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
+		<Size>
+			<AbsDimension x="118" y="15"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+		</HitRectInsets>
+		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="8"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="8"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="6" bottom="6"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentValue" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+				if ( this.tooltipRequirement ) then
+					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+		</ThumbTexture>
+	</Slider>
+	<Slider name="AudioOptionsVolumeSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="15"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+		</HitRectInsets>
+		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="8"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="8"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="6" bottom="6"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="65" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="5" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+				if ( this.tooltipRequirement ) then
+					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+		</ThumbTexture>
+	</Slider>
+	<Frame name="AudioOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+		<Size>
+			<AbsDimension x="400" y="395"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="AudioOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="AudioOptionsFrameTab1" inherits="AudioOptionsFrameTabButtonTemplate" id="1" text="VOICE_SOUND">
+                <Anchors>
+                    <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="45" y="-8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+			<Button name="AudioOptionsFrameTab2" inherits="AudioOptionsFrameTabButtonTemplate" id="2" text="VOICE">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="AudioOptionsFrameTab1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PanelTemplates_SetNumTabs(this, 2);
+				PanelTemplates_SetTab(this, 1);
+				this:RegisterEvent("VOICE_CHAT_ENABLED_UPDATE");
+			</OnLoad>
+			<OnEvent>
+				if ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
+					VoiceChat_Toggle();
+				end
+			</OnEvent>
+			<OnShow>
+				Disable_BagButtons();
+				UpdateMicroButtons();
+			</OnShow>
+			<OnKeyDown>
+				if ( arg1 == "ESCAPE" ) then
+					PlaySound("gsTitleOptionExit");
+					HideUIPanel(AudioOptionsFrame);
+					SoundOptionsFrame_Cancel();
+					VoiceOptionsFrame_Cancel();
+				elseif ( GetBindingFromClick(arg1) == "SCREENSHOT" ) then
+					RunBinding("SCREENSHOT");
+				end
+			</OnKeyDown>
+			<OnHide>
+				if ( not this.okay ) then
+					SoundOptionsFrame_Cancel();
+					VoiceOptionsFrame_Cancel();
+				end
+				this.okay = nil;
+				ShowUIPanel(GameMenuFrame);
+				UpdateMicroButtons();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

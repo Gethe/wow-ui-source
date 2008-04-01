@@ -1,0 +1,7 @@
+## Interface: 20300
+## Title: Blizzard Guild Bank UI
+## Secure: 1
+## LoadOnDemand: 1
+## SavedVariables: 
+Blizzard_GuildBankUI.xml
+Localization.lua

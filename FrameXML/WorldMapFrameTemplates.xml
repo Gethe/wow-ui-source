@@ -1,0 +1,95 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="WorldMapUnitTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				this.unit = "party"..this:GetID();
+				getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+			</OnLoad>
+			<OnEnter>
+				WorldMapUnit_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				WorldMapTooltip:Hide();
+			</OnLeave>
+			<OnMouseUp>
+				MapUnit_OnMouseUp(arg1, "WorldMapRaid", "WorldMapParty");
+			</OnMouseUp>
+			<OnUpdate>
+				MapUnit_OnUpdate(self);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<Frame name="WorldMapRaidUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="WorldMapFlagTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 2);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Minimap\POIIcons" setAllPoints="true">
+					<TexCoords left="0.875" right="1.0" top="0" bottom="0.125"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+			</OnLoad>
+			<OnEnter>
+				local x, y = this:GetCenter();
+				local parentX, parentY = this:GetParent():GetCenter();
+				if ( x > parentX ) then
+					WorldMapTooltip:SetOwner(this, "ANCHOR_LEFT");
+				else
+					WorldMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				end
+				WorldMapTooltip:SetText(CORPSE_RED);
+				WorldMapTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				WorldMapTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+</Ui>

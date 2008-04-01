@@ -1,0 +1,1349 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ChannelFrame.lua"/>
+
+	<Button name="ChannelRoleIconTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTexture" file="Interface\GroupFrame\UI-Group-LeaderIcon"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+			</OnLoad>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="ChannelButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="155" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentCollapsed" inherits="GameFontDisableLarge">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="-5" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentSpeakerFrame" inherits="VoiceChatSpeakerTemplate">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnUpdate>
+						VoiceChat_OnUpdate(arg1);
+					</OnUpdate>
+					<OnClick>
+						SetActiveVoiceChannel(this:GetParent():GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnClick>
+				ChannelList_OnClick();
+			</OnClick>
+			<OnDragStart>
+				ChannelListButton_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				ChannelListButton_OnDragStop(this);
+			</OnDragStop>
+			<OnEnter>
+				if ( this.voiceEnabled ) then
+					GameTooltip_AddNewbieTip(DISPLAY_CHANNEL_PULLOUT, 1.0, 1.0, 1.0, string.format(NEWBIE_TOOLTIP_DISPLAY_CHANNEL_PULLOUT, (this.name or UNKNOWN)), 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
+			<TexCoords left="0" right="0.53125" top="0" bottom="0.625"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
+		<ButtonText name="$parentText">
+			<Size>
+				<AbsDimension x="135" y="8"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="5" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormalSmall" justifyH="LEFT"/>
+		<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
+	</Button>
+	<Button name="ChannelRosterButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="130" y="15"/>
+		</Size>
+		<Frames>
+			<Frame setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<FontString name="$parentName" inherits="GameFontHighlightSmall" text="Player Name">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="13" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentRank" inherits="ChannelRoleIconTemplate">
+				<Size>
+					<AbsDimension x="12" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent">
+						<Offset x="0" y="1"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						local rank = this:GetParent().rank;
+						local voice = this:GetParent().voice;
+						-- Sets the Leader/Assistant Tooltip
+						if ( rank ) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							if ( rank == 2 ) then
+								GameTooltip:SetText(RAID_LEADER, nil, nil, nil, nil, 1);
+							elseif ( rank == 1 ) then
+								GameTooltip:SetText(RAID_ASSISTANT, nil, nil, nil, nil, 1);
+							end
+							if ( voice == 2 ) then
+								GameToolTip:AddLine("("..MUTED..")", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+							end
+						else
+							GameTooltip:Hide();
+						end
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Button name="$parentSpeakerFrame" inherits="VoiceChatSpeakerTemplate">
+				<Size>
+					<AbsDimension x="12" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnUpdate>
+						VoiceChat_OnUpdate(arg1);
+					</OnUpdate>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				if ( ChannelRosterScrollFrameScrollBar:IsShown() ) then
+					this:SetWidth(115);
+				else
+					this:SetWidth(135);
+				end
+			</OnLoad>
+			<OnClick>
+				ChannelRoster_OnClick();
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+	<!-- /Templates -->
+	<!-- Channel Frame -->
+	<Frame name="ChannelFrame" parent="FriendsFrame" hidden="true">
+		<Size>
+			<AbsDimension x="355" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="$parentVerticalBar">
+				<Size>
+					<AbsDimension x="13" y="300"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="3" y="35"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTop" file="Interface\FriendsFrame\UI-ChannelFrame-VerticalBar">
+							<Size x="12" y="128"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.1875" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\FriendsFrame\UI-ChannelFrame-VerticalBar">
+							<Size x="9" y="128"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTop">
+									<Offset x="1" y="-106"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="0.5625" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\FriendsFrame\UI-ChannelFrame-VerticalBar">
+							<Size x="12" y="128"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentMiddle">
+									<Offset x="-1" y="-105"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.8125" right="1" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentAutoJoin">
+				<Size>
+					<AbsDimension x="265" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ChannelFrame" relativePoint="TOP">
+						<Offset x="-100" y="-40"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontHighlightSmall" text="VOICE_CHAT">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentParty" inherits="UICheckButtonTemplate">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="60" y="5"/>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="-60" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Scripts>
+							<OnLoad>
+								local text = getglobal(this:GetName().."Text");
+								text:SetText(VOICE_CHAT_PARTY_RAID);
+								text:SetPoint("LEFT", this, "RIGHT", 2, 1);
+								this:SetChecked(GetCVar("autojoinPartyVoice"))
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(this:GetParent(), "ANCHOR_RIGHT", -20);
+								GameTooltip:SetText(AUTO_JOIN_VOICE);
+								GameTooltip_AddNewbieTip(AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								SetCVar("autojoinPartyVoice", this:GetChecked())
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentBattleground" inherits="UICheckButtonTemplate">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentParty" relativePoint="RIGHT">
+								<Offset x="70" y="0"/>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="-60" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Scripts>
+							<OnLoad>
+								local text = getglobal(this:GetName().."Text");
+								text:SetText(VOICE_CHAT_BATTLEGROUND);
+								text:SetPoint("LEFT", this, "RIGHT", 2, 1);
+								this:SetChecked(GetCVar("autojoinBGVoice"))
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(this:GetParent(), "ANCHOR_RIGHT", -20);
+								GameTooltip:SetText(AUTO_JOIN_VOICE);
+								GameTooltip_AddNewbieTip(AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								SetCVar("autojoinBGVoice", this:GetChecked())
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT", -20);
+						GameTooltip:SetText(AUTO_JOIN_VOICE);
+						GameTooltip_AddNewbieTip(AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Button name="$parentNewButton" inherits="UIPanelButtonTemplate" text="ADD">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="82"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ChannelFrame_New_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+<!-- Waiting for Chat System Changes
+			<Button name="$parentJoinButton" inherits="UIPanelButtonTemplate" text="JOIN">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentNewButton" relativePoint="LEFT">
+						<Offset x="-3" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ChannelFrame_Join_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button> 
+			-->
+			<!-- Channel List -->
+			<ScrollFrame name="ChannelListScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size x="158" y="327"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="20" y="-76"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ScrollChild>
+					<Frame name="ChannelListScrollChildFrame">
+						<Size>
+							<AbsDimension x="145" y="400"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<Button name="ChannelButton1" inherits="ChannelButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton2" inherits="ChannelButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton1" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton3" inherits="ChannelButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton2" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton4" inherits="ChannelButtonTemplate" id="4">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton3" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton5" inherits="ChannelButtonTemplate" id="5">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton4" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton6" inherits="ChannelButtonTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton5" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton7" inherits="ChannelButtonTemplate" id="7">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton6" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton8" inherits="ChannelButtonTemplate" id="8">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton7" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton9" inherits="ChannelButtonTemplate" id="9">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton8" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton10" inherits="ChannelButtonTemplate" id="10">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton9" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton11" inherits="ChannelButtonTemplate" id="11">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton10" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton12" inherits="ChannelButtonTemplate" id="12">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton11" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton13" inherits="ChannelButtonTemplate" id="13">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton12" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton14" inherits="ChannelButtonTemplate" id="14">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton13" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton15" inherits="ChannelButtonTemplate" id="15">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton14" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton16" inherits="ChannelButtonTemplate" id="16">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton15" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton17" inherits="ChannelButtonTemplate" id="17">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton16" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton18" inherits="ChannelButtonTemplate" id="18">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton17" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton19" inherits="ChannelButtonTemplate" id="19">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton18" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="ChannelButton20" inherits="ChannelButtonTemplate" id="20">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ChannelButton19" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<!-- /Channel List -->
+			<!-- Channel Roster -->
+			<Frame name="ChannelRoster">
+				<Size x="158" y="327"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ChannelFrame" relativePoint="TOP">
+						<Offset x="121" y="-79"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentChannelName" inherits="GameFontNormalSmall" text="Channel Name" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="-115" y="20"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentChannelCount" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size x="30" y="13"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentChannelName" relativePoint="RIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentHiddenText" inherits="GameFontNormalSmall" hidden="true">
+							<Size x="0" y="13"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size x="158" y="327"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="ChannelFrame">
+								<Offset x="-39" y="-76"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="256"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset x="-2" y="4"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="106"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset x="-2" y="-2"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(CHANNEL_ROSTER_HEIGHT, ChannelRoster_Update)
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+					<Button name="ChannelMemberButton1" inherits="ChannelRosterButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelFrame" relativePoint="TOPLEFT">
+								<Offset x="206" y="-75"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton2" inherits="ChannelRosterButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton1" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton3" inherits="ChannelRosterButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton2" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton4" inherits="ChannelRosterButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton3" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton5" inherits="ChannelRosterButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton4" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton6" inherits="ChannelRosterButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton5" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton7" inherits="ChannelRosterButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton6" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton8" inherits="ChannelRosterButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton7" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton9" inherits="ChannelRosterButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton8" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton10" inherits="ChannelRosterButtonTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton9" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton11" inherits="ChannelRosterButtonTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton10" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton12" inherits="ChannelRosterButtonTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton11" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton13" inherits="ChannelRosterButtonTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton12" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton14" inherits="ChannelRosterButtonTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton13" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton15" inherits="ChannelRosterButtonTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton14" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton16" inherits="ChannelRosterButtonTemplate" id="16">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton15" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton17" inherits="ChannelRosterButtonTemplate" id="17">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton16" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton18" inherits="ChannelRosterButtonTemplate" id="18">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton17" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton19" inherits="ChannelRosterButtonTemplate" id="19">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton18" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton20" inherits="ChannelRosterButtonTemplate" id="20">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton19" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton21" inherits="ChannelRosterButtonTemplate" id="21">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton20" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ChannelMemberButton22" inherits="ChannelRosterButtonTemplate" id="22">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ChannelMemberButton21" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate"/>
+				</Frames>
+			</Frame>
+			<!-- /Channel Roster -->
+			<!-- Channel Create/Join Pane -->
+			<Frame name="$parentDaughterFrame" hidden="true" enableKeyboard="true" enableMouse="true">
+				<Size>
+					<AbsDimension x="212" y="200"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="UIParent">
+						<Offset>
+							<AbsDimension x="0" y="100"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString name="$parentName" inherits="GameFontNormal" text="CHANNEL_NEW_CHANNEL">
+							<Size>
+								<AbsDimension x="0" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="-5" y="-13"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentTitlebar" file="Interface\FriendsFrame\UI-ChannelFrame-Titlebar">
+							<Size>
+								<AbsDimension x="256" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="8" y="-8"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-6" y="-7"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox name="$parentChannelName" letters="31" multiLine="false" enableMouse="true" autoFocus="true" inherits="InputBoxTemplate">
+						<Size x="170" y="16"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="23" y="-60"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormal" text="CHANNEL_CHANNEL_NAME">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset x="0" y="15"/>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnterPressed>
+								if ( this:GetText() ) then
+									ChannelFrameDaughterFrame_Okay();
+								else
+									ChannelFrameDaughterFrame_Cancel();
+								end
+							</OnEnterPressed>
+							<OnEscapePressed>
+									ChannelFrameDaughterFrame_Cancel();
+							</OnEscapePressed>
+							<OnTabPressed>
+								EditBox_HandleTabbing(CHAT_CHANNEL_TABBING);
+							</OnTabPressed>
+						</Scripts>
+					</EditBox>
+					<EditBox name="$parentChannelPassword" letters="31" multiLine="false" enableMouse="true" autoFocus="false" inherits="InputBoxTemplate">
+						<Size x="170" y="16"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentChannelName" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="-30"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormal" text="PASSWORD">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset x="0" y="15"/>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentOptional" inherits="GameFontHighlightSmall" text="OPTIONAL_PARENS">
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
+											<Offset x="3" y="0"/>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnterPressed>
+								ChannelFrameDaughterFrame_Okay();
+							</OnEnterPressed>
+							<OnEscapePressed>
+								ChannelFrameDaughterFrame_Cancel();
+							</OnEscapePressed>
+							<OnTabPressed>
+								EditBox_HandleTabbing(CHAT_CHANNEL_TABBING);
+							</OnTabPressed>
+						</Scripts>
+					</EditBox>
+					<!--
+					<CheckButton name="$parentVoiceChat" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentChannelPassword" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-7" y="-14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								local text = getglobal(this:GetName().."Text");
+								text:SetText(ENABLE_VOICECHAT);
+								text:SetPoint("LEFT", this, "RIGHT", 2, 2);
+							</OnLoad>
+						</Scripts>
+					</CheckButton> -->
+					<Button name="$parentDetailCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset x="-2" y="-3"/>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+						<Size>
+							<AbsDimension x="96" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ChannelFrameDaughterFrame_Okay();
+							</OnClick>
+						</Scripts>
+						<NormalFont inherits="GameFontNormalSmall"/>
+						<HighlightFont inherits="GameFontHighlightSmall"/>
+						<DisabledFont inherits="GameFontDisableSmall"/>
+					</Button>
+					<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size>
+							<AbsDimension x="96" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentOkayButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="1" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ChannelFrameDaughterFrame_Cancel();
+							</OnClick>
+						</Scripts>
+						<NormalFont inherits="GameFontNormalSmall"/>
+						<HighlightFont inherits="GameFontHighlightSmall"/>
+						<DisabledFont inherits="GameFontDisableSmall"/>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnHide>
+						ChannelFrameDaughterFrame_OnHide();
+					</OnHide>
+				</Scripts>
+			</Frame>
+			<Frame name="ChannelListDropDown" inherits="UIDropDownMenuTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ChannelFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				ChannelFrame_Update();
+			</OnShow>
+			<OnEvent>
+				ChannelFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				 ChannelFrame_OnUpdate();
+			</OnUpdate>
+			<OnHide>
+				if ( ChannelFrameDaughterFrame:IsShown() ) then
+					ChannelFrameDaughterFrame:Hide();		
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	
+	<Button name="ChannelPulloutRosterButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="14"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Button name="$parentSpeaker" inherits="VoiceChatSpeakerTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="13" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>		
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP" text="">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this.speaker = getglobal(this:GetName() .. "Speaker");
+				this.name = getglobal(this:GetName() .. "Name");
+				this.name:SetPoint("TOPLEFT", "$parentSpeaker", "TOPRIGHT", 8, -1);
+				this:EnableMouseWheel();
+				this:RegisterEvent("VOICE_PLATE_START");
+				this:RegisterEvent("VOICE_PLATE_STOP");
+				this:SetScript("OnEvent", function(...) ChannelPulloutRosterButton_OnEvent(...) end);
+			</OnLoad>
+			<OnMouseWheel>
+				ChannelPulloutRoster_Scroll(this:GetParent(), -arg1);
+			</OnMouseWheel>
+		</Scripts>
+	</Button>
+	
+	
+	<Button name="ChannelPulloutTab" frameStrata="DIALOG" parent="UIParent" movable="true" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="-264" y="77"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="64" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\ChatFrame\ChatFrameTab">
+					<Size>
+						<AbsDimension x="16" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.25" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\ChatFrame\ChatFrameTab">
+					<Size>
+						<AbsDimension x="44" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.25" right="0.75" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\ChatFrame\ChatFrameTab">
+					<Size>
+						<AbsDimension x="16" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="1.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentFlash" hidden="true">
+				<Size>
+					<AbsDimension x="5" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentLeft">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="RIGHT" relativeTo="$parentRight">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-80" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
+				this:RegisterForDrag("LeftButton");
+				this:SetAlpha(0);
+				UIDropDownMenu_Initialize(getglobal(this:GetName().."DropDown"), ChannelPulloutTabDropDown_Initialize, "MENU");
+			</OnLoad>
+			<OnShow>
+				PanelTemplates_TabResize(0);
+			</OnShow>
+			<OnClick>
+				ChannelPulloutTab_ReanchorLeft();
+				ChannelPulloutTab_OnClick(this, arg1);
+				PlaySound("UChatScrollButton");
+			</OnClick>
+			<OnEnter>
+				GameTooltip_AddNewbieTip(CHANNELPULLOUT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHANNELPULLOUT_OPTIONS, 1);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<ButtonText name="$parentText" text="Channel Roster">
+			<Size>
+				<AbsDimension x="0" y="8"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentLeft">
+					<Offset>
+						<AbsDimension x="0" y="-7"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="RIGHT" relativeTo="$parentRight">
+					<Offset>
+						<AbsDimension x="0" y="-7"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Frame name="ChannelPullout" movable="true" frameStrata="DIALOG" parent="UIParent" hidden="true" resizable="true">
+		<Size>
+			<AbsDimension x="140" y="420"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="ChannelPulloutTab" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="-5" y="3"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnUpdate>
+				ChannelPullout_OnUpdate(arg1);
+			</OnUpdate>
+			<OnLoad>
+				ChannelPullout_OnLoad();
+			</OnLoad>
+		</Scripts>		
+		<Frames>
+			<Frame name="$parentBackground" setAllPoints="true">
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>	
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
+					</BackgroundInsets>		
+				</Backdrop>	
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.5, 0.5, 0.5, 0.5);
+						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.5);
+					</OnLoad>					
+				</Scripts>
+			</Frame>
+			<Button name="$parentCloseButton">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ChannelPullout_ToggleDisplay();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface/BUTTONS/UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface/BUTTONS/UI-Panel-MinimizeButton-Down"/>
+				<DisabledTexture file="Interface/BUTTONS/UI-Panel-MinimizeButton-Disabled"/>
+				<HighlightTexture file="Interface/BUTTONS/UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Frame name="$parentRoster">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="4" y="-8"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-24" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						ChannelPulloutRoster_OnLoad(this);
+						this:EnableMouseWheel();
+						this.downArrow = getglobal(this:GetParent():GetName() .. "DownArrow");
+						this.upArrow = getglobal(this:GetParent():GetName() .. "UpArrow");						
+					</OnLoad>
+					<OnShow>
+						ChannelPulloutRoster_Update();
+					</OnShow>
+					<OnMouseWheel>
+						ChannelPulloutRoster_Scroll(this, -arg1);
+					</OnMouseWheel>					
+				</Scripts>
+				<Frames>
+					<Frame name="$parentScroll">
+						<Size>
+							<AbsDimension x="16" y="0"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="ChannelPullout">
+								<Offset>
+									<AbsDimension x="-6" y="-24"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="ChannelPullout">
+								<Offset>
+									<AbsDimension x="-4" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<Button name="$parentUpBtn">
+								<Size>
+									<AbsDimension x="18" y="18"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOP"/>
+								</Anchors>		
+								<Scripts>
+									<OnClick>
+										ChannelPulloutRoster_Scroll(this:GetParent():GetParent(), -1);
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+								<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+								<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+							</Button>
+							<Button name="$parentDownBtn">
+								<Size>
+									<AbsDimension x="18" y="18"/>
+								</Size>
+								<Anchors>
+									<Anchor point="BOTTOM"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										ChannelPulloutRoster_Scroll(this:GetParent():GetParent(), 1);
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+								<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+								<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+							</Button>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+			
+</Ui>

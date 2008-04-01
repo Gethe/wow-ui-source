@@ -1,0 +1,8 @@
+## Interface: 20300
+## Title: Blizzard Auction UI
+## Secure: 1
+## LoadOnDemand: 1
+## SavedVariables: AUCTION_DISPLAY_ON_CHARACTER
+Blizzard_AuctionUI.xml
+Blizzard_AuctionDressUp.xml
+Localization.lua

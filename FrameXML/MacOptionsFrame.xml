@@ -1,0 +1,913 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MacOptionsFrame.lua"/>
+	<Frame name="MacOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="426" y="455"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="MacOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="296" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacOptionsFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="MAC_OPTIONS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacOptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Movie Recording section -->
+			<Frame name="MacOptionsFrameMovieRecording" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="400" y="265"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-43"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="MacOptionsFrameResolutionDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameMovieRecording" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="RESOLUTION">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								if(IsMacClient()) then
+									MacOptionsFrameResolutionDropDown_OnLoad();
+								end
+							</OnLoad>
+							<OnShow>
+								MacOptionsFrameResolutionDropDown_OnLoad();
+							</OnShow>
+							<OnEnter>
+								if(UIDropDownMenu_IsEnabled(MacOptionsFrameResolutionDropDown)) then
+									GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+									GameTooltip:SetText(MOVIE_RECORDING_RESOLUTION_TOOLTIP, nil, nil, nil, nil, 1);
+								end
+							</OnEnter>
+							<OnLeave>
+								if(UIDropDownMenu_IsEnabled(MacOptionsFrameResolutionDropDown)) then
+									GameTooltip:Hide();
+								end
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="MacOptionsFrameFramerateDropDown" inherits="UIDropDownMenuTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameResolutionDropDown" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-18"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MOVIE_RECORDING_FRAMERATE">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								if(IsMacClient()) then
+									MacOptionsFrameFramerateDropDown_OnLoad();
+								end
+							</OnLoad>
+							<OnShow>
+								MacOptionsFrameFramerateDropDown_OnLoad();
+							</OnShow>
+							<OnEnter>
+								if(UIDropDownMenu_IsEnabled(MacOptionsFrameFramerateDropDown)) then
+									GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+									GameTooltip:SetText(MOVIE_RECORDING_FRAMERATE_TOOLTIP, nil, nil, nil, nil, 1);
+								end
+							</OnEnter>
+							<OnLeave>
+								if(UIDropDownMenu_IsEnabled(MacOptionsFrameFramerateDropDown)) then
+									GameTooltip:Hide();
+								end
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="MacOptionsFrameCodecDropDown" inherits="UIDropDownMenuTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameFramerateDropDown" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-18"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MOVIE_RECORDING_COMPRESSION">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								if(IsMacClient()) then
+									MacOptionsFrameCodecDropDown_OnLoad();
+								end
+							</OnLoad>
+							<OnShow>
+								MacOptionsFrameCodecDropDown_OnLoad();
+							</OnShow>
+							<OnEnter>
+								if(UIDropDownMenu_IsEnabled(MacOptionsFrameCodecDropDown)) then
+									GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+									GameTooltip:SetText(MOVIE_RECORDING_CODEC_TOOLTIP, nil, nil, nil, nil, 1);
+								end
+							</OnEnter>
+							<OnLeave>
+								if(UIDropDownMenu_IsEnabled(MacOptionsFrameCodecDropDown)) then
+									GameTooltip:Hide();
+								end
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Slider name="MacOptionsFrameQualitySlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="4" valueStep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCodecDropDown" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="18" y="-14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								MacOptionsFrameQualitySliderText:SetText(QUALITY);
+								this.tooltipText = MOVIE_RECORDING_QUALITY_TOOLTIP;
+							</OnLoad>
+						</Scripts>
+					</Slider>
+
+					<CheckButton name="MacOptionsFrameCheckButton1" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameResolutionDropDown" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="2" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+									MacOptionsFrame_EnableCheckBox(MacOptionsFrameCheckButton3);
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+									MacOptionsFrame_DisableCheckBox(MacOptionsFrameCheckButton3);
+								end
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="MacOptionsFrameCheckButton3" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="MacOptionsFrameCheckButton1" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="MacOptionsFrameCheckButton2" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCheckButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+								MacOptionsFrame_UpdateTime();
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="MacOptionsFrameCheckButton4" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCheckButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+									if( MovieRecording_IsRecording() ) then
+										MiniMapRecordingButton:Show();
+									end
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+									MiniMapRecordingButton:Hide();
+								end
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="MacOptionsFrameCheckButton5" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCheckButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="MacOptionsFrameCheckButton6" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCheckButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<Button name="MacOptionsButtonCompress" inherits="GameMenuButtonTemplate" text="MOVIE_RECORDING_COMPRESSDIALOG">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCheckButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(MOVIE_RECORDING_COMPRESS_TOOLTIP, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PlaySound("igMainMenuOption");
+								MovieRecording_SearchUncompressedMovie(true);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame name="MovieRecordingFrameTextTooltip1">
+						<Size>
+							<AbsDimension x="20" y="13"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="MacOptionsFrameMovieRecording" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="18" y="32"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(MOVIE_RECORDING_TIME_TOOLTIP, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="MovieRecordingFrameTextTooltip2">
+						<Size>
+							<AbsDimension x="20" y="13"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameText1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-9"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(MOVIE_RECORDING_DATA_RATE_TOOLTIP, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="MacOptionsFrameText1" inherits="GameFontNormal" text="MOVIE_RECORDING_TIME">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="MacOptionsFrameMovieRecording" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="18" y="32"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="MacOptionsFrameText2" inherits="GameFontWhite" text="00:00:00">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MacOptionsFrameText1" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="MacOptionsFrameText3" inherits="GameFontNormal" text="MOVIE_RECORDING_DATA_RATE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameText1" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-9"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="MacOptionsFrameText4" inherits="GameFontWhite">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MacOptionsFrameText3" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(BINDING_HEADER_MOVIE_RECORDING_SECTION);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<!-- End of Movie Recording section -->
+
+			<!-- iTunes Remote section -->
+			<Frame name="MacOptionsITunesRemote" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="400" y="80"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameMovieRecording" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(BINDING_HEADER_ITUNES_REMOTE);
+					</OnLoad>
+				</Scripts>
+				<Frames>
+					<CheckButton name="MacOptionsFrameCheckButton7" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsITunesRemote" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MacOptionsFrameCheckButton8" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCheckButton7" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<!-- End of iTunes Remote section -->
+			
+			<Button name="MacOptionsFrameCancel" inherits="OptionsButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionExit");
+						HideUIPanel(MacOptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacOptionsFrameOkay" inherits="OptionsButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MacOptionsFrameCancel" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						MacOptionsFrame_Save();
+						HideUIPanel(MacOptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacOptionsFrameDefaults" inherits="GameMenuButtonTemplate" text="DEFAULTS">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						MacOptionsFrame_SetDefaults();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacOptionsButtonKeybindings" inherits="GameMenuButtonTemplate" text="KEY_BINDINGS_MAC">
+				<Size>
+					<AbsDimension x="103" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameDefaults" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						MacOptionsFrame_Save();
+						KeyBindingFrame_LoadUI();
+						HideUIPanel(MacOptionsFrame);
+						ShowUIPanel(KeyBindingFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				if(IsMacClient()) then
+					MacOptionsFrame_Init();
+				end
+			</OnLoad>
+			<OnEvent>
+				MacOptionsFrame_OnEvent();
+			</OnEvent>
+			<OnShow>
+				MacOptionsFrame_Load();
+				UpdateMicroButtons();
+				Disable_BagButtons();
+				MacOptionsFrame_UpdateTime();
+			</OnShow>
+			<OnHide>
+				MacOptionsFrame_Cancel();
+				UpdateMicroButtons();
+				ShowUIPanel(GameMenuFrame);
+			</OnHide>
+			<OnKeyDown>
+				if ( arg1 == "ESCAPE" ) then
+					PlaySound("gsTitleOptionExit");
+					HideUIPanel(MacOptionsFrame);
+					MacOptionsFrame_Cancel();
+				elseif ( GetBindingFromClick(arg1) == "SCREENSHOT" ) then
+					RunBinding("SCREENSHOT");
+				end
+			</OnKeyDown>
+		</Scripts>
+	</Frame>
+	<Frame name="MacOptionsCompressFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="656" y="116"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="MacOptionsCompressFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="296" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacOptionsCompressFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="MOVIE_RECORDING_COMPRESSDIALOG">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacOptionsCompressFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MacOptionsCompressFrameFileName" inherits="GameFontWhite" nonspacewrap="true">
+					<Size>
+						<AbsDimension x="0" y="48"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacOptionsCompressFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-26"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="MacOptionsCompressFrameDelete" inherits="OptionsButtonTemplate" text="DELETE">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						MovieRecording_DeleteMovie(MacOptionsCompressFrameFileName:GetText());
+						MacOptionsCompressFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacOptionsCompressFrameSkip" inherits="OptionsButtonTemplate" text="IGNORE">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MacOptionsCompressFrameDelete" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						MacOptionsCompressFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacOptionsCompressFrameCompress" inherits="OptionsButtonTemplate" text="MOVIE_RECORDING_COMPRESSBUTTON">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MacOptionsCompressFrameSkip" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						MovieRecording_QueueMovieToCompress(MacOptionsCompressFrameFileName:GetText());
+						MacOptionsCompressFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("MOVIE_UNCOMPRESSED_MOVIE");
+			</OnLoad>
+			<OnEvent>
+				if ( event == "MOVIE_UNCOMPRESSED_MOVIE" ) then
+					MacOptionsCompressFrameFileName:SetText(arg1);
+					HideUIPanel(MacOptionsFrame);
+					HideUIPanel(GameMenuFrame);
+					MacOptionsCompressFrame_OnShow();
+					this:Show();
+				end
+			</OnEvent>
+			<OnHide>
+				MovieRecording_SearchUncompressedMovie(false);
+			</OnHide>
+		</Scripts>
+	</Frame>	
+	<Frame name="MacOptionsCancelFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="656" y="148"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="MacOptionsCancelFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="296" y="70"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacOptionsCancelFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormalLarge" text="CANCEL">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacOptionsCancelFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MacOptionsCancelFrameQuestion" inherits="GameFontWhite" nonspacewrap="true" text="MOVIE_RECORDING_CANCEL_CONFIRMATION">
+					<Size>
+						<AbsDimension x="0" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacOptionsCancelFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MacOptionsCancelFrameFileName" inherits="GameFontNormal" nonspacewrap="true">
+					<Size>
+						<AbsDimension x="0" y="48"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacOptionsCancelFrameQuestion" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="MacOptionsCancelFrameNo" inherits="OptionsButtonTemplate" text="NO">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						MacOptionsCancelFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacOptionsCancelFrameYes" inherits="OptionsButtonTemplate" text="YES">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="MacOptionsCancelFrameNo" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						MovieRecording_Cancel();
+						MacOptionsCancelFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				MacOptionsCancelFrame_OnShow();
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<Frame name="FolderPicker" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="500" y="400"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="FolderPickerHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="296" y="70"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="FolderPicker" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormalLarge" text="Folder...">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="FolderPickerHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="FolderPickerButton01" text="YES">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="BORDER">
+								<FontString name="$parentName" inherits="GameFontHighlightSmall" text="Player Name">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="13" y="-1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnClick>
+						FolderPicker:Hide();
+					</OnClick>
+				</Scripts>
+				<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+			</OnShow>
+		</Scripts>
+	</Frame></Ui>

@@ -1,0 +1,365 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="InspectHonorFrame.lua"/>
+	<Frame name="InspectHonorFrame" setAllPoints="true" enableMouse="true" parent="InspectFrame" hidden="true" id="2">
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="258" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-257"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="258" y="-257"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-69"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="275" y="-69"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+					<Size>
+						<AbsDimension x="256" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-325"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+					<Size>
+						<AbsDimension x="128" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="275" y="-325"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="InspectHonorFrameCurrentPVPTitle" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-81"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="InspectHonorFrameCurrentPVPRank" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="InspectHonorFrameCurrentPVPTitle" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="InspectHonorFrameCurrentSessionTitle" inherits="GameFontNormal" text="HONOR_THIS_SESSION">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="36" y="-112"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="InspectHonorFrameYesterdayTitle" inherits="GameFontNormal" text="HONOR_YESTERDAY">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameCurrentSessionTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-41"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="InspectHonorFrameThisWeekTitle" inherits="GameFontNormal" text="HONOR_THISWEEK">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameYesterdayTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-43"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="InspectHonorFrameLastWeekTitle" inherits="GameFontNormal" text="HONOR_LASTWEEK">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameThisWeekTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-42"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="InspectHonorFrameLifeTimeTitle" inherits="GameFontNormal" text="HONOR_LIFETIME">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-64"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="InspectHonorFramePvPIcon">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="InspectHonorFrameCurrentPVPTitle" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="InspectHonorFrameCurrentHK" inherits="HonorFrameHKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameCurrentSessionTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameCurrentDK" inherits="HonorFrameDKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameCurrentHK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameYesterdayHK" inherits="HonorFrameHKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameYesterdayTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameYesterdayContribution" inherits="HonorFrameContributionButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameYesterdayHK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameThisWeekHK" inherits="HonorFrameHKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameThisWeekTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameThisWeekContribution" inherits="HonorFrameContributionButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameThisWeekHK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLastWeekHK" inherits="HonorFrameHKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLastWeekContribution" inherits="HonorFrameContributionButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekHK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLastWeekStanding" inherits="HonorFrameStandingButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekContribution" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLifeTimeHK" inherits="HonorFrameHKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLifeTimeTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLifeTimeDK" inherits="HonorFrameDKButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLifeTimeHK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameLifeTimeRank" inherits="HonorFrameRankButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLifeTimeDK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameRankButton" enableMouse="true" hidden="false">
+				<Size>
+					<AbsDimension x="10" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="InspectHonorFramePvPIcon"/>
+					<Anchor point="RIGHT" relativeTo="InspectHonorFrameCurrentPVPRank"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(RANK, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						GameTooltip:AddLine(NEWBIE_TOOLTIP_RANK, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<StatusBar name="InspectHonorFrameProgressBar" drawLayer="BORDER" minValue="0" maxValue="1" defaultValue="0">
+				<Size>
+					<AbsDimension x="315" y="29"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-77"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="InspectHonorFrameProgressButton" enableMouse="true" setAllPoints="true">
+						<Scripts>
+							<OnLoad>
+								this:SetFrameLevel(this:GetFrameLevel() - 1);
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(RANK_POSITION, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+								GameTooltip:AddLine(NEWBIE_TOOLTIP_RANK_POSITION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				InspectHonorFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				InspectHonorFrame_OnShow();
+			</OnShow>
+			<OnEvent>
+				InspectHonorFrame_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

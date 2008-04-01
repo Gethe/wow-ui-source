@@ -1,0 +1,451 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ItemSocketingUI.lua"/>
+	<Button name="ItemSocketingSocketButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentRight" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+					<Size>
+						<AbsDimension x="73" y="55"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="5" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.28515625" right="0.5703125" top="0" bottom="0.21484375"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\ItemSocketingFrame\UI-ItemSockets">
+					<Size>
+						<AbsDimension x="72" y="74"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.71875" right="1" top="0.7109375" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBackground" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+					<Size>
+						<AbsDimension x="43" y="44"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIconTexture">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!--<Texture name="$parentBorder" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+					<Size>
+						<AbsDimension x="53" y="53"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>-->
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentShine" inherits="AnimatedShineTemplate">
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="-1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBracketFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentClosedBracket" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+							<Size>
+								<AbsDimension x="53" y="53"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.5546875" right="0.7578125" top="0" bottom="0.20703125"/>
+						</Texture>
+						<Texture name="$parentOpenBracket" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+							<Size>
+								<AbsDimension x="61" y="57"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.7578125" right="0.9921875" top="0" bottom="0.22265625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterEvent("SOCKET_INFO_UPDATE");
+			</OnLoad>
+			<OnEvent>
+				ItemSocketingSocketButton_OnEvent(event);
+			</OnEvent>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					local link = GetNewSocketLink(this:GetID()) or
+								 GetExistingSocketLink(this:GetID());
+					HandleModifiedItemClick(link);
+				else
+					StaticPopup_Hide("DELETE_ITEM");
+					StaticPopup_Hide("DELETE_GOOD_ITEM");
+					ClickSocketButton(this:GetID());
+				end
+			</OnClick>
+			<OnReceiveDrag>
+				StaticPopup_Hide("DELETE_ITEM");
+				StaticPopup_Hide("DELETE_GOOD_ITEM");
+				ClickSocketButton(this:GetID());
+			</OnReceiveDrag>
+			<OnDragStart>
+				StaticPopup_Hide("DELETE_ITEM");
+				StaticPopup_Hide("DELETE_GOOD_ITEM");
+				ClickSocketButton(this:GetID());
+			</OnDragStart>
+			<OnEnter>
+				ItemSocketingSocketButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ShoppingTooltip1:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file=""/>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+	</Button>
+	<Frame name="ItemSocketingFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="354" y="467"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="ItemSocketingFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
+					<Size>
+						<AbsDimension x="512" y="512"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="ITEM_SOCKETING">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="15" y="-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="ItemSocketingScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="269" y="255"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="32" y="-89"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTop" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-ScrollBar">
+							<Size>
+								<AbsDimension x="29" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+							<TexCoords left="0" right="0.46875" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-ScrollBar">
+							<Size>
+								<AbsDimension x="29" y="5"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.53125" right="1" top="0" bottom="0.01953125"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this.scrollBarHideable = 1;
+						ScrollFrame_OnLoad();
+						ScrollFrame_OnScrollRangeChanged(0);
+					</OnLoad>
+					<OnScrollRangeChanged>
+						ScrollFrame_OnScrollRangeChanged(arg2);
+						ItemSocketingSocketButton_OnScrollRangeChanged();
+					</OnScrollRangeChanged>
+				</Scripts>
+				<ScrollChild>
+					<Frame name="ItemSocketingScrollChild">
+						<Size>
+							<AbsDimension x="259" y="250"/>
+						</Size>
+						<Frames>
+							<GameTooltip name="ItemSocketingDescription" inherits="GameTooltipTemplate" setAllPoints="true" hidden="false">
+								<Scripts>
+									<OnLoad>
+										this:SetBackdrop(nil);
+									</OnLoad>
+								</Scripts>
+							</GameTooltip>							
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button name="ItemSocketingSocket1" inherits="ItemSocketingSocketButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="37"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="ItemSocketingSocket1Left" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+							<Size>
+								<AbsDimension x="73" y="55"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="CENTER">
+									<Offset>
+										<AbsDimension x="-5" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.28515625" top="0" bottom="0.21484375"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button name="ItemSocketingSocket2" inherits="ItemSocketingSocketButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ItemSocketingSocket1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="40" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="ItemSocketingSocket2Left" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+							<Size>
+								<AbsDimension x="73" y="46"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="CENTER">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.28515625" top="0.21484375" bottom="0.39453125"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button name="ItemSocketingSocket3" inherits="ItemSocketingSocketButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ItemSocketingSocket2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="40" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="ItemSocketingSocket3Left" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+							<Size>
+								<AbsDimension x="73" y="46"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="CENTER">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.28515625" top="0.21484375" bottom="0.39453125"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button name="ItemSocketingSocketButton" text="SOCKET_GEMS">
+				<Size>
+					<AbsDimension x="162" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="33"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Buttons\UI-Panel-Button-Up">
+							<Size>
+								<AbsDimension x="12" y="22"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="0.6875"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Buttons\UI-Panel-Button-Up">
+							<Size>
+								<AbsDimension x="12" y="22"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Buttons\UI-Panel-Button-Up">
+							<Size>
+								<AbsDimension x="12" y="22"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.6875"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						if ( not ItemSocketingFrame.destroyingGem ) then
+							AcceptSockets();
+							PlaySound("JewelcraftingFinalize");
+						else
+							StaticPopup_Show("CONFIRM_ACCEPT_SOCKETS");
+						end
+					</OnClick>
+					<OnMouseDown>
+						if ( not this.disabled ) then
+							getglobal(this:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+							getglobal(this:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+							getglobal(this:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						if ( not this.disabled ) then
+							getglobal(this:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+							getglobal(this:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+							getglobal(this:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+						end
+					</OnMouseUp>
+				</Scripts>
+				<NormalFont name="$parentText" inherits="GameFontNormal"/>
+				<DisabledFont inherits="GameFontDisable"/>
+				<HighlightFont inherits="GameFontHighlight"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+			<Button name="ItemSocketingCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-1" y="-9"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ItemSocketingFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnEvent>
+				ItemSocketingFrame_OnEvent(event);
+			</OnEvent>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+				StaticPopup_Hide("CONFIRM_ACCEPT_SOCKETS");
+				CloseSocketInfo();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

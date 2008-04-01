@@ -1,0 +1,70 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="RaidWarning.lua"/>
+
+	<Frame name="RaidWarningFrame" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
+		<Size>
+			<AbsDimension x="512" y="70"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIErrorsFrame" relativePoint="BOTTOM"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="RaidWarningFrameSlot1" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString name="RaidWarningFrameSlot2" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="RaidWarningFrameSlot1" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				RaidWarningFrame_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				RaidWarningFrame_OnEvent(self, event, arg1);
+			</OnEvent>
+			<OnUpdate>
+				RaidNotice_OnUpdate(self, arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RaidBossEmoteFrame" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
+		<Size>
+			<AbsDimension x="512" y="80"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="RaidWarningFrame" relativePoint="BOTTOM"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="RaidBossEmoteFrameSlot1" inherits="BossEmoteNormalHuge" justifyH="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString name="RaidBossEmoteFrameSlot2" inherits="BossEmoteNormalHuge" justifyH="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="RaidBossEmoteFrameSlot1" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				RaidBossEmoteFrame_OnLoad(self)
+			</OnLoad>
+			<OnUpdate>
+				RaidNotice_OnUpdate(self, arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+</Ui>

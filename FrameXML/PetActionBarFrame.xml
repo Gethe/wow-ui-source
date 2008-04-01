@@ -1,0 +1,220 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PetActionBarFrame.lua"/>
+	<CheckButton name="PetActionButtonTemplate" inherits="SecureFrameTemplate, ActionButtonTemplate" frameStrata="HIGH" virtual="true">
+		<Size>
+			<AbsDimension x="30" y="30"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentAutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
+					<Size>
+						<AbsDimension x="58" y="58"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>		
+			</Layer>
+		</Layers>
+		<Frames>
+			<Model name="$parentAutoCast" file="Interface\Buttons\UI-AutoCastButton.mdx" scale="1.2" hidden="true" setAllPoints="true">
+				<Scripts>
+					<OnLoad>
+						this:SetSequence(0);
+						this:SetSequenceTime(0, 0);
+					</OnLoad>
+				</Scripts>
+			</Model>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PetActionButton_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				PetActionButton_OnEvent();
+			</OnEvent>
+			<PreClick>
+				this:SetChecked(0);
+			</PreClick>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					PetActionButton_OnModifiedClick(arg1);
+				else
+					PetActionButton_OnClick(arg1);
+				end
+			</OnClick>
+			<OnDragStart>
+				PetActionButton_OnDragStart();
+			</OnDragStart>
+			<OnReceiveDrag>
+				PetActionButton_OnReceiveDrag();
+			</OnReceiveDrag>
+			<OnEnter>
+				PetActionButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				PetActionButton_OnLeave();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
+			<Size>
+				<AbsDimension x="54" y="54"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+	</CheckButton>
+	<Frame name="PetActionBarFrame" parent="MainMenuBar" enableMouse="true" frameStrata="LOW" hidden="true">
+		<Size>
+			<AbsDimension x="509" y="43"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="40" y="112"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="SlidingActionBarTexture0" file="Interface\PetActionBar\UI-PetBar">
+					<Size>
+						<AbsDimension x="256" y="44"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.015625" bottom="0.359375"/>
+				</Texture>
+				<Texture name="SlidingActionBarTexture1" file="Interface\PetActionBar\UI-PetBar">
+					<Size>
+						<AbsDimension x="184" y="44"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="SlidingActionBarTexture0" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.71875" top="0.375" bottom="0.71875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="PetActionButton1" inherits="PetActionButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="36" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton2" inherits="PetActionButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton3" inherits="PetActionButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton4" inherits="PetActionButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton5" inherits="PetActionButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton6" inherits="PetActionButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton7" inherits="PetActionButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton8" inherits="PetActionButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton9" inherits="PetActionButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton10" inherits="PetActionButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PetActionBar_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				PetActionBar_OnEvent();
+			</OnEvent>
+			<OnUpdate>
+				PetActionBarFrame_OnUpdate(arg1);
+			</OnUpdate>
+			<OnShow>
+				UIParent_ManageFramePositions();
+			</OnShow>
+			<OnHide>
+				UIParent_ManageFramePositions();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

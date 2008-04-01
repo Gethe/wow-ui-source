@@ -1,0 +1,116 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="ReadyCheck.lua"/>
+	<Frame name="ReadyCheckStatusTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentTexture" file="Interface\RaidFrame\ReadyCheck-Waiting" />
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="ReadyCheckFrame" toplevel="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="323" y="97"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="ReadyCheckPortrait">
+					<Size>
+						<AbsDimension x="50" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\RaidFrame\UI-ReadyCheckFrame">
+					<Size>
+						<AbsDimension x="323" y="97"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.630859375" top="0" bottom="0.7578125"/>
+				</Texture>
+				<FontString name="ReadyCheckFrameText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="15" y="-24"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="ReadyCheckFrameYesButton" inherits="UIPanelButtonTemplate" text="YES">
+				<Size>
+					<AbsDimension x="109" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="55" y="18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ConfirmReadyCheck(1);
+						ReadyCheckFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ReadyCheckFrameNoButton" inherits="UIPanelButtonTemplate" text="NO">
+				<Size>
+					<AbsDimension x="109" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ReadyCheckFrameYesButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ConfirmReadyCheck();
+						ReadyCheckFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("RAID_ROSTER_UPDATE");
+			</OnLoad>
+			<OnEvent>
+				if ( event == "RAID_ROSTER_UPDATE" ) then
+					if ( GetNumRaidMembers() == 0 ) then
+						ReadyCheckFrame.timer = nil;
+						ReadyCheckFrame:Hide();
+					end
+				end
+			</OnEvent>
+			<OnUpdate>
+				ReadyCheckFrame_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

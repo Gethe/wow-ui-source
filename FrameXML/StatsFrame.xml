@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="StatsFrame.lua"/>
+	<!-- This frame shows debug information for non-release builds -->
+	<Frame name="StatsFrame" setAllPoints="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="StatsFrameText" inherits="NumberFontNormal" justifyH="RIGHT" justifyV="BOTTOM">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-16" y="192"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				StatsFrame_OnLoad();
+			</OnLoad>
+			<OnUpdate>
+				StatsFrame_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

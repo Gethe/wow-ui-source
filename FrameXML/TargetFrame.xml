@@ -1,0 +1,600 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="TargetFrame.lua"/>
+	<Frame name="TargetofTargetBuffButtonTemplate" inherits="PartyBuffButtonTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="12" y="12"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Border"):SetWidth(13);
+				getglobal(this:GetName().."Border"):SetHeight(13);
+			</OnLoad>
+			<OnEnter>
+				if ( this:GetCenter() > GetScreenWidth()/2 ) then
+					GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				else
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				end
+				GameTooltip:SetUnitDebuff(this:GetParent().unit, this:GetID(), SHOW_DISPELLABLE_DEBUFFS);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Button name="TargetDebuffButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="17" y="17"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Size>
+						<AbsDimension x="17" y="17"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+				</Texture>	
+				<FontString name="$parentCount" inherits="NumberFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				if ( GameTooltip:IsOwned(this) ) then
+					GameTooltip:SetUnitDebuff("target", this.id);
+				end
+			</OnUpdate>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT", 15, -25);
+				GameTooltip:SetUnitDebuff("target", this.id);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="TargetBuffButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="21" y="21"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCount" inherits="NumberFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true">
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				if ( GameTooltip:IsOwned(this) ) then
+					GameTooltip:SetUnitBuff("target", this.id);
+				end
+			</OnUpdate>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT", 15, -25);
+				GameTooltip:SetUnitBuff("target", this.id);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="TargetFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
+		<Size>
+			<AbsDimension x="232" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="250" y="-4"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="96" right="6" top="4" bottom="9"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="TargetFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash">
+					<Size>
+						<AbsDimension x="242" y="95"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-10" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.05078125" right="1.0" top="0" bottom="0.7578125"/>
+				</Texture>
+				<Texture name="TargetFrameBackground">
+					<Size>
+						<AbsDimension x="119" y="41"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-106" y="-22"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+				<Texture name="TargetFrameNameBackground" file="Interface\TargetingFrame\UI-TargetingFrame-LevelBackground">
+					<Size>
+						<AbsDimension x="119" y="19"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-106" y="-22"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="TargetPortrait">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-42" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="TargetFrameTextureFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="TargetFrameTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
+							<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
+						</Texture>
+						<FontString name="TargetName" inherits="GameFontNormalSmall">
+							<Size>
+								<AbsDimension x="100" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-50" y="19"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="TargetLevelText" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="63" y="-16"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="TargetDeadText" inherits="GameFontNormalSmall" text="DEAD">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-50" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="TargetFrameHealthBarText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-50" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="TargetFrameManaBarText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-50" y="-8"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="TargetHighLevelTexture" file="Interface\TargetingFrame\UI-TargetingFrame-Skull">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="63" y="-16"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="TargetLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-44" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="TargetPVPIcon" hidden="true">
+							<Size>
+								<AbsDimension x="64" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="3" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="TargetRaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" hidden="true">
+							<Size>
+								<AbsDimension x="26" y="26"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-73" y="-14"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="TargetFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="10" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TargetFrameDropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<StatusBar name="TargetFrameHealthBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="119" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-106" y="-41"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize();
+						this.textLockable = 1;
+						this.cvar = "targetStatusText";
+						this.cvarLabel = "STATUS_TEXT_TARGET";
+						this.zeroText = "";
+					</OnLoad>
+					<OnValueChanged>
+						UnitFrameHealthBar_OnValueChanged(arg1);
+						TargetHealthCheck();
+					</OnValueChanged>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<StatusBar name="TargetFrameManaBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="119" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-106" y="-52"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize();
+						this.textLockable = 1;
+						this.cvar = "targetStatusText";
+						this.cvarLabel = "STATUS_TEXT_TARGET";
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="0" b="1.0"/>
+			</StatusBar>
+			<StatusBar name="TargetFrameSpellBar" inherits="CastingBarFrameTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="150" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						Target_Spellbar_AdjustPosition();
+					</OnShow>
+					<OnLoad>
+						Target_Spellbar_OnLoad();
+					</OnLoad>
+					<OnEvent>
+						Target_Spellbar_OnEvent();
+					</OnEvent>
+				</Scripts>
+			</StatusBar>
+			<Frame name="TargetFrameBuffs" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+			</Frame>
+			<Frame name="TargetFrameDebuffs" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				UnitFrame_Initialize("target", TargetName, TargetPortrait,
+									 TargetFrameHealthBar, TargetFrameHealthBarText,
+									 TargetFrameManaBar, TargetFrameManaBarText);
+				this.noTextPrefix = true;
+				TargetFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				TargetFrame_OnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				TargetFrame_OnUpdate();
+				TargetFrame_HealthUpdate(arg1, "target");
+			</OnUpdate>
+			<OnHide>
+				TargetFrame_OnHide();
+			</OnHide>
+			<OnEnter>
+				UnitFrame_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				UnitFrame_OnLeave();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="TargetofTargetFrame" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="TargetFrame" hidden="true">
+		<Size>
+			<AbsDimension x="93" y="45"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-35" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="TargetofTargetBackground">
+					<Size>
+						<AbsDimension x="46" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">	
+							<Offset>
+								<AbsDimension x="42" y="13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="TargetofTargetPortrait">
+					<Size>
+						<AbsDimension x="35" y="35"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="6" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="TargetofTargetTextureFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="TargetofTargetTexture" file="Interface\TargetingFrame\UI-TargetofTargetFrame">
+							<TexCoords left="0.015625" right="0.7265625" top="0" bottom="0.703125"/>
+						</Texture>
+						<FontString name="TargetofTargetName" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="100" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="42" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="TargetofTargetDeadText" inherits="GameFontNormalSmall" text="DEAD">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="15" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						RaiseFrameLevel(this);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<StatusBar name="TargetofTargetHealthBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="46" y="7"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						TargetofTargetHealthCheck();
+					</OnValueChanged>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="1.0" b="0"/>
+			</StatusBar>
+			<StatusBar name="TargetofTargetManaBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="46" y="7"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="-23"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="0" b="1.0"/>
+			</StatusBar>
+			<Frame name="$parentDebuff1" inherits="TargetofTargetBuffButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff2" inherits="TargetofTargetBuffButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff3" inherits="TargetofTargetBuffButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDebuff1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff4" inherits="TargetofTargetBuffButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				TargetofTarget_OnLoad();
+			</OnLoad>
+			<OnShow>
+				TargetDebuffButton_Update();
+			</OnShow>
+			<OnHide>
+				TargetofTarget_OnHide();
+			</OnHide>
+			<OnEvent>
+				UnitFrame_OnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				TargetofTarget_Update();
+			</OnUpdate>
+		</Scripts>
+	</Button>
+</Ui>
