@@ -14,7 +14,7 @@
 
 -- Version
 -- Constant -- Incrementing this number will erase saved filter settings!!
-COMBATLOG_FILTER_VERSION = 2;
+COMBATLOG_FILTER_VERSION = 3;
 -- Saved Variable
 Blizzard_CombatLog_Filter_Version = 0;
 
@@ -128,7 +128,7 @@ COMBATLOG_EVENT_LIST = {
 	["RANGE_MISSED"] = true,
 	["SPELL_CAST_START"] = false,
 	["SPELL_CAST_SUCCESS"] = false,
-	["SPELL_CAST_FAILED"] = true,
+	["SPELL_CAST_FAILED"] = false,
 	["SPELL_MISSED"] = true,
 	["SPELL_DAMAGE"] = true,
 	["SPELL_HEAL"] = true,
@@ -415,7 +415,7 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["RANGE_MISSED"] = true,
 					      --["SPELL_CAST_START"] = true,
 					      --["SPELL_CAST_SUCCESS"] = true,
-					      ["SPELL_CAST_FAILED"] = true,
+					      --["SPELL_CAST_FAILED"] = true,
 					      ["SPELL_MISSED"] = true,
 					      ["SPELL_DAMAGE"] = true,
 					      ["SPELL_HEAL"] = true,
@@ -634,10 +634,13 @@ function Blizzard_CombatLog_ApplyFilters(config)
 	CombatLogResetFilter()
 
 	-- Loop over all associated filters
+	local eventList;
 	for k,v in pairs(config.filters) do	
 		local eList
-		if ( v.eventList ) then
-			for k2,v2 in pairs(v.eventList) do 
+		-- Only use the first filter's eventList
+		eventList = config.filters[1].eventList;
+		if ( eventList ) then
+			for k2,v2 in pairs(eventList) do 
 				if ( v2 == true ) then
 					eList = eList and (eList .. "," .. k2) or k2
 				end
@@ -680,7 +683,10 @@ function Blizzard_CombatLog_ApplyFilters(config)
 			sourceFlags = nil;
 		end
 
-		if ( sourceFlags ~= 0 and destFlags ~= 0 ) then
+		-- This is a HACK!!!  Need filters to be able to accept empty or zero sourceFlags or destFlags
+		if ( sourceFlags == 0 or destFlags == 0 ) then
+			CombatLogAddFilter("", COMBATLOG_FILTER_MINE, nil);
+		else
 			CombatLogAddFilter(eList, sourceFlags, destFlags);
 		end
 	end
@@ -3482,7 +3488,7 @@ FCF_DockUpdate = function()
 end
 
 -- Override Hyperlink Handlers
--- XINHUAN: The SetItemRef() function hook is to be moved out into the core FrameXML.
+-- The SetItemRef() function hook is to be moved out into the core FrameXML.
 -- It is currently in the Constants.lua stub file to simulate being moved out to the core.
 --
 -- The reason is because Blizzard_CombatLog is a LoD addon and can be replaced by the user
@@ -3493,7 +3499,7 @@ end
 -- Blizzard_CombatLog gets loaded.
 
 -- Override Hyperlink Handlers
--- XINHUAN: This entire function hook should/must be directly integrated into ItemRef.lua
+-- This entire function hook should/must be directly integrated into ItemRef.lua
 -- The reason is because Blizzard_CombatLog is a LoD addon and can be replaced by the user
 -- If the functionality of these new unit/icon/spell/action links is not in the core FrameXML
 -- file in ItemRef.lua, then every combat log addon that replaces Blizzard_CombatLog must
@@ -3507,31 +3513,25 @@ function SetItemRef(link, text, button)
 	if ( strsub(link, 1, 4) == "unit") then
 		local _, guid, name = strsplit(":", link);
 
-		-- Show Popup Menu
-		if( button == "RightButton") then
+		if ( IsModifiedClick("CHATLINK") ) then
+			ChatEdit_InsertLink (name);
+			return;
+		elseif( button == "RightButton") then
+			-- Show Popup Menu
 			EasyMenu(Blizzard_CombatLog_CreateUnitMenu(name, guid), CombatLogDropDown, "cursor", nil, nil, "MENU");
 			return;
-		elseif ( button == "LeftButton" ) then
-			if ( IsModifiedClick("CHATLINK") ) then
-				ChatEdit_InsertLink (name);
-				return;
-			end
 		end
 	elseif ( strsub(link, 1, 4) == "icon") then
 		local _, bit, direction = strsplit(":", link);
-
+		local texture = string.gsub(text,".*|h(.*)|h.*","%1");
 		-- Show Popup Menu
 		if( button == "RightButton") then
-			EasyMenu(Blizzard_CombatLog_CreateUnitMenu(text, nil, tonumber(bit)), CombatLogDropDown, "cursor", nil, nil, "MENU");
-			return;
-		elseif ( button == "LeftButton" ) then
-			if ( IsModifiedClick("CHATLINK") ) then
-				ChatEdit_InsertLink (name);
-				return;
-			else
-				return;
-			end
+			-- need to fix this to be actual texture
+			EasyMenu(Blizzard_CombatLog_CreateUnitMenu(CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)), CombatLogDropDown, "cursor", nil, nil, "MENU");
+		elseif ( IsModifiedClick("CHATLINK") ) then
+			ChatEdit_InsertLink (CombatLog_BitToBraceCode(tonumber(bit)));
 		end
+		return;
 	elseif ( strsub(link, 1,5) == "spell" ) then 
 		local _, spellId, event = strsplit(":", link);	
 		spellId = tonumber (spellId);
@@ -3552,26 +3552,19 @@ function SetItemRef(link, text, button)
 	elseif ( strsub(link, 1,6) == "action" ) then 
 		local _, event = strsplit(":", link);
 
-		if ( IsModifiedClick("CHATLINK") ) then
-			return;
-		else
-			-- Show Popup Menu
-			if( button == "RightButton") then
-				EasyMenu(Blizzard_CombatLog_CreateActionMenu(event), CombatLogDropDown, "cursor", nil, nil, "MENU");
-				return;
-			end
-			return;
+		-- Show Popup Menu
+		if( button == "RightButton") then
+			EasyMenu(Blizzard_CombatLog_CreateActionMenu(event), CombatLogDropDown, "cursor", nil, nil, "MENU");
 		end
+		return;
 	elseif ( strsub(link, 1, 4) == "item") then
 		local _, itemId = strsplit(":", link);
 
-		if ( button == "LeftButton" ) then
-			if ( IsModifiedClick("CHATLINK") ) then
-				name, link = GetItemInfo(itemId);
-				ChatEdit_InsertLink (link);
-				return;
-			end
-		end 
+		if ( IsModifiedClick("CHATLINK") ) then
+			name, link = GetItemInfo(itemId);
+			ChatEdit_InsertLink (link);
+			return;
+		end
 	end
 	oldSetItemRef(link, text, button);
 end
@@ -3662,7 +3655,7 @@ function ShowQuickButton(filter)
 end
 
 function Blizzard_CombatLog_RefreshGlobalLinks()
-	-- Have to do this becuase Blizzard_CombatLog_Filters is a reference to the _G.Blizzard_CombatLog_Filters
+	-- Have to do this because Blizzard_CombatLog_Filters is a reference to the _G.Blizzard_CombatLog_Filters
 	Blizzard_CombatLog_Filters = _G.Blizzard_CombatLog_Filters;
 	Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[Blizzard_CombatLog_Filters.currentFilter];
 	_G.Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_CurrentSettings;

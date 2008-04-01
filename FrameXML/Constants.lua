@@ -142,7 +142,7 @@ COMBATLOG_FILTER_NEUTRAL_UNITS		= bit.bor(
 						COMBATLOG_OBJECT_TYPE_GUARDIAN,
 						COMBATLOG_OBJECT_TYPE_OBJECT
 						);
-COMBATLOG_FILTER_UNKNOWN_UNITS		=  COMBATLOG_OBJECT_TYPE_OBJECT;
+COMBATLOG_FILTER_UNKNOWN_UNITS		= COMBATLOG_OBJECT_NONE;
 COMBATLOG_FILTER_EVERYTHING =	0xFFFFFFFF;
 
 -- 
@@ -192,4 +192,31 @@ function CombatLog_Object_IsAll(unitFlags, ...)
 	return bit.band( unitFlags, compoundType ) == compoundType
 end
 
+--[[
+--  
+--  Returns the correct {} code for the combat log bit
+-- 
+--  args:
+-- 		bit - a bit exactly equal to a raid target icon.
+--]]
+function CombatLog_BitToBraceCode(bit)
+	if ( bit == COMBATLOG_OBJECT_RAIDTARGET1 ) then
+		return "{"..strlower(RAID_TARGET_1).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET2 ) then
+		return "{"..strlower(RAID_TARGET_2).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET3 ) then
+		return "{"..strlower(RAID_TARGET_3).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET4 ) then
+		return "{"..strlower(RAID_TARGET_4).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET5 ) then
+		return "{"..strlower(RAID_TARGET_5).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET6 ) then
+		return "{"..strlower(RAID_TARGET_6).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET7 ) then
+		return "{"..strlower(RAID_TARGET_7).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET8 ) then
+		return "{"..strlower(RAID_TARGET_8).."}";
+	end
+	return "";
+end
 

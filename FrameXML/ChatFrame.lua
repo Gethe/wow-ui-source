@@ -2033,10 +2033,11 @@ function ChatFrame_MessageEventHandler(event)
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
 
-		local filter = false;
+		local filter, newarg1 = false;
 		if ( chatFilters[event] ) then
 			for _, filterFunc in next, chatFilters[event] do
-				filter, arg1 = filterFunc(arg1), arg1;
+				filter, newarg1 = filterFunc(arg1);
+				arg1 = (newarg1 or arg1);
 				if ( filter ) then
 					return true;
 				end

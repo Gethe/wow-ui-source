@@ -191,6 +191,14 @@ function SoundOptionsSlider_OnValueChanged()
 					SetCVar(value.cvar, tonumber(SoundChannelNumChannels[tostring(this:GetValue())]) );
 					AudioOptionsFrame.SoundRestart = 1;
 				end
+			elseif ( value.cvar == "Sound_OutputQuality" ) then
+				local cvarValue = GetCVar(value.cvar);
+				if ( tonumber(cvarValue) == this:GetValue() ) then
+					--Nothing changed
+				else
+					SetCVar(value.cvar, this:GetValue());
+					AudioOptionsFrame.SoundRestart = 1;
+				end
 			else
 				SetCVar(value.cvar, this:GetValue());
 			end

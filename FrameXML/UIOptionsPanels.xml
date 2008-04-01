@@ -1161,13 +1161,17 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = ACTIONBARS_LABEL;
-				this.options = ActionBarsPanelOptions
+				self.name = ACTIONBARS_LABEL;
+				self.options = ActionBarsPanelOptions
+				InterfaceOptionsActionBarsPanel_OnLoad(self);
 				BlizzardOptionsPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				BlizzardOptionsPanel_OnShow(self);
 			</OnShow>
+			<OnEvent>
+				InterfaceOptionsActionBarsPanel_OnEvent(self, event, ...);
+			</OnEvent>
 		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentBottomLeft" inherits="InterfaceOptionsCheckButtonTemplate">
@@ -1181,9 +1185,10 @@
 				<Scripts>
 					<OnLoad>
 						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "bottomLeftActionBar";
+						this.label = "bottomLeftActionBar";
 						this.uvar = "SHOW_MULTI_ACTIONBAR_1";
 						this.setFunc = InterfaceOptions_UpdateMultiActionBars;
+						this.GetValue = function() return(select(1, GetActionBarToggles())) end
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1199,9 +1204,10 @@
 				<Scripts>
 					<OnLoad>
 						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "bottomRightActionBar";
+						this.label = "bottomRightActionBar";
 						this.uvar = "SHOW_MULTI_ACTIONBAR_2";
 						this.setFunc = InterfaceOptions_UpdateMultiActionBars;
+						this.GetValue = function() return(select(2, GetActionBarToggles())) end
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1217,10 +1223,10 @@
 				<Scripts>
 					<OnLoad>
 						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "rightActionBar";
+						this.label = "rightActionBar";
 						this.uvar = "SHOW_MULTI_ACTIONBAR_3";
 						this.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						this.dependentControls = {};
+						this.GetValue = function() return(select(3, GetActionBarToggles())) end
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1236,9 +1242,10 @@
 				<Scripts>
 					<OnLoad>
 						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "rightTwoActionBar";
+						this.label = "rightTwoActionBar";
 						this.uvar = "SHOW_MULTI_ACTIONBAR_4";
 						this.setFunc = InterfaceOptions_UpdateMultiActionBars;
+						this.GetValue = function() return(select(4, GetActionBarToggles())) end
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsActionBarsPanelRight, this);
 					</OnLoad>

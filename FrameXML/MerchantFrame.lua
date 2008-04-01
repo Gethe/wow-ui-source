@@ -455,11 +455,12 @@ LIST_DELIMITER = ", "
 
 function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 	quantity = (quantity or 1);
-	local index, itemTexture, itemLink, itemsString, itemCount = itemButton:GetID();
-	local costString, pointsTexture, button = "";
+	local index = itemButton:GetID();
+	local itemTexture, itemLink, itemsString;
+	local pointsTexture, button;
 	local honorPoints, arenaPoints, itemCount = GetMerchantItemCostInfo(index);
 	if ( (honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0) ) then
-		BuyMerchantItem( itemButton:GetID() );
+		BuyMerchantItem( itemButton:GetID(), quantity );
 		return;
 	end
 	

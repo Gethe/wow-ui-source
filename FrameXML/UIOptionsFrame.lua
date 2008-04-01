@@ -122,10 +122,10 @@ uvarInfo = {
 	["AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "autoLootCorpse", event = "AUTO_LOOT_DEFAULT_TEXT" },
 	
 	["SHOW_COMBAT_TEXT"] = { default = "0", cvar = "enableCombatText", event = "SHOW_COMBAT_TEXT_TEXT" },
-	["COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"] = { default = "1", cvar = "fctLowManaHealth", event = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
-	["COMBAT_TEXT_SHOW_AURAS"] = { default = "1", cvar = "fctAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
-	["COMBAT_TEXT_SHOW_AURA_FADE"] = { default = "1", cvar = "fctAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
-	["COMBAT_TEXT_SHOW_COMBAT_STATE"] = { default = "1", cvar = "fctCombatState", event = "COMBAT_TEXT_SHOW_COMBAT_STATE_TEXT" },
+	["COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"] = { default = "0", cvar = "fctLowManaHealth", event = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
+	["COMBAT_TEXT_SHOW_AURAS"] = { default = "0", cvar = "fctAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
+	["COMBAT_TEXT_SHOW_AURA_FADE"] = { default = "0", cvar = "fctAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
+	["COMBAT_TEXT_SHOW_COMBAT_STATE"] = { default = "0", cvar = "fctCombatState", event = "COMBAT_TEXT_SHOW_COMBAT_STATE_TEXT" },
 	["COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"] = { default = "0", cvar = "fctDodgeParryMiss", event = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS_TEXT" },
 	["COMBAT_TEXT_SHOW_RESISTANCES"] = { default = "0", cvar = "fctDamageReduction", event = "COMBAT_TEXT_SHOW_RESISTANCES_TEXT" },
 	["COMBAT_TEXT_SHOW_REPUTATION"] = { default = "0", cvar = "fctRepChanges", event = "COMBAT_TEXT_SHOW_REPUTATION_TEXT" },
@@ -134,12 +134,10 @@ uvarInfo = {
 	["COMBAT_TEXT_SHOW_COMBO_POINTS"] = { default = "0", cvar = "fctComboPoints", event = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT" },
 	["COMBAT_TEXT_SHOW_MANA"] = { default = "0", cvar = "fctEnergyGains", event = "COMBAT_TEXT_SHOW_MANA_TEXT" },
 	["COMBAT_TEXT_FLOAT_MODE"] = { default = "1", cvar = "combatTextFloatMode", event = "COMBAT_TEXT_FLOAT_MODE" },
-	["COMBAT_TEXT_SHOW_HONOR_GAINED"] = { default = "1", cvar = "fctHonorGains", event = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
-	["SHOW_MULTI_ACTIONBAR_1"] = { default = "0", cvar = "bottomLeftActionBar", func = function() InterfaceOptions_UpdateMultiActionBars() end },
-	["SHOW_MULTI_ACTIONBAR_2"] = { default = "0", cvar = "bottomRightActionBar", func = function() InterfaceOptions_UpdateMultiActionBars() end },
-	["SHOW_MULTI_ACTIONBAR_3"] = { default = "0", cvar = "rightActionBar", func = function() InterfaceOptions_UpdateMultiActionBars() end },
-	["SHOW_MULTI_ACTIONBAR_4"] = { default = "0", cvar = "rightTwoActionBar", func = function() InterfaceOptions_UpdateMultiActionBars() end },
-	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", func = function() MultiActionBar_UpdateGridVisibility(); InterfaceOptions_UpdateMultiActionBars(); end },
+	["COMBAT_TEXT_SHOW_HONOR_GAINED"] = { default = "0", cvar = "fctHonorGains", event = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
+	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", },
+	["SHOW_CASTABLE_BUFFS"] = { default = "0", cvar = "showPartyBuffs", event = "SHOW_CASTABLE_BUFFS_TEXT" },
+	["SHOW_DISPELLABLE_DEBUFFS"] = { default = "1", cvar = "showPartyDebuffs", event = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
 }
 
  function InterfaceOptionsFrame_OnEvent (self, event, ...)

@@ -140,8 +140,8 @@ CHAT_CONFIG_OTHER_COMBAT = {
 	[5] = {
 		text = ITEM_LOOT,
 		type = "LOOT",
-		checked = function () return IsListeningForMessageType("ITEM"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "ITEM"); end;
+		checked = function () return IsListeningForMessageType("LOOT"); end;
+		func = function (checked) ToggleChatMessageGroup(checked, "LOOT"); end;
 	},
 	[6] = {
 		text = MONEY_LOOT,
@@ -1011,11 +1011,11 @@ function CombatConfig_Colorize_Update()
 	CombatConfigColorsHighlightingSchool:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting);
 
 	
-	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, "Player", 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
+	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, UNIT_YOU_DEST_POSSESSIVE, 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
 	CombatConfigColorsExampleString1:SetVertexColor(r, g, b);
 	CombatConfigColorsExampleString1:SetText(text);
 
-	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, "Player", 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
+	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, UNIT_YOU_DEST, 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
 	CombatConfigColorsExampleString2:SetVertexColor(r, g, b);
 	CombatConfigColorsExampleString2:SetText(text);
 end
@@ -1505,7 +1505,10 @@ function ChatConfig_UpdateChatSettings()
 	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
 	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsRight);
 	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsCreatureLeft);
-	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+	-- Only do this if the ChannelSettings table has been created. It gets created OnShow()
+	if ( ChatConfigChannelSettingsLeft.checkBoxTable ) then
+		ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+	end
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCombat);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);

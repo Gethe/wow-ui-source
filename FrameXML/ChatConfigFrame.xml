@@ -1906,6 +1906,7 @@
 				<Scripts>
 					<OnClick>
 						HideUIPanel(ChatConfigFrame);
+						Blizzard_CombatLog_RefreshGlobalLinks();
 						Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings);
 						Blizzard_CombatLog_Refilter();
 						PlaySound("gsTitleOptionOK");

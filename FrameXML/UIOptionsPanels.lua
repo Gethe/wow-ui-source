@@ -348,9 +348,25 @@ ActionBarsPanelOptions = {
 	secureAbilityToggle = { text = "SECURE_ABILITY_TOGGLE", default = "0" },
 }
 
+function InterfaceOptionsActionBarsPanel_OnLoad (panel)
+	panel:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function InterfaceOptionsActionBarsPanel_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4, ALWAYS_SHOW_MULTIBARS = GetActionBarToggles();
+		MultiActionBar_Update();
+		UIParent_ManageFramePositions();
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+	end
+end
+
 function InterfaceOptions_UpdateMultiActionBars ()
 	--Clean up "0" values so they evaluate as false.
-
+	if ( InterfaceOptionsActionBarsPanel:IsEventRegistered("PLAYER_ENTERING_WORLD") ) then
+		return;
+	end
+		
 	if ( SHOW_MULTI_ACTIONBAR_1 == "0" ) then
 		SHOW_MULTI_ACTIONBAR_1 = nil;
 	end
@@ -805,7 +821,7 @@ function BlizzardOptionsPanel_OnLoad (frame)
 	if ( frame.options and frame.controls ) then
 		local entry;
 		for i, control in next, frame.controls do
-			entry = frame.options[control.cvar];
+			entry = frame.options[(control.cvar or control.label)];
 			if ( entry ) then
 				if ( entry.text ) then
 					control.tooltipText = (getglobal("OPTION_TOOLTIP_" .. gsub(entry.text, "_TEXT$", "")) or entry.tooltip);
@@ -827,6 +843,10 @@ function BlizzardOptionsPanel_OnLoad (frame)
 end
 
 function BlizzardOptionsPanel_OnShow (panel)
+	-- This function needs to be reworked.
+
+	local value;
+	
 	for _, control in next, panel.controls do
 		if ( control.cvar ) then
 			if ( control.type == CONTROLTYPE_CHECKBOX ) then
@@ -858,7 +878,37 @@ function BlizzardOptionsPanel_OnShow (panel)
 					end
 				end
 			elseif ( control.type == CONTROLTYPE_SLIDER ) then
+				return
+			end
+		elseif ( control.GetValue ) then
+			if ( control.type == CONTROLTYPE_CHECKBOX ) then
+				value = tostring(control:GetValue());
 				
+				if ( not control.invert ) then
+					if ( value == "1" ) then
+						control:SetChecked(true);
+					else
+						control:SetChecked(false);
+					end
+				else
+					if ( value == "0" ) then
+						control:SetChecked(true);
+					else
+						control:SetChecked(false);
+					end
+				end
+				
+				if ( control.dependentControls ) then
+					if ( control:GetChecked() ) then
+						for _, depControl in next, control.dependentControls do
+							depControl:Enable();
+						end
+					else
+						for _, depControl in next, control.dependentControls do
+							depControl:Disable();
+						end
+					end
+				end
 			end
 		end
 	end
@@ -890,6 +940,21 @@ function BlizzardOptionsPanel_RegisterControl (control, parentFrame)
 			control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
 		elseif ( control.type == CONTROLTYPE_SLIDER ) then
 			control.currValue = GetCVar(control.cvar);
+		end
+	elseif ( control.GetValue ) then
+		if ( control.type == CONTROLTYPE_CHECKBOX ) then
+			value = control.GetValue();
+			control.currValue = value;
+			control.value = value;
+			if ( control.uvar ) then
+				setglobal(control.uvar, value);
+			end
+			
+			if ( control.setFunc ) then
+				control.setFunc(value);
+			end
+			
+			control.SetValue = function(self, value) self.value = value; if ( self.uvar ) then setglobal(self.uvar, value); end if ( self.setFunc ) then self.setFunc(value) end end;
 		end
 	end
 end
