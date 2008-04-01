@@ -14,7 +14,7 @@
 
 -- Version
 -- Constant -- Incrementing this number will erase saved filter settings!!
-COMBATLOG_FILTER_VERSION = 3;
+COMBATLOG_FILTER_VERSION = 4;
 -- Saved Variable
 Blizzard_CombatLog_Filter_Version = 0;
 
@@ -102,6 +102,8 @@ COMBATLOG_DEFAULT_SETTINGS = {
 	showHistory = true;
 	lineColorPriority = 1; -- 1 = source->dest->event, 2 = dest->source->event, 3 = event->source->dest
 	unitIcons = true;
+	hideBuffs = false;
+	hideDebuffs = false;
 	--unitTokens = true;
 };
 
@@ -427,10 +429,10 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["SPELL_EXTRA_ATTACKS"] = true,
 					      --["SPELL_DURABILITY_DAMAGE"] = true,
 					      --["SPELL_DURABILITY_DAMAGE_ALL"] = true,
-					      --["SPELL_AURA_APPLIED"] = true,
-					      --["SPELL_AURA_APPLIED_DOSE"] = true,
-					      --["SPELL_AURA_REMOVED"] = true,
-					      --["SPELL_AURA_REMOVED_DOSE"] = true,
+					      ["SPELL_AURA_APPLIED"] = true,
+					      ["SPELL_AURA_APPLIED_DOSE"] = true,
+					      ["SPELL_AURA_REMOVED"] = true,
+					      ["SPELL_AURA_REMOVED_DOSE"] = true,
 					      ["SPELL_AURA_DISPELLED"] = true,
 					      ["SPELL_AURA_STOLEN"] = true,
 					      ["ENCHANT_APPLIED"] = true,

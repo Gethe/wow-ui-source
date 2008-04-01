@@ -384,15 +384,15 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 			[1] = {
 				text = BENEFICIAL,
 				type = {"SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE"};
-				checked = function () return not CHATCONFIG_SELECTED_FILTER_FILTERS[1].hideBuffs end;
+				checked = function () return not CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs end;
 				func = function (checked) 
 					if ( checked ) then
-						CHATCONFIG_SELECTED_FILTER_FILTERS[1].hideBuffs = false;
+						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs = false;
 						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 					else
-						CHATCONFIG_SELECTED_FILTER_FILTERS[1].hideBuffs = true;
+						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs = true;
 						-- Only stop listening for the messages if hideDebuffs is also true
-						if ( CHATCONFIG_SELECTED_FILTER_FILTERS[1].hideDebuffs ) then
+						if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs ) then
 							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 						end
 					end
@@ -402,15 +402,15 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 			[2] = {
 				text = HOSTILE,
 				type = {"SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE"};
-				checked = function () return not CHATCONFIG_SELECTED_FILTER_FILTERS[1].hideDebuffs end;
+				checked = function () return not CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs end;
 				func = function (checked) 
 					if ( checked ) then
-						CHATCONFIG_SELECTED_FILTER_FILTERS[1].hideDebuffs = false;
+						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs = false;
 						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 					else
-						CHATCONFIG_SELECTED_FILTER_FILTERS[1].hideDebuffs = true;
+						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs = true;
 						-- Only stop listening for the messages if hideDebuffs is also true
-						if ( CHATCONFIG_SELECTED_FILTER_FILTERS[1].hideBuffs ) then
+						if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs ) then
 							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 						end
 					end
@@ -1011,11 +1011,11 @@ function CombatConfig_Colorize_Update()
 	CombatConfigColorsHighlightingSchool:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting);
 
 	
-	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, UNIT_YOU_DEST_POSSESSIVE, 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
+	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, UnitName("player"), 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
 	CombatConfigColorsExampleString1:SetVertexColor(r, g, b);
 	CombatConfigColorsExampleString1:SetText(text);
 
-	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, UNIT_YOU_DEST, 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
+	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, UnitName("player"), 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
 	CombatConfigColorsExampleString2:SetVertexColor(r, g, b);
 	CombatConfigColorsExampleString2:SetText(text);
 end
@@ -1037,11 +1037,11 @@ function CombatConfig_Formatting_Update()
 	CombatConfigFormattingItemNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.itemBraces);
 	CombatConfigFormattingFullText:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.fullText);
 
-	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, "Player", 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
+	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, UnitName("player"), 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
 	CombatConfigFormattingExampleString1:SetVertexColor(r, g, b);
 	CombatConfigFormattingExampleString1:SetText(text);
 
-	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, "Player", 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
+	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, UnitName("player"), 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
 	CombatConfigFormattingExampleString2:SetVertexColor(r, g, b);
 	CombatConfigFormattingExampleString2:SetText(text);
 end
@@ -1481,6 +1481,9 @@ function ChatConfig_UpdateCombatSettings()
 			getglobal(value.frame):Hide();
 		end
 		return;
+	elseif ( #Blizzard_CombatLog_Filters.filters == 1 ) then
+		-- Don't allow them to delete the last filter for now
+		ChatConfigCombatSettingsFiltersDeleteButton:Disable();
 	else
 		ChatConfigCombatSettingsFiltersCopyFilterButton:Enable();
 		ChatConfigCombatSettingsFiltersDeleteButton:Enable();
@@ -1659,7 +1662,16 @@ function CombatConfig_CreateCombatFilter(name, filter)
 end
 
 function CombatConfig_DeleteCurrentCombatFilter()
+	-- Don't allow deletion of all filters
+	if ( #Blizzard_CombatLog_Filters.filters <= 1 ) then
+		return;
+	end
 	tremove(Blizzard_CombatLog_Filters.filters, ChatConfigCombatSettingsFilters.selectedFilter);
+	-- If the deleted filter is the selected filter, then select a new filter if possible
+	if ( ChatConfigCombatSettingsFilters.selectedFilter == Blizzard_CombatLog_Filters.currentFilter ) then
+		Blizzard_CombatLog_QuickButton_OnClick(1);
+	end
+	
 	-- Scroll filters to top of list
 	ChatConfigCombatSettingsFiltersScrollFrameScrollBar:SetValue(0);
 	-- Select the first filter

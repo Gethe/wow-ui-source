@@ -634,16 +634,13 @@
 						self.Disable = function (self) self:oldDisable() getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
 						self.Enable = function (self) self:oldEnable() getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;
 						self.GetValue = function (self) return ( ShowingCloak() ); end
-						self.SetValue = function (self, value) if ( self:IsEnabled() == 1 ) then self:SetChecked(value); self:Disable(); InterfaceOptionsDisplayPanelShowHelm:Disable(); self:RegisterEvent("PLAYER_FLAGS_CHANGED"); ShowCloak(value); end end
+						self.SetValue = function (self, value) self:SetChecked(value); ShowCloak(value); end
+						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 					</OnLoad>
 					<OnShow>
 						self:SetChecked(ShowingCloak());
 					</OnShow>
-					<OnClick>
-						self:Disable();
-						InterfaceOptionsDisplayPanelShowHelm:Disable();		
-						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
-						
+					<OnClick>					
 						if ( this:GetChecked() ) then
 							PlaySound("igMainMenuOptionCheckBoxOn");
 							ShowCloak(true);
@@ -653,10 +650,8 @@
 						end			
 					</OnClick>
 					<OnEvent>
-						if ( event == "PLAYER_FLAGS_CHANGED" and arg1 == "player" ) then
-							self:Enable()
-							InterfaceOptionsDisplayPanelShowHelm:Enable();
-							self:UnregisterEvent("PLAYER_FLAGS_CHANGED");
+						if ( arg1 == "player" ) then
+							self:SetChecked(ShowingCloak());
 						end
 					</OnEvent>
 				</Scripts>
@@ -682,16 +677,13 @@
 						self.Disable = function (self) self:oldDisable() getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
 						self.Enable = function (self) self:oldEnable() getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;						
 						self.GetValue = function (self) return ( ShowingHelm() ); end
-						self.SetValue = function (self, value) if ( self:IsEnabled() == 1 ) then self:SetChecked(value); self:Disable(); InterfaceOptionsDisplayPanelShowCloak:Disable(); self:RegisterEvent("PLAYER_FLAGS_CHANGED"); ShowHelm(value); end end						
+						self.SetValue = function (self, value) self:SetChecked(value); ShowHelm(value); end		
+						self:RegisterEvent("PLAYER_FLAGS_CHANGED");						
 					</OnLoad>
 					<OnShow>
 						self:SetChecked(ShowingHelm());
 					</OnShow>			
 					<OnClick>
-						self:Disable();
-						InterfaceOptionsDisplayPanelShowCloak:Disable();
-						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
-						
 						if ( this:GetChecked() ) then
 							PlaySound("igMainMenuOptionCheckBoxOn");
 							ShowHelm(true);
@@ -701,10 +693,8 @@
 						end			
 					</OnClick>
 					<OnEvent>
-						if ( event == "PLAYER_FLAGS_CHANGED" and arg1 == "player" ) then
-							self:Enable()
-							InterfaceOptionsDisplayPanelShowCloak:Enable();
-							self:UnregisterEvent("PLAYER_FLAGS_CHANGED");
+						if ( arg1 == "player" ) then
+							self:SetChecked(ShowingHelm());
 						end
 					</OnEvent>
 				</Scripts>

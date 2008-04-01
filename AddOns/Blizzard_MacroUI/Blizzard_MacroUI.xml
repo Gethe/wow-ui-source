@@ -132,7 +132,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<FontString name="MacroFrameSelectedMacroName" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<FontString name="MacroFrameSelectedMacroName" frameStrata="HIGH" inherits="GameFontNormalLarge" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="256" y="16"/>
 					</Size>
@@ -165,7 +165,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="MacroFrameSelectedMacroButton" inherits="MacroButtonTemplate" id="0">
+			<CheckButton name="MacroFrameSelectedMacroButton" frameStrata="HIGH" inherits="MacroButtonTemplate" id="0">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground">
 						<Offset>
@@ -342,7 +342,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<Button name="MacroEditButton" inherits="UIPanelButtonTemplate" text="CHANGE_MACRO_NAME_ICON">
+			<Button name="MacroEditButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" text="CHANGE_MACRO_NAME_ICON">
 				<Size>
 					<AbsDimension x="170" y="22"/>
 				</Size>
