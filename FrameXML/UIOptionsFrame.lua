@@ -1,9 +1,5 @@
 -- Note: If you're looking to modify any of the actual interface options, you probably want UIOptionsPanels.lua
 
--- Yay for magic numbers. 404 is the normal height of InterfaceOptionsFrameCategory (250) + the normal height of InterfaceOptionsFrameAddOns (135)  + the offset between the two (24 at the time of this comment)
-INTERFACEOPTIONS_MAXCATEGORYHEIGHT = 409;
-INTERFACEOPTIONS_DEFAULTCATEGORYHEIGHT = 250;
-
 local blizzardCategories = {};
 local addOnCategories = {};
 
@@ -59,6 +55,9 @@ end
 function InterfaceOptionsFrame_OnLoad ()
 	--Make sure all the UVars get their default values set, since systems that require them to be defined will be loaded before anything in UIOptionsPanels
 	InterfaceOptionsFrame_InitializeUVars();
+	PanelTemplates_SetNumTabs(this, 2);
+	InterfaceOptionsFrame.selectedTab = 1;
+	PanelTemplates_UpdateTabs(this);	
 end
 
 function InterfaceOptionsFrame_OnShow ()
@@ -85,22 +84,101 @@ function InterfaceOptionsFrame_Show ()
 	end
 end
 
+function InterfaceOptionsFrame_TabOnClick ()
+	if ( InterfaceOptionsFrame.selectedTab == 1 ) then
+		InterfaceOptionsFrameCategories:Show();
+		InterfaceOptionsFrameAddOns:Hide();
+		InterfaceOptionsFrameTab1TabSpacer:Show();
+		InterfaceOptionsFrameTab2TabSpacer1:Hide();
+		InterfaceOptionsFrameTab2TabSpacer2:Hide();		
+	else
+		InterfaceOptionsFrameCategories:Hide();
+		InterfaceOptionsFrameAddOns:Show();
+		InterfaceOptionsFrameTab1TabSpacer:Hide();
+		InterfaceOptionsFrameTab2TabSpacer1:Show();
+		InterfaceOptionsFrameTab2TabSpacer2:Show();
+	end
+end
+
+function InterfaceOptionsFrame_OpenToFrame (frame)
+	local frameName;
+	if ( type(frame) == "string" ) then
+		frameName = frame;
+		frame = nil;
+	end
+	
+	assert(frameName or frame, 'Usage: InterfaceOptionsFrame_OpenToFrame("categoryName" or frame)');
+	
+	local blizzardElement, elementToDisplay
+	
+	for i, element in next, blizzardCategories do
+		if ( element == frame or (frameName and element.name and element.name == frameName) ) then
+			elementToDisplay = element;
+			blizzardElement = true;
+			break;
+		end
+	end
+	
+	if ( not elementToDisplay ) then
+		for i, element in next, addOnCategories do
+			if ( element == frame or (frameName and element.name and element.name == frameName) ) then
+				elementToDisplay = element;
+				break;
+			end
+		end
+	end
+	
+	if ( not elementToDisplay ) then
+		return;
+	end
+	
+	if ( blizzardElement ) then
+		InterfaceOptionsFrameTab1:Click();
+		local buttons = InterfaceOptionsFrameCategories.buttons
+		for i, button in next, buttons do
+			if ( button.element == elementToDisplay ) then
+				button:Click();
+			elseif ( elementToDisplay.parent and button.element.name == elementToDisplay.parent ) then
+				button.toggle:Click();
+			end
+		end
+		
+		if ( not InterfaceOptionsFrame:IsShown() ) then
+			InterfaceOptionsFrame_Show();
+		end
+	else
+		InterfaceOptionsFrameTab2:Click();
+		local buttons = InterfaceOptionsFrameAddOns.buttons
+		for i, button in next, buttons do
+			if ( button.element == elementToDisplay ) then
+				button:Click();
+			elseif ( elementToDisplay.parent and button.element.name == elementToDisplay.parent ) then
+				button.toggle:Click();
+			end
+		end
+		
+		if ( not InterfaceOptionsFrame:IsShown() ) then
+			InterfaceOptionsFrame_Show();
+		end
+	end
+end
+
 function InterfaceOptionsList_OnLoad (categoryFrame)
 	local name = categoryFrame:GetName();
 	
 	--Setup random things!
 	categoryFrame.scrollBar = getglobal(name .. "ListScrollBar");
 	categoryFrame:SetBackdropBorderColor(.6, .6, .6, 1);
-	getglobal(name .. "Label"):SetText(categoryFrame.labelText);
+	getglobal(name.."Bottom"):SetVertexColor(.66, .66, .66);
 	
 	--Create buttons for scrolling
 	local buttons = {};
 	local button = CreateFrame("BUTTON", name .. "Button1", categoryFrame, "InterfaceOptionsButtonTemplate");
-	button:SetPoint("TOPLEFT", categoryFrame, 0, -4);
+	button:SetPoint("TOPLEFT", categoryFrame, 0, -8);
 	categoryFrame.buttonHeight = button:GetHeight();
 	tinsert(buttons, button);
 	
-	local maxButtons = (categoryFrame:GetHeight() - 4) / categoryFrame.buttonHeight;
+	local maxButtons = (categoryFrame:GetHeight() - 8) / categoryFrame.buttonHeight;
 	for i = 2, maxButtons do
 		button = CreateFrame("BUTTON", name .. "Button" .. i, categoryFrame, "InterfaceOptionsButtonTemplate");
 		button:SetPoint("TOPLEFT", buttons[#buttons], "BOTTOMLEFT");
@@ -110,19 +188,61 @@ function InterfaceOptionsList_OnLoad (categoryFrame)
 	categoryFrame.buttons = buttons;	
 end
 
+--Table to reuse! Yay reuse!
+local displayedElements = {}
+
 function InterfaceCategoryList_Update ()
 	--Redraw the scroll lists
 	local offset = FauxScrollFrame_GetOffset(InterfaceOptionsFrameCategoriesList);
 	local buttons = InterfaceOptionsFrameCategories.buttons;
 	local element;
 	
-	for i = 1, #buttons do
-		element = blizzardCategories[i + offset];
-		if ( ( not element ) or element.hidden ) then
+	for i, element in next, displayedElements do
+		displayedElements[i] = nil;
+	end
+	
+	for i, element in next, blizzardCategories do
+		if ( not element.hidden ) then
+			tinsert(displayedElements, element);
+		end
+	end
+	
+	local numButtons = #buttons;
+	local numCategories = #displayedElements;
+	
+	if ( numCategories > numButtons and ( not InterfaceOptionsFrameCategoriesList:IsShown() ) ) then
+		InterfaceOptionsList_DisplayScrollBar(InterfaceOptionsFrameCategories);
+	elseif ( numCategories <= numButtons and ( InterfaceOptionsFrameCategoriesList:IsShown() ) ) then
+		InterfaceOptionsList_HideScrollBar(InterfaceOptionsFrameCategories);	
+	end
+	
+	FauxScrollFrame_Update(InterfaceOptionsFrameCategoriesList, numCategories, numButtons, buttons[1]:GetHeight());
+	
+	local selection = InterfaceOptionsFrameCategories.selection;
+	if ( selection ) then
+		-- Store the currently selected element and clear all the buttons, we're redrawing.
+		InterfaceOptionsList_ClearSelection(InterfaceOptionsFrameCategories, InterfaceOptionsFrameCategories.buttons);
+	end
+		
+	
+	for i = 1, numButtons do
+		element = displayedElements[i + offset];
+		if ( not element ) then
 			InterfaceOptionsList_HideButton(buttons[i]);
 		else
 			InterfaceOptionsList_DisplayButton(buttons[i], element);
+			
+			if ( selection ) and ( selection == element ) and ( not InterfaceOptionsFrameCategories.selection ) then
+				InterfaceOptionsList_SelectButton(InterfaceOptionsFrameCategories, buttons[i]);
+			end
 		end
+		
+	end
+	
+	if ( selection ) then
+		-- If there was a selected element before we cleared the button highlights, restore it, 'cause we're done.
+		-- Note: This theoretically might already have been done by InterfaceOptionsList_SelectButton, but in the event that the selected button hasn't been drawn, this is still necessary.
+		InterfaceOptionsFrameCategories.selection = selection;
 	end
 end
 
@@ -132,19 +252,22 @@ function InterfaceAddOnsList_Update ()
 	local buttons = InterfaceOptionsFrameAddOns.buttons;
 	local element;
 	
-	local numAddOnCategories = #addOnCategories;
+	for i, element in next, displayedElements do
+		displayedElements[i] = nil;
+	end
+	
+	for i, element in next, addOnCategories do
+		if ( not element.hidden ) then
+			tinsert(displayedElements, element);
+		end
+	end
+	
+	local numAddOnCategories = #displayedElements;
 	local numButtons = #buttons;
 	
-	-- Hide the AddOns list if it's empty and make the Category list taller
-	if ( InterfaceOptionsFrameAddOns:IsShown() and numAddOnCategories == 0 ) then
-		InterfaceOptionsFrameAddOns:Hide();
-		InterfaceOptionsFrameCategories:SetHeight(INTERFACEOPTIONS_MAXCATEGORYHEIGHT);
-		
-		-- Don't need to do the rest of this stuff if this is going to be hidden. 
-		return;
-	elseif ( ( not InterfaceOptionsFrameAddOns:IsShown() ) and numAddOnCategories > 0 ) then
-		InterfaceOptionsFrameAddOns:Show();
-		InterfaceOptionsFrameCategories:SetHeight(INTERFACEOPTIONS_DEFAULTCATEGORYHEIGHT);
+	-- Show the AddOns tab if it's not empty.
+	if ( ( InterfaceOptionsFrameTab2 and not InterfaceOptionsFrameTab2:IsShown() ) and numAddOnCategories > 0 ) then
+		InterfaceOptionsFrameTab2:Show();
 	end
 	
 	if ( numAddOnCategories > numButtons and ( not InterfaceOptionsFrameAddOnsList:IsShown() ) ) then
@@ -155,13 +278,28 @@ function InterfaceAddOnsList_Update ()
 		InterfaceOptionsList_HideScrollBar(InterfaceOptionsFrameAddOns);
 	end
 	
+	FauxScrollFrame_Update(InterfaceOptionsFrameAddOnsList, numAddOnCategories, numButtons, buttons[1]:GetHeight());
+	
+	local selection = InterfaceOptionsFrameAddOns.selection;
+	if ( selection ) then
+		InterfaceOptionsList_ClearSelection(InterfaceOptionsFrameAddOns, InterfaceOptionsFrameAddOns.buttons);
+	end
+	
 	for i = 1, #buttons do
-		element = addOnCategories[i + offset]
-		if ( ( not element ) or element.hidden ) then
+		element = displayedElements[i + offset]
+		if ( not element ) then
 			InterfaceOptionsList_HideButton(buttons[i]);
 		else
 			InterfaceOptionsList_DisplayButton(buttons[i], element);
+			
+			if ( selection ) and ( selection == element ) and ( not InterfaceOptionsFrameAddOns.selection ) then
+				InterfaceOptionsList_SelectButton(InterfaceOptionsFrameAddOns, buttons[i]);
+			end
 		end
+	end
+	
+	if ( selection ) then
+		InterfaceOptionsFrameAddOns.selection = selection;
 	end
 end
 
@@ -177,13 +315,13 @@ function InterfaceOptionsList_DisplayScrollBar (frame)
 end
 
 function InterfaceOptionsList_HideScrollBar (frame)
-	local list = getglobal(frame:getName() .. "List");
+	local list = getglobal(frame:GetName() .. "List");
 	list:Hide();
 	
 	local listWidth = list:GetWidth();
 	
 	for _, button in next, frame.buttons do
-		button:SetWidth(button:GetWidth() - listWidth);
+		button:SetWidth(button:GetWidth() + listWidth);
 	end
 end
 
@@ -222,7 +360,14 @@ function InterfaceOptionsList_DisplayButton (button, element)
 	end
 end
 
-function InterfaceOptionsListButton_OnClick (button)
+function InterfaceOptionsListButton_OnClick (mouseButton, button)
+	if ( mouseButton == "RightButton" ) then
+		if ( button.element.hasChildren ) then
+			button.toggle:Click();
+		end
+		return;
+	end
+	
 	local parent = button:GetParent();
 	local buttons = parent.buttons;
 	
@@ -354,7 +499,13 @@ function InterfaceOptions_AddCategory (frame)
 		if ( parent ) then
 			for i = 1, #blizzardCategories do
 				if ( blizzardCategories[i].name == parent ) then
-					blizzardCategories[i].hasChildren = true;
+					if ( blizzardCategories[i].hasChildren ) then
+						frame.hidden = ( blizzardCategories[i].collapsed );
+					else
+						frame.hidden = true;
+						blizzardCategories[i].hasChildren = true;
+						blizzardCategories[i].collapsed = true;
+					end
 					tinsert(blizzardCategories, i + 1, frame);
 					InterfaceCategoryList_Update();
 					return;
@@ -376,6 +527,13 @@ function InterfaceOptions_AddCategory (frame)
 		if ( parent ) then
 			for i = 1, #addOnCategories do
 				if ( addOnCategories[i].name == parent ) then
+					if ( addOnCategories[i].hasChildren ) then
+						frame.hidden = ( addOnCategories[i].collapsed );
+					else
+						frame.hidden = true;
+						addOnCategories[i].hasChildren = true;
+						addOnCategories[i].collapsed = true;
+					end
 					addOnCategories[i].hasChildren = true;
 					tinsert(addOnCategories, i + 1, frame);
 					InterfaceAddOnsList_Update();

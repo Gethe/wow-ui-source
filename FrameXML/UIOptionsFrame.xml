@@ -1,8 +1,113 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="UIOptionsFrame.lua"/>
+	<Button name="OptionsFrameTabButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="115" y="24"/>
+        </Size>
+        <Layers>
+        	<Layer level="BORDER">
+        		<Texture name="$parentLeftDisabled" file="Interface\OptionsFrame\UI-OptionsFrame-ActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="24"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="BOTTOMLEFT">
+        					<Offset>
+        						<AbsDimension x="0" y="-3"/>
+        					</Offset>
+        				</Anchor>
+        			</Anchors>
+					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddleDisabled" file="Interface\OptionsFrame\UI-OptionsFrame-ActiveTab">
+        			<Size>
+        				<AbsDimension x="88" y="24"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRightDisabled" file="Interface\OptionsFrame\UI-OptionsFrame-ActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="24"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentLeft" file="Interface\OptionsFrame\UI-OptionsFrame-InActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="24"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="TOPLEFT"/>
+        			</Anchors>
+					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddle" file="Interface\OptionsFrame\UI-OptionsFrame-InActiveTab">
+        			<Size>
+        				<AbsDimension x="88" y="24"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRight" file="Interface\OptionsFrame\UI-OptionsFrame-InActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="24"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+        		</Texture>
+        	</Layer>
+        </Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 4);
+			</OnLoad>
+			<OnShow>
+				PanelTemplates_TabResize(0);
+				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 30);
+			</OnShow>
+		</Scripts>
+		<ButtonText name="$parentText">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
+		<DisabledFont inherits="GameFontHighlightSmall"/>
+		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="10" y="-4"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="RIGHT">
+					<Offset>
+						<AbsDimension x="-10" y="-4"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+    </Button>
+	
 	<Frame name="InterfaceOptionsListTemplate" virtual="true" enableMouseWheel="true">
+		
 		<Layers>
+		<!--
 			<Layer level="ARTWORK">
 				<FontString name="$parentLabel" inherits="GameFontHighlight" text="CATEGORY">
 					<Anchors>
@@ -14,26 +119,90 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+		-->
+			<Layer level="BACKGROUND">
+				<!-- Yay. It's a backdrop. -->
+				<Texture name="$parentTopLeft" file="Interface\Tooltips\UI-Tooltip-Border">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBottomLeft" file="Interface\Tooltips\UI-Tooltip-Border">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBottomRight" file="Interface\Tooltips\UI-Tooltip-Border">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentTopRight" file="Interface\Tooltips\UI-Tooltip-Border">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentLeft" file="Interface\Tooltips\UI-Tooltip-Border">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Tooltips\UI-Tooltip-Border">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.125" right="0.25" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBottom" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer">
+					<Size>
+						<AbsDimension x="0" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeft" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
-		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="12"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>		
 		<Frames>
 			<ScrollFrame name="$parentList" hidden="true">
 				<Size>
 					<AbsDimension x="24" y="0"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT"/>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-3"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="3"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<EdgeSize>
@@ -54,6 +223,9 @@
 					<OnMouseWheel>
 						ScrollFrameTemplate_OnMouseWheel(arg1);
 					</OnMouseWheel>					
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(18, self:GetParent().update);
+					</OnVerticalScroll>
 				</Scripts>
 				<Frames>
 					<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate">
@@ -69,13 +241,13 @@
 								</Offset>
 							</Anchor>	
 						</Anchors>
+						<Scripts>
+							<OnValueChanged>
+								this:GetParent():SetVerticalScroll(arg1);
+							</OnValueChanged>
+						</Scripts>
 					</Slider>
-					<Frame name="$parentScrollChildFrame" hidden="true">
-						<!-- Dummy frame so this can use exisiting faux scroll frame code -->
-						<Size>
-							<AbsDimension x="300" y="334"/>
-						</Size>
-					</Frame>					
+					<Frame name="$parentScrollChildFrame" hidden="true"/>
 				</Frames>
 			</ScrollFrame>
 		</Frames>
@@ -96,9 +268,10 @@
 				self.highlight = self:GetHighlightTexture();
 				self.highlight:SetVertexColor(.196, .388, .8);
 				self.text:SetPoint("RIGHT", "$parentToggle", "LEFT", -2, 0);
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick>
-				InterfaceOptionsListButton_OnClick(self);
+				InterfaceOptionsListButton_OnClick(button, self);
 			</OnClick>
 		</Scripts>
 		<Frames>
@@ -109,13 +282,14 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-6" y="-2"/>
+							<AbsDimension x="-6" y="-1"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self:GetParent().toggle = this;
+						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnClick>
 						InterfaceOptions_ToggleSubCategories(self);
@@ -137,7 +311,20 @@
 		</ButtonText>
 		<NormalFont inherits="GameFontNormal"/>
 		<HighlightFont inherits="GameFontHighlight"/>
-		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT">	
+					<Offset>
+						<AbsDimension x="0" y="1"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">	
+					<Offset>
+						<AbsDimension x="0" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
 	</Button>
 
 	<Frame name="InterfaceOptionsFrame" parent="UIParent" hidden="true" enableMouse="true">
@@ -233,7 +420,7 @@
 			</Button>
 			<Frame name="$parentCategories" inherits="InterfaceOptionsListTemplate">
 				<Size>
-					<AbsDimension x="175" y="250"/>
+					<AbsDimension x="175" y="409"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -245,34 +432,30 @@
 				<Scripts>
 					<OnLoad>
 						self.labelText = CATEGORY;
+						self.update = InterfaceCategoryList_Update;
 						InterfaceOptionsList_OnLoad(self);
 						InterfaceCategoryList_Update();
 					</OnLoad>
-					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(CATEGORIES_LIST_HEIGHT, InterfaceCategoryList_Update)
-					</OnVerticalScroll>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentAddOns" inherits="InterfaceOptionsListTemplate">
+			<Frame name="$parentAddOns" inherits="InterfaceOptionsListTemplate" hidden="true">
 				<Size>
-					<AbsDimension x="175" y="135"/>
+					<AbsDimension x="175" y="409"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="22" y="-314"/>
+							<AbsDimension x="22" y="-40"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.labelText = ADDONS
+						self.update = InterfaceAddOnsList_Update;
 						InterfaceOptionsList_OnLoad(self);
 						InterfaceAddOnsList_Update();
 					</OnLoad>
-					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(ADDONS_LIST_HEIGHT, InterfaceAddOnsList_Update)
-					</OnVerticalScroll>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentPanelContainer">
@@ -282,9 +465,9 @@
 							<AbsDimension x="16" y="0"/>
 						</Offset>
 					</Anchor>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentAddOns" relativePoint="BOTTOMRIGHT">
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentCategories" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="16" y="0"/>
+							<AbsDimension x="16" y="1"/>
 						</Offset>
 					</Anchor>
 					<Anchor point="RIGHT">
@@ -295,7 +478,7 @@
 				</Anchors>
 				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<EdgeSize>
-						<AbsValue val="12"/>
+						<AbsValue val="16"/>
 					</EdgeSize>
 					<TileSize>
 						<AbsValue val="16"/>
@@ -310,6 +493,85 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Button name="$parentTab1" inherits="OptionsFrameTabButtonTemplate" text="DEFAULT" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentCategories" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PanelTemplates_Tab_OnClick(InterfaceOptionsFrame);
+						PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
+						InterfaceOptionsFrame_TabOnClick();
+					</OnClick>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTabSpacer" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer">	
+							<Size>
+								<AbsDimension x="85" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="-6"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="RIGHT" relativeTo="InterfaceOptionsFrameCategoriesTopRight" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button name="$parentTab2" inherits="OptionsFrameTabButtonTemplate" text="ADDONS" id="2" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PanelTemplates_Tab_OnClick(InterfaceOptionsFrame);
+						PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
+						InterfaceOptionsFrame_TabOnClick();
+					</OnClick>
+				</Scripts>				
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTabSpacer1" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer" hidden="true">	
+							<Size>
+								<AbsDimension x="64" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-6"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="LEFT" relativeTo="InterfaceOptionsFrameAddOnsTopLeft" relativePoint="RIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTabSpacer2" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer" hidden="true">	
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-9" y="-6"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="RIGHT" relativeTo="InterfaceOptionsFrameAddOnsTopRight" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>				
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnShow>

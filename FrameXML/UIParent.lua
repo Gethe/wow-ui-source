@@ -1471,7 +1471,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 					return;
 				end
 			end
-			SetUIPanel("right", nil, 1);
+			self:SetUIPanel("right", nil, 1);
 		end
 		frame:Raise();
 	end

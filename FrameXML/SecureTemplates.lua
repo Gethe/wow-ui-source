@@ -273,7 +273,7 @@ function SecureActionButton_OnClick(self, button)
 	elseif ( type == "spell" ) then
 		local spell = SecureButton_GetModifiedAttribute(self, "spell", button);
 		if ( spell ) then
-			ClickSpellByName(spell, unit);
+			CastSpellByName(spell, unit);
 		end
 	elseif ( type == "item" ) then
 		local item = SecureButton_GetModifiedAttribute(self, "item", button);

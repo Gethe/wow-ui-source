@@ -764,7 +764,7 @@ function FCF_OnUpdate(elapsed)
 			end
 			
 			dockRegion = getglobal(value:GetName().."TabDockRegion");
-			if ( MouseIsOver(dockRegion) and MOVING_CHATFRAME ~= DEFAULT_CHAT_FRAME and not UIOptionsFrame:IsShown() ) then
+			if ( MouseIsOver(dockRegion) and MOVING_CHATFRAME ~= DEFAULT_CHAT_FRAME and not InterfaceOptionsFrame:IsShown() ) then
 				dockRegion:Show();
 			else
 				dockRegion:Hide();

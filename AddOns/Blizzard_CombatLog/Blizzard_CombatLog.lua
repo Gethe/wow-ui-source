@@ -115,7 +115,7 @@ COMBATLOG_FILTER_NEUTRAL_UNITS		= bit.bor(
 						COMBATLOG_OBJECT_TYPE_GUARDIAN,
 						COMBATLOG_OBJECT_TYPE_OBJECT
 						);
-
+COMBATLOG_FILTER_UNKNOWN 		= COMBATLOG_OBJECT_NONE;
 COMBATLOG_FILTER_EVERYTHING =	0xFFFFFFFF;
 
 -- Define the log
@@ -2027,6 +2027,10 @@ function CombatLog_String_SchoolString(school)
 		end
 		mask = mask * 2;
 	end
+	
+	if ( not schoolString ) then
+		schoolString = STRING_SCHOOL_UNKNOWN;
+	end
 	return schoolString;
 end
 
@@ -2694,6 +2698,14 @@ function CombatLog_OnEvent(frame, timestamp, event, sourceGUID, sourceName, sour
 			-- Event Type
 			event = event.."_"..auraType;
 
+			-- Support for multiple string orders
+			if ( getglobal("ACTION_"..event.."_MASTER") ) then
+				local newCombatString = getglobal("TEXT_MODE_"..textMode.."_STRING_"..getglobal("ACTION_"..event.."_MASTER") );
+				if ( newCombatString ) then
+					combatString = newCombatString;
+				end
+			end
+
 			-- Swap Source with Dest
 			sourceName = destName;
 			sourceGUID = destGUID;
@@ -2723,6 +2735,14 @@ function CombatLog_OnEvent(frame, timestamp, event, sourceGUID, sourceName, sour
 
 			-- Event Type
 			event = event.."_"..auraType;
+
+			-- Support for multiple string orders
+			if ( getglobal("ACTION_"..event.."_MASTER") ) then
+				local newCombatString = getglobal("TEXT_MODE_"..textMode.."_STRING_"..getglobal("ACTION_"..event.."_MASTER") );
+				if ( newCombatString ) then
+					combatString = newCombatString;
+				end
+			end
 
 			-- Swap Source with Dest
 			sourceName = destName;
@@ -3049,9 +3069,8 @@ function CombatLog_OnEvent(frame, timestamp, event, sourceGUID, sourceName, sour
 	-- Initialize the strings now
 	sourceNameStr, destNameStr = sourceName, destName
 
-
 	-- Special changes for localization when not in full text mode
-	if ( not Blizzard_CombatLog_CurrentSettings.settings.fullText ) then
+	if ( not Blizzard_CombatLog_CurrentSettings.settings.fullText and getglobal("COMBAT_LOG_UNIT_YOU_ENABLED") == "1" ) then
 		-- Replace your name with "You";
 		if ( sourceName and CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE) ) then
 			sourceNameStr = UNIT_YOU;
@@ -3059,16 +3078,8 @@ function CombatLog_OnEvent(frame, timestamp, event, sourceGUID, sourceName, sour
 		if ( destName and CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MINE) ) then
 			destNameStr = UNIT_YOU;
 		end
-		
 		-- Apply the possessive form to the source
-		if ( sourceName 
-			and ( string.sub( event, 1, 10 ) ~= "SPELL_CAST" and event ~= "SPELL_EXTRA_ATTACKS" )
-			and ( 
-			    event == "SWING_DAMAGE" or 
-			    event == "SWING_MISSED" or 
-			    event == "RANGE_DAMAGE" or 
-			    event == "RANGE_MISSED" or spellName ) 
-			    ) then
+		if ( sourceName and spellName and getglobal("ACTION_"..event.."_POSSESSIVE") == "1" ) then
 			if ( sourceName and CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE) ) then
 				sourceNameStr = UNIT_YOU_SOURCE;
 			end
@@ -3082,22 +3093,14 @@ function CombatLog_OnEvent(frame, timestamp, event, sourceGUID, sourceName, sour
 
 	-- If its full text mode
 	else
-		
 		-- Apply the possessive form to the source
-		if ( sourceName 
-			and ( string.sub( event, 1, 10 ) ~= "SPELL_CAST" and event ~= "SPELL_EXTRA_ATTACKS" )
-			and ( 
-			    event == "SWING_DAMAGE" or 
-			    event == "SWING_MISSED" or 
-			    event == "RANGE_DAMAGE" or 
-			    event == "RANGE_MISSED" or spellName ) 
-			    ) then
+		if ( sourceName and spellName ) then
 			sourceNameStr = string.gsub ( TEXT_MODE_A_STRING_POSSESSIVE, "$nameString", sourceNameStr );
 			sourceNameStr = string.gsub ( sourceNameStr, "$possessive", TEXT_MODE_A_STRING_POSSESSIVE_STRING );
 		end
 
 		-- Apply the possessive form to the dest if the dest has a spell
-		if ( extraSpellName and destName ) then
+		if ( ( extraSpellName or itemName ) and destName ) then
 			destNameStr = string.gsub ( TEXT_MODE_A_STRING_POSSESSIVE, "$nameString", destNameStr );
 			destNameStr = string.gsub ( destNameStr, "$possessive", TEXT_MODE_A_STRING_POSSESSIVE_STRING );
 		end
@@ -3194,17 +3197,15 @@ function CombatLog_OnEvent(frame, timestamp, event, sourceGUID, sourceName, sour
 		local schoolNameColor = nil;
 		-- Color school names
 		if ( Blizzard_CombatLog_CurrentSettings.settings.schoolNameColoring ) then
-			if ( Blizzard_CombatLog_CurrentSettings.settings.noMeleeSwingColoring and school == 0 and not spellId )  then
-			else
-				if ( Blizzard_CombatLog_CurrentSettings.settings.schoolNameActorColoring ) then
+			if ( Blizzard_CombatLog_CurrentSettings.settings.noMeleeSwingColoring and school == SCHOOL_MASK_PHYSICAL and not spellId )  then
+			elseif ( Blizzard_CombatLog_CurrentSettings.settings.schoolNameActorColoring ) then
 					if ( sourceName ) then
 						schoolNameColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags );
 					elseif ( destName ) then
 						schoolNameColor = CombatLog_Color_ColorArrayByUnitType( destFlags );
 					end
-				elseif ( Blizzard_CombatLog_CurrentSettings.settings.schoolNameActorColoring ) then
-					schoolNameColor = CombatLog_Color_ColorArrayBySchool(school);
-				end
+			else
+				schoolNameColor = CombatLog_Color_ColorArrayBySchool(school);
 			end
 		end
 		-- Highlighting
@@ -3510,7 +3511,6 @@ function CombatLog_AddEvent(...)
 	end
 	if ( DEBUG == true ) then
 		ChatFrame1:AddMessage(message, info.r, info.g, info.b);
-		return;
 	end
 	--COMBATLOG:AddMessage(message, info.r, info.g, info.b);
 	local finalMessage, r, g, b = CombatLog_OnEvent(COMBATLOG, timestamp, event, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, select( 9, ... ) );

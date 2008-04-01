@@ -97,7 +97,7 @@ function RaidClassButton_Update()
 				button.id = RAID_SUBGROUP_LISTS[index][1];
 				count:Hide();
 			else
-				button.class, button.fileName = UnitClass("raid"..RAID_SUBGROUP_LISTS[index][1]);
+				button.class, button.fileName = UnitClassBase("raid"..RAID_SUBGROUP_LISTS[index][1]);
 			end
 			button:Enable();
 		else

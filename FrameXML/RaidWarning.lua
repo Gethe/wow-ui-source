@@ -93,6 +93,17 @@ end
 
 function RaidWarningFrame_OnEvent(self, event, message)
 	if ( event == "CHAT_MSG_RAID_WARNING" ) then
+		
+		--Task 21207: Add the ability to link raid icons to other players
+		local term;
+		for tag in string.gmatch(message, "%b{}") do
+			term = strlower(string.gsub(tag, "[{}]", ""));
+			if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
+				-- Using 25 as the height and width, since it looks best with the raid notice MIN_HEIGHT and MAX_HEIGHTs
+				message = string.gsub(message, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "25:25|t");
+			end
+		end		
+		
 		RaidNotice_AddMessage( self, message, ChatTypeInfo["RAID_WARNING"] );
 		PlaySound("RaidWarning");
 	end

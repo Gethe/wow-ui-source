@@ -404,6 +404,37 @@ EMOTE169_TOKEN = "PAT";
 EMOTE170_TOKEN = "GOLFCLAP";
 EMOTE171_TOKEN = "MOUNTSPECIAL";
 
+ICON_LIST = {
+	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1:",
+	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_2:",
+	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_3:",
+	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_4:",
+	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_5:",
+	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_6:",
+	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_7:",
+	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_8:",
+}
+
+--Links tags from Global Strings to indicies for entries in ICON_LIST. This way addons can easily replace icons
+ICON_TAG_LIST =
+{
+	[strlower(ICON_TAG_RAID_TARGET_STAR)] = 1,
+	[strlower(ICON_TAG_RAID_TARGET_CIRCLE)] = 2,
+	[strlower(ICON_TAG_RAID_TARGET_DIAMOND)] = 3,
+	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE)] = 4,
+	[strlower(ICON_TAG_RAID_TARGET_MOON)] = 5,
+	[strlower(ICON_TAG_RAID_TARGET_SQUARE)] = 6,
+	[strlower(ICON_TAG_RAID_TARGET_CROSS)] = 7,
+	[strlower(ICON_TAG_RAID_TARGET_SKULL)] = 8,
+	[strlower(RAID_TARGET_1)] = 1,
+	[strlower(RAID_TARGET_2)] = 2,
+	[strlower(RAID_TARGET_3)] = 3,
+	[strlower(RAID_TARGET_4)] = 4,
+	[strlower(RAID_TARGET_5)] = 5,
+	[strlower(RAID_TARGET_6)] = 6,
+	[strlower(RAID_TARGET_7)] = 7,
+	[strlower(RAID_TARGET_8)] = 8,
+}
 
 -- Arena Team Helper Function
 function ArenaTeam_GetTeamSizeID(teamsizearg)
@@ -605,7 +636,7 @@ local function ExecuteCastSequence(sequence, target)
 			SecureCmdUseItem(name, bag, slot, target);
 		end
 	else
-		CastSpellByName(spell, target, true);
+		CastSpellByName(spell, target);
 	end
 	if ( spell == "" ) then
 		SetNextCastSequence(sequence, entry);
@@ -2005,6 +2036,13 @@ function ChatFrame_MessageEventHandler(event)
 		else
 			local body;
 
+			local _, fontHeight = GetChatWindowInfo(this:GetID());
+			
+			if ( fontHeight == 0 ) then
+				--fontHeight will be 0 if it's still at the default (14)
+				fontHeight = 14;
+			end
+			
 			-- Add AFK/DND flags
 			local pflag;
 			if(strlen(arg6) > 0) then
@@ -2024,6 +2062,16 @@ function ChatFrame_MessageEventHandler(event)
 			else
 				arg1 = gsub(arg1, "%%", "%%%%");
 			end
+			
+			-- Search for icon links and replace them with texture links.
+			local term;
+			for tag in string.gmatch(arg1, "%b{}") do
+				term = strlower(string.gsub(tag, "[{}]", ""));
+				if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
+					arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. fontHeight .. ":" .. fontHeight .. "|t");
+				end
+			end
+			
 			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= this.defaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (strlen(arg2) > 0) ) then
