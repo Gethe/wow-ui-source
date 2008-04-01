@@ -446,6 +446,11 @@ function UIDropDownMenuButton_OnClick()
 	PlaySound("UChatScrollButton");
 end
 
+function HideDropDownMenu(level)
+	local listFrame = getglobal("DropDownList"..level);
+	listFrame:Hide();
+end
+
 function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset)
 	if ( not level ) then
 		level = 1;
@@ -480,6 +485,17 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			-- If there's no specified anchorName then use left side of the dropdown menu
 			if ( not anchorName ) then
 				anchorName = UIDROPDOWNMENU_OPEN_MENU.."Left"
+			elseif ( anchorName == "cursor" ) then
+				anchorName = "UIParent";
+				local cursorX, cursorY = GetCursorPosition();
+				if ( not xOffset ) then
+					xOffset = 0;
+				end
+				if ( not yOffset ) then
+					yOffset = 0;
+				end
+				xOffset = cursorX + xOffset;
+				yOffset = cursorY + yOffset;
 			end
 			if ( not xOffset or not yOffset ) then
 				xOffset = 8;

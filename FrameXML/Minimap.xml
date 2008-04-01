@@ -236,7 +236,7 @@
 						</Scripts>						
 						<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 					</Button>					
-					<Frame name="MiniMapMailFrame" enableMouse="true" hidden="false">
+					<Frame name="MiniMapMailFrame" enableMouse="true" hidden="true">
 						<Size>
 							<AbsDimension x="33" y="33"/>
 						</Size>
@@ -281,9 +281,9 @@
 							<OnEvent>
 								if ( event == "UPDATE_PENDING_MAIL" ) then
 									if ( HasNewMail() ) then
-										MiniMapMailFrame:Show();
+										this:Show();
 									else
-										MiniMapMailFrame:Hide();
+										this:Hide();
 									end
 								end
 							</OnEvent>

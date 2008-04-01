@@ -5,7 +5,9 @@ NUM_CONTAINER_COLUMNS = 4;
 CONTAINER_WIDTH = 192;
 CONTAINER_SPACING = 0;
 VISIBLE_CONTAINER_SPACING = 3;
-CONTAINER_OFFSET = 70;
+CONTAINER_OFFSET_Y = 70;
+CONTAINER_OFFSET_X = 0;
+
 -- [n] = {textureName, textureWidth, textureHeight, frameHeight}
 CONTAINER_FRAME_TABLE = {
 	[0] = {"Interface\\ContainerFrame\\UI-BackpackBackground", 256, 256, 239},
@@ -371,13 +373,16 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 end
 
 function updateContainerFrameAnchors()
+	-- Adjust the start anchor for bags depending on the multibars
+	UIParent_ManageRightSideFrames();
+	local xOffset = CONTAINER_OFFSET_X;
 	local uiScale = GetCVar("uiscale") + 0;
 --	local screenHeight = GetScreenHeight();
 	local screenHeight = 768;
 	if ( GetCVar("useUiScale") == "1" ) then
 		screenHeight = 768 / uiScale;
 	end
-	local freeScreenHeight = screenHeight - CONTAINER_OFFSET;
+	local freeScreenHeight = screenHeight - CONTAINER_OFFSET_Y;
 	local index = 1;
 	local column = 0;
 	while ContainerFrame1.bags[index] do
@@ -385,12 +390,12 @@ function updateContainerFrameAnchors()
 		-- freeScreenHeight determines when to start a new column of bags
 		if ( index == 1 ) then
 			-- First bag
-			frame:SetPoint("BOTTOMRIGHT", frame:GetParent():GetName(), "BOTTOMRIGHT", 0, CONTAINER_OFFSET);
+			frame:SetPoint("BOTTOMRIGHT", frame:GetParent():GetName(), "BOTTOMRIGHT", -xOffset, CONTAINER_OFFSET_Y);
 		elseif ( freeScreenHeight < frame:GetHeight() ) then
 			-- Start a new column
 			column = column + 1;
-			freeScreenHeight = UIParent:GetHeight() - CONTAINER_OFFSET;
-			frame:SetPoint("BOTTOMRIGHT", frame:GetParent():GetName(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH), CONTAINER_OFFSET);
+			freeScreenHeight = UIParent:GetHeight() - CONTAINER_OFFSET_Y;
+			frame:SetPoint("BOTTOMRIGHT", frame:GetParent():GetName(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH) - xOffset, CONTAINER_OFFSET_Y);
 		else
 			-- Anchor to the previous bag
 			frame:SetPoint("BOTTOMRIGHT", ContainerFrame1.bags[index - 1], "TOPRIGHT", 0, CONTAINER_SPACING);	
@@ -403,7 +408,7 @@ function updateContainerFrameAnchors()
 	if ( index == 1 ) then
 		DEFAULT_TOOLTIP_POSITION = -13;
 	else
-		DEFAULT_TOOLTIP_POSITION = -((column + 1) * CONTAINER_WIDTH);
+		DEFAULT_TOOLTIP_POSITION = -((column + 1) * CONTAINER_WIDTH) - xOffset;
 	end
 	if ( DEFAULT_TOOLTIP_POSITION ~= oldContainerPosition and GameTooltip.default and GameTooltip:IsVisible() ) then
 		GameTooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", DEFAULT_TOOLTIP_POSITION, 64);
@@ -436,6 +441,7 @@ function ContainerFrameItemButton_OnClick(button, ignoreShift)
 			end
 		else
 			PickupContainerItem(this:GetParent():GetID(), this:GetID());
+			StackSplitFrame:Hide();
 		end
 	elseif ( button == "RightButton" ) then
 		if ( IsShiftKeyDown() and MerchantFrame:IsVisible() and not ignoreShift ) then
@@ -446,6 +452,7 @@ function ContainerFrameItemButton_OnClick(button, ignoreShift)
 			OpenStackSplitFrame(this.count, this, "BOTTOMRIGHT", "TOPRIGHT");
 		else
 			UseContainerItem(this:GetParent():GetID(), this:GetID());
+			StackSplitFrame:Hide();
 		end
 	end
 end

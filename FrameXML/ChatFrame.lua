@@ -614,6 +614,9 @@ EMOTE164_TOKEN = "WAIT";
 EMOTE165_TOKEN = "FLIRT";
 EMOTE166_TOKEN = "HEALME";
 EMOTE167_TOKEN = "JOKE";
+EMOTE168_TOKEN = "WINK";
+EMOTE169_TOKEN = "PAT";
+EMOTE170_TOKEN = "GOLFCLAP";
 
 function GetSlashCmdTarget(msg)
 	local target = gsub(msg, "(%s*)([^%s]+)(.*)", "%2", 1);
@@ -727,18 +730,6 @@ end
 
 SlashCmdList["QUIT"] = function(msg)
 	Quit();
-end
-
-SlashCmdList["BUG"] = function(msg)
-	ShowSuggestFrame(msg, "bug");
-end
-
-SlashCmdList["SUGGEST"] = function(msg)
-	ShowSuggestFrame(msg, "suggest");
-end
-
-SlashCmdList["NOTE"] = function(msg)
-	ReportNote(msg);
 end
 
 SlashCmdList["JOIN"] = 	function(msg)
@@ -1060,14 +1051,14 @@ end
 SlashCmdList["RANDOM"] = function(msg)
 	local num1 = gsub(msg, "(%s*)(%d+)(.*)", "%2", 1);
 	local rest = gsub(msg, "(%s*)(%d+)(.*)", "%3", 1);
-	local num2 = 0;
+	local num2 = "";
 	if ( strlen(rest) > 0 ) then
 		num2 = gsub(msg, "(%s*)(%d+)([-%s]+)(%d+)(.*)", "%4", 1);
 	end
 
-	if ( num1 == 0 and num2 == 0 ) then
+	if ( num1 == "" and num2 == "" ) then
 		RandomRoll("1", "100");
-	elseif ( num2 == 0 ) then
+	elseif ( num2 == "" ) then
 		RandomRoll("1", num1);
 	else
 		RandomRoll(num1, num2);
@@ -1090,6 +1081,10 @@ end
 
 SlashCmdList["PVP"] = function(msg)
 	EnablePVP();
+end
+
+SlashCmdList["RAID_INFO"] = function(msg)
+	RequestRaidInfo();
 end
 
 -- ChatFrame functions
@@ -1379,13 +1374,13 @@ function ChatFrame_OnEvent(event)
 			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= this.defaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (strlen(arg2) > 0) ) then
-					body = format(TEXT(getglobal("CHAT_"..type.."_GET"))..languageHeader..arg1, pflag.."|HPlayer:"..arg2.."|h".."["..arg2.."]".."|h");
+					body = format(TEXT(getglobal("CHAT_"..type.."_GET"))..languageHeader..arg1, pflag.."|Hplayer:"..arg2.."|h".."["..arg2.."]".."|h");
 				else
 					body = format(TEXT(getglobal("CHAT_"..type.."_GET"))..languageHeader..arg1, pflag..arg2);
 				end
 			else
 				if ( showLink and (strlen(arg2) > 0) and (type ~= "EMOTE") ) then
-					body = format(TEXT(getglobal("CHAT_"..type.."_GET"))..arg1, pflag.."|HPlayer:"..arg2.."|h".."["..arg2.."]".."|h");
+					body = format(TEXT(getglobal("CHAT_"..type.."_GET"))..arg1, pflag.."|Hplayer:"..arg2.."|h".."["..arg2.."]".."|h");
 				else
 					body = format(TEXT(getglobal("CHAT_"..type.."_GET"))..arg1, pflag..arg2);
 				end
@@ -1452,8 +1447,8 @@ function ChatFrame_OnUpdate(elapsedSec)
 	end
 end
 
-function ChatFrame_OnHyperlinkShow(link)
-	SetItemRef(link);
+function ChatFrame_OnHyperlinkShow(link, button)
+	SetItemRef(link, button);
 end
 
 function ChatFrame_OnHyperlinkHide()
@@ -1521,6 +1516,19 @@ end
 
 function ChatFrame_OpenMenu()
 	ChatMenu:Show();
+end
+
+function ChatFrame_SendTell(name, chatFrame)
+	if ( not chatFrame ) then
+		chatFrame = DEFAULT_CHAT_FRAME;
+	end
+
+	chatFrame.editBox.chatType = "WHISPER";
+	chatFrame.editBox.tellTarget = name;
+	ChatEdit_UpdateHeader(chatFrame.editBox);
+	if ( not chatFrame.editBox:IsVisible() ) then
+		ChatFrame_OpenChat("", chatFrame);
+	end
 end
 
 function ChatFrame_ReplyTell(chatFrame)
@@ -1694,6 +1702,7 @@ function ChatEdit_OnShow()
 	this.tabCompleteText = nil;
 	ChatEdit_UpdateHeader(this);
 	ChatEdit_OnInputLanguageChanged();
+	this:SetFocus();
 end
 
 function ChatEdit_GetLastTellTarget(editBox)

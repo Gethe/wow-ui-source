@@ -131,7 +131,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.359375"/>
 				</Texture>
-				<Texture file="Interface\PetActionBar\UI-PetBar">
+				<Texture name="SlidingActionBarTexture1" file="Interface\PetActionBar\UI-PetBar">
 					<Size>
 						<AbsDimension x="184" y="46"/>
 					</Size>

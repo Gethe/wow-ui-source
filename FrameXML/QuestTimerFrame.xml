@@ -33,7 +33,7 @@
 			<AbsDimension x="160" y="72"/>
 		</Size>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="MinimapCluster" relativePoint="BOTTOM">
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="10" y="0"/>
 				</Offset>

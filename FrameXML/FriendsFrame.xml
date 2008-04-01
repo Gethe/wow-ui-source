@@ -32,8 +32,11 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
 			<OnClick>
-				FriendsFrameFriendButton_OnClick();
+				FriendsFrameFriendButton_OnClick(arg1);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 		</Scripts>
@@ -139,8 +142,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
 			<OnClick>
-				FriendsFrameWhoButton_OnClick();
+				FriendsFrameWhoButton_OnClick(arg1);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 		</Scripts>
@@ -279,8 +285,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
 			<OnClick>
-				FriendsFrameGuildPlayerStatusButton_OnClick();
+				FriendsFrameGuildPlayerStatusButton_OnClick(arg1);
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
@@ -353,8 +362,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
 			<OnClick>
-				FriendsFrameGuildStatusButton_OnClick();
+				FriendsFrameGuildStatusButton_OnClick(arg1);
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
@@ -558,6 +570,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="FriendsDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Button name="FriendsFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
@@ -1764,17 +1777,25 @@
 								</Layers>
 								<Scripts>
 									<OnLoad>
-										SetGuildRosterShowOffline(1);
-										this:SetChecked(GetGuildRosterShowOffline());
+										RegisterForSave("SHOW_OFFLINE_GUILD_MEMBERS");
+										this:RegisterEvent("VARIABLES_LOADED");
 									</OnLoad>
+									<OnEvent>
+										if ( event == "VARIABLES_LOADED" ) then
+											SetGuildRosterShowOffline(SHOW_OFFLINE_GUILD_MEMBERS);
+											this:SetChecked(GetGuildRosterShowOffline());
+										end
+									</OnEvent>
 									<OnClick>
 										SetGuildRosterSelection(0);
 										if ( this:GetChecked() ) then
+											SHOW_OFFLINE_GUILD_MEMBERS = 1;
 											PlaySound("igMainMenuOptionCheckBoxOff");
 										else
+											SHOW_OFFLINE_GUILD_MEMBERS = 0;
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										end
-										SetGuildRosterShowOffline(this:GetChecked());
+										SetGuildRosterShowOffline(SHOW_OFFLINE_GUILD_MEMBERS);
 										if ( FriendsFrame.playerStatusFrame ) then
 											GuildPlayerStatus_Update();
 										else
@@ -2107,6 +2128,7 @@
 								<Scripts>
 									<OnLoad>
 										WhoFrameColumn_SetWidth(75);
+										this.sortType = "note";
 									</OnLoad>
 								</Scripts>
 							</Button>

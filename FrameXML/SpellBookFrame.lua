@@ -77,6 +77,9 @@ function SpellBookFrame_OnShow()
 	if ( SpellBookFrame.flashTabs ) then
 		UIFrameFlash(SpellBookTabFlashFrame, 0.5, 0.5, 30, nil);
 	end
+
+	-- Show multibar slots
+	MultiActionBar_ShowAllGrids();
 end
 
 function SpellBookFrame_Update(showing)
@@ -173,6 +176,9 @@ function SpellBookFrame_OnHide()
 	for i=1, MAX_SKILLLINE_TABS do
 		getglobal("SpellBookSkillLineTab"..i.."Flash"):Hide();
 	end
+
+	-- Hide multibar slots
+	MultiActionBar_HideAllGrids();
 end
 
 function SpellButton_OnLoad() 
@@ -331,7 +337,7 @@ function SpellButton_UpdateButton()
 		normalTexture:SetVertexColor(0, 0, 0);
 		highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
 		--subSpellName = TEXT(PASSIVE_PARENS);
-		spellString:SetTextColor(0.77, 0.64, 0);
+		spellString:SetTextColor(PASSIVE_SPELL_FONT_COLOR.r, PASSIVE_SPELL_FONT_COLOR.g, PASSIVE_SPELL_FONT_COLOR.b);
 	else
 		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");

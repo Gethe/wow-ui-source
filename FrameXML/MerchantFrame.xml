@@ -327,6 +327,7 @@
 					</OnLeave>
 					<OnClick>
 						RepairAllItems();
+						PlaySound("ITEM_REPAIR");
 						GameTooltip:Hide();
 					</OnClick>
 				</Scripts>

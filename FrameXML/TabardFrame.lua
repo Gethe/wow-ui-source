@@ -3,6 +3,7 @@ function TabardFrame_OnLoad()
 	this:RegisterEvent("OPEN_TABARD_FRAME");
 	this:RegisterEvent("CLOSE_TABARD_FRAME");
 	this:RegisterEvent("TABARD_CANSAVE_CHANGED");
+	this:RegisterEvent("TABARD_SAVE_PENDING");
 	this:RegisterEvent("UNIT_MODEL_CHANGED");
 	TabardFrameCostFrame:SetBackdropBorderColor(0.4, 0.4, 0.4);
 	TabardFrameCostFrame:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
@@ -26,15 +27,16 @@ function TabardFrame_OnEvent(event, unit)
 		SetPortraitTexture(TabardFramePortrait,"npc");
 		TabardFrameNameText:SetText(UnitName("npc"));
 		TabardModel:InitializeTabardColors();
-		TabardFrame_Update();
+		TabardFrame_UpdateTextures();
+		TabardFrame_UpdateButtons();
 		ShowUIPanel(TabardFrame);
 		if ( not TabardFrame:IsVisible() ) then
 			CloseTabardCreation();
 		end
 	elseif ( event == "CLOSE_TABARD_FRAME" ) then
 		HideUIPanel(TabardFrame);
-	elseif ( event == "TABARD_CANSAVE_CHANGED" ) then
-		TabardFrame_Update();
+	elseif ( event == "TABARD_CANSAVE_CHANGED" or event == "TABARD_SAVE_PENDING" ) then
+		TabardFrame_UpdateButtons();
 	elseif ( event == "UNIT_MODEL_CHANGED" ) then
 		if ( unit == "player" ) then
 			TabardModel:SetUnit("player");
@@ -74,30 +76,33 @@ end
 function TabardCustomization_Left(id)
 	PlaySound("gsCharacterCreationLook");
 	TabardModel:CycleVariation(id,-1);
-	TabardFrame_Update();
+	TabardFrame_UpdateTextures();
 end
 
 function TabardCustomization_Right(id)
 	PlaySound("gsCharacterCreationLook");
 	TabardModel:CycleVariation(id,1);
-	TabardFrame_Update();
+	TabardFrame_UpdateTextures();
 end
 
-function TabardFrame_Update()
+function TabardFrame_UpdateTextures()
 	TabardModel:GetUpperEmblemTexture("TabardFrameEmblemTopLeft");
 	TabardModel:GetUpperEmblemTexture("TabardFrameEmblemTopRight");
 	TabardModel:GetLowerEmblemTexture("TabardFrameEmblemBottomLeft");
 	TabardModel:GetLowerEmblemTexture("TabardFrameEmblemBottomRight");
+end
 
-	if ( TabardModel:CanSave() ) then
-		TabardFrameGreetingText:SetText(TABARDVENDORGREETING);
-		TabardFrameAcceptButton:Enable();
-	else
-		if ( IsGuildLeader() ) then
-			TabardFrameGreetingText:SetText(TABARDVENDORALREADYSETGREETING);
-		else
-			TabardFrameGreetingText:SetText(TABARDVENDORNOGUILDGREETING);
-		end
+function TabardFrame_UpdateButtons()
+	local guildName, rankName, rank = GetGuildInfo("player");
+	if ( guildName == nil or rankName == nil or ( rank > 0 ) ) then
+		TabardFrameGreetingText:SetText(TABARDVENDORNOGUILDGREETING);
 		TabardFrameAcceptButton:Disable();
+	else
+		TabardFrameGreetingText:SetText(TABARDVENDORGREETING);
+		if( TabardModel:CanSaveTabardNow() ) then
+			TabardFrameAcceptButton:Enable();
+		else
+			TabardFrameAcceptButton:Disable();
+		end
 	end
 end

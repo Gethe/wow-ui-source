@@ -10,6 +10,8 @@ MAX_IGNORE = 50;
 MAX_WHOS_FROM_SERVER = 50;
 MAX_GUILDCONTROL_OPTIONS = 12;
 
+SHOW_OFFLINE_GUILD_MEMBERS = 1;	-- This variable is saved
+
 WHOFRAME_DROPDOWN_LIST = {
 	{name = ZONE, sortType = "zone"},
 	{name = GUILD, sortType = "guild"},
@@ -25,6 +27,20 @@ function RaidFrame_ShowSubFrame(frameName)
 			getglobal(value):Hide();	
 		end	
 	end 
+end
+
+function FriendsFrame_ShowDropdown(name, connected)
+	HideDropDownMenu(1);
+	if ( connected and name ~= UnitName("player") ) then
+		FriendsDropDown.initialize = FriendsFrameDropDown_Initialize;
+		FriendsDropDown.displayMode = "MENU";
+		FriendsDropDown.name = name;
+		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
+	end
+end
+
+function FriendsFrameDropDown_Initialize()
+	UnitPopup_ShowMenu(getglobal(UIDROPDOWNMENU_OPEN_MENU), "FRIEND", nil, FriendsDropDown.name);
 end
 
 function FriendsFrame_OnLoad()
@@ -119,6 +135,9 @@ function FriendsFrame_OnHide()
 	SetGuildRosterSelection(0);
 	GuildFrame.selectedGuildMember = 0;
 	GuildControlPopupFrame:Hide();
+	for index, value in RAIDFRAME_SUBFRAMES do
+		getglobal(value):Hide();
+	end
 end
 
 function FriendsList_Update()
@@ -644,8 +663,6 @@ function WhoFrameDropDownButton_OnClick()
 end
 
 function FriendsFrame_OnEvent()
-	local name, rank, rankIndex, level, class, zone, group, note, officernote, online;
-	
 	if ( event == "FRIENDLIST_SHOW" ) then
 		FriendsList_Update();
 		FriendsFrame_Update();
@@ -683,9 +700,14 @@ function FriendsFrame_OnEvent()
 	end
 end
 
-function FriendsFrameFriendButton_OnClick()
-	SetSelectedFriend(this:GetID());
-	FriendsList_Update();
+function FriendsFrameFriendButton_OnClick(button)
+	if ( button == "LeftButton" ) then
+		SetSelectedFriend(this:GetID());
+		FriendsList_Update();
+	else
+		local name, level, class, area, connected = GetFriendInfo(this:GetID());
+		FriendsFrame_ShowDropdown(name, connected);
+	end
 end
 
 function FriendsFrameIgnoreButton_OnClick()
@@ -693,24 +715,42 @@ function FriendsFrameIgnoreButton_OnClick()
 	IgnoreList_Update();
 end
 
-function FriendsFrameWhoButton_OnClick()
-	WhoFrame.selectedWho = getglobal("WhoFrameButton"..this:GetID()).whoIndex;
-	WhoFrame.selectedName = getglobal("WhoFrameButton"..this:GetID().."Name"):GetText();
-	WhoList_Update();
+function FriendsFrameWhoButton_OnClick(button)
+	if ( button == "LeftButton" ) then
+		WhoFrame.selectedWho = getglobal("WhoFrameButton"..this:GetID()).whoIndex;
+		WhoFrame.selectedName = getglobal("WhoFrameButton"..this:GetID().."Name"):GetText();
+		WhoList_Update();
+	else
+		local name = getglobal("WhoFrameButton"..this:GetID().."Name"):GetText();
+		FriendsFrame_ShowDropdown(name, 1);
+	end
 end
 
-function FriendsFrameGuildPlayerStatusButton_OnClick()
-	GuildFrame.selectedGuildMember = getglobal("GuildFrameButton"..this:GetID()).guildIndex;
-	GuildFrame.selectedName = getglobal("GuildFrameButton"..this:GetID().."Name"):GetText();
-	SetGuildRosterSelection(GuildFrame.selectedGuildMember);
-	GuildPlayerStatus_Update();
+function FriendsFrameGuildPlayerStatusButton_OnClick(button)
+	if ( button == "LeftButton" ) then
+		GuildFrame.selectedGuildMember = getglobal("GuildFrameButton"..this:GetID()).guildIndex;
+		GuildFrame.selectedName = getglobal("GuildFrameButton"..this:GetID().."Name"):GetText();
+		SetGuildRosterSelection(GuildFrame.selectedGuildMember);
+		GuildPlayerStatus_Update();
+	else
+		local guildIndex = getglobal("GuildFrameButton"..this:GetID()).guildIndex;
+		local name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(guildIndex);
+		FriendsFrame_ShowDropdown(name, online);
+	end
 end
 
-function FriendsFrameGuildStatusButton_OnClick()
-	GuildFrame.selectedGuildMember = getglobal("GuildFrameGuildStatusButton"..this:GetID()).guildIndex;
-	GuildFrame.selectedName = getglobal("GuildFrameGuildStatusButton"..this:GetID().."Name"):GetText();
-	SetGuildRosterSelection(GuildFrame.selectedGuildMember);
-	GuildStatus_Update();
+function FriendsFrameGuildStatusButton_OnClick(button)
+	if ( button == "LeftButton" ) then
+		GuildFrame.selectedGuildMember = getglobal("GuildFrameGuildStatusButton"..this:GetID()).guildIndex;
+		GuildFrame.selectedName = getglobal("GuildFrameGuildStatusButton"..this:GetID().."Name"):GetText();
+		SetGuildRosterSelection(GuildFrame.selectedGuildMember);
+		GuildStatus_Update();
+	else
+		HideDropDownMenu(1);
+		local guildIndex = getglobal("GuildFrameGuildStatusButton"..this:GetID()).guildIndex;
+		local name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(guildIndex);
+		FriendsFrame_ShowDropdown(name, online);
+	end
 end
 
 function GuildPlayerStatusButton_OnClick()

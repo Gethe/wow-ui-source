@@ -13,7 +13,7 @@
 				ChatFrame_OnUpdate(arg1);
 			</OnUpdate>
 			<OnHyperlinkClick>
-				ChatFrame_OnHyperlinkShow(arg1);
+				ChatFrame_OnHyperlinkShow(arg1, arg2);
 			</OnHyperlinkClick>
 			<OnHyperlinkLeave>
 				ChatFrame_OnHyperlinkHide();

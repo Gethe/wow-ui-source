@@ -6,6 +6,7 @@ function BagSlotButton_OnClick()
 	if ( not hadItem ) then
 		ToggleBag(translatedID);
 		PlaySound("BAGMENUBUTTONPRESS");
+		
 	end
 	local isVisible = 0;
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
@@ -40,17 +41,16 @@ end
 function BackpackButton_OnClick()
 	if ( not PutItemInBackpack() ) then
 		ToggleBackpack();
-
-		local isVisible = 0;
-		for i=1, NUM_CONTAINER_FRAMES, 1 do
-			local frame = getglobal("ContainerFrame"..i);
-			if ( (frame:GetID() == 0) and frame:IsVisible() ) then
-				isVisible = 1;
-				break;
-			end
-		end
-		this:SetChecked(isVisible);
 	end
+	local isVisible = 0;
+	for i=1, NUM_CONTAINER_FRAMES, 1 do
+		local frame = getglobal("ContainerFrame"..i);
+		if ( (frame:GetID() == 0) and frame:IsVisible() ) then
+			isVisible = 1;
+			break;
+		end
+	end
+	this:SetChecked(isVisible);
 end
 
 function ItemAnim_OnLoad()

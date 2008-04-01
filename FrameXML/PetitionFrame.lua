@@ -11,10 +11,12 @@ function PetitionFrame_Update()
 		PetitionFrameRequestButton:Show();
 		PetitionFrameSignButton:Hide();
 		PetitionFrameInstructions:SetText(GUILD_PETITION_LEADER_INSTRUCTIONS);
+		PetitionFrameRenameButton:Show();
 	else	
 		PetitionFrameRequestButton:Hide();
 		PetitionFrameSignButton:Show();
 		PetitionFrameInstructions:SetText(GUILD_PETITION_MEMBER_INSTRUCTIONS);
+		PetitionFrameRenameButton:Hide();
 	end
 	if ( petitionType == "charter" ) then
 		PetitionFrameNpcNameText:SetText(format(TEXT(GUILD_CHARTER_TEMPLATE), title));

@@ -524,6 +524,7 @@
 							<OnEnter>
 								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 								GameTooltip:SetText(ATTACK_TOOLTIP, 1.0, 1.0, 1.0);
+								GameTooltip:AddLine(ATTACK_TOOLTIP_SUBTEXT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave>
@@ -586,6 +587,7 @@
 							<OnEnter>
 								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 								GameTooltip:SetText(RANGED_ATTACK_TOOLTIP, 1.0, 1.0, 1.0);
+								GameTooltip:AddLine(ATTACK_TOOLTIP_SUBTEXT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave>

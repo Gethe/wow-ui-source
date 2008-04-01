@@ -94,9 +94,18 @@ MoneyTypeInfo["AUCTION"] = {
 	UpdateFunc = function()
 		return this.staticMoney;
 	end,
-
+	showSmallerCoins = 1,
 	collapse = 1,
-	truncateSmallCoins = 1,
+	truncateSmallCoins = nil,
+};
+MoneyTypeInfo["AUCTION_DEPOSIT"] = {
+	UpdateFunc = function()
+		if ( not AuctionFrameAuctions.duration ) then
+			AuctionFrameAuctions.duration = 0
+		end
+		return CalculateAuctionDeposit(AuctionFrameAuctions.duration);
+	end,
+	collapse = 1,
 };
 
 function MoneyFrame_OnLoad()

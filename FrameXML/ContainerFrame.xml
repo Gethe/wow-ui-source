@@ -43,7 +43,7 @@
 			</OnUpdate>
 		</Scripts>
 	</Button>
-	<Frame name="ContainerFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
+	<Frame name="ContainerFrameTemplate" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="256" y="256"/>
 		</Size>

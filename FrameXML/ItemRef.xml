@@ -12,7 +12,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<TitleRegion setAllPoints="true"/>
 		<Frames>
 			<Button name="ItemRefCloseButton">
 				<Size>
@@ -39,7 +38,15 @@
 			<OnLoad>
 				GameTooltip_OnLoad();
 				this:SetPadding(16);
+				this:RegisterForDrag("LeftButton");
 			</OnLoad>
+			<OnDragStart>
+				this:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+				ValidateFramePosition(this);
+			</OnDragStop> 
 		</Scripts>
 	</GameTooltip>
 </Ui>

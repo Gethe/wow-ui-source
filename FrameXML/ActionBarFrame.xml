@@ -22,8 +22,10 @@
 				ActionButton_UpdateState();
 			</OnClick>
 			<OnDragStart>
-				PickupAction(ActionButton_GetPagedID(this));
-				ActionButton_UpdateState();
+				if ( LOCK_ACTIONBAR ~= "1" ) then
+					PickupAction(ActionButton_GetPagedID(this));
+					ActionButton_UpdateState();
+				end
 			</OnDragStart>
 			<OnReceiveDrag>
 				PlaceAction(ActionButton_GetPagedID(this));

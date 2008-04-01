@@ -654,6 +654,28 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+								OptionsFrame_UpdateFixLag(this:GetChecked());
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton16" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton14" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="10" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
 					</CheckButton>
 				</Frames>
 				<Scripts>

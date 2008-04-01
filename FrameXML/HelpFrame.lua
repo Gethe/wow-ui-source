@@ -160,6 +160,8 @@ GMTICKET_CHECK_INTERVAL = 600;		-- 10 Minutes
 
 elapsedTime = 0;
 
+PETITION_QUEUE_ACTIVE = 1;
+
 function HelpFrame_OnLoad()
 	-- Tab Handling code
 	--PanelTemplates_SetNumTabs(this, 5);
@@ -176,20 +178,27 @@ function HelpFrame_OnShow()
 end
 
 function HelpFrame_OnEvent()
-	--[[if ( event ==  "UPDATE_GM_STATUS" ) then
+	if ( event ==  "UPDATE_GM_STATUS" ) then
 		if ( arg1 == 1 ) then
-			HelpFrameHomeGMButton:Show();
+			PETITION_QUEUE_ACTIVE = 1;
 		else
-			HelpFrameHomeGMButton:Hide();
+			PETITION_QUEUE_ACTIVE = nil;
 		end
 	end
-	]]
 end
 
 function HelpFrame_ShowFrame(key, ticketType)
 	-- Close previously opened frame
 	if ( HelpFrame.openFrame ) then
 		HelpFrame.openFrame:Hide();
+	end
+	
+	
+	if ( key == "OpenTicket" and not PETITION_QUEUE_ACTIVE ) then
+		-- Petition queue is down show a dialog
+		HideUIPanel(HelpFrame);
+		StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
+		return;
 	end
 	
 	-- If key is in the HELPFRAME_FRAMES table, use its name otherwise set to OpenTicket and set the category
@@ -429,6 +438,10 @@ function HelpFrameGM_UpdateCategories(...)
 	local offset = FauxScrollFrame_GetOffset(HelpFrameGMScrollFrame);
 	local index, button, text;
 	for i=1, NUM_GM_CATEGORIES_TO_DISPLAY do
+		-- European version of WoW need to hide the billing category
+		if ( CATEGORY_TO_NOT_DISPLAY and i == CATEGORY_TO_NOT_DISPLAY ) then
+			break;
+		end
 		index = 2 * (offset + i) - 1;
 		button = getglobal("HelpFrameButton"..i);
 		text = getglobal("HelpFrameButton"..i.."Text");

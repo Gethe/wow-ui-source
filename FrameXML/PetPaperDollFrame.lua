@@ -3,6 +3,7 @@ NUM_PET_STATS = 5;
 
 function PetPaperDollFrame_OnLoad()
 	this:RegisterEvent("PET_UI_UPDATE");
+	this:RegisterEvent("PET_BAR_UPDATE");
 	this:RegisterEvent("PET_UI_CLOSE");
 	this:RegisterEvent("PLAYER_PET_CHANGED");
 	this:RegisterEvent("UNIT_PET_EXPERIENCE");
@@ -24,15 +25,21 @@ function PetPaperDollFrame_OnLoad()
 	PetDefenseFrameLabel:SetText(TEXT(DEFENSE_COLON));
 	PetArmorFrameLabel:SetText(TEXT(ARMOR_COLON));
 	SetTextStatusBarTextPrefix(PetPaperDollFrameExpBar, TEXT(XP));
+	PetTab_Update();
 end
 
 function PetPaperDollFrame_OnEvent()
-	if ( event == "PET_UI_UPDATE" or event == "PLAYER_PET_CHANGED" ) then
+	if ( event == "PET_UI_UPDATE" or event == "PLAYER_PET_CHANGED" or event == "PET_BAR_UPDATE" ) then
+		if ( PetPaperDollFrame:IsVisible() and not HasPetUI() ) then
+			ToggleCharacter("PetPaperDollFrame");
+		end
 		PetTab_Update();
 		PetPaperDollFrame_Update();
 	elseif ( event == "PET_UI_CLOSE" ) then
+		if ( PetPaperDollFrame:IsVisible() ) then
+			ToggleCharacter("PetPaperDollFrame");
+		end
 		PetTab_Update();
-		HideUIPanel(this:GetParent());
 	elseif ( event == "UNIT_PET_EXPERIENCE" ) then
 		PetExpBar_Update();
 	elseif ( arg1 == "pet" ) then
@@ -62,8 +69,6 @@ function PetPaperDollFrame_Update()
 		PetLevelText:SetText(format(TEXT(UNIT_LEVEL_TEMPLATE),UnitLevel("pet")).." "..UnitCreatureFamily("pet"));
 	end
 	PetLoyaltyText:SetText(GetPetLoyalty());
-	local totalPoints, spent = GetPetTrainingPoints();
-	PetTrainingPointText:SetText(totalPoints - spent);
 	PetExpBar_Update();
 	PetPaperDollFrame_SetResistances();
 	PetPaperDollFrame_SetStats();
@@ -77,8 +82,14 @@ function PetPaperDollFrame_Update()
 
 	if ( canGainXP ) then
 		PetPaperDollPetInfo:Show();
+		local totalPoints, spent = GetPetTrainingPoints();
+		PetTrainingPointText:SetText(totalPoints - spent);
+		PetTrainingPointText:Show();
+		PetTrainingPointLabel:Show();
 	else
 		PetPaperDollPetInfo:Hide();
+		PetTrainingPointText:Hide();
+		PetTrainingPointLabel:Hide();
 	end
 end
 
@@ -180,10 +191,6 @@ function PetTab_Update()
 	if ( not HasPetUI() ) then
 		CharacterFrameTab2:Hide();
 		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "LEFT", 0, 0);
-		if ( PetPaperDollFrame:IsVisible() ) then
-			HideUIPanel(CharacterFrame);
-		end
-		return;
 	else
 		CharacterFrameTab2:Show();
 		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "RIGHT", -15, 0);

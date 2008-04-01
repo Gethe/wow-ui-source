@@ -6,6 +6,14 @@ ATTACK_BUTTON_FLASH_TIME = 0.4;
 IN_ATTACK_MODE = nil;
 IN_AUTOREPEAT_MODE = nil;
 
+BOTTOMLEFT_ACTIONBAR_PAGE = 6;
+BOTTOMRIGHT_ACTIONBAR_PAGE = 5;
+LEFT_ACTIONBAR_PAGE = 4;
+RIGHT_ACTIONBAR_PAGE = 3;
+
+-- Table of actionbar pages and whether they're viewable or not
+VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
+
 function ActionButtonDown(id)
 	if ( BonusActionBarFrame:IsVisible() ) then
 		local button = getglobal("BonusActionButton"..id);
@@ -54,16 +62,36 @@ end
 
 function ActionBar_PageUp()
 	CURRENT_ACTIONBAR_PAGE = CURRENT_ACTIONBAR_PAGE + 1;
-	if ( CURRENT_ACTIONBAR_PAGE > NUM_ACTIONBAR_PAGES ) then
+	local nextPage;
+	for i=CURRENT_ACTIONBAR_PAGE, NUM_ACTIONBAR_PAGES do
+		if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
+			nextPage = i;
+			break;
+		end
+	end
+	
+	if ( not nextPage ) then
 		CURRENT_ACTIONBAR_PAGE = 1;
+	else
+		CURRENT_ACTIONBAR_PAGE = nextPage;
 	end
 	ChangeActionBarPage();
 end
 
 function ActionBar_PageDown()
 	CURRENT_ACTIONBAR_PAGE = CURRENT_ACTIONBAR_PAGE - 1;
-	if ( CURRENT_ACTIONBAR_PAGE < 1 ) then
+	local prevPage;
+	for i=CURRENT_ACTIONBAR_PAGE, 1, -1 do
+		if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
+			prevPage = i;
+			break;
+		end
+	end
+	
+	if ( not prevPage ) then
 		CURRENT_ACTIONBAR_PAGE = NUM_ACTIONBAR_PAGES;
+	else
+		CURRENT_ACTIONBAR_PAGE = prevPage;
 	end
 	ChangeActionBarPage();
 end
@@ -181,16 +209,23 @@ function ActionButton_Update()
 	macroName:SetText(GetActionText(ActionButton_GetPagedID(this)));
 end
 
-function ActionButton_ShowGrid()
-	this.showgrid = this.showgrid+1;
-	getglobal(this:GetName().."NormalTexture"):SetVertexColor(1.0, 1.0, 1.0);
-	this:Show();
+function ActionButton_ShowGrid(button)
+	if ( not button ) then
+		button = this;
+	end
+	button.showgrid = button.showgrid+1;
+	getglobal(button:GetName().."NormalTexture"):SetVertexColor(1.0, 1.0, 1.0, 0.5);
+	
+	button:Show();
 end
 
-function ActionButton_HideGrid()	
-	this.showgrid = this.showgrid-1;
-	if ( this.showgrid == 0 and not HasAction(ActionButton_GetPagedID(this)) ) then
-		this:Hide();
+function ActionButton_HideGrid(button)	
+	if ( not button ) then
+		button = this;
+	end
+	button.showgrid = button.showgrid-1;
+	if ( button.showgrid == 0 and not HasAction(ActionButton_GetPagedID(button)) ) then
+		button:Hide();
 	end
 end
 
@@ -405,6 +440,14 @@ function ActionButton_GetPagedID(button)
 			offset = BonusActionBarFrame.lastBonusBar;
 		end
 		return (button:GetID() + ((NUM_ACTIONBAR_PAGES + offset - 1) * NUM_ACTIONBAR_BUTTONS));
+	elseif ( button:GetParent():GetName() == "MultiBarBottomLeft" ) then
+		return (button:GetID() + ((BOTTOMLEFT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
+	elseif ( button:GetParent():GetName() == "MultiBarBottomRight" ) then
+		return (button:GetID() + ((BOTTOMRIGHT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
+	elseif ( button:GetParent():GetName() == "MultiBarLeft" ) then
+		return (button:GetID() + ((LEFT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
+	elseif ( button:GetParent():GetName() == "MultiBarRight" ) then
+		return (button:GetID() + ((RIGHT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
 	else
 		return (button:GetID() + ((CURRENT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS))
 	end

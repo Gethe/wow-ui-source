@@ -182,6 +182,9 @@
 					</Anchors>
 				</Texture>
 				<FontString name="MacroFrameSelectedMacroName" inherits="GameFontNormalLarge">
+					<Size>
+						<AbsDimension x="256" y="16"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="TOPRIGHT">
 							<Offset>

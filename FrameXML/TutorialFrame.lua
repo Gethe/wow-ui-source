@@ -43,7 +43,7 @@ function TutorialFrame_Update(currentTutorial)
 		if ( LAST_TUTORIAL_BUTTON_SHOWN and LAST_TUTORIAL_BUTTON_SHOWN ~= button ) then
 			button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN:GetName(), "BOTTOM", 36, 0);
 		else
-			button:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 55);
+			button:SetPoint("BOTTOM", "TutorialFrameParent", "BOTTOM", 0, 0);
 		end
 		LAST_TUTORIAL_BUTTON_SHOWN = button;
 	end
@@ -62,7 +62,7 @@ function TutorialFrame_NewTutorial(tutorialID)
 		button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN:GetName(), "BOTTOM", 36, 0);
 	else
 		-- No button shown so this is the first one
-		button:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 55);
+		button:SetPoint("BOTTOM", "TutorialFrameParent", "BOTTOM", 0, 0);
 	end
 	button.id = tutorialID;
 	button.tooltip = getglobal("TUTORIAL_TITLE"..tutorialID);

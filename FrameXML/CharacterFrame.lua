@@ -1,7 +1,7 @@
 CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame" };
 
 function ToggleCharacter(tab)
-	if ( tab == "PetPaperDollFrame" and not HasPetUI() ) then
+	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() ) then
 		return;
 	end
 	
@@ -79,7 +79,6 @@ function CharacterFrame_OnShow()
 	SetPortraitTexture(CharacterFramePortrait, "player");
 	CharacterNameText:SetText(UnitPVPName("player"));
 	UpdateMicroButtons();
-	PetTab_Update();
 	ShowTextStatusBarText(PlayerFrameHealthBar);
 	ShowTextStatusBarText(PlayerFrameManaBar);
 	ShowTextStatusBarText(MainMenuExpBar);

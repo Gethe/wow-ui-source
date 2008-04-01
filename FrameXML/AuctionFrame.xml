@@ -1051,11 +1051,11 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="BrowseBidText" inherits="GameFontHighlightSmall" text="BID">
+						<FontString name="BrowseBidText" inherits="GameFontHighlightSmall" text="BID" justifyH="RIGHT">
 							<Anchors>
-								<Anchor point="BOTTOM">
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
 									<Offset>
-										<AbsDimension x="-85" y="21"/>
+										<AbsDimension x="-75" y="21"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1572,6 +1572,8 @@
 								BrowseMinLevel:SetFocus();
 							</OnTabPressed>
 							<OnEnterPressed>
+								AuctionFrameBrowse_Search();
+								BrowseNoResultsText:SetText(BROWSE_NO_RESULTS);		
 								this:ClearFocus();
 							</OnEnterPressed>
 						</Scripts>
@@ -1799,9 +1801,9 @@
 					<Layer level="ARTWORK">
 						<FontString name="BidBidText" inherits="GameFontHighlightSmall" text="BID">
 							<Anchors>
-								<Anchor point="BOTTOM">
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
 									<Offset>
-										<AbsDimension x="-134" y="19"/>
+										<AbsDimension x="-115" y="21"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -2287,7 +2289,7 @@
 				<Frames>
 					<Button name="AuctionsQualitySort" inherits="AuctionSortButtonTemplate" text="RARITY">
 						<Size>
-							<AbsDimension x="195" y="19"/>
+							<AbsDimension x="185" y="19"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -2304,7 +2306,7 @@
 					</Button>
 					<Button name="AuctionsHighBidderSort" inherits="AuctionSortButtonTemplate" text="HIGH_BIDDER">
 						<Size>
-							<AbsDimension x="98" y="19"/>
+							<AbsDimension x="108" y="19"/>
 						</Size>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="AuctionsQualitySort" relativePoint="RIGHT">
@@ -2705,7 +2707,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								SmallMoneyFrame_OnLoad();
+								this.small = 1;
+								MoneyFrame_SetType("AUCTION_DEPOSIT");
 							</OnLoad>
 						</Scripts>
 					</Frame>

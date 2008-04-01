@@ -89,7 +89,7 @@
 				</Anchor>
 			</Anchors>
 		</NormalText>
-		<HighlightText inherits="GameFontHighlightSmall">
+		<HighlightText name="$parentHighlightText" inherits="GameFontHighlightSmall">
 			<Anchors>
 				<Anchor point="CENTER">
 					<Offset>
@@ -98,7 +98,7 @@
 				</Anchor>
 			</Anchors>
 		</HighlightText>
-		<DisabledText inherits="GameFontHighlightSmall">
+		<DisabledText name="$parentDisabledText" inherits="GameFontHighlightSmall">
 			<Anchors>
 				<Anchor point="CENTER">
 					<Offset>

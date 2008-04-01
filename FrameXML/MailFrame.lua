@@ -331,7 +331,12 @@ end
 function OpenMail_Reply()
 	MailFrameTab_OnClick(2);
 	SendMailNameEditBox:SetText(OpenMailSender:GetText())
-	SendMailSubjectEditBox:SetText(MAIL_REPLY_PREFIX.." "..OpenMailSubject:GetText())
+	local subject = OpenMailSubject:GetText();
+	local prefix = MAIL_REPLY_PREFIX.." ";
+	if ( strsub(subject, 1, strlen(prefix)) ~= prefix ) then
+		subject = prefix..subject;
+	end
+	SendMailSubjectEditBox:SetText(subject)
 	SendMailBodyEditBox:SetFocus();
 
 	-- Set the send mode so the work flow can change accordingly

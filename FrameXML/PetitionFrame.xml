@@ -340,6 +340,28 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<Button name="PetitionFrameRenameButton" inherits="UIPanelButtonTemplate" text="RENAME_GUILD">
+				<Size>
+					<AbsDimension x="10" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetitionFrameRequestButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="RIGHT" relativeTo="PetitionFrameCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("RENAME_GUILD");
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>

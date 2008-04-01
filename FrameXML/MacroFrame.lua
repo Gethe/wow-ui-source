@@ -242,12 +242,13 @@ function MacroPopupButton_OnClick()
 end
 
 function MacroPopupOkayButton_OnClick()
+	local index = 1
 	if ( MacroPopupFrame.mode == "new" ) then
-		CreateMacro(MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon, nil, 1);
+		index = CreateMacro(MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon, nil, 1);
 	elseif ( MacroPopupFrame.mode == "edit" ) then
-		EditMacro(MacroFrame.selectedMacro, MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon);
+		index = EditMacro(MacroFrame.selectedMacro, MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon);
 	end
-	MacroFrame_SelectMacro(GetMacroIndexByName(MacroPopupEditBox:GetText()));
+	MacroFrame_SelectMacro(index);
 	MacroPopupFrame:Hide();
 	MacroFrame_Update();
 end

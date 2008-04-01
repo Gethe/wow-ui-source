@@ -3,10 +3,10 @@
 	<Script file="DurabilityFrame.lua"/>
 	<Frame name="DurabilityFrame" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="false">
 		<Size>
-			<AbsDimension x="10" y="10"/>
+			<AbsDimension x="10" y="65"/>
 		</Size>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="MinimapCluster" relativePoint="BOTTOM">
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="40" y="15"/>
 				</Offset>

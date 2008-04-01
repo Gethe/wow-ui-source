@@ -40,7 +40,7 @@ function WorldMapFrame_Update()
 
 	-- Setup the POI's
 	local numPOIs = GetNumMapLandmarks();
-	local name, textureIndex, x, y;
+	local name, description, textureIndex, x, y;
 	local worldMapPOI;
 	local x1, x2, y1, y2;
 	-- To be removed... eventually
@@ -50,13 +50,14 @@ function WorldMapFrame_Update()
 	for i=1, NUM_WORLDMAP_POIS, 1 do
 		worldMapPOI = getglobal("WorldMapFramePOI"..i);
 		if ( i <= numPOIs ) then
-			name, textureIndex, x, y = GetMapLandmarkInfo(i);
+			name, description, textureIndex, x, y = GetMapLandmarkInfo(i);
 			x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
 			getglobal(worldMapPOI:GetName().."Texture"):SetTexCoord(x1, x2, y1, y2);
 			x = x * WorldMapButton:GetWidth();
 			y = -y * WorldMapButton:GetHeight();
 			worldMapPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
 			worldMapPOI.name = name;
+			worldMapPOI.description = description;
 			worldMapPOI:Show();
 		else
 			worldMapPOI:Hide();
@@ -275,16 +276,39 @@ function WorldMapButton_OnUpdate()
 	end
 	--Position groupmates
 	local partyX, partyY, partyMemberFrame;
-	for i=1, MAX_PARTY_MEMBERS, 1 do
-		partyX, partyY = GetPlayerMapPosition("party"..i);
-		partyMemberFrame = getglobal("WorldMapParty"..i);
-		if ( partyX == 0 and partyY == 0 ) then
+	if ( GetNumRaidMembers() > 0 ) then
+		for i=1, MAX_PARTY_MEMBERS do
+			partyMemberFrame = getglobal("WorldMapParty"..i);
 			partyMemberFrame:Hide();
-		else
-			partyX = partyX * WorldMapDetailFrame:GetWidth();
-			partyY = -partyY * WorldMapDetailFrame:GetHeight();
-			partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
-			partyMemberFrame:Show();
+		end
+		for i=1, MAX_RAID_MEMBERS do
+			partyX, partyY = GetPlayerMapPosition("raid"..i);
+			partyMemberFrame = getglobal("WorldMapRaid"..i);
+			if ( partyX == 0 and partyY == 0 or UnitIsUnit("raid"..i, "player") ) then
+				partyMemberFrame:Hide();
+			else
+				partyX = partyX * WorldMapDetailFrame:GetWidth();
+				partyY = -partyY * WorldMapDetailFrame:GetHeight();
+				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
+				partyMemberFrame:Show();
+			end
+		end
+	else
+		for i=1, MAX_PARTY_MEMBERS do
+			partyX, partyY = GetPlayerMapPosition("party"..i);
+			partyMemberFrame = getglobal("WorldMapParty"..i);
+			if ( partyX == 0 and partyY == 0 ) then
+				partyMemberFrame:Hide();
+			else
+				partyX = partyX * WorldMapDetailFrame:GetWidth();
+				partyY = -partyY * WorldMapDetailFrame:GetHeight();
+				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
+				partyMemberFrame:Show();
+			end
+		end
+		for i=1, MAX_RAID_MEMBERS do
+			partyMemberFrame = getglobal("WorldMapRaid"..i);
+			partyMemberFrame:Hide();
 		end
 	end
 	--Position corpse

@@ -19,22 +19,50 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentGroupMates" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="0" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="8" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="50" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
 				QuestLogTitleButton_OnLoad();
 			</OnLoad>
+			<OnEvent>
+				QuestLogTitleButton_OnEvent(event);
+			</OnEvent>
 			<OnClick>
 				QuestLogTitleButton_OnClick(arg1);
 			</OnClick>
 			<OnEnter>
-				getglobal(this:GetName().."Tag"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				QuestLogTitleButton_OnEnter();
 			</OnEnter>
 			<OnLeave>
 				if (this:GetID() ~= (QuestLogFrame.selectedButtonID - FauxScrollFrame_GetOffset(QuestLogListScrollFrame))) then
 					getglobal(this:GetName().."Tag"):SetTextColor(this.r, this.g, this.b);
 				end
+				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
@@ -129,6 +157,11 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<FontString name="QuestLogDummyText" inherits="GameFontNormal" hidden="true">
+					<Size>
+						<AbsDimension x="0" y="13"/>
+					</Size>
+				</FontString>
 				<Texture file="Interface\QuestFrame\UI-QuestLog-BookIcon">
 					<Size>
 						<AbsDimension x="64" y="64"/>
@@ -308,6 +341,52 @@
 						</Scripts>
 					</Button>
 				</Frames>
+			</Frame>
+			<Frame name="QuestLogTrack" enableMouse="true">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="QuestLogExpandButtonFrame" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-80" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="QuestLogTrackTitle" inherits="GameFontHighlightSmall" text="TRACK_QUEST">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture file="Interface\Buttons\UI-RadioButton">
+							<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="QuestLogTrackTracking" file="Interface\Buttons\UI-RadioButton">
+							<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						QuestLogTrackTracking:SetVertexColor(1.0, 0, 0);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(QUEST_WATCH_TOOLTIP, nil,nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
 			</Frame>
 			<Frame name="EmptyQuestLogFrame" hidden="true">
 				<Size>
@@ -888,6 +967,188 @@
 			<OnMouseWheel>
 				return;
 			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+	<FontString name="QuestWatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT">
+		<Size>
+			<AbsDimension x="0" y="13"/>
+		</Size>
+	</FontString>
+	<Frame name="QuestWatchFrame" toplevel="true" parent="UIParent" hidden="false">
+		<Size>
+			<AbsDimension x="280" y="20"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="QuestWatchQuestName" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="0" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine1" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchQuestName" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine2" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine1" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine3" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine2" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine4" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine3" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine5" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine4" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine6" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine5" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine7" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine6" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine8" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine7" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine9" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine8" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine10" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine9" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine11" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine10" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine12" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine11" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine13" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine12" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine14" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine13" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine15" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine14" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine16" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine15" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine17" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine16" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine18" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine17" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine19" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine18" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine20" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine19" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine21" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine20" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine22" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine21" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine23" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine22" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine24" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine23" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine25" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine24" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine26" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine25" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine27" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine26" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine28" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine27" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine29" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine28" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="QuestWatchLine30" inherits="QuestWatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine29" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
 		</Scripts>
 	</Frame>
 </Ui>

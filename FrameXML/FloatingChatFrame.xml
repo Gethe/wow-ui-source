@@ -700,7 +700,6 @@
 				this:RegisterEvent("CVAR_UPDATE");
 				this:RegisterEvent("UPDATE_CHAT_WINDOWS");
 				ChatFrame_DisplayStartupText(this);
-				
 			</OnLoad>
 			<OnEvent>
 				ChatFrame_OnEvent(event);
@@ -745,7 +744,7 @@
 		</Scripts>
 	</EditBox>
 	<!-- ChatFrame1 Specific buttons -->
-	<Button name="ChatFrameMenuButton" parent="UIParent">
+	<Button name="ChatFrameMenuButton" frameStrata="LOW" parent="UIParent">
 		<Size>
 			<AbsDimension x="32" y="32"/>
 		</Size>
@@ -835,6 +834,7 @@
 		<Scripts>
 			<OnLoad>
 				FCF_DockFrame(ChatFrame1, 1);
+				FCF_UpdateCombatLogPosition();
 			</OnLoad>
 		</Scripts>
 	</Frame>

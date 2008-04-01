@@ -130,7 +130,7 @@ function LootFrameItem_OnClick(button)
 	if ( button == "LeftButton" ) then
 		if ( IsShiftKeyDown() ) then
 			if ( ChatFrameEditBox:IsVisible() ) then
-				ChatFrameEditBox:Insert(GetLootSlotLink(this:GetID()));
+				ChatFrameEditBox:Insert(GetLootSlotLink(this.slot));
 			end
 		end
 	end

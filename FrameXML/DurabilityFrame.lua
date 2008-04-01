@@ -22,6 +22,7 @@ INVENTORY_ALERT_COLORS[4] = {r = 0.93, g = 0.07, b = 0.07};
 
 function DurabilityFrame_SetAlerts()
 	DurabilityFrame.enchantTimer = nil;
+	local numAlerts = 0;
 	local texture, color, showDurability;
 	for index, value in INVENTORY_ALERT_STATUS_SLOTS do
 		texture = getglobal("Durability"..value.slot);
@@ -47,6 +48,7 @@ function DurabilityFrame_SetAlerts()
 			else
 				showDurability = 1;
 			end
+			numAlerts = numAlerts + 1;
 		else
 			texture:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 			if ( value.showSeparate ) then
@@ -63,6 +65,14 @@ function DurabilityFrame_SetAlerts()
 			end
 		end
 	end
+
+	if ( numAlerts > 0 ) then
+		DurabilityFrame:Show();
+	else
+		DurabilityFrame:Hide();
+	end
+
+	UIParent_ManageRightSideFrames();
 end
 
 function DurabilityFrame_OnUpdate(elapsed)
@@ -74,3 +84,17 @@ function DurabilityFrame_OnUpdate(elapsed)
 		end
 	end
 end
+
+--[[
+function DurabilityFrame_UpdatePosition()
+	if ( QuestTimerFrame:IsVisible() ) then
+		DurabilityFrame:SetPoint("TOP", "QuestTimerFrame", "BOTTOM", 30, -5);
+	elseif ( MultiBarLeft:IsVisible() ) then
+		DurabilityFrame:SetPoint("TOP", "MinimapCluster", "BOTTOM", -40, 15);
+	elseif ( MultiBarRight:IsVisible() ) then
+		DurabilityFrame:SetPoint("TOP", "MinimapCluster", "BOTTOM", 0, 15);
+	else
+		DurabilityFrame:SetPoint("TOP", "MinimapCluster", "BOTTOM", 40, 15);
+	end
+end
+]]

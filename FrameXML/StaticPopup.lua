@@ -3,6 +3,40 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["RENAME_GUILD"] = {
+	text = TEXT(RENAME_GUILD_LABEL),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	hasEditBox = 1,
+	maxLetters = 24,
+	OnAccept = function()
+		local text = getglobal(this:GetParent():GetName().."EditBox"):GetText();
+		RenamePetition(text);
+	end,
+	EditBoxOnEnterPressed = function()
+		local text = getglobal(this:GetParent():GetName().."EditBox"):GetText();
+		RenamePetition(text);
+	end,
+	OnShow = function()
+		getglobal(this:GetName().."EditBox"):SetFocus();
+	end,
+	OnHide = function()
+		if ( ChatFrameEditBox:IsVisible() ) then
+			ChatFrameEditBox:SetFocus();
+		end
+		getglobal(this:GetName().."EditBox"):SetText("");
+	end,
+	timeout = 0,
+	exclusive = 1
+};
+
+StaticPopupDialogs["HELP_TICKET_QUEUE_DISABLED"] = {
+	text = TEXT(HELP_TICKET_QUEUE_DISABLED),
+	button1 = TEXT(OKAY),
+	showAlert = 1,
+	timeout = 0,
+}
+
 StaticPopupDialogs["CONFIRM_LEAVE_QUEUE"] = {
 	text = TEXT(CONFIRM_LEAVE_QUEUE),
 	button1 = TEXT(ACCEPT),
@@ -231,8 +265,13 @@ StaticPopupDialogs["HELP_TICKET"] = {
 	button1 = TEXT(HELP_TICKET_EDIT),
 	button2 = TEXT(HELP_TICKET_ABANDON),
 	OnAccept = function()
-		ShowUIPanel(HelpFrame);
-		HelpFrame_ShowFrame("OpenTicket")
+		if ( PETITION_QUEUE_ACTIVE ) then
+			ShowUIPanel(HelpFrame);
+			HelpFrame_ShowFrame("OpenTicket");
+		else
+			HideUIPanel(HelpFrame);
+			StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
+		end
 	end,
 	OnCancel = function()
 		local currentFrame = this:GetParent();
@@ -332,6 +371,51 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1
+};
+StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
+	text = TEXT(RESURRECT_REQUEST_NO_SICKNESS),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(DECLINE),
+	OnShow = function()
+		this.timeleft = GetCorpseRecoveryDelay() + 60;
+	end,
+	OnAccept = function()
+		AcceptResurrect();
+	end,
+	OnCancel = function()
+		DeclineResurrect();
+		if ( UnitIsDead("player") ) then
+			StaticPopup_Show("DEATH");
+		end
+	end,
+	timeout = 60,
+	whileDead = 1,
+	cancels = "DEATH",
+	interruptCinematic = 1,
+	notClosableByLogout = 1
+};
+StaticPopupDialogs["SKINNED"] = {
+	text = TEXT(DEATH_CORPSE_SKINNED),
+	button1 = TEXT(ACCEPT),
+	timeout = 0,
+	whileDead = 1,
+	interruptCinematic = 1,
+	notClosableByLogout = 1,	
+};
+StaticPopupDialogs["SKINNED_REPOP"] = {
+	text = TEXT(DEATH_CORPSE_SKINNED),
+	button1 = TEXT(DEATH_RELEASE),	
+	button2 = TEXT(DECLINE),
+	OnAccept = function()
+		StaticPopup_Hide("RESURRECT");
+		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
+		StaticPopup_Hide("RESURRECT_NO_TIMER");
+		RepopMe();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	interruptCinematic = 1,
+	notClosableByLogout = 1,	
 };
 StaticPopupDialogs["TRADE"] = {
 	text = TEXT(TRADE_WITH_QUESTION),
@@ -970,8 +1054,15 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	OnAccept = function()
 		ConfirmSummon();
 	end,
+	OnUpdate = function(elapsed)
+		local button = getglobal(this:GetName().."Button1");
+		if ( UnitAffectingCombat("player") ) then
+			button:Disable();
+		else
+			button:Enable();
+		end
+	end,
 	timeout = 0,
-	whileDead = 1,
 	interruptCinematic = 1,
 	notClosableByLogout = 1
 };
@@ -984,6 +1075,17 @@ StaticPopupDialogs["BILLING_NAG"] = {
 	end,
 	timeout = 0,
 	showAlert = 1
+};
+StaticPopupDialogs["CONFIRM_LOOT_ROLL"] = {
+	text = TEXT(LOOT_NO_DROP),
+	button1 = TEXT(OKAY),
+	button2 = TEXT(CANCEL),
+	OnAccept = function(id)
+		ConfirmLootRoll(id);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1
 };
 
 function StaticPopup_FindVisible(which)

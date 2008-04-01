@@ -35,6 +35,13 @@ function CharacterModelFrame_OnMouseUp(button)
 end
 
 function PaperDollFrame_OnEvent(event, unit)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		CharacterModelFrame:SetUnit("player");
+		return;
+	end
+	if ( not this:IsVisible() ) then
+		return;
+	end
 	if ( unit and unit == "player" ) then
 		if ( event == "UNIT_MODEL_CHANGED" ) then
 			CharacterModelFrame:SetUnit("player");
@@ -42,6 +49,7 @@ function PaperDollFrame_OnEvent(event, unit)
 			PaperDollFrame_SetLevel();
 		elseif ( event == "UNIT_DAMAGE" or event == "PLAYER_DAMAGE_DONE_MODS" or event == "UNIT_ATTACK_SPEED" or event == "UNIT_RANGEDDAMAGE" ) then
 			PaperDollFrame_SetDamage();
+			PaperDollFrame_SetRangedAttack();
 			PaperDollFrame_SetRangedDamage();
 			PaperDollFrame_SetAttackBothHands();
 		elseif ( event == "UNIT_ATTACK" ) then
@@ -55,8 +63,8 @@ function PaperDollFrame_OnEvent(event, unit)
 		elseif ( event == "UNIT_ATTACK_POWER" ) then
 			PaperDollFrame_SetAttackPower();
 		elseif ( event == "UNIT_RANGED_ATTACK_POWER" ) then
+			PaperDollFrame_SetRangedAttack();
 			PaperDollFrame_SetRangedAttackPower();
-			PaperDollFrame_SetRangedAttack(); -- ranged attack skill
 		end
 	end
 	if ( event == "SKILL_LINES_CHANGED" ) then
@@ -64,10 +72,6 @@ function PaperDollFrame_OnEvent(event, unit)
 	end
 	if ( event == "PLAYER_GUILD_UPDATE" ) then
 		PaperDollFrame_SetGuild();
-	end
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		CharacterModelFrame:SetUnit("player");
-		return;
 	end
 end
 
@@ -112,61 +116,6 @@ function PaperDollFrame_SetGuild()
 		CharacterGuildText:SetText(format(TEXT(GUILD_TITLE_TEMPLATE), title, guildName));
 	else
 		CharacterGuildText:Hide();
-	end
-	
-end
-
-function PaperDollFrame_SetResistances()
-	for i=1, NUM_RESISTANCE_TYPES, 1 do
-		local resistance;
-		local positive;
-		local negative;
-		local base;
-		local text = getglobal("MagicResText"..i);
-		local frame = getglobal("MagicResFrame"..i);
-		
-		base, resistance, positive, negative = UnitResistance("player", frame:GetID());
-
-		local resistanceName = getglobal("RESISTANCE"..(frame:GetID()).."_NAME");
-		frame.tooltip = resistanceName.." "..RESISTANCE_LABEL.." "..resistance;
-
-		-- resistances can now be negative. Show Red if negative, Green if positive, white otherwise
-		if( negative > positive ) then
-			text:SetText(RED_FONT_COLOR_CODE..resistance..FONT_COLOR_CODE_CLOSE);
-		elseif( negative == positive ) then
-			text:SetText(resistance);
-		else
-			text:SetText(GREEN_FONT_COLOR_CODE..resistance..FONT_COLOR_CODE_CLOSE);
-		end
-
-		if ( positive ~= 0 or negative ~= 0 ) then
-			-- Otherwise build up the formula
-			frame.tooltip = frame.tooltip.. " ( "..HIGHLIGHT_FONT_COLOR_CODE..base;
-			if( positive > 0 ) then
-				frame.tooltip = frame.tooltip..GREEN_FONT_COLOR_CODE.." +"..positive;
-			end
-			if( negative < 0 ) then
-				frame.tooltip = frame.tooltip.." "..RED_FONT_COLOR_CODE..negative;
-			end
-			frame.tooltip = frame.tooltip..FONT_COLOR_CODE_CLOSE.." )";
-		end
-		local unitLevel = UnitLevel("player");
-		unitLevel = max(unitLevel, 20);
-		local magicResistanceNumber = resistance/unitLevel;
-		if ( magicResistanceNumber > 5 ) then
-			resistanceLevel = RESISTANCE_EXCELLENT;
-		elseif ( magicResistanceNumber > 3.75 ) then
-			resistanceLevel = RESISTANCE_VERYGOOD;
-		elseif ( magicResistanceNumber > 2.5 ) then
-			resistanceLevel = RESISTANCE_GOOD;
-		elseif ( magicResistanceNumber > 1.25 ) then
-			resistanceLevel = RESISTANCE_FAIR;
-		elseif ( magicResistanceNumber > 0 ) then
-			resistanceLevel = RESISTANCE_POOR;
-		else
-			resistanceLevel = RESISTANCE_NONE;
-		end
-		frame.tooltipSubtext = format(RESISTANCE_TOOLTIP_SUBTEXT, resistanceName, unitLevel, resistanceLevel);
 	end
 end
 
@@ -215,140 +164,102 @@ function PaperDollFrame_SetStats()
 	end
 end
 
-function PaperDollFrame_SetAttackBothHands(unit, prefix)
-	if ( not unit ) then
-		unit = "player";
-	end
-	if ( not prefix ) then
-		prefix = "Character";
-	end
-	-- FIXME: The offhand stats aren't displayed yet.
-	local mainHandAttackBase, mainHandAttackMod,
-	      offHandAttackBase, offHandAttackMod = UnitAttackBothHands(unit);
+function PaperDollFrame_SetResistances()
+	for i=1, NUM_RESISTANCE_TYPES, 1 do
+		local resistance;
+		local positive;
+		local negative;
+		local base;
+		local text = getglobal("MagicResText"..i);
+		local frame = getglobal("MagicResFrame"..i);
+		
+		base, resistance, positive, negative = UnitResistance("player", frame:GetID());
 
-	local frame = getglobal(prefix.."AttackFrame"); 
-	local text = getglobal(prefix.."AttackFrameStatText");
+		local resistanceName = getglobal("RESISTANCE"..(frame:GetID()).."_NAME");
+		frame.tooltip = resistanceName.." "..RESISTANCE_LABEL.." "..resistance;
 
-	if( mainHandAttackMod == 0 ) then
-		text:SetText(mainHandAttackBase);
-		frame.tooltip = nil;
-	else
-		local color = RED_FONT_COLOR_CODE;
-		if( mainHandAttackMod > 0 ) then
-			color = GREEN_FONT_COLOR_CODE;
-			frame.tooltip = mainHandAttackBase..color.." +"..mainHandAttackMod..FONT_COLOR_CODE_CLOSE;
+		-- resistances can now be negative. Show Red if negative, Green if positive, white otherwise
+		if( abs(negative) > positive ) then
+			text:SetText(RED_FONT_COLOR_CODE..resistance..FONT_COLOR_CODE_CLOSE);
+		elseif( abs(negative) == positive ) then
+			text:SetText(resistance);
 		else
-			frame.tooltip = mainHandAttackBase..color.." "..mainHandAttackMod..FONT_COLOR_CODE_CLOSE;
+			text:SetText(GREEN_FONT_COLOR_CODE..resistance..FONT_COLOR_CODE_CLOSE);
 		end
-		text:SetText(color..(mainHandAttackBase + mainHandAttackMod)..FONT_COLOR_CODE_CLOSE);
+
+		if ( positive ~= 0 or negative ~= 0 ) then
+			-- Otherwise build up the formula
+			frame.tooltip = frame.tooltip.. " ( "..HIGHLIGHT_FONT_COLOR_CODE..base;
+			if( positive > 0 ) then
+				frame.tooltip = frame.tooltip..GREEN_FONT_COLOR_CODE.." +"..positive;
+			end
+			if( negative < 0 ) then
+				frame.tooltip = frame.tooltip.." "..RED_FONT_COLOR_CODE..negative;
+			end
+			frame.tooltip = frame.tooltip..FONT_COLOR_CODE_CLOSE.." )";
+		end
+		local unitLevel = UnitLevel("player");
+		unitLevel = max(unitLevel, 20);
+		local magicResistanceNumber = resistance/unitLevel;
+		if ( magicResistanceNumber > 5 ) then
+			resistanceLevel = RESISTANCE_EXCELLENT;
+		elseif ( magicResistanceNumber > 3.75 ) then
+			resistanceLevel = RESISTANCE_VERYGOOD;
+		elseif ( magicResistanceNumber > 2.5 ) then
+			resistanceLevel = RESISTANCE_GOOD;
+		elseif ( magicResistanceNumber > 1.25 ) then
+			resistanceLevel = RESISTANCE_FAIR;
+		elseif ( magicResistanceNumber > 0 ) then
+			resistanceLevel = RESISTANCE_POOR;
+		else
+			resistanceLevel = RESISTANCE_NONE;
+		end
+		frame.tooltipSubtext = format(RESISTANCE_TOOLTIP_SUBTEXT, resistanceName, unitLevel, resistanceLevel);
 	end
 end
 
-function PaperDollFrame_SetRangedDamage(unit, prefix)
+function PaperDollFrame_SetArmor(unit, prefix)
 	if ( not unit ) then
 		unit = "player";
-	elseif ( unit == "pet" ) then
-		return;
 	end
 	if ( not prefix ) then
 		prefix = "Character";
 	end
 
-	local damageText = getglobal(prefix.."RangedDamageFrameStatText");
-	local damageFrame = getglobal(prefix.."RangedDamageFrame");
+	local base, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
+	local totalBufs = posBuff + negBuff;
 
-	-- If no ranged attack then set to n/a
-	if ( PaperDollFrame.noRanged ) then
-		damageText:SetText(NOT_APPLICABLE);
-		damageFrame.damage = nil;
-		return;
-	end
+	local frame = getglobal(prefix.."ArmorFrame");
+	local text = getglobal(prefix.."ArmorFrameStatText");
 
-	local temp1, temp2, temp3, temp4, physicalBonusPos, physicalBonusNeg, percent = UnitDamage(unit);
-	local rangedAttackSpeed, minDamage, maxDamage = UnitRangedDamage(unit);
-	local baseDamage = (minDamage + maxDamage) * 0.5;
-	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
-	local damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
-	local totalBonus = (fullDamage - baseDamage);
-	local displayMin = max(floor(minDamage + totalBonus),1);
-	local displayMax = max(ceil(maxDamage + totalBonus),1);
-	local tooltip = floor(minDamage).." - "..ceil(maxDamage);
-	if ( totalBonus == 0 ) then
-		damageText:SetText(displayMin.." - "..displayMax);
-	else
-		local colorPos = "|cff20ff20";
-		local colorNeg = "|cffff2020";
-		local color;
-		if ( totalBonus > 0 ) then
-			color = colorPos;
-		else
-			color = colorNeg;
-		end
-		damageText:SetText(color..displayMin.." - "..displayMax.."|r");
-		if ( physicalBonusPos > 0 ) then
-			tooltip = tooltip..colorPos.." +"..physicalBonusPos.."|r";
-		end
-		if ( physicalBonusNeg < 0 ) then
-			tooltip = tooltip..colorNeg.." "..physicalBonusNeg.."|r";
-		end
-		if ( percent > 1 ) then
-			tooltip = tooltip..colorPos.." x"..floor(percent*100+0.5).."%|r";
-		elseif ( percent < 1 ) then
-			tooltip = tooltip..colorNeg.." x"..floor(percent*100+0.5).."%|r";
-		end
-		damageFrame.tooltip = tooltip.." "..format(TEXT(DPS_TEMPLATE), damagePerSecond);
-	end
-	damageFrame.attackSpeed = rangedAttackSpeed;
-	damageFrame.damage = tooltip;
-	damageFrame.dps = damagePerSecond;
-end
-
-function PaperDollFrame_SetRangedAttack(unit, prefix)
-	if ( not unit ) then
-		unit = "player";
-	elseif ( unit == "pet" ) then
-		return;
-	end
-	if ( not prefix ) then
-		prefix = "Character";
-	end
-
-	local rangedAttackBase, rangedAttackMod = UnitRangedAttack(unit);
-	local frame = getglobal(prefix.."RangedAttackFrame"); 
-	local text = getglobal(prefix.."RangedAttackFrameStatText");
-
-	-- If no ranged texture then set stats to n/a
-	local rangedTexture = GetInventoryItemTexture("player", 18);
-	local oldValue = PaperDollFrame.noRanged;
-	if ( rangedTexture ) then
-		PaperDollFrame.noRanged = nil;
-	else
-		text:SetText(NOT_APPLICABLE);
-		PaperDollFrame.noRanged = 1;
-		frame.tooltip = nil;
-	end
-	-- See if value has changed set the attack damage and power
-	if ( oldValue ~= PaperDollFrame.noRanged ) then
-		PaperDollFrame_SetRangedAttackPower();
-		PaperDollFrame_SetRangedDamage();
-	end
-	if ( not rangedTexture ) then
-		return;
-	end
+	PaperDollFormatStat(ARMOR, base, posBuff, negBuff, frame, text);
+	local playerLevel = UnitLevel(unit);
+	local armorReduction = effectiveArmor/((85 * playerLevel) + 400);
+	armorReduction = 100 * (armorReduction/(armorReduction + 1));
 	
-	if( rangedAttackMod == 0 ) then
-		text:SetText(rangedAttackBase);
-		frame.tooltip = nil;
-	else
-		local color = RED_FONT_COLOR_CODE;
-		if( rangedAttackMod > 0 ) then
-			color = GREEN_FONT_COLOR_CODE;
-			frame.tooltip = rangedAttackBase..color.." +"..rangedAttackMod..FONT_COLOR_CODE_CLOSE;
-		else
-			frame.tooltip = rangedAttackBase..color.." "..rangedAttackMod..FONT_COLOR_CODE_CLOSE;
-		end
-		text:SetText(color..(rangedAttackBase + rangedAttackMod)..FONT_COLOR_CODE_CLOSE);
+	frame.tooltipSubtext = format(ARMOR_TOOLTIP, playerLevel, armorReduction);
+end
+
+function PaperDollFrame_SetDefense(unit, prefix)
+	if ( not unit ) then
+		unit = "player";
 	end
+	if ( not prefix ) then
+		prefix = "Character";
+	end
+	local base, modifier = UnitDefense(unit);
+
+	local frame = getglobal(prefix.."DefenseFrame");
+	local text = getglobal(prefix.."DefenseFrameStatText");
+	
+	local posBuff = 0;
+	local negBuff = 0;
+	if ( modifier > 0 ) then
+		posBuff = modifier;
+	elseif ( modifier < 0 ) then
+		negBuff = modifier;
+	end
+	PaperDollFormatStat(DEFENSE_COLON, base, posBuff, negBuff, frame, text);
 end
 
 function PaperDollFrame_SetDamage(unit, prefix)
@@ -440,6 +351,158 @@ function PaperDollFrame_SetDamage(unit, prefix)
 	
 end
 
+function PaperDollFrame_SetAttackPower(unit, prefix)
+	if ( not unit ) then
+		unit = "player";
+	end
+	if ( not prefix ) then
+		prefix = "Character";
+	end
+	
+	local base, posBuff, negBuff = UnitAttackPower(unit);
+
+	local frame = getglobal(prefix.."AttackPowerFrame"); 
+	local text = getglobal(prefix.."AttackPowerFrameStatText");
+
+	PaperDollFormatStat(MELEE_ATTACK_POWER, base, posBuff, negBuff, frame, text);
+	frame.tooltipSubtext = format(MELEE_ATTACK_POWER_TOOLTIP, max((base+posBuff+negBuff), 0)/ATTACK_POWER_MAGIC_NUMBER);
+end
+
+function PaperDollFrame_SetAttackBothHands(unit, prefix)
+	if ( not unit ) then
+		unit = "player";
+	end
+	if ( not prefix ) then
+		prefix = "Character";
+	end
+	-- FIXME: The offhand stats aren't displayed yet.
+	local mainHandAttackBase, mainHandAttackMod = UnitAttackBothHands(unit);
+
+	local frame = getglobal(prefix.."AttackFrame"); 
+	local text = getglobal(prefix.."AttackFrameStatText");
+
+	if( mainHandAttackMod == 0 ) then
+		text:SetText(mainHandAttackBase);
+		frame.tooltip = nil;
+	else
+		local color = RED_FONT_COLOR_CODE;
+		if( mainHandAttackMod > 0 ) then
+			color = GREEN_FONT_COLOR_CODE;
+			frame.tooltip = mainHandAttackBase..color.." +"..mainHandAttackMod..FONT_COLOR_CODE_CLOSE;
+		else
+			frame.tooltip = mainHandAttackBase..color.." "..mainHandAttackMod..FONT_COLOR_CODE_CLOSE;
+		end
+		text:SetText(color..(mainHandAttackBase + mainHandAttackMod)..FONT_COLOR_CODE_CLOSE);
+	end
+end
+
+function PaperDollFrame_SetRangedAttack(unit, prefix)
+	if ( not unit ) then
+		unit = "player";
+	elseif ( unit == "pet" ) then
+		return;
+	end
+	if ( not prefix ) then
+		prefix = "Character";
+	end
+
+	local rangedAttackBase, rangedAttackMod = UnitRangedAttack(unit);
+	local frame = getglobal(prefix.."RangedAttackFrame"); 
+	local text = getglobal(prefix.."RangedAttackFrameStatText");
+
+	-- If no ranged texture then set stats to n/a
+	local rangedTexture = GetInventoryItemTexture("player", 18);
+	local oldValue = PaperDollFrame.noRanged;
+	if ( rangedTexture ) then
+		PaperDollFrame.noRanged = nil;
+	else
+		text:SetText(NOT_APPLICABLE);
+		PaperDollFrame.noRanged = 1;
+		frame.tooltip = nil;
+	end
+	-- See if value has changed set the attack damage and power
+	if ( oldValue ~= PaperDollFrame.noRanged ) then
+		PaperDollFrame_SetRangedAttackPower();
+		PaperDollFrame_SetRangedDamage();
+	end
+	if ( not rangedTexture ) then
+		return;
+	end
+	
+	if( rangedAttackMod == 0 ) then
+		text:SetText(rangedAttackBase);
+		frame.tooltip = nil;
+	else
+		local color = RED_FONT_COLOR_CODE;
+		if( rangedAttackMod > 0 ) then
+			color = GREEN_FONT_COLOR_CODE;
+			frame.tooltip = rangedAttackBase..color.." +"..rangedAttackMod..FONT_COLOR_CODE_CLOSE;
+		else
+			frame.tooltip = rangedAttackBase..color.." "..rangedAttackMod..FONT_COLOR_CODE_CLOSE;
+		end
+		text:SetText(color..(rangedAttackBase + rangedAttackMod)..FONT_COLOR_CODE_CLOSE);
+	end
+end
+
+function PaperDollFrame_SetRangedDamage(unit, prefix)
+	if ( not unit ) then
+		unit = "player";
+	elseif ( unit == "pet" ) then
+		return;
+	end
+	if ( not prefix ) then
+		prefix = "Character";
+	end
+
+	local damageText = getglobal(prefix.."RangedDamageFrameStatText");
+	local damageFrame = getglobal(prefix.."RangedDamageFrame");
+
+	-- If no ranged attack then set to n/a
+	if ( PaperDollFrame.noRanged ) then
+		damageText:SetText(NOT_APPLICABLE);
+		damageFrame.damage = nil;
+		return;
+	end
+
+	local temp1, temp2, temp3, temp4, physicalBonusPos, physicalBonusNeg, percent = UnitDamage(unit);
+	local rangedAttackSpeed, minDamage, maxDamage = UnitRangedDamage(unit);
+	local baseDamage = (minDamage + maxDamage) * 0.5;
+	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
+	local damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
+	local totalBonus = (fullDamage - baseDamage);
+	local displayMin = max(floor(minDamage + totalBonus),1);
+	local displayMax = max(ceil(maxDamage + totalBonus),1);
+	local tooltip = floor(minDamage).." - "..ceil(maxDamage);
+	if ( totalBonus == 0 ) then
+		damageText:SetText(displayMin.." - "..displayMax);
+	else
+		local colorPos = "|cff20ff20";
+		local colorNeg = "|cffff2020";
+		local color;
+		if ( totalBonus > 0 ) then
+			color = colorPos;
+		else
+			color = colorNeg;
+		end
+		damageText:SetText(color..displayMin.." - "..displayMax.."|r");
+		if ( physicalBonusPos > 0 ) then
+			tooltip = tooltip..colorPos.." +"..physicalBonusPos.."|r";
+		end
+		if ( physicalBonusNeg < 0 ) then
+			tooltip = tooltip..colorNeg.." "..physicalBonusNeg.."|r";
+		end
+		if ( percent > 1 ) then
+			tooltip = tooltip..colorPos.." x"..floor(percent*100+0.5).."%|r";
+		elseif ( percent < 1 ) then
+			tooltip = tooltip..colorNeg.." x"..floor(percent*100+0.5).."%|r";
+		end
+		damageFrame.tooltip = tooltip.." "..format(TEXT(DPS_TEMPLATE), damagePerSecond);
+	end
+	damageFrame.attackSpeed = rangedAttackSpeed;
+	damageFrame.damage = tooltip;
+	damageFrame.dps = damagePerSecond;
+end
+
 function PaperDollFrame_SetRangedAttackPower(unit, prefix)
 	if ( not unit ) then
 		unit = "player";
@@ -464,91 +527,18 @@ function PaperDollFrame_SetRangedAttackPower(unit, prefix)
 	frame.tooltipSubtext = format(RANGED_ATTACK_POWER_TOOLTIP, base/ATTACK_POWER_MAGIC_NUMBER);
 end
 
-function PaperDollFrame_SetAttackPower(unit, prefix)
-	if ( not unit ) then
-		unit = "player";
-	end
-	if ( not prefix ) then
-		prefix = "Character";
-	end
-	
-	local base, posBuff, negBuff = UnitAttackPower(unit);
-
-	local frame = getglobal(prefix.."AttackPowerFrame"); 
-	local text = getglobal(prefix.."AttackPowerFrameStatText");
-
-	PaperDollFormatStat(MELEE_ATTACK_POWER, base, posBuff, negBuff, frame, text);
-	frame.tooltipSubtext = format(MELEE_ATTACK_POWER_TOOLTIP, base/ATTACK_POWER_MAGIC_NUMBER);
-end
-
-function PaperDollFrame_SetAttackSpeed()
-	local leftSpeed;
-	local rightSpeed;
-	rightSpeed, leftSpeed = UnitAttackSpeed("player");
-	CharacterAttackSpeedFrameStatText:SetText(format("%.1f", rightSpeed));
-	--if ( leftSpeed ) then
-	--	CharacterAttackSpeedFrameStatText:SetText(format("%.2f, %.2f", rightSpeed, leftSpeed));
-	--else
-	--	CharacterAttackSpeedFrameStatText:SetText(format("%.2f", rightSpeed));
-	--end
-end
-
-function PaperDollFrame_SetArmor(unit, prefix)
-	if ( not unit ) then
-		unit = "player";
-	end
-	if ( not prefix ) then
-		prefix = "Character";
-	end
-
-	local base, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
-	local totalBufs = posBuff + negBuff;
-
-	local frame = getglobal(prefix.."ArmorFrame");
-	local text = getglobal(prefix.."ArmorFrameStatText");
-
-	PaperDollFormatStat(ARMOR, base, posBuff, negBuff, frame, text);
-	local playerLevel = UnitLevel(unit);
-	local armorReduction = effectiveArmor/((85 * playerLevel) + 400);
-	armorReduction = 100 * (armorReduction/(armorReduction + 1));
-	
-	frame.tooltipSubtext = format(ARMOR_TOOLTIP, playerLevel, armorReduction);
-end
-
-function PaperDollFrame_SetDefense(unit, prefix)
-	if ( not unit ) then
-		unit = "player";
-	end
-	if ( not prefix ) then
-		prefix = "Character";
-	end
-	local base, modifier = UnitDefense(unit);
-
-	local frame = getglobal(prefix.."DefenseFrame");
-	local text = getglobal(prefix.."DefenseFrameStatText");
-	
-	local posBuff = 0;
-	local negBuff = 0;
-	if ( modifier > 0 ) then
-		posBuff = modifier;
-	elseif ( modifier < 0 ) then
-		negBuff = modifier;
-	end
-	PaperDollFormatStat(DEFENSE_COLON, base, posBuff, negBuff, frame, text);
-end
-
 function PaperDollFrame_OnShow()
 	PaperDollFrame_SetGuild();
 	PaperDollFrame_SetLevel();
-	PaperDollFrame_SetResistances();
 	PaperDollFrame_SetStats();
-	PaperDollFrame_SetDamage();
-	PaperDollFrame_SetRangedDamage();
-	PaperDollFrame_SetAttackPower();
-	PaperDollFrame_SetRangedAttackPower();
-	PaperDollFrame_SetRangedAttack();
+	PaperDollFrame_SetResistances();
 	PaperDollFrame_SetArmor();
+	PaperDollFrame_SetDamage();
+	PaperDollFrame_SetAttackPower();
 	PaperDollFrame_SetAttackBothHands();
+	PaperDollFrame_SetRangedAttack();
+	PaperDollFrame_SetRangedDamage();
+	PaperDollFrame_SetRangedAttackPower();
 end
  
 function PaperDollFrame_OnHide()

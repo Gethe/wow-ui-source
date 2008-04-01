@@ -6,7 +6,7 @@
 			<AbsDimension x="30" y="30"/>
 		</Size>
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon"/>
 			</Layer>
 		</Layers>
@@ -33,6 +33,11 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<FontString name="BuffButtonDurationTemplate" inherits="GameFontNormalSmall" virtual="true">
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+	</FontString>
 	<Button name="BuffButtonHelpful" inherits="BuffButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -76,6 +81,34 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="BuffButton0Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton1Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton2Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton3Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton4Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton5Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton6Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton7Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton8Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton9Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton10Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton11Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton12Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton13Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton14Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton15Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton16Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton17Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton18Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton19Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton20Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton21Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton22Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton23Duration" inherits="BuffButtonDurationTemplate"/>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Button name="BuffButton0" inherits="BuffButtonHelpful" id="0">
 				<Anchors>

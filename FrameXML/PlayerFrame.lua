@@ -198,7 +198,7 @@ function PlayerFrame_UpdateStatus()
 		PlayerAttackGlow:Hide();
 		PlayerStatusGlow:Show();
 		PlayerAttackBackground:Hide();
-	elseif ( this.inCombat and this.onHateList or this.inCombat ) then
+	elseif ( this.inCombat ) then
 		PlayerStatusTexture:SetVertexColor(1.0, 0.0, 0.0, 1.0);
 		PlayerStatusTexture:Show();
 		PlayerAttackIcon:Show();

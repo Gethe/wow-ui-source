@@ -27,6 +27,14 @@ UIOptionsFrameCheckButtons["SHOW_TUTORIALS"] = { index = 28, tooltipText = OPTIO
 UIOptionsFrameCheckButtons["SHOW_NEWBIE_TIPS_TEXT"] = { index = 29, uvar = "SHOW_NEWBIE_TIPS", tooltipText = OPTION_TOOLTIP_SHOW_NEWBIE_TIPS};
 UIOptionsFrameCheckButtons["SHOW_CLOAK"] = { index = 30, func = ShowingCloak, setFunc = ShowCloak , tooltipText = OPTION_TOOLTIP_SHOW_CLOAK};
 UIOptionsFrameCheckButtons["SHOW_HELM"] = { index = 31, func = ShowingHelm , setFunc = ShowHelm, tooltipText = OPTION_TOOLTIP_SHOW_HELM};
+UIOptionsFrameCheckButtons["LOCK_ACTIONBAR_TEXT"] = { index = 32, uvar="LOCK_ACTIONBAR", tooltipText = OPTION_TOOLTIP_LOCK_ACTIONBAR};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR1_TEXT"] = { index = 33, func = MultiBar1_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR1};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"] = { index = 34, func = MultiBar2_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR2};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"] = { index = 35, func = MultiBar3_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR3};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"] = { index = 36, func = MultiBar4_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR4};
+UIOptionsFrameCheckButtons["CHAT_BUBBLES_TEXT"] = { index = 37, cvar = "ChatBubbles", tooltipText = OPTION_TOOLTIP_CHAT_BUBBLES_TEXT};
+UIOptionsFrameCheckButtons["PARTY_CHAT_BUBBLES_TEXT"] = { index = 38, cvar = "ChatBubblesParty", tooltipText = OPTION_TOOLTIP_PARTY_CHAT_BUBBLES_TEXT};
+UIOptionsFrameCheckButtons["SHOW_BUFF_DURATION_TEXT"] = { index = 39, uvar = "SHOW_BUFF_DURATIONS", tooltipText = OPTION_TOOLTIP_SHOW_BUFF_DURATION};
 
 UIOptionsFrameSliders = {
 	{ text = MOUSE_SENSITIVITY, cvar = "mousespeed", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 , tooltipText = OPTION_TOOLTIP_MOUSE_SENSITIVITY},
@@ -46,6 +54,10 @@ function UIOptionsFrame_Init()
 	RegisterForSave("REMOVE_CHAT_DELAY");
 	SHOW_NEWBIE_TIPS = "1";
 	RegisterForSave("SHOW_NEWBIE_TIPS");
+	LOCK_ACTIONBAR = "0";
+	RegisterForSave("LOCK_ACTIONBAR");
+	SHOW_BUFF_DURATIONS = "0";
+	RegisterForSave("SHOW_BUFF_DURATIONS");
 	UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value = GetCVar("statusBarText");
 	this:RegisterEvent("CVAR_UPDATE");
 end
@@ -127,8 +139,12 @@ function UIOptionsFrame_Save()
 			SetChatMouseOverDelay(REMOVE_CHAT_DELAY);
 		elseif ( value.uvar == "SHOW_DAMAGE" ) then
 			SHOW_DAMAGE = value.value;
+		elseif ( value.uvar == "LOCK_ACTIONBAR" ) then
+			LOCK_ACTIONBAR = value.value;
 		elseif ( value.uvar == "SHOW_NEWBIE_TIPS" ) then
 			SHOW_NEWBIE_TIPS = value.value;
+		elseif ( value.uvar == "SHOW_BUFF_DURATIONS" ) then
+			SHOW_BUFF_DURATIONS = value.value;
 		elseif ( index == "SHOW_TUTORIALS" ) then
 			if ( value.value+0 ~= TutorialsEnabled() ) then
 				if ( value.value == "1" ) then
@@ -145,7 +161,6 @@ function UIOptionsFrame_Save()
 		else
 			SetCVar(value.cvar, value.value, index);
 		end
-		
 	end
 	for index, value in UIOptionsFrameSliders do
 		local slider = getglobal("UIOptionsFrameSlider"..index);
@@ -160,6 +175,9 @@ function UIOptionsFrame_Save()
 			SetCVar(value.cvar, sliderValue);
 		end
 	end
+
+	-- Save multibar state
+	SetActionBarToggles(SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4);
 
 	-- Save Click to move camera style
 	SetCVar("cameraSmoothTrackingStyle", UIDropDownMenu_GetSelectedValue(UIOptionsFrameClickCameraDropDown));
@@ -320,16 +338,31 @@ end
 function UIOptionsFrame_UpdateDependencies()
 	if ( not UIOptionsFrameCheckButton6:GetChecked() ) then
 		OptionsFrame_DisableDropDown(UIOptionsFrameClickCameraDropDown);
+	else
+		OptionsFrame_EnableDropDown(UIOptionsFrameClickCameraDropDown);
 	end
 	if ( not UIOptionsFrameCheckButton21:GetChecked() ) then
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton22);
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton23);
+	else
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton22);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton23);
 	end
 	if ( not UIOptionsFrameCheckButton19:GetChecked() ) then
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton9);
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton11);
+	else
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton9);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton11);
 	end
 	if ( UIDropDownMenu_GetSelectedID(UIOptionsFrameCameraDropDown) == 3 ) then
 		OptionsFrame_DisableSlider(UIOptionsFrameSlider2);
+	else
+		OptionsFrame_EnableSlider(UIOptionsFrameSlider2);
+	end
+	if ( not UIOptionsFrameCheckButton35:GetChecked() ) then
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton36);
+	else
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton36, MultiBar4_IsVisible());
 	end
 end

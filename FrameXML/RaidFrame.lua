@@ -60,7 +60,7 @@ function RaidFrame_Update()
 	local numRaidMembers = GetNumRaidMembers();
 	local raidGroup, color;
 	local buttonName, buttonLevel, buttonClass, buttonRank;
-	local name, rank, subgroup, level, class, fileName, zone, online ;
+	local name, rank, subgroup, level, class, fileName, zone, online, isDead;
 	for i=1, MAX_RAID_MEMBERS do
 		button = getglobal("RaidGroupButton"..i);
 		if ( i <= numRaidMembers ) then
@@ -75,6 +75,7 @@ function RaidFrame_Update()
 				button.id = i;
 				
 				button.name = name;
+				button.unit = "raid"..i;
 				
 				if ( level == 0 ) then
 					level = "";
@@ -180,7 +181,6 @@ function RaidGroupButton_OnMouseUp(button, raidButton)
 end
 
 function RaidGroupButton_OnMouseDown(button)
-	RaidFrame.selectedName = this.name;
 	if ( button == "LeftButton" ) then
 		if ( not IsRaidLeader() ) then
 			return;
@@ -189,8 +189,17 @@ function RaidGroupButton_OnMouseDown(button)
 		MOVING_RAID_MEMBER = this;
 		SetRaidRosterSelection(this.id);
 	else
-		ToggleDropDownMenu(1, nil, getglobal("RaidGroupButton"..this:GetID().."DropDown"));
+		HideDropDownMenu(1);
+		if ( this.id and this.name ) then
+			FriendsDropDown.initialize = RaidFrameDropDown_Initialize;
+			FriendsDropDown.displayMode = "MENU";
+			ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
+		end
 	end
+end
+
+function RaidFrameDropDown_Initialize()
+	UnitPopup_ShowMenu(getglobal(UIDROPDOWNMENU_OPEN_MENU), "RAID", this.unit, this.name, this.id);
 end
 
 function RaidGroup_SetSlotStatus(enable)
@@ -215,7 +224,6 @@ end
 
 function RaidButton_OnClick()
 	SetRaidRosterSelection(this.index);
-	RaidFrame.selectedName = this.name;
 	RaidFrame_Update();
 end
 
@@ -231,21 +239,5 @@ function Toggle_RaidGroups()
 		RaidGroupFrame:Hide();
 	else
 		RaidGroupFrame:Show();
-	end
-end
-
-function RaidFrameDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, RaidFrameDropDown_Initialize, "MENU");
-end
-
-function RaidFrameDropDown_Initialize()
-	local dropdown;
-	if ( UIDROPDOWNMENU_OPEN_MENU ) then
-		dropdown = getglobal(UIDROPDOWNMENU_OPEN_MENU);
-	else
-		dropdown = this;
-	end
-	if ( this.id and this.name ) then
-		UnitPopup_ShowMenu(dropdown, "RAID", "player", this.id, this.name);
 	end
 end

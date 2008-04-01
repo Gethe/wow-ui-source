@@ -150,7 +150,8 @@ end
 
 function PetFrame_SetHappiness()
 	local happiness, damagePercentage, loyaltyRate = GetPetHappiness();
-	if ( not HasPetUI() ) then
+	local hasPetUI, isHunterPet = HasPetUI();
+	if ( not happiness or not isHunterPet ) then
 		PetFrameHappiness:Hide();
 		return;	
 	end

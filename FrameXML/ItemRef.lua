@@ -1,17 +1,14 @@
 
-function SetItemRef(link)
-	if ( strsub(link, 1, 6) == "Player" ) then
+function SetItemRef(link, button)
+	if ( strsub(link, 1, 6) == "player" ) then
 		local name = strsub(link, 8);
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsShiftKeyDown() ) then
 				SendWho("n-"..name);
+			elseif ( button == "RightButton" ) then
+				FriendsFrame_ShowDropdown(name, 1);
 			else
-				DEFAULT_CHAT_FRAME.editBox.chatType = "WHISPER";
-				DEFAULT_CHAT_FRAME.editBox.tellTarget = name;
-				ChatEdit_UpdateHeader(DEFAULT_CHAT_FRAME.editBox);
-				if ( not DEFAULT_CHAT_FRAME.editBox:IsVisible() ) then
-					ChatFrame_OpenChat("", DEFAULT_CHAT_FRAME);
-				end
+				ChatFrame_SendTell(name);
 			end
 		end
 		return;

@@ -309,7 +309,7 @@
 			</OnUpdate>
 			<OnEnter>
 				UnitFrame_OnEnter();
-				PartyMemberBuffTooltip:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 60, -25);
+				PartyMemberBuffTooltip:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 60, -35);
 				PartyMemberBuffTooltip_Update("pet");
 			</OnEnter>
 			<OnLeave>

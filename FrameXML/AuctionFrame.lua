@@ -658,8 +658,8 @@ end
 
 function AuctionFrameAuctions_OnShow()
 	AuctionsTitle:SetText(format(AUCTION_TITLE, UnitName("player")));
---	AuctionsRadioButton_OnClick(2);
-	MoneyFrame_Update("AuctionsDepositMoneyFrame", 0);
+	--AuctionsRadioButton_OnClick(2);
+	--MoneyFrame_Update("AuctionsDepositMoneyFrame", 0);
 	AuctionsFrameAuctions_ValidateAuction();
 	-- So the get auctions query is only run once per session, after that you only get updates
 	if ( not AuctionFrame.gotAuctions ) then

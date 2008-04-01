@@ -560,8 +560,10 @@
 										end
 									</OnClick>
 									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-										GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill);
+										if ( TradeSkillFrame.selectedSkill ~= 0 ) then
+											GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+											GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill);
+										end
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();

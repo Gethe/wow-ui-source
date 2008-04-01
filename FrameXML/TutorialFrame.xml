@@ -173,6 +173,18 @@
 			<TexCoords left="0.578125" right="0.9375" top="0" bottom="0.6875"/>
 		</HighlightTexture>
 	</Button>
+	<Frame name="TutorialFrameParent" toplevel="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="55"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
 	<Button name="TutorialFrameAlertButton1" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
 	<Button name="TutorialFrameAlertButton2" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
 	<Button name="TutorialFrameAlertButton3" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>

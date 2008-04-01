@@ -36,9 +36,13 @@ function PetStable_Update()
 	SetPortraitTexture(PetStableFramePortrait, "npc");
 	
 	-- So warlock pets don't show
-	if ( UnitExists("pet") and not HasPetUI() ) then
+	local hasPetUI, isHunterPet = HasPetUI();
+	if ( UnitExists("pet") and not isHunterPet ) then
 		PetStable_NoPetsAllowed();
+		PetStableCurrentPet:Disable();
 		return;
+	else
+		PetStableCurrentPet:Enable();
 	end
 	
 	-- If no selected pet try to set one

@@ -1,0 +1,120 @@
+NUM_MULTIBAR_BUTTONS = 12;
+SHOW_MULTI_ACTIONBAR_1 = nil;
+SHOW_MULTI_ACTIONBAR_2 = nil;
+SHOW_MULTI_ACTIONBAR_3 = nil;
+SHOW_MULTI_ACTIONBAR_4 = nil;
+
+function MultiActionBarFrame_OnLoad()
+	-- Hack to get around load order dependencies
+	UIOptionsFrameCheckButtons["SHOW_MULTIBAR1_TEXT"].setFunc = Multibar_EmptyFunc;
+	UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"].setFunc = Multibar_EmptyFunc;
+	UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"].setFunc = Multibar_EmptyFunc;
+	UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"].setFunc = Multibar_EmptyFunc;
+	UIOptionsFrameCheckButtons["SHOW_MULTIBAR1_TEXT"].func = MultiBar1_IsVisible;
+	UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"].func = MultiBar2_IsVisible;
+	UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"].func = MultiBar3_IsVisible;
+	UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"].func = MultiBar4_IsVisible;
+	
+	-- This is where i will load the actionbar states
+	--MultiActionBar_Update();
+end
+
+function MultiActionButtonDown(bar, id)
+	local button = getglobal(bar.."Button"..id);
+	if ( button:GetButtonState() == "NORMAL" ) then
+		button:SetButtonState("PUSHED");
+	end
+end
+
+function MultiActionButtonUp(bar, id, onSelf)
+	local button = getglobal(bar.."Button"..id);
+	if ( button:GetButtonState() == "PUSHED" ) then
+		button:SetButtonState("NORMAL");
+		-- Used to save a macro
+		MacroFrame_EditMacro();
+		UseAction(ActionButton_GetPagedID(button), 0, onSelf);
+		if ( IsCurrentAction(ActionButton_GetPagedID(button)) ) then
+			button:SetChecked(1);
+		else
+			button:SetChecked(0);
+		end
+	end
+end
+
+
+
+function MultiActionBar_Update()
+	if ( SHOW_MULTI_ACTIONBAR_1 ) then
+		MultiBarBottomLeft:Show();
+		VIEWABLE_ACTION_BAR_PAGES[BOTTOMLEFT_ACTIONBAR_PAGE] = nil;
+	else
+		MultiBarBottomLeft:Hide();
+		VIEWABLE_ACTION_BAR_PAGES[BOTTOMLEFT_ACTIONBAR_PAGE] = 1;
+	end
+	if ( SHOW_MULTI_ACTIONBAR_2 ) then
+		MultiBarBottomRight:Show();
+		VIEWABLE_ACTION_BAR_PAGES[BOTTOMRIGHT_ACTIONBAR_PAGE] = nil;
+	else
+		MultiBarBottomRight:Hide();
+		VIEWABLE_ACTION_BAR_PAGES[BOTTOMRIGHT_ACTIONBAR_PAGE] = 1;
+	end
+	if ( SHOW_MULTI_ACTIONBAR_3 ) then
+		MultiBarRight:Show();
+		VIEWABLE_ACTION_BAR_PAGES[RIGHT_ACTIONBAR_PAGE] = nil;
+	else
+		MultiBarRight:Hide();
+		VIEWABLE_ACTION_BAR_PAGES[RIGHT_ACTIONBAR_PAGE] = 1;
+	end
+	if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 ) then
+		MultiBarLeft:Show();
+		VIEWABLE_ACTION_BAR_PAGES[LEFT_ACTIONBAR_PAGE] = nil;
+	else
+		MultiBarLeft:Hide();
+		VIEWABLE_ACTION_BAR_PAGES[LEFT_ACTIONBAR_PAGE] = 1;
+	end
+end
+
+function MultiActionBar_ShowAllGrids()
+	MultiActionBar_UpdateGrid("MultiBarBottomLeft", 1);
+	MultiActionBar_UpdateGrid("MultiBarBottomRight", 1);
+	MultiActionBar_UpdateGrid("MultiBarRight", 1);
+	MultiActionBar_UpdateGrid("MultiBarLeft", 1);
+end
+
+function MultiActionBar_HideAllGrids()
+	MultiActionBar_UpdateGrid("MultiBarBottomLeft");
+	MultiActionBar_UpdateGrid("MultiBarBottomRight");
+	MultiActionBar_UpdateGrid("MultiBarRight");
+	MultiActionBar_UpdateGrid("MultiBarLeft");
+end
+
+function MultiActionBar_UpdateGrid(barName, show)
+	for i=1, NUM_MULTIBAR_BUTTONS do
+		if ( show ) then
+			ActionButton_ShowGrid(getglobal(barName.."Button"..i));
+		else
+			ActionButton_HideGrid(getglobal(barName.."Button"..i));
+		end
+		
+	end
+end
+
+function Multibar_EmptyFunc(show)
+	
+end
+
+function MultiBar1_IsVisible()
+	return SHOW_MULTI_ACTIONBAR_1;
+end
+
+function MultiBar2_IsVisible()
+	return SHOW_MULTI_ACTIONBAR_2;
+end
+
+function MultiBar3_IsVisible()
+	return SHOW_MULTI_ACTIONBAR_3;
+end
+
+function MultiBar4_IsVisible()
+	return SHOW_MULTI_ACTIONBAR_4;
+end

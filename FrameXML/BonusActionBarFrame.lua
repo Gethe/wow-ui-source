@@ -153,14 +153,16 @@ function ShapeshiftBar_Update()
 		--Move the chat frame and edit box up a bit
 		FCF_UpdateDockPosition();
 		--Move the casting bar up
-		CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 83);
+		--CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 83);
+		CastingBarFrame_UpdatePosition();
 	else
 		ShapeshiftBarFrame:Hide();
 		if ( not PetHasActionBar() ) then
 			--Move the chat frame and edit box back down to original position
 			FCF_UpdateDockPosition();
 			--Move the casting bar back down
-			CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 60);
+			--CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 60);
+			CastingBarFrame_UpdatePosition();
 		end
 	end
 	
@@ -199,10 +201,28 @@ function ShapeshiftBar_Update()
 			button:Hide();
 		end
 	end
+
+	ShapeshiftBar_UpdatePosition();
 end
 
 function ShapeshiftBar_ChangeForm(id)
 	ShapeshiftBarFrame.lastSelected = id;
 	local check = 1;
 	CastShapeshiftForm(id);
+end
+
+function ShapeshiftBar_UpdatePosition()
+	if ( MultiBarBottomLeft:IsVisible() ) then
+		ShapeshiftBarFrame:SetPoint("BOTTOMLEFT", "MainMenuBar", "TOPLEFT", 30, 45);
+		ShapeshiftBarLeft:Hide();
+		ShapeshiftBarRight:Hide();
+		ShapeshiftBarMiddle:Hide();
+	else
+		ShapeshiftBarFrame:SetPoint("BOTTOMLEFT", "MainMenuBar", "TOPLEFT", 30, 0);
+		if ( GetNumShapeshiftForms() > 2 ) then
+			ShapeshiftBarMiddle:Show();
+		end
+		ShapeshiftBarLeft:Show();
+		ShapeshiftBarRight:Show();
+	end
 end

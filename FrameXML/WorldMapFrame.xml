@@ -26,7 +26,11 @@
 			</OnLoad>
 			<OnEnter>
 				WorldMapFrame.poiHighlight = 1;
-				WorldMapFrameAreaLabel:SetText(this.name);
+				if ( this.description and strlen(this.description) > 0) then
+					WorldMapFrameAreaLabel:SetText(this.name.."\n"..this.description);
+				else
+					WorldMapFrameAreaLabel:SetText(this.name);
+				end
 			--[[
 				local x, y = this:GetCenter();
 				local parentX, parentY = this:GetParent():GetCenter();
@@ -36,6 +40,9 @@
 					WorldMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
 				end
 				WorldMapTooltip:SetText(this.name);
+				if ( this.description and strlen(this.description) > 0) then
+					WorldMapTooltip:AddLine(this.description);
+				end
 				WorldMapTooltip:Show();
 			]]
 			</OnEnter>
@@ -58,7 +65,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" file="Interface\WorldMap\WorldMapPlayerIcon" setAllPoints="true"/>
+				<Texture name="$parentIcon" setAllPoints="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -66,6 +73,7 @@
 				this:SetFrameLevel(this:GetFrameLevel() + 1);
 				if ( this:GetID() == 0 ) then
 					this.unit = "player";
+					getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPlayerIcon");
 				else
 					this.unit = "party"..this:GetID();
 					getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
@@ -85,6 +93,15 @@
 			<OnLeave>
 				WorldMapTooltip:Hide();
 			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="WorldMapRaidUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				this.unit = "raid"..this:GetID();
+				getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+			</OnLoad>
 		</Scripts>
 	</Frame>
 	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true">
@@ -631,6 +648,46 @@
 					<Frame name="WorldMapParty2" inherits="WorldMapUnitTemplate" id="2"/>
 					<Frame name="WorldMapParty3" inherits="WorldMapUnitTemplate" id="3"/>
 					<Frame name="WorldMapParty4" inherits="WorldMapUnitTemplate" id="4"/>
+					<Frame name="WorldMapRaid1" inherits="WorldMapRaidUnitTemplate" id="1"/>
+					<Frame name="WorldMapRaid2" inherits="WorldMapRaidUnitTemplate" id="2"/>
+					<Frame name="WorldMapRaid3" inherits="WorldMapRaidUnitTemplate" id="3"/>
+					<Frame name="WorldMapRaid4" inherits="WorldMapRaidUnitTemplate" id="4"/>
+					<Frame name="WorldMapRaid5" inherits="WorldMapRaidUnitTemplate" id="5"/>
+					<Frame name="WorldMapRaid6" inherits="WorldMapRaidUnitTemplate" id="6"/>
+					<Frame name="WorldMapRaid7" inherits="WorldMapRaidUnitTemplate" id="7"/>
+					<Frame name="WorldMapRaid8" inherits="WorldMapRaidUnitTemplate" id="8"/>
+					<Frame name="WorldMapRaid9" inherits="WorldMapRaidUnitTemplate" id="9"/>
+					<Frame name="WorldMapRaid10" inherits="WorldMapRaidUnitTemplate" id="10"/>
+					<Frame name="WorldMapRaid11" inherits="WorldMapRaidUnitTemplate" id="11"/>
+					<Frame name="WorldMapRaid12" inherits="WorldMapRaidUnitTemplate" id="12"/>
+					<Frame name="WorldMapRaid13" inherits="WorldMapRaidUnitTemplate" id="13"/>
+					<Frame name="WorldMapRaid14" inherits="WorldMapRaidUnitTemplate" id="14"/>
+					<Frame name="WorldMapRaid15" inherits="WorldMapRaidUnitTemplate" id="15"/>
+					<Frame name="WorldMapRaid16" inherits="WorldMapRaidUnitTemplate" id="16"/>
+					<Frame name="WorldMapRaid17" inherits="WorldMapRaidUnitTemplate" id="17"/>
+					<Frame name="WorldMapRaid18" inherits="WorldMapRaidUnitTemplate" id="18"/>
+					<Frame name="WorldMapRaid19" inherits="WorldMapRaidUnitTemplate" id="19"/>
+					<Frame name="WorldMapRaid20" inherits="WorldMapRaidUnitTemplate" id="20"/>
+					<Frame name="WorldMapRaid21" inherits="WorldMapRaidUnitTemplate" id="21"/>
+					<Frame name="WorldMapRaid22" inherits="WorldMapRaidUnitTemplate" id="22"/>
+					<Frame name="WorldMapRaid23" inherits="WorldMapRaidUnitTemplate" id="23"/>
+					<Frame name="WorldMapRaid24" inherits="WorldMapRaidUnitTemplate" id="24"/>
+					<Frame name="WorldMapRaid25" inherits="WorldMapRaidUnitTemplate" id="25"/>
+					<Frame name="WorldMapRaid26" inherits="WorldMapRaidUnitTemplate" id="26"/>
+					<Frame name="WorldMapRaid27" inherits="WorldMapRaidUnitTemplate" id="27"/>
+					<Frame name="WorldMapRaid28" inherits="WorldMapRaidUnitTemplate" id="28"/>
+					<Frame name="WorldMapRaid29" inherits="WorldMapRaidUnitTemplate" id="29"/>
+					<Frame name="WorldMapRaid30" inherits="WorldMapRaidUnitTemplate" id="30"/>
+					<Frame name="WorldMapRaid31" inherits="WorldMapRaidUnitTemplate" id="31"/>
+					<Frame name="WorldMapRaid32" inherits="WorldMapRaidUnitTemplate" id="32"/>
+					<Frame name="WorldMapRaid33" inherits="WorldMapRaidUnitTemplate" id="33"/>
+					<Frame name="WorldMapRaid34" inherits="WorldMapRaidUnitTemplate" id="34"/>
+					<Frame name="WorldMapRaid35" inherits="WorldMapRaidUnitTemplate" id="35"/>
+					<Frame name="WorldMapRaid36" inherits="WorldMapRaidUnitTemplate" id="36"/>
+					<Frame name="WorldMapRaid37" inherits="WorldMapRaidUnitTemplate" id="37"/>
+					<Frame name="WorldMapRaid38" inherits="WorldMapRaidUnitTemplate" id="38"/>
+					<Frame name="WorldMapRaid39" inherits="WorldMapRaidUnitTemplate" id="39"/>
+					<Frame name="WorldMapRaid40" inherits="WorldMapRaidUnitTemplate" id="40"/>
 					<Frame name="WorldMapCorpse" inherits="WorldMapCorpseTemplate"/>
 					<Button name="WorldMapFramePOI1" inherits="WorldMapFramePOIButtonTemplate"/>
 					<Button name="WorldMapFramePOI2" inherits="WorldMapFramePOIButtonTemplate"/>

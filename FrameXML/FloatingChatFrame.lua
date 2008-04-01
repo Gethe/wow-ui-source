@@ -1323,10 +1323,33 @@ function FCF_UpdateDockPosition()
 		end
 	end
 	
+	local chatOffset = 85;
 	if ( GetNumShapeshiftForms() > 0 or HasPetUI() or PetHasActionBar() ) then
-		DEFAULT_CHAT_FRAME:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 32, 100);
-	else
-		DEFAULT_CHAT_FRAME:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 32, 85);
+		if ( MultiBarBottomLeft:IsVisible() ) then
+			chatOffset = chatOffset + 55;
+		else
+			chatOffset = chatOffset + 15;
+		end
+	elseif ( MultiBarBottomLeft:IsVisible() ) then
+		chatOffset = chatOffset + 15;
+	end
+	DEFAULT_CHAT_FRAME:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 32, chatOffset);
+	FCF_DockUpdate();
+end
+
+function FCF_UpdateCombatLogPosition()
+	if ( SIMPLE_CHAT == "1" ) then
+		local xOffset = -32;
+		local yOffset = 75;
+		if ( MultiBarBottomRight:IsVisible() ) then
+			yOffset = yOffset + 40;
+		end
+		if ( MultiBarLeft:IsVisible() ) then
+			xOffset = xOffset - 88;
+		elseif ( MultiBarRight:IsVisible() ) then
+			xOffset = xOffset - 43;
+		end
+		ChatFrame2:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", xOffset, yOffset);
 	end
 end
 
@@ -1346,7 +1369,7 @@ function FCF_Set_SimpleChat()
 
 	FCF_UnDockFrame(ChatFrame2);
 	ChatFrame2:ClearAllPoints();
-	ChatFrame2:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -32, 75);
+	FCF_UpdateCombatLogPosition();
 	ChatFrame2:SetWidth(320);
 	ChatFrame2:SetHeight(120);
 	FCF_SetTabPosition(ChatFrame2, 0);
@@ -1394,6 +1417,7 @@ function ToggleCombatLog()
 		if ( ChatFrame2:IsVisible() ) then
 			ChatFrame2:Hide();
 		else
+			FCF_UpdateCombatLogPosition();
 			ChatFrame2:Show();
 		end
 	end

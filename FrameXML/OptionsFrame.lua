@@ -17,6 +17,7 @@ OptionsFrameCheckButtons["WINDOWED_MODE"] = { index = 10, cvar = "gxWindow" , to
 OptionsFrameCheckButtons["TRIPLE_BUFFER"] = { index = 13, cvar = "gxTripleBuffer" , tooltipText = OPTION_TOOLTIP_BUFFERING, gxRestart = 1};
 OptionsFrameCheckButtons["HARDWARE_CURSOR"] = { index = 14, cvar = "gxCursor" , tooltipText = OPTION_TOOLTIP_HARDWARE_CURSOR, gxRestart = 1};
 OptionsFrameCheckButtons["PHONG_SHADING"] = { index = 15, cvar = "M2UsePixelShaders" , tooltipText = OPTION_TOOLTIP_PHONG_SHADING};
+OptionsFrameCheckButtons["FIX_LAG"] = { index = 16, cvar = "gxFixLag" , tooltipText = OPTION_TOOLTIP_FIX_LAG, gxRestart = 1};
 
 OptionsFrameSliders = {
 	{ text = UI_SCALE, func = "uiscale", minValue = 0.64, maxValue = 1.0, valueStep = 0.01 , tooltipText = OPTION_TOOLTIP_UI_SCALE},
@@ -49,7 +50,7 @@ end
 
 function OptionsFrame_Load()
 	local shadersEnabled = GetCVar("pixelShaders");
-	local hasAnisotropic, hasPixelShaders, hasVertexShaders, hasTrilinear, hasTripleBuffering, maxAnisotropy = GetVideoCaps();
+	local hasAnisotropic, hasPixelShaders, hasVertexShaders, hasTrilinear, hasTripleBuffering, maxAnisotropy, hasHardwareCursor = GetVideoCaps();
 	for index, value in OptionsFrameCheckButtons do
 		local button = getglobal("OptionsFrameCheckButton"..value.index);
 		local string = getglobal("OptionsFrameCheckButton"..value.index.."Text");
@@ -82,6 +83,10 @@ function OptionsFrame_Load()
 			end
 		elseif ( index == "TRIPLE_BUFFER" ) then
 			if ( not hasTripleBuffering or GetCVar("gxVSync") ~= "1" ) then
+				button.disabled = 1;
+			end
+		elseif ( index == "HARDWARE_CURSOR" or index == "FIX_LAG" ) then
+			if ( not hasHardwareCursor ) then
 				button.disabled = 1;
 			end
 		end
@@ -163,6 +168,8 @@ function OptionsFrame_Load()
 	OptionsFrame_UpdateUIScaleControls();
 	-- Update phong shading
 	OptionsFrame_UpdatePhongShading();
+	-- Update fix lag
+	OptionsFrame_UpdateFixLag();
 end
 
 function OptionsFrame_Save()
@@ -368,6 +375,15 @@ function OptionsFrame_UpdatePhongShading()
 	end
 end
 
+function OptionsFrame_UpdateFixLag()
+	if ( OptionsFrameCheckButton14:GetChecked() ) then
+		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton16);
+		OptionsFrameCheckButton16:SetChecked(GetCVar(OptionsFrameCheckButtons["FIX_LAG"].cvar));
+	else
+		OptionsFrame_DisableCheckBox(OptionsFrameCheckButton16);
+	end
+end
+
 function OptionsFrame_SetDefaults()
 	local checkButton, slider;
 	local enableShaders;
@@ -385,6 +401,7 @@ function OptionsFrame_SetDefaults()
 	OptionsFrame_UpdateUIScaleControls();
 	OptionsFrame_UpdateGammaControls();
 	OptionsFrame_UpdatePhongShading();
+	OptionsFrame_UpdateFixLag();
 	local sliderValue;
 	for index, value in OptionsFrameSliders do
 		slider = getglobal("OptionsFrameSlider"..index);
@@ -425,6 +442,9 @@ function OptionsFrame_DisableCheckBox(checkBox)
 end
 
 function OptionsFrame_EnableCheckBox(checkBox, checked)
+	if ( checkBox:GetChecked() ) then
+		return;
+	end
 	checkBox:SetChecked(checked);
 	checkBox:Enable();
 	getglobal(checkBox:GetName().."Text"):SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);

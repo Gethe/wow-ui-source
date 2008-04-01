@@ -45,9 +45,21 @@ function QuestTimerButton_OnClick()
 end
 
 function QuestTimerFrame_OnShow()
-	DurabilityFrame:SetPoint("TOP", "QuestTimerFrame", "BOTTOM", 30, -5);
+	UIParent_ManageRightSideFrames();
 end
 
 function QuestTimerFrame_OnHide()
-	DurabilityFrame:SetPoint("TOP", "MinimapCluster", "BOTTOM", 40, 15);
+	UIParent_ManageRightSideFrames();
 end
+
+--[[
+function QuestTimerFrame_UpdatePosition()
+	if ( MultiBarLeft:IsVisible() ) then
+		QuestTimerFrame:SetPoint("TOP", "MinimapCluster", "BOTTOM", -75, 0);
+	elseif ( MultiBarRight:IsVisible() ) then
+		QuestTimerFrame:SetPoint("TOP", "MinimapCluster", "BOTTOM", -30, 0);
+	else
+		QuestTimerFrame:SetPoint("TOP", "MinimapCluster", "BOTTOM", 10, 0);
+	end
+end
+]]

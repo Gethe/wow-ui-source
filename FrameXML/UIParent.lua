@@ -69,6 +69,7 @@ function UIParent_OnLoad()
 	this:RegisterEvent("PLAYER_ALIVE");
 	this:RegisterEvent("PLAYER_UNGHOST");
 	this:RegisterEvent("RESURRECT_REQUEST");
+	this:RegisterEvent("PLAYER_SKINNED");
 	this:RegisterEvent("TRADE_REQUEST");
 	this:RegisterEvent("PARTY_INVITE_REQUEST");
 	this:RegisterEvent("PARTY_INVITE_CANCEL");
@@ -103,6 +104,7 @@ function UIParent_OnLoad()
 	this:RegisterEvent("PLAYER_CONTROL_LOST");
 	this:RegisterEvent("PLAYER_CONTROL_GAINED");
 	this:RegisterEvent("START_LOOT_ROLL");
+	this:RegisterEvent("CONFIRM_LOOT_ROLL");
 	this:RegisterEvent("INSTANCE_BOOT_START");
 	this:RegisterEvent("INSTANCE_BOOT_STOP");
 	this:RegisterEvent("CONFIRM_TALENT_WIPE");
@@ -124,22 +126,39 @@ function UIParent_OnEvent(event)
 			end
 		end
 		return;
-	end
+	end	
 	if ( event == "PLAYER_ALIVE" ) then
 		StaticPopup_Hide("DEATH");
 		return;
 	end
 	if ( event == "PLAYER_UNGHOST" ) then
 		StaticPopup_Hide("RESURRECT");
+		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
+		StaticPopup_Hide("RESURRECT_NO_TIMER");
+		StaticPopup_Hide("SKINNED");
+		StaticPopup_Hide("SKINNED_REPOP");
 		return;
 	end
 	if ( event == "RESURRECT_REQUEST" ) then
 		if ( ResurrectHasSickness() ) then
 			StaticPopup_Show("RESURRECT", arg1);
-		else
+		elseif ( ResurrectHasTimer() ) then
 			StaticPopup_Show("RESURRECT_NO_SICKNESS", arg1);
+		else
+			StaticPopup_Show("RESURRECT_NO_TIMER", arg1);
 		end
 		return;
+	end
+	if ( event == "PLAYER_SKINNED" ) then
+		StaticPopup_Hide("RESURRECT");
+		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
+		StaticPopup_Hide("RESURRECT_NO_TIMER");
+
+		if (arg1 == 1) then
+			StaticPopup_Show("SKINNED_REPOP");
+		else
+			StaticPopup_Show("SKINNED");
+		end		
 	end
 	if ( event == "TRADE_REQUEST" ) then
 		StaticPopup_Show("TRADE", arg1);
@@ -215,6 +234,10 @@ function UIParent_OnEvent(event)
 		return;
 	end
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		-- Get multi-actionbar states
+		SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
+		MultiActionBar_Update();
+		
 		CloseAllWindows();
 		return;
 	end
@@ -287,7 +310,11 @@ function UIParent_OnEvent(event)
 		return;
 	end
 	if ( event == "MEMORY_EXHAUSTED" ) then
-		StaticPopup_Show("MEMORY_EXHAUSTED");
+		StaticPopup_Show("MEMORY_EXHAUSTED", arg1);
+		return;
+	end
+	if ( event == "MEMORY_RECOVERED" ) then
+		StaticPopup_Hide("MEMORY_EXHAUSTED");
 		return;
 	end
 	if ( event == "PLAYER_CONTROL_LOST" ) then
@@ -295,34 +322,49 @@ function UIParent_OnEvent(event)
 			return;
 		end
 		CloseAllWindows();
+		
+		--[[
 		-- Disable all microbuttons except the main menu
 		SetDesaturation(MicroButtonPortrait, 1);
 		
+		Designers previously wanted these disabled when feared, they seem to have changed their minds
 		CharacterMicroButton:Disable();
 		SpellbookMicroButton:Disable();
 		TalentMicroButton:Disable();
 		QuestLogMicroButton:Disable();
 		SocialsMicroButton:Disable();
 		WorldMapMicroButton:Disable();
-		
+		]]
+
+
 		UIParent.isOutOfControl = 1;
 		return;
 	end
 	if ( event == "PLAYER_CONTROL_GAINED" ) then
+		--[[
 		-- Enable all microbuttons
 		SetDesaturation(MicroButtonPortrait, nil);
+
 		CharacterMicroButton:Enable();
 		SpellbookMicroButton:Enable();
 		TalentMicroButton:Enable();
 		QuestLogMicroButton:Enable();
 		SocialsMicroButton:Enable();
 		WorldMapMicroButton:Enable();
-		
+		]]
+
 		UIParent.isOutOfControl = nil;
 		return;
 	end
 	if ( event == "START_LOOT_ROLL" ) then
 		GroupLootFrame_OpenNewFrame(arg1);
+		return;
+	end
+	if ( event == "CONFIRM_LOOT_ROLL" ) then
+		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL");
+		if ( dialog ) then
+			dialog.data = arg1;
+		end
 		return;
 	end
 	if ( event == "INSTANCE_BOOT_START" ) then
@@ -588,9 +630,16 @@ function MovePanelToCenter()
 end
 
 function CanOpenPanels()
+	if ( UnitIsDead("player") ) then
+		return nil;
+	end
+	
+	--[[
+	Previously couldn't open frames if player was out of control i.e. feared
 	if ( UnitIsDead("player") or UIParent.isOutOfControl ) then
 		return nil;
 	end
+	]]
 
 	local centerFrame = GetCenterFrame();
 	if ( not centerFrame ) then
@@ -684,29 +733,49 @@ function SecondsToTime(seconds)
 	local tempTime;
 	if ( seconds > 86400  ) then
 		tempTime = floor(seconds / 86400);
-		timeTag = GetPluralTag(tempTime);
 		time = tempTime.." "..GetText("DAYS_ABBR", nil, tempTime).." ";
 		seconds = mod(seconds, 86400);
 		count = count + 1;
 	end
 	if ( seconds > 3600  ) then
 		tempTime = floor(seconds / 3600);
-		timeTag = GetPluralTag(tempTime);
 		time = time..tempTime.." "..GetText("HOURS_ABBR", nil, tempTime).." ";
 		seconds = mod(seconds, 3600);
 		count = count + 1;
 	end
 	if ( count < 2 and seconds > 60  ) then
 		tempTime = floor(seconds / 60);
-		timeTag = GetPluralTag(tempTime);
 		time = time..tempTime.." "..GetText("MINUTES_ABBR", nil, tempTime).." ";
 		seconds = mod(seconds, 60);
 		count = count + 1;
 	end
 	if ( count < 2 ) then
-		timeTag = GetPluralTag(seconds);
+		seconds = format("%d", seconds);
 		time = time..seconds.." "..GetText("SECONDS_ABBR", nil, seconds).." ";
 	end
+	return time;
+end
+
+function SecondsToTimeAbbrev(seconds)
+	local time = "";
+	local tempTime;
+	if ( seconds > 86400  ) then
+		tempTime = ceil(seconds / 86400);
+		time = tempTime.." "..DAY_ONELETTER_ABBR;
+		return time;
+	end
+	if ( seconds > 3600  ) then
+		tempTime = ceil(seconds / 3600);
+		time = tempTime.." "..HOUR_ONELETTER_ABBR;
+		return time;
+	end
+	if ( seconds > 60  ) then
+		tempTime = ceil(seconds / 60);
+		time = tempTime.." "..MINUTE_ONELETTER_ABBR;
+		return time;
+	end
+	tempTime = format("%d", seconds);
+	time = tempTime.." "..SECOND_ONELETTER_ABBR;
 	return time;
 end
 
@@ -1146,4 +1215,81 @@ function SetDesaturation(texture, desaturation)
 		end
 		
 	end
+end
+
+-- Function to reposition frames if they get dragged off screen
+function ValidateFramePosition(frame, offscreenPadding)
+	local left = frame:GetLeft();
+	local right = frame:GetRight();
+	local top = frame:GetTop();
+	local bottom = frame:GetBottom();
+	local newAnchorX, newAnchorY;
+	if ( not offscreenPadding ) then
+		offscreenPadding = 15;
+	end
+	if ( top < (0 + MainMenuBar:GetHeight() + offscreenPadding)) then
+		-- Off the bottom of the screen
+		newAnchorY = MainMenuBar:GetHeight() + frame:GetHeight() - GetScreenHeight(); 
+	elseif ( bottom > GetScreenHeight() ) then
+		-- Off the top of the screen
+		newAnchorY =  0;
+	end
+	if ( right < 0 ) then
+		-- Off the left of the screen
+		newAnchorX = 0;
+	elseif ( left > GetScreenWidth() ) then
+		-- Off the right of the screen
+		newAnchorX = GetScreenWidth() - frame:GetWidth();
+	end
+	if ( newAnchorX or newAnchorY ) then
+		if ( not newAnchorX ) then
+			newAnchorX = left;
+		elseif ( not newAnchorY ) then
+			newAnchorY = top - GetScreenHeight();
+		end
+		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", newAnchorX, newAnchorY);
+	end
+end
+
+-- Call this function to update the positions of all frames that can appear on the right side of the screen
+function UIParent_ManageRightSideFrames()
+	local anchorX = 0;
+	local anchorY = 0;
+
+	-- Update tutorial anchor
+	if ( MultiBarBottomRight:IsVisible() or MultiBarBottomLeft:IsVisible() ) then
+		TutorialFrameParent:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 94);
+		FramerateLabel:SetPoint("BOTTOM", "WorldFrame", "BOTTOM", 0, 104);
+	else
+		TutorialFrameParent:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 52);
+		FramerateLabel:SetPoint("BOTTOM", "WorldFrame", "BOTTOM", 0, 64);
+	end
+	
+	-- Update bag anchor
+	if ( MultiBarBottomRight:IsVisible() ) then
+		CONTAINER_OFFSET_Y = 97;
+	else
+		CONTAINER_OFFSET_Y = 70;
+	end
+	-- Setup x anchor
+	if ( MultiBarLeft:IsVisible() ) then
+		CONTAINER_OFFSET_X = 90;
+		anchorX = 90;
+	elseif ( MultiBarRight:IsVisible() ) then
+		CONTAINER_OFFSET_X = 45;
+		anchorX = 45;
+	else
+		CONTAINER_OFFSET_X = 0;
+		anchorX = 0;
+	end
+	-- Setup y anchors
+	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -anchorX, anchorY);
+	if ( QuestTimerFrame:IsVisible() ) then
+		anchorY = anchorY - QuestTimerFrame:GetHeight();
+	end
+	DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -anchorX-20, anchorY);
+	if ( DurabilityFrame:IsVisible() ) then
+		anchorY = anchorY - DurabilityFrame:GetHeight();
+	end
+	QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -anchorX, anchorY);
 end

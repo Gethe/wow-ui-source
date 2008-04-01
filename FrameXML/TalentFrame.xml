@@ -279,7 +279,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="TalentFrameTalentPointsText" inherits="GameFontHighlightSmall" text="5">
+				<FontString name="TalentFrameTalentPointsText" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
 							<Offset>

@@ -6,7 +6,7 @@
 		 Children of the world frame are visible even when the UI is turned off.
 	-->
 	<Script file="WorldFrame.lua"/>
-	<WorldFrame name="WorldFrame" frameStrata="BACKGROUND">
+	<WorldFrame name="WorldFrame">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="FramerateLabel" hidden="true" inherits="SystemFont" text="FRAMERATE_LABEL">

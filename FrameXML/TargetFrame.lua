@@ -124,41 +124,27 @@ function TargetFrame_OnHide()
 end
 
 function TargetFrame_CheckLevel()
-	local playerLevel = UnitLevel("player");
 	local targetLevel = UnitLevel("target");
-	if ( UnitIsPlusMob("target") ) then
-	--	TargetLevelText:SetText(targetLevel.."+");
-		TargetLevelText:SetText(targetLevel);
-	elseif ( targetLevel == 0 ) then
-		TargetLevelText:SetText("");
-	else
-		TargetLevelText:SetText(targetLevel);
-	end
-	-- Color level number
-	local color = GetDifficultyColor(targetLevel);
-	TargetLevelText:SetVertexColor(color.r, color.g, color.b);
 	
-	if ( UnitClassification("target") == "worldboss" ) then
-		-- If unit is a world boss show skull regardless of level
+	if ( UnitIsCorpse("target") ) then
 		TargetLevelText:Hide();
 		TargetHighLevelTexture:Show();
-	elseif ( UnitIsEnemy("target", "player") ) then
-		if ( playerLevel > (targetLevel - 10) ) then
-			-- Normal level target
-			TargetLevelText:Show();
-			TargetHighLevelTexture:Hide();
-		else
-			-- High level target
-			TargetLevelText:Hide();
-			TargetHighLevelTexture:Show();
-		end
-	elseif ( UnitIsCorpse("target") ) then
-		TargetLevelText:Hide();
-		TargetHighLevelTexture:Show();
-	else
+	elseif ( targetLevel > 0 ) then
 		-- Normal level target
+		TargetLevelText:SetText(targetLevel);
+		-- Color level number
+		if ( UnitCanAttack("player", "target") ) then
+			local color = GetDifficultyColor(targetLevel);
+			TargetLevelText:SetVertexColor(color.r, color.g, color.b);
+		else
+			TargetLevelText:SetVertexColor(1.0, 0.82, 0.0);
+		end
 		TargetLevelText:Show();
 		TargetHighLevelTexture:Hide();
+	else
+		-- Target is too high level to tell
+		TargetLevelText:Hide();
+		TargetHighLevelTexture:Show();
 	end
 end
 

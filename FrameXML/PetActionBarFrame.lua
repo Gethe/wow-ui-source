@@ -148,6 +148,7 @@ function PetActionBar_UpdateCooldowns()
 end
 
 function ShowPetActionBar()
+	PetActionBar_UpdatePosition();
 	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and not PetActionBarFrame.locked and not PetActionBarFrame.ctrlPressed ) then
 		PetActionBarFrame:Show();
 		if ( PetActionBarFrame.completed ) then
@@ -159,7 +160,8 @@ function ShowPetActionBar()
 		--Move the chat frame and edit box up a bit
 		FCF_UpdateDockPosition();
 		--Move the casting bar up
-		CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 100);
+		--CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 100);
+		CastingBarFrame_UpdatePosition();
 	end
 end
 
@@ -173,7 +175,8 @@ function HidePetActionBar()
 		PetActionBarFrame.mode = "hide";
 		if ( GetNumShapeshiftForms() == 0 ) then
 			--Move the casting bar back down
-			CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 60);
+			--CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 60);
+			CastingBarFrame_UpdatePosition();
 		end
 		--Move the chat frame and edit box back down to original position
 		FCF_UpdateDockPosition();
@@ -244,6 +247,22 @@ end
 
 function UnlockPetActionBar()
 	PetActionBarFrame.locked = nil;
+end
+
+function PetActionBar_UpdatePosition()
+	if ( MultiBarBottomLeft:IsVisible() ) then
+		PETACTIONBAR_YPOS = 141;
+		SlidingActionBarTexture0:Hide();
+		SlidingActionBarTexture1:Hide();
+	else
+		PETACTIONBAR_YPOS = 98;
+		SlidingActionBarTexture0:Show();
+		SlidingActionBarTexture1:Show();
+	end
+	if ( not PetActionBarFrame:IsVisible() ) then
+		return;
+	end
+	PetActionBarFrame:SetPoint("TOPLEFT", "MainMenuBar", "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 end
 
 --function ControlPressed()
