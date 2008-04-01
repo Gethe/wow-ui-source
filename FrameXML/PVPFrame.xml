@@ -185,15 +185,6 @@
 					<AbsInset left="0" right="120" top="0" bottom="0"/>
 				</HitRectInsets>
 			</Frame>
-			<Button name="PVPFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="PVPFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-28" y="-10"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 		<!-- Individual -->
 			<Frame name="PVPHonor">
 				<Size>

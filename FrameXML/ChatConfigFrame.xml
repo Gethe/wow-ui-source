@@ -192,17 +192,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Layers>
 				<Scripts>
 					<OnClick>
-						local info = UIDropDownMenu_CreateInfo();
-						info.r, info.g, info.b = GetMessageTypeColor(button.messageType);
-						info.swatchFunc = function() 
-									ChangeChatColor(button.messageType, ColorPickerFrame:GetColorRGB());
-									getglobal(this:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
-								end;
-						info.cancelFunc = function() 
-									ChangeChatColor(button.messageType, ColorPicker_GetPreviousValues());
-									getglobal(this:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
-								end;
-						OpenColorPicker(info);
+						MessageTypeColor_OpenColorPicker(this);
 					</OnClick>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
@@ -464,11 +454,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton2, "BOTTOMLEFT", 0, -1);
 							ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton2, "BOTTOMRIGHT", 0, -1);
 							ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
+							ChatConfigFrame:SetHeight(625);
 						else
 							ChatConfigCategoryFrameButton2:Hide();
 							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton1, "BOTTOMLEFT", 0, -1);
 							ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton1, "BOTTOMRIGHT", 0, -1);
 							ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
+							ChatConfigFrame:SetHeight(475);
 						end
 						ChatConfigFrameHeaderText:SetText(format(CHATCONFIG_HEADER, FCF_GetCurrentChatFrame().name));
 						ChatConfigFrameHeader:SetWidth(ChatConfigFrameHeaderText:GetWidth()+200);
@@ -799,12 +791,50 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								<Offset x="0" y="0"/>
 							</Anchor>
 						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentExampleString1" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+									<Size x="450" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="CombatConfigColors" relativePoint="TOPLEFT">
+											<Offset x="25" y="-32"/>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentExampleString2" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+									<Size x="450" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentExampleString1" relativePoint="BOTTOMLEFT">
+											<Offset x="0" y="0"/>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentExampleTitle" inherits="GameFontNormalSmall" text="EXAMPLE_TEXT">
+									<Size x="0" y="13"/>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="$parentExampleString1" relativePoint="TOP">
+											<Offset x="0" y="3"/>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
 						<Frames>
 							<Frame name="$parentUnitColors" inherits="ChatConfigBoxWithHeaderTemplate">
 								<Size x="10" y="10"/>
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset x="13" y="-25"/>
+									<Anchor point="BOTTOMLEFT" relativeTo="ChatConfigBackgroundFrame" relativePoint="BOTTOMLEFT">
+										<Offset x="13" y="147"/>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentHighlighting" inherits="ChatConfigBoxWithHeaderTemplate">
+								<Size>
+									<AbsDimension x="200" y="96"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentUnitColors" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="-25"/>
 									</Anchor>
 								</Anchors>
 							</Frame>
@@ -1025,7 +1055,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 														this.tooltip = SPELL_DAMAGE_NUMBER_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring = this:GetChecked();
+														if ( this:GetChecked() ) then
+															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring = true;
+														else
+															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring = false;
+														end
 														CombatConfig_Colorize_Update();
 													</OnClick>
 												</Scripts>
@@ -1236,18 +1270,26 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString name="$parentExampleString" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
-									<Size x="450" y="40"/>
+								<FontString name="$parentExampleString1" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+									<Size x="450" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT">
 											<Offset x="15" y="-32"/>
 										</Anchor>
 									</Anchors>
 								</FontString>
+								<FontString name="$parentExampleString2" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+									<Size x="450" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentExampleString1" relativePoint="BOTTOMLEFT">
+											<Offset x="0" y="0"/>
+										</Anchor>
+									</Anchors>
+								</FontString>
 								<FontString name="$parentExampleTitle" inherits="GameFontNormalSmall" text="EXAMPLE_TEXT">
 									<Size x="0" y="13"/>
 									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="$parentExampleString" relativePoint="TOP">
+										<Anchor point="BOTTOM" relativeTo="$parentExampleString1" relativePoint="TOP">
 											<Offset x="0" y="3"/>
 										</Anchor>
 									</Anchors>
@@ -1260,8 +1302,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 									<AbsDimension x="24" y="24"/>
 								</Size>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentExampleString" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-10"/>
+									<Anchor point="TOPLEFT" relativeTo="$parentExampleString2" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="-20"/>
 									</Anchor>
 								</Anchors>
 								<Scripts>
@@ -1491,7 +1533,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 										getglobal(this:GetName().."Text"):SetText(SOLO);
 									</OnLoad>
 									<OnClick>
-										CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.solo = this:GetChecked();
+										if ( this:GetChecked() ) then
+											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.solo = true;
+										else
+											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.solo = false;
+										end
 										Blizard_CombatLog_Update_QuickButtons();
 									</OnClick>
 								</Scripts>
@@ -1595,7 +1641,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						this:GetParent():Hide();
+						ChatConfigCancel_OnClick();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1612,7 +1658,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						this:GetParent():Hide();
+						HideUIPanel(ChatConfigFrame);
 						Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings);
 						Blizzard_CombatLog_Refilter();
 					</OnClick>

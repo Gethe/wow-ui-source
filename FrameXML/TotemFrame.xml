@@ -77,7 +77,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="TotemFrame" frameStrata="LOW" toplevel="true" parent="PlayerFrame">
+	<Frame name="TotemFrame" toplevel="true" parent="PlayerFrame" hidden="true">
 		<Size>
 			<AbsDimension x="128" y="53"/>
 		</Size>
@@ -134,5 +134,5 @@
 				TotemFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
-	</Button>
+	</Frame>
 </Ui>

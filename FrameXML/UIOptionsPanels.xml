@@ -312,8 +312,9 @@
 				<Scripts>
 					<OnLoad>
 						this.type = CONTROLTYPE_DROPDOWN;
-						this:RegisterEvent("VARIABLES_LOADED");
+						this:RegisterEvent("PLAYER_ENTERING_WORLD");
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad();
 					</OnLoad>
 					<OnEnter>
 						if ( not this.isDisabled ) then
@@ -322,9 +323,7 @@
 						end
 					</OnEnter>
 					<OnEvent>
-						if ( event == "VARIABLES_LOADED" ) then
-							InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad();
-						end
+						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...);
 					</OnEvent>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -623,11 +622,14 @@
 						self.text = getglobal(this:GetName().."Text");
 						self.text:SetText(SHOW_CLOAK);
 						self.tooltipText = OPTION_TOOLTIP_SHOW_CLOAK;
+						self.defaultValue = "1";
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
 						self.oldDisable = self.Disable;
 						self.oldEnable = self.Enable;
 						self.Disable = function (self) self:oldDisable() getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
 						self.Enable = function (self) self:oldEnable() getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;
+						self.GetValue = function (self) return ( ShowingCloak() ); end
+						self.SetValue = function (self, value) if ( self:IsEnabled() == 1 ) then self:SetChecked(value); self:Disable(); InterfaceOptionsDisplayPanelShowHelm:Disable(); self:RegisterEvent("PLAYER_FLAGS_CHANGED"); ShowCloak(value); end end
 					</OnLoad>
 					<OnShow>
 						self:SetChecked(ShowingCloak());
@@ -669,10 +671,13 @@
 						self.text:SetText(SHOW_HELM);
 						self.tooltipText = OPTION_TOOLTIP_SHOW_HELM;
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.defaultValue = "1";
 						self.oldDisable = this.Disable;
 						self.oldEnable = this.Enable;
 						self.Disable = function (self) self:oldDisable() getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
 						self.Enable = function (self) self:oldEnable() getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;						
+						self.GetValue = function (self) return ( ShowingHelm() ); end
+						self.SetValue = function (self, value) if ( self:IsEnabled() == 1 ) then self:SetChecked(value); self:Disable(); InterfaceOptionsDisplayPanelShowCloak:Disable(); self:RegisterEvent("PLAYER_FLAGS_CHANGED"); ShowHelm(value); end end						
 					</OnLoad>
 					<OnShow>
 						self:SetChecked(ShowingHelm());

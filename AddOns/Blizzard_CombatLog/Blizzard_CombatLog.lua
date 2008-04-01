@@ -1359,6 +1359,18 @@ function Blizzard_CombatLog_GenerateDefaultEventList ( )
 	return eventList;
 end
 
+function Blizzard_CombatLog_CopySetting(settings)
+	local copy = {};
+	for k, v in pairs(settings) do
+		if ( type(v) == "table" ) then
+			copy[k] = Blizzard_CombatLog_CopySetting(v);
+		else
+			copy[k] = v;
+		end
+	end
+	return copy;
+end
+
 --
 -- Default CombatLog Filter
 -- This table is used to create new CombatLog filters

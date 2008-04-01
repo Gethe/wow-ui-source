@@ -25,22 +25,30 @@ function TotemFrame_Update()
 	local slot;
 	local button;
 	local buttonIndex = 1;
+	TotemFrame.activeTotems = 0;
 	for i=1, MAX_TOTEMS do
 		slot = TOTEM_PRIORITIES[i];
 		haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
 		if ( haveTotem ) then
 			button = getglobal("TotemFrameTotem"..buttonIndex);
 			button.slot = slot;
-
-			TotemButton_Update(button, slot, name, startTime, duration, icon);
-
+			TotemButton_Update(button, startTime, duration, icon);
 			buttonIndex = buttonIndex + 1;
+
+			if ( button:IsShown() ) then
+				TotemFrame.activeTotems = TotemFrame.activeTotems + 1;
+			end
 		else
 			button = getglobal("TotemFrameTotem"..MAX_TOTEMS - i + buttonIndex);
 			button.slot = 0;
 
 			button:Hide();
 		end
+	end
+	if ( TotemFrame.activeTotems > 0 ) then
+		TotemFrame:Show();
+	else
+		TotemFrame:Hide();
 	end
 end
 
@@ -50,23 +58,34 @@ function TotemFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_TOTEM_UPDATE" ) then
 		local slot = ...;
 		local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
-
 		local button;
-		local i;
 		for i=1, MAX_TOTEMS do
 			button = getglobal("TotemFrameTotem"..i);
 			if ( button.slot == slot ) then
-				TotemButton_Update(button, slot, name, startTime, duration, icon);
+				local previouslyShown = button:IsShown();
+				TotemButton_Update(button, startTime, duration, icon);
+				if ( previouslyShown ) then
+					if ( not button:IsShown() ) then
+						TotemFrame.activeTotems = TotemFrame.activeTotems - 1;
+					end
+				else
+					if ( button:IsShown() ) then
+						TotemFrame.activeTotems = TotemFrame.activeTotems + 1;
+					end
+				end
+				if ( TotemFrame.activeTotems > 0 ) then
+					TotemFrame:Show();
+				else
+					TotemFrame:Hide();
+				end
 				return;
 			end
 		end
 
-		if ( haveTotem ) then
-			-- The assumption is that we have gained a totem that we did not previously have
-			-- so the totem buttons have to be reordered. It's easier to just do a full update
-			-- rather than sorting the buttons since there aren't that many.
-			TotemFrame_Update();
-		end
+		-- The assumption is that we have gained a totem that we did not previously have
+		-- so the totem buttons have to be reordered. It's easier to just do a full update
+		-- rather than sorting the buttons since there aren't that many.
+		TotemFrame_Update();
 	end
 end
 
@@ -83,15 +102,13 @@ function TotemButton_OnUpdate(button, elapsed)
 	end
 end
 
-function TotemButton_Update(button, slot, name, startTime, duration, icon)
+function TotemButton_Update(button, startTime, duration, icon)
 	local buttonName = button:GetName();
 	local buttonIcon = getglobal(buttonName.."IconTexture");
 	local buttonDuration = getglobal(buttonName.."Duration");
 	local buttonCooldown = getglobal(buttonName.."IconCooldown");
 
 	if ( duration > 0 ) then
-		button.name = name;
-
 		buttonIcon:SetTexture(icon);
 		buttonIcon:Show();
 		CooldownFrame_SetTimer(buttonCooldown, startTime, duration, 1);
@@ -99,8 +116,6 @@ function TotemButton_Update(button, slot, name, startTime, duration, icon)
 		button:SetScript("OnUpdate", TotemButton_OnUpdate);
 		button:Show();
 	else
-		button.name = name;
-
 		buttonIcon:Hide();
 		buttonDuration:Hide();
 		buttonCooldown:Hide();

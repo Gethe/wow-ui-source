@@ -58,10 +58,10 @@ COMBAT_TEXT_TYPE_INFO["RAGE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHO
 COMBAT_TEXT_TYPE_INFO["FOCUS"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
 COMBAT_TEXT_TYPE_INFO["ENERGY"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
 COMBAT_TEXT_TYPE_INFO["SPELL_CAST"] = {r = 0.1, g = 1, b = 0.1, show = 1};
-COMBAT_TEXT_TYPE_INFO["AURA_END"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
-COMBAT_TEXT_TYPE_INFO["AURA_END_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
-COMBAT_TEXT_TYPE_INFO["AURA_START"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
-COMBAT_TEXT_TYPE_INFO["AURA_START_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_AURA_END"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_AURA_END_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_AURA_START"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_AURA_START_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
 COMBAT_TEXT_TYPE_INFO["SPELL_ACTIVE"] = {r = 1, g = 0.82, b = 0, var = "COMBAT_TEXT_SHOW_REACTIVES"};
 COMBAT_TEXT_TYPE_INFO["FACTION"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_REPUTATION"};
 COMBAT_TEXT_TYPE_INFO["HEAL_CRIT"] = {r = 0.1, g = 1, b = 0.1, show = 1};
@@ -172,11 +172,11 @@ function CombatText_OnEvent(event)
 		message = "-"..data;
 	elseif ( messageType == "SPELL_CAST" ) then
 		message = "<"..data..">";
-	elseif ( messageType == "AURA_START" ) then
+	elseif ( messageType == "SPELL_AURA_START" ) then
 		message = "<"..data..">";
-	elseif ( messageType == "AURA_START_HARMFUL" ) then
+	elseif ( messageType == "SPELL_AURA_START_HARMFUL" ) then
 		message = "<"..data..">";
-	elseif ( messageType == "AURA_END" or messageType == "AURA_END_HARMFUL" ) then
+	elseif ( messageType == "SPELL_AURA_END" or messageType == "SPELL_AURA_END_HARMFUL" ) then
 		message = format(AURA_END, data);
 	elseif ( messageType == "HEAL" or messageType == "PERIODIC_HEAL") then
 		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and messageType == "HEAL" and UnitName("player") ~= data ) then

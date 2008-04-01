@@ -120,7 +120,7 @@ function GossipFrameActiveQuestsUpdate(...)
 		GossipResize(titleButton);
 		titleButton:SetID(titleIndex);
 		titleButton.type="Active";
-		getglobal(titleButton:GetName() .. "GossipIcon"):SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+		titleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
 		GossipFrame.buttonIndex = GossipFrame.buttonIndex + 1;
 		titleIndex = titleIndex + 1;
 		titleButton:Show();

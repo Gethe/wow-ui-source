@@ -11,38 +11,47 @@ ControlsPanelOptions = {
 	BlockTrades = { text="BLOCK_TRADES", default="0" },
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT", default="0" },
 	autoLootCorpse = { text = "AUTO_LOOT_DEFAULT_TEXT", default="0" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
-	autoLootKey = { text="AUTO_LOOT_KEY_TEXT", default="0" },
+	autoLootKey = { text="AUTO_LOOT_KEY_TEXT", default="NONE" },
 }
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, InterfaceOptionsControlsPanelAutoLootKeyDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(this, GetModifiedClick("AUTOLOOTTOGGLE"));
-	this.defaultValue = "NONE";
-	this.currValue = GetModifiedClick("AUTOLOOTTOGGLE");
-	this.value = this.currValue;
-	InterfaceOptionsControlsPanelAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..UIDropDownMenu_GetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown).."_KEY");
-	UIDropDownMenu_SetWidth(90, InterfaceOptionsControlsPanelAutoLootKeyDropDown);
-	this.SetValue = 
-		function (self, value) 
-			UIDropDownMenu_SetSelectedValue(self, value);
-			SetModifiedClick("AUTOLOOTTOGGLE", value);
-			InterfaceOptionsControlsPanelAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..UIDropDownMenu_GetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown).."_KEY");	
-		end;
-	this.GetValue =
-		function (self)
-			return UIDropDownMenu_GetSelectedValue(self);
+
+end
+
+function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+		UIDropDownMenu_Initialize(this, InterfaceOptionsControlsPanelAutoLootKeyDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(this, GetModifiedClick("AUTOLOOTTOGGLE"));
+		self.defaultValue = "NONE";
+		self.currValue = GetModifiedClick("AUTOLOOTTOGGLE");
+		self.value = this.currValue;
+		InterfaceOptionsControlsPanelAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..self.value.."_KEY");
+		UIDropDownMenu_SetWidth(90, InterfaceOptionsControlsPanelAutoLootKeyDropDown);
+		self.SetValue = 
+			function (self, value) 
+				UIDropDownMenu_SetSelectedValue(self, value);
+				SetModifiedClick("AUTOLOOTTOGGLE", value);
+				SaveBindings(GetCurrentBindingSet());
+				InterfaceOptionsControlsPanelAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..value.."_KEY");	
+			end;
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		if ( GetCVar("autoLootCorpse") == "1" ) then
+			InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(LOOT_KEY_TEXT);
+		else
+			InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(AUTO_LOOT_KEY_TEXT);
 		end
-	if ( GetCVar("autoLootCorpse") == "1" ) then
-		InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(LOOT_KEY_TEXT);
-	else
-		InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(AUTO_LOOT_KEY_TEXT);
 	end
 end
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnClick()
 	UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, this.value);
 	SetModifiedClick("AUTOLOOTTOGGLE", this.value);
-	InterfaceOptionsControlsPanelAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..UIDropDownMenu_GetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown).."_KEY");
+	SaveBindings(GetCurrentBindingSet());
+	InterfaceOptionsControlsPanelAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..this.value.."_KEY");
 end
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_Initialize()
@@ -892,8 +901,10 @@ end
 
 function BlizzardOptionsPanel_CheckButton_OnClick (checkButton)
 	local setting = "0";
-	if ( checkButton:GetChecked() and ( not checkButton.invert ) ) then
-		setting = "1"
+	if ( checkButton:GetChecked() ) then
+		if ( not checkButton.invert ) then
+			setting = "1"
+		end
 	elseif ( checkButton.invert ) then
 		setting = "1"
 	end 

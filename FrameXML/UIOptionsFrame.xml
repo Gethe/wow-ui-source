@@ -340,7 +340,7 @@
 		</HighlightTexture>
 	</Button>
 
-	<Frame name="InterfaceOptionsFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="FULLSCREEN">
+	<Frame name="InterfaceOptionsFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
 		<Size>
 			<AbsDimension x="620" y="500"/>
 		</Size>

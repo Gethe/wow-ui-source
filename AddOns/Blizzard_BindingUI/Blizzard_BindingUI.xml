@@ -530,6 +530,7 @@
 						KeyBindingFrame.selected = nil;
 						KeyBindingFrame.buttonPressed:UnlockHighlight();
 						KeyBindingFrame_UpdateUnbindKey();
+						KeyBindingFrameOutputText:SetText();
 					</OnClick>
 				</Scripts>
 			</Button>

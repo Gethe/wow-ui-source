@@ -187,15 +187,6 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Button name="InspectPVPFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="InspectPVPFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-28" y="-10"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 		<!-- Individual -->
 			<Frame name="InspectPVPHonor">
 				<Size>

@@ -96,7 +96,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="0" y="0"/>
+								<AbsDimension x="3" y="1"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

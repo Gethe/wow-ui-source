@@ -5,6 +5,7 @@ CHATCONFIG_SELECTED_FILTER = 0;
 CHATCONFIG_SELECTED_FILTER_FILTERS = 0;
 CHATCONFIG_SELECTED_FILTER_COLORS = 0;
 CHATCONFIG_SELECTED_FILTER_SETTINGS = 0;
+CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = 0;
 
 --Chat options
 CHAT_CONFIG_CHAT_RIGHT = {
@@ -269,14 +270,14 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 				text = DAMAGE,
 				type = "SWING_DAMAGE",
 				checked = function () return HasMessageType("SWING_DAMAGE"); end;
-				func = function (checked) return ToggleMessageType(checked, "SWING_DAMAGE") end;
+				func = function (checked) ToggleMessageType(checked, "SWING_DAMAGE") end;
 				tooltip = SWING_DAMAGE_COMBATLOG_TOOLTIP;
 			},
 			[2] = {
 				text = MISSES,
 				type = "SWING_MISSED",
 				checked = function () return HasMessageType("SWING_MISSED"); end;
-				func = function (checked) return ToggleMessageType(checked, "SWING_MISSED"); end;
+				func = function (checked) ToggleMessageType(checked, "SWING_MISSED"); end;
 				tooltip = SWING_MISSED_COMBATLOG_TOOLTIP;
 			},
 		}
@@ -291,14 +292,14 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 				text = DAMAGE,
 				type = "RANGE_DAMAGE",
 				checked = function () return HasMessageType("RANGE_DAMAGE"); end;
-				func = function (checked) return ToggleMessageType(checked, "RANGE_DAMAGE"); end;
+				func = function (checked) ToggleMessageType(checked, "RANGE_DAMAGE"); end;
 				tooltip = RANGE_DAMAGE_COMBATLOG_TOOLTIP;
 			},
 			[2] = {
 				text = MISSES,
 				type = "RANGE_MISSED",
 				checked = function () return HasMessageType("RANGE_MISSED"); end;
-				func = function (checked) return ToggleMessageType(checked, "RANGE_MISSED"); end;
+				func = function (checked) ToggleMessageType(checked, "RANGE_MISSED"); end;
 				tooltip = RANGE_MISSED_COMBATLOG_TOOLTIP;
 			},
 		}
@@ -349,14 +350,14 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 				text = DISPELS,
 				type = {"SPELL_DISPELLED_AURA","SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"};
 				checked = function () return HasMessageType("SPELL_DISPELLED_AURA", "SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_DISPELLED_AURA", "SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_DISPELLED_AURA", "SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"); end;
 				tooltip = DISPEL_AURA_COMBATLOG_TOOLTIP;
 			},
 			[4] = {
 				text = ENCHANTS,
 				type = {"ENCHANT_APPLIED", "ENCHANT_REMOVED"};
 				checked = function () return HasMessageType("ENCHANT_APPLIED", "ENCHANT_REMOVED"); end;
-				func = function (checked) return ToggleMessageType(checked, "ENCHANT_APPLIED", "ENCHANT_REMOVED"); end;
+				func = function (checked) ToggleMessageType(checked, "ENCHANT_APPLIED", "ENCHANT_REMOVED"); end;
 				tooltip = ENCHANT_AURA_COMBATLOG_TOOLTIP;
 			},
 		}
@@ -371,28 +372,28 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 				text = DAMAGE,
 				type = "SPELL_PERIODIC_DAMAGE",
 				checked = function () return HasMessageType("SPELL_PERIODIC_DAMAGE"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_PERIODIC_DAMAGE"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_PERIODIC_DAMAGE"); end;
 				tooltip = SPELL_PERIODIC_DAMAGE_COMBATLOG_TOOLTIP,
 			},
 			[2] = {
 				text = MISSES,
 				type = "SPELL_PERIODIC_MISSED",
 				checked = function () return HasMessageType("SPELL_PERIODIC_MISSED"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_PERIODIC_MISSED"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_PERIODIC_MISSED"); end;
 				tooltip = SPELL_PERIODIC_MISSED_COMBATLOG_TOOLTIP,
 			},
 			[3] = {
 				text = HEALS,
 				type = "SPELL_PERIODIC_HEAL",
 				checked = function () return HasMessageType("SPELL_PERIODIC_HEAL"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_PERIODIC_HEAL"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_PERIODIC_HEAL"); end;
 				tooltip = SPELL_PERIODIC_HEAL_COMBATLOG_TOOLTIP,
 			},
 			[4] = {
 				text = OTHER,
 				type = {"SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN","SPELL_PERIODIC_LEECH"};
 				checked = function () return HasMessageType("SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
 				tooltip = SPELL_PERIODIC_OTHER_COMBATLOG_TOOLTIP,
 			},
 		}
@@ -410,56 +411,56 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 				text = DAMAGE,
 				type = "SPELL_DAMAGE",
 				checked = function () return HasMessageType("SPELL_DAMAGE"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_DAMAGE"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_DAMAGE"); end;
 				tooltip = SPELL_DAMAGE_COMBATLOG_TOOLTIP,
 			},
 			[2] = {
 				text = MISSES,
 				type = "SPELL_MISSED",
 				checked = function () return HasMessageType("SPELL_MISSED"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_MISSED"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_MISSED"); end;
 				tooltip = SPELL_MISSED_COMBATLOG_TOOLTIP,
 			},
 			[3] = {
 				text = HEALS,
 				type = "SPELL_HEAL",
 				checked = function () return HasMessageType("SPELL_HEAL"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_HEAL"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_HEAL"); end;
 				tooltip = SPELL_HEAL_COMBATLOG_TOOLTIP,
 			},
 			[4] = {
 				text = POWER_GAINS,
 				type = "SPELL_ENERGIZE",
 				checked = function () return HasMessageType("SPELL_ENERGIZE"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
 				tooltip = POWER_GAINS_COMBATLOG_TOOLTIP,
 			},
 			[5] = {
 				text = DRAINS,
 				type = {"SPELL_DRAIN", "SPELL_LEECH"};
 				checked = function () return HasMessageType("SPELL_ENERGIZE"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
 				tooltip = SPELL_DRAIN_COMBATLOG_TOOLTIP,
 			},
 			[5] = {
 				text = INTERRUPTS,
 				type = {"SPELL_INTERRUPT"};
 				checked = function () return HasMessageType("SPELL_INTERRUPT"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_INTERRUPT"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_INTERRUPT"); end;
 				tooltip = SPELL_INTERRUPT_COMBATLOG_TOOLTIP,
 			},
 			[5] = {
 				text = SPECIAL,
 				type = {"SPELL_INSTAKILL"};
 				checked = function () return HasMessageType("SPELL_INSTAKILL"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_INSTAKILL"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_INSTAKILL"); end;
 				tooltip = SPELL_INSTAKILL_COMBATLOG_TOOLTIP,
 			},
 			[6] = {
 				text = EXTRA_ATTACKS,
 				type = {"SPELL_EXTRA_ATTACKS"};
 				checked = function () return HasMessageType("SPELL_EXTRA_ATTACKS"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_EXTRA_ATTACKS"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_EXTRA_ATTACKS"); end;
 				tooltip = SPELL_EXTRA_ATTACKS_COMBATLOG_TOOLTIP,
 			},
 		}
@@ -474,21 +475,21 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 				text = START,
 				type = "SPELL_CAST_START",
 				checked = function () return HasMessageType("SPELL_CAST_START"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_CAST_START"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_CAST_START"); end;
 				tooltip = SPELL_CAST_START_COMBATLOG_TOOLTIP,
 			},
 			[2] = {
 				text = SUCCESS,
 				type = "SPELL_CAST_SUCCESS",
 				checked = function () return HasMessageType("SPELL_CAST_SUCCESS"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_CAST_SUCCESS"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_CAST_SUCCESS"); end;
 				tooltip = SPELL_CAST_SUCCESS_COMBATLOG_TOOLTIP,
 			},
 			[3] = {
 				text = FAILURES,
 				type = "SPELL_CAST_FAILED",
 				checked = function () return HasMessageType("SPELL_CAST_FAILED"); end;
-				func = function (checked) return ToggleMessageType(checked, "SPELL_CAST_FAILED"); end;
+				func = function (checked) ToggleMessageType(checked, "SPELL_CAST_FAILED"); end;
 				tooltip = SPELL_CAST_FAILED_COMBATLOG_TOOLTIP,
 			},
 		}
@@ -498,26 +499,26 @@ COMBAT_CONFIG_MESSAGETYPES_MISC = {
 	[1] = {
 		text = DAMAGE_SHIELD,
 		checked = function () return HasMessageType("DAMAGE_SHIELD"); end;
-		func = function (checked) return ToggleMessageType(checked, "DAMAGE_SHIELD"); end;
+		func = function (checked) ToggleMessageType(checked, "DAMAGE_SHIELD"); end;
 		tooltip = DAMAGE_SHIELD_COMBATLOG_TOOLTIP,
 	},
 	[2] = {
 		text = ENVIRONMENTAL_DAMAGE,
 		checked = function () return HasMessageType("ENVIRONMENTAL_DAMAGE"); end;
-		func = function (checked) return ToggleMessageType(checked, "ENVIRONMENTAL_DAMAGE"); end;
+		func = function (checked) ToggleMessageType(checked, "ENVIRONMENTAL_DAMAGE"); end;
 		tooltip = ENVIRONMENTAL_DAMAGE_COMBATLOG_TOOLTIP,
 	},
 	[3] = {
 		text = KILLS,
 		checked = function () return HasMessageType("PARTY_KILL"); end;
-		func = function (checked) return ToggleMessageType(checked, "PARTY_KILL"); end;
+		func = function (checked) ToggleMessageType(checked, "PARTY_KILL"); end;
 		tooltip = KILLS_COMBATLOG_TOOLTIP,
 	},
 	[4] = {
 		text = DEATHS,
 		type = {"UNIT_DIED", "UNIT_DESTROYED"};
 		checked = function () return HasMessageType("DAMAGE_SHIELD"); end;
-		func = function (checked) return ToggleMessageType(checked, "RANGE_MISSED"); end;
+		func = function (checked) ToggleMessageType(checked, "RANGE_MISSED"); end;
 		tooltip = DEATHS_COMBATLOG_TOOLTIP,
 	},
 };
@@ -548,6 +549,61 @@ COMBAT_CONFIG_UNIT_COLORS = {
 	},
 }
 
+COMBAT_CONFIG_HIGHLIGHTING = {
+	[1] = {
+		text = COMBATLOG_HIGHLIGHT_LINE,
+		checked = function () return CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting; end;
+		func = function (checked)
+			if ( checked ) then
+				CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting = true;
+			else
+				CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting = false;
+			end
+			CombatConfig_Colorize_Update();
+		end;
+		tooltip = HIGHLIGHT_LINE_COMBATLOG_TOOLTIP,
+	},
+	[2] = {
+		text = COMBATLOG_HIGHLIGHT_ABILITY,
+		checked = function () return CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting; end;
+		func = function (checked)
+			if ( checked ) then
+				CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting = true;
+			else
+				CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting = false;
+			end
+			CombatConfig_Colorize_Update();
+		end;
+		tooltip = HIGHLIGHT_ABILITY_COMBATLOG_TOOLTIP,
+	},
+	[3] = {
+		text = COMBATLOG_HIGHLIGHT_DAMAGE,
+		checked = function () return CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting; end;
+		func = function (checked)
+			if ( checked ) then
+				CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting = true;
+			else
+				CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting = false;
+			end
+			CombatConfig_Colorize_Update();
+		end;
+		tooltip = HIGHLIGHT_DAMAGE_COMBATLOG_TOOLTIP,
+	},
+	[4] = {
+		text = COMBATLOG_HIGHLIGHT_SCHOOL,
+		checked = function () return CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting; end;
+		func = function (checked)
+			if ( checked ) then
+				CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting = true;
+			else
+				CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting = false;
+			end
+			CombatConfig_Colorize_Update();
+		end;
+		tooltip = HIGHLIGHT_SCHOOL_COMBATLOG_TOOLTIP,
+	},
+}
+
 function ChatConfigFrame_OnLoad()
 	-- Chat Settings
 	ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigCheckBoxWithSwatchTemplate");
@@ -563,6 +619,7 @@ function ChatConfigFrame_OnLoad()
 	ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesRight, COMBAT_CONFIG_MESSAGETYPES_RIGHT, "ChatConfigCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
 	ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesMisc, COMBAT_CONFIG_MESSAGETYPES_MISC, "ChatConfigSmallCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
 	ChatConfig_CreateColorSwatches(CombatConfigColorsUnitColors, COMBAT_CONFIG_UNIT_COLORS, "ChatConfigSwatchTemplate", UNIT_COLORS);
+	ChatConfig_CreateCheckboxes(CombatConfigColorsHighlighting, COMBAT_CONFIG_HIGHLIGHTING, "ChatConfigCheckBoxTemplate", HIGHLIGHTING);
 
 	-- Default selections
 	ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
@@ -747,7 +804,7 @@ function ChatConfig_UpdateCheckboxes(frame)
 			colorSwatch = getglobal(baseName.."ColorSwatch");
 			if ( colorSwatch ) then
 				getglobal(baseName.."ColorSwatchNormalTexture"):SetVertexColor(GetMessageTypeColor(value.type));
-				colorSwatch.messageType = value.type;
+				colorSwatch.type = value.type;
 			end
 		end
 	end
@@ -852,6 +909,15 @@ function CombatConfig_Colorize_Update()
 		CombatConfigColorsColorizeEntireLineBySource:SetChecked(nil);
 		CombatConfigColorsColorizeEntireLineByTarget:SetChecked(1);
 	end
+
+	-- Line Highlighting
+	local text, r, g, b = CombatLog_OnEvent("", CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, "Player", 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
+	CombatConfigColorsExampleString1:SetVertexColor(r, g, b);
+	CombatConfigColorsExampleString1:SetText(text);
+
+	text, r, g, b = CombatLog_OnEvent("", CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, "Player", 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
+	CombatConfigColorsExampleString2:SetVertexColor(r, g, b);
+	CombatConfigColorsExampleString2:SetText(text);
 end
 
 function CombatConfig_Formatting_Update()
@@ -870,10 +936,13 @@ function CombatConfig_Formatting_Update()
 	CombatConfigFormattingSpellNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.spellBraces);
 	CombatConfigFormattingItemNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.itemBraces);
 
-	debugdump(CHATCONFIG_SELECTED_FILTER);
-	local text, r, g, b = CombatLog_OnEvent("", CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001,"Player",0x511,0xF13000012B000820,EXAMPLE_TARGET_MONSTER,0x10a28,116,EXAMPLE_SPELL_FROSTBOLT,SCHOOL_MASK_FROST,27,SCHOOL_MASK_FROST,nil,nil,nil,1,nil,nil);
-	CombatConfigFormattingExampleString:SetVertexColor(r, g, b);
-	CombatConfigFormattingExampleString:SetText(text);
+	local text, r, g, b = CombatLog_OnEvent("", CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, "Player", 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
+	CombatConfigFormattingExampleString1:SetVertexColor(r, g, b);
+	CombatConfigFormattingExampleString1:SetText(text);
+
+	text, r, g, b = CombatLog_OnEvent("", CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, "Player", 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
+	CombatConfigFormattingExampleString2:SetVertexColor(r, g, b);
+	CombatConfigFormattingExampleString2:SetText(text);
 end
 
 function CombatConfig_Settings_Update()
@@ -1014,11 +1083,19 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 		end;
 	damageColorSwatch = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage, ColorPickerFrame:GetColorRGB());
-			getglobal(this:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
+			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
 		end;
 	damageColorCancel = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage, ColorPicker_GetPreviousValues());
-			getglobal(this:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
+			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
+		end;
+	messageTypeColorSwatch = function() 
+			ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetColorRGB());
+			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
+		end;
+	messageTypeColorCancel = function() 
+			ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPicker_GetPreviousValues());
+			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
 		end;
 }
 
@@ -1044,8 +1121,17 @@ function DamageColor_OpenColorPicker(self)
 	local info = UIDropDownMenu_CreateInfo();
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
 	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage);
-	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.spellColorSwatch;
-	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.spellColorCancel;
+	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.damageColorSwatch;
+	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.damageColorCancel;
+	OpenColorPicker(info);
+end
+
+function MessageTypeColor_OpenColorPicker(self)
+	local info = UIDropDownMenu_CreateInfo();
+	info.r, info.g, info.b = GetMessageTypeColor(self.type);
+	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
+	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.messageTypeColorSwatch;
+	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.messageTypeColorCancel;
 	OpenColorPicker(info);
 end
 
@@ -1226,6 +1312,7 @@ function ChatConfigFilter_OnClick(id)
 	CHATCONFIG_SELECTED_FILTER_FILTERS = CHATCONFIG_SELECTED_FILTER.filters;
 	CHATCONFIG_SELECTED_FILTER_COLORS = CHATCONFIG_SELECTED_FILTER.colors;
 	CHATCONFIG_SELECTED_FILTER_SETTINGS = CHATCONFIG_SELECTED_FILTER.settings;
+	CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = Blizzard_CombatLog_CopySetting(CHATCONFIG_SELECTED_FILTER);
 	ChatConfig_UpdateFilterList();
 	ChatConfig_UpdateCombatSettings();
 end
@@ -1242,6 +1329,7 @@ function ChatConfig_UpdateCombatSettings()
 	CombatConfig_Colorize_Update();
 	CombatConfig_Formatting_Update();
 	CombatConfig_Settings_Update();
+	ChatConfig_UpdateCheckboxes(CombatConfigColorsHighlighting);
 
 	CombatConfigSettingsNameEditBox:SetText(CHATCONFIG_SELECTED_FILTER.name);
 end
@@ -1328,6 +1416,9 @@ end
 
 function CombatConfig_CreateCombatFilter(name)
 	local newFilter = DEFAULT_COMBATLOG_FILTER_TEMPLATE;
+	if ( not name or name == "" ) then
+		name = format(DEFAULT_COMBATLOG_FILTER_NAME, #Blizzard_CombatLog_Filters.filters);
+	end
 	newFilter.name = name;
 	tinsert(Blizzard_CombatLog_Filters.filters, newFilter);
 	-- Scroll filters to top of list
@@ -1342,4 +1433,22 @@ function CombatConfig_DeleteCurrentCombatFilter()
 	ChatConfigCombatSettingsFiltersScrollFrameScrollBar:SetValue(0);
 	-- Select the first filter
 	ChatConfigFilter_OnClick(1);
+end
+
+function ChatConfigCancel_OnClick()
+	-- Copy the old settings back in place
+	if ( CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS == 0 ) then
+		HideUIPanel(ChatConfigFrame);
+		return;
+	end
+	Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter] = Blizzard_CombatLog_CopySetting(CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS);
+	-- Update everything
+	--ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
+	--ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsRight);
+	--ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+	--ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCombat);
+	--ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
+	--ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
+	ChatConfigFilter_OnClick(ChatConfigCombatSettingsFilters.selectedFilter-FauxScrollFrame_GetOffset(ChatConfigCombatSettingsFiltersScrollFrame));
+	HideUIPanel(ChatConfigFrame);
 end

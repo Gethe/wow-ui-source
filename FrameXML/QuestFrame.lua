@@ -224,11 +224,13 @@ function QuestFrameGreetingPanel_OnShow()
 		QuestTitleButton1:SetPoint("TOPLEFT", "CurrentQuestsText", "BOTTOMLEFT", -10, -5);
 		for i=1, numActiveQuests, 1 do
 			local questTitleButton = getglobal("QuestTitleButton"..i);
+			local questTitleButtonIcon = getglobal(questTitleButton:GetName() .. "QuestIcon");
 			if ( IsActiveQuestTrivial(i) ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetActiveTitle(i));
 			else
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetActiveTitle(i));
 			end
+			questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon"); 
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
 			questTitleButton:SetID(i);
 			questTitleButton.isActive = 1;
@@ -261,6 +263,7 @@ function QuestFrameGreetingPanel_OnShow()
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
 				questTitleButtonIcon:SetVertexColor(1,1,1);
 			end
+			questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon"); 
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
 			questTitleButton:SetID(i - numActiveQuests);
 			questTitleButton.isActive = 0;

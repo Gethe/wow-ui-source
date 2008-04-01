@@ -88,11 +88,6 @@ function FCFOptionsDropDown_Initialize()
 	local name, fontSize, r, g, b, a, shown = GetChatWindowInfo(FCF_GetCurrentChatFrameID());
 	local info;
 
-	-- If level 3
-	if ( UIDROPDOWNMENU_MENU_LEVEL == 3 ) then
-		FCF_LoadChatSubTypes();
-		return;
-	end
 	-- If level 2
 	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
 		-- If this is the font size menu then create dropdown
@@ -113,70 +108,6 @@ function FCFOptionsDropDown_Initialize()
 
 				UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 			end
-			return;
-		end
-		
-		-- If this is the chat channel menu then show the channel dropdown
-		if ( UIDROPDOWNMENU_MENU_VALUE == CHANNELS ) then
-			--[[FCFDropDown_LoadServerChannels(EnumerateServerChannels());
-
-			-- Spacer
-			info = UIDropDownMenu_CreateInfo();
-			info.disabled = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);]]--
-
-			-- Channels header
-			info = UIDropDownMenu_CreateInfo();
-			info.text = CHANNELS;
-			info.notClickable = 1;
-			info.isTitle = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-			--Populate list
-			FCFDropDown_LoadChatTypes(ChannelMenuChatTypeGroups);
-			FCFDropDown_LoadChannels(GetChannelList());
-			return;
-		end
-
-		-- If this is the combat messages menu then show the message dropdown
-		if ( UIDROPDOWNMENU_MENU_VALUE == COMBAT_MESSAGES ) then
-			-- Combat Messages header
-			info = UIDropDownMenu_CreateInfo();
-			info.text = COMBAT_MESSAGES;
-			info.notClickable = 1;
-			info.isTitle = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-			--Populate list
-			FCFDropDown_LoadChatTypes(CombatLogMenuChatTypeGroups);
-			return;
-		end
-
-		-- If this is the system messages menu then show the message dropdown
-		if ( UIDROPDOWNMENU_MENU_VALUE == SYSTEM_MESSAGES ) then
-			-- System Messages header
-			info = UIDropDownMenu_CreateInfo();
-			info.text = SYSTEM_MESSAGES;
-			info.notClickable = 1;
-			info.isTitle = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-			--Populate list
-			FCF_LoadChatSubTypes("SYSTEM");
-			return;
-		end
-
-		-- If this is the other messages menu then show the message dropdown
-		if ( UIDROPDOWNMENU_MENU_VALUE == OTHER_MESSAGES ) then
-			-- Other Messages header
-			info = UIDropDownMenu_CreateInfo();
-			info.text = OTHER_MESSAGES;
-			info.notClickable = 1;
-			info.isTitle = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-			--Populate list
-			FCFDropDown_LoadChatTypes(OtherMenuChatTypeGroups);
 			return;
 		end
 		return;
@@ -271,34 +202,7 @@ function FCFOptionsDropDown_Initialize()
 	info.notCheckable = 1;
 	UIDropDownMenu_AddButton(info);
 
-	-- Channel list
-	info = UIDropDownMenu_CreateInfo();
-	info.text = CHANNELS;
-	--info.notClickable = 1;
-	info.hasArrow = 1;
-	info.func = nil;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	-- Combat message list
-	info = UIDropDownMenu_CreateInfo();
-	info.text = COMBAT_MESSAGES;
-	--info.notClickable = 1;
-	info.hasArrow = 1;
-	info.func = nil;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	-- System message list
-	info = UIDropDownMenu_CreateInfo();
-	info.text = SYSTEM_MESSAGES;
-	--info.notClickable = 1;
-	info.hasArrow = 1;
-	info.func = nil;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	-- Other messages list
+	-- Configure settings
 	info = UIDropDownMenu_CreateInfo();
 	info.text = CHAT_CONFIGURATION;
 	info.func = function() ShowUIPanel(ChatConfigFrame); end;
