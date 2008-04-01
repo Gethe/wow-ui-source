@@ -359,8 +359,9 @@
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("RightButtonUp");
+								this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 								this:SetFrameLevel(this:GetFrameLevel()+1);
+								MiniMapBattlefieldFrame.timeInQueue = 0;
 							</OnLoad>
 							<OnEnter>
 								GameTooltip:SetOwner(this, "ANCHOR_LEFT");
@@ -370,13 +371,20 @@
 								if ( GameTooltip:IsOwned(this) and MiniMapBattlefieldFrame.status == "confirm") then
 									this.tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, MiniMapBattlefieldFrame.mapName, SecondsToTime(GetBattlefieldPortExpiration()/1000));
 									GameTooltip:SetText(this.tooltip);
+								elseif ( GameTooltip:IsOwned(this) and MiniMapBattlefieldFrame.status == "queued" ) then
+									this.tooltip = format(BATTLEFIELD_IN_QUEUE, MiniMapBattlefieldFrame.mapName, MiniMapBattlefieldFrame.waitTime, SecondsToTime(GetBattlefieldTimeWaited()/1000)).."\n"..RIGHT_CLICK_MESSAGE;
+									GameTooltip:SetText(this.tooltip);
 								end
 							</OnUpdate>
 							<OnLeave>
 								GameTooltip:Hide();
 							</OnLeave>
 							<OnClick>
-								ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
+								if ( MiniMapBattlefieldFrame.status == "active") then
+									ToggleWorldStateScoreFrame();
+								elseif ( arg1 == "RightButton" ) then
+									ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
+								end
 							</OnClick>
 						</Scripts>
 					</Button>

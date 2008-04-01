@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 1300
+## Interface: 1500
 Fonts.xml
 Localization.xml
 BasicControls.xml
@@ -91,3 +91,4 @@ TalentFrame.xml
 AuctionFrame.xml
 PetStable.xml
 DurabilityFrame.xml
+WorldStateFrame.xml

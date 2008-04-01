@@ -21,7 +21,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="546" y="2"/>
+					<AbsDimension x="552" y="2"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -65,7 +65,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CharacterMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -90,7 +90,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -115,7 +115,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -137,7 +137,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -159,7 +159,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SocialsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -181,7 +181,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="WorldMapMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -203,7 +203,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-3" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

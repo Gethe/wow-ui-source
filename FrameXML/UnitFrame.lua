@@ -111,31 +111,39 @@ function UnitFrame_OnUpdate(elapsed)
 	end
 end
 
-function UnitFrame_UpdateManaType()
-	local info = ManaBarColor[UnitPowerType(this.unit)];
-	this.manabar:SetStatusBarColor(info.r, info.g, info.b);
+function UnitFrame_UpdateManaType(unitFrame)
+	if ( not unitFrame ) then
+		unitFrame = this;
+	end
+	if ( not unitFrame.manabar ) then
+		return;
+	end
+	local info = ManaBarColor[UnitPowerType(unitFrame.unit)];
+	unitFrame.manabar:SetStatusBarColor(info.r, info.g, info.b);
 	--Hack for pets
-	if ( this.unit == "pet" and info.prefix ~= HAPPINESS_POINTS ) then
+	if ( unitFrame.unit == "pet" and info.prefix ~= HAPPINESS_POINTS ) then
 		return;
 	end
 	-- Update the manabar text if shown in the ui options
-	SetTextStatusBarTextPrefix(this.manabar, info.prefix);
+	SetTextStatusBarTextPrefix(unitFrame.manabar, info.prefix);
 	if ( UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value == "1" ) then
-		TextStatusBar_UpdateTextString(this.manabar);
+		TextStatusBar_UpdateTextString(unitFrame.manabar);
 	end
 
 	-- Setup newbie tooltip
-	if ( this:GetName() == "PlayerFrame" ) then
-		this.manabar.tooltipTitle = info.prefix;
-		this.manabar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR"..UnitPowerType(this.unit));
+	if ( unitFrame:GetName() == "PlayerFrame" ) then
+		unitFrame.manabar.tooltipTitle = info.prefix;
+		unitFrame.manabar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR"..UnitPowerType(unitFrame.unit));
 	else
-		this.manabar.tooltipTitle = nil;
-		this.manabar.tooltipText = nil;
+		unitFrame.manabar.tooltipTitle = nil;
+		unitFrame.manabar.tooltipText = nil;
 	end
-	
 end
 
 function UnitFrameHealthBar_Initialize(unit, statusbar, statustext)
+	if ( not statusbar ) then
+		return;
+	end
 	statusbar.unit = unit;
 	SetTextStatusBarText(statusbar, statustext);
 	statusbar:RegisterEvent("UNIT_HEALTH");
@@ -149,10 +157,12 @@ function UnitFrameHealthBar_Initialize(unit, statusbar, statustext)
 		statusbar.tooltipTitle = nil;
 		statusbar.tooltipText = nil;
 	end
-	
 end
 
 function UnitFrameHealthBar_Update(statusbar, unit)
+	if ( not statusbar ) then
+		return;
+	end
 	local cvar = arg1;
 	local value = arg2;
 	if ( unit == statusbar.unit ) then
@@ -170,6 +180,9 @@ function UnitFrameHealthBar_OnValueChanged(value)
 end
 
 function UnitFrameManaBar_Initialize(unit, statusbar, statustext)
+	if ( not statusbar ) then
+		return;
+	end
 	statusbar.unit = unit;
 	SetTextStatusBarText(statusbar, statustext);
 	statusbar:RegisterEvent("UNIT_MANA");
@@ -186,13 +199,23 @@ function UnitFrameManaBar_Initialize(unit, statusbar, statustext)
 end
 
 function UnitFrameManaBar_Update(statusbar, unit)
+	if ( not statusbar ) then
+		return;
+	end
 	local cvar = arg1;
 	local value = arg2;
 	if ( unit == statusbar.unit ) then
-		local currValue = UnitMana(unit);
 		local maxValue = UnitManaMax(unit);
 		statusbar:SetMinMaxValues(0, maxValue);
-		statusbar:SetValue(currValue);
+		-- If disconnected
+		if ( not UnitIsConnected(unit) ) then
+			statusbar:SetValue(maxValue);
+			statusbar:SetStatusBarColor(0.5, 0.5, 0.5);
+		else
+			local currValue = UnitMana(unit);
+			statusbar:SetValue(currValue);
+			UnitFrame_UpdateManaType(statusbar:GetParent());
+		end
 	end
 	TextStatusBar_OnEvent(cvar, value);
 end

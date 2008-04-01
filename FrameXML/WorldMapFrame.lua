@@ -7,6 +7,7 @@ NUM_WORLDMAP_OVERLAYS = 40;
 function WorldMapFrame_OnLoad()
 	this:RegisterEvent("WORLD_MAP_UPDATE");
 	this:RegisterEvent("CLOSE_WORLD_MAP");
+	this:RegisterEvent("WORLD_MAP_NAME_UPDATE");
 	this.poiHighlight = nil;
 	this.areaName = nil;
 	WorldMapFrame_Update();
@@ -279,6 +280,7 @@ function WorldMapButton_OnUpdate()
 	end
 	--Position groupmates
 	local partyX, partyY, partyMemberFrame;
+	local playerCount = 0;
 	if ( GetNumRaidMembers() > 0 ) then
 		for i=1, MAX_PARTY_MEMBERS do
 			partyMemberFrame = getglobal("WorldMapParty"..i);
@@ -286,14 +288,15 @@ function WorldMapButton_OnUpdate()
 		end
 		for i=1, MAX_RAID_MEMBERS do
 			partyX, partyY = GetPlayerMapPosition("raid"..i);
-			partyMemberFrame = getglobal("WorldMapRaid"..i);
-			if ( partyX == 0 and partyY == 0 or UnitIsUnit("raid"..i, "player") ) then
-				partyMemberFrame:Hide();
-			else
+			partyMemberFrame = getglobal("WorldMapRaid"..playerCount + 1);
+			if ( (partyX ~= 0 or partyY ~= 0) and not UnitIsUnit("raid"..i, "player") ) then
 				partyX = partyX * WorldMapDetailFrame:GetWidth();
 				partyY = -partyY * WorldMapDetailFrame:GetHeight();
 				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
+				partyMemberFrame.name = nil;
+				partyMemberFrame.unit = "raid"..i;
 				partyMemberFrame:Show();
+				playerCount = playerCount + 1;
 			end
 		end
 	else
@@ -306,6 +309,7 @@ function WorldMapButton_OnUpdate()
 				partyX = partyX * WorldMapDetailFrame:GetWidth();
 				partyY = -partyY * WorldMapDetailFrame:GetHeight();
 				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
+				partyMemberFrame.name = nil;
 				partyMemberFrame:Show();
 			end
 		end
@@ -314,6 +318,22 @@ function WorldMapButton_OnUpdate()
 			partyMemberFrame:Hide();
 		end
 	end
+	-- Position Team Members
+	local numTeamMembers = GetNumBattlefieldPositions();
+	for i=playerCount+1, MAX_RAID_MEMBERS do
+		partyX, partyY, name = GetBattlefieldPosition(i - playerCount);
+		partyMemberFrame = getglobal("WorldMapRaid"..i);
+		if ( partyX == 0 and partyY == 0 ) then
+			partyMemberFrame:Hide();
+		else
+			partyX = partyX * WorldMapDetailFrame:GetWidth();
+			partyY = -partyY * WorldMapDetailFrame:GetHeight();
+			partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
+			partyMemberFrame.name = name;
+			partyMemberFrame:Show();
+		end
+	end
+
 	--Position corpse
 	local corpseX, corpseY = GetCorpseMapPosition();
 	if ( corpseX == 0 and corpseY == 0 ) then
@@ -325,6 +345,51 @@ function WorldMapButton_OnUpdate()
 		WorldMapCorpse:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", corpseX, corpseY);
 		WorldMapCorpse:Show();
 	end
+end
+
+function WorldMapUnit_OnEnter()
+	-- Adjust the tooltip based on which side the unit button is on
+	local x, y = this:GetCenter();
+	local parentX, parentY = this:GetParent():GetCenter();
+	if ( x > parentX ) then
+		WorldMapTooltip:SetOwner(this, "ANCHOR_LEFT");
+	else
+		WorldMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
+	end
+	
+	-- See which POI's are in the same region and include their names in the tooltip
+	local unitButton;
+	local newLineString = "";
+	local tooltipText = "";
+	
+	-- Check player
+	if ( MouseIsOver(WorldMapPlayer) ) then
+		tooltipText = UnitName(WorldMapPlayer.unit);
+		newLineString = "\n";
+	end
+	-- Check party
+	for i=1, MAX_PARTY_MEMBERS do
+		unitButton = getglobal("WorldMapParty"..i);
+		if ( unitButton:IsVisible() and MouseIsOver(unitButton) ) then
+			tooltipText = tooltipText..newLineString..UnitName(unitButton.unit);
+			newLineString = "\n";
+		end
+	end
+	--Check Raid
+	for i=1, MAX_RAID_MEMBERS do
+		unitButton = getglobal("WorldMapRaid"..i);
+		if ( unitButton:IsVisible() and MouseIsOver(unitButton) ) then
+			-- Handle players not in your raid or party, but on your team
+			if ( unitButton.name ) then
+				tooltipText = tooltipText..newLineString..unitButton.name;		
+			else
+				tooltipText = tooltipText..newLineString..UnitName(unitButton.unit);
+			end
+			newLineString = "\n";
+		end
+	end
+	WorldMapTooltip:SetText(tooltipText);
+	WorldMapTooltip:Show();
 end
 
 function ToggleWorldMap()

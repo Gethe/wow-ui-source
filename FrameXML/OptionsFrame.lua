@@ -2,22 +2,23 @@ OPTIONS_FARCLIP_MIN = 177;
 OPTIONS_FARCLIP_MAX = 777;
 
 OptionsFrameCheckButtons = { };
-OptionsFrameCheckButtons["WORLD_LOD"] = { index = 7, cvar = "lod" , tooltipText = OPTION_TOOLTIP_WORLD_LOD};
-OptionsFrameCheckButtons["DESKTOP_GAMMA"] = { index = 1, cvar = "desktopGamma" , tooltipText = OPTION_TOOLTIP_USE_DESKTOP_GAMMA};
-OptionsFrameCheckButtons["ENABLE_ALL_SHADERS"] = { index = 11, cvar = "pixelShaders" , tooltipText = OPTION_TOOLTIP_ENABLE_ALL_SHADERS};
-OptionsFrameCheckButtons["TERRAIN_HIGHLIGHTS"] = { index = 2, cvar = "specular" , tooltipText = OPTION_TOOLTIP_TERRAIN_HIGHLIGHTS, tooltipRequirement = OPTION_LOGOUT_REQUIREMENT};
-OptionsFrameCheckButtons["FULL_SCREEN_GLOW"] = { index = 3, cvar = "ffxGlow" , tooltipText = OPTION_TOOLTIP_FULL_SCREEN_GLOW};
-OptionsFrameCheckButtons["DEATH_EFFECT"] = { index = 12, cvar = "ffxDeath" , tooltipText = OPTION_TOOLTIP_DEATH_EFFECT};
-OptionsFrameCheckButtons["VERTEX_ANIMATION_SHADERS"] = { index = 8, cvar = "M2UseShaders" , tooltipText = OPTION_TOOLTIP_VERTEX_ANIMATION_SHADERS, tooltipRequirement = OPTION_LOGOUT_REQUIREMENT};
-OptionsFrameCheckButtons["TRILINEAR_FILTERING"] = { index = 4, cvar = "trilinear" , tooltipText = OPTION_TOOLTIP_TRILINEAR, restartClient = 1, tooltipRequirement = OPTION_RESTART_REQUIREMENT};
-OptionsFrameCheckButtons["VERTICAL_SYNC"] = { index = 5, cvar = "gxVSync" , tooltipText = OPTION_TOOLTIP_VERTICAL_SYNC, gxRestart = 1};
-OptionsFrameCheckButtons["CINEMATIC_SUBTITLES"] = { index = 6, cvar = "movieSubtitle" , tooltipText = OPTION_TOOLTIP_CINEMATIC_SUBTITLES};
-OptionsFrameCheckButtons["USE_UISCALE"] = { index = 9, cvar = "useUiScale" , tooltipText = OPTION_TOOLTIP_USE_UISCALE};
-OptionsFrameCheckButtons["WINDOWED_MODE"] = { index = 10, cvar = "gxWindow" , tooltipText = OPTION_TOOLTIP_WINDOWED_MODE, gxRestart = 1};
-OptionsFrameCheckButtons["TRIPLE_BUFFER"] = { index = 13, cvar = "gxTripleBuffer" , tooltipText = OPTION_TOOLTIP_BUFFERING, gxRestart = 1};
-OptionsFrameCheckButtons["HARDWARE_CURSOR"] = { index = 14, cvar = "gxCursor" , tooltipText = OPTION_TOOLTIP_HARDWARE_CURSOR, gxRestart = 1};
-OptionsFrameCheckButtons["PHONG_SHADING"] = { index = 15, cvar = "M2UsePixelShaders" , tooltipText = OPTION_TOOLTIP_PHONG_SHADING};
-OptionsFrameCheckButtons["FIX_LAG"] = { index = 16, cvar = "gxFixLag" , tooltipText = OPTION_TOOLTIP_FIX_LAG, gxRestart = 1};
+OptionsFrameCheckButtons["DESKTOP_GAMMA"] = { index = 1, cvar = "desktopGamma", tooltipText = OPTION_TOOLTIP_USE_DESKTOP_GAMMA};
+OptionsFrameCheckButtons["TERRAIN_HIGHLIGHTS"] = { index = 2, cvar = "specular", dependency = "ENABLE_ALL_SHADERS", tooltipText = OPTION_TOOLTIP_TERRAIN_HIGHLIGHTS, tooltipRequirement = OPTION_LOGOUT_REQUIREMENT};
+OptionsFrameCheckButtons["FULL_SCREEN_GLOW"] = { index = 3, cvar = "ffxGlow", dependency = "ENABLE_ALL_SHADERS", tooltipText = OPTION_TOOLTIP_FULL_SCREEN_GLOW};
+OptionsFrameCheckButtons["TRILINEAR_FILTERING"] = { index = 4, cvar = "trilinear", tooltipText = OPTION_TOOLTIP_TRILINEAR, restartClient = 1, tooltipRequirement = OPTION_RESTART_REQUIREMENT};
+OptionsFrameCheckButtons["VERTICAL_SYNC"] = { index = 5, cvar = "gxVSync", tooltipText = OPTION_TOOLTIP_VERTICAL_SYNC, gxRestart = 1};
+OptionsFrameCheckButtons["CINEMATIC_SUBTITLES"] = { index = 6, cvar = "movieSubtitle", tooltipText = OPTION_TOOLTIP_CINEMATIC_SUBTITLES};
+OptionsFrameCheckButtons["WORLD_LOD"] = { index = 7, cvar = "lod", tooltipText = OPTION_TOOLTIP_WORLD_LOD};
+OptionsFrameCheckButtons["VERTEX_ANIMATION_SHADERS"] = { index = 8, cvar = "M2UseShaders", tooltipText = OPTION_TOOLTIP_VERTEX_ANIMATION_SHADERS, tooltipRequirement = OPTION_LOGOUT_REQUIREMENT};
+OptionsFrameCheckButtons["USE_UISCALE"] = { index = 9, cvar = "useUiScale", tooltipText = OPTION_TOOLTIP_USE_UISCALE};
+OptionsFrameCheckButtons["WINDOWED_MODE"] = { index = 10, cvar = "gxWindow", tooltipText = OPTION_TOOLTIP_WINDOWED_MODE, gxRestart = 1};
+OptionsFrameCheckButtons["ENABLE_ALL_SHADERS"] = { index = 11, cvar = "pixelShaders", tooltipText = OPTION_TOOLTIP_ENABLE_ALL_SHADERS};
+OptionsFrameCheckButtons["DEATH_EFFECT"] = { index = 12, cvar = "ffxDeath", dependency = "ENABLE_ALL_SHADERS", tooltipText = OPTION_TOOLTIP_DEATH_EFFECT};
+OptionsFrameCheckButtons["TRIPLE_BUFFER"] = { index = 13, cvar = "gxTripleBuffer", dependency = "VERTICAL_SYNC", tooltipText = OPTION_TOOLTIP_BUFFERING, gxRestart = 1};
+OptionsFrameCheckButtons["HARDWARE_CURSOR"] = { index = 14, cvar = "gxCursor", tooltipText = OPTION_TOOLTIP_HARDWARE_CURSOR, gxRestart = 1};
+OptionsFrameCheckButtons["PHONG_SHADING"] = { index = 15, cvar = "M2UsePixelShaders", dependency = "VERTEX_ANIMATION_SHADERS", tooltipText = OPTION_TOOLTIP_PHONG_SHADING, };
+OptionsFrameCheckButtons["FIX_LAG"] = { index = 16, cvar = "gxFixLag", dependency = "HARDWARE_CURSOR", tooltipText = OPTION_TOOLTIP_FIX_LAG, gxRestart = 1};
+OptionsFrameCheckButtons["WINDOWED_MAXIMIZED"] = { index = 17, cvar = "gxMaximize", dependency = "WINDOWED_MODE", tooltipText = OPTION_TOOLTIP_WINDOWED_MAXIMIZED, gxRestart = 1};
 
 OptionsFrameSliders = {
 	{ text = UI_SCALE, func = "uiscale", minValue = 0.64, maxValue = 1.0, valueStep = 0.01 , tooltipText = OPTION_TOOLTIP_UI_SCALE},
@@ -67,15 +68,11 @@ function OptionsFrame_Load()
 
 		-- Enable disable checkboxes
 		button.disabled = nil;
-		if ( index == "TERRAIN_HIGHLIGHTS" or index == "FULL_SCREEN_GLOW" or index == "DEATH_EFFECT" ) then
-			if ( shadersEnabled ~= "1" or not hasPixelShaders ) then
-				button.disabled = 1;
-			end
-		elseif ( index == "ENABLE_ALL_SHADERS" ) then
+		if ( index == "ENABLE_ALL_SHADERS" ) then
 			if ( not hasPixelShaders ) then
 				button.disabled = 1;
 			end
-		elseif ( index == "VERTEX_ANIMATION_SHADERS" or index == "PHONG_SHADING" ) then
+		elseif ( index == "VERTEX_ANIMATION_SHADERS" ) then
 			if ( not hasVertexShaders ) then
 				button.disabled = 1;
 			end
@@ -87,7 +84,7 @@ function OptionsFrame_Load()
 			if ( not hasTripleBuffering or GetCVar("gxVSync") ~= "1" ) then
 				button.disabled = 1;
 			end
-		elseif ( index == "HARDWARE_CURSOR" or index == "FIX_LAG" ) then
+		elseif ( index == "HARDWARE_CURSOR" ) then
 			if ( not hasHardwareCursor ) then
 				button.disabled = 1;
 			end
@@ -164,14 +161,12 @@ function OptionsFrame_Load()
 		-- Reposition subtitles button
 		OptionsFrameCheckButton6:SetPoint("TOP", "OptionsFrameCheckButton5", "BOTTOM", 0, 2);
 	end
+	-- Update option dependencies
+	OptionsFrame_UpdateCheckboxes();
 	-- Update gamma
 	OptionsFrame_UpdateGammaControls();
 	-- Update ui scale
 	OptionsFrame_UpdateUIScaleControls();
-	-- Update phong shading
-	OptionsFrame_UpdatePhongShading();
-	-- Update fix lag
-	OptionsFrame_UpdateFixLag();
 
 	-- Resize the options frame
 	OptionsFrame:SetWidth(OPTIONS_FRAME_WIDTH);
@@ -372,6 +367,27 @@ function OptionsFrameMultiSampleDropDown_OnClick()
 	UIDropDownMenu_SetSelectedID(OptionsFrameMultiSampleDropDown, this:GetID());
 end
 
+function OptionsFrame_UpdateCheckboxes()
+	for index, value in OptionsFrameCheckButtons do
+		if ( value.dependency ) then
+			local button = getglobal("OptionsFrameCheckButton"..value.index);	
+			local dependency = getglobal("OptionsFrameCheckButton"..OptionsFrameCheckButtons[value.dependency].index);
+			local enable = dependency:GetChecked();
+			if ( enable and index == "TRIPLE_BUFFER" ) then
+				local hasAnisotropic, hasPixelShaders, hasVertexShaders, hasTrilinear, hasTripleBuffering, maxAnisotropy, hasHardwareCursor = GetVideoCaps();
+				if ( not hasTripleBuffering ) then
+					enable = false;
+				end
+			end
+			if ( enable ) then
+				OptionsFrame_EnableCheckBox(button, button:GetChecked());
+			else
+				OptionsFrame_DisableCheckBox(button);
+			end
+		end
+	end
+end
+
 function OptionsFrame_UpdateGammaControls()
 	local value = "0";
 	if ( OptionsFrameCheckButton1:GetChecked() ) then
@@ -391,66 +407,15 @@ function OptionsFrame_UpdateUIScaleControls()
 	end
 end
 
-function OptionsFrame_UpdateShaderOptions(shadersEnabled)
-	for index, value in OptionsFrameCheckButtons do
-		local button = getglobal("OptionsFrameCheckButton"..value.index);
-		local string = getglobal("OptionsFrameCheckButton"..value.index.."Text");	
-		-- Enable disable shader checkboxes
-		if ( index == "TERRAIN_HIGHLIGHTS" or index == "FULL_SCREEN_GLOW" or index == "DEATH_EFFECT" ) then
-			if ( shadersEnabled ) then
-				OptionsFrame_EnableCheckBox(button);
-				button:SetChecked(GetCVar(value.cvar));
-			else
-				OptionsFrame_DisableCheckBox(button);
-			end
-		end
-	end
-end
-
-function OptionsFrame_UpdateBuffering(tripleBufferingEnabled)
-	if ( tripleBufferingEnabled ) then
-		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton13, OptionsFrameCheckButton13:GetChecked());
-		--OptionsFrameCheckButton13:SetChecked(GetCVar(OptionsFrameCheckButtons["TRIPLE_BUFFER"].cvar));
-	else
-		OptionsFrame_DisableCheckBox(OptionsFrameCheckButton13);
-	end
-end
-
-function OptionsFrame_UpdatePhongShading()
-	if ( OptionsFrameCheckButton8:GetChecked() ) then
-		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton15, OptionsFrameCheckButton15:GetChecked());
-		--OptionsFrameCheckButton15:SetChecked(GetCVar(OptionsFrameCheckButtons["PHONG_SHADING"].cvar));
-	else
-		OptionsFrame_DisableCheckBox(OptionsFrameCheckButton15);
-	end
-end
-
-function OptionsFrame_UpdateFixLag()
-	if ( OptionsFrameCheckButton14:GetChecked() ) then
-		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton16, OptionsFrameCheckButton16:GetChecked());
-	else
-		OptionsFrame_DisableCheckBox(OptionsFrameCheckButton16);
-	end
-end
-
 function OptionsFrame_SetDefaults()
 	local checkButton, slider;
-	local enableShaders;
 	for index, value in OptionsFrameCheckButtons do
 		checkButton = getglobal("OptionsFrameCheckButton"..value.index);
 		checkButton:SetChecked(GetCVarDefault(value.cvar));
-		
-		if ( index == "ENABLE_ALL_SHADERS" ) then
-			enableShaders = checkButton:GetChecked();
-		elseif ( index == "VERTICAL_SYNC" ) then
-			OptionsFrame_UpdateBuffering(checkButton:GetChecked());
-		end
 	end
-	OptionsFrame_UpdateShaderOptions(enableShaders);
-	OptionsFrame_UpdateUIScaleControls();
+	OptionsFrame_UpdateCheckboxes();
 	OptionsFrame_UpdateGammaControls();
-	OptionsFrame_UpdatePhongShading();
-	OptionsFrame_UpdateFixLag();
+	OptionsFrame_UpdateUIScaleControls();
 	local sliderValue;
 	for index, value in OptionsFrameSliders do
 		slider = getglobal("OptionsFrameSlider"..index);
@@ -470,7 +435,6 @@ function OptionsFrame_SetDefaults()
 			sliderValue = 1 - GetCVarDefault("baseMip");
 		elseif ( value.func == "Gamma" ) then
 			sliderValue = 1 - GetCVarDefault("gamma");
-		
 		else
 			sliderValue = GetCVarDefault(value.func);
 		end

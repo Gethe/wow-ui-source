@@ -194,9 +194,11 @@
 		<Scripts>
 			<OnShow>
 				UpdateMicroButtons();
+				Disable_BagButtons();
 			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();
+				Enable_BagButtons();
 			</OnHide>
 		</Scripts>
 	</Frame>

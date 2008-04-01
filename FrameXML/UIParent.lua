@@ -43,6 +43,7 @@ UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["TalentFrame"] =			{ area = "left",	pushable = 6 };
 UIPanelWindows["PetStableFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["AuctionFrame"] =		{ area = "doublewide",	pushable = 0 };
+UIPanelWindows["WorldStateScoreFrame"] =	{ area = "center",	pushable = 0 };
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
 UIChildWindows = {
@@ -97,6 +98,8 @@ function UIParent_OnLoad()
 	this:RegisterEvent("CORPSE_IN_RANGE");
 	this:RegisterEvent("CORPSE_IN_INSTANCE");
 	this:RegisterEvent("CORPSE_OUT_OF_RANGE");
+	this:RegisterEvent("AREA_SPIRIT_HEALER_IN_RANGE");
+	this:RegisterEvent("AREA_SPIRIT_HEALER_OUT_OF_RANGE");
 	this:RegisterEvent("REPLACE_ENCHANT");
 	this:RegisterEvent("TRADE_REPLACE_ENCHANT");
 	this:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
@@ -154,11 +157,15 @@ function UIParent_OnEvent(event)
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
 
+		--[[
 		if (arg1 == 1) then
 			StaticPopup_Show("SKINNED_REPOP");
 		else
 			StaticPopup_Show("SKINNED");
-		end		
+		end
+		]]
+		UIErrorsFrame:AddMessage(DEATH_CORPSE_SKINNED, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+		return;		
 	end
 	if ( event == "TRADE_REQUEST" ) then
 		StaticPopup_Show("TRADE", arg1);
@@ -296,6 +303,14 @@ function UIParent_OnEvent(event)
 		StaticPopup_Hide("XP_LOSS");
 		return;
 	end
+	if ( event == "AREA_SPIRIT_HEALER_IN_RANGE" ) then
+		StaticPopup_Show("AREA_SPIRIT_HEAL");
+		return;
+	end
+	if ( event == "AREA_SPIRIT_HEALER_OUT_OF_RANGE" ) then
+		StaticPopup_Hide("AREA_SPIRIT_HEAL");
+		return;
+	end
 	if ( event == "REPLACE_ENCHANT" ) then
 		StaticPopup_Show("REPLACE_ENCHANT", arg1, arg2);
 		return;
@@ -321,7 +336,7 @@ function UIParent_OnEvent(event)
 		if ( UnitOnTaxi("player") ) then
 			return;
 		end
-		CloseAllWindows();
+		CloseAllWindows_WithExceptions();
 		
 		--[[
 		-- Disable all microbuttons except the main menu
@@ -396,7 +411,7 @@ function ShowUIPanel(frame, force)
 	if ( not frame or frame:IsVisible() ) then
 		return;
 	end
-	if ( not CanOpenPanels() and (frame ~= GameMenuFrame and frame ~= UIOptionsFrame and frame ~= SoundOptionsFrame and frame ~= OptionsFrame and frame ~= KeyBindingFrame and frame ~= HelpFrame and frame ~= SuggestFrame) ) then
+	if ( not CanOpenPanels() and (frame ~= GameMenuFrame and frame ~= UIOptionsFrame and frame ~= SoundOptionsFrame and frame ~= OptionsFrame and frame ~= KeyBindingFrame and frame ~= HelpFrame and frame ~= SuggestFrame and frame ~= WorldStateScoreFrame) ) then
 		return;
 	end
 
@@ -687,7 +702,7 @@ function CloseWindows(ignoreCenter)
 		local info = UIPanelWindows[centerFrame:GetName()];
 		if ( not info or (info.area ~= "center") or not ignoreCenter ) then
 			HideUIPanel(centerFrame);
-		end
+		end	
 	end
 
 	local frame;
@@ -700,6 +715,15 @@ function CloseWindows(ignoreCenter)
 	end
 
 	return found;
+end
+
+function CloseAllWindows_WithExceptions()
+	-- Insert exceptions here, right now we just don't close the scoreFrame when the player loses control i.e. the game over spell effect
+	if ( GetCenterFrame() == WorldStateScoreFrame ) then
+		CloseAllWindows(1);
+	else
+		CloseAllWindows();
+	end
 end
 
 function CloseAllWindows(ignoreCenter)
@@ -728,7 +752,7 @@ function CloseMenus()
 	return menusVisible;
 end
 
-function SecondsToTime(seconds)
+function SecondsToTime(seconds, noSeconds)
 	local time = "";
 	local count = 0;
 	local tempTime;
@@ -751,7 +775,7 @@ function SecondsToTime(seconds)
 		seconds = mod(seconds, 60);
 		count = count + 1;
 	end
-	if ( count < 2 and seconds > 0 ) then
+	if ( count < 2 and seconds > 0 and not noSeconds ) then
 		seconds = format("%d", seconds);
 		time = time..seconds.." "..GetText("SECONDS_ABBR", nil, seconds).." ";
 	end
@@ -859,6 +883,14 @@ function UIFrameFade(frame, fadeInfo)
 
 	frame.fadeInfo = fadeInfo;
 	if ( frame ) then
+		-- If frame is already set to fade then return
+		local index = 1;
+		while FADEFRAMES[index] do
+			if ( FADEFRAMES[index] == frame ) then
+				return;
+			end
+			index = index + 1;
+		end
 		frame:Show();
 		tinsert(FADEFRAMES, frame);
 	end
@@ -1304,4 +1336,21 @@ function UIParent_ManageRightSideFrames()
 
 	-- Update combat log anchor
 	FCF_UpdateCombatLogPosition();
+end
+
+function PlayerStatus_OnUpdate(elapsed)
+	local min, max = PlayerFrameHealthBar:GetMinMaxValues();
+	if ( (PlayerFrameHealthBar:GetValue()/(max - min) <= 0.2) and not LowHealthFrame.flashing and SHOW_FULLSCREEN_STATUS+0 ~= 0 ) then
+		UIFrameFlash(LowHealthFrame, 0.5, 0.5, 100);
+		LowHealthFrame.flashing = 1;
+	elseif ( ((PlayerFrameHealthBar:GetValue()/(max - min) > 0.1) and LowHealthFrame.flashing) or UnitIsDead("player") ) then
+		UIFrameFlash(LowHealthFrame, 1, 1, 0);
+		LowHealthFrame.flashing = nil;
+	elseif ( UIParent.isOutOfControl and not OutOfControlFrame.flashing and SHOW_FULLSCREEN_STATUS+0 ~= 0 ) then
+		UIFrameFlash(OutOfControlFrame, 0.5, 0.5, 100);
+		OutOfControlFrame.flashing = 1;
+	elseif ( not UIParent.isOutOfControl and OutOfControlFrame.flashing ) then
+		UIFrameFlash(OutOfControlFrame, 0.5, 0.5, 0);
+		OutOfControlFrame.flashing = nil;
+	end
 end

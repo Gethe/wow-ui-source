@@ -125,6 +125,15 @@
 									</Anchors>
 									<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 								</Texture>
+								<FontString name="MainMenuBarPageNumber" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="30" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
 					</Frame>

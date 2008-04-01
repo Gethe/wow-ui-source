@@ -12,7 +12,7 @@ function PetFrame_OnLoad()
 	this:RegisterEvent("UNIT_COMBAT");
 	this:RegisterEvent("UNIT_SPELLMISS");
 	this:RegisterEvent("UNIT_AURA");
-	this:RegisterEvent("PLAYER_PET_CHANGED");
+	this:RegisterEvent("UNIT_PET");
 	this:RegisterEvent("PET_ATTACK_START");
 	this:RegisterEvent("PET_ATTACK_STOP");
 	this:RegisterEvent("UNIT_HAPPINESS");
@@ -59,10 +59,12 @@ function PetFrame_OnEvent(event)
 			PetFrame_RefreshBuffs();
 		end
 	end
-	if ( event == "PLAYER_PET_CHANGED" ) then
-		PetFrame_Update();
-		PetAttackModeTexture:Hide();
-		PetFrame_RefreshBuffs();
+	if ( event == "UNIT_PET" ) then
+		if ( arg1 == "player" ) then
+			PetFrame_Update();
+			PetAttackModeTexture:Hide();
+			PetFrame_RefreshBuffs();
+		end
 		return;
 	end
 	if ( event == "PET_ATTACK_START" ) then

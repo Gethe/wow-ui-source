@@ -686,7 +686,7 @@
 							</Layer>
 						</Layers>
 						<ScrollChild>
-							<EditBox name="HelpFrameOpenTicketText" multiLine="true" letters="500">
+							<EditBox name="HelpFrameOpenTicketText" multiLine="true" letters="2000">
 								<Size>
 									<AbsDimension x="541" y="357"/>
 								</Size>

@@ -265,13 +265,17 @@
 				<Anchors>
 					<Anchor point="TOP" relativeTo="PetitionFrame" relativePoint="TOP">
 						<Offset>
-							<AbsDimension x="0" y="-23"/>
+							<AbsDimension x="10" y="-23"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="PetitionFrameNpcNameText" inherits="GameFontHighlight"/>
+						<FontString name="PetitionFrameNpcNameText" inherits="GameFontHighlight">
+							<Size>
+								<AbsDimension x="245" y="16"/>
+							</Size>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>

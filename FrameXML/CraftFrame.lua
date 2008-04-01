@@ -144,7 +144,7 @@ function CraftFrame_Update()
 	CraftCollapseAllButton:Enable();
 	
 	-- ScrollFrame update
-	FauxScrollFrame_Update(CraftListScrollFrame, numCrafts, CRAFTS_DISPLAYED, CRAFT_SKILL_HEIGHT, CraftHighlightFrame, 293, 316 );
+	FauxScrollFrame_Update(CraftListScrollFrame, numCrafts, CRAFTS_DISPLAYED, CRAFT_SKILL_HEIGHT, nil, nil, nil, CraftHighlightFrame, 293, 316 );
 	
 	CraftHighlightFrame:Hide();
 	

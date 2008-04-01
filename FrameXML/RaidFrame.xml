@@ -60,14 +60,18 @@
 		<Scripts>
 			<OnLoad>
 				this:SetFrameLevel(this:GetFrameLevel() + 2);
+				this:RegisterForDrag("LeftButton");
 				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
-			<OnMouseDown>
-				RaidGroupButton_OnMouseDown(arg1);
-			</OnMouseDown>
-			<OnMouseUp>
-				RaidGroupButton_OnMouseUp(arg1);
-			</OnMouseUp> 
+			<OnClick>
+				RaidGroupButton_OnClick(arg1);
+			</OnClick>
+			<OnDragStart>
+				RaidGroupButton_OnDragStart();
+			</OnDragStart>
+			<OnDragStop>
+				RaidGroupButton_OnDragStop();
+			</OnDragStop> 
 		</Scripts>
 		<NormalTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton">
 			<TexCoords left="0" right="0.640625" top="0" bottom="0.4375"/>

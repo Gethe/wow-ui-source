@@ -420,7 +420,7 @@ function TicketStatusFrame_OnEvent()
 			refreshTime = GMTICKET_CHECK_INTERVAL;
 		else
 			this:Hide();
-			TemporaryEnchantFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -205, -13);
+			TemporaryEnchantFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -180, -13);
 		end
 	end	
 end

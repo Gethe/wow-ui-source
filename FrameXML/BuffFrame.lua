@@ -114,10 +114,10 @@ end
 
 function BuffButtons_UpdatePositions()
 	if ( SHOW_BUFF_DURATIONS == "1" ) then
-		BuffButton8:SetPoint("TOP", "BuffButton0", "BOTTOM", 0, -15);
+		BuffButton8:SetPoint("TOP", "TempEnchant1", "BOTTOM", 0, -15);
 		BuffButton16:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPRIGHT", 0, -90);
 	else
-		BuffButton8:SetPoint("TOP", "BuffButton0", "BOTTOM", 0, -5);
+		BuffButton8:SetPoint("TOP", "TempEnchant1", "BOTTOM", 0, -5);
 		BuffButton16:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPRIGHT", 0, -70);
 	end
 end

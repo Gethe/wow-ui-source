@@ -414,14 +414,22 @@ function SendMailFrame_Update()
 		SendMailCODButton:Enable();
 		SendMailCODButtonText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 
-		if ( SendMailSubjectEditBox:GetText() == "" ) then
+		if ( SendMailSubjectEditBox:GetText() == "" or SendMailSubjectEditBox:GetText() == SendMailFrame.previousItem ) then
 			if ( stackCount ~= "" ) then
-				SendMailSubjectEditBox:SetText(itemName.." ("..stackCount..")");	
+				SendMailSubjectEditBox:SetText(itemName.." ("..stackCount..")");
+				SendMailFrame.previousItem = itemName.." ("..stackCount..")";
 			else
 				SendMailSubjectEditBox:SetText(itemName);
+				SendMailFrame.previousItem = itemName;
 			end
 		end
 	else
+		-- If no itemname see if the subject is the name of the previously held item, if so clear the subject
+		if ( SendMailSubjectEditBox:GetText() == SendMailFrame.previousItem ) then
+			SendMailSubjectEditBox:SetText("");	
+		end
+		SendMailFrame.previousItem = "";
+
 		SendMailRadioButton_OnClick(1);
 		SendMailCODButton:Disable();
 		SendMailCODButtonText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);

@@ -147,7 +147,7 @@ function ScrollFrameTemplate_OnMouseWheel(value)
 end
 
 -- Function to handle the update of manually calculated scrollframes.  Used mostly for listings with an indeterminate number of items
-function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, highlightFrame, smallHighlightWidth, bigHighlightWidth )
+function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button, smallWidth, bigWidth, highlightFrame, smallHighlightWidth, bigHighlightWidth )
 	-- If more than one screen full of skills then show the scrollbar
 	local frameName = frame:GetName();
 	local scrollBar = getglobal( frameName.."ScrollBar" );
@@ -199,10 +199,20 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, highli
 		if ( highlightFrame ) then
 			highlightFrame:SetWidth(smallHighlightWidth);
 		end
+		if ( button ) then
+			for i=1, numToDisplay do
+				getglobal(button..i):SetWidth(smallWidth);
+			end
+		end
 	else
 		-- Widen because scrollbar is hidden
 		if ( highlightFrame ) then
 			highlightFrame:SetWidth(bigHighlightWidth);
+		end
+		if ( button ) then
+			for i=1, numToDisplay do
+				getglobal(button..i):SetWidth(bigWidth);
+			end
 		end
 	end
 end

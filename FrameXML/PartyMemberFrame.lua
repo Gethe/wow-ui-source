@@ -33,6 +33,7 @@ function PartyMemberFrame_OnLoad()
 	this:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
 	this:RegisterEvent("UNIT_PVP_UPDATE");
 	this:RegisterEvent("UNIT_AURA");
+	this:RegisterEvent("UNIT_PET");
 end
 
 function PartyMemberFrame_UpdateMember()
@@ -44,19 +45,35 @@ function PartyMemberFrame_UpdateMember()
 			this:Show();
 		end
 		
+		local masterIcon = getglobal(this:GetName().."MasterIcon");
 		local lootMethod;
 		local lootMaster;
 		lootMethod, lootMaster = GetLootMethod();
 		if ( id == lootMaster ) then
-			getglobal(this:GetName().."MasterIcon"):Show();
+			masterIcon:Show();
 		else
-			getglobal(this:GetName().."MasterIcon"):Hide();
+			masterIcon:Hide();
 		end
 	else
 		this:Hide();
 	end
 	PartyMemberFrame_UpdatePvPStatus();
 	PartyMemberFrame_RefreshBuffs();
+	PartyMemberFrame_UpdatePet();
+end
+
+function PartyMemberFrame_UpdatePet()
+	local id = this:GetID();
+	local petFrame = getglobal(this:GetName().."PetFrame");
+	
+	if ( UnitIsConnected("party"..id) and UnitExists("partypet"..id) ) then
+		petFrame:Show();
+		petFrame:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 23, -43);
+	else
+		petFrame:Hide();
+		petFrame:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 23, -27);
+	end
+	PartyMemberFrame_RefreshPetBuffs();
 end
 
 function PartyMemberFrame_UpdateMemberHealth(elapsed)
@@ -120,13 +137,13 @@ function PartyMemberFrame_OnEvent(event)
 		return;
 	end
 
-	if ( event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then
-		if ( arg1 == this:GetID() ) then
-			UnitFrame_Update();
-			PartyMemberFrame_RefreshBuffs();
-		end
-		return;
-	end
+	--if ( event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then
+	--	if ( arg1 == this:GetID() ) then
+	--		UnitFrame_Update();
+	--		PartyMemberFrame_RefreshBuffs();
+	--	end
+	--	return;
+	--end
 
 	if ( event == "PARTY_LOOT_METHOD_CHANGED" ) then
 		local lootMethod;
@@ -155,6 +172,19 @@ function PartyMemberFrame_OnEvent(event)
 			if ( PartyMemberBuffTooltip:IsVisible() ) then
 				PartyMemberBuffTooltip_Update();
 			end
+		else
+			unit = "partypet"..this:GetID();
+			if ( arg1 == unit ) then
+				PartyMemberFrame_RefreshPetBuffs();
+			end
+		end
+		return;
+	end
+
+	if ( event =="UNIT_PET" ) then
+		local unit = "party"..this:GetID();
+		if ( arg1 == unit ) then
+			PartyMemberFrame_UpdatePet();
 		end
 		return;
 	end
@@ -182,6 +212,21 @@ function PartyMemberFrame_OnClick(partyFrame)
 	end
 end
 
+function PartyMemberPetFrame_OnClick()
+	if ( SpellIsTargeting() and arg1 == "RightButton" ) then
+		SpellStopTargeting();
+		return;
+	end
+	if ( arg1 == "LeftButton" ) then
+		local unit = "partypet"..this:GetParent():GetID();
+		if ( SpellIsTargeting() ) then
+			SpellTargetUnit(unit);
+		else
+			TargetUnit(unit);
+		end
+	end
+end
+
 function PartyMemberFrame_RefreshBuffs()
 	local debuff, debuffButton;
 	for i=1, MAX_PARTY_DEBUFFS do
@@ -191,6 +236,18 @@ function PartyMemberFrame_RefreshBuffs()
 			getglobal(this:GetName().."Debuff"..i):Show();
 		else
 			getglobal(this:GetName().."Debuff"..i):Hide();
+		end
+	end
+end
+
+function PartyMemberFrame_RefreshPetBuffs()
+	for i=1, MAX_PARTY_DEBUFFS do
+		debuff = UnitDebuff("partypet"..this:GetID(), i);
+		if ( debuff ) then
+			getglobal(this:GetName().."PetFrameDebuff"..i.."Icon"):SetTexture(debuff);
+			getglobal(this:GetName().."PetFrameDebuff"..i):Show();
+		else
+			getglobal(this:GetName().."PetFrameDebuff"..i):Hide();
 		end
 	end
 end
@@ -262,6 +319,19 @@ function PartyMemberHealthCheck()
 	local prefix = this:GetParent():GetName();
 	local unitMinHP, unitMaxHP, unitCurrHP;
 	unitHPMin, unitHPMax = this:GetMinMaxValues();
+	-- Handle disconnected state
+	if ( not UnitIsConnected("party"..this:GetParent():GetID()) ) then
+		this:SetValue(unitHPMax);
+		this:SetStatusBarColor(0.5, 0.5, 0.5);
+		SetDesaturation(getglobal(this:GetParent():GetName().."Portrait"), 1);
+		getglobal(this:GetParent():GetName().."Disconnect"):Show();
+		getglobal(this:GetParent():GetName().."PetFrame"):Hide();
+		return;
+	else
+		SetDesaturation(getglobal(this:GetParent():GetName().."Portrait"), nil);
+		getglobal(this:GetParent():GetName().."Disconnect"):Hide();
+	end
+	
 	unitCurrHP = this:GetValue();
 	if ( unitHPMax > 0 ) then
 		this:GetParent().unitHPPercent = unitCurrHP / unitHPMax;

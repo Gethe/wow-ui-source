@@ -6,6 +6,8 @@ TARGET_RAID_SLOT = nil;
 
 function RaidFrame_OnLoad()
 	this:RegisterEvent("RAID_ROSTER_UPDATE");
+	this:RegisterEvent("UNIT_LEVEL");
+	this:RegisterEvent("UNIT_HEALTH");
 	RaidGroup_SetSlotStatus(nil);
 end
 
@@ -16,13 +18,25 @@ end
 function RaidFrame_OnHide()
 	-- If there's a selected button then call the onmouseup function on it when the frame is hidden
 	if ( MOVING_RAID_MEMBER ) then
-		RaidGroupButton_OnMouseUp("LeftButton", MOVING_RAID_MEMBER);
+		RaidGroupButton_OnDragStop(MOVING_RAID_MEMBER);
 	end
 end
 
 function RaidFrame_OnEvent()
 	if ( event == "RAID_ROSTER_UPDATE" ) then
 		RaidFrame_Update();
+	end
+	if ( event == "UNIT_LEVEL" ) then
+		local id, found = gsub(arg1, "raid([0-9]+)", "%1");
+		if ( found == 1 ) then
+			RaidFrame_UpdateLevel(id);
+		end
+	end
+	if ( event == "UNIT_HEALTH" ) then
+		local id, found = gsub(arg1, "raid([0-9]+)", "%1");
+		if ( found == 1 ) then
+			RaidFrame_UpdateHealth(id);
+		end
 	end
 end
 
@@ -69,8 +83,8 @@ function RaidFrame_Update()
 			-- To prevent errors when the server hiccups
 			if ( raidGroup.nextIndex <= MEMBERS_PER_RAID_GROUP ) then
 				buttonName = getglobal("RaidGroupButton"..i.."Name");
-				buttonLevel = getglobal("RaidGroupButton"..i.."Level");
 				buttonClass = getglobal("RaidGroupButton"..i.."Class");
+				buttonLevel = getglobal("RaidGroupButton"..i.."Level");
 				buttonRank = getglobal("RaidGroupButton"..i.."Rank");
 				button.id = i;
 				
@@ -86,19 +100,21 @@ function RaidFrame_Update()
 				end
 				
 				buttonName:SetText(name);
-				buttonLevel:SetText(level);
 				buttonClass:SetText(class);
+				buttonLevel:SetText(level);
 				
-				if ( isDead ) then
-					buttonName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-					buttonClass:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-					buttonLevel:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-				elseif ( online ) then
-					color = RAID_CLASS_COLORS[fileName];
-					if ( color ) then
-						buttonName:SetVertexColor(color.r, color.g, color.b);
-						buttonLevel:SetVertexColor(color.r, color.g, color.b);
-						buttonClass:SetVertexColor(color.r, color.g, color.b);
+				if ( online ) then
+					if ( isDead ) then
+						buttonName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						buttonClass:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						buttonLevel:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+					else
+						color = RAID_CLASS_COLORS[fileName];
+						if ( color ) then
+							buttonName:SetVertexColor(color.r, color.g, color.b);
+							buttonClass:SetVertexColor(color.r, color.g, color.b);
+							buttonLevel:SetVertexColor(color.r, color.g, color.b);
+						end
 					end
 				else
 					buttonName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
@@ -135,6 +151,40 @@ function RaidFrame_Update()
 	end
 end
 
+function RaidFrame_UpdateLevel(id)
+	local unit = "raid"..id;
+	local buttonLevel = getglobal("RaidGroupButton"..id.."Level");
+
+	buttonLevel:SetText(UnitLevel(unit));
+end
+
+function RaidFrame_UpdateHealth(id)
+	local name, rank, subgroup, level, class, fileName, zone, online, isDead = GetRaidRosterInfo(id);
+
+	local buttonName = getglobal("RaidGroupButton"..id.."Name");
+	local buttonClass = getglobal("RaidGroupButton"..id.."Class");
+	local buttonLevel = getglobal("RaidGroupButton"..id.."Level");
+
+	if ( online ) then
+		if ( isDead ) then
+			buttonName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			buttonClass:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			buttonLevel:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		else
+			color = RAID_CLASS_COLORS[fileName];
+			if ( color ) then
+				buttonName:SetVertexColor(color.r, color.g, color.b);
+				buttonClass:SetVertexColor(color.r, color.g, color.b);
+				buttonLevel:SetVertexColor(color.r, color.g, color.b);
+			end
+		end
+	else
+		buttonName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		buttonClass:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		buttonLevel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	end
+end
+
 function RaidGroupFrame_OnUpdate(elapsed)
 	if ( MOVING_RAID_MEMBER ) then
 		local button, slot;
@@ -153,41 +203,56 @@ function RaidGroupFrame_OnUpdate(elapsed)
 	end
 end
 
-function RaidGroupButton_OnMouseUp(button, raidButton)
+function RaidGroupButton_OnDragStart()
+	if ( not IsRaidLeader() ) then
+		return;
+	end
+	local cursorX, cursorY = GetCursorPosition();
+	this:ClearAllPoints();
+	this:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", cursorX, cursorY);
+	this:StartMoving();
+	MOVING_RAID_MEMBER = this;
+	SetRaidRosterSelection(this.id);
+end
+
+function RaidGroupButton_OnDragStop(raidButton)
+	if ( not IsRaidLeader() ) then
+		return;
+	end
 	if ( not raidButton ) then
 		raidButton = this;
 	end
-	if ( button ~= "RightButton" ) then
-		raidButton:StopMovingOrSizing();
-		MOVING_RAID_MEMBER = nil;
-		if ( TARGET_RAID_SLOT and TARGET_RAID_SLOT:GetParent():GetID() ~= raidButton.subgroup ) then
-			if (TARGET_RAID_SLOT.button) then
-				local button = getglobal(TARGET_RAID_SLOT.button);
-				--button:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 0, 0);
-				SwapRaidSubgroup(raidButton:GetID(), button:GetID());
-			else
-				local slot = TARGET_RAID_SLOT:GetParent():GetName().."Slot"..TARGET_RAID_SLOT:GetParent().nextIndex;
-				raidButton:SetPoint("TOPLEFT", slot, "TOPLEFT", 0, 0);
-				TARGET_RAID_SLOT:UnlockHighlight();
-				SetRaidSubgroup(raidButton:GetID(), TARGET_RAID_SLOT:GetParent():GetID());
-			end
+	raidButton:StopMovingOrSizing();
+	MOVING_RAID_MEMBER = nil;
+	if ( TARGET_RAID_SLOT and TARGET_RAID_SLOT:GetParent():GetID() ~= raidButton.subgroup ) then
+		if (TARGET_RAID_SLOT.button) then
+			local button = getglobal(TARGET_RAID_SLOT.button);
+			--button:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 0, 0);
+			SwapRaidSubgroup(raidButton:GetID(), button:GetID());
 		else
-			if ( TARGET_RAID_SLOT ) then
-				TARGET_RAID_SLOT:UnlockHighlight();
-			end
-			raidButton:SetPoint("TOPLEFT", raidButton.slot, "TOPLEFT", 0, 0);
+			local slot = TARGET_RAID_SLOT:GetParent():GetName().."Slot"..TARGET_RAID_SLOT:GetParent().nextIndex;
+			raidButton:SetPoint("TOPLEFT", slot, "TOPLEFT", 0, 0);
+			TARGET_RAID_SLOT:UnlockHighlight();
+			SetRaidSubgroup(raidButton:GetID(), TARGET_RAID_SLOT:GetParent():GetID());
 		end
+	else
+		if ( TARGET_RAID_SLOT ) then
+			TARGET_RAID_SLOT:UnlockHighlight();
+		end
+		raidButton:SetPoint("TOPLEFT", raidButton.slot, "TOPLEFT", 0, 0);
 	end
 end
 
-function RaidGroupButton_OnMouseDown(button)
+function RaidGroupButton_OnClick(button)
 	if ( button == "LeftButton" ) then
-		if ( not IsRaidLeader() ) then
-			return;
+		local unit = "raid"..this.id;
+		if ( SpellIsTargeting() ) then
+			SpellTargetUnit(unit);
+		elseif ( CursorHasItem() ) then
+			DropItemOnUnit(unit);
+		else
+			TargetUnit(unit);
 		end
-		this:StartMoving();
-		MOVING_RAID_MEMBER = this;
-		SetRaidRosterSelection(this.id);
 	else
 		HideDropDownMenu(1);
 		if ( this.id and this.name ) then

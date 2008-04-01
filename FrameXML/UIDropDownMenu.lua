@@ -579,7 +579,11 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		if ( level == 1 ) then
 			if ( offscreenY ) then
 				listFrame:ClearAllPoints();
-				listFrame:SetPoint("BOTTOMLEFT", anchorName, "TOPLEFT", xOffset, -yOffset);
+				if ( anchorName == "cursor" ) then
+					listFrame:SetPoint("BOTTOMLEFT", relativeTo, "BOTTOMLEFT", xOffset, yOffset);
+				else
+					listFrame:SetPoint("BOTTOMLEFT", relativeTo, "TOPLEFT", xOffset, -yOffset);
+				end
 			end
 		else
 			local anchorPoint, relativePoint, offsetX, offsetY;

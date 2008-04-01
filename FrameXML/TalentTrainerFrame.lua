@@ -62,7 +62,7 @@ function TalentTrainerFrame_Update()
 	end
 
 	-- ScrollFrame update
-	FauxScrollFrame_Update(TalentTrainerListScrollFrame, numTrainerServices, TALENTS_DISPLAYED, TALENT_TRAINER_SKILL_HEIGHT, TalentTrainerSkillHighlightFrame, 293, 316 )
+	FauxScrollFrame_Update(TalentTrainerListScrollFrame, numTrainerServices, TALENTS_DISPLAYED, TALENT_TRAINER_SKILL_HEIGHT, nil, nil, nil, TalentTrainerSkillHighlightFrame, 293, 316 )
 	
 	-- Adjust filter bar and hide the money frame if showing the talent trainer
 	local cp1, cp2 = UnitCharacterPoints("player");
