@@ -1261,6 +1261,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Scripts>
 					<OnLoad>
 						this:SetText(CLICK_TO_ENTER_COMMENT);
+						this:SetCursorPosition(1);
 					</OnLoad>
 					<OnUpdate>
 						LFGComment_OnUpdate(arg1);

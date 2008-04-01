@@ -64,7 +64,6 @@ function CraftFrame_OnEvent()
 	if ( not this:IsShown() ) then
 		return;
 	end
-
 	if ( event == "CRAFT_UPDATE" ) then
 		CraftCreateButton:Disable();
 		if ( GetCraftSelectionIndex() > 1 ) then
@@ -93,6 +92,13 @@ function CraftFrame_OnEvent()
 		CraftFrame_Update();
 	elseif ( event == "UNIT_PET_TRAINING_POINTS" ) then
 		Craft_UpdateTrainingPoints();
+	end
+end
+
+function CraftFrame_OnShow()
+	PlaySound("igCharacterInfoOpen");
+	if ( CraftFrame.selected ) then
+		SetCraftFilter(CraftFrame.selected);
 	end
 end
 
@@ -488,16 +494,6 @@ function CraftFrameFilterDropDown_OnLoad()
 	UIDropDownMenu_SetSelectedID(CraftFrameFilterDropDown, 1);
 end
 
-function CraftFrameFilterDropDown_OnShow()
-	-- Hack to quickly reset the ShowMakeable filter
-	CraftOnlyShowMakeable(0);
-	CraftFrameAvailableFilterCheckButton:SetChecked(0);
-	UIDropDownMenu_Initialize(this, CraftFrameFilterDropDown_Initialize);
-	if ( GetCraftFilter(0) ) then
-		UIDropDownMenu_SetSelectedID(CraftFrameFilterDropDown, 1);
-	end
-end
-
 function CraftFrameFilterDropDown_Initialize()
 	CraftFrameFilterDropDown_LoadInvSlots(GetCraftSlots());
 end
@@ -533,6 +529,7 @@ end
 function CraftFrameFilterDropDown_OnClick()	
 	UIDropDownMenu_SetSelectedID(CraftFrameFilterDropDown, this:GetID());
 	SetCraftFilter(this:GetID());
+	CraftFrame.selected = this:GetID();
 end
 
 function CraftFrame_PlaytimeUpdate()

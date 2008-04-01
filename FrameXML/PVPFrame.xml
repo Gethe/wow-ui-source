@@ -344,15 +344,6 @@
 								<Anchor point="LEFT"/>
 							</Anchors>
 						</FontString>
-						<FontString name="PVPHonorToday~" inherits="GameFontHighlight" text="~">
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="PVPHonorTodayHonor" relativePoint="LEFT">
-									<Offset>
-										<AbsDimension x="-1" y="-4"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>

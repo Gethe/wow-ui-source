@@ -685,7 +685,12 @@ function FCF_OnUpdate(elapsed)
 		
 		-- New version of the crazy function
 		if ( FCF_IsValidChatFrame(chatFrame) ) then
-			if ( (MouseIsOver(chatFrame, 45, -10, -5, 5) or chatFrame.resizing) ) then
+			--Tab height
+			local yOffset = 45;
+			if ( IsCombatLog(chatFrame) ) then
+				yOffset = yOffset + CombatLogQuickButtonFrame:GetHeight();				
+			end
+			if ( (MouseIsOver(chatFrame, yOffset, -10, -5, 5) or chatFrame.resizing) ) then
 				-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 				if ( chatFrame.hover ) then
 					if ( (chatFrame.oldX == xPos and chatFrame.oldy == yPos) or REMOVE_CHAT_DELAY == "1" ) then
@@ -703,9 +708,12 @@ function FCF_OnUpdate(elapsed)
 							for index, value in pairs(CHAT_FRAME_TEXTURES) do
 								UIFrameFadeIn(getglobal(chatFrame:GetName()..value), CHAT_FRAME_FADE_TIME, chatFrame.oldAlpha, DEFAULT_CHATFRAME_ALPHA);
 							end
-							-- Fade in quick button frame
-							UIFrameFadeIn(CombatLogQuickButtonFrame, CHAT_FRAME_FADE_TIME, chatFrame.oldAlpha, 1.0);
 							
+							if ( IsCombatLog(chatFrame) ) then
+								-- Fade in quick button frame
+								UIFrameFadeIn(CombatLogQuickButtonFrame, CHAT_FRAME_FADE_TIME, chatFrame.oldAlpha, 1.0);
+							end
+
 							-- Set the fact that the chatFrame has been faded so we don't try to fade it again
 							chatFrame.hasBeenFaded = 1;
 						end
@@ -718,6 +726,7 @@ function FCF_OnUpdate(elapsed)
 								UIFrameFadeIn(chatTab, CHAT_FRAME_FADE_TIME, 0, 0.5);
 								chatTab.oldAlpha = 0.5;
 							end
+
 							chatTab.hasBeenFaded = 1;
 
 							-- If this is the default chat tab fading in then fade in all the docked tabs
@@ -745,8 +754,11 @@ function FCF_OnUpdate(elapsed)
 					for index, value in pairs(CHAT_FRAME_TEXTURES) do
 						UIFrameFadeOut(getglobal(chatFrame:GetName()..value), CHAT_FRAME_FADE_TIME, DEFAULT_CHATFRAME_ALPHA, chatFrame.oldAlpha);
 					end
-					-- Fadeout combatlog
-					UIFrameFadeOut(CombatLogQuickButtonFrame, CHAT_FRAME_FADE_TIME, DEFAULT_CHATFRAME_ALPHA, chatFrame.oldAlpha);
+					
+					if ( IsCombatLog(chatFrame) ) then
+						-- Fade out quick button frame
+						UIFrameFadeOut(CombatLogQuickButtonFrame, CHAT_FRAME_FADE_TIME, DEFAULT_CHATFRAME_ALPHA, chatFrame.oldAlpha);
+					end
 
 					chatFrame.hover = nil;
 					chatFrame.hasBeenFaded = nil;
@@ -912,10 +924,14 @@ function FCF_DockUpdate()
 		-- If not the initial chatframe then anchor the frame to the base chatframe
 		name = value:GetName();
 		if ( index ~= 1 ) then
-			value:ClearAllPoints();
-			value:SetPoint("TOPLEFT", DEFAULT_CHAT_FRAME, "TOPLEFT", 0, 0);
-			value:SetPoint("BOTTOMLEFT", DEFAULT_CHAT_FRAME, "BOTTOMLEFT", 0, 0);
-			value:SetPoint("BOTTOMRIGHT", DEFAULT_CHAT_FRAME, "BOTTOMRIGHT", 0, 0);
+			if ( IsCombatLog(value) and CombatLog_UpdateHeight ) then
+				CombatLog_UpdateHeight(1);
+			else
+				value:ClearAllPoints();
+				value:SetPoint("TOPLEFT", DEFAULT_CHAT_FRAME, "TOPLEFT", 0, 0);
+				value:SetPoint("BOTTOMLEFT", DEFAULT_CHAT_FRAME, "BOTTOMLEFT", 0, 0);
+				value:SetPoint("BOTTOMRIGHT", DEFAULT_CHAT_FRAME, "BOTTOMRIGHT", 0, 0);
+			end
 		end
 		
 		-- Select or deselect the frame

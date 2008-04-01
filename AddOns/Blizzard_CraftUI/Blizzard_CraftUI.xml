@@ -183,9 +183,6 @@
 					<OnLoad>
 						CraftFrameFilterDropDown_OnLoad();
 					</OnLoad>
-					<OnShow>
-						CraftFrameFilterDropDown_OnShow();
-					</OnShow>
 				</Scripts>
 			</Frame>
 			<CheckButton name="CraftFrameAvailableFilterCheckButton" inherits="UICheckButtonTemplate">
@@ -824,7 +821,7 @@
 				CraftFrame_OnEvent();
 			</OnEvent>
 			<OnShow>
-				PlaySound("igCharacterInfoOpen");
+				CraftFrame_OnShow();
 			</OnShow>
 			<OnHide>
 				CloseCraft();

@@ -545,7 +545,7 @@ COMBAT_CONFIG_UNIT_COLORS = {
 	},
 	[6] = {
 		text = COMBATLOG_FILTER_UNKNOWN_UNITS,
-		type = "COMBATLOG_FILTER_MINE",
+		type = "COMBATLOG_FILTER_UNKNOWN_UNITS",
 	},
 }
 
@@ -1415,7 +1415,7 @@ function ChatConfig_HideCombatTabs()
 end
 
 function CombatConfig_CreateCombatFilter(name)
-	local newFilter = DEFAULT_COMBATLOG_FILTER_TEMPLATE;
+	local newFilter = Blizzard_CombatLog_CopySetting(DEFAULT_COMBATLOG_FILTER_TEMPLATE);
 	if ( not name or name == "" ) then
 		name = format(DEFAULT_COMBATLOG_FILTER_NAME, #Blizzard_CombatLog_Filters.filters);
 	end

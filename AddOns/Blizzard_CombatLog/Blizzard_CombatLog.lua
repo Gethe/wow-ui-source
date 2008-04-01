@@ -9,6 +9,12 @@
 --
 --]]
 
+-- Version
+-- Constant -- Incrementing this number will erase saved filter settings!!
+COMBATLOG_FILTER_VERSION = 1;
+-- Saved Variable
+Blizzard_CombatLog_Filter_Version = 0;
+
 -- Object type constants
 
 -- Affiliation
@@ -1224,7 +1230,7 @@ function Blizzard_CombatLog_UnitMenuClick(event, unitName, unitGUID, unitFlags)
 
 		-- Let the system know that this filter is temporary and unhighlight any quick buttons
 		Blizzard_CombatLog_CurrentSettings.isTemp = true;
-		Blizard_CombatLog_Update_QuickButtons()
+		Blizard_CombatLog_Update_QuickButtons();
 	end
 
 	-- Reset the combat log text box! (Grats!)
@@ -1415,14 +1421,17 @@ DEFAULT_COMBATLOG_FILTER_TEMPLATE = {
 -- 
 -- Persistant Variables
 -- 
-Blizzard_CombatLog_Filters = {
+--
+-- Default Filters
+--
+Blizzard_CombatLog_Filter_Defaults = {
 	-- All of the filters
 	filters = {
 		[1] = {
 			-- Descriptive Information
-			name = "Default";
+			name = QUICKBUTTON_NAME_DEFAULT;
 			hasQuickButton = true;
-			quickButtonName = "Default";
+			quickButtonName = QUICKBUTTON_NAME_DEFAULT;
 			quickButtonDisplay = {
 				solo = true;
 				party = true;
@@ -1539,9 +1548,9 @@ Blizzard_CombatLog_Filters = {
 		};
 		[2] = {
 			-- Descriptive Information
-			name = "Everything";
+			name = QUICKBUTTON_NAME_EVERYTHING;
 			hasQuickButton = true;
-			quickButtonName = "Everything";
+			quickButtonName = QUICKBUTTON_NAME_EVERYTHING;
 			quickButtonDisplay = {
 				solo = true;
 				party = true;
@@ -1597,9 +1606,9 @@ Blizzard_CombatLog_Filters = {
 		};
 		[3] = {
 			-- Descriptive Information
-			name = "Me";
+			name = QUICKBUTTON_NAME_ME;
 			hasQuickButton = true;
-			quickButtonName = "Me";
+			quickButtonName = QUICKBUTTON_NAME_ME;
 			quickButtonDisplay = {
 				solo = true;
 				party = true;
@@ -1661,9 +1670,9 @@ Blizzard_CombatLog_Filters = {
 		};
 		[4] = {
 			-- Descriptive Information
-			name = "Friends";
+			name = QUICKBUTTON_NAME_FRIENDS;
 			hasQuickButton = true;
-			quickButtonName = "Friends";
+			quickButtonName = QUICKBUTTON_NAME_FRIENDS;
 			quickButtonDisplay = {
 				solo = true;
 				party = true;
@@ -1723,9 +1732,9 @@ Blizzard_CombatLog_Filters = {
 		};
 		[5] = {
 			-- Descriptive Information
-			name = "Original";
+			name = QUICKBUTTON_NAME_ORIGINAL;
 			hasQuickButton = true;
-			quickButtonName = "Original";
+			quickButtonName = QUICKBUTTON_NAME_ORIGINAL;
 			quickButtonDisplay = {
 				solo = true;
 				party = true;
@@ -1784,6 +1793,8 @@ Blizzard_CombatLog_Filters = {
 	-- Current Filter
 	currentFilter = 1;
 };
+
+Blizzard_CombatLog_Filters = Blizzard_CombatLog_Filter_Defaults;
 
 --
 -- Temporary Settings
@@ -3537,24 +3548,8 @@ getglobal(COMBATLOG:GetName().."Tab"):SetScript("OnDragStart",
 -- XML Function Overrides Part 2
 --
 
--- 
--- Attach the Combat Log Button Frame to the Combat Log
---
-
--- On Event
-function Blizzard_CombatLog_QuickButtonFrame_OnEvent(event)
-	if ( event == "VARIABLES_LOADED" ) then
-		Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[1];
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		for k,v in pairs (Blizzard_CombatLog_UnitTokens) do
-			Blizzard_CombatLog_UnitTokens[k] = nil;
-		end
-	end
-end
-
 -- On Load
 function Blizzard_CombatLog_QuickButtonFrame_OnLoad()
-	this:RegisterEvent("VARIABLES_LOADED");
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 	CombatLogQuickButtonFrame:SetParent(COMBATLOG);
@@ -3563,48 +3558,45 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad()
 	CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT");
 	CombatLogQuickButtonFrameProgressBar:Hide();
 
-	local oldPoint,relativeTo,relativePoint,xOfs,yOfs;
-	local hadTopLeft = false;
-	for i=1,COMBATLOG:GetNumPoints() do
-		point,relativeTo,relativePoint,xOfs,yOfs = COMBATLOG:GetPoint(i)
-		if ( point == "TOPLEFT" ) then 
-			hadTopLeft = true;
-			break;
-		end
-	end
+	CombatLog_UpdateHeight(COMBATLOG.isDocked);
+	Blizard_CombatLog_Update_QuickButtons();
+end
 
-	local heightChange = CombatLogQuickButtonFrame:GetHeight()
-	if ( not COMBATLOG.isDocked ) then 
+function Blizzard_CombatLog_QuickButtonFrame_OnEvent()
+	-- Overwrite saved filters if the version is greater than the save one
+	if ( Blizzard_CombatLog_Filter_Version < COMBATLOG_FILTER_VERSION  ) then
+		Blizzard_CombatLog_Filters = Blizzard_CombatLog_Filter_Defaults;
+		Blizzard_CombatLog_Filter_Version = COMBATLOG_FILTER_VERSION;
+		debugprint(Blizzard_CombatLog_Filter_Version);
+	end
+	Blizard_CombatLog_Update_QuickButtons();
+end
+
+function CombatLog_UpdateHeight(docked)
+	local combatLogBackground = getglobal(COMBATLOG:GetName().."Background");
+	local quickButtonFrameHeight = CombatLogQuickButtonFrame:GetHeight();
+	if ( docked ) then
+		COMBATLOG:ClearAllPoints();
+		COMBATLOG:SetPoint("TOPLEFT", DEFAULT_CHAT_FRAME, "TOPLEFT", 0, -quickButtonFrameHeight);
+		COMBATLOG:SetPoint("BOTTOMRIGHT", DEFAULT_CHAT_FRAME, "BOTTOMRIGHT", 0, 0);
+		
+	else
 		local chatTab = getglobal(COMBATLOG:GetName().."Tab");
 		local x,y = chatTab:GetCenter();
 		if ( x and y ) then
 			x = x - (chatTab:GetWidth()/2);
 			y = y - (chatTab:GetHeight()/2);
 			COMBATLOG:ClearAllPoints();
-			COMBATLOG:SetPoint("TOPLEFT", "UIParent", "BOTTOMLEFT", x, y-heightChange);
+			COMBATLOG:SetPoint("TOPLEFT", "UIParent", "BOTTOMLEFT", x, y-quickButtonFrameHeight);
 		end
-		getglobal(COMBATLOG:GetName().."Background"):SetPoint("TOPLEFT", COMBATLOG, "TOPLEFT", -2, 3 + heightChange);
-		getglobal(COMBATLOG:GetName().."Background"):SetPoint("TOPRIGHT", COMBATLOG, "TOPRIGHT", 2, 3 + heightChange);
-
-	else
-		COMBATLOG:SetPoint("TOPLEFT", relativeTo, relativePoint, xOfs, yOfs - heightChange )
-		getglobal(COMBATLOG:GetName().."Background"):SetPoint("TOPLEFT", COMBATLOG, "TOPLEFT", -2, 3 + heightChange);
-		getglobal(COMBATLOG:GetName().."Background"):SetPoint("TOPRIGHT", COMBATLOG, "TOPRIGHT", 2, 3 + heightChange);
 	end
-	Blizard_CombatLog_Update_QuickButtons();
-end
-
-local oldFCF_DockUpdate = FCF_DockUpdate;
-FCF_DockUpdate = function()
-	oldFCF_DockUpdate();
-	Blizzard_CombatLog_QuickButtonFrame_OnLoad();
+	combatLogBackground:SetPoint("TOPLEFT", COMBATLOG, "TOPLEFT", -2, 3 + quickButtonFrameHeight);
+	combatLogBackground:SetPoint("TOPRIGHT", COMBATLOG, "TOPRIGHT", 2, 3 + quickButtonFrameHeight);
 end
 
 -- Override Hyperlink Handlers
 local oldSetItemRef = SetItemRef;
 function SetItemRef(link, text, button)
-	local printable = gsub(link, "\124", "\124\124");
-
 	if ( strsub(link, 1, 4) == "unit") then
 		local _, guid, name = strsplit(":", link);
 
@@ -3664,12 +3656,6 @@ function SetItemRef(link, text, button)
 			return;
 		end
 	end
-
-	-- This is already being called in oldSetItemRef
-	--if ( IsModifierKeyDown() or IsModifiedClick() ) then
-	--	HandleModifiedItemClick(text);
-	--end
-	
 	oldSetItemRef(link, text, button);
 end
 
@@ -3681,7 +3667,7 @@ function Blizard_CombatLog_Update_QuickButtons()
 	local totalWidth = 0;
 	local padding = 10;
 	local showMoreQuickButtons = true;
-	for index, filter in pairs(Blizzard_CombatLog_Filters.filters) do
+	for index, filter in ipairs(Blizzard_CombatLog_Filters.filters) do
 		buttonName = baseName.."Button"..index;
 		button = getglobal(buttonName);
 		if ( ShowQuickButton(filter) and showMoreQuickButtons ) then

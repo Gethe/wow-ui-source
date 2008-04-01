@@ -331,7 +331,7 @@ function SoundOptionsFrame_RefreshSoundDevices()
 		
 		if ( not found ) then
 			UIDropDownMenu_SetSelectedValue(SoundOptionsOutputDropDown, 0);
-			UIDropDownMenu_SetText(Sound_GetOutputDriverNameByIndex(0), SoundOptionsOutputDropDown);
+			UIDropDownMenu_SetText(Sound_GameSystem_GetOutputDriverNameByIndex(0), SoundOptionsOutputDropDown);
 			SoundOptionsOutputDropDown.initialValue = 0;
 		end
 	end

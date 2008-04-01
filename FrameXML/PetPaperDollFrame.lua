@@ -195,7 +195,7 @@ function PetPaperDollFrame_SetStats()
 				local manaGain = ((effectiveStat-20)*15+20)*GetUnitPowerModifier("pet");
 				frame.tooltip2 = format(frame.tooltip2, manaGain, GetSpellCritChanceFromIntellect("pet"));
 			else
-				local newLineIndex = strfind(frame.tooltip2, "|n")+1;
+				local newLineIndex = strfind(frame.tooltip2, "|n")+2;
 				frame.tooltip2 = strsub(frame.tooltip2, newLineIndex);
 				frame.tooltip2 = format(frame.tooltip2, GetSpellCritChanceFromIntellect("pet"));
 			end

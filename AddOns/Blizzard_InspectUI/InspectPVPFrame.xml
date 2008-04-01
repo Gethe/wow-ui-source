@@ -260,15 +260,6 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentToday~" inherits="GameFontHighlightSmall" text="~">
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="$parentTodayHonor" relativePoint="LEFT">
-									<Offset>
-										<AbsDimension x="-1" y="-3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
 						<!-- Today End -->
 						<!-- Yesterday Begin -->
 						<FontString name="$parentYesterdayLabel" inherits="GameFontDisableSmall" text="HONOR_YESTERDAY">

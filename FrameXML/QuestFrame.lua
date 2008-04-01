@@ -227,8 +227,10 @@ function QuestFrameGreetingPanel_OnShow()
 			local questTitleButtonIcon = getglobal(questTitleButton:GetName() .. "QuestIcon");
 			if ( IsActiveQuestTrivial(i) ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetActiveTitle(i));
+				questTitleButtonIcon:SetVertexColor(0.5,0.5,0.5);
 			else
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetActiveTitle(i));
+				questTitleButtonIcon:SetVertexColor(1,1,1);
 			end
 			questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon"); 
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
@@ -365,7 +367,7 @@ function QuestFrameItems_Update(questState)
 	local moneyFrame = getglobal(questState.."MoneyFrame");
 	local playerTitleFrame = getglobal(questState.."PlayerTitleFrame");
 	
-	if ( totalRewards == 0 and money == 0 and honor == 0 and not playerTitleFrame ) then
+	if ( totalRewards == 0 and money == 0 and honor == 0 and not playerTitle ) then
 		getglobal(questState.."RewardTitleText"):Hide();
 	else
 		getglobal(questState.."RewardTitleText"):Show();

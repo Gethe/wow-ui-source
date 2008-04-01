@@ -191,7 +191,7 @@
 						<Size x="26" y="26"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton14" relativePoint="BOTTOM">
-								<Offset x="10" y="4"/>
+								<Offset x="5" y="4"/>
 							</Anchor>
 						</Anchors>
 					</CheckButton>

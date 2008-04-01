@@ -64,6 +64,7 @@ function TotemFrame_OnEvent(self, event, ...)
 			if ( button.slot == slot ) then
 				local previouslyShown = button:IsShown();
 				TotemButton_Update(button, startTime, duration, icon);
+				-- check to see if we should be showing or hiding the parent frame
 				if ( previouslyShown ) then
 					if ( not button:IsShown() ) then
 						TotemFrame.activeTotems = TotemFrame.activeTotems - 1;

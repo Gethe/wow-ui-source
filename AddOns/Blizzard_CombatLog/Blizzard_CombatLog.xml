@@ -15,7 +15,7 @@
 		<NormalFont inherits="GameFontDisable"/>
 		<HighlightFont inherits="GameFontHighlight"/>
 	</Button>
-	<Frame name="CombatLogQuickButtonFrame" parent="ChatFrame2">
+	<Frame name="CombatLogQuickButtonFrame" parent="ChatFrame2" hidden="true">
 		<Size>
 			<AbsDimension x="65" y="24"/>
 		</Size>
@@ -27,7 +27,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		
 		<Anchors>
 			<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER">
 				<Offset>
@@ -58,23 +57,17 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				 Blizzard_CombatLog_QuickButtonFrame_OnLoad();
+				Blizzard_CombatLog_QuickButtonFrame_OnLoad();
 			</OnLoad>
+			<OnEvent>
+				Blizzard_CombatLog_QuickButtonFrame_OnEvent();
+			</OnEvent>
 		</Scripts>
 	</Frame>
 	<Frame name="CombatLogUpdateFrame" parent="UIParent" visible="true">
 		<Size>
 			<AbsDimension x="1" y="1"/>
 		</Size>
-		<!--
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentTexture" setAllPoints="true">
-					<Color r="0.0" g="0.9" b="0.2" a="0.5"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		-->
 		<Anchors>
 			<Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM">
 				<Offset>

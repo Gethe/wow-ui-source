@@ -1082,7 +1082,7 @@
 					</Anchor>
 				</Anchors>
 				<Frames>
-					<Button name="GuildBankInfoSaveButton" inherits="UIPanelButtonTemplate" text="SAVE_CHANGES">
+					<Button name="GuildBankInfoSaveButton" inherits="UIPanelButtonTemplate" text="SAVE_CHANGES" hidden="true">
 						<Size>
 							<AbsDimension x="100" y="22"/>
 						</Size>
@@ -1147,7 +1147,10 @@
 											this.max = max;
 											scrollBar:SetValue(max);
 										end
-										if ( CanEditGuildTabInfo(GetCurrentGuildBankTab()) ) then
+										local currentTab = GetCurrentGuildBankTab();
+										if ( currentTab > GetNumGuildBankTabs() ) then
+											GuildBankInfoSaveButton:Hide();
+										elseif ( CanEditGuildTabInfo(currentTab) ) then
 											GuildBankInfoSaveButton:Show();
 										else
 											GuildBankInfoSaveButton:Hide();

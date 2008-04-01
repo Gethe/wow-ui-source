@@ -524,7 +524,7 @@ function UnitPopup_HideButtons()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "OPT_OUT_LOOT_TITLE" ) then
-			if ( inParty == 0 ) then
+			if ( inParty == 0 or ( inParty == 1 and GetLootMethod() == "freeforall" ) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LOOT_PROMOTE" ) then

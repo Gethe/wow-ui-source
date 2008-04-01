@@ -391,9 +391,9 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetText(REPAIR_ALL_ITEMS);
 						local repairAllCost, canRepair = GetRepairAllCost();
 						if ( canRepair and (repairAllCost > 0) ) then
+							GameTooltip:SetText(REPAIR_ALL_ITEMS);
 							SetTooltipMoney(GameTooltip, repairAllCost);
 						end
 						GameTooltip:Show();
@@ -402,25 +402,27 @@
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
-						local repairAllCost = GetRepairAllCost();
-						if ( GetMoney() >= repairAllCost ) then
-							this:RegisterEvent("PLAYER_MONEY");
-							this:SetScript(
-								"OnEvent", 
-								function() 
-									local _, canRepair = GetRepairAllCost();
-									if ( not canRepair ) then 
-										SetDesaturation(MerchantRepairAllIcon, 1); 
-										this:Disable(); 
-									end 
-									this:UnregisterEvent("PLAYER_MONEY");
-								end
-							);
-						end
 						RepairAllItems();
 						PlaySound("ITEM_REPAIR");
 						GameTooltip:Hide();
 					</OnClick>
+					<OnEvent>
+						local _, canRepair = GetRepairAllCost();
+						if ( not canRepair ) then
+							SetDesaturation(MerchantRepairAllIcon, 1);
+							SetDesaturation(MerchantGuildBankRepairButtonIcon, 1);
+							MerchantGuildBankRepairButton:Disable();
+							self:Disable();
+						else
+							SetDesaturation(MerchantRepairAllIcon, nil);
+							SetDesaturation(MerchantGuildBankRepairButtonIcon, nil);
+							self:Enable();
+							MerchantGuildBankRepairButton:Enable();
+						end
+					</OnEvent>
+					<OnLoad>
+						self:RegisterEvent("UPDATE_INVENTORY_DURABILITY");
+					</OnLoad>
 				</Scripts>
 				<NormalTexture file=""/>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
@@ -515,6 +517,23 @@
 						end
 						GameTooltip:Hide();
 					</OnClick>
+					<OnEvent>
+						local _, canRepair = GetRepairAllCost();
+						if ( not canRepair ) then
+							SetDesaturation(MerchantRepairAllIcon, 1);
+							SetDesaturation(MerchantGuildBankRepairButtonIcon, 1);
+							MerchantGuildBankRepairButton:Disable();
+							MerchantRepairAllButton:Disable();
+						else
+							SetDesaturation(MerchantRepairAllIcon, nil);
+							SetDesaturation(MerchantGuildBankRepairButtonIcon, nil);
+							self:Enable();
+							MerchantRepairAllButton:Enable();
+						end
+					</OnEvent>
+					<OnLoad>
+						self:RegisterEvent("UPDATE_INVENTORY_DURABILITY");
+					</OnLoad>
 				</Scripts>
 				<NormalTexture file=""/>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>

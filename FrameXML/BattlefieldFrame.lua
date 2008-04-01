@@ -237,11 +237,16 @@ function BattlefieldFrame_Update()
 	local playerLevel = UnitLevel("player");
 	local button, buttonStatus;
 	local instanceID;
-	local mapName, mapDescription, minLevel, maxLevel, mapID, mapX, mapY, mapFull = GetBattlefieldInfo();
+	local mapName, mapDescription, minLevel, maxLevel, mapID, mapX, mapY, mapFull, maxGroup = GetBattlefieldInfo();
 	
 	-- Set title text
 	BattlefieldFrameFrameLabel:SetText(mapName);
-
+	-- Set the Join as Group text based on the limits of which instances can join as group.
+	if ( maxGroup and maxGroup == 5 ) then
+		BattlefieldFrameGroupJoinButton:SetText(JOIN_AS_PARTY);
+	else
+		BattlefieldFrameGroupJoinButton:SetText(JOIN_AS_GROUP);		
+	end
 	-- Setup instance buttons
 	-- add one to battlefields because of the fake "first available" button
 	local numBattlefields = GetNumBattlefields() + 1;

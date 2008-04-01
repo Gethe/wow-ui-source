@@ -87,11 +87,13 @@ function GuildBankFrame_OnLoad()
 	this:RegisterEvent("GUILDBANK_ITEM_LOCK_CHANGED");
 	this:RegisterEvent("GUILDBANK_UPDATE_TABS");
 	this:RegisterEvent("GUILDBANK_UPDATE_MONEY");
+	this:RegisterEvent("GUILDBANK_UPDATE_WITHDRAWMONEY");
 	this:RegisterEvent("GUILD_ROSTER_UPDATE");
 	this:RegisterEvent("GUILDBANKLOG_UPDATE");
 	this:RegisterEvent("GUILDTABARD_UPDATE");
 	this:RegisterEvent("GUILDBANK_UPDATE_TEXT");
 	this:RegisterEvent("GUILDBANK_TEXT_CHANGED");
+	this:RegisterEvent("PLAYER_MONEY");
 	-- Set the button id's
 	local index, column, button;
 	for i=1, MAX_GUILDBANK_SLOTS_PER_TAB do
@@ -136,13 +138,17 @@ function GuildBankFrame_OnEvent(event)
 		end
 	elseif ( event == "GUILDTABARD_UPDATE" ) then
 		GuildBankFrame_UpdateTabard();
-	elseif ( event == "GUILDBANK_UPDATE_MONEY" ) then
+	elseif ( event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
 		GuildBankFrame_UpdateWithdrawMoney();
 	elseif ( event == "GUILDBANK_UPDATE_TEXT" ) then
 		GuildBankFrame_UpdateTabInfo(arg1);
 	elseif ( event == "GUILDBANK_TEXT_CHANGED" ) then
 		if ( GetCurrentGuildBankTab() == tonumber(arg1) ) then
 			QueryGuildBankText(arg1);
+		end
+	elseif ( event == "PLAYER_MONEY" ) then
+		if ( GuildBankFrameBuyInfo:IsShown() ) then
+			GuildBankFrame_UpdateTabBuyingInfo();
 		end
 	end
 end
@@ -178,6 +184,7 @@ function GuildBankFrame_Update()
 		local tab = GetCurrentGuildBankTab();
 		if ( GuildBankFrame.noViewableTabs ) then
 			GuildBankFrame_HideColumns();
+			GuildBankFrameBuyInfo:Hide();
 			GuildBankErrorMessage:SetText(NO_VIEWABLE_GUILDBANK_TABS);
 			GuildBankErrorMessage:Show();
 		elseif ( tab > GetNumGuildBankTabs() ) then
@@ -242,6 +249,7 @@ function GuildBankFrame_Update()
 		end
 	elseif ( GuildBankFrame.mode == "tabinfo" ) then
 		GuildBankFrame_HideColumns();
+		GuildBankErrorMessage:Hide();
 		GuildBankFrameBuyInfo:Hide();
 		GuildBankFrameLog:Hide();
 		GuildBankInfo:Show();

@@ -1018,7 +1018,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+								<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size>
 										<AbsDimension x="31" y="256"/>
 									</Size>
@@ -2900,6 +2900,7 @@
 					<OnHide>
 						GuildControlPopupFrame:Hide();
 						GuildMemberDetailFrame:Hide();
+						GuildEventLogFrame:Hide();
 					</OnHide>
 				</Scripts>
 			</Frame>
@@ -3870,7 +3871,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="GuildMemberDetailRankText" inherits="GameFontHighlight">
+						<FontString name="GuildMemberDetailRankText" inherits="GameFontHighlight" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT">
 									<Offset>

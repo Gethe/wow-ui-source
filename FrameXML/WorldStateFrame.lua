@@ -998,12 +998,13 @@ end
 
 function ScorePlayerDropDown_OnClick()
 	ReportPlayerIsPVPAFK(AFK_PLAYER_CLICKED);
+	PlaySound("UChatScrollButton");
 	AFK_PLAYER_CLICKED = nil;
 end
 
-function ScorePlayerDropDown_Hide()
+function ScorePlayerDropDown_Cancel()
 	AFK_PLAYER_CLICKED = nil;
-	ToggleDropDownMenu(1, nil, ScorePlayerDropDown, this:GetName(), 0, -5);
+	PlaySound("UChatScrollButton");
 end
 
 function ScorePlayerDropDown_Initialize()
@@ -1014,6 +1015,6 @@ function ScorePlayerDropDown_Initialize()
 
 	info = UIDropDownMenu_CreateInfo();
 	info.text = CANCEL;
-	info.func = ScorePlayerDropDown_Hide;
+	info.func = ScorePlayerDropDown_Cancel;
 	UIDropDownMenu_AddButton(info);
 end
