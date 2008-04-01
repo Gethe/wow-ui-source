@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="TextStatusBar.lua"/>
+	<StatusBar name="TextStatusBar" virtual="true">
+		<Scripts>
+			<OnLoad>
+				TextStatusBar_Initialize();
+			</OnLoad>
+			<OnEvent>
+				TextStatusBar_OnEvent(arg1, arg2);
+			</OnEvent>
+			<OnEnter>
+				TextStatusBar_UpdateTextString();
+				ShowTextStatusBarText(this);
+				if ( this.tooltipTitle ) then
+					GameTooltip_AddNewbieTip(this.tooltipTitle, 1.0, 1.0, 1.0, this.tooltipText, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				HideTextStatusBarText(this);
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnValueChanged>
+				TextStatusBar_OnValueChanged();
+			</OnValueChanged>
+		</Scripts>
+	</StatusBar>
+</Ui>

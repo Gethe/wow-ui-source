@@ -1,0 +1,101 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CombatLog.lua"/>
+	<Frame name="CombatLogButtons" toplevel="true" frameStrata="BACKGROUND" parent="UIParent">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+			<Anchors>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-32" y="60"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="CombatLogBottomButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="32" y="36"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="CombatLogBottomButtonFlash" file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound("igChatBottom");
+						CombatLog_ScrollToBottom();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="CombatLogDownButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="CombatLogBottomButton" relativePoint="TOP"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						MessageFrameScrollButton_OnLoad();
+					</OnLoad>
+					<OnUpdate>
+						MessageFrameScrollButton_OnUpdate(arg1);
+					</OnUpdate>
+					<OnClick>
+						if ( this:GetButtonState() == "PUSHED" ) then
+							this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+						else
+							PlaySound("igChatScrollDown");
+							CombatLogDownButton_OnClick(arg1);
+						end
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="CombatLogUpButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="CombatLogDownButton" relativePoint="TOP"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						MessageFrameScrollButton_OnLoad()					
+					</OnLoad>
+					<OnUpdate>
+						MessageFrameScrollButton_OnUpdate(arg1);
+					</OnUpdate>
+					<OnClick>
+						if ( this:GetButtonState() == "PUSHED" ) then
+							this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+						else
+							PlaySound("igChatScrollUp");
+							CombatLogUpButton_OnClick(arg1);
+						end
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

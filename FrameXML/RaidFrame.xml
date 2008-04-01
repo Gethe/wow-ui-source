@@ -1,0 +1,590 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="RaidFrame.lua"/>
+	<Button name="RaidGroupButtonTemplate" movable="true" virtual="true">
+		<Size>
+			<AbsDimension x="156" y="14"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentRank" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="18" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="1" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="60" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLevel" inherits="GameFontNormalSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="22" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentClass" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="50" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="110" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 2);
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnMouseDown>
+				RaidGroupButton_OnMouseDown(arg1);
+			</OnMouseDown>
+			<OnMouseUp>
+				RaidGroupButton_OnMouseUp(arg1);
+			</OnMouseUp> 
+		</Scripts>
+		<NormalTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton">
+			<TexCoords left="0" right="0.640625" top="0" bottom="0.4375"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
+			<TexCoords left="0" right="0.640625" top="0.46875" bottom="0.90625"/>
+		</HighlightTexture>
+	</Button>
+	<Button name="RaidGroupSlotTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="156" y="14"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="GameFontDarkGraySmall" text="EMPTY">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
+			<TexCoords left="0" right="0.640625" top="0.46875" bottom="0.90625"/>
+		</HighlightTexture>
+	</Button>
+	<Frame name="RaidGroupTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="162" y="80"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\RaidFrame\UI-RaidFrame-GroupOutline">
+					<Size>
+						<AbsDimension x="162" y="80"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.6640625" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentSlot1" inherits="RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentSlot2" inherits="RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentSlot3" inherits="RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentSlot4" inherits="RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentSlot5" inherits="RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Label"):SetText(GROUP.." "..this:GetID());
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="RaidFrame" setAllPoints="true" hidden="true" parent="FriendsFrame">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="RaidFrameTotals" inherits="GameFontNormalSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="0" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString name="RaidFrameOnlineTotals" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="0" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="RaidFrameTotals" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="RaidFrameRaidDescription" inherits="GameFontNormal" text="RAID_DESCRIPTION" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="300" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="29" y="-85"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="RaidFrameConvertToRaidButton" inherits="UIPanelButtonTemplate" text="CONVERT_TO_RAID">
+				<Size>
+					<AbsDimension x="115" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="90" y="-37"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ConvertToRaid();
+					</OnClick>
+				</Scripts>
+				<NormalText inherits="GameFontNormalSmall"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+				<DisabledText inherits="GameFontDisableSmall"/>
+			</Button>
+			<Button name="RaidFrameAddMemberButton" inherits="UIPanelButtonTemplate" text="ADD_RAID_MEMBER">
+				<Size>
+					<AbsDimension x="86" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RaidFrameConvertToRaidButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( UnitCanCooperate("player", "target") ) then
+							InviteByName(UnitName("target"));
+						else
+							StaticPopup_Show("ADD_RAIDMEMBER");
+						end
+					</OnClick>
+				</Scripts>
+				<NormalText inherits="GameFontNormalSmall"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+				<DisabledText inherits="GameFontDisableSmall"/>
+			</Button>
+			<Frame name="RaidGroup1" inherits="RaidGroupTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="16" y="-70"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup2" inherits="RaidGroupTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RaidGroup1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup3" inherits="RaidGroupTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="RaidGroup1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup4" inherits="RaidGroupTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RaidGroup3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup5" inherits="RaidGroupTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="RaidGroup3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup6" inherits="RaidGroupTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RaidGroup5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup7" inherits="RaidGroupTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="RaidGroup5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup8" inherits="RaidGroupTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RaidGroup7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="RaidGroupButton1" inherits="RaidGroupButtonTemplate" id="1"/>
+			<Button name="RaidGroupButton2" inherits="RaidGroupButtonTemplate" id="2"/>
+			<Button name="RaidGroupButton3" inherits="RaidGroupButtonTemplate" id="3"/>
+			<Button name="RaidGroupButton4" inherits="RaidGroupButtonTemplate" id="4"/>
+			<Button name="RaidGroupButton5" inherits="RaidGroupButtonTemplate" id="5"/>
+			<Button name="RaidGroupButton6" inherits="RaidGroupButtonTemplate" id="6"/>
+			<Button name="RaidGroupButton7" inherits="RaidGroupButtonTemplate" id="7"/>
+			<Button name="RaidGroupButton8" inherits="RaidGroupButtonTemplate" id="8"/>
+			<Button name="RaidGroupButton9" inherits="RaidGroupButtonTemplate" id="9"/>
+			<Button name="RaidGroupButton10" inherits="RaidGroupButtonTemplate" id="10"/>
+			<Button name="RaidGroupButton11" inherits="RaidGroupButtonTemplate" id="11"/>
+			<Button name="RaidGroupButton12" inherits="RaidGroupButtonTemplate" id="12"/>
+			<Button name="RaidGroupButton13" inherits="RaidGroupButtonTemplate" id="13"/>
+			<Button name="RaidGroupButton14" inherits="RaidGroupButtonTemplate" id="14"/>
+			<Button name="RaidGroupButton15" inherits="RaidGroupButtonTemplate" id="15"/>
+			<Button name="RaidGroupButton16" inherits="RaidGroupButtonTemplate" id="16"/>
+			<Button name="RaidGroupButton17" inherits="RaidGroupButtonTemplate" id="17"/>
+			<Button name="RaidGroupButton18" inherits="RaidGroupButtonTemplate" id="18"/>
+			<Button name="RaidGroupButton19" inherits="RaidGroupButtonTemplate" id="19"/>
+			<Button name="RaidGroupButton20" inherits="RaidGroupButtonTemplate" id="20"/>
+			<Button name="RaidGroupButton21" inherits="RaidGroupButtonTemplate" id="21"/>
+			<Button name="RaidGroupButton22" inherits="RaidGroupButtonTemplate" id="22"/>
+			<Button name="RaidGroupButton23" inherits="RaidGroupButtonTemplate" id="23"/>
+			<Button name="RaidGroupButton24" inherits="RaidGroupButtonTemplate" id="24"/>
+			<Button name="RaidGroupButton25" inherits="RaidGroupButtonTemplate" id="25"/>
+			<Button name="RaidGroupButton26" inherits="RaidGroupButtonTemplate" id="26"/>
+			<Button name="RaidGroupButton27" inherits="RaidGroupButtonTemplate" id="27"/>
+			<Button name="RaidGroupButton28" inherits="RaidGroupButtonTemplate" id="28"/>
+			<Button name="RaidGroupButton29" inherits="RaidGroupButtonTemplate" id="29"/>
+			<Button name="RaidGroupButton30" inherits="RaidGroupButtonTemplate" id="30"/>
+			<Button name="RaidGroupButton31" inherits="RaidGroupButtonTemplate" id="31"/>
+			<Button name="RaidGroupButton32" inherits="RaidGroupButtonTemplate" id="32"/>
+			<Button name="RaidGroupButton33" inherits="RaidGroupButtonTemplate" id="33"/>
+			<Button name="RaidGroupButton34" inherits="RaidGroupButtonTemplate" id="34"/>
+			<Button name="RaidGroupButton35" inherits="RaidGroupButtonTemplate" id="35"/>
+			<Button name="RaidGroupButton36" inherits="RaidGroupButtonTemplate" id="36"/>
+			<Button name="RaidGroupButton37" inherits="RaidGroupButtonTemplate" id="37"/>
+			<Button name="RaidGroupButton38" inherits="RaidGroupButtonTemplate" id="38"/>
+			<Button name="RaidGroupButton39" inherits="RaidGroupButtonTemplate" id="39"/>
+			<Button name="RaidGroupButton40" inherits="RaidGroupButtonTemplate" id="40"/>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				RaidFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				RaidFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				HideUIPanel(RaidGroupFrame);
+			</OnHide>
+			<OnEvent>
+				RaidFrame_OnEvent();
+			</OnEvent>
+			<OnUpdate>
+				RaidGroupFrame_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<!--
+	<Frame name="RaidGroupFrame" toplevel="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="390" y="415"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="RaidFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-5" y="-15"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\RaidFrame\UI-RaidFrame-GroupBg">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="-5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="5" y="5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="RaidGroupFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="RAID_GROUPS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="RaidGroupFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="RaidGroup1" inherits="RaidGroupTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="19" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup2" inherits="RaidGroupTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RaidGroup1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup3" inherits="RaidGroupTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="RaidGroup1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup4" inherits="RaidGroupTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RaidGroup3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup5" inherits="RaidGroupTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="RaidGroup3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup6" inherits="RaidGroupTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RaidGroup5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup7" inherits="RaidGroupTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="RaidGroup5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="RaidGroup8" inherits="RaidGroupTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RaidGroup7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="RaidGroupButton1" inherits="RaidGroupButtonTemplate" id="1"/>
+			<Button name="RaidGroupButton2" inherits="RaidGroupButtonTemplate" id="2"/>
+			<Button name="RaidGroupButton3" inherits="RaidGroupButtonTemplate" id="3"/>
+			<Button name="RaidGroupButton4" inherits="RaidGroupButtonTemplate" id="4"/>
+			<Button name="RaidGroupButton5" inherits="RaidGroupButtonTemplate" id="5"/>
+			<Button name="RaidGroupButton6" inherits="RaidGroupButtonTemplate" id="6"/>
+			<Button name="RaidGroupButton7" inherits="RaidGroupButtonTemplate" id="7"/>
+			<Button name="RaidGroupButton8" inherits="RaidGroupButtonTemplate" id="8"/>
+			<Button name="RaidGroupButton9" inherits="RaidGroupButtonTemplate" id="9"/>
+			<Button name="RaidGroupButton10" inherits="RaidGroupButtonTemplate" id="10"/>
+			<Button name="RaidGroupButton11" inherits="RaidGroupButtonTemplate" id="11"/>
+			<Button name="RaidGroupButton12" inherits="RaidGroupButtonTemplate" id="12"/>
+			<Button name="RaidGroupButton13" inherits="RaidGroupButtonTemplate" id="13"/>
+			<Button name="RaidGroupButton14" inherits="RaidGroupButtonTemplate" id="14"/>
+			<Button name="RaidGroupButton15" inherits="RaidGroupButtonTemplate" id="15"/>
+			<Button name="RaidGroupButton16" inherits="RaidGroupButtonTemplate" id="16"/>
+			<Button name="RaidGroupButton17" inherits="RaidGroupButtonTemplate" id="17"/>
+			<Button name="RaidGroupButton18" inherits="RaidGroupButtonTemplate" id="18"/>
+			<Button name="RaidGroupButton19" inherits="RaidGroupButtonTemplate" id="19"/>
+			<Button name="RaidGroupButton20" inherits="RaidGroupButtonTemplate" id="20"/>
+			<Button name="RaidGroupButton21" inherits="RaidGroupButtonTemplate" id="21"/>
+			<Button name="RaidGroupButton22" inherits="RaidGroupButtonTemplate" id="22"/>
+			<Button name="RaidGroupButton23" inherits="RaidGroupButtonTemplate" id="23"/>
+			<Button name="RaidGroupButton24" inherits="RaidGroupButtonTemplate" id="24"/>
+			<Button name="RaidGroupButton25" inherits="RaidGroupButtonTemplate" id="25"/>
+			<Button name="RaidGroupButton26" inherits="RaidGroupButtonTemplate" id="26"/>
+			<Button name="RaidGroupButton27" inherits="RaidGroupButtonTemplate" id="27"/>
+			<Button name="RaidGroupButton28" inherits="RaidGroupButtonTemplate" id="28"/>
+			<Button name="RaidGroupButton29" inherits="RaidGroupButtonTemplate" id="29"/>
+			<Button name="RaidGroupButton30" inherits="RaidGroupButtonTemplate" id="30"/>
+			<Button name="RaidGroupButton31" inherits="RaidGroupButtonTemplate" id="31"/>
+			<Button name="RaidGroupButton32" inherits="RaidGroupButtonTemplate" id="32"/>
+			<Button name="RaidGroupButton33" inherits="RaidGroupButtonTemplate" id="33"/>
+			<Button name="RaidGroupButton34" inherits="RaidGroupButtonTemplate" id="34"/>
+			<Button name="RaidGroupButton35" inherits="RaidGroupButtonTemplate" id="35"/>
+			<Button name="RaidGroupButton36" inherits="RaidGroupButtonTemplate" id="36"/>
+			<Button name="RaidGroupButton37" inherits="RaidGroupButtonTemplate" id="37"/>
+			<Button name="RaidGroupButton38" inherits="RaidGroupButtonTemplate" id="38"/>
+			<Button name="RaidGroupButton39" inherits="RaidGroupButtonTemplate" id="39"/>
+			<Button name="RaidGroupButton40" inherits="RaidGroupButtonTemplate" id="40"/>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				RaidGroupFrame_OnLoad();
+			</OnLoad>
+			<OnUpdate>
+				RaidGroupFrame_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame-->
+</Ui>

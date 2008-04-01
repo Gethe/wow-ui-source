@@ -1,0 +1,373 @@
+ <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GossipFrame.lua"/>
+	<Frame name="GossipFramePanelTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>	
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentMaterialTopLeft" file="">
+					<Size>
+						<AbsDimension x="239" y="241"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="21" y="-75"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialTopRight" file="">
+					<Size>
+						<AbsDimension x="64" y="241"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialBotLeft" file="">
+					<Size>
+						<AbsDimension x="239" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialBotRight" file="">
+					<Size>
+						<AbsDimension x="64" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Button name="GossipTitleButtonTemplate" virtual="true" hidden="false">
+		<Size>
+			<AbsDimension x="300" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentGossipIcon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				GossipTitleButton_OnClick();
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<NormalText inherits="QuestFont" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="275" y="0"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="20" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+	</Button>
+	<Frame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+ 		<Size>
+ 			<AbsDimension x="384" y="512"/>
+ 		</Size>
+ 		<Anchors>
+ 			<Anchor point="TOPLEFT">
+ 				<Offset>
+ 					<AbsDimension x="0" y="-104"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+                <Texture name="GossipFramePortrait">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+		</Layers> 
+ 		<Frames>
+			<Frame name="GossipNpcNameFrame">
+				<Size>
+					<AbsDimension x="300" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GossipFrame" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-23"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="GossipFrameNpcNameText" inherits="GameFontHighlight"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+                     <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 2);
+                    </OnLoad>
+                </Scripts>
+			</Frame>
+			<Button name="GossipFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="GossipFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-42" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+ 			<Frame name="GossipFrameGreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
+							<Size>
+								<AbsDimension x="128" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="22" y="68"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="GossipFrameGreetingGoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">
+						<Size>
+							<AbsDimension x="77" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GossipFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-39" y="73"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(GossipFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="GossipGreetingScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="300" y="334"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GossipFrame">
+								<Offset>
+									<AbsDimension x="23" y="-81"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								this:UpdateScrollChildRect();
+							</OnShow>
+						</Scripts>
+						<ScrollChild>
+							<Frame name="GossipGreetingScrollChildFrame">
+								<Size>
+									<AbsDimension x="300" y="334"/>
+								</Size>
+								<Layers>
+									<Layer>
+										<FontString name="GossipGreetingText" inherits="QuestFont" text="Filler Text" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="270" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="10" y="-10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button name="GossipTitleButton1" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipGreetingText" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="-10" y="-20"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton2" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton1" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton3" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton2" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton4" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton3" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton5" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton4" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton6" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton5" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton7" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton6" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton8" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton7" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton9" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton8" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton10" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton9" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton11" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton10" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton12" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton11" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton13" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton12" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton14" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton13" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton15" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton14" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton16" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton15" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+ 			</Frame>
+ 		</Frames>
+		<Scripts>
+			<OnLoad>
+				GossipFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				PlaySound("igQuestListOpen");
+				if ( StaticPopup_Visible("XP_LOSS") ) then
+					StaticPopup_Hide("XP_LOSS");
+				end
+			</OnShow>
+			<OnEvent>
+				GossipFrame_OnEvent();
+			</OnEvent>
+			<OnHide>
+				PlaySound("igQuestListClose");
+				CloseGossip();
+			</OnHide>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+ 	</Frame>
+ </Ui>

@@ -1,0 +1,248 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="StaticPopup.lua"/>
+	<Button name="StaticPopupButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="20"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				StaticPopup_OnClick(this:GetParent(), this:GetID());
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-DialogBox-Button-Down">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625"/>
+		</PushedTexture>
+		<DisabledTexture file="Interface\Buttons\UI-DialogBox-Button-Disabled">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625"/>
+		</DisabledTexture>
+		<HighlightTexture file="Interface\Buttons\UI-DialogBox-Button-Highlight" alphaMode="ADD">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625"/>
+		</HighlightTexture>
+		<NormalText inherits="GameFontNormal"/>
+		<DisabledText inherits="GameFontDisable"/>
+		<HighlightText inherits="GameFontHighlight"/>
+	</Button>
+	<Frame name="StaticPopupTemplate" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="320" y="72"/>
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="290" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentAlertIcon" file="Interface\DialogFrame\DialogAlertIcon">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton1" inherits="StaticPopupButtonTemplate" id="1"/>
+			<Button name="$parentButton2" inherits="StaticPopupButtonTemplate" id="2"/>
+			<EditBox name="$parentEditBox" historyLines="1" hidden="true">
+				<Size>
+					<AbsDimension x="130" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size>
+								<AbsDimension x="75" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="-10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size>
+								<AbsDimension x="75" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed>
+						StaticPopup_EditBoxOnEnterPressed();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						StaticPopup_EditBoxOnEscapePressed();
+					</OnEscapePressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<EditBox name="$parentWideEditBox" historyLines="1" hidden="true">
+				<Size>
+					<AbsDimension x="350" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size>
+								<AbsDimension x="256" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="-10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size>
+								<AbsDimension x="75" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size>
+								<AbsDimension x="5" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.29296875" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed>
+						StaticPopup_EditBoxOnEnterPressed();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						StaticPopup_EditBoxOnEscapePressed();
+					</OnEscapePressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad();
+						MoneyFrame_SetType("STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				StaticPopup_OnUpdate(arg1);
+			</OnUpdate>
+			<OnShow>
+				StaticPopup_OnShow();
+			</OnShow>
+			<OnHide>
+				StaticPopup_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="StaticPopup1" inherits="StaticPopupTemplate" parent="UIParent">
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-128"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="StaticPopup2" inherits="StaticPopupTemplate" parent="UIParent">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="StaticPopup1" relativePoint="BOTTOM"/>
+		</Anchors>
+	</Frame>
+	<Frame name="StaticPopup3" inherits="StaticPopupTemplate" parent="UIParent">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="StaticPopup2" relativePoint="BOTTOM"/>
+		</Anchors>
+	</Frame>
+	<Frame name="StaticPopup4" inherits="StaticPopupTemplate" parent="UIParent">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="StaticPopup3" relativePoint="BOTTOM"/>
+		</Anchors>
+	</Frame>
+</Ui>

@@ -1,0 +1,186 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="TutorialFrame.lua"/>
+	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" frameStrata="HIGH" hidden="true">
+		<Size>
+			<AbsDimension x="230" y="128"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<TitleRegion setAllPoints="true"/>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="5" top="3" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="TutorialFrameTitle" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension x="210" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-9"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString name="TutorialFrameText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="210" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TutorialFrameTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="TutorialFrameCheckButton" checked="true" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="5" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="TutorialFrameCheckboxText" inherits="GameFontNormalSmall" text="ENABLE_TUTORIAL_TEXT">
+							<Size>
+								<AbsDimension x="0" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</CheckButton>
+			<Button name="TutorialFrameOkayButton">
+				<Size>
+					<AbsDimension x="76" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-7" y="7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="GameFontNormalSmall" text="OKAY"/>
+				<HighlightText inherits="GameFontHighlightSmall" text="OKAY"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("TUTORIAL_TRIGGER");
+				this:RegisterEvent("CINEMATIC_STOP");
+			</OnLoad>
+			<OnHide>
+				TutorialFrame_OnHide();
+			</OnHide>
+			<OnEvent>
+				if ( event == "TUTORIAL_TRIGGER" ) then
+					TutorialFrame_NewTutorial(arg1);
+				elseif ( event == "CINEMATIC_STOP" ) then
+					TutorialFrame_CheckIntro();
+				end
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	<Button name="TutorialFrameAlertButtonTemplate" parent="UIParent" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="34" y="42"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="50"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				GameTooltip:SetText(this.tooltip);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				ShowUIPanel(TutorialFrame);
+				this:ClearAllPoints();
+				this:Hide();
+				TutorialFrame_Update(this.id);
+				this.id = nil;
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\TutorialFrame\TutorialFrameAlert">
+			<Size>
+				<AbsDimension x="34" y="42"/>
+			</Size>
+			<TexCoords left="0" right="0.53125" top="0" bottom="0.6875"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\TutorialFrame\TutorialFrameAlert" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="23" y="42"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="-1" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<TexCoords left="0.578125" right="0.9375" top="0" bottom="0.6875"/>
+		</HighlightTexture>
+	</Button>
+	<Button name="TutorialFrameAlertButton1" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
+	<Button name="TutorialFrameAlertButton2" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
+	<Button name="TutorialFrameAlertButton3" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
+	<Button name="TutorialFrameAlertButton4" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
+	<Button name="TutorialFrameAlertButton5" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
+	<Button name="TutorialFrameAlertButton6" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
+	<Button name="TutorialFrameAlertButton7" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
+	<Button name="TutorialFrameAlertButton8" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
+	<Button name="TutorialFrameAlertButton9" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
+	<Button name="TutorialFrameAlertButton10" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
+</Ui>

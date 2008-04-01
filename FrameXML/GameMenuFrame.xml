@@ -1,0 +1,203 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UIParent.lua"/>
+	<Button name="GameMenuButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="144" y="21"/>
+		</Size>
+		<NormalText inherits="GameFontHighlight"/>
+		<DisabledText inherits="GameFontDisable"/>
+		<HighlightText inherits="GameFontHighlight"/>
+	</Button>
+	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="195" y="246"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="MAIN_MENU">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="GameMenuFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="GameMenuButtonOptions" inherits="GameMenuButtonTemplate" text="VIDEOOPTIONS_MENU">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-37"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						ShowUIPanel(OptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GameMenuButtonSoundOptions" inherits="GameMenuButtonTemplate" text="SOUNDOPTIONS_MENU">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonOptions" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						ShowUIPanel(SoundOptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GameMenuButtonUIOptions" inherits="GameMenuButtonTemplate" text="UIOPTIONS_MENU">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonSoundOptions" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						ShowUIPanel(UIOptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GameMenuButtonKeybindings" inherits="GameMenuButtonTemplate" text="KEY_BINDINGS">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonUIOptions" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						ShowUIPanel(KeyBindingFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GameMenuButtonMacros" inherits="GameMenuButtonTemplate" text="MACROS">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonKeybindings" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						HideUIPanel(GameMenuFrame);
+						ShowUIPanel(MacroFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GameMenuButtonLogout" inherits="GameMenuButtonTemplate" text="LOGOUT">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonMacros" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") ) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnClick>
+						PlaySound("igMainMenuLogout");
+						Logout();
+						HideUIPanel(GameMenuFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GameMenuButtonQuit" inherits="GameMenuButtonTemplate" text="EXIT_GAME">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonLogout" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") ) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnClick>
+						PlaySound("igMainMenuQuit");
+						Quit();
+						HideUIPanel(GameMenuFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GameMenuButtonContinue" inherits="GameMenuButtonTemplate" text="RETURN_TO_GAME">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonQuit" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuContinue");
+						HideUIPanel(GameMenuFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				UpdateMicroButtons();
+			</OnShow>
+			<OnHide>
+				UpdateMicroButtons();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

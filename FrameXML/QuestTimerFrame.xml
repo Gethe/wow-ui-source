@@ -1,0 +1,278 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="QuestTimerFrame.lua"/>
+	<Button name="QuestTimerTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="140" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this);
+				GameTooltip:SetText(GetQuestLogTitle(GetQuestIndexForTimer(this:GetID())), 1.0, 1.0, 1.0);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				QuestTimerButton_OnClick();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="QuestTimerFrame" toplevel="true" enableMouse="true" frameStrata="BACKGROUND" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="160" y="72"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="MinimapCluster" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="10" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="QuestTimerHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="1" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="QUEST_TIMERS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="QuestTimerHeader">
+							<Offset>
+								<AbsDimension x="0" y="-13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="QuestTimer1" inherits="QuestTimerTemplate" hidden="true" id="1">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer2" inherits="QuestTimerTemplate" hidden="true" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer3" inherits="QuestTimerTemplate" hidden="true" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer4" inherits="QuestTimerTemplate" hidden="true" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer5" inherits="QuestTimerTemplate" hidden="true" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer6" inherits="QuestTimerTemplate" hidden="true" id="6">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer7" inherits="QuestTimerTemplate" hidden="true" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer8" inherits="QuestTimerTemplate" hidden="true" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer9" inherits="QuestTimerTemplate" hidden="true" id="9">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer10" inherits="QuestTimerTemplate" hidden="true" id="10">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer9" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer11" inherits="QuestTimerTemplate" hidden="true" id="11">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer10" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer12" inherits="QuestTimerTemplate" hidden="true" id="12">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer11" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer13" inherits="QuestTimerTemplate" hidden="true" id="13">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer12" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer14" inherits="QuestTimerTemplate" hidden="true" id="14">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer13" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer15" inherits="QuestTimerTemplate" hidden="true" id="15">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer14" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer16" inherits="QuestTimerTemplate" hidden="true" id="16">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer15" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer17" inherits="QuestTimerTemplate" hidden="true" id="17">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer16" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer18" inherits="QuestTimerTemplate" hidden="true" id="18">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer17" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer19" inherits="QuestTimerTemplate" hidden="true" id="19">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer18" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer20" inherits="QuestTimerTemplate" hidden="true" id="20">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer19" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				QuestTimerFrame_OnLoad();
+			</OnLoad>
+			<OnUpdate>
+				QuestTimerFrame_OnUpdate();
+			</OnUpdate>
+			<OnEvent>
+				QuestTimerFrame_OnEvent();
+			</OnEvent>
+			<OnShow>
+				QuestTimerFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				QuestTimerFrame_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

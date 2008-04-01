@@ -1,0 +1,218 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ActionButton.lua"/>
+	<CheckButton name="ActionBarButtonTemplate" inherits="ActionButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				ActionButton_OnLoad();
+			</OnLoad>
+			<OnShow>
+				ActionButton_Update();
+			</OnShow>
+			<OnEvent>
+				ActionButton_OnEvent(event);
+			</OnEvent>
+			<OnClick>
+				if ( IsShiftKeyDown() ) then
+					PickupAction(ActionButton_GetPagedID(this));
+				else
+					MacroFrame_EditMacro();
+					UseAction(ActionButton_GetPagedID(this), 1);
+				end
+				ActionButton_UpdateState();
+			</OnClick>
+			<OnDragStart>
+				PickupAction(ActionButton_GetPagedID(this));
+				ActionButton_UpdateState();
+			</OnDragStart>
+			<OnReceiveDrag>
+				PlaceAction(ActionButton_GetPagedID(this));
+				ActionButton_UpdateState();
+			</OnReceiveDrag>
+			<OnEnter>
+				ActionButton_SetTooltip();
+			</OnEnter>
+			<OnLeave>
+				this.updateTooltip = nil;
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnUpdate>
+				ActionButton_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="ActionButton1" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="1">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="8" y="4"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton2" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="2">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton1" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton3" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="3">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton2" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton4" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="4">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton3" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton5" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="5">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton4" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton6" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="6">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton5" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton7" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="7">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton6" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton8" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="8">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton7" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton9" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="9">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton8" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton10" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="10">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton9" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton11" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="11">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton10" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="ActionButton12" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="12">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="ActionButton11" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<Button name="ActionBarUpButton" parent="MainMenuBarArtFrame">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="MainMenuBarArtFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="522" y="-22"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="6" right="6" top="7" bottom="7"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+			</OnLoad>
+			<OnClick>
+				if ( CURRENT_ACTIONBAR_PAGE == 1 ) then
+					CURRENT_ACTIONBAR_PAGE = NUM_ACTIONBAR_PAGES;
+				else
+					CURRENT_ACTIONBAR_PAGE = CURRENT_ACTIONBAR_PAGE - 1;
+				end
+				PlaySound("UChatScrollButton");
+				ChangeActionBarPage();
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
+		<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Highlight"/>
+	</Button>
+	<Button name="ActionBarDownButton" parent="MainMenuBarArtFrame">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="MainMenuBarArtFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="522" y="-42"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="6" right="6" top="7" bottom="7"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+			</OnLoad>
+			<OnClick>
+				if ( CURRENT_ACTIONBAR_PAGE == NUM_ACTIONBAR_PAGES ) then
+					CURRENT_ACTIONBAR_PAGE = 1;
+				else
+					CURRENT_ACTIONBAR_PAGE = CURRENT_ACTIONBAR_PAGE + 1;
+				end
+				PlaySound("UChatScrollButton");
+				ChangeActionBarPage();
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
+		<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
+	</Button>
+</Ui>

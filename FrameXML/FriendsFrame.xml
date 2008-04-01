@@ -1,0 +1,3107 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="FriendsFrame.lua"/>
+	<Button name="FriendsFrameButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="31"/>
+		</Size>
+		<Frames>
+			<Frame name="$parentButtonText" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<FontString name="$parentNameLocation" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentInfo" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNameLocation" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				FriendsFrameFriendButton_OnClick();
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+	<Button name="FriendsFrameIgnoreButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="16"/>
+		</Size>
+		<Frames>
+			<Frame name="$parentButtonText" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<FontString name="$parentName" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				FriendsFrameIgnoreButton_OnClick();
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+	<Button name="FriendsFrameWhoButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="88" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentVariable" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="95" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLevel" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="20" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentVariable" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="48" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentGroup" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="45" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentClass" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				FriendsFrameWhoButton_OnClick();
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="298" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="5" y="-2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="WhoFrameColumnHeaderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="10" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="5" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="53" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="4" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				if ( this.sortType ) then
+					SortWho(this.sortType);
+				end
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<NormalText inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="8" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+	</Button>
+	<Button name="FriendsFrameGuildPlayerStatusButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="88" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="14" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentZone" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="90" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLevel" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="20" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentZone" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="42" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentGroup" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="40" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentClass" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				FriendsFrameGuildPlayerStatusButton_OnClick();
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="298" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="5" y="-2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="FriendsFrameGuildStatusButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="75" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="14" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="55" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentNote" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="100" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentOnline" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="80" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentNote" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				FriendsFrameGuildStatusButton_OnClick();
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="298" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="5" y="-2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="GuildFrameColumnHeaderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="10" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="5" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="53" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="4" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				if ( this.sortType ) then
+					SortGuildRoster(this.sortType);
+				end
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<NormalText inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="8" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+	</Button>
+	<CheckButton name="GuildControlPopupFrameCheckboxTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="1" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				if ( this:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				end
+				GuildControlSetRankFlag(this:GetID(), this:GetChecked());
+				GuildControlPopupAcceptButton:Enable();
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+	<Button name="FriendsFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(FriendsFrame);
+				FriendsFrame_OnShow();
+				GuildControlPopupFrame:Hide();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="FriendsFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\FriendsFrame\FriendsFrameScrollIcon">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="FriendsFrameTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="FriendsFrameTopRight" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="FriendsFrameBottomLeft" file="Interface\FriendsFrame\UI-FriendsFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="FriendsFrameBottomRight" file="Interface\FriendsFrame\UI-FriendsFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="FriendsFrameTitleText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="FriendsFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-30" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="FriendsListFrame" hidden="true" setAllPoints="true">
+				<Frames>
+					<Button name="FriendsFrameAddFriendButton" inherits="UIPanelButtonTemplate" text="ADD_FRIEND">
+						<Size>
+							<AbsDimension x="131" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="FriendsFrame">
+								<Offset>
+									<AbsDimension x="17" y="107"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( UnitCanCooperate("player", "target") ) then
+									AddFriend(UnitName("target"));
+								else
+									StaticPopup_Show("ADD_FRIEND");
+								end
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(ADD_FRIEND, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDFRIEND, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="FriendsFrameRemoveFriendButton" inherits="UIPanelButtonTemplate" text="REMOVE_FRIEND">
+						<Size>
+							<AbsDimension x="131" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameAddFriendButton" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FriendsFrame_RemoveFriend();
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(REMOVE_FRIEND, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_REMOVEFRIEND, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="FriendsFrameSendMessageButton" inherits="UIPanelButtonTemplate" text="SEND_MESSAGE">
+						<Size>
+							<AbsDimension x="131" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="FriendsFrameAddFriendButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="66" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FriendsFrame_SendMessage();
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(SEND_MESSAGE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SENDMESSAGE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="FriendsFrameGroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
+						<Size>
+							<AbsDimension x="131" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameSendMessageButton" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FriendsFrame_GroupInvite();
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GROUPINVITE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="FriendsFrameFriendButton1" inherits="FriendsFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="FriendsFrame">
+								<Offset>
+									<AbsDimension x="23" y="-76"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameFriendButton2" inherits="FriendsFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameFriendButton1" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameFriendButton3" inherits="FriendsFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameFriendButton2" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameFriendButton4" inherits="FriendsFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameFriendButton3" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameFriendButton5" inherits="FriendsFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameFriendButton4" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameFriendButton6" inherits="FriendsFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameFriendButton5" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameFriendButton7" inherits="FriendsFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameFriendButton6" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameFriendButton8" inherits="FriendsFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameFriendButton7" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameFriendButton9" inherits="FriendsFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameFriendButton8" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameFriendButton10" inherits="FriendsFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameFriendButton9" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<ScrollFrame name="FriendsFrameFriendsScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="296" y="304"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame">
+								<Offset>
+									<AbsDimension x="-67" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="256"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+											<Offset>
+												<AbsDimension x="0" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="106"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_FRIEND_HEIGHT, FriendsList_Update)
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Frame name="IgnoreListFrame" hidden="true" setAllPoints="true">
+				<Frames>
+					<Button name="FriendsFrameIgnorePlayerButton" inherits="UIPanelButtonTemplate" text="IGNORE_PLAYER">
+						<Size>
+							<AbsDimension x="131" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="FriendsFrame">
+								<Offset>
+									<AbsDimension x="17" y="81"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( UnitCanCooperate("player", "target") ) then
+									AddIgnore(UnitName("target"));
+								else
+									StaticPopup_Show("ADD_IGNORE");
+								end
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(IGNORE_PLAYER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_IGNOREPLAYER, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="FriendsFrameStopIgnoreButton" inherits="UIPanelButtonTemplate" text="STOP_IGNORE">
+						<Size>
+							<AbsDimension x="131" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="FriendsFrameIgnorePlayerButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="62" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FriendsFrame_UnIgnore();
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(STOP_IGNORE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPIGNORE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton1" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="FriendsFrame">
+								<Offset>
+									<AbsDimension x="23" y="-80"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton2" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton1" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton3" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton2" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton4" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton3" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton5" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton4" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton6" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton5" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton7" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton6" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton8" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton7" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton9" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton8" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton10" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton9" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton11" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton10" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton12" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton11" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton13" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton12" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton14" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton13" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton15" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton14" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton16" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton15" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton17" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton16" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton18" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton17" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton19" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton18" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="FriendsFrameIgnoreButton20" inherits="FriendsFrameIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton19" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<ScrollFrame name="FriendsFrameIgnoreScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="296" y="330"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame">
+								<Offset>
+									<AbsDimension x="-67" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="256"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+											<Offset>
+												<AbsDimension x="0" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="106"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_IGNORE_HEIGHT, IgnoreList_Update);
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Frame name="WhoFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="WhoFrameTotals" inherits="GameFontNormalSmall">
+							<Size>
+								<AbsDimension x="298" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-10" y="127"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="WhoFrameLFGFrame">
+						<Size>
+							<AbsDimension x="210" y="23"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-42" y="-38"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="WhoFrameLFGFrameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size>
+										<AbsDimension x="12" y="28"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+									<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="WhoFrameLFGFrameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size>
+										<AbsDimension x="186" y="28"/>
+									</Size>
+									<Anchors>
+										<Anchor point="RIGHT" relativeTo="WhoFrameLFGFrameRight" relativePoint="LEFT"/>
+									</Anchors>
+									<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="WhoFrameLFGFrameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size>
+										<AbsDimension x="12" y="28"/>
+									</Size>
+									<Anchors>
+										<Anchor point="RIGHT" relativeTo="WhoFrameLFGFrameMiddle" relativePoint="LEFT"/>
+									</Anchors>
+									<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<CheckButton name="WhoFrameLFGButton" virtual="true">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="RIGHT">
+										<Offset>
+											<AbsDimension x="-8" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="WhoFrameLFGButtonText" inherits="GameFontHighlightSmall" text="LFG_LABEL">
+											<Anchors>
+												<Anchor point="RIGHT" relativePoint="LEFT">
+													<Offset>
+														<AbsDimension x="-10" y="1"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										this:SetChecked(GetLookingForGroup());
+									</OnLoad>
+									<OnClick>
+										if ( this:GetChecked() ) then
+											PlaySound("igMainMenuOptionCheckBoxOff");
+										else
+											PlaySound("igMainMenuOptionCheckBoxOn");
+										end
+										SetLookingForGroup(this:GetChecked());
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+								<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+								<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+								<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+							</CheckButton>
+						</Frames>
+					</Frame>
+					<Button name="WhoFrameColumnHeader1" inherits="WhoFrameColumnHeaderTemplate" text="NAME">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="20" y="-70"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(83);
+								this.sortType = "name";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="WhoFrameColumnHeader2" inherits="WhoFrameColumnHeaderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<Frame name="WhoFrameDropDown" inherits="UIDropDownMenuTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="-15" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameDropDown_OnLoad();
+									</OnLoad>
+									<OnShow>
+										UIDropDownMenu_Initialize(WhoFrameDropDown, WhoFrameDropDown_Initialize);
+										UIDropDownMenu_SetSelectedID(WhoFrameDropDown, 1);
+									</OnShow>
+									<OnEvent>
+										WhoFrameDropDown_OnEvent()
+									</OnEvent>
+									<OnMouseUp>
+										if ( WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)].sortType ) then
+											SortWho(WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)].sortType);
+										end
+									</OnMouseUp>
+								</Scripts>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(105);
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="WhoFrameColumnHeader3" inherits="WhoFrameColumnHeaderTemplate" text="LEVEL_ABBR">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader2" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(27);
+								this.sortType = "level";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="WhoFrameColumnHeader4" inherits="WhoFrameColumnHeaderTemplate" text="CLASS">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader3" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(42);
+								this.sortType = "class";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="WhoFrameColumnHeader5" inherits="WhoFrameColumnHeaderTemplate" text="GROUP">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader4" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(53);
+								this.sortType = "group";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="WhoFrameButton1" inherits="FriendsFrameWhoButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrame">
+								<Offset>
+									<AbsDimension x="15" y="-95"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton2" inherits="FriendsFrameWhoButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton3" inherits="FriendsFrameWhoButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton4" inherits="FriendsFrameWhoButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton5" inherits="FriendsFrameWhoButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton6" inherits="FriendsFrameWhoButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton7" inherits="FriendsFrameWhoButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton8" inherits="FriendsFrameWhoButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton9" inherits="FriendsFrameWhoButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton8" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton10" inherits="FriendsFrameWhoButtonTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton9" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton11" inherits="FriendsFrameWhoButtonTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton10" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton12" inherits="FriendsFrameWhoButtonTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton11" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton13" inherits="FriendsFrameWhoButtonTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton12" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton14" inherits="FriendsFrameWhoButtonTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton13" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton15" inherits="FriendsFrameWhoButtonTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton14" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton16" inherits="FriendsFrameWhoButtonTemplate" id="16">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton15" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameButton17" inherits="FriendsFrameWhoButtonTemplate" id="17">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton16" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="WhoFrameGroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
+						<Size>
+							<AbsDimension x="120" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-40" y="82"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								InviteByName(WhoFrame.selectedName);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="WhoFrameAddFriendButton" inherits="UIPanelButtonTemplate" text="ADD_FRIEND">
+						<Size>
+							<AbsDimension x="120" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="WhoFrameGroupInviteButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								AddFriend(WhoFrame.selectedName);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="WhoFrameWhoButton" inherits="UIPanelButtonTemplate" text="REFRESH">
+						<Size>
+							<AbsDimension x="85" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="WhoFrameAddFriendButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								WhoFrameEditBox_OnEnterPressed();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<EditBox name="WhoFrameEditBox" autoFocus="false" frameStrata="HIGH" historyLines="32">
+						<Size>
+							<AbsDimension x="296" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="-20" y="100"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								this:ClearFocus();
+							</OnShow>
+							<OnEnterPressed>
+								WhoFrameEditBox_OnEnterPressed();
+							</OnEnterPressed>
+							<OnEscapePressed>
+								this:ClearFocus();
+							</OnEscapePressed>
+						</Scripts>
+						<FontString inherits="ChatFontNormal" bytes="256"/>
+					</EditBox>
+					<ScrollFrame name="WhoListScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="296" y="287"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-67" y="-96"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_WHO_HEIGHT, WhoList_Update);
+							</OnVerticalScroll>
+						</Scripts>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="WhoListScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="256"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="WhoListScrollFrameScrollBarScrollUpButton">
+											<Offset>
+												<AbsDimension x="0" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="106"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						SetWhoToUI(0);
+					</OnLoad>
+					<OnShow>
+						SetWhoToUI(1);
+					</OnShow>
+					<OnHide>
+						SetWhoToUI(0);
+					</OnHide>
+				</Scripts>
+			</Frame>
+			<Frame name="GuildFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="GuildFrameTotals" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="0" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-122" y="168"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildFrameOnlineTotals" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="0" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildFrameTotals" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="3" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildFrameNotesLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="225" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="23" y="-358"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="GuildFrameLFGFrame">
+						<Size>
+							<AbsDimension x="210" y="23"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-42" y="-38"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="GuildFrameLFGFrameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size>
+										<AbsDimension x="12" y="28"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+									<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="GuildFrameLFGFrameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size>
+										<AbsDimension x="186" y="28"/>
+									</Size>
+									<Anchors>
+										<Anchor point="RIGHT" relativeTo="GuildFrameLFGFrameRight" relativePoint="LEFT"/>
+									</Anchors>
+									<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="GuildFrameLFGFrameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size>
+										<AbsDimension x="12" y="28"/>
+									</Size>
+									<Anchors>
+										<Anchor point="RIGHT" relativeTo="GuildFrameLFGFrameMiddle" relativePoint="LEFT"/>
+									</Anchors>
+									<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<CheckButton name="GuildFrameLFGButton" virtual="true">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="RIGHT">
+										<Offset>
+											<AbsDimension x="-8" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="GuildFrameLFGButtonText" inherits="GameFontHighlightSmall" text="SHOW_OFFLINE_MEMBERS">
+											<Anchors>
+												<Anchor point="RIGHT" relativePoint="LEFT">
+													<Offset>
+														<AbsDimension x="-10" y="1"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										SetGuildRosterShowOffline(1);
+										this:SetChecked(GetGuildRosterShowOffline());
+									</OnLoad>
+									<OnClick>
+										SetGuildRosterSelection(0);
+										if ( this:GetChecked() ) then
+											PlaySound("igMainMenuOptionCheckBoxOff");
+										else
+											PlaySound("igMainMenuOptionCheckBoxOn");
+										end
+										SetGuildRosterShowOffline(this:GetChecked());
+										if ( FriendsFrame.playerStatusFrame ) then
+											GuildPlayerStatus_Update();
+										else
+											GuildStatus_Update();
+										end
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+								<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+								<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+								<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+							</CheckButton>
+						</Frames>
+					</Frame>
+					<Frame name="GuildPlayerStatusFrame" hidden="true">
+						<Size>
+							<AbsDimension x="300" y="200"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<Button name="GuildFrameColumnHeader1" inherits="GuildFrameColumnHeaderTemplate" text="NAME">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="20" y="-70"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(83);
+										this.sortType = "name";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="GuildFrameColumnHeader2" inherits="GuildFrameColumnHeaderTemplate" text="ZONE">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildFrameColumnHeader1" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(105);
+										this.sortType = "zone";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="GuildFrameColumnHeader3" inherits="GuildFrameColumnHeaderTemplate" text="LEVEL_ABBR">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildFrameColumnHeader2" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(27);
+										this.sortType = "level";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="GuildFrameColumnHeader4" inherits="GuildFrameColumnHeaderTemplate" text="CLASS">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildFrameColumnHeader3" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(42);
+										this.sortType = "class";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="GuildFrameColumnHeader5" inherits="GuildFrameColumnHeaderTemplate" text="GROUP">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildFrameColumnHeader4" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(53);
+										this.sortType = "group";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="GuildFrameButton1" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrame">
+										<Offset>
+											<AbsDimension x="15" y="-95"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton2" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton1" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton3" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton2" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton4" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="4">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton3" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton5" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="5">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton4" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton6" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton5" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton7" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="7">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton6" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton8" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="8">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton7" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton9" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="9">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton8" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton10" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="10">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton9" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton11" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="11">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton10" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton12" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="12">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton11" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton13" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="13">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton12" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameButton14" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="14">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton13" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<ScrollFrame name="GuildListScrollFrame" inherits="FauxScrollFrameTemplate">
+								<Size>
+									<AbsDimension x="296" y="257"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
+										<Offset>
+											<AbsDimension x="-67" y="-96"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnVerticalScroll>
+										FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_GUILD_HEIGHT, GuildPlayerStatus_Update);
+									</OnVerticalScroll>
+								</Scripts>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture name="GuildListScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+											<Size>
+												<AbsDimension x="31" y="256"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+													<Offset>
+														<AbsDimension x="0" y="5"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+											<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+										</Texture>
+										<Texture name="GuildListScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+											<Size>
+												<AbsDimension x="31" y="106"/>
+											</Size>
+											<Anchors>
+												<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+													<Offset>
+														<AbsDimension x="0" y="-2"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+											<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+										</Texture>
+									</Layer>
+								</Layers>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+					<Frame name="GuildStatusFrame" hidden="true">
+						<Size>
+							<AbsDimension x="300" y="200"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<Button name="GuildFrameGuildStatusColumnHeader1" inherits="GuildFrameColumnHeaderTemplate" text="NAME">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="20" y="-70"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(83);
+										this.sortType = "name";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="GuildFrameGuildStatusColumnHeader2" inherits="GuildFrameColumnHeaderTemplate" text="RANK">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildFrameGuildStatusColumnHeader1" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(75);
+										this.sortType = "rank";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="GuildFrameGuildStatusColumnHeader3" inherits="GuildFrameColumnHeaderTemplate" text="LABEL_NOTE">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildFrameGuildStatusColumnHeader2" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(75);
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="GuildFrameGuildStatusColumnHeader4" inherits="GuildFrameColumnHeaderTemplate" text="LASTONLINE">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildFrameGuildStatusColumnHeader3" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(75);
+										this.sortType = "online";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton1" inherits="FriendsFrameGuildStatusButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrame">
+										<Offset>
+											<AbsDimension x="15" y="-95"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton2" inherits="FriendsFrameGuildStatusButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton1" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton3" inherits="FriendsFrameGuildStatusButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton2" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton4" inherits="FriendsFrameGuildStatusButtonTemplate" id="4">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton3" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton5" inherits="FriendsFrameGuildStatusButtonTemplate" id="5">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton4" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton6" inherits="FriendsFrameGuildStatusButtonTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton5" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton7" inherits="FriendsFrameGuildStatusButtonTemplate" id="7">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton6" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton8" inherits="FriendsFrameGuildStatusButtonTemplate" id="8">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton7" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton9" inherits="FriendsFrameGuildStatusButtonTemplate" id="9">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton8" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton10" inherits="FriendsFrameGuildStatusButtonTemplate" id="10">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton9" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton11" inherits="FriendsFrameGuildStatusButtonTemplate" id="11">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton10" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton12" inherits="FriendsFrameGuildStatusButtonTemplate" id="12">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton11" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton13" inherits="FriendsFrameGuildStatusButtonTemplate" id="13">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton12" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildFrameGuildStatusButton14" inherits="FriendsFrameGuildStatusButtonTemplate" id="14">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton13" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<ScrollFrame name="GuildStatusScrollFrame" inherits="FauxScrollFrameTemplate">
+								<Size>
+									<AbsDimension x="296" y="257"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
+										<Offset>
+											<AbsDimension x="-67" y="-96"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnVerticalScroll>
+										FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_GUILD_HEIGHT, GuildStatus_Update);
+									</OnVerticalScroll>
+								</Scripts>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture name="GuildStatusScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+											<Size>
+												<AbsDimension x="31" y="256"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+													<Offset>
+														<AbsDimension x="0" y="5"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+											<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+										</Texture>
+										<Texture name="GuildStatusScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+											<Size>
+												<AbsDimension x="31" y="106"/>
+											</Size>
+											<Anchors>
+												<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+													<Offset>
+														<AbsDimension x="0" y="-2"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+											<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+										</Texture>
+									</Layer>
+								</Layers>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+					<Button name="GuildFrameGuildListToggleButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT">
+								<Offset>
+									<AbsDimension x="245" y="-200"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildFrameGuildListToggleButton_OnClick();
+								PlaySound("igMainMenuOptionCheckBoxOn");
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+						<NormalText inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="-32" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</NormalText>
+						<PushedTextOffset>
+							<AbsDimension x="0" y="0"/>
+						</PushedTextOffset>
+					</Button>
+					<Button name="GuildFramePromoteButton" inherits="UIPanelButtonTemplate" text="PROMOTE">
+						<Size>
+							<AbsDimension x="65" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="19" y="82"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildPromoteByName(GuildFrame.selectedName);
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(PROMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PROMOTE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildFrameDemoteButton" inherits="UIPanelButtonTemplate" text="DEMOTE">
+						<Size>
+							<AbsDimension x="65" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildFramePromoteButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="7" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildDemoteByName(GuildFrame.selectedName);
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(DEMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_DEMOTE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildFrameRemoveMemberButton" inherits="UIPanelButtonTemplate" text="REMOVE">
+						<Size>
+							<AbsDimension x="86" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildFrameDemoteButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="7" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								StaticPopup_Show("REMOVE_GUILDMEMBER");
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(REMOVE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildFrameAddMemberButton" inherits="UIPanelButtonTemplate" text="ADDMEMBER">
+						<Size>
+							<AbsDimension x="86" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildFrameRemoveMemberButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="7" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								StaticPopup_Show("ADD_GUILDMEMBER");
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(ADDMEMBER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDMEMBER, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildFrameControlButton" inherits="UIPanelButtonTemplate" text="GUILDCONTROL">
+						<Size>
+							<AbsDimension x="86" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="GuildFrameAddMemberButton" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnUpdate>
+								GuildFrameControlButton_OnUpdate();
+							</OnUpdate>
+							<OnClick>
+								if ( GuildControlPopupFrame:IsVisible() ) then
+									GuildControlPopupFrame:Hide();
+								else
+									GuildControlPopupFrame:Show();
+								end
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(GUILDCONTROL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDCONTROL, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildFrameGroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
+						<Size>
+							<AbsDimension x="86" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="GuildFrameControlButton" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								InviteByName(GuildFrame.selectedName);
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDGROUPINVITE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildFrameGuildMOTDToggleButton">
+						<Size>
+							<AbsDimension x="16" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildFrameNotesLabel" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="173" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildFrame.notesToggle = 1;
+								GuildFrameNoteCheck();
+								GuildFrameGuildMOTDToggleButton:LockHighlight();
+								GuildFramePublicNoteToggleButton:UnlockHighlight();
+								GuildFrameOfficerNoteToggleButton:UnlockHighlight();
+								PlaySound("igMainMenuOptionCheckBoxOn");
+							</OnClick>
+							<OnEnter>
+								if ( SHOW_NEWBIE_TIPS == "1" ) then
+									GameTooltip_AddNewbieTip(GUILD_MOTD_LABEL2, 1.0, 1.0, 1.0, GUILDNOTE_BUTTON_TOOLTIP, 1);
+								else
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText(GUILDMOTD_BUTTON_TOOLTIP);
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();						
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-GuildButton-MOTD-Up"/>
+						<DisabledTexture file="Interface\Buttons\UI-GuildButton-MOTD-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-GuildButton-MOTD-Up" alphaMode="ADD"/>
+					</Button>
+					<Button name="GuildFramePublicNoteToggleButton">
+						<Size>
+							<AbsDimension x="16" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildFrameGuildMOTDToggleButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="1" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnUpdate>
+								if ( GetGuildRosterSelection() == 0 ) then
+									this:Disable();
+								else
+									this:Enable();
+								end
+							</OnUpdate>
+							<OnClick>
+								GuildFrame.notesToggle = 2;
+								GuildFrameNoteCheck();
+								GuildFrameGuildMOTDToggleButton:UnlockHighlight();
+								GuildFramePublicNoteToggleButton:LockHighlight();
+								GuildFrameOfficerNoteToggleButton:UnlockHighlight();
+								PlaySound("igMainMenuOptionCheckBoxOn");
+							</OnClick>
+							<OnEnter>
+								if ( SHOW_NEWBIE_TIPS == "1" ) then
+									GameTooltip_AddNewbieTip(PUBLIC_NOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDPUBLICNOTE, 1);
+								else
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText(GUILDNOTE_BUTTON_TOOLTIP);
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();						
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-GuildButton-PublicNote-Up"/>
+						<DisabledTexture file="Interface\Buttons\UI-GuildButton-PublicNote-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-GuildButton-PublicNote-Up" alphaMode="ADD"/>
+					</Button>
+					<Button name="GuildFrameOfficerNoteToggleButton">
+						<Size>
+							<AbsDimension x="16" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildFramePublicNoteToggleButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnUpdate>
+								if ( (GetGuildRosterSelection() == 0) or (not CanViewOfficerNote()) ) then
+									this:Disable();
+								else
+									this:Enable();
+								end
+							</OnUpdate>
+							<OnClick>
+								GuildFrame.notesToggle = 3;
+								GuildFrameNoteCheck();
+								GuildFrameGuildMOTDToggleButton:UnlockHighlight();
+								GuildFramePublicNoteToggleButton:UnlockHighlight();
+								GuildFrameOfficerNoteToggleButton:LockHighlight();
+								PlaySound("igMainMenuOptionCheckBoxOn");
+							</OnClick>
+							<OnEnter>
+								if ( SHOW_NEWBIE_TIPS == "1" ) then
+									GameTooltip_AddNewbieTip(GUILD_OFFICER_NOTE, 1.0, 1.0, 1.0, GUILDOFFICERNOTE_BUTTON_TOOLTIP, 1);
+								else
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText(GUILDOFFICERNOTE_BUTTON_TOOLTIP);
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();						
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-GuildButton-OfficerNote-Up"/>
+						<DisabledTexture file="Interface\Buttons\UI-GuildButton-OfficerNote-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-GuildButton-OfficerNote-Up" alphaMode="ADD"/>
+					</Button>
+					<Button name="GuildFrameEditBox">
+						<Size>
+							<AbsDimension x="225" y="30"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildFrameNotesLabel" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP" nonspacewrap="true">
+									<Size>
+										<AbsDimension x="225" y="30"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								GuildFrameEditBox_UpdateText();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						GuildRoster();
+					</OnShow>
+					<OnHide>
+						GuildControlPopupFrame:Hide();
+					</OnHide>
+				</Scripts>
+			</Frame>
+			<Frame name="GuildControlPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+				<Size>
+					<AbsDimension x="297" y="298"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-40" y="-65"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
+							<Size>
+								<AbsDimension x="64" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="256" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
+							<Size>
+								<AbsDimension x="256" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-256"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
+							<Size>
+								<AbsDimension x="64" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="256" y="-256"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString inherits="GameFontNormal" text="GUILDCONTROL_SELECTRANK">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontHighlight" text="GUILDCONTROL_ALLOWRANK">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-108"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="GuildControlPopupFrameCheckboxes">
+						<Size>
+							<AbsDimension x="300" y="500"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<Frame name="GuildControlPopupFrameDropDown" inherits="UIDropDownMenuTemplate">
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-30"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<HitRectInsets>
+									<AbsInset left="0" right="20" top="0" bottom="0"/>
+								</HitRectInsets>
+								<Scripts>
+									<OnLoad>
+										GuildControlPopupFrameDropDown_OnLoad();
+									</OnLoad>
+								</Scripts>
+							</Frame>
+							<Button name="GuildControlPopupFrameAddRankButton">
+								<Size>
+									<AbsDimension x="16" y="16"/>
+								</Size>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildControlPopupFrameDropDown" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-15" y="1"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnUpdate>
+										GuildControlPopupFrameAddRankButton_OnUpdate();
+									</OnUpdate>
+									<OnClick>
+										StaticPopup_Show("ADD_GUILDRANK");
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetText(GUILDADDRANK_BUTTON_TOOLTIP);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();		
+									</OnLeave>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-PlusButton-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-PlusButton-Down"/>
+								<DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled"/>
+								<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
+							</Button>
+							<Button name="GuildControlPopupFrameRemoveRankButton">
+								<Size>
+									<AbsDimension x="16" y="16"/>
+								</Size>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildControlPopupFrameAddRankButton" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnUpdate>
+										GuildControlPopupFrameRemoveRankButton_OnUpdate();
+									</OnUpdate>
+									<OnClick>
+										GuildControlPopupFrameRemoveRankButton_OnClick();
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetText(GUILDREMOVERANK_BUTTON_TOOLTIP);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();						
+									</OnLeave>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-MinusButton-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-MinusButton-Down"/>
+								<DisabledTexture file="Interface\Buttons\UI-MinusButton-Disabled"/>
+								<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
+							</Button>
+							<CheckButton name="GuildControlPopupFrameCheckbox1" inherits="GuildControlPopupFrameCheckboxTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="25" y="-125"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox3" inherits="GuildControlPopupFrameCheckboxTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox1" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox5" inherits="GuildControlPopupFrameCheckboxTemplate" id="5">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox3" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox7" inherits="GuildControlPopupFrameCheckboxTemplate" id="7">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox5" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox9" inherits="GuildControlPopupFrameCheckboxTemplate" id="9">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox7" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox11" inherits="GuildControlPopupFrameCheckboxTemplate" id="11">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox9" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox2" inherits="GuildControlPopupFrameCheckboxTemplate" id="2">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildControlPopupFrameCheckbox1" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="115" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox4" inherits="GuildControlPopupFrameCheckboxTemplate" id="4">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox2" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox6" inherits="GuildControlPopupFrameCheckboxTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox4" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox8" inherits="GuildControlPopupFrameCheckboxTemplate" id="8">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox6" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox10" inherits="GuildControlPopupFrameCheckboxTemplate" id="10">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox8" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox12" inherits="GuildControlPopupFrameCheckboxTemplate" id="12">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox10" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+						</Frames>
+					</Frame>
+					<Button name="GuildControlPopupFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size>
+							<AbsDimension x="78" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildControlPopupFrame">
+								<Offset>
+									<AbsDimension x="-11" y="13"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								this:GetParent():Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="GuildControlPopupAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+						<Size>
+							<AbsDimension x="78" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="GuildControlPopupFrameCancelButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildControlPopupAcceptButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<EditBox name="GuildControlPopupFrameEditBox" autoFocus="false" historyLines="1" letters="15">
+						<Size>
+							<AbsDimension x="130" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="35" y="-70"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+									<Size>
+										<AbsDimension x="75" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT">
+											<Offset>
+												<AbsDimension x="-10" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+									<Size>
+										<AbsDimension x="75" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="RIGHT">
+											<Offset>
+												<AbsDimension x="10" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+								<FontString inherits="GameFontNormal" text="GUILDCONTROL_RANKLABEL">
+									<Anchors>
+										<Anchor point="RIGHT" relativeTo="GuildControlPopupFrameEditBox" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="-12" y="1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								this:SetText(GuildControlGetRankName(1));
+								this:ClearFocus();
+							</OnShow>
+							<OnEditFocusGained>
+								GuildControlPopupAcceptButton:Enable();
+							</OnEditFocusGained>
+							<OnEnterPressed>
+								this:ClearFocus();
+								GuildControlPopupAcceptButton:Enable();
+							</OnEnterPressed>
+							<OnEscapePressed>
+								this:ClearFocus();
+							</OnEscapePressed>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						GuildControlPopupFrame_OnLoad();
+					</OnLoad>
+					<OnShow>
+						GuildControlPopupFrame_OnShow();
+					</OnShow>
+					<OnHide>
+						GuildControlPopupFrame_OnHide();
+					</OnHide>
+				</Scripts>
+			</Frame>
+			<Button name="FriendsFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="FRIENDS">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="11" y="45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_FRIENDSTAB, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="FriendsFrameTab2" inherits="FriendsFrameTabTemplate" id="2" text="IGNORE">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_IGNORETAB, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="WHO">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_WHOTAB, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="GUILD">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						InGuildCheck();
+						FriendsFrame_Update();
+					</OnLoad>
+					<OnClick>
+						PanelTemplates_Tab_OnClick(FriendsFrame);
+						--[[ GuildRoster();		I don't think this one's necessary... ]]
+						FriendsFrame_OnShow();
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_GUILDTAB, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="FriendsFrameTab5" inherits="FriendsFrameTabTemplate" id="5" text="RAID">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						--InGuildCheck();
+						FriendsFrame_Update();
+					</OnLoad>
+					<OnEvent>
+						--InGuildCheck();
+						FriendsFrame_Update();
+					</OnEvent>
+					<OnUpdate>
+						--InGuildCheck();
+					</OnUpdate>
+					<OnClick>
+						PanelTemplates_Tab_OnClick(FriendsFrame);
+						FriendsFrame_OnShow();
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_RAIDTAB, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				FriendsFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				FriendsFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				FriendsFrame_OnHide();
+			</OnHide>
+			<OnEvent>
+				FriendsFrame_OnEvent();
+			</OnEvent>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+</Ui>

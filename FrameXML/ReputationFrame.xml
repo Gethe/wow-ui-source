@@ -1,0 +1,569 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ReputationFrame.lua"/>
+	<Button name="ReputationHeaderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="302" y="13"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				if (this.isCollapsed) then
+					ExpandFactionHeader(this.index);
+				else
+					CollapseFactionHeader(this.index);
+				end
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+		<NormalText name="$parentNormalText" inherits="GameFontNormal" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="275" y="12"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="20" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors> 
+		</NormalText>
+		<HighlightText name="$parentHighlightText" inherits="GameFontHighlight" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="275" y="12"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="20" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightText>
+		<DisabledText name="$parentDisabledText" inherits="GameFontHighlight" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="275" y="12"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="20" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</DisabledText>
+	</Button>
+	<StatusBar name="ReputationBarTemplate" virtual="true" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
+		<Size>
+			<AbsDimension x="133" y="13"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentReputationBarLeft" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+					<Size>
+						<AbsDimension x="256" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-126" y="4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.34375"/>
+				</Texture>
+				<Texture name="$parentReputationBarRight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+					<Size>
+						<AbsDimension x="37" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentReputationBarLeft" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.14453125" top="0.34375" bottom="0.71875"/>
+				</Texture>
+				<FontString name="$parentFactionName" inherits="GameFontHighlightSmall" text="Orcish Horde">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="-119" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentFactionStanding" inherits="GameFontHighlightSmall" text="Revered">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentAlliedCheckButton">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="35" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						else
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						end
+						FactionToggleAtWar(this:GetParent():GetID());
+					</OnClick>
+				</Scripts>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="40" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</HighlightTexture>
+				<CheckedTexture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check"/>
+			</CheckButton>
+		</Frames>
+		<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+		<BarColor r=".25" g=".25" b=".75"/>
+	</StatusBar>
+	<Frame name="ReputationFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true" id="3">
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="258" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-257"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="258" y="-257"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="ReputationFrameFactionLabel" inherits="GameFontHighlight" text="FACTION">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="26" y="-79"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="ReputationFrameStandingLabel" inherits="GameFontHighlight" text="STANDING">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="185" y="-79"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="ReputationFrameAlliedLabel" inherits="GameFontHighlight" text="AT_WAR">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="285" y="-79"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="ReputationBar1" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="150" y="-107"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader1" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar1">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar2" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader2" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar2">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar3" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader3" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar3">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar4" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader4" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar4">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar5" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader5" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar5">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar6" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader6" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar6">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar7" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader7" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar7">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar8" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader8" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar8">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar9" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader9" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar9">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar10" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader10" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar10">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar11" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader11" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar11">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar12" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar11" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader12" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar12">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar13" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar12" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader13" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar13">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<StatusBar name="ReputationBar14" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar13" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader14" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar14">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="ReputationListScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="332"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-66" y="-98"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(REPUTATIONFRAME_FACTIONHEIGHT, ReputationFrame_Update);
+					</OnVerticalScroll>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="ReputationListScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="ReputationListScrollFrameScrollBarScrollUpButton">
+									<Offset>
+										<AbsDimension x="0" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="108"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="ReputationListScrollFrameScrollBarScrollDownButton">
+									<Offset>
+										<AbsDimension x="0" y="-4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.421875"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ReputationFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				ReputationFrame_OnShow();
+			</OnShow>
+			<OnEvent>
+				ReputationFrame_OnEvent(event);
+			</OnEvent>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+</Ui>

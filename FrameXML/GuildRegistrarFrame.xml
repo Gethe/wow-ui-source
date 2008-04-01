@@ -1,0 +1,356 @@
+ <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GuildRegistrarFrame.lua"/>
+	<Frame name="GuildRegistrarFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+ 		<Size>
+ 			<AbsDimension x="384" y="512"/>
+ 		</Size>
+ 		<Anchors>
+ 			<Anchor point="TOPLEFT">
+ 				<Offset>
+ 					<AbsDimension x="0" y="-104"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+                <Texture name="GuildRegistrarFramePortrait">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="GuildRegistrarText" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="270" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers> 
+ 		<Frames>
+			<Frame name="GuildRegistrarNpcNameFrame">
+				<Size>
+					<AbsDimension x="300" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GuildRegistrarFrame" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-23"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="GuildRegistrarFrameNpcNameText" inherits="GameFontHighlight"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+                     <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 2);
+                    </OnLoad>
+                </Scripts>
+			</Frame>
+			<Button name="GuildRegistrarFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="GuildRegistrarFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-42" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="GuildRegistrarGreetingFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="AvailableServicesText" inherits="QuestTitleFont" text="AVAILABLE_SERVICES" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="300" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="35" y="-100"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
+							<Size>
+								<AbsDimension x="128" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="22" y="68"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="GuildRegistrarFrameGoodbyeButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size>
+							<AbsDimension x="75" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-40" y="72"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(GuildRegistrarFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="GuildRegistrarButton1" inherits="QuestTitleButtonTemplate" text="GUILD_CHARTER_PURCHASE">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AvailableServicesText" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-10" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildRegistrar_ShowPurchaseFrame();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="GuildRegistrarButton2" inherits="QuestTitleButtonTemplate" text="GUILD_CHARTER_REGISTER">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildRegistrarButton1" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TurnInGuildCharter();
+							</OnClick>
+						</Scripts>
+					</Button>
+<!--
+					<Button name="GuildRegistrarButton3" inherits="QuestTitleButtonTemplate" text="GUILD_CREST_DESIGN">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildRegistrarButton2" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GetTabardInfo();
+							</OnClick>
+						</Scripts>
+					</Button>
+-->
+				</Frames>
+			</Frame>
+			<Frame name="GuildRegistrarPurchaseFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="GuildRegistrarPurchaseText" inherits="QuestFont" text="GUILD_REGISTRAR_PURCHASE_TEXT" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="270" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="35" y="-95"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildRegistrarCostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="GuildRegistrarPurchaseText" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="GuildRegistrarMoneyFrame" inherits="MoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildRegistrarCostLabel" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="15" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								MoneyFrame_OnLoad();
+								MoneyFrame_SetType("STATIC");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="GuildRegistrarFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size>
+							<AbsDimension x="75" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-40" y="72"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(GuildRegistrarFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="GuildRegistrarFramePurchaseButton" inherits="UIPanelButtonTemplate" text="PURCHASE">
+						<Size>
+							<AbsDimension x="85" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="GuildRegistrarFrame">
+								<Offset>
+									<AbsDimension x="22" y="72"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								BuyGuildCharter(GuildRegistrarFrameEditBox:GetText());
+								HideUIPanel(GuildRegistrarFrame);
+								ChatFrameEditBox:SetFocus();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<EditBox name="GuildRegistrarFrameEditBox" letters="24" historyLines="1">
+						<Size>
+							<AbsDimension x="130" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildRegistrarCostLabel" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+									<Size>
+										<AbsDimension x="75" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT">
+											<Offset>
+												<AbsDimension x="-10" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+									<Size>
+										<AbsDimension x="75" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="RIGHT">
+											<Offset>
+												<AbsDimension x="10" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnterPressed>
+								BuyGuildCharter(this:GetText());
+								HideUIPanel(GuildRegistrarFrame);
+								ChatFrameEditBox:SetFocus();
+							</OnEnterPressed>
+							<OnEscapePressed>
+								ChatFrameEditBox:SetFocus();
+							</OnEscapePressed>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>	
+				</Frames>
+			</Frame>
+ 		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("GUILD_REGISTRAR_SHOW");
+				this:RegisterEvent("GUILD_REGISTRAR_CLOSED");
+			</OnLoad>
+			<OnEvent>
+				if ( event == "GUILD_REGISTRAR_SHOW" ) then
+					ShowUIPanel(GuildRegistrarFrame);
+					if ( not GuildRegistrarFrame:IsVisible() ) then
+						CloseGuildRegistrar();
+					end
+				elseif ( event == "GUILD_REGISTRAR_CLOSED" ) then
+					HideUIPanel(GuildRegistrarFrame);
+				end
+			</OnEvent>
+			<OnShow>
+				GuildRegistrar_OnShow();
+				PlaySound("igQuestListOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igQuestListClose");
+				CloseGuildRegistrar();
+			</OnHide>
+		</Scripts>
+ 	</Frame>
+ </Ui>

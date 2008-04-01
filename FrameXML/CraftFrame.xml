@@ -1,0 +1,702 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CraftFrame.lua"/>
+	<Button name="CraftButtonTemplate" inherits="ClassTrainerSkillButtonTemplate" hidden="false" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentCost" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-15" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				CraftButton_OnClick(arg1);
+			</OnClick>
+			<OnLeave>
+				if ( GetCraftSelectionIndex() ~= this:GetID() ) then
+					getglobal(this:GetName().."SubText"):SetTextColor(this.r, this.g, this.b);
+				end
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="CraftItemTemplate" inherits="QuestItemTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetCraftItem(GetCraftSelectionIndex(), this:GetID());
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				if ( IsShiftKeyDown() and ChatFrameEditBox:IsVisible() ) then
+					local link = GetCraftReagentItemLink(GetCraftSelectionIndex(), this:GetID())
+					if ( link ) then
+						ChatFrameEditBox:Insert(link);
+					end
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="CraftFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="34" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+                <Texture name="CraftFramePortrait">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="CraftFrameTitleText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CraftFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="CraftSkillBorderLeft" file="Interface\TradeSkillFrame\UI-TradeSkill-SkillBorder">
+					<Size>
+						<AbsDimension x="256" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="63" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>
+				<Texture file="Interface\TradeSkillFrame\UI-TradeSkill-SkillBorder">
+					<Size>
+						<AbsDimension x="28" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CraftSkillBorderLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.109375" top="0.25" bottom="0.5"/>
+				</Texture>
+				<Texture name="CraftHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="256" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-221"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="75" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CraftHorizontalBarLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				</Texture>
+				<FontString name="CraftFramePointsText" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="CraftFrame" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="170" y="86"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CraftFramePointsLabel" inherits="GameFontNormalSmall" text="TRAINING_POINTS">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="CraftFramePointsText" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="CraftRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
+				<Size>
+					<AbsDimension x="268" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="73" y="-37"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentSkillName" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="6" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="128" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentSkillName" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="13" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+							<Texture name="$parentBackground">
+								<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
+							</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentBorder">
+						<Size>
+							<AbsDimension x="281" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT">
+								<Offset>
+									<AbsDimension x="-5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture name="$parentNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder" />
+					</Button>			
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:RegisterEvent("SKILL_LINES_CHANGED");
+					</OnLoad>
+					<OnEvent>
+						if ( event == "SKILL_LINES_CHANGED" ) then
+							CraftFrame_Update();
+						end
+					</OnEvent>
+				</Scripts>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarColor r="0.25" g="0.25" b="0.75" />
+			</StatusBar>
+			<Frame name="CraftExpandButtonFrame">
+				<Size>
+					<AbsDimension x="54" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-71"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="CraftExpandTabLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ExpandTab-Left">
+							<Size>
+								<AbsDimension x="8" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="CraftExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
+							<Size>
+								<AbsDimension x="38" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="CraftExpandTabLeft" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="CraftExpandTabRight" file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
+							<Size>
+								<AbsDimension x="8" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="CraftExpandTabMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="CraftCollapseAllButton" hidden="false" inherits="ClassTrainerSkillButtonTemplate">
+						<Size>
+							<AbsDimension x="22" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="CraftExpandTabLeft" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName()):SetText(ALL);
+							</OnLoad>
+							<OnClick>
+								TradeSkillCollapseAllButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="CraftHighlightFrame" hidden="true">
+				<Size>
+					<AbsDimension x="293" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="CraftHighlight" file="Interface\Buttons\UI-Listbox-Highlight2"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="Craft1" inherits="CraftButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CraftFrame">
+						<Offset>
+							<AbsDimension x="22" y="-96"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="Craft2" inherits="CraftButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Craft1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="Craft3" inherits="CraftButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Craft2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="Craft4" inherits="CraftButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Craft3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="Craft5" inherits="CraftButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Craft4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="Craft6" inherits="CraftButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Craft5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="Craft7" inherits="CraftButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Craft6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="Craft8" inherits="CraftButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Craft7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="CraftListScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="130"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="CraftFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-67" y="-96"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(CRAFT_SKILL_HEIGHT, CraftFrame_Update)
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+		<!--
+			<Frame name="CraftMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="CraftFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="180" y="86"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		-->
+			<ScrollFrame name="CraftDetailScrollFrame" inherits="ClassTrainerDetailScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="297" y="176"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-234"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<Frame name="CraftDetailScrollChildFrame">
+						<Size>
+							<AbsDimension x="297" y="150"/>
+						</Size>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="CraftName" inherits="GameFontNormal" text="Skill Name" justifyH="LEFT">
+									<Size>
+										<AbsDimension x="244" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="50" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="CraftRequirements" inherits="GameFontHighlightSmall">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="CraftName" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="CraftCost" inherits="GameFontHighlightSmall">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="CraftRequirements" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<Texture name="CraftDetailHeaderLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderLeft">
+									<Size>
+										<AbsDimension x="256" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderRight">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="CraftDetailHeaderLeft" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+								<FontString name="CraftDescription" inherits="GameFontHighlightSmall" justifyH="LEFT">
+									<Size>
+										<AbsDimension x="290" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="5" y="-50"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="CraftReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="CraftDescription" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="CraftIcon">
+								<Size>
+									<AbsDimension x="37" y="37"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="8" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										if ( IsShiftKeyDown() and ChatFrameEditBox:IsVisible() ) then
+											local link = GetCraftItemLink(GetCraftSelectionIndex())
+											if ( link ) then
+												ChatFrameEditBox:Insert(link);
+											end
+										end
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetCraftSpell(GetCraftSelectionIndex());
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Button>
+							<Button name="CraftReagent1" inherits="CraftItemTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CraftReagentLabel" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="CraftReagent2" inherits="CraftItemTemplate" id="2">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CraftReagent1" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="CraftReagent3" inherits="CraftItemTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CraftReagent1" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="CraftReagent4" inherits="CraftItemTemplate" id="4">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CraftReagent3" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="CraftReagent5" inherits="CraftItemTemplate" id="5">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CraftReagent3" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="CraftReagent6" inherits="CraftItemTemplate" id="6">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CraftReagent5" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="CraftReagent7" inherits="CraftItemTemplate" id="7">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CraftReagent6" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="CraftReagent8" inherits="CraftItemTemplate" id="8">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CraftReagent7" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button name="CraftCreateButton" inherits="UIPanelButtonTemplate" text="CREATE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CraftFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="224" y="-422"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						DoCraft(GetCraftSelectionIndex());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CraftCancelButton" inherits="UIPanelButtonTemplate" text="EXIT">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CraftFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-422"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(CraftFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CraftFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="CraftFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-29" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				CraftFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				CraftFrame_OnEvent();
+			</OnEvent>
+			<OnShow>
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnHide>
+				CloseCraft();
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+</Ui>

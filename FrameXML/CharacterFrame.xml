@@ -1,0 +1,288 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="CharacterFrame.lua"/>
+    <Button name="CharacterFrameTabButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="115" y="32"/>
+        </Size>
+        <Layers>
+        	<Layer level="BACKGROUND">
+        		<Texture name="$parentLeftDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="TOPLEFT">
+        					<Offset>
+        						<AbsDimension x="0" y="5"/>
+        					</Offset>
+        				</Anchor>
+        			</Anchors>
+					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddleDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
+        			<Size>
+        				<AbsDimension x="88" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRightDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentLeft" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="TOPLEFT"/>
+        			</Anchors>
+					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
+        			<Size>
+        				<AbsDimension x="88" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRight" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
+        			<Size>
+        				<AbsDimension x="20" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+        		</Texture>
+        	</Layer>
+        </Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 4);
+			</OnLoad>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(CharacterFrame);
+				CharacterFrameTab_OnClick();
+			</OnClick>
+			<OnShow>
+				PanelTemplates_TabResize(10);
+				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 30);
+			</OnShow>
+		</Scripts>
+		<NormalText name="$parentText" inherits="GameFontNormalSmall">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+		<HighlightText inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightText>
+		<DisabledText inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</DisabledText>
+		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="10" y="2"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="RIGHT">
+					<Offset>
+						<AbsDimension x="-10" y="2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+    </Button>
+    <Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true">
+        <Size>
+            <AbsDimension x="384" y="512"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="0" y="-104"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture name="CharacterFramePortrait">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="CharacterNameFrame">
+                <Size>
+                    <AbsDimension x="109" y="12"/>
+                </Size>
+                 <Anchors>
+                    <Anchor point="CENTER">
+                        <Offset>
+                            <AbsDimension x="6" y="232"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer>
+                        <FontString name="CharacterNameText" inherits="GameFontNormal" text="NAME">
+                            <Size>
+                                <AbsDimension x="300" y="12"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="CENTER"/>
+                            </Anchors>
+                            <Color r="1.0" g="1.0" b="1.0"/>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                     <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 1);
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Button name="CharacterFrameCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="CharacterFrame" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-44" y="-26"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 4);
+                    </OnLoad>
+                </Scripts>
+            </Button>
+            <Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER">
+                <Anchors>
+                    <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="65" y="61"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(TEXT(CHARACTER_INFO), "TOGGLECHARACTER0"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
+            <Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PET">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-15" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(TEXT(PET), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
+			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="REPUTATION">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-15" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(TEXT(REPUTATION), "TOGGLECHARACTER2"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
+			<Button name="CharacterFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="SKILLS">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="CharacterFrameTab3" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-15" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(TEXT(SKILLS), "TOGGLECHARACTER1"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
+        </Frames>
+        <Scripts>
+			<OnLoad>
+				CharacterFrame_OnLoad();
+			</OnLoad>
+            <OnEvent>
+                CharacterFrame_OnEvent(event);
+            </OnEvent>
+            <OnShow>
+                CharacterFrame_OnShow();
+            </OnShow>
+			<OnHide>
+				CharacterFrame_OnHide();
+			</OnHide>
+        </Scripts>
+    </Frame>
+</Ui>

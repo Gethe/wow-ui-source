@@ -1,0 +1,126 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ComboFrame.lua"/>
+	<Frame name="ComboPointTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="12" y="12"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\ComboFrame\ComboPoint">
+					<Size>
+						<AbsDimension x="12" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.375" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHighlight" file="Interface\ComboFrame\ComboPoint">
+					<Size>
+						<AbsDimension x="8" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.375" right="0.5625" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="14" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="ComboFrame" frameStrata="MEDIUM" toplevel="true" movable="true" parent="UIParent" hidden="true" alpha="0">
+		<Size>
+			<AbsDimension x="256" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="TargetFrame">
+				<Offset>
+					<AbsDimension x="-44" y="-9"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="ComboPoint1" inherits="ComboPointTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint2" inherits="ComboPointTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ComboPoint1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="7" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint3" inherits="ComboPointTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ComboPoint2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="5" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint4" inherits="ComboPointTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ComboPoint3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="2" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint5" inherits="ComboPointTemplate">
+				<Size>
+					<AbsDimension x="15" y="18"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ComboPoint4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("PLAYER_TARGET_CHANGED");
+				this:RegisterEvent("PLAYER_COMBO_POINTS");
+				-- init alpha
+				ComboPoint1Highlight:SetAlpha(0);
+				ComboPoint1Shine:SetAlpha(0);
+			</OnLoad>
+			<OnEvent>
+				ComboPointsFrame_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

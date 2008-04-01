@@ -1,0 +1,428 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PlayerFrame.lua"/>
+	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="232" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="-19" y="-4"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="6" right="0" top="4" bottom="9"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="PlayerFrameBackground">
+					<Size>
+						<AbsDimension x="119" y="41"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="106" y="-22"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="PlayerPortrait">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="42" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame setAllPoints="true">
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="PlayerFrameTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
+									<TexCoords left="1.0" right="0.09375" top="0" bottom="0.78125"/>
+								</Texture>
+								<FontString name="PlayerName" inherits="GameFontNormalSmall">
+									<Size>
+										<AbsDimension x="100" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="50" y="19"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerLevelText" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="-63" y="-16"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameHealthBarText" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="50" y="4"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameManaBarText" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="50" y="-8"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture name="PlayerStatusTexture" file="Interface\CharacterFrame\UI-Player-Status" alphaMode="ADD" hidden="true">
+									<Size>
+										<AbsDimension x="190" y="66"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="35" y="-8"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.74609375" top="0" bottom="0.5234375"/>
+								</Texture>
+								<Texture name="PlayerAttackBackground" file="Interface\TargetingFrame\UI-TargetingFrame-AttackBackground" hidden="true">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="37" y="-50"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+								<Texture name="PlayerPVPIcon" hidden="true">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="18" y="-20"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="PlayerHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="73" y="-42"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<Texture name="PlayerLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="44" y="-10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+								<Texture name="PlayerMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="80" y="-10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+								<Texture name="PlayerRestIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="37" y="-52"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
+								</Texture>
+								<Texture name="PlayerAttackIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon">
+											<Offset>
+												<AbsDimension x="1" y="1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.5" right="1.0" top="0" bottom="0.5"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="PlayerPVPIconHitArea" enableMouse="true">
+						<Size>
+							<AbsDimension x="39" y="37"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PlayerPVPIcon"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(this.tooltipTitle, 1.0, 1.0, 1.0, this.tooltipText, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>							
+						</Scripts>
+					</Frame>
+					<Frame name="PlayerStatusGlow" hidden="true">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="PlayerRestGlow" file="Interface\CharacterFrame\UI-StateIcon" hidden="false" alphaMode="ADD">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+									<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
+								</Texture>
+								<Texture name="PlayerAttackGlow" file="Interface\CharacterFrame\UI-StateIcon" hidden="false" alphaMode="ADD">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="1" y="1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="1.0" g="0" b="0"/>
+									<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Scripts>
+						<OnLoad>
+							this:SetFrameLevel(this:GetFrameLevel()+3);
+						</OnLoad>
+					</Scripts>
+				</Frames>
+			</Frame>
+			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="119" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="106" y="-41"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize();
+						this.textLockable = 1;
+					</OnLoad>
+					<OnMouseUp>
+						PlayerFrame_OnClick(arg1);
+					</OnMouseUp>
+					<OnEvent>
+						UnitFrameHealthBar_Update(this, arg1);
+					</OnEvent>
+					<OnValueChanged>
+						UnitFrameHealthBar_OnValueChanged(arg1);
+					</OnValueChanged>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="119" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="106" y="-52"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize();
+						this.textLockable = 1;
+					</OnLoad>
+					<OnEvent>
+						UnitFrameManaBar_Update(this, arg1);
+					</OnEvent>
+					<OnMouseUp>
+						PlayerFrame_OnClick(arg1);
+					</OnMouseUp>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="0" b="1.0"/>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				UnitFrame_Initialize("player", PlayerName, PlayerPortrait,
+									 PlayerFrameHealthBar, PlayerFrameHealthBarText, 
+									 PlayerFrameManaBar, PlayerFrameManaBarText);
+				PlayerFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				PlayerFrame_OnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				PlayerFrame_OnUpdate(arg1);
+			</OnUpdate>
+			<OnEnter>
+				UnitFrame_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				UnitFrame_OnLeave();
+			</OnLeave>
+			<OnClick>
+				PlayerFrame_OnClick(arg1);
+			</OnClick>
+			<OnReceiveDrag>
+				PlayerFrame_OnReceiveDrag();
+			</OnReceiveDrag>
+		</Scripts>
+	</Button>
+	<Button name="LootThresholdButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="64" y="12"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				LootThreshold_OnClick(this:GetID());
+			</OnClick>
+			<OnLoad>
+					local color = ITEM_QUALITY_COLORS[this:GetID()];
+					this:SetTextColor(color.r, color.g, color.b);
+			</OnLoad>
+		</Scripts>
+		<NormalText inherits="GameFontNormal"/>
+		<HighlightText inherits="GameFontHighlight"/>
+		<DisabledText inherits="GameFontDisable"/>
+	</Button>
+	<Frame name="PlayerFrameLootThresholdPopup" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="150" y="106"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="LootThresholdTitle" inherits="GameFontHighlight" text="LOOT_THRESHOLD">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="LootThresholdButton1" inherits="LootThresholdButtonTemplate" id="2" text="ITEM_QUALITY2_DESC">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="LootThresholdTitle" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="LootThresholdButton2" inherits="LootThresholdButtonTemplate" id="3" text="ITEM_QUALITY3_DESC">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="LootThresholdButton1" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="LootThresholdButton3" inherits="LootThresholdButtonTemplate" id="4" text="ITEM_QUALITY4_DESC">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="LootThresholdButton2" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="LootThresholdCloseButton" inherits="LootThresholdButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="LootThresholdButton3" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlayerFrameLootThresholdPopup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

@@ -1,0 +1,1205 @@
+ <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="QuestFrame.lua"/>
+	<Frame name="QuestFramePanelTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>	
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentMaterialTopLeft" file="">
+					<Size>
+						<AbsDimension x="239" y="241"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="21" y="-75"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialTopRight" file="">
+					<Size>
+						<AbsDimension x="64" y="241"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialBotLeft" file="">
+					<Size>
+						<AbsDimension x="239" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialBotRight" file="">
+					<Size>
+						<AbsDimension x="64" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Button name="QuestItemTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="147" y="41"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture">
+					<Size>
+						<AbsDimension x="39" y="39"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+					<Size>
+						<AbsDimension x="128" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="90" y="36"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentNameFrame">
+							<Offset>
+								<AbsDimension x="15" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture">
+							<Offset>
+								<AbsDimension x="-4" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( this:GetAlpha() > 0 ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					if ( this.rewardType == "item" ) then
+						GameTooltip:SetQuestItem(this.type, this:GetID());
+					elseif ( this.rewardType == "spell" ) then
+						GameTooltip:SetQuestRewardSpell();
+					end
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				QuestItem_OnClick();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="QuestRewardItemTemplate" inherits="QuestItemTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				QuestRewardItem_OnClick();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="QuestTitleButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="300" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\QuestFrame\UI-Quest-BulletPoint">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				QuestTitleButton_OnClick();
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<NormalText inherits="QuestFont" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="275" y="0"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="20" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+	</Button>
+	<Frame name="QuestFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+ 		<Size>
+ 			<AbsDimension x="384" y="512"/>
+ 		</Size>
+ 		<Anchors>
+ 			<Anchor point="TOPLEFT">
+ 				<Offset>
+ 					<AbsDimension x="0" y="-104"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+                <Texture name="QuestFramePortrait">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+		</Layers> 
+ 		<Frames>
+			<Frame name="QuestNpcNameFrame">
+				<Size>
+					<AbsDimension x="300" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestFrame" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-23"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="QuestFrameNpcNameText" inherits="GameFontHighlight" text="Title Text"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+                     <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 2);
+                    </OnLoad>
+                </Scripts>
+			</Frame>
+			<Button name="QuestFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="QuestFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-42" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+ 			<Frame name="QuestFrameRewardPanel" inherits="QuestFramePanelTemplate" hidden="true">
+ 				<Frames>
+ 					<Button name="QuestFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size>
+							<AbsDimension x="75" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-39" y="72"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								QuestRewardCancelButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="QuestFrameCompleteQuestButton" inherits="UIPanelButtonTemplate" text="COMPLETE_QUEST">
+						<Size>
+							<AbsDimension x="120" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="22" y="72"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								QuestRewardCompleteButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="QuestRewardScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="300" y="334"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestFrame">
+								<Offset>
+									<AbsDimension x="23" y="-81"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="QuestRewardScrollChildFrame">
+								<Size>
+									<AbsDimension x="300" y="334"/>
+								</Size>
+								<Layers>
+									<Layer>
+										<FontString name="QuestRewardTitleText" inherits="QuestTitleFont" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="285" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="5" y="-10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestRewardText" inherits="QuestFont" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="275" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="QuestRewardTitleText" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-5"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestRewardRewardTitleText" inherits="QuestTitleFont" text="QUEST_REWARDS" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="285" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="QuestRewardText" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestRewardItemChooseText" inherits="QuestFont" text="REWARD_CHOOSE" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="295" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="QuestRewardRewardTitleText" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-5"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestRewardItemReceiveText" inherits="QuestFont" text="Reward receive text" justifyH="LEFT">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button name="QuestRewardItem1" inherits="QuestRewardItemTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestRewardItem2" inherits="QuestRewardItemTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestRewardItem3" inherits="QuestRewardItemTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestRewardItem4" inherits="QuestRewardItemTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestRewardItem5" inherits="QuestRewardItemTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestRewardItem6" inherits="QuestRewardItemTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestRewardItem7" inherits="QuestRewardItemTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestRewardItem8" inherits="QuestRewardItemTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestRewardItem9" inherits="QuestRewardItemTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestRewardItem10" inherits="QuestRewardItemTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Button>
+									<Frame name="QuestRewardMoneyFrame" inherits="MoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="QuestRewardItemReceiveText" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="15" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												QuestMoneyFrame_OnLoad();
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<Frame name="QuestRewardItemHighlight" hidden="true">
+										<Size>
+											<AbsDimension x="256" y="64"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<Texture file="Interface\QuestFrame\UI-QuestItemHighlight" alphaMode="ADD">
+													<Size>
+														<AbsDimension x="256" y="64"/>
+													</Size>
+													<Anchors>
+														<Anchor point="TOPLEFT"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad>
+												this:SetFrameLevel(this:GetFrameLevel() + 1);
+											</OnLoad>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						QuestFrameRewardPanel_OnShow();
+					</OnShow>
+				</Scripts>
+ 			</Frame>
+			<Frame name="QuestFrameProgressPanel" inherits="QuestFramePanelTemplate" hidden="true">
+ 				<Frames>
+ 					<Button name="QuestFrameGoodbyeButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size>
+							<AbsDimension x="75" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-40" y="72"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								QuestGoodbyeButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="QuestFrameCompleteButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
+						<Size>
+							<AbsDimension x="120" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="22" y="72"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								QuestProgressCompleteButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="QuestProgressScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="300" y="334"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestFrame">
+								<Offset>
+									<AbsDimension x="23" y="-81"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="QuestProgressScrollChildFrame">
+								<Size>
+									<AbsDimension x="300" y="334"/>
+								</Size>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="QuestProgressTitleText" inherits="QuestTitleFont" text="Quest Title" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="285" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="5" y="-10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestProgressText" inherits="QuestFont" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="275" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="QuestProgressTitleText" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-5"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestProgressRequiredItemsText" inherits="QuestTitleFont" text="TURN_IN_ITEMS" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="295" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="QuestProgressText" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestProgressRequiredMoneyText" inherits="QuestFontNormalSmall" text="REQUIRED_MONEY" justifyH="LEFT">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="QuestProgressRequiredItemsText" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame name="QuestProgressRequiredMoneyFrame" inherits="MoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="QuestProgressRequiredMoneyText" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="10" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												SmallMoneyFrame_OnLoad();
+												MoneyFrame_SetType("STATIC");
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<Button name="QuestProgressItem1" inherits="QuestItemTemplate" id="1">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestProgressRequiredItemsText" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="-3" y="-5"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+									<Button name="QuestProgressItem2" inherits="QuestItemTemplate" id="2">
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="QuestProgressItem1" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="2" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+									<Button name="QuestProgressItem3" inherits="QuestItemTemplate" id="3">
+										<Anchors>
+											<Anchor point="TOP" relativeTo="QuestProgressItem1" relativePoint="BOTTOM">
+												<Offset>
+													<AbsDimension x="0" y="-3"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+									<Button name="QuestProgressItem4" inherits="QuestItemTemplate" id="4">
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="QuestProgressItem3" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="2" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+									<Button name="QuestProgressItem5" inherits="QuestItemTemplate" id="5">
+										<Anchors>
+											<Anchor point="TOP" relativeTo="QuestProgressItem3" relativePoint="BOTTOM">
+												<Offset>
+													<AbsDimension x="0" y="-3"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+									<Button name="QuestProgressItem6" inherits="QuestItemTemplate" id="6">
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="QuestProgressItem5" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="2" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+ 				</Frames>
+				<Scripts>
+					<OnShow>
+						QuestFrameProgressPanel_OnShow();
+					</OnShow>
+				</Scripts>
+ 			</Frame>
+			<Frame name="QuestFrameDetailPanel" inherits="QuestFramePanelTemplate" hidden="true">
+ 				<Frames>
+					<Button name="QuestFrameDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+						<Size>
+							<AbsDimension x="78" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-39" y="72"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								QuestDetailDeclineButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="QuestFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+						<Size>
+							<AbsDimension x="77" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="23" y="72"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								QuestDetailAcceptButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="QuestDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="300" y="334"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestFrame">
+								<Offset>
+									<AbsDimension x="23" y="-81"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="QuestDetailScrollChildFrame">
+								<Size>
+									<AbsDimension x="300" y="334"/>
+								</Size>
+								<Layers>
+									<Layer>
+										<FontString name="QuestTitleText" inherits="QuestTitleFont" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="285" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="5" y="-10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestDescription" inherits="QuestFont" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="270" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="QuestTitleText" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-5"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame name="TextAlphaDependentFrame">
+										<Size>
+											<AbsDimension x="1" y="1"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestDescription" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="-5"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<FontString name="QuestDetailObjectiveTitleText" inherits="QuestTitleFont" text="QUEST_OBJECTIVES"  justifyH="LEFT">
+													<Size>
+														<AbsDimension x="285" y="18"/>
+													</Size>
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeTo="QuestDescription" relativePoint="BOTTOMLEFT">
+															<Offset>
+																<AbsDimension x="0" y="-15"/>
+															</Offset>
+														</Anchor>
+													</Anchors>
+												</FontString>
+												<FontString name="QuestObjectiveText" inherits="QuestFont" justifyH="LEFT">
+													<Size>
+														<AbsDimension x="270" y="0"/>
+													</Size>
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeTo="QuestDetailObjectiveTitleText" relativePoint="BOTTOMLEFT">
+															<Offset>
+																<AbsDimension x="0" y="-5"/>
+															</Offset>
+														</Anchor>
+													</Anchors>
+												</FontString>
+												<FontString name="QuestDetailRewardTitleText" inherits="QuestTitleFont" text="QUEST_REWARDS"  justifyH="LEFT">
+													<Size>
+														<AbsDimension x="285" y="18"/>
+													</Size>
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeTo="QuestObjectiveText" relativePoint="BOTTOMLEFT">
+															<Offset>
+																<AbsDimension x="0" y="-15"/>
+															</Offset>
+														</Anchor>
+													</Anchors>
+												</FontString>
+												<FontString name="QuestDetailItemChooseText" inherits="QuestFont" text="REWARD_CHOICES" justifyH="LEFT">
+													<Size>
+														<AbsDimension x="295" y="0"/>
+													</Size>
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeTo="QuestDetailRewardTitleText" relativePoint="BOTTOMLEFT">
+															<Offset>
+																<AbsDimension x="0" y="-5"/>
+															</Offset>
+														</Anchor>
+													</Anchors>
+												</FontString>
+												<FontString name="QuestDetailItemReceiveText" inherits="QuestFont" text="Reward receive text" justifyH="LEFT">
+													<Anchors>
+														<Anchor point="TOPLEFT"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Frames>
+											<Button name="QuestDetailItem1" inherits="QuestItemTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="QuestDetailItem2" inherits="QuestItemTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="QuestDetailItem3" inherits="QuestItemTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="QuestDetailItem4" inherits="QuestItemTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="QuestDetailItem5" inherits="QuestItemTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="QuestDetailItem6" inherits="QuestItemTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="QuestDetailItem7" inherits="QuestItemTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="QuestDetailItem8" inherits="QuestItemTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="QuestDetailItem9" inherits="QuestItemTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="QuestDetailItem10" inherits="QuestItemTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+											</Button>
+											<Frame name="QuestDetailMoneyFrame" inherits="MoneyFrameTemplate">
+												<Anchors>
+													<Anchor point="LEFT" relativeTo="QuestDetailItemReceiveText" relativePoint="RIGHT">
+														<Offset>
+															<AbsDimension x="15" y="0"/>
+														</Offset>
+													</Anchor>
+												</Anchors>
+												<Scripts>
+													<OnLoad>
+														QuestMoneyFrame_OnLoad();
+													</OnLoad>
+												</Scripts>
+											</Frame>
+										</Frames>
+									</Frame>
+									<Frame name="QuestSpacerFrame">
+										<Size>
+											<AbsDimension x="5" y="25"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOP">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						QuestFrameDetailPanel_OnShow();
+					</OnShow>
+					<OnUpdate>
+						QuestFrameDetailPanel_OnUpdate(arg1);
+					</OnUpdate>
+				</Scripts>
+ 			</Frame>
+			<Frame name="QuestFrameGreetingPanel" inherits="QuestFramePanelTemplate" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
+							<Size>
+								<AbsDimension x="128" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="22" y="68"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="QuestFrameGreetingGoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">
+						<Size>
+							<AbsDimension x="77" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-39" y="73"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(QuestFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="QuestGreetingScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="300" y="334"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestFrame">
+								<Offset>
+									<AbsDimension x="23" y="-81"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								this:UpdateScrollChildRect();
+							</OnShow>
+						</Scripts>
+						<ScrollChild>
+							<Frame name="QuestGreetingScrollChildFrame">
+								<Size>
+									<AbsDimension x="300" y="334"/>
+								</Size>
+								<Layers>
+									<Layer>
+										<FontString name="GreetingText" inherits="QuestFont" text="Filler Text" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="270" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="10" y="-10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="CurrentQuestsText" inherits="QuestTitleFont" text="CURRENT_QUESTS" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="300" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="GreetingText" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<Texture name="QuestGreetingFrameHorizontalBreak" file="Interface\QuestFrame\UI-HorizontalBreak">
+											<Size>
+												<AbsDimension x="256" y="32"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="22" y="5"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</Texture>
+										<FontString name="AvailableQuestsText" inherits="QuestTitleFont" text="AVAILABLE_QUESTS" justifyH="LEFT">
+											<Size>
+												<AbsDimension x="300" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="GreetingText" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button name="QuestTitleButton1" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="CurrentQuestsText" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="-10" y="-10"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton2" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton1"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton3" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton2"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton4" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton3"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton5" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton4"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton6" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton5"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton7" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton6"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton8" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton7"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton9" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton8"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton10" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton9"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton11" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton10"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton12" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton11"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton13" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton12"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton14" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton13"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton15" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton14"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton16" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton15"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton17" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton16"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton18" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton17"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton19" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton18"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton20" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton19"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton21" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton20"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton22" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton21"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton23" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton22"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton24" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton23"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton25" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton24"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton26" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton25"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton27" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton26"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton28" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton27"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton29" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton28"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton30" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton29"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton31" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton30"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestTitleButton32" inherits="QuestTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestTitleButton31"/>
+										</Anchors>
+									</Button>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						QuestFrameGreetingPanel_OnShow();
+					</OnShow>
+				</Scripts>
+ 			</Frame>
+ 		</Frames>
+		<Scripts>
+			<OnLoad>
+				QuestFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				QuestFrame_OnEvent(event);
+			</OnEvent>
+			<OnShow>
+				QuestFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				QuestFrame_OnHide();
+			</OnHide>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+ 	</Frame>
+ </Ui>

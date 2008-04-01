@@ -1,0 +1,25 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UIErrorsFrame.lua"/>
+	<MessageFrame name="UIErrorsFrame" insertMode="TOP" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size>
+			<AbsDimension x="512" y="60"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-122"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				UIErrorsFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				UIErrorsFrame_OnEvent(event, arg1);
+			</OnEvent>
+		</Scripts>
+		<FontString inherits="ErrorFont" justifyH="CENTER"/>
+	</MessageFrame>
+</Ui>

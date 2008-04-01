@@ -1,0 +1,368 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UIDropDownMenu.lua"/>
+	<Button name="UIDropDownMenuButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentColorSwatch" hidden="true">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="-6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentSwatchBg">
+							<Size>
+								<AbsDimension x="14" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						CloseMenus();
+						UIDropDownMenuButton_OpenColorPicker(this:GetParent());
+					</OnClick>
+					<OnEnter>
+						CloseDropDownMenus(this:GetParent():GetParent():GetID() + 1);
+						getglobal(this:GetName().."SwatchBg"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						UIDropDownMenu_StopCounting(this:GetParent():GetParent());
+					</OnEnter>
+					<OnLeave>
+						getglobal(this:GetName().."SwatchBg"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						UIDropDownMenu_StartCounting(this:GetParent():GetParent());
+					</OnLeave>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
+			</Button>
+			<Button name="$parentExpandArrow" hidden="true">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="-6" y="0"/>
+						</Offset>
+					</Anchor>                   
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ToggleDropDownMenu(this:GetParent():GetParent():GetID() + 1, this:GetParent().value);
+					</OnClick>
+					<OnEnter>
+						ToggleDropDownMenu(this:GetParent():GetParent():GetID() + 1, this:GetParent().value);
+						UIDropDownMenu_StopCounting(this:GetParent():GetParent());
+					</OnEnter>
+					<OnLeave>
+						UIDropDownMenu_StartCounting(this:GetParent():GetParent());
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\ChatFrameExpandArrow"/>
+			</Button>
+			<Button name="$parentInvisibleButton" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="RIGHT" relativeTo="$parentColorSwatch" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						UIDropDownMenu_StopCounting(this:GetParent():GetParent());
+					</OnEnter>
+					<OnLeave>
+						UIDropDownMenu_StartCounting(this:GetParent():GetParent());
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				UIDropDownMenuButton_OnClick();
+			</OnClick>
+			<OnEnter>
+				if ( this.hasArrow ) then
+					ToggleDropDownMenu(this:GetParent():GetID() + 1, this.value);
+				end
+				getglobal(this:GetName().."Highlight"):Show();
+				UIDropDownMenu_StopCounting(this:GetParent());
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName().."Highlight"):Hide();
+				UIDropDownMenu_StartCounting(this:GetParent());
+			</OnLeave>
+		</Scripts>
+		<NormalText name="$parentNormalText" inherits="GameFontHighlightSmall" justifyH="LEFT"/>
+		<HighlightText name="$parentHighlightText" inherits="GameFontHighlightSmall" justifyH="LEFT"/>
+		<DisabledText name="$parentDisabledText" inherits="GameFontDisableSmall" justifyH="LEFT"/>
+	</Button>
+	<Button name="UIDropDownListTemplate" frameStrata="DIALOG" enableMouse="true" virtual="true">
+		<Frames>
+			<Frame name="$parentBackdrop" setAllPoints="true">
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+			</Frame>
+			<Frame name="$parentMenuBackdrop" setAllPoints="true">
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentButton1" inherits="UIDropDownMenuButtonTemplate" id="1"/>
+			<Button name="$parentButton2" inherits="UIDropDownMenuButtonTemplate" id="2"/>
+			<Button name="$parentButton3" inherits="UIDropDownMenuButtonTemplate" id="3"/>
+			<Button name="$parentButton4" inherits="UIDropDownMenuButtonTemplate" id="4"/>
+			<Button name="$parentButton5" inherits="UIDropDownMenuButtonTemplate" id="5"/>
+			<Button name="$parentButton6" inherits="UIDropDownMenuButtonTemplate" id="6"/>
+			<Button name="$parentButton7" inherits="UIDropDownMenuButtonTemplate" id="7"/>
+			<Button name="$parentButton8" inherits="UIDropDownMenuButtonTemplate" id="8"/>
+			<Button name="$parentButton9" inherits="UIDropDownMenuButtonTemplate" id="9"/>
+			<Button name="$parentButton10" inherits="UIDropDownMenuButtonTemplate" id="10"/>
+			<Button name="$parentButton11" inherits="UIDropDownMenuButtonTemplate" id="11"/>
+			<Button name="$parentButton12" inherits="UIDropDownMenuButtonTemplate" id="12"/>
+			<Button name="$parentButton13" inherits="UIDropDownMenuButtonTemplate" id="13"/>
+			<Button name="$parentButton14" inherits="UIDropDownMenuButtonTemplate" id="14"/>
+			<Button name="$parentButton15" inherits="UIDropDownMenuButtonTemplate" id="15"/>
+			<Button name="$parentButton16" inherits="UIDropDownMenuButtonTemplate" id="16"/>
+			<Button name="$parentButton17" inherits="UIDropDownMenuButtonTemplate" id="17"/>
+			<Button name="$parentButton18" inherits="UIDropDownMenuButtonTemplate" id="18"/>
+			<Button name="$parentButton19" inherits="UIDropDownMenuButtonTemplate" id="19"/>
+			<Button name="$parentButton20" inherits="UIDropDownMenuButtonTemplate" id="20"/>
+			<Button name="$parentButton21" inherits="UIDropDownMenuButtonTemplate" id="21"/>
+			<Button name="$parentButton22" inherits="UIDropDownMenuButtonTemplate" id="22"/>
+			<Button name="$parentButton23" inherits="UIDropDownMenuButtonTemplate" id="23"/>
+			<Button name="$parentButton24" inherits="UIDropDownMenuButtonTemplate" id="24"/>
+			<Button name="$parentButton25" inherits="UIDropDownMenuButtonTemplate" id="25"/>
+			<Button name="$parentButton26" inherits="UIDropDownMenuButtonTemplate" id="26"/>
+			<Button name="$parentButton27" inherits="UIDropDownMenuButtonTemplate" id="27"/>
+			<Button name="$parentButton28" inherits="UIDropDownMenuButtonTemplate" id="28"/>
+			<Button name="$parentButton29" inherits="UIDropDownMenuButtonTemplate" id="29"/>
+			<Button name="$parentButton30" inherits="UIDropDownMenuButtonTemplate" id="30"/>
+			<Button name="$parentButton31" inherits="UIDropDownMenuButtonTemplate" id="31"/>
+			<Button name="$parentButton32" inherits="UIDropDownMenuButtonTemplate" id="32"/>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				this:Hide();
+			</OnClick>
+			<OnEnter>
+				UIDropDownMenu_StopCounting(this);
+			</OnEnter>
+			<OnLeave>
+				UIDropDownMenu_StartCounting(this);
+			</OnLeave>
+			<OnUpdate>
+				UIDropDownMenu_OnUpdate(arg1);
+			</OnUpdate>
+			<OnShow>
+				for i=1, UIDROPDOWNMENU_MAXBUTTONS do
+					if (not this.noResize) then
+						getglobal(this:GetName().."Button"..i):SetWidth(this.maxWidth);
+					end
+				end
+				if (not this.noResize) then
+					this:SetWidth(this.maxWidth+15);
+				end
+				this.showTime = nil;
+				if ( this:GetID() > 1 ) then
+					this.parent = getglobal("DropDownList"..(this:GetID() - 1));
+				end
+			</OnShow>
+		</Scripts>
+	</Button>
+	<Frame name="UIDropDownMenuTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size>
+						<AbsDimension x="25" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size>
+						<AbsDimension x="115" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size>
+						<AbsDimension x="25" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="0" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentRight">
+							<Offset>
+								<AbsDimension x="-43" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentButton">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentRight">
+						<Offset>
+							<AbsDimension x="-16" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ToggleDropDownMenu();
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</PushedTexture>
+				<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</DisabledTexture>
+				<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</HighlightTexture>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnHide>
+				CloseDropDownMenus();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Button name="DropDownList1" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" hidden="true" id="1">
+		<Size>
+			<AbsDimension x="180" y="10"/>
+		</Size>
+		<Scripts>
+			<OnHide>
+				CloseDropDownMenus(2);
+			</OnHide>
+		</Scripts>
+	</Button>
+	<Button name="DropDownList2" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" hidden="true" id="2">
+		<Size>
+			<AbsDimension x="180" y="10"/>
+		</Size>
+		<Scripts>
+			<OnHide>
+				CloseDropDownMenus(3);
+			</OnHide>
+		</Scripts>
+	</Button>
+	<Button name="DropDownList3" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" hidden="true" id="3">
+		<Size>
+			<AbsDimension x="180" y="10"/>
+		</Size>
+	</Button>
+</Ui>

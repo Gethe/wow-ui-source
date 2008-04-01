@@ -1,0 +1,2799 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AuctionFrame.lua"/>
+	<Button name="AuctionClassButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="136" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLines" file="Interface\AuctionFrame\UI-AuctionFrame-FilterLines">
+					<Size>
+						<AbsDimension x="7" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="13" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.4375" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				AuctionFrameFilter_OnClick();
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
+			<TexCoords left="0" right="0.53125" top="0" bottom="0.625"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
+		<NormalText name="$parentNormalText" inherits="GameFontNormalSmall" justifyH="LEFT">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+		<HighlightText name="$parentHighlightText" inherits="GameFontHighlightSmall" justifyH="LEFT">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightText>
+	</Button>
+	<Button name="AuctionSortButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="5" y="19"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.59375"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="4" y="19"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.59375"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="10" y="19"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.59375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalText name="$parentText" inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="8" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+		<NormalTexture name="$parentArrow" file="Interface\Buttons\UI-SortArrow">
+			<Size>
+				<AbsDimension x="9" y="8"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="3" y="-2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<TexCoords left="0" right="0.5625" top="0" bottom="1.0"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="5" y="24"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="RIGHT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="BrowseButtonTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="557" y="37"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="167" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="43" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLevel" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="205" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHighBidder" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="78" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="305" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentLeft" file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
+					<Size>
+						<AbsDimension x="10" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="34" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
+					<Size>
+						<AbsDimension x="10" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.75" right="0.828125" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
+					<Size>
+						<AbsDimension x="10" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.75" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentItem">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentIconTexture"/>
+						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						AuctionFrameItem_OnEnter("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if ( IsShiftKeyDown() ) then
+							if ( ChatFrameEditBox:IsVisible() ) then
+								ChatFrameEditBox:Insert(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+							end
+						else
+							BrowseButton_OnClick(this:GetParent());
+						end
+					</OnClick>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
+			<Frame name="$parentClosingTime" enableMouse="true">
+				<Size>
+					<AbsDimension x="65" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="237" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall">
+							<Size>
+								<AbsDimension x="65" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this);
+						GameTooltip:SetText(this.tooltip);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad();
+						MoneyFrame_SetType("AUCTION");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentYourBidText" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="11"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentMoneyFrame" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormalSmall" text="YOUR_BID" justifyH="RIGHT"/>
+					</Layer>
+				</Layers>
+			</Button>
+			<Frame name="$parentBuyoutMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentMoneyFrame" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad();
+						MoneyFrame_SetType("AUCTION");
+						SetMoneyFrameColor(this:GetName(), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentBuyoutText" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="11"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentBuyoutMoneyFrame" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-35" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormalSmall" text="BUYOUT_COST" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				BrowseButton_OnClick();
+			</OnClick>
+		</Scripts>
+		<HighlightTexture name="$parentHighlight" file="Interface\HelpFrame\HelpFrameButton-Highlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="523" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="33" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<TexCoords left="0" right="1.0" top="0" bottom="0.578125"/>
+		</HighlightTexture>
+	</Button>
+	<Button name="BidButtonTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="705" y="37"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="160" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="41" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLevel" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="217" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBidStatus" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="75" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="470" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentLeft" file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
+					<Size>
+						<AbsDimension x="10" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="34" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
+					<Size>
+						<AbsDimension x="10" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.75" right="0.828125" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
+					<Size>
+						<AbsDimension x="10" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.75" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentItem">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentIconTexture"/>
+						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						AuctionFrameItem_OnEnter("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame));
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if ( IsShiftKeyDown() ) then
+							if ( ChatFrameEditBox:IsVisible() ) then
+								ChatFrameEditBox:Insert(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
+							end
+						else
+							BidButton_OnClick(this:GetParent());
+						end
+					</OnClick>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
+			<Frame name="$parentClosingTime" enableMouse="true">
+				<Size>
+					<AbsDimension x="75" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="255" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall">
+							<Size>
+								<AbsDimension x="75" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this);
+						GameTooltip:SetText(this.tooltip);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentBuyoutMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="-230" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad();
+						MoneyFrame_SetType("AUCTION");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad();
+						MoneyFrame_SetType("AUCTION");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				BidButton_OnClick();
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\HelpFrame\HelpFrameButton-Highlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="670" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="33" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<TexCoords left="0" right="1.0" top="0" bottom="0.578125"/>
+		</HighlightTexture>
+	</Button>
+	<Button name="AuctionsButtonTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="513" y="37"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="128" y="28"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="43" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHighBidder" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="104" y="28"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="151" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentLeft" file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
+					<Size>
+						<AbsDimension x="10" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="34" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
+					<Size>
+						<AbsDimension x="10" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.75" right="0.828125" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
+					<Size>
+						<AbsDimension x="10" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.75" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentItem">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentIconTexture"/>
+						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						AuctionFrameItem_OnEnter("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if ( IsShiftKeyDown() ) then
+							if ( ChatFrameEditBox:IsVisible() ) then
+								ChatFrameEditBox:Insert(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
+							end
+						else
+							AuctionsButton_OnClick(this:GetParent());
+						end
+					</OnClick>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
+			<Frame name="$parentClosingTime" enableMouse="true">
+				<Size>
+					<AbsDimension x="65" y="28"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="261" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall">
+							<Size>
+								<AbsDimension x="65" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this);
+						GameTooltip:SetText(this.tooltip);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad();
+						MoneyFrame_SetType("AUCTION");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				AuctionsButton_OnClick()
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\HelpFrame\HelpFrameButton-Highlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="480" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="33" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<TexCoords left="0" right="1.0" top="0" bottom="0.578125"/>
+		</HighlightTexture>
+	</Button>
+	<Button name="AuctionTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				AuctionFrameTab_OnClick();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="AuctionFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="768" y="447"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="AuctionPortraitTexture">
+					<Size>
+						<AbsDimension x="58" y="58"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="12" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTopLeft" file="Interface\AuctionFrame\UI-AuctionFrame-Browse-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTop" file="Interface\AuctionFrame\UI-AuctionFrame-Browse-Top">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopRight" file="Interface\AuctionFrame\UI-AuctionFrame-Browse-TopRight">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="512" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBotLeft" file="Interface\AuctionFrame\UI-AuctionFrame-Browse-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBot" file="Interface\AuctionFrame\UI-AuctionFrame-Browse-Bot">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBotRight" file="Interface\AuctionFrame\UI-AuctionFrame-Browse-BotRight">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="512" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="AuctionFrameTab1" inherits="AuctionTabTemplate" id="1" text="BROWSE">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="15" y="11"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="AuctionFrameTab2" inherits="AuctionTabTemplate" id="2" text="BIDS">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AuctionFrameTab1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="AuctionFrameTab3" inherits="AuctionTabTemplate" id="3" text="AUCTIONS">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AuctionFrameTab2" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="AuctionFrameMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="181" y="18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="AuctionFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="3" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<!-- Browse Tab -->
+			<Frame name="AuctionFrameBrowse" hidden="true">
+				<Size>
+					<AbsDimension x="694" y="447"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="BrowseTitle" inherits="GameFontNormal" text="BROWSE_AUCTIONS">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-18"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="BrowseTabText" inherits="GameFontHighlightSmall" text="FILTERS">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="85" y="-85"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BrowseNameText" inherits="GameFontHighlightSmall" text="NAME">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="80" y="-41"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BrowseLevelText" inherits="GameFontHighlightSmall" text="LEVEL_RANGE">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="230" y="-41"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BrowseBidText" inherits="GameFontHighlightSmall" text="BID">
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-85" y="21"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BrowseIsUsableText" inherits="GameFontHighlightSmall" text="USABLE_ITEMS">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="460" y="-56"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BrowseSearchCountText" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="80" y="53"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BrowseNoResultsText" inherits="GameFontNormal" text="BROWSE_SEARCH_TEXT" hidden="true">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="115" y="-120"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="AuctionFilterButton1" inherits="AuctionClassButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="23" y="-105"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton2" inherits="AuctionClassButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton3" inherits="AuctionClassButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton4" inherits="AuctionClassButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton5" inherits="AuctionClassButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton6" inherits="AuctionClassButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton7" inherits="AuctionClassButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton8" inherits="AuctionClassButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton9" inherits="AuctionClassButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton8" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton10" inherits="AuctionClassButtonTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton9" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton11" inherits="AuctionClassButtonTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton10" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton12" inherits="AuctionClassButtonTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton11" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton13" inherits="AuctionClassButtonTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton12" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton14" inherits="AuctionClassButtonTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton13" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionFilterButton15" inherits="AuctionClassButtonTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionFilterButton14" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<ScrollFrame name="BrowseFilterScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="160" y="305"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="158" y="-105"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="256"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+											<Offset>
+												<AbsDimension x="0" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="106"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(BROWSE_FILTER_HEIGHT, AuctionFrameFilters_Update);
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+					<ScrollFrame name="BrowseScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="465" y="306"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="39" y="-105"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="256"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+											<Offset>
+												<AbsDimension x="0" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="106"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(AUCTIONS_BUTTON_HEIGHT, AuctionFrameBrowse_Update);
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+					<Button name="BrowseQualitySort" inherits="AuctionSortButtonTemplate" text="RARITY">
+						<Size>
+							<AbsDimension x="214" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="186" y="-82"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("list", "quality")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BrowseLevelSort" inherits="AuctionSortButtonTemplate" text="LEVEL_ABBR">
+						<Size>
+							<AbsDimension x="37" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BrowseQualitySort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("list", "level")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BrowseDurationSort" inherits="AuctionSortButtonTemplate" text="CLOSES_IN">
+						<Size>
+							<AbsDimension x="71" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BrowseLevelSort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("list", "duration")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BrowseHighBidderSort" inherits="AuctionSortButtonTemplate" text="AUCTION_CREATOR">
+						<Size>
+							<AbsDimension x="81" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BrowseDurationSort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("list", "status")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BrowseCurrentBidSort" inherits="AuctionSortButtonTemplate" text="CURRENT_BID">
+						<Size>
+							<AbsDimension x="143" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BrowseHighBidderSort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("list", "bid");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BrowseButton1" inherits="BrowseButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="195" y="-110"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BrowseButton2" inherits="BrowseButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BrowseButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BrowseButton3" inherits="BrowseButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BrowseButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BrowseButton4" inherits="BrowseButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BrowseButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BrowseButton5" inherits="BrowseButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BrowseButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BrowseButton6" inherits="BrowseButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BrowseButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BrowseButton7" inherits="BrowseButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BrowseButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BrowseButton8" inherits="BrowseButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BrowseButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BrowsePrevPageButton" hidden="true">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BrowseButton8">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" justifyH="LEFT" text="PREV">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								AuctionFrameBrowse.page = AuctionFrameBrowse.page - 1;
+								this:Disable();
+								BrowseScrollFrameScrollBar:SetValue(0);
+								AuctionFrameBrowse_Search(AuctionFrameBrowse.page);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="BrowseNextPageButton" hidden="true">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="BrowseButton8">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" justifyH="RIGHT" text="NEXT">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								AuctionFrameBrowse.page = AuctionFrameBrowse.page + 1;
+								this:Disable();
+								BrowseScrollFrameScrollBar:SetValue(0);
+								AuctionFrameBrowse_Search(AuctionFrameBrowse.page);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<CheckButton name="IsUsableCheckButton" inherits="UICheckButtonTemplate" id="1">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BrowseIsUsableText" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<EditBox name="BrowseName" autoFocus="false" inherits="InputBoxTemplate">
+						<Size>
+							<AbsDimension x="140" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BrowseNameText" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="3" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTabPressed>
+								BrowseMinLevel:SetFocus();
+							</OnTabPressed>
+							<OnEnterPressed>
+								this:ClearFocus();
+							</OnEnterPressed>
+						</Scripts>
+						<FontString inherits="ChatFontNormal" bytes="64"/>
+					</EditBox>
+					<EditBox name="BrowseMinLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+						<Size>
+							<AbsDimension x="30" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BrowseLevelText" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="3" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GameFontHighlightSmall" text="-">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT">
+											<Offset>
+												<AbsDimension x="-5" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnTabPressed>
+								if ( IsShiftKeyDown() ) then
+									BrowseName:SetFocus();
+								else
+									BrowseMaxLevel:SetFocus();
+								end
+							</OnTabPressed>
+							<OnEnterPressed>
+								this:ClearFocus();
+							</OnEnterPressed>
+						</Scripts>
+					</EditBox>
+					<EditBox name="BrowseMaxLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+						<Size>
+							<AbsDimension x="30" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BrowseMinLevel" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="8" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTabPressed>
+								if ( IsShiftKeyDown() ) then
+									BrowseMaxLevel:SetFocus();
+								end
+							</OnTabPressed>
+							<OnEnterPressed>
+								this:ClearFocus();
+							</OnEnterPressed>
+						</Scripts>
+					</EditBox>
+					<Frame name="BrowseDropDown" inherits="UIDropDownMenuTemplate" id="1">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BrowseMaxLevel" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-5" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString inherits="GameFontHighlightSmall" text="RARITY">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="20" y="7"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								BrowseDropDown_OnLoad();
+							</OnLoad>
+							<OnShow>
+								BrowseDropDown_OnLoad();
+							</OnShow>
+						</Scripts>
+					</Frame>
+					<Frame name="BrowseBidPrice" inherits="MoneyInputFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="25" y="18"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Button name="BrowseCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="66" y="14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(this:GetParent():GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BrowseBuyoutButton" inherits="UIPanelButtonTemplate" text="BUYOUT">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="BrowseCloseButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								StaticPopup_Show("BUYOUT_AUCTION");
+								this:Disable();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BrowseBidButton" inherits="UIPanelButtonTemplate" text="BID">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="BrowseBuyoutButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaceAuctionBid("list", GetSelectedAuctionItem("list"), MoneyInputFrame_GetCopper(BrowseBidPrice));
+								this:Disable();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BrowseSearchButton" inherits="UIPanelButtonTemplate" text="SEARCH">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="IsUsableCheckButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								AuctionFrameBrowse_Search();
+								BrowseNoResultsText:SetText(BROWSE_NO_RESULTS);								
+							</OnClick>
+							<OnUpdate>
+								if (CanSendAuctionQuery()) then
+									this:Enable();
+									if ( BrowsePrevPageButton.isEnabled ) then
+										BrowsePrevPageButton:Enable();
+									else
+										BrowsePrevPageButton:Disable();
+									end
+									if ( BrowseNextPageButton.isEnabled ) then
+										BrowseNextPageButton:Enable();
+									else
+										BrowseNextPageButton:Disable();
+									end
+								else
+									this:Disable();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						AuctionFrameBrowse_OnLoad();
+					</OnLoad>
+					<OnShow>
+						AuctionFrameBrowse_OnShow();
+					</OnShow>
+					<OnEvent>
+						AuctionFrameBrowse_OnEvent();
+					</OnEvent>
+				</Scripts>
+			</Frame>
+			<!-- Bid Tab -->
+			<Frame name="AuctionFrameBid" hidden="false">
+				<Size>
+					<AbsDimension x="694" y="447"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="BidTitle" inherits="GameFontNormal" text="BID">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-18"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="BidBidText" inherits="GameFontHighlightSmall" text="BID">
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-134" y="19"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BidSearchCountText" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-10" y="53"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="BidQualitySort" inherits="AuctionSortButtonTemplate" text="RARITY">
+						<Size>
+							<AbsDimension x="175" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="65" y="-52"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("bidder", "quality")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BidLevelSort" inherits="AuctionSortButtonTemplate" text="LEVEL_ABBR">
+						<Size>
+							<AbsDimension x="45" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BidQualitySort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("bidder", "level")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BidDurationSort" inherits="AuctionSortButtonTemplate" text="CLOSES_IN">
+						<Size>
+							<AbsDimension x="79" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BidLevelSort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("bidder", "duration")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BidBuyoutSort" inherits="AuctionSortButtonTemplate" text="BUYOUT_PRICE">
+						<Size>
+							<AbsDimension x="142" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BidDurationSort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("bidder", "buyout")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BidStatusSort" inherits="AuctionSortButtonTemplate" text="BID_STATUS">
+						<Size>
+							<AbsDimension x="74" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BidBuyoutSort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("bidder", "status")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BidBidSort" inherits="AuctionSortButtonTemplate" text="CURRENT_BID">
+						<Size>
+							<AbsDimension x="164" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BidStatusSort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("bidder", "bid")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="BidScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="625" y="335"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="40" y="-74"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="256"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+											<Offset>
+												<AbsDimension x="0" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="106"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(AUCTIONS_BUTTON_HEIGHT, AuctionFrameBid_Update)
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+					<Button name="BidButton1" inherits="BidButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="27" y="-76"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BidButton2" inherits="BidButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BidButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BidButton3" inherits="BidButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BidButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BidButton4" inherits="BidButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BidButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BidButton5" inherits="BidButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BidButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BidButton6" inherits="BidButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BidButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BidButton7" inherits="BidButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BidButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BidButton8" inherits="BidButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BidButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BidButton9" inherits="BidButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BidButton8" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="BidPrevPageButton" hidden="true">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BidButton9">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" justifyH="LEFT" text="PREV">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								AuctionFrameBid.page = AuctionFrameBid.page - 1;
+								BidScrollFrameScrollBar:SetValue(0);
+								GetBidderAuctionItems(AuctionFrameBid.page);
+								this:Disable();
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="BidNextPageButton" hidden="true">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="BidButton9">
+								<Offset>
+									<AbsDimension x="-13" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" justifyH="RIGHT" text="NEXT">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								AuctionFrameBid.page = AuctionFrameBid.page + 1;
+								BidScrollFrameScrollBar:SetValue(0);
+								GetBidderAuctionItems(AuctionFrameBid.page);
+								this:Disable();
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Frame name="BidBidPrice" inherits="MoneyInputFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="-15" y="18"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Button name="BidCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="66" y="14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(this:GetParent():GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BidBuyoutButton" inherits="UIPanelButtonTemplate" text="BUYOUT">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="BidCloseButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								StaticPopup_Show("BUYOUT_AUCTION");
+								this:Disable();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="BidBidButton" inherits="UIPanelButtonTemplate" text="BID">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="BidBuyoutButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaceAuctionBid("bidder", GetSelectedAuctionItem("bidder"), MoneyInputFrame_GetCopper(BidBidPrice))
+								this:Disable();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						AuctionFrameBid_OnLoad();
+					</OnLoad>
+					<OnShow>
+						AuctionFrameBid_OnShow();
+					</OnShow>
+					<OnEvent>
+						AuctionFrameBid_OnEvent();
+					</OnEvent>
+				</Scripts>
+			</Frame>
+			<!-- Auctions Tab -->
+			<Frame name="AuctionFrameAuctions" hidden="true">
+				<Size>
+					<AbsDimension x="694" y="447"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="AuctionsTitle" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-18"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="AuctionsTabText" inherits="GameFontHighlightSmall" text="CREATE_AUCTION">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="121" y="-55"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="AuctionsItemText" inherits="GameFontHighlightSmall" text="AUCTION_ITEM">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="28" y="-83"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="AuctionsPriceText" inherits="GameFontHighlightSmall" text="STARTING_PRICE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="AuctionsItemText">
+									<Offset>
+										<AbsDimension x="0" y="-70"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="AuctionsDurationText" inherits="GameFontHighlightSmall" text="AUCTION_DURATION">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="AuctionsPriceText">
+									<Offset>
+										<AbsDimension x="0" y="-50"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="AuctionsBuyoutText" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="AuctionsPriceText">
+									<Offset>
+										<AbsDimension x="0" y="-144"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="AuctionsBuyoutErrorText" inherits="GameFontRedSmall" text="AUCTION_BUYOUT_ERROR">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="AuctionsBuyoutText" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="AuctionsDepositText" inherits="GameFontNormal" text="DEPOSIT_COLON">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="AuctionsBuyoutText">
+									<Offset>
+										<AbsDimension x="0" y="-67"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="AuctionsSearchCountText" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="90" y="53"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="AuctionsQualitySort" inherits="AuctionSortButtonTemplate" text="RARITY">
+						<Size>
+							<AbsDimension x="175" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="219" y="-51"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("owner", "quality")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="AuctionsHighBidderSort" inherits="AuctionSortButtonTemplate" text="HIGH_BIDDER">
+						<Size>
+							<AbsDimension x="88" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="AuctionsQualitySort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("owner", "status")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="AuctionsDurationSort" inherits="AuctionSortButtonTemplate" text="CLOSES_IN">
+						<Size>
+							<AbsDimension x="80" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="AuctionsHighBidderSort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("owner", "duration")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="AuctionsBidSort" inherits="AuctionSortButtonTemplate" text="CURRENT_BID">
+						<Size>
+							<AbsDimension x="178" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="AuctionsDurationSort" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SortAuctionItems("owner", "bid")
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="AuctionsScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="435" y="339"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="40" y="-72"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="256"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+											<Offset>
+												<AbsDimension x="0" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="106"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(AUCTIONS_BUTTON_HEIGHT, AuctionFrameAuctions_Update);
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+					<Button name="AuctionsButton1" inherits="AuctionsButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="219" y="-76"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionsButton2" inherits="AuctionsButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionsButton3" inherits="AuctionsButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionsButton4" inherits="AuctionsButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionsButton5" inherits="AuctionsButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionsButton6" inherits="AuctionsButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionsButton7" inherits="AuctionsButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionsButton8" inherits="AuctionsButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionsButton9" inherits="AuctionsButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsButton8" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="AuctionsPrevPageButton" hidden="true">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="AuctionsButton9">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" justifyH="LEFT" text="PREV">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								AuctionFrameAuctions.page = AuctionFrameAuctions.page - 1;
+								AuctionsScrollFrameScrollBar:SetValue(0);
+								GetOwnerAuctionItems(AuctionFrameAuctions.page);
+								this:Disable();
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="AuctionsNextPageButton" hidden="true">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="AuctionsButton9">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" justifyH="RIGHT" text="NEXT">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								AuctionFrameAuctions.page = AuctionFrameAuctions.page + 1;
+								AuctionsScrollFrameScrollBar:SetValue(0);
+								GetOwnerAuctionItems(AuctionFrameAuctions.page);
+								this:Disable();
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="AuctionsItemButton">
+						<Size>
+							<AbsDimension x="37" y="37"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="28" y="-98"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentName" inherits="GameFontNormal">
+									<Size>
+										<AbsDimension x="124" y="30"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="5" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="-5" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:RegisterEvent("NEW_AUCTION_UPDATE");
+								this:RegisterForDrag("LeftButton");
+							</OnLoad>
+							<OnEvent>
+								AuctionSellItemButton_OnEvent();
+							</OnEvent>
+							<OnClick>
+								ClickAuctionSellItemButton();
+							</OnClick>
+							<OnDragStart>
+								ClickAuctionSellItemButton();
+							</OnDragStart>
+							<OnReceiveDrag>
+								ClickAuctionSellItemButton();
+							</OnReceiveDrag>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								if ( GetAuctionSellItemInfo() ) then
+									GameTooltip:SetAuctionSellItem();
+								else
+									GameTooltip:SetText(AUCTION_ITEM_TEXT, 1.0, 1.0, 1.0);
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+					</Button>
+					<Frame name="StartPrice" inherits="MoneyInputFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsPriceText" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="3" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								MoneyInputFrame_SetOnvalueChangedFunc(this, AuctionsFrameAuctions_ValidateAuction);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<CheckButton name="AuctionsShortAuctionButton" inherits="SendMailRadioButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsDurationText" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="3" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText("2 "..GetText("HOURS", nil, 2));
+							</OnLoad>
+							<OnClick>
+								AuctionsRadioButton_OnClick(this:GetID())
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="AuctionsMediumAuctionButton" inherits="SendMailRadioButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsShortAuctionButton" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText("8 "..GetText("HOURS", nil, 8));
+							</OnLoad>
+							<OnClick>
+								AuctionsRadioButton_OnClick(this:GetID())
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="AuctionsLongAuctionButton" inherits="SendMailRadioButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsMediumAuctionButton" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText("24 "..GetText("HOURS", nil, 24));
+							</OnLoad>
+							<OnClick>
+								AuctionsRadioButton_OnClick(this:GetID())
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<Frame name="BuyoutPrice" inherits="MoneyInputFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AuctionsBuyoutText" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="2" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								MoneyInputFrame_SetOnvalueChangedFunc(this, AuctionsFrameAuctions_ValidateAuction);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="AuctionsDepositMoneyFrame" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="AuctionsDepositText" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad();
+								MoneyFrame_SetType("AUCTION");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="AuctionsCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="66" y="14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(this:GetParent():GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="AuctionsCancelAuctionButton" inherits="UIPanelButtonTemplate" text="CANCEL_AUCTION">
+						<Size>
+							<AbsDimension x="126" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="AuctionsCloseButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( GetSelectedAuctionItem("owner") and (GetSelectedAuctionItem("owner") > 0) ) then
+									StaticPopup_Show("CANCEL_AUCTION");
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="AuctionsCreateAuctionButton" inherits="UIPanelButtonTemplate" text="CREATE_AUCTION">
+						<Size>
+							<AbsDimension x="191" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="18" y="39"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								StartAuction(MoneyInputFrame_GetCopper(StartPrice), MoneyInputFrame_GetCopper(BuyoutPrice), AuctionFrameAuctions.duration);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						AuctionFrameAuctions_OnLoad();
+					</OnLoad>
+					<OnShow>
+						AuctionFrameAuctions_OnShow();
+					</OnShow>
+					<OnEvent>
+						AuctionFrameAuctions_OnEvent();
+					</OnEvent>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				AuctionFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				AuctionFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				PlaySound("AuctionWindowClose");
+				CloseAuctionHouse();
+			</OnHide>
+			<OnEvent>
+				AuctionFrame_OnEvent();
+			</OnEvent>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+</Ui>

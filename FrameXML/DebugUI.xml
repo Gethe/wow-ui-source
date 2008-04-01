@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- This script turns on verbose messages in the FrameXML log -->
+	<Script>
+		FrameXML_Debug(1);
+	</Script>
+	<!-- This button allows you to hot reload the UI at runtime -->
+	<Button name="ReloadButton" parent="UIParent">
+		<Size>
+			<AbsDimension x="128" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-8" y="64"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				ReloadUI();
+			</OnClick>
+		</Scripts>
+		<NormalTexture inherits="DialogButtonNormalTexture"/>
+		<PushedTexture inherits="DialogButtonPushedTexture"/>
+		<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+		<NormalText inherits="DialogButtonNormalText" text="Reload"/>
+		<HighlightText inherits="DialogButtonHighlightText" text="Reload"/>
+	</Button>
+</Ui>

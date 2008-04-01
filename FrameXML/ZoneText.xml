@@ -1,0 +1,198 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ZoneText.lua"/>
+	<Script>
+		ZoneFadeInDuration = 0.5;
+		ZoneHoldDuration = 1.0;
+		ZoneFadeOutDuration = 2.0;
+
+		function SetZoneText(showPVPInfo)
+			ZoneTextString:SetText(GetZoneText());
+			local pvpType, factionName, isArena = GetZonePVPInfo();
+			if ( pvpType == "friendly" ) then
+				PVPInfoTextString:SetText(format(FACTION_CONTROLLED_TERRITORY, factionName));
+				ZoneTextString:SetTextColor(0.1, 1.0, 0.1);
+				SubZoneTextString:SetTextColor(0.1, 1.0, 0.1);
+				PVPInfoTextString:SetTextColor(0.1, 1.0, 0.1);
+				SubZoneTextString:SetPoint("TOP", "PVPInfoTextString", "BOTTOM", 0, 0);
+			elseif ( pvpType == "hostile" ) then
+				PVPInfoTextString:SetText(format(FACTION_CONTROLLED_TERRITORY, factionName));
+				ZoneTextString:SetTextColor(1.0, 0.1, 0.1);
+				SubZoneTextString:SetTextColor(1.0, 0.1, 0.1);
+				PVPInfoTextString:SetTextColor(1.0, 0.1, 0.1);
+				SubZoneTextString:SetPoint("TOP", "PVPInfoTextString", "BOTTOM", 0, 0);
+			elseif ( pvpType == "contested" ) then
+				PVPInfoTextString:SetText(CONTESTED_TERRITORY);
+				ZoneTextString:SetTextColor(1.0, 0.7, 0);
+				SubZoneTextString:SetTextColor(1.0, 0.7, 0);
+				PVPInfoTextString:SetTextColor(1.0, 0.7, 0);
+				SubZoneTextString:SetPoint("TOP", "PVPInfoTextString", "BOTTOM", 0, 0);
+			else
+				PVPInfoTextString:SetText("");
+				ZoneTextString:SetTextColor(1.0, 0.9294, 0.7607);
+				SubZoneTextString:SetTextColor(1.0, 0.9294, 0.7607);
+				SubZoneTextString:SetPoint("TOP", "ZoneTextString", "BOTTOM", 0, 0);
+			end
+			if ( isArena ) then
+				PVPArenaTextString:SetText(FREE_FOR_ALL_TERRITORY);
+				SubZoneTextString:SetTextColor(1.0, 0.1, 0.1);
+			else
+				PVPArenaTextString:SetText("");
+			end
+			if ( not showPVPInfo ) then
+				PVPInfoTextString:SetText("");
+				SubZoneTextString:SetPoint("TOP", "ZoneTextString", "BOTTOM", 0, 0);
+			end
+		end
+	</Script>
+	<!-- These frames are shown when the current zone or subzone changes -->
+	<Frame name="ZoneTextFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="512"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="128" y="128"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="ZoneTextString" inherits="ZoneTextFont">
+					<Size>
+						<AbsDimension x="384" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+				<FontString name="PVPInfoTextString" inherits="SubZoneTextFont">
+					<Size>
+						<AbsDimension x="384" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ZoneTextString" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				FadingFrame_OnLoad();
+				FadingFrame_SetFadeInTime(this, ZoneFadeInDuration);
+				FadingFrame_SetHoldTime(this, ZoneHoldDuration);
+				FadingFrame_SetFadeOutTime(this, ZoneFadeOutDuration);
+				this:RegisterEvent("ZONE_CHANGED");
+				this:RegisterEvent("ZONE_CHANGED_INDOORS");
+				this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+			</OnLoad>
+			<OnEvent>
+				local newText = GetZoneText();
+				if ( event == "ZONE_CHANGED" ) then
+					this.zoneText = newText;
+					return;
+				end
+				if ( newText ~= this.zoneText ) then
+					this.zoneText = newText;
+					if ( event == "ZONE_CHANGED_NEW_AREA" ) then
+						SetZoneText(1);
+					else
+						SetZoneText();
+					end
+					FadingFrame_Show();
+				end
+			</OnEvent>
+			<OnUpdate>
+				FadingFrame_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<Frame name="SubZoneTextFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="512"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="128" y="128"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SubZoneTextString" inherits="SubZoneTextFont">
+					<Size>
+						<AbsDimension x="384" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ZoneTextString" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+				<FontString name="PVPArenaTextString" inherits="SubZoneTextFont">
+					<Size>
+						<AbsDimension x="384" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="SubZoneTextString" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				FadingFrame_OnLoad();
+				FadingFrame_SetFadeInTime(this, ZoneFadeInDuration);
+				FadingFrame_SetHoldTime(this, ZoneHoldDuration);
+				FadingFrame_SetFadeOutTime(this, ZoneFadeOutDuration);
+				this:RegisterEvent("ZONE_CHANGED");
+				this:RegisterEvent("ZONE_CHANGED_INDOORS");
+				this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+				PVPArenaTextString:SetTextColor(1.0, 0.1, 0.1);
+				SetZoneText(1);
+				SubZoneTextString:SetText(GetSubZoneText());
+			</OnLoad>
+			<OnEvent>
+				local text = SubZoneTextString:GetText();
+				local newText = GetSubZoneText();
+				if(text ~= newText) then
+					SubZoneTextString:SetText(newText);
+					SetZoneText(1);
+					FadingFrame_Show();
+				end
+			</OnEvent>
+			<OnUpdate>
+				FadingFrame_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<Frame name="AutoFollowStatus" parent="UIParent" setAllPoints="true" frameStrata="BACKGROUND" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="AutoFollowStatusText" inherits="GameFontNormal">
+					<FontHeight>
+						<AbsValue val="20"/>
+					</FontHeight>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				AutoFollowStatus_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				AutoFollowStatus_OnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				AutoFollowStatus_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

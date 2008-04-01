@@ -1,0 +1,655 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PetPaperDollFrame.lua"/>
+	<Frame name="PetPaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" id="2" hidden="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PetPaperDollFrame\UI-PetPaperDollFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-257"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PetPaperDollFrame\UI-PetPaperDollFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="258" y="-257"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="PetNameText" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="109" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="6" y="232"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetLevelText" inherits="GameFontNormalSmall" text="Level level race class">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="PetNameText" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetLoyaltyText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="PetLevelText" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetTrainingPointText" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-135" y="86"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetTrainingPointLabel" inherits="GameFontNormalSmall" text="TRAINING_POINTS">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="PetTrainingPointText" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="PetPaperDollFrameExpBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="319" y="11"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="23" y="105"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="PetPaperDollXPBar1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="160" y="13"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0.203125" right="0.8046875" top="0.2890625" bottom="0.33984375"/>
+						</Texture>
+						<Texture file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="159" y="13"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="PetPaperDollXPBar1" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.203125" right="0.8046875" top="0.2890625" bottom="0.33984375"/>
+						</Texture>
+						<FontString name="PetPaperDollFrameExpBarText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize();
+						SetTextStatusBarText(this, PetPaperDollFrameExpBarText);
+					</OnLoad>
+					<OnEvent>
+						local cvar = arg1;
+						local value = arg2;
+						PetExpBar_Update();
+						TextStatusBar_OnEvent(cvar, value);
+					</OnEvent>
+					<OnEnter>
+						TextStatusBar_UpdateTextString();
+						ShowTextStatusBarText(this);
+					</OnEnter>
+					<OnLeave>
+						HideTextStatusBarText(this);
+					</OnLeave>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.58" g="0.0" b="0.55"/>
+			</StatusBar>
+			<PlayerModel name="PetModelFrame">
+				<Size>
+					<AbsDimension x="318" y="224"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="25" y="-78"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						Model_OnLoad();
+						this:RegisterEvent("DISPLAY_SIZE_CHANGED");
+					</OnLoad>
+					<OnEvent>
+						this:RefreshUnit();
+					</OnEvent>
+					<OnModelUpdate>
+                        this:UpdateModel();
+                    </OnModelUpdate>
+					<OnUpdate>
+                        Model_OnUpdate(arg1, PetModelFrame);
+                    </OnUpdate>
+				</Scripts>
+				<Frames>
+					<Button name="PetModelFrameRotateLeftButton">
+						<Size>
+							<AbsDimension x="35" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetPaperDollFrame">
+								<Offset>
+									<AbsDimension x="23" y="-76"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							</OnLoad>
+							<OnClick>
+								Model_RotateLeft(PetModelFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="PetModelFrameRotateRightButton">
+						<Size>
+							<AbsDimension x="35" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetModelFrameRotateLeftButton" relativePoint="TOPRIGHT"/>
+						</Anchors>
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							</OnLoad>
+							<OnClick>
+								Model_RotateRight(PetModelFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</PlayerModel>
+			<Frame name="PetPaperDollPetInfo" enableMouse="true" hidden="false">
+				<Size>
+					<AbsDimension x="24" y="23"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PetModelFrameRotateLeftButton">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\PetPaperDollFrame\UI-PetHappiness" setAllPoints="true">
+							<Size>
+								<AbsDimension x="24" y="23"/>
+							</Size>
+							<TexCoords left="0" right="0.1875" top="0" bottom="0.359375"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(format(PET_DIET_TEMPLATE,BuildListString(GetPetFoodTypes())));
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Button name="PetPaperDollCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-422"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(this:GetParent():GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="PetAttributesFrame">
+				<Size>
+					<AbsDimension x="230" y="78"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="67" y="-300"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+							<Size>
+								<AbsDimension x="114" y="78"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.89" top="0" bottom="0.61"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+							<Size>
+								<AbsDimension x="114" y="78"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="115" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.89" top="0" bottom="0.61"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="PetStatFrame1" inherits="AttributeFrameTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								PaperDollStatTooltip("pet", "STRENGTH");
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="PetStatFrame2" inherits="AttributeFrameTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetStatFrame1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								PaperDollStatTooltip("pet", "AGILITY");
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="PetStatFrame3" inherits="AttributeFrameTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetStatFrame2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								PaperDollStatTooltip("pet", "STAMINA");
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="PetStatFrame4" inherits="AttributeFrameTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetStatFrame3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								PaperDollStatTooltip("pet", "INTELLECT");
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="PetStatFrame5" inherits="AttributeFrameTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetStatFrame4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								PaperDollStatTooltip("pet", "SPIRIT");
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="PetAttackFrame" inherits="StatFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetAttributesFrame" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="122" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(ATTACK_TOOLTIP, 1.0, 1.0, 1.0);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="PetAttackPowerFrame" inherits="StatFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetAttackFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(this.tooltip);
+								GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="PetDamageFrame" inherits="StatFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetAttackPowerFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								CharacterDamageFrame_OnEnter();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="PetDefenseFrame" inherits="StatFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetDamageFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(DEFENSE_TOOLTIP, 1.0, 1.0, 1.0);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="PetArmorFrame" inherits="StatFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetDefenseFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(this.tooltip);
+								GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="PetResistanceFrame">
+				<Size>
+					<AbsDimension x="32" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="PetPaperDollFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="347" y="-77"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="PetMagicResFrame1" inherits="MagicResistanceFrameTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+									<TexCoords left="0" right="1.0" top="0.2265625" bottom="0.33984375"/>
+								</Texture>
+								<FontString name="PetMagicResText1" inherits="GameFontHighlightSmall" text="X">
+									<Anchors>
+										<Anchor point="BOTTOM">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="PetMagicResFrame2" inherits="MagicResistanceFrameTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="PetMagicResFrame1" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+									<TexCoords left="0" right="1.0" top="0" bottom="0.11328125"/>
+								</Texture>
+								<FontString name="PetMagicResText2" inherits="GameFontHighlightSmall" text="X">
+									<Anchors>
+										<Anchor point="BOTTOM">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="PetMagicResFrame3" inherits="MagicResistanceFrameTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="PetMagicResFrame2" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+									<TexCoords left="0" right="1.0" top="0.11328125" bottom="0.2265625"/>
+								</Texture>
+								<FontString name="PetMagicResText3" inherits="GameFontHighlightSmall" text="X">
+									<Anchors>
+										<Anchor point="BOTTOM">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="PetMagicResFrame4" inherits="MagicResistanceFrameTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="PetMagicResFrame3" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+									<TexCoords left="0" right="1.0" top="0.33984375" bottom="0.453125"/>
+								</Texture>
+								<FontString name="PetMagicResText4" inherits="GameFontHighlightSmall" text="X">
+									<Anchors>
+										<Anchor point="BOTTOM">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="PetMagicResFrame5" inherits="MagicResistanceFrameTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="PetMagicResFrame4" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+									<TexCoords left="0" right="1.0" top="0.453125" bottom="0.56640625"/>
+								</Texture>
+								<FontString name="PetMagicResText5" inherits="GameFontHighlightSmall" text="X">
+									<Anchors>
+										<Anchor point="BOTTOM">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PetPaperDollFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				PetPaperDollFrame_OnEvent();
+			</OnEvent>
+			<OnShow>
+				PetPaperDollFrame_OnShow()
+			</OnShow>
+			<OnHide>
+				PetPaperDollFrame_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

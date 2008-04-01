@@ -1,0 +1,366 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ItemTextFrame.lua"/>
+	<Frame name="ItemTextFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Spellbook\Spellbook-Icon">
+					<Size>
+						<AbsDimension x="58" y="58"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\ItemTextFrame\UI-ItemText-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\ItemTextFrame\UI-ItemText-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="ItemTextMaterialTopLeft" file="">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="21" y="-75"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="ItemTextMaterialTopRight" file="">
+					<Size>
+						<AbsDimension x="64" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="ItemTextMaterialTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="ItemTextMaterialBotLeft" file="">
+					<Size>
+						<AbsDimension x="256" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="ItemTextMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="ItemTextMaterialBotRight" file="">
+					<Size>
+						<AbsDimension x="64" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="ItemTextMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="ItemTextTitleText" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="224" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="6" y="230"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="ItemTextCurrentPage" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="192" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="10" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="ItemTextScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="280" y="355"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-66" y="-76"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar" hidden="true">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+									<Offset>
+										<AbsDimension x="0" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar" hidden="true">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBack" hidden="true">
+							<Size>
+								<AbsDimension x="27" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTop">
+									<Offset>
+										<AbsDimension x="2" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOM" relativeTo="$parentBottom">
+									<Offset>
+										<AbsDimension x="2" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnScrollRangeChanged>
+						ScrollFrame_OnScrollRangeChanged(arg2);
+						if ( this:GetVerticalScrollRange() == 0 ) then
+							getglobal(this:GetName().."Back"):Hide();
+						else
+							getglobal(this:GetName().."Back"):Show();
+						end
+					</OnScrollRangeChanged>
+				</Scripts>
+				<ScrollChild>
+					<SimpleHTML name="ItemTextPageText">
+						<Size>
+							<AbsDimension x="240" y="304"/>
+						</Size>
+						<FontString name="ItemTextFontString" inherits="ItemTextFontNormal">
+							<Size>
+								<AbsDimension x="240" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+			<StatusBar name="ItemTextStatusBar">
+				<Size>
+					<AbsDimension x="250" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="ItemTextFrame">
+						<Offset>
+							<AbsDimension x="-5" y="128"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size>
+								<AbsDimension x="256" y="23"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.0625" bottom="0.75"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel()+1);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+				<BarColor r="0.25" g="0.75" b="0.25"/>
+			</StatusBar>
+			<Button name="ItemTextPrevPageButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="90" y="-56"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormal" justifyH="LEFT" text="PREV">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ItemTextPrevPage();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="ItemTextNextPageButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-55" y="-56"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormal" justifyH="RIGHT" text="NEXT">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ItemTextNextPage();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="ItemTextCloseButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-45" y="-26"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(ItemTextFrame);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ItemTextFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				ItemTextFrame_OnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				ItemTextFrame_OnUpdate(arg1);
+			</OnUpdate>
+			<OnShow>
+				PlaySound("igMainMenuOpen");
+			</OnShow>
+			<OnHide>
+				CloseItemText();
+				PlaySound("igMainMenuClose");
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

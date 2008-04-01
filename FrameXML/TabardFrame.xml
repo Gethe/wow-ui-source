@@ -1,0 +1,632 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ 
+..\FrameXML\UI.xsd">
+	<Script file="TabardFrame.lua"/>
+	<Frame name="TabardFrameCustomizeTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="164" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size>
+						<AbsDimension x="95" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size>
+						<AbsDimension x="25" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentMiddle" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size>
+						<AbsDimension x="25" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="85" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentMiddle">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentLeftButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentLeft" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="21" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TabardCustomization_Left(this:GetParent():GetID());
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentRightButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRight" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-19" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TabardCustomization_Right(this:GetParent():GetID());
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="TabardFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+ 			<Anchor point="TOPLEFT">
+ 				<Offset>
+ 					<AbsDimension x="0" y="-104"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="TabardFramePortrait">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="TabardFrameBackground" file="Interface\TabardFrame\TabardFrameBackground" hidden="false">
+					<Size>
+						<AbsDimension x="316" y="325"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="23" y="-76"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="TabardFrameOuterFrameTopLeft" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size>
+						<AbsDimension x="20" y="39"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="19" y="-73"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.109375" right="0.1875" top="0" bottom="0.3046875"/>
+				</Texture>
+				<Texture name="TabardFrameOuterFrameTop" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size>
+						<AbsDimension x="280" y="6"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TabardFrameOuterFrameTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1875" right="0.8828125" top="0" bottom="0.046875"/>
+				</Texture>
+				<Texture name="TabardFrameOuterFrameTopRight" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size>
+						<AbsDimension x="20" y="39"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TabardFrameOuterFrameTop" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.8828125" right="0.9609375" top="0" bottom="0.3046875"/>
+				</Texture>
+				<Texture name="TabardFrameOuterFrameLeftTop" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size>
+						<AbsDimension x="7" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TabardFrameOuterFrameTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.02734375" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="TabardFrameOuterFrameLeftBottom" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size>
+						<AbsDimension x="7" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TabardFrameOuterFrameLeftTop" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.02734375" right="0.0546875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="TabardFrameOuterFrameRightTop" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size>
+						<AbsDimension x="7" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="TabardFrameOuterFrameTopRight" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0546875" right="0.08203125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="TabardFrameOuterFrameRightBottom" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size>
+						<AbsDimension x="7" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TabardFrameOuterFrameRightTop" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.08203125" right="0.109375" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="TabardFrameOuterFrameBottomLeft" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size>
+						<AbsDimension x="20" y="39"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TabardFrameOuterFrameLeftBottom" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.109375" right="0.1875" top="0.3046875" bottom="0.6171875"/>
+				</Texture>
+				<Texture name="TabardFrameOuterFrameBottom" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size>
+						<AbsDimension x="280" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="TabardFrameOuterFrameBottomLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1875" right="0.8828125" top="0.5546875" bottom="0.6171875"/>
+				</Texture>
+				<Texture name="TabardFrameOuterFrameBottomRight" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size>
+						<AbsDimension x="20" y="39"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="TabardFrameOuterFrameBottom" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.8828125" right="0.9609375" top="0.3046875" bottom="0.6171875"/>
+				</Texture>
+				<Texture name="TabardFrameEmblemTopRight" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="128" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="TabardFrameOuterFrameTopRight">
+							<Offset>
+								<AbsDimension x="35" y="20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.5" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="TabardFrameEmblemBottomRight" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="128" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="TabardFrameEmblemTopRight" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0" right="0.5" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="TabardFrameEmblemTopLeft" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="128" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="TabardFrameEmblemTopRight" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="TabardFrameEmblemBottomLeft" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="128" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="TabardFrameEmblemTopLeft" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0" top="0" bottom="1"/>
+				</Texture>
+				<FontString name="TabardFrameNameText" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="109" y="16"/>
+					</Size>
+					<Anchors>
+						 <Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="6" y="232"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="TabardFrameGreetingText" inherits="GameFontHighlight" text="TABARDVENDORGREETING">
+					<Size>
+						<AbsDimension x="250" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="TabardFrame">
+							<Offset>
+								<AbsDimension x="10" y="-39"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<TabardModel name="TabardModel">
+                <Size>
+                    <AbsDimension x="303" y="317"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM" relativeTo="TabardFrame" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="-14" y="114"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+				<Frames>
+					<Button name="TabardCharacterModelRotateLeftButton">
+						<Size>
+							<AbsDimension x="35" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="TabardFrame">
+								<Offset>
+									<AbsDimension x="26" y="110"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							</OnLoad>
+							<OnClick>
+								TabardCharacterModelRotateLeftButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="TabardCharacterModelRotateRightButton">
+						<Size>
+							<AbsDimension x="35" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TabardCharacterModelRotateLeftButton" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							</OnLoad>
+							<OnClick>
+								TabardCharacterModelRotateRightButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+                    <OnLoad>
+                        TabardCharacterModelFrame_OnLoad();
+                    </OnLoad>
+                    <OnModelUpdate>
+                        this:UpdateModel();
+                    </OnModelUpdate>
+					<OnUpdate>
+						TabardCharacterModelFrame_OnUpdate(arg1);
+					</OnUpdate>
+                </Scripts>
+            </TabardModel>
+			<Frame name="TabardFrameCostFrame">
+				<Size>
+					<AbsDimension x="170" y="23"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="TabardFrameOuterFrameTopRight">
+						<Offset>
+							<AbsDimension x="-7" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Frames>
+					<Frame name="TabardFrameCostMoneyFrame" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="TabardFrameCostLabel" inherits="GameFontHighlight" text="TABARDVENDORCOST">
+									<Anchors>
+										<Anchor point="RIGHT" relativeTo="TabardFrameCostMoneyFrame" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="-5" y="1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad();
+								this.small = 0;
+								MoneyFrame_SetType("STATIC");
+							</OnLoad>
+						</Scripts>
+					</Frame>					
+				</Frames>
+			</Frame>
+			<Frame name="TabardFrameCustomizationFrame">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="TabardFrameCustomizationBorder" file="Interface\TabardFrame\TabardFrameCustomizationFrame">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="TabardFrame">
+									<Offset>
+										<AbsDimension x="-9" y="50"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="TabardFrameCustomization1" inherits="TabardFrameCustomizeTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TabardFrameCustomizationBorder" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="48" y="-65"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								TabardFrameCustomization1Text:SetText(EMBLEM_SYMBOL);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="TabardFrameCustomization2" inherits="TabardFrameCustomizeTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TabardFrameCustomization1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								TabardFrameCustomization2Text:SetText(EMBLEM_SYMBOL_COLOR);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="TabardFrameCustomization3" inherits="TabardFrameCustomizeTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TabardFrameCustomization2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								TabardFrameCustomization3Text:SetText(EMBLEM_BORDER);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="TabardFrameCustomization4" inherits="TabardFrameCustomizeTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TabardFrameCustomization3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								TabardFrameCustomization4Text:SetText(EMBLEM_BORDER_COLOR);
+							</OnLoad>	
+						</Scripts>
+					</Frame>
+					<Frame name="TabardFrameCustomization5" inherits="TabardFrameCustomizeTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TabardFrameCustomization4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								TabardFrameCustomization5Text:SetText(EMBLEM_BACKGROUND);
+							</OnLoad>	
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() + 1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="TabardFrameMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TabardFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="183" y="86"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="TabardFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="TabardFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="224" y="-420"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TabardModel:Save();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="TabardFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="TabardFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-420"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>	
+						HideUIPanel(this:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="TabardFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="TabardFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-45" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				TabardFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnEvent>
+				TabardFrame_OnEvent(event, arg1);
+			</OnEvent>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+				CloseTabardCreation();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

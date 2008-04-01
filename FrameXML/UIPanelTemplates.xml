@@ -1,0 +1,298 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UIPanelTemplates.lua"/>
+	<Texture name="UIPanelButtonUpTexture" file="Interface\Buttons\UI-Panel-Button-Up" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Texture name="UIPanelButtonDownTexture" file="Interface\Buttons\UI-Panel-Button-Down" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Texture name="UIPanelButtonDisabledTexture" file="Interface\Buttons\UI-Panel-Button-Disabled" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Texture name="UIPanelButtonDisabledDownTexture" file="Interface\Buttons\UI-Panel-Button-Disabled-Down" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Texture name="UIPanelButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Button name="UIPanelButtonTemplate" virtual="true">
+		<NormalText name="$parentText" inherits="GameFontNormal"/>
+		<DisabledText inherits="GameFontDisable"/>
+		<HighlightText inherits="GameFontHighlight"/>
+		<NormalTexture inherits="UIPanelButtonUpTexture"/>
+		<PushedTexture inherits="UIPanelButtonDownTexture"/>
+		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+	</Button>
+	<Button name="UIPanelButtonTemplate2" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="22"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\Buttons\UI-Panel-Button-Up">
+					<Size>
+						<AbsDimension x="12" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.09375" top="0" bottom="0.6875"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Buttons\UI-Panel-Button-Up">
+					<Size>
+						<AbsDimension x="12" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Buttons\UI-Panel-Button-Up">
+					<Size>
+						<AbsDimension x="12" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.6875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				getglobal(this:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+				getglobal(this:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+				getglobal(this:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+			</OnMouseDown>
+			<OnMouseUp>
+				getglobal(this:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				getglobal(this:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				getglobal(this:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+			</OnMouseUp>
+		</Scripts>
+		<NormalText name="$parentText" inherits="GameFontNormal"/>
+		<DisabledText inherits="GameFontDisable"/>
+		<HighlightText inherits="GameFontHighlight"/>
+		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+	</Button>
+	<Button name="UIPanelButtonGrayTemplate" virtual="true">
+		<NormalText inherits="GameFontHighlight"/>
+		<DisabledText inherits="GameFontDisable"/>
+		<HighlightText inherits="GameFontHighlight"/>
+		<NormalTexture inherits="UIPanelButtonDisabledTexture"/>
+		<PushedTexture inherits="UIPanelButtonDisabledDownTexture"/>
+		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+	</Button>
+	<Button name="UIPanelCloseButton" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				HideUIPanel(this:GetParent());
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+	</Button>
+	<Texture name="UIPanelScrollBarButton" virtual="true">
+		<TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
+	</Texture>
+	<Button name="UIPanelScrollUpButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<NormalTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
+		<PushedTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
+		<DisabledTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
+		<HighlightTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD"/>
+	</Button>
+	<Button name="UIPanelScrollDownButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<NormalTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
+		<PushedTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
+		<DisabledTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
+		<HighlightTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD"/>
+	</Button>
+	<Slider name="UIPanelScrollBarTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="0"/>
+		</Size>
+		<Frames>
+			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = this:GetParent();
+						parent:SetValue(parent:GetValue() - (parent:GetHeight() / 2));
+						PlaySound("UChatScrollButton");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = this:GetParent();
+						parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
+						PlaySound("UChatScrollButton");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnValueChanged>
+				this:GetParent():SetVerticalScroll(arg1);
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+		</ThumbTexture>
+	</Slider>
+	<ScrollFrame name="UIPanelScrollFrameTemplate" virtual="true">
+		<Frames>
+			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="-16"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ScrollFrame_OnLoad();
+			</OnLoad>
+			<OnScrollRangeChanged>
+				ScrollFrame_OnScrollRangeChanged(arg2);
+			</OnScrollRangeChanged>
+			<!--  The code to disable the ScrollDownButton is pretty hacked, but it works -->
+			<OnVerticalScroll>
+				local scrollbar = getglobal(this:GetName().."ScrollBar");
+				scrollbar:SetValue(arg1);
+				local min;
+				local max;
+				min, max = scrollbar:GetMinMaxValues();
+				if ( arg1 == 0 ) then
+					getglobal(scrollbar:GetName().."ScrollUpButton"):Disable();
+				else
+					getglobal(scrollbar:GetName().."ScrollUpButton"):Enable();
+				end
+				if ((scrollbar:GetValue() - max) == 0) then
+					getglobal(scrollbar:GetName().."ScrollDownButton"):Disable();
+				else
+					getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
+				end
+			</OnVerticalScroll>
+			<OnMouseWheel>
+				ScrollFrameTemplate_OnMouseWheel(arg1);
+			</OnMouseWheel>
+		</Scripts>
+	</ScrollFrame>
+	<ScrollFrame name="FauxScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<ScrollChild>
+			<Frame name="$parentScrollChildFrame">
+				<Size>
+					<AbsDimension x="300" y="334"/>
+				</Size>
+			</Frame>
+		</ScrollChild>
+	</ScrollFrame>
+	<EditBox name="InputBoxTemplate" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="10" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEscapePressed>
+				this:ClearFocus();
+			</OnEscapePressed>
+			<OnEditFocusLost>
+				this:HighlightText(0, 0);
+			</OnEditFocusLost>
+			<OnEditFocusGained>
+				this:HighlightText();
+			</OnEditFocusGained>
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+	<CheckButton name="UICheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+</Ui>

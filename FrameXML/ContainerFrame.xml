@@ -1,0 +1,200 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ContainerFrame.lua"/>
+	<Button name="ContainerFrameItemButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Model name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				ContainerFrameItemButton_OnClick(arg1);
+			</OnClick>
+			<OnLoad>
+				ContainerFrameItemButton_OnLoad();
+			</OnLoad>
+			<OnEnter>
+				ContainerFrameItemButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				this.updateTooltip = nil;
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnHide>
+				if ( this.hasStackSplit and (this.hasStackSplit == 1) ) then
+					StackSplitFrame:Hide();
+				end
+			</OnHide>
+			<OnDragStart>
+				ContainerFrameItemButton_OnClick("LeftButton", 1);
+			</OnDragStart>
+			<OnReceiveDrag>
+				ContainerFrameItemButton_OnClick("LeftButton", 1);
+			</OnReceiveDrag>
+			<OnUpdate>
+				ContainerFrameItemButton_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+	<Frame name="ContainerFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="256" y="256"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+                <Texture name="$parentPortrait">
+                    <Size>
+                        <AbsDimension x="40" y="40"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBackgroundTexture" file="Interface\ContainerFrame\UI-BackpackBackground">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="112" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="47" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="-216"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="$parentItem1" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem2" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem3" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem4" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem5" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem6" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem7" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem8" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem9" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem10" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem11" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem12" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem13" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem14" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem15" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem16" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem17" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem18" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem19" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem20" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentPortraitButton">
+				<Size>
+					<AbsDimension x="40" y="40"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="7" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+						if ( this:GetID() == 0 ) then
+							GameTooltip:SetText(TEXT(BACKPACK_TOOLTIP), 1.0, 1.0, 1.0);
+							if (GetBindingKey("TOGGLEBACKPACK")) then
+								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
+							end
+						elseif ( GameTooltip:SetInventoryItem("player", ContainerIDToInventoryID(this:GetID())) ) then
+							local binding = GetBindingKey("TOGGLEBAG"..(4 - this:GetID() + 1));
+							if ( binding ) then
+								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
+							end
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ToggleBag(this:GetParent():GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent>
+				ContainerFrame_OnEvent();
+			</OnEvent>
+			<OnLoad>
+				ContainerFrame_OnLoad();
+			</OnLoad>
+			<OnHide>
+				ContainerFrame_OnHide();
+			</OnHide>
+			<OnShow>
+				ContainerFrame_OnShow();
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<Frame name="ContainerFrame1" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame2" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame3" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame4" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame5" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame6" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame7" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame8" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame9" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame10" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame11" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame12" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame14" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame15" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame16" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame17" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+</Ui>

@@ -1,0 +1,1015 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MacroFrame.lua"/>
+	<CheckButton name="MacroFrameButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="36" y="36"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
+					<Size>
+						<AbsDimension x="36" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Buttons\UI-EmptySlot-Disabled">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture name="$parentIcon">
+			<Size>
+				<AbsDimension x="36" y="36"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</CheckButton>
+	<CheckButton name="MacroButtonTemplate" inherits="MacroFrameButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnClick>
+				MacroButton_OnClick();
+			</OnClick>
+			<OnDragStart>
+				PickupMacro(this:GetID());
+			</OnDragStart>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="MacroPopupButtonTemplate" inherits="MacroFrameButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				MacroPopupButton_OnClick();	
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<Frame name="MacroFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="34" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="MacroFramePortrait" file="Interface\MacroFrame\MacroFrame-Icon">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="CREATE_MACROS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacroFrame">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="MacroHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="256" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-220"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="75" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="MacroHorizontalBarLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				</Texture>
+				<Texture name="MacroFrameSelectedMacroBackground" file="Interface\Buttons\UI-EmptySlot">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-228"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="MacroFrameSelectedMacroName" inherits="GameFontNormalLarge">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-4" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MacroFrameEnterMacroText" inherits="GameFontHighlightSmall" text="ENTER_MACRO_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="8" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MacroFrameCharLimitText" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="-15" y="105"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="MacroFrameSelectedMacroButton" inherits="MacroButtonTemplate" id="0">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground">
+						<Offset>
+							<AbsDimension x="14" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:SetChecked(nil);
+						PickupMacro(MacroFrame.selectedMacro);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="MacroButton1" inherits="MacroButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="42" y="-83"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton2" inherits="MacroButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton3" inherits="MacroButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton4" inherits="MacroButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton5" inherits="MacroButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton6" inherits="MacroButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton7" inherits="MacroButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MacroButton1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton8" inherits="MacroButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton9" inherits="MacroButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton10" inherits="MacroButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton11" inherits="MacroButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton10" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton12" inherits="MacroButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton11" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton13" inherits="MacroButtonTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MacroButton7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton14" inherits="MacroButtonTemplate" id="14">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton13" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton15" inherits="MacroButtonTemplate" id="15">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton14" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton16" inherits="MacroButtonTemplate" id="16">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton15" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton17" inherits="MacroButtonTemplate" id="17">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton16" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroButton18" inherits="MacroButtonTemplate" id="18">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroButton17" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<ScrollFrame name="MacroFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="286" y="85"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="11" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<EditBox name="MacroFrameText" multiLine="true" letters="255" autoFocus="false">
+						<Size>
+							<AbsDimension x="286" y="85"/>
+						</Size>
+						<Scripts>
+							<OnTextChanged>
+								MacroFrame.textChanged = 1;
+								if ( MacroPopupFrame.mode == "new" ) then
+									MacroPopupFrame:Hide();
+								end
+								MacroFrameCharLimitText:SetText(format(TEXT(MACROFRAME_CHAR_LIMIT), MacroFrameText:GetNumLetters()));
+
+								local scrollBar = getglobal(this:GetParent():GetName().."ScrollBar")
+								this:GetParent():UpdateScrollChildRect();
+								local min;
+								local max;
+								min, max = scrollBar:GetMinMaxValues();
+								if ( max > 0 and (this.max ~= max) ) then
+									this.max = max;
+									scrollBar:SetValue(max);
+								end
+							</OnTextChanged>
+							<OnEscapePressed>
+								this:ClearFocus();
+							</OnEscapePressed>
+							<OnEditFocusGained>
+								MacroNewButton:SetText(COMPLETE);
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+								MacroNewButton:SetText(NEW);
+							</OnEditFocusLost>
+						</Scripts>
+						<FontString inherits="GameFontHighlightSmall"/>
+					</EditBox>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button name="MacroFrameTextButton">
+				<Size>
+					<AbsDimension x="286" y="85"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrameText"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MacroFrameText:SetFocus();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="MacroFrameTextBackground">
+				<Size>
+					<AbsDimension x="322" y="95"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrame">
+						<Offset>
+							<AbsDimension x="18" y="-305"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="MacroFrameTab">
+				<Size>
+					<AbsDimension x="154" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-42"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+							<Size>
+								<AbsDimension x="16" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+							<Size>
+								<AbsDimension x="122" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+							<Size>
+								<AbsDimension x="16" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<FontString name="MacroFrameTabText" inherits="GameFontHighlight" text="CURRENT_MACROS">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentMiddle">
+									<Offset>
+										<AbsDimension x="0" y="-14"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="MacroEditButton" inherits="UIPanelButtonTemplate" text="CHANGE_MACRO_NAME_ICON">
+				<Size>
+					<AbsDimension x="170" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground">
+						<Offset>
+							<AbsDimension x="51" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MacroEditButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacroDeleteButton" inherits="UIPanelButtonGrayTemplate" text="DELETE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="MacroFrame">
+						<Offset>
+							<AbsDimension x="17" y="79"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						DeleteMacro(MacroFrame.selectedMacro);
+						MacroFrame_OnLoad();
+						MacroFrame_Update();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacroNewButton" inherits="UIPanelButtonTemplate" text="NEW">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="MacroFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="222" y="-422"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MacroNewButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacroExitButton" inherits="UIPanelButtonTemplate" text="EXIT">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="MacroFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="303" y="-422"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(this:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacroFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="MacroFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-29" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				MacroFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				MacroFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				MacroFrame_OnHide();
+			</OnHide>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+	<Frame name="MacroPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="297" y="298"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="MacroFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-40" y="-40"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
+					<Size>
+						<AbsDimension x="64" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_TEXT">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="24" y="-21"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="24" y="-69"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="MacroPopupEditBox" letters="16" historyLines="0">
+				<Size>
+					<AbsDimension x="200" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="29" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MacroPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-11" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="MacroPopupNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="175" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MacroPopupNameLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="MacroPopupNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MacroPopupNameMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTextChanged>
+						MacroPopupOkayButton_Update();
+						MacroFrameSelectedMacroName:SetText(this:GetText());
+					</OnTextChanged>
+					<OnEscapePressed>
+						MacroPopupFrame:Hide();
+					</OnEscapePressed>
+					<OnEnterPressed>
+						if ( MacroPopupOkayButton:IsEnabled() ~= 0 ) then
+							MacroPopupOkayButton_OnClick();
+						end
+					</OnEnterPressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<ScrollFrame name="MacroPopupScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="195"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="MacroPopupFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-39" y="-67"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(MACRO_ICON_ROW_HEIGHT, MacroPopupFrame_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<CheckButton name="MacroPopupButton1" inherits="MacroPopupButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="24" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton2" inherits="MacroPopupButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton3" inherits="MacroPopupButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton4" inherits="MacroPopupButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton5" inherits="MacroPopupButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton6" inherits="MacroPopupButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroPopupButton1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton7" inherits="MacroPopupButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton8" inherits="MacroPopupButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton9" inherits="MacroPopupButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton10" inherits="MacroPopupButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton11" inherits="MacroPopupButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroPopupButton6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton12" inherits="MacroPopupButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton11" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton13" inherits="MacroPopupButtonTemplate" id="13">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton12" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton14" inherits="MacroPopupButtonTemplate" id="14">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton13" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton15" inherits="MacroPopupButtonTemplate" id="15">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton14" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton16" inherits="MacroPopupButtonTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroPopupButton11" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton17" inherits="MacroPopupButtonTemplate" id="17">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton16" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton18" inherits="MacroPopupButtonTemplate" id="18">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton17" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton19" inherits="MacroPopupButtonTemplate" id="19">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton18" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacroPopupButton20" inherits="MacroPopupButtonTemplate" id="20">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroPopupButton19" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Button name="MacroPopupCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="78" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="MacroPopupFrame">
+						<Offset>
+							<AbsDimension x="-11" y="13"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+						MacroFrame_Update();
+						PlaySound("gsTitleOptionOK");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacroPopupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="78" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MacroPopupCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MacroPopupOkayButton_OnClick();
+						PlaySound("gsTitleOptionOK");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				MacroPopupFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				MacroPopupFrame_OnHide();
+			</OnHide>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+</Ui>

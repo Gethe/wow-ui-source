@@ -1,0 +1,521 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PartyMemberFrame.lua"/>
+	<Script file="TextStatusBar.lua"/>
+	<Button name="PartyBuffButtonTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="15" y="15"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentOverlay" file="Interface\Buttons\UI-Debuff-Border">
+					<Size>
+						<AbsDimension x="17" y="17"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetUnitDebuff("party"..this:GetParent():GetID(), this:GetID());
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="PartyMemberFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="53"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="7" right="66" top="6" bottom="7"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentPortrait">
+					<Size>
+						<AbsDimension x="37" y="37"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame setAllPoints="true">
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
+									<Size>
+										<AbsDimension x="128" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+								<FontString name="$parentName" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="50" y="43"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="32" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentPVPIcon" hidden="true">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="-9" y="-15"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="70" y="8"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="47" y="-12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEvent>
+						UnitFrameHealthBar_Update(this, arg1);
+					</OnEvent>
+					<OnValueChanged>
+						UnitFrameHealthBar_OnValueChanged(arg1);
+						PartyMemberHealthCheck();
+					</OnValueChanged>
+					<OnMouseUp>
+						PartyMemberFrame_OnClick(this:GetParent());
+					</OnMouseUp> 
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="70" y="8"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="47" y="-21"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEvent>
+						UnitFrameManaBar_Update(this, arg1);
+					</OnEvent>
+					<OnMouseUp>
+						PartyMemberFrame_OnClick(this:GetParent());
+					</OnMouseUp> 
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="0" b="1.0"/>
+			</StatusBar>
+			<Button name="$parentDebuff1" inherits="PartyBuffButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="48" y="-32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff2" inherits="PartyBuffButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff3" inherits="PartyBuffButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff4" inherits="PartyBuffButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				local id = this:GetID();
+				local prefix = "PartyMemberFrame"..id;
+				UnitFrame_Initialize("party"..id,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
+					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"), 
+					  getglobal(prefix.."ManaBar"), getglobal(prefix.."ManaBarText"));
+				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), TEXT(DEAD));
+				PartyMemberFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				PartyMemberFrame_OnEvent(event);
+			</OnEvent>
+			<OnEnter>
+				UnitFrame_OnEnter();
+				PartyMemberBuffTooltip:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 60, -25);
+				PartyMemberBuffTooltip_Update();
+			</OnEnter>
+			<OnLeave>
+				UnitFrame_OnLeave();
+				PartyMemberBuffTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				PartyMemberFrame_OnClick();
+			</OnClick>
+			<OnHide>
+				if ( UnitPopup.unit == "party"..this:GetID() ) then
+					UnitPopup:Hide();
+				end
+			</OnHide>
+			<OnUpdate>
+				PartyMemberFrame_UpdateMemberHealth(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+	<Button name="PartyMemberFrame1" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="1">
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="10" y="-128"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="PartyMemberFrame2" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="2">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame1" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="PartyMemberFrame3" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="3">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame2" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="PartyMemberFrame4" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="4">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame3" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Frame name="PartyMemberBuffTooltip" frameStrata="TOOLTIP" hidden="true">
+		<Size>
+			<AbsDimension x="200" y="75"/>
+		</Size>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Button name="$parentBuff1" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="9" y="-9"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff2" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff3" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff4" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff5" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff6" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff7" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff8" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff9" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentBuff1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff10" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff11" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff10" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff12" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff11" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff13" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff12" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff14" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff13" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff15" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff14" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff16" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff15" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff1" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentBuff9" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff2" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff3" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff4" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff5" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff6" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff7" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff8" inherits="PartyBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				GameTooltip_OnLoad();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

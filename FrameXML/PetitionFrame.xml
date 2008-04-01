@@ -1,0 +1,374 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PetitionFrame.lua"/>
+	<Frame name="PetitionFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+ 		<Size>
+ 			<AbsDimension x="384" y="512"/>
+ 		</Size>
+ 		<Anchors>
+ 			<Anchor point="TOPLEFT">
+ 				<Offset>
+ 					<AbsDimension x="0" y="-104"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+                <Texture name="PetitionFramePortrait" file="Interface\PetitionFrame\GuildCharter-Icon">
+                    <Size>
+                        <AbsDimension x="58" y="58"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="10" y="-8"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="PetitionText" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="270" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameCharterTitle" inherits="QuestTitleFont" justifyH="LEFT" text="GUILD_NAME">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="30" y="-95"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameCharterName" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameCharterTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMasterTitle" inherits="QuestTitleFont" justifyH="LEFT" text="GUILD_RANK0_DESC">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameCharterName" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMasterName" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMasterTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMemberTitle" inherits="QuestTitleFont" justifyH="LEFT" text="MEMBERS">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMasterName" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMemberName1" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMemberTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMemberName2" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMemberName1" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMemberName3" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMemberName2" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMemberName4" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMemberName3" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMemberName5" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMemberName4" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMemberName6" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMemberName5" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMemberName7" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMemberName6" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMemberName8" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMemberName7" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameMemberName9" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMemberName8" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetitionFrameInstructions" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PetitionFrameMemberName9" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers> 
+ 		<Frames>
+			<Frame name="PetitionNpcNameFrame">
+				<Size>
+					<AbsDimension x="300" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="PetitionFrame" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-23"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="PetitionFrameNpcNameText" inherits="GameFontHighlight"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+                     <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 2);
+                    </OnLoad>
+                </Scripts>
+			</Frame>
+			<Button name="PetitionFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size>
+					<AbsDimension x="75" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="PetitionFrame" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-40" y="72"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(PetitionFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="PetitionFrameSignButton" inherits="UIPanelButtonTemplate" text="SIGN_CHARTER">
+				<Size>
+					<AbsDimension x="110" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="PetitionFrame">
+						<Offset>
+							<AbsDimension x="22" y="72"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SignPetition();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="PetitionFrameRequestButton" inherits="UIPanelButtonTemplate" text="REQUEST_SIGNATURE">
+				<Size>
+					<AbsDimension x="140" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="PetitionFrame">
+						<Offset>
+							<AbsDimension x="22" y="72"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						OfferPetition();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="PetitionFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="PetitionFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-42" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("PETITION_SHOW");
+				this:RegisterEvent("PETITION_CLOSED");
+			</OnLoad>
+			<OnEvent>
+				if (event == "PETITION_SHOW") then
+					ShowUIPanel(PetitionFrame);
+					if ( not PetitionFrame:IsVisible() ) then
+						ClosePetition();
+						return;
+					end
+
+					PetitionFrame_Update();
+				elseif (event == "PETITION_CLOSED") then
+					HideUIPanel(PetitionFrame);
+				end
+			</OnEvent>
+			<OnShow>
+				PlaySound("igQuestListOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igQuestListClose");
+				ClosePetition();
+			</OnHide>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,285 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MoneyInputFrame.lua"/>
+	<Frame name="MoneyInputFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="176" y="18"/>
+		</Size>
+		<Frames>
+			<EditBox name="$parentGold" letters="8" historyLines="0" numeric="true" autoFocus="false">
+				<Size>
+					<AbsDimension x="68" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="10" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture file="Interface\MoneyFrame\UI-MoneyIcons">
+							<Size>
+								<AbsDimension x="13" y="13"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTabPressed>
+						if ( IsShiftKeyDown() and this:GetParent().previousFocus ) then
+							this:GetParent().previousFocus:SetFocus();
+						else
+							getglobal(this:GetParent():GetName().."Silver"):SetFocus();
+						end
+					</OnTabPressed>
+					<OnEnterPressed>
+						getglobal(this:GetParent():GetName().."Silver"):SetFocus();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						this:ClearFocus();
+					</OnEscapePressed>
+					<OnTextChanged>
+						MoneyInputFrame_OnTextChanged(this:GetParent());
+					</OnTextChanged> 
+					<OnEditFocusLost>
+						this:HighlightText(0, 0);
+					</OnEditFocusLost>
+					<OnEditFocusGained>
+						this:HighlightText();
+					</OnEditFocusGained>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<EditBox name="$parentSilver" letters="2" historyLines="0" numeric="true" autoFocus="false">
+				<Size>
+					<AbsDimension x="30" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentGold" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="10" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture file="Interface\MoneyFrame\UI-MoneyIcons">
+							<Size>
+								<AbsDimension x="13" y="13"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTabPressed>
+						if ( IsShiftKeyDown() ) then
+							getglobal(this:GetParent():GetName().."Gold"):SetFocus();
+						else
+							getglobal(this:GetParent():GetName().."Copper"):SetFocus();
+						end
+					</OnTabPressed>
+					<OnEnterPressed>
+						getglobal(this:GetParent():GetName().."Copper"):SetFocus();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						this:ClearFocus();
+					</OnEscapePressed>
+					<OnTextChanged>
+						MoneyInputFrame_OnTextChanged(this:GetParent());
+					</OnTextChanged>
+					<OnEditFocusLost>
+						this:HighlightText(0, 0);
+					</OnEditFocusLost>
+					<OnEditFocusGained>
+						this:HighlightText();
+					</OnEditFocusGained>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<EditBox name="$parentCopper" letters="2" historyLines="0" numeric="true" autoFocus="false">
+				<Size>
+					<AbsDimension x="30" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentSilver" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="10" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture file="Interface\MoneyFrame\UI-MoneyIcons">
+							<Size>
+								<AbsDimension x="13" y="13"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTabPressed>
+						if ( IsShiftKeyDown() ) then
+							getglobal(this:GetParent():GetName().."Silver"):SetFocus();
+						else
+							if ( this:GetParent().nextFocus ) then
+								this:GetParent().nextFocus:SetFocus();
+							else
+								this:ClearFocus();
+							end
+						end
+					</OnTabPressed>
+					<OnEnterPressed>
+						if ( this:GetParent().nextFocus ) then
+							this:GetParent().nextFocus:SetFocus();
+						else
+							this:ClearFocus();
+						end
+					</OnEnterPressed>
+					<OnEscapePressed>
+						this:ClearFocus();
+					</OnEscapePressed>
+					<OnTextChanged>
+						MoneyInputFrame_OnTextChanged(this:GetParent());
+					</OnTextChanged>
+					<OnEditFocusLost>
+						this:HighlightText(0, 0);
+					</OnEditFocusLost>
+					<OnEditFocusGained>
+						this:HighlightText();
+					</OnEditFocusGained>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+		</Frames>
+	</Frame>
+</Ui>

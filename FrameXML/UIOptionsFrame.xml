@@ -1,0 +1,664 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UIOptionsFrame.lua"/>
+	<Frame name="UIOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="500" y="575"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="UIOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="UIOPTIONS_MENU">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="UIOptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="UIOptionsFrameGeneral" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="475" y="90"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="UIOptionsFrameCheckButton6" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+									OptionsFrame_EnableDropDown(UIOptionsFrameClickCameraDropDown);
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+									OptionsFrame_DisableDropDown(UIOptionsFrameClickCameraDropDown);
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton3" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="UIOptionsFrameCheckButton6" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="120" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton14" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="UIOptionsFrameCheckButton3" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="120" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Frame name="UIOptionsFrameClickCameraDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCheckButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-16" y="-14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="CLICK_CAMERA_STYLE">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								UIOptionsFrameClickCameraDropDown_OnLoad();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Slider name="UIOptionsFrameSlider1" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="UIOptionsFrameClickCameraDropDown" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="35" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<CheckButton name="UIOptionsFrameCheckButton16" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton14" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(GENERAL);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="UIOptionsFrameDisplay" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="475" y="125"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameGeneral" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="UIOptionsFrameCheckButton12" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton2" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton12" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton5" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton2" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton17" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton5" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton20" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="UIOptionsFrameCheckButton12" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="120" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton21" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton20" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+									OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton22);
+									OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton23);
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+									OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton22);
+									OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton23);
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton22" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton21" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="10" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton23" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton22" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton19" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="UIOptionsFrameCheckButton20" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="120" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterEvent("VARIABLES_LOADED");
+							</OnLoad>
+							<OnEvent>
+								if ( event == "VARIABLES_LOADED" ) then
+									UIOptionsFrameCheckButtons["SHOW_DAMAGE_TEXT"].value = SHOW_DAMAGE;
+									UIOptionsFrame_SetDamageCheckBoxes(SHOW_DAMAGE);
+								end
+							</OnEvent>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+									OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton11);
+									OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton9);
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+									OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton11);
+									OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton9);
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton11" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton19" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="10" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton9" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton11" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(DISPLAY);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="UIOptionsFrameCamera" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="475" y="115"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameDisplay" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="UIOptionsFrameCameraDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-8" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="CAMERA_FOLLOWING_STYLE">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								UIOptionsFrameCameraDropDown_OnLoad();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<CheckButton name="UIOptionsFrameCheckButton24" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCameraDropDown" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="20" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton26" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton24" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Slider name="UIOptionsFrameSlider2" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="UIOptionsFrameCameraDropDown" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="35" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<CheckButton name="UIOptionsFrameCheckButton1" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameSlider2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-6" y="-16"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton27" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton1" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Slider name="UIOptionsFrameSlider3" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="UIOptionsFrameSlider2" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="35" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="UIOptionsFrameSlider4" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameSlider3" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-22"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<CheckButton name="UIOptionsFrameCheckButton15" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameSlider4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-6" y="-7"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(CAMERA_LABEL);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="UIOptionsFrameChat" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="237" y="127"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCamera" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="UIOptionsFrameCheckButton7" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterEvent("VARIABLES_LOADED");
+							</OnLoad>
+							<OnEvent>
+								if ( event == "VARIABLES_LOADED" ) then
+									UIOptionsFrameCheckButtons["SIMPLE_CHAT_TEXT"].value = SIMPLE_CHAT;
+									if ( SIMPLE_CHAT == "1" ) then
+										FCF_Set_SimpleChat();
+									end
+								end
+							</OnEvent>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton13" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton7" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton8" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton13" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterEvent("VARIABLES_LOADED");
+							</OnLoad>
+							<OnEvent>
+								if ( event == "VARIABLES_LOADED" ) then
+									UIOptionsFrameCheckButtons["CHAT_LOCKED_TEXT"].value = CHAT_LOCKED;
+									if ( CHAT_LOCKED == "1" ) then
+										FCF_Set_ChatLocked(1);
+									end
+								end
+							</OnEvent>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton18" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton8" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterEvent("VARIABLES_LOADED");
+							</OnLoad>
+							<OnEvent>
+								if ( event == "VARIABLES_LOADED" ) then
+									UIOptionsFrameCheckButtons["REMOVE_CHAT_DELAY_TEXT"].value = REMOVE_CHAT_DELAY;
+									SetChatMouseOverDelay(REMOVE_CHAT_DELAY);
+								end
+							</OnEvent>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(CHAT_LABEL);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="UIOptionsFrameHelp" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="237" y="127"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameChat" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="UIOptionsFrameCheckButton28" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Button name="UIOptionsFrameResetTutorials" inherits="GameMenuButtonTemplate" text="RESET_TUTORIALS">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCheckButton28" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("gsTitleOptionOK");
+								ResetTutorials();
+								TutorialFrameCheckButton:SetChecked(1);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<CheckButton name="UIOptionsFrameCheckButton29" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameResetTutorials">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(HELP_LABEL);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="UIOptionsFrameCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-13" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionExit");
+						HideUIPanel(UIOptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="UIOptionsFrameOkay" inherits="GameMenuButtonTemplate" text="OKAY">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="UIOptionsFrameCancel" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						UIOptionsFrame_Save();
+						HideUIPanel(UIOptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="UIOptionsFrameDefaults" inherits="OptionsButtonTemplate" text="DEFAULTS">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						UIOptionsFrame_SetDefaults();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				UIOptionsFrame_Init();
+			</OnLoad>
+			<OnEvent>
+				UIOptionsFrame_OnEvent();
+			</OnEvent>
+			<OnShow>
+				UIOptionsFrame_Load();
+			</OnShow>
+			<OnHide>
+				ShowUIPanel(GameMenuFrame);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

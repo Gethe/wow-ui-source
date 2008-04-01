@@ -1,0 +1,599 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MerchantFrame.lua"/>
+	<Frame name="MerchantItemTemplate" virtual="true">	
+		<Size>
+			<AbsDimension x="153" y="37"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-13" y="13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
+					<Size>
+						<AbsDimension x="128" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-9" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="90" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentItemButton" inherits="ItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( IsShiftKeyDown() ) then
+							MerchantItemButton_OnShiftClick();
+						else
+							MerchantItemButton_OnClick(arg1);
+						end
+					</OnClick>
+					<OnLoad>
+						MerchantItemButton_OnLoad();
+					</OnLoad>
+					<OnDragStart>
+						MerchantItemButton_OnClick("LeftButton");
+					</OnDragStart>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetMerchantItem(this:GetID());
+						if ( ShoppingTooltip1:SetMerchantCompareItem(this:GetID(), 1) ) then
+							ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_BOTTOMRIGHT");
+							ShoppingTooltip1:SetPoint("TOPLEFT", "GameTooltip", "TOPRIGHT", 0, -10);
+							ShoppingTooltip1:SetMerchantCompareItem(this:GetID(), 1);
+							ShoppingTooltip1:Show();
+						end
+						if ( ShoppingTooltip2:SetMerchantCompareItem(this:GetID(), 2) ) then
+							ShoppingTooltip2:SetOwner(ShoppingTooltip1, "ANCHOR_BOTTOMRIGHT");
+							ShoppingTooltip2:SetPoint("TOPLEFT", "ShoppingTooltip1", "TOPRIGHT", 0, 0);
+							ShoppingTooltip2:SetMerchantCompareItem(this:GetID(), 2);
+							ShoppingTooltip2:Show();
+						end
+						ShowMerchantSellCursor(this:GetID());
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+					</OnLeave>
+					<OnHide>
+						if ( this.hasStackSplit == 1 ) then
+							StackSplitFrame:Hide();
+						end
+					</OnHide>
+				</Scripts>
+			</Button>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad();
+						MoneyFrame_SetType("STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="MerchantFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="61"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="MerchantFramePortrait">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\MerchantFrame\UI-Merchant-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\MerchantFrame\UI-Merchant-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MerchantFrame\UI-Merchant-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MerchantFrame\UI-Merchant-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				 <FontString name="MerchantNameText" inherits="GameFontNormal" text="Merchant Name">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MerchantFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MerchantPageText" inherits="GameFontNormal" text="Page">
+					<Size>
+						<AbsDimension x="104" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="-14" y="150"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MerchantRepairText" inherits="GameFontHighlightSmall" text="REPAIR_ITEMS">
+ 					<Anchors>
+ 						<Anchor point="BOTTOMLEFT">
+ 							<Offset>
+ 								<AbsDimension x="26" y="103"/>
+ 							</Offset>
+ 						</Anchor>
+ 					</Anchors>
+ 				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="MerchantItem1" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="24" y="-79"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem2" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem3" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem4" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem3" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem5" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem6" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem5" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem7" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem8" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem7" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem9" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem10" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem9" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem11" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem12" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem11" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="MerchantRepairAllButton">
+				<Size>
+					<AbsDimension x="36" y="36"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="172" y="91"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="MerchantRepairAllIcon" file="Interface\MerchantFrame\UI-Merchant-RepairIcons">
+							<TexCoords left="0.28125" right="0.5625" top="0" bottom="0.5625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(REPAIR_ALL_ITEMS);
+						local repairAllCost, canRepair = GetRepairAllCost();
+						if ( canRepair and (repairAllCost > 0) ) then
+							SetTooltipMoney(GameTooltip, repairAllCost);
+						end
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						RepairAllItems();
+						GameTooltip:Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file=""/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
+			<Button name="MerchantRepairItemButton">
+				<Size>
+					<AbsDimension x="36" y="36"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MerchantRepairAllButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture file="Interface\MerchantFrame\UI-Merchant-RepairIcons">
+							<TexCoords left="0" right="0.28125" top="0" bottom="0.5625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(REPAIR_AN_ITEM);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if ( InRepairMode() ) then
+							HideRepairCursor();
+						else
+							ShowRepairCursor();
+						end
+					</OnClick>
+				</Scripts>
+				<NormalTexture file=""/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
+			<Frame name="MerchantBuyBackItem">	
+				<Size>
+					<AbsDimension x="153" y="37"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem12" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-49"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+							<Size>
+								<AbsDimension x="64" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-13" y="13"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
+							<Size>
+								<AbsDimension x="128" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-9" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="90" y="30"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentItemButton" inherits="ItemButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								MerchantItemButton_OnLoad();
+								this:RegisterEvent("MERCHANT_UPDATE");
+							</OnLoad>
+							<OnEvent>
+								if ( event == "MERCHANT_UPDATE" ) then
+									if ( GameTooltip:IsOwned(this) ) then
+										GameTooltip:SetBuybackItem();
+										GameTooltip:Show();
+									end
+								end
+							</OnEvent>
+							<OnClick>
+								BuybackItem();
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetBuybackItem();
+								ShowMerchantSellCursor(this:GetID());
+							</OnEnter>
+							<OnLeave>  
+								GameTooltip:Hide();
+								ResetCursor();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad();
+								MoneyFrame_SetType("STATIC");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="MerchantMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="MerchantFrame" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-40" y="67"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="MerchantPrevPageButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="MerchantFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="37" y="156"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormal" justifyH="LEFT" text="PREV">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MerchantPrevPageButton" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						MerchantPrevPageButton_OnClick();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="MerchantNextPageButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="MerchantFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="324" y="156"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormal" justifyH="RIGHT" text="NEXT">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="MerchantNextPageButton" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-3" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						MerchantNextPageButton_OnClick();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="MerchantFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="MerchantFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-29" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnHide>
+				MerchantFrame_OnHide();
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
+			<OnLoad>
+				MerchantFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				MerchantFrame_OnShow();
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnEvent>
+				MerchantFrame_OnEvent();
+			</OnEvent>
+			<OnMouseUp>
+				PickupMerchantItem(0);
+			</OnMouseUp>
+			<OnReceiveDrag>
+				MerchantItemButton_OnClick("LeftButton");
+			</OnReceiveDrag>
+		</Scripts>
+	</Frame>
+</Ui>

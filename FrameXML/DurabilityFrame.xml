@@ -1,0 +1,182 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="DurabilityFrame.lua"/>
+	<Frame name="DurabilityFrame" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="false">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="MinimapCluster" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="40" y="15"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="DurabilityHead" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="18" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+					<TexCoords left="0" right="0.140625" top="0" bottom="0.171875"/>
+				</Texture>
+				<Texture name="DurabilityShoulders" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="48" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="DurabilityHead" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.140625" right="0.515625" top="0" bottom="0.171875"/>
+				</Texture>
+				<Texture name="DurabilityChest" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="20" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="DurabilityShoulders" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.515625" right="0.6640625" top="0" bottom="0.171875"/>
+				</Texture>
+				<Texture name="DurabilityWrists" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="44" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="DurabilityShoulders" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.6640625" right="1.0" top="0" bottom="0.171875"/>
+				</Texture>
+				<Texture name="DurabilityHands" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="42" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="DurabilityWrists" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.328125" top="0.171875" bottom="0.3046875"/>
+				</Texture>
+				<Texture name="DurabilityWaist" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="16" y="5"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="DurabilityChest" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.328125" right="0.46875" top="0.171875" bottom="0.203125"/>
+				</Texture>
+				<Texture name="DurabilityLegs" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="29" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="DurabilityWaist" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.46875" right="0.6875" top="0.171875" bottom="0.3203125"/>
+				</Texture>
+				<Texture name="DurabilityFeet" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="41" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="DurabilityLegs" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.6875" right="1.0" top="0.171875" bottom="0.4140625"/>
+				</Texture>
+				<Texture name="DurabilityWeapon" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="20" y="45"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="DurabilityWrists" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.140625" top="0.3203125" bottom="0.6640625"/>
+				</Texture>
+				<Texture name="DurabilityShield" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="25" y="31"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="DurabilityWrists" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.1875" right="0.375" top="0.3203125" bottom="0.5546875"/>
+				</Texture>
+				<Texture name="DurabilityOffWeapon" file="Interface\Durability\UI-Durability-Icons" hidden="true">
+					<Size>
+						<AbsDimension x="20" y="45"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="DurabilityWrists" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.140625" top="0.3203125" bottom="0.6640625"/>
+				</Texture>
+				<Texture name="DurabilityRanged" file="Interface\Durability\UI-Durability-Icons">
+					<Size>
+						<AbsDimension x="28" y="38"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="DurabilityShield" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.1875" right="0.3984375" top="0.5546875" bottom="0.84375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() - 1);
+				this:RegisterEvent("UPDATE_INVENTORY_ALERTS");
+				this:RegisterEvent("PLAYER_ENTERING_WORLD");
+			</OnLoad>
+			<OnEvent>
+				DurabilityFrame_SetAlerts();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

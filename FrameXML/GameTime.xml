@@ -1,0 +1,41 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GameTime.lua"/>
+	<Frame name="GameTimeFrame" parent="MinimapCluster">
+		<Size>
+			<AbsDimension x="50" y="50"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="4" y="-19"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="6" right="0" top="5" bottom="10"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameTimeTexture" file="Interface\Minimap\UI-TOD-Indicator"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this.timeOfDay = 0;
+				this:SetFrameLevel(this:GetFrameLevel() + 2);
+				GameTimeFrame_Update();
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
+				GameTimeFrame_UpdateTooltip(GetGameTime());
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnUpdate>
+				GameTimeFrame_Update();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

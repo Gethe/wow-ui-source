@@ -1,0 +1,227 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="SoundOptionsFrame.lua"/>
+	<CheckButton name="SoundOptionsCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SoundOptionsCheckButton_OnClick();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<Slider name="SoundOptionsSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+		<Scripts>
+			<OnValueChanged>
+				SoundOptionsSlider_OnValueChanged();
+			</OnValueChanged>
+		</Scripts>
+	</Slider>
+	<Frame name="SoundOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+		<Size>
+			<AbsDimension x="350" y="265"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="SoundOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="SOUNDOPTIONS_MENU">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="SoundOptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="SoundOptionsFrameCheckButton1" inherits="SoundOptionsCheckButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="14" y="-44"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SoundOptionsFrameCheckButton2" inherits="SoundOptionsCheckButtonTemplate" id="2">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="6" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SoundOptionsFrameCheckButton3" inherits="SoundOptionsCheckButtonTemplate" id="3">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SoundOptionsFrameCheckButton4" inherits="SoundOptionsCheckButtonTemplate" id="4">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SoundOptionsFrameCheckButton5" inherits="SoundOptionsCheckButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="-6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SoundOptionsFrameCheckButton6" inherits="SoundOptionsCheckButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SoundOptionsFrameCheckButton7" inherits="SoundOptionsCheckButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Slider name="SoundOptionsFrameSlider1" inherits="SoundOptionsSliderTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="-43"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="SoundOptionsFrameSlider2" inherits="SoundOptionsSliderTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameSlider1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="SoundOptionsFrameSlider3" inherits="SoundOptionsSliderTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameSlider2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="SoundOptionsFrameSlider4" inherits="SoundOptionsSliderTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameSlider3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Button name="SoundOptionsFrameOkay" inherits="GameMenuButtonTemplate" text="OKAY">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						HideUIPanel(SoundOptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SoundOptionsFrameCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionExit");
+						HideUIPanel(SoundOptionsFrame);
+						SoundOptionsFrame_Cancel();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				SoundOptionsFrame_Init();
+			</OnLoad>
+			<OnEvent>
+				SoundOptionsFrame_OnEvent();
+			</OnEvent>
+			<OnShow>
+				SoundOptionsFrame_Load();
+			</OnShow>
+			<OnKeyDown>
+				if ( arg1 == "ESCAPE" ) then
+					PlaySound("gsTitleOptionExit");
+					HideUIPanel(SoundOptionsFrame);
+					SoundOptionsFrame_Cancel();
+				elseif ( arg1 == "PRINTSCREEN" ) then
+					Screenshot();
+					return;
+				end
+			</OnKeyDown>
+			<OnHide>
+				ShowUIPanel(GameMenuFrame);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,98 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="InspectFrame.lua"/>
+    <Frame name="InspectFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+        <Size>
+            <AbsDimension x="384" y="512"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="0" y="-104"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture name="InspectFramePortrait">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="InspectNameFrame">
+                <Size>
+                    <AbsDimension x="109" y="12"/>
+                </Size>
+                 <Anchors>
+                    <Anchor point="CENTER">
+                        <Offset>
+                            <AbsDimension x="6" y="232"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer>
+                        <FontString name="InspectNameText" inherits="GameFontNormal" text="NAME">
+                            <Size>
+                                <AbsDimension x="109" y="16"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="CENTER"/>
+                            </Anchors>
+                            <Color r="1.0" g="1.0" b="1.0"/>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                     <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 1);
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Button name="InspectFrameCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="InspectFrame" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-44" y="-26"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 1);
+                    </OnLoad>
+                </Scripts>
+            </Button>
+        </Frames>
+        <Scripts>
+			<OnLoad>
+				InspectFrame_OnLoad();
+			</OnLoad>
+            <OnEvent>
+                InspectFrame_OnEvent(event);
+            </OnEvent>
+            <OnShow>
+                InspectFrame_OnShow();
+            </OnShow>
+			<OnHide>
+				InspectFrame_OnHide();
+			</OnHide>
+			<OnUpdate>
+				InspectFrame_OnUpdate();
+			</OnUpdate>
+        </Scripts>
+    </Frame>
+</Ui>

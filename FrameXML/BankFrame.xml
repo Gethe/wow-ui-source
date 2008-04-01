@@ -1,0 +1,550 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="BankFrame.lua"/>
+	<Button name="BankItemButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Scripts>
+			<OnEvent>
+				BankFrameItemButton_OnEvent(event);
+			</OnEvent>
+            <OnShow>
+            </OnShow>
+            <OnEnter>
+                GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+                if ( not GameTooltip:SetInventoryItem("player", this:GetInventorySlot()) ) then
+					if ( this.isBag ) then
+						GameTooltip:SetText(this.tooltipText);
+					end
+				end
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+				ResetCursor();
+            </OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="BankItemButtonGenericTemplate" inherits="BankItemButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				BankFrameItemButton_OnLoad();
+			</OnLoad>
+			<OnClick>
+				BankFrameItemButtonGeneric_OnClick(arg1);
+			</OnClick>
+            <OnDragStart>
+                BankFrameItemButtonGeneric_OnClick("LeftButton");
+            </OnDragStart>
+            <OnReceiveDrag>
+                BankFrameItemButtonGeneric_OnClick("LeftButton");
+            </OnReceiveDrag>
+		</Scripts>
+	</Button>
+	<Button name="BankItemButtonBagTemplate" inherits="BankItemButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				BankFrameBagButton_OnLoad();
+			</OnLoad>
+			<OnClick>
+				if ( IsShiftKeyDown() ) then
+					BankFrameItemButtonBag_OnShiftClick();
+				else
+					BankFrameItemButtonBag_OnClick(arg1);
+				end
+			</OnClick>
+	            <OnDragStart>
+	                BankFrameItemButtonBag_OnShiftClick();
+	            </OnDragStart>
+	            <OnReceiveDrag>
+	                BankFrameItemButtonBag_OnClick();
+	            </OnReceiveDrag>
+		</Scripts>
+		<Frames>
+			<Frame name="$parentHighlightFrame" setAllPoints="true">
+				<Layers>
+					<Layer>
+						<Texture name="$parentTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>									
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Button>
+
+
+	<Frame name="BankFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="BankPortraitTexture">
+					<Size>
+						<AbsDimension x="58" y="58"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="12" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\BankFrame\UI-BankFrame-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\BankFrame\UI-BankFrame-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\BankFrame\UI-BankFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\BankFrame\UI-BankFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="BankFrameTitleText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="6" y="230"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="ITEMSLOTTEXT">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-11" y="195"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="BAGSLOTTEXT">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-11" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="BankCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="BankFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-44" y="-26"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="$parentItem1" inherits="BankItemButtonGenericTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="40" y="-73"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem2" inherits="BankItemButtonGenericTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem3" inherits="BankItemButtonGenericTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem2" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem4" inherits="BankItemButtonGenericTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem3" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem5" inherits="BankItemButtonGenericTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem4" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem6" inherits="BankItemButtonGenericTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem5" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem7" inherits="BankItemButtonGenericTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem8" inherits="BankItemButtonGenericTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem7" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem9" inherits="BankItemButtonGenericTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem8" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem10" inherits="BankItemButtonGenericTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem9" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem11" inherits="BankItemButtonGenericTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem10" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem12" inherits="BankItemButtonGenericTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem11" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem13" inherits="BankItemButtonGenericTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem14" inherits="BankItemButtonGenericTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem13" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem15" inherits="BankItemButtonGenericTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem14" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem16" inherits="BankItemButtonGenericTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem15" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem17" inherits="BankItemButtonGenericTemplate" id="17">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem16" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem18" inherits="BankItemButtonGenericTemplate" id="18">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem17" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem19" inherits="BankItemButtonGenericTemplate" id="19">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem13" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem20" inherits="BankItemButtonGenericTemplate" id="20">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem19" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem21" inherits="BankItemButtonGenericTemplate" id="21">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem20" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem22" inherits="BankItemButtonGenericTemplate" id="22">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem21" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem23" inherits="BankItemButtonGenericTemplate" id="23">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem22" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem24" inherits="BankItemButtonGenericTemplate" id="24">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem23" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+
+			<Button name="$parentBag1" inherits="BankItemButtonBagTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem19" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBag2" inherits="BankItemButtonBagTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameBag1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBag3" inherits="BankItemButtonBagTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameBag2" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBag4" inherits="BankItemButtonBagTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameBag3" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBag5" inherits="BankItemButtonBagTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameBag4" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBag6" inherits="BankItemButtonBagTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameBag5" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="$parentPurchaseInfo" hidden="false">
+				<Size>
+					<AbsDimension x="300" y="72"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="BankFrame" relativePoint="CENTER">
+						<Offset>
+							<AbsDimension x="-15" y="-105"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontHighlight" text="BANKSLOTPURCHASE_LABEL" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="280" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="10" y="20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BankFrameSlotCost" inherits="GameFontNormal" text="COSTS_LABEL">
+							<Size>
+								<AbsDimension x="0" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="30" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentPurchaseButton" inherits="UIPanelButtonTemplate" virtual="true" text="BANKSLOTPURCHASE">
+						<Size>
+							<AbsDimension x="124" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-20" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOption");
+								PurchaseSlot();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame name="BankFrameDetailMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BankFrameSlotCost" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad();
+								MoneyFrame_SetType("STATIC");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-38" y="102"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				BankFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				BankFrame_OnEvent(event);
+			</OnEvent>
+			<OnShow>
+				PlaySound("igMainMenuOpen");
+			</OnShow>
+			<OnHide>
+				CloseBankBagFrames();
+				CloseBankFrame();
+				PlaySound("igMainMenuClose");
+			</OnHide>
+
+		</Scripts>
+	</Frame>
+</Ui>

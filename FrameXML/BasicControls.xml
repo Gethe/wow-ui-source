@@ -1,0 +1,94 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- This function is called when a script error occurs -->
+	<Script>
+		function _ERRORMESSAGE(message)
+			debuginfo();
+			if ( not ScriptErrors:IsVisible() ) then
+				ScriptErrors_Message:SetText(message);
+				ScriptErrors:Show();
+			end
+		end
+		function message(text)
+			_ERRORMESSAGE(text);
+		end
+	</Script>
+	<!-- This function is used to translate text (actually it's already translated as-is) -->
+	<Script>
+		function TEXT(text)
+			return text;
+		end
+	</Script>
+	<!-- These are basic attributes for dialogs -->
+	<Texture name="DialogButtonNormalTexture" file="Interface\Buttons\UI-Panel-Button-Up" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Texture name="DialogButtonPushedTexture" file="Interface\Buttons\UI-Panel-Button-Down" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Texture name="DialogButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Frame name="DialogBoxFrame" virtual="true" toplevel="true" frameStrata="DIALOG" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Button name="$parentButton">
+				<Size>
+					<AbsDimension x="128" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="OKAY"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="OKAY"/>
+			</Button>
+		</Frames>
+	</Frame>
+	<!-- This is the general scripting error dialog -->
+	<Frame name="ScriptErrors" inherits="DialogBoxFrame">
+		<Size>
+			<AbsDimension x="384" y="128"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="ScriptErrors_Message" inherits="GameFontRedLarge" justifyH="CENTER" justifyV="TOP">
+					<Size>
+						<AbsDimension x="360" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

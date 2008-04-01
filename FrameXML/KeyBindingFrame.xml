@@ -1,0 +1,470 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="KeyBindingFrame.lua"/>
+	<Button name="KeyBindingFrameBindingButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				KeyBindingButton_OnClick(arg1);
+			</OnClick>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp", "Button4Up", "Button5Up");
+			</OnLoad>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" inherits="UIPanelButtonUpTexture"/>
+		<PushedTexture name="$parentPushedTexture" inherits="UIPanelButtonDownTexture"/>
+		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+	</Button>
+	<Frame name="KeyBindingFrameBindingTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="560" y="25"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentDescription" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHeader" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentKey1Button" inherits="KeyBindingFrameBindingButtonTemplate" id="1">
+				<Size>
+					<AbsDimension x="180" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="175" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalText inherits="GameFontHighlightSmall"/>
+				<DisabledText inherits="GameFontDisable"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+			</Button>
+			<Button name="$parentKey2Button" inherits="KeyBindingFrameBindingButtonTemplate" id="2">
+				<Size>
+					<AbsDimension x="180" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentKey1Button" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalText inherits="GameFontHighlightSmall"/>
+				<DisabledText inherits="GameFontDisable"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+			</Button>
+		</Frames>
+	</Frame>
+	<Button name="KeyBindingFrame" toplevel="true" parent="UIParent" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" enableKeyboard="true">
+		<Size>
+			<AbsDimension x="640" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-Top">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-Bot">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="KeyBindingFrameCommandLabel" inherits="GameFontNormal" text="COMMAND">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="26" y="-32"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="KeyBindingFrameKey1Label" inherits="GameFontNormal" text="KEY1">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="KeyBindingFrameCommandLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="185" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="KeyBindingFrameKey2Label" inherits="GameFontNormal" text="KEY2">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="KeyBindingFrameKey1Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="145" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="KeyBindingFrameOutputText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="52"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="KeyBindingFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="KEY_BINDINGS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="KeyBindingFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="KeyBindingFrameBinding1" inherits="KeyBindingFrameBindingTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="27" y="-53"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding2" inherits="KeyBindingFrameBindingTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding3" inherits="KeyBindingFrameBindingTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding4" inherits="KeyBindingFrameBindingTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding5" inherits="KeyBindingFrameBindingTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding6" inherits="KeyBindingFrameBindingTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding7" inherits="KeyBindingFrameBindingTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding8" inherits="KeyBindingFrameBindingTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding9" inherits="KeyBindingFrameBindingTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding10" inherits="KeyBindingFrameBindingTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding11" inherits="KeyBindingFrameBindingTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding12" inherits="KeyBindingFrameBindingTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding11" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding13" inherits="KeyBindingFrameBindingTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding12" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding14" inherits="KeyBindingFrameBindingTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding13" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding15" inherits="KeyBindingFrameBindingTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding14" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding16" inherits="KeyBindingFrameBindingTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding15" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="KeyBindingFrameBinding17" inherits="KeyBindingFrameBindingTemplate" id="17">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="KeyBindingFrameBinding16" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<ScrollFrame name="KeyBindingFrameScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="560" y="390"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="2" y="-53"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(KEY_BINDING_HEIGHT, KeyBindingFrame_Update);
+					</OnVerticalScroll>
+					<OnMouseWheel>
+						if ( KeyBindingFrame.selected ) then
+							if ( arg1 > 0 ) then
+								KeyBindingFrame_OnKeyDown("MOUSEWHEELUP");
+							else
+								KeyBindingFrame_OnKeyDown("MOUSEWHEELDOWN");
+							end
+						else
+							ScrollFrameTemplate_OnMouseWheel(arg1);
+						end
+					</OnMouseWheel>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="KeyBindingFrameDefaultButton" inherits="UIPanelButtonGrayTemplate" text="RESET_TO_DEFAULT">
+				<Size>
+					<AbsDimension x="130" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="21"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						DefaultBindings();
+						KeyBindingFrame_Update();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="KeyBindingFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="130" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-50" y="21"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ResetBindings();
+						KeyBindingFrame.selected = nil;
+						HideUIPanel(KeyBindingFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="KeyBindingFrameOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="130" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="KeyBindingFrameCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SaveBindings();
+						KeyBindingFrame.selected = nil;
+						HideUIPanel(KeyBindingFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				KeyBindingFrame_OnKeyDown(arg1);
+			</OnClick>
+			<OnKeyDown>
+				KeyBindingFrame_OnKeyDown();
+			</OnKeyDown> 
+			<OnLoad>
+				KeyBindingFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				KeyBindingFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				KeyBindingFrameOutputText:SetText("");
+				ShowUIPanel(GameMenuFrame);
+			</OnHide>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Button>
+</Ui>

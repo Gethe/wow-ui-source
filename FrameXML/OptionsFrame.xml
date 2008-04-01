@@ -1,0 +1,733 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="OptionsFrame.lua"/>
+	<Frame name="OptionFrameBoxTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTitle" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="9" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+				this:SetBackdropColor(0.5, 0.5, 0.5);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Button name="OptionsButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="90" y="21"/>
+		</Size>
+	</Button>
+	<CheckButton name="OptionsCheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-100" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				if ( this:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				end
+			</OnClick>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+				if ( this.tooltipRequirement ) then
+					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	<Slider name="OptionsSliderTemplate" orientation="HORIZONTAL" virtual="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="128" y="17"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+		</HitRectInsets>
+		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="8"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="8"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="6" bottom="6"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLow" inherits="GameFontHighlightSmall" text="LOW">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="2" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHigh" inherits="GameFontHighlightSmall" text="HIGH">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+				if ( this.tooltipRequirement ) then
+					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+		</ThumbTexture>
+	</Slider>
+	<Frame name="OptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="450" y="615"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="OptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="VIDEOOPTIONS_MENU">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="OptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\OptionsFrame\NvidiaLogo">
+					<Size>
+						<AbsDimension x="128" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="OptionsFrameDisplay" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="425" y="100"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="OptionsFrameResolutionDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-8" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="RESOLUTION">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								OptionsFrameResolutionDropDown_OnLoad();
+							</OnLoad>
+							<OnShow>
+								OptionsFrameResolutionDropDown_OnLoad();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(OPTION_TOOLTIP_USE_RESOLUTION, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="OptionsFrameRefreshDropDown" inherits="UIDropDownMenuTemplate" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="OptionsFrameResolutionDropDown" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="REFRESH_RATE">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								OptionsFrameRefreshDropDown_OnLoad();
+							</OnLoad>
+							<OnShow>
+								OptionsFrameRefreshDropDown_OnLoad();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(OPTION_TOOLTIP_USE_REFRESH, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<CheckButton name="OptionsFrameCheckButton10" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="OptionsFrameRefreshDropDown" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="10" y="1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton9" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="OptionsFrameResolutionDropDown" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="17" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+								OptionsFrame_UpdateUIScaleControls();
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<Slider name="OptionsFrameSlider1" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="OptionsFrameCheckButton9" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="110" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."High"):SetText(1.0);
+								getglobal(this:GetName().."Low"):SetText(0.64);
+							</OnLoad>
+						</Scripts>
+					</Slider>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(DISPLAY);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="OptionsFrameWorldAppearance" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="425" y="100"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OptionsFrameDisplay" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Slider name="OptionsFrameSlider2" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="9" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="OptionsFrameSlider3" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="OptionsFrameSlider2" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="OptionsFrameSlider4" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameSlider2" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-23"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="OptionsFrameSlider5" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="OptionsFrameSlider4" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="OptionsFrameSlider7" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="OptionsFrameSlider3" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<CheckButton name="OptionsFrameCheckButton7" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="OptionsFrameSlider7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(WORLD_APPEARANCE);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="OptionsFrameBrightness" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="425" y="82"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OptionsFrameWorldAppearance" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\OptionsFrame\21stepgrayscale">
+							<Size>
+								<AbsDimension x="256" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="OptionsFrameCheckButton1" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								if ( GetCVar("desktopGamma") == "1" ) then
+									this:SetChecked(1);
+								else
+									this:SetChecked(nil);
+								end
+								OptionsFrame_UpdateGammaControls();
+							</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+								OptionsFrame_UpdateGammaControls();
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<Slider name="OptionsFrameSlider6" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="OptionsFrameCheckButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnValueChanged>
+								SetGamma(arg1);
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(OPTIONS_BRIGHTNESS);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="OptionsFramePixelShaders" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="212" y="185"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OptionsFrameBrightness" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="OptionsFrameCheckButton11" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+								OptionsFrame_UpdateShaderOptions(this:GetChecked());
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton2" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton11" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="10" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton3" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton2" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton12" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton3" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton8" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton12" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="-10" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+								OptionsFrame_UpdatePhongShading();
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton15" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton8" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="10" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(PIXEL_SHADERS);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="OptionsFrameMiscellaneous" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="212" y="185"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OptionsFramePixelShaders" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="OptionsFrameCheckButton4" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton5" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton4" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+								OptionsFrame_UpdateBuffering(this:GetChecked());
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton13" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton5" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="5" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton6" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton5" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton14" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton6" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(MISCELLANEOUS);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="OptionsFrameCancel" inherits="OptionsButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionExit");
+						HideUIPanel(OptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="OptionsFrameOkay" inherits="OptionsButtonTemplate" text="OKAY">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="OptionsFrameCancel" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						OptionsFrame_Save();
+						HideUIPanel(OptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="OptionsFrameDefaults" inherits="OptionsButtonTemplate" text="DEFAULTS">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="OptionsFrameOkay" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-18" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						OptionsFrame_SetDefaults();
+						--OptionsFrame_Load();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				OptionsFrame_Init();
+			</OnLoad>
+			<OnEvent>
+				OptionsFrame_OnEvent();
+			</OnEvent>
+			<OnShow>
+				OptionsFrame_Load();
+				UpdateMicroButtons();
+			</OnShow>
+			<OnHide>
+				OptionsFrame_Cancel();
+				UpdateMicroButtons();
+				ShowUIPanel(GameMenuFrame);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

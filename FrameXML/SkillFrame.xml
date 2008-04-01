@@ -1,0 +1,861 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="SkillFrame.lua"/>
+	<StatusBar name="SkillStatusBarTemplate" hidden="true" virtual="true" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
+		<Size>
+			<AbsDimension x="271" y="15"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentSkillName" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="6" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="128" y="0"/>
+					</Size>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentFillBar">
+					<Size>
+						<AbsDimension x="0" y="15"/>
+					</Size>
+					<Color r="1.0" g="1.0" b="1.0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground">
+					<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentBorder">
+				<Size>
+					<AbsDimension x="281" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="7" bottom="7"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnClick>
+						SkillBar_OnClick();				
+					</OnClick>
+				</Scripts>
+				<NormalTexture name="$parentNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder"/>
+				<HighlightTexture name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorderHighlight"/>
+			</Button>
+		</Frames>
+		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+		<BarColor r="0.25" g="0.25" b="0.75"/>
+	</StatusBar>
+	<Button name="SkillLabelTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="285" y="14"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				if (this.isExpanded) then
+					CollapseSkillHeader(this.skillIndex);
+				else
+					ExpandSkillHeader(this.skillIndex);
+				end
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-MinusButton-UP">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+		<DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</DisabledTexture>
+		<NormalText inherits="GameFontHighlight" justifyH="LEFT">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="25" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+	</Button>
+	<Frame name="SkillFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true" id="4">
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="SkillFrameHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="256" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-290"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="75" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="SkillFrameHorizontalBarLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!--	Replace once code is ready...	
+			<CheckButton name="SkillSortButton" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="130" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local text = getglobal(this:GetName().."Text");
+						text:SetText("Show Known Skills Only");
+						text:SetTextColor(1.0, 1.0, 1.0);
+					</OnLoad>
+					<OnShow>
+						SkillSortButton_OnShow(this, "available");
+					</OnShow>
+					<OnClick>
+						SkillSortButton_OnClick("available")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+-->
+			<Frame name="SkillFrameExpandButtonFrame">
+				<Size>
+					<AbsDimension x="54" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="70" y="-49"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="SkillFrameExpandTabLeft" file="Interface\QuestFrame\UI-QuestLogSortTab-Left">
+							<Size>
+								<AbsDimension x="8" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="SkillFrameExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
+							<Size>
+								<AbsDimension x="42" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SkillFrameExpandTabLeft" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
+							<Size>
+								<AbsDimension x="8" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SkillFrameExpandTabMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="SkillFrameCollapseAllButton" hidden="false" inherits="SkillLabelTemplate">
+						<Size>
+							<AbsDimension x="40" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SkillFrameExpandTabLeft" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-3" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName()):SetText(ALL);
+								this.skillIndex = 0;
+								this.isExpanded = 1;
+							</OnLoad>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<!--
+			<Button name="SkillFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="224" y="-420"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AcceptSkillUps();
+						this:GetParent():Hide();
+						HideUIPanel(CharacterFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+		-->
+			<Button name="SkillFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-422"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CancelSkillUps();
+						this:GetParent():Hide();
+						HideUIPanel(CharacterFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SkillTypeLabel1" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-86"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel2" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel1">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel3" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel2">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel4" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel3">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel5" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel4">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel6" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel5">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel7" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel6">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel8" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel7">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel9" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel8">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel10" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel9">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel11" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel10">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SkillTypeLabel12" inherits="SkillLabelTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SkillTypeLabel11">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="SkillListScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="220"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SkillFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-67" y="-75"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+							<Size>
+								<AbsDimension x="30" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+									<Offset>
+										<AbsDimension x="-2" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.46875" top="0.0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+							<Size>
+								<AbsDimension x="30" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+									<Offset>
+										<AbsDimension x="-2" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.53125" right="1.0" top="0.0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(SKILLFRAME_SKILL_HEIGHT, SkillFrame_UpdateSkills)
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<ScrollFrame name="SkillDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="107"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillListScrollFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTop" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+							<Size>
+								<AbsDimension x="30" y="100"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.46875" top="0" bottom="0.78125"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+							<Size>
+								<AbsDimension x="30" y="100"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+									<Offset>
+										<AbsDimension x="-2" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.53125" right="1.0" top="0.21875" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						ScrollFrame_OnLoad();
+						this.scrollBarHideable = 1;
+					</OnLoad>
+				</Scripts>
+				<ScrollChild>
+					<Frame name="SkillDetailScrollChildFrame">
+						<Size>
+							<AbsDimension x="320" y="50"/>
+						</Size>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="SkillDetailCostText" inherits="GameFontNormalSmall" justifyH="CENTER" hidden="true">
+									<Size>
+										<AbsDimension x="200" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="-10" y="-40"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="SkillDetailDescriptionText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP">
+									<Size>
+										<AbsDimension x="275" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="-5" y="-35"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<StatusBar name="SkillDetailStatusBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
+								<Size>
+									<AbsDimension x="211" y="15"/>
+								</Size>
+								<Anchors>
+									<Anchor point="CENTER" relativeTo="SkillDetailScrollChildFrame" relativePoint="TOP">
+										<Offset>
+											<AbsDimension x="-10" y="-20"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture name="$parentBorder" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+											<Size>
+												<AbsDimension x="220" y="32"/>
+											</Size>
+											<Anchors>
+												<Anchor point="LEFT">
+													<Offset>
+														<AbsDimension x="-5" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</Texture>
+										<FontString name="$parentSkillName" inherits="GameFontNormalSmall">
+											<Anchors>
+												<Anchor point="LEFT">
+													<Offset>
+														<AbsDimension x="6" y="1"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall">
+											<Size>
+												<AbsDimension x="128" y="0"/>
+											</Size>
+										</FontString>
+									</Layer>
+									<Layer level="BORDER">
+										<Texture name="$parentFillBar">
+											<Size>
+												<AbsDimension x="0" y="15"/>
+											</Size>
+											<Color r="1.0" g="1.0" b="1.0" a="0.5"/>
+										</Texture>
+									</Layer>
+									<Layer level="BACKGROUND">
+										<Texture name="$parentBackground">
+											<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button name="$parentLearnSkillButton" setAllPoints="true">
+										<Scripts>
+											<OnClick>
+												BuySkillTier(this:GetParent().skillIndex)
+											</OnClick>
+											<OnEnter>
+												GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+												GameTooltip:SetText(CLICK_TO_LEARN)
+											</OnEnter>
+											<OnLeave>
+												GameTooltip:Hide();
+											</OnLeave>
+										</Scripts>
+									</Button>
+									<Button name="$parentLeftArrow">
+										<Size>
+											<AbsDimension x="32" y="32"/>
+										</Size>
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="$parentBorder" relativePoint="LEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												RemoveSkillUp(this:GetParent().skillIndex);
+											</OnClick>
+										</Scripts>
+										<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+										<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+										<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+										<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+									</Button>
+									<Button name="$parentRightArrow">
+										<Size>
+											<AbsDimension x="32" y="32"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="$parentBorder" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="1" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												AddSkillUp(this:GetParent().skillIndex);
+											</OnClick>
+										</Scripts>
+										<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+										<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+										<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+										<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+									</Button>
+									<Button name="$parentUnlearnButton">
+										<Size>
+											<AbsDimension x="32" y="32"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="$parentBorder" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="-2" y="-1"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<HitRectInsets>
+											<AbsInset left="9" right="7" top="-7" bottom="10"/>
+										</HitRectInsets>
+										<Scripts>
+											<OnClick>
+												local dialog = StaticPopup_Show("UNLEARN_SKILL", this.skillName);
+												if ( dialog ) then
+													dialog.data = this:GetParent().skillIndex;
+												end
+											</OnClick>
+											<OnEnter>
+												GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+												GameTooltip:SetText(UNLEARN_SKILL_TOOLTIP);
+											</OnEnter>
+											<OnLeave>
+												GameTooltip:Hide();						
+											</OnLeave>
+										</Scripts>
+										<NormalTexture file="Interface\Buttons\CancelButton-Up"/>
+										<PushedTexture file="Interface\Buttons\CancelButton-Down"/>
+										<HighlightTexture file="Interface\Buttons\CancelButton-Highlight" alphaMode="ADD"/>
+									</Button>
+								</Frames>
+								<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+								<BarColor r="0.25" g="0.25" b="0.75"/>
+							</StatusBar>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<StatusBar name="SkillRankFrame1" inherits="SkillStatusBarTemplate" minValue="0" maxValue="1" defaultValue="1" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="38" y="-79"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame2" inherits="SkillStatusBarTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame3" inherits="SkillStatusBarTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame4" inherits="SkillStatusBarTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame5" inherits="SkillStatusBarTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame6" inherits="SkillStatusBarTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame7" inherits="SkillStatusBarTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame8" inherits="SkillStatusBarTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame9" inherits="SkillStatusBarTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame10" inherits="SkillStatusBarTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame11" inherits="SkillStatusBarTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="SkillRankFrame12" inherits="SkillStatusBarTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SkillRankFrame11" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				SkillFrame_OnShow();
+			</OnShow>
+			<OnLoad>
+				SkillFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				SkillFrame_OnEvent(event);
+			</OnEvent>
+			<OnHide>
+				CancelSkillUps();
+			</OnHide>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+</Ui>

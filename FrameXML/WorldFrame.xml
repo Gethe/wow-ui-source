@@ -1,0 +1,62 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- This special frame is used to render the world.
+		 There can be only one of these frames!!
+	     The world is rendered in the background of the frame.
+		 Children of the world frame are visible even when the UI is turned off.
+	-->
+	<Script file="WorldFrame.lua"/>
+	<WorldFrame name="WorldFrame" frameStrata="BACKGROUND">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="FramerateLabel" hidden="true" inherits="SystemFont" text="FRAMERATE_LABEL">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="64"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="FramerateText" hidden="true" inherits="SystemFont">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="FramerateLabel" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="ScreenshotStatus" setAllPoints="true" frameStrata="TOOLTIP" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="ScreenshotStatusText" inherits="SystemFont">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						ScreenshotStatus_OnLoad();
+					</OnLoad>
+					<OnEvent>
+						ScreenshotStatus_OnEvent(event);
+					</OnEvent>
+					<OnUpdate>
+						ScreenshotStatus_OnUpdate(arg1);
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				WorldFrame_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</WorldFrame>
+</Ui>

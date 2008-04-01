@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Cooldown.lua"/>
+	<Model name="CooldownFrameTemplate" file="Interface\Cooldown\UI-Cooldown-Indicator.mdx" scale="0.85" setAllPoints="true" hidden="true" virtual="true">
+		<Scripts>
+			<OnUpdateModel>
+				CooldownFrame_OnUpdateModel();
+			</OnUpdateModel>
+			<OnAnimFinished>
+				CooldownFrame_OnAnimFinished();
+			</OnAnimFinished>
+		</Scripts>
+	</Model>
+</Ui>

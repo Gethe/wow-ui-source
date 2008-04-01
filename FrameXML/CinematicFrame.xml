@@ -1,0 +1,43 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CinematicFrame.lua"/>
+	<Frame name="CinematicFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture>
+					<Size>
+						<AbsDimension x="2048" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+				<Texture>
+					<Size>
+						<AbsDimension x="2048" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CinematicFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				CinematicFrame_OnEvent();
+			</OnEvent>
+			<OnKeyDown>
+				if ( arg1 == "ESCAPE" ) then
+					StopCinematic();
+				elseif ( arg1 == strupper(GetBindingKey("SCREENSHOT"))) then
+					RunBinding("SCREENSHOT");
+				end
+			</OnKeyDown>
+		</Scripts>
+	</Frame>
+</Ui>

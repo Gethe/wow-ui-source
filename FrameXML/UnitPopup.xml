@@ -1,0 +1,109 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UnitPopup.lua"/>
+	<Button name="UnitPopupButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="64" y="12"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				UnitPopup_OnClick(this:GetID());
+			</OnClick>
+			<OnEnter>
+				GameTooltip_AddNewbieTip(this.tooltipTitle, 1.0, 1.0, 1.0, this.tooltipText, 1);
+				UnitPopup.timeleft = UNITPOPUP_TIMEOUT;
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalText inherits="GameFontNormal"/>
+		<HighlightText inherits="GameFontHighlight"/>
+		<DisabledText inherits="GameFontDisable"/>
+	</Button>
+	<Frame name="UnitPopup" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="UnitPopupTitle" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="UnitPopupButton1" inherits="UnitPopupButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UnitPopupTitle" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="UnitPopupButton2" inherits="UnitPopupButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UnitPopupButton1" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="UnitPopupButton3" inherits="UnitPopupButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UnitPopupButton2" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="UnitPopupButton4" inherits="UnitPopupButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UnitPopupButton3" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="UnitPopupButton5" inherits="UnitPopupButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UnitPopupButton4" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="UnitPopupButton6" inherits="UnitPopupButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UnitPopupButton5" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="UnitPopupButton7" inherits="UnitPopupButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UnitPopupButton6" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="UnitPopupButton8" inherits="UnitPopupButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UnitPopupButton7" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="UnitPopupButton9" inherits="UnitPopupButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UnitPopupButton8" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				PlaySound("UChatScrollButton");
+			</OnShow>
+			<OnUpdate>
+				UnitPopup_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

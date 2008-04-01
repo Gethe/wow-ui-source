@@ -1,0 +1,31 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UIParent.lua"/>
+	<Script file="LocaleProperties.lua"/>
+	<Frame name="UIParent" setAllPoints="true" frameStrata="MEDIUM" parent="WorldFrame">
+		<Scripts>
+			<!-- Register here for any events you want to monitor globally -->
+			<OnLoad>
+				UIParent_OnLoad();
+				this.firstTimeLoaded = 1;
+			</OnLoad>
+			<!-- Respond here to any events you want to monitor globally -->
+			<OnEvent>
+				UIParent_OnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				UIFrameFadeUpdate(arg1);
+				UIFrameFlashUpdate(arg1);
+				FCF_OnUpdate(arg1);
+				ButtonPulse_OnUpdate(arg1);
+			</OnUpdate>
+			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
+			<OnShow>
+				if ( this.firstTimeLoaded ~= 1 ) then
+					CloseAllWindows();
+					this.firstTimeLoaded = nil;
+				end
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

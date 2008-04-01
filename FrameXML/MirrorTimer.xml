@@ -1,0 +1,99 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MirrorTimer.lua"/>
+	<Frame name="MirrorTimerTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="206" y="26"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Size>
+						<AbsDimension x="195" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>		
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\CastingBar\UI-CastingBar-Border">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentStatusBar">
+				<Size>
+					<AbsDimension x="195" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1)
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				MirrorTimerFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				MirrorTimerFrame_OnEvent();
+			</OnEvent>
+			<OnUpdate>
+				MirrorTimerFrame_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<Frame name="MirrorTimer1" inherits="MirrorTimerTemplate">
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-96"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="MirrorTimer2" inherits="MirrorTimerTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="MirrorTimer1" relativePoint="BOTTOM"/>
+		</Anchors>
+	</Frame>
+	<Frame name="MirrorTimer3" inherits="MirrorTimerTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="MirrorTimer2" relativePoint="BOTTOM"/>
+		</Anchors>
+	</Frame>
+</Ui>

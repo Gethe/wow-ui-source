@@ -1,0 +1,377 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="BonusActionBarFrame.lua"/>
+	<CheckButton name="BonusActionButtonTemplate" inherits="ActionBarButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="36" y="36"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				ActionButton_OnLoad();
+				this.isBonus = 1;
+				this.inTransition = nil;
+				this:SetFrameLevel(this:GetFrameLevel() + 2);
+				local cooldown = getglobal(this:GetName().."Cooldown");
+				cooldown:SetFrameLevel(cooldown:GetFrameLevel() + 2);
+			</OnLoad>
+			<OnEvent>
+				ActionButton_OnEvent(event);
+				BonusActionButton_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="ShapeshiftButtonTemplate" inherits="ActionButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="30" y="30"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Cooldown"):SetScale(0.6);	
+			</OnLoad>
+			<OnClick>
+				local check = 1;
+				if ( this:GetChecked() ) then
+					check = nil;
+				end
+				this:SetChecked(check);
+				ShapeshiftBar_ChangeForm(this:GetID())
+			</OnClick>
+			<OnEnter>
+				if ( GetCVar("UberTooltips") == "1" ) then
+					GameTooltip_SetDefaultAnchor(GameTooltip, this);
+				else
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				end
+				GameTooltip:SetShapeshift(this:GetID());
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		
+	</CheckButton>
+
+	<Frame name="BonusActionBarFrame" frameStrata="HIGH" parent="MainMenuBar" enableMouse="true" toplevel="true" hidden="true">
+		<Size>
+			<AbsDimension x="505" y="43"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="40" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="BonusActionBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+					<Size>
+						<AbsDimension x="252" y="43"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.015625" right="1.0" top="0.83203125" bottom="1.0"/>
+				</Texture>
+				<Texture file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+					<Size>
+						<AbsDimension x="253" y="43"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="BonusActionBarTexture0" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.98828125" top="0.58203125" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="BonusActionButton1" inherits="BonusActionButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="5" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton2" inherits="BonusActionButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton3" inherits="BonusActionButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton4" inherits="BonusActionButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton5" inherits="BonusActionButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton6" inherits="BonusActionButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton7" inherits="BonusActionButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton8" inherits="BonusActionButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton9" inherits="BonusActionButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton10" inherits="BonusActionButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton11" inherits="BonusActionButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton10" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BonusActionButton12" inherits="BonusActionButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BonusActionButton11" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				BonusActionBar_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				BonusActionBar_OnEvent();
+			</OnEvent>
+			<OnUpdate>
+				BonusActionBar_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<Frame name="ShapeshiftBarFrame" parent="MainMenuBar" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="29" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBar" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="30" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="ShapeshiftBarLeft" file="Interface\ShapeshiftBar\ShapeshiftBarEnds">
+					<Size>
+						<AbsDimension x="45" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.453125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="ShapeshiftBarMiddle" file="Interface\ShapeshiftBar\ShapeshiftBarMiddle">
+					<Size>
+						<AbsDimension x="38" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="ShapeshiftBarLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="ShapeshiftBarRight" file="Interface\ShapeshiftBar\ShapeshiftBarEnds">
+					<Size>
+						<AbsDimension x="42" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="ShapeshiftBarMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.453125" right="0.875" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="ShapeshiftButton1" inherits="ShapeshiftButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="11" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ShapeshiftButton2" inherits="ShapeshiftButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ShapeshiftButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ShapeshiftButton3" inherits="ShapeshiftButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ShapeshiftButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ShapeshiftButton4" inherits="ShapeshiftButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ShapeshiftButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ShapeshiftButton5" inherits="ShapeshiftButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ShapeshiftButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ShapeshiftButton6" inherits="ShapeshiftButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ShapeshiftButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ShapeshiftButton7" inherits="ShapeshiftButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ShapeshiftButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ShapeshiftButton8" inherits="ShapeshiftButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ShapeshiftButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ShapeshiftButton9" inherits="ShapeshiftButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ShapeshiftButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ShapeshiftButton10" inherits="ShapeshiftButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ShapeshiftButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("UPDATE_SHAPESHIFT_FORMS");
+				this:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
+				this:RegisterEvent("UPDATE_INVENTORY_ALERTS");
+				this:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+				this:RegisterEvent("SPELL_UPDATE_USABLE");
+				this:RegisterEvent("PLAYER_AURAS_CHANGED");
+				this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+				this:RegisterEvent("UNIT_HEALTH");
+				this:RegisterEvent("UNIT_HEALTH");
+				this:RegisterEvent("UNIT_RAGE");
+				this:RegisterEvent("UNIT_FOCUS");
+				this:RegisterEvent("UNIT_ENERGY");
+				ShapeshiftBar_Update();
+			</OnLoad>
+			<OnEvent>
+				if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
+					if ( GetBonusBarOffset() > 0 ) then
+						ShowBonusActionBar();
+					else
+						HideBonusActionBar();
+					end
+					return;
+				end
+				if ( arg1 == "player" and (event == "UNIT_HEALTH" or event == "UNIT_MANA" or event == "UNIT_RAGE" or event == "UNIT_FOCUS" or event == "UNIT_ENERGY") ) then
+					ShapeshiftBar_Update();
+					return;
+				end
+
+				ShapeshiftBar_Update();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

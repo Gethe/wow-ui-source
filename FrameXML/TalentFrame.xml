@@ -1,0 +1,534 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="TalentFrame.lua"/>
+	<Button name="TalentTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("PLAYER_LEVEL_UP");	
+			</OnLoad>
+			<OnEvent>
+				if (UnitLevel("player") == 9 and PanelTemplates_GetSelectedTab(TalentFrame) ~= this:GetID()) then
+					SetButtonPulse(this, 60, 0.75);
+				end
+			</OnEvent>
+			<OnClick>
+				TalentFrameTab_OnClick();
+			</OnClick>
+			<OnEnter>
+				
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Texture name="TalentBranchTemplate" file="Interface\TalentFrame\UI-TalentBranches" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+	</Texture>
+	<Texture name="TalentArrowTemplate" file="Interface\TalentFrame\UI-TalentArrows" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+	</Texture>
+	<Button name="TalentButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentSlot" file="Interface\Buttons\UI-EmptySlot-White">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentRankBorder" file="Interface\TalentFrame\TalentFrame-RankBorder">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentRank" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentRankBorder">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("CHARACTER_POINTS_CHANGED");
+			</OnLoad>
+			<OnEvent>
+				TalentFrameTalent_OnEvent();
+			</OnEvent>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetTalent(TalentFrame.selectedTab, this:GetID());
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				TalentFrameTalent_OnClick();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="TalentFrame" enableMouse="true" toplevel="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="TalentFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\TalentFrame\UI-TalentFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\TalentFrame\UI-TalentFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="TalentFrameBackgroundTopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="23" y="-77"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="TalentFrameBackgroundTopRight">
+					<Size>
+						<AbsDimension x="64" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TalentFrameBackgroundTopLeft" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="TalentFrameBackgroundBottomLeft">
+					<Size>
+						<AbsDimension x="256" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TalentFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="TalentFrameBackgroundBottomRight">
+					<Size>
+						<AbsDimension x="64" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TalentFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="TalentFrameTitleText" inherits="GameFontNormal" text="TALENTS">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="TalentFramePointsLeft" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TalentFrame">
+							<Offset>
+								<AbsDimension x="75" y="-48"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="TalentFramePointsMiddle" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="230" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="TalentFramePointsLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="TalentFramePointsRight" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="TalentFramePointsMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+				<FontString name="TalentFrameSpentPoints" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="TalentFramePointsMiddle">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="TalentFrameTalentPointsText" inherits="GameFontHighlightSmall" text="5">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="252" y="87"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="TalentFrameTalentPoints" inherits="GameFontNormalSmall" text="CHARACTER_POINTS1_COLON">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="TalentFrameTalentPointsText" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="TalentFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-44" y="-26"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TalentFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-420"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(this:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="TalentFrameTab1" inherits="TalentTabTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="15" y="46"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TalentFrameTab2" inherits="TalentTabTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TalentFrameTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TalentFrameTab3" inherits="TalentTabTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TalentFrameTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TalentFrameTab4" inherits="TalentTabTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TalentFrameTab3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TalentFrameTab5" inherits="TalentTabTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TalentFrameTab4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="TalentFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="332"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-65" y="-77"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+									<Offset>
+										<AbsDimension x="0" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ScrollChild>
+					<Frame name="TalentFrameScrollChildFrame">
+						<Size>
+							<AbsDimension x="320" y="50"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="TalentFrameBranch1" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch2" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch3" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch4" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch5" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch6" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch7" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch8" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch9" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch10" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch11" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch12" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch13" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch14" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch15" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch16" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch17" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch18" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch19" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch20" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch21" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch22" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch23" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch24" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch25" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch26" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch27" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch28" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch29" inherits="TalentBranchTemplate"/>
+								<Texture name="TalentFrameBranch30" inherits="TalentBranchTemplate"/>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="TalentFrameTalent1" inherits="TalentButtonTemplate" id="1"/>
+							<Button name="TalentFrameTalent2" inherits="TalentButtonTemplate" id="2"/>
+							<Button name="TalentFrameTalent3" inherits="TalentButtonTemplate" id="3"/>
+							<Button name="TalentFrameTalent4" inherits="TalentButtonTemplate" id="4"/>
+							<Button name="TalentFrameTalent5" inherits="TalentButtonTemplate" id="5"/>
+							<Button name="TalentFrameTalent6" inherits="TalentButtonTemplate" id="6"/>
+							<Button name="TalentFrameTalent7" inherits="TalentButtonTemplate" id="7"/>
+							<Button name="TalentFrameTalent8" inherits="TalentButtonTemplate" id="8"/>
+							<Button name="TalentFrameTalent9" inherits="TalentButtonTemplate" id="9"/>
+							<Button name="TalentFrameTalent10" inherits="TalentButtonTemplate" id="10"/>
+							<Button name="TalentFrameTalent11" inherits="TalentButtonTemplate" id="11"/>
+							<Button name="TalentFrameTalent12" inherits="TalentButtonTemplate" id="12"/>
+							<Button name="TalentFrameTalent13" inherits="TalentButtonTemplate" id="13"/>
+							<Button name="TalentFrameTalent14" inherits="TalentButtonTemplate" id="14"/>
+							<Button name="TalentFrameTalent15" inherits="TalentButtonTemplate" id="15"/>
+							<Button name="TalentFrameTalent16" inherits="TalentButtonTemplate" id="16"/>
+							<Button name="TalentFrameTalent17" inherits="TalentButtonTemplate" id="17"/>
+							<Button name="TalentFrameTalent18" inherits="TalentButtonTemplate" id="18"/>
+							<Button name="TalentFrameTalent19" inherits="TalentButtonTemplate" id="19"/>
+							<Button name="TalentFrameTalent20" inherits="TalentButtonTemplate" id="20"/>
+							<Frame name="TalentFrameArrowFrame" setAllPoints="true">
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture name="TalentFrameArrow1" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow2" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow3" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow4" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow5" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow6" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow7" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow8" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow9" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow10" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow11" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow12" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow13" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow14" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow15" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow16" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow17" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow18" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow19" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow20" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow21" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow22" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow23" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow24" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow25" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow26" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow27" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow28" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow29" inherits="TalentArrowTemplate"/>
+										<Texture name="TalentFrameArrow30" inherits="TalentArrowTemplate"/>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				TalentFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				TalentFrame_OnHide();
+			</OnHide>
+			<OnLoad>
+				TalentFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				TalentFrame_OnEvent();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

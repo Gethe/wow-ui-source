@@ -1,0 +1,93 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UIMenu.lua"/>
+	<Button name="UIMenuButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="16"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				UIMenuButton_OnLoad();
+			</OnLoad>
+			<OnClick>
+				UIMenuButton_OnClick();
+			</OnClick>
+			<OnEnter>
+				UIMenuButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				UIMenuButton_OnLeave();
+			</OnLeave>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentShortcutText" inherits="GameFontHighlight" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalText inherits="GameFontNormal" justifyH="LEFT"/>
+		<HighlightText inherits="GameFontHighlight" justifyH="LEFT"/>
+		<DisabledText inherits="GameFontDisable" justifyH="LEFT"/>
+	</Button>
+	<Frame name="UIMenuTemplate" frameStrata="DIALOG" toplevel="true" virtual="true">
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="13"/>
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<Button name="$parentButton1" inherits="UIMenuButtonTemplate" id="1"/>
+			<Button name="$parentButton2" inherits="UIMenuButtonTemplate" id="2"/>
+			<Button name="$parentButton3" inherits="UIMenuButtonTemplate" id="3"/>
+			<Button name="$parentButton4" inherits="UIMenuButtonTemplate" id="4"/>
+			<Button name="$parentButton5" inherits="UIMenuButtonTemplate" id="5"/>
+			<Button name="$parentButton6" inherits="UIMenuButtonTemplate" id="6"/>
+			<Button name="$parentButton7" inherits="UIMenuButtonTemplate" id="7"/>
+			<Button name="$parentButton8" inherits="UIMenuButtonTemplate" id="8"/>
+			<Button name="$parentButton9" inherits="UIMenuButtonTemplate" id="9"/>
+			<Button name="$parentButton10" inherits="UIMenuButtonTemplate" id="10"/>
+			<Button name="$parentButton11" inherits="UIMenuButtonTemplate" id="11"/>
+			<Button name="$parentButton12" inherits="UIMenuButtonTemplate" id="12"/>
+			<Button name="$parentButton13" inherits="UIMenuButtonTemplate" id="13"/>
+			<Button name="$parentButton14" inherits="UIMenuButtonTemplate" id="14"/>
+			<Button name="$parentButton15" inherits="UIMenuButtonTemplate" id="15"/>
+			<Button name="$parentButton16" inherits="UIMenuButtonTemplate" id="16"/>
+			<Button name="$parentButton17" inherits="UIMenuButtonTemplate" id="17"/>
+			<Button name="$parentButton18" inherits="UIMenuButtonTemplate" id="18"/>
+			<Button name="$parentButton19" inherits="UIMenuButtonTemplate" id="19"/>
+			<Button name="$parentButton20" inherits="UIMenuButtonTemplate" id="20"/>
+			<Button name="$parentButton21" inherits="UIMenuButtonTemplate" id="21"/>
+			<Button name="$parentButton22" inherits="UIMenuButtonTemplate" id="22"/>
+			<Button name="$parentButton23" inherits="UIMenuButtonTemplate" id="23"/>
+			<Button name="$parentButton24" inherits="UIMenuButtonTemplate" id="24"/>
+			<Button name="$parentButton25" inherits="UIMenuButtonTemplate" id="25"/>
+			<Button name="$parentButton26" inherits="UIMenuButtonTemplate" id="26"/>
+			<Button name="$parentButton27" inherits="UIMenuButtonTemplate" id="27"/>
+			<Button name="$parentButton28" inherits="UIMenuButtonTemplate" id="28"/>
+			<Button name="$parentButton29" inherits="UIMenuButtonTemplate" id="29"/>
+			<Button name="$parentButton30" inherits="UIMenuButtonTemplate" id="30"/>
+			<Button name="$parentButton31" inherits="UIMenuButtonTemplate" id="31"/>
+			<Button name="$parentButton32" inherits="UIMenuButtonTemplate" id="32"/>
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				UIMenu_OnUpdate(arg1);
+			</OnUpdate>
+			<OnShow>
+				UIMenu_OnShow();
+				PlaySound("UChatScrollButton");
+				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

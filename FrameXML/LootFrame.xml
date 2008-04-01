@@ -1,0 +1,450 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="LootFrame.lua"/>
+	<LootButton name="LootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\QuestFrame\UI-QuestItemNameFrame">
+					<Size>
+						<AbsDimension x="130" y="62"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="30" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="93" y="38"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="8" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEnter>
+				local slot = ((LOOTFRAME_NUMBUTTONS - 1) * (LootFrame.page - 1)) + this:GetID();
+				if ( LootSlotIsItem(slot) ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetLootItem(slot);
+				end
+            		</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+            		</OnLeave>
+			<OnClick>
+				LootFrameItem_OnClick(arg1);
+			</OnClick>
+		</Scripts>
+	</LootButton>
+	<Frame name="LootFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="256" y="256"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="70" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="LootFramePortraitOverlay" file="Interface\TargetingFrame\TargetDead">
+					<Size>
+						<AbsDimension x="58" y="58"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\LootFrame\UI-LootPanel"/>
+				<FontString inherits="GameFontNormal" text="ITEMS">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-12" y="102"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="LootFramePrev" inherits="GameFontNormal" text="PREV">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="57" y="27"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="LootFrameNext" inherits="GameFontNormal" text="NEXT">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="LootFramePrev" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="85" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="LootCloseButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-81" y="-26"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(LootFrame);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<LootButton name="LootButton1" inherits="LootButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="24" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="LootButton2" inherits="LootButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="LootButton1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="LootButton3" inherits="LootButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="LootButton2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="LootButton4" inherits="LootButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="LootButton3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<Button name="LootFrameUpButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="25" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						LootFrame_PageUp();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="LootFrameDownButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LootFrameUpButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="86" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						LootFrame_PageDown();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				LootFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				LootFrame_OnEvent(event);
+			</OnEvent>
+			<OnShow>
+				LootFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				LootFrame_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="GroupLootDropDown" inherits="UIDropDownMenuTemplate" id="1">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				GroupLootDropDown_OnLoad();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="GroupLootFrameTemplate" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="218" y="84"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="3" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
+					<Size>
+						<AbsDimension x="128" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-9" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="90" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentIconFrame" enableMouse="true">
+				<Size>
+					<AbsDimension x="34" y="34"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlotTexture">
+						<Offset>
+							<AbsDimension x="15" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIcon">
+							<Size>
+								<AbsDimension x="34" y="34"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetLootRollItem(this:GetParent().rollID);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Button name="$parentRollButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RollOnLoot(this:GetParent().rollID, 1);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Dice-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Dice-Down"/>
+			</Button>
+			<Button name="$parentCancelButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentRollButton" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RollOnLoot(this:GetParent().rollID, nil);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Pass-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Pass-Down"/>
+			</Button>
+			<StatusBar name="$parentTimer" drawLayer="BACKGROUND" minValue="0" maxValue="60000" defaultValue="0">
+				<Size>
+					<AbsDimension x="152" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlotTexture" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size>
+								<AbsDimension x="156" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnUpdate>
+						GroupLootFrame_OnUpdate();
+					</OnUpdate>
+				</Scripts>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarColor r="1.0" g="1.0" b="0" />
+			</StatusBar>
+		</Frames>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("CANCEL_LOOT_ROLL");
+			</OnLoad>
+			<OnShow>
+				GroupLootFrame_OnShow();
+			</OnShow>
+			<OnEvent>
+				GroupLootFrame_OnEvent();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	<Frame name="GroupLootFrame1" inherits="GroupLootFrameTemplate" id="1">
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="60"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="GroupLootFrame2" inherits="GroupLootFrameTemplate" id="2">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="GroupLootFrame1" relativePoint="TOP">
+				<Offset>
+					<AbsDimension x="0" y="3"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="GroupLootFrame3" inherits="GroupLootFrameTemplate" id="3">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="GroupLootFrame2" relativePoint="TOP">
+				<Offset>
+					<AbsDimension x="0" y="3"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="GroupLootFrame4" inherits="GroupLootFrameTemplate" id="4">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="GroupLootFrame3" relativePoint="TOP">
+				<Offset>
+					<AbsDimension x="0" y="3"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+</Ui>

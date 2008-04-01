@@ -1,0 +1,229 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="TaxiFrame.lua"/>
+	<Button name="TaxiButtonTemplate" hidden="true" parent="TaxiFrame" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Scripts>
+            <OnEnter>
+				TaxiNodeOnButtonEnter(this);
+            </OnEnter>
+            <OnLeave>
+				GameTooltip:Hide();
+            </OnLeave>
+			<OnClick>
+				TakeTaxiNode(this:GetID());
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="TaxiFrame" toplevel="true" movable="true" hidden="true" parent="UIParent" enableMouse="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="TaxiPortrait">
+					<Size>
+						<AbsDimension x="58" y="58"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="8" y="-9"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\TaxiFrame\UI-TaxiFrame-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\TaxiFrame\UI-TaxiFrame-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\TaxiFrame\UI-TaxiFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\TaxiFrame\UI-TaxiFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="TaxiMerchant" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="192" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="TaxiMap">
+					<Size>
+						<AbsDimension x="280" y="280"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="-10" y="-85"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="TaxiCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="TaxiFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-29" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<TaxiRouteFrame name="TaxiRouteMap">
+				<Size>
+					<AbsDimension x="280" y="280"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-10" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="TaxiButton1" inherits="TaxiButtonTemplate" id="1"/>
+					<Button name="TaxiButton2" inherits="TaxiButtonTemplate" id="2"/>
+					<Button name="TaxiButton3" inherits="TaxiButtonTemplate" id="3"/>
+					<Button name="TaxiButton4" inherits="TaxiButtonTemplate" id="4"/>
+					<Button name="TaxiButton5" inherits="TaxiButtonTemplate" id="5"/>
+					<Button name="TaxiButton6" inherits="TaxiButtonTemplate" id="6"/>
+					<Button name="TaxiButton7" inherits="TaxiButtonTemplate" id="7"/>
+					<Button name="TaxiButton8" inherits="TaxiButtonTemplate" id="8"/>
+					<Button name="TaxiButton9" inherits="TaxiButtonTemplate" id="9"/>
+					<Button name="TaxiButton10" inherits="TaxiButtonTemplate" id="10"/>
+					<Button name="TaxiButton11" inherits="TaxiButtonTemplate" id="11"/>
+					<Button name="TaxiButton12" inherits="TaxiButtonTemplate" id="12"/>
+					<Button name="TaxiButton13" inherits="TaxiButtonTemplate" id="13"/>
+					<Button name="TaxiButton14" inherits="TaxiButtonTemplate" id="14"/>
+					<Button name="TaxiButton15" inherits="TaxiButtonTemplate" id="15"/>
+					<Button name="TaxiButton16" inherits="TaxiButtonTemplate" id="16"/>
+					<Button name="TaxiButton17" inherits="TaxiButtonTemplate" id="17"/>
+					<Button name="TaxiButton18" inherits="TaxiButtonTemplate" id="18"/>
+					<Button name="TaxiButton19" inherits="TaxiButtonTemplate" id="19"/>
+					<Button name="TaxiButton20" inherits="TaxiButtonTemplate" id="20"/>
+					<Button name="TaxiButton21" inherits="TaxiButtonTemplate" id="21"/>
+					<Button name="TaxiButton22" inherits="TaxiButtonTemplate" id="22"/>
+					<Button name="TaxiButton23" inherits="TaxiButtonTemplate" id="23"/>
+					<Button name="TaxiButton24" inherits="TaxiButtonTemplate" id="24"/>
+					<Button name="TaxiButton25" inherits="TaxiButtonTemplate" id="25"/>
+					<Button name="TaxiButton26" inherits="TaxiButtonTemplate" id="26"/>
+					<Button name="TaxiButton27" inherits="TaxiButtonTemplate" id="27"/>
+					<Button name="TaxiButton28" inherits="TaxiButtonTemplate" id="28"/>
+					<Button name="TaxiButton29" inherits="TaxiButtonTemplate" id="29"/>
+					<Button name="TaxiButton30" inherits="TaxiButtonTemplate" id="30"/>
+					<Button name="TaxiButton31" inherits="TaxiButtonTemplate" id="31"/>
+					<Button name="TaxiButton32" inherits="TaxiButtonTemplate" id="32"/>
+					<Button name="TaxiButton33" inherits="TaxiButtonTemplate" id="33"/>
+					<Button name="TaxiButton34" inherits="TaxiButtonTemplate" id="34"/>
+					<Button name="TaxiButton35" inherits="TaxiButtonTemplate" id="35"/>
+					<Button name="TaxiButton36" inherits="TaxiButtonTemplate" id="36"/>
+					<Button name="TaxiButton37" inherits="TaxiButtonTemplate" id="37"/>
+					<Button name="TaxiButton38" inherits="TaxiButtonTemplate" id="38"/>
+					<Button name="TaxiButton39" inherits="TaxiButtonTemplate" id="39"/>
+					<Button name="TaxiButton40" inherits="TaxiButtonTemplate" id="40"/>
+					<Button name="TaxiButton41" inherits="TaxiButtonTemplate" id="41"/>
+					<Button name="TaxiButton42" inherits="TaxiButtonTemplate" id="42"/>
+					<Button name="TaxiButton43" inherits="TaxiButtonTemplate" id="43"/>
+					<Button name="TaxiButton44" inherits="TaxiButtonTemplate" id="44"/>
+					<Button name="TaxiButton45" inherits="TaxiButtonTemplate" id="45"/>
+					<Button name="TaxiButton46" inherits="TaxiButtonTemplate" id="46"/>
+					<Button name="TaxiButton47" inherits="TaxiButtonTemplate" id="47"/>
+					<Button name="TaxiButton48" inherits="TaxiButtonTemplate" id="48"/>
+					<Button name="TaxiButton49" inherits="TaxiButtonTemplate" id="49"/>
+					<Button name="TaxiButton50" inherits="TaxiButtonTemplate" id="50"/>
+					<Button name="TaxiButton51" inherits="TaxiButtonTemplate" id="51"/>
+					<Button name="TaxiButton52" inherits="TaxiButtonTemplate" id="52"/>
+					<Button name="TaxiButton53" inherits="TaxiButtonTemplate" id="53"/>
+					<Button name="TaxiButton54" inherits="TaxiButtonTemplate" id="54"/>
+					<Button name="TaxiButton55" inherits="TaxiButtonTemplate" id="55"/>
+					<Button name="TaxiButton56" inherits="TaxiButtonTemplate" id="56"/>
+					<Button name="TaxiButton57" inherits="TaxiButtonTemplate" id="57"/>
+					<Button name="TaxiButton58" inherits="TaxiButtonTemplate" id="58"/>
+					<Button name="TaxiButton59" inherits="TaxiButtonTemplate" id="59"/>
+					<Button name="TaxiButton60" inherits="TaxiButtonTemplate" id="60"/>
+					<Button name="TaxiButton61" inherits="TaxiButtonTemplate" id="61"/>
+					<Button name="TaxiButton62" inherits="TaxiButtonTemplate" id="62"/>
+					<Button name="TaxiButton63" inherits="TaxiButtonTemplate" id="63"/>
+					<Button name="TaxiButton64" inherits="TaxiButtonTemplate" id="64"/>
+
+				</Frames>
+			</TaxiRouteFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				TaxiFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				TaxiFrame_OnEvent(event);
+			</OnEvent>
+			<OnShow>
+				PlaySound("igMainMenuOpen");
+			</OnShow>
+			<OnHide>
+				CloseTaxiMap();
+				PlaySound("igMainMenuClose");
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

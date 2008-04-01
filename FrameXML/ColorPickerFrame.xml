@@ -1,0 +1,221 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<ColorSelect name="ColorPickerFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" enableKeyboard="true" hidden="false">
+		<Size>
+			<AbsDimension x="365" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="ColorSwatch">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="225" y="-32"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+				</Texture>
+				<Texture name="ColorPickerFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="COLOR_PICKER">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ColorPickerFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="ColorPickerCancelButton" inherits="GameMenuButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(this:GetParent());
+						if ( ColorPickerFrame.cancelFunc ) then
+							ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ColorPickerOkayButton" inherits="GameMenuButtonTemplate" text="OKAY">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="ColorPickerCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(this:GetParent());
+						ColorPickerFrame.func();
+						if ( ColorPickerFrame.opacityFunc ) then
+							ColorPickerFrame.opacityFunc();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Slider name="OpacitySliderFrame" orientation="VERTICAL" minValue="0" maxValue="1" valueStep="0.01" defaultValue="1">
+				<Size>
+					<AbsDimension x="16" y="128"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ColorSwatch" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="32" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="3" right="3" top="6" bottom="6"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontHighlightSmall" text="0%">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="2" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontHighlightSmall" text="100%">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnValueChanged>
+						if ( ColorPickerFrame.opacityFunc ) then
+							ColorPickerFrame.opacityFunc();
+						end
+					</OnValueChanged>
+				</Scripts>
+				<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</ThumbTexture>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				if ( this.hasOpacity ) then
+					OpacitySliderFrame:Show();
+					OpacitySliderFrame:SetValue(this.opacity);
+					this:SetWidth(365);
+				else
+					OpacitySliderFrame:Hide();
+					this:SetWidth(305);
+				end
+			</OnShow>
+			<OnColorSelect>
+				ColorSwatch:SetTexture(arg1, arg2, arg3);
+				if ( this.func ) then
+					this.func();
+				end
+			</OnColorSelect>
+			<OnKeyDown>
+				if (arg1 == "ESCAPE") then
+					HideUIPanel(this);
+					if ( ColorPickerFrame.cancelFunc ) then
+						ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);
+					end
+				end
+			</OnKeyDown>
+		</Scripts>
+		<ColorWheelTexture name="ColorPickerWheel">
+			<Size>
+				<AbsDimension x="128" y="128"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="16" y="-32"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ColorWheelTexture>
+		<ColorWheelThumbTexture file="Interface\Buttons\UI-ColorPicker-Buttons">
+			<Size>
+				<AbsDimension x="10" y="10"/>
+			</Size>
+			<TexCoords left="0" right="0.15625" top="0" bottom="0.625"/>
+		</ColorWheelThumbTexture>
+		<ColorValueTexture>
+			<Size>
+				<AbsDimension x="32" y="128"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="ColorPickerWheel" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="24" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ColorValueTexture>
+		<ColorValueThumbTexture file="Interface\Buttons\UI-ColorPicker-Buttons">
+			<Size>
+				<AbsDimension x="48" y="14"/>
+			</Size>
+			<TexCoords left="0.25" right="1.0" top="0" bottom="0.875"/>
+		</ColorValueThumbTexture>
+	</ColorSelect>
+</Ui>
