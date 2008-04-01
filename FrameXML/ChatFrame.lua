@@ -685,14 +685,17 @@ local CastSequenceFreeList = {};
 
 local function CreateCanonicalActions(entry, ...)
 	entry.spells = {};
+	entry.spellNames = {};
 	entry.items = {};
 	for i=1, select("#", ...) do
 		local action = strlower(strtrim((select(i, ...))));
 		if ( GetItemInfo(action) or select(3, SecureCmdItemParse(action)) ) then
 			entry.items[i] = action;
 			entry.spells[i] = strlower(GetItemSpell(action) or "");
+			entry.spellNames[i] = entry.spells[i];
 		else
-			entry.spells[i] = gsub(action, "!*(.*)", "%1");
+			entry.spells[i] = action;
+			entry.spellNames[i] = gsub(action, "!*(.*)", "%1");
 		end
 	end
 end
@@ -744,9 +747,8 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 			local nameplus = name.."()";
 			local fullname = name.."("..rank..")";
 			for sequence, entry in pairs(CastSequenceTable) do
-				if ( entry.spells[entry.index] == name or
-					 entry.spells[entry.index] == nameplus or
-					 entry.spells[entry.index] == fullname ) then
+				local entryName = entry.spellNames[entry.index];
+				if ( entryName == name or entryName == nameplus or entryName == fullname ) then
 					if ( event == "UNIT_SPELLCAST_SENT" ) then
 						entry.pending = 1;
 					else

@@ -797,6 +797,13 @@
 			<OnEvent>
 				RaidPulloutButton_OnEvent();
 			</OnEvent>
+			<OnLoad>
+				this.healthBar = getglobal(this:GetName().."HealthBar");
+				this.manaBar = getglobal(this:GetName().."ManaBar");
+				this.nameLabel = getglobal(this:GetName().."Name");
+				this.clearButton = getglobal(this:GetName().."ClearButton");
+				this.speaker = getglobal(this:GetName().."Speaker");
+			</OnLoad>
 		</Scripts>
 	</Frame>
 	<Button name="RaidPulloutFrameTemplate" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" hidden="true" virtual="true">
@@ -872,6 +879,8 @@
 				this:RegisterEvent("READY_CHECK_FINISHED");
 				this:RegisterForDrag("LeftButton");
 				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				this.label = getglobal(this:GetName() .. "Name");
+				this.buttons = {};
 			</OnLoad>
 			<OnEvent>
 				RaidPullout_OnEvent();

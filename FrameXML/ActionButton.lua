@@ -154,7 +154,10 @@ function ActionButton_Update()
 	end
 
 	local action = this.action;
-
+	local icon = getglobal(this:GetName().."Icon");
+	local buttonCooldown = getglobal(this:GetName().."Cooldown");
+	local texture = GetActionTexture(action);	
+	
 	if ( HasAction(action) ) then
 		if ( not this.eventsRegistered ) then
 			this:RegisterEvent("ACTIONBAR_UPDATE_STATE");
@@ -225,9 +228,6 @@ function ActionButton_Update()
 	end
 
 	-- Update icon and hotkey text
-	local icon = getglobal(this:GetName().."Icon");
-	local buttonCooldown = getglobal(this:GetName().."Cooldown");
-	local texture = GetActionTexture(action);	
 	if ( texture ) then
 		icon:SetTexture(texture);
 		icon:Show();

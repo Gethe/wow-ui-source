@@ -177,22 +177,62 @@ function RaidGroupFrame_OnEvent()
 	end
 end
 
+local raid_groupSlots;
+
+function RaidGroup_ResetSlotButtons()
+	if ( raid_groupSlots ) then
+		for i, group in next, raid_groupSlots do
+			for j, slot in next, group do
+				slot.button = nil;
+			end
+		end
+	else
+		raid_groupSlots = {};
+		for i=1, NUM_RAID_GROUPS do
+			raid_groupSlots[i] = {};
+			for j=1, MEMBERS_PER_RAID_GROUP do
+				raid_groupSlots[i][j] = getglobal("RaidGroup"..i.."Slot"..j);
+				raid_groupSlots[i][j].button = nil;
+			end
+		end
+	end
+end
+
+local raid_groupFrames;
+local classes;
+local raid_buttons;
+
 function RaidGroupFrame_Update()
 	-- Update raid group labels
+	if ( not raid_groupFrames ) then
+		raid_groupFrames = {};
+		for i=1, NUM_RAID_GROUPS do
+			raid_groupFrames[i] = getglobal("RaidGroup"..i);
+		end
+	end
+	
+	if ( not classes ) then
+		classes = {};
+		for i=1, MAX_CLASSES do
+			classes[i] = getglobal("RaidClassButton"..i);
+		end
+	end
+	
+	
 	if ( GetNumRaidMembers() == 0 ) then
 		for i=1, NUM_RAID_GROUPS do
-			getglobal("RaidGroup"..i):Hide();
+			raid_groupFrames[i]:Hide()
 		end
 		for i=1, MAX_CLASSES do
-			getglobal("RaidClassButton"..i):Hide();
+			classes[i]:Hide();
 		end
 		RaidFrameReadyCheckButton:Hide();
 	else
 		for i=1, NUM_RAID_GROUPS do
-			getglobal("RaidGroup"..i):Show();
+			raid_groupFrames[i]:Show();
 		end
 		for i=1, MAX_CLASSES do
-			getglobal("RaidClassButton"..i):Show();
+			classes[i]:Show();
 		end
 	end
 
@@ -205,20 +245,35 @@ function RaidGroupFrame_Update()
 
 	-- Reset group index counters;
 	for i=1, NUM_RAID_GROUPS do
-		getglobal("RaidGroup"..i).nextIndex = 1;
+		raid_groupFrames[i].nextIndex = 1;
 	end
 	-- Clear out all the slots buttons
 	RaidGroup_ResetSlotButtons();
 
 	-- Clear out subgroup list
-	RAID_SUBGROUP_LISTS = {};
+	for i, j in next, RAID_SUBGROUP_LISTS do
+		RAID_SUBGROUP_LISTS[i] = nil;
+	end
+	
 	for i=1, NUM_RAID_GROUPS do
-		RAID_SUBGROUP_LISTS[i] = {};
+		if ( RAID_SUBGROUP_LISTS[i] ) then
+			for k, v in next, RAID_SUBGROUP_LISTS[i] do
+				RAID_SUBGROUP_LISTS[i][k] = nil;
+			end
+		else
+			RAID_SUBGROUP_LISTS[i] = {};
+		end
 	end
 
 	-- Use the class color list to clear out the class list
 	for index, value in pairs(RAID_CLASS_BUTTONS) do
-		RAID_SUBGROUP_LISTS[index] = {};
+		if ( RAID_SUBGROUP_LISTS[index] ) then
+			for k, v in next, RAID_SUBGROUP_LISTS[index] do
+				RAID_SUBGROUP_LISTS[index][k] = nil;
+			end
+		else
+			RAID_SUBGROUP_LISTS[index] = {};
+		end
 	end
 
 	-- Fill out buttons
@@ -226,30 +281,42 @@ function RaidGroupFrame_Update()
 	local raidGroup, color;
 	local buttonFrameName, buttonName, buttonLevel, buttonClass, buttonRank;
 	local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, loot, muted, unit;
-	local buttons = {};
 	local buttonCount;
 	local readyCheckStatus;
+	local button, subframes;
+	
+	if ( not raid_buttons ) then
+		raid_buttons = {};
+		for i = 1, MAX_RAID_MEMBERS do
+			raid_buttons[i] = getglobal("RaidGroupButton"..i);
+		end
+	end
+	
 	for i=1, MAX_RAID_MEMBERS do
-		button = getglobal("RaidGroupButton"..i);
+		button = raid_buttons[i];
 		if ( i <= numRaidMembers ) then
 			name, rank, subgroup, level, class, fileName, zone, online, isDead, role, loot = GetRaidRosterInfo(i);
 			unit = "raid"..i;
 			muted = GetMuteStatus(unit, "raid");
-			raidGroup = getglobal("RaidGroup"..subgroup);
+			raidGroup = raid_groupFrames[subgroup];
 			readyCheckStatus = GetReadyCheckStatus(unit);
 			-- To prevent errors when the server hiccups
 			if ( raidGroup.nextIndex <= MEMBERS_PER_RAID_GROUP ) then
-				buttonFrameName = "RaidGroupButton"..i;
-				buttonName = getglobal(buttonFrameName.."Name");
-				buttonClass = getglobal(buttonFrameName.."Class");
-				buttonLevel = getglobal(buttonFrameName.."Level");
-				buttonRank = getglobal(buttonFrameName.."Rank");
-				buttonRole = getglobal(buttonFrameName.."Role");
-				buttonLoot = getglobal(buttonFrameName.."Loot");
-				buttonRankTexture = getglobal(buttonFrameName.."RankTexture");
-				--buttonMutedTexture = getglobal(buttonFrameName.."RankMuted");
-				buttonRoleTexture = getglobal(buttonFrameName.."RoleTexture");
-				buttonLootTexture = getglobal(buttonFrameName.."LootTexture");
+				subframes = button.subframes;
+				if ( not subframes ) then
+					subframes = {};
+					subframes.name = getglobal("RaidGroupButton"..i.."Name");
+					subframes.class = getglobal("RaidGroupButton"..i.."Class");
+					subframes.level = getglobal("RaidGroupButton"..i.."Level");
+					subframes.rank = getglobal("RaidGroupButton"..i.."Rank");
+					subframes.role = getglobal("RaidGroupButton"..i.."Role");
+					subframes.loot = getglobal("RaidGroupButton"..i.."Loot");
+					subframes.rankTexture = getglobal("RaidGroupButton"..i.."RankTexture");
+					--buttonMutedTexture = getglobal("RaidGroupButton"..i.."RankMuted");
+					subframes.roleTexture = getglobal("RaidGroupButton"..i.."RoleTexture");
+					subframes.lootTexture = getglobal("RaidGroupButton"..i.."LootTexture");
+					button.subframes = subframes;
+				end
 				
 				button.name = name;
 				button.class = fileName;
@@ -280,34 +347,34 @@ function RaidGroupFrame_Update()
 					tinsert(RAID_SUBGROUP_LISTS[role], i);
 				end
 
-				buttonName:SetText(name);
+				subframes.name:SetText(name);
 				if ( class ) then
-					buttonClass:SetText(class);
+					subframes.class:SetText(class);
 				else
-					buttonClass:SetText("");
+					subframes.class:SetText("");
 				end
 				if ( level ) then
-					buttonLevel:SetText(level);
+					subframes.level:SetText(level);
 				else
-					buttonLevel:SetText("");
+					subframes.level:SetText("");
 				end
 				if ( online ) then
 					if ( isDead ) then
-						buttonName:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-						buttonClass:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-						buttonLevel:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						subframes.name:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						subframes.class:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						subframes.level:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 					else
 						color = RAID_CLASS_COLORS[fileName];
 						if ( color ) then
-							buttonName:SetTextColor(color.r, color.g, color.b);
-							buttonClass:SetTextColor(color.r, color.g, color.b);
-							buttonLevel:SetTextColor(color.r, color.g, color.b);
+							subframes.name:SetTextColor(color.r, color.g, color.b);
+							subframes.class:SetTextColor(color.r, color.g, color.b);
+							subframes.level:SetTextColor(color.r, color.g, color.b);
 						end
 					end
 				else
-					buttonName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-					buttonClass:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-					buttonLevel:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					subframes.name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					subframes.class:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					subframes.level:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 				end
 
 				--[[if ( muted ) then
@@ -318,105 +385,112 @@ function RaidGroupFrame_Update()
 
 				-- Sets the Leader/Assistant Icon
 				if ( rank == 2 ) then
-					buttonRankTexture:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
+					subframes.rankTexture:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
 				elseif ( rank == 1 ) then
-					buttonRankTexture:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
+					subframes.rankTexture:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
 				elseif ( (rank == 0 ) and ( muted == 2 ) ) then
-					buttonRankTexture:SetTexture("Interface\\Common\\VoiceChat-Speaker");
+					subframes.rankTexture:SetTexture("Interface\\Common\\VoiceChat-Speaker");
 				else 
-					buttonRankTexture:SetTexture("");
+					subframes.rankTexture:SetTexture("");
 				end
 
 				if ( readyCheckStatus ) then
-					buttonRoleTexture:SetTexture("");
-					buttonLootTexture:SetTexture("");
+					subframes.lootTexture:SetTexture("");
 
 					if ( readyCheckStatus == "ready" ) then
-						ReadyCheck_Confirm(getglobal(buttonFrameName.."ReadyCheck"), 1);
+						ReadyCheck_Confirm(getglobal("RaidGroupButton"..i.."ReadyCheck"), 1);
 					elseif ( readyCheckStatus == "notready" ) then
-						ReadyCheck_Confirm(getglobal(buttonFrameName.."ReadyCheck"), 0);
+						ReadyCheck_Confirm(getglobal("RaidGroupButton"..i.."ReadyCheck"), 0);
 					else -- "waiting"
-						ReadyCheck_Start(getglobal(buttonFrameName.."ReadyCheck"));
+						ReadyCheck_Start(getglobal("RaidGroupButton"..i.."ReadyCheck"));
 					end
 				else
-					getglobal(buttonFrameName.."ReadyCheck"):Hide();
+					getglobal("RaidGroupButton"..i.."ReadyCheck"):Hide();
 				
 					-- Sets the Main Tank/Assist Icon
 					if ( role == "MAINTANK" ) then
-						buttonRoleTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MainTankIcon");
+						subframes.roleTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MainTankIcon");
 					elseif (role == "MAINASSIST" ) then
-						buttonRoleTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MainAssistIcon");
+						subframes.roleTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MainAssistIcon");
 					else
-						buttonRoleTexture:SetTexture("");
+						subframes.roleTexture:SetTexture("");
 					end
 
 					-- Sets the Master Looter Icon
 					if ( loot ) then
-						buttonLootTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MasterLooter");
+						subframes.lootTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MasterLooter");
 					else
-						buttonLootTexture:SetTexture("");
+						subframes.lootTexture:SetTexture("");
 					end
 				end
 				
 				-- Resizes if there are all 3 visible
 				if ( ( rank > 0 ) and role and loot ) then
-					buttonRank:SetWidth(10);
-					buttonRank:SetHeight(10);
-					buttonRole:SetWidth(10);
-					buttonRole:SetHeight(10);
-					buttonLoot:SetWidth(9);
-					buttonLoot:SetHeight(9);
+					subframes.rank:SetWidth(10);
+					subframes.rank:SetHeight(10);
+					subframes.role:SetWidth(10);
+					subframes.role:SetHeight(10);
+					subframes.loot:SetWidth(9);
+					subframes.loot:SetHeight(9);
 				else
-					buttonRank:SetWidth(11);
-					buttonRank:SetHeight(11);
-					buttonRole:SetWidth(11);
-					buttonRole:SetHeight(11);
-					buttonLoot:SetWidth(11);
-					buttonLoot:SetHeight(11);
+					subframes.rank:SetWidth(11);
+					subframes.rank:SetHeight(11);
+					subframes.role:SetWidth(11);
+					subframes.role:SetHeight(11);
+					subframes.loot:SetWidth(11);
+					subframes.loot:SetHeight(11);
 				end
 				
-				buttons = {};
+				button.jobs = button.jobs or {};
+				
+				for i, j in next, button.jobs do
+					button.jobs[i] = nil;
+				end
+				
+				buttonCount = 0;
 
 				if ( rank > 0 or muted == 2 ) then
-					tinsert(buttons, buttonRank);
+					tinsert(button.jobs, subframes.rank);
+					buttonCount = buttonCount + 1;
 				else
-					buttonRank:Hide();
+					subframes.rank:Hide();
 				end
 
 				if ( role ) then
-					tinsert(buttons, buttonRole);			
+					tinsert(button.jobs, subframes.role);			
+					buttonCount = buttonCount + 1;
 				else
-					buttonRole:Hide();
+					subframes.role:Hide();
 				end
 
 				if ( loot ) then
-					tinsert(buttons, buttonLoot);			
+					tinsert(button.jobs, subframes.loot);
+					buttonCount = buttonCount + 1;
 				else
-					buttonLoot:Hide();
+					subframes.loot:Hide();
 				end
-
-				buttonCount = getn(buttons);
 				
 				for i=1, buttonCount, 1 do
 					if ( i == 1 ) then
-						buttons[i]:SetPoint("LEFT", button, "LEFT", 2, 0);
+						button.jobs[i]:SetPoint("LEFT", button, "LEFT", 2, 0);
 					else
-						buttons[i]:SetPoint("LEFT", buttons[i-1], "RIGHT", -1, 0);
+						button.jobs[i]:SetPoint("LEFT", button.jobs[i-1], "RIGHT", -1, 0);
 					end
-					buttons[i]:Show();
-				end
-
-				-- Anchor button to slot
-				if ( MOVING_RAID_MEMBER ~= button  ) then
-					button:SetPoint("TOPLEFT", "RaidGroup"..subgroup.."Slot"..raidGroup.nextIndex, "TOPLEFT", 0, 0);
+					button.jobs[i]:Show();
 				end
 				
 				-- Save slot for future use
-				button.slot = "RaidGroup"..subgroup.."Slot"..raidGroup.nextIndex;
+				button.slot = raid_groupSlots[subgroup][raidGroup.nextIndex];
+				
+				-- Anchor button to slot
+				if ( MOVING_RAID_MEMBER ~= button  ) then
+					button:SetPoint("TOPLEFT", button.slot, "TOPLEFT", 0, 0);
+				end
+
 				-- Save the button's subgroup too
 				button.subgroup = subgroup;
 				-- Tell the slot what button is in it
-				getglobal("RaidGroup"..subgroup.."Slot"..raidGroup.nextIndex).button = button:GetName();
+				button.slot.button = button:GetName();
 				raidGroup.nextIndex = raidGroup.nextIndex + 1;
 				button.voice = voice;
 				button.rank = rank;
@@ -580,14 +654,6 @@ function RaidFrameDropDown_Initialize()
 	UnitPopup_ShowMenu(getglobal(UIDROPDOWNMENU_OPEN_MENU), "RAID", this.unit, this.name, this.id);
 end
 
-function RaidGroup_ResetSlotButtons()
-	for i=1, NUM_RAID_GROUPS do
-		for j=1, MEMBERS_PER_RAID_GROUP do
-			getglobal("RaidGroup"..i.."Slot"..j).button = nil;
-		end
-	end
-end
-
 function RaidButton_OnClick()
 	SetRaidRosterSelection(this.index);
 	RaidFrame_Update();
@@ -606,23 +672,21 @@ function RaidPullout_OnEvent()
 end
 
 function RaidPullout_ReadyCheckFinished(pulloutFrame)
-	local pulloutButtonName, pulloutButton;
+	local pulloutButton;
 	for i=1, pulloutFrame.numPulloutButtons do
-		pulloutButtonName = pulloutFrame:GetName().."Button"..i;
-		pulloutButton = getglobal(pulloutButtonName);
-		ReadyCheck_Finish(getglobal(pulloutButtonName.."ReadyCheck"), 1.5, RaidPullout_ReadyCheckFinishFunc, pulloutButton);
+		pulloutButton = pulloutFrame.buttons[i];
+		ReadyCheck_Finish(getglobal(pulloutButton:GetName().."ReadyCheck"), 1.5, RaidPullout_ReadyCheckFinishFunc, pulloutButton);
 	end
 end
 
 function RaidPullout_ReadyCheckFinishFunc(pulloutButton)
-	RefreshBuffs(pulloutButton, this.showBuffs, pulloutButton.unit);
+	RefreshBuffs(pulloutButton, pulloutButton:GetParent().showBuffs, pulloutButton.unit);
 end
 
 function RaidPullout_GeneratePulloutFrame(fileName, class)
 	-- Get a handle on a pullout frame
 	local pullOutFrame = RaidPullout_GetFrame(fileName);
 	if ( pullOutFrame ) then
-		local pullOutName = getglobal(pullOutFrame:GetName().."Name");
 
 		pullOutFrame.filterID = fileName;
 		pullOutFrame.showBuffs = nil;
@@ -630,11 +694,11 @@ function RaidPullout_GeneratePulloutFrame(fileName, class)
 		-- Set pullout name
 		if ( class ) then
 			pullOutFrame.class = class;
-			pullOutName:SetText(class);
+			pullOutFrame.label:SetText(class);
 		elseif ( tonumber(fileName) ) then
-			pullOutName:SetText(GROUP.." "..fileName);
+			pullOutFrame.label:SetText(GROUP.." "..fileName);
 		else
-			pullOutName:SetText("");
+			pullOutFrame.label:SetText("");
 		end
 
 		if ( fileName == "MAINTANK" or fileName == "MAINASSIST" ) then
@@ -821,24 +885,22 @@ function RaidPullout_Update(pullOutFrame)
 			if ( i == 1 ) then
 				pulloutButton:SetPoint("TOP", pullOutFrame, "TOP", 1, -10);
 			else
-				relative = getglobal(pullOutFrame:GetName().."Button"..(i-1));
-				pulloutButton:SetPoint("TOP", relative, "BOTTOM", 0, -8);
+				pulloutButton:SetPoint("TOP", pullOutFrame:GetName().."Button"..(i-1), "BOTTOM", 0, -8);
 			end
+			pullOutFrame.buttons[i] = pulloutButton;
 		end
 		pullOutFrame.numPulloutButtons = numPulloutEntries;
 	end
 	-- Populate Data
 	local name, rank, subgroup, level, class, fileName, zone, online, isDead, role;
-	local buttonFrameName;
 	local readyCheckStatus;
 	local debuff;
 	for i=1, pullOutFrame.numPulloutButtons do
-		pulloutButton = getglobal(pullOutFrame:GetName().."Button"..i);
+		pulloutButton = pullOutFrame.buttons[i];
 		if ( i <= numPulloutEntries ) then
-			buttonFrameName = pulloutButton:GetName();
-			pulloutButtonName = getglobal(buttonFrameName.."Name");
-			pulloutHealthBar = getglobal(buttonFrameName.."HealthBar");
-			pulloutManaBar = getglobal(buttonFrameName.."ManaBar");
+			pulloutButtonName = pulloutButton.nameLabel;
+			pulloutHealthBar = pulloutButton.healthBar;
+			pulloutManaBar = pulloutButton.manaBar;
 			if ( pulloutList ) then
 				id = pulloutList[i];
 			elseif ( single ) then
@@ -877,7 +939,7 @@ function RaidPullout_Update(pullOutFrame)
 			pulloutButton.unit = unit;
 
 			-- Set for tooltip support
-			pulloutClearButton = getglobal(pulloutButton:GetName().."ClearButton");
+			pulloutClearButton = pulloutButton.clearButton;
 			SecureUnitButton_OnLoad(pulloutClearButton, unit, RaidPulloutButton_ShowMenu);
 			pullOutFrame.name = name;
 			pullOutFrame.single = single;
@@ -907,19 +969,19 @@ function RaidPullout_Update(pullOutFrame)
 			readyCheckStatus = GetReadyCheckStatus(unit);
 			if ( readyCheckStatus ) then
 				if ( readyCheckStatus == "ready" ) then
-					ReadyCheck_Confirm(getglobal(buttonFrameName.."ReadyCheck"), 1);
+					ReadyCheck_Confirm(getglobal(pulloutButton:GetName().."ReadyCheck"), 1);
 				elseif ( readyCheckStatus == "notready" ) then
-					ReadyCheck_Confirm(getglobal(buttonFrameName.."ReadyCheck"), 0);
+					ReadyCheck_Confirm(getglobal(pulloutButton:GetName().."ReadyCheck"), 0);
 				else -- "waiting"
-					ReadyCheck_Start(getglobal(buttonFrameName.."ReadyCheck"));
+					ReadyCheck_Start(getglobal(pulloutButton:GetName().."ReadyCheck"));
 				end
 
 				-- hide buffs/debuffs while ready check is up
 				for i=1, MAX_PARTY_DEBUFFS do
-					getglobal(buttonFrameName.."Debuff"..i):Hide();
+					getglobal(pulloutButton:GetName().."Debuff"..i):Hide();
 				end
 			else
-				getglobal(buttonFrameName.."ReadyCheck"):Hide();
+				getglobal(pulloutButton:GetName().."ReadyCheck"):Hide();
 				-- Handle buffs/debuffs
 				RefreshBuffs(pulloutButton, pullOutFrame.showBuffs, unit);
 			end
@@ -961,7 +1023,7 @@ function RaidPullout_Update(pullOutFrame)
 end
 
 function RaidPulloutButton_OnEvent()
-	local speaker = getglobal(this:GetName().."Speaker");
+	local speaker = this.speaker;
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		RaidPulloutButton_UpdateVoice(this);
 	elseif ( event == "UNIT_HEALTH" ) then
@@ -1002,7 +1064,7 @@ end
 
 function RaidPulloutButton_UpdateDead(button, isDead, class)
 	local unit;
-	local pulloutButtonName = getglobal(button:GetName().."Name");
+	local pulloutButtonName = button.nameLabel;
 	if ( isDead ) then
 		pulloutButtonName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	else
@@ -1018,7 +1080,7 @@ end
 
 function RaidPulloutButton_UpdateVoice(pullOutButton)
 	local button = pullOutButton:GetName();
-	local icon = getglobal(button.."Speaker");
+	local icon = pullOutButton.speaker;
 	local muted = getglobal(button.."SpeakerMuted");
 	local muteStatus = GetMuteStatus(UnitName(pullOutButton.unit), "raid");
 	local state = UnitIsTalking(UnitName(pullOutButton.unit));
@@ -1197,25 +1259,27 @@ function RaidPullout_MatchName(name)
 	end
 end
 
+local raid_pullout_frames = {};
+
 function RaidPullout_GetFrame(filterID)
 	-- Grab an available pullout frame
-	local frame;
+	local frame, freeFrame;
 	for i=1, NUM_RAID_PULLOUT_FRAMES do
-		frame = getglobal("RaidPullout"..i);
+		frame = raid_pullout_frames[i]
 		-- if frame is visible see if its group id is already taken
 		if ( frame:IsShown() and filterID == frame.filterID ) then
 			return nil;
+		elseif ( not freeFrame and not frame:IsShown() ) then
+			freeFrame = frame;
 		end
 	end
-	for i=1, NUM_RAID_PULLOUT_FRAMES do
-		frame = getglobal("RaidPullout"..i);
-		if ( not frame:IsShown() ) then
-			return frame;
-		end
+	if ( freeFrame ) then
+		return freeFrame;
 	end
 	NUM_RAID_PULLOUT_FRAMES = NUM_RAID_PULLOUT_FRAMES + 1;
 	frame = CreateFrame("Button", "RaidPullout"..NUM_RAID_PULLOUT_FRAMES, UIParent, "RaidPulloutFrameTemplate");
 	frame.numPulloutButtons = 0;
+	raid_pullout_frames[NUM_RAID_PULLOUT_FRAMES] = frame;
 	return frame;
 end
 
