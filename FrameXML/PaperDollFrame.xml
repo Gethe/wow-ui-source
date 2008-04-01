@@ -10,7 +10,7 @@
                 PaperDollItemSlotButton_OnLoad();
             </OnLoad>
             <OnEvent>
-                PaperDollItemSlotButton_OnEvent(event);
+                PaperDollItemSlotButton_OnEvent(self, event, ...);
             </OnEvent>
 			<OnShow>
 				PaperDollItemSlotButton_OnShow();
@@ -877,7 +877,7 @@
 							PaperDollItemSlotButton_Update();
 							return;
 						end
-						PaperDollItemSlotButton_OnEvent(event);
+						PaperDollItemSlotButton_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnShow>
 						PaperDollItemSlotButton_OnShow();

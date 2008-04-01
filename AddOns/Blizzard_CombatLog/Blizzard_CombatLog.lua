@@ -14,7 +14,7 @@
 
 -- Version
 -- Constant -- Incrementing this number will erase saved filter settings!!
-COMBATLOG_FILTER_VERSION = 1;
+COMBATLOG_FILTER_VERSION = 2;
 -- Saved Variable
 Blizzard_CombatLog_Filter_Version = 0;
 
@@ -38,6 +38,7 @@ COMBATLOG_DEFAULT_COLORS = {
 		[COMBATLOG_FILTER_MY_PET] 		= {a=1.0,r=0.70,g=0.70,b=0.70}; --{a=1.0,r=0.14,g=0.80,b=0.15};
 		[COMBATLOG_FILTER_FRIENDLY_UNITS] 	= {a=1.0,r=0.34,g=0.64,b=1.00};
 		[COMBATLOG_FILTER_HOSTILE_UNITS] 	= {a=1.0,r=0.75,g=0.05,b=0.05};
+		[COMBATLOG_FILTER_HOSTILE_PLAYERS] 	= {a=1.0,r=0.75,g=0.05,b=0.05};
 		[COMBATLOG_FILTER_NEUTRAL_UNITS] 	= {a=1.0,r=0.75,g=0.05,b=0.05}; -- {a=1.0,r=0.80,g=0.80,b=0.14};
 		[COMBATLOG_FILTER_UNKNOWN_UNITS] 	= {a=1.0,r=0.75,g=0.75,b=0.75};
 	};
@@ -135,6 +136,8 @@ COMBATLOG_EVENT_LIST = {
 	["SPELL_ENERGIZE"] = true,
 	["SPELL_DRAIN"] = true,
 	["SPELL_LEECH"] = true,
+	["SPELL_SUMMON"] = true,
+	["SPELL_CREATE"] = true,
 	["SPELL_INSTAKILL"] = true,
 	["SPELL_INTERRUPT"] = true,
 	["SPELL_EXTRA_ATTACKS"] = true,
@@ -193,18 +196,6 @@ function Blizzard_CombatLog_GenerateFullEventList ( )
 	return eventList;
 end
 
-function Blizzard_CombatLog_CopySetting(settings)
-	local copy = {};
-	for k, v in pairs(settings) do
-		if ( type(v) == "table" ) then
-			copy[k] = Blizzard_CombatLog_CopySetting(v);
-		else
-			copy[k] = v;
-		end
-	end
-	return copy;
-end
-
 --
 -- Default CombatLog Filter
 -- This table is used to create new CombatLog filters
@@ -219,10 +210,10 @@ DEFAULT_COMBATLOG_FILTER_TEMPLATE = {
 	};
 
 	-- Default Color and Formatting Options
-	settings = COMBATLOG_DEFAULT_SETTINGS;
+	settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS);
 
 	-- Coloring
-	colors = COMBATLOG_DEFAULT_COLORS;
+	colors = CopyTable(COMBATLOG_DEFAULT_COLORS);
 
 	-- The actual client filters
 	filters = {
@@ -296,6 +287,7 @@ local COMBATLOG_FILTER_MINE = COMBATLOG_FILTER_MINE
 local COMBATLOG_FILTER_MY_PET = COMBATLOG_FILTER_MY_PET
 local COMBATLOG_FILTER_FRIENDLY_UNITS = COMBATLOG_FILTER_FRIENDLY_UNITS
 local COMBATLOG_FILTER_HOSTILE_UNITS = COMBATLOG_FILTER_HOSTILE_UNITS
+local COMBATLOG_FILTER_HOSTILE_PLAYERS = COMBATLOG_FILTER_HOSTILE_PLAYERS
 local COMBATLOG_FILTER_NEUTRAL_UNITS = COMBATLOG_FILTER_NEUTRAL_UNITS
 local COMBATLOG_FILTER_UNKNOWN_UNITS = COMBATLOG_FILTER_UNKNOWN_UNITS
 local COMBATLOG_FILTER_EVERYTHING = COMBATLOG_FILTER_EVERYTHING
@@ -378,20 +370,21 @@ Blizzard_CombatLog_Filter_Defaults = {
 	filters = {
 		[1] = {
 			-- Descriptive Information
-			name = QUICKBUTTON_NAME_DEFAULT;
+			name = QUICKBUTTON_NAME_SELF;
 			hasQuickButton = true;
-			quickButtonName = QUICKBUTTON_NAME_DEFAULT;
+			quickButtonName = QUICKBUTTON_NAME_SELF;
 			quickButtonDisplay = {
 				solo = true;
 				party = true;
 				raid = true;
 			};
+			tooltip = QUICKBUTTON_NAME_SELF_TOOLTIP;
 
 			-- Default Color and Formatting Options
-			settings = COMBATLOG_DEFAULT_SETTINGS;
+			settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS);
 
 			-- Coloring
-			colors = COMBATLOG_DEFAULT_COLORS;
+			colors = CopyTable(COMBATLOG_DEFAULT_COLORS);
 
 			-- The actual client filters
 			filters = {
@@ -505,39 +498,13 @@ Blizzard_CombatLog_Filter_Defaults = {
 				party = true;
 				raid = true;
 			};
+			tooltip = QUICKBUTTON_NAME_EVERYTHING_TOOLTIP;
 
 			-- Settings
-			settings = {
-				fullText = false;
-				textMode = TEXT_MODE_A;
-				timestamp = true;
-				timestampFormat = TEXT_MODE_A_TIMESTAMP;
-				unitColoring = false;
-				sourceColoring = true;
-				destColoring = true;
-				lineColoring = true;
-				abilityColoring = false;
-				abilitySchoolColoring = false;
-				abilityActorColoring = false;
-				amountActorColoring = false;
-				amountColoring = false;
-				amountSchoolColoring = false;
-				schoolNameColoring = false;
-				noMeleeSwingColoring = false;
-				braces = true;
-				unitBraces = true;
-				sourceBraces = true;
-				destBraces = true;
-				spellBraces = false;
-				itemBraces = true;
-				showHistory = true;
-				lineColorPriority = 1; -- 1 = source->dest->event, 2 = dest->source->event, 3 = event->source->dest
-				unitIcons = true;
-				--unitTokens = true;
-			};
+			settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS);
 
 			-- Coloring
-			colors = COMBATLOG_DEFAULT_COLORS;
+			colors = CopyTable(COMBATLOG_DEFAULT_COLORS);
 
 			-- The actual client filters
 			filters = {
@@ -563,47 +530,26 @@ Blizzard_CombatLog_Filter_Defaults = {
 				party = true;
 				raid = true;
 			};
+			tooltip = QUICKBUTTON_NAME_ME_TOOLTIP;
 
 			-- Settings
-			settings = {
-				fullText = false;
-				textMode = TEXT_MODE_A;
-				timestamp = true;
-				timestampFormat = TEXT_MODE_A_TIMESTAMP;
-				unitColoring = true;
-				sourceColoring = true;
-				destColoring = true;
-				lineColoring = false;
-				abilityColoring = true;
-				abilitySchoolColoring = false;
-				abilityActorColoring = false;
-				amountActorColoring = false;
-				amountColoring = true;
-				amountSchoolColoring = true;
-				schoolNameColoring = true;
-				noMeleeSwingColoring = false;
-				braces = true;
-				unitBraces = true;
-				sourceBraces = true;
-				destBraces = true;
-				spellBraces = false;
-				itemBraces = true;
-				showHistory = true;
-				lineColorPriority = 1; -- 1 = source->dest->event, 2 = dest->source->event, 3 = event->source->dest
-				unitIcons = true;
-				--unitTokens = true;
-			};
+			settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS);
 
 			-- Coloring
-			colors = COMBATLOG_DEFAULT_COLORS;
+			colors = CopyTable(COMBATLOG_DEFAULT_COLORS);
 
 			-- The actual client filters
 			filters = {
 				[1] = {
 					eventList = Blizzard_CombatLog_GenerateFullEventList();
 					sourceFlags = {
-						[COMBATLOG_FILTER_MINE] = true,
-						[COMBATLOG_FILTER_MY_PET] = true;
+						[COMBATLOG_FILTER_MINE] = false,
+						[COMBATLOG_FILTER_MY_PET] = false,
+						[COMBATLOG_FILTER_FRIENDLY_UNITS] = false,
+						[COMBATLOG_FILTER_HOSTILE_UNITS] = false,
+						[COMBATLOG_FILTER_HOSTILE_PLAYERS] = false,
+						[COMBATLOG_FILTER_NEUTRAL_UNITS] = false,
+						[COMBATLOG_FILTER_UNKNOWN_UNITS] = false,
 					};
 					destFlags = nil;
 				};
@@ -619,121 +565,45 @@ Blizzard_CombatLog_Filter_Defaults = {
 		};
 		[4] = {
 			-- Descriptive Information
-			name = QUICKBUTTON_NAME_FRIENDS;
-			hasQuickButton = true;
-			quickButtonName = QUICKBUTTON_NAME_FRIENDS;
+			name = QUICKBUTTON_NAME_KILLS;
+			hasQuickButton = false;
+			quickButtonName = QUICKBUTTON_NAME_KILLS;
 			quickButtonDisplay = {
 				solo = true;
 				party = true;
 				raid = true;
 			};
+			tooltip = QUICKBUTTON_NAME_KILLS_TOOLTIP;
 
 			-- Settings
-			settings = {
-				fullText = false;
-				textMode = TEXT_MODE_A;
-				timestamp = true;
-				timestampFormat = TEXT_MODE_A_TIMESTAMP;
-				unitColoring = false;
-				sourceColoring = true;
-				destColoring = true;
-				lineColoring = true;
-				abilityColoring = false;
-				abilitySchoolColoring = false;
-				abilityActorColoring = false;
-				amountActorColoring = false;
-				amountColoring = false;
-				amountSchoolColoring = false;
-				schoolNameColoring = false;
-				noMeleeSwingColoring = false;
-				braces = true;
-				unitBraces = true;
-				sourceBraces = true;
-				destBraces = true;
-				spellBraces = false;
-				itemBraces = true;
-				showHistory = true;
-				lineColorPriority = 1; -- 1 = source->dest->event, 2 = dest->source->event, 3 = event->source->dest
-				unitIcons = true;
-				--unitTokens = true;
-			};
+			settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS);
 
 			-- Coloring
-			colors = COMBATLOG_DEFAULT_COLORS;
+			colors = CopyTable(COMBATLOG_DEFAULT_COLORS);
 
 			-- The actual client filters
 			filters = {
 				[1] = {
-					eventList = Blizzard_CombatLog_GenerateFullEventList();
+					eventList = {
+						["PARTY_KILL"] = true,
+						["UNIT_DIED"] = true,
+						["UNIT_DESTROYED"] = true
+					};
 					sourceFlags = {
-						[COMBATLOG_FILTER_FRIENDLY_UNITS] = true,
+						[COMBATLOG_FILTER_EVERYTHING] = true,
 					};
 					destFlags = nil;
 				};
 				[2] = {
-					eventList = Blizzard_CombatLog_GenerateFullEventList();
+					eventList = {
+						["PARTY_KILL"] = true,
+						["UNIT_DIED"] = true,
+						["UNIT_DESTROYED"] = true
+					};
 					sourceFlags = nil;
 					destFlags = {
-						[COMBATLOG_FILTER_FRIENDLY_UNITS] = true,
+						[COMBATLOG_FILTER_EVERYTHING] = true,  
 					};
-				};
-			};
-		};
-		[5] = {
-			-- Descriptive Information
-			name = QUICKBUTTON_NAME_ORIGINAL;
-			hasQuickButton = true;
-			quickButtonName = QUICKBUTTON_NAME_ORIGINAL;
-			quickButtonDisplay = {
-				solo = true;
-				party = true;
-				raid = true;
-			};
-
-			-- Settings
-			settings = {
-				fullText = true;
-				textMode = TEXT_MODE_A;
-				timestamp = false;
-				timestampFormat = TEXT_MODE_A_TIMESTAMP;
-				unitColoring = false;
-				sourceColoring = true;
-				destColoring = true;
-				lineColoring = true;
-				abilityColoring = false;
-				abilitySchoolColoring = false;
-				abilityActorColoring = false;
-				amountActorColoring = false;
-				amountColoring = false;
-				amountSchoolColoring = false;
-				schoolNameColoring = false;
-				noMeleeSwingColoring = false;
-				braces = false;
-				unitBraces = false;
-				sourceBraces = false;
-				destBraces = true;
-				spellBraces = false;
-				itemBraces = true;
-				showHistory = true;
-				lineColorPriority = 1; -- 1 = source->dest->event, 2 = dest->source->event, 3 = event->source->dest
-				unitIcons = true;
-				--unitTokens = true;
-			};
-
-			-- Coloring
-			colors = COMBATLOG_DEFAULT_COLORS;
-
-			-- The actual client filters
-			filters = {
-				[1] = {
-					eventList = Blizzard_CombatLog_GenerateFullEventList();
-					sourceFlags = nil;
-					destFlags = nil;
-				};
-				[2] = {
-					eventList = Blizzard_CombatLog_GenerateFullEventList();
-					sourceFlags = nil;
-					destFlags = nil;
 				};
 			};
 		};
@@ -745,7 +615,6 @@ Blizzard_CombatLog_Filter_Defaults = {
 
 local Blizzard_CombatLog_Filters = Blizzard_CombatLog_Filter_Defaults;
 _G.Blizzard_CombatLog_Filters = Blizzard_CombatLog_Filters
-
 
 -- Combat Log Filter Resetting Code
 --
@@ -770,6 +639,12 @@ function Blizzard_CombatLog_ApplyFilters(config)
 		if ( v.sourceFlags ) then
 			sourceFlags = 0;
 			for k2, v2 in pairs(v.sourceFlags) do
+				-- Support for GUIDs
+				if ( type (k2) == "string" ) then
+					sourceFlags = k2;
+					break;
+				end
+				-- Otherwise OR bits
 				if ( v2 ) then
 					sourceFlags = bit_bor(sourceFlags, k2);
 				end
@@ -778,15 +653,27 @@ function Blizzard_CombatLog_ApplyFilters(config)
 		if ( v.destFlags ) then
 			destFlags = 0;
 			for k2, v2 in pairs(v.destFlags) do
+				-- Support for GUIDs
+				if ( type (k2) == "string" ) then
+					destFlags = k2;
+					break;
+				end
+				-- Otherwise OR bits
 				if ( v2 ) then
 					destFlags = bit_bor(destFlags, k2);
 				end
 			end
 		end
-		if ( sourceFlags == 0 or destFlags == 0 ) then
-			return;
+		if ( type(sourceFlags) == "string" and destFlags == 0 ) then
+			destFlags = nil;
 		end
-		CombatLogAddFilter(eList, sourceFlags, destFlags);
+		if ( type(destFlags) == "string" and sourceFlags == 0 ) then
+			sourceFlags = nil;
+		end
+
+		if ( sourceFlags ~= 0 and destFlags ~= 0 ) then
+			CombatLogAddFilter(eList, sourceFlags, destFlags);
+		end
 	end
 end
 
@@ -837,7 +724,7 @@ function Blizzard_CombatLog_RefilterUpdate()
 	local total = 0;
 	while (valid and total < COMBATLOG_LIMIT_PER_FRAME) do 
 		-- Log to the window
-		COMBATLOG:AddMessage(CombatLog_OnEvent(COMBATLOG, Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry()) )
+		COMBATLOG:AddMessage(CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry()) )
 
 		-- count can be 
 		--  positive to advance from oldest to newest
@@ -890,7 +777,6 @@ function Blizzard_CombatLog_EnableEvent ( settings, ... )
 		end
 
 		for i = 1, select("#", ...) do
-			-- XINHUAN: Combine
 			filter.eventList[select(i, ...)] = true;
 		end
 	end
@@ -907,7 +793,6 @@ function Blizzard_CombatLog_DisableEvent ( settings, ... )
 	for _, filter in pairs (settings.filters) do
 		if ( filter.eventList ) then
 			for i = 1, select("#", ...) do
-				-- XINHUAN: Combine
 				filter.eventList[select(i, ...)] = false;
 			end
 		end
@@ -917,7 +802,6 @@ end
 -- 
 -- Creates the action menu popup
 --
--- XINHUAN: Reuse the same table in an upvalue
 do
 	local eventType
 	local actionMenu = {
@@ -937,7 +821,6 @@ end
 -- 
 -- Creates the spell menu popup
 --
--- XINHUAN: Reuse the same table in an upvalue
 do
 	local spellName, spellId, eventType
 	local spellMenu = {
@@ -983,7 +866,6 @@ end
 --
 -- Temporary Menu
 --
--- XINHUAN: Reuse the same table in an upvalue
 do
 	-- This big table currently only has one upvalue: Blizzard_CombatLog_CurrentSettings
 	local messageTypesMenu = {
@@ -1285,7 +1167,6 @@ do
 			};
 		};
 	};
-	-- XINHUAN: Note, this function currently takes in no input. This may change as other
 	-- functions I see do pass in arguments, update upvalues as necessary.
 	function Blizzard_CombatLog_MessageTypesMenu()
 		return messageTypesMenu;
@@ -1551,10 +1432,8 @@ end;
 -- args:
 -- 	settingsIndex - the filter settings to use
 --
--- XINHUAN: Note - This function isn't used anywhere yet.
 do
 	local filterId
-	-- XINHUAN: I assumed you are missing these 3 locals, as the original code was referring to globals
 	local unitName, unitGUID, special
 	local tabMenu = {
 		[1] = {
@@ -1562,9 +1441,8 @@ do
 			func = function () Blizzard_CombatLog_UnitMenuClick ("EVERYTHING", unitName, unitGUID, special); end;
 		},
 		[2] = {
-			text = BLIZZARD_COMBAT_LOG_MENU_REVERT;
-			disabled = (Blizzard_CombatLog_PreviousSettings == Blizzard_CombatLog_CurrentSettings);
-			func = function () Blizzard_CombatLog_UnitMenuClick ("REVERT", unitName, unitGUID, special); end;
+			text = BLIZZARD_COMBAT_LOG_MENU_SAVE;
+			func = function () Blizzard_CombatLog_UnitMenuClick ("SAVE", unitName, unitGUID, special); end;
 		},
 		[3] = {
 			text = BLIZZARD_COMBAT_LOG_MENU_RESET;
@@ -1578,8 +1456,6 @@ do
 	function Blizzard_CombatLog_CreateTabMenu ( filterId_arg )
 		-- Update upvalues
 		filterId = filterId_arg
-		-- XINHUAN: I assume there is code to be added here for updating the missing
-		-- (unitName, unitGUID, special) variables that aren't defined in the original code
 
 		-- Update menus
 		tabMenu[2].disabled = (Blizzard_CombatLog_PreviousSettings == Blizzard_CombatLog_CurrentSettings)
@@ -1593,65 +1469,95 @@ end
 --
 -- Temporary Menu
 --
--- XINHUAN: Convert the function to return an upvalue table. This means everytime we right click
--- on a unit name in the combat log, it will reuse this table everytime instead of creating a
--- new one every right-click.
 do
-	-- XINHUAN: Use a table upvalue in a self-contained do-end block
-	local displayName, unitName, unitGUID, special
-	local unitMenu = {
-		[1] = {
-			text = "string.format(BLIZZARD_COMBAT_LOG_MENU_BOTH, displayName)", -- Dummy text
-			func = function () Blizzard_CombatLog_UnitMenuClick ("BOTH", unitName, unitGUID, special); end;
-		},
-		[2] = {
-			text = "string.format(BLIZZARD_COMBAT_LOG_MENU_INCOMING, displayName)",
-			func = function () Blizzard_CombatLog_UnitMenuClick ("INCOMING", unitName, unitGUID, special); end;
-		},
-		[3] = {
-			text = "string.format(BLIZZARD_COMBAT_LOG_MENU_OUTGOING, displayName)";
-			func = function () Blizzard_CombatLog_UnitMenuClick ("OUTGOING", unitName, unitGUID, special); end;
-		},
-		[4] = {
-			text = "------------------";
-			disabled = true;
-		},
-		[5] = {
-			text = BLIZZARD_COMBAT_LOG_MENU_EVERYTHING;
-			func = function () Blizzard_CombatLog_UnitMenuClick ("EVERYTHING", unitName, unitGUID, special); end;
-		},
-		[6] = {
-			text = BLIZZARD_COMBAT_LOG_MENU_REVERT;
-			disabled = (Blizzard_CombatLog_PreviousSettings == Blizzard_CombatLog_CurrentSettings);
-			func = function () Blizzard_CombatLog_UnitMenuClick ("REVERT", unitName, unitGUID, special); end;
-		},
-		[7] = {
-			text = BLIZZARD_COMBAT_LOG_MENU_RESET;
-			func = function () Blizzard_CombatLog_UnitMenuClick ("RESET", unitName, unitGUID, special); end;
-		},
-		[8] = {
-			text = "--------- Temporary Adjustments ---------";
-			disabled = true;
-		},
-	};
-	function Blizzard_CombatLog_CreateUnitMenu(unitName_arg, unitGUID_arg, special_arg)
-		-- XINHUAN: Update upvalues in do-end block for the unitMenu table
-		displayName, unitName, unitGUID, special = unitName_arg, unitName_arg, unitGUID_arg, special_arg;
-		if ( unitName == UnitName("player") ) then
+	function Blizzard_CombatLog_CreateUnitMenu(unitName, unitGUID, special)
+		local displayName = unitName;
+		if ( unitGUID == UnitGUID("player") ) then
 			displayName = UNIT_YOU;
 		end
-		-- Update menu text and disabled menuitem status
-		unitMenu[1].text = string.format(BLIZZARD_COMBAT_LOG_MENU_BOTH, displayName);
-		unitMenu[2].text = string.format(BLIZZARD_COMBAT_LOG_MENU_INCOMING, displayName);
-		unitMenu[3].text = string.format(BLIZZARD_COMBAT_LOG_MENU_OUTGOING, displayName);
-		unitMenu[6].disabled = (Blizzard_CombatLog_PreviousSettings == Blizzard_CombatLog_CurrentSettings);
+
+		local unitMenu = {
+			[1] = {
+				text = string.format(BLIZZARD_COMBAT_LOG_MENU_BOTH, displayName); -- Dummy text
+				func = function () Blizzard_CombatLog_UnitMenuClick ("BOTH", unitName, unitGUID, special); end;
+			},
+			[2] = {
+				text = string.format(BLIZZARD_COMBAT_LOG_MENU_INCOMING, displayName);
+				func = function () Blizzard_CombatLog_UnitMenuClick ("INCOMING", unitName, unitGUID, special); end;
+			},
+			[3] = {
+				text = string.format(BLIZZARD_COMBAT_LOG_MENU_OUTGOING, displayName);
+				func = function () Blizzard_CombatLog_UnitMenuClick ("OUTGOING", unitName, unitGUID, special); end;
+			},
+			[4] = {
+				text = "------------------";
+				disabled = true;
+			},
+			[5] = {
+				text = BLIZZARD_COMBAT_LOG_MENU_EVERYTHING;
+				func = function () Blizzard_CombatLog_UnitMenuClick ("EVERYTHING", unitName, unitGUID, special); end;
+			},
+			[6] = {
+				text = BLIZZARD_COMBAT_LOG_MENU_SAVE;
+				func = function () Blizzard_CombatLog_UnitMenuClick ("SAVE", unitName, unitGUID, special); end;
+			},
+			[7] = {
+				text = BLIZZARD_COMBAT_LOG_MENU_RESET;
+				func = function () Blizzard_CombatLog_UnitMenuClick ("RESET", unitName, unitGUID, special); end;
+			},
+			[8] = {
+				text = "--------- Temporary Adjustments ---------";
+				disabled = true;
+			},
+		};		
 		-- These 2 calls update the menus in their respective do-end blocks
 		unitMenu[9] = Blizzard_CombatLog_FormattingMenu(Blizzard_CombatLog_Filters.currentFilter);
 		unitMenu[10] = Blizzard_CombatLog_MessageTypesMenu(Blizzard_CombatLog_Filters.currentFilter);
+
+		if ( unitGUID ~= UnitGUID("player") ) then
+			table.insert(unitMenu, 4, {
+				text = string.format(BLIZZARD_COMBAT_LOG_MENU_OUTGOING_ME, displayName);
+				func = function () Blizzard_CombatLog_UnitMenuClick ("OUTGOING_ME", unitName, unitGUID, special); end;
+			} );
+		end
 		return unitMenu
 	end
 end
-
+-- Create additional filter dropdown list
+do
+	local menu = {};
+	function Blizzard_CombatLog_CreateFilterMenu()
+		local count = 1;
+		for index, value in pairs(menu) do
+			if ( not value ) then
+				value = {};
+			else
+				for k, v in pairs(value) do
+					value[k] = nil;
+				end
+			end
+		end
+		local selectedIndex = Blizzard_CombatLog_Filters.currentFilter;
+		local checked;
+		for index, value in ipairs(Blizzard_CombatLog_Filters.filters) do
+			if ( not value.onQuickBar ) then
+				if ( not menu[count] ) then
+					menu[count] = {};
+				end
+				menu[count].text = value.name;
+				menu[count].func = function () Blizzard_CombatLog_QuickButton_OnClick(index); end;
+				if ( selectedIndex == index ) then
+					checked = 1;
+				else
+					checked = nil;
+				end
+				menu[count].checked =  checked;
+				count = count+1;
+			end
+		end
+		return menu;
+	end
+end
 -- 
 -- Handle mini menu clicks
 --
@@ -1662,8 +1568,8 @@ end
 -- 	special - bit code for special filters, such as raid targets
 --
 function Blizzard_CombatLog_UnitMenuClick(event, unitName, unitGUID, unitFlags)
-	-- Reset all filtering.
-	CombatLogResetFilter()
+
+--	ChatFrame1:AddMessage("Event: "..event.." N: "..tostring(unitName).." GUID: "..tostring(unitGUID).." Flags: "..tostring(unitFlags));
 -- 
 -- This code was for the context menus to support different formatting criteria
 --
@@ -1682,6 +1588,11 @@ function Blizzard_CombatLog_UnitMenuClick(event, unitName, unitGUID, unitFlags)
 		-- Apply the old filters
 		Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings);
 
+	elseif ( event == "SAVE" ) then
+		local dialog = StaticPopup_Show("COPY_COMBAT_FILTER");
+		dialog.data = Blizzard_CombatLog_CurrentSettings;
+
+		return;
 	elseif ( event == "RESET" ) then
 		Blizzard_CombatLog_PreviousSettings = Blizzard_CombatLog_CurrentSettings;
 		Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[Blizzard_CombatLog_Filters.currentFilter];
@@ -1701,6 +1612,8 @@ function Blizzard_CombatLog_UnitMenuClick(event, unitName, unitGUID, unitFlags)
 		Blizzard_CombatLog_CurrentSettings.filters = {};  -- We want to be careful not to destroy the active data, so the user can reset
 
 		if ( event == "EVERYTHING" ) then
+			-- Reset all filtering.
+			CombatLogResetFilter()
 			--Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.contextMenu[event];
 			CombatLogAddFilter(nil, nil, nil)	
 			tinsert ( Blizzard_CombatLog_CurrentSettings.filters, {} );
@@ -1719,6 +1632,13 @@ function Blizzard_CombatLog_UnitMenuClick(event, unitName, unitGUID, unitFlags)
 				tinsert ( Blizzard_CombatLog_CurrentSettings.filters, { sourceFlags = { [unitGUID] = true; } } );
 			end
 		end
+		if ( event == "OUTGOING_ME" ) then
+			if ( unitFlags ) then
+				tinsert ( Blizzard_CombatLog_CurrentSettings.filters, { sourceFlags = { [unitFlags] = true; }; destFlags = { [COMBATLOG_FILTER_MINE] = true; } } );
+			else
+				tinsert ( Blizzard_CombatLog_CurrentSettings.filters, { sourceFlags = { [unitGUID] = true; }; destFlags = { [COMBATLOG_FILTER_MINE] = true; } } );
+			end
+		end
 
 		-- If the context menu is not resetting, then we need to create an event list, 
 		-- So that right click removal works when the user right clicks
@@ -1734,7 +1654,6 @@ function Blizzard_CombatLog_UnitMenuClick(event, unitName, unitGUID, unitFlags)
 
 		-- Apply the generated filters
 		Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings);
-
 		-- Let the system know that this filter is temporary and unhighlight any quick buttons
 		Blizzard_CombatLog_CurrentSettings.isTemp = true;
 		Blizzard_CombatLog_Update_QuickButtons()
@@ -1878,10 +1797,12 @@ _G.CombatLog_Color_ColorArrayByEventType = CombatLog_Color_ColorArrayByEventType
 --	Gets the appropriate color for a unit type
 --
 
-local function CombatLog_Color_ColorArrayByUnitType(unitFlags)
+local function CombatLog_Color_ColorArrayByUnitType(unitFlags, settings)
 	local array = nil;
-
-	for mask,colorArray in pairs( Blizzard_CombatLog_CurrentSettings.colors.unitColoring ) do
+	if ( not settings ) then
+		settings = Blizzard_CombatLog_CurrentSettings;
+	end
+	for mask,colorArray in pairs( settings.colors.unitColoring ) do
 		if ( CombatLog_Object_IsA (unitFlags, mask) )then
 			array = colorArray;
 			break;
@@ -1894,12 +1815,15 @@ _G.CombatLog_Color_ColorArrayByUnitType = CombatLog_Color_ColorArrayByUnitType
 --
 --	Gets the appropriate color for a  spell school
 --
-local function CombatLog_Color_ColorArrayBySchool(school)
+local function CombatLog_Color_ColorArrayBySchool(school, settings)
+	if ( not settings ) then
+		settings = Blizzard_CombatLog_CurrentSettings;
+	end
 	if ( not school ) then
-		return Blizzard_CombatLog_CurrentSettings.colors.schoolColoring.default;
+		return settings.colors.schoolColoring.default;
 	end
 
-	return Blizzard_CombatLog_CurrentSettings.colors.schoolColoring[school] or defaultColorArray
+	return settings.colors.schoolColoring[school] or defaultColorArray
 end
 _G.CombatLog_Color_ColorArrayBySchool = CombatLog_Color_ColorArrayBySchool
 
@@ -2158,7 +2082,7 @@ _G.CombatLog_Color_ColorStringByEventType = CombatLog_Color_ColorStringByEventTy
 
 local defaultCombatLogLineColor = { a = 1.00, r = 1.00, g = 1.00, b = 1.00 };
 
-function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
+function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
 	-- [environmentalDamageType]
 	-- [spellName, spellRank, spellSchool]
 	-- [damage, school, [resisted, blocked, absorbed, crit, glancing, crushing]]
@@ -2526,6 +2450,16 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 			valueEnabled = true;
 			valueTypeEnabled = false;
 			schoolEnabled = false;
+		elseif ( event == "SPELL_SUMMON" ) then
+			-- Disable appropriate sections
+			resultEnabled = false;
+			valueEnabled = false;
+			schoolEnabled = false;
+		elseif ( event == "SPELL_CREATE" ) then
+			-- Disable appropriate sections
+			resultEnabled = false;
+			valueEnabled = false;
+			schoolEnabled = false;
 		elseif ( event == "SPELL_INSTAKILL" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
@@ -2555,7 +2489,6 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 			resultEnabled = false;
 			valueEnabled = false;
 		elseif ( event == "SPELL_AURA_DISPELLED" ) then
-			-- XINHUAN: Combine into one function call
 			-- Extra Spell standard, Aura standard
 			extraSpellId, extraSpellName, extraSpellSchool, auraType = select(4, ...);
 
@@ -2572,7 +2505,6 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 			resultEnabled = false;
 			valueEnabled = false;
 		elseif ( event == "SPELL_AURA_STOLEN" ) then
-			-- XINHUAN: Combine into one function call
 			-- Extra Spell standard, Aura standard
 			extraSpellId, extraSpellName, extraSpellSchool, auraType = select(4, ...);
 
@@ -2695,7 +2627,6 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 			resultEnabled = true;
 		end
 	elseif ( event == "DAMAGE_SHIELD" ) then	-- Damage Shields
-		-- XINHUAN: Combine
 		-- Spell standard, Damage standard
 		spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing = ...;
 
@@ -2707,7 +2638,6 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 			resultEnabled = false
 		end
 	elseif ( event == "DAMAGE_SHIELD_MISSED" ) then
-		-- XINHUAN: Combine
 		-- Spell standard, Miss type
 		spellId, spellName, spellSchool, missType = ...;
 
@@ -2730,7 +2660,6 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 		valueEnabled = false;
 		spellEnabled = false;
 	elseif ( event == "ENCHANT_APPLIED" ) then	
-		-- XINHUAN: Combine
 		-- Get the enchant name, item id and item name
 		spellName, itemId, itemName = ...;
 		nameIsNotSpell = true;
@@ -2742,7 +2671,6 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 		itemEnabled = true;
 		resultEnabled = false;
 	elseif ( event == "ENCHANT_REMOVED" ) then
-		-- XINHUAN: Combine
 		-- Get the enchant name, item id and item name
 		spellName, itemId, itemName = ...;
 		nameIsNotSpell = true;
@@ -2768,7 +2696,6 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 		spellEnabled = false;
 		valueEnabled = false;
 	elseif ( event == "ENVIRONMENTAL_DAMAGE" ) then
-		-- XINHUAN: Combine
 		--Environemental Type, Damage standard
 		environmentalType, amount, school, resisted, blocked, absorbed, critical, glancing, crushing = ...
 
@@ -2789,7 +2716,6 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 			resultEnabled = false;
 		end
 	elseif ( event == "DAMAGE_SPLIT" ) then
-		-- XINHUAN: Combine
 		-- Spell Standard Arguments, Damage standard
 		spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing = ...;
 
@@ -2947,28 +2873,28 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 	if ( not settings.fullText and COMBAT_LOG_UNIT_YOU_ENABLED == "1" ) then
 		-- Replace your name with "You";
 		if ( sourceName and CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE) ) then
-			sourceNameStr = UNIT_YOU;
+				sourceNameStr = UNIT_YOU_SOURCE;
 		end
 		if ( destName and CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MINE) ) then
-			destNameStr = UNIT_YOU;
+				destNameStr = UNIT_YOU_DEST;
 		end
 		-- Apply the possessive form to the source
 		if ( sourceName and spellName and _G["ACTION_"..event.."_POSSESSIVE"] == "1" ) then
 			if ( sourceName and CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE) ) then
-				sourceNameStr = UNIT_YOU_SOURCE;
+				sourceNameStr = UNIT_YOU_SOURCE_POSSESSIVE;
 			end
 		end
 		-- Apply the possessive form to the source
 		if ( destName and ( extraSpellName or itemName ) ) then
 			if ( destName and CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MINE) ) then
-				destNameStr = UNIT_YOU_DEST;
+				destNameStr = UNIT_YOU_DEST_POSSESSIVE;
 			end
 		end
 
 	-- If its full text mode
 	else
 		-- Apply the possessive form to the source
-		if ( sourceName and spellName ) then
+		if ( sourceName and spellName and _G["ACTION_"..event.."_POSSESSIVE"] == "1" ) then
 			sourceNameStr = string_gsub ( TEXT_MODE_A_STRING_POSSESSIVE, "$nameString", sourceNameStr );
 			sourceNameStr = string_gsub ( sourceNameStr, "$possessive", TEXT_MODE_A_STRING_POSSESSIVE_STRING );
 		end
@@ -3014,14 +2940,14 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 	-- Whole line coloring
 	if ( settings.lineColoring ) then
 		if ( lineColorPriority == 3 or ( not sourceName and not destName) ) then
-			lineColor = CombatLog_Color_ColorArrayByEventType( event );
+			lineColor = CombatLog_Color_ColorArrayByEventType( event, filterSettings );
 		else
 			if ( ( lineColorPriority == 1 and sourceName ) or not destName ) then
-				lineColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags );
+				lineColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
 			elseif ( ( lineColorPriority == 2 and destName ) or not sourceName ) then
-				lineColor = CombatLog_Color_ColorArrayByUnitType( destFlags );
+				lineColor = CombatLog_Color_ColorArrayByUnitType( destFlags, filterSettings );
 			else
-				lineColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags );
+				lineColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
 			end
 		end
 	end
@@ -3037,18 +2963,14 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 				-- Do nothing
 			elseif ( settings.amountActorColoring ) then
 				if ( sourceName ) then
-					amountColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags );
+					amountColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
 				elseif ( destName ) then
-					amountColor = CombatLog_Color_ColorArrayByUnitType( destFlags );
+					amountColor = CombatLog_Color_ColorArrayByUnitType( destFlags, filterSettings );
 				end
 			elseif ( settings.amountSchoolColoring ) then
-				amountColor = CombatLog_Color_ColorArrayBySchool(school);
+				amountColor = CombatLog_Color_ColorArrayBySchool(school, filterSettings);
 			else
-				if ( school ) then 
-					amountColor = CombatLog_Color_ColorArrayBySchool(SCHOOL_MASK_NONE);
-				else
-					amountColor = CombatLog_Color_ColorArrayBySchool(nil);					
-				end
+				amountColor = filterSettings.colors.defaults.damage;			
 			end
 
 		end
@@ -3074,12 +2996,12 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 			if ( settings.noMeleeSwingColoring and school == SCHOOL_MASK_PHYSICAL and not spellId )  then
 			elseif ( settings.schoolNameActorColoring ) then
 					if ( sourceName ) then
-						schoolNameColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags );
+						schoolNameColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
 					elseif ( destName ) then
-						schoolNameColor = CombatLog_Color_ColorArrayByUnitType( destFlags );
+						schoolNameColor = CombatLog_Color_ColorArrayByUnitType( destFlags, filterSettings );
 					end
 			else
-				schoolNameColor = CombatLog_Color_ColorArrayBySchool(school);
+				schoolNameColor = CombatLog_Color_ColorArrayBySchool( school, filterSettings );
 			end
 		end
 		-- Highlighting
@@ -3128,12 +3050,12 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 
 			if ( settings.actionActorColoring ) then
 				if ( sourceName ) then
-					actionColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags );
+					actionColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
 				elseif ( destName ) then
-					actionColor = CombatLog_Color_ColorArrayByUnitType( destFlags );
+					actionColor = CombatLog_Color_ColorArrayByUnitType( destFlags, filterSettings );
 				end
 			elseif ( settings.actionSchoolColoring and spellSchool ) then
-				actionColor = CombatLog_Color_ColorArrayBySchool(spellSchool);
+				actionColor = CombatLog_Color_ColorArrayBySchool( spellSchool, filterSettings );
 			else
 				actionColor = CombatLog_Color_ColorArrayByEventType(event);
 			end
@@ -3148,9 +3070,9 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 				local actionColor = nil;
 
 				if ( settings.actionActorColoring ) then
-					actionColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags );
+					actionColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
 				elseif ( settings.actionSchoolColoring ) then
-					actionColor = CombatLog_Color_ColorArrayBySchool(spellSchool);
+					actionColor = CombatLog_Color_ColorArrayBySchool( spellSchool, filterSettings );
 				else
 					actionColor = CombatLog_Color_ColorArrayByEventType(event);
 				end
@@ -3181,16 +3103,12 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 		-- Color ability names
 		if ( settings.abilityColoring ) then
 			if ( settings.abilityActorColoring ) then
-				abilityColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags );
+				abilityColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
 			elseif ( settings.abilitySchoolColoring ) then
-				abilityColor = CombatLog_Color_ColorArrayBySchool(spellSchool);
-			end
-
-			if ( not abilityColor ) then
+				abilityColor = CombatLog_Color_ColorArrayBySchool( spellSchool, filterSettings );
+			else
 				if ( spellSchool ) then 
-					abilityColor = CombatLog_Color_ColorArrayBySchool(SCHOOL_MASK_PHYSICAL);
-				else
-					abilityColor = CombatLog_Color_ColorArrayBySchool(nil);					
+					abilityColor = filterSettings.colors.defaults.spell;			
 				end
 			end
 		end
@@ -3218,12 +3136,12 @@ function CombatLog_OnEvent(frame, filterSettings, timestamp, event, sourceGUID, 
 		if ( settings.abilityColoring ) then
 
 			if ( settings.abilitySchoolColoring ) then
-				abilityColor = CombatLog_Color_ColorArrayBySchool(extraSpellSchool);
+				abilityColor = CombatLog_Color_ColorArrayBySchool( extraSpellSchool, filterSettings );
 			else
 				if ( extraSpellSchool ) then 
-					abilityColor = CombatLog_Color_ColorArrayBySchool(SCHOOL_MASK_HOLY);
+					abilityColor = CombatLog_Color_ColorArrayBySchool( SCHOOL_MASK_HOLY, filterSettings );
 				else
-					abilityColor = CombatLog_Color_ColorArrayBySchool(nil);					
+					abilityColor = CombatLog_Color_ColorArrayBySchool( nil, filterSettings );					
 				end
 			end
 		end
@@ -3375,7 +3293,6 @@ function CombatLog_AddEvent(...)
 	if ( CombatLogUpdateFrame.refiltering ) then
 		return;
 	end
-	-- XINHUAN: Moved debug code into the DEBUG if-section so that they can be removed easily.
 	if ( DEBUG == true ) then
 		local info = ChatTypeInfo["COMBAT_MISC_INFO"];
 		local timestamp, event, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags = ...
@@ -3390,9 +3307,8 @@ function CombatLog_AddEvent(...)
 		end
 		ChatFrame1:AddMessage(message, info.r, info.g, info.b);
 	end
-	-- XINHUAN: Cleaned up code into a 1-liner
 	-- Add the messages
-	COMBATLOG:AddMessage(CombatLog_OnEvent(COMBATLOG, Blizzard_CombatLog_CurrentSettings, ... ));
+	COMBATLOG:AddMessage(CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, ... ));
 end
 
 --
@@ -3472,16 +3388,18 @@ _G[COMBATLOG:GetName().."Tab"]:SetScript("OnDragStart",
 
 -- On Event
 function Blizzard_CombatLog_QuickButtonFrame_OnEvent(event)
-	if ( event == "VARIABLES_LOADED" ) then
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		Blizzard_CombatLog_Filters = _G.Blizzard_CombatLog_Filters or Blizzard_CombatLog_Filters
 		Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[1];
+		_G.Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_CurrentSettings;
 		Blizzard_CombatLog_Refilter();
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		for k,v in pairs (Blizzard_CombatLog_UnitTokens) do
 			Blizzard_CombatLog_UnitTokens[k] = nil;
 		end
+		Blizzard_CombatLog_Update_QuickButtons();
 	end
 end
+
 
 -- BUG: Since we're futzing with the frame height, the combat log tab fades out on hover while other tabs remain faded in. This bug is in the stock version, as well.
 
@@ -3523,7 +3441,6 @@ end
 -- On Load
 local hooksSet = false
 function Blizzard_CombatLog_QuickButtonFrame_OnLoad()
-	this:RegisterEvent("VARIABLES_LOADED");
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	
 	-- We're using the _Custom suffix to get around the show/hide bug in FloatingChatFrame.lua.
@@ -3551,15 +3468,13 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad()
 		CombatLogQuickButtonFrame_Custom:Hide()
 		-- Blizzard_CombatLog_AdjustCombatLogHeight()
 		return hide and hide()
-	end)
-	
-	Blizzard_CombatLog_Update_QuickButtons();
+	end)	
 end
 
 local oldFCF_DockUpdate = FCF_DockUpdate;
 FCF_DockUpdate = function()
 	oldFCF_DockUpdate();
-	Blizzard_CombatLog_AdjustCombatLogHeight()
+	Blizzard_CombatLog_AdjustCombatLogHeight();
 end
 
 -- Override Hyperlink Handlers
@@ -3650,13 +3565,14 @@ end
 function Blizzard_CombatLog_Update_QuickButtons()
 	local baseName = "CombatLogQuickButtonFrame";
 	local buttonName, button, textWidth;
-	local previousIndex = 1;
-	local maxWidth = ChatFrame2:GetWidth()-10;
+	local buttonIndex = 1;
+	-- subtract the width of the dropdown button
+	local maxWidth = COMBATLOG:GetWidth()-31;
 	local totalWidth = 0;
 	local padding = 10;
 	local showMoreQuickButtons = true;
-	for index, filter in pairs(_G.Blizzard_CombatLog_Filters.filters) do
-		buttonName = baseName.."Button"..index;
+	for index, filter in ipairs(_G.Blizzard_CombatLog_Filters.filters) do
+		buttonName = baseName.."Button"..buttonIndex;
 		button = _G[buttonName];
 		if ( ShowQuickButton(filter) and showMoreQuickButtons ) then
 			if ( not button ) then
@@ -3669,8 +3585,9 @@ function Blizzard_CombatLog_Update_QuickButtons()
 				button:SetWidth(textWidth+padding);
 				button:SetID(index);
 				button:Show();
-				if ( index > 1 ) then
-					button:SetPoint("LEFT", _G[baseName.."Button"..previousIndex], "RIGHT", 3, 0);
+				button.tooltip = filter.tooltip;
+				if ( buttonIndex > 1 ) then
+					button:SetPoint("LEFT", _G[baseName.."Button"..buttonIndex-1], "RIGHT", 3, 0);
 				else
 					button:SetPoint("LEFT", CombatLogQuickButtonFrame, "LEFT", 3, 0);
 				end
@@ -3679,13 +3596,16 @@ function Blizzard_CombatLog_Update_QuickButtons()
 				else
 					button:UnlockHighlight();
 				end
-				previousIndex = index;
+				buttonIndex = buttonIndex + 1;
+				filter.onQuickBar = true;
 			else
 				-- Don't show anymore buttons if the maxwidth has been exceeded
 				showMoreQuickButtons = false;
 				button:Hide();
+				filter.onQuickBar = false;
 			end
 		else
+			filter.onQuickBar = false;
 			if ( button ) then
 				button:Hide();
 			end

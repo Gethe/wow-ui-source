@@ -378,7 +378,9 @@ function MerchantItemButton_OnLoad()
 	this:RegisterForDrag("LeftButton");
 	
 	this.SplitStack = function(button, split)
-		if ( split > 0 ) then
+		if ( button.extendedCost ) then
+			MerchantFrame_ConfirmExtendedItemCost(button, split)
+		elseif ( split > 0 ) then
 			BuyMerchantItem(button:GetID(), split);
 		end
 	end
@@ -387,10 +389,15 @@ function MerchantItemButton_OnLoad()
 end
 
 function MerchantItemButton_OnClick(button)
+	MerchantFrame.extendedCost = nil;
+	
 	if ( MerchantFrame.selectedTab == 1 ) then
 		-- Is merchant frame
 		if ( button == "LeftButton" ) then
 			PickupMerchantItem(this:GetID());
+			if ( this.extendedCost ) then
+				MerchantFrame.extendedCost = this;
+			end
 		else
 			if ( this.extendedCost ) then
 				MerchantFrame_ConfirmExtendedItemCost(this);
@@ -446,7 +453,8 @@ end
 
 LIST_DELIMITER = ", "
 
-function MerchantFrame_ConfirmExtendedItemCost(itemButton)
+function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
+	quantity = (quantity or 1);
 	local index, itemTexture, itemLink, itemsString, itemCount = itemButton:GetID();
 	local costString, pointsTexture, button = "";
 	local honorPoints, arenaPoints, itemCount = GetMerchantItemCostInfo(index);
@@ -456,11 +464,12 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton)
 	end
 	
 	local count = itemButton.count or 1;
-
+	honorPoints, arenaPoints, itemCount = (honorPoints or 0) * quantity, (arenaPoints or 0) * quantity, (itemCount or 0) * quantity;
+	
 	if ( honorPoints and honorPoints ~= 0 ) then
 		local factionGroup = UnitFactionGroup("player");
 		if ( factionGroup ) then	
-			pointsTexture = "Interface\\TargetingFrame\\UI-PVP-"..factionGroup;
+			pointsTexture = "Interface\\PVPFrame\\PVP-Currency-"..factionGroup;
 			itemsString = " |T" .. pointsTexture .. ":0:0:0:-1|t" ..  honorPoints .. " " .. HONOR_POINTS;
 		end
 	elseif ( arenaPoints and arenaPoints ~= 0 ) then
@@ -471,18 +480,19 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton)
 		itemTexture, itemCount, itemLink = GetMerchantItemCostItem(index, i);
 		if ( itemLink ) then
 			if ( itemsString ) then
-				itemsString = itemsString .. LIST_DELIMITER .. itemCount .. " " .. itemLink;
+				itemsString = itemsString .. LIST_DELIMITER .. ((itemCount or 0) * quantity) .. " " .. itemLink;
 			else
-				itemsString = itemCount .. " " .. itemLink;
+				itemsString = ((itemCount or 0) * quantity) .. " " .. itemLink;
 			end
 		end
 	end
 	
 	MerchantFrame.itemIndex = index;
+	MerchantFrame.count = quantity;
 	
 	local itemName, _, itemQuality = GetItemInfo(itemButton.link);
 	local r, g, b = GetItemQualityColor(itemQuality);
-	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index, ["count"] = count});
+	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index, ["count"] = count * quantity});
 end
 
 function MerchantFrame_UpdateCanRepairAll()

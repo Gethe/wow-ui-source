@@ -2820,3 +2820,15 @@ function UpdateNameplates()
 		HideFriendNameplates();
 	end
 end
+
+function CopyTable(settings)
+	local copy = {};
+	for k, v in pairs(settings) do
+		if ( type(v) == "table" ) then
+			copy[k] = CopyTable(v);
+		else
+			copy[k] = v;
+		end
+	end
+	return copy;
+end

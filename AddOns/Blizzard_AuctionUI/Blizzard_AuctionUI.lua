@@ -1390,11 +1390,11 @@ function AuctionFrameItem_OnEnter(type, index)
 	-- add price per unit info
 	local button;
 	if ( type == "owner" ) then
-		button = getglobal("AuctionsButton"..index);
+		button = getglobal("AuctionsButton"..this:GetParent():GetID());
 	elseif ( type == "bidder" ) then
-		button = getglobal("BidButton"..index);
+		button = getglobal("BidButton"..this:GetParent():GetID());
 	elseif ( type == "list" ) then
-		button = getglobal("BrowseButton"..index);
+		button = getglobal("BrowseButton"..this:GetParent():GetID());
 	end
 	if ( button and button.itemCount > 1 ) then
 		if ( button.minBid > 0 ) then

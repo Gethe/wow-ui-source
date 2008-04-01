@@ -238,7 +238,6 @@ function BankFrameItemButtonBag_OnClick(button)
 	if ( not hadItem ) then
 		-- open bag
 		ToggleBag(id);
-		PlaySound("BAGMENUBUTTONPRESS");
 	end
 	UpdateBagButtonHighlight(id);
 end
@@ -246,6 +245,5 @@ end
 function BankFrameItemButtonBag_Pickup()
 	local inventoryID = this:GetInventorySlot();
 	PickupBagFromSlot(inventoryID);
-	PlaySound("BAGMENUBUTTONPRESS");
 	UpdateBagButtonHighlight(this:GetID());
 end

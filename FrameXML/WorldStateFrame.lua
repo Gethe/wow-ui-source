@@ -15,7 +15,6 @@ WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL = 5;
 WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES = {};
 
 local inBattleground = false;
-battlegroundOver = false;
 
 --
 FILTERED_BG_CHAT_ADD_GLOBALS = { "ERR_RAID_MEMBER_ADDED_S", "ERR_BG_PLAYER_JOINED_SS" };
@@ -102,23 +101,13 @@ end
 function WorldStateAlwaysUpFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		WorldStateFrame_ToggleBattlefieldMinimap();
-		if ( inBattleground ) then
-			WorldStateAlwaysUpFrame_StopBGChatFilter(self);	
-			WorldStateAlwaysUpFrame:SetScript("OnUpdate", nil);
-			battlegroundOver = false;
-		end
-	elseif ( event == "PLAYER_ENTERING_BATTLEGROUND" ) then
-		WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = -25;
-		WorldStateAlwaysUpFrame_StartBGChatFilter(self);
-		WorldStateAlwaysUpFrame:SetScript("OnUpdate", WorldStateAlwaysUpFrame_OnUpdate);
+		WorldStateAlwaysUpFrame_StopBGChatFilter(self);	
 		return;
-	elseif ( event == "CHAT_MSG_SYSTEM" ) then
-		WorldStateAlwaysUpFrame_DispatchBGChat(self, event, ...);
+	elseif ( event == "PLAYER_ENTERING_BATTLEGROUND" ) then
+		WorldStateAlwaysUpFrame_StartBGChatFilter(self);
 		return;
 	elseif ( event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES" ) then
-		if ( GetBattlefieldWinner() ) then
-			battlegroundOver = true;
-		end
+
 	end
 	WorldStateAlwaysUpFrame_Update();
 end
@@ -236,19 +225,13 @@ function WorldStateAlwaysUpFrame_OnUpdate(self, elapsed)
 			info = ChatTypeInfo["SYSTEM"];
 			if ( subtractedPlayers > 1 and subtractedPlayers <= 3 ) then
 				message = ERR_PLAYERLIST_LEFT_BATTLE;
-				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
-					chatFrame:AddMessage(string.format(message, subtractedPlayers, playerString), info.r, info.g, info.b, info.id);
-				end
+				DEFAULT_CHAT_FRAME:AddMessage(string.format(message, subtractedPlayers, playerString), info.r, info.g, info.b, info.id);
 			elseif ( subtractedPlayers > 3 ) then
 				message = ERR_PLAYERS_LEFT_BATTLE_D;
-				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
-					chatFrame:AddMessage(string.format(message, subtractedPlayers), info.r, info.g, info.b, info.id);
-				end				
+				DEFAULT_CHAT_FRAME:AddMessage(string.format(message, subtractedPlayers), info.r, info.g, info.b, info.id);
 			else
 				message = ERR_PLAYER_LEFT_BATTLE_D;
-				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
-					chatFrame:AddMessage(string.format(message, playerString), info.r, info.g, info.b, info.id);
-				end
+				DEFAULT_CHAT_FRAME:AddMessage(string.format(message, playerString), info.r, info.g, info.b, info.id);
 			end
 
 			for i in next, SUBTRACTED_PLAYERS do
@@ -272,19 +255,13 @@ function WorldStateAlwaysUpFrame_OnUpdate(self, elapsed)
 			info = ChatTypeInfo["SYSTEM"];
 			if ( addedPlayers > 1 and addedPlayers <= 3 ) then
 				message = ERR_PLAYERLIST_JOINED_BATTLE;
-				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
-					chatFrame:AddMessage(string.format(message, addedPlayers, playerString), info.r, info.g, info.b, info.id);
-				end
+				DEFAULT_CHAT_FRAME:AddMessage(string.format(message, addedPlayers, playerString), info.r, info.g, info.b, info.id);
 			elseif ( addedPlayers > 3 ) then
 				message = ERR_PLAYERS_JOINED_BATTLE_D;
-				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
-					chatFrame:AddMessage(string.format(message, addedPlayers), info.r, info.g, info.b, info.id);
-				end
+				DEFAULT_CHAT_FRAME:AddMessage(string.format(message, addedPlayers), info.r, info.g, info.b, info.id);
 			else
 				message = ERR_PLAYER_JOINED_BATTLE_D;
-				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
-					chatFrame:AddMessage(string.format(message, playerString), info.r, info.g, info.b, info.id);
-				end
+				DEFAULT_CHAT_FRAME:AddMessage(string.format(message, playerString), info.r, info.g, info.b, info.id);
 			end
 
 			for i in next, ADDED_PLAYERS do
@@ -303,28 +280,21 @@ end
 function WorldStateAlwaysUpFrame_StartBGChatFilter (self)
 	inBattleground = true;
 	
-	local chatFrame;
-	for i = 1, NUM_CHAT_WINDOWS do
-		chatFrame = getglobal("ChatFrame" .. i);
-		if ( chatFrame ) then
-			if ( chatFrame:IsEventRegistered("CHAT_MSG_SYSTEM") ) then
-				tinsert(WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES, chatFrame);
-				chatFrame:UnregisterEvent("CHAT_MSG_SYSTEM");
-			end
-		end
-	end
+	-- Reset the OnUpdate timer variables
+	WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = -25;
+	WORLDSTATEALWAYSUPFRAME_TIMESINCESTART = 0;
 	
-	if ( #WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES > 0 ) then
-		self:RegisterEvent("CHAT_MSG_SYSTEM");
-		self:RegisterEvent("CHAT_MSG_LOOT");
-	end
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", WorldStateAlwaysUpFrame_FilterChatMsgSystem);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", WorldStateAlwaysUpFrame_FilterChatMsgLoot);
+	
+	self:SetScript("OnUpdate", WorldStateAlwaysUpFrame_OnUpdate);
 end
 
 function WorldStateAlwaysUpFrame_StopBGChatFilter (self)
 	inBattleground = false;
-
-	self:UnregisterEvent("CHAT_MSG_SYSTEM");
-	self:UnregisterEvent("CHAT_MSG_LOOT");
+	
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", WorldStateAlwaysUpFrame_FilterChatMsgSystem);
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_LOOT", WorldStateAlwaysUpFrame_FilterChatMsgLoot);
 	
 	for i in next, ADDED_PLAYERS do
 		ADDED_PLAYERS[i] = nil;
@@ -334,10 +304,48 @@ function WorldStateAlwaysUpFrame_StopBGChatFilter (self)
 		SUBTRACTED_PLAYERS[i] = nil;
 	end
 	
-	for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
-		chatFrame:RegisterEvent("CHAT_MSG_SYSTEM");
-		tremove(WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES, i);
+	self:SetScript("OnUpdate", nil);
+end
+
+function WorldStateAlwaysUpFrame_FilterChatMsgSystem (message)
+	local playerName;
+	
+	if ( GetBattlefieldWinner() ) then
+		-- Filter out leaving messages when the battleground is over.
+		for i, str in next, FILTERED_BG_CHAT_SUBTRACT do
+			playerName = string.match(message, str);
+			if ( playerName ) then
+				return true;
+			end
+		end
+	elseif ( WORLDSTATEALWAYSUPFRAME_TIMESINCESTART < WORLDSTATEALWAYSUPFRAME_TIMETORUN ) then
+		-- Filter out leaving and joining messages when the battleground starts.
+		for i, str in next, FILTERED_BG_CHAT_ADD do
+			playerName = string.match(message, str);
+			if ( playerName ) then
+				ADDED_PLAYERS[playerName] = true;
+				return true;
+			end
+		end
+		
+		for i, str in next, FILTERED_BG_CHAT_SUBTRACT do
+			playerName = string.match(message, str);
+			if ( playerName ) then
+				SUBTRACTED_PLAYERS[playerName] = true;
+				return true;
+			end
+		end
 	end
+	return false;
+end
+
+function WorldStateAlwaysUpFrame_FilterChatMsgLoot (message)
+	if ( GetBattlefieldWinner() ) then
+		-- Suppress loot messages at the end of battlefields and arenas
+		return true;
+	end
+	
+	return false;
 end
 
 function WorldStateAlwaysUpFrame_DispatchBGChat(self, event, ...)

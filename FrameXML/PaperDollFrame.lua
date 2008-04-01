@@ -1094,7 +1094,8 @@ function PaperDollItemSlotButton_OnHide()
 	this:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
 end
 
-function PaperDollItemSlotButton_OnEvent(event)
+function PaperDollItemSlotButton_OnEvent(self, event, ...)
+	local arg1, arg2 = ...;
 	if ( event == "UNIT_INVENTORY_CHANGED" ) then
 		if ( arg1 == "player" ) then
 			PaperDollItemSlotButton_Update();

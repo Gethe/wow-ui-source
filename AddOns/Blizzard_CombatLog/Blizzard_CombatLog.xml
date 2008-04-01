@@ -12,11 +12,20 @@
 			<OnClick>
 				Blizzard_CombatLog_QuickButton_OnClick(this:GetID());
 			</OnClick>
+			<OnEnter>
+				if (this.tooltip) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip_AddNewbieTip(this.tooltip, 1.0, 1.0, 1.0, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalFont inherits="GameFontDisable"/>
 		<HighlightFont inherits="GameFontHighlight"/>
 	</Button>
-	<Frame name="CombatLogQuickButtonFrame_Custom" parent="ChatFrame2">
+	<Frame name="CombatLogQuickButtonFrame_Custom" parent="ChatFrame2" hidden="true">
 		<Size>
 			<AbsDimension x="65" y="24"/>
 		</Size>
@@ -53,15 +62,47 @@
 				</Anchors>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.0" g="1.0" b="0.3"/>
-			</StatusBar>		
+			</StatusBar>
+			<Button name="$parentAdditionalFilterButton">
+				<Size>
+					<AbsDimension x="28" y="28"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="6" right="6" top="7" bottom="7"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						EasyMenu(Blizzard_CombatLog_CreateFilterMenu(), CombatLogDropDown, "cursor", nil, nil, "MENU");
+						PlaySound("UChatScrollButton");
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip_AddNewbieTip(ADDITIONAL_FILTERS, 1.0, 1.0, 1.0);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
+				<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
+				<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Disabled"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				 Blizzard_CombatLog_QuickButtonFrame_OnLoad();
 			</OnLoad>
-			<!-- XINHUAN: Add in the missing OnEvent handler
-				The function is declared in the lua file, but isn't called from anywhere!!
-			-->
 			<OnEvent>
 				Blizzard_CombatLog_QuickButtonFrame_OnEvent(event)
 			</OnEvent>

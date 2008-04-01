@@ -565,7 +565,13 @@ function ContainerFrameItemButton_OnClick(button)
 		elseif ( type == "money" ) then
 			DropCursorMoney();
 			ClearCursor();
-		else
+		elseif ( type == "merchant" ) then
+			if ( MerchantFrame.extendedCost ) then
+				MerchantFrame_ConfirmExtendedItemCost(MerchantFrame.extendedCost);
+			else
+				PickupContainerItem(this:GetParent():GetID(), this:GetID());
+			end
+		else			
 			PickupContainerItem(this:GetParent():GetID(), this:GetID());
 		end
 		StackSplitFrame:Hide();

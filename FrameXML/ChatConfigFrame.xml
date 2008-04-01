@@ -111,6 +111,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<HitRectInsets>
+			<AbsInset left="0" right="-145" top="0" bottom="0"/>
+		</HitRectInsets>
 	</CheckButton>
 	<CheckButton name="ChatConfigSmallCheckButtonTemplate" inherits="ChatConfigBaseCheckButtonTemplate" virtual="true">
 		<Size>
@@ -129,6 +132,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<HitRectInsets>
+			<AbsInset left="0" right="-55" top="0" bottom="0"/>
+		</HitRectInsets>
 	</CheckButton>
 	<Frame name="ChatConfigCheckBoxTemplate" virtual="true">
 		<Size>
@@ -347,7 +353,7 @@
 		</HighlightTexture>
 	</Button>
 
-	<Frame name="ChatConfigFrame" toplevel="true" parent="UIParent" hidden="true">
+	<Frame name="ChatConfigFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true">
 		<Size>
 			<AbsDimension x="645" y="540"/>
 		</Size>
@@ -454,7 +460,7 @@
 							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton2, "BOTTOMLEFT", 0, -1);
 							ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton2, "BOTTOMRIGHT", 0, -1);
 							ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
-							ChatConfigFrame:SetHeight(625);
+							ChatConfigFrame:SetHeight(575);
 						else
 							ChatConfigCategoryFrameButton2:Hide();
 							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton1, "BOTTOMLEFT", 0, -1);
@@ -483,7 +489,7 @@
 					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
 				</Anchors>
 				<Frames>
-					<Frame name="$parentLeft" inherits="ChatConfigBoxTemplate">
+					<Frame name="$parentLeft" inherits="ChatConfigBoxWithHeaderTemplate">
 						<Size x="10" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -499,11 +505,20 @@
 							</Anchor>
 						</Anchors>
 					</Frame>
+					<Frame name="$parentCreatureLeft" inherits="ChatConfigBoxWithHeaderTemplate">
+						<Size x="10" y="10"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="BOTTOMLEFT">
+								<Offset x="0" y="-50"/>
+							</Anchor>
+						</Anchors>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow>
 						ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
 						ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsRight);
+						ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsCreatureLeft);
 					</OnShow>
 				</Scripts>
 			</Frame>
@@ -696,6 +711,86 @@
 									</OnClick>
 								</Scripts>
 							</Button>
+							<Button name="$parentCopyFilterButton" inherits="UIPanelButtonTemplate" text="COPY_FILTER">
+								<Size>
+									<AbsDimension x="80" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="$parentAddFilterButton" relativePoint="LEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										local dialog = StaticPopup_Show("COPY_COMBAT_FILTER");
+										dialog.data = CHATCONFIG_SELECTED_FILTER;
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="ChatConfigMoveFilterUpButton">
+								<Size>
+									<AbsDimension x="28" y="28"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+								<HitRectInsets>
+									<AbsInset left="6" right="6" top="7" bottom="7"/>
+								</HitRectInsets>
+								<Scripts>
+									<OnClick>
+										ChatConfig_MoveFilterUp();
+										PlaySound("UChatScrollButton");
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip_AddNewbieTip(MOVE_FILTER_UP, 1.0, 1.0, 1.0);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+								<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
+								<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Down"/>
+								<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Disabled"/>
+								<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Highlight"/>
+							</Button>
+							<Button name="ChatConfigMoveFilterDownButton">
+								<Size>
+									<AbsDimension x="28" y="28"/>
+								</Size>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="ChatConfigMoveFilterUpButton" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-8" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<HitRectInsets>
+									<AbsInset left="6" right="6" top="7" bottom="7"/>
+								</HitRectInsets>
+								<Scripts>
+									<OnClick>
+										ChatConfig_MoveFilterDown();
+										PlaySound("UChatScrollButton");
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip_AddNewbieTip(MOVE_FILTER_DOWN, 1.0, 1.0, 1.0);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+								<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
+								<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
+								<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Disabled"/>
+								<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
+							</Button>
 						</Frames>
 						<Scripts>
 							<OnShow>
@@ -721,11 +816,6 @@
 										<Offset x="13" y="-25"/>
 									</Anchor>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										this:SetBackdropBorderColor(0, 0, 1.0, 0.5);
-									</OnLoad>
-								</Scripts>
 							</Frame>
 							<Frame name="$parentDoneTo" inherits="ChatConfigBoxWithHeaderTemplate">
 								<Size x="10" y="10"/>
@@ -772,7 +862,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<FontString inherits="GameFontHighlight" text="MISC">
+										<FontString inherits="GameFontHighlight" text="MISCELLANEOUS">
 											<Anchors>
 												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
 													<Offset x="0" y="0"/>
@@ -826,30 +916,30 @@
 								<Size x="10" y="10"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativeTo="ChatConfigBackgroundFrame" relativePoint="BOTTOMLEFT">
-										<Offset x="13" y="147"/>
+										<Offset x="13" y="89"/>
 									</Anchor>
 								</Anchors>
 							</Frame>
-							<Frame name="$parentHighlighting" inherits="ChatConfigBoxWithHeaderTemplate">
+							<Frame name="$parentHighlighting">
 								<Size>
-									<AbsDimension x="200" y="96"/>
+									<AbsDimension x="200" y="53"/>
 								</Size>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentUnitColors" relativePoint="BOTTOMLEFT">
 										<Offset x="0" y="-25"/>
 									</Anchor>
 								</Anchors>
-							</Frame>
-							<Frame name="$parentColorize">
-								<Size x="10" y="10"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentUnitColors" relativePoint="TOPRIGHT">
-										<Offset x="50" y="0"/>
-									</Anchor>
-								</Anchors>
+								<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+									<EdgeSize>
+										<AbsValue val="16"/>
+									</EdgeSize>
+									<TileSize>
+										<AbsValue val="16"/>
+									</TileSize>
+								</Backdrop>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<FontString inherits="GameFontNormal" text="COLORIZE">
+										<FontString name="$parentTitle" inherits="GameFontNormal" text="HIGHLIGHTING">
 											<Anchors>
 												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
 													<Offset x="0" y="2"/>
@@ -858,6 +948,117 @@
 										</FontString>
 									</Layer>
 								</Layers>
+								<Frames>
+									<CheckButton name="$parentLine" inherits="ChatConfigSmallCheckButtonTemplate">
+										<Size>
+											<AbsDimension x="24" y="24"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="CombatConfigColorsHighlighting" relativePoint="TOPLEFT">
+												<Offset x="6" y="-4"/>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												getglobal(this:GetName().."Text"):SetText(COMBATLOG_HIGHLIGHT_KILL);
+												this.tooltip = HIGHLIGHT_KILL_COMBATLOG_TOOLTIP;
+											</OnLoad>
+											<OnClick>
+												if ( this:GetChecked() ) then
+													CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting = true;
+												else
+													CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting = false;
+												end
+												CombatConfig_Colorize_Update();
+											</OnClick>
+										</Scripts>
+									</CheckButton>
+									<CheckButton name="$parentAbility" inherits="ChatConfigSmallCheckButtonTemplate">
+										<Size>
+											<AbsDimension x="24" y="24"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="$parentLine" relativePoint="RIGHT">
+												<Offset x="60" y="0"/>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												getglobal(this:GetName().."Text"):SetText(COMBATLOG_HIGHLIGHT_ABILITY);
+												this.tooltip = HIGHLIGHT_ABILITY_COMBATLOG_TOOLTIP;
+											</OnLoad>
+											<OnClick>
+												if ( this:GetChecked() ) then
+													CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting = true;
+												else
+													CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting = false;
+												end
+												CombatConfig_Colorize_Update();
+											</OnClick>
+										</Scripts>
+									</CheckButton>
+									<CheckButton name="$parentDamage" inherits="ChatConfigSmallCheckButtonTemplate">
+										<Size>
+											<AbsDimension x="24" y="24"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="CombatConfigColorsHighlightingLine" relativePoint="BOTTOMLEFT">
+												<Offset x="0" y="3"/>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												getglobal(this:GetName().."Text"):SetText(COMBATLOG_HIGHLIGHT_DAMAGE);
+												this.tooltip = HIGHLIGHT_DAMAGE_COMBATLOG_TOOLTIP;
+											</OnLoad>
+											<OnClick>
+												if ( this:GetChecked() ) then
+													CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting = true;
+												else
+													CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting = false;
+												end
+												CombatConfig_Colorize_Update();
+											</OnClick>
+										</Scripts>
+									</CheckButton>
+									<CheckButton name="$parentSchool" inherits="ChatConfigSmallCheckButtonTemplate">
+										<Size>
+											<AbsDimension x="24" y="24"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="$parentDamage" relativePoint="RIGHT">
+												<Offset x="60" y="0"/>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												getglobal(this:GetName().."Text"):SetText(COMBATLOG_HIGHLIGHT_SCHOOL);
+												this.tooltip = HIGHLIGHT_SCHOOL_COMBATLOG_TOOLTIP;
+											</OnLoad>
+											<OnClick>
+												if ( this:GetChecked() ) then
+													CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting = true;
+												else
+													CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting = false;
+												end
+												CombatConfig_Colorize_Update();
+											</OnClick>
+										</Scripts>
+									</CheckButton>
+								</Frames>
+								<Scripts>
+									<OnLoad>
+										this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+									</OnLoad>
+								</Scripts>
+							</Frame>
+							<Frame name="$parentColorize">
+								<Size x="10" y="10"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentUnitColors" relativePoint="TOPRIGHT">
+										<Offset x="50" y="0"/>
+									</Anchor>
+								</Anchors>
 								<Frames>
 									<Frame name="$parentUnitName">
 										<Size>
@@ -976,7 +1177,12 @@
 														this.tooltip = SPELL_COLOR_BY_SCHOOL_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														CHATCONFIG_SELECTED_FILTER_SETTINGS.abilitySchoolColoring = this:GetChecked();
+														if ( this:GetChecked() ) then
+															CHATCONFIG_SELECTED_FILTER_SETTINGS.abilitySchoolColoring = true;
+														else
+															CHATCONFIG_SELECTED_FILTER_SETTINGS.abilitySchoolColoring = false;
+														end
+														CombatConfig_Colorize_Update();
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1076,7 +1282,12 @@
 														this.tooltip = SPELL_COLOR_BY_SCHOOL_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														CHATCONFIG_SELECTED_FILTER_SETTINGS.amountSchoolColoring = this:GetChecked();
+														if ( this:GetChecked() ) then
+															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountSchoolColoring = true;
+														else
+															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountSchoolColoring = false;
+														end
+														CombatConfig_Colorize_Update();
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1155,7 +1366,12 @@
 														this.tooltip = SPELL_DAMAGE_SCHOOL_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameColoring = this:GetChecked();
+														if ( this:GetChecked() ) then
+															CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameColoring = true;
+														else
+															CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameColoring = false;
+														end
+														CombatConfig_Colorize_Update();
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1421,6 +1637,7 @@
 								<Scripts>
 									<OnLoad>
 										getglobal(this:GetName().."Text"):SetText(USE_FULL_TEXT_MODE);
+										this.tooltip = FULL_TEXT_COMBATLOG_TOOLTIP;
 									</OnLoad>
 									<OnClick>
 										if ( this:GetChecked() ) then
@@ -1517,7 +1734,7 @@
 										else
 											CHATCONFIG_SELECTED_FILTER.hasQuickButton = false;
 										end
-										Blizard_CombatLog_Update_QuickButtons();
+										Blizzard_CombatLog_Update_QuickButtons();
 										CombatConfig_Settings_Update();
 									</OnClick>
 								</Scripts>
@@ -1538,7 +1755,7 @@
 										else
 											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.solo = false;
 										end
-										Blizard_CombatLog_Update_QuickButtons();
+										Blizzard_CombatLog_Update_QuickButtons();
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1558,7 +1775,7 @@
 										else
 											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.party = false;
 										end
-										Blizard_CombatLog_Update_QuickButtons();
+										Blizzard_CombatLog_Update_QuickButtons();
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1578,7 +1795,7 @@
 										else
 											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.raid = false;
 										end
-										Blizard_CombatLog_Update_QuickButtons();
+										Blizzard_CombatLog_Update_QuickButtons();
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1590,7 +1807,7 @@
 							</OnLoad>
 							<OnEvent>
 								if ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
-									Blizard_CombatLog_Update_QuickButtons();
+									Blizzard_CombatLog_Update_QuickButtons();
 								end
 							</OnEvent>
 							<OnShow>
@@ -1624,7 +1841,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						StaticPopup_Show("CONFIRM_COMBAT_FILTER_DEFAULTS");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1669,6 +1886,12 @@
 			<OnLoad>
 				ChatConfigFrame_OnLoad();
 			</OnLoad>
+			<OnEvent>
+				ChatConfigFrame_OnEvent(event);
+			</OnEvent>
+			<OnShow>
+				CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = CopyTable(Blizzard_CombatLog_Filters);
+			</OnShow>
 		</Scripts>
 	</Frame>
 </Ui>

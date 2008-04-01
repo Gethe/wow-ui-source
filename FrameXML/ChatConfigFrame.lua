@@ -1,11 +1,13 @@
 COMBATLOG_FILTERS_TO_DISPLAY = 4;
 CHATCONFIG_FILTER_HEIGHT = 16;
 GRAY_CHECKED = 1;
-CHATCONFIG_SELECTED_FILTER = 0;
-CHATCONFIG_SELECTED_FILTER_FILTERS = 0;
-CHATCONFIG_SELECTED_FILTER_COLORS = 0;
-CHATCONFIG_SELECTED_FILTER_SETTINGS = 0;
-CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = 0;
+CHECKED_NO_SUBTYPES = 2;
+UNCHECKED_NO_SUBTYPES = 3;
+CHATCONFIG_SELECTED_FILTER = nil;
+CHATCONFIG_SELECTED_FILTER_FILTERS = nil;
+CHATCONFIG_SELECTED_FILTER_COLORS = nil;
+CHATCONFIG_SELECTED_FILTER_SETTINGS = nil;
+CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = nil;
 
 --Chat options
 CHAT_CONFIG_CHAT_RIGHT = {
@@ -76,6 +78,43 @@ CHAT_CONFIG_CHAT_LEFT = {
 	}
 };
 
+CHAT_CONFIG_CHAT_CREATURE_LEFT = {
+	[1] = {
+		text = SAY;
+		type = "MONSTER_SAY",
+		checked = function () return IsListeningForMessageType("MONSTER_SAY"); end;
+		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_SAY"); end;
+	},
+	[2] = {
+		text = EMOTE;
+		type = "MONSTER_EMOTE",
+		checked = function () return IsListeningForMessageType("MONSTER_EMOTE"); end;
+		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_EMOTE"); end;
+	},
+	[3] = {
+		text = YELL;
+		type = "MONSTER_YELL",
+		checked = function () return IsListeningForMessageType("MONSTER_YELL"); end;
+		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_YELL"); end;
+	},
+	[4] = {
+		text = WHISPER;
+		type = "MONSTER_WHISPER",
+		checked = function () return IsListeningForMessageType("MONSTER_WHISPER"); end;
+		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_WHISPER"); end;
+	},
+	[5] = {
+		type = "MONSTER_BOSS_EMOTE",
+		checked = function () return IsListeningForMessageType("MONSTER_BOSS_EMOTE"); end;
+		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_BOSS_EMOTE"); end;
+	},
+	[6] = {
+		type = "MONSTER_BOSS_WHISPER",
+		checked = function () return IsListeningForMessageType("MONSTER_BOSS_WHISPER"); end;
+		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_BOSS_WHISPER"); end;
+	}
+};
+
 CHAT_CONFIG_OTHER_COMBAT = {
 	[1] = {
 		type = "COMBAT_XP_GAIN",
@@ -128,17 +167,17 @@ CHAT_CONFIG_OTHER_COMBAT = {
 
 CHAT_CONFIG_OTHER_PVP = {
 	[1] = {
-		type = "BG_HORDE",
+		type = "BG_SYSTEM_HORDE",
 		checked = function () return IsListeningForMessageType("BG_HORDE"); end;
 		func = function (checked) ToggleChatMessageGroup(checked, "BG_HORDE"); end;
 	},
 	[2] = {
-		type = "BG_ALLIANCE",
+		type = "BG_SYSTEM_ALLIANCE",
 		checked = function () return IsListeningForMessageType("BG_ALLIANCE"); end;
 		func = function (checked) ToggleChatMessageGroup(checked, "BG_ALLIANCE"); end;
 	},
 	[3] = {
-		type = "BG_NEUTRAL",
+		type = "BG_SYSTEM_NEUTRAL",
 		checked = function () return IsListeningForMessageType("BG_NEUTRAL"); end;
 		func = function (checked) ToggleChatMessageGroup(checked, "BG_NEUTRAL"); end;
 	},
@@ -185,36 +224,49 @@ COMBAT_CONFIG_MESSAGESOURCES_BY = {
 	[1] = {
 		text = COMBATLOG_FILTER_STRING_ME,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_MINE); end;
+		disabled = function () return UsesGUID("SOURCE"); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_MINE); end;
 		tooltip = FILTER_BY_ME_COMBATLOG_TOOLTIP;
 	},
 	[2] = {
 		text = COMBATLOG_FILTER_STRING_MY_PET,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_MY_PET); end;
+		disabled = function () return UsesGUID("SOURCE"); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_MY_PET); end;
 		tooltip = FILTER_BY_PET_COMBATLOG_TOOLTIP;
 	},
 	[3] = {
 		text = COMBATLOG_FILTER_STRING_FRIENDLY_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_FRIENDLY_UNITS); end;
+		disabled = function () return UsesGUID("SOURCE"); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_FRIENDLY_UNITS); end;
 		tooltip = FILTER_BY_FRIENDS_COMBATLOG_TOOLTIP;
 	},
 	[4] = {
+		text = COMBATLOG_FILTER_STRING_HOSTILE_PLAYERS,
+		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_HOSTILE_PLAYERS); end;
+		disabled = function () return UsesGUID("SOURCE"); end;
+		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_HOSTILE_PLAYERS); end;
+		tooltip = FILTER_BY_HOSTILE_PLAYERS_COMBATLOG_TOOLTIP;
+	},
+	[5] = {
 		text = COMBATLOG_FILTER_STRING_HOSTILE_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_HOSTILE_UNITS); end;
+		disabled = function () return UsesGUID("SOURCE"); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_HOSTILE_UNITS); end;
 		tooltip = FILTER_BY_ENEMIES_COMBATLOG_TOOLTIP;
 	},
-	[5] = {
+	[6] = {
 		text = COMBATLOG_FILTER_STRING_NEUTRAL_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_NEUTRAL_UNITS); end;
+		disabled = function () return UsesGUID("SOURCE"); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_NEUTRAL_UNITS); end;
 		tooltip = FILTER_BY_NEUTRAL_COMBATLOG_TOOLTIP;
 	},
 	[6] = {
 		text = COMBATLOG_FILTER_STRING_UNKNOWN_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_UNKNOWN_UNITS); end;
+		disabled = function () return UsesGUID("SOURCE"); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_UNKNOWN_UNITS); end;
 		tooltip = FILTER_BY_UNKNOWN_COMBATLOG_TOOLTIP;
 	},
@@ -224,36 +276,49 @@ COMBAT_CONFIG_MESSAGESOURCES_TO = {
 	[1] = {
 		text = COMBATLOG_FILTER_STRING_ME,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_MINE); end;
+		disabled = function () return UsesGUID("DEST"); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_MINE); end;
 		tooltip = FILTER_TO_ME_COMBATLOG_TOOLTIP;
 	},
 	[2] = {
 		text = COMBATLOG_FILTER_STRING_MY_PET,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_MY_PET); end;
+		disabled = function () return UsesGUID("DEST"); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_MY_PET); end;
 		tooltip = FILTER_TO_PET_COMBATLOG_TOOLTIP;
 	},
 	[3] = {
 		text = COMBATLOG_FILTER_STRING_FRIENDLY_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_FRIENDLY_UNITS); end;
+		disabled = function () return UsesGUID("DEST"); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_FRIENDLY_UNITS); end;
 		tooltip = FILTER_TO_FRIENDS_COMBATLOG_TOOLTIP;
 	},
 	[4] = {
+		text = COMBATLOG_FILTER_STRING_HOSTILE_PLAYERS,
+		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_HOSTILE_PLAYERS); end;
+		disabled = function () return UsesGUID("DEST"); end;
+		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_HOSTILE_PLAYERS); end;
+		tooltip = FILTER_TO_HOSTILE_PLAYERS_COMBATLOG_TOOLTIP;
+	},
+	[5] = {
 		text = COMBATLOG_FILTER_STRING_HOSTILE_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_HOSTILE_UNITS); end;
+		disabled = function () return UsesGUID("DEST"); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_HOSTILE_UNITS); end;
 		tooltip = FILTER_TO_HOSTILE_COMBATLOG_TOOLTIP;
 	},
-	[5] = {
+	[6] = {
 		text = COMBATLOG_FILTER_STRING_NEUTRAL_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_NEUTRAL_UNITS); end;
+		disabled = function () return UsesGUID("DEST"); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_NEUTRAL_UNITS); end;
 		tooltip = FILTER_TO_NEUTRAL_COMBATLOG_TOOLTIP;
 	},
-	[6] = {
+	[7] = {
 		text = COMBATLOG_FILTER_STRING_UNKNOWN_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_UNKNOWN_UNITS); end;
+		disabled = function () return UsesGUID("DEST"); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_UNKNOWN_UNITS); end;
 		tooltip = FILTER_TO_UNKNOWN_COMBATLOG_TOOLTIP;
 	},
@@ -517,8 +582,8 @@ COMBAT_CONFIG_MESSAGETYPES_MISC = {
 	[4] = {
 		text = DEATHS,
 		type = {"UNIT_DIED", "UNIT_DESTROYED"};
-		checked = function () return HasMessageType("DAMAGE_SHIELD"); end;
-		func = function (checked) ToggleMessageType(checked, "RANGE_MISSED"); end;
+		checked = function () return HasMessageType("UNIT_DIED"); end;
+		func = function (checked) ToggleMessageType(checked, "UNIT_DIED"); end;
 		tooltip = DEATHS_COMBATLOG_TOOLTIP,
 	},
 };
@@ -540,90 +605,50 @@ COMBAT_CONFIG_UNIT_COLORS = {
 		type = "COMBATLOG_FILTER_HOSTILE_UNITS",
 	},
 	[5] = {
+		text = COMBATLOG_FILTER_STRING_HOSTILE_PLAYERS,
+		type = "COMBATLOG_FILTER_HOSTILE_PLAYERS",
+	},
+	[6] = {
 		text = COMBATLOG_FILTER_STRING_NEUTRAL_UNITS,
 		type = "COMBATLOG_FILTER_NEUTRAL_UNITS",
 	},
-	[6] = {
+	[7] = {
 		text = COMBATLOG_FILTER_STRING_UNKNOWN_UNITS,
 		type = "COMBATLOG_FILTER_UNKNOWN_UNITS",
 	},
 }
 
-COMBAT_CONFIG_HIGHLIGHTING = {
-	[1] = {
-		text = COMBATLOG_HIGHLIGHT_LINE,
-		checked = function () return CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting; end;
-		func = function (checked)
-			if ( checked ) then
-				CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting = true;
-			else
-				CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting = false;
-			end
-			CombatConfig_Colorize_Update();
-		end;
-		tooltip = HIGHLIGHT_LINE_COMBATLOG_TOOLTIP,
-	},
-	[2] = {
-		text = COMBATLOG_HIGHLIGHT_ABILITY,
-		checked = function () return CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting; end;
-		func = function (checked)
-			if ( checked ) then
-				CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting = true;
-			else
-				CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting = false;
-			end
-			CombatConfig_Colorize_Update();
-		end;
-		tooltip = HIGHLIGHT_ABILITY_COMBATLOG_TOOLTIP,
-	},
-	[3] = {
-		text = COMBATLOG_HIGHLIGHT_DAMAGE,
-		checked = function () return CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting; end;
-		func = function (checked)
-			if ( checked ) then
-				CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting = true;
-			else
-				CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting = false;
-			end
-			CombatConfig_Colorize_Update();
-		end;
-		tooltip = HIGHLIGHT_DAMAGE_COMBATLOG_TOOLTIP,
-	},
-	[4] = {
-		text = COMBATLOG_HIGHLIGHT_SCHOOL,
-		checked = function () return CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting; end;
-		func = function (checked)
-			if ( checked ) then
-				CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting = true;
-			else
-				CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting = false;
-			end
-			CombatConfig_Colorize_Update();
-		end;
-		tooltip = HIGHLIGHT_SCHOOL_COMBATLOG_TOOLTIP,
-	},
-}
-
 function ChatConfigFrame_OnLoad()
-	-- Chat Settings
-	ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigCheckBoxWithSwatchTemplate");
-	ChatConfig_CreateCheckboxes(ChatConfigChatSettingsRight, CHAT_CONFIG_CHAT_RIGHT, "ChatConfigCheckBoxWithSwatchTemplate");
-	ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckBoxWithSwatchTemplate", COMBAT);
-	ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckBoxWithSwatchTemplate", PVP);
-	ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsSystem, CHAT_CONFIG_OTHER_SYSTEM, "ChatConfigCheckBoxWithSwatchTemplate", OTHER);
+	this:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
 
-	-- CombatLog Settings
-	ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneBy, COMBAT_CONFIG_MESSAGESOURCES_BY, "ChatConfigCheckBoxTemplate", DONE_BY);
-	ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneTo, COMBAT_CONFIG_MESSAGESOURCES_TO, "ChatConfigCheckBoxTemplate", DONE_TO);
-	ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesLeft, COMBAT_CONFIG_MESSAGETYPES_LEFT, "ChatConfigCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
-	ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesRight, COMBAT_CONFIG_MESSAGETYPES_RIGHT, "ChatConfigCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
-	ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesMisc, COMBAT_CONFIG_MESSAGETYPES_MISC, "ChatConfigSmallCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
-	ChatConfig_CreateColorSwatches(CombatConfigColorsUnitColors, COMBAT_CONFIG_UNIT_COLORS, "ChatConfigSwatchTemplate", UNIT_COLORS);
-	ChatConfig_CreateCheckboxes(CombatConfigColorsHighlighting, COMBAT_CONFIG_HIGHLIGHTING, "ChatConfigCheckBoxTemplate", HIGHLIGHTING);
+function ChatConfigFrame_OnEvent(event)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		if ( COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
+			CombatConfig_SetCombatFiltersToDefault();
+			Blizzard_CombatLog_Filter_Version = COMBATLOG_FILTER_VERSION;
+		end
+		
+		-- Chat Settings
+		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigCheckBoxWithSwatchTemplate", PLAYER_MESSAGES);
+		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsRight, CHAT_CONFIG_CHAT_RIGHT, "ChatConfigCheckBoxWithSwatchTemplate");
+		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsCreatureLeft, CHAT_CONFIG_CHAT_CREATURE_LEFT, "ChatConfigCheckBoxWithSwatchTemplate", CREATURE_MESSAGES);
+		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckBoxWithSwatchTemplate", COMBAT);
+		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckBoxWithSwatchTemplate", PVP);
+		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsSystem, CHAT_CONFIG_OTHER_SYSTEM, "ChatConfigCheckBoxWithSwatchTemplate", OTHER);
 
-	-- Default selections
-	ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
-	ChatConfig_UpdateCombatTabs(1);
+		-- CombatLog Settings
+		ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneBy, COMBAT_CONFIG_MESSAGESOURCES_BY, "ChatConfigCheckBoxTemplate", DONE_BY);
+		ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneTo, COMBAT_CONFIG_MESSAGESOURCES_TO, "ChatConfigCheckBoxTemplate", DONE_TO);
+		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesLeft, COMBAT_CONFIG_MESSAGETYPES_LEFT, "ChatConfigCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
+		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesRight, COMBAT_CONFIG_MESSAGETYPES_RIGHT, "ChatConfigCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
+		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesMisc, COMBAT_CONFIG_MESSAGETYPES_MISC, "ChatConfigSmallCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
+		ChatConfig_CreateColorSwatches(CombatConfigColorsUnitColors, COMBAT_CONFIG_UNIT_COLORS, "ChatConfigSwatchTemplate", UNIT_COLORS);
+
+		-- Default selections
+		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
+		ChatConfig_UpdateCombatTabs(1);
+	end
 end
 
 function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, title)
@@ -671,7 +696,7 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 	end
 end
 
-function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplate, subCheckBoxTemplate)
+function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplate, subCheckBoxTemplate, columns, spacing)
 	local checkBoxNameString = frame:GetName().."CheckBox";
 	local checkBoxName, checkBox, subCheckBoxName, subCheckBox, subCheckBoxNameString;
 	local width, height;
@@ -680,6 +705,11 @@ function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplat
 	local text, subText;
 	local yOffset;
 	local numColumns = 2;
+	local columnIndex = 1;
+	local itemsPerColumn;
+	if ( columns ) then
+		itemsPerColumn = ceil(#checkBoxTable/columns);
+	end
 	frame.checkBoxTable = checkBoxTable;
 	for index, value in ipairs(checkBoxTable) do
 		--If no checkbox then create it
@@ -687,9 +717,20 @@ function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplat
 		if ( not getglobal(checkBoxName) ) then
 			checkBox = CreateFrame("CheckButton", checkBoxName, frame, checkBoxTemplate);
 			if ( index > 1 ) then
-				checkBox:SetPoint("TOPLEFT", checkBoxNameString..(index-1), "BOTTOMLEFT", 0, yOffset);
+				if ( columns ) then
+					if ( mod(index, columns) == 1 ) then
+						checkBox:SetPoint("TOPLEFT", checkBoxNameString..(index-columns), "BOTTOMLEFT", 0, yOffset);
+						count = count+1;
+					else
+						checkBox:SetPoint("TOPLEFT", checkBoxNameString..(index-1), "TOPRIGHT", spacing, 0);
+					end
+				else
+					checkBox:SetPoint("TOPLEFT", checkBoxNameString..(index-1), "BOTTOMLEFT", 0, yOffset);
+					count = count+1;
+				end
 			else
 				checkBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4);
+				count = count+1;
 			end
 			if ( value.text ) then
 				text = value.text;
@@ -733,7 +774,6 @@ function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplat
 				width = checkBox:GetWidth();
 				height = checkBox:GetHeight();
 			end
-			count = count+1;
 		end
 	end
 	--Set Parent frame dimensions
@@ -801,6 +841,19 @@ function ChatConfig_UpdateCheckboxes(frame)
 			else
 				checkBox:SetChecked(value.checked);	
 			end
+			if ( type(value.disabled) == "function" ) then
+				if( value.disabled() ) then
+					checkBox:Disable();
+				else
+					checkBox:Enable();
+				end
+			else
+				if ( value.disabled ) then
+					checkBox:Disable();
+				else
+					checkBox:Enable();
+				end
+			end
 			colorSwatch = getglobal(baseName.."ColorSwatch");
 			if ( colorSwatch ) then
 				getglobal(baseName.."ColorSwatchNormalTexture"):SetVertexColor(GetMessageTypeColor(value.type));
@@ -848,6 +901,19 @@ function ChatConfig_UpdateTieredCheckboxes(frame)
 			else
 				checkBox:SetChecked(checked);	
 			end
+			if ( type(value.disabled) == "function" ) then
+				if( value.disabled() ) then
+					checkBox:Disable();
+				else
+					checkBox:Enable();
+				end
+			else
+				if ( value.disabled ) then
+					checkBox:Disable();
+				else
+					checkBox:Enable();
+				end
+			end
 		end
 		if ( value.subTypes ) then
 			for k, v in ipairs(value.subTypes) do
@@ -857,6 +923,20 @@ function ChatConfig_UpdateTieredCheckboxes(frame)
 				else
 					subCheckBox:SetChecked(v.checked);	
 				end
+				if ( type(v.disabled) == "function" ) then
+					if( v.disabled() ) then
+						subCheckBox:Disable();
+					else
+						subCheckBox:Enable();
+					end
+				else
+					if ( v.disabled ) then
+						subCheckBox:Disable();
+					else
+						subCheckBox:Enable();
+					end
+				end
+				
 				if ( checked ) then
 					OptionsFrame_EnableCheckBox(subCheckBox, nil, nil, 1);
 				else
@@ -911,11 +991,17 @@ function CombatConfig_Colorize_Update()
 	end
 
 	-- Line Highlighting
-	local text, r, g, b = CombatLog_OnEvent("", CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, "Player", 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
+	CombatConfigColorsHighlightingLine:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting);
+	CombatConfigColorsHighlightingAbility:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting);
+	CombatConfigColorsHighlightingDamage:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting);
+	CombatConfigColorsHighlightingSchool:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting);
+
+	
+	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, "Player", 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
 	CombatConfigColorsExampleString1:SetVertexColor(r, g, b);
 	CombatConfigColorsExampleString1:SetText(text);
 
-	text, r, g, b = CombatLog_OnEvent("", CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, "Player", 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
+	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, "Player", 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
 	CombatConfigColorsExampleString2:SetVertexColor(r, g, b);
 	CombatConfigColorsExampleString2:SetText(text);
 end
@@ -935,12 +1021,13 @@ function CombatConfig_Formatting_Update()
 	CombatConfigFormattingUnitNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.unitBraces);
 	CombatConfigFormattingSpellNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.spellBraces);
 	CombatConfigFormattingItemNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.itemBraces);
+	CombatConfigFormattingFullText:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.fullText);
 
-	local text, r, g, b = CombatLog_OnEvent("", CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, "Player", 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
+	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0x0000000000000001, "Player", 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
 	CombatConfigFormattingExampleString1:SetVertexColor(r, g, b);
 	CombatConfigFormattingExampleString1:SetText(text);
 
-	text, r, g, b = CombatLog_OnEvent("", CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, "Player", 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
+	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, "Player", 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
 	CombatConfigFormattingExampleString2:SetVertexColor(r, g, b);
 	CombatConfigFormattingExampleString2:SetText(text);
 end
@@ -995,10 +1082,19 @@ function ToggleMessageSource(checked, filter)
 end
 
 function ToggleMessageDest(checked, filter)
-	if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[2].destFlags ) then
-		CHATCONFIG_SELECTED_FILTER_FILTERS[2].destFlags = {};
+	local destFlags;
+
+	if ( UsesGUID( "SOURCE" )  ) then 
+		if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags ) then
+			CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags = {};
+		end
+		destFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags;
+	else
+		if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[2].destFlags ) then
+			CHATCONFIG_SELECTED_FILTER_FILTERS[2].destFlags = {};
+		end
+			destFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[2].destFlags;
 	end
-	local destFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[2].destFlags;
 	if ( checked ) then
 		destFlags[filter] = true;
 	else
@@ -1006,15 +1102,22 @@ function ToggleMessageDest(checked, filter)
 	end
 end
 
+
+-- Create  parent is checked or unchecked if all children are unchecked
 function ToggleMessageTypeGroup(checked, frame, index)
 	local subTypes = getglobal(frame).checkBoxTable[index].subTypes;
 	local eventList = CHATCONFIG_SELECTED_FILTER_FILTERS[1].eventList;
 	if ( subTypes ) then
 		local state;
+		local numChecked = 0;
 		if ( checked ) then
 			for k, v in ipairs(subTypes) do
 				state = GetMessageTypeState(v.type);
+				if ( state == true or state == GRAY_CHECKED ) then
+					numChecked = numChecked+1;
+				end
 				if ( state == GRAY_CHECKED ) then
+					
 					if ( type(v.type) == "table" ) then
 						for k2, v2 in pairs(v.type) do
 							eventList[v2] = true;
@@ -1022,7 +1125,17 @@ function ToggleMessageTypeGroup(checked, frame, index)
 					else
 						eventList[v.type] = true;
 					end
-					
+				end
+			end
+			if ( numChecked == 0 ) then
+				for k, v in ipairs(subTypes) do
+					if ( type(v.type) == "table" ) then
+						for k2, v2 in pairs(v.type) do
+							eventList[v2] = CHECKED_NO_SUBTYPES;
+						end
+					else
+						eventList[v.type] = CHECKED_NO_SUBTYPES;
+					end
 				end
 			end
 		else
@@ -1035,6 +1148,18 @@ function ToggleMessageTypeGroup(checked, frame, index)
 						end
 					else
 						eventList[v.type] = GRAY_CHECKED;
+					end
+					numChecked = numChecked+1;
+				end
+			end
+			if ( numChecked == 0 ) then
+				for k, v in ipairs(subTypes) do
+					if ( type(v.type) == "table" ) then
+						for k2, v2 in pairs(v.type) do
+							eventList[v2] = UNCHECKED_NO_SUBTYPES;
+						end
+					else
+						eventList[v.type] = UNCHECKED_NO_SUBTYPES;
 					end
 				end
 			end
@@ -1068,10 +1193,12 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 	chatUnitColorSwatch = function() 
 			SetChatUnitColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetColorRGB());
 			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
+			CombatConfig_Colorize_Update();
 		end;
 	chatUnitColorCancel = function() 
 			SetChatUnitColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPicker_GetPreviousValues());
 			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
+			CombatConfig_Colorize_Update();
 		end;
 	spellColorSwatch = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell, ColorPickerFrame:GetColorRGB());
@@ -1312,7 +1439,7 @@ function ChatConfigFilter_OnClick(id)
 	CHATCONFIG_SELECTED_FILTER_FILTERS = CHATCONFIG_SELECTED_FILTER.filters;
 	CHATCONFIG_SELECTED_FILTER_COLORS = CHATCONFIG_SELECTED_FILTER.colors;
 	CHATCONFIG_SELECTED_FILTER_SETTINGS = CHATCONFIG_SELECTED_FILTER.settings;
-	CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = Blizzard_CombatLog_CopySetting(CHATCONFIG_SELECTED_FILTER);
+	
 	ChatConfig_UpdateFilterList();
 	ChatConfig_UpdateCombatSettings();
 end
@@ -1329,13 +1456,35 @@ function ChatConfig_UpdateCombatSettings()
 	CombatConfig_Colorize_Update();
 	CombatConfig_Formatting_Update();
 	CombatConfig_Settings_Update();
-	ChatConfig_UpdateCheckboxes(CombatConfigColorsHighlighting);
 
 	CombatConfigSettingsNameEditBox:SetText(CHATCONFIG_SELECTED_FILTER.name);
 end
 
+function UsesGUID(direction)
+	if ( direction == "SOURCE" and CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags ) then
+		for k,v in pairs( CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags ) do
+			if ( type(k) == "string" ) then
+				return true;
+			end
+		end
+	end
+	if ( direction == "DEST" and CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags ) then
+		for k,v in pairs( CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags ) do
+			if ( type(k) == "string" ) then
+				return true;
+			end
+		end
+	end
+	return false;
+end
+
 function IsMessageDoneBy(filter)
-	local sourceFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags;
+	local sourceFlags;
+	if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags ) then
+		CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags = {};
+	end
+	sourceFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags;
+
 	if ( not sourceFlags ) then
 		return true;
 	end
@@ -1343,7 +1492,19 @@ function IsMessageDoneBy(filter)
 end
 
 function IsMessageDoneTo(filter)
-	local destFlags = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter].filters[2].destFlags;
+	local destFlags;
+
+	if ( UsesGUID( "SOURCE" ) or UsesGUID("DEST") ) then 
+		if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags ) then
+			CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags = {};
+		end
+		destFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags;
+	else
+
+		destFlags = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter].filters[2].destFlags;
+	end
+
+
 	if ( not destFlags ) then
 		return true;
 	end
@@ -1354,13 +1515,22 @@ function HasMessageTypeGroup(checkBoxList, index)
 	local subTypes = getglobal(checkBoxList)[index].subTypes;
 	if ( subTypes ) then
 		local state;
+		local numChecked = 0;
 		for k, v in ipairs(subTypes) do
 			state = GetMessageTypeState(v.type);
-			if ( state == GRAY_CHECKED ) then
+			if ( state == GRAY_CHECKED or state == UNCHECKED_NO_SUBTYPES ) then
 				return false;
+			elseif ( state == CHECKED_NO_SUBTYPES ) then
+				return true;
+			elseif ( state ) then
+				numChecked = numChecked + 1;
 			end
 		end
-		return true;
+		if ( numChecked > 0 ) then
+			return true;
+		else
+			return false;
+		end
 	end
 	return false;
 end
@@ -1368,7 +1538,9 @@ end
 function HasMessageType(messageType)
 	-- Only look at the first messageType passed in since we're treating them as a unit
 	local isListening = GetMessageTypeState(messageType);
-	if ( isListening ) then
+	if ( isListening == CHECKED_NO_SUBTYPES or isListening == UNCHECKED_NO_SUBTYPES ) then
+		return false;
+	elseif ( isListening ) then
 		return true;
 	else
 		return false;
@@ -1394,7 +1566,7 @@ function ChatConfig_UpdateCombatTabs(selectedTabID)
 			text:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			frame:Show();
 		else
-			tab:SetAlpha(0.5);
+			tab:SetAlpha(0.75);
 			text:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 			frame:Hide();
 		end
@@ -1414,8 +1586,13 @@ function ChatConfig_HideCombatTabs()
 	end
 end
 
-function CombatConfig_CreateCombatFilter(name)
-	local newFilter = Blizzard_CombatLog_CopySetting(DEFAULT_COMBATLOG_FILTER_TEMPLATE);
+function CombatConfig_CreateCombatFilter(name, filter)
+	local newFilter;
+	if ( not filter ) then
+		newFilter = CopyTable(DEFAULT_COMBATLOG_FILTER_TEMPLATE);
+	else
+		newFilter = CopyTable(filter);
+	end
 	if ( not name or name == "" ) then
 		name = format(DEFAULT_COMBATLOG_FILTER_NAME, #Blizzard_CombatLog_Filters.filters);
 	end
@@ -1435,20 +1612,53 @@ function CombatConfig_DeleteCurrentCombatFilter()
 	ChatConfigFilter_OnClick(1);
 end
 
-function ChatConfigCancel_OnClick()
-	-- Copy the old settings back in place
-	if ( CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS == 0 ) then
-		HideUIPanel(ChatConfigFrame);
+function CombatConfig_SetCombatFiltersToDefault()
+	Blizzard_CombatLog_Filters = CopyTable(Blizzard_CombatLog_Filter_Defaults);	
+end
+
+function ChatConfig_MoveFilterUp()
+	local selectedFilter = ChatConfigCombatSettingsFilters.selectedFilter;
+	if ( selectedFilter == 1 ) then
 		return;
 	end
-	Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter] = Blizzard_CombatLog_CopySetting(CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS);
-	-- Update everything
-	--ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
-	--ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsRight);
-	--ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
-	--ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCombat);
-	--ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
-	--ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
-	ChatConfigFilter_OnClick(ChatConfigCombatSettingsFilters.selectedFilter-FauxScrollFrame_GetOffset(ChatConfigCombatSettingsFiltersScrollFrame));
+	local newIndex = selectedFilter-1;
+	tinsert(Blizzard_CombatLog_Filters.filters, newIndex, CHATCONFIG_SELECTED_FILTER);
+	tremove(Blizzard_CombatLog_Filters.filters, selectedFilter+1);
+	if ( selectedFilter == Blizzard_CombatLog_Filters.currentFilter  ) then
+		Blizzard_CombatLog_Filters.currentFilter = newIndex;
+	elseif ( newIndex == Blizzard_CombatLog_Filters.currentFilter ) then
+		Blizzard_CombatLog_Filters.currentFilter = Blizzard_CombatLog_Filters.currentFilter+1;
+	end
+	Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[Blizzard_CombatLog_Filters.currentFilter];
+	ChatConfigFilter_OnClick(newIndex);
+end
+
+function ChatConfig_MoveFilterDown()
+	local selectedFilter = ChatConfigCombatSettingsFilters.selectedFilter;
+	if ( selectedFilter >= #Blizzard_CombatLog_Filters.filters ) then
+		selectedFilter = #Blizzard_CombatLog_Filters.filters;
+		return;
+	end
+	local newIndex = selectedFilter+2;
+	tinsert(Blizzard_CombatLog_Filters.filters, newIndex, CHATCONFIG_SELECTED_FILTER);
+	tremove(Blizzard_CombatLog_Filters.filters, selectedFilter);
+	if ( selectedFilter == Blizzard_CombatLog_Filters.currentFilter  ) then
+		Blizzard_CombatLog_Filters.currentFilter = selectedFilter+1;
+	elseif ( selectedFilter+1 == Blizzard_CombatLog_Filters.currentFilter ) then
+		Blizzard_CombatLog_Filters.currentFilter = selectedFilter;
+	end
+	Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[Blizzard_CombatLog_Filters.currentFilter];
+	ChatConfigFilter_OnClick(selectedFilter+1);
+end
+
+function ChatConfigCancel_OnClick()
+	-- Copy the old settings back in place
+	Blizzard_CombatLog_Filters = CopyTable(CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS);
+	
+	CHATCONFIG_SELECTED_FILTER = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter];
+	CHATCONFIG_SELECTED_FILTER_FILTERS = CHATCONFIG_SELECTED_FILTER.filters;
+	CHATCONFIG_SELECTED_FILTER_COLORS = CHATCONFIG_SELECTED_FILTER.colors;
+	CHATCONFIG_SELECTED_FILTER_SETTINGS = CHATCONFIG_SELECTED_FILTER.settings;
+	
 	HideUIPanel(ChatConfigFrame);
 end

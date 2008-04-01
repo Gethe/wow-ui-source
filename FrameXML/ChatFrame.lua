@@ -8,6 +8,11 @@ NUM_REMEMBERED_TELLS = 10;
 
 local showChatIcons = false;
 
+-- Table for event indexed chatFilters.
+-- Format ["CHAT_MSG_SYSTEM"] = { function1, function2, function3 }
+-- filter, msg = function1 (msg); if filter then return true, msg; end
+local chatFilters = {};
+
 -- These hash tables are to improve performance of common lookups
 -- if you change what these tables point to (ie slash command, emote, chat)
 -- then you need to invalidate the entry in the hash table
@@ -121,7 +126,7 @@ ChatTypeGroup["GUILD"] = {
 ChatTypeGroup["GUILD_OFFICER"] = {
 	"CHAT_MSG_OFFICER",
 };
-ChatTypeGroup["MONSTER_SAYS"] = {
+ChatTypeGroup["MONSTER_SAY"] = {
 	"CHAT_MSG_MONSTER_SAY",
 };
 ChatTypeGroup["MONSTER_YELL"] = {
@@ -2028,6 +2033,16 @@ function ChatFrame_MessageEventHandler(event)
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
 
+		local filter = false;
+		if ( chatFilters[event] ) then
+			for _, filterFunc in next, chatFilters[event] do
+				filter, arg1 = filterFunc(arg1), arg1;
+				if ( filter ) then
+					return true;
+				end
+			end
+		end
+		
 		local channelLength = strlen(arg4);
 		if ( (strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER")) ) then
 			if ( arg1 == "WRONG_PASSWORD" ) then
@@ -2174,6 +2189,45 @@ function ChatFrame_MessageEventHandler(event)
 
 		return true;
 	end
+end
+
+function ChatFrame_AddMessageEventFilter (event, filter)
+	assert(event and filter);
+	
+	if ( chatFilters[event] ) then
+		-- Only allow a filter to be added once
+		for index, filterFunc in next, chatFilters[event] do
+			if ( filterFunc == filter ) then
+				return;
+			end
+		end
+	else
+		chatFilters[event] = {};
+	end
+	
+	tinsert(chatFilters[event], filter);
+end
+
+function ChatFrame_RemoveMessageEventFilter (event, filter)
+	assert(event and filter);
+	
+	if ( chatFilters[event] ) then
+		for index, filterFunc in next, chatFilters[event] do
+			if ( filterFunc == filter ) then
+				tremove(chatFilters[event], index);
+			end
+		end
+		
+		if ( #chatFilters[event] == 0 ) then
+			chatFilters[event] = nil;
+		end
+	end
+end
+
+function ChatFrame_GetMessageEventFilters (event)
+	assert(event);
+	
+	return chatFilters[event];
 end
 
 function ChatFrame_OnUpdate(elapsedSec)

@@ -2179,9 +2179,9 @@
 								<AbsDimension x="0" y="16"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM">
+								<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="LEFT">
 									<Offset>
-										<AbsDimension x="-122" y="181"/>
+										<AbsDimension x="75" y="-75"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

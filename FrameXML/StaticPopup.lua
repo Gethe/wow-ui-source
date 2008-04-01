@@ -21,7 +21,7 @@ StaticPopupDialogs["CONFIRM_PURCHASE_TOKEN_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		BuyMerchantItem(MerchantFrame.itemIndex);
+		BuyMerchantItem(MerchantFrame.itemIndex, MerchantFrame.count);
 	end,
 	OnCancel = function()
 	
@@ -2035,6 +2035,7 @@ StaticPopupDialogs["CREATE_COMBAT_FILTER"] = {
 	button2 = CANCEL,
 	whileDead = 1,
 	hasEditBox = 1,
+	maxLetters = 32,
 	OnAccept = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		CombatConfig_CreateCombatFilter(editBox:GetText());
@@ -2044,6 +2045,30 @@ StaticPopupDialogs["CREATE_COMBAT_FILTER"] = {
 	EditBoxOnEnterPressed = function(data)
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		CombatConfig_CreateCombatFilter(editBox:GetText());
+		editBox:SetText("");
+		this:GetParent():Hide();
+	end,
+	EditBoxOnEscapePressed = function ()
+		this:GetParent():Hide();
+	end,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["COPY_COMBAT_FILTER"] = {
+	text = ENTER_FILTER_NAME,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	whileDead = 1,
+	hasEditBox = 1,
+	maxLetters = 32,
+	OnAccept = function()
+		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+		CombatConfig_CreateCombatFilter(editBox:GetText(), this:GetParent().data);
+		editBox:SetText("");
+	end,
+	timeout = 0,
+	EditBoxOnEnterPressed = function()
+		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+		CombatConfig_CreateCombatFilter(editBox:GetText(), this:GetParent().data);
 		editBox:SetText("");
 		this:GetParent():Hide();
 	end,
@@ -2065,7 +2090,18 @@ StaticPopupDialogs["CONFIRM_COMBAT_FILTER_DELETE"] = {
 	hideOnEscape = 1
 };
 
-
+StaticPopupDialogs["CONFIRM_COMBAT_FILTER_DEFAULTS"] = {
+	text = CONFIRM_COMBAT_FILTER_DEFAULTS,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function()
+		CombatConfig_SetCombatFiltersToDefault();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	hideOnEscape = 1
+};
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];

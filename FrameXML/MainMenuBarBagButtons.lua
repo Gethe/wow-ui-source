@@ -19,7 +19,6 @@ function BagSlotButton_OnClick()
 	local hadItem = PutItemInBag(id);
 	if ( not hadItem ) then
 		ToggleBag(translatedID);
-		PlaySound("BAGMENUBUTTONPRESS");
 	end
 	BagSlotButton_UpdateChecked();
 end
@@ -35,7 +34,6 @@ end
 
 function BagSlotButton_OnDrag()
 	PickupBagFromSlot(this:GetID());
-	PlaySound("BAGMENUBUTTONPRESS");
 	BagSlotButton_UpdateChecked();
 end
 

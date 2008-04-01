@@ -410,11 +410,6 @@ function FCF_Resize(anchorPoint)
 		return;
 	end
 	chatFrame.resizing = 1;
-	--[[
-	if ( chatFrame == DEFAULT_CHAT_FRAME ) then
-		DEFAULT_CHAT_FRAME.resizing = 1;
-	end
-	]]
 	this:GetParent():StartSizing(anchorPoint);
 end
 
@@ -687,7 +682,7 @@ function FCF_OnUpdate(elapsed)
 		if ( FCF_IsValidChatFrame(chatFrame) ) then
 			--Tab height
 			local yOffset = 45;
-			if ( IsCombatLog(chatFrame) ) then
+			if ( IsCombatLog(chatFrame) and IsAddOnLoaded("Blizzard_CombatLog") ) then
 				yOffset = yOffset + CombatLogQuickButtonFrame:GetHeight();				
 			end
 			if ( (MouseIsOver(chatFrame, yOffset, -10, -5, 5) or chatFrame.resizing) ) then
@@ -831,6 +826,9 @@ function FCF_OnUpdate(elapsed)
 	if ( DEFAULT_CHAT_FRAME.resizing ) then
 		FCF_DockUpdate();
 	end
+	if ( ChatFrame2.resizing ) then
+		Blizzard_CombatLog_Update_QuickButtons();
+	end
 end
 
 function FCF_StopDragging(chatFrame)
@@ -924,14 +922,10 @@ function FCF_DockUpdate()
 		-- If not the initial chatframe then anchor the frame to the base chatframe
 		name = value:GetName();
 		if ( index ~= 1 ) then
-			if ( IsCombatLog(value) and CombatLog_UpdateHeight ) then
-				CombatLog_UpdateHeight(1);
-			else
-				value:ClearAllPoints();
-				value:SetPoint("TOPLEFT", DEFAULT_CHAT_FRAME, "TOPLEFT", 0, 0);
-				value:SetPoint("BOTTOMLEFT", DEFAULT_CHAT_FRAME, "BOTTOMLEFT", 0, 0);
-				value:SetPoint("BOTTOMRIGHT", DEFAULT_CHAT_FRAME, "BOTTOMRIGHT", 0, 0);
-			end
+			value:ClearAllPoints();
+			value:SetPoint("TOPLEFT", DEFAULT_CHAT_FRAME, "TOPLEFT", 0, 0);
+			value:SetPoint("BOTTOMLEFT", DEFAULT_CHAT_FRAME, "BOTTOMLEFT", 0, 0);
+			value:SetPoint("BOTTOMRIGHT", DEFAULT_CHAT_FRAME, "BOTTOMRIGHT", 0, 0);
 		end
 		
 		-- Select or deselect the frame
@@ -1395,7 +1389,7 @@ function FCF_ResetChatWindows()
 end
 
 function IsCombatLog(frame)
-	if ( frame == ChatFrame2 ) then
+	if ( frame == ChatFrame2 and IsAddOnLoaded("Blizzard_CombatLog") ) then
 		return true;
 	else
 		return false;
