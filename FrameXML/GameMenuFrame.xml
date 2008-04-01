@@ -87,6 +87,7 @@
 					<OnClick>
 						PlaySound("igMainMenuOption");
 						ShowUIPanel(InterfaceOptionsFrame);
+						InterfaceOptionsFrame.lastFrame = GameMenuFrame;
 					</OnClick>
 				</Scripts>
 			</Button>

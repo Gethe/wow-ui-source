@@ -282,7 +282,11 @@
 			<OnShow>
 				UnitFrame_Update();
 				PetFrame_Update();
+				TotemFrame_Update();
 			</OnShow>
+			<OnHide>
+				TotemFrame_Update();
+			</OnHide>
 			<OnUpdate>
 				local elapsed = arg1;
 				PetFrame_OnUpdate(elapsed);

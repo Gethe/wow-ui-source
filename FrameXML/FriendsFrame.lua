@@ -17,6 +17,7 @@ MAX_GUILDBANK_TABS = 6;
 MAX_GOLD_WITHDRAW = 1000;
 GUILDEVENT_TRANSACTION_HEIGHT = 13;
 MAX_EVENTS_SHOWN = 25;
+MAX_GOLD_WITHDRAW_DIGITS = 9;
 PENDING_GUILDBANK_PERMISSIONS = {};
 
 WHOFRAME_DROPDOWN_LIST = {
@@ -168,6 +169,7 @@ end
 
 function FriendsList_Update()
 	local numFriends = GetNumFriends();
+	debugprint("updating!")
 	local nameLocationText, infoText, noteText, noteHiddenText;
 	local name, level, class, area, connected, status, note;
 	local friendButton;
@@ -204,7 +206,7 @@ function FriendsList_Update()
 		noteHiddenText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteHiddenText");
 		noteIcon = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteIcon")
 		if ( not name ) then
-			name = UNKNOWN
+			name = UNKNOWN;
 		end
 		if ( connected ) then
 			nameLocationText:SetFormattedText(FRIENDS_LIST_TEMPLATE, name, area, status);
@@ -226,13 +228,15 @@ function FriendsList_Update()
 				noteText:SetFormattedText(FRIENDS_LIST_NOTE_OFFLINE_TEMPLATE, note);
 			end
 			noteHiddenText:SetText(note);
-
+			debugprint("Resetting width!");
 			local width = noteHiddenText:GetWidth() + infoText:GetWidth();
+			local friendButtonWidth = friendButton:GetWidth();
 			if ( FriendsFrameFriendsScrollFrameScrollBarTop:IsVisible() ) then
-				width = width + FriendsFrameFriendsScrollFrameScrollBarTop:GetWidth();
+				friendButtonWidth = friendButtonWidth - FriendsFrameFriendsScrollFrameScrollBarTop:GetWidth();
+			debugprint("Scrollbar visible!");
 			end
-			if ( width > friendButton:GetWidth() ) then
-				width = friendButton:GetWidth() - infoText:GetWidth();
+			if ( width > friendButtonWidth ) then
+				width = friendButtonWidth - infoText:GetWidth();
 			end
 			noteText:SetWidth(width);
 			noteText:SetHeight(14);
@@ -1001,6 +1005,11 @@ function GuildControlPopupFrame_OnShow()
 end
 
 function GuildControlPopupFrame_OnEvent (self, event, ...)
+	if ( not IsGuildLeader(UnitName("player")) ) then
+		GuildControlPopupFrame:Hide();
+		return;
+	end
+	
 	local rank
 	for i = 1, GuildControlGetNumRanks() do
 		rank = GuildControlGetRankName(i);
@@ -1051,6 +1060,7 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions)
 		GuildControlWithdrawGoldText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		GuildControlWithdrawGoldAmountText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		GuildControlWithdrawGoldEditBox:SetNumeric(nil);
+		GuildControlWithdrawGoldEditBox:SetMaxLetters(0);
 		GuildControlWithdrawGoldEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		GuildControlWithdrawGoldEditBox:SetText(UNLIMITED);
 		GuildControlWithdrawGoldEditBox:ClearFocus();
@@ -1080,6 +1090,7 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions)
 		GuildControlWithdrawGoldText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		GuildControlWithdrawGoldAmountText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		GuildControlWithdrawGoldEditBox:SetNumeric(1);
+		GuildControlWithdrawGoldEditBox:SetMaxLetters(MAX_GOLD_WITHDRAW_DIGITS);
 		GuildControlWithdrawGoldEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		GuildControlWithdrawGoldEditBoxMask:Hide();
 		OptionsFrame_EnableCheckBox(GuildControlPopupFrameCheckbox15);
@@ -1181,7 +1192,7 @@ end
 
 function GuildControlPopupAcceptButton_OnClick()
 	local amount = GuildControlWithdrawGoldEditBox:GetText();
-	if(amount and amount ~= "" and amount ~= UNLIMITED and tonumber(amount) > 0) then
+	if(amount and amount ~= "" and amount ~= UNLIMITED and tonumber(amount) and tonumber(amount) > 0) then
 		SetGuildBankWithdrawLimit(amount);
 	else
 		SetGuildBankWithdrawLimit(0);

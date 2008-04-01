@@ -1849,7 +1849,7 @@ function UpdateUIPanelPositions(currentFrame)
 end
 
 function IsOptionFrameOpen()
-	if ( GameMenuFrame:IsShown() or OptionsFrame:IsShown() or InterfaceOptionsFrame:IsShown() or AudioOptionsFrame:IsShown() or (KeyBindingFrame and KeyBindingFrame:IsShown()) ) then
+	if ( GameMenuFrame:IsShown() or OptionsFrame:IsShown() or AudioOptionsFrame:IsShown() or (KeyBindingFrame and KeyBindingFrame:IsShown()) ) then
 		return 1;
 	else
 		return nil;

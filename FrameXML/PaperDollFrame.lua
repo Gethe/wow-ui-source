@@ -510,7 +510,7 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 	local colorNeg = "|cffff2020";
 
 	-- epsilon check
-	if ( totalBonus < 0.1 ) then
+	if ( totalBonus < 0.1 and totalBonus > -0.1 ) then
 		totalBonus = 0.0;
 	end
 

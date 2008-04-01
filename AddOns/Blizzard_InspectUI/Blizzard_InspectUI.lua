@@ -82,12 +82,6 @@ function InspectFrame_OnHide()
 	ClearInspectPlayer();
 end
 
-function InspectFrame_OnUpdate()
-	if ( not CanInspect(this.unit) ) then
-		HideUIPanel(InspectFrame);
-	end
-end
-
 function InspectSwitchTabs(newID)
 	local newFrame = getglobal(INSPECTFRAME_SUBFRAMES[newID]);
 	local oldFrame = getglobal(INSPECTFRAME_SUBFRAMES[PanelTemplates_GetSelectedTab(InspectFrame)]);
@@ -109,7 +103,9 @@ end
 function InspectFrame_UpdateTalentTab()
 	if ( not InspectFrame.unit ) then
 		return;
-	elseif ( CanInspect(InspectFrame.unit, true) and ( UnitLevel(InspectFrame.unit) or 0 ) < 10 ) then
+	end
+	local level = UnitLevel(InspectFrame.unit);
+	if ( level > 0 and level < 10 ) then
 		PanelTemplates_DisableTab(InspectFrame, 3);
 		if ( PanelTemplates_GetSelectedTab(InspectFrame) == 3 ) then
 			InspectSwitchTabs(1);

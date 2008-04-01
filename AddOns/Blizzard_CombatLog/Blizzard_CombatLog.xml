@@ -2,6 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="localization.lua"/>
 	<Script file="Blizzard_CombatLog.lua"/>
+
 	<Frame name="CombatLogDropDown" inherits="UIDropDownMenuTemplate"/>
 	<Button name="CombatLogQuickButtonTemplate" virtual="true">
 		<Size>
@@ -15,27 +16,26 @@
 		<NormalFont inherits="GameFontDisable"/>
 		<HighlightFont inherits="GameFontHighlight"/>
 	</Button>
-	<Frame name="CombatLogQuickButtonFrame" parent="ChatFrame2" hidden="true">
+	<Frame name="CombatLogQuickButtonFrame_Custom" parent="ChatFrame2">
 		<Size>
 			<AbsDimension x="65" y="24"/>
 		</Size>
-		
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentTexture" setAllPoints="true">
-					<Color r="0.0" g="0.0" b="0.0" a="0.3"/>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Anchors>
-			<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER">
+			<Anchor point="CENTER" relativeTo="ChatFrame2" relativePoint="CENTER">
 				<Offset>
 					<AbsDimension x="0" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTexture" setAllPoints="true">
+					<Color r="0.0" g="0.0" b="0.0" a="0.7"/>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
-			<StatusBar name="$parentProgressBar" drawLayer="LOW" visible="false">
+			<StatusBar name="$parentProgressBar" hidden="true">
 				<Size>
 					<AbsDimension x="195" y="4"/>
 				</Size>
@@ -57,28 +57,14 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				Blizzard_CombatLog_QuickButtonFrame_OnLoad();
+				 Blizzard_CombatLog_QuickButtonFrame_OnLoad();
 			</OnLoad>
+			<!-- XINHUAN: Add in the missing OnEvent handler
+				The function is declared in the lua file, but isn't called from anywhere!!
+			-->
 			<OnEvent>
-				Blizzard_CombatLog_QuickButtonFrame_OnEvent();
+				Blizzard_CombatLog_QuickButtonFrame_OnEvent(event)
 			</OnEvent>
-		</Scripts>
-	</Frame>
-	<Frame name="CombatLogUpdateFrame" parent="UIParent" visible="true">
-		<Size>
-			<AbsDimension x="1" y="1"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnUpdate>
-				Blizzard_CombatLog_RefilterUpdate()
-			</OnUpdate>
 		</Scripts>
 	</Frame>
 </Ui>

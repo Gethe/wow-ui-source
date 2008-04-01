@@ -119,6 +119,7 @@ MoneyTypeInfo["GUILDBANK"] = {
 	end,
 
 	collapse = 1,
+	showSmallerCoins = "Backpack",
 };
 
 MoneyTypeInfo["GUILDBANKWITHDRAW"] = {

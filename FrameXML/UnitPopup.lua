@@ -445,7 +445,7 @@ function UnitPopup_HideButtons()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "INSPECT" ) then
-			if ( canCoop == 0 ) then
+			if ( not dropdownMenu.unit or UnitCanAttack("player", dropdownMenu.unit) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "IGNORE" ) then

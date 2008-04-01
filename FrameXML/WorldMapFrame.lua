@@ -681,10 +681,6 @@ function MapGroupDropDown_OnClick(unit)
 	ReportPlayerIsPVPAFK(unit);
 end
 
-function MapGroupDropDown_Hide(unit)
-	ToggleDropDownMenu(1, nil, MapGroupDropDown, this:GetName(), 0, -5);
-end
-
 function MapGroupDropDown_Initialize()
 	info = UIDropDownMenu_CreateInfo();
 	info.text = PVP_REPORT_AFK;
@@ -711,7 +707,6 @@ function MapGroupDropDown_Initialize()
 
 	info = UIDropDownMenu_CreateInfo();
 	info.text = CANCEL;
-	info.func = MapGroupDropDown_Hide;
 	UIDropDownMenu_AddButton(info);
 end
 

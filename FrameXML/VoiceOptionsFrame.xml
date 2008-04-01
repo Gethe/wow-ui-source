@@ -67,7 +67,7 @@
 			</CheckButton>
 			<Frame name="VoiceOptionsFrameDisabledMessage" hidden="true">
 				<Size>
-					<AbsDimension y="24"/>
+					<AbsDimension x="0" y="24"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -83,7 +83,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentText" inherits="GameFontNormal" text="VOICECHAT_DISABLED" justifyh="MIDDLE" setAllPoints="true"/>
+						<FontString name="$parentText" inherits="GameFontNormal" text="VOICECHAT_DISABLED" setAllPoints="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>

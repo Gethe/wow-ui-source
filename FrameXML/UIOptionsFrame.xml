@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\FrameXML\UI.xsd">
 	<Script file="UIOptionsFrame.lua"/>
 	<Button name="OptionsFrameTabButtonTemplate" virtual="true">
         <Size>
@@ -104,8 +104,7 @@
 		</HighlightTexture>
     </Button>
 	
-	<Frame name="InterfaceOptionsListTemplate" virtual="true" enableMouseWheel="true">
-		
+	<Frame name="InterfaceOptionsListTemplate" virtual="true">
 		<Layers>
 		<!--
 			<Layer level="ARTWORK">
@@ -485,7 +484,7 @@
 					</Anchor>
 					<Anchor point="RIGHT">
 						<Offset>
-							<AbsDimension x="-22"/>
+							<AbsDimension x="-22" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

@@ -100,7 +100,7 @@ function Minimap_OnUpdate(elapsed)
 	elseif ( MiniMapPing.fadeOut ) then
 		MiniMapPing.fadeOutTimer = MiniMapPing.fadeOutTimer - elapsed;
 		if ( MiniMapPing.fadeOutTimer > 0 ) then
-			MiniMapPing:SetAlpha(255 * (MiniMapPing.fadeOutTimer/MINIMAPPING_FADE_TIMER));
+			MiniMapPing:SetAlpha((255 * (MiniMapPing.fadeOutTimer/MINIMAPPING_FADE_TIMER)) / 255);
 			Minimap_SetPing(Minimap:GetPingPosition());
 		else
 			MiniMapPing.fadeOut = nil;
@@ -115,7 +115,7 @@ function Minimap_SetPing(x, y, playSound)
 	
 	if ( sqrt(x * x + y * y) < (Minimap:GetWidth() / 2) ) then
 		MiniMapPing:SetPoint("CENTER", "Minimap", "CENTER", x, y);
-		MiniMapPing:SetAlpha(255);
+		MiniMapPing:SetAlpha(1);
 		MiniMapPing:Show();
 		if ( playSound ) then
 			PlaySound("MapPing");

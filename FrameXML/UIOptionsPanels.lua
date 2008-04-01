@@ -361,7 +361,6 @@ function InterfaceOptions_UpdateMultiActionBars ()
 	
 	SetActionBarToggles(SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4, ALWAYS_SHOW_MULTIBARS);
 	MultiActionBar_Update();
-	MultiActionBar_UpdateGridVisibility();
 	UIParent_ManageFramePositions();
 end
 
@@ -765,7 +764,7 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createIn
 		local value = select(i, ...);
 		if (value) then
 			createInfo.text = getglobal(strupper(value));
-			createInfo.func = InterfaceOptionsLanguagesPanelDropDown_OnClick;
+			createInfo.func = InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick;
 			createInfo.value = value;
 			if ( createInfo.value == selectedValue ) then
 				createInfo.checked = 1;

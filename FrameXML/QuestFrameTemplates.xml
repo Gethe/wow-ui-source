@@ -224,7 +224,7 @@
 		<Size x="500" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentHonorReceiveText" inherits="QuestFont" text="BONUS_HONOR" textjustifyH="LEFT">
+				<FontString name="$parentHonorReceiveText" inherits="QuestFont" text="BONUS_HONOR">
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>

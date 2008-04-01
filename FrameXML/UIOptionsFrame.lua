@@ -92,7 +92,12 @@ end
 function InterfaceOptionsFrame_OnHide ()
 	--Yay for playing sounds
 	PlaySound("gsTitleOptionExit");
-	ShowUIPanel(GameMenuFrame);
+	
+	if ( InterfaceOptionsFrame.lastFrame ) then
+		ShowUIPanel(InterfaceOptionsFrame.lastFrame);
+		InterfaceOptionsFrame.lastFrame = nil;
+	end
+	
 	UpdateMicroButtons();
 end
 

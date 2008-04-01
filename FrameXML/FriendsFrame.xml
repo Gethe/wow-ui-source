@@ -3174,7 +3174,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<EditBox name="GuildControlWithdrawGoldEditBox" autoFocus="false" historyLines="1" letters="9" inherits="InputBoxTemplate" numeric="true">
+									<EditBox name="GuildControlWithdrawGoldEditBox" autoFocus="false" historyLines="1" inherits="InputBoxTemplate" numeric="true">
 										<Size>
 											<AbsDimension x="70" y="32"/>
 										</Size>

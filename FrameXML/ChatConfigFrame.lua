@@ -183,37 +183,37 @@ CHAT_CONFIG_CHANNEL_LIST = {};
 -- Combat Options
 COMBAT_CONFIG_MESSAGESOURCES_BY = {
 	[1] = {
-		text = COMBATLOG_FILTER_ME,
+		text = COMBATLOG_FILTER_STRING_ME,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_MINE); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_MINE); end;
 		tooltip = FILTER_BY_ME_COMBATLOG_TOOLTIP;
 	},
 	[2] = {
-		text = COMBATLOG_FILTER_MY_PET,
+		text = COMBATLOG_FILTER_STRING_MY_PET,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_MY_PET); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_MY_PET); end;
 		tooltip = FILTER_BY_PET_COMBATLOG_TOOLTIP;
 	},
 	[3] = {
-		text = COMBATLOG_FILTER_FRIENDLY_UNITS,
+		text = COMBATLOG_FILTER_STRING_FRIENDLY_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_FRIENDLY_UNITS); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_FRIENDLY_UNITS); end;
 		tooltip = FILTER_BY_FRIENDS_COMBATLOG_TOOLTIP;
 	},
 	[4] = {
-		text = COMBATLOG_FILTER_HOSTILE_UNITS,
+		text = COMBATLOG_FILTER_STRING_HOSTILE_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_HOSTILE_UNITS); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_HOSTILE_UNITS); end;
 		tooltip = FILTER_BY_ENEMIES_COMBATLOG_TOOLTIP;
 	},
 	[5] = {
-		text = COMBATLOG_FILTER_NEUTRAL_UNITS,
+		text = COMBATLOG_FILTER_STRING_NEUTRAL_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_NEUTRAL_UNITS); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_NEUTRAL_UNITS); end;
 		tooltip = FILTER_BY_NEUTRAL_COMBATLOG_TOOLTIP;
 	},
 	[6] = {
-		text = COMBATLOG_FILTER_UNKNOWN_UNITS,
+		text = COMBATLOG_FILTER_STRING_UNKNOWN_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_UNKNOWN_UNITS); end;
 		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_UNKNOWN_UNITS); end;
 		tooltip = FILTER_BY_UNKNOWN_COMBATLOG_TOOLTIP;
@@ -222,37 +222,37 @@ COMBAT_CONFIG_MESSAGESOURCES_BY = {
 
 COMBAT_CONFIG_MESSAGESOURCES_TO = {
 	[1] = {
-		text = COMBATLOG_FILTER_ME,
+		text = COMBATLOG_FILTER_STRING_ME,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_MINE); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_MINE); end;
 		tooltip = FILTER_TO_ME_COMBATLOG_TOOLTIP;
 	},
 	[2] = {
-		text = COMBATLOG_FILTER_MY_PET,
+		text = COMBATLOG_FILTER_STRING_MY_PET,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_MY_PET); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_MY_PET); end;
 		tooltip = FILTER_TO_PET_COMBATLOG_TOOLTIP;
 	},
 	[3] = {
-		text = COMBATLOG_FILTER_FRIENDLY_UNITS,
+		text = COMBATLOG_FILTER_STRING_FRIENDLY_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_FRIENDLY_UNITS); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_FRIENDLY_UNITS); end;
 		tooltip = FILTER_TO_FRIENDS_COMBATLOG_TOOLTIP;
 	},
 	[4] = {
-		text = COMBATLOG_FILTER_HOSTILE_UNITS,
+		text = COMBATLOG_FILTER_STRING_HOSTILE_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_HOSTILE_UNITS); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_HOSTILE_UNITS); end;
 		tooltip = FILTER_TO_HOSTILE_COMBATLOG_TOOLTIP;
 	},
 	[5] = {
-		text = COMBATLOG_FILTER_NEUTRAL_UNITS,
+		text = COMBATLOG_FILTER_STRING_NEUTRAL_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_NEUTRAL_UNITS); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_NEUTRAL_UNITS); end;
 		tooltip = FILTER_TO_NEUTRAL_COMBATLOG_TOOLTIP;
 	},
 	[6] = {
-		text = COMBATLOG_FILTER_UNKNOWN_UNITS,
+		text = COMBATLOG_FILTER_STRING_UNKNOWN_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_UNKNOWN_UNITS); end;
 		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_UNKNOWN_UNITS); end;
 		tooltip = FILTER_TO_UNKNOWN_COMBATLOG_TOOLTIP;
@@ -524,27 +524,27 @@ COMBAT_CONFIG_MESSAGETYPES_MISC = {
 };
 COMBAT_CONFIG_UNIT_COLORS = {
 	[1] = {
-		text = COMBATLOG_FILTER_ME,
+		text = COMBATLOG_FILTER_STRING_ME,
 		type = "COMBATLOG_FILTER_MINE",
 	},
 	[2] = {
-		text = COMBATLOG_FILTER_MY_PET,
+		text = COMBATLOG_FILTER_STRING_MY_PET,
 		type = "COMBATLOG_FILTER_MY_PET",
 	},
 	[3] = {
-		text = COMBATLOG_FILTER_FRIENDLY_UNITS,
+		text = COMBATLOG_FILTER_STRING_FRIENDLY_UNITS,
 		type = "COMBATLOG_FILTER_FRIENDLY_UNITS",
 	},
 	[4] = {
-		text = COMBATLOG_FILTER_HOSTILE_UNITS,
+		text = COMBATLOG_FILTER_STRING_HOSTILE_UNITS,
 		type = "COMBATLOG_FILTER_HOSTILE_UNITS",
 	},
 	[5] = {
-		text = COMBATLOG_FILTER_NEUTRAL_UNITS,
+		text = COMBATLOG_FILTER_STRING_NEUTRAL_UNITS,
 		type = "COMBATLOG_FILTER_NEUTRAL_UNITS",
 	},
 	[6] = {
-		text = COMBATLOG_FILTER_UNKNOWN_UNITS,
+		text = COMBATLOG_FILTER_STRING_UNKNOWN_UNITS,
 		type = "COMBATLOG_FILTER_UNKNOWN_UNITS",
 	},
 }
@@ -1303,7 +1303,7 @@ function ChatConfig_UpdateFilterList()
 		ChatConfigCombatSettingsFiltersButton1:SetPoint("TOPRIGHT", ChatConfigCombatSettingsFilters, "TOPRIGHT", -5, -7);
 	end
 	-- Update the combat log quick buttons
-	Blizard_CombatLog_Update_QuickButtons();
+	Blizzard_CombatLog_Update_QuickButtons();
 end
 
 function ChatConfigFilter_OnClick(id)

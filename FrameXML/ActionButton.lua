@@ -271,7 +271,10 @@ function ActionButton_HideGrid(button)
 	if ( not button ) then
 		button = this;
 	end
-	button.showgrid = button.showgrid-1;
+	if ( button.showgrid > 0 ) then
+		button.showgrid = button.showgrid-1;
+	end
+	
 	if ( button.showgrid == 0 and not HasAction(button.action) ) then
 		button:Hide();
 	end

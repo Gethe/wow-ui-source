@@ -1,6 +1,7 @@
 # Do not delete the following line!
 ## Interface: 20400
 GlobalStrings.lua
+Constants.lua
 Fonts.xml
 Localization.xml
 BasicControls.xml
@@ -54,6 +55,7 @@ ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
 TargetFrame.xml
+TotemFrame.xml
 PetFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
@@ -108,7 +110,6 @@ RatingMenuFrame.xml
 TalentFrameBase.lua
 Blizzard_TalentUITemplates.xml
 EasyMenu.lua
-TotemFrame.xml
 ChatConfigFrame.xml
 UIOptionsPanels.xml
 LocalizationPost.xml

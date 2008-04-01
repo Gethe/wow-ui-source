@@ -362,7 +362,7 @@
 				<FontString name="GuildBankMoneyUnlimitedLabel" inherits="GameFontHighlightSmall" text="UNLIMITED">
 					<Size x="0" y="13"/>
 					<Anchors>
-						<Anchor point="Left" relativeTo="GuildBankMoneyLimitLabel" relativePoint="Right">
+						<Anchor point="LEFT" relativeTo="GuildBankMoneyLimitLabel" relativePoint="RIGHT">
 							<Offset x="5" y="0"/>
 						</Anchor>
 					</Anchors>

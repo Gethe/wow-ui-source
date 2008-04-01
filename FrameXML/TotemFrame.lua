@@ -21,6 +21,11 @@ function TotemFrame_OnLoad()
 end
 
 function TotemFrame_Update()
+	if ( PetFrame and PetFrame:IsShown() ) then
+		TotemFrame:Hide();
+		return;
+	end
+
 	local haveTotem, name, startTime, duration, icon;
 	local slot;
 	local button;

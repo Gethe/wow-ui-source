@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\FrameXML\UI.xsd">
 	<Script file="UIOptionsPanels.lua"/>
 	
 	<!-- Templates -->
@@ -142,7 +142,7 @@
 	<Frame name="InterfaceOptionsControlsPanel" hidden="false" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="CONTROLS_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="CONTROLS_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -151,7 +151,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="CONTROLS_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="CONTROLS_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -338,7 +338,7 @@
 	<Frame name="InterfaceOptionsCombatPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="COMBAT_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="COMBAT_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -347,7 +347,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="COMBAT_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="COMBAT_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -466,8 +466,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
 				<!--
+				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="$parentLabel" inherits="GameFontHighlight" text="MODE">
 							<Anchors>
@@ -479,8 +479,8 @@
 							</Anchors>
 						</FontString>
 					</Layer>
-					-->
 				</Layers>
+				-->
 				<Scripts>
 					<OnLoad>
 						this.type = CONTROLTYPE_DROPDOWN;
@@ -519,9 +519,9 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString name="$parentLabel" inherits="GameFontHighlight" justifyH="RIGHT" text="SHOW_ENEMY_CAST">
+						<FontString name="$parentLabel" inherits="GameFontHighlight" justifyH="LEFT" text="SHOW_ENEMY_CAST">
 							<Anchors>
-								<Anchor point="TOPRIGHT"/>
+								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -529,9 +529,14 @@
 				<Frames>
 					<CheckButton name="$parentOnPortrait" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="$parentLabel" relativePoint="BOTTOMRIGHT">
+							<Anchor point="TOP" relativeTo="$parentLabel" relativePoint="BOTTOM">
 								<Offset>
-									<AbsDimension x="-68" y="-8"/>
+									<AbsDimension x="0" y="-8"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-68" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -569,7 +574,7 @@
 	<Frame name="InterfaceOptionsDisplayPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="DISPLAY_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="DISPLAY_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -578,7 +583,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="DISPLAY_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="DISPLAY_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -848,7 +853,7 @@
 	<Frame name="InterfaceOptionsQuestsPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="QUESTS_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="QUESTS_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -857,7 +862,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="QUESTS_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="QUESTS_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -929,7 +934,7 @@
 	<Frame name="InterfaceOptionsSocialPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="SOCIAL_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="SOCIAL_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -938,7 +943,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="SOCIAL_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="SOCIAL_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -1124,7 +1129,7 @@
 	<Frame name="InterfaceOptionsActionBarsPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="ACTIONBARS_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="ACTIONBARS_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -1133,7 +1138,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="ACTIONBARS_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="ACTIONBARS_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="4" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -1268,7 +1273,7 @@
 						this.type = CONTROLTYPE_CHECKBOX;
 						this.cvar = "alwaysShowActionBars";
 						this.uvar = "ALWAYS_SHOW_MULTIBARS";
-						this.setFunc = InterfaceOptions_UpdateMultiActionBars;
+						this.setFunc = function() MultiActionBar_UpdateGridVisibility(); InterfaceOptions_UpdateMultiActionBars(); end;
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1297,7 +1302,7 @@
 	<Frame name="InterfaceOptionsNamesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="NAMES_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="NAMES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -1306,7 +1311,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="NAMES_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="NAMES_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -1556,7 +1561,7 @@
 	<Frame name="InterfaceOptionsCombatTextPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="COMBATTEXT_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="COMBATTEXT_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -1565,7 +1570,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="COMBATTEXT_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="COMBATTEXT_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -1940,7 +1945,7 @@
 	<Frame name="InterfaceOptionsStatusTextPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="STATUSTEXT_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="STATUSTEXT_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -1949,7 +1954,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="STATUSTEXT_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="STATUSTEXT_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -2083,7 +2088,7 @@
 	<Frame name="InterfaceOptionsPartyRaidPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="PARTYRAID_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="PARTYRAID_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -2092,7 +2097,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="PARTYRAID_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="PARTYRAID_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -2242,7 +2247,7 @@
 	<Frame name="InterfaceOptionsCameraPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="CAMERA_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="CAMERA_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -2251,7 +2256,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="CAMERA_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="CAMERA_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -2449,7 +2454,7 @@
 	<Frame name="InterfaceOptionsMousePanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="MOUSE_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="MOUSE_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -2458,7 +2463,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="MOUSE_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="MOUSE_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -2625,7 +2630,7 @@
 	<Frame name="InterfaceOptionsHelpPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="HELP_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="HELP_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -2634,7 +2639,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="HELP_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="HELP_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -2776,7 +2781,7 @@
 	<Frame name="InterfaceOptionsLanguagesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="LANGUAGES_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentTitle" text="LANGUAGES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -2785,7 +2790,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="LANGUAGES_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+				<FontString name="$parentSubText" text="LANGUAGES_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>

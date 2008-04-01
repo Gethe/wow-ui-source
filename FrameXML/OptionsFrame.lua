@@ -85,6 +85,11 @@ function OptionsFrame_Load()
 			if ( not hasHardwareCursor ) then
 				button.disabled = 1;
 			end
+		elseif ( index == "WINDOW_LOCK" ) then
+			-- we never disable window resizing on the Mac, so hide the checkbox
+			if ( IsMacClient() ) then
+				button:Hide();
+			end
 		end
 
 		if ( button.disabled ) then
