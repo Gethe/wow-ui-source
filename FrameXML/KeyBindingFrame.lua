@@ -124,6 +124,9 @@ function KeyBindingFrame_Update()
 	
 	-- Scroll frame stuff
 	FauxScrollFrame_Update(KeyBindingFrameScrollFrame, numBindings, KEY_BINDINGS_DISPLAYED, KEY_BINDING_HEIGHT );
+
+	-- Update Unbindkey button
+	KeyBindingFrame_UpdateUnbindKey();
 end
 
 function KeyBindingFrame_OnKeyDown(button)
@@ -209,6 +212,7 @@ function KeyBindingFrame_OnKeyDown(button)
 			HideUIPanel(this);
 		end
 	end
+	KeyBindingFrame_UpdateUnbindKey();
 end
 
 function KeyBindingButton_OnClick(button)
@@ -240,6 +244,7 @@ function KeyBindingButton_OnClick(button)
 		KeyBindingFrameOutputText:SetText(format(BIND_KEY_TO_COMMAND, KeyBindingFrame_GetLocalizedName(this.commandName, "BINDING_NAME_")));
 		KeyBindingFrame_Update();
 	end
+	KeyBindingFrame_UpdateUnbindKey();
 end
 
 function KeyBindingFrame_SetBinding(key, selectedBinding, oldKey)
@@ -251,5 +256,13 @@ function KeyBindingFrame_SetBinding(key, selectedBinding, oldKey)
 		end
 		--Error message
 		KeyBindingFrameOutputText:SetText("Can't bind mousewheel to actions with up and down states");
+	end
+end
+
+function KeyBindingFrame_UpdateUnbindKey()
+	if ( KeyBindingFrame.selected ) then
+		KeyBindingFrameUnbindButton:Enable();
+	else
+		KeyBindingFrameUnbindButton:Disable();
 	end
 end

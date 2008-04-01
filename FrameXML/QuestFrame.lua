@@ -115,7 +115,7 @@ end
 
 function QuestItem_OnClick()
 	if ( IsShiftKeyDown() ) then
-		if ( ChatFrameEditBox:IsVisible() ) then
+		if ( ChatFrameEditBox:IsVisible() and this.rewardType ~= "spell") then
 			ChatFrameEditBox:Insert(GetQuestItemLink(this.type, this:GetID()));
 		end
 	end

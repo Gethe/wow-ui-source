@@ -477,6 +477,7 @@
 						-- Button highlighting stuff
 						KeyBindingFrame.selected = nil;
 						KeyBindingFrame.buttonPressed:UnlockHighlight();
+						KeyBindingFrame_UpdateUnbindKey();
 					</OnClick>
 				</Scripts>
 			</Button>

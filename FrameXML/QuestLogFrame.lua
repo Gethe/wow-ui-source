@@ -170,7 +170,9 @@ function QuestLog_Update()
 			questLogTitle.isHeader = isHeader;
 
 			-- Set the quest tag
-			if ( isComplete ) then
+			if ( isComplete and isComplete < 0 ) then
+				questTag = FAILED;
+			elseif ( isComplete and isComplete > 0 ) then
 				questTag = COMPLETE;
 			end
 			if ( questTag ) then
@@ -505,7 +507,7 @@ function QuestLog_UpdatePartyInfoTooltip()
 end
 
 function QuestLogRewardItem_OnClick()
-	if ( IsShiftKeyDown() ) then
+	if ( IsShiftKeyDown() and this.rewardType ~= "spell" ) then
 		if ( ChatFrameEditBox:IsVisible() ) then
 			ChatFrameEditBox:Insert(GetQuestLogItemLink(this.type, this:GetID()));
 		end
