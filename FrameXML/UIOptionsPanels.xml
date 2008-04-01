@@ -619,11 +619,39 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showCloak";
-						this.setFunc = ShowCloak;
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.text = getglobal(this:GetName().."Text");
+						self.text:SetText(SHOW_CLOAK);
+						self.tooltipText = OPTION_TOOLTIP_SHOW_CLOAK;
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.oldDisable = self.Disable;
+						self.oldEnable = self.Enable;
+						self.Disable = function (self) self:oldDisable() getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
+						self.Enable = function (self) self:oldEnable() getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;
 					</OnLoad>
+					<OnShow>
+						self:SetChecked(ShowingCloak());
+					</OnShow>
+					<OnClick>
+						self:Disable();
+						InterfaceOptionsDisplayPanelShowHelm:Disable();		
+						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+						
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							ShowCloak(true);
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+							ShowCloak(false);
+						end			
+					</OnClick>
+					<OnEvent>
+						if ( event == "PLAYER_FLAGS_CHANGED" and arg1 == "player" ) then
+							self:Enable()
+							InterfaceOptionsDisplayPanelShowHelm:Enable();
+							self:UnregisterEvent("PLAYER_FLAGS_CHANGED");
+						end
+					</OnEvent>
 				</Scripts>
 			</CheckButton>			
 			<CheckButton name="$parentShowHelm" inherits="InterfaceOptionsCheckButtonTemplate">
@@ -636,11 +664,39 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showHelm";
-						this.setFunc = ShowHelm;
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.text = getglobal(this:GetName().."Text");
+						self.text:SetText(SHOW_HELM);
+						self.tooltipText = OPTION_TOOLTIP_SHOW_HELM;
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.oldDisable = this.Disable;
+						self.oldEnable = this.Enable;
+						self.Disable = function (self) self:oldDisable() getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
+						self.Enable = function (self) self:oldEnable() getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;						
 					</OnLoad>
+					<OnShow>
+						self:SetChecked(ShowingHelm());
+					</OnShow>			
+					<OnClick>
+						self:Disable();
+						InterfaceOptionsDisplayPanelShowCloak:Disable();
+						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+						
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							ShowHelm(true);
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+							ShowHelm(false);
+						end			
+					</OnClick>
+					<OnEvent>
+						if ( event == "PLAYER_FLAGS_CHANGED" and arg1 == "player" ) then
+							self:Enable()
+							InterfaceOptionsDisplayPanelShowCloak:Enable();
+							self:UnregisterEvent("PLAYER_FLAGS_CHANGED");
+						end
+					</OnEvent>
 				</Scripts>
 			</CheckButton>			
 			<CheckButton name="$parentBuffDurations" inherits="InterfaceOptionsCheckButtonTemplate">

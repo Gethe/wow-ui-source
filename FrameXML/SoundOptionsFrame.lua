@@ -184,8 +184,13 @@ function SoundOptionsSlider_OnValueChanged()
 	for index, value in pairs(SoundOptionsFrameSliders) do
 		if ( value.index == this:GetID() ) then
 			if ( value.cvar == "Sound_NumChannels" ) then
-				SetCVar(value.cvar, tonumber(SoundChannelNumChannels[tostring(this:GetValue())]) );
-				AudioOptionsFrame.SoundRestart = 1;
+				local cvarValue = GetCVar(value.cvar);
+				if ( tonumber(cvarValue) == tonumber(SoundChannelNumChannels[tostring(this:GetValue())]) ) then
+					--Nothing changed
+				else
+					SetCVar(value.cvar, tonumber(SoundChannelNumChannels[tostring(this:GetValue())]) );
+					AudioOptionsFrame.SoundRestart = 1;
+				end
 			else
 				SetCVar(value.cvar, this:GetValue());
 			end

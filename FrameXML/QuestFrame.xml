@@ -240,9 +240,7 @@
 									<Frame name="QuestRewardMoneyFrame" inherits="MoneyFrameTemplate">
 										<Anchors>
 											<Anchor point="LEFT" relativeTo="QuestRewardItemReceiveText" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="15" y="0"/>
-												</Offset>
+												<Offset x="15" y="0"/>
 											</Anchor>
 										</Anchors>
 										<Scripts>
@@ -254,18 +252,14 @@
 									<Frame name="QuestRewardHonorFrame" inherits="QuestHonorFrameTemplate">
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeTo="QuestRewardItemReceiveText" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="-5"/>
-												</Offset>
+												<Offset x="0" y="-5"/>
 											</Anchor>
 										</Anchors>
 									</Frame>
 									<Frame name="QuestRewardPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate">
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeTo="QuestRewardItemReceiveText" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="-5"/>
-												</Offset>
+												<Offset x="0" y="-5"/>
 											</Anchor>
 										</Anchors>
 									</Frame>

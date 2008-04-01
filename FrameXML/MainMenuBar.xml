@@ -140,7 +140,6 @@
 					<OnShow>
 						if ( GetCVar("xpBarText") == "1" ) then
 							TextStatusBar_UpdateTextString();
-							ShowTextStatusBarText(this);
 						end
 					</OnShow>					
 					<OnEnter>

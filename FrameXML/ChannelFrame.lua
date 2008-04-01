@@ -805,6 +805,7 @@ function ChannelPullout_ShowOpacity ()
 	OpacityFrame.opacityFunc = ChannelPullout_SetOpacity;
 	OpacityFrame.saveOpacityFunc = ChannelPullout_SaveOpacity;
 	OpacityFrame:Show();
+	OpacityFrameSlider:SetValue(CHANNELPULLOUT_OPTIONS.opacity or 0);
 end
 
 function ChannelPullout_SetOpacity(value)
@@ -815,6 +816,7 @@ end
 
 function ChannelPullout_SaveOpacity()
 	CHANNELPULLOUT_OPTIONS.opacity = OpacityFrameSlider:GetValue();
+	OpacityFrame.saveOpacityFunc = nil;
 end
 
 function ChannelPullout_ToggleDisplay ()

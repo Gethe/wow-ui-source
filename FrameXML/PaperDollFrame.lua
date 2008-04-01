@@ -732,8 +732,13 @@ function PaperDollFrame_SetRangedDamage(statFrame, unit)
 	local text = getglobal(statFrame:GetName().."StatText");
 
 	-- If no ranged attack then set to n/a
-	if ( PaperDollFrame.noRanged ) then
+	local hasRelic = UnitHasRelicSlot(unit);	
+	local rangedTexture = GetInventoryItemTexture("player", 18);
+	if ( rangedTexture and not hasRelic ) then
+		PaperDollFrame.noRanged = nil;
+	else
 		text:SetText(NOT_APPLICABLE);
+		PaperDollFrame.noRanged = 1;
 		statFrame.damage = nil;
 		return;
 	end

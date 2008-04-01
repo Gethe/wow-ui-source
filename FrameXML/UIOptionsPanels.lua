@@ -215,8 +215,6 @@ end
 -- [[ Display Options Panel ]] --
 
 DisplayPanelOptions = {
-	showCloak = { text = "SHOW_CLOAK", default = "1" },
-	showHelm = { text = "SHOW_HELM", default = "1" },
 	buffDurations = { text = "SHOW_BUFF_DURATION_TEXT", default = "0" },
 	rotateMinimap = { text = "ROTATE_MINIMAP", default = "0" },
 	scriptErrors = { text = "SHOW_LUA_ERRORS", default = "0" },
@@ -894,18 +892,16 @@ end
 
 function BlizzardOptionsPanel_CheckButton_OnClick (checkButton)
 	local setting = "0";
-	if ( checkButton:GetChecked() ) then
-		if ( checkButton.invert ) then
-			setting = "0"
-		else
-			setting = "1"
-		end
+	if ( checkButton:GetChecked() and ( not checkButton.invert ) ) then
+		setting = "1"
 	elseif ( checkButton.invert ) then
 		setting = "1"
 	end 
 	
+	checkButton.value = setting;
+	
 	if ( checkButton.cvar ) then
-		SetCVar(checkButton.cvar, setting);
+		SetCVar(checkButton.cvar, setting, checkButton.event);
 	end
 
 	if ( checkButton.uvar ) then

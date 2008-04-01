@@ -746,11 +746,15 @@ function UnitPopup_HideButtons()
 			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;			
 			else
-				if ( ( inParty == 1 and isAssistant == 1 and inRaid == 1 and inBattleground == 0 ) and dropdownMenu.name ~= UnitName("player") ) then
-					if ( UnitIsSilenced(dropdownMenu.name, "raid") ) then
+				if (  inBattleground == 0 ) then
+					if ( ( inParty == 1 and isAssistant == 1 and inRaid == 1 ) and dropdownMenu.name ~= UnitName("player") ) then
+						if ( UnitIsSilenced(dropdownMenu.name, "raid") ) then
+							UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+						end
+						dropdownMenu.channelName = "raid";
+					else
 						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 					end
-					dropdownMenu.channelName = "raid";
 				else
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
@@ -759,11 +763,15 @@ function UnitPopup_HideButtons()
 			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;			
 			else
-				if ( ( inParty == 1 and isAssistant == 1 and inRaid == 1 and inBattleground == 0 ) ) then
-					if ( not UnitIsSilenced(dropdownMenu.name, "raid") ) then
+				if (  inBattleground == 0 ) then
+					if ( ( inParty == 1 and isAssistant == 1 and inRaid == 1 ) ) then
+						if ( not UnitIsSilenced(dropdownMenu.name, "raid") ) then
+							UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+						end
+						dropdownMenu.channelName = "raid";
+					else
 						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 					end
-					dropdownMenu.channelName = "raid";
 				else
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
@@ -772,11 +780,15 @@ function UnitPopup_HideButtons()
 			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;	
 			else
-				if ( ( inParty == 1 and isAssistant == 1 and inRaid == 1 and inBattleground == 1 ) and dropdownMenu.name ~= UnitName("player") ) then
-					if ( UnitIsSilenced(dropdownMenu.name, "battleground") ) then
+				if (  inBattleground == 1 ) then
+					if ( ( inParty == 1 and isAssistant == 1 and inRaid == 1 ) and dropdownMenu.name ~= UnitName("player") ) then
+						if ( UnitIsSilenced(dropdownMenu.name, "battleground") ) then
+							UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+						end
+						dropdownMenu.channelName = "battleground";
+					else
 						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 					end
-					dropdownMenu.channelName = "battleground";
 				else
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
@@ -785,11 +797,15 @@ function UnitPopup_HideButtons()
 			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;			
 			else
-				if ( ( inParty == 1 and isAssistant == 1 and inRaid == 1 and inBattleground == 1 ) ) then
-					if ( not UnitIsSilenced(dropdownMenu.name, "battleground") ) then
+				if (  inBattleground == 1 ) then
+					if ( ( inParty == 1 and isAssistant == 1 and inRaid == 1 ) ) then
+						if ( not UnitIsSilenced(dropdownMenu.name, "battleground") ) then
+							UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+						end
+						dropdownMenu.channelName = "battleground";
+					else
 						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 					end
-					dropdownMenu.channelName = "battleground";
 				else
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end

@@ -461,10 +461,10 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton)
 		local factionGroup = UnitFactionGroup("player");
 		if ( factionGroup ) then	
 			pointsTexture = "Interface\\TargetingFrame\\UI-PVP-"..factionGroup;
-			itemsString = " |T" .. pointsTexture .. ":12:12:0:-1|t" ..  honorPoints .. " " .. HONOR_POINTS;
+			itemsString = " |T" .. pointsTexture .. ":0:0:0:-1|t" ..  honorPoints .. " " .. HONOR_POINTS;
 		end
 	elseif ( arenaPoints and arenaPoints ~= 0 ) then
-		itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:12:12:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
+		itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
 	end
 	
 	for i=1, MAX_ITEM_COST, 1 do

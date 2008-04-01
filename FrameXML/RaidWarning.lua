@@ -99,8 +99,8 @@ function RaidWarningFrame_OnEvent(self, event, message)
 		for tag in string.gmatch(message, "%b{}") do
 			term = strlower(string.gsub(tag, "[{}]", ""));
 			if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
-				-- Using 25 as the height and width, since it looks best with the raid notice MIN_HEIGHT and MAX_HEIGHTs
-				message = string.gsub(message, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "25:25|t");
+				-- Using 0 as the height to make the texture match the font height
+				message = string.gsub(message, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
 			end
 		end		
 		

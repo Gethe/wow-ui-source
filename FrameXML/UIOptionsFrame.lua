@@ -158,7 +158,7 @@ function InterfaceOptionsFrame_OpenToFrame (frame)
 		for i, button in next, buttons do
 			if ( button.element == elementToDisplay ) then
 				button:Click();
-			elseif ( elementToDisplay.parent and button.element.name == elementToDisplay.parent ) then
+			elseif ( elementToDisplay.parent and button.element and (button.element.name == elementToDisplay.parent and button.element.collapsed) ) then
 				button.toggle:Click();
 			end
 		end
@@ -172,7 +172,7 @@ function InterfaceOptionsFrame_OpenToFrame (frame)
 		for i, button in next, buttons do
 			if ( button.element == elementToDisplay ) then
 				button:Click();
-			elseif ( elementToDisplay.parent and button.element.name == elementToDisplay.parent ) then
+			elseif ( elementToDisplay.parent and button.element and (button.element.name == elementToDisplay.parent and button.element.collapsed) ) then
 				button.toggle:Click();
 			end
 		end

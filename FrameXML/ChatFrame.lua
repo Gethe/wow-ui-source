@@ -1519,6 +1519,7 @@ end
 SlashCmdList["GUILD_ROSTER"] = function(msg)
 	if ( IsInGuild() ) then
 		PanelTemplates_SetTab(FriendsFrame, 3);
+		FriendsFrame_ShowSubFrame("GuildFrame");
 		ShowUIPanel(FriendsFrame);
 	end
 end
@@ -2029,6 +2030,14 @@ function ChatFrame_MessageEventHandler(event)
 
 		local channelLength = strlen(arg4);
 		if ( (strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER")) ) then
+			if ( arg1 == "WRONG_PASSWORD" ) then
+				local staticPopup = getglobal(StaticPopup_Visible("CHAT_CHANNEL_PASSWORD") or "");
+				if ( staticPopup and staticPopup.data == arg9 ) then
+					-- Don't display invalid password messages if we're going to prompt for a password (bug 102312)
+					return;
+				end
+			end
+			
 			local found = 0;
 			for index, value in pairs(this.channelList) do
 				if ( channelLength > strlen(value) ) then
@@ -2118,7 +2127,7 @@ function ChatFrame_MessageEventHandler(event)
 				for tag in string.gmatch(arg1, "%b{}") do
 					term = strlower(string.gsub(tag, "[{}]", ""));
 					if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
-						arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. fontHeight .. ":" .. fontHeight .. "|t");
+						arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
 					end
 				end
 			end
