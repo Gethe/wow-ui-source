@@ -172,14 +172,16 @@ function BattlefieldFrame_Update()
 		end
 		
 		-- Set queued status
-		if ( MiniMapBattlefieldFrame.instanceID == zoneIndex - 1 and MiniMapBattlefieldFrame.status == "queued" ) then
-			buttonStatus:SetText(BATTLEFIELD_QUEUE_STATUS);
-		elseif ( MiniMapBattlefieldFrame.instanceID == zoneIndex - 1 and MiniMapBattlefieldFrame.status == "confirm" ) then
-			buttonStatus:SetText(BATTLEFIELD_CONFIRM_STATUS);
+		if ( MiniMapBattlefieldFrame.instanceID == zoneIndex - 1 and MiniMapBattlefieldFrame.mapName == button.title ) then
+			if ( MiniMapBattlefieldFrame.status == "queued" ) then
+				buttonStatus:SetText(BATTLEFIELD_QUEUE_STATUS);
+			elseif ( MiniMapBattlefieldFrame.status == "confirm" ) then
+				buttonStatus:SetText(BATTLEFIELD_CONFIRM_STATUS);
+			end
 		else
 			buttonStatus:SetText("");
 		end
-
+		
 		-- Set selected instance
 		if ( zoneIndex == 1 and GetSelectedBattlefield() == 0 ) then
 			button:LockHighlight();

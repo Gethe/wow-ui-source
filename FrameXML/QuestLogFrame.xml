@@ -464,7 +464,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="QuestLogFrame" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-29" y="-8"/>
+							<AbsDimension x="-30" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1147,8 +1147,5 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			
-		</Scripts>
 	</Frame>
 </Ui>

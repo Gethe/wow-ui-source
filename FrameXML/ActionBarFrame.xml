@@ -28,8 +28,10 @@
 				end
 			</OnDragStart>
 			<OnReceiveDrag>
-				PlaceAction(ActionButton_GetPagedID(this));
-				ActionButton_UpdateState();
+				if ( LOCK_ACTIONBAR ~= "1" ) then
+					PlaceAction(ActionButton_GetPagedID(this));
+					ActionButton_UpdateState();
+				end
 			</OnReceiveDrag>
 			<OnEnter>
 				ActionButton_SetTooltip();

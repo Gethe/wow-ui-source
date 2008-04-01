@@ -150,7 +150,7 @@ function UnitFrameHealthBar_Initialize(unit, statusbar, statustext)
 	statusbar:RegisterEvent("UNIT_MAXHEALTH");
 
 	-- Setup newbie tooltip
-	if ( this:GetName() == "PlayerFrame" ) then
+	if ( this and (this:GetName() == "PlayerFrame") ) then
 		statusbar.tooltipTitle = HEALTH;
 		statusbar.tooltipText = NEWBIE_TOOLTIP_HEALTHBAR;
 	else
@@ -165,6 +165,7 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 	end
 	local cvar = arg1;
 	local value = arg2;
+	
 	if ( unit == statusbar.unit ) then
 		local currValue = UnitHealth(unit);
 		local maxValue = UnitHealthMax(unit);
@@ -204,6 +205,7 @@ function UnitFrameManaBar_Update(statusbar, unit)
 	end
 	local cvar = arg1;
 	local value = arg2;
+	
 	if ( unit == statusbar.unit ) then
 		local maxValue = UnitManaMax(unit);
 		statusbar:SetMinMaxValues(0, maxValue);

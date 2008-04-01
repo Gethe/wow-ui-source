@@ -198,9 +198,6 @@
 					<OnEvent>
 						this:RefreshUnit();
 					</OnEvent>
-                    <OnModelUpdate>
-                        this:UpdateModel();
-                    </OnModelUpdate>
                     <OnUpdate>
                         Model_OnUpdate(arg1, PetStableModel);
                     </OnUpdate>
@@ -217,9 +214,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 						<Scripts>
 							<OnLoad>
 								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
@@ -228,6 +222,9 @@
 								Model_RotateLeft(PetStableModel);
 							</OnClick>
 						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
 					<Button name="PetStableModelRotateRightButton">
 						<Size>
@@ -236,9 +233,6 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PetStableModelRotateLeftButton" relativePoint="TOPRIGHT"/>
 						</Anchors>
-						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 						<Scripts>
 							<OnLoad>
 								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
@@ -247,6 +241,9 @@
 								Model_RotateRight(PetStableModel);
 							</OnClick>
 						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
 					<Frame name="PetStablePetInfo" enableMouse="true" hidden="false">
 						<Size>

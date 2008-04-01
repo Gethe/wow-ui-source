@@ -20,12 +20,14 @@ function HonorFrame_Update(updateAll)
 		-- Yesterday's values
 		hk, dk, contribution = GetPVPYesterdayStats();
 		HonorFrameYesterdayHKValue:SetText(hk);
-		HonorFrameYesterdayDKValue:SetText(dk);
 		HonorFrameYesterdayContributionValue:SetText(contribution);
+		-- This Week's values
+		hk, contribution = GetPVPThisWeekStats();
+		HonorFrameThisWeekHKValue:SetText(hk);
+		HonorFrameThisWeekContributionValue:SetText(contribution);
 		-- Last Week's values
 		hk, dk, contribution, rank = GetPVPLastWeekStats();
 		HonorFrameLastWeekHKValue:SetText(hk);
-		HonorFrameLastWeekDKValue:SetText(dk);
 		HonorFrameLastWeekContributionValue:SetText(contribution);
 		HonorFrameLastWeekStandingValue:SetText(rank);
 	end
@@ -61,6 +63,15 @@ function HonorFrame_Update(updateAll)
 		HonorFramePvPIcon:Hide();
 	end
 	
+	-- Set rank progress and bar color
+	local factionGroup, factionName = UnitFactionGroup("player");
+	if ( factionGroup == "Alliance" ) then
+		HonorFrameProgressBar:SetStatusBarColor(0.05, 0.15, 0.36);
+	else
+		HonorFrameProgressBar:SetStatusBarColor(0.63, 0.09, 0.09);
+	end
+	HonorFrameProgressBar:SetValue(GetPVPRankProgress());
+
 	-- Recenter rank text
-	HonorFrameCurrentPVPTitle:SetPoint("TOP", "HonorFrame", "TOP", - HonorFrameCurrentPVPRank:GetWidth()/2, -81);
+	HonorFrameCurrentPVPTitle:SetPoint("TOP", "HonorFrame", "TOP", - HonorFrameCurrentPVPRank:GetWidth()/2, -83);
 end

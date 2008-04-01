@@ -34,6 +34,7 @@ function PartyMemberFrame_OnLoad()
 	this:RegisterEvent("UNIT_PVP_UPDATE");
 	this:RegisterEvent("UNIT_AURA");
 	this:RegisterEvent("UNIT_PET");
+	this:RegisterEvent("VARIABLES_LOADED");
 end
 
 function PartyMemberFrame_UpdateMember()
@@ -62,18 +63,22 @@ function PartyMemberFrame_UpdateMember()
 	PartyMemberFrame_UpdatePet();
 end
 
-function PartyMemberFrame_UpdatePet()
-	local id = this:GetID();
-	local petFrame = getglobal(this:GetName().."PetFrame");
+function PartyMemberFrame_UpdatePet(id)
+	if ( not id ) then
+		id = this:GetID();
+	end
 	
-	if ( UnitIsConnected("party"..id) and UnitExists("partypet"..id) ) then
+	local frameName = "PartyMemberFrame"..id;
+	local petFrame = getglobal("PartyMemberFrame"..id.."PetFrame");
+	
+	if ( UnitIsConnected("party"..id) and UnitExists("partypet"..id) and SHOW_PARTY_PETS == "1" ) then
 		petFrame:Show();
-		petFrame:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 23, -43);
+		petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -43);
 	else
 		petFrame:Hide();
-		petFrame:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 23, -27);
+		petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -27);
 	end
-	PartyMemberFrame_RefreshPetBuffs();
+	PartyMemberFrame_RefreshPetBuffs(id);
 end
 
 function PartyMemberFrame_UpdateMemberHealth(elapsed)
@@ -188,6 +193,10 @@ function PartyMemberFrame_OnEvent(event)
 		end
 		return;
 	end
+
+	if ( event == "VARIABLES_LOADED" ) then
+		PartyMemberFrame_UpdatePet();
+	end
 end
 
 function PartyMemberFrame_OnClick(partyFrame)
@@ -240,14 +249,18 @@ function PartyMemberFrame_RefreshBuffs()
 	end
 end
 
-function PartyMemberFrame_RefreshPetBuffs()
+function PartyMemberFrame_RefreshPetBuffs(id)
+	if ( not id ) then
+		id = this:GetID();
+	end
+	local petFrameDebuffName = "PartyMemberFrame"..id.."PetFrameDebuff";
 	for i=1, MAX_PARTY_DEBUFFS do
-		debuff = UnitDebuff("partypet"..this:GetID(), i);
+		debuff = UnitDebuff("partypet"..id, i);
 		if ( debuff ) then
-			getglobal(this:GetName().."PetFrameDebuff"..i.."Icon"):SetTexture(debuff);
-			getglobal(this:GetName().."PetFrameDebuff"..i):Show();
+			getglobal(petFrameDebuffName..i.."Icon"):SetTexture(debuff);
+			getglobal(petFrameDebuffName..i):Show();
 		else
-			getglobal(this:GetName().."PetFrameDebuff"..i):Hide();
+			getglobal(petFrameDebuffName..i):Hide();
 		end
 	end
 end

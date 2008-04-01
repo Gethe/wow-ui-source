@@ -251,12 +251,12 @@
 								</Texture>
 							</Layer>
 						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:SetFrameLevel(this:GetFrameLevel()+3);
+							</OnLoad>
+						</Scripts>
 					</Frame>
-					<Scripts>
-						<OnLoad>
-							this:SetFrameLevel(this:GetFrameLevel()+3);
-						</OnLoad>
-					</Scripts>
 				</Frames>
 			</Frame>
 			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar">

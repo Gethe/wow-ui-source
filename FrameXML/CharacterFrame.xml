@@ -187,7 +187,7 @@
                 <Anchors>
                     <Anchor point="CENTER" relativeTo="CharacterFrame" relativePoint="TOPRIGHT">
                         <Offset>
-                            <AbsDimension x="-44" y="-26"/>
+                            <AbsDimension x="-44" y="-25"/>
                         </Offset>
                     </Anchor>
                 </Anchors>

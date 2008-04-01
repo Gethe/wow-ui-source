@@ -447,46 +447,46 @@
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER1">
 		if ( UnitIsUnit("party1", "target") ) then
-			TargetUnitsPet("party1");
+			TargetUnit("partypet1");
 		else
 			TargetUnit("party1");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER2">
 		if ( UnitIsUnit("party2", "target") ) then
-			TargetUnitsPet("party2");
+			TargetUnit("partypet2");
 		else
 			TargetUnit("party2");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER3">
 		if ( UnitIsUnit("party3", "target") ) then
-			TargetUnitsPet("party3");
+			TargetUnit("partypet3");
 		else
 			TargetUnit("party3");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER4">
 		if ( UnitIsUnit("party4", "target") ) then
-			TargetUnitsPet("party4");
+			TargetUnit("partypet4");
 		else
 			TargetUnit("party4");
 		end
 	</Binding>
 	<Binding name="TARGETPET">
-		TargetUnitsPet("player");
+		TargetUnit("pet");
 	</Binding>
 	<Binding name="TARGETPARTYPET1">
-		TargetUnitsPet("party1");
+		TargetUnit("partypet1");
 	</Binding>
 	<Binding name="TARGETPARTYPET2">
-		TargetUnitsPet("party2");
+		TargetUnit("partypet2");
 	</Binding>
 	<Binding name="TARGETPARTYPET3">
-		TargetUnitsPet("party3");
+		TargetUnit("partypet3");
 	</Binding>
 	<Binding name="TARGETPARTYPET4">
-		TargetUnitsPet("party4");
+		TargetUnit("partypet4");
 	</Binding>
 	<Binding name="TARGETLASTHOSTILE">
 		TargetLastEnemy();

@@ -3,7 +3,7 @@
 	<Script file="HealthBar.lua"/>
 	<Script file="GameTooltip.lua"/>
 	<GameTooltip name="GameTooltipTemplate" frameStrata="TOOLTIP" hidden="true" virtual="true">
-		<Backdrop name="$parentBackdrop" bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
 			</EdgeSize>
@@ -622,7 +622,7 @@
 		</Scripts>
 	</GameTooltip>
 	<GameTooltip name="ShoppingTooltipTemplate" frameStrata="TOOLTIP" hidden="true" virtual="true">
-		<Backdrop name="$parentBackdrop" bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
 			</EdgeSize>

@@ -13,7 +13,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\Minimap\UI-Minimap-Border">
+				<Texture name="MinimapBorder" file="Interface\Minimap\UI-Minimap-Border">
 					<Size>
 						<AbsDimension x="192" y="32"/>
 					</Size>

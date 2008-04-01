@@ -10,7 +10,6 @@ function PetFrame_OnLoad()
 	PetFrame_Update();
 	CombatFeedback_Initialize(PetHitIndicator, 30);
 	this:RegisterEvent("UNIT_COMBAT");
-	this:RegisterEvent("UNIT_SPELLMISS");
 	this:RegisterEvent("UNIT_AURA");
 	this:RegisterEvent("UNIT_PET");
 	this:RegisterEvent("PET_ATTACK_START");
@@ -43,11 +42,6 @@ end
 function PetFrame_OnEvent(event)
 	UnitFrame_OnEvent(event);
 
-	if ( event == "UNIT_SPELLMISS" ) then
-		if ( arg1 == "pet" ) then
-			CombatFeedback_OnSpellMissEvent(arg2);
-		end
-	end
 	if ( event == "UNIT_COMBAT" ) then
 		if ( arg1 == "pet" ) then
 			CombatFeedback_OnCombatEvent(arg2, arg3, arg4, arg5);

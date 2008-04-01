@@ -36,6 +36,7 @@ UIOptionsFrameCheckButtons["CHAT_BUBBLES_TEXT"] = { index = 37, cvar = "ChatBubb
 UIOptionsFrameCheckButtons["PARTY_CHAT_BUBBLES_TEXT"] = { index = 38, cvar = "ChatBubblesParty", tooltipText = OPTION_TOOLTIP_PARTY_CHAT_BUBBLES_TEXT};
 UIOptionsFrameCheckButtons["SHOW_BUFF_DURATION_TEXT"] = { index = 39, uvar = "SHOW_BUFF_DURATIONS", tooltipText = OPTION_TOOLTIP_SHOW_BUFF_DURATION};
 UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"] = { index = 40, uvar = "ALWAYS_SHOW_MULTIBARS", tooltipText = OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS};
+UIOptionsFrameCheckButtons["SHOW_PARTY_PETS_TEXT"] = { index = 41, uvar = "SHOW_PARTY_PETS", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_PETS};
 
 UIOptionsFrameSliders = {
 	{ text = MOUSE_SENSITIVITY, cvar = "mousespeed", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 , tooltipText = OPTION_TOOLTIP_MOUSE_SENSITIVITY},
@@ -61,6 +62,8 @@ function UIOptionsFrame_Init()
 	RegisterForSave("SHOW_BUFF_DURATIONS");
 	ALWAYS_SHOW_MULTIBARS = "0";
 	RegisterForSave("ALWAYS_SHOW_MULTIBARS");
+	SHOW_PARTY_PETS = "1";
+	RegisterForSave("SHOW_PARTY_PETS");
 	UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value = GetCVar("statusBarText");
 	this:RegisterEvent("CVAR_UPDATE");
 end
@@ -129,29 +132,21 @@ function UIOptionsFrame_Save()
 		if ( value.setFunc ) then
 			value.setFunc(value.value);
 		elseif ( value.uvar == "SIMPLE_CHAT" ) then
-			SIMPLE_CHAT = value.value;
+			setglobal(value.uvar, value.value);
 			if ( value.value == "1" ) then
 				FCF_Set_SimpleChat();
 			else
 				FCF_Set_NormalChat();
 			end
-		elseif ( value.uvar == "CHAT_LOCKED" ) then
-			CHAT_LOCKED = value.value;
-		elseif ( value.uvar == "REMOVE_CHAT_DELAY" ) then
-			REMOVE_CHAT_DELAY = value.value;
-			SetChatMouseOverDelay(REMOVE_CHAT_DELAY);
-		elseif ( value.uvar == "SHOW_DAMAGE" ) then
-			SHOW_DAMAGE = value.value;
-		elseif ( value.uvar == "LOCK_ACTIONBAR" ) then
-			LOCK_ACTIONBAR = value.value;
-		elseif ( value.uvar == "SHOW_NEWBIE_TIPS" ) then
-			SHOW_NEWBIE_TIPS = value.value;
-		elseif ( value.uvar == "SHOW_BUFF_DURATIONS" ) then
-			SHOW_BUFF_DURATIONS = value.value;
-		elseif ( value.uvar == "ALWAYS_SHOW_MULTIBARS" ) then
-			ALWAYS_SHOW_MULTIBARS = value.value;
+		elseif ( value.uvar == "SHOW_PARTY_PETS" ) then
+			setglobal(value.uvar, value.value);
+			for i=1, MAX_PARTY_MEMBERS do
+					PartyMemberFrame_UpdatePet(i);
+			end
+		elseif ( value.uvar ) then
+			setglobal(value.uvar, value.value);
 		elseif ( index == "SHOW_TUTORIALS" ) then
-			if ( value.value+0 ~= TutorialsEnabled() ) then
+			if ( tonumber(value.value) ~= TutorialsEnabled() ) then
 				if ( value.value == "1" ) then
 					ResetTutorials();
 					TutorialFrameCheckButton:SetChecked(1);

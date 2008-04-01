@@ -3,6 +3,7 @@ NUM_WORLDMAP_POIS = 50;
 NUM_WORLDMAP_POI_COLUMNS = 4;
 WORLDMAP_POI_TEXTURE_WIDTH = 64;
 NUM_WORLDMAP_OVERLAYS = 40;
+NUM_WORLDMAP_FLAGS = 2;
 
 function WorldMapFrame_OnLoad()
 	this:RegisterEvent("WORLD_MAP_UPDATE");
@@ -294,7 +295,6 @@ function WorldMapButton_OnUpdate()
 				partyY = -partyY * WorldMapDetailFrame:GetHeight();
 				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
 				partyMemberFrame.name = nil;
-				partyMemberFrame.unit = "raid"..i;
 				partyMemberFrame:Show();
 				playerCount = playerCount + 1;
 			end
@@ -309,13 +309,8 @@ function WorldMapButton_OnUpdate()
 				partyX = partyX * WorldMapDetailFrame:GetWidth();
 				partyY = -partyY * WorldMapDetailFrame:GetHeight();
 				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
-				partyMemberFrame.name = nil;
 				partyMemberFrame:Show();
 			end
-		end
-		for i=1, MAX_RAID_MEMBERS do
-			partyMemberFrame = getglobal("WorldMapRaid"..i);
-			partyMemberFrame:Hide();
 		end
 	end
 	-- Position Team Members
@@ -334,7 +329,29 @@ function WorldMapButton_OnUpdate()
 		end
 	end
 
-	--Position corpse
+	-- Position flags
+	local flagX, flagY, flagToken, flagFrame, flagTexture;
+	local numFlags = GetNumBattlefieldFlagPositions();
+	for i=1, numFlags do
+		flagX, flagY, flagToken = GetBattlefieldFlagPosition(i);
+		flagFrame = getglobal("WorldMapFlag"..i);
+		flagTexture = getglobal("WorldMapFlag"..i.."Texture");
+		if ( flagX == 0 and flagY == 0 ) then
+			flagFrame:Hide();
+		else
+			flagX = flagX * WorldMapDetailFrame:GetWidth();
+			flagY = -flagY * WorldMapDetailFrame:GetHeight();
+			flagFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", flagX, flagY);
+			flagTexture:SetTexture("Interface\\WorldStateFrame\\"..flagToken);
+			flagFrame:Show();
+		end
+	end
+	for i=numFlags+1, NUM_WORLDMAP_FLAGS do
+		flagFrame = getglobal("WorldMapFlag"..i);
+		flagFrame:Hide();
+	end
+
+	-- Position corpse
 	local corpseX, corpseY = GetCorpseMapPosition();
 	if ( corpseX == 0 and corpseY == 0 ) then
 		WorldMapCorpse:Hide();

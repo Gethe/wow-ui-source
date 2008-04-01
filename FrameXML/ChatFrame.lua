@@ -954,7 +954,11 @@ SlashCmdList["GUILD_INFO"] = function(msg)
 end
 
 SlashCmdList["GUILD_ROSTER"] = function(msg)
-	GuildRoster();
+	--GuildRoster();
+	if ( IsInGuild() ) then
+		PanelTemplates_SetTab(FriendsFrame, 3);
+		ShowUIPanel(FriendsFrame);
+	end
 end
 
 --SlashCmdList["GUILD_HELP"] = function(msg)
@@ -1457,8 +1461,8 @@ function ChatFrame_OnUpdate(elapsedSec)
 	end
 end
 
-function ChatFrame_OnHyperlinkShow(link, button)
-	SetItemRef(link, button);
+function ChatFrame_OnHyperlinkShow(link, text, button)
+	SetItemRef(link, text, button);
 end
 
 function ChatFrame_OnMouseWheel(value)

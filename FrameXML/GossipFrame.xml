@@ -179,7 +179,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="GossipFrame" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-42" y="-30"/>
+							<AbsDimension x="-42" y="-31"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -336,6 +336,18 @@
 											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton15" relativePoint="BOTTOMLEFT"/>
 										</Anchors>
 									</Button>
+									<Frame name="GossipSpacerFrame">
+										<Size>
+											<AbsDimension x="5" y="15"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOP">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
 								</Frames>
 							</Frame>
 						</ScrollChild>

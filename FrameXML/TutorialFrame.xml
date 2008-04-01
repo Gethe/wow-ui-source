@@ -13,7 +13,7 @@
 			</Anchor>
 		</Anchors>
 		<TitleRegion setAllPoints="true"/>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
 			</EdgeSize>

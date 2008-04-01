@@ -43,23 +43,64 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentClass" inherits="GameFontNormalSmall" justifyH="LEFT">
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentClass">
+				<Size>
+					<AbsDimension x="50" y="8"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="110" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						RaidPulloutButton_OnDragStart(RaidPullout_GenerateClassFrame(this:GetText(), this:GetParent().class));
+					</OnDragStart>
+					<OnDragStop>
+						if ( MOVING_RAID_PULLOUT ) then
+							MOVING_RAID_PULLOUT:StopMovingOrSizing();
+							ValidateFramePosition(MOVING_RAID_PULLOUT, 25);
+						end
+					</OnDragStop>
+				</Scripts>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="50" y="8"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="110" y="1"/>
+								<AbsDimension x="0" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+				</NormalText>
+				<HighlightText inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="50" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</HighlightText>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				this:SetFrameLevel(this:GetFrameLevel() + 2);
+				getglobal(this:GetName().."Class"):SetFrameLevel(this:GetFrameLevel() + 2);
 				this:RegisterForDrag("LeftButton");
 				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
@@ -71,7 +112,13 @@
 			</OnDragStart>
 			<OnDragStop>
 				RaidGroupButton_OnDragStop();
-			</OnDragStop> 
+			</OnDragStop>
+			<OnEnter>
+				RaidGroupButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton">
 			<TexCoords left="0" right="0.640625" top="0" bottom="0.4375"/>
@@ -107,15 +154,6 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="10"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<Texture file="Interface\RaidFrame\UI-RaidFrame-GroupOutline">
 					<Size>
 						<AbsDimension x="162" y="80"/>
@@ -128,6 +166,34 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentLabel">
+				<Size>
+					<AbsDimension x="156" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						RaidPulloutButton_OnDragStart(RaidPullout_GenerateGroupFrame());
+					</OnDragStart>
+					<OnDragStop>
+						if ( MOVING_RAID_PULLOUT ) then
+							MOVING_RAID_PULLOUT:StopMovingOrSizing();
+							ValidateFramePosition(MOVING_RAID_PULLOUT, 25);
+						end
+					</OnDragStop>
+				</Scripts>
+				<NormalText inherits="GameFontNormalSmall"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+			</Button>
 			<Button name="$parentSlot1" inherits="RaidGroupSlotTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -180,6 +246,281 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	<Button name="RaidBuffButtonTemplate" inherits="PartyBuffButtonTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="12" y="12"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Overlay"):SetWidth(13);
+				getglobal(this:GetName().."Overlay"):SetHeight(13);
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				if ( this:GetParent():GetParent().showBuffs ) then
+					GameTooltip:SetUnitBuff(this:GetParent().unit, this:GetID());
+				else
+					GameTooltip:SetUnitDebuff(this:GetParent().unit, this:GetID());
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="RaidPulloutButtonTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="57" y="25"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="1" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
+					<Size>
+						<AbsDimension x="64" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.5"/>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormalSmall">
+					<Size>
+						<AbsDimension x="52" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentHealthBar" inherits="TextStatusBar" enableMouse="false">
+				<Size>
+					<AbsDimension x="51" y="4"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="3" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEvent>
+						UnitFrameHealthBar_Update(this, arg1);
+					</OnEvent>
+					<OnValueChanged>
+						UnitFrameHealthBar_OnValueChanged(arg1);
+					</OnValueChanged>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<StatusBar name="$parentManaBar" inherits="TextStatusBar" enableMouse="false">
+				<Size>
+					<AbsDimension x="51" y="4"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentHealthBar" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEvent>
+						UnitFrameManaBar_Update(this, arg1);
+					</OnEvent>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="0" b="1.0"/>
+			</StatusBar>
+			<Button name="$parentClearButton" setAllPoints="true">
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						this:SetFrameLevel(this:GetFrameLevel() + 1);
+					</OnLoad>
+					<OnClick>
+						RaidPulloutButton_OnClick();
+					</OnClick>
+					<OnEnter>
+						RaidGroupButton_OnEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentDebuff1" inherits="RaidBuffButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff2" inherits="RaidBuffButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff3" inherits="RaidBuffButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDebuff1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff4" inherits="RaidBuffButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				if ( this:GetID() ~= 1 ) then
+					this:SetPoint("TOP", this:GetParent():GetName().."Button"..(this:GetID()-1), "BOTTOM", 0, -8);
+				end
+				this:RegisterEvent("UNIT_HEALTH");
+				this:RegisterEvent("UNIT_AURA");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEvent>
+				RaidPulloutButton_OnEvent();
+			</OnEvent>
+		</Scripts>
+	</Button>
+	<Button name="RaidPulloutFrameTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="72" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentName" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentButton1" inherits="RaidPulloutButtonTemplate" id="1"/>
+			<Button name="$parentButton2" inherits="RaidPulloutButtonTemplate" id="2"/>
+			<Button name="$parentButton3" inherits="RaidPulloutButtonTemplate" id="3"/>
+			<Button name="$parentButton4" inherits="RaidPulloutButtonTemplate" id="4"/>
+			<Button name="$parentButton5" inherits="RaidPulloutButtonTemplate" id="5"/>
+			<Button name="$parentButton6" inherits="RaidPulloutButtonTemplate" id="6"/>
+			<Button name="$parentButton7" inherits="RaidPulloutButtonTemplate" id="7"/>
+			<Button name="$parentButton8" inherits="RaidPulloutButtonTemplate" id="8"/>
+			<Button name="$parentButton9" inherits="RaidPulloutButtonTemplate" id="9"/>
+			<Button name="$parentButton10" inherits="RaidPulloutButtonTemplate" id="10"/>
+			<Button name="$parentButton11" inherits="RaidPulloutButtonTemplate" id="11"/>
+			<Button name="$parentButton12" inherits="RaidPulloutButtonTemplate" id="12"/>
+			<Button name="$parentButton13" inherits="RaidPulloutButtonTemplate" id="13"/>
+			<Button name="$parentButton14" inherits="RaidPulloutButtonTemplate" id="14"/>
+			<Button name="$parentButton15" inherits="RaidPulloutButtonTemplate" id="15"/>
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						RaidPulloutDropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentMenuBackdrop" setAllPoints="true">
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.5, 0.5, 0.5);
+						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+						this:SetAlpha(0.7);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-13" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("RAID_ROSTER_UPDATE");
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEvent>
+				RaidPullout_OnEvent();
+			</OnEvent>
+			<OnDragStart>
+				this:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+				ValidateFramePosition(this, 25);
+			</OnDragStop>
+			<OnClick>
+				if (arg1 == "RightButton") then
+					ToggleDropDownMenu(1, nil, getglobal(this:GetName().."DropDown"));
+				end
+			</OnClick>
+			<OnMouseUp>
+				this:StopMovingOrSizing();
+			</OnMouseUp> 
+		</Scripts>
+	</Button>
 	<Frame name="RaidFrame" setAllPoints="true" hidden="true" parent="FriendsFrame">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -394,4 +735,16 @@
 			</OnUpdate>
 		</Scripts>
 	</Frame>
+	<Button name="RaidPullout1" inherits="RaidPulloutFrameTemplate" id="1"/>
+	<Button name="RaidPullout2" inherits="RaidPulloutFrameTemplate" id="2"/>
+	<Button name="RaidPullout3" inherits="RaidPulloutFrameTemplate" id="3"/>
+	<Button name="RaidPullout4" inherits="RaidPulloutFrameTemplate" id="4"/>
+	<Button name="RaidPullout5" inherits="RaidPulloutFrameTemplate" id="5"/>
+	<Button name="RaidPullout6" inherits="RaidPulloutFrameTemplate" id="6"/>
+	<Button name="RaidPullout7" inherits="RaidPulloutFrameTemplate" id="7"/>
+	<Button name="RaidPullout8" inherits="RaidPulloutFrameTemplate" id="8"/>
+	<Button name="RaidPullout9" inherits="RaidPulloutFrameTemplate" id="9"/>
+	<Button name="RaidPullout10" inherits="RaidPulloutFrameTemplate" id="10"/>
+	<Button name="RaidPullout11" inherits="RaidPulloutFrameTemplate" id="11"/>
+	<Button name="RaidPullout12" inherits="RaidPulloutFrameTemplate" id="12"/>
 </Ui>

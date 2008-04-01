@@ -40,6 +40,7 @@ function TargetFrame_Update()
 		TargetFrame_CheckFaction();
 		TargetFrame_CheckClassification();
 		TargetFrame_CheckDead();
+		TargetFrame_CheckDishonorableKill();
 		if ( UnitIsPartyLeader("target") ) then
 			TargetLeaderIcon:Show();
 		else
@@ -229,6 +230,17 @@ function TargetFrame_CheckDead()
 		TargetDeadText:Show();
 	else
 		TargetDeadText:Hide();
+	end
+end
+
+function TargetFrame_CheckDishonorableKill()
+	if ( UnitIsCivilian("target") ) then
+		-- Is a dishonorable kill
+		--[[
+		this.name:SetText(RED_FONT_COLOR_CODE..PVP_RANK_CIVILIAN..FONT_COLOR_CODE_CLOSE);
+		TargetFrameNameBackground:SetVertexColor(0.36, 0.05, 0.05);
+		]]--
+		TargetFrameNameBackground:SetVertexColor(1.0, 1.0, 1.0);
 	end
 end
 

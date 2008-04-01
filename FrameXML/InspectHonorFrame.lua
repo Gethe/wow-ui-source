@@ -17,18 +17,21 @@ function InspectHonorFrame_OnShow()
 end
 
 function InspectHonorFrame_Update()
-	local lifetimeRank, sessionHK, sessionDK, yesterdayHK, yesterdayDK, lastweekHK, lastweekDK, lifetimeHK, lifetimeDK, yesterdayContribution, lastweekContribution, lastweekRank = GetInspectHonorData();
 	
+	local sessionHK, sessionDK, yesterdayHK, yesterdayHonor, thisweekHK, thisweekHonor, lastweekHK, lastweekHonor, lastweekStanding, lifetimeHK, lifetimeDK, lifetimeRank = GetInspectHonorData();
+
 	-- Yesterday's values
 	InspectHonorFrameYesterdayHKValue:SetText(yesterdayHK);
-	InspectHonorFrameYesterdayDKValue:SetText(yesterdayDK);
-	InspectHonorFrameYesterdayContributionValue:SetText(yesterdayContribution);
+	InspectHonorFrameYesterdayContributionValue:SetText(yesterdayHonor);
+
+	-- This week's values
+	InspectHonorFrameThisWeekHKValue:SetText(thisweekHK);
+	InspectHonorFrameThisWeekContributionValue:SetText(thisweekHonor);
 	
 	-- Last Week's values
 	InspectHonorFrameLastWeekHKValue:SetText(lastweekHK);
-	InspectHonorFrameLastWeekDKValue:SetText(lastweekDK);
-	InspectHonorFrameLastWeekContributionValue:SetText(lastweekContribution);
-	InspectHonorFrameLastWeekStandingValue:SetText(lastweekRank);
+	InspectHonorFrameLastWeekContributionValue:SetText(lastweekHonor);
+	InspectHonorFrameLastWeekStandingValue:SetText(lastweekStanding);
 
 	-- This session's values
 	InspectHonorFrameCurrentHKValue:SetText(sessionHK);
@@ -54,9 +57,6 @@ function InspectHonorFrame_Update()
 	InspectHonorFrameCurrentPVPTitle:SetText(rankName);
 	InspectHonorFrameCurrentPVPTitle:Show();
 
-	-- Recenter rank text
-	InspectHonorFrameCurrentPVPTitle:SetPoint("TOP", "InspectHonorFrame", "TOP", - InspectHonorFrameCurrentPVPRank:GetWidth()/2, -81);
-
 	-- Set icon
 	if ( rankNumber > 0 ) then
 		InspectHonorFramePvPIcon:SetTexture(format("%s%02d","Interface\\PvPRankBadges\\PvPRank",rankNumber));
@@ -64,4 +64,16 @@ function InspectHonorFrame_Update()
 	else
 		InspectHonorFramePvPIcon:Hide();
 	end
+
+	-- Set rank progress and bar color
+	local factionGroup, factionName = UnitFactionGroup("target");
+	if ( factionGroup == "Alliance" ) then
+		InspectHonorFrameProgressBar:SetStatusBarColor(0.05, 0.15, 0.36);
+	else
+		InspectHonorFrameProgressBar:SetStatusBarColor(0.63, 0.09, 0.09);
+	end
+	InspectHonorFrameProgressBar:SetValue(GetInspectPVPRankProgress());
+
+	-- Recenter rank text
+	InspectHonorFrameCurrentPVPTitle:SetPoint("TOP", "InspectHonorFrame", "TOP", - InspectHonorFrameCurrentPVPRank:GetWidth()/2, -83);
 end

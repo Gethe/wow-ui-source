@@ -260,7 +260,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="QuestFrame" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-42" y="-30"/>
+							<AbsDimension x="-42" y="-31"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

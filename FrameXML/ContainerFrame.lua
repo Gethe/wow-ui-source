@@ -377,7 +377,6 @@ function updateContainerFrameAnchors()
 	UIParent_ManageRightSideFrames();
 	local xOffset = CONTAINER_OFFSET_X;
 	local uiScale = GetCVar("uiscale") + 0;
---	local screenHeight = GetScreenHeight();
 	local screenHeight = 768;
 	if ( GetCVar("useUiScale") == "1" ) then
 		screenHeight = 768 / uiScale;

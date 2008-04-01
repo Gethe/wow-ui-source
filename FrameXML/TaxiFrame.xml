@@ -206,7 +206,6 @@
 					<Button name="TaxiButton62" inherits="TaxiButtonTemplate" id="62"/>
 					<Button name="TaxiButton63" inherits="TaxiButtonTemplate" id="63"/>
 					<Button name="TaxiButton64" inherits="TaxiButtonTemplate" id="64"/>
-
 				</Frames>
 			</TaxiRouteFrame>
 		</Frames>

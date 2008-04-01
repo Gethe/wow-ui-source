@@ -8,11 +8,6 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	button1 = TEXT(ENTER_BATTLE),
 	button2 = TEXT(HIDE),
 	OnAccept = function()
-		if ( data ) then
-			getglobal(this:GetParent():GetName().."Text"):SetText(format(TEXT(CONFIRM_XP_LOSS_AGAIN), data));
-			this:GetParent().data = nil;
-			return 1;
-		end
 		BattlefieldFrame_EnterBattlefield();
 	end,
 	timeout = 0,
@@ -313,6 +308,10 @@ StaticPopupDialogs["DEATH"] = {
 	button2 = TEXT(USE_SOULSTONE),
 	OnShow = function()
 		this.timeleft = GetReleaseTimeRemaining();
+		local text = HasSoulstone();
+		if ( text ) then
+			getglobal(this:GetName().."Button2"):SetText(text);
+		end
 	end,
 	OnAccept = function()
 		RepopMe();
@@ -1112,11 +1111,7 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 };
 StaticPopupDialogs["BILLING_NAG"] = {
 	text = TEXT(BILLING_NAG_DIALOG);
-	button1 = TEXT(MANAGE_ACCOUNT),
-	button2 = TEXT(CANCEL),
-	OnAccept = function()
-		LaunchURL(TEXT(AUTH_NO_TIME_URL));
-	end,
+	button1 = TEXT(OKAY),
 	timeout = 0,
 	showAlert = 1
 };
@@ -1129,6 +1124,35 @@ StaticPopupDialogs["CONFIRM_LOOT_ROLL"] = {
 	end,
 	timeout = 0,
 	whileDead = 1,
+	exclusive = 1
+};
+StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
+	text = TEXT(ENTER_CODE),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	hasEditBox = 1,
+	OnAccept = function(data)
+		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+		SelectGossipOption(data, editBox:GetText());
+	end,
+	OnShow = function()
+		getglobal(this:GetName().."EditBox"):SetFocus();
+	end,
+	OnHide = function()
+		if ( ChatFrameEditBox:IsVisible() ) then
+			ChatFrameEditBox:SetFocus();
+		end
+		getglobal(this:GetName().."EditBox"):SetText("");
+	end,
+	EditBoxOnEnterPressed = function(data)
+		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+		SelectGossipOption(data, editBox:GetText());
+		this:GetParent():Hide();
+	end,
+	EditBoxOnEscapePressed = function()
+		this:GetParent():Hide();
+	end,
+	timeout = 0,
 	exclusive = 1
 };
 
@@ -1272,13 +1296,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
 	elseif ( which == "BILLING_NAG" ) then
-		if ( text_arg1 < 60 ) then
-			text:SetText(format(StaticPopupDialogs[which].text, text_arg1, GetText("MINUTES", nil, text_arg1)));
-		elseif ( text_arg1 < (60 * 24) ) then
-			text:SetText(format(StaticPopupDialogs[which].text, ceil(text_arg1 / 60), GetText("HOURS", nil, ceil(text_arg1 / 60))));
-		else
-			text:SetText(format(StaticPopupDialogs[which].text, ceil(text_arg1 / (60 * 24)), GetText("DAYS", nil, ceil(text_arg1 / (60 * 24)))));
-		end
+		text:SetText(format(StaticPopupDialogs[which].text, text_arg1, GetText("MINUTES", nil, text_arg1)));
 	else
 		text:SetText(format(StaticPopupDialogs[which].text, text_arg1, text_arg2));
 	end

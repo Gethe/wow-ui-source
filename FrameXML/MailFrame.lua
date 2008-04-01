@@ -30,6 +30,11 @@ function MailFrame_OnEvent()
 			return;
 		end
 
+		-- Update the roster so auto-completion works
+		if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
+			GuildRoster();
+		end
+
 		OpenBackpack();
 		SendMailFrame_Update();
 		MailFrameTab_OnClick(1);
@@ -494,11 +499,26 @@ end
 function SendMailFrame_SendeeAutocomplete()
 	local text = this:GetText();
 	local textlen = strlen(text);
-        local numFriends = GetNumFriends();
-	local name;
+	local numFriends, name;
+
+	-- First check your friends list
+    numFriends = GetNumFriends();
 	if ( numFriends > 0 ) then
 		for i=1, numFriends do
-			name = 	GetFriendInfo(i);
+			name = GetFriendInfo(i);
+			if ( strfind(strupper(name), "^"..strupper(text)) ) then
+				this:SetText(name);
+				this:HighlightText(textlen, -1);
+				return;
+			end
+		end
+	end
+
+	-- No match, check your guild list
+	numFriends = GetNumGuildMembers();
+	if ( numFriends > 0 ) then
+		for i=1, numFriends do
+			name = GetGuildRosterInfo(i);
 			if ( strfind(strupper(name), "^"..strupper(text)) ) then
 				this:SetText(name);
 				this:HighlightText(textlen, -1);

@@ -191,9 +191,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentHonorGained" inherits="GameFontNormal" text="1008">
+				<FontString name="$parentHonorGained" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="RIGHT">
+						<Anchor point="CENTER">
 							<Offset>
 								<AbsDimension x="-7" y="0"/>
 							</Offset>
@@ -675,6 +675,24 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="WorldStateScorePlayerCount" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="WorldStateScoreBattlegroundRunTime" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="WorldStateScoreFrameTopBackground" file="Interface\WorldStateFrame\WorldStateFinalScoreFrame-TopBackground">
@@ -1022,6 +1040,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</Frame>
+			<!--
 			<Frame name="WorldStateScoreButton23" inherits="WorldStateScoreTemplate" id="23">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="WorldStateScoreButton22" relativePoint="BOTTOMLEFT">
@@ -1031,6 +1050,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</Frame>
+			-->
 			<ScrollFrame name="WorldStateScoreScrollFrame" inherits="FauxScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="296" y="361"/>
@@ -1159,60 +1179,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="WorldStateScoreTotalFrame" hidden="true">
-				<Size>
-					<AbsDimension x="505" y="16"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="17" y="100"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\WorldStateFrame\WorldStateFinalScore-Highlight">
-							<Size>
-								<AbsDimension x="256" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentRight" file="Interface\WorldStateFrame\WorldStateFinalScore-Highlight">
-							<Size>
-								<AbsDimension x="20" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentText" inherits="GameFontHighlight">
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
 			<Frame name="WorldStateScoreWinnerFrame" hidden="true">
 				<Size>
 					<AbsDimension x="505" y="16"/>

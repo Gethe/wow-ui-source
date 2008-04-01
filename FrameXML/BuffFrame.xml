@@ -70,7 +70,7 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Button name="BuffButtonTempEnchant" inherits="BuffButtonTemplate" virtual="true" justifyH="LEFT">
+	<Button name="BuffButtonTempEnchant" inherits="BuffButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" file="Interface\Buttons\UI-TempEnchant-Border">

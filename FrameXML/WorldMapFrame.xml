@@ -99,6 +99,24 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	<Frame name="WorldMapFlagTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 2);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="16" y="16"/>
@@ -133,18 +151,6 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-			<Frame name="WorldMapPositioningGuide2">
-				<Size>
-					<AbsDimension x="1024" y="768" />
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativePoint="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0" />
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
 	<Frame name="WorldMapFrame" setAllPoints="true" frameStrata="FULLSCREEN" hidden="true" enableKeyboard="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -692,6 +698,8 @@
 					<Frame name="WorldMapRaid38" inherits="WorldMapRaidUnitTemplate" id="38"/>
 					<Frame name="WorldMapRaid39" inherits="WorldMapRaidUnitTemplate" id="39"/>
 					<Frame name="WorldMapRaid40" inherits="WorldMapRaidUnitTemplate" id="40"/>
+					<Frame name="WorldMapFlag1" inherits="WorldMapFlagTemplate" id="1"/>
+					<Frame name="WorldMapFlag2" inherits="WorldMapFlagTemplate" id="2"/>
 					<Frame name="WorldMapCorpse" inherits="WorldMapCorpseTemplate"/>
 					<Button name="WorldMapFramePOI1" inherits="WorldMapFramePOIButtonTemplate"/>
 					<Button name="WorldMapFramePOI2" inherits="WorldMapFramePOIButtonTemplate"/>

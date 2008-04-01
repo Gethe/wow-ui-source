@@ -352,6 +352,10 @@ function UnitPopup_OnUpdate(elapsed)
 	if ( inParty and IsPartyLeader() ) then
 		isLeader = 1;
 	end
+	local isAssistant = 0;
+	if ( IsRaidOfficer() ) then
+		isAssistant = 1;
+	end
 	local count = 0;
 	local dropdownFrame = getglobal(UIDROPDOWNMENU_OPEN_MENU);
 	for index, value in UnitPopupMenus[dropdownFrame.which] do
@@ -374,7 +378,7 @@ function UnitPopup_OnUpdate(elapsed)
 					enable = 0;
 				end
 			elseif ( value == "INVITE" ) then
-				if ( inParty == 1 and isLeader == 0 ) then
+				if ( inParty == 1 and (isLeader == 0 and isAssistant == 0)) then
 					enable = 0;
 				end
 			elseif ( value == "UNINVITE" or value == "PROMOTE" ) then

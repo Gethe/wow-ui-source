@@ -8,7 +8,6 @@ function PlayerFrame_OnLoad()
 	PlayerFrame_UpdatePvPStatus();
 	this:RegisterEvent("UNIT_LEVEL");
 	this:RegisterEvent("UNIT_COMBAT");
-	this:RegisterEvent("UNIT_SPELLMISS");
 	this:RegisterEvent("UNIT_PVP_UPDATE");
 	this:RegisterEvent("UNIT_MAXMANA");
 	this:RegisterEvent("PLAYER_ENTER_COMBAT");
@@ -80,12 +79,6 @@ function PlayerFrame_OnEvent(event)
 	if ( event == "UNIT_COMBAT" ) then
 		if ( arg1 == "player" ) then
 			CombatFeedback_OnCombatEvent(arg2, arg3, arg4, arg5);
-		end
-		return;
-	end
-	if ( event == "UNIT_SPELLMISS" ) then
-		if ( arg1 == "player" ) then
-			CombatFeedback_OnSpellMissEvent(arg2);
 		end
 		return;
 	end

@@ -550,7 +550,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="MerchantFrame" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-29" y="-8"/>
+							<AbsDimension x="-30" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

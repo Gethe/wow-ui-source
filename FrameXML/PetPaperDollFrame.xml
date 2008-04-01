@@ -193,9 +193,6 @@
 					<OnEvent>
 						this:RefreshUnit();
 					</OnEvent>
-					<OnModelUpdate>
-                        this:UpdateModel();
-                    </OnModelUpdate>
 					<OnUpdate>
                         Model_OnUpdate(arg1, PetModelFrame);
                     </OnUpdate>
@@ -212,9 +209,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 						<Scripts>
 							<OnLoad>
 								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
@@ -223,6 +217,9 @@
 								Model_RotateLeft(PetModelFrame);
 							</OnClick>
 						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
 					<Button name="PetModelFrameRotateRightButton">
 						<Size>
@@ -231,9 +228,6 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PetModelFrameRotateLeftButton" relativePoint="TOPRIGHT"/>
 						</Anchors>
-						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 						<Scripts>
 							<OnLoad>
 								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
@@ -242,6 +236,9 @@
 								Model_RotateRight(PetModelFrame);
 							</OnClick>
 						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
 				</Frames>
 			</PlayerModel>

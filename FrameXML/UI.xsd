@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Sam Lantinga (Blizzard Entertainment) -->
-<xs:schema targetNamespace="http://www.blizzard.com/wow/ui/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/" xmlns:ui="http://www.blizzard.com/wow/ui/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Sam Lantinga (Blizzard Entertainment) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/" xmlns:ui="http://www.blizzard.com/wow/ui/" targetNamespace="http://www.blizzard.com/wow/ui/" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:simpleType name="FRAMEPOINT">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="TOPLEFT"/>
@@ -603,4 +603,49 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:complexType name="WorldFrameType">
+		<xs:complexContent>
+			<xs:extension base="FrameType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="WorldFrame" type="WorldFrameType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="GameTooltipType">
+		<xs:complexContent>
+			<xs:extension base="FrameType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GameTooltip" type="GameTooltipType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="MinimapType">
+		<xs:complexContent>
+			<xs:extension base="FrameType">
+				<xs:attribute name="minimapArrowModel" type="xs:string"/>
+				<xs:attribute name="minimapPlayerModel" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Minimap" type="MinimapType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="PlayerModelType">
+		<xs:complexContent>
+			<xs:extension base="ModelType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="PlayerModel" type="PlayerModelType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="TabardModelType">
+		<xs:complexContent>
+			<xs:extension base="PlayerModelType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="TabardModel" type="TabardModelType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="LootButtonType">
+		<xs:complexContent>
+			<xs:extension base="ButtonType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="LootButton" type="LootButtonType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="TaxiRouteFrameType">
+		<xs:complexContent>
+			<xs:extension base="FrameType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="TaxiRouteFrame" type="TaxiRouteFrameType" substitutionGroup="ui:Frame"/>
 </xs:schema>

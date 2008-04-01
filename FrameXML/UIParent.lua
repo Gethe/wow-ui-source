@@ -112,6 +112,7 @@ function UIParent_OnLoad()
 	this:RegisterEvent("INSTANCE_BOOT_STOP");
 	this:RegisterEvent("CONFIRM_TALENT_WIPE");
 	this:RegisterEvent("CONFIRM_SUMMON");
+	this:RegisterEvent("GOSSIP_ENTER_CODE");
 	this:RegisterEvent("BILLING_NAG_DIALOG");
 	this:RegisterEvent("VARIABLES_LOADED");
 end
@@ -403,6 +404,13 @@ function UIParent_OnEvent(event)
 	end
 	if ( event == "BILLING_NAG_DIALOG" ) then
 		StaticPopup_Show("BILLING_NAG", arg1);
+		return;
+	end
+	if ( event == "GOSSIP_ENTER_CODE" ) then
+		local dialog = StaticPopup_Show("GOSSIP_ENTER_CODE");
+		if ( dialog ) then
+			dialog.data = arg1;
+		end
 		return;
 	end
 end
@@ -1148,6 +1156,12 @@ function MouseIsOver(frame, topOffset, bottomOffset, leftOffset, rightOffset)
 		leftOffset = 0;
 		rightOffset = 0;
 	end
+	
+	-- Hack to fix a symptom not the real issue
+	if ( not left ) then
+		return;
+	end
+
 	left = left + leftOffset;
 	right = right + rightOffset;
 	top = top + topOffset;
@@ -1340,13 +1354,13 @@ end
 
 function PlayerStatus_OnUpdate(elapsed)
 	local min, max = PlayerFrameHealthBar:GetMinMaxValues();
-	if ( (PlayerFrameHealthBar:GetValue()/(max - min) <= 0.2) and not LowHealthFrame.flashing and SHOW_FULLSCREEN_STATUS+0 ~= 0 ) then
+	if ( (PlayerFrameHealthBar:GetValue()/(max - min) <= 0.2) and not LowHealthFrame.flashing and tonumber(SHOW_FULLSCREEN_STATUS) ~= 0 ) then
 		UIFrameFlash(LowHealthFrame, 0.5, 0.5, 100);
 		LowHealthFrame.flashing = 1;
 	elseif ( ((PlayerFrameHealthBar:GetValue()/(max - min) > 0.1) and LowHealthFrame.flashing) or UnitIsDead("player") ) then
 		UIFrameFlash(LowHealthFrame, 1, 1, 0);
 		LowHealthFrame.flashing = nil;
-	elseif ( UIParent.isOutOfControl and not OutOfControlFrame.flashing and SHOW_FULLSCREEN_STATUS+0 ~= 0 ) then
+	elseif ( UIParent.isOutOfControl and not OutOfControlFrame.flashing and tonumber(SHOW_FULLSCREEN_STATUS) ~= 0 ) then
 		UIFrameFlash(OutOfControlFrame, 0.5, 0.5, 100);
 		OutOfControlFrame.flashing = 1;
 	elseif ( not UIParent.isOutOfControl and OutOfControlFrame.flashing ) then

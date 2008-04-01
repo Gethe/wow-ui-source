@@ -362,7 +362,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="SpellBookFrame" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-44" y="-26"/>
+							<AbsDimension x="-44" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

@@ -36,6 +36,17 @@ function GossipFrameUpdate()
 	else
 		GossipFramePortrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 	end
+
+	-- Set Spacer
+	if ( GossipFrame.buttonIndex > 1 ) then
+		GossipSpacerFrame:SetPoint("TOP", "GossipTitleButton"..GossipFrame.buttonIndex-1, "BOTTOM", 0, 0);
+		GossipSpacerFrame:Show();
+	else
+		GossipSpacerFrame:Hide();
+	end
+
+	-- Update scrollframe
+	GossipGreetingScrollFrame:SetVerticalScroll(0);
 	GossipGreetingScrollFrame:UpdateScrollChildRect();
 end
 

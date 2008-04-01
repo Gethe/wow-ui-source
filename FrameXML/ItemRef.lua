@@ -1,8 +1,9 @@
 
-function SetItemRef(link, button)
+function SetItemRef(link, text, button)
 	if ( strsub(link, 1, 6) == "player" ) then
 		local name = strsub(link, 8);
 		if ( name and (strlen(name) > 0) ) then
+			name = gsub(name, "([^%s]*)%s+([^%s]*)", "%2");
 			if ( IsShiftKeyDown() ) then
 				local staticPopup = StaticPopup_Visible("ADD_IGNORE");
 				if ( staticPopup ) then
@@ -21,9 +22,15 @@ function SetItemRef(link, button)
 		return;
 	end
 
-	ShowUIPanel(ItemRefTooltip);
-	if ( not ItemRefTooltip:IsVisible() ) then
-		ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
+	if ( IsShiftKeyDown() ) then
+		if ( ChatFrameEditBox:IsVisible() ) then
+			ChatFrameEditBox:Insert(text);
+		end
+	else
+		ShowUIPanel(ItemRefTooltip);
+		if ( not ItemRefTooltip:IsVisible() ) then
+			ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
+		end
+		ItemRefTooltip:SetHyperlink(link);
 	end
-	ItemRefTooltip:SetHyperlink(link);
 end

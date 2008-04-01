@@ -50,23 +50,6 @@
 				</Scripts>
 			</Frame>
 			<Frame setAllPoints="true">
-				<Frame name="PetFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="-10" y="-50"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						PetFrameDropDown_OnLoad();
-					</OnLoad>
-				</Scripts>
-			</Frame>
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>

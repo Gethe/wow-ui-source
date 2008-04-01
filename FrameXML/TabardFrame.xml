@@ -363,9 +363,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 						<Scripts>
 							<OnLoad>
 								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
@@ -374,6 +371,9 @@
 								TabardCharacterModelRotateLeftButton_OnClick();
 							</OnClick>
 						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
 					<Button name="TabardCharacterModelRotateRightButton">
 						<Size>
@@ -386,9 +386,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 						<Scripts>
 							<OnLoad>
 								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
@@ -397,15 +394,15 @@
 								TabardCharacterModelRotateRightButton_OnClick();
 							</OnClick>
 						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
 				</Frames>
 				<Scripts>
                     <OnLoad>
                         TabardCharacterModelFrame_OnLoad();
                     </OnLoad>
-                    <OnModelUpdate>
-                        this:UpdateModel();
-                    </OnModelUpdate>
 					<OnUpdate>
 						TabardCharacterModelFrame_OnUpdate(arg1);
 					</OnUpdate>

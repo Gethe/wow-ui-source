@@ -64,7 +64,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="22" y="-96"/>
+								<AbsDimension x="22" y="-69"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -76,7 +76,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="275" y="-96"/>
+								<AbsDimension x="275" y="-69"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -88,7 +88,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="22" y="-352"/>
+								<AbsDimension x="22" y="-325"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -100,7 +100,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="275" y="-352"/>
+								<AbsDimension x="275" y="-325"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -125,36 +125,45 @@
 				</FontString>
 				<FontString name="InspectHonorFrameCurrentSessionTitle" inherits="GameFontNormal" text="HONOR_THIS_SESSION">
 					<Anchors>
-						<Anchor point="TOPLEfT">
+						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="36" y="-115"/>
+								<AbsDimension x="36" y="-112"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="InspectHonorFrameYesterdayTitle" inherits="GameFontNormal" text="HONOR_YESTERDAY">
 					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameCurrentSessionTitle" relativePoint="BOTTOMLEFT">
+						<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameCurrentSessionTitle" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-45"/>
+								<AbsDimension x="0" y="-41"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="InspectHonorFrameThisWeekTitle" inherits="GameFontNormal" text="HONOR_THISWEEK">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameYesterdayTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-43"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="InspectHonorFrameLastWeekTitle" inherits="GameFontNormal" text="HONOR_LASTWEEK">
 					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameYesterdayTitle" relativePoint="BOTTOMLEFT">
+						<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameThisWeekTitle" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-58"/>
+								<AbsDimension x="0" y="-42"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="InspectHonorFrameLifeTimeTitle" inherits="GameFontNormal" text="HONOR_LIFETIME">
 					<Anchors>
-						<Anchor point="TOPLEfT" relativeTo="InspectHonorFrameLastWeekTitle" relativePoint="BOTTOMLEFT">
+						<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekTitle" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-97"/>
+								<AbsDimension x="0" y="-64"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -168,7 +177,7 @@
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="InspectHonorFrameCurrentPVPTitle" relativePoint="LEFT">
 							<Offset>
-								<AbsDimension x="-5" y="-2"/>
+								<AbsDimension x="-5" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -189,7 +198,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameCurrentHK" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-3"/>
+							<AbsDimension x="0" y="-2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -203,7 +212,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="InspectHonorFrameYesterdayDK" inherits="HonorFrameDKButtonTemplate">
+			<Frame name="InspectHonorFrameYesterdayContribution" inherits="HonorFrameContributionButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameYesterdayHK" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -212,9 +221,18 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="InspectHonorFrameYesterdayContribution" inherits="HonorFrameContributionButtonTemplate">
+			<Frame name="InspectHonorFrameThisWeekHK" inherits="HonorFrameHKButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameYesterdayDK" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameThisWeekTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="InspectHonorFrameThisWeekContribution" inherits="HonorFrameContributionButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameThisWeekHK" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-3"/>
 						</Offset>
@@ -225,25 +243,16 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekTitle" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="10" y="-4"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="InspectHonorFrameLastWeekDK" inherits="HonorFrameDKButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekHK" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-4"/>
+							<AbsDimension x="10" y="-3"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Frame>
 			<Frame name="InspectHonorFrameLastWeekContribution" inherits="HonorFrameContributionButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekDK" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekHK" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-4"/>
+							<AbsDimension x="0" y="-2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -252,7 +261,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekContribution" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-4"/>
+							<AbsDimension x="0" y="-2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -304,6 +313,42 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
+			<StatusBar name="InspectHonorFrameProgressBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
+				<Size>
+					<AbsDimension x="315" y="29"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-77"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="InspectHonorFrameProgressButton" enableMouse="true" setAllPoints="true">
+						<Scripts>
+							<OnLoad>
+								this:SetFrameLevel(this:GetFrameLevel() - 1);
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(RANK_POSITION, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+								GameTooltip:AddLine(NEWBIE_TOOLTIP_RANK_POSITION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+			</StatusBar>
 		</Frames>
 		<Scripts>
 			<OnLoad>

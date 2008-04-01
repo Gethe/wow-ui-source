@@ -116,7 +116,7 @@ function OptionsFrame_Load()
 					if ( cvarValue == ANISOTROPIC_VALUES[i] ) then
 						getvalue = i;
 					end
-					if ( maxAnisotropy == ANISOTROPIC_VALUES[i]+0 ) then
+					if ( maxAnisotropy == tonumber(ANISOTROPIC_VALUES[i]) ) then
 						maxAnisotropy = i;
 					end
 				end
@@ -312,7 +312,7 @@ function OptionsFrame_GetRefreshRates(...)
 		info.text = arg[i]..HERTZ;
 		info.func = OptionsFrameRefreshDropDown_OnClick;
 		
-		if ( UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown) and UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown)+0 == arg[i] ) then
+		if ( UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown) and tonumber(UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown)) == arg[i] ) then
 			checked = 1;
 			UIDropDownMenu_SetText(info.text, OptionsFrameRefreshDropDown);
 		else

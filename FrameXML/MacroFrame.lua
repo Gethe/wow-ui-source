@@ -25,7 +25,7 @@ function MacroFrame_OnHide()
 		EditMacro(MacroFrame.selectedMacro, nil, nil, MacroFrameText:GetText(), 1);		
 	end
 	MacroFrame.textChanged = nil;
-	SaveMacros();
+	--SaveMacros();
 	PlaySound("igCharacterInfoClose");
 end
 

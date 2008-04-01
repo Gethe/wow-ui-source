@@ -170,9 +170,6 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="AutoFollowStatusText" inherits="GameFontNormal">
-					<FontHeight>
-						<AbsValue val="20"/>
-					</FontHeight>
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
@@ -180,6 +177,9 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
+					<FontHeight>
+						<AbsValue val="20"/>
+					</FontHeight>
 				</FontString>
 			</Layer>
 		</Layers>

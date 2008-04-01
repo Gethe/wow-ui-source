@@ -51,7 +51,6 @@ function FriendsFrame_OnLoad()
 	this:RegisterEvent("FRIENDLIST_UPDATE");
 	this:RegisterEvent("IGNORELIST_UPDATE");
 	this:RegisterEvent("WHO_LIST_UPDATE");
-	this:RegisterEvent("GUILD_ROSTER_SHOW");
 	this:RegisterEvent("GUILD_ROSTER_UPDATE");
 	this:RegisterEvent("PLAYER_GUILD_UPDATE");
 	FriendsFrame.playersInBotRank = 0;
@@ -672,14 +671,6 @@ function FriendsFrame_OnEvent()
 		IgnoreList_Update();
 	elseif ( event == "WHO_LIST_UPDATE" ) then
 		WhoList_Update();
-		FriendsFrame_Update();
-	elseif ( event == "GUILD_ROSTER_SHOW" ) then
-		ShowUIPanel(FriendsFrame);
-		if ( FriendsFrame.playerStatusFrame ) then
-			GuildPlayerStatus_Update();
-		else
-			GuildStatus_Update();
-		end
 		FriendsFrame_Update();
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
 		if ( GuildFrame:IsVisible() ) then

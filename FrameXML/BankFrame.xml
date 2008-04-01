@@ -166,7 +166,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="BankFrame" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-44" y="-26"/>
+							<AbsDimension x="-46" y="-24"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
