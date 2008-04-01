@@ -6,6 +6,8 @@ NUM_CHAT_WINDOWS = 7;
 DEFAULT_CHAT_FRAME = ChatFrame1;
 NUM_REMEMBERED_TELLS = 10;
 
+pendingSpellCast = nil;
+
 -- These hash tables are to improve performance of common lookups
 -- if you change what these tables point to (ie slash command, emote, chat)
 -- then you need to invalidate the entry in the hash table
@@ -702,7 +704,8 @@ end
 
 local function SetCastSequenceIndex(entry, index)
 	entry.index = index;
-	entry.pending = nil;
+	--entry.pending = nil;
+	pendingSpellCast = nil;
 end
 
 local function ResetCastSequence(sequence, entry)
@@ -739,6 +742,12 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 
 		if ( not name ) then
 			-- This was a server-side only spell affecting the player somehow, don't do anything with cast sequencing, just bail.
+			
+			-- Actually, this is a spell failure, clear the pending spellcast.
+			if ( unit == "player" or unit == "pet" ) then
+				--entry.pending = nil;
+				pendingSpellCast = nil;
+			end
 			return;
 		end
 
@@ -750,9 +759,12 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 				local entryName = entry.spellNames[entry.index];
 				if ( entryName == name or entryName == nameplus or entryName == fullname ) then
 					if ( event == "UNIT_SPELLCAST_SENT" ) then
-						entry.pending = 1;
+						--entry.pending = 1;
+						pendingSpellCast = 1;
 					else
-						entry.pending = nil;
+						--entry.pending = nil;
+						pendingSpellCast = nil;
+						
 						if ( event == "UNIT_SPELLCAST_SUCCEEDED" ) then
 							SetNextCastSequence(sequence, entry);
 						end
@@ -828,7 +840,8 @@ local function ExecuteCastSequence(sequence, target)
 	end
 
 	-- Don't do anything if this entry is still pending
-	if ( entry.pending ) then
+	--if ( entry.pending ) then
+	if ( pendingSpellCast ) then
 		return;
 	end
 

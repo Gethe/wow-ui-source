@@ -598,8 +598,8 @@
 	</Binding>
 	<Binding name="TOGGLEUI">
 		if ( UIParent:IsShown() ) then
-			CloseMenus();
-			CloseAllWindows();
+			securecall("CloseMenus");
+			securecall("CloseAllWindows");
 			UIParent:Hide();
 			SetUIVisibility(false);
 		else
