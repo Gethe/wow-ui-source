@@ -3,7 +3,7 @@
 	<Script file="TargetFrame.lua"/>
 	<Button name="TargetDebuffButtonTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="21" y="21"/>
+			<AbsDimension x="17" y="17"/>
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -12,7 +12,7 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Border">
 					<Size>
-						<AbsDimension x="23" y="23"/>
+						<AbsDimension x="19" y="19"/>
 					</Size>
 					<Anchors>
 						<Anchor point="CENTER">
@@ -21,7 +21,16 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</Texture>	
+				</Texture>
+				<FontString name="$parentCount" inherits="NumberFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -289,6 +298,105 @@
 			<Button name="TargetFrameDebuff5" inherits="TargetDebuffButtonTemplate" id="5">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="TargetFrameDebuff4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff6" inherits="TargetDebuffButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TargetFrameDebuff5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff7" inherits="TargetDebuffButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TargetFrameDebuff1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff8" inherits="TargetDebuffButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TargetFrameDebuff7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff9" inherits="TargetDebuffButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TargetFrameDebuff8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff10" inherits="TargetDebuffButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TargetFrameDebuff9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff11" inherits="TargetDebuffButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TargetFrameDebuff10" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff12" inherits="TargetDebuffButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TargetFrameDebuff11" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff13" inherits="TargetDebuffButtonTemplate" id="13">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TargetFrameDebuff12" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff14" inherits="TargetDebuffButtonTemplate" id="14">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TargetFrameDebuff13" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff15" inherits="TargetDebuffButtonTemplate" id="15">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TargetFrameDebuff14" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TargetFrameDebuff16" inherits="TargetDebuffButtonTemplate" id="16">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TargetFrameDebuff15" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="3" y="0"/>
 						</Offset>

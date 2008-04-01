@@ -90,7 +90,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetText(MicroButtonTooltipText(TEXT(CHARACTER_INFO), "TOGGLECHARACTER0"), 1.0,1.0,1.0 );
+						GameTooltip:SetText(CHARACTER_INFO, 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -111,7 +111,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetText(TEXT(HONOR), 1.0,1.0,1.0 );
+						GameTooltip:SetText(HONOR, 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

@@ -99,6 +99,7 @@ function WorldStateScoreFrame_Update()
 	
 	-- Update buttons
 	local numScores = GetNumBattlefieldScores();
+
 	local scoreButton, buttonIcon, buttonName, nameButton, buttonKills, buttonDeaths, buttonHonorGained, buttonFaction, columnButtonText, columnButtonIcon, buttonFactionLeft, buttonFactionRight;
 	local name, kills, killingBlows, deaths, honorGained, faction, rank, race, class;
 	local index;
@@ -140,8 +141,7 @@ function WorldStateScoreFrame_Update()
 			if ( i == numStatColumns ) then
 				honorGainedAnchorFrame = "WorldStateScoreColumn"..i;
 			end
-			
-
+		
 			getglobal("WorldStateScoreColumn"..i):Show();
 		else
 			getglobal("WorldStateScoreColumn"..i):Hide();
@@ -259,30 +259,31 @@ function WorldStateScoreFrame_Update()
 	end
 	
 	-- Set count text and anchor team count to last button shown
+	WorldStateScorePlayerCount:Show();
 	if ( numHorde > 0 and numAlliance > 0 ) then
 		WorldStateScorePlayerCount:SetText(format(GetText("PLAYER_COUNT_ALLIANCE", nil, numAlliance), numAlliance).." / "..format(GetText("PLAYER_COUNT_HORDE", nil, numHorde), numHorde));
 	elseif ( numAlliance > 0 ) then
 		WorldStateScorePlayerCount:SetText(format(GetText("PLAYER_COUNT_ALLIANCE", nil, numAlliance), numAlliance));
-	else
+	elseif ( numHorde > 0 ) then
 		WorldStateScorePlayerCount:SetText(format(GetText("PLAYER_COUNT_HORDE", nil, numHorde), numHorde));
+	else
+		WorldStateScorePlayerCount:Hide();
 	end
-	WorldStateScorePlayerCount:SetPoint("TOPLEFT", lastButtonShown, "BOTTOMLEFT", 22, -7);
+	WorldStateScorePlayerCount:SetPoint("TOPLEFT", lastButtonShown, "BOTTOMLEFT", 22, -6);
 	WorldStateScoreBattlegroundRunTime:SetText(TIME_ELAPSED.." "..SecondsToTime(GetBattlefieldInstanceRunTime()/1000, 1));
 	WorldStateScoreBattlegroundRunTime:SetPoint("TOPRIGHT", lastButtonShown, "BOTTOMRIGHT", -10, -7);
-
-	if ( hasScrollBar ) then
-		WorldStateScoreWinnerFrame:SetWidth(WorldStateScoreFrame.scrollBarButtonWidth-22);
-	else
-		WorldStateScoreWinnerFrame:SetWidth(WorldStateScoreFrame.buttonWidth-22);
-	end
 end
 
 function WorldStateScoreFrame_Resize(width)
-	if ( width ) then
-		WorldStateScoreFrame:SetWidth(width);
-	else
-		WorldStateScoreFrame:SetWidth(WORLDSTATESCOREFRAME_BASE_WIDTH + GetNumBattlefieldStats()*WORLDSTATESCOREFRAME_COLUMN_SPACING);
+	if ( not width ) then
+		if ( WorldStateScoreScrollFrame:IsVisible() ) then
+			width = WORLDSTATESCOREFRAME_BASE_WIDTH + 37 + GetNumBattlefieldStats()*WORLDSTATESCOREFRAME_COLUMN_SPACING;
+		else
+			width = WORLDSTATESCOREFRAME_BASE_WIDTH + GetNumBattlefieldStats()*WORLDSTATESCOREFRAME_COLUMN_SPACING;
+		end
 	end
+	WorldStateScoreFrame:SetWidth(width);
+	
 	WorldStateScoreFrameTopBackground:SetWidth(WorldStateScoreFrame:GetWidth()-129);
 	WorldStateScoreFrameTopBackground:SetTexCoord(0, WorldStateScoreFrameTopBackground:GetWidth()/256, 0, 1.0);
 	WorldStateScoreFrame.scrollBarButtonWidth = WorldStateScoreFrame:GetWidth() - 165;

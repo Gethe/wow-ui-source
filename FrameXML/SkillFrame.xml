@@ -259,26 +259,28 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<Texture name="SkillFrameExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
-							<Size>
-								<AbsDimension x="42" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="SkillFrameExpandTabLeft" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
+						<Texture name="SkillFrameExpandTabRight" file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
 							<Size>
 								<AbsDimension x="8" y="32"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="SkillFrameExpandTabMiddle" relativePoint="RIGHT"/>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="6"/>
+									</Offset>
+								</Anchor>
 							</Anchors>
 						</Texture>
+						<Texture name="SkillFrameExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
+							<Size>
+								<AbsDimension x="0" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SkillFrameExpandTabLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="SkillFrameExpandTabRight" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+						
 					</Layer>
 				</Layers>
 				<Frames>
@@ -295,13 +297,18 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName()):SetText(ALL);
+								this:SetText(ALL);
 								this.skillIndex = 0;
 								this.isExpanded = 1;
 							</OnLoad>
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetWidth(SkillFrameCollapseAllButton:GetTextWidth()+45);
+					</OnLoad>
+				</Scripts>
 			</Frame>
 			<!--
 			<Button name="SkillFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">

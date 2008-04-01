@@ -13,12 +13,19 @@
 			<OnEnter>
 				GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT");
 				GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill, this:GetID());
+				CursorUpdate();
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
+				ResetCursor();
 			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate();
+			</OnUpdate>
 			<OnClick>
-				if ( IsShiftKeyDown() ) then
+				if ( IsControlKeyDown() ) then
+					DressUpItemLink(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, this:GetID()));
+				elseif ( IsShiftKeyDown() ) then
 					if ( ChatFrameEditBox:IsVisible() ) then
 						ChatFrameEditBox:Insert(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, this:GetID()));
 					end
@@ -554,8 +561,13 @@
 									</Layer>
 								</Layers>
 								<Scripts>
+									<OnLoad>
+										this.hasItem = 1;
+									</OnLoad>
 									<OnClick>
-										if ( IsShiftKeyDown() ) then
+										if ( IsControlKeyDown() ) then
+											DressUpItemLink(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
+										elseif ( IsShiftKeyDown() ) then
 											if ( ChatFrameEditBox:IsVisible() ) then
 												ChatFrameEditBox:Insert(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
 											end
@@ -565,11 +577,16 @@
 										if ( TradeSkillFrame.selectedSkill ~= 0 ) then
 											GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 											GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill);
+											CursorUpdate();
 										end
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();
+										ResetCursor();
 									</OnLeave>
+									<OnUpdate>
+										CursorOnUpdate();
+									</OnUpdate>
 								</Scripts>
 							</Button>
 							<Button name="TradeSkillReagent1" inherits="TradeSkillItemTemplate" id="1">

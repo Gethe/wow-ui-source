@@ -41,12 +41,12 @@ function BonusActionBar_OnUpdate(elapsed)
 		this.completed = nil;
 		if ( this.mode == "show" ) then
 			yPos = (this.slideTimer/this.timeToSlide) * this.yTarget;
-			this:SetPoint("TOPLEFT", this:GetParent():GetName(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, yPos);
+			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, yPos);
 			this.state = "showing";
 			this:Show();
 		elseif ( this.mode == "hide" ) then
 			yPos = (1 - (this.slideTimer/this.timeToSlide)) * this.yTarget;
-			this:SetPoint("TOPLEFT", this:GetParent():GetName(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, yPos);
+			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, yPos);
 			this.state = "hiding";
 		end
 		this.slideTimer = this.slideTimer + elapsed;
@@ -59,11 +59,11 @@ function BonusActionBar_OnUpdate(elapsed)
 		end
 		BonusActionBar_SetButtonTransitionState(nil);
 		if ( this.mode == "show" ) then
-			this:SetPoint("TOPLEFT", this:GetParent():GetName(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, this.yTarget);
+			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, this.yTarget);
 			this.state = "top";
 			PlaySound("igBonusBarOpen");
 		elseif ( this.mode == "hide" ) then
-			this:SetPoint("TOPLEFT", this:GetParent():GetName(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, 0);
+			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, 0);
 			this.state = "bottom";
 			this:Hide();
 		end
@@ -127,6 +127,41 @@ function BonusActionBar_SetButtonTransitionState(state)
 	end
 end
 
+function ShapeshiftBar_OnLoad()
+	ShapeshiftBar_Update();
+	this:RegisterEvent("PLAYER_ENTERING_WORLD");
+	this:RegisterEvent("UPDATE_SHAPESHIFT_FORMS");
+	this:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
+	this:RegisterEvent("UPDATE_INVENTORY_ALERTS");	-- Wha??
+	this:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+	this:RegisterEvent("SPELL_UPDATE_USABLE");
+	this:RegisterEvent("PLAYER_AURAS_CHANGED");
+	this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+	this:RegisterEvent("UNIT_HEALTH");
+	this:RegisterEvent("UNIT_HEALTH");
+	this:RegisterEvent("UNIT_RAGE");
+	this:RegisterEvent("UNIT_FOCUS");
+	this:RegisterEvent("UNIT_ENERGY");
+end
+
+function ShapeshiftBar_OnEvent()
+	if ( event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_SHAPESHIFT_FORMS" ) then
+		ShapeshiftBar_Update();
+	elseif ( event == "ACTIONBAR_PAGE_CHANGED" ) then
+		if ( GetBonusBarOffset() > 0 ) then
+			ShowBonusActionBar();
+		else
+			HideBonusActionBar();
+		end
+	elseif ( event == "UNIT_HEALTH" or event == "UNIT_MANA" or event == "UNIT_RAGE" or event == "UNIT_FOCUS" or event == "UNIT_ENERGY" ) then
+		if ( arg1 == "player" ) then
+			ShapeshiftBar_UpdateState();
+		end
+	else
+		ShapeshiftBar_UpdateState();
+	end
+end
+
 function ShapeshiftBar_Update()
 	local numForms = GetNumShapeshiftForms();
 	local fileName, name, isActive, isCastable;
@@ -153,23 +188,24 @@ function ShapeshiftBar_Update()
 		--Move the chat frame and edit box up a bit
 		FCF_UpdateDockPosition();
 		--Move the casting bar up
-		--CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 83);
 		CastingBarFrame_UpdatePosition();
 	else
 		ShapeshiftBarFrame:Hide();
-		if ( not PetHasActionBar() ) then
-			--Move the chat frame and edit box back down to original position
-			FCF_UpdateDockPosition();
-			--Move the casting bar back down
-			--CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 60);
-			CastingBarFrame_UpdatePosition();
-		end
+		--Move the chat frame and edit box back down to original position
+		FCF_UpdateDockPosition();
+		--Move the casting bar back down
+		CastingBarFrame_UpdatePosition();
 	end
-	
+
+	ShapeshiftBar_UpdateState();
+	ShapeshiftBar_UpdatePosition();
+end
+
+function ShapeshiftBar_UpdateState()
 	for i=1, NUM_SHAPESHIFT_SLOTS do
 		button = getglobal("ShapeshiftButton"..i);
 		icon = getglobal("ShapeshiftButton"..i.."Icon");
-		if ( i <= numForms ) then
+		if ( i <= GetNumShapeshiftForms() ) then
 			texture, name, isActive, isCastable = GetShapeshiftFormInfo(i);
 			icon:SetTexture(texture);
 			
@@ -201,8 +237,6 @@ function ShapeshiftBar_Update()
 			button:Hide();
 		end
 	end
-
-	ShapeshiftBar_UpdatePosition();
 end
 
 function ShapeshiftBar_ChangeForm(id)
@@ -212,7 +246,7 @@ function ShapeshiftBar_ChangeForm(id)
 end
 
 function ShapeshiftBar_UpdatePosition()
-	if ( MultiBarBottomLeft:IsVisible() ) then
+	if ( MultiBarBottomLeft.isShowing ) then
 		ShapeshiftBarFrame:SetPoint("BOTTOMLEFT", "MainMenuBar", "TOPLEFT", 30, 45);
 		ShapeshiftBarLeft:Hide();
 		ShapeshiftBarRight:Hide();

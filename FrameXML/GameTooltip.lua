@@ -1,16 +1,3 @@
--- Colors for item quality tooltip borders
-ITEM_QUALITY0_TOOLTIP_COLOR = { r = 0.8, g = 0.8, b = 0.8 };
-ITEM_QUALITY1_TOOLTIP_COLOR = { r = 0.5, g = 0.5, b = 0.5 };
-ITEM_QUALITY2_TOOLTIP_COLOR = { r = 0, g = 1.0, b = 0 };
-ITEM_QUALITY3_TOOLTIP_COLOR = { r = 0, g = 0.18, b = 0.35 };
-ITEM_QUALITY4_TOOLTIP_COLOR = { r = 0.5, g = 0, b = 1.0 };
-ITEM_QUALITY5_TOOLTIP_COLOR = { r = 1.0, g = 0, b = 0 };
-ITEM_QUALITY6_TOOLTIP_COLOR = { r = 1.0, g = 0.5, b = 0 };
--- Colors for item quality tooltip backgrounds
-ITEM_QUALITY3_TOOLTIP_BGCOLOR = { r = 0, g = 0.18, b = 0.35 };
-ITEM_QUALITY4_TOOLTIP_BGCOLOR = { r = 0.15, g = 0, b = 0.28 };
-ITEM_QUALITY5_TOOLTIP_BGCOLOR = { r = 0.28, g = 0, b = 0 };
-ITEM_QUALITY6_TOOLTIP_BGCOLOR = { r = 0.28, g = 0.15, b = 0 };
 -- The default tooltip border color
 --TOOLTIP_DEFAULT_COLOR = { r = 0.5, g = 0.5, b = 0.5 };
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
@@ -91,31 +78,8 @@ function GameTooltip_SetDefaultAnchor(tooltip, parent)
 end
 
 function GameTooltip_OnLoad()
-	this:RegisterEvent("TOOLTIP_ADD_MONEY");
 	this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-end
-
-function GameTooltip_OnEvent()
-	if ( event == "UPDATE_MOUSEOVER_UNIT" ) then
-		if ( UnitExists("mouseover") ) then
-			GameTooltip_SetDefaultAnchor(this, UIParent);
-			this:SetUnit("mouseover");
-			local r, g, b = GameTooltip_UnitColor("mouseover");
-			--this:SetBackdropColor(r, g, b);
-			getglobal(this:GetName().."TextLeft1"):SetTextColor(r, g, b);
-		else
-			this:FadeOut();
-		end
-	elseif ( event == "CLEAR_TOOLTIP" ) then
-		GameTooltip_ClearMoney();
-	elseif ( event == "TOOLTIP_ADD_MONEY" ) then
-		if ( arg1 == this:GetName() ) then
-			SetTooltipMoney(this, arg2);
-		end
-	elseif ( event == "TOOLTIP_ANCHOR_DEFAULT" ) then
-		GameTooltip_SetDefaultAnchor(this, UIParent);
-	end
 end
 
 function SetTooltipMoney(frame, money)
@@ -125,12 +89,11 @@ function SetTooltipMoney(frame, money)
 	moneyFrame:SetPoint("LEFT", frame:GetName().."TextLeft"..numLines, "LEFT", 4, 0);
 	moneyFrame:Show();
 	MoneyFrame_Update(moneyFrame:GetName(), money);
-	frame:SetMoneyWidth(moneyFrame:GetWidth());
+	frame:SetMinimumWidth(moneyFrame:GetWidth());
 end
 
 function GameTooltip_ClearMoney()
 	local moneyFrame = getglobal(this:GetName().."MoneyFrame");
-	moneyFrame:SetPoint("LEFT", this:GetName().."TextLeft1", "LEFT", 0, 0);
 	moneyFrame:Hide();
 end
 
@@ -155,20 +118,5 @@ function GameTooltip_AddNewbieTip(normalText, r, g, b, newbieText, noNormalText)
 			GameTooltip:SetOwner(this);
 			GameTooltip:SetText(normalText, r, g, b);
 		end
-		
-	end
-end
-
---Not currently used but left in just in case
-function GameTooltip_SetQuality(quality)
-	if ( quality and quality ~= -1 ) then
-		local color = getglobal("ITEM_QUALITY".. quality .."_TOOLTIP_COLOR");
-		this:SetBackdropBorderColor(color.r, color.g, color.b);
-		if ( quality > 2 ) then
-			color = getglobal("ITEM_QUALITY".. quality .."_TOOLTIP_BGCOLOR");
-			this:SetBackdropColor(color.r, color.g, color.b);
-		end
-	else
-		this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	end
 end

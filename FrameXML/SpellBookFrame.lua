@@ -58,8 +58,10 @@ function SpellBookFrame_OnLoad()
 end
 
 function SpellBookFrame_OnEvent()
-	if ( event == "SPELLS_CHANGED" and SpellBookFrame:IsVisible() ) then
-		SpellBookFrame_Update();
+	if ( event == "SPELLS_CHANGED" ) then
+		if ( SpellBookFrame:IsVisible() ) then
+			SpellBookFrame_Update();
+		end
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
 		local flashFrame = getglobal("SpellBookSkillLineTab"..arg1.."Flash");
 		if ( flashFrame ) then
@@ -189,6 +191,7 @@ function SpellButton_OnLoad()
 	this:RegisterEvent("CRAFT_CLOSE");
 	this:RegisterEvent("TRADE_SKILL_SHOW");
 	this:RegisterEvent("TRADE_SKILL_CLOSE");
+	this:RegisterEvent("PET_BAR_UPDATE");
 	this:RegisterForDrag("LeftButton");
 	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	SpellButton_UpdateButton();
@@ -201,7 +204,10 @@ function SpellButton_OnEvent(event)
 		SpellButton_UpdateSelection();
 	elseif ( event == "CRAFT_SHOW" or event == "CRAFT_CLOSE" or event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" ) then
 		SpellButton_UpdateSelection();
-		return;
+	elseif ( event == "PET_BAR_UPDATE" ) then
+		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
+			SpellButton_UpdateButton();
+		end
 	end
 
 end
@@ -241,7 +247,7 @@ function SpellButton_OnClick(drag)
 	end
 	this:SetChecked("false");
 	if ( drag ) then
-		PickupSpell(id, SpellBookFrame.bookType );
+		PickupSpell(id, SpellBookFrame.bookType);
 	elseif ( IsShiftKeyDown() ) then
 		if ( MacroFrame:IsVisible() ) then
 			local spellName, subSpellName = GetSpellName(id, SpellBookFrame.bookType);
@@ -255,6 +261,8 @@ function SpellButton_OnClick(drag)
 		else
 			PickupSpell(id, SpellBookFrame.bookType );
 		end
+	elseif ( arg1 ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
+		ToggleSpellAutocast(id, SpellBookFrame.bookType);
 	else
 		CastSpell(id, SpellBookFrame.bookType);
 		SpellButton_UpdateSelection();
@@ -291,24 +299,27 @@ function SpellButton_UpdateButton()
 	SpellBookFrame.selectedSkillLineOffset = offset;
 	local id = SpellBook_GetSpellID(this:GetID());
 	local name = this:GetName();
-	local texture;
 	local iconTexture = getglobal(name.."IconTexture");
 	local spellString = getglobal(name.."SpellName");
 	local subSpellString = getglobal(name.."SubSpellName");
 	local cooldown = getglobal(name.."Cooldown");
+	local autoCastableTexture = getglobal(name.."AutoCastable");
+	local autoCastModel = getglobal(name.."AutoCast");
 	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and (id > (offset + numSpells)) ) then
 		this:Disable();
 		iconTexture:Hide();
 		spellString:Hide();
 		subSpellString:Hide();
 		cooldown:Hide();
+		autoCastableTexture:Hide();
+		autoCastModel:Hide();
 		this:SetChecked(0);
 		getglobal(name.."NormalTexture"):SetVertexColor(1.0, 1.0, 1.0);
 		return;
 	else
 		this:Enable();
 	end
-	texture = GetSpellTexture(id, SpellBookFrame.bookType);
+	local texture = GetSpellTexture(id, SpellBookFrame.bookType);
 	local highlightTexture = getglobal(name.."Highlight");
 	local normalTexture = getglobal(name.."NormalTexture");
 	-- If no spell, hide everything and return
@@ -317,6 +328,8 @@ function SpellButton_UpdateButton()
 		spellString:Hide();
 		subSpellString:Hide();
 		cooldown:Hide();
+		autoCastableTexture:Hide();
+		autoCastModel:Hide();
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
 		this:SetChecked(0);
 		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
@@ -330,7 +343,19 @@ function SpellButton_UpdateButton()
 	else
 		iconTexture:SetVertexColor(0.4, 0.4, 0.4);
 	end
-	
+
+	local autoCastAllowed, autoCastEnabled = GetSpellAutocast(id, SpellBookFrame.bookType);
+	if ( autoCastAllowed ) then
+		autoCastableTexture:Show();
+	else
+		autoCastableTexture:Hide();
+	end
+	if ( autoCastEnabled ) then
+		autoCastModel:Show();
+	else
+		autoCastModel:Hide();
+	end
+
 	local spellName, subSpellName = GetSpellName(id, SpellBookFrame.bookType);
 	local isPassive = IsSpellPassive(id, SpellBookFrame.bookType);
 	if ( isPassive ) then
@@ -347,9 +372,9 @@ function SpellButton_UpdateButton()
 	spellString:SetText(spellName);
 	subSpellString:SetText(subSpellName);
 	if ( subSpellName ~= "" ) then
-		spellString:SetPoint("LEFT", this:GetName(), "RIGHT", 4, 4);
+		spellString:SetPoint("LEFT", this, "RIGHT", 4, 4);
 	else
-		spellString:SetPoint("LEFT", this:GetName(), "RIGHT", 4, 2);
+		spellString:SetPoint("LEFT", this, "RIGHT", 4, 2);
 	end
 
 	iconTexture:Show();

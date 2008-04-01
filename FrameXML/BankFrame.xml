@@ -8,6 +8,9 @@
 			</OnEvent>
             <OnShow>
             </OnShow>
+			<OnUpdate>
+				CursorOnUpdate();
+			</OnUpdate>
             <OnEnter>
                 GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
                 if ( not GameTooltip:SetInventoryItem("player", this:GetInventorySlot()) ) then
@@ -15,6 +18,7 @@
 						GameTooltip:SetText(this.tooltipText);
 					end
 				end
+				CursorUpdate();
             </OnEnter>
             <OnLeave>
                 GameTooltip:Hide();
@@ -171,7 +175,6 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-
 			<Button name="BankFrameItem1" inherits="BankItemButtonGenericTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">

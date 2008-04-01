@@ -185,36 +185,38 @@ function MerchantItemButton_OnLoad()
 	end
 end
 
-function MerchantItemButton_OnClick(button)
+function MerchantItemButton_OnClick(button, ignoreModifiers)
 	if ( button == "LeftButton" ) then
-		PickupMerchantItem(this:GetID());
-	elseif ( button == "RightButton" ) then
-		BuyMerchantItem(this:GetID());
-	end
-end
+		if ( IsControlKeyDown() and not ignoreModifiers ) then
+			DressUpItemLink(GetMerchantItemLink(this:GetID()));
+		elseif ( IsShiftKeyDown() and not ignoreModifiers ) then
+			if ( ChatFrameEditBox:IsVisible() ) then
+				ChatFrameEditBox:Insert(GetMerchantItemLink(this:GetID()));
+			else
+				local name, texture, price, quantity, numAvailable, isUsable = GetMerchantItemInfo(this:GetID());
+				if ( not name ) then
+					return;
+				end
 
-function MerchantItemButton_OnShiftClick()
-	if ( ChatFrameEditBox:IsVisible() ) then
-		ChatFrameEditBox:Insert(GetMerchantItemLink(this:GetID()));
-	else
-		local name, texture, price, quantity, numAvailable, isUsable = GetMerchantItemInfo(this:GetID());
-		if ( not name ) then
-			return;
-		end
+				local maxStack = GetMerchantItemMaxStack(this:GetID());
+				if ( maxStack <= 1 ) then
+					MerchantItemButton_OnClick(arg1, 1);
+					return;
+				end
 
-		local maxStack = GetMerchantItemMaxStack(this:GetID());
-		if ( maxStack <= 1 ) then
-			MerchantItemButton_OnClick(arg1);
-			return;
-		end
+				if ( price and (price > 0) ) then
+					local canAfford = floor(GetMoney() / price);
+					if ( canAfford < maxStack ) then
+						maxStack = canAfford;
+					end
+				end
 
-		if ( price and (price > 0) ) then
-			local canAfford = floor(GetMoney() / price);
-			if ( canAfford < maxStack ) then
-				maxStack = canAfford;
+				OpenStackSplitFrame(maxStack, this, "BOTTOMLEFT", "TOPLEFT");
 			end
+		else
+			PickupMerchantItem(this:GetID());
 		end
-
-		OpenStackSplitFrame(maxStack, this, "BOTTOMLEFT", "TOPLEFT");
+	elseif ( button == "RightButton" and not IsControlKeyDown() ) then
+		BuyMerchantItem(this:GetID());
 	end
 end

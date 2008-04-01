@@ -194,7 +194,7 @@
 						this:RefreshUnit();
 					</OnEvent>
 					<OnUpdate>
-                        Model_OnUpdate(arg1, PetModelFrame);
+                        Model_OnUpdate(arg1, this);
                     </OnUpdate>
 				</Scripts>
 				<Frames>

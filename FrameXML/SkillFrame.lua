@@ -83,7 +83,7 @@ function SkillFrame_SetStatusBar(statusBarID, skillIndex, numSkills, adjustedSki
 	
 	-- Anchor the text to the left by default
 	statusBarName:ClearAllPoints();
-	statusBarName:SetPoint("LEFT", statusBar:GetName(), "LEFT", 6, 1);
+	statusBarName:SetPoint("LEFT", statusBar, "LEFT", 6, 1);
 
 	-- Lock border color if skill is selected
 	if (skillIndex == GetSelectedSkill()) then
@@ -126,7 +126,7 @@ function SkillFrame_SetStatusBar(statusBarID, skillIndex, numSkills, adjustedSki
 		statusBarBackground:SetVertexColor(0.75, 0.75, 0.75, 0.5);
 		statusBarName:SetText(format(LEARN_SKILL_TEMPLATE,skillName));
 		statusBarName:ClearAllPoints();
-		statusBarName:SetPoint("LEFT", statusBar:GetName(), "LEFT", 15, 1);
+		statusBarName:SetPoint("LEFT", statusBar, "LEFT", 15, 1);
 		statusBarSkillRank:SetText("");
 
 		-- If skill is too high level
@@ -237,7 +237,7 @@ function SkillDetailFrame_SetStatusBar(skillIndex, adjustedSkillPoints)
 
 	-- Anchor the text to the left by default
 	statusBarName:ClearAllPoints();
-	statusBarName:SetPoint("LEFT", statusBar:GetName(), "LEFT", 6, 1);
+	statusBarName:SetPoint("LEFT", statusBar, "LEFT", 6, 1);
 
 	-- Set bar color depending on skill cost
 	local skillType = "";
@@ -277,7 +277,7 @@ function SkillDetailFrame_SetStatusBar(skillIndex, adjustedSkillPoints)
 		statusBar:SetStatusBarColor(0.0, 0.0, 1.0, 0.5);
 		statusBarName:SetText(format(LEARN_SKILL_TEMPLATE,skillName));
 		statusBarName:ClearAllPoints();
-		statusBarName:SetPoint("CENTER", statusBar:GetName(), "CENTER", 0, 1);
+		statusBarName:SetPoint("CENTER", statusBar, "CENTER", 0, 1);
 		statusBarSkillRank:SetText("");
 		statusBarFillBar:Hide();
 		statusBarLearnSkillButton:Show();

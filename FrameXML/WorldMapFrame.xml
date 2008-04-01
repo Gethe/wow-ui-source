@@ -74,13 +74,8 @@
 		<Scripts>
 			<OnLoad>
 				this:SetFrameLevel(this:GetFrameLevel() + 1);
-				if ( this:GetID() == 0 ) then
-					this.unit = "player";
-					getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPlayerIcon");
-				else
-					this.unit = "party"..this:GetID();
-					getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
-				end
+				this.unit = "party"..this:GetID();
+				getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
 			</OnLoad>
 			<OnEnter>
 				WorldMapUnit_OnEnter();
@@ -127,7 +122,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\Minimap\POIIcons" setAllPoints="true">
-					<TexCoords left="0.75" right="1.0" top="0.25" bottom="0.5"/>
+					<TexCoords left="0.875" right="1.0" top="0" bottom="0.125"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -345,9 +340,11 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<!--
 					<OnLoad>
 						WorldMapContinentsDropDown_OnLoad();
 					</OnLoad>
+					-->
 					<OnShow>
 						WorldMapContinentsDropDown_OnLoad();
 					</OnShow>
@@ -375,18 +372,23 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<!--
 					<OnLoad>
 						WorldMapZoneDropDown_OnLoad();
 					</OnLoad>
+					-->
 					<OnShow>
 						WorldMapZoneDropDown_OnLoad();
 					</OnShow>
 					<OnEvent>
-						if (event == "WORLD_MAP_UPDATE") then
-							WorldMapContinentsDropDown_OnLoad();
-							WorldMap_UpdateContinentDropDownText();
-							WorldMapZoneDropDown_OnLoad();
-							WorldMap_UpdateZoneDropDownText();
+						if ( event == "WORLD_MAP_UPDATE" ) then
+							if ( this:IsVisible() ) then
+								WorldMapContinentsDropDown_OnLoad();
+								WorldMap_UpdateContinentDropDownText();
+								WorldMapZoneDropDown_OnLoad();
+								WorldMap_UpdateZoneDropDownText();
+							end
+							return;
 						end
 					</OnEvent>
 				</Scripts>
@@ -472,7 +474,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-							<Texture name="WorldMapDetailTile1" file="">
+							<Texture name="WorldMapDetailTile1">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -480,7 +482,7 @@
 									<Anchor point="TOPLEFT"/>
 								</Anchors>
 							</Texture>
-							<Texture name="WorldMapDetailTile2" file="">
+							<Texture name="WorldMapDetailTile2">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -488,7 +490,7 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile1" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Texture>
-							<Texture name="WorldMapDetailTile3" file="">
+							<Texture name="WorldMapDetailTile3">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -496,7 +498,7 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile2" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Texture>
-							<Texture name="WorldMapDetailTile4" file="">
+							<Texture name="WorldMapDetailTile4">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -504,7 +506,7 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile3" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Texture>	
-							<Texture name="WorldMapDetailTile5" file="">
+							<Texture name="WorldMapDetailTile5">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -512,7 +514,7 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile1" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Texture>
-							<Texture name="WorldMapDetailTile6" file="">
+							<Texture name="WorldMapDetailTile6">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -520,7 +522,7 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile5" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Texture>
-							<Texture name="WorldMapDetailTile7" file="">
+							<Texture name="WorldMapDetailTile7">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -528,7 +530,7 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile6" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Texture>
-							<Texture name="WorldMapDetailTile8" file="">
+							<Texture name="WorldMapDetailTile8">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -536,7 +538,7 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile7" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Texture>
-							<Texture name="WorldMapDetailTile9" file="">
+							<Texture name="WorldMapDetailTile9">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -544,7 +546,7 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile5" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Texture>
-							<Texture name="WorldMapDetailTile10" file="">
+							<Texture name="WorldMapDetailTile10">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -552,7 +554,7 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile9" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Texture>
-							<Texture name="WorldMapDetailTile11" file="">
+							<Texture name="WorldMapDetailTile11">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -560,7 +562,7 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile10" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Texture>
-							<Texture name="WorldMapDetailTile12" file="">
+							<Texture name="WorldMapDetailTile12">
 								<Size>
 									<AbsDimension x="256" y="256"/>
 								</Size>
@@ -612,7 +614,7 @@
 						<Texture name="WorldMapOverlay40" hidden="true"/>
 					</Layer>
 					<Layer level="OVERLAY">
-							<Texture name="WorldMapHighlight" file="" alphaMode="ADD" hidden="true">
+							<Texture name="WorldMapHighlight" alphaMode="ADD" hidden="true">
 								<Size>
 									<AbsDimension x="128" y="128"/>
 								</Size>
@@ -653,7 +655,26 @@
 					</Anchor>
 				</Anchors>
 				<Frames>
-					<Frame name="WorldMapPlayer" inherits="WorldMapUnitTemplate" id="0"/>
+					<Frame name="WorldMapPlayer" id="0">
+						<Size>
+							<AbsDimension x="16" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this.unit = "player";
+								this:SetFrameLevel(this:GetFrameLevel()+1);
+							</OnLoad>
+							<OnEnter>
+								WorldMapUnit_OnEnter();
+							</OnEnter>
+							<OnLeave>
+								WorldMapTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
 					<Frame name="WorldMapParty1" inherits="WorldMapUnitTemplate" id="1"/>
 					<Frame name="WorldMapParty2" inherits="WorldMapUnitTemplate" id="2"/>
 					<Frame name="WorldMapParty3" inherits="WorldMapUnitTemplate" id="3"/>
@@ -751,6 +772,20 @@
 					<Button name="WorldMapFramePOI48" inherits="WorldMapFramePOIButtonTemplate"/>
 					<Button name="WorldMapFramePOI49" inherits="WorldMapFramePOIButtonTemplate"/>
 					<Button name="WorldMapFramePOI50" inherits="WorldMapFramePOIButtonTemplate"/>
+					<Model name="WorldMapPing" file="Interface\MiniMap\Ping\MinimapPing.mdx" scale="0.4" hidden="true">
+						<Size>
+							<AbsDimension x="50" y="50"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="WorldMapFrame"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this.fadeOut = nil;
+								this:SetSequence(0);
+							</OnLoad>
+						</Scripts>
+					</Model>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -760,7 +795,7 @@
 						WorldMapButton_OnClick(arg1);
 					</OnMouseUp>
 					<OnUpdate>
-						WorldMapButton_OnUpdate();
+						WorldMapButton_OnUpdate(arg1);
 					</OnUpdate>
 				</Scripts>
 			</Button>
@@ -774,6 +809,7 @@
 				SetMapToCurrentZone();
 				PlaySound("igQuestLogOpen");
 				CloseDropDownMenus();
+				WorldMapFrame_PingPlayerPosition();
 			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();

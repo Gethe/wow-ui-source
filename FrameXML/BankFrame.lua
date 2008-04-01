@@ -36,6 +36,7 @@ function BankFrameItemButton_OnUpdate()
 	local slotName = this:GetName();
 	local id;
 	local slotTextureName;
+	this.hasItem = nil;
 
 	if( this.isBag ) then
 		id, slotTextureName = GetInventorySlotInfo(strsub(slotName,10));
@@ -45,6 +46,7 @@ function BankFrameItemButton_OnUpdate()
 		texture:SetTexture(textureName);
 		texture:Show();
 		SetItemButtonCount(this,GetInventoryItemCount("player",inventoryID));
+		this.hasItem = 1;
 	elseif ( slotTextureName and this.isBag ) then
 		texture:SetTexture(slotTextureName);
 		SetItemButtonCount(this,0);
@@ -137,7 +139,9 @@ end
 
 function BankFrameItemButtonGeneric_OnClick(button)
 	if ( button == "LeftButton" ) then
-		if ( IsShiftKeyDown() and not this.isBag ) then
+		if ( IsControlKeyDown() and not this.isBag ) then
+			DressUpItemLink(GetContainerItemLink(BANK_CONTAINER, this:GetID()));
+		elseif ( IsShiftKeyDown() and not this.isBag ) then
 			if ( ChatFrameEditBox:IsVisible() ) then
 				ChatFrameEditBox:Insert(GetContainerItemLink(BANK_CONTAINER, this:GetID()));
 			else

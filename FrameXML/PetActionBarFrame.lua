@@ -12,6 +12,10 @@ PET_WAIT_TEXTURE = "Interface\\Icons\\Spell_Nature_TimeStop";
 PET_DISMISS_TEXTURE = "Interface\\Icons\\Spell_Shadow_Teleport";
 
 function PetActionBar_OnLoad()
+	this:RegisterEvent("PLAYER_CONTROL_LOST");
+	this:RegisterEvent("PLAYER_CONTROL_GAINED");
+	this:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED");
+	this:RegisterEvent("UNIT_PET");
 	this:RegisterEvent("UNIT_FLAGS");
 	this:RegisterEvent("UNIT_AURA");
 	this:RegisterEvent("PET_BAR_UPDATE");
@@ -27,11 +31,7 @@ function PetActionBar_OnLoad()
 end
 
 function PetActionBar_OnEvent()
-	if ( (event == "UNIT_FLAGS") or (event == "UNIT_AURA") ) then
-		if ( arg1 == "pet" ) then
-			PetActionBar_Update();
-		end
-	elseif ( event == "PET_BAR_UPDATE" ) then
+	if ( event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") ) then
 		PetActionBar_Update();
 		if ( PetHasActionBar() ) then
 			ShowPetActionBar();
@@ -39,6 +39,12 @@ function PetActionBar_OnEvent()
 		else
 			UnlockPetActionBar();
 			HidePetActionBar();
+		end
+	elseif ( event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" ) then
+		PetActionBar_Update();
+	elseif ( (event == "UNIT_FLAGS") or (event == "UNIT_AURA") ) then
+		if ( arg1 == "pet" ) then
+			PetActionBar_Update();
 		end
 	elseif ( event =="PET_BAR_UPDATE_COOLDOWN" ) then
 		PetActionBar_UpdateCooldowns();
@@ -55,24 +61,32 @@ function PetActionBarFrame_OnUpdate(elapsed)
 		this.completed = nil;
 		if ( this.mode == "show" ) then
 			yPos = (this.slideTimer/this.timeToSlide) * this.yTarget;
-			this:SetPoint("TOPLEFT", this:GetParent():GetName(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
+			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
 			this.state = "showing";
 			this:Show();
 		elseif ( this.mode == "hide" ) then
 			yPos = (1 - (this.slideTimer/this.timeToSlide)) * this.yTarget;
-			this:SetPoint("TOPLEFT", this:GetParent():GetName(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
+			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
 			this.state = "hiding";
 		end
 		this.slideTimer = this.slideTimer + elapsed;
 	else
 		this.completed = 1;
 		if ( this.mode == "show" ) then
-			this:SetPoint("TOPLEFT", this:GetParent():GetName(), "BOTTOMLEFT", PETACTIONBAR_XPOS, this.yTarget);
+			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, this.yTarget);
 			this.state = "top";
+			--Move the chat frame and edit box up a bit
+			FCF_UpdateDockPosition();
+			--Move the casting bar up
+			CastingBarFrame_UpdatePosition();
 		elseif ( this.mode == "hide" ) then
-			this:SetPoint("TOPLEFT", this:GetParent():GetName(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
+			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
 			this.state = "bottom";
 			this:Hide();
+			--Move the chat frame and edit box back down to original position
+			FCF_UpdateDockPosition();
+			--Move the casting bar back down
+			CastingBarFrame_UpdatePosition();
 		end
 		this.mode = "none";
 	end
@@ -164,12 +178,6 @@ function ShowPetActionBar()
 		else
 			PETACTIONBAR_XPOS = 36
 		end
-
-		--Move the chat frame and edit box up a bit
-		FCF_UpdateDockPosition();
-		--Move the casting bar up
-		--CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 100);
-		CastingBarFrame_UpdatePosition();
 	end
 end
 
@@ -181,13 +189,6 @@ function HidePetActionBar()
 		PetActionBarFrame.timeToSlide = PETACTIONBAR_SLIDETIME;
 		PetActionBarFrame.yTarget = PETACTIONBAR_YPOS;
 		PetActionBarFrame.mode = "hide";
-		if ( GetNumShapeshiftForms() == 0 ) then
-			--Move the casting bar back down
-			--CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 60);
-			CastingBarFrame_UpdatePosition();
-		end
-		--Move the chat frame and edit box back down to original position
-		FCF_UpdateDockPosition();
 	end
 end
 
@@ -232,10 +233,80 @@ function PetActionButtonUp(id)
 	end
 end
 
+function PetActionButton_OnLoad()
+	this:RegisterForDrag("LeftButton", "RightButton");
+	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	this:RegisterEvent("UPDATE_BINDINGS");
+	getglobal(this:GetName().."Cooldown"):SetScale(0.65);
+	getglobal(this:GetName().."Cooldown"):ClearAllPoints();
+	getglobal(this:GetName().."Cooldown"):SetWidth(30);
+	getglobal(this:GetName().."Cooldown"):SetHeight(32);
+	getglobal(this:GetName().."Cooldown"):SetPoint("CENTER", this, "CENTER", 0, 0);
+	PetActionButton_SetHotkeys();
+end
+
 function PetActionButton_OnEvent()
 	if ( event == "UPDATE_BINDINGS" ) then
 		PetActionButton_SetHotkeys();
+		return;
 	end
+end
+
+function PetActionButton_OnClick(button)
+	this:SetChecked(0);
+	if ( IsShiftKeyDown() ) then
+		PickupPetAction(this:GetID());
+	else
+		if ( button == "LeftButton" ) then
+			if ( IsPetAttackActive(this:GetID()) ) then
+				PetStopAttack();
+			else
+				CastPetAction(this:GetID());
+			end
+		else
+			TogglePetAutocast(this:GetID());
+		end
+	end
+end
+
+function PetActionButton_OnDragStart()
+	if ( LOCK_ACTIONBAR ~= "1" ) then
+		this:SetChecked(0);
+		PickupPetAction(this:GetID());
+	end
+end
+
+function PetActionButton_OnReceiveDrag()
+	if ( LOCK_ACTIONBAR ~= "1" ) then
+		this:SetChecked(0);
+		PickupPetAction(this:GetID());
+	end
+end
+
+function PetActionButton_OnEnter()
+	if ( not this.tooltipName ) then
+		return;
+	end
+	local uber = GetCVar("UberTooltips");
+	if ( this.isToken or (uber == "0") ) then
+		if ( uber == "0" ) then
+			GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		else
+			GameTooltip_SetDefaultAnchor(GameTooltip, this);
+		end
+		GameTooltip:SetText(this.tooltipName..NORMAL_FONT_COLOR_CODE.." ("..KeyBindingFrame_GetLocalizedName(GetBindingKey("BONUSACTIONBUTTON"..this:GetID()), "KEY_")..")"..FONT_COLOR_CODE_CLOSE, 1.0, 1.0, 1.0);
+		if ( this.tooltipSubtext ) then
+			GameTooltip:AddLine(this.tooltipSubtext, "", 0.5, 0.5, 0.5);
+		end
+		GameTooltip:Show();
+	else
+		GameTooltip_SetDefaultAnchor(GameTooltip, this);
+		GameTooltip:SetPetAction(this:GetID());
+	end
+end
+
+function PetActionButton_OnLeave()
+	GameTooltip:Hide();
 end
 
 function PetActionButton_SetHotkeys()
@@ -249,6 +320,18 @@ function PetActionButton_SetHotkeys()
 	end
 end
 
+function PetActionButton_StartFlash()
+	this.flashing = 1;
+	this.flashtime = 0;
+	ActionButton_UpdateState();
+end
+
+function PetActionButton_StopFlash()
+	this.flashing = 0;
+	getglobal(this:GetName().."Flash"):Hide();
+	ActionButton_UpdateState();
+end
+
 function LockPetActionBar()
 	PetActionBarFrame.locked = 1;
 end
@@ -258,7 +341,7 @@ function UnlockPetActionBar()
 end
 
 function PetActionBar_UpdatePosition()
-	if ( MultiBarBottomLeft:IsVisible() ) then
+	if ( MultiBarBottomLeft.isShowing ) then
 		PETACTIONBAR_YPOS = 141;
 		SlidingActionBarTexture0:Hide();
 		SlidingActionBarTexture1:Hide();

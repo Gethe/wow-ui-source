@@ -29,17 +29,18 @@ function UnitFrame_Update()
 end
 
 function UnitFrame_OnEvent(event)
-	if ( (event == "UNIT_NAME_UPDATE") and (arg1 == this.unit) ) then
-		this.name:SetText(UnitName(this.unit));
-		return;
-	end
-	if ( (event == "UNIT_PORTRAIT_UPDATE") and (arg1 == this.unit) ) then
-		SetPortraitTexture(this.portrait, this.unit);
-		return;
-	end
-	if ( (event == "UNIT_DISPLAYPOWER") and (arg1 == this.unit) ) then
-		UnitFrame_UpdateManaType();
-		return;
+	if ( event == "UNIT_NAME_UPDATE" ) then
+		if ( arg1 == this.unit ) then
+			this.name:SetText(UnitName(this.unit));
+		end
+	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		if ( arg1 == this.unit ) then
+			SetPortraitTexture(this.portrait, this.unit);
+		end
+	elseif ( event == "UNIT_DISPLAYPOWER" ) then
+		if ( arg1 == this.unit ) then
+			UnitFrame_UpdateManaType();
+		end
 	end
 end
 

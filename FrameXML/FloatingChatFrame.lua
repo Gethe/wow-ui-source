@@ -1010,9 +1010,9 @@ function FCF_SetButtonSide(chatFrame, buttonSide)
 		return;
 	end
 	if ( buttonSide == "left" ) then
-		getglobal(chatFrame:GetName().."BottomButton"):SetPoint("BOTTOMLEFT", chatFrame:GetName(), "BOTTOMLEFT", -32, -4);
+		getglobal(chatFrame:GetName().."BottomButton"):SetPoint("BOTTOMLEFT", chatFrame, "BOTTOMLEFT", -32, -4);
 	elseif ( buttonSide == "right" ) then
-		getglobal(chatFrame:GetName().."BottomButton"):SetPoint("BOTTOMLEFT", chatFrame:GetName(), "BOTTOMRIGHT", 0, -4);
+		getglobal(chatFrame:GetName().."BottomButton"):SetPoint("BOTTOMLEFT", chatFrame, "BOTTOMRIGHT", 0, -4);
 	end
 	chatFrame.buttonSide = buttonSide;
 end
@@ -1032,9 +1032,9 @@ function FCF_DockUpdate()
 		name = value:GetName();
 		if ( index ~= 1 ) then
 			value:ClearAllPoints();
-			value:SetPoint("TOPLEFT", DEFAULT_CHAT_FRAME:GetName(), "TOPLEFT", 0, 0);
-			value:SetPoint("BOTTOMLEFT", DEFAULT_CHAT_FRAME:GetName(), "BOTTOMLEFT", 0, 0);
-			value:SetPoint("BOTTOMRIGHT", DEFAULT_CHAT_FRAME:GetName(), "BOTTOMRIGHT", 0, 0);
+			value:SetPoint("TOPLEFT", DEFAULT_CHAT_FRAME, "TOPLEFT", 0, 0);
+			value:SetPoint("BOTTOMLEFT", DEFAULT_CHAT_FRAME, "BOTTOMLEFT", 0, 0);
+			value:SetPoint("BOTTOMRIGHT", DEFAULT_CHAT_FRAME, "BOTTOMRIGHT", 0, 0);
 		end
 		
 		-- Select or deselect the frame
@@ -1063,7 +1063,7 @@ function FCF_DockUpdate()
 
 		-- If this is the last frame in the dock then extend the dockRegion, otherwise shrink it to the default width
 		dockRegion = getglobal(chatTab:GetName().."DockRegion");
-		dockRegion:SetPoint("LEFT", chatTab:GetName(), "CENTER", 0 , 0);
+		dockRegion:SetPoint("LEFT", chatTab, "CENTER", 0 , 0);
 		if ( numDockedFrames == index ) then
 			dockRegion:SetPoint("RIGHT", "ChatFrame"..chatTab:GetID(), "RIGHT", 0, 0);
 		end
@@ -1170,7 +1170,7 @@ function FCF_UnDockFrame(frame)
 	
 	-- Reset dockregion anchors
 	dockRegion = getglobal(frame:GetName().."TabDockRegion");
-	dockRegion:SetPoint("RIGHT", frame:GetName(), "RIGHT", 0, 0);
+	dockRegion:SetPoint("RIGHT", frame, "RIGHT", 0, 0);
 	dockRegion:Hide();
 	
 	-- Select first docked frame
@@ -1325,12 +1325,12 @@ function FCF_UpdateDockPosition()
 	
 	local chatOffset = 85;
 	if ( GetNumShapeshiftForms() > 0 or HasPetUI() or PetHasActionBar() ) then
-		if ( MultiBarBottomLeft:IsVisible() ) then
+		if ( MultiBarBottomLeft:IsShown() ) then
 			chatOffset = chatOffset + 55;
 		else
 			chatOffset = chatOffset + 15;
 		end
-	elseif ( MultiBarBottomLeft:IsVisible() ) then
+	elseif ( MultiBarBottomLeft:IsShown() ) then
 		chatOffset = chatOffset + 15;
 	end
 	DEFAULT_CHAT_FRAME:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 32, chatOffset);

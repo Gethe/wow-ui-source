@@ -101,6 +101,9 @@ ChatTypeInfo["SPELL_PERIODIC_HOSTILEPLAYER_BUFFS"]		= { sticky = 0 };
 ChatTypeInfo["SPELL_PERIODIC_CREATURE_DAMAGE"]			= { sticky = 0 };
 ChatTypeInfo["SPELL_PERIODIC_CREATURE_BUFFS"]			= { sticky = 0 };
 ChatTypeInfo["SPELL_FAILED_LOCALPLAYER"]				= { sticky = 0 };
+ChatTypeInfo["BG_SYSTEM_NEUTRAL"]						= { sticky = 0 };
+ChatTypeInfo["BG_SYSTEM_ALLIANCE"]						= { sticky = 0 };
+ChatTypeInfo["BG_SYSTEM_HORDE"]							= { sticky = 0 };
 
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
@@ -112,6 +115,9 @@ ChatTypeGroup["SYSTEM"] = {
 	"TIME_PLAYED_MSG",
 	"PLAYER_LEVEL_UP",
 	"CHARACTER_POINTS_CHANGED",
+	"CHAT_MSG_BG_SYSTEM_NEUTRAL",
+	"CHAT_MSG_BG_SYSTEM_ALLIANCE",
+	"CHAT_MSG_BG_SYSTEM_HORDE",
 };
 ChatTypeGroup["SAY"] = {
 	"CHAT_MSG_SAY",
@@ -648,8 +654,26 @@ SlashCmdList["CONSOLE"] = function(msg)
 	ConsoleExec(msg);
 end
 
+SlashCmdList["CHATLOG"] = function()
+	local info = ChatTypeInfo["SYSTEM"];
+	if ( LoggingChat() ) then
+		LoggingChat(false);
+		this.chatFrame:AddMessage(TEXT(CHATLOGDISABLED), info.r, info.g, info.b, info.id);
+	else
+		LoggingChat(true);
+		this.chatFrame:AddMessage(TEXT(CHATLOGENABLED), info.r, info.g, info.b, info.id);
+	end
+end
+
 SlashCmdList["COMBATLOG"] = function()
-	ToggleCombatLogFileWrite();
+	local info = ChatTypeInfo["SYSTEM"];
+	if ( LoggingCombat() ) then
+		LoggingCombat(false);
+		this.chatFrame:AddMessage(TEXT(COMBATLOGDISABLED), info.r, info.g, info.b, info.id);
+	else
+		LoggingCombat(true);
+		this.chatFrame:AddMessage(TEXT(COMBATLOGENABLED), info.r, info.g, info.b, info.id);
+	end
 end
 
 SlashCmdList["INVITE"] = function(msg)
@@ -743,7 +767,7 @@ SlashCmdList["JOIN"] = 	function(msg)
 	local name = gsub(msg, "%s*([^%s]+).*", "%1");
 	local password = gsub(msg, "%s*([^%s]+)%s*(.*)", "%2");
 	if(strlen(name) <= 0) then
-		local joinhelp = TEXT(getglobal("CHAT_JOIN_HELP"));
+		local joinhelp = TEXT(CHAT_JOIN_HELP);
 		local info = ChatTypeInfo["SYSTEM"];
 		this.chatFrame:AddMessage(joinhelp, info.r, info.g, info.b, info.id);
 	else
@@ -1036,7 +1060,7 @@ SlashCmdList["SPLIT"] = function(msg)
 		end
 	end
 
-	local splithelp = TEXT(getglobal("SPLIT_MONEY_HELP"));
+	local splithelp = TEXT(SPLIT_MONEY_HELP);
 	local info = ChatTypeInfo["SYSTEM"];
 	this.chatFrame:AddMessage(splithelp, info.r, info.g, info.b, info.id);
 end
@@ -1323,7 +1347,7 @@ function ChatFrame_OnEvent(event)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
-		
+
 		local channelLength = strlen(arg4);
 		if ( (strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and (arg1 ~= "INVITE") ) then
 			local found = 0;
@@ -1352,8 +1376,10 @@ function ChatFrame_OnEvent(event)
 			this:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,6) == "SPELL_" ) then
 			this:AddMessage(arg1, info.r, info.g, info.b, info.id);
+		elseif ( strsub(type,1,10) == "BG_SYSTEM_" ) then
+			this:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
-			this:AddMessage(format(TEXT(getglobal("CHAT_IGNORED")), arg2), info.r, info.g, info.b, info.id);
+			this:AddMessage(format(TEXT(CHAT_IGNORED), arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
 				this:AddMessage(format(TEXT(getglobal("CHAT_"..type.."_GET"))..arg1, arg4), info.r, info.g, info.b, info.id);
@@ -1368,6 +1394,9 @@ function ChatFrame_OnEvent(event)
 				this:AddMessage(format(TEXT(getglobal("CHAT_"..arg1.."_NOTICE")), arg4, arg2), info.r, info.g, info.b, info.id);
 			end
 		elseif (type == "CHANNEL_NOTICE") then
+			if ( arg10 > 0 ) then
+				arg4 = arg4.." "..arg10;
+			end
 			this:AddMessage(format(TEXT(getglobal("CHAT_"..arg1.."_NOTICE")), arg4), info.r, info.g, info.b, info.id);
 		else
 			arg1 = gsub(arg1, "%%", "%%%%");
@@ -1482,12 +1511,14 @@ function ChatFrame_OpenChat(text, chatFrame)
 	chatFrame.editBox.setText = 1;
 	chatFrame.editBox.text = text;
 
-	if ( (chatFrame.editBox.stickyType == "PARTY") and (GetNumPartyMembers() == 0) ) then
-		chatFrame.editBox.chatType = "SAY";
-		ChatEdit_UpdateHeader(chatFrame.editBox);
-	elseif ( (chatFrame.editBox.stickyType == "RAID") and (GetNumRaidMembers() == 0) ) then
-		chatFrame.editBox.chatType = "SAY";
-		ChatEdit_UpdateHeader(chatFrame.editBox);
+	if ( chatFrame.editBox.chatType == chatFrame.editBox.stickyType ) then
+		if ( (chatFrame.editBox.stickyType == "PARTY") and (GetNumPartyMembers() == 0) ) then
+			chatFrame.editBox.chatType = "SAY";
+			ChatEdit_UpdateHeader(chatFrame.editBox);
+		elseif ( (chatFrame.editBox.stickyType == "RAID") and (GetNumRaidMembers() == 0) ) then
+			chatFrame.editBox.chatType = "SAY";
+			ChatEdit_UpdateHeader(chatFrame.editBox);
+		end
 	end
 end
 
@@ -1534,12 +1565,20 @@ function ChatFrame_SendTell(name, chatFrame)
 		chatFrame = DEFAULT_CHAT_FRAME;
 	end
 
+	if ( not chatFrame.editBox:IsVisible() ) then
+		ChatFrame_OpenChat("/w "..name.." ", chatFrame);
+	else
+		chatFrame.editBox:SetText("/w "..name.." ");
+	end
+	ChatEdit_ParseText(chatFrame.editBox, 0);
+--[[
 	chatFrame.editBox.chatType = "WHISPER";
 	chatFrame.editBox.tellTarget = name;
 	ChatEdit_UpdateHeader(chatFrame.editBox);
 	if ( not chatFrame.editBox:IsVisible() ) then
 		ChatFrame_OpenChat("", chatFrame);
 	end
+]]
 end
 
 function ChatFrame_ReplyTell(chatFrame)
@@ -1777,8 +1816,11 @@ function ChatEdit_UpdateHeader(editBox)
 	elseif ( type == "EMOTE" ) then
 		header:SetText(format(TEXT(getglobal("CHAT_EMOTE_SEND")), UnitName("player")));
 	elseif ( type == "CHANNEL" ) then
-		local channel, channelName = GetChannelName(editBox.channelTarget);
+		local channel, channelName, instanceID = GetChannelName(editBox.channelTarget);
 		if ( channelName ) then
+			if ( instanceID > 0 ) then
+				channelName = channelName.." "..instanceID;
+			end
 			info = ChatTypeInfo["CHANNEL"..channel];
 			editBox.channelTarget = channel;
 			header:SetText(format(TEXT(getglobal("CHAT_CHANNEL_SEND")), channel, channelName));
@@ -2087,7 +2129,7 @@ end
 function ChatEdit_ExtractTellTarget(editBox, msg)
 	-- Grab the first "word" in the string
 	local target = gsub(msg, "(%s*)([^%s]+)(.*)", "%2", 1);
-	if ( strlen(target) <= 0 ) then
+	if ( (strlen(target) <= 0) or (strsub(target, 1, 1) == "|") ) then
 		return;
 	end
 

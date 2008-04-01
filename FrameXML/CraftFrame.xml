@@ -29,19 +29,23 @@
 	<Button name="CraftItemTemplate" inherits="QuestItemTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT");
 				GameTooltip:SetCraftItem(GetCraftSelectionIndex(), this:GetID());
+				CursorUpdate();
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
+				ResetCursor();
 			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate();
+			</OnUpdate>
 			<OnClick>
-				if ( IsShiftKeyDown() ) then
+				if ( IsControlKeyDown() ) then
+					DressUpItemLink(GetCraftReagentItemLink(GetCraftSelectionIndex(), this:GetID()));
+				elseif ( IsShiftKeyDown() ) then
 					if ( ChatFrameEditBox:IsVisible() ) then
-						local link = GetCraftReagentItemLink(GetCraftSelectionIndex(), this:GetID())
-						if ( link ) then
-							ChatFrameEditBox:Insert(link);
-						end
+						ChatFrameEditBox:Insert(GetCraftReagentItemLink(GetCraftSelectionIndex(), this:GetID()));
 					end
 				end
 			</OnClick>
@@ -545,23 +549,30 @@
 									</Anchor>
 								</Anchors>
 								<Scripts>
+									<OnLoad>
+										this.hasItem = 1;
+									</OnLoad>
 									<OnClick>
-										if ( IsShiftKeyDown() ) then
+										if ( IsControlKeyDown() ) then
+											DressUpItemLink(GetCraftItemLink(GetCraftSelectionIndex()));
+										elseif ( IsShiftKeyDown() ) then
 											if ( ChatFrameEditBox:IsVisible() ) then
-												local link = GetCraftItemLink(GetCraftSelectionIndex())
-												if ( link ) then
-													ChatFrameEditBox:Insert(link);
-												end
+												ChatFrameEditBox:Insert(GetCraftItemLink(GetCraftSelectionIndex()));
 											end
 										end
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 										GameTooltip:SetCraftSpell(GetCraftSelectionIndex());
+										CursorUpdate();
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();
+										ResetCursor();
 									</OnLeave>
+									<OnUpdate>
+										CursorOnUpdate();
+									</OnUpdate>
 								</Scripts>
 							</Button>
 							<Button name="CraftReagent1" inherits="CraftItemTemplate" id="1">

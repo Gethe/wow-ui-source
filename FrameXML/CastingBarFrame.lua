@@ -12,6 +12,7 @@ function CastingBarFrame_OnLoad()
 	this:RegisterEvent("SPELLCAST_CHANNEL_UPDATE");
 	this.casting = nil;
 	this.holdTime = 0;
+	CastingBarFrameStatusBar = CastingBarFrame;
 end
 
 function CastingBarFrame_OnEvent()
@@ -107,7 +108,7 @@ function CastingBarFrame_OnUpdate()
 		if ( sparkPosition < 0 ) then
 			sparkPosition = 0;
 		end
-		CastingBarSpark:SetPoint("CENTER", "CastingBarFrameStatusBar", "LEFT", sparkPosition, 0);
+		CastingBarSpark:SetPoint("CENTER", CastingBarFrame, "LEFT", sparkPosition, -2);
 	elseif ( this.channeling ) then
 		local time = GetTime();
 		if ( time > this.endTime ) then
@@ -122,7 +123,7 @@ function CastingBarFrame_OnUpdate()
 		CastingBarFrameStatusBar:SetValue( barValue );
 		CastingBarFlash:Hide();
 		local sparkPosition = ((barValue - this.startTime) / (this.endTime - this.startTime)) * 195;
-		CastingBarSpark:SetPoint("CENTER", "CastingBarFrameStatusBar", "LEFT", sparkPosition, 0);
+		CastingBarSpark:SetPoint("CENTER", CastingBarFrame, "LEFT", sparkPosition, -2);
 	elseif ( GetTime() < this.holdTime ) then
 		return;
 	elseif ( this.flash ) then

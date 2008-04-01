@@ -211,7 +211,7 @@
 		</Frames>
 		<Scripts>
 			<OnUpdate>
-				StaticPopup_OnUpdate(arg1);
+				StaticPopup_OnUpdate(this, arg1);
 			</OnUpdate>
 			<OnShow>
 				StaticPopup_OnShow();

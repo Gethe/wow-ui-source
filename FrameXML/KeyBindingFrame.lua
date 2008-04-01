@@ -130,9 +130,13 @@ function KeyBindingFrame_Update()
 end
 
 function KeyBindingFrame_OnKeyDown(button)
-	if ( arg1 == "PRINTSCREEN" ) then
-		Screenshot();
-		return;
+	-- Mac client needs to be able to remap PRINTSCREEN (F13) because
+	-- PowerBooks and iBooks don't have an F13 key
+	if ( not IsMacClient() ) then
+		if ( arg1 == "PRINTSCREEN" ) then
+			Screenshot();
+			return;
+		end
 	end
 
 	-- Convert the mouse button names

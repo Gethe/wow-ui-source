@@ -6,11 +6,11 @@ function MainMenuExpBar_Update()
 end
 
 function ExhaustionTick_OnLoad()
+	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	this:RegisterEvent("PLAYER_XP_UPDATE");
 	this:RegisterEvent("UPDATE_EXHAUSTION");
 	this:RegisterEvent("PLAYER_LEVEL_UP");
 	this:RegisterEvent("PLAYER_UPDATE_RESTING");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function ExhaustionTick_Update()

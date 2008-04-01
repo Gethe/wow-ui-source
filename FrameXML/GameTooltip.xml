@@ -580,7 +580,7 @@
 						HealthBar_OnValueChanged(arg1);
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+				<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
 			</StatusBar>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 				<Anchors>
@@ -598,12 +598,18 @@
 			<OnLoad>
 				GameTooltip_OnLoad();
 			</OnLoad>
-			<OnEvent>
-				GameTooltip_OnEvent();
-			</OnEvent>
 			<OnHide>
 				GameTooltip_OnHide();
 			</OnHide>
+			<OnTooltipSetDefaultAnchor>
+				GameTooltip_SetDefaultAnchor(this, UIParent);
+			</OnTooltipSetDefaultAnchor>
+			<OnTooltipAddMoney>
+				SetTooltipMoney(this, arg1);
+			</OnTooltipAddMoney>
+			<OnTooltipCleared>
+				GameTooltip_ClearMoney();
+			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>
 	<GameTooltip name="GameTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
@@ -611,9 +617,12 @@
 			<OnLoad>
 				GameTooltip_OnLoad();
 				this:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
-				this:RegisterEvent("CLEAR_TOOLTIP");
-				this:RegisterEvent("TOOLTIP_ANCHOR_DEFAULT");
 			</OnLoad>
+			<OnEvent>
+				if ( event == "UPDATE_MOUSEOVER_UNIT" ) then
+					getglobal(this:GetName().."TextLeft1"):SetTextColor(GameTooltip_UnitColor("mouseover"));
+				end
+			</OnEvent>
 			<OnHide>
 				GameTooltip_OnHide();
 				ShoppingTooltip1:Hide();
@@ -1070,29 +1079,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<StatusBar name="$parentStatusBar" hidden="true">
-				<Size>
-					<AbsDimension x="0" y="8"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="2" y="-1"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-2" y="-1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnValueChanged>
-						HealthBar_OnValueChanged(arg1);
-					</OnValueChanged>
-				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
-			</StatusBar>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTextLeft1" relativePoint="LEFT"/>
@@ -1109,12 +1095,6 @@
 			<OnLoad>
 				GameTooltip_OnLoad();
 			</OnLoad>
-			<OnEvent>
-				GameTooltip_OnEvent();
-			</OnEvent>
-			<OnHide>
-				GameTooltip_OnHide();
-			</OnHide>
 		</Scripts>
 	</GameTooltip>
 	<GameTooltip name="ShoppingTooltip1" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>

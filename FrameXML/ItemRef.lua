@@ -3,6 +3,7 @@ function SetItemRef(link, text, button)
 	if ( strsub(link, 1, 6) == "player" ) then
 		local name = strsub(link, 8);
 		if ( name and (strlen(name) > 0) ) then
+			name = gsub(name, "([^%s]*)%s+([^%s]*)%s+([^%s]*)", "%3");
 			name = gsub(name, "([^%s]*)%s+([^%s]*)", "%2");
 			if ( IsShiftKeyDown() ) then
 				local staticPopup = StaticPopup_Visible("ADD_IGNORE");
@@ -22,7 +23,9 @@ function SetItemRef(link, text, button)
 		return;
 	end
 
-	if ( IsShiftKeyDown() ) then
+	if ( IsControlKeyDown() ) then
+		DressUpItemLink(text);
+	elseif ( IsShiftKeyDown() ) then
 		if ( ChatFrameEditBox:IsVisible() ) then
 			ChatFrameEditBox:Insert(text);
 		end

@@ -410,7 +410,7 @@
 			</OnEvent>
 			<OnEnter>
 				UnitFrame_OnEnter();
-				PartyMemberBuffTooltip:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 60, -25);
+				PartyMemberBuffTooltip:SetPoint("TOPLEFT", this, "TOPLEFT", 60, -25);
 				PartyMemberBuffTooltip_Update();
 			</OnEnter>
 			<OnLeave>

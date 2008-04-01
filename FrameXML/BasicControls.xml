@@ -8,6 +8,7 @@
 				ScriptErrors_Message:SetText(message);
 				ScriptErrors:Show();
 			end
+			return message;
 		end
 		function message(text)
 			_ERRORMESSAGE(text);

@@ -68,7 +68,7 @@ function UIMenu_OnUpdate(elapsed)
 end
 
 function UIMenuButton_OnLoad()
-	this:SetPoint("TOP", this:GetParent():GetName(), "TOP", 0, -((this:GetID() - 1) * UIMENU_BUTTON_HEIGHT) - UIMENU_BORDER_HEIGHT);
+	this:SetPoint("TOP", this:GetParent(), "TOP", 0, -((this:GetID() - 1) * UIMENU_BUTTON_HEIGHT) - UIMENU_BORDER_HEIGHT);
 end
 
 function UIMenuButton_OnClick()
@@ -111,7 +111,7 @@ function UIMenuButton_OnEnter()
 			end
 
 			this:GetParent().subMenu = nested;
-			menu:SetPoint("BOTTOMLEFT", this:GetName(), "BOTTOMRIGHT", 10, -12);
+			menu:SetPoint("BOTTOMLEFT", this, "BOTTOMRIGHT", 10, -12);
 			menu:Show();
 		end
 

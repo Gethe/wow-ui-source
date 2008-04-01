@@ -205,6 +205,9 @@
 				<xs:element name="OnMovieFinished" type="xs:string"/>
 				<xs:element name="OnMovieShowSubtitle" type="xs:string"/>
 				<xs:element name="OnMovieHideSubtitle" type="xs:string"/>
+				<xs:element name="OnTooltipSetDefaultAnchor" type="xs:string"/>
+				<xs:element name="OnTooltipCleared" type="xs:string"/>
+				<xs:element name="OnTooltipAddMoney" type="xs:string"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -512,6 +515,7 @@
 					</xs:sequence>
 				</xs:sequence>
 				<xs:attribute name="file" type="xs:string"/>
+				<xs:attribute name="hyperlinkFormat" type="xs:string" default="|H%s|h%s|h"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -630,6 +634,12 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="PlayerModel" type="PlayerModelType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="DressUpModelType">
+		<xs:complexContent>
+			<xs:extension base="PlayerModelType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DressUpModel" type="DressUpModelType" substitutionGroup="ui:Frame"/>
 	<xs:complexType name="TabardModelType">
 		<xs:complexContent>
 			<xs:extension base="PlayerModelType"/>

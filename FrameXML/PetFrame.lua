@@ -7,15 +7,14 @@ function PetFrame_OnLoad()
 	this.attackModeSign = -1;
 	--this.flashState = 1;
 	--this.flashTimer = 0;
-	PetFrame_Update();
 	CombatFeedback_Initialize(PetHitIndicator, 30);
+	PetFrame_Update();
+	this:RegisterEvent("UNIT_PET");
 	this:RegisterEvent("UNIT_COMBAT");
 	this:RegisterEvent("UNIT_AURA");
-	this:RegisterEvent("UNIT_PET");
 	this:RegisterEvent("PET_ATTACK_START");
 	this:RegisterEvent("PET_ATTACK_STOP");
 	this:RegisterEvent("UNIT_HAPPINESS");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function PetFrame_Update()
@@ -32,8 +31,10 @@ function PetFrame_Update()
 		else
 			PetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-SmallTargetingFrame");
 		end
+		PetAttackModeTexture:Hide();
 
 		PetFrame_SetHappiness();
+		PetFrame_RefreshBuffs();
 	else
 		this:Hide();
 	end
@@ -42,41 +43,25 @@ end
 function PetFrame_OnEvent(event)
 	UnitFrame_OnEvent(event);
 
-	if ( event == "UNIT_COMBAT" ) then
-		if ( arg1 == "pet" ) then
-			CombatFeedback_OnCombatEvent(arg2, arg3, arg4, arg5);
-		end
-		return;
-	end
-	if ( event == "UNIT_AURA" ) then
-		if ( arg1 == "pet" ) then
-			PetFrame_RefreshBuffs();
-		end
-	end
 	if ( event == "UNIT_PET" ) then
 		if ( arg1 == "player" ) then
 			PetFrame_Update();
-			PetAttackModeTexture:Hide();
+		end
+	elseif ( event == "UNIT_COMBAT" ) then
+		if ( arg1 == "pet" ) then
+			CombatFeedback_OnCombatEvent(arg2, arg3, arg4, arg5);
+		end
+	elseif ( event == "UNIT_AURA" ) then
+		if ( arg1 == "pet" ) then
 			PetFrame_RefreshBuffs();
 		end
-		return;
-	end
-	if ( event == "PET_ATTACK_START" ) then
+	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
 		PetAttackModeTexture:Show();
-		return;
-	end
-	if ( event == "PET_ATTACK_STOP" ) then
+	elseif ( event == "PET_ATTACK_STOP" ) then
 		PetAttackModeTexture:Hide();
-		return;
-	end
-	if ( event == "UNIT_HAPPINESS" ) then
+	elseif ( event == "UNIT_HAPPINESS" ) then
 		PetFrame_SetHappiness();
-		return;
-	end
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		PetFrame_Update();
-		return;
 	end
 end
 

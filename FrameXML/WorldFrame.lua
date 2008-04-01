@@ -22,6 +22,23 @@ function WorldFrame_OnUpdate(elapsed)
 			this.fpsTime = timeLeft;
 		end
 	end
+	-- Process dialog onUpdates if the map is up or the ui is hidden
+	local dialog;
+	for i = 1, STATICPOPUP_NUMDIALOGS, 1 do
+		dialog = getglobal("StaticPopup"..i);
+		if ( dialog and dialog:IsShown() and not dialog:IsVisible() ) then
+			StaticPopup_OnUpdate(dialog, elapsed);
+		end
+	end
+
+	-- Process breathbar onUpdates if the map is up or the ui is hidden
+	local bar;
+	for i=1, MIRRORTIMER_NUMTIMERS do
+		bar = getglobal("MirrorTimer"..i);
+		if ( bar and bar:IsShown() and not bar:IsVisible() ) then
+			MirrorTimerFrame_OnUpdate(bar, arg1);
+		end
+	end
 end
 
 SCREENSHOT_STATUS_FADETIME = 1.5;

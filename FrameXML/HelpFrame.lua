@@ -1,3 +1,6 @@
+HELPFRAME_BULLET_SPACING = -3;
+HELPFRAME_SECTION_SPACING = -20;
+
 -- Ugly, but needs to be up here so that the function is defined when you try to add it as a parameter for general frames
 function HelpFrameUnstick_OnClick()
 	Stuck();
@@ -183,6 +186,9 @@ function HelpFrame_OnEvent()
 			PETITION_QUEUE_ACTIVE = 1;
 		else
 			PETITION_QUEUE_ACTIVE = nil;
+			if ( arg1 == -1 ) then
+				StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
+			end
 		end
 	end
 end
@@ -247,7 +253,7 @@ function HelpFrame_SetupGeneralFrame(key)
 				getglobal("HelpFrameGeneralBullet"..bulletIndex.."Text"):SetText(value);
 				bullet:Show();
 				if ( index > 1 ) then
-					bullet:SetPoint("TOPLEFT", "HelpFrameGeneralBullet"..(bulletIndex-1), "BOTTOMLEFT", 0, -3);
+					bullet:SetPoint("TOPLEFT", "HelpFrameGeneralBullet"..(bulletIndex-1), "BOTTOMLEFT", 0, HELPFRAME_BULLET_SPACING);
 				end
 				bulletIndex = bulletIndex + 1;
 			else
@@ -257,7 +263,7 @@ function HelpFrame_SetupGeneralFrame(key)
 	end
 	if ( info.bulletTitle2 ) then
 		HelpFrameBulletTitle2:Show();
-		HelpFrameBulletTitle2:SetPoint("TOPLEFT", "HelpFrameGeneralBullet"..(bulletIndex-1), "BOTTOMLEFT", -5, -20);
+		HelpFrameBulletTitle2:SetPoint("TOPLEFT", "HelpFrameGeneralBullet"..(bulletIndex-1), "BOTTOMLEFT", -5, HELPFRAME_SECTION_SPACING);
 		HelpFrameBulletTitle2:SetText(info.bulletTitle2);
 	else
 		HelpFrameBulletTitle2:Hide();
@@ -269,9 +275,9 @@ function HelpFrame_SetupGeneralFrame(key)
 				getglobal("HelpFrameGeneralBullet"..bulletIndex.."Text"):SetText(value);
 				bullet:Show();
 				if ( index == 1 ) then
-					bullet:SetPoint("TOPLEFT", "HelpFrameBulletTitle2", "BOTTOMLEFT", 5, -3);
+					bullet:SetPoint("TOPLEFT", "HelpFrameBulletTitle2", "BOTTOMLEFT", 5, HELPFRAME_BULLET_SPACING);
 				else
-					bullet:SetPoint("TOPLEFT", "HelpFrameGeneralBullet"..(bulletIndex-1), "BOTTOMLEFT", 0, -3);
+					bullet:SetPoint("TOPLEFT", "HelpFrameGeneralBullet"..(bulletIndex-1), "BOTTOMLEFT", 0, HELPFRAME_BULLET_SPACING);
 				end
 				bulletIndex = bulletIndex + 1;
 			else
@@ -289,7 +295,7 @@ function HelpFrame_SetupGeneralFrame(key)
 	-- Set end text
 	if ( info.endText ) then
 		HelpFrameEndText:SetText(info.endText);
-		HelpFrameEndText:SetPoint("TOPLEFT", "HelpFrameGeneralBullet"..(bulletIndex-1), "BOTTOMLEFT", -5, -20);
+		HelpFrameEndText:SetPoint("TOPLEFT", "HelpFrameGeneralBullet"..(bulletIndex-1), "BOTTOMLEFT", -5, HELPFRAME_SECTION_SPACING);
 		HelpFrameEndText:Show();
 	else
 		HelpFrameEndText:Hide();
@@ -300,9 +306,9 @@ function HelpFrame_SetupGeneralFrame(key)
 		HelpFrameGeneralButton:SetText(info.buttonText);
 		HelpFrameGeneralButton:SetWidth(HelpFrameGeneralButtonText:GetWidth()+40);
 		if ( info.endText ) then
-			HelpFrameGeneralButton:SetPoint("TOP", "HelpFrameEndText", "BOTTOM", 0, -20);
+			HelpFrameGeneralButton:SetPoint("TOP", "HelpFrameEndText", "BOTTOM", 0, HELPFRAME_SECTION_SPACING);
 		else
-			HelpFrameGeneralButton:SetPoint("TOP", "HelpFrameGeneralBullet"..(bulletIndex-1), "BOTTOM", 0, -20);
+			HelpFrameGeneralButton:SetPoint("TOP", "HelpFrameGeneralBullet"..(bulletIndex-1), "BOTTOM", 0, HELPFRAME_SECTION_SPACING);
 		end
 		if ( info.buttonOnClickFunc ) then
 			HelpFrameGeneralButton.onClick = info.buttonOnClickFunc;
@@ -316,7 +322,7 @@ function HelpFrame_SetupGeneralFrame(key)
 	-- Set second title text if applicable
 	if ( info.titleText2 ) then
 		HelpFrameGeneralTitleText2:SetText(info.titleText2);
-		HelpFrameGeneralTitleText2:SetPoint("TOPLEFT", "HelpFrameGeneralButton", "BOTTOM", -300, -20);
+		HelpFrameGeneralTitleText2:SetPoint("TOPLEFT", "HelpFrameGeneralButton", "BOTTOM", -300, HELPFRAME_SECTION_SPACING);
 		HelpFrameGeneralTitleText2:Show();
 	else
 		HelpFrameGeneralTitleText2:Hide();
@@ -327,9 +333,9 @@ function HelpFrame_SetupGeneralFrame(key)
 		HelpFrameGeneralButton2:SetText(info.button2Text);
 		HelpFrameGeneralButton2:SetWidth(HelpFrameGeneralButton2Text:GetWidth()+40);
 		if ( info.titleText2 ) then
-			HelpFrameGeneralButton2:SetPoint("TOP", "HelpFrameGeneralTitleText2", "BOTTOM", 0, -20);
+			HelpFrameGeneralButton2:SetPoint("TOP", "HelpFrameGeneralTitleText2", "BOTTOM", 0, HELPFRAME_SECTION_SPACING);
 		else
-			HelpFrameGeneralButton2:SetPoint("TOP", "HelpFrameGeneralButton", "BOTTOM", 0, -20);
+			HelpFrameGeneralButton2:SetPoint("TOP", "HelpFrameGeneralButton", "BOTTOM", 0, HELPFRAME_SECTION_SPACING);
 		end
 		if ( info.button2OnClickFunc ) then
 			HelpFrameGeneralButton2.onClick = info.button2OnClickFunc;
@@ -416,7 +422,7 @@ function TicketStatusFrame_OnEvent()
 	else
 		if ( arg1 ~= 0 ) then		
 			this:Show();
-			TemporaryEnchantFrame:SetPoint("TOPRIGHT", this:GetParent():GetName(), "TOPRIGHT", -205, (-this:GetHeight()));
+			TemporaryEnchantFrame:SetPoint("TOPRIGHT", this:GetParent(), "TOPRIGHT", -205, (-this:GetHeight()));
 			refreshTime = GMTICKET_CHECK_INTERVAL;
 		else
 			this:Hide();

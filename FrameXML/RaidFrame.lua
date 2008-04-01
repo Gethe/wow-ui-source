@@ -245,7 +245,7 @@ function RaidGroupButton_OnDragStart()
 	end
 	local cursorX, cursorY = GetCursorPosition();
 	this:ClearAllPoints();
-	this:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", cursorX, cursorY);
+	this:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", cursorX*GetScreenWidthScale(), cursorY*GetScreenHeightScale());
 	this:StartMoving();
 	MOVING_RAID_MEMBER = this;
 	SetRaidRosterSelection(this.id);
@@ -263,7 +263,7 @@ function RaidGroupButton_OnDragStop(raidButton)
 	if ( TARGET_RAID_SLOT and TARGET_RAID_SLOT:GetParent():GetID() ~= raidButton.subgroup ) then
 		if (TARGET_RAID_SLOT.button) then
 			local button = getglobal(TARGET_RAID_SLOT.button);
-			--button:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", 0, 0);
+			--button:SetPoint("TOPLEFT", this, "TOPLEFT", 0, 0);
 			SwapRaidSubgroup(raidButton:GetID(), button:GetID());
 		else
 			local slot = TARGET_RAID_SLOT:GetParent():GetName().."Slot"..TARGET_RAID_SLOT:GetParent().nextIndex;
@@ -543,7 +543,7 @@ function RaidPulloutButton_OnDragStart(frame)
 	end
 	local cursorX, cursorY = GetCursorPosition();
 	frame:ClearAllPoints();
-	frame:SetPoint("TOP", "UIParent", "BOTTOMLEFT", cursorX, cursorY);
+	frame:SetPoint("TOP", "UIParent", "BOTTOMLEFT", cursorX*GetScreenWidthScale(), cursorY*GetScreenHeightScale());
 	frame:StartMoving();
 	MOVING_RAID_PULLOUT = frame;
 end

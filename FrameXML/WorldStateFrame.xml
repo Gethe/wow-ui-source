@@ -7,7 +7,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" file="HordeFlag">
+				<Texture name="$parentIcon">
 					<Size>
 						<AbsDimension x="42" y="42"/>
 					</Size>
@@ -44,7 +44,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentIcon" file="HordeFlag">
+						<Texture name="$parentIcon">
 							<Size>
 								<AbsDimension x="32" y="32"/>
 							</Size>
@@ -79,7 +79,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" file="FlagFlash" alphaMode="ADD">
+						<Texture name="$parentTexture" alphaMode="ADD">
 							<Size>
 								<AbsDimension x="32" y="32"/>
 							</Size>
@@ -661,7 +661,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="40" y="80"/>
+								<AbsDimension x="40" y="77"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1181,12 +1181,17 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Button>
 			<Frame name="WorldStateScoreWinnerFrame" hidden="true">
 				<Size>
-					<AbsDimension x="505" y="16"/>
+					<AbsDimension x="10" y="16"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
 							<AbsDimension x="17" y="-20"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-141" y="-20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1243,7 +1248,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</OnLoad>
 			<OnEvent>
 				if	( event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES") then
-					WorldStateScoreFrame_Update();
+					if ( WorldStateScoreFrame:IsVisible() or GetBattlefieldWinner() ) then
+						WorldStateScoreFrame_Update();
+					end
 				end
 				if ( event == "PLAYER_ENTERING_WORLD" ) then
 					HideUIPanel(WorldStateScoreFrame);
@@ -1251,6 +1258,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				end
 			</OnEvent>
 			<OnShow>
+				WorldStateScoreFrame_Update();
 				WorldStateScoreFrame_Resize();
 				WorldStateScoreFrameTab_OnClick(WorldStateScoreFrameTab1);
 			</OnShow>

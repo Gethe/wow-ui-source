@@ -74,13 +74,7 @@ function ToggleBag(id)
 			end
 		end
 		if ( not containerShowing ) then
-			if ( CanOpenPanels() ) then
-				ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), size, id);
-			else
-				if ( UnitIsDead("player") ) then
-					NotWhileDeadError();
-				end
-			end
+			ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), size, id);
 		end
 	end
 end
@@ -247,8 +241,10 @@ function ContainerFrame_Update(frame)
 		
 		if ( texture ) then
 			ContainerFrame_UpdateCooldown(id, itemButton);
+			itemButton.hasItem = 1;
 		else
 			getglobal(name.."Item"..j.."Cooldown"):Hide();
+			itemButton.hasItem = nil;
 		end
 
 		itemButton.readable = readable;
@@ -263,11 +259,12 @@ function ContainerFrame_Update(frame)
 		if ( GameTooltip:IsOwned(itemButton) ) then
 			if ( texture ) then
 				local hasCooldown, repairCost = GameTooltip:SetBagItem(itemButton:GetParent():GetID(),itemButton:GetID());
-				if ( hasCooldown ) then
+				--[[if ( hasCooldown ) then
 					itemButton.updateTooltip = TOOLTIP_UPDATE_TIME;
 				else
 					itemButton.updateTooltip = nil;
 				end
+				]]
 				if ( InRepairMode() and (repairCost > 0) ) then
 					GameTooltip:AddLine(TEXT(REPAIR_COST), "", 1, 1, 1);
 					SetTooltipMoney(GameTooltip, repairCost);
@@ -349,8 +346,10 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 		if ( texture ) then
 			ContainerFrame_UpdateCooldown(id, itemButton);
+			itemButton.hasItem = 1;
 		else
 			getglobal(name.."Item"..j.."Cooldown"):Hide();
+			itemButton.hasItem = nil;
 		end
 		--if ( quality and quality ~= -1 ) then
 		---	local color = getglobal("ITEM_QUALITY".. quality .."_COLOR");
@@ -389,12 +388,12 @@ function updateContainerFrameAnchors()
 		-- freeScreenHeight determines when to start a new column of bags
 		if ( index == 1 ) then
 			-- First bag
-			frame:SetPoint("BOTTOMRIGHT", frame:GetParent():GetName(), "BOTTOMRIGHT", -xOffset, CONTAINER_OFFSET_Y);
+			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -xOffset, CONTAINER_OFFSET_Y);
 		elseif ( freeScreenHeight < frame:GetHeight() ) then
 			-- Start a new column
 			column = column + 1;
 			freeScreenHeight = UIParent:GetHeight() - CONTAINER_OFFSET_Y;
-			frame:SetPoint("BOTTOMRIGHT", frame:GetParent():GetName(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH) - xOffset, CONTAINER_OFFSET_Y);
+			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH) - xOffset, CONTAINER_OFFSET_Y);
 		else
 			-- Anchor to the previous bag
 			frame:SetPoint("BOTTOMRIGHT", ContainerFrame1.bags[index - 1], "TOPRIGHT", 0, CONTAINER_SPACING);	
@@ -424,9 +423,11 @@ function ContainerFrameItemButton_OnLoad()
 	end
 end
 
-function ContainerFrameItemButton_OnClick(button, ignoreShift)
+function ContainerFrameItemButton_OnClick(button, ignoreModifiers)
 	if ( button == "LeftButton" ) then
-		if ( IsShiftKeyDown() and not ignoreShift ) then
+		if ( IsControlKeyDown() and not ignoreModifiers ) then
+			DressUpItemLink(GetContainerItemLink(this:GetParent():GetID(), this:GetID()));
+		elseif ( IsShiftKeyDown() and not ignoreModifiers ) then
 			if ( ChatFrameEditBox:IsVisible() ) then
 				ChatFrameEditBox:Insert(GetContainerItemLink(this:GetParent():GetID(), this:GetID()));
 			else
@@ -443,7 +444,9 @@ function ContainerFrameItemButton_OnClick(button, ignoreShift)
 			StackSplitFrame:Hide();
 		end
 	elseif ( button == "RightButton" ) then
-		if ( IsShiftKeyDown() and MerchantFrame:IsVisible() and not ignoreShift ) then
+		if ( IsControlKeyDown() ) then
+			return;
+		elseif ( IsShiftKeyDown() and MerchantFrame:IsVisible() and not ignoreModifiers ) then
 			this.SplitStack = function(button, split)
 				SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 				MerchantItemButton_OnClick("LeftButton");
@@ -456,26 +459,36 @@ function ContainerFrameItemButton_OnClick(button, ignoreShift)
 	end
 end
 
-function ContainerFrameItemButton_OnEnter()
-	GameTooltip:SetOwner(this, "ANCHOR_LEFT");
-	local hasCooldown, repairCost = GameTooltip:SetBagItem(this:GetParent():GetID(),this:GetID());
-	if ( hasCooldown ) then
-		this.updateTooltip = TOOLTIP_UPDATE_TIME;
-	else
-		this.updateTooltip = nil;
+function ContainerFrameItemButton_OnEnter(button)
+	if ( not button ) then
+		button = this;
 	end
+	GameTooltip:SetOwner(button, "ANCHOR_LEFT");
+	local hasCooldown, repairCost = GameTooltip:SetBagItem(button:GetParent():GetID(),button:GetID());
+	--[[
+	Commented out to make dressup cursor work.
+	if ( hasCooldown ) then
+		button.updateTooltip = TOOLTIP_UPDATE_TIME;
+	else
+		button.updateTooltip = nil;
+	end
+	]]
 	if ( InRepairMode() and (repairCost and repairCost > 0) ) then
 		GameTooltip:AddLine(TEXT(REPAIR_COST), "", 1, 1, 1);
 		SetTooltipMoney(GameTooltip, repairCost);
 		GameTooltip:Show();
-	elseif ( MerchantFrame:IsVisible() ) then
-		ShowContainerSellCursor(this:GetParent():GetID(),this:GetID());
-	elseif ( this.readable ) then
+	elseif ( this.readable or (IsControlKeyDown() and button.hasItem) ) then
 		ShowInspectCursor();
+	elseif ( MerchantFrame:IsVisible() ) then
+		ShowContainerSellCursor(button:GetParent():GetID(),button:GetID());
+	else
+		ResetCursor();
 	end
 end
 
 function ContainerFrameItemButton_OnUpdate(elapsed)
+	--[[
+	Might hurt performance, but need to always update the cursor now
 	if ( not this.updateTooltip ) then
 		return;
 	end
@@ -484,11 +497,9 @@ function ContainerFrameItemButton_OnUpdate(elapsed)
 	if ( this.updateTooltip > 0 ) then
 		return;
 	end
-
+	]]
 	if ( GameTooltip:IsOwned(this) ) then
 		ContainerFrameItemButton_OnEnter();
-	else
-		this.updateTooltip = nil;
 	end
 end
 

@@ -290,15 +290,17 @@ function PaperDollFrame_SetDamage(unit, prefix)
 	local physicalBonusNeg;
 	local percent;
 	minDamage, maxDamage, minOffHandDamage, maxOffHandDamage, physicalBonusPos, physicalBonusNeg, percent = UnitDamage(unit);
+	local displayMin = max(floor(minDamage),1);
+	local displayMax = max(ceil(maxDamage),1);
+
+	minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
+	maxDamage = (maxDamage / percent) - physicalBonusPos - physicalBonusNeg;
 
 	local baseDamage = (minDamage + maxDamage) * 0.5;
 	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
-	local damagePerSecond = (max(fullDamage,1) / speed);
-	local damageTooltip = floor(minDamage).." - "..ceil(maxDamage);
-	
 	local totalBonus = (fullDamage - baseDamage);
-	local displayMin = max(floor(minDamage + totalBonus),1);
-	local displayMax = max(ceil(maxDamage + totalBonus),1);
+	local damagePerSecond = (max(fullDamage,1) / speed);
+	local damageTooltip = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
 	
 	local colorPos = "|cff20ff20";
 	local colorNeg = "|cffff2020";
@@ -332,12 +334,13 @@ function PaperDollFrame_SetDamage(unit, prefix)
 	
 	-- If there's an offhand speed then add the offhand info to the tooltip
 	if ( offhandSpeed ) then
-		minOffHandDamage = minOffHandDamage;
-		maxOffHandDamage = maxOffHandDamage;
+		minOffHandDamage = (minOffHandDamage / percent) - physicalBonusPos - physicalBonusNeg;
+		maxOffHandDamage = (maxOffHandDamage / percent) - physicalBonusPos - physicalBonusNeg;
+
 		local offhandBaseDamage = (minOffHandDamage + maxOffHandDamage) * 0.5;
 		local offhandFullDamage = (offhandBaseDamage + physicalBonusPos + physicalBonusNeg) * percent;
 		local offhandDamagePerSecond = (max(offhandFullDamage,1) / offhandSpeed);
-		local offhandDamageTooltip = floor(minOffHandDamage).." - "..ceil(maxOffHandDamage);
+		local offhandDamageTooltip = max(floor(minOffHandDamage),1).." - "..max(ceil(maxOffHandDamage),1);
 		if ( physicalBonusPos > 0 ) then
 			offhandDamageTooltip = offhandDamageTooltip..colorPos.." +"..physicalBonusPos.."|r";
 		end
@@ -473,13 +476,18 @@ function PaperDollFrame_SetRangedDamage(unit, prefix)
 
 	local temp1, temp2, temp3, temp4, physicalBonusPos, physicalBonusNeg, percent = UnitDamage(unit);
 	local rangedAttackSpeed, minDamage, maxDamage = UnitRangedDamage(unit);
+	local displayMin = max(floor(minDamage),1);
+	local displayMax = max(ceil(maxDamage),1);
+
+	minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
+	maxDamage = (maxDamage / percent) - physicalBonusPos - physicalBonusNeg;
+
 	local baseDamage = (minDamage + maxDamage) * 0.5;
 	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
-	local damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
 	local totalBonus = (fullDamage - baseDamage);
-	local displayMin = max(floor(minDamage + totalBonus),1);
-	local displayMax = max(ceil(maxDamage + totalBonus),1);
-	local tooltip = floor(minDamage).." - "..ceil(maxDamage);
+	local damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
+	local tooltip = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
+
 	if ( totalBonus == 0 ) then
 		damageText:SetText(displayMin.." - "..displayMax);
 	else
@@ -525,6 +533,11 @@ function PaperDollFrame_SetRangedAttackPower(unit, prefix)
 	-- If no ranged attack then set to n/a
 	if ( PaperDollFrame.noRanged ) then
 		text:SetText(NOT_APPLICABLE);
+		frame.tooltip = nil;
+		return;
+	end
+	if ( HasWandEquipped() ) then
+		text:SetText("--");
 		frame.tooltip = nil;
 		return;
 	end
@@ -597,9 +610,9 @@ function PaperDollItemSlotButton_OnEvent(event)
 		if ( not hasItem ) then
 			tooltip:Hide();
 		elseif ( hasCooldown ) then
-			this.updateTooltip = TOOLTIP_UPDATE_TIME;
+			--this.updateTooltip = TOOLTIP_UPDATE_TIME;
 		else
-			this.updateTooltip = nil;
+			--this.updateTooltip = nil;
 		end
 		return;
 	end
@@ -608,9 +621,11 @@ function PaperDollItemSlotButton_OnEvent(event)
 	end
 end
 
-function PaperDollItemSlotButton_OnClick(button, ignoreShift)
+function PaperDollItemSlotButton_OnClick(button, ignoreModifiers)
 	if ( button == "LeftButton" ) then
-		if ( IsShiftKeyDown() and not ignoreShift ) then
+		if ( IsControlKeyDown() and not ignoreModifiers ) then
+			DressUpItemLink(GetInventoryItemLink("player", this:GetID()));
+		elseif ( IsShiftKeyDown() and not ignoreModifiers ) then
 			if ( ChatFrameEditBox:IsVisible() ) then
 				ChatFrameEditBox:Insert(GetInventoryItemLink("player", this:GetID()));
 			end
@@ -636,12 +651,14 @@ function PaperDollItemSlotButton_Update(cooldownOnly)
 			SetItemButtonTextureVertexColor(this, 1.0, 1.0, 1.0);
 			SetItemButtonNormalTextureVertexColor(this, 1.0, 1.0, 1.0);
 		end
+		this.hasItem = 1;
 	else
 		SetItemButtonTexture(this, this.backgroundTextureName);
 		SetItemButtonCount(this, 0);
 		SetItemButtonTextureVertexColor(this, 1.0, 1.0, 1.0);
 		SetItemButtonNormalTextureVertexColor(this, 1.0, 1.0, 1.0);
 		cooldown:Hide();
+		this.hasItem = nil;
 	end
 
 	local start, duration, enable = GetInventoryItemCooldown("player", this:GetID());
@@ -662,7 +679,7 @@ function PaperDollItemSlotButton_Update(cooldownOnly)
 				PaperDollItemSlotButton_OnEnter();
 			end
 		else
-			this.updateTooltip = nil;
+			--this.updateTooltip = nil;
 			GameTooltip:Hide();
 			ResetCursor();
 		end
@@ -699,9 +716,9 @@ function PaperDollItemSlotButton_OnEnter()
 		GameTooltip:SetText(TEXT(getglobal(strupper(strsub(this:GetName(), 10)))));
 	end
 	if ( hasCooldown ) then
-		this.updateTooltip = TOOLTIP_UPDATE_TIME;
+		--this.updateTooltip = TOOLTIP_UPDATE_TIME;
 	else
-		this.updateTooltip = nil;
+		--this.updateTooltip = nil;
 	end
 --	if ( MerchantFrame:IsVisible() ) then
 --		ShowInventorySellCursor(this:GetID());
@@ -710,10 +727,13 @@ function PaperDollItemSlotButton_OnEnter()
 		GameTooltip:AddLine(TEXT(REPAIR_COST), "", 1, 1, 1);
 		SetTooltipMoney(GameTooltip, repairCost);
 		GameTooltip:Show();
+	else
+		CursorUpdate();
 	end
 end
 
 function PaperDollItemSlotButton_OnUpdate(elapsed)
+	--[[
 	if ( not this.updateTooltip ) then
 		return;
 	end
@@ -722,15 +742,13 @@ function PaperDollItemSlotButton_OnUpdate(elapsed)
 	if ( this.updateTooltip > 0 ) then
 		return;
 	end
-
+	]]
 	if ( GameTooltip:IsOwned(this) ) then
 		if ( this.isBag ) then
 			BagSlotButton_OnEnter();
 		else
 			PaperDollItemSlotButton_OnEnter();
 		end
-	else
-		this.updateTooltip = nil;
 	end
 end
 

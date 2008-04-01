@@ -160,6 +160,7 @@
 								MainMenuExpBar.lockShow = 0;
 								SetTextStatusBarText(MainMenuExpBar, MainMenuBarExpText);
 								MainMenuExpBar_Update();
+								MainMenuExpBar:RegisterEvent("PLAYER_ENTERING_WORLD");
 								MainMenuExpBar:RegisterEvent("PLAYER_XP_UPDATE");
 							</OnLoad>
 						</Scripts>

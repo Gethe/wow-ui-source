@@ -13,7 +13,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="MinimapBorder" file="Interface\Minimap\UI-Minimap-Border">
+				<Texture name="MinimapBorderTop" file="Interface\Minimap\UI-Minimap-Border">
 					<Size>
 						<AbsDimension x="192" y="32"/>
 					</Size>
@@ -133,7 +133,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+								<Texture name="MiniMapTrackingBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 									<Size>
 										<AbsDimension x="64" y="64"/>
 									</Size>
@@ -199,7 +199,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+								<Texture name="MiniMapMeetingStoneBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 									<Size>
 										<AbsDimension x="52" y="52"/>
 									</Size>
@@ -263,7 +263,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+								<Texture name="MiniMapMailBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 									<Size>
 										<AbsDimension x="52" y="52"/>
 									</Size>
@@ -323,7 +323,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+								<Texture name="MiniMapBattlefieldBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 									<Size>
 										<AbsDimension x="52" y="52"/>
 									</Size>
@@ -381,7 +381,11 @@
 							</OnLeave>
 							<OnClick>
 								if ( MiniMapBattlefieldFrame.status == "active") then
-									ToggleWorldStateScoreFrame();
+									if ( arg1 == "RightButton" ) then
+										ToggleBattlefieldMinimap();
+									else
+										ToggleWorldStateScoreFrame();
+									end
 								elseif ( arg1 == "RightButton" ) then
 									ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
 								end
@@ -420,7 +424,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture file="Interface\Minimap\UI-Minimap-Border">
+								<Texture name="MinimapBorder" file="Interface\Minimap\UI-Minimap-Border">
 									<TexCoords left="0.25" right="1.0" top="0.125" bottom="0.875"/>
 								</Texture>
 							</Layer>

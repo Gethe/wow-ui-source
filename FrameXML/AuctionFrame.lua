@@ -19,7 +19,19 @@ function AuctionFrame_OnLoad()
 	AuctionsBuyoutText:SetText(BUYOUT_PRICE.." |cff808080("..OPTIONAL..")|r");
 
 	-- Set focus rules
+	MoneyInputFrame_SetPreviousFocus(BrowseBidPrice, BrowseMaxLevel);
+	MoneyInputFrame_SetNextFocus(BrowseBidPrice, BrowseName);
+
+	MoneyInputFrame_SetPreviousFocus(BidBidPrice, BidBidPriceCopper);
+	MoneyInputFrame_SetNextFocus(BidBidPrice, BidBidPriceGold);
+	
+	MoneyInputFrame_SetPreviousFocus(StartPrice, BuyoutPriceCopper);
 	MoneyInputFrame_SetNextFocus(StartPrice, BuyoutPriceGold);
+
+	MoneyInputFrame_SetPreviousFocus(BuyoutPrice, StartPriceCopper);
+	MoneyInputFrame_SetNextFocus(BuyoutPrice, StartPriceGold);
+
+	
 end
 
 function AuctionFrame_OnShow()
@@ -235,20 +247,20 @@ function FilterButton_SetType(button, type, text, isLast)
 	local line = getglobal(button:GetName().."Lines");
 	if ( type == "class" ) then
 		button:SetText(text);
-		normalText:SetPoint("LEFT", button:GetName(), "LEFT", 4, 0);
-		highlightText:SetPoint("LEFT", button:GetName(), "LEFT", 4, 0);
+		normalText:SetPoint("LEFT", button, "LEFT", 4, 0);
+		highlightText:SetPoint("LEFT", button, "LEFT", 4, 0);
 		normalTexture:SetAlpha(1.0);	
 		line:Hide();
 	elseif ( type == "subclass" ) then
 		button:SetText(HIGHLIGHT_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE);
-		normalText:SetPoint("LEFT", button:GetName(), "LEFT", 12, 0);
-		highlightText:SetPoint("LEFT", button:GetName(), "LEFT", 12, 0);
+		normalText:SetPoint("LEFT", button, "LEFT", 12, 0);
+		highlightText:SetPoint("LEFT", button, "LEFT", 12, 0);
 		normalTexture:SetAlpha(0.4);
 		line:Hide();
 	elseif ( type == "invtype" ) then
 		button:SetText(HIGHLIGHT_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE);
-		normalText:SetPoint("LEFT", button:GetName(), "LEFT", 20, 0);
-		highlightText:SetPoint("LEFT", button:GetName(), "LEFT", 20, 0);
+		normalText:SetPoint("LEFT", button, "LEFT", 20, 0);
+		highlightText:SetPoint("LEFT", button, "LEFT", 20, 0);
 		normalTexture:SetAlpha(0.0);	
 		if ( isLast ) then
 			line:SetTexCoord(0.4375, 0.875, 0, 0.625);
@@ -332,6 +344,10 @@ function AuctionFrameBrowse_Update()
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal("BrowseButton"..i.."Highlight");
 			if ( numBatchAuctions <= NUM_BROWSE_TO_DISPLAY ) then
+				button:SetWidth(625);
+				buttonHighlight:SetWidth(589);
+				BrowseCurrentBidSort:SetWidth(207);
+			elseif ( numBatchAuctions == NUM_BROWSE_TO_DISPLAY and totalAuctions <= NUM_BROWSE_TO_DISPLAY ) then
 				button:SetWidth(625);
 				buttonHighlight:SetWidth(589);
 				BrowseCurrentBidSort:SetWidth(207);
@@ -521,7 +537,11 @@ function AuctionFrameBid_Update()
 			duration = GetAuctionItemTimeLeft("bidder", offset + i);
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal("BidButton"..i.."Highlight");
-			if ( numBatchAuctions <= NUM_BIDS_TO_DISPLAY ) then
+			if ( numBatchAuctions < NUM_BIDS_TO_DISPLAY ) then
+				button:SetWidth(793);
+				buttonHighlight:SetWidth(758);
+				BidBidSort:SetWidth(169);
+			elseif ( numBatchAuctions == NUM_BIDS_TO_DISPLAY and totalAuctions <= NUM_BIDS_TO_DISPLAY ) then
 				button:SetWidth(793);
 				buttonHighlight:SetWidth(758);
 				BidBidSort:SetWidth(169);
@@ -702,7 +722,11 @@ function AuctionFrameAuctions_Update()
 			duration = GetAuctionItemTimeLeft("owner", offset + i);
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal("AuctionsButton"..i.."Highlight");
-			if ( numBatchAuctions <= NUM_AUCTIONS_TO_DISPLAY ) then
+			if ( numBatchAuctions < NUM_AUCTIONS_TO_DISPLAY ) then
+				auction:SetWidth(599);
+				buttonHighlight:SetWidth(565);
+				AuctionsBidSort:SetWidth(213);
+			elseif ( numBatchAuctions == NUM_AUCTIONS_TO_DISPLAY and totalAuctions <= NUM_AUCTIONS_TO_DISPLAY ) then
 				auction:SetWidth(599);
 				buttonHighlight:SetWidth(565);
 				AuctionsBidSort:SetWidth(213);
@@ -918,6 +942,12 @@ function AuctionFrameItem_OnEnter(type, index)
 		ShoppingTooltip2:SetPoint("TOPLEFT", "ShoppingTooltip1", "TOPRIGHT", 0, 0);
 		ShoppingTooltip2:SetAuctionCompareItem(type, index, 2);
 		ShoppingTooltip2:Show();
+	end
+
+	if ( IsControlKeyDown() ) then
+		ShowInspectCursor();
+	else
+		ResetCursor();
 	end
 end
 

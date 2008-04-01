@@ -788,7 +788,7 @@
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						OptionsFrame_SetDefaults();
-						--OptionsFrame_Load();
+						HideUIPanel(OptionsFrame);
 					</OnClick>
 				</Scripts>
 			</Button>

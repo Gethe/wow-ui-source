@@ -2,44 +2,44 @@
 	<!-- User interface key bindings -->
 	<Binding name="MOVEFORWARD" runOnUp="true" header="MOVEMENT">
 		if ( keystate == "down" ) then
-			MoveForwardStart(arg1);
+			MoveForwardStart();
 		else
-			MoveForwardStop(arg1);
+			MoveForwardStop();
 		end
 	</Binding>
 	<Binding name="MOVEBACKWARD" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveBackwardStart(arg1);
+			MoveBackwardStart();
 		else
-			MoveBackwardStop(arg1);
+			MoveBackwardStop();
 		end
 	</Binding>
 	<Binding name="TURNLEFT" runOnUp="true">
 		if ( keystate == "down" ) then
-			TurnLeftStart(arg1);
+			TurnLeftStart();
 		else
-			TurnLeftStop(arg1);
+			TurnLeftStop();
 		end
 	</Binding>
 	<Binding name="TURNRIGHT" runOnUp="true">
 		if ( keystate == "down" ) then
-			TurnRightStart(arg1);
+			TurnRightStart();
 		else
-			TurnRightStop(arg1);
+			TurnRightStop();
 		end
 	</Binding>
 	<Binding name="STRAFELEFT" runOnUp="true">
 		if ( keystate == "down" ) then
-			StrafeLeftStart(arg1);
+			StrafeLeftStart();
 		else
-			StrafeLeftStop(arg1);
+			StrafeLeftStop();
 		end
 	</Binding>
 	<Binding name="STRAFERIGHT" runOnUp="true">
 		if ( keystate == "down" ) then
-			StrafeRightStart(arg1);
+			StrafeRightStart();
 		else
-			StrafeRightStop(arg1);
+			StrafeRightStop();
 		end
 	</Binding>
 	<Binding name="JUMP">
@@ -56,20 +56,20 @@
 	</Binding>
 		<Binding name="PITCHUP" runOnUp="true">
 		if ( keystate == "down" ) then
-			PitchUpStart(arg1);
+			PitchUpStart();
 		else
-			PitchUpStop(arg1);
+			PitchUpStop();
 		end
 	</Binding>
 	<Binding name="PITCHDOWN" runOnUp="true">
 		if ( keystate == "down" ) then
-			PitchDownStart(arg1);
+			PitchDownStart();
 		else
-			PitchDownStop(arg1);
+			PitchDownStop();
 		end
 	</Binding>
 	<Binding name="TOGGLERUN">
-		ToggleRun(arg1);
+		ToggleRun();
 	</Binding>
 	<Binding name="FOLLOWTARGET">
 		FollowUnit("target");
@@ -582,6 +582,9 @@
 	<Binding name="TOGGLEWORLDSTATESCORES">
 		ToggleWorldStateScoreFrame();
 	</Binding>
+	<Binding name="TOGGLEBATTLEFIELDMINIMAP">
+		ToggleBattlefieldMinimap();
+	</Binding>
 	<!-- Misc -->
 	<Binding name="MINIMAPZOOMIN" header="MISC">
 		Minimap_ZoomIn();
@@ -653,52 +656,52 @@
 		PrevView();
 	</Binding>
 	<Binding name="CAMERAZOOMIN">
-			CameraZoomIn(arg1, 1.0);
+			CameraZoomIn(1.0);
 	</Binding>
 	<Binding name="CAMERAZOOMOUT">
-			CameraZoomOut(arg1, 1.0);
+			CameraZoomOut(1.0);
 	</Binding>
 	<!-- 
 	<Binding name="MOVEVIEWIN" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewInStart(arg1);
+			MoveViewInStart();
 		else
-			MoveViewInStop(arg1);
+			MoveViewInStop();
 		end
 	</Binding>
 	<Binding name="MOVEVIEWOUT" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewOutStart(arg1);
+			MoveViewOutStart();
 		else
-			MoveViewOutStop(arg1);
+			MoveViewOutStop();
 		end
 	</Binding>
 	<Binding name="MOVEVIEWLEFT" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewLeftStart(arg1);
+			MoveViewLeftStart();
 		else
-			MoveViewLeftStop(arg1);
+			MoveViewLeftStop();
 		end
 	</Binding>
 	<Binding name="MOVEVIEWRIGHT" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewRightStart(arg1);
+			MoveViewRightStart();
 		else
-			MoveViewRightStop(arg1);
+			MoveViewRightStop();
 		end
 	</Binding>
 	<Binding name="MOVEVIEWUP" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewUpStart(arg1);
+			MoveViewUpStart();
 		else
-			MoveViewUpStop(arg1);
+			MoveViewUpStop();
 		end
 	</Binding>
 	<Binding name="MOVEVIEWDOWN" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewDownStart(arg1);
+			MoveViewDownStart();
 		else
-			MoveViewDownStop(arg1);
+			MoveViewDownStop();
 		end
 	</Binding>
 	-->
@@ -1084,23 +1087,23 @@
 	<!-- Hidden bindings -->
 	<Binding name="TURNORACTION" runOnUp="true" hidden="true">
 		if ( keystate == "down" ) then
-			TurnOrActionStart(arg1);
+			TurnOrActionStart();
 		else
-			TurnOrActionStop(arg1);
+			TurnOrActionStop();
 		end
 	</Binding>
 	<Binding name="CAMERAORSELECTORMOVE" runOnUp="true" hidden="true">
 		if ( keystate == "down" ) then
-			CameraOrSelectOrMoveStart(arg1);
+			CameraOrSelectOrMoveStart();
 		else
-			CameraOrSelectOrMoveStop(arg1);
+			CameraOrSelectOrMoveStop();
 		end
 	</Binding>
 	<Binding name="CAMERAORSELECTORMOVESTICKY" runOnUp="true" hidden="true">
 		if ( keystate == "down" ) then
-			CameraOrSelectOrMoveStart(arg1);
+			CameraOrSelectOrMoveStart();
 		else
-			CameraOrSelectOrMoveStop(arg1, 1);
+			CameraOrSelectOrMoveStop(1);
 		end
 	</Binding>
 </Bindings>

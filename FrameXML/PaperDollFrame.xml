@@ -221,7 +221,7 @@
 						this:RefreshUnit();
 					</OnEvent>
                     <OnUpdate>
-						Model_OnUpdate(arg1, CharacterModelFrame);
+						Model_OnUpdate(arg1, this);
                     </OnUpdate>
 					<OnMouseUp>
 						CharacterModelFrame_OnMouseUp(arg1);
@@ -236,14 +236,14 @@
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterModelFrame" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
-								Model_RotateLeft(CharacterModelFrame);
+								Model_RotateLeft(this:GetParent());
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
@@ -262,7 +262,7 @@
 								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
-								Model_RotateRight(CharacterModelFrame);
+								Model_RotateRight(this:GetParent());
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>

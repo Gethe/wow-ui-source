@@ -9,41 +9,43 @@ FLASHFRAMES = {};
 PULSEBUTTONS = {};
 
 UIPanelWindows = {};
-UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0 };
-UIPanelWindows["OptionsFrame"] =		{ area = "center",	pushable = 0 };
-UIPanelWindows["SoundOptionsFrame"] =		{ area = "center",	pushable = 0 };
-UIPanelWindows["UIOptionsFrame"] =		{ area = "center",	pushable = 0 };
-UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 2 };
+UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["OptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["SoundOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["UIOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 2 ,	whileDead = 1};
 UIPanelWindows["InspectFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0 };
+UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["LootFrame"] =			{ area = "left",	pushable = 7 };
 UIPanelWindows["TaxiFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["QuestFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["QuestLogFrame"] =		{ area = "left",	pushable = 0 };
+UIPanelWindows["QuestLogFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["ClassTrainerFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["TradeSkillFrame"] =		{ area = "left",	pushable = 3 };
 UIPanelWindows["MerchantFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["TradeFrame"] =			{ area = "left",	pushable = 1 };
 UIPanelWindows["BankFrame"] =			{ area = "left",	pushable = 6 };
-UIPanelWindows["FriendsFrame"] =		{ area = "left",	pushable = 0 };
+UIPanelWindows["FriendsFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["SuggestFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["CraftFrame"] =			{ area = "left",	pushable = 4 };
-UIPanelWindows["WorldMapFrame"] =		{ area = "full",	pushable = 0 };
-UIPanelWindows["KeyBindingFrame"] =		{ area = "center",	pushable = 0 };
+UIPanelWindows["WorldMapFrame"] =		{ area = "full",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["KeyBindingFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["CinematicFrame"] =		{ area = "full",	pushable = 0 };
 UIPanelWindows["TabardFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["GuildRegistrarFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["PetitionFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["HelpFrame"] =			{ area = "center",	pushable = 0 };
-UIPanelWindows["MacroFrame"] =			{ area = "left",	pushable = 5 };
+UIPanelWindows["HelpFrame"] =			{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["MacroFrame"] =			{ area = "left",	pushable = 5,	whileDead = 1 };
 UIPanelWindows["GossipFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["MailFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["TalentFrame"] =			{ area = "left",	pushable = 6 };
+UIPanelWindows["TalentFrame"] =			{ area = "left",	pushable = 6,	whileDead = 1 };
 UIPanelWindows["PetStableFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["AuctionFrame"] =		{ area = "doublewide",	pushable = 0 };
-UIPanelWindows["WorldStateScoreFrame"] =	{ area = "center",	pushable = 0 };
+UIPanelWindows["WorldStateScoreFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
+--UIPanelWindows["BattlefieldMinimap"] =		{ area = "center",	pushable = 0 };
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
 UIChildWindows = {
@@ -100,6 +102,7 @@ function UIParent_OnLoad()
 	this:RegisterEvent("CORPSE_OUT_OF_RANGE");
 	this:RegisterEvent("AREA_SPIRIT_HEALER_IN_RANGE");
 	this:RegisterEvent("AREA_SPIRIT_HEALER_OUT_OF_RANGE");
+	this:RegisterEvent("BIND_ENCHANT");
 	this:RegisterEvent("REPLACE_ENCHANT");
 	this:RegisterEvent("TRADE_REPLACE_ENCHANT");
 	this:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
@@ -111,9 +114,12 @@ function UIParent_OnLoad()
 	this:RegisterEvent("INSTANCE_BOOT_START");
 	this:RegisterEvent("INSTANCE_BOOT_STOP");
 	this:RegisterEvent("CONFIRM_TALENT_WIPE");
+	this:RegisterEvent("CONFIRM_PET_UNLEARN");
+	this:RegisterEvent("CONFIRM_BINDER");
 	this:RegisterEvent("CONFIRM_SUMMON");
 	this:RegisterEvent("GOSSIP_ENTER_CODE");
 	this:RegisterEvent("BILLING_NAG_DIALOG");
+	this:RegisterEvent("IGR_BILLING_NAG_DIALOG");
 	this:RegisterEvent("VARIABLES_LOADED");
 end
 
@@ -312,6 +318,10 @@ function UIParent_OnEvent(event)
 		StaticPopup_Hide("AREA_SPIRIT_HEAL");
 		return;
 	end
+	if ( event == "BIND_ENCHANT" ) then
+		StaticPopup_Show("BIND_ENCHANT");
+		return;
+	end
 	if ( event == "REPLACE_ENCHANT" ) then
 		StaticPopup_Show("REPLACE_ENCHANT", arg1, arg2);
 		return;
@@ -321,6 +331,7 @@ function UIParent_OnEvent(event)
 		return;
 	end
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
+		StaticPopup_Hide("BIND_ENCHANT");
 		StaticPopup_Hide("REPLACE_ENCHANT");
 		StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
 		return;
@@ -380,6 +391,7 @@ function UIParent_OnEvent(event)
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL");
 		if ( dialog ) then
 			dialog.data = arg1;
+			dialog.data2 = arg2;
 		end
 		return;
 	end
@@ -398,12 +410,27 @@ function UIParent_OnEvent(event)
 		end
 		return;
 	end
+	if ( event == "CONFIRM_PET_UNLEARN" ) then
+		local dialog = StaticPopup_Show("CONFIRM_PET_UNLEARN");
+		if ( dialog ) then
+			MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg1);
+		end
+		return;
+	end
+	if ( event == "CONFIRM_BINDER" ) then
+		StaticPopup_Show("CONFIRM_BINDER", arg1);
+		return;
+	end
 	if ( event == "CONFIRM_SUMMON" ) then
 		StaticPopup_Show("CONFIRM_SUMMON");
 		return;
 	end
 	if ( event == "BILLING_NAG_DIALOG" ) then
 		StaticPopup_Show("BILLING_NAG", arg1);
+		return;
+	end
+	if ( event == "IGR_BILLING_NAG_DIALOG" ) then
+		StaticPopup_Show("IGR_BILLING_NAG");
 		return;
 	end
 	if ( event == "GOSSIP_ENTER_CODE" ) then
@@ -415,21 +442,29 @@ function UIParent_OnEvent(event)
 	end
 end
 
+function UIParentLoadAddOn(name)
+	local loaded, reason = LoadAddOn(name);
+	if ( not loaded ) then
+		message(format(TEXT(ADDON_LOAD_FAILED), name, TEXT(getglobal("ADDON_"..reason))));
+	end
+	return loaded;
+end
+
 function ShowUIPanel(frame, force)	
 	if ( not frame or frame:IsVisible() ) then
 		return;
 	end
-	if ( not CanOpenPanels() and (frame ~= GameMenuFrame and frame ~= UIOptionsFrame and frame ~= SoundOptionsFrame and frame ~= OptionsFrame and frame ~= KeyBindingFrame and frame ~= HelpFrame and frame ~= SuggestFrame and frame ~= WorldStateScoreFrame) ) then
+	
+	local info = UIPanelWindows[frame:GetName()];
+	if ( not CanOpenPanels() and info and info.area ~= "center" ) then
 		return;
 	end
-
-	local info = UIPanelWindows[frame:GetName()];
 	if ( not info ) then
 		frame:Show();
 		return;
 	end
 
-	if ( UnitIsDead("player") and (info.area ~= "center") and (info.area ~= "full") and (frame ~= SuggestFrame) ) then
+	if ( UnitIsDead("player") and not info.whileDead ) then
 		NotWhileDeadError();
 		return;
 	end
@@ -654,11 +689,11 @@ function MovePanelToCenter()
 end
 
 function CanOpenPanels()
+	--[[
 	if ( UnitIsDead("player") ) then
 		return nil;
 	end
 	
-	--[[
 	Previously couldn't open frames if player was out of control i.e. feared
 	if ( UnitIsDead("player") or UIParent.isOutOfControl ) then
 		return nil;
@@ -1323,8 +1358,10 @@ function UIParent_ManageRightSideFrames()
 	-- Update bag anchor
 	if ( MultiBarBottomRight:IsVisible() ) then
 		CONTAINER_OFFSET_Y = 97;
+		BATTLEFIELD_TAB_OFFSET_Y = 252;
 	else
 		CONTAINER_OFFSET_Y = 70;
+		BATTLEFIELD_TAB_OFFSET_Y = 210;
 	end
 	-- Setup x anchor
 	if ( MultiBarLeft:IsVisible() ) then
@@ -1337,6 +1374,12 @@ function UIParent_ManageRightSideFrames()
 		CONTAINER_OFFSET_X = 0;
 		anchorX = 0;
 	end
+
+	-- Set battlefield minimap position
+	if ( not BattlefieldMinimapTab:IsUserPlaced() ) then
+		BattlefieldMinimapTab:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMRIGHT", -225-CONTAINER_OFFSET_X, BATTLEFIELD_TAB_OFFSET_Y);
+	end
+
 	-- Setup y anchors
 	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -anchorX, anchorY);
 	if ( QuestTimerFrame:IsVisible() ) then
@@ -1366,5 +1409,30 @@ function PlayerStatus_OnUpdate(elapsed)
 	elseif ( not UIParent.isOutOfControl and OutOfControlFrame.flashing ) then
 		UIFrameFlash(OutOfControlFrame, 0.5, 0.5, 0);
 		OutOfControlFrame.flashing = nil;
+	end
+end
+
+function GetScreenHeightScale()
+	local screenHeight = 768;
+	return GetScreenHeight()/screenHeight;
+end
+
+function GetScreenWidthScale()
+	local screenWidth = 1024;
+	return GetScreenWidth()/screenWidth;
+end
+
+-- Helper function to show the inspect cursor if the ctrl key is down
+function CursorUpdate()
+	if ( IsControlKeyDown() and this.hasItem ) then
+		ShowInspectCursor();
+	else
+		ResetCursor();
+	end
+end
+
+function CursorOnUpdate()
+	if ( GameTooltip:IsOwned(this) ) then
+		CursorUpdate();
 	end
 end

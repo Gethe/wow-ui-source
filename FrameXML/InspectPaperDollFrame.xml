@@ -12,14 +12,19 @@
             <OnClick>
                 InspectPaperDollItemSlotButton_OnClick(arg1);
             </OnClick>
+			<OnUpdate>
+				CursorOnUpdate();
+			</OnUpdate>
             <OnEnter>
                 GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
                 if ( not GameTooltip:SetInventoryItem(InspectFrame.unit, this:GetID()) ) then
 					GameTooltip:SetText(TEXT(getglobal(strupper(strsub(this:GetName(), 8)))));
 				end
+				CursorUpdate();
             </OnEnter>
             <OnLeave>
                 GameTooltip:Hide();
+				ResetCursor();
             </OnLeave>
         </Scripts>
 		<NormalTexture file="Interface\Buttons\UI-Quickslot2">

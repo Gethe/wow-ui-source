@@ -31,7 +31,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture file="Interface\CastingBar\UI-CastingBar-Border">
+				<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border">
 					<Size>
 						<AbsDimension x="256" y="64"/>
 					</Size>
@@ -73,7 +73,7 @@
 				MirrorTimerFrame_OnEvent();
 			</OnEvent>
 			<OnUpdate>
-				MirrorTimerFrame_OnUpdate(arg1);
+				MirrorTimerFrame_OnUpdate(this, arg1);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

@@ -98,9 +98,10 @@ end
 function TalentFrame_OnEvent()
 	if ( (event == "CHARACTER_POINTS_CHANGED") or (event == "SPELLS_CHANGED") ) then
 		TalentFrame_Update();
-	end
-	if ( (event == "UNIT_PORTRAIT_UPDATE") and (arg1 == "player") ) then
-		SetPortraitTexture(TalentFramePortrait, "player");
+	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		if ( arg1 == "player" ) then
+			SetPortraitTexture(TalentFramePortrait, "player");
+		end
 	end
 end
 
@@ -536,7 +537,7 @@ end
 function SetTalentButtonLocation(button, tier, column)
 	column = ((column - 1) * 63) + INITIAL_TALENT_OFFSET_X;
 	tier = -((tier - 1) * 63) - INITIAL_TALENT_OFFSET_Y;
-	button:SetPoint("TOPLEFT", button:GetParent():GetName(), "TOPLEFT", column, tier);
+	button:SetPoint("TOPLEFT", button:GetParent(), "TOPLEFT", column, tier);
 end
 
 function TalentFrame_ResetBranches()

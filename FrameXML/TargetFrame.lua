@@ -1,5 +1,6 @@
 MAX_COMBO_POINTS = 5;
-MAX_TARGET_DEBUFFS = 5;
+MAX_TARGET_DEBUFFS = 16;
+MAX_TARGET_BUFFS = 5;
 
 UnitReactionColor = {
 	{ r = 1.0, g = 0.0, b = 0.0 },
@@ -16,26 +17,20 @@ function TargetFrame_OnLoad()
 	this.statusSign = -1;
 	this.unitHPPercent = 1;
 	TargetFrame_Update();
+	this:RegisterEvent("PLAYER_TARGET_CHANGED");
 	this:RegisterEvent("UNIT_HEALTH");
 	this:RegisterEvent("UNIT_LEVEL");
 	this:RegisterEvent("UNIT_FACTION");
-	this:RegisterEvent("UNIT_DYNAMIC_FLAGS");
 	this:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
-	this:RegisterEvent("PLAYER_PVPLEVEL_CHANGED");
-	this:RegisterEvent("PLAYER_TARGET_CHANGED");
-	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	this:RegisterEvent("PARTY_LEADER_CHANGED");
-	this:RegisterEvent("PARTY_MEMBER_ENABLE");
-	this:RegisterEvent("PARTY_MEMBER_DISABLE");
 	this:RegisterEvent("UNIT_AURA");
 	this:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
 end
 
 function TargetFrame_Update()
 	if ( UnitExists("target") ) then
 		this:Show();
 		UnitFrame_Update();
-		UnitFrame_UpdateManaType();
 		TargetFrame_CheckLevel();
 		TargetFrame_CheckFaction();
 		TargetFrame_CheckClassification();
@@ -47,6 +42,7 @@ function TargetFrame_Update()
 			TargetLeaderIcon:Hide();
 		end
 		TargetDebuffButton_Update();
+		TargetPortrait:SetAlpha(1.0);
 	else
 		this:Hide();
 	end
@@ -55,49 +51,30 @@ end
 function TargetFrame_OnEvent(event)
 	UnitFrame_OnEvent(event);
 
-	if ( event == "UNIT_HEALTH" ) then
+	if ( event == "PLAYER_TARGET_CHANGED" ) then
+		TargetFrame_Update();
+	elseif ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == "target" ) then
 			TargetFrame_CheckDead();
 		end
-		return;
-	end
-	if ( event == "UNIT_LEVEL" ) then
+	elseif ( event == "UNIT_LEVEL" ) then
 		if ( arg1 == "target" ) then
 			TargetFrame_CheckLevel();
 		end
-		return;
-	end
-	if ( event == "UNIT_FACTION" ) then
+	elseif ( event == "UNIT_FACTION" ) then
 		if ( arg1 == "target" or arg1 == "player" ) then
 			TargetFrame_CheckFaction();
 			TargetFrame_CheckLevel();
 		end
-		return;
-	end
-	if ( event == "UNIT_DYNAMIC_FLAGS" ) then
-		if ( arg1 == "target" ) then
-			TargetFrame_CheckFaction();
-		end
-		return;
-	end
-	if ( event == "UNIT_CLASSIFICATION_CHANGED" ) then
+	elseif ( event == "UNIT_CLASSIFICATION_CHANGED" ) then
 		if ( arg1 == "target" ) then
 			TargetFrame_CheckClassification();
 		end
-		return;
-	end
-	if ( event == "PLAYER_TARGET_CHANGED" or event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE") then
-		TargetFrame_Update();
-		if ( event == "PARTY_MEMBERS_CHANGED" ) then
-			TargetFrame_CheckFaction();
+	elseif ( event == "UNIT_AURA" ) then
+		if ( arg1 == "target" ) then
+			TargetDebuffButton_Update();
 		end
-		return;
-	end
-	if ( event == "UNIT_AURA" and arg1 == "target" ) then
-		TargetDebuffButton_Update();
-		return;
-	end
-	if ( event == "PLAYER_FLAGS_CHANGED" ) then
+	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 		if ( arg1 == "target" ) then
 			if ( UnitIsPartyLeader("target") ) then
 				TargetLeaderIcon:Show();
@@ -105,7 +82,8 @@ function TargetFrame_OnEvent(event)
 				TargetLeaderIcon:Hide();
 			end
 		end
-		return;
+	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
+		TargetFrame_CheckFaction();
 	end
 end
 
@@ -261,18 +239,9 @@ function TargetFrame_OnClick(button)
 end
 
 function TargetDebuffButton_Update()
-	-- Position buffs depending on whether the targeted unit is friendly orno
-	if ( UnitIsFriend("player", "target") ) then
-		TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
-		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrameBuff1", "BOTTOMLEFT", 0, -2);
-	else
-		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
-		TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff1", "BOTTOMLEFT", 0, -2);
-	end
-	
-	local debuff, debuffButton, buff, buffButton;
+	local debuff, debuffApplications, debuffButton, buff, buffButton;
 	local button;
-	for i=1, MAX_TARGET_DEBUFFS do
+	for i=1, MAX_TARGET_BUFFS do
 		buff = UnitBuff("target", i);
 		button = getglobal("TargetFrameBuff"..i);
 		if ( buff ) then
@@ -283,16 +252,66 @@ function TargetDebuffButton_Update()
 			button:Hide();
 		end
 	end
+	local debuffCount;
+	local numDebuffs = 0;
 	for i=1, MAX_TARGET_DEBUFFS do
-		debuff = UnitDebuff("target", i);
+		debuff, debuffApplications = UnitDebuff("target", i);
 		button = getglobal("TargetFrameDebuff"..i);
 		if ( debuff ) then
 			getglobal("TargetFrameDebuff"..i.."Icon"):SetTexture(debuff);
+			debuffCount = getglobal("TargetFrameDebuff"..i.."Count");
+			if ( debuffApplications > 1 ) then
+				debuffCount:SetText(debuffApplications);
+				debuffCount:Show();
+			else
+				debuffCount:Hide();
+			end
 			button:Show();
+			numDebuffs = numDebuffs + 1;
 		else
 			button:Hide();
 		end
 		button.id = i;
+	end
+
+	-- Position buffs depending on whether the targeted unit is friendly or not
+	if ( UnitIsFriend("player", "target") ) then
+		TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
+		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrameBuff1", "BOTTOMLEFT", 0, -2);
+		TargetFrameDebuff7:ClearAllPoints();
+		TargetFrameDebuff7:SetPoint("LEFT", "TargetFrameDebuff6", "RIGHT", 3, 0);
+		TargetFrameDebuff11:ClearAllPoints();
+		TargetFrameDebuff11:SetPoint("TOPLEFT", "TargetFrameDebuff1", "BOTTOMLEFT", 0, -2);
+	else
+		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
+		 if ( numDebuffs >= 5 ) then
+			TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff7", "BOTTOMLEFT", 0, -2);
+		else
+			TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff1", "BOTTOMLEFT", 0, -2);
+		end
+		TargetFrameDebuff7:ClearAllPoints();
+		TargetFrameDebuff7:SetPoint("TOPLEFT", "TargetFrameDebuff1", "BOTTOMLEFT", 0, -2);
+		TargetFrameDebuff11:ClearAllPoints();
+		TargetFrameDebuff11:SetPoint("LEFT", "TargetFrameDebuff10", "RIGHT", 3, 0);
+	end
+	
+	-- If more than 5 debuffs then make the first 5 small
+	local debuffFrame;
+	local debuffSize, debuffFrameSize;
+	if ( numDebuffs > 5 ) then
+		debuffSize = 17;
+		debuffFrameSize = 19;
+	else
+		debuffSize = 21;
+		debuffFrameSize = 23;
+	end
+	for i=1, 5 do
+		button = getglobal("TargetFrameDebuff"..i);
+		debuffFrame = getglobal("TargetFrameDebuff"..i.."Border");
+		button:SetWidth(debuffSize);
+		button:SetHeight(debuffSize);
+		debuffFrame:SetWidth(debuffFrameSize);
+		debuffFrame:SetHeight(debuffFrameSize);
 	end
 end
 

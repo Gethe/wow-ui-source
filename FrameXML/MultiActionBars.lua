@@ -46,9 +46,11 @@ end
 function MultiActionBar_Update()
 	if ( SHOW_MULTI_ACTIONBAR_1 ) then
 		MultiBarBottomLeft:Show();
+		MultiBarBottomLeft.isShowing = 1;
 		VIEWABLE_ACTION_BAR_PAGES[BOTTOMLEFT_ACTIONBAR_PAGE] = nil;
 	else
 		MultiBarBottomLeft:Hide();
+		MultiBarBottomLeft.isShowing = nil;
 		VIEWABLE_ACTION_BAR_PAGES[BOTTOMLEFT_ACTIONBAR_PAGE] = 1;
 	end
 	if ( SHOW_MULTI_ACTIONBAR_2 ) then

@@ -252,16 +252,27 @@
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
+						ResetCursor();
 					</OnLeave>
 					<OnClick>
-						if ( IsShiftKeyDown() ) then
+						if ( IsControlKeyDown()  ) then
+							DressUpItemLink(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+						elseif ( IsShiftKeyDown() ) then
 							if ( ChatFrameEditBox:IsVisible() ) then
 								ChatFrameEditBox:Insert(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 							end
 						else
+							if ( SHOW_ON_CHAR == "1" ) then
+								DressUpItemLink(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+							end
 							BrowseButton_OnClick(this:GetParent());
 						end
 					</OnClick>
+					<OnUpdate>
+						if ( GameTooltip:IsOwned(this) ) then
+							AuctionFrameItem_OnEnter("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
+						end
+					</OnUpdate>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
@@ -387,7 +398,18 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
-				BrowseButton_OnClick();
+				if ( IsControlKeyDown() ) then
+					DressUpItemLink(GetAuctionItemLink("list", this:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+				elseif ( IsShiftKeyDown() ) then
+					if ( ChatFrameEditBox:IsVisible() ) then
+						ChatFrameEditBox:Insert(GetAuctionItemLink("list", this:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+					end
+				else
+					if ( SHOW_ON_CHAR == "1" ) then
+						DressUpItemLink(GetAuctionItemLink("list", this:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+					end
+					BrowseButton_OnClick();
+				end
 			</OnClick>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\HelpFrame\HelpFrameButton-Highlight" alphaMode="ADD">
@@ -533,16 +555,27 @@
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
+						ResetCursor();
 					</OnLeave>
 					<OnClick>
-						if ( IsShiftKeyDown() ) then
+						if ( IsControlKeyDown() ) then
+							DressUpItemLink(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
+						elseif ( IsShiftKeyDown() ) then
 							if ( ChatFrameEditBox:IsVisible() ) then
 								ChatFrameEditBox:Insert(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 							end
 						else
+							if ( SHOW_ON_CHAR == "1" ) then
+								DressUpItemLink(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
+							end
 							BidButton_OnClick(this:GetParent());
 						end
 					</OnClick>
+					<OnUpdate>
+						if ( GameTooltip:IsOwned(this) ) then
+							AuctionFrameItem_OnEnter("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame));
+						end
+					</OnUpdate>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
@@ -759,16 +792,27 @@
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
+						ResetCursor();
 					</OnLeave>
 					<OnClick>
-						if ( IsShiftKeyDown() ) then
+						if ( IsControlKeyDown() ) then
+							DressUpItemLink(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
+						elseif ( IsShiftKeyDown() ) then
 							if ( ChatFrameEditBox:IsVisible() ) then
 								ChatFrameEditBox:Insert(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
 							end
 						else
+							if ( SHOW_ON_CHAR == "1" ) then
+								DressUpItemLink(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
+							end
 							AuctionsButton_OnClick(this:GetParent());
 						end
 					</OnClick>
+					<OnUpdate>
+						if ( GameTooltip:IsOwned(this) ) then
+							AuctionFrameItem_OnEnter("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
+						end
+					</OnUpdate>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
@@ -1065,6 +1109,15 @@
 								<Anchor point="TOPLEFT">
 									<Offset>
 										<AbsDimension x="485" y="-56"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BrowseShowOnCharacterText" inherits="GameFontHighlightSmall" text="DISPLAY_ON_CHARACTER">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="685" y="-56"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1569,7 +1622,11 @@
 						</Anchors>
 						<Scripts>
 							<OnTabPressed>
-								BrowseMinLevel:SetFocus();
+								if ( IsShiftKeyDown() ) then
+									BrowseBidPriceCopper:SetFocus();
+								else
+									BrowseMinLevel:SetFocus();
+								end
 							</OnTabPressed>
 							<OnEnterPressed>
 								AuctionFrameBrowse_Search();
@@ -1630,7 +1687,9 @@
 						<Scripts>
 							<OnTabPressed>
 								if ( IsShiftKeyDown() ) then
-									BrowseMaxLevel:SetFocus();
+									BrowseMinLevel:SetFocus();
+								else
+									BrowseBidPriceGold:SetFocus();
 								end
 							</OnTabPressed>
 							<OnEnterPressed>
@@ -1761,10 +1820,47 @@
 									end
 								else
 									this:Disable();
+									BrowsePrevPageButton:Disable();
+									BrowseNextPageButton:Disable();
 								end
 							</OnUpdate>
 						</Scripts>
 					</Button>
+					<CheckButton name="ShowOnPlayerCheckButton" inherits="UICheckButtonTemplate" id="1">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BrowseShowOnCharacterText" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterEvent("VARIABLES_LOADED");
+								SHOW_ON_CHAR = "0";
+								RegisterForSave("SHOW_ON_CHAR");
+							</OnLoad>
+							<OnEvent>
+								if ( event == "VARIABLES_LOADED" ) then
+									this:SetChecked(SHOW_ON_CHAR);
+								end
+							</OnEvent>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									SHOW_ON_CHAR = "1";
+								else
+									SHOW_ON_CHAR = "0";
+								end
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+								GameTooltip:SetText(DISPLAY_ON_CHAR_TOOLTIP, nil, nil, nil, nil, 1);
+							</OnEnter>
+						</Scripts>
+					</CheckButton>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -2793,6 +2889,7 @@
 				PlaySound("AuctionWindowClose");
 				StaticPopup_Hide("BUYOUT_AUCTION");
 				StaticPopup_Hide("CANCEL_AUCTION");
+				HideUIPanel(AuctionDressUpFrame);
 				CloseAuctionHouse();
 			</OnHide>
 			<OnEvent>

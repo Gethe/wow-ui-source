@@ -23,9 +23,6 @@
 		</Layers>
 		<Frames>
 			<Model name="$parentAutoCast" file="Interface\Buttons\UI-AutoCastButton.mdx" scale="1.2" hidden="true" setAllPoints="true">
-				<Frames>
-					<Model name="$parentCooldown" inherits="CooldownFrameTemplate"/>
-				</Frames>
 				<Scripts>
 					<OnLoad>
 						this:SetSequence(0);
@@ -36,69 +33,26 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton", "RightButton");
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				this:RegisterEvent("UPDATE_BINDINGS");
-				getglobal(this:GetName().."Cooldown"):SetScale(0.65);
-				getglobal(this:GetName().."Cooldown"):ClearAllPoints();
-				getglobal(this:GetName().."Cooldown"):SetWidth(30);
-				getglobal(this:GetName().."Cooldown"):SetHeight(32);
-				getglobal(this:GetName().."Cooldown"):SetPoint("CENTER", this:GetName(), "CENTER", 0, 0);
-				PetActionButton_SetHotkeys();
+				PetActionButton_OnLoad();
 			</OnLoad>
 			<OnEvent>
 				PetActionButton_OnEvent();
 			</OnEvent>
 			<OnClick>
-				this:SetChecked(0);
-				if ( IsShiftKeyDown() ) then
-					PickupPetAction(this:GetID());
-				else
-					if ( arg1 == "LeftButton" ) then
-						CastPetAction(this:GetID());
-					else
-						TogglePetAutocast(this:GetID());
-					end
-				end
+				PetActionButton_OnClick(arg1);
 			</OnClick>
 			<OnDragStart>
-				if ( LOCK_ACTIONBAR ~= "1" ) then
-					this:SetChecked(0);
-					PickupPetAction(this:GetID());
-				end
+				PetActionButton_OnDragStart();
 			</OnDragStart>
 			<OnReceiveDrag>
-				if ( LOCK_ACTIONBAR ~= "1" ) then
-					this:SetChecked(0);
-					PickupPetAction(this:GetID());
-				end
+				PetActionButton_OnReceiveDrag();
 			</OnReceiveDrag>
 			<OnEnter>
-				if ( not this.tooltipName ) then
-					return;
-				end
-				local uber = GetCVar("UberTooltips");
-				if ( this.isToken or (uber == "0") ) then
-					if ( uber == "0" ) then
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					else
-						GameTooltip_SetDefaultAnchor(GameTooltip, this);
-					end
-					GameTooltip:SetText(this.tooltipName..NORMAL_FONT_COLOR_CODE.." ("..KeyBindingFrame_GetLocalizedName(GetBindingKey("BONUSACTIONBUTTON"..this:GetID()), "KEY_")..")"..FONT_COLOR_CODE_CLOSE, 1.0, 1.0, 1.0);
-					if ( this.tooltipSubtext ) then
-						GameTooltip:AddLine(this.tooltipSubtext, "", 0.5, 0.5, 0.5);
-					end
-					GameTooltip:Show();
-				else
-					GameTooltip_SetDefaultAnchor(GameTooltip, this);
-					GameTooltip:SetPetAction(this:GetID());
-				end
+				PetActionButton_OnEnter();
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:Hide();
+				PetActionButton_OnLeave();
 			</OnLeave>
-			<OnUpdate>
-			</OnUpdate>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
 			<Size>

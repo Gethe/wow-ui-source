@@ -73,8 +73,10 @@ function CraftFrame_OnEvent()
 		CraftFrame_Update();
 	elseif ( event == "CRAFT_CLOSE" ) then
 		HideUIPanel(this);
-	elseif ( (event == "UNIT_PORTRAIT_UPDATE") and (arg1 == "player") ) then
-		SetPortraitTexture(CraftFramePortrait, "player");
+	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		if ( arg1 == "player" ) then
+			SetPortraitTexture(CraftFramePortrait, "player");
+		end
 	elseif ( event == "SPELLS_CHANGED" ) then
 		CraftFrame_Update();
 	elseif ( event == "UNIT_PET_TRAINING_POINTS" ) then
@@ -311,13 +313,13 @@ function CraftFrame_SetSelection(id)
 		local reagentName, reagentTexture, reagentCount, playerReagentCount = GetCraftReagentInfo(id, i);
 		local reagent = getglobal("CraftReagent"..i)
 		local name = getglobal("CraftReagent"..i.."Name");
+		local count = getglobal("CraftReagent"..i.."Count");
 		if ( not reagentName or not reagentTexture ) then
 			reagent:Hide();
 		else
 			reagent:Show();
-			SetItemButtonCount(reagent, reagentCount);
 			SetItemButtonTexture(reagent, reagentTexture);
-			name:SetText(reagentName.." ("..playerReagentCount.."/"..reagentCount..")");
+			name:SetText(reagentName);
 			-- Grayout items
 			if ( playerReagentCount < reagentCount ) then
 				SetItemButtonTextureVertexColor(reagent, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
@@ -327,6 +329,10 @@ function CraftFrame_SetSelection(id)
 				SetItemButtonTextureVertexColor(reagent, 1.0, 1.0, 1.0);
 				name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			end
+			if ( playerReagentCount >= 100 ) then
+				playerReagentCount = "*";
+			end
+			count:SetText(playerReagentCount.." /"..reagentCount);
 		end
 	end
 	

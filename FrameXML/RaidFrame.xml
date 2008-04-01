@@ -246,7 +246,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Button name="RaidBuffButtonTemplate" inherits="PartyBuffButtonTemplate" virtual="true" hidden="true">
+	<Frame name="RaidBuffButtonTemplate" inherits="PartyBuffButtonTemplate" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="12" y="12"/>
 		</Size>
@@ -256,7 +256,12 @@
 				getglobal(this:GetName().."Overlay"):SetHeight(13);
 			</OnLoad>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				if ( this:GetCenter() > GetScreenWidth()/2 ) then
+					GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				else
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				end
+
 				if ( this:GetParent():GetParent().showBuffs ) then
 					GameTooltip:SetUnitBuff(this:GetParent().unit, this:GetID());
 				else
@@ -267,8 +272,8 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-	</Button>
-	<Button name="RaidPulloutButtonTemplate" hidden="true" virtual="true">
+	</Frame>
+	<Frame name="RaidPulloutButtonTemplate" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="57" y="25"/>
 		</Size>
@@ -366,7 +371,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="$parentDebuff1" inherits="RaidBuffButtonTemplate" id="1">
+			<Frame name="$parentDebuff1" inherits="RaidBuffButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 						<Offset>
@@ -374,8 +379,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff2" inherits="RaidBuffButtonTemplate" id="2">
+			</Frame>
+			<Frame name="$parentDebuff2" inherits="RaidBuffButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
 						<Offset>
@@ -383,8 +388,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff3" inherits="RaidBuffButtonTemplate" id="3">
+			</Frame>
+			<Frame name="$parentDebuff3" inherits="RaidBuffButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDebuff1" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -392,8 +397,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff4" inherits="RaidBuffButtonTemplate" id="4">
+			</Frame>
+			<Frame name="$parentDebuff4" inherits="RaidBuffButtonTemplate" id="4">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
 						<Offset>
@@ -401,7 +406,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -410,13 +415,12 @@
 				end
 				this:RegisterEvent("UNIT_HEALTH");
 				this:RegisterEvent("UNIT_AURA");
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEvent>
 				RaidPulloutButton_OnEvent();
 			</OnEvent>
 		</Scripts>
-	</Button>
+	</Frame>
 	<Button name="RaidPulloutFrameTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="72" y="10"/>
@@ -442,21 +446,21 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentButton1" inherits="RaidPulloutButtonTemplate" id="1"/>
-			<Button name="$parentButton2" inherits="RaidPulloutButtonTemplate" id="2"/>
-			<Button name="$parentButton3" inherits="RaidPulloutButtonTemplate" id="3"/>
-			<Button name="$parentButton4" inherits="RaidPulloutButtonTemplate" id="4"/>
-			<Button name="$parentButton5" inherits="RaidPulloutButtonTemplate" id="5"/>
-			<Button name="$parentButton6" inherits="RaidPulloutButtonTemplate" id="6"/>
-			<Button name="$parentButton7" inherits="RaidPulloutButtonTemplate" id="7"/>
-			<Button name="$parentButton8" inherits="RaidPulloutButtonTemplate" id="8"/>
-			<Button name="$parentButton9" inherits="RaidPulloutButtonTemplate" id="9"/>
-			<Button name="$parentButton10" inherits="RaidPulloutButtonTemplate" id="10"/>
-			<Button name="$parentButton11" inherits="RaidPulloutButtonTemplate" id="11"/>
-			<Button name="$parentButton12" inherits="RaidPulloutButtonTemplate" id="12"/>
-			<Button name="$parentButton13" inherits="RaidPulloutButtonTemplate" id="13"/>
-			<Button name="$parentButton14" inherits="RaidPulloutButtonTemplate" id="14"/>
-			<Button name="$parentButton15" inherits="RaidPulloutButtonTemplate" id="15"/>
+			<Frame name="$parentButton1" inherits="RaidPulloutButtonTemplate" id="1"/>
+			<Frame name="$parentButton2" inherits="RaidPulloutButtonTemplate" id="2"/>
+			<Frame name="$parentButton3" inherits="RaidPulloutButtonTemplate" id="3"/>
+			<Frame name="$parentButton4" inherits="RaidPulloutButtonTemplate" id="4"/>
+			<Frame name="$parentButton5" inherits="RaidPulloutButtonTemplate" id="5"/>
+			<Frame name="$parentButton6" inherits="RaidPulloutButtonTemplate" id="6"/>
+			<Frame name="$parentButton7" inherits="RaidPulloutButtonTemplate" id="7"/>
+			<Frame name="$parentButton8" inherits="RaidPulloutButtonTemplate" id="8"/>
+			<Frame name="$parentButton9" inherits="RaidPulloutButtonTemplate" id="9"/>
+			<Frame name="$parentButton10" inherits="RaidPulloutButtonTemplate" id="10"/>
+			<Frame name="$parentButton11" inherits="RaidPulloutButtonTemplate" id="11"/>
+			<Frame name="$parentButton12" inherits="RaidPulloutButtonTemplate" id="12"/>
+			<Frame name="$parentButton13" inherits="RaidPulloutButtonTemplate" id="13"/>
+			<Frame name="$parentButton14" inherits="RaidPulloutButtonTemplate" id="14"/>
+			<Frame name="$parentButton15" inherits="RaidPulloutButtonTemplate" id="15"/>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOP">

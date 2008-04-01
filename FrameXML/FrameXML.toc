@@ -1,5 +1,6 @@
 # Do not delete the following line!
-## Interface: 1600
+## Interface: 1700
+GlobalStrings.lua
 Fonts.xml
 Localization.xml
 BasicControls.xml
@@ -92,3 +93,5 @@ AuctionFrame.xml
 PetStable.xml
 DurabilityFrame.xml
 WorldStateFrame.xml
+BattlefieldMinimap.xml
+DressUpFrame.xml

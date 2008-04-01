@@ -651,12 +651,6 @@
 											<OnEscapePressed>
 												this:ClearFocus();
 											</OnEscapePressed>
-											<OnClick>
-												this:SetFocus();
-												if ( CursorHasItem() ) then
-													SendMailPackageButton_OnClick();
-												end
-											</OnClick>
 										</Scripts>
 										<FontString inherits="ItemTextFontNormal"/>
 									</EditBox>
@@ -1589,7 +1583,7 @@
 						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnEvent>
-						GameTooltip:Hide();
+						--GameTooltip:Hide();
 						if ( GameTooltip:IsOwned(this) ) then
 							GameTooltip:SetInboxItem(InboxFrame.openMailID);
 							GameTooltip:Show();
@@ -1628,7 +1622,7 @@
 						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnEvent>
-						GameTooltip:Hide();
+						--GameTooltip:Hide();
 						if ( GameTooltip:IsOwned(this) ) then
 							if ( OpenMailFrame.money ) then
 								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");

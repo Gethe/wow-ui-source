@@ -68,6 +68,16 @@ function BuffButton_Update()
 	local icon = getglobal(this:GetName().."Icon");
 	icon:SetTexture(GetPlayerBuffTexture(buffIndex));
 
+	-- Set the number of applications of an aura if its a debuff
+	local buffCount = getglobal(this:GetName().."Count");
+	local count = GetPlayerBuffApplications(buffIndex);
+	if ( this.buffFilter == "HARMFUL" and count > 1 ) then
+		buffCount:SetText(count);
+		buffCount:Show();
+	else
+		buffCount:Hide();
+	end
+
 	if ( GameTooltip:IsOwned(this) ) then
 		GameTooltip:SetPlayerBuff(buffIndex);
 	end
@@ -156,6 +166,8 @@ function BuffFrame_Enchant_OnUpdate(elapsed)
 		-- Handle flashing
 		if ( offHandExpiration and offHandExpiration < BUFF_WARNING_TIME ) then
 			TempEnchant1:SetAlpha(BUFF_ALPHA_VALUE);
+		else
+			TempEnchant1:SetAlpha(1.0);
 		end
 		
 	end
@@ -178,6 +190,8 @@ function BuffFrame_Enchant_OnUpdate(elapsed)
 		-- Handle flashing
 		if ( mainHandExpiration and mainHandExpiration < BUFF_WARNING_TIME ) then
 			enchantButton:SetAlpha(BUFF_ALPHA_VALUE);
+		else
+			enchantButton:SetAlpha(1.0);
 		end
 	end
 	--Hide unused enchants

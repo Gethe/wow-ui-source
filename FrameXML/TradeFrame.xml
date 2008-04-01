@@ -91,7 +91,9 @@
 						this:SetFrameLevel(this:GetFrameLevel() + 2);
 					</OnLoad>
 					<OnClick>
-						if ( IsShiftKeyDown() ) then
+						if ( IsControlKeyDown() ) then
+							DressUpItemLink(GetTradeTargetItemLink(this:GetParent():GetID()));
+						elseif ( IsShiftKeyDown() ) then
 							if ( ChatFrameEditBox:IsVisible() ) then
 								ChatFrameEditBox:Insert(GetTradeTargetItemLink(this:GetParent():GetID()));
 							end
@@ -102,12 +104,16 @@
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 						GameTooltip:SetTradeTargetItem(this:GetParent():GetID());
+						CursorUpdate();
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
+						ResetCursor();
 					</OnLeave>
+					<OnUpdate>
+						CursorOnUpdate();
+					</OnUpdate>
 				</Scripts>
-				<NormalTexture file=""/>
 			</Button>
 		</Frames>
 	</Frame>
@@ -119,7 +125,9 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						if ( IsShiftKeyDown() ) then
+						if ( IsControlKeyDown() ) then
+							DressUpItemLink(GetTradePlayerItemLink(this:GetParent():GetID()));
+						elseif ( IsShiftKeyDown() ) then
 							if ( ChatFrameEditBox:IsVisible() ) then
 								ChatFrameEditBox:Insert(GetTradePlayerItemLink(this:GetParent():GetID()));
 							end
@@ -140,12 +148,16 @@
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 						GameTooltip:SetTradePlayerItem(this:GetParent():GetID());
+						CursorUpdate();
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
+						ResetCursor();
 					</OnLeave>
+					<OnUpdate>
+						CursorOnUpdate();
+					</OnUpdate>
 				</Scripts>
-				<NormalTexture file=""/>
 			</Button>
 		</Frames>
 	</Frame>

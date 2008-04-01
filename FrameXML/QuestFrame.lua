@@ -1,7 +1,6 @@
 MAX_NUM_QUESTS = 32;
 MAX_NUM_ITEMS = 10;
 MAX_REQUIRED_ITEMS = 6;
-QUEST_FADING_ENABLE = 1;
 QUEST_DESCRIPTION_GRADIENT_LENGTH = 30;
 QUEST_DESCRIPTION_GRADIENT_CPS = 40;
 QUESTINFO_FADE_IN = 1;
@@ -83,7 +82,7 @@ function QuestFrameRewardPanel_OnShow()
 	QuestFrameItems_Update("QuestReward");
 	QuestRewardScrollFrame:UpdateScrollChildRect();
 	QuestRewardScrollFrameScrollBar:SetValue(0);
-	if ( QUEST_FADING_ENABLE ) then
+	if ( QUEST_FADING_DISABLE == "0" ) then
 		QuestRewardScrollChildFrame:SetAlpha(0);
 		UIFrameFadeIn(QuestRewardScrollChildFrame, QUESTINFO_FADE_IN);
 	end
@@ -114,7 +113,11 @@ function QuestGoodbyeButton_OnClick()
 end
 
 function QuestItem_OnClick()
-	if ( IsShiftKeyDown() ) then
+	if ( IsControlKeyDown() ) then
+		if ( this.rewardType ~= "spell" ) then
+			DressUpItemLink(GetQuestItemLink(this.type, this:GetID()));
+		end
+	elseif ( IsShiftKeyDown() ) then
 		if ( ChatFrameEditBox:IsVisible() and this.rewardType ~= "spell") then
 			ChatFrameEditBox:Insert(GetQuestItemLink(this.type, this:GetID()));
 		end
@@ -122,15 +125,14 @@ function QuestItem_OnClick()
 end
 
 function QuestRewardItem_OnClick()
-	if ( IsShiftKeyDown() ) then
+	if ( IsControlKeyDown() ) then
+		DressUpItemLink(GetQuestItemLink(this.type, this:GetID()));
+	elseif ( IsShiftKeyDown() ) then
 		if ( ChatFrameEditBox:IsVisible() ) then
 			ChatFrameEditBox:Insert(GetQuestItemLink(this.type, this:GetID()));
 		end
-		return;
-	end
-
-	if ( this.type == "choice" ) then
-		QuestRewardItemHighlight:SetPoint("TOPLEFT", this:GetName(), "TOPLEFT", -8, 7);
+	elseif ( this.type == "choice" ) then
+		QuestRewardItemHighlight:SetPoint("TOPLEFT", this, "TOPLEFT", -8, 7);
 		QuestRewardItemHighlight:Show();
 		QuestFrameRewardPanel.itemChoice = this:GetID();
 	end
@@ -152,7 +154,7 @@ function QuestFrameProgressPanel_OnShow()
 		QuestFrameCompleteButton:Disable();
 	end
 	QuestFrameProgressItems_Update();
-	if ( QUEST_FADING_ENABLE ) then
+	if ( QUEST_FADING_DISABLE == "0" ) then
 		QuestProgressScrollChildFrame:SetAlpha(0);
 		UIFrameFadeIn(QuestProgressScrollChildFrame, QUESTINFO_FADE_IN);
 	end
@@ -217,7 +219,7 @@ function QuestFrameGreetingPanel_OnShow()
 	QuestFrameRewardPanel:Hide();
 	QuestFrameProgressPanel:Hide();
 	QuestFrameDetailPanel:Hide();
-	if ( QUEST_FADING_ENABLE ) then
+	if ( QUEST_FADING_DISABLE == "0" ) then
 		QuestGreetingScrollChildFrame:SetAlpha(0);
 		UIFrameFadeIn(QuestGreetingScrollChildFrame, QUESTINFO_FADE_IN);
 	end
@@ -511,7 +513,7 @@ function QuestFrameDetailPanel_OnShow()
 	QuestFrameDetailPanel.fading = 1;
 	QuestFrameDetailPanel.fadingProgress = 0;
 	QuestDescription:SetAlphaGradient(0, QUEST_DESCRIPTION_GRADIENT_LENGTH);
-	if ( not QUEST_FADING_ENABLE ) then
+	if ( QUEST_FADING_DISABLE == "1" ) then
 		QuestFrameDetailPanel.fadingProgress = 1024;
 	end
 end
@@ -523,7 +525,7 @@ function QuestFrameDetailPanel_OnUpdate(elapsed)
 		if ( not QuestDescription:SetAlphaGradient(this.fadingProgress, QUEST_DESCRIPTION_GRADIENT_LENGTH) ) then
 			this.fading = nil;
 			-- Show Quest Objectives and Rewards
-			if ( QUEST_FADING_ENABLE ) then
+			if ( QUEST_FADING_DISABLE == "0" ) then
 				UIFrameFadeIn(TextAlphaDependentFrame, QUESTINFO_FADE_IN );
 			else
 				TextAlphaDependentFrame:SetAlpha(1);

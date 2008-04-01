@@ -100,11 +100,11 @@ function InspectPaperDollItemSlotButton_OnEvent(event)
 end
 
 function InspectPaperDollItemSlotButton_OnClick(button)
-	if ( button == "LeftButton" ) then
-		if ( IsShiftKeyDown() ) then
-			if ( ChatFrameEditBox:IsVisible() ) then
-				ChatFrameEditBox:Insert(GetInventoryItemLink(InspectFrame.unit, this:GetID()));
-			end
+	if ( IsControlKeyDown() ) then
+		DressUpItemLink(GetInventoryItemLink(InspectFrame.unit, this:GetID()));
+	elseif ( IsShiftKeyDown() ) then
+		if ( ChatFrameEditBox:IsVisible() ) then
+			ChatFrameEditBox:Insert(GetInventoryItemLink(InspectFrame.unit, this:GetID()));
 		end
 	end
 end
@@ -115,9 +115,11 @@ function InspectPaperDollItemSlotButton_Update(button)
 	if ( textureName ) then
 		SetItemButtonTexture(button, textureName);
 		SetItemButtonCount(button, GetInventoryItemCount(unit, button:GetID()));
+		button.hasItem = 1;
 	else
 		SetItemButtonTexture(button, button.backgroundTextureName);
 		SetItemButtonCount(button, 0);
+		button.hasItem = nil;
 	end
 	if ( GameTooltip:IsOwned(button) ) then
 		if ( texture ) then

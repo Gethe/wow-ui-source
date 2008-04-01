@@ -15,7 +15,7 @@ UIOptionsFrameCheckButtons["SMART_PIVOT"] = { index = 15, cvar = "cameraPivot" ,
 UIOptionsFrameCheckButtons["CLEAR_AFK"] = { index = 16, cvar = "autoClearAFK" , tooltipText = OPTION_TOOLTIP_CLEAR_AFK};
 UIOptionsFrameCheckButtons["SHOW_PET_NAMEPLATES"] = { index = 17, cvar = "PetNamePlates", tooltipText = OPTION_TOOLTIP_PET_NAMEPLATES};
 UIOptionsFrameCheckButtons["REMOVE_CHAT_DELAY_TEXT"] = { index = 18, uvar = "REMOVE_CHAT_DELAY", tooltipText = OPTION_TOOLTIP_REMOVE_CHAT_DELAY};
-UIOptionsFrameCheckButtons["SHOW_DAMAGE_TEXT"] = { index = 19, uvar = "SHOW_DAMAGE", tooltipText = OPTION_TOOLTIP_SHOW_DAMAGE};
+UIOptionsFrameCheckButtons["SHOW_DAMAGE_TEXT"] = { index = 19, cvar = "CombatDamage", tooltipText = OPTION_TOOLTIP_SHOW_DAMAGE};
 UIOptionsFrameCheckButtons["SHOW_NPC_NAMES"] = { index = 20, cvar = "UnitNameNPC", tooltipText = OPTION_TOOLTIP_SHOW_NPC_NAMES};
 UIOptionsFrameCheckButtons["SHOW_PLAYER_NAMES"] = { index = 21, cvar = "UnitNamePlayer", tooltipText = OPTION_TOOLTIP_SHOW_PLAYER_NAMES};
 UIOptionsFrameCheckButtons["SHOW_GUILD_NAMES"] = { index = 22, cvar = "UnitNamePlayerGuild", tooltipText = OPTION_TOOLTIP_SHOW_GUILD_NAMES};
@@ -37,6 +37,7 @@ UIOptionsFrameCheckButtons["PARTY_CHAT_BUBBLES_TEXT"] = { index = 38, cvar = "Ch
 UIOptionsFrameCheckButtons["SHOW_BUFF_DURATION_TEXT"] = { index = 39, uvar = "SHOW_BUFF_DURATIONS", tooltipText = OPTION_TOOLTIP_SHOW_BUFF_DURATION};
 UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"] = { index = 40, uvar = "ALWAYS_SHOW_MULTIBARS", tooltipText = OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS};
 UIOptionsFrameCheckButtons["SHOW_PARTY_PETS_TEXT"] = { index = 41, uvar = "SHOW_PARTY_PETS", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_PETS};
+UIOptionsFrameCheckButtons["SHOW_QUEST_FADING_TEXT"] = { index = 42, uvar = "QUEST_FADING_DISABLE", tooltipText = OPTION_TOOLTIP_SHOW_QUEST_FADING};
 
 UIOptionsFrameSliders = {
 	{ text = MOUSE_SENSITIVITY, cvar = "mousespeed", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 , tooltipText = OPTION_TOOLTIP_MOUSE_SENSITIVITY},
@@ -50,8 +51,6 @@ function UIOptionsFrame_Init()
 	RegisterForSave("SIMPLE_CHAT");
 	CHAT_LOCKED = "0"
 	RegisterForSave("CHAT_LOCKED");
-	SHOW_DAMAGE = "1";
-	RegisterForSave("SHOW_DAMAGE");
 	REMOVE_CHAT_DELAY = "0";
 	RegisterForSave("REMOVE_CHAT_DELAY");
 	SHOW_NEWBIE_TIPS = "1";
@@ -64,6 +63,8 @@ function UIOptionsFrame_Init()
 	RegisterForSave("ALWAYS_SHOW_MULTIBARS");
 	SHOW_PARTY_PETS = "1";
 	RegisterForSave("SHOW_PARTY_PETS");
+	QUEST_FADING_DISABLE = "0";
+	RegisterForSave("QUEST_FADING_DISABLE");
 	UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value = GetCVar("statusBarText");
 	this:RegisterEvent("CVAR_UPDATE");
 end

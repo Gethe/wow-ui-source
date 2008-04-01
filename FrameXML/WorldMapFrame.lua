@@ -1,7 +1,7 @@
 NUM_WORLDMAP_DETAIL_TILES = 12;
 NUM_WORLDMAP_POIS = 50;
-NUM_WORLDMAP_POI_COLUMNS = 4;
-WORLDMAP_POI_TEXTURE_WIDTH = 64;
+NUM_WORLDMAP_POI_COLUMNS = 8;
+WORLDMAP_POI_TEXTURE_WIDTH = 128;
 NUM_WORLDMAP_OVERLAYS = 40;
 NUM_WORLDMAP_FLAGS = 2;
 
@@ -11,12 +11,15 @@ function WorldMapFrame_OnLoad()
 	this:RegisterEvent("WORLD_MAP_NAME_UPDATE");
 	this.poiHighlight = nil;
 	this.areaName = nil;
+	CreateWorldMapArrowFrame("WorldMapFrame");
 	WorldMapFrame_Update();
 end
 
 function WorldMapFrame_OnEvent()
 	if ( event == "WORLD_MAP_UPDATE" ) then
-		WorldMapFrame_Update();
+		if ( this:IsVisible() ) then
+			WorldMapFrame_Update();
+		end
 	elseif ( event == "CLOSE_WORLD_MAP" ) then
 		HideUIPanel(this);
 	end
@@ -68,7 +71,7 @@ function WorldMapFrame_Update()
 			worldMapPOI:Hide();
 		end
 	end
-	
+
 	-- Overlay stuff
 	local numOverlays = GetNumMapOverlays();
 	local textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY;
@@ -234,7 +237,7 @@ function WorldMapButton_OnClick(mouseButton, button)
 	end
 end
 
-function WorldMapButton_OnUpdate()
+function WorldMapButton_OnUpdate(elapsed)
 	local x, y = GetCursorPosition();
 	x = x / this:GetScale();
 	y = y / this:GetScale();
@@ -269,16 +272,42 @@ function WorldMapButton_OnUpdate()
 		WorldMapHighlight:Hide();
 	end
 	--Position player
+	UpdateWorldMapArrowFrames();
 	local playerX, playerY = GetPlayerMapPosition("player");
 	if ( playerX == 0 and playerY == 0 ) then
-		WorldMapPlayer:Hide();
+		ShowWorldMapArrowFrame(nil);
+		WorldMapPing:Hide();
 	else
 		playerX = playerX * WorldMapDetailFrame:GetWidth();
 		playerY = -playerY * WorldMapDetailFrame:GetHeight();
-		
+		PositionWorldMapArrowFrame("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
+		ShowWorldMapArrowFrame(1);
+
+		-- Position clear button to detect mouseovers
 		WorldMapPlayer:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
-		WorldMapPlayer:Show();
+
+		-- Position player ping if its shown
+		if ( WorldMapPing:IsVisible() ) then
+			WorldMapPing:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX-7, playerY-9);
+			-- If ping has a timer greater than 0 count it down, otherwise fade it out
+			if ( WorldMapPing.timer > 0 ) then
+				WorldMapPing.timer = WorldMapPing.timer - elapsed;
+				if ( WorldMapPing.timer <= 0 ) then
+					WorldMapPing.fadeOut = 1;
+					WorldMapPing.fadeOutTimer = MINIMAPPING_FADE_TIMER;
+				end
+			elseif ( WorldMapPing.fadeOut ) then
+				WorldMapPing.fadeOutTimer = WorldMapPing.fadeOutTimer - elapsed;
+				if ( WorldMapPing.fadeOutTimer > 0 ) then
+					WorldMapPing:SetAlpha(255 * (WorldMapPing.fadeOutTimer/MINIMAPPING_FADE_TIMER))
+				else
+					WorldMapPing.fadeOut = nil;
+					WorldMapPing:Hide();
+				end
+			end
+		end
 	end
+
 	--Position groupmates
 	local partyX, partyY, partyMemberFrame;
 	local playerCount = 0;
@@ -362,6 +391,7 @@ function WorldMapButton_OnUpdate()
 		WorldMapCorpse:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", corpseX, corpseY);
 		WorldMapCorpse:Show();
 	end
+
 end
 
 function WorldMapUnit_OnEnter()
@@ -407,6 +437,13 @@ function WorldMapUnit_OnEnter()
 	end
 	WorldMapTooltip:SetText(tooltipText);
 	WorldMapTooltip:Show();
+end
+
+function WorldMapFrame_PingPlayerPosition()
+	WorldMapPing:SetAlpha(255);
+	WorldMapPing:Show();
+	--PlaySound("MapPing");
+	WorldMapPing.timer = 1;
 end
 
 function ToggleWorldMap()

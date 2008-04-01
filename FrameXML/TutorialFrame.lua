@@ -41,7 +41,7 @@ function TutorialFrame_Update(currentTutorial)
 	for index, value in TUTORIALFRAME_QUEUE do
 		button = getglobal(value[2]);
 		if ( LAST_TUTORIAL_BUTTON_SHOWN and LAST_TUTORIAL_BUTTON_SHOWN ~= button ) then
-			button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN:GetName(), "BOTTOM", 36, 0);
+			button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN, "BOTTOM", 36, 0);
 		else
 			button:SetPoint("BOTTOM", "TutorialFrameParent", "BOTTOM", 0, 0);
 		end
@@ -59,7 +59,7 @@ function TutorialFrame_NewTutorial(tutorialID)
 	tinsert(TUTORIALFRAME_QUEUE, {tutorialID, button:GetName()});
 
 	if ( LAST_TUTORIAL_BUTTON_SHOWN and LAST_TUTORIAL_BUTTON_SHOWN ~= button ) then
-		button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN:GetName(), "BOTTOM", 36, 0);
+		button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN, "BOTTOM", 36, 0);
 	else
 		-- No button shown so this is the first one
 		button:SetPoint("BOTTOM", "TutorialFrameParent", "BOTTOM", 0, 0);

@@ -2,27 +2,33 @@
 function PlayerFrame_OnLoad()
 	this.statusCounter = 0;
 	this.statusSign = -1;
-	PlayerLevelText:SetText(UnitLevel("player"));
 	CombatFeedback_Initialize(PlayerHitIndicator, 30);
-	PlayerFrame_UpdatePartyLeader();
-	PlayerFrame_UpdatePvPStatus();
+	PlayerFrame_Update();
 	this:RegisterEvent("UNIT_LEVEL");
 	this:RegisterEvent("UNIT_COMBAT");
 	this:RegisterEvent("UNIT_PVP_UPDATE");
 	this:RegisterEvent("UNIT_MAXMANA");
+	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	this:RegisterEvent("PLAYER_ENTER_COMBAT");
 	this:RegisterEvent("PLAYER_LEAVE_COMBAT");
+	this:RegisterEvent("PLAYER_REGEN_DISABLED");
+	this:RegisterEvent("PLAYER_REGEN_ENABLED");
 	this:RegisterEvent("PLAYER_UPDATE_RESTING");
 	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	this:RegisterEvent("PARTY_LEADER_CHANGED");
 	this:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
 	this:RegisterEvent("RAID_ROSTER_UPDATE");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	-- This is for debug feedback for Q/A
-	this:RegisterEvent("PLAYER_REGEN_DISABLED");
-	this:RegisterEvent("PLAYER_REGEN_ENABLED");
 	PlayerAttackBackground:SetVertexColor(0.8, 0.1, 0.1);
 	PlayerAttackBackground:SetAlpha(0.4);
+end
+
+function PlayerFrame_Update()
+	if ( UnitExists("player") ) then
+		PlayerLevelText:SetText(UnitLevel("player"));
+		PlayerFrame_UpdatePartyLeader();
+		PlayerFrame_UpdatePvPStatus();
+		PlayerFrame_UpdateStatus();
+	end
 end
 
 function PlayerFrame_UpdatePartyLeader()
@@ -74,39 +80,37 @@ function PlayerFrame_OnEvent(event)
 		if ( arg1 == "player" ) then
 			PlayerLevelText:SetText(UnitLevel("player"));
 		end
-		return;
-	end
-	if ( event == "UNIT_COMBAT" ) then
+	elseif ( event == "UNIT_COMBAT" ) then
 		if ( arg1 == "player" ) then
 			CombatFeedback_OnCombatEvent(arg2, arg3, arg4, arg5);
 		end
-		return;
-	end
-	if ( event == "UNIT_PVP_UPDATE" ) then
+	elseif ( event == "UNIT_PVP_UPDATE" ) then
 		if ( arg1 == "player" ) then
 			PlayerFrame_UpdatePvPStatus();
 		end
-		return;
-	end
-	if ( event == "PLAYER_ENTER_COMBAT" ) then
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		UnitFrame_Update();
+		this.inCombat = nil;
+		this.onHateList = nil;
+		PlayerFrame_Update();
+	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
 		this.inCombat = 1;
 		PlayerFrame_UpdateStatus();
-		return;
-	end
-	if ( event == "PLAYER_UPDATE_RESTING" ) then
-		PlayerFrame_UpdateStatus();
-		return;
-	end
-	if ( event == "PLAYER_LEAVE_COMBAT" ) then
+	elseif ( event == "PLAYER_LEAVE_COMBAT" ) then
 		this.inCombat = nil;
 		PlayerFrame_UpdateStatus();
-		return;
-	end
-	if ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
+	elseif ( event == "PLAYER_REGEN_DISABLED" ) then
+		this.onHateList = 1;
+		PlayerFrame_UpdateStatus();
+	elseif ( event == "PLAYER_REGEN_ENABLED" ) then
+		this.onHateList = nil;
+		PlayerFrame_UpdateStatus();
+	elseif ( event == "PLAYER_UPDATE_RESTING" ) then
+		PlayerFrame_UpdateStatus();
+	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
+		PlayerFrame_UpdateGroupIndicator();
 		PlayerFrame_UpdatePartyLeader();
-		return;
-	end
-	if ( event == "PARTY_LOOT_METHOD_CHANGED" ) then
+	elseif ( event == "PARTY_LOOT_METHOD_CHANGED" ) then
 		local lootMethod;
 		local lootMaster;
 		lootMethod, lootMaster = GetLootMethod();
@@ -115,23 +119,6 @@ function PlayerFrame_OnEvent(event)
 		else
 			PlayerMasterIcon:Hide();
 		end
-		return;
-	end
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		this.inCombat = nil;
-		this.onHateList = nil;
-		UnitFrame_UpdateManaType();
-		PlayerFrame_UpdateStatus();
-	end
-	if ( event == "PLAYER_REGEN_DISABLED" ) then
-		this.onHateList = 1;
-		PlayerFrame_UpdateStatus();
-		return;
-	end
-	if ( event == "PLAYER_REGEN_ENABLED" ) then
-		this.onHateList = nil;
-		PlayerFrame_UpdateStatus();
-		return;
 	end
 end
 
@@ -214,6 +201,27 @@ function PlayerFrame_UpdateStatus()
 		PlayerAttackIcon:Hide();
 		PlayerStatusGlow:Hide();
 		PlayerAttackBackground:Hide();
+	end
+end
+
+function PlayerFrame_UpdateGroupIndicator()
+	PlayerFrameGroupIndicator:Hide();
+	local name, rank, subgroup;
+	if ( GetNumRaidMembers() == 0 ) then
+		PlayerFrameGroupIndicator:Hide();
+		return;
+	end
+	local numRaidMembers = GetNumRaidMembers();
+	for i=1, MAX_RAID_MEMBERS do
+		if ( i <= numRaidMembers ) then
+			name, rank, subgroup = GetRaidRosterInfo(i);
+			-- Set the player's group number indicator
+			if ( name == UnitName("player") ) then
+				PlayerFrameGroupIndicatorText:SetText(GROUP.." "..subgroup);
+				PlayerFrameGroupIndicator:SetWidth(PlayerFrameGroupIndicatorText:GetWidth()+40);
+				PlayerFrameGroupIndicator:Show();
+			end
+		end
 	end
 end
 

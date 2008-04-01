@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="StackSplitFrame.lua"/>
-	<Frame name="StackSplitFrame" frameStrata="HIGH" parent="UIParent" hidden="true" enableMouse="true" enableKeyboard="true">
+	<Frame name="StackSplitFrame" frameStrata="HIGH" parent="UIParent" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
 		<Size>
 			<AbsDimension x="172" y="96"/>
 		</Size>
@@ -101,15 +101,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				this:Raise();
-			</OnShow>
 			<OnHide>
 				StackSplitFrame_OnHide();
 			</OnHide>
-			<OnClick>
-				this:Raise();
-			</OnClick>
 			<OnChar>
 				StackSplitFrame_OnChar();
 			</OnChar>

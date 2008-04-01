@@ -3,9 +3,6 @@ NUM_ACTIONBAR_PAGES = 6;
 NUM_ACTIONBAR_BUTTONS = 12;
 ATTACK_BUTTON_FLASH_TIME = 0.4;
 
-IN_ATTACK_MODE = nil;
-IN_AUTOREPEAT_MODE = nil;
-
 BOTTOMLEFT_ACTIONBAR_PAGE = 6;
 BOTTOMRIGHT_ACTIONBAR_PAGE = 5;
 LEFT_ACTIONBAR_PAGE = 4;
@@ -107,6 +104,8 @@ function ActionButton_OnLoad()
 	ActionButton_Update();
 	this:RegisterForDrag("LeftButton", "RightButton");
 	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	this:RegisterEvent("PLAYER_ENTERING_WORLD");
+	this:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 	this:RegisterEvent("ACTIONBAR_SHOWGRID");
 	this:RegisterEvent("ACTIONBAR_HIDEGRID");
 	this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
@@ -128,7 +127,6 @@ function ActionButton_OnLoad()
 	this:RegisterEvent("UNIT_RAGE");
 	this:RegisterEvent("UNIT_FOCUS");
 	this:RegisterEvent("UNIT_ENERGY");
-	this:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 	this:RegisterEvent("PLAYER_ENTER_COMBAT");
 	this:RegisterEvent("PLAYER_LEAVE_COMBAT");
 	this:RegisterEvent("PLAYER_COMBO_POINTS");
@@ -148,19 +146,8 @@ function ActionButton_UpdateHotkeys(actionButtonType)
 end
 
 function ActionButton_Update()
-	-- Determine whether or not the button should be flashing or not since the button may have missed the enter combat event
-	local pagedID = ActionButton_GetPagedID(this);
-	if ( IsAttackAction(pagedID) and IsCurrentAction(pagedID) ) then
-		IN_ATTACK_MODE = 1;
-	else
-		IN_ATTACK_MODE = nil;
-	end
-	IN_AUTOREPEAT_MODE = IsAutoRepeatAction(pagedID);
-	
 	-- Special case code for bonus bar buttons
 	-- Prevents the button from updating if the bonusbar is still in an animation transition
-
-	-- Derek, I had to comment this out because it was causing them all to be grayed out after a cinematic...
 	if ( this.isBonus and this.inTransition ) then
 		ActionButton_UpdateUsable();
 		ActionButton_UpdateCooldown();
@@ -179,7 +166,6 @@ function ActionButton_Update()
 		if ( this.isBonus ) then
 			this.texture = texture;
 		end
-		
 	else
 		icon:Hide();
 		buttonCooldown:Hide();
@@ -190,17 +176,14 @@ function ActionButton_Update()
 	ActionButton_UpdateCount();
 	if ( HasAction(ActionButton_GetPagedID(this)) ) then
 		this:Show();
+		ActionButton_UpdateState();
 		ActionButton_UpdateUsable();
 		ActionButton_UpdateCooldown();
+		ActionButton_UpdateFlash();
 	elseif ( this.showgrid == 0 ) then
 		this:Hide();
 	else
-		getglobal(this:GetName().."Cooldown"):Hide();
-	end
-	if ( IN_ATTACK_MODE or IN_AUTOREPEAT_MODE ) then
-		ActionButton_StartFlash();
-	else
-		ActionButton_StopFlash();
+		buttonCooldown:Hide();
 	end
 	if ( GameTooltip:IsOwned(this) ) then
 		ActionButton_SetTooltip();
@@ -259,9 +242,8 @@ end
 
 function ActionButton_UpdateCount()
 	local text = getglobal(this:GetName().."Count");
-	local count = GetActionCount(ActionButton_GetPagedID(this));
-	if ( count > 1 ) then
-		text:SetText(count);
+	if ( IsConsumableAction(ActionButton_GetPagedID(this)) ) then
+		text:SetText(GetActionCount(ActionButton_GetPagedID(this)));
 	else
 		text:SetText("");
 	end
@@ -280,9 +262,14 @@ function ActionButton_OnEvent(event)
 		end
 		return;
 	end
-	if ( event == "ACTIONBAR_PAGE_CHANGED" or event == "PLAYER_AURAS_CHANGED" or event == "UPDATE_BONUS_ACTIONBAR" ) then
+	if ( event == "PLAYER_ENTERING_WORLD" or event == "ACTIONBAR_PAGE_CHANGED" ) then
 		ActionButton_Update();
-		ActionButton_UpdateState();
+		return;
+	end
+	if ( event == "UPDATE_BONUS_ACTIONBAR" ) then
+		if ( this.isBonus ) then
+			ActionButton_Update();
+		end
 		return;
 	end
 	if ( event == "ACTIONBAR_SHOWGRID" ) then
@@ -295,6 +282,7 @@ function ActionButton_OnEvent(event)
 	end
 	if ( event == "UPDATE_BINDINGS" ) then
 		ActionButton_UpdateHotkeys();
+		return;
 	end
 
 	-- All event handlers below this line MUST only be valid when the button is visible
@@ -302,70 +290,45 @@ function ActionButton_OnEvent(event)
 		return;
 	end
 
-	if ( event == "PLAYER_TARGET_CHANGED" ) then
+	if ( event == "UNIT_HEALTH" or event == "UNIT_MANA" or event == "UNIT_RAGE" or event == "UNIT_FOCUS" or event == "UNIT_ENERGY" ) then
+		if ( arg1 == "player" ) then
+			ActionButton_UpdateUsable();
+		end
+	elseif ( event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_AURAS_CHANGED" ) then
 		ActionButton_UpdateUsable();
-		return;
-	end
-	if ( event == "UNIT_AURASTATE" ) then
+	elseif ( event == "UNIT_AURASTATE" ) then
 		if ( arg1 == "player" or arg1 == "target" ) then
 			ActionButton_UpdateUsable();
 		end
-		return;
-	end
-	if ( event == "UNIT_INVENTORY_CHANGED" ) then
+	elseif ( event == "UNIT_INVENTORY_CHANGED" ) then
 		if ( arg1 == "player" ) then
 			ActionButton_Update();
 		end
-		return;
-	end
-	if ( event == "ACTIONBAR_UPDATE_STATE" ) then
+	elseif ( event == "ACTIONBAR_UPDATE_STATE" ) then
 		ActionButton_UpdateState();
-		return;
-	end
-	if ( event == "ACTIONBAR_UPDATE_USABLE" or event == "UPDATE_INVENTORY_ALERTS" or event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
+	elseif ( event == "ACTIONBAR_UPDATE_USABLE" or event == "UPDATE_INVENTORY_ALERTS" or event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
 		ActionButton_UpdateUsable();
 		ActionButton_UpdateCooldown();
-		return;
-	end
-	if ( event == "CRAFT_SHOW" or event == "CRAFT_CLOSE" or event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" ) then
+	elseif ( event == "CRAFT_SHOW" or event == "CRAFT_CLOSE" or event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" ) then
 		ActionButton_UpdateState();
-		return;
-	end
-	if ( arg1 == "player" and (event == "UNIT_HEALTH" or event == "UNIT_MANA" or event == "UNIT_RAGE" or event == "UNIT_FOCUS" or event == "UNIT_ENERGY") ) then
-		ActionButton_UpdateUsable();
-		return;
-	end
-	if ( event == "PLAYER_ENTER_COMBAT" ) then
-		IN_ATTACK_MODE = 1;
+	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
 		if ( IsAttackAction(ActionButton_GetPagedID(this)) ) then
 			ActionButton_StartFlash();
 		end
-		return;
-	end
-	if ( event == "PLAYER_LEAVE_COMBAT" ) then
-		IN_ATTACK_MODE = nil;
+	elseif ( event == "PLAYER_LEAVE_COMBAT" ) then
 		if ( IsAttackAction(ActionButton_GetPagedID(this)) ) then
 			ActionButton_StopFlash();
 		end
-		return;
-	end
-	if ( event == "PLAYER_COMBO_POINTS" ) then
+	elseif ( event == "PLAYER_COMBO_POINTS" ) then
 		ActionButton_UpdateUsable();
-		return;
-	end
-	if ( event == "START_AUTOREPEAT_SPELL" ) then
-		IN_AUTOREPEAT_MODE = 1;
+	elseif ( event == "START_AUTOREPEAT_SPELL" ) then
 		if ( IsAutoRepeatAction(ActionButton_GetPagedID(this)) ) then
 			ActionButton_StartFlash();
 		end
-		return;
-	end
-	if ( event == "STOP_AUTOREPEAT_SPELL" ) then
-		IN_AUTOREPEAT_MODE = nil;
+	elseif ( event == "STOP_AUTOREPEAT_SPELL" ) then
 		if ( ActionButton_IsFlashing() and not IsAttackAction(ActionButton_GetPagedID(this)) ) then
 			ActionButton_StopFlash();
 		end
-		return;
 	end
 end
 
@@ -459,6 +422,15 @@ function ActionButton_GetPagedID(button)
 		return (button:GetID() + ((RIGHT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
 	else
 		return (button:GetID() + ((CURRENT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS))
+	end
+end
+
+function ActionButton_UpdateFlash()
+	local pagedID = ActionButton_GetPagedID(this);
+	if ( (IsAttackAction(pagedID) and IsCurrentAction(pagedID)) or IsAutoRepeatAction(pagedID) ) then
+		ActionButton_StartFlash();
+	else
+		ActionButton_StopFlash();
 	end
 end
 

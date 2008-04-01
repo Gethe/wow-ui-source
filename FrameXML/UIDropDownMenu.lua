@@ -235,21 +235,21 @@ function UIDropDownMenu_AddButton(info, level)
 	disabledText:ClearAllPoints();
 	if ( info.notCheckable ) then
 		if ( info.justifyH and info.justifyH == "CENTER" ) then
-			normalText:SetPoint("CENTER", button:GetName(), "CENTER", -7, 0);
-			highlightText:SetPoint("CENTER", button:GetName(), "CENTER", -7, 0);
-			disabledText:SetPoint("CENTER", button:GetName(), "CENTER", -7, 0);
+			normalText:SetPoint("CENTER", button, "CENTER", -7, 0);
+			highlightText:SetPoint("CENTER", button, "CENTER", -7, 0);
+			disabledText:SetPoint("CENTER", button, "CENTER", -7, 0);
 		else
-			normalText:SetPoint("LEFT", button:GetName(), "LEFT", 0, 0);
-			highlightText:SetPoint("LEFT", button:GetName(), "LEFT", 0, 0);
-			disabledText:SetPoint("LEFT", button:GetName(), "LEFT", 0, 0);
+			normalText:SetPoint("LEFT", button, "LEFT", 0, 0);
+			highlightText:SetPoint("LEFT", button, "LEFT", 0, 0);
+			disabledText:SetPoint("LEFT", button, "LEFT", 0, 0);
 		end
 		xPos = xPos + 10;
 		
 	else
 		xPos = xPos + 12;
-		normalText:SetPoint("LEFT", button:GetName(), "LEFT", 27, 0);
-		highlightText:SetPoint("LEFT", button:GetName(), "LEFT", 27, 0);
-		disabledText:SetPoint("LEFT", button:GetName(), "LEFT", 27, 0);
+		normalText:SetPoint("LEFT", button, "LEFT", 27, 0);
+		highlightText:SetPoint("LEFT", button, "LEFT", 27, 0);
+		disabledText:SetPoint("LEFT", button, "LEFT", 27, 0);
 	end
 
 	-- Adjust offset if displayMode is menu
@@ -265,7 +265,7 @@ function UIDropDownMenu_AddButton(info, level)
 		frame = getglobal(UIDROPDOWNMENU_INIT_MENU);
 	end
 
-	button:SetPoint("TOPLEFT", button:GetParent():GetName(), "TOPLEFT", xPos, yPos);
+	button:SetPoint("TOPLEFT", button:GetParent(), "TOPLEFT", xPos, yPos);
 
 	-- See if button is selected by id or name
 	if ( frame ) then
@@ -330,7 +330,7 @@ function UIDropDownMenu_AddButton(info, level)
 	button:Show();
 end
 
-function UIDropDownMenu_Refresh(frame, isCleared, useValue)
+function UIDropDownMenu_Refresh(frame, useValue)
 	local button, checked, checkImage;
 	if ( not frame ) then
 		frame = this;
@@ -357,7 +357,7 @@ function UIDropDownMenu_Refresh(frame, isCleared, useValue)
 
 		-- If checked show check image
 		checkImage = getglobal("DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."Check");
-		if ( checked and not isCleared ) then
+		if ( checked ) then
 			if ( useValue ) then
 				UIDropDownMenu_SetText(button.value, frame);
 			else
@@ -376,7 +376,7 @@ function UIDropDownMenu_SetSelectedName(frame, name, useValue)
 	frame.selectedName = name;
 	frame.selectedID = nil;
 	frame.selectedValue = nil;
-	UIDropDownMenu_Refresh(frame, nil, useValue);
+	UIDropDownMenu_Refresh(frame, useValue);
 end
 
 function UIDropDownMenu_SetSelectedValue(frame, value, useValue)
@@ -384,14 +384,14 @@ function UIDropDownMenu_SetSelectedValue(frame, value, useValue)
 	frame.selectedName = nil;
 	frame.selectedID = nil;
 	frame.selectedValue = value;
-	UIDropDownMenu_Refresh(frame, nil, useValue);
+	UIDropDownMenu_Refresh(frame, useValue);
 end
 
 function UIDropDownMenu_SetSelectedID(frame, id, useValue)
 	frame.selectedID = id;
 	frame.selectedName = nil;
 	frame.selectedValue = nil;
-	UIDropDownMenu_Refresh(frame, nil, useValue);
+	UIDropDownMenu_Refresh(frame, useValue);
 end
 
 function UIDropDownMenu_GetSelectedName(frame)
@@ -469,6 +469,15 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	if ( listFrame:IsVisible() and (UIDROPDOWNMENU_OPEN_MENU == tempFrame:GetName()) ) then
 		listFrame:Hide();
 	else
+		-- Set the dropdownframe scale
+		if ( GetCVar("useUiScale") == "1" and (tempFrame ~= WorldMapContinentDropDown and tempFrame ~= WorldMapZoneDropDown) ) then
+			local uiScale = GetCVar("uiscale") + 0;
+			listFrame:SetScale(uiScale);
+		else
+			-- Don't scale if these are the world map dropdowns, since they're fullscreen
+			listFrame:SetScale(1.0);
+		end
+		
 		-- Hide the listframe anyways since it is redrawn OnShow() 
 		listFrame:Hide();
 		
@@ -571,47 +580,55 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		if ( (y - listFrame:GetHeight()/2) < 0 ) then
 			offscreenY = 1;
 		end
-		if ( x + listFrame:GetWidth()/2 > GetScreenWidth() ) then
-			offscreenX = 1;		
+		if ( listFrame:GetRight() > GetScreenWidth() ) then
+			offscreenX = 1;	
 		end
 		
 		--  If level 1 can only go off the bottom of the screen
 		if ( level == 1 ) then
-			if ( offscreenY ) then
-				listFrame:ClearAllPoints();
-				if ( anchorName == "cursor" ) then
-					listFrame:SetPoint("BOTTOMLEFT", relativeTo, "BOTTOMLEFT", xOffset, yOffset);
-				else
-					listFrame:SetPoint("BOTTOMLEFT", relativeTo, "TOPLEFT", xOffset, -yOffset);
-				end
+			if ( offscreenY and offscreenX ) then
+				anchorPoint = "BOTTOMRIGHT";
+				relativePoint = "BOTTOMLEFT";
+			elseif ( offscreenY ) then
+				anchorPoint = "BOTTOMLEFT";
+				relativePoint = "TOPLEFT";
+			elseif ( offscreenX ) then
+				anchorPoint = "TOPRIGHT";
+				relativePoint = "TOPLEFT";
+			else
+				anchorPoint = "TOPLEFT";
+			end
+			
+			listFrame:ClearAllPoints();
+			if ( anchorName == "cursor" ) then
+				listFrame:SetPoint(anchorPoint, relativeTo, "BOTTOMLEFT", xOffset, yOffset);
+			else
+				listFrame:SetPoint(anchorPoint, relativeTo, relativePoint, xOffset, yOffset);
 			end
 		else
 			local anchorPoint, relativePoint, offsetX, offsetY;
-			if ( offscreenY ) then
-				if ( offscreenX ) then
-					anchorPoint = "BOTTOMRIGHT";
-					relativePoint = "BOTTOMLEFT";
-					offsetX = 0;
-					offsetY = -14;
-				else
-					anchorPoint = "BOTTOMLEFT";
-					relativePoint = "BOTTOMRIGHT";
-					offsetX = 0;
-					offsetY = -14;
-				end
+			if ( offscreenY and offscreenX ) then
+				anchorPoint = "BOTTOMRIGHT";
+				relativePoint = "BOTTOMLEFT";
+				offsetX = -11;
+				offsetY = -14;
+			elseif ( offscreenY ) then
+				anchorPoint = "BOTTOMLEFT";
+				relativePoint = "BOTTOMRIGHT";
+				offsetX = 0;
+				offsetY = -14;
+			elseif ( offscreenX ) then
+				anchorPoint = "TOPRIGHT";
+				relativePoint = "TOPLEFT";
+				offsetX = -11;
+				offsetY = 14;
 			else
-				if ( offscreenX ) then
-					anchorPoint = "TOPRIGHT";
-					relativePoint = "TOPLEFT";
-					offsetX = 0;
-					offsetY = 14;
-				else
-					anchorPoint = "TOPLEFT";
-					relativePoint = "TOPRIGHT";
-					offsetX = 0;
-					offsetY = 14;
-				end
+				anchorPoint = "TOPLEFT";
+				relativePoint = "TOPRIGHT";
+				offsetX = 0;
+				offsetY = 14;
 			end
+			
 			listFrame:ClearAllPoints();
 			listFrame:SetPoint(anchorPoint, anchorFrame, relativePoint, offsetX, offsetY);
 		end
@@ -668,11 +685,20 @@ function UIDropDownMenu_GetText(frame)
 end
 
 function UIDropDownMenu_ClearAll(frame)
-	UIDropDownMenu_SetSelectedID(frame, nil);
-	UIDropDownMenu_SetSelectedName(frame,nil);
-	UIDropDownMenu_SetSelectedValue(frame,nil);
+	-- Previous code refreshed the menu quite often and was a performance bottleneck
+	frame.selectedID = nil;
+	frame.selectedName = nil;
+	frame.selectedValue = nil;
 	UIDropDownMenu_SetText("", frame);
-	UIDropDownMenu_Refresh(frame, 1)
+
+	local button, checkImage;
+	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
+		button = getglobal("DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i);
+		button:UnlockHighlight();
+
+		checkImage = getglobal("DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."Check");
+		checkImage:Hide();
+	end
 end
 
 function UIDropDownMenu_JustifyText(justification, frame)

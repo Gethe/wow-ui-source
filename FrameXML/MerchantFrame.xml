@@ -52,17 +52,13 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						if ( IsShiftKeyDown() ) then
-							MerchantItemButton_OnShiftClick();
-						else
-							MerchantItemButton_OnClick(arg1);
-						end
+						MerchantItemButton_OnClick(arg1);
 					</OnClick>
 					<OnLoad>
 						MerchantItemButton_OnLoad();
 					</OnLoad>
 					<OnDragStart>
-						MerchantItemButton_OnClick("LeftButton");
+						MerchantItemButton_OnClick("LeftButton", 1);
 					</OnDragStart>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
@@ -79,11 +75,12 @@
 							ShoppingTooltip2:SetMerchantCompareItem(this:GetID(), 2);
 							ShoppingTooltip2:Show();
 						end
-						ShowMerchantSellCursor(this:GetID());
+						MerchantFrame.itemHover = this:GetID();
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 						ResetCursor();
+						MerchantFrame.itemHover = nil;
 					</OnLeave>
 					<OnHide>
 						if ( this.hasStackSplit == 1 ) then
@@ -331,7 +328,6 @@
 						GameTooltip:Hide();
 					</OnClick>
 				</Scripts>
-				<NormalTexture file=""/>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
@@ -369,7 +365,6 @@
 						end
 					</OnClick>
 				</Scripts>
-				<NormalTexture file=""/>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
@@ -571,6 +566,15 @@
 			<OnEvent>
 				MerchantFrame_OnEvent();
 			</OnEvent>
+			<OnUpdate>
+				if ( MerchantFrame.itemHover ) then
+					if ( IsControlKeyDown() ) then
+						ShowInspectCursor();
+					else
+						ShowMerchantSellCursor(MerchantFrame.itemHover);
+					end
+				end
+			</OnUpdate>
 			<OnMouseUp>
 				PickupMerchantItem(0);
 			</OnMouseUp>

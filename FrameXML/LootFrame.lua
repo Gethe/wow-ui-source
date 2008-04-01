@@ -143,11 +143,11 @@ function LootFrame_OnHide()
 end
 
 function LootFrameItem_OnClick(button)
-	if ( button == "LeftButton" ) then
-		if ( IsShiftKeyDown() ) then
-			if ( ChatFrameEditBox:IsVisible() ) then
-				ChatFrameEditBox:Insert(GetLootSlotLink(this.slot));
-			end
+	if ( IsControlKeyDown() ) then
+		DressUpItemLink(GetLootSlotLink(this.slot));
+	elseif ( IsShiftKeyDown() ) then
+		if ( ChatFrameEditBox:IsVisible() ) then
+			ChatFrameEditBox:Insert(GetLootSlotLink(this.slot));
 		end
 	end
 	LootFrame.selectedLootButton = this:GetName();

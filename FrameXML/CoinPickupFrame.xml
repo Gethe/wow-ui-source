@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CoinPickupFrame.lua"/>
-	<Frame name="CoinPickupFrame" frameStrata="HIGH" parent="UIParent" hidden="true" enableMouse="true" enableKeyboard="true">
+	<Frame name="CoinPickupFrame" frameStrata="HIGH" parent="UIParent" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
 		<Size>
 			<AbsDimension x="172" y="96"/>
 		</Size>
@@ -143,16 +143,12 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				this:Raise();
 				PlaySound("MONEYFRAMEOPEN");
 			</OnShow>
 			<OnHide>
 				CoinPickupFrame_OnHide();
 				PlaySound("MONEYFRAMECLOSE");
 			</OnHide>
-			<OnClick>
-				this:Raise();
-			</OnClick>
 			<OnChar>
 				CoinPickupFrame_OnChar();
 			</OnChar>

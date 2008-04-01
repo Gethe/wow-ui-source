@@ -342,35 +342,10 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("UPDATE_SHAPESHIFT_FORMS");
-				this:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
-				this:RegisterEvent("UPDATE_INVENTORY_ALERTS");
-				this:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-				this:RegisterEvent("SPELL_UPDATE_USABLE");
-				this:RegisterEvent("PLAYER_AURAS_CHANGED");
-				this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
-				this:RegisterEvent("UNIT_HEALTH");
-				this:RegisterEvent("UNIT_HEALTH");
-				this:RegisterEvent("UNIT_RAGE");
-				this:RegisterEvent("UNIT_FOCUS");
-				this:RegisterEvent("UNIT_ENERGY");
-				ShapeshiftBar_Update();
+				ShapeshiftBar_OnLoad();
 			</OnLoad>
 			<OnEvent>
-				if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
-					if ( GetBonusBarOffset() > 0 ) then
-						ShowBonusActionBar();
-					else
-						HideBonusActionBar();
-					end
-					return;
-				end
-				if ( arg1 == "player" and (event == "UNIT_HEALTH" or event == "UNIT_MANA" or event == "UNIT_RAGE" or event == "UNIT_FOCUS" or event == "UNIT_ENERGY") ) then
-					ShapeshiftBar_Update();
-					return;
-				end
-
-				ShapeshiftBar_Update();
+				ShapeshiftBar_OnEvent();
 			</OnEvent>
 		</Scripts>
 	</Frame>

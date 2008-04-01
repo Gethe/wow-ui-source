@@ -56,7 +56,7 @@ function InspectFrame_OnHide()
 end
 
 function InspectFrame_OnUpdate()
-	if ( not CheckInteractDistance(this.unit, 1) ) then
+	if ( not UnitExists("target") ) then
 		HideUIPanel(InspectFrame);
 	end
 end

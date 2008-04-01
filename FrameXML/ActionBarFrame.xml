@@ -6,9 +6,6 @@
 			<OnLoad>
 				ActionButton_OnLoad();
 			</OnLoad>
-			<OnShow>
-				ActionButton_Update();
-			</OnShow>
 			<OnEvent>
 				ActionButton_OnEvent(event);
 			</OnEvent>

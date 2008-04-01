@@ -12,7 +12,7 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	end,
 	timeout = 0,
 	whileDead = 1,
-	exclusive = 1
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["RENAME_GUILD"] = {
@@ -39,7 +39,8 @@ StaticPopupDialogs["RENAME_GUILD"] = {
 		getglobal(this:GetName().."EditBox"):SetText("");
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["HELP_TICKET_QUEUE_DISABLED"] = {
@@ -57,6 +58,7 @@ StaticPopupDialogs["CONFIRM_LEAVE_QUEUE"] = {
 		CancelMeetingStoneRequest();
 	end,
 	timeout = 0,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["CLIENT_RESTART_ALERT"] = {
@@ -86,6 +88,7 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	end,
 	showAlert = 1,
 	timeout = 0,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["CANCEL_AUCTION"] = {
@@ -107,6 +110,7 @@ StaticPopupDialogs["CANCEL_AUCTION"] = {
 	hasMoneyFrame = 1,
 	showAlert = 1,
 	timeout = 0,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["MEMORY_EXHAUSTED"] = {
@@ -123,6 +127,7 @@ StaticPopupDialogs["COD_ALERT"] = {
 	text = TEXT(COD_INSUFFICIENT_MONEY),
 	button1 = TEXT(CLOSE),
 	timeout = 0,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["COD_CONFIRMATION"] = {
@@ -137,6 +142,7 @@ StaticPopupDialogs["COD_CONFIRMATION"] = {
 	end,
 	hasMoneyFrame = 1,
 	timeout = 0,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["BUYOUT_AUCTION"] = {
@@ -152,6 +158,7 @@ StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	hasMoneyFrame = 1,
 	showAlert = 1,
 	timeout = 0,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["DELETE_MAIL"] = {
@@ -165,6 +172,7 @@ StaticPopupDialogs["DELETE_MAIL"] = {
 	end,
 	showAlert = 1,
 	timeout = 0,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["DELETE_MONEY"] = {
@@ -182,6 +190,7 @@ StaticPopupDialogs["DELETE_MONEY"] = {
 	hasMoneyFrame = 1,
 	showAlert = 1,
 	timeout = 0,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["SEND_MONEY"] = {
@@ -201,6 +210,7 @@ StaticPopupDialogs["SEND_MONEY"] = {
 	end,
 	hasMoneyFrame = 1,
 	timeout = 0,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["JOIN_CHANNEL"] = {
@@ -223,7 +233,8 @@ StaticPopupDialogs["JOIN_CHANNEL"] = {
 		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
 		getglobal(this:GetParent():GetName().."EditBox"):SetText("");
 		this:GetParent():Hide();
-	end
+	end,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["NAME_CHAT"] = {
@@ -257,7 +268,8 @@ StaticPopupDialogs["NAME_CHAT"] = {
 	end,
 	EditBoxOnEscapePressed = function ()
 		this:GetParent():Hide();
-	end
+	end,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["HELP_TICKET_ABANDON_CONFIRM"] = {
@@ -270,7 +282,8 @@ StaticPopupDialogs["HELP_TICKET_ABANDON_CONFIRM"] = {
 	OnCancel = function(prevFrame)
 	end,
 	timeout = 0,
-	whileDead = 1
+	whileDead = 1,
+	hideOnEscape = 1
 }
 StaticPopupDialogs["HELP_TICKET"] = {
 	text = TEXT(HELP_TICKET_EDIT_ABANDON),
@@ -291,7 +304,7 @@ StaticPopupDialogs["HELP_TICKET"] = {
 		dialogFrame.data = currentFrame;
 	end,
 	timeout = 0,
-	whileDead = 1;
+	whileDead = 1
 }
 StaticPopupDialogs["PETRENAMECONFIRM"] = {
 	text = TEXT(PET_RENAME_CONFIRMATION),
@@ -300,7 +313,8 @@ StaticPopupDialogs["PETRENAMECONFIRM"] = {
 	OnAccept = function()
 		PetRename(this:GetParent().data);
 	end,
-	timeout = 0
+	timeout = 0,
+	hideOnEscape = 1
 }
 StaticPopupDialogs["DEATH"] = {
 	text = TEXT(DEATH_RELEASE_TIMER),
@@ -362,7 +376,8 @@ StaticPopupDialogs["RESURRECT"] = {
 	whileDead = 1,
 	cancels = "DEATH",
 	interruptCinematic = 1,
-	notClosableByLogout = 1
+	notClosableByLogout = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	StartDelay = GetCorpseRecoveryDelay,
@@ -386,7 +401,8 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	whileDead = 1,
 	cancels = "DEATH",
 	interruptCinematic = 1,
-	notClosableByLogout = 1
+	notClosableByLogout = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	text = TEXT(RESURRECT_REQUEST_NO_SICKNESS),
@@ -408,7 +424,8 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	whileDead = 1,
 	cancels = "DEATH",
 	interruptCinematic = 1,
-	notClosableByLogout = 1
+	notClosableByLogout = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["SKINNED"] = {
 	text = TEXT(DEATH_CORPSE_SKINNED),
@@ -431,7 +448,8 @@ StaticPopupDialogs["SKINNED_REPOP"] = {
 	timeout = 0,
 	whileDead = 1,
 	interruptCinematic = 1,
-	notClosableByLogout = 1,	
+	notClosableByLogout = 1,
+	hideOnEscape = 1	
 };
 StaticPopupDialogs["TRADE"] = {
 	text = TEXT(TRADE_WITH_QUESTION),
@@ -443,7 +461,8 @@ StaticPopupDialogs["TRADE"] = {
 	OnCancel = function()
 		CancelTrade();
 	end,
-	timeout = 60
+	timeout = 60,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["PARTY_INVITE"] = {
 	text = TEXT(INVITATION),
@@ -466,7 +485,8 @@ StaticPopupDialogs["PARTY_INVITE"] = {
 		end
 	end,
 	timeout = 60,
-	whileDead = 1
+	whileDead = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["GUILD_INVITE"] = {
 	text = TEXT(GUILD_INVITATION),
@@ -479,7 +499,8 @@ StaticPopupDialogs["GUILD_INVITE"] = {
 		DeclineGuild();
 	end,
 	timeout = 60,
-	whileDead = 1
+	whileDead = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["CAMP"] = {
 	text = TEXT(CAMP_TIMER),
@@ -526,7 +547,9 @@ StaticPopupDialogs["LOOT_BIND"] = {
 		LootSlot(slot);
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["EQUIP_BIND"] = {
 	text = TEXT(EQUIP_NO_DROP),
@@ -543,7 +566,8 @@ StaticPopupDialogs["EQUIP_BIND"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	whileDead = 1
+	whileDead = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["AUTOEQUIP_BIND"] = {
 	text = TEXT(EQUIP_NO_DROP),
@@ -560,7 +584,8 @@ StaticPopupDialogs["AUTOEQUIP_BIND"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	whileDead = 1
+	whileDead = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["USE_BIND"] = {
 	text = TEXT(USE_NO_DROP),
@@ -570,7 +595,8 @@ StaticPopupDialogs["USE_BIND"] = {
 		ConfirmBindOnUse();
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["DELETE_ITEM"] = {
 	text = TEXT(DELETE_ITEM),
@@ -580,8 +606,10 @@ StaticPopupDialogs["DELETE_ITEM"] = {
 		DeleteCursorItem();
 	end,
 	timeout = 0,
+	whileDead = 1,
 	exclusive = 1,
-	showAlert = 1
+	showAlert = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["QUEST_ACCEPT"] = {
 	text = TEXT(QUEST_ACCEPT),
@@ -591,7 +619,8 @@ StaticPopupDialogs["QUEST_ACCEPT"] = {
 		ConfirmAcceptQuest();
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["ABANDON_PET"] = {
 	text = TEXT(ABANDON_PET),
@@ -601,7 +630,8 @@ StaticPopupDialogs["ABANDON_PET"] = {
 		PetAbandon();
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["ABANDON_QUEST"] = {
 	text = TEXT(ABANDON_QUEST_CONFIRM),
@@ -613,7 +643,8 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	end,
 	timeout = 0,
 	whileDead = 1,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["ADD_FRIEND"] = {
 	text = TEXT(ADD_FRIEND_LABEL),
@@ -644,7 +675,8 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	whileDead = 1
+	whileDead = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["ADD_IGNORE"] = {
 	text = TEXT(ADD_IGNORE_LABEL),
@@ -675,7 +707,8 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	whileDead = 1
+	whileDead = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	text = TEXT(ADD_GUILDMEMBER_LABEL),
@@ -705,7 +738,8 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 		this:GetParent():Hide();
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["ADD_RAIDMEMBER"] = {
 	text = TEXT(ADD_RAIDMEMBER_LABEL),
@@ -735,7 +769,8 @@ StaticPopupDialogs["ADD_RAIDMEMBER"] = {
 		this:GetParent():Hide();
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	text = format(TEXT(REMOVE_GUILDMEMBER_LABEL), "XXX"),
@@ -748,7 +783,8 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 		getglobal(this:GetName().."Text"):SetText(format(TEXT(REMOVE_GUILDMEMBER_LABEL), GuildFrame.selectedName));
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["ADD_GUILDRANK"] = {
 	text = TEXT(ADD_GUILDRANK_LABEL),
@@ -790,7 +826,8 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 		this:GetParent():Hide();
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["SET_GUILDMOTD"] = {
 	text = TEXT(SET_GUILDMOTD_LABEL),
@@ -822,7 +859,8 @@ StaticPopupDialogs["SET_GUILDMOTD"] = {
 		this:GetParent():Hide();
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 	text = TEXT(SET_GUILDPLAYERNOTE_LABEL),
@@ -857,7 +895,8 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 		this:GetParent():Hide();
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 	text = TEXT(SET_GUILDOFFICERNOTE_LABEL),
@@ -892,7 +931,8 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 		this:GetParent():Hide();
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["RENAME_PET"] = {
 	text = TEXT(PET_RENAME_LABEL),
@@ -924,7 +964,8 @@ StaticPopupDialogs["RENAME_PET"] = {
 		getglobal(this:GetName().."EditBox"):SetText("");
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["DUEL_REQUESTED"] = {
 	text = TEXT(DUEL_REQUESTED),
@@ -938,6 +979,7 @@ StaticPopupDialogs["DUEL_REQUESTED"] = {
 		CancelDuel();
 	end,
 	timeout = 60,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["DUEL_OUTOFBOUNDS"] = {
 	text = TEXT(DUEL_OUTOFBOUNDS_TIMER),
@@ -953,7 +995,8 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	timeout = 60,
 	exclusive = 1,
 	whileDead = 1,
-	showAlert = 1
+	showAlert = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["XP_LOSS"] = {
 	text = TEXT(CONFIRM_XP_LOSS),
@@ -976,7 +1019,8 @@ StaticPopupDialogs["XP_LOSS"] = {
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-	showAlert = 1
+	showAlert = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["XP_LOSS_NO_SICKNESS"] = {
 	text = TEXT(CONFIRM_XP_LOSS_NO_SICKNESS),
@@ -999,7 +1043,8 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS"] = {
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-	showAlert = 1
+	showAlert = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["RECOVER_CORPSE"] = {
 	StartDelay = GetCorpseRecoveryDelay,
@@ -1022,6 +1067,7 @@ StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1
 };
+--[[ The old version of the dialog... the new one auto-accepts for you.
 StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 	text = TEXT(AREA_SPIRIT_HEAL),
 	button1 = TEXT(ACCEPT),
@@ -1038,7 +1084,37 @@ StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 	timeout = 0,
 	whileDead = 1,
 	interruptCinematic = 1,
-	notClosableByLogout = 1
+	notClosableByLogout = 1,
+	hideOnEscape = 1
+};
+]]
+StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
+	text = TEXT(AREA_SPIRIT_HEAL),
+	button1 = TEXT(CANCEL),
+	OnShow = function()
+		this.timeleft = GetAreaSpiritHealerTime();
+		AcceptAreaSpiritHeal();
+	end,
+	OnAccept = function()
+		CancelAreaSpiritHeal();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	interruptCinematic = 1,
+	notClosableByLogout = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["BIND_ENCHANT"] = {
+	text = TEXT(BIND_ENCHANT),
+	button1 = TEXT(OKAY),
+	button2 = TEXT(CANCEL),
+	OnAccept = function()
+		BindEnchant();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["REPLACE_ENCHANT"] = {
 	text = TEXT(REPLACE_ENCHANT),
@@ -1049,7 +1125,8 @@ StaticPopupDialogs["REPLACE_ENCHANT"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	showAlert = 1
+	showAlert = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["TRADE_REPLACE_ENCHANT"] = {
 	text = TEXT(REPLACE_ENCHANT),
@@ -1060,7 +1137,8 @@ StaticPopupDialogs["TRADE_REPLACE_ENCHANT"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	showAlert = 1
+	showAlert = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["INSTANCE_BOOT"] = {
 	text = TEXT(INSTANCE_BOOT_TIMER),
@@ -1086,6 +1164,38 @@ StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
 	end,
 	hasMoneyFrame = 1,
 	timeout = 0,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["CONFIRM_PET_UNLEARN"] = {
+	text = TEXT(CONFIRM_PET_UNLEARN),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	OnAccept = function()
+		ConfirmPetUnlearn();
+	end,
+	OnUpdate = function(elapsed)
+		if ( not CheckPetUntrainerDist() ) then
+			this:Hide();
+		end
+	end,
+	hasMoneyFrame = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["CONFIRM_BINDER"] = {
+	text = TEXT(CONFIRM_BINDER),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	OnAccept = function()
+		ConfirmBinder();
+	end,
+	OnUpdate = function(elapsed)
+		if ( not CheckBinderDist() ) then
+			this:Hide();
+		end
+	end,
+	timeout = 0,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	text = TEXT(CONFIRM_SUMMON);
@@ -1107,10 +1217,17 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	end,
 	timeout = 0,
 	interruptCinematic = 1,
-	notClosableByLogout = 1
+	notClosableByLogout = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["BILLING_NAG"] = {
 	text = TEXT(BILLING_NAG_DIALOG);
+	button1 = TEXT(OKAY),
+	timeout = 0,
+	showAlert = 1
+};
+StaticPopupDialogs["IGR_BILLING_NAG"] = {
+	text = TEXT(IGR_BILLING_NAG_DIALOG);
 	button1 = TEXT(OKAY),
 	timeout = 0,
 	showAlert = 1
@@ -1119,12 +1236,13 @@ StaticPopupDialogs["CONFIRM_LOOT_ROLL"] = {
 	text = TEXT(LOOT_NO_DROP),
 	button1 = TEXT(OKAY),
 	button2 = TEXT(CANCEL),
-	OnAccept = function(id)
-		ConfirmLootRoll(id);
+	OnAccept = function(id, rollType)
+		ConfirmLootRoll(id, rollType);
 	end,
 	timeout = 0,
 	whileDead = 1,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 	text = TEXT(ENTER_CODE),
@@ -1153,13 +1271,14 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 		this:GetParent():Hide();
 	end,
 	timeout = 0,
-	exclusive = 1
+	exclusive = 1,
+	hideOnEscape = 1
 };
 
 function StaticPopup_FindVisible(which)
 	for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 		local frame = getglobal("StaticPopup"..index);
-		if ( frame:IsVisible() and (frame.which == which) ) then
+		if ( frame:IsShown() and (frame.which == which) ) then
 			return frame;
 		end
 	end
@@ -1202,7 +1321,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 	if ( info.exclusive ) then
 		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 			local frame = getglobal("StaticPopup"..index);
-			if ( frame:IsVisible() and StaticPopupDialogs[frame.which].exclusive ) then
+			if ( frame:IsShown() and StaticPopupDialogs[frame.which].exclusive ) then
 				frame:Hide();
 				local OnCancel = StaticPopupDialogs[frame.which].OnCancel;
 				if ( OnCancel ) then
@@ -1216,7 +1335,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 	if ( info.cancels ) then
 		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 			local frame = getglobal("StaticPopup"..index);
-			if ( frame:IsVisible() and (frame.which == info.cancels) ) then
+			if ( frame:IsShown() and (frame.which == info.cancels) ) then
 				frame:Hide();
 				local OnCancel = StaticPopupDialogs[frame.which].OnCancel;
 				if ( OnCancel ) then
@@ -1229,7 +1348,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 	if ( (which == "CAMP") or (which == "QUIT") ) then
 		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 			local frame = getglobal("StaticPopup"..index);
-			if ( frame:IsVisible() and not StaticPopupDialogs[frame.which].notClosableByLogout ) then
+			if ( frame:IsShown() and not StaticPopupDialogs[frame.which].notClosableByLogout ) then
 				frame:Hide();
 				local OnCancel = StaticPopupDialogs[frame.which].OnCancel;
 				if ( OnCancel ) then
@@ -1242,7 +1361,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 	if ( which == "DEATH" ) then
 		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 			local frame = getglobal("StaticPopup"..index);
-			if ( frame:IsVisible() and not StaticPopupDialogs[frame.which].whileDead ) then
+			if ( frame:IsShown() and not StaticPopupDialogs[frame.which].whileDead ) then
 				frame:Hide();
 				local OnCancel = StaticPopupDialogs[frame.which].OnCancel;
 				if ( OnCancel ) then
@@ -1269,7 +1388,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 		-- Find a free dialog
 		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 			local frame = getglobal("StaticPopup"..index);
-			if ( not frame:IsVisible() ) then
+			if ( not frame:IsShown() ) then
 				dialog = frame;
 				break;
 			end
@@ -1367,14 +1486,14 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 		button1:ClearAllPoints();
 		button2:ClearAllPoints();
 		if ( StaticPopupDialogs[which].hasEditBox ) then
-			button1:SetPoint("TOPRIGHT", editBox:GetName(), "BOTTOM", -6, -8);
-			button2:SetPoint("LEFT", button1:GetName(), "RIGHT", 13, 0);
+			button1:SetPoint("TOPRIGHT", editBox, "BOTTOM", -6, -8);
+			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 		elseif ( StaticPopupDialogs[which].hasMoneyFrame ) then
-			button1:SetPoint("TOPRIGHT", text:GetName(), "BOTTOM", -6, -24);
-			button2:SetPoint("LEFT", button1:GetName(), "RIGHT", 13, 0);
+			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -24);
+			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 		else
-			button1:SetPoint("TOPRIGHT", text:GetName(), "BOTTOM", -6, -8);
-			button2:SetPoint("LEFT", button1:GetName(), "RIGHT", 13, 0);
+			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -8);
+			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 		end
 		button2:SetText(StaticPopupDialogs[which].button2);
 		local width = button2:GetTextWidth();
@@ -1386,7 +1505,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 		button2:Show();
 	else
 		button1:ClearAllPoints();
-		button1:SetPoint("TOP", text:GetName(), "BOTTOM", 0, -8);
+		button1:SetPoint("TOP", text, "BOTTOM", 0, -8);
 		button2:Hide();
 	end
 	if ( StaticPopupDialogs[which].button1 ) then
@@ -1437,20 +1556,20 @@ function StaticPopup_Hide(which)
 	end
 end
 
-function StaticPopup_OnUpdate(elapsed)
-	if ( this.timeleft > 0 ) then
-		local which = this.which;
-		local timeleft = this.timeleft - elapsed;
+function StaticPopup_OnUpdate(dialog, elapsed)
+	if ( dialog.timeleft > 0 ) then
+		local which = dialog.which;
+		local timeleft = dialog.timeleft - elapsed;
 		if ( timeleft <= 0 ) then
-			this.timeleft = 0;
+			dialog.timeleft = 0;
 			local OnCancel = StaticPopupDialogs[which].OnCancel;
 			if ( OnCancel ) then
-				OnCancel(this.data, "timeout");
+				OnCancel(dialog.data, "timeout");
 			end
-			this:Hide();
+			dialog:Hide();
 			return;
 		end
-		this.timeleft = timeleft;
+		dialog.timeleft = timeleft;
 
 		if ( (which == "DEATH") or
 		     (which == "CAMP")  or
@@ -1459,7 +1578,7 @@ function StaticPopup_OnUpdate(elapsed)
 			 (which == "INSTANCE_BOOT") or
 			 (which == "CONFIRM_SUMMON") or
 			 (which == "AREA_SPIRIT_HEAL") ) then
-			local text = getglobal(this:GetName().."Text");
+			local text = getglobal(dialog:GetName().."Text");
 			local hasText = nil;
 			if ( text:GetText() ~= " " ) then
 				hasText = 1;
@@ -1485,26 +1604,26 @@ function StaticPopup_OnUpdate(elapsed)
 				end
 			end
 			if ( not hasText ) then
-				StaticPopup_Resize(this, which);
+				StaticPopup_Resize(dialog, which);
 			end
 		end
 	end
-	if ( this.startDelay ) then
-		local which = this.which;
-		local timeleft = this.startDelay - elapsed;
+	if ( dialog.startDelay ) then
+		local which = dialog.which;
+		local timeleft = dialog.startDelay - elapsed;
 		if ( timeleft <= 0 ) then
-			this.startDelay = nil;
-			local text = getglobal(this:GetName().."Text");
+			dialog.startDelay = nil;
+			local text = getglobal(dialog:GetName().."Text");
 			text:SetText(format(StaticPopupDialogs[which].text, text.text_arg1, text.text_arg2));
-			local button1 = getglobal(this:GetName().."Button1");
+			local button1 = getglobal(dialog:GetName().."Button1");
 			button1:Enable();
-			StaticPopup_Resize(this, which);
+			StaticPopup_Resize(dialog, which);
 			return;
 		end
-		this.startDelay = timeleft;
+		dialog.startDelay = timeleft;
 
 		if ( which == "RECOVER_CORPSE" or (which == "RESURRECT") or (which == "RESURRECT_NO_SICKNESS") ) then
-			local text = getglobal(this:GetName().."Text");
+			local text = getglobal(dialog:GetName().."Text");
 			local hasText = nil;
 			if ( text:GetText() ~= " " ) then
 				hasText = 1;
@@ -1524,12 +1643,12 @@ function StaticPopup_OnUpdate(elapsed)
 				end
 			end
 			if ( not hasText ) then
-				StaticPopup_Resize(this, which);
+				StaticPopup_Resize(dialog, which);
 			end
 		end
 	end
 
-	local onUpdate = StaticPopupDialogs[this.which].OnUpdate;
+	local onUpdate = StaticPopupDialogs[dialog.which].OnUpdate;
 	if ( onUpdate ) then
 		onUpdate(elapsed);
 	end
@@ -1569,11 +1688,12 @@ function StaticPopup_OnHide()
 end
 
 function StaticPopup_OnClick(dialog, index)
+	local which = dialog.which;
 	local dontHide = nil;
 	if ( index == 1 ) then
 		local OnAccept = StaticPopupDialogs[dialog.which].OnAccept;
 		if ( OnAccept ) then
-			dontHide = OnAccept(dialog.data);
+			dontHide = OnAccept(dialog.data, dialog.data2);
 		end
 	else
 		local OnCancel = StaticPopupDialogs[dialog.which].OnCancel;
@@ -1582,7 +1702,7 @@ function StaticPopup_OnClick(dialog, index)
 		end
 	end
 
-	if ( not dontHide ) then
+	if ( not dontHide and (which == dialog.which) ) then
 		dialog:Hide();
 	end
 end
@@ -1590,7 +1710,7 @@ end
 function StaticPopup_Visible(which)
 	for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 		local frame = getglobal("StaticPopup"..index);
-		if( frame:IsVisible() and (frame.which == which) ) then 
+		if( frame:IsShown() and (frame.which == which) ) then 
 			return frame:GetName();
 		end
 	end
@@ -1601,7 +1721,11 @@ function StaticPopup_EscapePressed()
 	local closed = nil;
 	for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 		local frame = getglobal("StaticPopup"..index);
-		if( frame:IsVisible() and frame.hideOnEscape ) then 
+		if( frame:IsShown() and frame.hideOnEscape ) then 
+			local OnCancel = StaticPopupDialogs[frame.which].OnCancel;
+			if ( OnCancel ) then
+				OnCancel(frame.data, "clicked");
+			end
 			frame:Hide();
 			closed = 1;
 		end

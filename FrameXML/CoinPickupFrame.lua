@@ -45,7 +45,7 @@ function OpenCoinPickupFrame(multiplier, maxMoney, parent)
 		CoinPickupGoldIcon:Hide();
 	end
 
-	CoinPickupFrame:SetPoint("BOTTOMRIGHT", parent:GetName(), "TOPRIGHT", 0, 0);
+	CoinPickupFrame:SetPoint("BOTTOMRIGHT", parent, "TOPRIGHT", 0, 0);
 	CoinPickupFrame:Show();
 	PlaySound("igBackPackCoinSelect");
 end

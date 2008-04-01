@@ -52,8 +52,10 @@ function TradeSkillFrame_OnEvent()
 		TradeSkillFrame_Update();
 	elseif ( event == "TRADE_SKILL_CLOSE" ) then
 		HideUIPanel(this);
-	elseif ( event == "UNIT_PORTRAIT_UPDATE" and arg1 == "player" ) then
-		SetPortraitTexture(TradeSkillFramePortrait, "player");
+	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		if ( arg1 == "player" ) then
+			SetPortraitTexture(TradeSkillFramePortrait, "player");
+		end
 	elseif ( event == "UPDATE_TRADESKILL_RECAST" ) then
 		TradeSkillInputBox:SetNumber(GetTradeskillRepeatCount());
 	end
@@ -241,7 +243,7 @@ function TradeSkillFrame_SetSelection(id)
 				SetItemButtonTextureVertexColor(reagent, 1.0, 1.0, 1.0);
 				name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			end
-			if ( playerReagentCount > 100 ) then
+			if ( playerReagentCount >= 100 ) then
 				playerReagentCount = "*";
 			end
 			count:SetText(playerReagentCount.." /"..reagentCount);

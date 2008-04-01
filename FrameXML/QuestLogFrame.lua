@@ -51,7 +51,7 @@ function QuestLog_OnEvent(event)
 		QuestLog_Update();
 		QuestWatch_Update();
 		if ( QuestLogFrame:IsVisible() ) then
-			QuestLog_UpdateQuestDetails();
+			QuestLog_UpdateQuestDetails(1);
 		end
 	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
 		-- Determine whether the selected quest is pushable or not
@@ -186,7 +186,7 @@ function QuestLog_Update()
 				-- If there's quest tag position check accordingly
 				questCheck:Hide();
 				if ( IsQuestWatched(questIndex) ) then
-					questCheck:SetPoint("LEFT", questLogTitle:GetName(), "LEFT", tempWidth+24, 0);
+					questCheck:SetPoint("LEFT", questLogTitle, "LEFT", tempWidth+24, 0);
 					questCheck:Show();
 				end
 			else
@@ -199,7 +199,7 @@ function QuestLog_Update()
 				-- Show check if quest is being watched
 				questCheck:Hide();
 				if ( IsQuestWatched(questIndex) ) then
-					questCheck:SetPoint("LEFT", questLogTitle:GetName(), "LEFT", QuestLogDummyText:GetWidth()+24, 0);
+					questCheck:SetPoint("LEFT", questLogTitle, "LEFT", QuestLogDummyText:GetWidth()+24, 0);
 					questCheck:Show();
 				end
 			end
@@ -315,7 +315,7 @@ function QuestLog_SetSelection(questID)
 	QuestLog_UpdateQuestDetails();
 end
 
-function QuestLog_UpdateQuestDetails()
+function QuestLog_UpdateQuestDetails(doNotScroll)
 	local questID = GetQuestLogSelection();
 	local questTitle = GetQuestLogTitle(questID);
 	if ( not questTitle ) then
@@ -423,7 +423,9 @@ function QuestLog_UpdateQuestDetails()
 	end
 
 	QuestFrameItems_Update("QuestLog");
-	QuestLogDetailScrollFrameScrollBar:SetValue(0);
+	if ( not doNotScroll ) then
+		QuestLogDetailScrollFrameScrollBar:SetValue(0);
+	end
 	QuestLogDetailScrollFrame:UpdateScrollChildRect();
 end
 
@@ -432,41 +434,44 @@ function QuestFrame_SetAsLastShown(frame, spacerFrame)
 	if ( not spacerFrame ) then
 		spacerFrame = QuestLogSpacerFrame;
 	end
-	spacerFrame:SetPoint("TOP", frame:GetName(), "BOTTOM", 0, 0);
+	spacerFrame:SetPoint("TOP", frame, "BOTTOM", 0, 0);
 end
 
 function QuestLogTitleButton_OnClick(button)
-	if ( button == "LeftButton" ) then
-		local questName = this:GetText();
-		local questIndex = this:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
-		if ( IsShiftKeyDown() ) then
-			if ( ChatFrameEditBox:IsVisible() ) then
-				-- Trim leading whitespace
-				ChatFrameEditBox:Insert(gsub(this:GetText(), " *(.*)", "%1"));
+	local questName = this:GetText();
+	local questIndex = this:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
+	if ( IsShiftKeyDown() ) then
+		-- If header then return
+		if ( this.isHeader ) then
+			return;
+		end
+		-- Otherwise try to track it or put it into chat
+		if ( ChatFrameEditBox:IsVisible() ) then
+			-- Trim leading whitespace
+			ChatFrameEditBox:Insert(gsub(this:GetText(), " *(.*)", "%1"));
+		else
+			-- Shift-click toggles quest-watch on this quest.
+			if ( IsQuestWatched(questIndex) ) then
+				RemoveQuestWatch(questIndex);
+				QuestWatch_Update();
 			else
-				-- Shift-click toggles quest-watch on this quest.
-				if ( IsQuestWatched(questIndex) ) then
-					RemoveQuestWatch(questIndex);
-					QuestWatch_Update();
-				else
-					-- Set error if no objectives
-					if ( GetNumQuestLeaderBoards(questIndex) == 0 ) then
-						UIErrorsFrame:AddMessage(QUEST_WATCH_NO_OBJECTIVES, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
-						return;
-					end
-					-- Set an error message if trying to show too many quests
-					if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then
-						UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
-						return;
-					end
-					AddQuestWatch(questIndex);
-					QuestWatch_Update();
+				-- Set error if no objectives
+				if ( GetNumQuestLeaderBoards(questIndex) == 0 ) then
+					UIErrorsFrame:AddMessage(QUEST_WATCH_NO_OBJECTIVES, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+					return;
 				end
+				-- Set an error message if trying to show too many quests
+				if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then
+					UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+					return;
+				end
+				AddQuestWatch(questIndex);
+				QuestWatch_Update();
 			end
 		end
-		QuestLog_SetSelection(questIndex)
-		QuestLog_Update();
 	end
+	QuestLog_SetSelection(questIndex)
+	QuestLog_Update();
 end
 
 function QuestLogTitleButton_OnEnter()
@@ -507,7 +512,9 @@ function QuestLog_UpdatePartyInfoTooltip()
 end
 
 function QuestLogRewardItem_OnClick()
-	if ( IsShiftKeyDown() and this.rewardType ~= "spell" ) then
+	if ( IsControlKeyDown() and this.rewardType ~= "spell" ) then
+		DressUpItemLink(GetQuestLogItemLink(this.type, this:GetID()));
+	elseif ( IsShiftKeyDown() and this.rewardType ~= "spell" ) then
 		if ( ChatFrameEditBox:IsVisible() ) then
 			ChatFrameEditBox:Insert(GetQuestLogItemLink(this.type, this:GetID()));
 		end

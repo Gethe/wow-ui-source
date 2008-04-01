@@ -515,7 +515,7 @@ function SendMailFrame_SendeeAutocomplete()
 	end
 
 	-- No match, check your guild list
-	numFriends = GetNumGuildMembers();
+	numFriends = GetNumGuildMembers(true);	-- true to include offline members
 	if ( numFriends > 0 ) then
 		for i=1, numFriends do
 			name = GetGuildRosterInfo(i);

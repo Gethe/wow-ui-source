@@ -33,17 +33,23 @@
 		<Scripts>
 			<OnLoad>
 				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				this.hasItem = 1;
 			</OnLoad>
 			<OnEnter>
 				local slot = ((LOOTFRAME_NUMBUTTONS - 1) * (LootFrame.page - 1)) + this:GetID();
 				if ( LootSlotIsItem(slot) ) then
 					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 					GameTooltip:SetLootItem(slot);
+					CursorUpdate();
 				end
-            		</OnEnter>
+            </OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
-            		</OnLeave>
+				ResetCursor();
+            </OnLeave>
+			<OnUpdate>
+				CursorOnUpdate();
+			</OnUpdate>
 			<OnClick>
 				LootFrameItem_OnClick(arg1);
 			</OnClick>
@@ -224,7 +230,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="GroupLootDropDown" inherits="UIDropDownMenuTemplate" id="1">
+	<Frame name="GroupLootDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
@@ -236,7 +242,7 @@
 	</Frame>
 	<Frame name="GroupLootFrameTemplate" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
 		<Size>
-			<AbsDimension x="218" y="84"/>
+			<AbsDimension x="243" y="84"/>
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -277,6 +283,20 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-6" y="-7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentIconFrame" enableMouse="true">
@@ -303,15 +323,44 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad>
+						--this.hasItem = 1;
+					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 						GameTooltip:SetLootRollItem(this:GetParent().rollID);
+						--CursorUpdate();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+						--ResetCursor();
+					</OnLeave>
+					<OnUpdate>
+						--CursorOnUpdate();
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+			<Button inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentCorner" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="5" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RollOnLoot(this:GetParent().rollID, 0);
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(PASS);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
-			</Frame>
+			</Button>
 			<Button name="$parentRollButton">
 				<Size>
 					<AbsDimension x="32" y="32"/>
@@ -319,7 +368,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="-14"/>
+							<AbsDimension x="-37" y="-14"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -327,30 +376,44 @@
 					<OnClick>
 						RollOnLoot(this:GetParent().rollID, 1);
 					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(NEED);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
 				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Dice-Highlight" alphaMode="ADD"/>
 				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Dice-Down"/>
 			</Button>
-			<Button name="$parentCancelButton">
+			<Button name="$parentGreedButton">
 				<Size>
 					<AbsDimension x="32" y="32"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentRollButton" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="0" y="5"/>
+							<AbsDimension x="-2" y="2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						RollOnLoot(this:GetParent().rollID, nil);
+						RollOnLoot(this:GetParent().rollID, 2);
 					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(GREED);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up"/>
-				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Pass-Highlight" alphaMode="ADD"/>
-				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Pass-Down"/>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Coin-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Coin-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Coin-Down"/>
 			</Button>
 			<StatusBar name="$parentTimer" drawLayer="BACKGROUND" minValue="0" maxValue="60000" defaultValue="0">
 				<Size>

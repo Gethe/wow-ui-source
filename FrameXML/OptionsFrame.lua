@@ -446,6 +446,9 @@ function OptionsFrame_SetDefaults()
 	--OptionsFrameResolutionDropDown_Initialize();
 	UIDropDownMenu_Initialize(OptionsFrameResolutionDropDown, OptionsFrameResolutionDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(OptionsFrameResolutionDropDown, "1024x768");
+
+	-- Update video settings
+	RestoreVideoDefaults();
 end
 
 function OptionsFrame_DisableCheckBox(checkBox)

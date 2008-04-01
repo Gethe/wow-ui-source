@@ -19,7 +19,7 @@ function OpenStackSplitFrame(maxStack, parent, anchor, anchorTo)
 	StackSplitRightButton:Enable();
 
 	StackSplitFrame:ClearAllPoints();
-	StackSplitFrame:SetPoint(anchor, parent:GetName(), anchorTo, 0, 0);
+	StackSplitFrame:SetPoint(anchor, parent, anchorTo, 0, 0);
 	StackSplitFrame:Show();
 end
 

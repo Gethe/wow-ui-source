@@ -106,12 +106,14 @@ function BattlefieldFrame_UpdateStatus()
 		MiniMapBattlefieldFrame.waitTime = waitTime;
 		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime, SecondsToTime(timeInQueue)).."\n"..RIGHT_CLICK_MESSAGE;
 
+		PlaySound("PVPENTERQUEUE");
 		UIFrameFadeIn(MiniMapBattlefieldFrame, CHAT_FRAME_FADE_TIME);
 		BattlegroundShineFadeIn();
 	elseif ( status == "confirm" ) then
 		-- Have been accepted show enter battleground dialog
 		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration()/1000)).."\n"..RIGHT_CLICK_MESSAGE;
 		StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName);
+		PlaySound("PVPTHROUGHQUEUE");
 		MiniMapBattlefieldFrame:Show();
 	elseif ( status == "active" ) then
 		-- In the battleground
@@ -195,12 +197,19 @@ function BattlefieldFrame_Update()
 	BattlefieldFrameZoneDescription:SetText(mapDescription);
 
 	-- Enable or disable the group join button
-	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
-		-- If this is true then can join as a group
-		BattlefieldFrameGroupJoinButton:Enable();
+	if ( CanJoinBattlefieldAsGroup() ) then
+		if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
+			-- If this is true then can join as a group
+			BattlefieldFrameGroupJoinButton:Enable();
+		else
+			BattlefieldFrameGroupJoinButton:Disable();
+		end
+		BattlefieldFrameGroupJoinButton:Show();
 	else
-		BattlefieldFrameGroupJoinButton:Disable();
+		BattlefieldFrameGroupJoinButton:Hide();
 	end
+	
+	
 
 	FauxScrollFrame_Update(BattlefieldListScrollFrame, numBattlefields, BATTLEFIELD_ZONES_DISPLAYED, BATTLEFIELD_ZONES_HEIGHT, "BattlefieldZone", 293, 315);
 end

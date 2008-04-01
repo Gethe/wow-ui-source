@@ -44,7 +44,7 @@
 				</Texture>	
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentMaterialTopLeft" file="">
+				<Texture name="$parentMaterialTopLeft">
 					<Size>
 						<AbsDimension x="239" y="241"/>
 					</Size>
@@ -56,7 +56,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentMaterialTopRight" file="">
+				<Texture name="$parentMaterialTopRight">
 					<Size>
 						<AbsDimension x="64" y="241"/>
 					</Size>
@@ -64,7 +64,7 @@
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentMaterialBotLeft" file="">
+				<Texture name="$parentMaterialBotLeft">
 					<Size>
 						<AbsDimension x="239" y="128"/>
 					</Size>
@@ -72,7 +72,7 @@
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentMaterialBotRight" file="">
+				<Texture name="$parentMaterialBotRight">
 					<Size>
 						<AbsDimension x="64" y="128"/>
 					</Size>
@@ -139,6 +139,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				this.hasItem = 1;
+			</OnLoad>
 			<OnEnter>
 				if ( this:GetAlpha() > 0 ) then
 					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
@@ -148,10 +151,15 @@
 						GameTooltip:SetQuestRewardSpell();
 					end
 				end
+				CursorUpdate();
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
+				ResetCursor();
 			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate();
+			</OnUpdate>
 			<OnClick>
 				QuestItem_OnClick();
 			</OnClick>

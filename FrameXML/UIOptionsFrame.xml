@@ -3,7 +3,7 @@
 	<Script file="UIOptionsFrame.lua"/>
 	<Frame name="UIOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="734" y="650"/>
+			<AbsDimension x="734" y="668"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER">
@@ -161,7 +161,7 @@
 			</Frame>
 			<Frame name="UIOptionsFrameDisplay" inherits="OptionFrameBoxTemplate">
 				<Size>
-					<AbsDimension x="712" y="150"/>
+					<AbsDimension x="712" y="168"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameGeneral" relativePoint="BOTTOMLEFT">
@@ -307,15 +307,6 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								this:RegisterEvent("VARIABLES_LOADED");
-							</OnLoad>
-							<OnEvent>
-								if ( event == "VARIABLES_LOADED" ) then
-									UIOptionsFrameCheckButtons["SHOW_DAMAGE_TEXT"].value = SHOW_DAMAGE;
-									UIOptionsFrame_SetDamageCheckBoxes(SHOW_DAMAGE);
-								end
-							</OnEvent>
 							<OnClick>
 								if ( this:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOff");
@@ -362,6 +353,15 @@
 					<CheckButton name="UIOptionsFrameCheckButton31" inherits="OptionsCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton30" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton42" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton31" relativePoint="BOTTOM">
 								<Offset>
 									<AbsDimension x="0" y="4"/>
 								</Offset>
