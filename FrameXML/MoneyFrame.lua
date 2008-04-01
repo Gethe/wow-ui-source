@@ -286,6 +286,7 @@ function MoneyFrame_Update(frameName, money)
 	end
 
 	local width = iconWidth;
+
 	local showLowerDenominations, truncateCopper;
 	if ( gold > 0 ) then
 		width = width + goldButton:GetWidth();
@@ -335,6 +336,42 @@ function MoneyFrame_Update(frameName, money)
 	else
 		copperButton:Hide();
 		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "RIGHT", 0, 0);
+	end
+
+	-- attach text now that denominations have been computed
+	local prefixText = getglobal(frameName.."PrefixText");
+	if ( prefixText ) then
+		if ( prefixText:GetText() ) then
+			local attachButtonName;
+			if ( goldButton:IsShown() ) then
+				attachButtonName = "GoldButton";
+			elseif ( silverButton:IsShown() ) then
+				attachButtonName = "SilverButton";
+			elseif ( copperButton:IsShown() ) then
+				attachButtonName = "CopperButton";
+			end
+
+			prefixText:ClearAllPoints();
+			if ( attachButtonName ) then
+				width = width + prefixText:GetWidth();
+				prefixText:Show();
+				prefixText:SetPoint("RIGHT", frameName..attachButtonName, "LEFT", spacing, 0);
+			else
+				prefixText:Hide();
+				prefixText:SetPoint("RIGHT", frameName.."GoldButton", "RIGHT", 0, 0);
+			end
+		else
+			prefixText:Hide();
+		end
+	end
+	local suffixText = getglobal(frameName.."SuffixText");
+	if ( suffixText ) then
+		if ( suffixText:GetText() ) then
+			width = width + suffixText:GetWidth();
+			suffixText:Show();
+		else
+			suffixText:Hide();
+		end
 	end
 
 	frame:SetWidth(width);

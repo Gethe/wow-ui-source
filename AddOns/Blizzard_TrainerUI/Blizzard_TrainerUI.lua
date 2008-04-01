@@ -382,16 +382,6 @@ function ClassTrainer_SetSelection(id)
 		ClassTrainerTrainButton:Disable();
 	end
 
-	-- Determine what type of spell to display
-	local isLearnSpell;
-	local isPetLearnSpell;
-	isLearnSpell, isPetLearnSpell = IsTrainerServiceLearnSpell(id);
-	if ( isLearnSpell ) then
-		if ( isPetLearnSpell ) then
-			ClassTrainerSkillName:SetText(ClassTrainerSkillName:GetText() ..TRAINER_PET_SPELL_LABEL);
-		end
-	end
-
 	-- Close the confirmation dialog if you choose a different skill
 	if ( StaticPopup_Visible("CONFIRM_PROFESSION") ) then
 		StaticPopup_Hide("CONFIRM_PROFESSION");
@@ -510,10 +500,10 @@ end
 function ClassTrainerFrameFilterDropDown_OnClick()	
 	ClassTrainerListScrollFrameScrollBar:SetValue(0);
 	if ( UIDropDownMenuButton_GetChecked() ) then
-		setglobal("TRAINER_FILTER_"..strupper(this.value), 0);
-		SetTrainerServiceTypeFilter(this.value, 0);
-	else
 		setglobal("TRAINER_FILTER_"..strupper(this.value), 1);
 		SetTrainerServiceTypeFilter(this.value, 1);
+	else
+		setglobal("TRAINER_FILTER_"..strupper(this.value), 0);
+		SetTrainerServiceTypeFilter(this.value, 0);
 	end
 end

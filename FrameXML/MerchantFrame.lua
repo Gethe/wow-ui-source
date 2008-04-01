@@ -48,6 +48,8 @@ function MerchantFrame_OnHide()
 	CloseMerchant();
 	CloseBackpack();
 	ResetCursor();
+	
+	StaticPopup_Hide("CONFIRM_PURCHASE_TOKEN_ITEM");
 end
 
 function MerchantFrame_Update()
@@ -63,8 +65,10 @@ function MerchantFrame_UpdateMerchantInfo()
 	MerchantNameText:SetText(UnitName("NPC"));
 	SetPortraitTexture(MerchantFramePortrait, "NPC");
 	
-	MerchantPageText:SetFormattedText(PAGE_NUMBER, MerchantFrame.page);
 	local numMerchantItems = GetMerchantNumItems();
+	
+	MerchantPageText:SetFormattedText(MERCHANT_PAGE_NUMBER, MerchantFrame.page, math.ceil(numMerchantItems / MERCHANT_ITEMS_PER_PAGE));
+
 	local name, texture, price, quantity, numAvailable, isUsable, extendedCost;
 	for i=1, MERCHANT_ITEMS_PER_PAGE, 1 do
 		local index = (((MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE) + i);
@@ -80,12 +84,18 @@ function MerchantFrame_UpdateMerchantInfo()
 			SetItemButtonTexture(itemButton, texture);
 			
 			if ( extendedCost and (price <= 0) ) then
+				itemButton.extendedCost = true;
+				itemButton.link = GetMerchantItemLink(index);
+				itemButton.texture = texture;
 				MerchantFrame_UpdateAltCurrency(index, i);
 				merchantAltCurrency:ClearAllPoints();
 				merchantAltCurrency:SetPoint("BOTTOMLEFT", "MerchantItem"..i.."NameFrame", "BOTTOMLEFT", 0, 31);
 				merchantMoney:Hide();
 				merchantAltCurrency:Show();
 			elseif ( extendedCost and (price > 0) ) then
+				itemButton.extendedCost = true;
+				itemButton.link = GetMerchantItemLink(index);
+				itemButton.texture = texture;
 				MerchantFrame_UpdateAltCurrency(index, i);
 				MoneyFrame_Update(merchantMoney:GetName(), price);
 				merchantAltCurrency:ClearAllPoints();
@@ -93,6 +103,7 @@ function MerchantFrame_UpdateMerchantInfo()
 				merchantAltCurrency:Show();
 				merchantMoney:Show();
 			else
+				itemButton.extendedCost = nil;
 				MoneyFrame_Update(merchantMoney:GetName(), price);
 				merchantAltCurrency:Hide();
 				merchantMoney:Show();
@@ -232,7 +243,7 @@ function MerchantFrame_UpdateAltCurrency(index, i)
 			button.index = index;
 			button.item = i;
 
-			itemTexture, itemValue = GetMerchantItemCostItem(index, i);
+			itemTexture, itemValue, button.itemLink = GetMerchantItemCostItem(index, i);
 			
 			AltCurrencyFrame_Update(frameName.."Item"..i, itemTexture, itemValue);
 			-- Anchor items based on how many item costs there are.
@@ -381,7 +392,11 @@ function MerchantItemButton_OnClick(button)
 		if ( button == "LeftButton" ) then
 			PickupMerchantItem(this:GetID());
 		else
-			BuyMerchantItem(this:GetID());
+			if ( this.extendedCost ) then
+				MerchantFrame_ConfirmExtendedItemCost(this);
+			else
+				BuyMerchantItem(this:GetID());
+			end
 		end
 	else
 		-- Is buyback item
@@ -429,7 +444,40 @@ function MerchantItemButton_OnEnter(button)
 	end
 end
 
+LIST_DELIMITER = ", "
 
+function MerchantFrame_ConfirmExtendedItemCost(itemButton)
+	local index, itemTexture, itemLink, itemsString, itemCount = itemButton:GetID();
+	local costString, pointsTexture, button = "";
+	local honorPoints, arenaPoints, itemCount = GetMerchantItemCostInfo(index);
+	
+	if ( honorPoints and honorPoints ~= 0 ) then
+		local factionGroup = UnitFactionGroup("player");
+		if ( factionGroup ) then	
+			pointsTexture = "Interface\\TargetingFrame\\UI-PVP-"..factionGroup;
+			itemsString = " |T" .. pointsTexture .. ":12:12:0:-1|t" ..  honorPoints .. " " .. HONOR_POINTS;
+		end
+	elseif ( arenaPoints and arenaPoints ~= 0 ) then
+		itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:12:12:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
+	end
+	
+	for i=1, MAX_ITEM_COST, 1 do
+		itemTexture, itemCount, itemLink = GetMerchantItemCostItem(index, i);
+		if ( itemLink ) then
+			if ( itemsString ) then
+				itemsString = itemsString .. LIST_DELIMITER .. itemCount .. " " .. itemLink;
+			else
+				itemsString = itemCount .. " " .. itemLink;
+			end
+		end
+	end
+	
+	MerchantFrame.itemIndex = index;
+	
+	local itemName, _, itemQuality = GetItemInfo(itemButton.link);
+	local r, g, b = GetItemQualityColor(itemQuality);
+	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index});
+end
 
 function MerchantFrame_UpdateCanRepairAll()
 	if ( MerchantRepairAllIcon ) then
@@ -453,15 +501,6 @@ function MerchantFrame_UpdateGuildBankRepair()
 		SetDesaturation(MerchantGuildBankRepairButtonIcon, 1);
 		MerchantGuildBankRepairButton:Disable();
 	end	
-end
-
-function CanGuildBankRepair()
-	--FIXME!!! Fix when I have actual withdrawal amount
-	if(CanWithdrawGuildBankMoney() and IsInGuild()) then
-		return 1;
-	else
-		return nil;
-	end
 end
 
 function MerchantFrame_UpdateRepairButtons()

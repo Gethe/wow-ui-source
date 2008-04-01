@@ -12,11 +12,13 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="RaidWarningFrameSlot1" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
+					<Size x="800" y="0"/>
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>
 				</FontString>
 				<FontString name="RaidWarningFrameSlot2" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
+					<Size x="800" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="RaidWarningFrameSlot1" relativePoint="BOTTOM"/>
 					</Anchors>

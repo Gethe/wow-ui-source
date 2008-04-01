@@ -62,5 +62,5 @@ end
 
 function AudioOptionsFrame_RestartEngine()
 	AudioOptionsFrame.SoundRestart = nil;
-	Sound_RestartSoundEngine();
+	Sound_GameSystem_RestartSoundSystem();
 end

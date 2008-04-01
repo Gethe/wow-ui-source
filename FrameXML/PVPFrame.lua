@@ -14,12 +14,12 @@ function PVPFrame_OnLoad()
 	this:RegisterEvent("PLAYER_PVP_KILLS_CHANGED");
 	this:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
 	this:RegisterEvent("HONOR_CURRENCY_UPDATE");
-	this:RegisterEvent("ARENA_SEASON_WORLD_STATE");
+	--this:RegisterEvent("ARENA_SEASON_WORLD_STATE");
 end
 
 function PVPFrame_OnEvent(event, arg1)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		PVPFrame.season = GetCurrentArenaSeason();
+		-- PVPFrame.season = GetCurrentArenaSeason();
 		PVPFrame_Update();
 		PVPHonor_Update();
 	elseif ( event == "PLAYER_PVP_KILLS_CHANGED" or event == "PLAYER_PVP_RANK_CHANGED") then
@@ -32,9 +32,9 @@ function PVPFrame_OnEvent(event, arg1)
 				PVPTeamDetails:Hide();
 			end
 		end
-	elseif ( event == "ARENA_SEASON_WORLD_STATE" ) then
-		PVPFrame.season = GetCurrentArenaSeason();
-		PVPFrame_Update();
+	--[[ elseif ( event == "ARENA_SEASON_WORLD_STATE" ) then
+		 PVPFrame.season = GetCurrentArenaSeason();
+		PVPFrame_Update(); ]]
 	elseif ( event == "HONOR_CURRENCY_UPDATE" ) then
 		PVPHonor_Update();
 	elseif ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
@@ -47,7 +47,7 @@ function PVPFrame_OnEvent(event, arg1)
 			PVPFrame_Update();
 		end
 	elseif ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
-		PVPFrame.season = GetCurrentArenaSeason();
+		-- PVPFrame.season = GetCurrentArenaSeason();
 		if ( PVPTeamDetails:IsShown() ) then
 			ArenaTeamRoster(PVPTeamDetails.team);
 		end
@@ -110,7 +110,6 @@ function PVPTeam_Update()
 	end
 
 	-- fill out data
-	local season = PVPFrame.season;
 	for index, value in pairs(ARENA_TEAMS) do
 		if ( value.index ) then
 			buttonIndex = buttonIndex + 1;
@@ -154,8 +153,7 @@ function PVPTeam_Update()
 			getglobal(data.."Wins"):SetText(wins);
 			getglobal(data.."Loss"):SetText(loss);
 			
-			-- Remove the season 3 check in 2.4
-			if ( season == 3 and PVPFrame.seasonStats ) then
+			if ( PVPFrame.seasonStats ) then
 				getglobal(data.."Played"):SetText(playerRating);
 				getglobal(data.."Played"):SetVertexColor(1.0, 1.0, 1.0);
 				getglobal(data.."PlayedLabel"):SetText(PVP_YOUR_RATING);
@@ -270,11 +268,7 @@ function PVPTeamDetails_Update(id)
 	local teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, personalRating  = GetArenaTeam(id);		
 	local button;
 	local teamIndex;
-	local season = PVPFrame.season;
 
-	-- Get selected arena team member info
-	
-	
 	-- Display General Team Stats
 	PVPTeamDetailsName:SetText(teamName);
 	PVPTeamDetailsSize:SetFormattedText(PVP_TEAMSIZE, teamSize, teamSize);
@@ -298,19 +292,6 @@ function PVPTeamDetails_Update(id)
 		PVPTeamDetailsLoss:SetText(teamPlayed - teamWins);
 		PVPTeamDetailsStatsType:SetText(strupper(ARENA_THIS_WEEK));
 		PVPTeamDetailsToggleButton:SetText(ARENA_THIS_SEASON_TOGGLE);
-	end
-
-	-- Show/Hide for Arena Season 3 - Remove for 2.4
-	if ( season == 3 ) then
-		WhoFrameColumn_SetWidth(96, PVPTeamDetailsFrameColumnHeader1)
-		WhoFrameColumn_SetWidth(62, PVPTeamDetailsFrameColumnHeader2)
-		WhoFrameColumn_SetWidth(55, PVPTeamDetailsFrameColumnHeader3)
-		PVPTeamDetailsFrameColumnHeader5:Show();
-	else
-		WhoFrameColumn_SetWidth(120, PVPTeamDetailsFrameColumnHeader1)
-		WhoFrameColumn_SetWidth(80, PVPTeamDetailsFrameColumnHeader2)
-		WhoFrameColumn_SetWidth(65, PVPTeamDetailsFrameColumnHeader3)
-		PVPTeamDetailsFrameColumnHeader5:Hide();
 	end
 
 	local nameText, classText, playedText, winLossWin, winLossLoss, ratingText;
@@ -382,20 +363,7 @@ function PVPTeamDetails_Update(id)
 			winLossWin:SetText(winValue)
 			winLossLoss:SetText(lossValue);
 			ratingText:SetText(rating);
-
-			if ( season == 3 ) then
-				-- Populate Data for Arena Season 3
-				ratingText:Show();
-				nameButton:SetWidth(90);
-				classButton:SetWidth(55);
-				playedButton:SetWidth(45);
-			else
-				ratingText:Hide();
-				nameButton:SetWidth(115);
-				classButton:SetWidth(70);
-				playedButton:SetWidth(60);
-			end
-			
+		
 			-- Color Entries based on Online status
 			local r, g, b;
 			if ( online ) then

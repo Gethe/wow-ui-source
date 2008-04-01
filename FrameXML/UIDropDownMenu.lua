@@ -18,10 +18,12 @@ UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = nil;
 -- List of open menus
 OPEN_DROPDOWNMENUS = {};
 
-function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level)
+function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menuList)
 	if ( not frame ) then
 		frame = this;
 	end
+
+	frame.menuList = menuList;
 
 	if ( frame:GetName() ~= UIDROPDOWNMENU_OPEN_MENU ) then
 		UIDROPDOWNMENU_MENU_LEVEL = 1;
@@ -49,7 +51,7 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level)
 	-- Set the initialize function and call it.  The initFunction populates the dropdown list.
 	if ( initFunction ) then
 		frame.initialize = initFunction;
-		initFunction(level);
+		initFunction(level, frame.menuList);
 	end
 
 	-- Change appearance based on the displayMode
@@ -107,11 +109,11 @@ List of button attributes
 info.text = [STRING]  --  The text of the button
 info.value = [ANYTHING]  --  The value that UIDROPDOWNMENU_MENU_VALUE is set to when the button is clicked
 info.func = [function()]  --  The function that is called when you click the button
-info.checked = [nil, 1]  --  Check the button
-info.isTitle = [nil, 1]  --  If it's a title the button is disabled and the font color is set to yellow
-info.disabled = [nil, 1]  --  Disable the button and show an invisible button that still traps the mouseover event so menu doesn't time out
-info.hasArrow = [nil, 1]  --  Show the expand arrow for multilevel menus
-info.hasColorSwatch = [nil, 1]  --  Show color swatch or not, for color selection
+info.checked = [nil, true, function]  --  Check the button if true or function returns true
+info.isTitle = [nil, true]  --  If it's a title the button is disabled and the font color is set to yellow
+info.disabled = [nil, true]  --  Disable the button and show an invisible button that still traps the mouseover event so menu doesn't time out
+info.hasArrow = [nil, true]  --  Show the expand arrow for multilevel menus
+info.hasColorSwatch = [nil, true]  --  Show color swatch or not, for color selection
 info.r = [1 - 255]  --  Red color value of the color swatch
 info.g = [1 - 255]  --  Green color value of the color swatch
 info.b = [1 - 255]  --  Blue color value of the color swatch
@@ -133,6 +135,7 @@ info.justifyH = [nil, "CENTER"] -- Justify button text
 info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
 info.textHeight = [NUMBER] -- font height for button text
+info.menuTable = [TABLE] -- This contains an array of info tables to be displayed as a child menu
 ]]
 
 local UIDropDownMenu_ButtonInfo = {};
@@ -286,6 +289,7 @@ function UIDropDownMenu_AddButton(info, level)
 	button.hasArrow = info.hasArrow;
 	button.hasColorSwatch = info.hasColorSwatch;
 	button.notCheckable = info.notCheckable;
+	button.menuList = info.menuList;
 
 	if ( info.value ) then
 		button.value = info.value;
@@ -351,9 +355,15 @@ function UIDropDownMenu_AddButton(info, level)
 			end
 		end
 	end
+	
+	-- Checked can be a function now
+	local checked = info.checked;
+	if ( type(checked) == "function" ) then
+		checked = checked();
+	end
 
 	-- Show the check if checked
-	if ( info.checked ) then
+	if ( checked ) then
 		button:LockHighlight();
 		getglobal(listFrameName.."Button"..index.."Check"):Show();
 	else
@@ -519,24 +529,34 @@ function UIDropDownMenu_GetSelectedValue(frame)
 end
 
 function UIDropDownMenuButton_OnClick()
-	local func = this.func;
-	if ( func ) then
-		func(this.arg1, this.arg2);
-	else
-		return;
+	local checked = this.checked;
+	if ( type (checked) == "function" ) then
+		checked = checked();
 	end
-	
+
 	if ( this.keepShownOnClick ) then
-		if ( this.checked ) then
+		if ( checked ) then
 			getglobal(this:GetName().."Check"):Hide();
-			this.checked = nil;
+			checked = false;
 		else
 			getglobal(this:GetName().."Check"):Show();
-			this.checked = 1;
+			checked = true;
 		end
 	else
 		this:GetParent():Hide();
 	end
+
+	if ( type (this.checked) ~= "function" ) then 
+		this.checked = checked;
+	end
+
+	local func = this.func;
+	if ( func ) then
+		func(this.arg1, this.arg2, checked);
+	else
+		return;
+	end
+
 	PlaySound("UChatScrollButton");
 end
 
@@ -545,7 +565,7 @@ function HideDropDownMenu(level)
 	listFrame:Hide();
 end
 
-function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset)
+function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList)
 	if ( not level ) then
 		level = 1;
 	end
@@ -667,8 +687,8 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			getglobal(listFrameName.."Backdrop"):Show();
 			getglobal(listFrameName.."MenuBackdrop"):Hide();
 		end
-
-		UIDropDownMenu_Initialize(dropDownFrame, dropDownFrame.initialize, nil, level);
+		dropDownFrame.menuList = menuList;
+		UIDropDownMenu_Initialize(dropDownFrame, dropDownFrame.initialize, nil, level, menuList);
 		-- If no items in the drop down don't show it
 		if ( listFrame.numButtons == 0 ) then
 			return;

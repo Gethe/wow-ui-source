@@ -224,7 +224,7 @@
 		</Frames>
 		<Scripts>
 			<OnEvent>
-				ContainerFrame_OnEvent();
+				ContainerFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnLoad>
 				ContainerFrame_OnLoad();

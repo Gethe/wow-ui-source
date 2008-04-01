@@ -81,7 +81,7 @@ function GameTooltip_OnLoad()
 	this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
-function SetTooltipMoney(frame, money, type)
+function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 	frame:AddLine(" ", 1.0, 1.0, 1.0);
 	local numLines = frame:NumLines();
 	if ( not frame.numMoneyFrames ) then
@@ -94,7 +94,18 @@ function SetTooltipMoney(frame, money, type)
 	local moneyFrame = getglobal(name);
 	if ( not moneyFrame ) then
 		frame.numMoneyFrames = frame.numMoneyFrames+1;
-		moneyFrame = CreateFrame("Frame", name, frame, "SmallMoneyFrameTemplate");
+		moneyFrame = CreateFrame("Frame", name, frame, "TooltipMoneyFrameTemplate");
+		name = moneyFrame:GetName();
+		if ( prefixText ) then
+			getglobal(name.."PrefixText"):SetText(prefixText);
+		else
+			getglobal(name.."PrefixText"):SetText(nil);
+		end
+		if ( suffixText ) then
+			getglobal(name.."SuffixText"):SetText(suffixText);
+		else
+			getglobal(name.."SuffixText"):SetText(nil);
+		end
 		MoneyFrame_SetType("STATIC", moneyFrame);
 	end
 	if ( type ) then

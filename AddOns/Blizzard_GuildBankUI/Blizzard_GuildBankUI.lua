@@ -90,6 +90,8 @@ function GuildBankFrame_OnLoad()
 	this:RegisterEvent("GUILD_ROSTER_UPDATE");
 	this:RegisterEvent("GUILDBANKLOG_UPDATE");
 	this:RegisterEvent("GUILDTABARD_UPDATE");
+	this:RegisterEvent("GUILDBANK_UPDATE_TEXT");
+	this:RegisterEvent("GUILDBANK_TEXT_CHANGED");
 	-- Set the button id's
 	local index, column, button;
 	for i=1, MAX_GUILDBANK_SLOTS_PER_TAB do
@@ -102,7 +104,7 @@ function GuildBankFrame_OnLoad()
 		button:SetID(i);
 	end
 	GuildBankFrame.mode = "bank";
-	GuildBankFrame.numTabs = 3;
+	GuildBankFrame.numTabs = 4;
 	GuildBankFrame_UpdateTabs();
 	GuildBankFrame_UpdateTabard();
 
@@ -121,6 +123,11 @@ function GuildBankFrame_OnEvent(event)
 		if ( GuildBankFrameBuyInfo:IsShown() ) then
 			GuildBankFrame_UpdateTabBuyingInfo();
 		end
+		if ( CanEditGuildTabInfo(GetCurrentGuildBankTab()) ) then
+			GuildBankInfoSaveButton:Show();
+		else
+			GuildBankInfoSaveButton:Hide();
+		end
 	elseif ( event == "GUILDBANKLOG_UPDATE" ) then
 		if ( GuildBankFrame.mode == "log" ) then
 			GuildBankFrame_UpdateLog();
@@ -131,6 +138,12 @@ function GuildBankFrame_OnEvent(event)
 		GuildBankFrame_UpdateTabard();
 	elseif ( event == "GUILDBANK_UPDATE_MONEY" ) then
 		GuildBankFrame_UpdateWithdrawMoney();
+	elseif ( event == "GUILDBANK_UPDATE_TEXT" ) then
+		GuildBankFrame_UpdateTabInfo(arg1);
+	elseif ( event == "GUILDBANK_TEXT_CHANGED" ) then
+		if ( GetCurrentGuildBankTab() == tonumber(arg1) ) then
+			QueryGuildBankText(arg1);
+		end
 	end
 end
 
@@ -161,6 +174,7 @@ function GuildBankFrame_Update()
 	if ( GuildBankFrame.mode == "bank" ) then
 		-- Determine whether its the buy tab or not
 		GuildBankFrameLog:Hide();
+		GuildBankInfo:Hide();	
 		local tab = GetCurrentGuildBankTab();
 		if ( GuildBankFrame.noViewableTabs ) then
 			GuildBankFrame_HideColumns();
@@ -217,8 +231,7 @@ function GuildBankFrame_Update()
 	elseif ( GuildBankFrame.mode == "log" or GuildBankFrame.mode == "moneylog" ) then
 		GuildBankFrame_HideColumns();
 		GuildBankFrameBuyInfo:Hide();
-		
-				
+		GuildBankInfo:Hide();	
 		if ( GuildBankFrame.noViewableTabs and GuildBankFrame.mode == "log" ) then
 			GuildBankErrorMessage:SetText(NO_VIEWABLE_GUILDBANK_LOGS);
 			GuildBankErrorMessage:Show();
@@ -227,6 +240,11 @@ function GuildBankFrame_Update()
 			GuildBankErrorMessage:Hide();
 			GuildBankFrameLog:Show();
 		end
+	elseif ( GuildBankFrame.mode == "tabinfo" ) then
+		GuildBankFrame_HideColumns();
+		GuildBankFrameBuyInfo:Hide();
+		GuildBankFrameLog:Hide();
+		GuildBankInfo:Show();
 	end
 	--Update remaining money
 	GuildBankFrame_UpdateWithdrawMoney();
@@ -249,7 +267,7 @@ function GuildBankFrameTab_OnClick(id, doNotUpdate)
 			QueryGuildBankLog(GetCurrentGuildBankTab());
 		end
 		GuildBankTransactionsScrollFrameScrollBar:SetValue(0);
-	else
+	elseif ( id == 3 ) then
 		--Money log
 		GuildBankMessageFrame:Clear();
 		GuildBankTransactionsScrollFrame:Hide();
@@ -258,6 +276,12 @@ function GuildBankFrameTab_OnClick(id, doNotUpdate)
 			QueryGuildBankLog(MAX_GUILDBANK_TABS + 1);
 		end
 		GuildBankTransactionsScrollFrameScrollBar:SetValue(0);
+	else
+		--Tab Info
+		GuildBankFrame.mode = "tabinfo";
+		if ( not doNotUpdate ) then
+			QueryGuildBankText(GetCurrentGuildBankTab());
+		end
 	end
 	--Call this to gray out tabs or activate them
 	GuildBankFrame_UpdateTabs();
@@ -275,7 +299,7 @@ function GuildBankFrame_UpdateTabBuyingInfo()
 		--You've bought all the tabs
 		GuildBankTab_OnClick("LeftButton", 1);
 	else
-		if( GetMoney() >= tabCost ) then
+		if( GetMoney() >= tabCost or (GetMoney() + GetGuildBankMoney()) >= tabCost ) then
 			SetMoneyFrameColor("GuildBankFrameTabCostMoneyFrame", 1.0, 1.0, 1.0);
 			GuildBankFramePurchaseButton:Enable();
 		else
@@ -315,7 +339,7 @@ function GuildBankFrame_UpdateTabs()
 			tabButton.tooltip = BUY_GUILDBANK_TAB;
 			tab:Show();
 			
-			if ( disableAll or GuildBankFrame.mode == "log" ) then
+			if ( disableAll or GuildBankFrame.mode == "log" or GuildBankFrame.mode == "tabinfo" ) then
 				tabButton:SetChecked(nil);
 				SetDesaturation(iconTexture, 1);
 				tabButton:SetButtonState("NORMAL");
@@ -386,8 +410,13 @@ function GuildBankFrame_UpdateTabs()
 		titleText = GUILD_BANK_MONEY_LOG;
 		withdrawalText = nil;
 	elseif ( GuildBankFrame.mode == "log" ) then
-		if (  titleText ) then
+		if ( titleText ) then
 			titleText = format(GUILDBANK_LOG_TITLE_FORMAT, titleText);	
+		end
+	elseif ( GuildBankFrame.mode == "tabinfo" ) then
+		withdrawalText = nil;
+		if ( titleText ) then
+			titleText = format(GUILDBANK_INFO_TITLE_FORMAT, titleText);
 		end
 	end
 	--Get selected tab info
@@ -452,6 +481,9 @@ function GuildBankFrame_UpdateTabs()
 end
 
 function GuildBankTab_OnClick(mouseButton, currentTab)
+	if ( GuildBankInfo:IsShown() ) then
+		GuildBankInfoSaveButton:Click();
+	end
 	if ( not currentTab ) then
 		currentTab = this:GetParent():GetID();
 	end
@@ -471,6 +503,8 @@ function GuildBankTab_OnClick(mouseButton, currentTab)
 			QueryGuildBankLog(MAX_GUILDBANK_TABS+1);
 			GuildBankFrame_UpdateMoneyLog();
 		end
+	elseif ( GuildBankInfo:IsShown() ) then
+		QueryGuildBankText(currentTab);
 	else
 		QueryGuildBankTab(currentTab);
 	end
@@ -550,6 +584,7 @@ function GuildBankFrame_UpdateMoneyLog()
 	local numTransactions = GetNumGuildBankMoneyTransactions();
 	local type, name, amount, year, month, day, hour;
 	local msg;
+	local money;
 	GuildBankMessageFrame:Clear();
 	for i=1, numTransactions, 1 do
 		type, name, amount, year, month, day, hour = GetGuildBankMoneyTransaction(i);
@@ -557,12 +592,17 @@ function GuildBankFrame_UpdateMoneyLog()
 			name = UNKNOWN;
 		end
 		name = NORMAL_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
+		money = GetDenominationsFromCopper(amount);
 		if ( type == "deposit" ) then
-			msg = format(GUILDBANK_DEPOSIT_MONEY_FORMAT, name, GetDenominationsFromCopper(amount));
+			msg = format(GUILDBANK_DEPOSIT_MONEY_FORMAT, name, money);
 		elseif ( type == "withdraw" ) then
-			msg = format(GUILDBANK_WITHDRAW_MONEY_FORMAT, name, GetDenominationsFromCopper(amount));
+			msg = format(GUILDBANK_WITHDRAW_MONEY_FORMAT, name, money);
 		elseif ( type == "repair" ) then
-			msg = format(GUILDBANK_REPAIR_MONEY_FORMAT, name, GetDenominationsFromCopper(amount));
+			msg = format(GUILDBANK_REPAIR_MONEY_FORMAT, name, money);
+		elseif ( type == "withdrawForTab" ) then
+			msg = format(GUILDBANK_WITHDRAWFORTAB_MONEY_FORMAT, name, money);
+		elseif ( type == "buyTab" ) then
+			msg = format(GUILDBANK_BUYTAB_MONEY_FORMAT, name, money);
 		end
 		GuildBankMessageFrame:AddMessage(msg..GUILD_BANK_LOG_TIME_PREPEND..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)));
 	end
@@ -602,7 +642,7 @@ function GuildBankFrame_UpdateWithdrawMoney()
 	local withdrawLimit = GetGuildBankWithdrawMoney();
 	if ( withdrawLimit >= 0 ) then
 		local amount;
-		if ( CanRepairOnly() ) then
+		if ( (not CanGuildBankRepair() and not CanWithdrawGuildBankMoney()) or (CanGuildBankRepair() and not CanWithdrawGuildBankMoney()) ) then
 			amount = 0;
 		else
 			amount = GetGuildBankMoney();
@@ -638,6 +678,14 @@ function GuildBankFrame_UpdateTabard()
 	GuildBankEmblemBorderUR:SetTexture(tabardBorderUpper);
 	GuildBankEmblemBorderBL:SetTexture(tabardBorderLower);
 	GuildBankEmblemBorderBR:SetTexture(tabardBorderLower);
+end
+
+function GuildBankFrame_UpdateTabInfo(tab)
+	if ( GetGuildBankText(tab) ) then
+		GuildBankTabInfoEditBox:SetText(GetGuildBankText(tab));
+	else
+		GuildBankTabInfoEditBox:SetText("");
+	end
 end
 
 --Popup functions

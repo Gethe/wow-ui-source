@@ -1,4 +1,5 @@
 MAX_RAID_GROUPS = 8;
+RAID_RANGE_ALPHA = 0.5;
 MOVING_RAID_MEMBER = nil;
 TARGET_RAID_SLOT = nil;
 RAID_SUBGROUP_LISTS = {};
@@ -315,6 +316,7 @@ function RaidGroupFrame_Update()
 					--buttonMutedTexture = getglobal("RaidGroupButton"..i.."RankMuted");
 					subframes.roleTexture = getglobal("RaidGroupButton"..i.."RoleTexture");
 					subframes.lootTexture = getglobal("RaidGroupButton"..i.."LootTexture");
+					subframes.readyCheck = getglobal("RaidGroupButton"..i.."ReadyCheck");
 					button.subframes = subframes;
 				end
 				
@@ -394,36 +396,22 @@ function RaidGroupFrame_Update()
 					subframes.rankTexture:SetTexture("");
 				end
 
-				if ( readyCheckStatus ) then
-					subframes.lootTexture:SetTexture("");
-
-					if ( readyCheckStatus == "ready" ) then
-						ReadyCheck_Confirm(getglobal("RaidGroupButton"..i.."ReadyCheck"), 1);
-					elseif ( readyCheckStatus == "notready" ) then
-						ReadyCheck_Confirm(getglobal("RaidGroupButton"..i.."ReadyCheck"), 0);
-					else -- "waiting"
-						ReadyCheck_Start(getglobal("RaidGroupButton"..i.."ReadyCheck"));
-					end
+				-- Sets the Main Tank/Assist Icon
+				if ( role == "MAINTANK" ) then
+					subframes.roleTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MainTankIcon");
+				elseif (role == "MAINASSIST" ) then
+					subframes.roleTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MainAssistIcon");
 				else
-					getglobal("RaidGroupButton"..i.."ReadyCheck"):Hide();
-				
-					-- Sets the Main Tank/Assist Icon
-					if ( role == "MAINTANK" ) then
-						subframes.roleTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MainTankIcon");
-					elseif (role == "MAINASSIST" ) then
-						subframes.roleTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MainAssistIcon");
-					else
-						subframes.roleTexture:SetTexture("");
-					end
-
-					-- Sets the Master Looter Icon
-					if ( loot ) then
-						subframes.lootTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MasterLooter");
-					else
-						subframes.lootTexture:SetTexture("");
-					end
+					subframes.roleTexture:SetTexture("");
 				end
-				
+
+				-- Sets the Master Looter Icon
+				if ( loot ) then
+					subframes.lootTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MasterLooter");
+				else
+					subframes.lootTexture:SetTexture("");
+				end
+
 				-- Resizes if there are all 3 visible
 				if ( ( rank > 0 ) and role and loot ) then
 					subframes.rank:SetWidth(10);
@@ -432,6 +420,8 @@ function RaidGroupFrame_Update()
 					subframes.role:SetHeight(10);
 					subframes.loot:SetWidth(9);
 					subframes.loot:SetHeight(9);
+					subframes.readyCheck:SetWidth(10);
+					subframes.readyCheck:SetHeight(10);
 				else
 					subframes.rank:SetWidth(11);
 					subframes.rank:SetHeight(11);
@@ -439,6 +429,8 @@ function RaidGroupFrame_Update()
 					subframes.role:SetHeight(11);
 					subframes.loot:SetWidth(11);
 					subframes.loot:SetHeight(11);
+					subframes.readyCheck:SetWidth(11);
+					subframes.readyCheck:SetHeight(11);
 				end
 				
 				button.jobs = button.jobs or {};
@@ -478,7 +470,25 @@ function RaidGroupFrame_Update()
 					end
 					button.jobs[i]:Show();
 				end
-				
+
+				-- Sets the Ready Check Icon
+				if ( readyCheckStatus ) then
+					if ( readyCheckStatus == "ready" ) then
+						ReadyCheck_Confirm(subframes.readyCheck, 1);
+					elseif ( readyCheckStatus == "notready" ) then
+						ReadyCheck_Confirm(subframes.readyCheck, 0);
+					else -- "waiting"
+						ReadyCheck_Start(subframes.readyCheck);
+					end
+
+					-- hide the second job icon if there is one
+					if ( #button.jobs >= 2 ) then
+						button.jobs[2]:Hide();
+					end
+				else
+					subframes.readyCheck:Hide();
+				end
+
 				-- Save slot for future use
 				button.slot = raid_groupSlots[subgroup][raidGroup.nextIndex];
 				
@@ -851,6 +861,23 @@ function RaidPullout_OnUpdate()
 			this.timer = this.timer - elapsed;
 		end
 	end
+	if ( RaidFrame.showRange ) then
+		if ( UnitIsConnected(this.unit) and  not UnitInRange(this.unit) ) then
+			if ( this.healthBar:GetAlpha() == 1 ) then
+				getglobal(this:GetName().."Name"):SetAlpha(RAID_RANGE_ALPHA);
+				this.healthBar:SetAlpha(RAID_RANGE_ALPHA);
+				this.manaBar:SetAlpha(RAID_RANGE_ALPHA);
+			end
+		else
+			getglobal(this:GetName().."Name"):SetAlpha(1);
+			this.healthBar:SetAlpha(1);
+			this.manaBar:SetAlpha(1);
+		end
+	elseif ( this.healthBar:GetAlpha() ~= 1 ) then
+		getglobal(this:GetName().."Name"):SetAlpha(1);
+		this.healthBar:SetAlpha(1);
+		this.manaBar:SetAlpha(1);
+	end
 end
 
 function RaidPullout_Update(pullOutFrame)
@@ -956,7 +983,12 @@ function RaidPullout_Update(pullOutFrame)
 			if ( online ) then	
 				RaidPulloutButton_UpdateDead(pulloutButton, isDead, fileName);
 			else
-				-- Offline so set the bars and name grey
+				-- Offline so set name grey and full alpha
+				if ( pulloutHealthBar:GetAlpha() ~= 1 ) then
+					pulloutButtonName:SetAlpha(1);
+					pulloutHealthBar:SetAlpha(1);
+					pulloutManaBar:SetAlpha(1);
+				end
 				pulloutButtonName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 			end
 			

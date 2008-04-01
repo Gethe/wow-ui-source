@@ -224,6 +224,62 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
+			<Button name="$parentItemFrame" inherits="ItemButtonTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="37" y="37"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-16"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="82" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+							<Size>
+								<AbsDimension x="140" y="62"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="30" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="103" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if ( this.link ) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetHyperlink(this.link);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnUpdate>

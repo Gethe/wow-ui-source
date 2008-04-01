@@ -379,9 +379,7 @@
 		</Size>
 		<Frames>
 			<Frame name="$parentName">
-				<Size>
-					<AbsDimension x="90" y="14"/>
-				</Size>
+				<Size x="90" y="14"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="10" y="-1"/>
@@ -394,9 +392,7 @@
 				</Layers>
 			</Frame>
 			<Frame name="$parentClass">
-				<Size>
-					<AbsDimension x="50" y="14"/>
-				</Size>
+				<Size x="55" y="14"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
 						<Offset x="4" y="0"/>
@@ -409,9 +405,7 @@
 				</Layers>
 			</Frame>
 			<Frame name="$parentPlayed">
-				<Size>
-					<AbsDimension x="45" y="14"/>
-				</Size>
+				<Size x="45" y="14"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentClass" relativePoint="RIGHT">
 						<Offset x="4" y="0"/>
@@ -437,9 +431,7 @@
 				</Scripts>
 			</Frame>
 			<Frame name="$parentWinLoss">
-				<Size>
-					<AbsDimension x="72" y="14"/>
-				</Size>
+				<Size x="72" y="14"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentPlayed" relativePoint="RIGHT">
 						<Offset x="0" y="0"/>
@@ -475,9 +467,7 @@
 				</Layers>
 			</Frame>
 			<Frame name="$parentRating">
-				<Size>
-					<AbsDimension x="50" y="14"/>
-				</Size>
+				<Size x="50" y="14"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentWinLoss" relativePoint="RIGHT">
 						<Offset x="4" y="0"/>

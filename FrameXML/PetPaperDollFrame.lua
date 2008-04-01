@@ -186,7 +186,9 @@ function PetPaperDollFrame_SetStats()
 			frame.tooltip2 = strsub(frame.tooltip2, 1, newLineIndex);
 			frame.tooltip2 = format(frame.tooltip2, GetCritChanceFromAgility("pet"));
 		elseif ( i == 3 ) then
-			local healthGain = ((effectiveStat-20)*10+20)*GetUnitHealthModifier("pet");
+			local expectedHealthGain = (((stat - posBuff - negBuff)-20)*10+20)*GetUnitHealthModifier("pet");
+			local realHealthGain = ((effectiveStat-20)*10+20)*GetUnitHealthModifier("pet");
+			local healthGain = (realHealthGain - expectedHealthGain)*GetUnitMaxHealthModifier("pet");
 			frame.tooltip2 = format(frame.tooltip2, healthGain);
 		elseif ( i == 4 ) then
 			if ( UnitHasMana("pet") ) then

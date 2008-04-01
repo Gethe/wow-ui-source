@@ -164,25 +164,26 @@ function StackSplitFrameRight_Click()
 end
 
 function StackSplitFrameOkay_Click()
+	StackSplitFrame:Hide();
+	
 	if ( StackSplitFrame.owner ) then
 		StackSplitFrame.owner.SplitStack(StackSplitFrame.owner, StackSplitFrame.split);
 	end
-	StackSplitFrame:Hide();
 end
 
 function StackSplitFrameCancel_Click()
 	StackSplitFrame:Hide();
 end
 
-function StackSplitFrame_OnHide()
-	if ( StackSplitFrame.owner ) then
-		StackSplitFrame.owner.hasStackSplit = 0;
-	end
-	
+function StackSplitFrame_OnHide()	
 	for key in next, (this.down or {}) do
 		if ( GetBindingAction(key) ) then
 			RunBinding(GetBindingAction(key), "up");
 		end
 		this.down[key] = nil;
+	end
+	
+	if ( StackSplitFrame.owner ) then
+		StackSplitFrame.owner.hasStackSplit = 0;
 	end
 end

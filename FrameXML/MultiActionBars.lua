@@ -6,19 +6,8 @@ STATE_MultiBar1, STATE_MultiBar2, STATE_MultiBar3, STATE_MultiBar4, STATE_Always
 
 
 function MultiActionBarFrame_OnLoad()
-	-- Hack to get around load order dependencies
-	UIOptionsFrameCheckButtons["SHOW_MULTIBAR1_TEXT"].setFunc = Multibar_EmptyFunc;
-	UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"].setFunc = Multibar_EmptyFunc;
-	UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"].setFunc = Multibar_EmptyFunc;
-	UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"].setFunc = Multibar_EmptyFunc;
-	UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"].setFunc = Multibar_EmptyFunc;
-	UIOptionsFrameCheckButtons["SHOW_MULTIBAR1_TEXT"].func = MultiBar1_IsVisible;
-	UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"].func = MultiBar2_IsVisible;
-	UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"].func = MultiBar3_IsVisible;
-	UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"].func = MultiBar4_IsVisible;
-	UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"].func = MultibarGrid_IsVisible;
+	-- Hack no longer needed here.
 	-- This is where i will load the actionbar states
-	--MultiActionBar_Update();
 end
 
 function MultiActionButtonDown(bar, id)

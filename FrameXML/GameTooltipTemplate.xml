@@ -362,4 +362,38 @@
 			</OnLoad>
 		</Scripts>
 	</GameTooltip>
+	<Frame name="TooltipMoneyFrameTemplate" inherits="SmallMoneyFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="13"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentPrefixText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentGoldButton" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSuffixText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-13" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				SmallMoneyFrame_OnLoad();
+				local copperButton = getglobal(this:GetName().."CopperButton");
+				copperButton:SetPoint("RIGHT", this:GetName().."SuffixText", "LEFT", 0, 0);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

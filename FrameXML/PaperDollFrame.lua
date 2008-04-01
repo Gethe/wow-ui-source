@@ -233,7 +233,7 @@ function PaperDollFrame_SetStat(statFrame, statIndex)
 	elseif ( statIndex == 3 ) then
 		local baseStam = min(20, effectiveStat);
 		local moreStam = effectiveStat - baseStam;
-		statFrame.tooltip2 = format(statFrame.tooltip2, baseStam + (moreStam*HEALTH_PER_STAMINA));
+		statFrame.tooltip2 = format(statFrame.tooltip2, (baseStam + (moreStam*HEALTH_PER_STAMINA))*GetUnitMaxHealthModifier("player"));
 		local petStam = ComputePetBonus("PET_BONUS_STAM", effectiveStat );
 		if( petStam > 0 ) then
 			statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format(PET_BONUS_TOOLTIP_STAMINA,petStam);
@@ -286,7 +286,7 @@ function PaperDollFrame_SetRating(statFrame, ratingIndex)
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..statName.." "..rating..FONT_COLOR_CODE_CLOSE;
 	-- Can probably axe this if else tree if all rating tooltips follow the same format
 	if ( ratingIndex == CR_HIT_MELEE ) then
-		statFrame.tooltip2 = format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), ratingBonus);
+		statFrame.tooltip2 = format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), ratingBonus, GetArmorPenetration());
 	elseif ( ratingIndex == CR_HIT_RANGED ) then
 		statFrame.tooltip2 = format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), ratingBonus);
 	elseif ( ratingIndex == CR_DODGE ) then
@@ -296,7 +296,7 @@ function PaperDollFrame_SetRating(statFrame, ratingIndex)
 	elseif ( ratingIndex == CR_BLOCK ) then
 		statFrame.tooltip2 = format(CR_PARRY_TOOLTIP, ratingBonus);
 	elseif ( ratingIndex == CR_HIT_SPELL ) then
-		statFrame.tooltip2 = format(CR_HIT_SPELL_TOOLTIP, UnitLevel("player"), ratingBonus);
+		statFrame.tooltip2 = format(CR_HIT_SPELL_TOOLTIP, UnitLevel("player"), ratingBonus, GetSpellPenetration(), GetSpellPenetration());
 	elseif ( ratingIndex == CR_CRIT_SPELL ) then
 		local holySchool = 2;
 		local minCrit = GetSpellCritChance(holySchool);
@@ -426,24 +426,24 @@ end
 function PaperDollFrame_SetDodge(statFrame)
 	local chance = GetDodgeChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_DODGE, chance, 1);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_DODGE).." "..GetCombatRating(CR_DODGE)..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(CR_DODGE_TOOLTIP, GetCombatRatingBonus(CR_DODGE));
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("DODGE_CHANCE").." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = format(CR_DODGE_TOOLTIP, GetCombatRating(CR_DODGE), GetCombatRatingBonus(CR_DODGE));
 	statFrame:Show();
 end
 
 function PaperDollFrame_SetBlock(statFrame)
 	local chance = GetBlockChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BLOCK, chance, 1);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_BLOCK).." "..GetCombatRating(CR_BLOCK)..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(CR_BLOCK_TOOLTIP, GetCombatRatingBonus(CR_BLOCK), GetShieldBlock());
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("BLOCK_CHANCE").." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = format(CR_BLOCK_TOOLTIP, GetCombatRating(CR_BLOCK), GetCombatRatingBonus(CR_BLOCK), GetShieldBlock());
 	statFrame:Show();
 end
 
 function PaperDollFrame_SetParry(statFrame)
 	local chance = GetParryChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_PARRY, chance, 1);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_PARRY).." "..GetCombatRating(CR_PARRY)..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(CR_PARRY_TOOLTIP, GetCombatRatingBonus(CR_PARRY));
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("PARRY_CHANCE").." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = format(CR_PARRY_TOOLTIP, GetCombatRating(CR_PARRY), GetCombatRatingBonus(CR_PARRY));
 	statFrame:Show();
 end
 
@@ -929,6 +929,15 @@ function PaperDollFrame_SetSpellPenetration(statFrame)
 	statFrame:Show();
 end
 
+function PaperDollFrame_SetSpellHaste(statFrame)
+	getglobal(statFrame:GetName().."Label"):SetText(SPELL_HASTE..":");
+	local text = getglobal(statFrame:GetName().."StatText");
+	text:SetText(GetCombatRating(CR_HASTE_SPELL));
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. SPELL_HASTE .. FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = format(SPELL_HASTE_TOOLTIP, GetCombatRatingBonus(CR_HASTE_SPELL));
+	statFrame:Show();
+end
+
 function PaperDollFrame_SetManaRegen(statFrame)
 	getglobal(statFrame:GetName().."Label"):SetText(MANA_REGEN..":");
 	local text = getglobal(statFrame:GetName().."StatText");
@@ -948,11 +957,32 @@ function PaperDollFrame_SetManaRegen(statFrame)
 	statFrame:Show();
 end
 
-function PaperDollFrame_SetExpertise(statFrame)
-	local expertise = GetExpertise();
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_EXPERTISE, expertise);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_EXPERTISE).." "..expertise..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(CR_EXPERTISE_TOOLTIP, GetExpertisePercent(), GetCombatRating(CR_EXPERTISE), GetCombatRatingBonus(CR_EXPERTISE));
+function PaperDollFrame_SetExpertise(statFrame, unit)
+	if ( not unit ) then
+		unit = "player";
+	end
+	local expertise, offhandExpertise = GetExpertise();
+	local speed, offhandSpeed = UnitAttackSpeed(unit);
+	local text;
+	if( offhandSpeed ) then
+		text = expertise.." / "..offhandExpertise;
+	else
+		text = expertise;
+	end
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_EXPERTISE, text);
+	
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_EXPERTISE).." "..text..FONT_COLOR_CODE_CLOSE;
+	
+	local expertisePercent, offhandExpertisePercent = GetExpertisePercent();
+	expertisePercent = format("%.2f", expertisePercent);
+	if( offhandSpeed ) then
+		offhandExpertisePercent = format("%.2f", offhandExpertisePercent);
+		text = expertisePercent.."% / "..offhandExpertisePercent.."%";
+	else
+		text = expertisePercent.."%";
+	end
+	statFrame.tooltip2 = format(CR_EXPERTISE_TOOLTIP, text, GetCombatRating(CR_EXPERTISE), GetCombatRatingBonus(CR_EXPERTISE));
+
 	statFrame:Show();
 end
 
@@ -1522,7 +1552,7 @@ function UpdatePaperdollStats(prefix, index)
 		PaperDollFrame_SetRating(stat3, CR_HIT_SPELL);
 		PaperDollFrame_SetSpellCritChance(stat4);
 		stat4:SetScript("OnEnter", CharacterSpellCritChance_OnEnter);
-		PaperDollFrame_SetSpellPenetration(stat5);
+		PaperDollFrame_SetSpellHaste(stat5);
 		PaperDollFrame_SetManaRegen(stat6);
 	elseif ( index == "PLAYERSTAT_DEFENSES" ) then
 		PaperDollFrame_SetArmor(stat1);

@@ -15,7 +15,7 @@ function PetFrame_OnLoad()
 	this:RegisterEvent("PET_ATTACK_START");
 	this:RegisterEvent("PET_ATTACK_STOP");
 	this:RegisterEvent("UNIT_HAPPINESS");
-
+	this:RegisterEvent("PET_UI_UPDATE");
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, PetFrameDropDown);
 	end
@@ -49,10 +49,8 @@ end
 function PetFrame_OnEvent(event)
 	UnitFrame_OnEvent(event);
 
-	if ( event == "UNIT_PET" ) then
-		if ( arg1 == "player" ) then
-			PetFrame_Update();
-		end
+	if ( (event == "UNIT_PET" and arg1 == "player" ) or event == "PET_UI_UPDATE" ) then
+		PetFrame_Update();
 	elseif ( event == "UNIT_COMBAT" ) then
 		if ( arg1 == "pet" ) then
 			CombatFeedback_OnCombatEvent(arg2, arg3, arg4, arg5);

@@ -336,7 +336,7 @@ function TradeSkillFilter_OnTextChanged()
 		minLevel = approxLevel - 2;
 		maxLevel = approxLevel + 2;
 	else
-		minLevel, maxLevel = strmatch(text, "^(%d+)-*(%d*)$");
+		minLevel, maxLevel = strmatch(text, "^(%d+)%s*-*%s*(%d*)$");
 	end
 	if ( minLevel ) then
 		if ( maxLevel == "" or maxLevel < minLevel ) then

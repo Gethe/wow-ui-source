@@ -86,7 +86,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOption");
-						ShowUIPanel(UIOptionsFrame);
+						ShowUIPanel(InterfaceOptionsFrame);
 					</OnClick>
 				</Scripts>
 			</Button>

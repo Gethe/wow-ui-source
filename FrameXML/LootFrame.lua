@@ -140,7 +140,7 @@ end
 function LootFrame_OnShow()
 	this.numLootItems = GetNumLootItems();
 	
-	if ( LOOT_UNDER_MOUSE == "1" ) then
+	if ( GetCVar("lootUnderMouse") == "1" ) then
 		-- position loot window under mouse cursor		
 		local x, y = GetCursorPosition();
 		x = x / this:GetEffectiveScale();
@@ -319,6 +319,7 @@ function GroupLootFrame_OnEvent()
 	if ( event == "CANCEL_LOOT_ROLL" ) then
 		if ( arg1 == this.rollID ) then
 			this:Hide();
+			StaticPopup_Hide("CONFIRM_LOOT_ROLL", this.rollID);
 		end
 	end
 end

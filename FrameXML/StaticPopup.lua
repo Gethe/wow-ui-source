@@ -3,6 +3,50 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["CONFIRM_PURCHASE_TOKEN_ITEM"] = {
+	text = CONFIRM_PURCHASE_TOKEN_ITEM,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		BuyMerchantItem(MerchantFrame.itemIndex);
+	end,
+	OnCancel = function()
+	
+	end,
+	OnShow = function()
+	
+	end,
+	OnHide = function()
+	
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	hasItemFrame = 1,
+}
+
+StaticPopupDialogs["CONFIRM_COMPLETE_EXPENSIVE_QUEST"] = {
+	text = CONFIRM_COMPLETE_EXPENSIVE_QUEST,
+	button1 = COMPLETE_QUEST,
+	button2 = CANCEL,
+	OnAccept = function()
+		GetQuestReward(QuestFrameRewardPanel.itemChoice);
+		PlaySound("igQuestListComplete");
+	end,
+	OnCancel = function() 
+		DeclineQuest();
+		PlaySound("igQuestCancel");
+	end,
+	OnShow = function()
+		QuestFrameCompleteQuestButton:Disable();
+		QuestFrameCancelButton:Disable();
+	end,
+	OnHide = function()
+		QuestFrameCancelButton:Enable();
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	hasMoneyFrame = 1,
+};
 StaticPopupDialogs["USE_GUILDBANK_REPAIR"] = {
 	text = USE_GUILDBANK_REPAIR,
 	button1 = USE_PERSONAL_FUNDS,
@@ -877,8 +921,12 @@ StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 		StaticPopupDialogs["CHAT_CHANNEL_INVITE"].inviteAccepted = 1;
 		this:GetParent():Hide();
 	end,
-	EditBoxOnEscapePressed = function()
+	EditBoxOnEscapePressed = function(data)
 		this:GetParent():Hide();
+	end,
+	OnHide = function(data)
+		local name = data;
+		DeclineInvite(name);
 	end,
 	timeout = 60,
 	whileDead = 1,
@@ -1234,6 +1282,43 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 	EditBoxOnEnterPressed = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		AddFriend(editBox:GetText());
+		this:GetParent():Hide();
+	end,
+	EditBoxOnEscapePressed = function()
+		this:GetParent():Hide();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["SET_FRIENDNOTE"] = {
+	text = SET_FRIENDNOTE_LABEL,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 48,
+	hasWideEditBox = 1,
+	OnAccept = function()
+		local editBox = getglobal(this:GetParent():GetName().."WideEditBox");
+		SetFriendNotes(FriendsFrame.NotesID, editBox:GetText());
+	end,
+	OnShow = function()
+		local name, level, class, area, connected, status, note = GetFriendInfo(FriendsFrame.NotesID);
+		if ( note ) then
+			getglobal(this:GetName().."WideEditBox"):SetText(note);
+		end
+		getglobal(this:GetName().."WideEditBox"):SetFocus();
+	end,
+	OnHide = function()
+		if ( ChatFrameEditBox:IsShown() ) then
+			ChatFrameEditBox:SetFocus();
+		end
+		getglobal(this:GetName().."WideEditBox"):SetText("");
+	end,
+	EditBoxOnEnterPressed = function()
+		local editBox = getglobal(this:GetParent():GetName().."WideEditBox");
+		SetFriendNotes(FriendsFrame.NotesID, editBox:GetText());
 		this:GetParent():Hide();
 	end,
 	EditBoxOnEscapePressed = function()
@@ -1949,12 +2034,28 @@ function StaticPopup_Resize(dialog, which)
 	local text = getglobal(dialog:GetName().."Text");
 	local editBox = getglobal(dialog:GetName().."EditBox");
 	local button1 = getglobal(dialog:GetName().."Button1");
+	
+	local width = 320;
+	dialog:SetWidth(320);
+	if (StaticPopupDialogs[which].hasWideEditBox or StaticPopupDialogs[which].showAlert) then
+		-- Widen
+		width = 420;
+	elseif ( which == "HELP_TICKET" ) then
+		width = 350;
+	end
+	dialog:SetWidth(width);
+	
 	if ( StaticPopupDialogs[which].hasEditBox ) then
+		if ( StaticPopupDialogs[which].hasWideEditBox  ) then
+		
+		end
 		dialog:SetHeight(16 + text:GetHeight() + 8 + editBox:GetHeight() + 8 + button1:GetHeight() + 16);
 	elseif ( StaticPopupDialogs[which].hasMoneyFrame ) then
 		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 32);
 	elseif ( StaticPopupDialogs[which].hasMoneyInputFrame ) then
 		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 38);
+	elseif ( StaticPopupDialogs[which].hasItemFrame ) then
+		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 80);
 	else
 		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 16);
 	end
@@ -2101,21 +2202,15 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	local wideEditBox = getglobal(dialog:GetName().."WideEditBox");
 	local editBox = getglobal(dialog:GetName().."EditBox");
 	local alertIcon = getglobal(dialog:GetName().."AlertIcon");
-	alertIcon:Hide();
-	dialog:SetWidth(320);
-	if ( (which == "SET_GUILDMOTD") or (which == "SET_GUILDPLAYERNOTE") or (which == "SET_GUILDPLAYERNOTE") or (which == "SET_GUILDOFFICERNOTE" )) then
-		-- Widen
-		dialog:SetWidth(420);
-	elseif ( info.showAlert ) then
-		-- If is the delete item dialog display the error image
-		dialog:SetWidth(420);
+	if ( info.showAlert ) then
 		alertIcon:Show();
+	else
+		alertIcon:Hide();	
 	end
 
 	-- If is the ticket edit dialog then show the close button
 	if ( which == "HELP_TICKET" ) then
 		getglobal(dialog:GetName().."CloseButton"):Show();
-		dialog:SetWidth(350);
 	else
 		getglobal(dialog:GetName().."CloseButton"):Hide();
 	end
@@ -2170,6 +2265,20 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		getglobal(dialog:GetName().."MoneyInputFrame"):Hide();
 	end
 
+	-- Show or hide item button
+	if ( StaticPopupDialogs[which].hasItemFrame ) then
+		getglobal(dialog:GetName().."ItemFrame"):Show();
+		if ( data and type(data) == "table" ) then
+			getglobal(dialog:GetName().."ItemFrame").link = data.link
+			getglobal(dialog:GetName().."ItemFrameIconTexture"):SetTexture(data.texture);
+			local nameText = getglobal(dialog:GetName().."ItemFrameText");
+			nameText:SetTextColor(unpack(data.color or {1, 1, 1, 1}));
+			nameText:SetText(data.name);
+		end
+	else
+		getglobal(dialog:GetName().."ItemFrame"):Hide();
+	end
+	
 	-- Set the buttons of the dialog
 	local button1 = getglobal(dialog:GetName().."Button1");
 	local button2 = getglobal(dialog:GetName().."Button2");
@@ -2185,6 +2294,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 		elseif ( StaticPopupDialogs[which].hasMoneyInputFrame ) then
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -30);
+			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
+		elseif ( StaticPopupDialogs[which].hasItemFrame ) then
+			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -70);
 			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 		else
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -8);

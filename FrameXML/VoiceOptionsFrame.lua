@@ -40,15 +40,16 @@ end
 
 function VoiceOptionsFrame_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
-		local info = UIOptionsFrameCheckButtons[arg1];
-		if ( info ) then
-			info.value = arg2;
-			if ( info.cvar == "EnableVoiceChat" ) then
-				VoiceOptionsFrame_Update();
-			elseif ( info.cvar == "EnableMicrophone" ) then
-				VoiceOptionsFrame_UpdateMicrophoneControls();
-			end
-		end
+		--It turns out that this code wasn't doing anything actually related to the VoiceOptionsFrame. No items in UIOptionsFrameCheckButtons exist with cvars of "EnableVoiceChat" or "EnableMicrophone", making this pointless.
+		-- local info = UIOptionsFrameCheckButtons[arg1];
+		-- if ( info ) then
+			-- info.value = arg2;
+			-- if ( info.cvar == "EnableVoiceChat" ) then
+				-- VoiceOptionsFrame_Update();
+			-- elseif ( info.cvar == "EnableMicrophone" ) then
+				-- VoiceOptionsFrame_UpdateMicrophoneControls();
+			-- end
+		-- end
 		return;
 	elseif ( event == "SOUND_DEVICE_UPDATE" ) then
 		VoiceOptionsFrame_RefreshSoundDevices();
@@ -124,7 +125,7 @@ function VoiceOptionsFrame_Update()
 		end
 	else
 		UIDropDownMenu_EnableDropDown(VoiceOptionsFrameTypeDropDown);
-		if ( Sound_GetNumOutputDrivers() > 0 ) then
+		if ( Sound_ChatSystem_GetNumOutputDrivers() > 0 ) then
 			UIDropDownMenu_EnableDropDown(VoiceOptionsFrameOutputDeviceDropDown);
 		else
 			UIDropDownMenu_DisableDropDown(VoiceOptionsFrameOutputDeviceDropDown);
@@ -140,7 +141,7 @@ function VoiceOptionsFrame_Update()
 		end
 		OptionsFrame_EnableCheckBox(VoiceOptionsFrameCheckButton3);
 		
-		if ( Sound_GetNumInputDrivers() > 0 ) then
+		if ( Sound_ChatSystem_GetNumInputDrivers() > 0 ) then
 			OptionsFrame_EnableCheckBox(VoiceOptionsFrameCheckButton2);
 			VoiceOptionsFrame_UpdateMicrophoneControls();
 		else
@@ -296,11 +297,6 @@ function VoiceOptionsFrame_Cancel()
 end
 
 function VoiceOptionsFrame_Okay()
-	for index, value in pairs(UIOptionsFrameCheckButtons) do
-		if ( value.uvar ) then
-			setglobal(value.uvar, value.value);
-		end
-	end
 	MiniMapVoiceChat_Update();
 	VoiceChat_Toggle();
 end
@@ -508,7 +504,7 @@ function VoiceOptionsFrame_RefreshSoundDevices ()
 	initialValue = VoiceOptionsFrameInputDeviceDropDown.initialValue;
 	VoiceOptionsFrameInputDeviceDropDown.initialValue = nil;
 	
-	numDrivers = Sound_GetNumInputDrivers();
+	numDrivers = Sound_ChatSystem_GetNumInputDrivers();
 	if ( numDrivers > 0 ) then
 		currentDevice = UIDropDownMenu_GetText(VoiceOptionsFrameInputDeviceDropDown);
 		currentValue = UIDropDownMenu_GetSelectedValue(VoiceOptionsFrameInputDeviceDropDown);
@@ -540,12 +536,12 @@ function VoiceOptionsFrame_RefreshSoundDevices ()
 	initialValue = VoiceOptionsFrameOutputDeviceDropDown.initialValue;
 	VoiceOptionsFrameOutputDeviceDropDown.initialValue = nil;
 	
-	numDrivers = Sound_GetNumOutputDrivers();
+	numDrivers = Sound_ChatSystem_GetNumOutputDrivers();
 	if ( numDrivers > 0 ) then
 		currentDevice = UIDropDownMenu_GetText(VoiceOptionsFrameOutputDeviceDropDown);
 		currentValue = UIDropDownMenu_GetSelectedValue(VoiceOptionsFrameOutputDeviceDropDown);
 		for index = 0, numDrivers -1 do
-			deviceName = Sound_GetOutputDriverNameByIndex(index);
+			deviceName = Sound_ChatSystem_GetOutputDriverNameByIndex(index);
 			if ( deviceName == currentDevice ) then
 				UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameOutputDeviceDropDown, index);
 				UIDropDownMenu_SetText(deviceName, VoiceOptionsFrameOutputDeviceDropDown);
@@ -587,10 +583,10 @@ end
 
 function VoiceOptionsFrameInputDeviceDropDown_Initialize()
 	local selectedInputDriverIndex = GetCVar("Sound_VoiceChatInputDriverIndex");
-	local num = Sound_GetNumInputDrivers();
+	local num = Sound_ChatSystem_GetNumInputDrivers();
 	local info = UIDropDownMenu_CreateInfo();
 	for index=0,num-1,1 do
-		local description = Sound_GetInputDriverNameByIndex(index);
+		local description = Sound_ChatSystem_GetInputDriverNameByIndex(index);
 		info.text = description;
 		info.value = index;
 		info.checked = nil;
@@ -625,10 +621,10 @@ end
 
 function VoiceOptionsFrameOutputDeviceDropDown_Initialize()
 	local selectedOutputDriverIndex = GetCVar("Sound_VoiceChatOutputDriverIndex");
-	local num = Sound_GetNumOutputDrivers();
+	local num = Sound_ChatSystem_GetNumOutputDrivers();
 	local info = UIDropDownMenu_CreateInfo();
 	for index=0,num-1,1 do
-		local description = Sound_GetOutputDriverNameByIndex(index);
+		local description = Sound_ChatSystem_GetOutputDriverNameByIndex(index);
 		info.text = description;
 		info.value = index;
         info.checked = nil;

@@ -703,6 +703,7 @@
 			</OnShow>
 			<OnHide>
 				VoiceChatTalkers:SetAlpha(0);
+				VoiceChat_StopPlayingLoopbackSound();
 			</OnHide>
 			<OnEvent>
 				VoiceOptionsFrame_OnEvent(self, event, ...);

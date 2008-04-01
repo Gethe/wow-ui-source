@@ -123,9 +123,17 @@ function PlayerFrame_OnEvent(event)
 	elseif ( event == "PLAYER_REGEN_DISABLED" ) then
 		this.onHateList = 1;
 		PlayerFrame_UpdateStatus();
+
+		if ( tonumber(SHOW_FULLSCREEN_STATUS) ~= 0 ) then
+			CombatFeedback_StartFullscreenStatus();
+		end
 	elseif ( event == "PLAYER_REGEN_ENABLED" ) then
 		this.onHateList = nil;
 		PlayerFrame_UpdateStatus();
+
+		if ( LowHealthFrame.flashing ) then
+			CombatFeedback_StopFullscreenStatus();
+		end
 	elseif ( event == "PLAYER_UPDATE_RESTING" ) then
 		PlayerFrame_UpdateStatus();
 	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then

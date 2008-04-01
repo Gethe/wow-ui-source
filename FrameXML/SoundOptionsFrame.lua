@@ -29,6 +29,7 @@ SoundOptionsFrameSliders = {
 	{ index = 4, text = AMBIENCE_VOLUME, cvar = "Sound_AmbienceVolume", minValue = 0, maxValue = 1, valueStep = 0.1, initialValue = nil , tooltipText = OPTION_TOOLTIP_AMBIENCE_VOLUME},
 	{ index = 1, text = MASTER_VOLUME, cvar = "Sound_MasterVolume", minValue = 0, maxValue = 1, valueStep = 0.1, initialValue = nil , tooltipText = OPTION_TOOLTIP_MASTER_VOLUME},
 	{ index = 5, text = SOUND_CHANNELS, cvar = "Sound_NumChannels", minValue = 2, maxValue = 3, valueStep = 1, initialValue = nil, tooltipText = OPTION_TOOLTIP_SOUND_CHANNELS},
+	{ index = 6, text = SOUND_QUALITY, cvar = "Sound_OutputQuality", minValue = 0, maxValue = 2, valueStep = 1, initialValue = 1, tooltipText = OPTION_TOOLTIP_SOUND_QUALITY},
 };
 
 function SoundOptionsFrame_Init()
@@ -49,7 +50,7 @@ function SoundOptionsFrame_Init()
 end
 
 function SoundOptionsFrame_OnEvent(self, event, ...)
-	if ( event == "CVAR_UPDATE" ) then
+	if ( event == "CVAR_UPDATE" and SoundOptionsFrame:IsVisible() ) then
 		SoundOptionsFrame_Load();
 	elseif ( event == "SOUND_DEVICE_UPDATE" ) then
 		SoundOptionsFrame_RefreshSoundDevices();
@@ -281,7 +282,7 @@ function SoundOptionsFrame_UpdateDependencies()
 		for i, value in pairs(SoundOptionsFrameSliders) do
 			AudioOptionsFrame_EnableSlider(getglobal("SoundOptionsFrameSlider"..value.index));
 		end
-		if ( Sound_GetNumOutputDrivers() > 0 ) then
+		if ( Sound_GameSystem_GetNumOutputDrivers() > 0 ) then
 			UIDropDownMenu_EnableDropDown(SoundOptionsOutputDropDown);
 		else
 			UIDropDownMenu_DisableDropDown(SoundOptionsOutputDropDown);
@@ -306,12 +307,12 @@ function SoundOptionsFrame_RefreshSoundDevices()
 	initialValue = SoundOptionsOutputDropDown.initalValue;
 	SoundOptionsOutputDropDown.initalValue = nil;
 	
-	numDrivers = Sound_GetNumOutputDrivers();
+	numDrivers = Sound_GameSystem_GetNumOutputDrivers();
 	if ( numDrivers > 0 ) then
 		currentDevice = UIDropDownMenu_GetText(SoundOptionsOutputDropDown);
 		currentValue = UIDropDownMenu_GetSelectedValue(SoundOptionsOutputDropDown);
 		for index = 0, numDrivers - 1 do
-			deviceName = Sound_GetOutputDriverNameByIndex(index);
+			deviceName = Sound_GameSystem_GetOutputDriverNameByIndex(index);
 			if ( deviceName == currentDevice ) then
 				UIDropDownMenu_SetSelectedValue(SoundOptionsOutputDropDown, index);
 				UIDropDownMenu_SetText(deviceName, SoundOptionsOutputDropDown);
@@ -340,7 +341,7 @@ function SoundOptionsOutputDropDown_Load()
 	SoundOptionsOutputDropDown.initialValue = selectedDriverIndex;
 
 --	local deviceName = GetCVar("Sound_OutputDriverName");
-	local deviceName = Sound_GetOutputDriverNameByIndex(tonumber(selectedDriverIndex));
+	local deviceName = Sound_GameSystem_GetOutputDriverNameByIndex(tonumber(selectedDriverIndex));
 	SoundOptionsOutputDropDown.initialText = deviceName;
 
 	UIDropDownMenu_SetSelectedValue(SoundOptionsOutputDropDown, deviceName, 1);
@@ -356,10 +357,10 @@ end
 
 function SoundOptionsOutputDropDown_Initialize()
 	local selectedDriverIndex = GetCVar("Sound_OutputDriverIndex");
-	local num = Sound_GetNumOutputDrivers();
+	local num = Sound_GameSystem_GetNumOutputDrivers();
 	local info = UIDropDownMenu_CreateInfo();
 	for index=0,num-1,1 do
-		local description = Sound_GetOutputDriverNameByIndex(index);
+		local description = Sound_GameSystem_GetOutputDriverNameByIndex(index);
 		info.text = description;
 		info.value = index;
 		info.checked = nil;

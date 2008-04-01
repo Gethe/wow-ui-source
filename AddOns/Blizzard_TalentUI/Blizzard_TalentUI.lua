@@ -13,7 +13,14 @@ end
 
 
 function PlayerTalentFrameTalent_OnClick()
-	LearnTalent(PanelTemplates_GetSelectedTab(PlayerTalentFrame), this:GetID());
+	if ( IsModifiedClick("CHATLINK") ) then
+		local link = GetTalentLink(PanelTemplates_GetSelectedTab(PlayerTalentFrame), this:GetID());
+		if ( link ) then
+			ChatEdit_InsertLink(link);
+		end
+	else
+		LearnTalent(PanelTemplates_GetSelectedTab(PlayerTalentFrame), this:GetID());
+	end
 end
 
 function PlayerTalentFrameTalent_OnEvent()

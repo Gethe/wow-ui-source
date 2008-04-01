@@ -152,49 +152,6 @@ function FCFOptionsDropDown_Initialize()
 			return;
 		end
 
-		-- If this is the spell messages menu then show the message dropdown
-		if ( UIDROPDOWNMENU_MENU_VALUE == SPELL_MESSAGES ) then
-			-- Other Combat Messages header
-			info = UIDropDownMenu_CreateInfo();
-			info.text = SPELL_MESSAGES;
-			info.notClickable = 1;
-			info.isTitle = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-			--Populate list
-			FCFDropDown_LoadChatTypes(SpellLogMenuChatTypeGroups );
-			return;
-		end
-
-		-- If this is the second spell messages menu then show the message dropdown
-		if ( UIDROPDOWNMENU_MENU_VALUE == SPELL_OTHER_MESSAGES ) then
-			-- Other Combat Messages header
-			info = UIDropDownMenu_CreateInfo();
-			info.text = SPELL_OTHER_MESSAGES;
-			info.notClickable = 1;
-			info.isTitle = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-			--Populate list
-			FCFDropDown_LoadChatTypes(SpellLogOtherMenuChatTypeGroups );
-			return;
-		end
-
-		-- If this is the periodic messages menu then show the message dropdown
-		if ( UIDROPDOWNMENU_MENU_VALUE == PERIODIC_MESSAGES ) then
-			-- Other Combat Messages header
-			info = UIDropDownMenu_CreateInfo();
-			info.text = PERIODIC_MESSAGES;
-			info.notClickable = 1;
-			info.isTitle = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-			--Populate list
-			FCFDropDown_LoadChatTypes(PeriodicLogMenuChatTypeGroups );
-			return;
-		end
-
-
 		-- If this is the system messages menu then show the message dropdown
 		if ( UIDROPDOWNMENU_MENU_VALUE == SYSTEM_MESSAGES ) then
 			-- System Messages header
@@ -326,33 +283,6 @@ function FCFOptionsDropDown_Initialize()
 	-- Combat message list
 	info = UIDropDownMenu_CreateInfo();
 	info.text = COMBAT_MESSAGES;
-	--info.notClickable = 1;
-	info.hasArrow = 1;
-	info.func = nil;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	-- Spell message list
-	info = UIDropDownMenu_CreateInfo();
-	info.text = SPELL_MESSAGES;
-	--info.notClickable = 1;
-	info.hasArrow = 1;
-	info.func = nil;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	-- Other Spell message list
-	info = UIDropDownMenu_CreateInfo();
-	info.text = SPELL_OTHER_MESSAGES;
-	--info.notClickable = 1;
-	info.hasArrow = 1;
-	info.func = nil;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	-- Periodic message list
-	info = UIDropDownMenu_CreateInfo();
-	info.text = PERIODIC_MESSAGES;
 	--info.notClickable = 1;
 	info.hasArrow = 1;
 	info.func = nil;
@@ -852,7 +782,7 @@ function FCF_OnUpdate(elapsed)
 		
 		-- New version of the crazy function
 		if ( FCF_IsValidChatFrame(chatFrame) ) then
-			if ( (MouseIsOver(chatFrame, 45, -10, -5, 5) or chatFrame.resizing) and not UIOptionsFrame:IsShown()) then
+			if ( (MouseIsOver(chatFrame, 45, -10, -5, 5) or chatFrame.resizing) ) then
 				-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 				if ( chatFrame.hover ) then
 					if ( (chatFrame.oldX == xPos and chatFrame.oldy == yPos) or REMOVE_CHAT_DELAY == "1" ) then

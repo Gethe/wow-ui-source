@@ -862,6 +862,27 @@
 					</OnClick>
                 </Scripts>
             </Button>
+			<Button name="GuildBankFrameTab4" inherits="CharacterFrameTabButtonTemplate" text="GUILD_BANK_TAB_INFO" id="4">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="GuildBankFrameTab3" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText("", 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						GuildBankFrameTab_OnClick(this:GetID());
+					</OnClick>
+                </Scripts>
+            </Button>
 			<Frame name="GuildBankTab1" inherits="GuildBankTabTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="GuildBankFrame" relativePoint="TOPRIGHT">
@@ -1050,6 +1071,99 @@
 						</Scripts>
 					</ScrollFrame>
 				</Frames>
+			</Frame>
+			<Frame name="GuildBankInfo" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankFrame" relativePoint="TOPLEFT">
+						<Offset x="32" y="-74"/>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="GuildBankInfoSaveButton" inherits="UIPanelButtonTemplate" text="SAVE_CHANGES">
+						<Size>
+							<AbsDimension x="100" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="GuildBankFrame" relativePoint="BOTTOMLEFT">
+								<Offset x="25" y="37"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetWidth(getglobal(this:GetName().."Text"):GetWidth()+40);
+							</OnLoad>
+							<OnClick>
+								if ( GuildBankTabInfoEditBox:GetText() ) then
+									SetGuildBankText(GetCurrentGuildBankTab(), GuildBankTabInfoEditBox:GetText());
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="GuildBankInfoScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="691" y="306"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnMouseDown>
+								if ( CanEditGuildTabInfo(GetCurrentGuildBankTab()) ) then
+									GuildBankTabInfoEditBox:SetFocus();
+								else
+									GuildBankTabInfoEditBox:ClearFocus();
+								end
+							</OnMouseDown>
+							<OnMouseUp>
+								if ( CanEditGuildTabInfo(GetCurrentGuildBankTab()) ) then
+									GuildBankTabInfoEditBox:SetFocus();
+								else
+									GuildBankTabInfoEditBox:ClearFocus();
+								end
+							</OnMouseUp> 
+						</Scripts>
+						<ScrollChild>
+							<EditBox name="GuildBankTabInfoEditBox" letters="500" multiLine="true" autoFocus="false">
+								<Size>
+									<AbsDimension x="690" y="218"/>
+								</Size>
+								<Scripts>
+									<OnEscapePressed>
+										this:ClearFocus();
+									</OnEscapePressed>
+									<OnTextChanged>
+										local scrollBar = getglobal(this:GetParent():GetName().."ScrollBar")
+										local min;
+										local max;
+										min, max = scrollBar:GetMinMaxValues();
+										if ( max > 0 and (this.max ~= max) ) then
+											this.max = max;
+											scrollBar:SetValue(max);
+										end
+										if ( CanEditGuildTabInfo(GetCurrentGuildBankTab()) ) then
+											GuildBankInfoSaveButton:Show();
+										else
+											GuildBankInfoSaveButton:Hide();
+										end
+									</OnTextChanged>
+								</Scripts>
+								<FontString inherits="GameFontHighlight"/>
+							</EditBox>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnHide>
+						GuildBankInfoSaveButton:Click();
+					</OnHide>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

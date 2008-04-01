@@ -93,8 +93,16 @@ function QuestRewardCompleteButton_OnClick()
 	if ( QuestFrameRewardPanel.itemChoice == 0 and GetNumQuestChoices() > 0 ) then
 		QuestChooseRewardError();
 	else
-		GetQuestReward(QuestFrameRewardPanel.itemChoice);
-		PlaySound("igQuestListComplete");
+		local money = GetQuestMoneyToGet();
+		if ( money and money > 0 ) then
+			QuestFrame.dialog = StaticPopup_Show("CONFIRM_COMPLETE_EXPENSIVE_QUEST");
+			if ( QuestFrame.dialog ) then
+				MoneyFrame_Update(QuestFrame.dialog:GetName().."MoneyFrame", money);
+			end
+		else
+			GetQuestReward(QuestFrameRewardPanel.itemChoice);
+			PlaySound("igQuestListComplete");
+		end
 	end
 end
 
@@ -276,6 +284,10 @@ function QuestFrame_OnHide()
 	QuestFrameDetailPanel:Hide();
 	QuestFrameRewardPanel:Hide();
 	QuestFrameProgressPanel:Hide();
+	if ( QuestFrame.dialog ) then
+		QuestFrame.dialog:Hide();
+		QuestFrame.dialog = nil;
+	end
 	CloseQuest();
 	PlaySound("igQuestListClose");
 end

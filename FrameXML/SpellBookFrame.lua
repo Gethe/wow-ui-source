@@ -293,6 +293,12 @@ function SpellButton_OnModifiedClick(button)
 				end
 			end
 			return;
+		else
+			local spellLink = GetSpellLink(id, SpellBookFrame.bookType);
+			if(spellLink) then
+				ChatEdit_InsertLink(spellLink);
+			end
+			return;
 		end
 	end
 	if ( IsModifiedClick("PICKUPACTION") ) then

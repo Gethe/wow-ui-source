@@ -86,10 +86,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ToggleDropDownMenu(this:GetParent():GetParent():GetID() + 1, this:GetParent().value);
+						ToggleDropDownMenu(this:GetParent():GetParent():GetID() + 1, this:GetParent().value, nil, nil, nil, nil, this:GetParent().menuList);
 					</OnClick>
 					<OnEnter>
-						ToggleDropDownMenu(this:GetParent():GetParent():GetID() + 1, this:GetParent().value);
+						ToggleDropDownMenu(this:GetParent():GetParent():GetID() + 1, this:GetParent().value, nil, nil, nil, nil, this:GetParent().menuList);
 						UIDropDownMenu_StopCounting(this:GetParent():GetParent());
 					</OnEnter>
 					<OnLeave>
@@ -125,7 +125,7 @@
 			</OnClick>
 			<OnEnter>
 				if ( this.hasArrow ) then
-					ToggleDropDownMenu(this:GetParent():GetID() + 1, this.value);
+					ToggleDropDownMenu(this:GetParent():GetID() + 1, this.value, nil, nil, nil, nil, this.menuList);
 				else
 					CloseDropDownMenus(this:GetParent():GetID() + 1);
 				end

@@ -50,16 +50,17 @@ function ReadyCheckFrame_OnUpdate(elapsed)
 end
 
 function ReadyCheck_Start(readyCheckFrame)
-	getglobal(readyCheckFrame:GetName().."Texture"):SetTexture(READY_CHECK_WAITING_TEXTURE);
-	readyCheckFrame:SetAlpha(1);
-	readyCheckFrame:Show();
-
 	readyCheckFrame:SetScript("OnUpdate", nil);
 
+	getglobal(readyCheckFrame:GetName().."Texture"):SetTexture(READY_CHECK_WAITING_TEXTURE);
 	readyCheckFrame.state = "waiting";
+	readyCheckFrame:SetAlpha(1);
+	readyCheckFrame:Show();
 end
 
 function ReadyCheck_Confirm(readyCheckFrame, ready)
+	readyCheckFrame:SetScript("OnUpdate", nil);
+
 	if ( ready == 1 ) then
 		getglobal(readyCheckFrame:GetName().."Texture"):SetTexture(READY_CHECK_READY_TEXTURE);
 		readyCheckFrame.state = "ready";
@@ -84,12 +85,8 @@ function ReadyCheck_Finish(readyCheckFrame, fadeTime, onFinishFunc, onFinishFunc
 	else
 		readyCheckFrame.fadeTimer = 1.5;
 	end
-	if ( onFinishFunc ) then
-		readyCheckFrame.onFinishFunc = onFinishFunc;
-	end
-	if ( onFinishFuncArg ) then
-		readyCheckFrame.onFinishFuncArg = onFinishFuncArg;
-	end
+	readyCheckFrame.onFinishFunc = onFinishFunc;
+	readyCheckFrame.onFinishFuncArg = onFinishFuncArg;
 end
 
 function ReadyCheck_OnUpdate(readyCheckFrame, elapsed)

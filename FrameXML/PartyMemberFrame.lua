@@ -26,8 +26,6 @@ function PartyMemberFrame_OnLoad()
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	this:RegisterEvent("PARTY_LEADER_CHANGED");
-	this:RegisterEvent("PARTY_MEMBER_ENABLE");
-	this:RegisterEvent("PARTY_MEMBER_DISABLE");
 	this:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
 	this:RegisterEvent("MUTELIST_UPDATE");
 	this:RegisterEvent("IGNORELIST_UPDATE");
@@ -230,14 +228,6 @@ function PartyMemberFrame_OnEvent(event)
 		PartyMemberFrame_UpdateLeader();
 		return;
 	end
-
-	--if ( event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then
-	--	if ( arg1 == this:GetID() ) then
-	--		UnitFrame_Update();
-	--		PartyMemberFrame_RefreshBuffs();
-	--	end
-	--	return;
-	--end
 
 	if ( event == "PARTY_LOOT_METHOD_CHANGED" ) then
 		local lootMethod;

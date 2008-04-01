@@ -62,12 +62,12 @@
 
 			<Frame name="$parentPlayback" inherits="OptionFrameBoxTemplate">
 				<Size>
-					<AbsDimension x="180" y="270"/>
+					<AbsDimension x="180" y="290"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="20" y="-65"/>
+							<AbsDimension x="20" y="-60"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -168,10 +168,17 @@
 							</OnEnter>
 						</Scripts>
 					</CheckButton>
+					<Slider name="SoundOptionsFrameSlider6" inherits="SoundOptionsLowHighSliderTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SoundOptionsFrameCheckButton10" relativePoint="BOTTOMLEFT">
+								<Offset x="14" y="-15"/>
+							</Anchor>
+						</Anchors>
+					</Slider>					
 				</Frames>
 			</Frame>
 			<Frame name="$parentHardware" inherits="OptionFrameBoxTemplate">
-				<Size x="180" y="125"/>
+				<Size x="180" y="135"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPlayback" relativePoint="TOPRIGHT">
 						<Offset x="3" y="0"/>
@@ -251,10 +258,10 @@
 				</Frames>
 			</Frame>
 			<Frame name="$parentVolume" inherits="OptionFrameBoxTemplate">
-				<Size x="180" y="130"/>
+				<Size x="180" y="137"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-15"/>
+						<Offset x="0" y="-18"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>

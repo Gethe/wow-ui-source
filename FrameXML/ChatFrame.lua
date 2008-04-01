@@ -6,8 +6,6 @@ NUM_CHAT_WINDOWS = 7;
 DEFAULT_CHAT_FRAME = ChatFrame1;
 NUM_REMEMBERED_TELLS = 10;
 
-pendingSpellCast = nil;
-
 -- These hash tables are to improve performance of common lookups
 -- if you change what these tables point to (ie slash command, emote, chat)
 -- then you need to invalidate the entry in the hash table
@@ -17,6 +15,7 @@ hash_EmoteTokenList = {}
 hash_ChatTypeInfoList = {}
 
 ChatTypeInfo = { };
+ChatTypeInfo["SYSTEM"]									= { sticky = 0 };
 ChatTypeInfo["SAY"]										= { sticky = 1 };
 ChatTypeInfo["PARTY"]									= { sticky = 1 };
 ChatTypeInfo["RAID"]									= { sticky = 1 };
@@ -28,11 +27,10 @@ ChatTypeInfo["WHISPER_INFORM"]							= { sticky = 0 };
 ChatTypeInfo["REPLY"]									= { sticky = 0 };
 ChatTypeInfo["EMOTE"]									= { sticky = 0 };
 ChatTypeInfo["TEXT_EMOTE"]								= { sticky = 0 };
-ChatTypeInfo["SYSTEM"]									= { sticky = 0 };
-ChatTypeInfo["MONSTER_WHISPER"]							= { sticky = 0 };
-ChatTypeInfo["MONSTER_PARTY"]							= { sticky = 0 };
 ChatTypeInfo["MONSTER_SAY"]								= { sticky = 0 };
+ChatTypeInfo["MONSTER_PARTY"]							= { sticky = 0 };
 ChatTypeInfo["MONSTER_YELL"]							= { sticky = 0 };
+ChatTypeInfo["MONSTER_WHISPER"]							= { sticky = 0 };
 ChatTypeInfo["MONSTER_EMOTE"]							= { sticky = 0 };
 ChatTypeInfo["CHANNEL"]									= { sticky = 0 };
 ChatTypeInfo["CHANNEL_JOIN"]							= { sticky = 0 };
@@ -45,8 +43,25 @@ ChatTypeInfo["DND"]										= { sticky = 0 };
 ChatTypeInfo["IGNORED"]									= { sticky = 0 };
 ChatTypeInfo["SKILL"]									= { sticky = 0 };
 ChatTypeInfo["LOOT"]									= { sticky = 0 };
-ChatTypeInfo["COMBAT_ERROR"]							= { sticky = 0 };
+ChatTypeInfo["MONEY"]									= { sticky = 0 };
+ChatTypeInfo["OPENING"]									= { sticky = 0 };
+ChatTypeInfo["TRADESKILLS"]								= { sticky = 0 };
+ChatTypeInfo["PET_INFO"]								= { sticky = 0 };
 ChatTypeInfo["COMBAT_MISC_INFO"]						= { sticky = 0 };
+ChatTypeInfo["COMBAT_XP_GAIN"]							= { sticky = 0 };
+ChatTypeInfo["COMBAT_HONOR_GAIN"]						= { sticky = 0 };
+ChatTypeInfo["COMBAT_FACTION_CHANGE"]					= { sticky = 0 };
+ChatTypeInfo["BG_SYSTEM_NEUTRAL"]						= { sticky = 0 };
+ChatTypeInfo["BG_SYSTEM_ALLIANCE"]						= { sticky = 0 };
+ChatTypeInfo["BG_SYSTEM_HORDE"]							= { sticky = 0 };
+ChatTypeInfo["RAID_LEADER"]								= { sticky = 0 };
+ChatTypeInfo["RAID_WARNING"]							= { sticky = 0 };
+ChatTypeInfo["RAID_BOSS_WHISPER"]						= { sticky = 0 };
+ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0 };
+ChatTypeInfo["FILTERED"]								= { sticky = 0 };
+ChatTypeInfo["BATTLEGROUND"]                            = { sticky = 1 };
+ChatTypeInfo["BATTLEGROUND_LEADER"]                     = { sticky = 0 };
+ChatTypeInfo["RESTRICTED"] 			                    = { sticky = 0 };
 ChatTypeInfo["CHANNEL1"]								= { sticky = 0 };
 ChatTypeInfo["CHANNEL2"]								= { sticky = 0 };
 ChatTypeInfo["CHANNEL3"]								= { sticky = 0 };
@@ -57,73 +72,6 @@ ChatTypeInfo["CHANNEL7"]								= { sticky = 0 };
 ChatTypeInfo["CHANNEL8"]								= { sticky = 0 };
 ChatTypeInfo["CHANNEL9"]								= { sticky = 0 };
 ChatTypeInfo["CHANNEL10"]								= { sticky = 0 };
-ChatTypeInfo["COMBAT_SELF_HITS"]						= { sticky = 0 };
-ChatTypeInfo["COMBAT_SELF_MISSES"]						= { sticky = 0 };
-ChatTypeInfo["COMBAT_PET_HITS"]							= { sticky = 0 };
-ChatTypeInfo["COMBAT_PET_MISSES"]						= { sticky = 0 };
-ChatTypeInfo["COMBAT_PARTY_HITS"]						= { sticky = 0 };
-ChatTypeInfo["COMBAT_PARTY_MISSES"]						= { sticky = 0 };
-ChatTypeInfo["COMBAT_FRIENDLYPLAYER_HITS"]				= { sticky = 0 };
-ChatTypeInfo["COMBAT_FRIENDLYPLAYER_MISSES"]			= { sticky = 0 };
-ChatTypeInfo["COMBAT_HOSTILEPLAYER_HITS"]				= { sticky = 0 };
-ChatTypeInfo["COMBAT_HOSTILEPLAYER_MISSES"]				= { sticky = 0 };
-ChatTypeInfo["COMBAT_CREATURE_VS_SELF_HITS"]			= { sticky = 0 };
-ChatTypeInfo["COMBAT_CREATURE_VS_SELF_MISSES"]			= { sticky = 0 };
-ChatTypeInfo["COMBAT_CREATURE_VS_PARTY_HITS"]			= { sticky = 0 };
-ChatTypeInfo["COMBAT_CREATURE_VS_PARTY_MISSES"]			= { sticky = 0 };
-ChatTypeInfo["COMBAT_CREATURE_VS_CREATURE_HITS"]		= { sticky = 0 };
-ChatTypeInfo["COMBAT_CREATURE_VS_CREATURE_MISSES"]		= { sticky = 0 };
-ChatTypeInfo["COMBAT_FRIENDLY_DEATH"]					= { sticky = 0 };
-ChatTypeInfo["COMBAT_HOSTILE_DEATH"]					= { sticky = 0 };
-ChatTypeInfo["COMBAT_XP_GAIN"]							= { sticky = 0 };
-ChatTypeInfo["COMBAT_HONOR_GAIN"]						= { sticky = 0 };
-ChatTypeInfo["SPELL_SELF_DAMAGE"]						= { sticky = 0 };
-ChatTypeInfo["SPELL_SELF_BUFF"]							= { sticky = 0 };
-ChatTypeInfo["SPELL_PET_DAMAGE"]						= { sticky = 0 };
-ChatTypeInfo["SPELL_PET_BUFF"]							= { sticky = 0 };
-ChatTypeInfo["SPELL_PARTY_DAMAGE"]						= { sticky = 0 };
-ChatTypeInfo["SPELL_PARTY_BUFF"]						= { sticky = 0 };
-ChatTypeInfo["SPELL_FRIENDLYPLAYER_DAMAGE"]				= { sticky = 0 };
-ChatTypeInfo["SPELL_FRIENDLYPLAYER_BUFF"]				= { sticky = 0 };
-ChatTypeInfo["SPELL_HOSTILEPLAYER_DAMAGE"]				= { sticky = 0 };
-ChatTypeInfo["SPELL_HOSTILEPLAYER_BUFF"]				= { sticky = 0 };
-ChatTypeInfo["SPELL_CREATURE_VS_SELF_DAMAGE"]			= { sticky = 0 };
-ChatTypeInfo["SPELL_CREATURE_VS_SELF_BUFF"]				= { sticky = 0 };
-ChatTypeInfo["SPELL_CREATURE_VS_PARTY_DAMAGE"]			= { sticky = 0 };
-ChatTypeInfo["SPELL_CREATURE_VS_PARTY_BUFF"]			= { sticky = 0 };
-ChatTypeInfo["SPELL_CREATURE_VS_CREATURE_DAMAGE"]		= { sticky = 0 };
-ChatTypeInfo["SPELL_CREATURE_VS_CREATURE_BUFF"]			= { sticky = 0 };
-ChatTypeInfo["SPELL_TRADESKILLS"]						= { sticky = 0 };
-ChatTypeInfo["SPELL_DAMAGESHIELDS_ON_SELF"]				= { sticky = 0 };
-ChatTypeInfo["SPELL_DAMAGESHIELDS_ON_OTHERS"]			= { sticky = 0 };
-ChatTypeInfo["SPELL_AURA_GONE_SELF"]					= { sticky = 0 };
-ChatTypeInfo["SPELL_AURA_GONE_PARTY"]					= { sticky = 0 };
-ChatTypeInfo["SPELL_AURA_GONE_OTHER"]					= { sticky = 0 };
-ChatTypeInfo["SPELL_ITEM_ENCHANTMENTS"]					= { sticky = 0 };
-ChatTypeInfo["SPELL_BREAK_AURA"]						= { sticky = 0 };
-ChatTypeInfo["SPELL_PERIODIC_SELF_DAMAGE"]				= { sticky = 0 };
-ChatTypeInfo["SPELL_PERIODIC_SELF_BUFFS"]				= { sticky = 0 };
-ChatTypeInfo["SPELL_PERIODIC_PARTY_DAMAGE"]				= { sticky = 0 };
-ChatTypeInfo["SPELL_PERIODIC_PARTY_BUFFS"]				= { sticky = 0 };
-ChatTypeInfo["SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE"]	= { sticky = 0 };
-ChatTypeInfo["SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS"]		= { sticky = 0 };
-ChatTypeInfo["SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE"]		= { sticky = 0 };
-ChatTypeInfo["SPELL_PERIODIC_HOSTILEPLAYER_BUFFS"]		= { sticky = 0 };
-ChatTypeInfo["SPELL_PERIODIC_CREATURE_DAMAGE"]			= { sticky = 0 };
-ChatTypeInfo["SPELL_PERIODIC_CREATURE_BUFFS"]			= { sticky = 0 };
-ChatTypeInfo["SPELL_FAILED_LOCALPLAYER"]				= { sticky = 0 };
-ChatTypeInfo["BG_SYSTEM_NEUTRAL"]						= { sticky = 0 };
-ChatTypeInfo["BG_SYSTEM_ALLIANCE"]						= { sticky = 0 };
-ChatTypeInfo["BG_SYSTEM_HORDE"]							= { sticky = 0 };
-ChatTypeInfo["COMBAT_FACTION_CHANGE"]					= { sticky = 0 };
-ChatTypeInfo["MONEY"]									= { sticky = 0 };
-ChatTypeInfo["RAID_LEADER"]								= { sticky = 0 };
-ChatTypeInfo["RAID_WARNING"]							= { sticky = 0 };
-ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0 };
-ChatTypeInfo["FILTERED"]								= { sticky = 0 };
-ChatTypeInfo["BATTLEGROUND"]                            = { sticky = 1 };
-ChatTypeInfo["BATTLEGROUND_LEADER"]                     = { sticky = 0 };
-ChatTypeInfo["RESTRICTED"] 			                    = { sticky = 0 };
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
 	"CHAT_MSG_SYSTEM",
@@ -174,6 +122,7 @@ ChatTypeGroup["CREATURE"] = {
 	"CHAT_MSG_MONSTER_WHISPER",
 	"CHAT_MSG_MONSTER_PARTY",
 	"CHAT_MSG_RAID_BOSS_EMOTE",
+	"CHAT_MSG_RAID_BOSS_WHISPER",
 };
 ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_JOIN",
@@ -188,65 +137,17 @@ ChatTypeGroup["LOOT"] = {
 	"CHAT_MSG_LOOT",
 	"CHAT_MSG_MONEY",
 };
-ChatTypeGroup["COMBAT_ERROR"] = {
-	"CHAT_MSG_COMBAT_ERROR";
+ChatTypeGroup["OPENING"] = {
+	"CHAT_MSG_OPENING";
+};
+ChatTypeGroup["TRADESKILLS"] = {
+	"CHAT_MSG_TRADESKILLS";
+};
+ChatTypeGroup["PET_INFO"] = {
+	"CHAT_MSG_PET_INFO";
 };
 ChatTypeGroup["COMBAT_MISC_INFO"] = {
 	"CHAT_MSG_COMBAT_MISC_INFO";
-};
-ChatTypeGroup["COMBAT_SELF_HITS"] = {
-	"CHAT_MSG_COMBAT_SELF_HITS";
-};
-ChatTypeGroup["COMBAT_SELF_MISSES"] = {
-	"CHAT_MSG_COMBAT_SELF_MISSES";
-};
-ChatTypeGroup["COMBAT_PET_HITS"] = {
-	"CHAT_MSG_COMBAT_PET_HITS";
-};
-ChatTypeGroup["COMBAT_PET_MISSES"] = {
-	"CHAT_MSG_COMBAT_PET_MISSES";
-};
-ChatTypeGroup["COMBAT_PARTY_HITS"] = {
-	"CHAT_MSG_COMBAT_PARTY_HITS";
-};
-ChatTypeGroup["COMBAT_PARTY_MISSES"] = {
-	"CHAT_MSG_COMBAT_PARTY_MISSES";
-};
-ChatTypeGroup["COMBAT_FRIENDLYPLAYER_HITS"] = {
-	"CHAT_MSG_COMBAT_FRIENDLYPLAYER_HITS";
-};
-ChatTypeGroup["COMBAT_FRIENDLYPLAYER_MISSES"] = {
-	"CHAT_MSG_COMBAT_FRIENDLYPLAYER_MISSES";
-};
-ChatTypeGroup["COMBAT_HOSTILEPLAYER_HITS"] = {
-	"CHAT_MSG_COMBAT_HOSTILEPLAYER_HITS";
-};
-ChatTypeGroup["COMBAT_HOSTILEPLAYER_MISSES"] = {
-	"CHAT_MSG_COMBAT_HOSTILEPLAYER_MISSES";
-};
-ChatTypeGroup["COMBAT_CREATURE_VS_SELF_HITS"] = {
-	"CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS";
-};
-ChatTypeGroup["COMBAT_CREATURE_VS_SELF_MISSES"] = {
-	"CHAT_MSG_COMBAT_CREATURE_VS_SELF_MISSES";
-};
-ChatTypeGroup["COMBAT_CREATURE_VS_PARTY_HITS"] = {
-	"CHAT_MSG_COMBAT_CREATURE_VS_PARTY_HITS";
-};
-ChatTypeGroup["COMBAT_CREATURE_VS_PARTY_MISSES"] = {
-	"CHAT_MSG_COMBAT_CREATURE_VS_PARTY_MISSES";
-};
-ChatTypeGroup["COMBAT_CREATURE_VS_CREATURE_HITS"] = {
-	"CHAT_MSG_COMBAT_CREATURE_VS_CREATURE_HITS";
-};
-ChatTypeGroup["COMBAT_CREATURE_VS_CREATURE_MISSES"] = {
-	"CHAT_MSG_COMBAT_CREATURE_VS_CREATURE_MISSES";
-};
-ChatTypeGroup["COMBAT_FRIENDLY_DEATH"] = {
-	"CHAT_MSG_COMBAT_FRIENDLY_DEATH";
-};
-ChatTypeGroup["COMBAT_HOSTILE_DEATH"] = {
-	"CHAT_MSG_COMBAT_HOSTILE_DEATH";
 };
 ChatTypeGroup["COMBAT_XP_GAIN"] = {
 	"CHAT_MSG_COMBAT_XP_GAIN";
@@ -254,111 +155,6 @@ ChatTypeGroup["COMBAT_XP_GAIN"] = {
 ChatTypeGroup["COMBAT_HONOR_GAIN"] = {
 	"CHAT_MSG_COMBAT_HONOR_GAIN";
 }
-ChatTypeGroup["SPELL_SELF_DAMAGE"] = {
-	"CHAT_MSG_SPELL_SELF_DAMAGE";
-};
-ChatTypeGroup["SPELL_SELF_BUFF"] = {
-	"CHAT_MSG_SPELL_SELF_BUFF";
-};
-ChatTypeGroup["SPELL_PET_DAMAGE"] = {
-	"CHAT_MSG_SPELL_PET_DAMAGE";
-};
-ChatTypeGroup["SPELL_PET_BUFF"] = {
-	"CHAT_MSG_SPELL_PET_BUFF";
-};
-ChatTypeGroup["SPELL_PARTY_DAMAGE"] = {
-	"CHAT_MSG_SPELL_PARTY_DAMAGE";
-};
-ChatTypeGroup["SPELL_PARTY_BUFF"] = {
-	"CHAT_MSG_SPELL_PARTY_BUFF";
-};
-ChatTypeGroup["SPELL_FRIENDLYPLAYER_DAMAGE"] = {
-	"CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE";
-};
-ChatTypeGroup["SPELL_FRIENDLYPLAYER_BUFF"] = {
-	"CHAT_MSG_SPELL_FRIENDLYPLAYER_BUFF";
-};
-ChatTypeGroup["SPELL_HOSTILEPLAYER_DAMAGE"] = {
-	"CHAT_MSG_SPELL_HOSTILEPLAYER_DAMAGE";
-};
-ChatTypeGroup["SPELL_HOSTILEPLAYER_BUFF"] = {
-	"CHAT_MSG_SPELL_HOSTILEPLAYER_BUFF";
-};
-ChatTypeGroup["SPELL_CREATURE_VS_SELF_DAMAGE"] = {
-	"CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE";
-};
-ChatTypeGroup["SPELL_CREATURE_VS_SELF_BUFF"] = {
-	"CHAT_MSG_SPELL_CREATURE_VS_SELF_BUFF";
-};
-ChatTypeGroup["SPELL_CREATURE_VS_PARTY_DAMAGE"] = {
-	"CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE";
-};
-ChatTypeGroup["SPELL_CREATURE_VS_PARTY_BUFF"] = {
-	"CHAT_MSG_SPELL_CREATURE_VS_PARTY_BUFF";
-};
-ChatTypeGroup["SPELL_CREATURE_VS_CREATURE_DAMAGE"] = {
-	"CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE";
-};
-ChatTypeGroup["SPELL_CREATURE_VS_CREATURE_BUFF"] = {
-	"CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF";
-};
-ChatTypeGroup["SPELL_TRADESKILLS"] = {
-	"CHAT_MSG_SPELL_TRADESKILLS";
-};
-ChatTypeGroup["SPELL_DAMAGESHIELDS_ON_SELF"] = {
-	"CHAT_MSG_SPELL_DAMAGESHIELDS_ON_SELF";
-};
-ChatTypeGroup["SPELL_DAMAGESHIELDS_ON_OTHERS"] = {
-	"CHAT_MSG_SPELL_DAMAGESHIELDS_ON_OTHERS";
-};
-ChatTypeGroup["SPELL_AURA_GONE_SELF"] = {
-	"CHAT_MSG_SPELL_AURA_GONE_SELF";
-};
-ChatTypeGroup["SPELL_AURA_GONE_PARTY"] = {
-	"CHAT_MSG_SPELL_AURA_GONE_PARTY";
-};
-ChatTypeGroup["SPELL_AURA_GONE_OTHER"] = {
-	"CHAT_MSG_SPELL_AURA_GONE_OTHER";
-};
-ChatTypeGroup["SPELL_ITEM_ENCHANTMENTS"] = {
-	"CHAT_MSG_SPELL_ITEM_ENCHANTMENTS";
-};
-ChatTypeGroup["SPELL_BREAK_AURA"] = {
-	"CHAT_MSG_SPELL_BREAK_AURA";
-};
-ChatTypeGroup["SPELL_PERIODIC_SELF_DAMAGE"] = {
-	"CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE";
-};
-ChatTypeGroup["SPELL_PERIODIC_SELF_BUFFS"] = {
-	"CHAT_MSG_SPELL_PERIODIC_SELF_BUFFS";
-};
-ChatTypeGroup["SPELL_PERIODIC_PARTY_DAMAGE"] = {
-	"CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE";
-};
-ChatTypeGroup["SPELL_PERIODIC_PARTY_BUFFS"] = {
-	"CHAT_MSG_SPELL_PERIODIC_PARTY_BUFFS";
-};
-ChatTypeGroup["SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE"] = {
-	"CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE";
-};
-ChatTypeGroup["SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS"] = {
-	"CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS";
-};
-ChatTypeGroup["SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE"] = {
-	"CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE";
-};
-ChatTypeGroup["SPELL_PERIODIC_HOSTILEPLAYER_BUFFS"] = {
-	"CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_BUFFS";
-};
-ChatTypeGroup["SPELL_PERIODIC_CREATURE_DAMAGE"] = {
-	"CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE";
-};
-ChatTypeGroup["SPELL_PERIODIC_CREATURE_BUFFS"] = {
-	"CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS";
-};
-ChatTypeGroup["SPELL_FAILED_LOCALPLAYER"] = {
-	"CHAT_MSG_SPELL_FAILED_LOCALPLAYER";
-};
 ChatTypeGroup["COMBAT_FACTION_CHANGE"] = {
 	"CHAT_MSG_COMBAT_FACTION_CHANGE";
 };
@@ -371,69 +167,13 @@ ChannelMenuChatTypeGroups[4] = "WHISPER";
 ChannelMenuChatTypeGroups[5] = "PARTY";
 
 CombatLogMenuChatTypeGroups = {};
-CombatLogMenuChatTypeGroups[1]  = "COMBAT_MISC_INFO";
-CombatLogMenuChatTypeGroups[2]  = "COMBAT_SELF_HITS";
-CombatLogMenuChatTypeGroups[3]  = "COMBAT_SELF_MISSES";
-CombatLogMenuChatTypeGroups[4]  = "COMBAT_PET_HITS";
-CombatLogMenuChatTypeGroups[5]  = "COMBAT_PET_MISSES";
-CombatLogMenuChatTypeGroups[6]  = "COMBAT_PARTY_HITS";
-CombatLogMenuChatTypeGroups[7]  = "COMBAT_PARTY_MISSES";
-CombatLogMenuChatTypeGroups[8]  = "COMBAT_FRIENDLYPLAYER_HITS";
-CombatLogMenuChatTypeGroups[9]  = "COMBAT_FRIENDLYPLAYER_MISSES";
-CombatLogMenuChatTypeGroups[10] = "COMBAT_HOSTILEPLAYER_HITS";
-CombatLogMenuChatTypeGroups[11] = "COMBAT_HOSTILEPLAYER_MISSES";
-CombatLogMenuChatTypeGroups[12] = "COMBAT_CREATURE_VS_SELF_HITS";
-CombatLogMenuChatTypeGroups[13] = "COMBAT_CREATURE_VS_SELF_MISSES";
-CombatLogMenuChatTypeGroups[14] = "COMBAT_CREATURE_VS_PARTY_HITS";
-CombatLogMenuChatTypeGroups[15] = "COMBAT_CREATURE_VS_PARTY_MISSES";
-CombatLogMenuChatTypeGroups[16] = "COMBAT_CREATURE_VS_CREATURE_HITS";
-CombatLogMenuChatTypeGroups[17] = "COMBAT_CREATURE_VS_CREATURE_MISSES";
-CombatLogMenuChatTypeGroups[18] = "COMBAT_FRIENDLY_DEATH";
-CombatLogMenuChatTypeGroups[19] = "COMBAT_HOSTILE_DEATH";
-CombatLogMenuChatTypeGroups[20] = "COMBAT_XP_GAIN";
-CombatLogMenuChatTypeGroups[21] = "COMBAT_HONOR_GAIN";
-CombatLogMenuChatTypeGroups[22] = "COMBAT_FACTION_CHANGE";
-
-SpellLogMenuChatTypeGroups = {};
-SpellLogMenuChatTypeGroups[1]  = "SPELL_SELF_DAMAGE";
-SpellLogMenuChatTypeGroups[2]  = "SPELL_SELF_BUFF";
-SpellLogMenuChatTypeGroups[3]  = "SPELL_PET_DAMAGE";
-SpellLogMenuChatTypeGroups[4]  = "SPELL_PET_BUFF";
-SpellLogMenuChatTypeGroups[5]  = "SPELL_PARTY_DAMAGE";
-SpellLogMenuChatTypeGroups[6]  = "SPELL_PARTY_BUFF";
-SpellLogMenuChatTypeGroups[7]  = "SPELL_FRIENDLYPLAYER_DAMAGE";
-SpellLogMenuChatTypeGroups[8]  = "SPELL_FRIENDLYPLAYER_BUFF";
-SpellLogMenuChatTypeGroups[9]  = "SPELL_HOSTILEPLAYER_DAMAGE";
-SpellLogMenuChatTypeGroups[10] = "SPELL_HOSTILEPLAYER_BUFF";
-SpellLogMenuChatTypeGroups[11] = "SPELL_CREATURE_VS_SELF_DAMAGE";
-SpellLogMenuChatTypeGroups[12] = "SPELL_CREATURE_VS_SELF_BUFF";
-SpellLogMenuChatTypeGroups[13] = "SPELL_CREATURE_VS_PARTY_DAMAGE";
-SpellLogMenuChatTypeGroups[14] = "SPELL_CREATURE_VS_PARTY_BUFF";
-SpellLogMenuChatTypeGroups[15] = "SPELL_CREATURE_VS_CREATURE_DAMAGE";
-SpellLogMenuChatTypeGroups[16] = "SPELL_CREATURE_VS_CREATURE_BUFF";
-
-SpellLogOtherMenuChatTypeGroups = {};
-SpellLogOtherMenuChatTypeGroups [1] = "SPELL_TRADESKILLS";
-SpellLogOtherMenuChatTypeGroups [2] = "SPELL_DAMAGESHIELDS_ON_SELF";
-SpellLogOtherMenuChatTypeGroups [3] = "SPELL_DAMAGESHIELDS_ON_OTHERS";
-SpellLogOtherMenuChatTypeGroups [4] = "SPELL_AURA_GONE_SELF";
-SpellLogOtherMenuChatTypeGroups [5] = "SPELL_AURA_GONE_PARTY";
-SpellLogOtherMenuChatTypeGroups [6] = "SPELL_AURA_GONE_OTHER";
-SpellLogOtherMenuChatTypeGroups [7] = "SPELL_ITEM_ENCHANTMENTS";
-SpellLogOtherMenuChatTypeGroups [8] = "SPELL_BREAK_AURA";
-SpellLogOtherMenuChatTypeGroups [9] = "SPELL_FAILED_LOCALPLAYER";
-
-PeriodicLogMenuChatTypeGroups = {};
-PeriodicLogMenuChatTypeGroups[1]  = "SPELL_PERIODIC_SELF_DAMAGE";
-PeriodicLogMenuChatTypeGroups[2]  = "SPELL_PERIODIC_SELF_BUFFS";
-PeriodicLogMenuChatTypeGroups[3]  = "SPELL_PERIODIC_PARTY_DAMAGE";
-PeriodicLogMenuChatTypeGroups[4]  = "SPELL_PERIODIC_PARTY_BUFFS";
-PeriodicLogMenuChatTypeGroups[5]  = "SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE";
-PeriodicLogMenuChatTypeGroups[6]  = "SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS";
-PeriodicLogMenuChatTypeGroups[7]  = "SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE";
-PeriodicLogMenuChatTypeGroups[8]  = "SPELL_PERIODIC_HOSTILEPLAYER_BUFFS";
-PeriodicLogMenuChatTypeGroups[9]  = "SPELL_PERIODIC_CREATURE_DAMAGE";
-PeriodicLogMenuChatTypeGroups[10] = "SPELL_PERIODIC_CREATURE_BUFFS";
+CombatLogMenuChatTypeGroups[1] = "OPENING";
+CombatLogMenuChatTypeGroups[2] = "TRADESKILLS";
+CombatLogMenuChatTypeGroups[3] = "PET_INFO";
+CombatLogMenuChatTypeGroups[4] = "COMBAT_MISC_INFO";
+CombatLogMenuChatTypeGroups[5] = "COMBAT_XP_GAIN";
+CombatLogMenuChatTypeGroups[6] = "COMBAT_HONOR_GAIN";
+CombatLogMenuChatTypeGroups[7] = "COMBAT_FACTION_CHANGE";
 
 OtherMenuChatTypeGroups = {};
 OtherMenuChatTypeGroups[1] = "CREATURE";
@@ -704,8 +444,7 @@ end
 
 local function SetCastSequenceIndex(entry, index)
 	entry.index = index;
-	--entry.pending = nil;
-	pendingSpellCast = nil;
+	entry.pending = nil;
 end
 
 local function ResetCastSequence(sequence, entry)
@@ -742,12 +481,6 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 
 		if ( not name ) then
 			-- This was a server-side only spell affecting the player somehow, don't do anything with cast sequencing, just bail.
-			
-			-- Actually, this is a spell failure, clear the pending spellcast.
-			if ( unit == "player" or unit == "pet" ) then
-				--entry.pending = nil;
-				pendingSpellCast = nil;
-			end
 			return;
 		end
 
@@ -759,12 +492,9 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 				local entryName = entry.spellNames[entry.index];
 				if ( entryName == name or entryName == nameplus or entryName == fullname ) then
 					if ( event == "UNIT_SPELLCAST_SENT" ) then
-						--entry.pending = 1;
-						pendingSpellCast = 1;
+						entry.pending = 1;
 					else
-						--entry.pending = nil;
-						pendingSpellCast = nil;
-						
+						entry.pending = nil;
 						if ( event == "UNIT_SPELLCAST_SUCCEEDED" ) then
 							SetNextCastSequence(sequence, entry);
 						end
@@ -840,8 +570,7 @@ local function ExecuteCastSequence(sequence, target)
 	end
 
 	-- Don't do anything if this entry is still pending
-	--if ( entry.pending ) then
-	if ( pendingSpellCast ) then
+	if ( entry.pending ) then
 		return;
 	end
 
@@ -868,7 +597,7 @@ local function ExecuteCastSequence(sequence, target)
 			else
 				spell = "";
 			end
-			entry.spells[entry.index] = spell;
+			entry.spellNames[entry.index] = spell;
 		end
 		if ( IsEquippableItem(name) and not IsEquippedItem(name) ) then
 			EquipItemByName(name);
@@ -1752,8 +1481,9 @@ SlashCmdList["CHANNEL"] = function(msg)
 end
 
 SlashCmdList["FRIENDS"] = function(msg)
-	if ( msg ~= "" or UnitIsPlayer("target") ) then
-		AddFriend(msg);
+	local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+	if ( player ~= "" or UnitIsPlayer("target") ) then
+		AddFriend(player, note);
 	else
 		ToggleFriendsPanel();
 	end
@@ -1916,6 +1646,16 @@ end
 
 SlashCmdList["RESETCHAT"] = function(msg)
 	FCF_ResetAllWindows();
+end
+
+SlashCmdList["ENABLE_ADDONS"] = function(msg)
+	EnableAllAddOns();
+	ReloadUI();
+end
+
+SlashCmdList["DISABLE_ADDONS"] = function(msg)
+	DisableAllAddOns();
+	ReloadUI();
 end
 
 
@@ -2229,7 +1969,8 @@ function ChatFrame_MessageEventHandler(event)
 			end
 		end
 
-		if ( type == "SYSTEM" or type == "TEXT_EMOTE" or type == "SKILL" or type == "LOOT" or type == "MONEY" ) then
+		if ( type == "SYSTEM" or type == "TEXT_EMOTE" or type == "SKILL" or type == "LOOT" or type == "MONEY" or
+		     type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" ) then
 			this:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,7) == "COMBAT_" ) then
 			this:AddMessage(arg1, info.r, info.g, info.b, info.id);
@@ -2267,13 +2008,18 @@ function ChatFrame_MessageEventHandler(event)
 			-- Add AFK/DND flags
 			local pflag;
 			if(strlen(arg6) > 0) then
-				pflag = getglobal("CHAT_FLAG_"..arg6);
+				if ( arg6 == "GM" ) then
+					--Add Blizzard Icon, this was sent by a GM
+					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:18:12:0:-1|t ";
+				else
+					pflag = getglobal("CHAT_FLAG_"..arg6);
+				end
 			else
 				pflag = "";
 			end
 
 			local showLink = 1;
-			if ( strsub(type, 1, 7) == "MONSTER" or type == "RAID_BOSS_EMOTE" ) then
+			if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
 				showLink = nil;
 			else
 				arg1 = gsub(arg1, "%%", "%%%%");
@@ -2294,7 +2040,7 @@ function ChatFrame_MessageEventHandler(event)
 					body = format(getglobal("CHAT_"..type.."_GET")..arg1, pflag..arg2, arg2);
 
 					-- Add raid boss emote message
-					if ( type == "RAID_BOSS_EMOTE" ) then
+					if ( strsub(type, 1, 9) == "RAID_BOSS" ) then
 						RaidNotice_AddMessage( RaidBossEmoteFrame, body, info );
 						PlaySound("RaidBossEmoteWarning");
 					end
@@ -3363,7 +3109,7 @@ function LanguageMenu_OnEvent(event)
 end
 
 function LanguageMenu_LoadLanguages()
-	local numLanguages = GetNumLaguages();
+	local numLanguages = GetNumLanguages();
 	local i;
 	local editBoxLanguage = this:GetParent().chatFrame.editBox.language;
 	local languageKnown = false;
@@ -3388,60 +3134,11 @@ function LanguageMenu_Click()
 end
 
 function ChatFrame_ActivateCombatMessages(chatFrame)
+	ChatFrame_AddMessageGroup(chatFrame, "OPENING");
+	ChatFrame_AddMessageGroup(chatFrame, "TRADESKILLS");
+	ChatFrame_AddMessageGroup(chatFrame, "PET_INFO");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_MISC_INFO");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_SELF_HITS");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_SELF_MISSES");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_PET_HITS");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_PET_MISSES");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_PARTY_HITS");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_PARTY_MISSES");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FRIENDLYPLAYER_HITS");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FRIENDLYPLAYER_MISSES");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_HOSTILEPLAYER_HITS");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_HOSTILEPLAYER_MISSES");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_CREATURE_VS_SELF_HITS");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_CREATURE_VS_SELF_MISSES");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_CREATURE_VS_PARTY_HITS");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_CREATURE_VS_PARTY_MISSES");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_CREATURE_VS_CREATURE_HITS");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_CREATURE_VS_CREATURE_MISSES");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FRIENDLY_DEATH");
-	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_HOSTILE_DEATH");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_XP_GAIN");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_HONOR_GAIN");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_SELF_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_SELF_BUFF");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PET_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PET_BUFF");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PARTY_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PARTY_BUFF");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_FRIENDLYPLAYER_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_FRIENDLYPLAYER_BUFF");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_HOSTILEPLAYER_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_HOSTILEPLAYER_BUFF");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_CREATURE_VS_SELF_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_CREATURE_VS_SELF_BUFF");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_CREATURE_VS_PARTY_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_CREATURE_VS_PARTY_BUFF");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_CREATURE_VS_CREATURE_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_CREATURE_VS_CREATURE_BUFF");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_TRADESKILLS");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_DAMAGESHIELDS_ON_SELF");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_DAMAGESHIELDS_ON_OTHERS");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_AURA_GONE_SELF");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_AURA_GONE_PARTY");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_AURA_GONE_OTHER");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_ITEM_ENCHANTMENTS");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_BREAK_AURA");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_SELF_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_SELF_BUFFS");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_PARTY_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_PARTY_BUFFS");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_HOSTILEPLAYER_BUFFS");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_CREATURE_DAMAGE");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_CREATURE_BUFFS");
-	ChatFrame_AddMessageGroup(chatFrame, "SPELL_FAILED_LOCALPLAYER");
+	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FACTION_CHANGE");
 end

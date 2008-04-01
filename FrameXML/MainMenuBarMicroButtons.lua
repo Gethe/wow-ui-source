@@ -47,7 +47,7 @@ function UpdateMicroButtons()
 	if ( ( GameMenuFrame:IsShown() ) 
 		or ( OptionsFrame:IsShown()) 
 		or ( AudioOptionsFrame:IsShown()) 
-		or ( UIOptionsFrame:IsShown()) 
+		or ( InterfaceOptionsFrame and InterfaceOptionsFrame:IsShown()) 
 		or ( KeyBindingFrame and KeyBindingFrame:IsShown()) 
 		or ( MacroFrame and MacroFrame:IsShown()) ) then
 		MainMenuMicroButton:SetButtonState("PUSHED", 1);

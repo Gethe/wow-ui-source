@@ -5,7 +5,6 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\FullScreenTextures\LowHealth" alphaMode="ADD"/>
-				<Texture file="Interface\FullScreenTextures\LowHealth" alphaMode="ADD"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -13,9 +12,6 @@
 				SHOW_FULLSCREEN_STATUS = "1";
 				RegisterForSave("SHOW_FULLSCREEN_STATUS");
 			</OnLoad>
-			<OnUpdate>
-				CombatFeedback_UIFrameFlashUpdate(arg1);
-			</OnUpdate>
 		</Scripts>
 	</Frame>
 </Ui>

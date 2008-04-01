@@ -221,9 +221,17 @@
 							</Anchor>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="OptionsFrameCheckButton9" inherits="OptionsCheckButtonTemplate">
+					<CheckButton name="OptionsFrameCheckButton11" inherits="OptionsCheckButtonTemplate">
+						<Size x="26" y="26"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton17" relativePoint="BOTTOM">
+								<Offset x="0" y="4"/>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton9" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton11" relativePoint="BOTTOM">
 								<Offset x="-5" y="4"/>
 							</Anchor>
 						</Anchors>

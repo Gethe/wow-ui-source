@@ -68,7 +68,6 @@ function InspectPVPTeam_Update()
 	end
 
 	-- fill out data
-	local season = PVPFrame.season;
 	for index, value in pairs(ARENA_TEAMS) do
 		if ( value.index ) then
 			buttonIndex = buttonIndex + 1;
@@ -97,22 +96,9 @@ function InspectPVPTeam_Update()
 			getglobal(data.."Wins"):SetText(teamWins);
 			getglobal(data.."Loss"):SetText(teamLoss);
 			
-			if ( season == 3 ) then
-				getglobal(data.."Played"):SetText(playerRating);
-				getglobal(data.."Played"):SetVertexColor(1.0, 1.0, 1.0);
-				getglobal(data.."PlayedLabel"):SetText(RATING);
-			else
-				-- played %
-				if ( playerPlayedPct < 10 ) then
-					getglobal(data.."Played"):SetVertexColor(1.0, 0, 0);
-				else
-					getglobal(data.."Played"):SetVertexColor(1.0, 1.0, 1.0);
-				end
-				-- FIXME: Turn this into a localized format string
-				playerPlayedPct = format("%d", playerPlayedPct);
-				getglobal(data.."Played"):SetText(playerPlayed.." ("..playerPlayedPct.."%)");
-				getglobal(data.."PlayedLabel"):SetText(PLAYED);
-			end
+			getglobal(data.."Played"):SetText(playerRating);
+			getglobal(data.."Played"):SetVertexColor(1.0, 1.0, 1.0);
+			getglobal(data.."PlayedLabel"):SetText(RATING);
 
 			-- Set TeamSize Banner
 			getglobal(standard.."Banner"):SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize);

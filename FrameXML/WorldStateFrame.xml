@@ -716,7 +716,7 @@
 				WorldStateAlwaysUpFrame_OnLoad();
 			</OnLoad>
 			<OnEvent>
-				WorldStateAlwaysUpFrame_OnEvent();
+				WorldStateAlwaysUpFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnEnter>
 				if ( this.tooltip ) then

@@ -56,6 +56,11 @@ UnitPopupButtons["ITEM_QUALITY2_DESC"] = { text = ITEM_QUALITY2_DESC, dist = 0, 
 UnitPopupButtons["ITEM_QUALITY3_DESC"] = { text = ITEM_QUALITY3_DESC, dist = 0, color = ITEM_QUALITY_COLORS[3] };
 UnitPopupButtons["ITEM_QUALITY4_DESC"] = { text = ITEM_QUALITY4_DESC, dist = 0, color = ITEM_QUALITY_COLORS[4] };
 
+UnitPopupButtons["OPT_OUT_LOOT_TITLE"] = { text = OPT_OUT_LOOT_TITLE, dist = 0, nested = 1, tooltipText = NEWBIE_TOOLTIP_UNIT_OPT_OUT_LOOT };
+UnitPopupButtons["OPT_OUT_LOOT_ENABLE"] = { text = YES, dist = 0, checkable = 1 };
+UnitPopupButtons["OPT_OUT_LOOT_DISABLE"] = { text = NO, dist = 0, checkable = 1 };
+
+
 UnitPopupButtons["RAID_LEADER"] = { text = SET_RAID_LEADER, dist = 0 };
 UnitPopupButtons["RAID_PROMOTE"] = { text = SET_RAID_ASSISTANT, dist = 0 };
 UnitPopupButtons["RAID_MAINTANK"] = { text = SET_MAIN_TANK, dist = 0 };
@@ -97,7 +102,7 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "LOOT_PROMOTE", "DUNGEON_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "LEAVE", "CANCEL" };
+UnitPopupMenus["SELF"] = { "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "DUNGEON_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "LEAVE", "CANCEL" };
 UnitPopupMenus["PET"] = { "PET_PAPERDOLL", "PET_RENAME", "PET_ABANDON", "PET_DISMISS", "CANCEL" };
 UnitPopupMenus["PARTY"] = { "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "LOOT_PROMOTE", "UNINVITE", "INSPECT", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "PVP_REPORT_AFK", "CANCEL" };
 UnitPopupMenus["PLAYER"] = { "WHISPER", "INSPECT", "INVITE", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "CANCEL" };
@@ -112,6 +117,7 @@ UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_S
 UnitPopupMenus["PVP_FLAG"] = { "PVP_ENABLE", "PVP_DISABLE"};
 UnitPopupMenus["LOOT_METHOD"] = { "FREE_FOR_ALL", "ROUND_ROBIN", "MASTER_LOOTER", "GROUP_LOOT", "NEED_BEFORE_GREED", "CANCEL" };
 UnitPopupMenus["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" };
+UnitPopupMenus["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"};
 UnitPopupMenus["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2" };
 
 UnitPopupShown = {};
@@ -184,6 +190,12 @@ function UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 		UnitPopupButtons["LOOT_METHOD"].nested = nil;
 		UnitPopupButtons["LOOT_THRESHOLD"].nested = nil;
 	end
+	-- Set the selected opt out of loot option to the opt out of loot button text
+	if ( GetOptOutOfLoot() ) then
+		UnitPopupButtons["OPT_OUT_LOOT_TITLE"].text = format(OPT_OUT_LOOT_TITLE, UnitPopupButtons["OPT_OUT_LOOT_ENABLE"].text);
+	else
+		UnitPopupButtons["OPT_OUT_LOOT_TITLE"].text = format(OPT_OUT_LOOT_TITLE, UnitPopupButtons["OPT_OUT_LOOT_DISABLE"].text);
+	end
 
 	-- If level 2 dropdown
 	local info;
@@ -254,6 +266,14 @@ function UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 				end
 			elseif ( value == "PVP_DISABLE" ) then
 				if ( GetPVPDesired() == 0 ) then
+					info.checked = 1;
+				end
+			elseif ( value == "OPT_OUT_LOOT_ENABLE" ) then
+				if ( GetOptOutOfLoot() ) then
+					info.checked = 1;
+				end
+			elseif ( value == "OPT_OUT_LOOT_DISABLE" ) then
+				if ( not GetOptOutOfLoot() ) then
 					info.checked = 1;
 				end
 			end
@@ -500,6 +520,10 @@ function UnitPopup_HideButtons()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LOOT_THRESHOLD" ) then
+			if ( inParty == 0 ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "OPT_OUT_LOOT_TITLE" ) then
 			if ( inParty == 0 ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
@@ -1018,6 +1042,14 @@ function UnitPopup_OnClick()
 	elseif ( button == "NEED_BEFORE_GREED" ) then
 		SetLootMethod("needbeforegreed");
 		UIDropDownMenu_SetButtonText(1, 3, UnitPopupButtons[button].text);
+		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
+	elseif ( button == "OPT_OUT_LOOT_ENABLE" ) then
+		SetOptOutOfLoot(1);
+		UIDropDownMenu_SetButtonText(1, 5, format(OPT_OUT_LOOT_TITLE, UnitPopupButtons[button].text));
+		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
+	elseif ( button == "OPT_OUT_LOOT_DISABLE" ) then
+		SetOptOutOfLoot(nil);
+		UIDropDownMenu_SetButtonText(1, 5, format(OPT_OUT_LOOT_TITLE, UnitPopupButtons[button].text));
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( strsub(button, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(button) > 18) ) then
 		local dungeonDifficulty = tonumber( strsub(button,19,19) );

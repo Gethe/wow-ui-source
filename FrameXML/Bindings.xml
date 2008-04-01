@@ -636,7 +636,10 @@
 	<Binding name="TOGGLEPERFORMANCEDISPLAY" hidden="true" debug="true">
 		TogglePerformanceDisplay();
 	</Binding>
-	<Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true">
+  <Binding name="TOGGLEPERFORMANCEPAUSE" hidden="true" debug="true">
+    TogglePerformancePause();
+  </Binding>
+  <Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true">
 		TogglePerformanceValues();
 	</Binding>
 	<Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true">

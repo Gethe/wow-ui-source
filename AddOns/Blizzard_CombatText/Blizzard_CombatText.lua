@@ -31,40 +31,37 @@ COMBAT_TEXT_TYPE_INFO["INTERRUPT"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["DAMAGE_CRIT"] = {r = 1, g = 0.1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["DAMAGE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, show = 1};
 COMBAT_TEXT_TYPE_INFO["MISS"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["BLOCK"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["ABSORB"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["RESIST"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["EVADE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
 COMBAT_TEXT_TYPE_INFO["DODGE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
 COMBAT_TEXT_TYPE_INFO["PARRY"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["EVADE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
 COMBAT_TEXT_TYPE_INFO["IMMUNE"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
 COMBAT_TEXT_TYPE_INFO["DEFLECT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["ENCHANTMENT_REMOVED"] = {r = 1, g = 1, b = 1};
-COMBAT_TEXT_TYPE_INFO["ENCHANTMENT_ADDED"] = {r = 1, g = 1, b = 1};
+COMBAT_TEXT_TYPE_INFO["REFLECT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["RESIST"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
+COMBAT_TEXT_TYPE_INFO["BLOCK"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
+COMBAT_TEXT_TYPE_INFO["ABSORB"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
+COMBAT_TEXT_TYPE_INFO["SPELL_DAMAGE_CRIT"] = {r = 0.79, g = 0.3, b = 0.85, show = 1};
+COMBAT_TEXT_TYPE_INFO["SPELL_DAMAGE"] = {r = 0.79, g = 0.3, b = 0.85, show = 1};
+COMBAT_TEXT_TYPE_INFO["SPELL_MISS"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_DODGE"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_PARRY"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_EVADE"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_IMMUNE"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_DEFLECT"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_REFLECT"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["SPELL_RESIST"] = {r = 0.79, g = 0.3, b = 0.85, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
+COMBAT_TEXT_TYPE_INFO["SPELL_BLOCK"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
+COMBAT_TEXT_TYPE_INFO["SPELL_ABSORB"] = {r = 0.79, g = 0.3, b = 0.85, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["MANA"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
 COMBAT_TEXT_TYPE_INFO["RAGE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
 COMBAT_TEXT_TYPE_INFO["FOCUS"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
 COMBAT_TEXT_TYPE_INFO["ENERGY"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
-COMBAT_TEXT_TYPE_INFO["SPELL_ABSORBED"] = {r = 0.79, g = 0.3, b = 0.85, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["SPELL_RESISTED"] = {r = 0.79, g = 0.3, b = 0.85, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["PROC_RESISTED"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["DISPEL_FAILED"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["SPELL_CAST"] = {r = 0.1, g = 1, b = 0.1, show = 1};
-COMBAT_TEXT_TYPE_INFO["SPELL_CAST_START"] = {r = 1, g = 1, b = 1};
-COMBAT_TEXT_TYPE_INFO["AURA_END"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURA_FADE"};
-COMBAT_TEXT_TYPE_INFO["AURA_END_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURA_FADE"};
+COMBAT_TEXT_TYPE_INFO["AURA_END"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
+COMBAT_TEXT_TYPE_INFO["AURA_END_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
 COMBAT_TEXT_TYPE_INFO["AURA_START"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
 COMBAT_TEXT_TYPE_INFO["AURA_START_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_DAMAGE"] = {r = 0.79, g = 0.3, b = 0.85, show = 1};
-COMBAT_TEXT_TYPE_INFO["SPELL_DODGED"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_PARRIED"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_BLOCKED"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["SPELL_EVADED"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_IMMUNE"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_DEFLECTED"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_REFLECTED"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_MISSED"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
 COMBAT_TEXT_TYPE_INFO["SPELL_ACTIVE"] = {r = 1, g = 0.82, b = 0, var = "COMBAT_TEXT_SHOW_REACTIVES"};
 COMBAT_TEXT_TYPE_INFO["FACTION"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_REPUTATION"};
 COMBAT_TEXT_TYPE_INFO["HEAL_CRIT"] = {r = 0.1, g = 1, b = 0.1, show = 1};
@@ -168,7 +165,7 @@ function CombatText_OnEvent(event)
 	local isStaggered = info.isStaggered;
 	if ( messageType == "" ) then
 	
-	elseif ( messageType == "DAMAGE_CRIT" ) then
+	elseif ( messageType == "DAMAGE_CRIT" or messageType == "SPELL_DAMAGE_CRIT" ) then
 		displayType = "crit";
 		message = "-"..data;
 	elseif ( messageType == "DAMAGE" or messageType == "SPELL_DAMAGE" ) then
@@ -216,28 +213,35 @@ function CombatText_OnEvent(event)
 			arg3 = "+"..arg3;
 		end
 		message = "("..data.." "..arg3..")";
-	elseif ( messageType == "BLOCK" ) then
+	elseif ( messageType == "SPELL_MISS" ) then
+		message = MISS;
+	elseif ( messageType == "SPELL_DODGE" ) then
+		message = DODGE;
+	elseif ( messageType == "SPELL_PARRY" ) then
+		message = PARRY;
+	elseif ( messageType == "SPELL_EVADE" ) then
+		message = EVADE;
+	elseif ( messageType == "SPELL_IMMUNE" ) then
+		message = IMMUNE;
+	elseif ( messageType == "SPELL_DEFLECT" ) then
+		message = DEFLECT;
+	elseif ( messageType == "SPELL_REFLECT" ) then
+		message = REFLECT;
+	elseif ( messageType == "BLOCK" or messageType == "SPELL_BLOCKED" ) then
 		if ( arg3 ) then
 			-- Partial block
 			message = data.." "..format(BLOCK_TRAILER, arg3);
 		else
 			message = BLOCK;
 		end
-	elseif ( messageType == "ABSORB" ) then
+	elseif ( messageType == "ABSORB" or messageType == "SPELL_ABSORBED" ) then
 		if ( arg3 ) then
 			-- Partial block
 			message = arg2.." "..format(ABSORB_TRAILER, arg3);
 		else
 			message = ABSORB;
 		end
-	elseif ( messageType == "RESIST" ) then
-		if ( arg3 ) then
-			-- Partial resist
-			message = data.." "..format(RESIST_TRAILER, arg3);
-		else
-			message = RESIST;
-		end
-	elseif ( messageType == "SPELL_RESISTED" ) then
+	elseif ( messageType == "RESIST" or messageType == "SPELL_RESISTED" ) then
 		if ( arg3 ) then
 			-- Partial resist
 			message = data.." "..format(RESIST_TRAILER, arg3);

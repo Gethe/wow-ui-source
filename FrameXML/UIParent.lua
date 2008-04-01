@@ -19,7 +19,7 @@ UIPanelWindows = {};
 UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["OptionsFrame"] =			{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["AudioOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["UIOptionsFrame"] =		{ area = "full",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["InterfaceOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1 };
 UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
@@ -100,6 +100,7 @@ for i = -1, 6 do
 end
 
 function UIParent_OnLoad()
+	this:RegisterEvent("PLAYER_LOGIN");
 	this:RegisterEvent("PLAYER_DEAD");
 	this:RegisterEvent("PLAYER_ALIVE");
 	this:RegisterEvent("PLAYER_UNGHOST");
@@ -207,6 +208,12 @@ function UIParent_OnLoad()
 	-- Events for Guild bank UI
 	this:RegisterEvent("GUILDBANKFRAME_OPENED");
 	this:RegisterEvent("GUILDBANKFRAME_CLOSED");
+	
+	-- Nameplate variables
+	NAMEPLATES_ON = nil;
+	FRIENDNAMEPLATES_ON = nil;	
+	RegisterForSave("NAMEPLATES_ON");
+	RegisterForSave("FRIENDNAMEPLATES_ON");
 end
 
 function AuctionFrame_LoadUI()
@@ -221,8 +228,16 @@ function ClassTrainerFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TrainerUI");
 end
 
+function CombatLog_LoadUI()
+	UIParentLoadAddOn("Blizzard_CombatLog");
+end
+
 function CraftFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_CraftUI");
+end
+
+function GuildBankFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_GuildBankUI");
 end
 
 function InspectFrame_LoadUI()
@@ -303,6 +318,11 @@ function UIParent_OnEvent(event)
 			end
 			BattlefieldMinimap:Show();
 		end
+		return;
+	end
+	if ( event == "PLAYER_LOGIN" ) then
+		-- You can override this if you want a Combat Log replacement
+		CombatLog_LoadUI();
 		return;
 	end
 	if ( event == "PLAYER_DEAD" ) then
@@ -424,7 +444,8 @@ function UIParent_OnEvent(event)
 		return;
 	end
 	if ( event == "LOOT_BIND_CONFIRM" ) then
-		local dialog = StaticPopup_Show("LOOT_BIND");
+		local texture, item, quantity, quality, locked = GetLootSlotInfo(arg1);
+		local dialog = StaticPopup_Show("LOOT_BIND", ITEM_QUALITY_COLORS[quality].hex..item.."|r");
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
@@ -655,7 +676,8 @@ function UIParent_OnEvent(event)
 		return;
 	end
 	if ( event == "CONFIRM_LOOT_ROLL" ) then
-		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL");
+		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
+		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
 		if ( dialog ) then
 			dialog.data = arg1;
 			dialog.data2 = arg2;
@@ -808,7 +830,7 @@ function UIParent_OnEvent(event)
 	
 	-- Event for guildbank handling
 	if ( event == "GUILDBANKFRAME_OPENED" ) then
-		UIParentLoadAddOn("Blizzard_GuildBankUI");
+		GuildBankFrame_LoadUI();
 		if ( GuildBankFrame ) then
 			ShowUIPanel(GuildBankFrame);
 			if ( not GuildBankFrame:IsVisible() ) then
@@ -1826,7 +1848,7 @@ function UpdateUIPanelPositions(currentFrame)
 end
 
 function IsOptionFrameOpen()
-	if ( GameMenuFrame:IsShown() or OptionsFrame:IsShown() or UIOptionsFrame:IsShown() or AudioOptionsFrame:IsShown() or (KeyBindingFrame and KeyBindingFrame:IsShown()) ) then
+	if ( GameMenuFrame:IsShown() or OptionsFrame:IsShown() or InterfaceOptionsFrame:IsShown() or AudioOptionsFrame:IsShown() or (KeyBindingFrame and KeyBindingFrame:IsShown()) ) then
 		return 1;
 	else
 		return nil;
@@ -2398,6 +2420,8 @@ function ToggleGameMenu()
 		if ( HelpFrame.back and HelpFrame.back.Click ) then
 			HelpFrame.back:Click();
 		end
+	elseif ( InterfaceOptionsFrame:IsShown() ) then
+		InterfaceOptionsFrameCancel:Click();
 	elseif ( securecall("CloseMenus") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
@@ -2780,4 +2804,18 @@ function UnitHasMana(unit)
 		return 1;
 	end
 	return nil;
+end
+
+-- Nameplate display function -- It was not used by the options ui, but somebody put it there. It's here now.
+function UpdateNameplates()
+	if ( NAMEPLATES_ON ) then
+		ShowNameplates();
+	else
+		HideNameplates();
+	end
+	if ( FRIENDNAMEPLATES_ON ) then
+		ShowFriendNameplates();
+	else
+		HideFriendNameplates();
+	end
 end

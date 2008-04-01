@@ -747,6 +747,11 @@ function AuctionFrameBrowse_Update()
 			buttonName = "BrowseButton"..i;
 			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("list", offset + i);
 			duration = GetAuctionItemTimeLeft("list", offset + i);
+
+			button.minBid = minBid;
+			button.buyoutPrice = buyoutPrice;
+			button.itemCount = count;
+
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal("BrowseButton"..i.."Highlight");
 			if ( numBatchAuctions < NUM_BROWSE_TO_DISPLAY ) then
@@ -956,6 +961,11 @@ function AuctionFrameBid_Update()
 			buttonName = "BidButton"..i;
 			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("bidder", index);
 			duration = GetAuctionItemTimeLeft("bidder", offset + i);
+
+			button.minBid = minBid;
+			button.buyoutPrice = buyoutPrice;
+			button.itemCount = count;
+
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal("BidButton"..i.."Highlight");
 			if ( numBatchAuctions < NUM_BIDS_TO_DISPLAY ) then
@@ -1110,7 +1120,7 @@ end
 
 function AuctionFrameAuctions_Update()
 	local numBatchAuctions, totalAuctions = GetNumAuctionItems("owner");
-	local auction, buttonName, iconTexture, itemName, color, itemCount;
+	local auction, button, buttonName, iconTexture, itemName, color, itemCount;
 	local offset = FauxScrollFrame_GetOffset(AuctionsScrollFrame);
 	local index;
 	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
@@ -1137,13 +1147,19 @@ function AuctionFrameAuctions_Update()
 		else
 			auction:Show();
 			
-			buttonName = "AuctionsButton"..i;
 			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("owner", offset + i);
 			duration = GetAuctionItemTimeLeft("owner", offset + i);
+
+			buttonName = "AuctionsButton"..i;
+			button = getglobal(buttonName);
+			button.minBid = minBid;
+			button.buyoutPrice = buyoutPrice;
+			button.itemCount = count;
+
 			-- Resize button if there isn't a scrollbar
-			buttonHighlight = getglobal("AuctionsButton"..i.."Highlight");
-			buttonBuyoutFrame = getglobal("AuctionsButton"..i.."BuyoutMoneyFrame");
-			buttonBuyoutText = getglobal("AuctionsButton"..i.."BuyoutMoneyFrameText");
+			buttonHighlight = getglobal(buttonName.."Highlight");
+			buttonBuyoutFrame = getglobal(buttonName.."BuyoutMoneyFrame");
+			buttonBuyoutText = getglobal(buttonName.."BuyoutMoneyFrameText");
 			if ( numBatchAuctions < NUM_AUCTIONS_TO_DISPLAY ) then
 				buttonBuyoutText:SetPoint("LEFT", buttonBuyoutFrame, "RIGHT", -205, 0)
 				auction:SetWidth(599);
@@ -1370,7 +1386,29 @@ end
 function AuctionFrameItem_OnEnter(type, index)
 	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 	GameTooltip:SetAuctionItem(type, index);
+
+	-- add price per unit info
+	local button;
+	if ( type == "owner" ) then
+		button = getglobal("AuctionsButton"..index);
+	elseif ( type == "bidder" ) then
+		button = getglobal("BidButton"..index);
+	elseif ( type == "list" ) then
+		button = getglobal("BrowseButton"..index);
+	end
+	if ( button and button.itemCount > 1 ) then
+		if ( button.minBid > 0 ) then
+			GameTooltip:AddLine("|n");
+			SetTooltipMoney(GameTooltip, ceil(button.minBid / button.itemCount), "STATIC", "<"..AUCTION_TOOLTIP_BID_PREFIX, ">");
+		end
+		if ( button.buyoutPrice > 0 ) then
+			SetTooltipMoney(GameTooltip, ceil(button.buyoutPrice / button.itemCount), "STATIC", "<"..AUCTION_TOOLTIP_BUYOUT_PREFIX, ">");
+		end
+		GameTooltip:Show();
+	end
+
 	GameTooltip_ShowCompareItem();
+
 	if ( IsModifiedClick("DRESSUP") ) then
 		ShowInspectCursor();
 	else

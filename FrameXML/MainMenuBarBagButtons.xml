@@ -95,6 +95,9 @@
 			<OnLoad>
 				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
+				this:RegisterEvent("PLAYER_ENTERING_WORLD");
+				this:RegisterEvent("CVAR_UPDATE");
+				this:RegisterEvent("BAG_UPDATE");
 			</OnLoad>
 			<OnClick>
 				if ( IsModifiedClick() ) then
@@ -107,17 +110,21 @@
 				BackpackButton_OnClick();
 			</OnReceiveDrag>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 				GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
 				local keyBinding = GetBindingKey("TOGGLEBACKPACK");
 				if ( keyBinding ) then
 					GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..keyBinding..")"..FONT_COLOR_CODE_CLOSE);
 				end
-				
+				GameTooltip:AddLine(string.format(NUM_FREE_SLOTS, (self.freeSlots or 0)));
+				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnEvent>
+				MainMenuBarBackpackButton_OnEvent(self, event, ...);
+			</OnEvent>
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>

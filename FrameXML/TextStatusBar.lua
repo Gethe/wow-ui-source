@@ -102,7 +102,9 @@ function ShowTextStatusBarText(bar)
 		if ( not bar.lockShow ) then
 			bar.lockShow = 0;
 		end
-		bar.TextString:Show();
+		if ( not bar.forceHideText ) then
+			bar.TextString:Show();
+		end
 		bar.lockShow = bar.lockShow + 1;
 	end
 end

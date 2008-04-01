@@ -167,14 +167,8 @@ end
 
 function FriendsList_Update()
 	local numFriends = GetNumFriends();
-	local nameLocationText;
-	local infoText;
-	local name;
-	local level;
-	local class;
-	local area;
-	local connected;
-	local status;
+	local nameLocationText, infoText, noteText, noteHiddenText;
+	local name, level, class, area, connected, status, note;
 	local friendButton;
 
 	FriendsFrame.selectedFriend = GetSelectedFriend();
@@ -202,9 +196,12 @@ function FriendsList_Update()
 	local friendIndex;
 	for i=1, FRIENDS_TO_DISPLAY, 1 do
 		friendIndex = friendOffset + i;
-		name, level, class, area, connected, status = GetFriendInfo(friendIndex);
+		name, level, class, area, connected, status, note = GetFriendInfo(friendIndex);
 		nameLocationText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNameLocation");
 		infoText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextInfo");
+		noteText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteText");
+		noteHiddenText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteHiddenText");
+		noteIcon = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteIcon")
 		if ( not name ) then
 			name = UNKNOWN
 		end
@@ -215,8 +212,30 @@ function FriendsList_Update()
 			nameLocationText:SetFormattedText(FRIENDS_LIST_OFFLINE_TEMPLATE, name);
 			infoText:SetText(UNKNOWN);
 		end
+
 		friendButton = getglobal("FriendsFrameFriendButton"..i);
 		friendButton:SetID(friendIndex);
+
+		if ( note ) then
+			if ( connected ) then
+				noteText:SetFormattedText(FRIENDS_LIST_NOTE_TEMPLATE, note);
+				noteIcon:SetAlpha(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			else
+				noteText:SetFormattedText(FRIENDS_LIST_NOTE_OFFLINE_TEMPLATE, note);
+				noteIcon:SetAlpha(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			end
+			noteHiddenText:SetText(note);
+
+			local width = noteHiddenText:GetWidth() + infoText:GetWidth();
+			if ( width > friendButton:GetWidth() ) then
+				width = friendButton:GetWidth() - infoText:GetWidth();
+			end
+			noteText:SetWidth(width);
+			noteText:SetHeight(14);
+		else
+			noteText:SetText("");
+		end
+
 		
 		-- Update the highlight
 		if ( friendIndex == FriendsFrame.selectedFriend ) then
@@ -938,22 +957,16 @@ function WhoFrame_GetDefaultWhoCommand()
 end
 
 function GuildControlPopupFrame_OnLoad()
-	GuildControlPopupFrameCheckbox1Text:SetText(GUILDCONTROL_OPTION1);
-	GuildControlPopupFrameCheckbox2Text:SetText(GUILDCONTROL_OPTION2);
-	GuildControlPopupFrameCheckbox3Text:SetText(GUILDCONTROL_OPTION3);
-	GuildControlPopupFrameCheckbox4Text:SetText(GUILDCONTROL_OPTION4);
-	GuildControlPopupFrameCheckbox5Text:SetText(GUILDCONTROL_OPTION5);
-	GuildControlPopupFrameCheckbox6Text:SetText(GUILDCONTROL_OPTION6);
-	GuildControlPopupFrameCheckbox7Text:SetText(GUILDCONTROL_OPTION7);
-	GuildControlPopupFrameCheckbox8Text:SetText(GUILDCONTROL_OPTION8);
-	GuildControlPopupFrameCheckbox9Text:SetText(GUILDCONTROL_OPTION9);
-	GuildControlPopupFrameCheckbox10Text:SetText(GUILDCONTROL_OPTION10);
-	GuildControlPopupFrameCheckbox11Text:SetText(GUILDCONTROL_OPTION11);
-	GuildControlPopupFrameCheckbox12Text:SetText(GUILDCONTROL_OPTION12);
-	GuildControlPopupFrameCheckbox13Text:SetText(GUILDCONTROL_OPTION13);
-	GuildControlPopupFrameCheckbox14Text:SetText(GUILDCONTROL_OPTION14);
+	local buttonText;
+	for i=1, 16 do	
+		buttonText = getglobal("GuildControlPopupFrameCheckbox"..i.."Text");
+		if ( buttonText ) then
+			buttonText:SetText(getglobal("GUILDCONTROL_OPTION"..i));
+		end
+	end
 	GuildControlTabPermissionsViewTabText:SetText(GUILDCONTROL_VIEW_TAB);
 	GuildControlTabPermissionsDepositItemsText:SetText(GUILDCONTROL_DEPOSIT_ITEMS);
+	GuildControlTabPermissionsUpdateTextText:SetText(GUILDCONTROL_UPDATE_TEXT);
 	ClearPendingGuildBankPermissions();
 end
 
@@ -1022,6 +1035,7 @@ function GuildControlPopupframe_Update()
 		GuildBankTabLabel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		OptionsFrame_DisableCheckBox(GuildControlTabPermissionsDepositItems);
 		OptionsFrame_DisableCheckBox(GuildControlTabPermissionsViewTab);
+		OptionsFrame_DisableCheckBox(GuildControlTabPermissionsUpdateText);
 		GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		GuildControlWithdrawItemsEditBox:SetNumeric(nil);
 		GuildControlWithdrawItemsEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
@@ -1029,12 +1043,14 @@ function GuildControlPopupframe_Update()
 		GuildControlWithdrawItemsEditBox:ClearFocus();
 		GuildControlWithdrawItemsEditBoxMask:Show();
 		GuildControlWithdrawGoldText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		GuildControlWithdrawGoldAmountText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		GuildControlWithdrawGoldEditBox:SetNumeric(nil);
 		GuildControlWithdrawGoldEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		GuildControlWithdrawGoldEditBox:SetText(UNLIMITED);
 		GuildControlWithdrawGoldEditBox:ClearFocus();
 		GuildControlWithdrawGoldEditBoxMask:Show();
-		OptionsFrame_DisableCheckBox(GuildControlPopupFrameCheckbox14);
+		OptionsFrame_DisableCheckBox(GuildControlPopupFrameCheckbox15);
+		OptionsFrame_DisableCheckBox(GuildControlPopupFrameCheckbox16);
 	else
 		GuildBankTabLabel:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		OptionsFrame_EnableCheckBox(GuildControlTabPermissionsViewTab);
@@ -1043,20 +1059,24 @@ function GuildControlPopupframe_Update()
 		GuildControlWithdrawItemsEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		GuildControlWithdrawItemsEditBoxMask:Hide();
 		GuildControlWithdrawGoldText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GuildControlWithdrawGoldAmountText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		GuildControlWithdrawGoldEditBox:SetNumeric(1);
 		GuildControlWithdrawGoldEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		GuildControlWithdrawGoldEditBoxMask:Hide();
-		OptionsFrame_EnableCheckBox(GuildControlPopupFrameCheckbox14);
+		OptionsFrame_EnableCheckBox(GuildControlPopupFrameCheckbox15);
+		OptionsFrame_EnableCheckBox(GuildControlPopupFrameCheckbox16);
 
 		-- Update tab specific info
-		local viewTab, canDeposit, numWithdrawals = GetGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab);
+		local viewTab, canDeposit, canUpdateText, numWithdrawals = GetGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab);
 		if ( rankID == 1 ) then
 			--If is guildmaster then force checkboxes to be selected
 			viewTab = 1;
 			canDeposit = 1;
+			canUpdateText = 1;
 		end
 		GuildControlTabPermissionsViewTab:SetChecked(viewTab);
 		GuildControlTabPermissionsDepositItems:SetChecked(canDeposit);
+		GuildControlTabPermissionsUpdateText:SetChecked(canUpdateText);
 		GuildControlWithdrawItemsEditBox:SetText(numWithdrawals);
 		local goldWithdrawLimit = GetGuildBankWithdrawLimit();
 		-- Only write to the editbox if the value hasn't been changed by the player
@@ -1105,6 +1125,19 @@ function GuildControlPopupframe_Update()
 		else
 			tab:Hide();
 		end
+	end
+end
+
+function WithdrawGoldEditBox_Update()
+	if ( not GuildControlPopupFrameCheckbox15:GetChecked() and not GuildControlPopupFrameCheckbox16:GetChecked() ) then
+		GuildControlWithdrawGoldAmountText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		GuildControlWithdrawGoldEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		GuildControlWithdrawGoldEditBox:ClearFocus();
+		GuildControlWithdrawGoldEditBoxMask:Show();
+	else
+		GuildControlWithdrawGoldAmountText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GuildControlWithdrawGoldEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		GuildControlWithdrawGoldEditBoxMask:Hide();
 	end
 end
 
@@ -1160,7 +1193,8 @@ function GuildControlCheckboxUpdate(...)
 		if ( checkbox ) then
 			checkbox:SetChecked(select(i, ...));
 		else
-			message("GuildControlPopupFrameCheckbox"..i.." does not exist!");
+			--We need to skip checkbox 14 since it's a deprecated flag
+			--message("GuildControlPopupFrameCheckbox"..i.." does not exist!");
 		end
 	end
 end
@@ -1203,8 +1237,10 @@ end
 function GuildControlPopup_UpdateDepositCheckBox()
 	if(GuildControlTabPermissionsViewTab:GetChecked()) then
 		OptionsFrame_EnableCheckBox(GuildControlTabPermissionsDepositItems);
+		OptionsFrame_EnableCheckBox(GuildControlTabPermissionsUpdateText);
 	else
 		OptionsFrame_DisableCheckBox(GuildControlTabPermissionsDepositItems);
+		OptionsFrame_DisableCheckBox(GuildControlTabPermissionsUpdateText);
 	end
 end
 
@@ -1282,7 +1318,7 @@ end
 
 function SavePendingGuildBankTabPermissions()
 	for index, value in pairs(PENDING_GUILDBANK_PERMISSIONS) do
-		for i=1, 2 do
+		for i=1, 3 do
 			if ( value[i] ) then
 				SetGuildBankTabPermissions(index, i, value[i]);
 			end

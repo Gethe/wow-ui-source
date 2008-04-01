@@ -152,8 +152,8 @@ function PanelTemplates_SetDisabledTabState(tab)
 	getglobal(name.."RightDisabled"):Hide();
 end
 
-function ScrollFrameTemplate_OnMouseWheel(value)
-	local scrollBar = getglobal(this:GetName().."ScrollBar");
+function ScrollFrameTemplate_OnMouseWheel(value, scrollBar)
+	scrollBar = scrollBar or getglobal(this:GetName() .. "ScrollBar");
 	if ( value > 0 ) then
 		scrollBar:SetValue(scrollBar:GetValue() - (scrollBar:GetHeight() / 2));
 	else

@@ -1,4 +1,4 @@
-## Interface: 20300
+## Interface: 20400
 ## Title: Blizzard Auction UI
 ## Secure: 1
 ## LoadOnDemand: 1

@@ -1,9 +1,18 @@
 
-COMBATFEEDBACK_FLASHFRAMES = {};
-
 COMBATFEEDBACK_FADEINTIME = 0.2;
 COMBATFEEDBACK_HOLDTIME = 0.7;
 COMBATFEEDBACK_FADEOUTTIME = 0.3;
+
+SCHOOL_MASK_NONE		= 0x00;
+SCHOOL_MASK_PHYSICAL	= 0x01;
+SCHOOL_MASK_HOLY		= 0x02;
+SCHOOL_MASK_FIRE		= 0x04;
+SCHOOL_MASK_NATURE		= 0x08;
+SCHOOL_MASK_FROST		= 0x10;
+SCHOOL_MASK_SHADOW		= 0x20;
+SCHOOL_MASK_ARCANE		= 0x40;
+
+LOWHEALTHFRAME_FLASHFRAMES = {};
 
 CombatFeedbackText = { };
 CombatFeedbackText["INTERRUPT"]	= INTERRUPT;
@@ -41,16 +50,12 @@ function CombatFeedback_OnCombatEvent(event, flags, amount, type)
 			elseif ( flags == "GLANCING" ) then
 				fontHeight = fontHeight * 0.75;
 			end
-			if ( type > 0 ) then
+			if ( type ~= SCHOOL_MASK_PHYSICAL ) then
 				r = 1.0;
 				g = 1.0;
 				b = 0.0;
 			end
 			text = amount;
-
-			if ( tonumber(SHOW_FULLSCREEN_STATUS) ~= 0 ) then
-				CombatFeedback_UIFrameFlash(LowHealthFrame, 0.5, 0.5, 1);
-			end
 		elseif ( flags == "ABSORB" ) then
 			fontHeight = fontHeight * 0.75;
 			text = CombatFeedbackText["ABSORB"];
@@ -120,13 +125,23 @@ function CombatFeedback_OnUpdate(elapsed)
 	end
 end
 
+function CombatFeedback_StartFullscreenStatus()
+	LowHealthFrame.flashing = true;
+	LowHealthFrame_UIFrameFlash(LowHealthFrame, 0.5, 0.5, -1);
+end
+
+function CombatFeedback_StopFullscreenStatus()
+	LowHealthFrame.flashing = nil;
+	LowHealthFrame_UIFrameFlashRemoveFrame(LowHealthFrame);
+end
+
 -- Function to start a frame flashing
-function CombatFeedback_UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, flashInHoldTime, flashOutHoldTime)
+function LowHealthFrame_UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, flashInHoldTime, flashOutHoldTime)
 	if ( frame ) then
 		local index = 1;
 		-- If frame is already set to flash then return
-		while COMBATFEEDBACK_FLASHFRAMES[index] do
-			if ( COMBATFEEDBACK_FLASHFRAMES[index] == frame ) then
+		while LOWHEALTHFRAME_FLASHFRAMES[index] do
+			if ( LOWHEALTHFRAME_FLASHFRAMES[index] == frame ) then
 				return;
 			end
 			index = index + 1;
@@ -154,85 +169,79 @@ function CombatFeedback_UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDurati
 		frame:SetAlpha(0.0);
 		frame:Show();
 		
-		tinsert(COMBATFEEDBACK_FLASHFRAMES, frame);
+		tinsert(LOWHEALTHFRAME_FLASHFRAMES, frame);
+		frame:SetScript("OnUpdate", LowHealthFrame_UIFrameFlashUpdate);
 	end
 end
 
 -- Called every frame to update flashing frames
-function CombatFeedback_UIFrameFlashUpdate(elapsed)
-	local frame;
-	local index = 1;
-	while COMBATFEEDBACK_FLASHFRAMES[index] do
-		frame = COMBATFEEDBACK_FLASHFRAMES[index];
-		frame.flashDurationTimer = frame.flashDurationTimer + elapsed;
-		-- If flashDuration is exceeded
-		if ( (frame.flashDurationTimer > frame.flashDuration) and frame.flashDuration ~= -1 ) then
-			CombatFeedback_UIFrameFlashRemoveFrame(frame);
-			frame:SetAlpha(1.0);
-			frame.flashDurationTimer = nil;
-			frame:Hide();
-		else
-			if ( frame.flashMode == "IN" ) then
-				local alpha = frame.flashTimer / frame.fadeInTime;
-				frame:SetAlpha(alpha);
+function LowHealthFrame_UIFrameFlashUpdate(frame, elapsed)
+	frame.flashDurationTimer = frame.flashDurationTimer + elapsed;
+	-- If flashDuration is exceeded
+	if ( (frame.flashDurationTimer > frame.flashDuration) and frame.flashDuration ~= -1 ) then
+		LowHealthFrame_UIFrameFlashRemoveFrame(frame);
+		frame.flashDurationTimer = nil;
+	else
+		if ( frame.flashMode == "IN" ) then
+			local alpha = frame.flashTimer / frame.fadeInTime;
+			frame:SetAlpha(alpha);
 
-				if ( frame.flashTimer >= frame.fadeInTime ) then
-					if ( frame.flashInHoldTime and frame.flashInHoldTime > 0 ) then
-						frame.flashMode = "IN_HOLD";
-					else
-						frame.flashMode = "OUT";
-					end
-					frame.flashTimer = 0;
+			if ( frame.flashTimer >= frame.fadeInTime ) then
+				if ( frame.flashInHoldTime and frame.flashInHoldTime > 0 ) then
+					frame.flashMode = "IN_HOLD";
 				else
-					frame.flashTimer = frame.flashTimer + elapsed;
-				end
-			elseif ( frame.flashMode == "IN_HOLD" ) then
-				frame:SetAlpha(1.0);
-
-				if ( frame.flashTimer >= frame.flashInHoldTime ) then
 					frame.flashMode = "OUT";
-					frame.flashTimer = 0;
-				else
-					frame.flashTimer = frame.flashTimer + elapsed;
 				end
-			elseif ( frame.flashMode == "OUT" ) then
-				local alpha = 1.0 - frame.flashTimer / frame.fadeOutTime;
-				frame:SetAlpha(alpha);
+				frame.flashTimer = 0;
+			else
+				frame.flashTimer = frame.flashTimer + elapsed;
+			end
+		elseif ( frame.flashMode == "IN_HOLD" ) then
+			frame:SetAlpha(1.0);
 
-				if ( frame.flashTimer >= frame.fadeOutTime ) then
-					if ( frame.flashOutHoldTime and frame.flashOutHoldTime > 0 ) then
-						frame.flashMode = "OUT_HOLD";
-					else
-						frame.flashMode = "IN";
-					end
-					frame.flashTimer = 0;
+			if ( frame.flashTimer >= frame.flashInHoldTime ) then
+				frame.flashMode = "OUT";
+				frame.flashTimer = 0;
+			else
+				frame.flashTimer = frame.flashTimer + elapsed;
+			end
+		elseif ( frame.flashMode == "OUT" ) then
+			local alpha = 1.0 - frame.flashTimer / frame.fadeOutTime;
+			frame:SetAlpha(alpha);
+
+			if ( frame.flashTimer >= frame.fadeOutTime ) then
+				if ( frame.flashOutHoldTime and frame.flashOutHoldTime > 0 ) then
+					frame.flashMode = "OUT_HOLD";
 				else
-					frame.flashTimer = frame.flashTimer + elapsed;
-				end
-				frame:SetAlpha(alpha);
-			elseif ( frame.flashMode == "OUT_HOLD" ) then
-				frame:SetAlpha(0.0);
-
-				frame.flashTimer = frame.flashTimer + elpased;
-				if ( frame.flashTimer >= frame.flashOutHoldTime ) then
 					frame.flashMode = "IN";
-					frame.flashTimer = 0;
-				else
-					frame.flashTimer = frame.flashTimer + elapsed;
 				end
+				frame.flashTimer = 0;
+			else
+				frame.flashTimer = frame.flashTimer + elapsed;
+			end
+			frame:SetAlpha(alpha);
+		elseif ( frame.flashMode == "OUT_HOLD" ) then
+			frame:SetAlpha(0.0);
+
+			frame.flashTimer = frame.flashTimer + elpased;
+			if ( frame.flashTimer >= frame.flashOutHoldTime ) then
+				frame.flashMode = "IN";
+				frame.flashTimer = 0;
+			else
+				frame.flashTimer = frame.flashTimer + elapsed;
 			end
 		end
+	end
 
-		if ( not GetUIPanel("fullscreen") ) then
-			-- this feature is only supposed to be seen when the screen is covered
-			-- also, alpha is set to 0 so the frame can still call its OnUpdate functions
-			frame:SetAlpha(0.0);
-		end
-
-		index = index + 1;
+	if ( not GetUIPanel("fullscreen") ) then
+		-- this feature is only supposed to be seen when the screen is covered
+		-- also, alpha is set to 0 so the frame can still call its OnUpdate functions
+		frame:SetAlpha(0.0);
 	end
 end
 
-function CombatFeedback_UIFrameFlashRemoveFrame(frame)
-	tDeleteItem(COMBATFEEDBACK_FLASHFRAMES, frame);
+function LowHealthFrame_UIFrameFlashRemoveFrame(frame)
+	frame:SetScript("OnUpdate", nil);
+	frame:Hide();
+	tDeleteItem(LOWHEALTHFRAME_FLASHFRAMES, frame);
 end

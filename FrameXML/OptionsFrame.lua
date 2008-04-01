@@ -12,7 +12,7 @@ OptionsFrameCheckButtons["WORLD_LOD"] = { index = 7, cvar = "lod", tooltipText =
 --OptionsFrameCheckButtons["VERTEX_ANIMATION_SHADERS"] = { index = 8, cvar = "M2UseShaders", tooltipText = OPTION_TOOLTIP_VERTEX_ANIMATION_SHADERS, tooltipRequirement = OPTION_LOGOUT_REQUIREMENT};
 OptionsFrameCheckButtons["USE_UISCALE"] = { index = 9, cvar = "useUiScale", tooltipText = OPTION_TOOLTIP_USE_UISCALE};
 OptionsFrameCheckButtons["WINDOWED_MODE"] = { index = 10, cvar = "gxWindow", tooltipText = OPTION_TOOLTIP_WINDOWED_MODE, gxRestart = 1};
---OptionsFrameCheckButtons["ENABLE_ALL_SHADERS"] = { index = 11, cvar = "pixelShaders", tooltipText = OPTION_TOOLTIP_ENABLE_ALL_SHADERS};
+OptionsFrameCheckButtons["WINDOW_LOCK"] = { index = 11, cvar = "windowResizeLock", dependency = "WINDOWED_MODE", tooltipText = OPTION_TOOLTIP_WINDOW_LOCK};
 OptionsFrameCheckButtons["DEATH_EFFECT"] = { index = 12, cvar = "ffxDeath", tooltipText = OPTION_TOOLTIP_DEATH_EFFECT};
 OptionsFrameCheckButtons["TRIPLE_BUFFER"] = { index = 13, cvar = "gxTripleBuffer", dependency = "VERTICAL_SYNC", tooltipText = OPTION_TOOLTIP_BUFFERING, gxRestart = 1};
 OptionsFrameCheckButtons["HARDWARE_CURSOR"] = { index = 14, cvar = "gxCursor", tooltipText = OPTION_TOOLTIP_HARDWARE_CURSOR, gxRestart = 1};
@@ -77,11 +77,7 @@ function OptionsFrame_Load()
 
 		-- Enable disable checkboxes
 		button.disabled = nil;
-		if ( index == "ENABLE_ALL_SHADERS" ) then
-			if ( not hasPixelShaders ) then
-				button.disabled = 1;
-			end
-		elseif ( index == "TRIPLE_BUFFER" ) then
+		if ( index == "TRIPLE_BUFFER" ) then
 			if ( not hasTripleBuffering or GetCVar("gxVSync") ~= "1" ) then
 				button.disabled = 1;
 			end

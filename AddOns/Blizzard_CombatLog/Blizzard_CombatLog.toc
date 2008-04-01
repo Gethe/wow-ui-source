@@ -1,6 +1,6 @@
 ## Interface: 20400
-## Title: Blizzard GM Survey UI
+## Title: Blizzard CombatLog
 ## Secure: 1
 ## LoadOnDemand: 1
-Blizzard_GMSurveyUI.xml
+Blizzard_CombatLog.xml
 Localization.lua

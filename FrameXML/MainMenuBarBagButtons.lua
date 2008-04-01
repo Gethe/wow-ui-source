@@ -122,3 +122,44 @@ function Enable_BagButtons()
 	CharacterBag3Slot:Enable();
 	SetDesaturation(CharacterBag3SlotIconTexture, nil);
 end
+
+function MainMenuBarBackpackButton_OnEvent(self, event, ...)
+	if ( event == "BAG_UPDATE" ) then
+		local bag = ...;
+		if ( bag >= BACKPACK_CONTAINER and bag <= NUM_BAG_SLOTS ) then
+			MainMenuBarBackpackButton_UpdateFreeSlots();
+		end
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		if ( GetCVar("displayFreeBagSlots") == "1" ) then
+			MainMenuBarBackpackButtonCount:Show();
+		else
+			MainMenuBarBackpackButtonCount:Hide();
+		end
+		MainMenuBarBackpackButton_UpdateFreeSlots();
+	elseif ( event == "CVAR_UPDATE" ) then
+		local cvar, value = ...
+		if ( cvar == "DISPLAY_FREE_BAG_SLOTS" ) then
+			if ( value == "1" ) then
+				MainMenuBarBackpackButtonCount:Show();
+			else
+				MainMenuBarBackpackButtonCount:Hide();
+			end
+		end
+	end
+end
+
+local BACKPACK_FREESLOTS_FORMAT = "(%s)";
+
+function MainMenuBarBackpackButton_UpdateFreeSlots()
+	local totalFree, freeSlots, bagFamily = 0;
+	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+		freeSlots, bagFamily = GetContainerNumFreeSlots(i);
+		if ( bagFamily == 0 ) then
+			totalFree = totalFree + freeSlots;
+		end
+	end
+
+	MainMenuBarBackpackButton.freeSlots = totalFree;
+	
+	MainMenuBarBackpackButtonCount:SetText(string.format(BACKPACK_FREESLOTS_FORMAT, totalFree));
+end

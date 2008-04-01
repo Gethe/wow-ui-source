@@ -170,8 +170,10 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 		statusbar.showPercentage = nil;
 		
 		-- Safety check to make sure we never get an empty bar.
+		statusbar.forceHideText = false;
 		if ( maxValue == 0 ) then
 			maxValue = 1;
+			statusbar.forceHideText = true;
 		elseif ( maxValue == 100 ) then
 			--This should be displayed as percentage.
 			statusbar.showPercentage = true;
@@ -180,11 +182,10 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 		statusbar:SetMinMaxValues(0, maxValue);
 
 		if ( not UnitIsConnected(unit) ) then
-			statusbar:SetValue(maxValue);
 			statusbar:SetStatusBarColor(0.5, 0.5, 0.5);
+			statusbar:SetValue(maxValue);
 		else
 			statusbar:SetStatusBarColor(0.0, 1.0, 0.0);
-			statusbar:SetMinMaxValues(0, maxValue);
 			statusbar:SetValue(currValue);
 		end
 	end

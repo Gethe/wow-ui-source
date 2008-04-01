@@ -31,6 +31,7 @@ end
 function QuestLogTitleButton_OnLoad()
 	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	this:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
+	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	this:RegisterEvent("PARTY_MEMBER_ENABLE");
 	this:RegisterEvent("PARTY_MEMBER_DISABLE");
 end
@@ -489,7 +490,10 @@ function QuestLogTitleButton_OnClick(button)
 		end
 		-- Otherwise try to track it or put it into chat
 		if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
-			ChatFrameEditBox:Insert(strtrim(this:GetText()));
+			local questLink = GetQuestLink(questIndex);
+			if ( questLink ) then
+				ChatEdit_InsertLink(questLink);
+			end
 		elseif ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
 			if ( IsQuestWatched(questIndex) ) then
 				RemoveQuestWatch(questIndex);

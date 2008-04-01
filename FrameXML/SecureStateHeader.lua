@@ -1,8 +1,9 @@
 -- SecureStateHeader - Button management state engine
--- 
+--
 ---------------------------------------------------------------------------
 -- Contributed with permission by Iriel, with some support code from Tem
 -- (Anchoring code inspired by cueball)
+-- (stateattribute code contributed by Alestane)
 --
 -- IMPORTANT: Version 2.1.0 updated the next state functions to require
 --            the state header they're operating against. This could
@@ -30,6 +31,12 @@
 --
 -- 4) Key Rebinding -- The template can rebind keys to its child buttons
 --                     when changing states.
+--
+-- 5) Attribute Changes -- The template can modify its own attributes
+--                         according to its state, except for the attributes
+--                         that control its own state behavior. It can use
+--                         these attributes or its children can inherit them
+--                         by using 'useparent-' attributes.
 --
 -- This engine cannot bypass the general principles of the new in combat
 -- restrictions, once in combat it cannot be reconfigured, and it cannot
@@ -101,7 +108,7 @@
 -- press (LeftButton) look like another (say, RightButton, or possibly a
 -- user defined virtual button). Since the secure action template uses the
 -- button to look up attributes, this lets you change its behavior in
--- different states. Button mappings are incredibly flexible, first the 
+-- different states. Button mappings are incredibly flexible, first the
 -- "statebutton" attribute of the child is queried using the SecureButton
 -- modifier rules, so you can have different re-mappings for different
 -- modifiers and buttons. If the attribute is found then it is parsed
@@ -274,9 +281,9 @@
 --
 -- The header can change its parent with the use of the "headparent"
 -- state attribute and matching "headparent-<parentName>" attributes.
--- 
+--
 -- Set "headparent-<parentName>" with the value of the desired parent frame,
--- and use the "headparent" state attribute to map state rules to parent names. 
+-- and use the "headparent" state attribute to map state rules to parent names.
 --
 -- The "parentName" used does not need to match the frame's actual name or global
 -- symbol. It is nothing more than "directions" to the header of where to find
@@ -284,7 +291,7 @@
 --
 -- For example:
 --
--- "headparent" -> "1:frame" -- Check "headparent-frame" for the frame object 
+-- "headparent" -> "1:frame" -- Check "headparent-frame" for the frame object
 -- when in state 1
 --
 -- "headparent" -> "1:parent1;2:parent2" -- Check "headparent-parent1" when
@@ -327,7 +334,31 @@
 -- "headofsrelpoint" -> "cursor" -- Anchor relative to cursor position
 --
 --
+-- ADVANCED TOPICS: STATE-BASED ATTRIBUTES
+--
+-- A header can be set up to reconfigure its own attributes on a state change,
+-- for inheritance by children, or for internal use if the header is also an
+-- action button. This is accomlished through an "attribute set" system similar
+-- to the mechanism for state bindings.
+--
+-- When the header changes state, it searches the state attribute
+-- "stateattributes" (if present) for a set name that matches the new state.
+-- If found, it then searches for a "attributes-<set name>" attribute and,
+-- if found, parses it as a series of attribute assignments. These attributes
+-- are specified as strings of the form "<attr>[=<value>](|<attr>[=<value>])*".
+-- For example:
+--
+-- DemonButton:SetAttribute("stateattributes",
+--                          "1:Imp;2:Voidwalker;3:Succubus;4:Felhunter")
+-- DemonButton:SetAttribute("attributes-Succubus",
+--                          "ctrl-spell*=Seduction|*unit2=focus")
+-- DemonButton:SetAttribute("attributes-Felhunter",
+--                          "shift-spell*=Devour Magic|shift-unit2=player"
+--                          .. "|ctrl-spell*=Spell Lock|ctrl-unit2=focus")
+--
+--
 -- ADVANCED TOPICS: HEADER UNIT CHANGE
+-- (This feature is deprecated in favor of the stateattributes mechanism)
 --
 -- You can change the unit or unitsuffix property on the header using its
 -- "headstateunit" state attribute. For each state it can have one of the
@@ -335,7 +366,7 @@
 --
 -- "<unit>"    -- A normal unit, e.g. "player" (unitsuffix is cleared)
 -- "+<suffix>" -- A unit suffix e.g. "target" (unit is cleared)
--- "clear"      -- Clear unit and unitsuffix 
+-- "clear"      -- Clear unit and unitsuffix
 --
 --
 -- ADVANCED TOPICS: EXTERNAL STATE CHANGES
@@ -366,7 +397,7 @@
 -- "delaystatemap-<type>-<value>" then "delaystatemap-<type>"
 -- "delaytimemap-<type>-<value>" then "delaytimemap-<type>"
 -- "delayhovermap-<type>-<value>" then "delayhovermap-<type>"
--- 
+--
 -- External state sources should only set the value when it actually
 -- changes, unless they're indication that an ACTION has occurred.
 --
@@ -379,7 +410,7 @@
 --
 -- You can also set a state header to propagate state change information
 -- back to its parent. If you set the "exportstate" property of the
--- header to a value, then any state change on the header will set the 
+-- header to a value, then any state change on the header will set the
 -- "state-<exportstate>" value on its parent to the header's new state.
 --
 --
@@ -416,7 +447,7 @@
 --
 -- 5. The "childstate" attribute is queried, if this has a value then
 --    it's used to change the anchor child's 'state-anchor' attribute.
---    If you prefix start the new state with a ^ then the attribute is 
+--    If you prefix start the new state with a ^ then the attribute is
 --    always set, otherwise it's only set if it's different than it was
 --    before. You can also optionally provide a true "childverify" attribute
 --    on the anchor to only change state if the anchorchild's parent is the
@@ -433,16 +464,16 @@
 --
 -- * SecureAnchorEnterTemplate: Provides mouseover support using the
 --   virtual buttons "OnEnter" and "OnLeave". You can specify alternate
---   buttons by providing the "onenterbutton" or "onleavebutton" 
+--   buttons by providing the "onenterbutton" or "onleavebutton"
 --   attributes (both queried with modifiers).
 --
 -- * SecureUpDownTemplate: Provides OnMouseUp/OnMouseDown support, using
 --   the button pressed/released. You can specify alternate buttons
---   by providing the "onmouseupbutton" or "onmousedownbutton" 
+--   by providing the "onmouseupbutton" or "onmousedownbutton"
 --   attributes (both queried with modifiers).
 --
 -- Example:
--- 
+--
 -- -- menuheader is the state header for a menu, with states 0 (hidden)
 -- -- and 1 (shown). A sample 'mouseover to open' anchor could be set up
 -- -- with:
@@ -483,6 +514,7 @@ end
 local function commaIterator(str) return splitNext, ",", str; end
 local function semicolonIterator(str) return splitNext, ";", str; end
 local function spaceIterator(str) return splitNext, " ", str; end
+local function pipeIterator(str) return splitNext, "|", str; end
 
 ----------------------------------------------------------------------------
 -- Get a state dependent attribute by applying the condition filtering
@@ -522,7 +554,7 @@ local function SecureStateHeader_TestChildVisibility(self, state, ...)
         if (show) then
             -- Set size and scale if requested
             local width = SecureState_GetStateAttribute(child, state, "width");
-            local height= 
+            local height =
                 SecureState_GetStateAttribute(child, state, "height");
             local scale = SecureState_GetStateAttribute(child, state, "scale");
             width, height = tonumber(width), tonumber(height);
@@ -606,7 +638,7 @@ local function SecureStateHeader_ApplyChildBindings(self, set, full, ...)
                         key = string.upper(key);
                         if (not newBindings[key]) then
                             newBindings[key] = true;
-                            SetOverrideBindingClick(self, prispec, 
+                            SetOverrideBindingClick(self, prispec,
                                                     key, childname, button);
                         end
                     end
@@ -701,7 +733,7 @@ function SecureStateHeader_Refresh(self, state)
     if (needraise) then self:Raise(); end
 
     -- Change the header's unit if necessary
-    local newUnit = SecureState_GetStateAttribute(self, state, 
+    local newUnit = SecureState_GetStateAttribute(self, state,
                                                   "headstateunit");
     if (newUnit) then
         if (newUnit == "") then
@@ -709,7 +741,7 @@ function SecureStateHeader_Refresh(self, state)
         elseif (newUnit == "clear") then
             self:SetAttribute("unitsuffix", nil);
             self:SetAttribute("unit", nil);
-        else 
+        else
             local suffix = match(tostring(newUnit), "^%+(.*)$");
             if (suffix) then
                 self:SetAttribute("unitsuffix", suffix);
@@ -717,6 +749,23 @@ function SecureStateHeader_Refresh(self, state)
             else
                 self:SetAttribute("unitsuffix", nil);
                 self:SetAttribute("unit", newUnit);
+            end
+        end
+    end
+
+    -- Update the header's attributes - can overwrite "headstateunit"
+    local attrSet =
+        SecureState_GetStateAttribute(self, state, "stateattributes");
+    if (attrSet and attrSet ~= self:GetAttribute("_attributes")) then
+        self:SetAttribute("_attributes", attrSet);
+        attrSet = self:GetAttribute("attributes-" .. attrSet);
+        if (attrSet) then
+            for _, clause in pipeIterator(attrSet) do
+                local attr, value = strsplit("=", clause, 2);
+                local attrFamily = attr:sub(1, 5);
+                if (attrFamily ~= "state" and attrFamily ~= "delay") then
+                    self:SetAttribute(attr, value);
+                end
             end
         end
     end
@@ -796,7 +845,7 @@ function SecureStateHeader_OnAttributeChanged(self, name, value)
         end
         value:SetParent(self);
         if (value:HasScript("OnClick")) then
-            -- This can lead to tainting the current execution so we use a 
+            -- This can lead to tainting the current execution so we use a
             -- secure function for the dirty work.
             securecall(SecureStateHeader_SafeSaveOnClick, value);
             value:SetScript("OnClick", SecureStateChild_OnClick);
@@ -852,7 +901,7 @@ function SecureStateHeader_OnAttributeChanged(self, name, value)
                     delayHover = (delayHover and true) or false;
                 end
             end
-            
+
             if (newState) then
                 self:SetAttribute("state", newState);
             end
@@ -956,7 +1005,7 @@ function SecureStateHeader_GetNextButtonState(self, state, button)
 end
 
 -- Apply new button state configuration to the parent
-function SecureStateHeader_ApplyNextButtonState(self, 
+function SecureStateHeader_ApplyNextButtonState(self,
                                                 nState, dState, delay, hover)
     -- Abort now if the wrapped frame is not protected and we're in combat.
     -- This prevents a number of exploits that could otherwise occur if
@@ -987,13 +1036,13 @@ function SecureStateChild_OnClick(self, button, down)
 
     local downButton;
     if (down) then
-        downButton = SecureState_GetStateModifiedAttribute(self, state, 
+        downButton = SecureState_GetStateModifiedAttribute(self, state,
                                                           "statedownbutton",
                                                           button);
     end
-    button = downButton 
+    button = downButton
         or SecureState_GetStateModifiedAttribute(self, state, "statebutton",
-                                                 button) 
+                                                 button)
         or button;
 
     local nState, dState, delay, hover =
@@ -1001,7 +1050,7 @@ function SecureStateChild_OnClick(self, button, down)
 
     -- Invoke the old OnClick
     securecall(SecureStateHeader_SafeCallOnClick, self, button, down);
-    
+
     SecureStateHeader_ApplyNextButtonState(self, nState, dState, delay, hover);
 end
 
@@ -1249,7 +1298,7 @@ function SecureStateHeader_ApplyRule(header, state, rule, suggested)
             anyChange = true;
         else
             local newState = SecureStateHeader_ApplyRuleClause(header,
-                                                               state, 
+                                                               state,
                                                                clause);
             if (newState) then
                 state = newState;
@@ -1274,13 +1323,13 @@ function SecureStateChild_GetEffectiveButton(self, button, down)
     local state = tostring((parent and parent:GetAttribute("state")) or "0");
     local downButton;
     if (down) then
-        downButton = SecureState_GetStateModifiedAttribute(self, state, 
+        downButton = SecureState_GetStateModifiedAttribute(self, state,
                                                           "statedownbutton",
                                                           button);
     end
-    return downButton 
+    return downButton
         or SecureState_GetStateModifiedAttribute(self, state, "statebutton",
-                                                 button) 
+                                                 button)
         or button;
 end
 
@@ -1305,37 +1354,37 @@ function SecureStateAnchor_RunChild(self, button, remapButton)
     if (not self:IsProtected() and InCombatLockdown()) then
         return;
     end
-        
+
     local x = SecureButton_GetModifiedAttribute(self, "childofsx", button);
     local y = SecureButton_GetModifiedAttribute(self, "childofsy", button);
     if (x or y) then
         x,y = tonumber(x) or 0, tonumber(y) or 0;
-        local point = 
-            SecureButton_GetModifiedAttribute(self, "childpoint", button) 
+        local point =
+            SecureButton_GetModifiedAttribute(self, "childpoint", button)
             or "CENTER";
-        local relpoint = 
-            SecureButton_GetModifiedAttribute(self, "childrelpoint", button) 
+        local relpoint =
+            SecureButton_GetModifiedAttribute(self, "childrelpoint", button)
             or point;
         child:ClearAllPoints();
         child:SetPoint(point, self, relpoint, x, y);
     end
-    
+
     -- This should always be safe since we're protected and this
     -- requires a trusted initiation to run in the first place. Required for
     -- shared raid header child dropdowns.
     if (SecureButton_GetModifiedAttribute(self, "childreparent", button)) then
         child:SetParent(self);
     end
-                
+
     if (SecureButton_GetModifiedAttribute(self, "childraise", button)) then
         child:Raise();
     end
 
-    local newstate = 
+    local newstate =
         SecureButton_GetModifiedAttribute(self, "childstate", button);
 
     -- Allow for child verification
-    if (newstate and 
+    if (newstate and
         SecureButton_GetModifiedAttribute(self, "childverify")) then
         if (child:GetParent() ~= self) then
             newstate = nil;

@@ -23,26 +23,27 @@ function ContainerFrame_OnLoad()
 	ContainerFrame1.bags = {};
 end
 
-function ContainerFrame_OnEvent()
+function ContainerFrame_OnEvent(self, event, ...)
+	local arg1, arg2 = ...;
 	if ( event == "BAG_OPEN" ) then
-		if ( this:GetID() == arg1 ) then
-			this:Show();
+		if ( self:GetID() == arg1 ) then
+			self:Show();
 		end
 	elseif ( event == "BAG_CLOSED" ) then
-		if ( this:GetID() == arg1 ) then
-			this:Hide();
+		if ( self:GetID() == arg1 ) then
+			self:Hide();
 		end
 	elseif ( event == "BAG_UPDATE" ) then
-		if ( this:GetID() == arg1 ) then
+		if ( self:GetID() == arg1 ) then
  			ContainerFrame_Update(this);
 		end
 	elseif ( event == "ITEM_LOCK_CHANGED" ) then
 		local bag, slot = arg1, arg2;
-		if ( bag and slot and bag == this:GetID() ) then
-			ContainerFrame_UpdateLockedItem(this, slot);
+		if ( bag and slot and (bag == self:GetID()) ) then
+			ContainerFrame_UpdateLockedItem(self, slot);
 		end
 	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
-		ContainerFrame_UpdateCooldowns(this);
+		ContainerFrame_UpdateCooldowns(self);
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		updateContainerFrameAnchors();
 	end

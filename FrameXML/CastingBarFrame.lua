@@ -36,6 +36,8 @@ function CastingBarFrame_OnEvent(newevent, newarg1)
 		elseif ( nameSpell ) then
 			newevent = "UNIT_SPELLCAST_START";
 			newarg1 = this.unit;
+		else
+		    CastingBarFrame_FinishSpell();
 		end
 	end
 
@@ -80,7 +82,7 @@ function CastingBarFrame_OnEvent(newevent, newarg1)
 			this:Show();
 		end
 
-	elseif ( newevent == "UNIT_SPELLCAST_STOP" or newevent == "UNIT_SPELLCAST_CHANNEL_STOP" ) then
+	elseif ( newevent == "UNIT_SPELLCAST_STOP" or newevent == "UNIT_SPELLCAST_CHANNEL_STOP") then
 		if ( not this:IsVisible() ) then
 			this:Hide();
 		end

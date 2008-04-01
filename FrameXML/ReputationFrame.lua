@@ -260,7 +260,7 @@ function ShowWatchedReputationBarText(lock)
 	if ( lock ) then
 		ReputationWatchBar.cvarLocked = lock;
 	end
-	if ( UnitLevel("player") == MAX_PLAYER_LEVEL and ReputationWatchBar:IsShown() ) then
+	if ( ReputationWatchBar:IsShown() ) then
 		ReputationWatchStatusBarText:Show();
 		ReputationWatchBar.textLocked = 1;
 	else

@@ -27,8 +27,60 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<FontString name="$parentNoteHiddenText" inherits="GameFontNormalSmall" justifyH="LEFT" hidden="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentInfo" relativePoint="RIGHT">
+									<Offset x="5" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNoteText" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentInfo" relativePoint="RIGHT">
+									<Offset x="2" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Button name="$parentNote">
+						<Size x="7" y="8"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentNameLocation" relativePoint="LEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentIcon" file="Interface/FriendsFrame/UI-FriendsFrame-Note">
+									<Size x="7" y="8"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+							</OnLoad>
+							<OnClick>
+								FriendsFrame.NotesID = this:GetParent():GetParent():GetID();
+								local dialog = StaticPopup_Show("SET_FRIENDNOTE", GetFriendInfo(FriendsFrame.NotesID));
+								PlaySound("igCharacterInfoClose");
+							</OnClick>
+						</Scripts>
+						<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+							<Size x="7" y="8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="-1" y="0"/>
+								</Anchor>
+							</Anchors>
+						</HighlightTexture>
+					</Button>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -3045,7 +3097,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox1" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3054,7 +3106,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox3" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3063,7 +3115,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox5" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3072,7 +3124,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox7" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3081,7 +3133,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox9" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3090,7 +3142,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox11" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3101,7 +3153,7 @@
 								</Size>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GuildControlPopupFrameCheckbox13" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-18"/>
+										<Offset x="0" y="-16"/>
 									</Anchor>
 								</Anchors>
 								<Layers>
@@ -3109,6 +3161,13 @@
 										<FontString name="GuildControlWithdrawGoldText" inherits="GameFontNormalSmall" text="GUILDCONTROL_WITHDRAW_GOLD">
 											<Anchors>
 												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</FontString>
+										<FontString name="GuildControlWithdrawGoldAmountText" inherits="GameFontNormalSmall" text="GOLD_PER_DAY">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="GuildControlWithdrawGoldText" relativePoint="BOTTOMLEFT">
+													<Offset x="0" y="-13"/>
+												</Anchor>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -3119,9 +3178,9 @@
 											<AbsDimension x="70" y="32"/>
 										</Size>
 										<Anchors>
-											<Anchor point="LEFT" relativeTo="GuildControlWithdrawGoldText" relativePoint="RIGHT">
+											<Anchor point="LEFT" relativeTo="GuildControlWithdrawGoldAmountText" relativePoint="RIGHT">
 												<Offset>
-													<AbsDimension x="20" y="0"/>
+													<AbsDimension x="11" y="-1"/>
 												</Offset>
 											</Anchor>
 										</Anchors>
@@ -3153,7 +3212,7 @@
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="GuildControlPopupFrameCheckbox1" relativePoint="RIGHT">
 										<Offset>
-											<AbsDimension x="115" y="0"/>
+											<AbsDimension x="115" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3162,7 +3221,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox2" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3171,7 +3230,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox4" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3180,7 +3239,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox6" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3189,7 +3248,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox8" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3198,27 +3257,64 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox10" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="0" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 							</CheckButton>
-							<CheckButton name="GuildControlPopupFrameCheckbox14" inherits="GuildControlPopupFrameCheckboxTemplate" id="14">
+							<CheckButton name="GuildControlPopupFrameCheckbox16" inherits="GuildControlPopupFrameCheckboxTemplate" id="16">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="GuildControlWithdrawGoldText" relativePoint="BOTTOMLEFT">
-										<Offset x="134" y="-7"/>
+									<Anchor point="LEFT" relativeTo="GuildControlWithdrawGoldText" relativePoint="RIGHT">
+										<Offset x="4" y="-1"/>
 									</Anchor>
 								</Anchors>
 								<Scripts>
+									<OnClick>
+										if ( this:GetChecked() ) then
+											PlaySound("igMainMenuOptionCheckBoxOff");
+										else
+											PlaySound("igMainMenuOptionCheckBoxOn");
+										end
+										GuildControlSetRankFlag(this:GetID(), this:GetChecked());
+										GuildControlPopupAcceptButton:Enable();
+										WithdrawGoldEditBox_Update();
+									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-										GameTooltip:SetText(GUILDCONROL_OPTION14_TOOLTIP, nil, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+										GameTooltip:SetText(GUILDCONTROL_OPTION16_TOOLTIP, nil, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();
 									</OnLeave>
 								</Scripts>
 							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox15" inherits="GuildControlPopupFrameCheckboxTemplate" id="15">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildControlPopupFrameCheckbox16Text" relativePoint="RIGHT">
+										<Offset x="12" y="-1"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										if ( this:GetChecked() ) then
+											PlaySound("igMainMenuOptionCheckBoxOff");
+										else
+											PlaySound("igMainMenuOptionCheckBoxOn");
+										end
+										GuildControlSetRankFlag(this:GetID(), this:GetChecked());
+										GuildControlPopupAcceptButton:Enable();
+										WithdrawGoldEditBox_Update();
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetText(GUILDCONTROL_OPTION15_TOOLTIP, nil, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</CheckButton>
+							
 						</Frames>
 					</Frame>
 					<Button name="GuildControlPopupFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
@@ -3292,7 +3388,7 @@
 					</EditBox>
 					<Frame name="GuildControlPopupFrameTabPermissions">
 						<Size>
-							<AbsDimension x="268" y="53"/>
+							<AbsDimension x="268" y="62"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="GuildControlPopupFrame" relativePoint="BOTTOMLEFT">
@@ -3349,6 +3445,19 @@
 									</OnClick>
 								</Scripts>
 							</CheckButton>
+							<CheckButton name="GuildControlTabPermissionsUpdateText" inherits="GuildControlPopupFrameCheckboxTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildControlTabPermissionsViewTab" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="4"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, this:GetID(), this:GetChecked());
+										GuildControlPopupAcceptButton:Enable();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
 							<Frame name="GuildControlTabPermissionsWithdrawItems">
 								<Size>
 									<AbsDimension x="20" y="20"/>
@@ -3356,7 +3465,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GuildControlTabPermissionsViewTab" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="-4"/>
+											<AbsDimension x="0" y="-16"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3747,7 +3856,7 @@
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="GuildMemberDetailZoneLabel" relativePoint="RIGHT">
 									<Offset>
-										<AbsDimension x="2" y="1"/>
+										<AbsDimension x="2" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -3763,9 +3872,9 @@
 						</FontString>
 						<FontString name="GuildMemberDetailRankText" inherits="GameFontHighlight">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailZoneText" relativePoint="BOTTOMLEFT">
+								<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT">
 									<Offset>
-										<AbsDimension x="1" y="-5"/>
+										<AbsDimension x="2" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

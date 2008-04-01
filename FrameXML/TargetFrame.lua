@@ -17,6 +17,7 @@ UnitReactionColor = {
 	{ r = 0.0, g = 1.0, b = 0.0 },
 	{ r = 0.0, g = 1.0, b = 0.0 },
 	{ r = 0.0, g = 1.0, b = 0.0 },
+	{ r = 0.0, g = 1.0, b = 0.0 },
 };
 
 function TargetFrame_OnLoad()
@@ -451,7 +452,7 @@ function TargetFrame_UpdateBuffAnchor(buffName, index, numFirstRowBuffs, numDebu
 			if ( numDebuffs > 0 ) then
 				buff:SetPoint("TOPLEFT", TargetFrameDebuffs, "BOTTOMLEFT", 0, -TargetFrame.buffSpacing);
 			else
-				buff:SetPoint("TOPLEFT", TargetFrame, "BOTTOMLEFT", TargetFrame.buffStartX, (TargetFrame.buffStartY-buffSize-TargetFrame.buffSpacing));
+				buff:SetPoint("TOPLEFT", TargetFrame, "BOTTOMLEFT", TargetFrame.buffStartX, TargetFrame.buffStartY);
 			end
 		end
 		TargetFrameBuffs:SetPoint("TOPLEFT", buff, "TOPLEFT", 0, 0);
@@ -737,7 +738,7 @@ function Target_Spellbar_OnLoad()
 	SetTargetSpellbarAspect();
 	
 	-- check to see if the castbar should be shown
-	if ( GetCVar( UIOptionsFrameCheckButtons["SHOW_TARGET_CASTBAR"].cvar ) == "0") then
+	if ( GetCVar("ShowTargetCastbar") == "0") then
 		this.showCastbar = false;	
 	end
 end
@@ -747,7 +748,7 @@ function Target_Spellbar_OnEvent()
 	local newarg1 = arg1;
 	--	Check for target specific events
 	if ( (event == "CVAR_UPDATE") and (arg1 == "SHOW_TARGET_CASTBAR") ) then
-		if ( GetCVar( UIOptionsFrameCheckButtons[arg1].cvar ) == "0") then
+		if ( GetCVar("ShowTargetCastbar") == "0") then
 			this.showCastbar = false;
 		else
 			this.showCastbar = true;

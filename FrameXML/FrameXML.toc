@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 20300
+## Interface: 20400
 GlobalStrings.lua
 Fonts.xml
 Localization.xml
@@ -16,9 +16,11 @@ UIDropDownMenu.xml
 UIPanelTemplates.lua
 UIPanelTemplates.xml
 SecureTemplates.xml
+ItemButtonTemplate.xml
 AudioOptionsFrame.xml
 GameMenuFrame.xml
 OptionsFrame.xml
+CharacterFrameTemplates.xml
 UIOptionsFrame.xml
 UIErrorsFrame.xml
 StaticPopup.xml
@@ -53,7 +55,6 @@ PlayerFrame.xml
 PartyFrame.xml
 TargetFrame.xml
 PetFrame.xml
-ItemButtonTemplate.xml
 StatsFrame.xml
 SpellBookFrame.xml
 CharacterFrame.xml
@@ -106,3 +107,6 @@ MacOptionsFrame.xml
 RatingMenuFrame.xml
 TalentFrameBase.lua
 Blizzard_TalentUITemplates.xml
+EasyMenu.lua
+TotemFrame.xml
+UIOptionsPanels.xml

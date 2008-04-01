@@ -137,6 +137,12 @@
 							MainMenuExpBar_Update();
 						end
 					</OnEvent>
+					<OnShow>
+						if ( GetCVar("xpBarText") == "1" ) then
+							TextStatusBar_UpdateTextString();
+							ShowTextStatusBarText(this);
+						end
+					</OnShow>					
 					<OnEnter>
 						TextStatusBar_UpdateTextString();
 						ShowTextStatusBarText(this);

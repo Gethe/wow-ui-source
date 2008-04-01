@@ -7,6 +7,30 @@ WORLDSTATESCOREFRAME_PADDING = 35;
 WORLDSTATESCOREFRAME_COLUMN_SPACING = 66;
 WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET = -30;
 
+WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = -25;
+WORLDSTATEALWAYSUPFRAME_TIMESINCESTART = 0;
+WORLDSTATEALWAYSUPFRAME_TIMETORUN = 60;
+WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL = 5;
+
+WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES = {};
+
+local inBattleground = false;
+battlegroundOver = false;
+
+--
+FILTERED_BG_CHAT_ADD_GLOBALS = { "ERR_RAID_MEMBER_ADDED_S", "ERR_BG_PLAYER_JOINED_SS" };
+FILTERED_BG_CHAT_SUBTRACT_GLOBALS = { "ERR_RAID_MEMBER_REMOVED_S", "ERR_BG_PLAYER_LEFT_S" };
+
+--Filtered at the end of BGs only
+FILTERED_BG_CHAT_END_GLOBALS = { "LOOT_ITEM", "LOOT_ITEM_MULTIPLE", "CREATED_ITEM", "CREATED_ITEM_MULTIPLE", "ERR_RAID_MEMBER_REMOVED_S", "ERR_BG_PLAYER_LEFT_S" };
+
+FILTERED_BG_CHAT_ADD = {};
+FILTERED_BG_CHAT_SUBTRACT = {};
+FILTERED_BG_CHAT_END = {};
+
+ADDED_PLAYERS = {};
+SUBTRACTED_PLAYERS = {};
+
 SHOW_BATTLEFIELD_MINIMAP = "0";
 
 CLASS_BUTTONS = {
@@ -27,6 +51,7 @@ ExtendedUI = {};
 -- Always up stuff (i.e. capture the flag indicators)
 function WorldStateAlwaysUpFrame_OnLoad()
 	this:RegisterEvent("UPDATE_WORLD_STATES");
+	this:RegisterEvent("UPDATE_BATTLEFIELD_SCORE");
 	RegisterForSavePerCharacter("SHOW_BATTLEFIELD_MINIMAP");
 	WorldStateAlwaysUpFrame_Update();
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -34,11 +59,66 @@ function WorldStateAlwaysUpFrame_OnLoad()
 	this:RegisterEvent("ZONE_CHANGED");
 	this:RegisterEvent("ZONE_CHANGED_INDOORS");
 	this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	this:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND");
+		
+	FILTERED_BG_CHAT_ADD = {};
+	FILTERED_BG_CHAT_SUBTRACT = {};
+	FILTERED_BG_CHAT_END = {};
+	
+	local chatString;
+	for _, str in next, FILTERED_BG_CHAT_ADD_GLOBALS do	
+		chatString = getglobal(str);
+		if ( chatString ) then
+			chatString = string.gsub(chatString, "%[", "%%[");
+			chatString = string.gsub(chatString, "%]", "%%]");
+			chatString = string.gsub(chatString, "%%s", "([%%w]+)")
+			tinsert(FILTERED_BG_CHAT_ADD, chatString);
+		end
+	end	
+	
+	local chatString;
+	for _, str in next, FILTERED_BG_CHAT_SUBTRACT_GLOBALS do	
+		chatString = getglobal(str);
+		if ( chatString ) then
+			chatString = string.gsub(chatString, "%[", "%%[");
+			chatString = string.gsub(chatString, "%]", "%%]");
+			chatString = string.gsub(chatString, "%%s", "([%%w]+)")
+			tinsert(FILTERED_BG_CHAT_SUBTRACT, chatString);
+		end
+	end
+	
+	for _, str in next, FILTERED_BG_CHAT_END_GLOBALS do
+		chatString = getglobal(str);
+		if ( chatString ) then
+			chatString = string.gsub(chatString, "%[", "%%[");
+			chatString = string.gsub(chatString, "%]", "%%]");
+			chatString = string.gsub(chatString, "%%s", "(.-)");
+			tinsert(FILTERED_BG_CHAT_END, chatString);
+		end
+	end
+
 end
 
-function WorldStateAlwaysUpFrame_OnEvent()
+function WorldStateAlwaysUpFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		WorldStateFrame_ToggleBattlefieldMinimap();
+		if ( inBattleground ) then
+			WorldStateAlwaysUpFrame_StopBGChatFilter(self);	
+			WorldStateAlwaysUpFrame:SetScript("OnUpdate", nil);
+			battlegroundOver = false;
+		end
+	elseif ( event == "PLAYER_ENTERING_BATTLEGROUND" ) then
+		WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = -25;
+		WorldStateAlwaysUpFrame_StartBGChatFilter(self);
+		WorldStateAlwaysUpFrame:SetScript("OnUpdate", WorldStateAlwaysUpFrame_OnUpdate);
+		return;
+	elseif ( event == "CHAT_MSG_SYSTEM" ) then
+		WorldStateAlwaysUpFrame_DispatchBGChat(self, event, ...);
+		return;
+	elseif ( event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES" ) then
+		if ( GetBattlefieldWinner() ) then
+			battlegroundOver = true;
+		end
 	end
 	WorldStateAlwaysUpFrame_Update();
 end
@@ -132,6 +212,210 @@ function WorldStateAlwaysUpFrame_Update()
 		end
 	end
 	UIParent_ManageFramePositions();
+end
+
+function WorldStateAlwaysUpFrame_OnUpdate(self, elapsed)
+	WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = WORLDSTATEALWAYSUPFRAME_TIMESINCELAST + elapsed;
+	WORLDSTATEALWAYSUPFRAME_TIMESINCESTART = WORLDSTATEALWAYSUPFRAME_TIMESINCESTART + elapsed;
+	if ( WORLDSTATEALWAYSUPFRAME_TIMESINCELAST >= WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL ) then		
+		local subtractedPlayers, playerString = 0;
+		
+		for i in next, SUBTRACTED_PLAYERS do 
+			if ( not playerString ) then
+				playerString = i;
+			else
+				playerString = playerString .. PLAYER_LIST_DELIMITER .. i;
+			end
+			
+			subtractedPlayers = subtractedPlayers + 1;
+		end
+
+		local message, info;
+		
+		if ( subtractedPlayers > 0 ) then
+			info = ChatTypeInfo["SYSTEM"];
+			if ( subtractedPlayers > 1 and subtractedPlayers <= 3 ) then
+				message = ERR_PLAYERLIST_LEFT_BATTLE;
+				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
+					chatFrame:AddMessage(string.format(message, subtractedPlayers, playerString), info.r, info.g, info.b, info.id);
+				end
+			elseif ( subtractedPlayers > 3 ) then
+				message = ERR_PLAYERS_LEFT_BATTLE_D;
+				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
+					chatFrame:AddMessage(string.format(message, subtractedPlayers), info.r, info.g, info.b, info.id);
+				end				
+			else
+				message = ERR_PLAYER_LEFT_BATTLE_D;
+				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
+					chatFrame:AddMessage(string.format(message, playerString), info.r, info.g, info.b, info.id);
+				end
+			end
+
+			for i in next, SUBTRACTED_PLAYERS do
+				SUBTRACTED_PLAYERS[i] = nil;
+			end
+		end
+		
+		local addedPlayers, playerString = 0;
+		for i in next, ADDED_PLAYERS do
+			if ( not playerString ) then
+				playerString = i;
+			else
+				playerString = playerString .. PLAYER_LIST_DELIMITER .. i;
+			end
+			
+			addedPlayers = addedPlayers + 1;
+		end
+		
+		
+		if ( addedPlayers > 0 ) then
+			info = ChatTypeInfo["SYSTEM"];
+			if ( addedPlayers > 1 and addedPlayers <= 3 ) then
+				message = ERR_PLAYERLIST_JOINED_BATTLE;
+				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
+					chatFrame:AddMessage(string.format(message, addedPlayers, playerString), info.r, info.g, info.b, info.id);
+				end
+			elseif ( addedPlayers > 3 ) then
+				message = ERR_PLAYERS_JOINED_BATTLE_D;
+				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
+					chatFrame:AddMessage(string.format(message, addedPlayers), info.r, info.g, info.b, info.id);
+				end
+			else
+				message = ERR_PLAYER_JOINED_BATTLE_D;
+				for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
+					chatFrame:AddMessage(string.format(message, playerString), info.r, info.g, info.b, info.id);
+				end
+			end
+
+			for i in next, ADDED_PLAYERS do
+				ADDED_PLAYERS[i] = nil;
+			end
+		end
+		
+		WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = 0;
+	elseif ( WORLDSTATEALWAYSUPFRAME_TIMESINCESTART >= WORLDSTATEALWAYSUPFRAME_TIMETORUN ) then
+		WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL;
+		WorldStateAlwaysUpFrame_OnUpdate(self, 0);
+		self:SetScript("OnUpdate", nil);
+	end
+end
+
+function WorldStateAlwaysUpFrame_StartBGChatFilter (self)
+	inBattleground = true;
+	
+	local chatFrame;
+	for i = 1, NUM_CHAT_WINDOWS do
+		chatFrame = getglobal("ChatFrame" .. i);
+		if ( chatFrame ) then
+			if ( chatFrame:IsEventRegistered("CHAT_MSG_SYSTEM") ) then
+				tinsert(WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES, chatFrame);
+				chatFrame:UnregisterEvent("CHAT_MSG_SYSTEM");
+			end
+		end
+	end
+	
+	if ( #WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES > 0 ) then
+		self:RegisterEvent("CHAT_MSG_SYSTEM");
+		self:RegisterEvent("CHAT_MSG_LOOT");
+	end
+end
+
+function WorldStateAlwaysUpFrame_StopBGChatFilter (self)
+	inBattleground = false;
+
+	self:UnregisterEvent("CHAT_MSG_SYSTEM");
+	self:UnregisterEvent("CHAT_MSG_LOOT");
+	
+	for i in next, ADDED_PLAYERS do
+		ADDED_PLAYERS[i] = nil;
+	end
+	
+	for i in next, SUBTRACTED_PLAYERS do
+		SUBTRACTED_PLAYERS[i] = nil;
+	end
+	
+	for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
+		chatFrame:RegisterEvent("CHAT_MSG_SYSTEM");
+		tremove(WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES, i);
+	end
+end
+
+function WorldStateAlwaysUpFrame_DispatchBGChat(self, event, ...)
+	local arg1 = ...
+	local playerName;
+	
+	if ( ( not battlegroundOver ) and WORLDSTATEALWAYSUPFRAME_TIMESINCESTART < WORLDSTATEALWAYSUPFRAME_TIMETORUN ) then
+		for i, str in next, FILTERED_BG_CHAT_ADD do
+			playerName = string.match(arg1, str);
+			if ( playerName ) then
+				SUBTRACTED_PLAYERS[playerName] = nil;
+
+				if ( not ADDED_PLAYERS[playerName] ) then
+					WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL;
+					
+					local subtractedPlayers = false;
+					for i in next, SUBTRACTED_PLAYERS do
+						--Never runs if SUBTRACTED_PLAYERS is empty.
+						subtractedPlayers = true;
+						break;
+					end
+					
+					if ( subtractedPlayers ) then
+						WorldStateAlwaysUpFrame_OnUpdate(self, 0);
+					end
+					
+					WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = ( WORLDSTATEALWAYSUPFRAME_TIMESINCELAST or 0 ) - WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL;
+					ADDED_PLAYERS[playerName] = true;
+					self:SetScript("OnUpdate", WorldStateAlwaysUpFrame_OnUpdate);
+				end
+				return;
+			end
+			
+		end
+		
+		for i, str in next, FILTERED_BG_CHAT_SUBTRACT do
+			playerName = string.match(arg1, str);
+			if ( playerName ) then
+				ADDED_PLAYERS[playerName] = nil;
+				
+				if ( not SUBTRACTED_PLAYERS[playerName] ) then
+					WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL;
+					
+					local addedPlayers = false;
+					for i in next, ADDED_PLAYERS do
+						--This will never run if ADDED_PLAYERS is empty.
+						addedPlayers = true;
+						break;
+					end
+					
+					if ( addedPlayers ) then
+						WorldStateAlwaysUpFrame_OnUpdate(self, 0);
+					end
+					
+					WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = ( WORLDSTATEALWAYSUPFRAME_TIMESINCELAST or 0 ) - WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL;
+					SUBTRACTED_PLAYERS[playerName] = true;
+					self:SetScript("OnUpdate", WorldStateAlwaysUpFrame_OnUpdate);
+				end
+				
+				return;
+			end
+			
+		end		
+	end
+	
+	if ( battlegroundOver ) then
+		for i, str in next, FILTERED_BG_CHAT_END do
+			playerName = string.match(arg1, str);
+			if ( playerName ) then
+				return;
+			end
+		end
+	end
+	
+	local info = ChatTypeInfo["SYSTEM"];
+	for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
+		chatFrame:AddMessage(arg1, info.r, info.g, info.b, info.id);
+	end
 end
 
 function WorldStateFrame_ToggleBattlefieldMinimap()
@@ -733,4 +1017,3 @@ function ScorePlayerDropDown_Initialize()
 	info.func = ScorePlayerDropDown_Hide;
 	UIDropDownMenu_AddButton(info);
 end
-
