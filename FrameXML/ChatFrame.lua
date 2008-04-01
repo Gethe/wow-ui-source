@@ -395,6 +395,7 @@ OtherMenuChatTypeGroups[1] = "CREATURE";
 OtherMenuChatTypeGroups[2] = "SKILL";
 OtherMenuChatTypeGroups[3] = "LOOT";
 
+-- list of text emotes that we want to show on the Emote submenu (these have anims)
 EmoteList = {
 	"WAVE",
 	"BOW",
@@ -419,29 +420,27 @@ EmoteList = {
 	"KNEEL",
 };
 
--- NEVER rely on the ordering of these entries to match anything because the entries in
--- VoiceMacroList get sorted according to the client's locale. There's a lookup in
--- SoundInterfaceVocal.cpp (s_voiceMacroLabels) that does the lookup.
-VoiceMacroList = {
-	"HELP",
+-- list of text emotes that we want to show on the Speech submenu (these have sounds)
+TextEmoteSpeechList = {
+	"HELPME",
 	"INCOMING",
 	"CHARGE",
 	"FLEE",
-	"AID",
-	"OUTOFMANA",
+	"ATTACKMYTARGET",
+	"OOM",
 	"FOLLOW",
-	"WAITHERE",
+	"WAIT",
 	"HEALME",
 	"CHEER",
 	"OPENFIRE",
-	"RASPBERRY",
+	"RASP",
 	"HELLO",
-	"GOODBYE",
-	"YES",
+	"BYE",
+	"NOD",
 	"NO",
-	"THANKYOU",
-	"YOUREWELCOME",
-	"CONGRATULATIONS",
+	"THANK",
+	"WELCOME",
+	"CONGRATULATE",
 	"FLIRT",
 	"JOKE",
 	"TRAIN",
@@ -603,26 +602,36 @@ EMOTE152_TOKEN = "LOVE";
 EMOTE153_TOKEN = "MOO";
 EMOTE154_TOKEN = "COMMEND";
 EMOTE155_TOKEN = "TRAIN";
+EMOTE156_TOKEN = "HELPME";
+EMOTE157_TOKEN = "INCOMING";
+EMOTE158_TOKEN = "OPENFIRE";
+EMOTE159_TOKEN = "CHARGE";
+EMOTE160_TOKEN = "FLEE";
+EMOTE161_TOKEN = "ATTACKMYTARGET";
+EMOTE162_TOKEN = "OOM";
+EMOTE163_TOKEN = "FOLLOW";
+EMOTE164_TOKEN = "WAIT";
+EMOTE165_TOKEN = "FLIRT";
+EMOTE166_TOKEN = "HEALME";
+EMOTE167_TOKEN = "JOKE";
 
-function GetSlashCmdTarget(msg, nonPlayers)
+function GetSlashCmdTarget(msg)
 	local target = gsub(msg, "(%s*)([^%s]+)(.*)", "%2", 1);
 	if ( target == "" ) then
-		target = "target";
+		if ( UnitIsPlayer("target") ) then
+			target = "target";
+		else
+			target = nil;
+		end
 	end
 	if ( target == "player" or
-	     target == "pet" or
 		 target == "party1" or
 		 target == "party2" or
 		 target == "party3" or
 		 target == "party4" or
 		 target == "party5" or
 		 target == "target" ) then
-		if ( nonPlayers or UnitIsPlayer(target) ) then
-			target = UnitName(target);
-		end
-	end
-	if ( target and target == "" ) then
-		target = nil;
+		target = UnitName(target);
 	end
 	return target;
 end
@@ -963,7 +972,7 @@ SlashCmdList["CHAT_DND"] = function(msg)
 end
 
 SlashCmdList["WHO"] = function(msg)
-	if ( msg == "") then
+	if ( msg == "" ) then
 		msg = WhoFrame_GetDefaultWhoCommand();
 		ShowWhoPanel();
 	elseif ( msg == "cheat" ) then
@@ -1009,7 +1018,9 @@ SlashCmdList["UNIGNORE"] = function(msg)
 end
 
 SlashCmdList["DUEL"] = function(msg)
-	StartDuel(GetSlashCmdTarget(msg))
+	if ( GetSlashCmdTarget(msg) ) then
+		StartDuel(GetSlashCmdTarget(msg))
+	end
 end
 
 SlashCmdList["DUEL_CANCEL"] = function(msg)
@@ -1041,7 +1052,9 @@ SlashCmdList["LOOT_ROUNDROBIN"] = function(msg)
 end
 
 SlashCmdList["LOOT_MASTER"] = function(msg)
-	SetLootMethod("master", GetSlashCmdTarget(msg));
+	if ( GetSlashCmdTarget(msg) ) then
+		SetLootMethod("master", GetSlashCmdTarget(msg));
+	end
 end
 
 SlashCmdList["RANDOM"] = function(msg)
@@ -2023,22 +2036,6 @@ function ChatEdit_ParseText(editBox, send)
 
 	local i = 1;
 	local j = 1;
-	for index, value in VoiceMacroList do
-		j = 1;
-		local token = getglobal("VOICEMACRO_LABEL_"..value..j);
-		while ( token ) do
-			if ( "/"..strupper(token) == strupper(command) ) then
-				editBox:AddHistoryLine(text);
-				PlayVocalCategory(VoiceMacroList[index]);
-				ChatEdit_OnEscapePressed(editBox);
-				return;
-			end
-			j = j + 1;
-			token = getglobal("VOICEMACRO_LABEL_"..value..j);
-		end
-	end
-	
-	j = 1;
 	local cmdString = TEXT(getglobal("EMOTE"..i.."_CMD"..j));
 	while ( cmdString ) do
 		if ( strupper(cmdString) == command ) then
@@ -2171,7 +2168,7 @@ function EmoteMenu_Click()
 	ChatMenu:Hide();
 end
 
-function EmoteSort(token1, token2)
+function TextEmoteSort(token1, token2)
 	local i = 1;
 	local string1, string2;
 	local token = getglobal("EMOTE"..i.."_TOKEN");
@@ -2194,11 +2191,11 @@ function EmoteSort(token1, token2)
 	return string1 < string2;
 end
 
-function EmoteMenu_OnLoad()
-	sort(EmoteList, EmoteSort);
+function OnMenuLoad(list,func)
+	sort(list, TextEmoteSort);
 	UIMenu_Initialize();
 	this.parentMenu = "ChatMenu";
-	for index, value in EmoteList do
+	for index, value in list do
 		local i = 1;
 		local token = getglobal("EMOTE"..i.."_TOKEN");
 		while ( token ) do
@@ -2212,8 +2209,12 @@ function EmoteMenu_OnLoad()
 		if ( not label ) then
 			label = value;
 		end
-		UIMenu_AddButton(label, nil, EmoteMenu_Click);
+		UIMenu_AddButton(label, nil, func);
 	end
+end
+
+function EmoteMenu_OnLoad()
+	OnMenuLoad(EmoteList,EmoteMenu_Click);
 end
 
 function LanguageMenu_OnLoad()
@@ -2224,24 +2225,12 @@ function LanguageMenu_OnLoad()
 end
 
 function VoiceMacroMenu_Click()
-	PlayVocalCategory(VoiceMacroList[this:GetID()]);
+	DoEmote(TextEmoteSpeechList[this:GetID()]);
 	ChatMenu:Hide();
 end
 
-function VoiceSort(token1, token2)
-	return getglobal("VOICEMACRO_LABEL_"..token1.."1") < getglobal("VOICEMACRO_LABEL_"..token2.."1");
-end
-
 function VoiceMacroMenu_OnLoad()
-	sort(VoiceMacroList, VoiceSort);
-	UIMenu_Initialize();
-	this.parentMenu = "ChatMenu";
-	for index, value in VoiceMacroList do
-		local token = "/"..TEXT(getglobal("VOICEMACRO_LABEL_"..value.."1"));
-		if ( token ) then
-			UIMenu_AddButton(token, nil, VoiceMacroMenu_Click);
-		end
-	end
+	OnMenuLoad(TextEmoteSpeechList,VoiceMacroMenu_Click);
 end
 
 function LanguageMenu_OnEvent(event)

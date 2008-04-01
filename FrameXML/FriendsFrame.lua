@@ -49,10 +49,10 @@ function FriendsFrame_OnLoad()
 end
 
 function FriendsFrame_OnShow()
+	FriendsFrame.showFriendsList = 1;
 	FriendsFrame_Update();
 	UpdateMicroButtons();
 	PlaySound("igMainMenuOpen");
-	FriendsFrame.showFriendsList = 1;
 	GuildFrame.selectedGuildMember = 0;
 	SetGuildRosterSelection(0);
 	InGuildCheck();

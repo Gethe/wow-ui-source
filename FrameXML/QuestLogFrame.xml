@@ -244,7 +244,7 @@
 					</Anchor>
 				</Anchors>
 				<Frames>
-					<Button name="QuestLogCollapseAllButton" hidden="false" inherits="QuestLogTitleButtonTemplate">
+					<Button name="QuestLogCollapseAllButton" hidden="false" inherits="QuestLogTitleButtonTemplate" text="ALL">
 						<Size>
 							<AbsDimension x="40" y="22"/>
 						</Size>
@@ -293,7 +293,8 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName()):SetText(ALL);
+								QuestLogCollapseAllButtonNormalText:SetWidth(0);
+								QuestLogExpandTabMiddle:SetWidth(this:GetTextWidth() + 24);
 							</OnLoad>
 							<OnClick>
 								QuestLogCollapseAllButton_OnClick();
