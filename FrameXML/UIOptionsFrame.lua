@@ -32,6 +32,10 @@ function InterfaceOptionsFrameOkay_OnClick ()
 end
 
 function InterfaceOptionsFrameDefaults_OnClick ()
+	StaticPopup_Show("CONFIRM_RESET_SETTINGS");
+end
+
+function InterfaceOptionsFrame_SetAllToDefaults ()
 	--Iterate through registered panels and run their default methods in a taint-safe fashion
 
 	for _, category in next, blizzardCategories do
@@ -44,6 +48,22 @@ function InterfaceOptionsFrameDefaults_OnClick ()
 	
 	--Run the OnShow method of the currently displayed panel so that it can update and values that were changed. D
 	local displayedFrame = InterfaceOptionsFramePanelContainer.displayedFrame;
+	if ( displayedFrame and displayedFrame.GetScript ) then
+		local script = displayedFrame:GetScript("OnShow");
+		if ( script ) then
+			securecall(script, displayedFrame);
+		end
+	end
+end
+
+function InterfaceOptionsFrame_SetCurrentToDefaults ()
+	local displayedFrame = InterfaceOptionsFramePanelContainer.displayedFrame;
+	
+	if ( not displayedFrame or not displayedFrame.default ) then
+		return;
+	end
+	
+	securecall("pcall", displayedFrame.default, displayedFrame);
 	if ( displayedFrame and displayedFrame.GetScript ) then
 		local script = displayedFrame:GetScript("OnShow");
 		if ( script ) then
@@ -267,6 +287,9 @@ function InterfaceAddOnsList_Update ()
 	
 	-- Show the AddOns tab if it's not empty.
 	if ( ( InterfaceOptionsFrameTab2 and not InterfaceOptionsFrameTab2:IsShown() ) and numAddOnCategories > 0 ) then
+		InterfaceOptionsFrameCategoriesTop:Hide();
+		InterfaceOptionsFrameAddOnsTop:Hide();
+		InterfaceOptionsFrameTab1:Show();
 		InterfaceOptionsFrameTab2:Show();
 	end
 	

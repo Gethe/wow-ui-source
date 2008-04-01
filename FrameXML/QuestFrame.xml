@@ -260,6 +260,15 @@
 											</Anchor>
 										</Anchors>
 									</Frame>
+									<Frame name="QuestRewardPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestRewardItemReceiveText" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="-5"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
 									<Frame name="QuestRewardItemHighlight" hidden="true">
 										<Size>
 											<AbsDimension x="256" y="64"/>
@@ -698,6 +707,15 @@
 												</Scripts>
 											</Frame>
 											<Frame name="QuestDetailHonorFrame" inherits="QuestHonorFrameTemplate">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeTo="QuestDetailItemReceiveText" relativePoint="BOTTOMLEFT">
+														<Offset>
+															<AbsDimension x="0" y="-5"/>
+														</Offset>
+													</Anchor>
+												</Anchors>
+											</Frame>
+											<Frame name="QuestDetailPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate">
 												<Anchors>
 													<Anchor point="TOPLEFT" relativeTo="QuestDetailItemReceiveText" relativePoint="BOTTOMLEFT">
 														<Offset>

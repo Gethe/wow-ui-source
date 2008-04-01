@@ -185,6 +185,7 @@ function BankFrame_OnHide()
 	this:UnregisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
 	this:UnregisterEvent("PLAYER_MONEY");
 
+	StaticPopup_Hide("CONFIRM_BUY_BANK_SLOT");
 	CloseBankBagFrames();
 	CloseBankFrame();
 	updateContainerFrameAnchors();

@@ -886,14 +886,7 @@ function UIDropDownMenuButton_OpenColorPicker(button)
 		button = this;
 	end
 	UIDROPDOWNMENU_MENU_VALUE = button.value;
-	ColorPickerFrame.func = button.swatchFunc;
-	ColorPickerFrame.hasOpacity = button.hasOpacity;
-	ColorPickerFrame.opacityFunc = button.opacityFunc;
-	ColorPickerFrame.opacity = button.opacity;
-	ColorPickerFrame:SetColorRGB(button.r, button.g, button.b);
-	ColorPickerFrame.previousValues = {r = button.r, g = button.g, b = button.b, opacity = button.opacity};
-	ColorPickerFrame.cancelFunc = button.cancelFunc;
-	ShowUIPanel(ColorPickerFrame);
+	OpenColorPicker(button);
 end
 
 function UIDropDownMenu_DisableButton(level, id)
@@ -945,4 +938,19 @@ function UIDropDownMenu_GetValue(id)
 	else
 		return nil;
 	end
+end
+
+function OpenColorPicker(info)
+	ColorPickerFrame.func = info.swatchFunc;
+	ColorPickerFrame.hasOpacity = info.hasOpacity;
+	ColorPickerFrame.opacityFunc = info.opacityFunc;
+	ColorPickerFrame.opacity = info.opacity;
+	ColorPickerFrame:SetColorRGB(info.r, info.g, info.b);
+	ColorPickerFrame.previousValues = {r = info.r, g = info.g, b = info.b, opacity = info.opacity};
+	ColorPickerFrame.cancelFunc = info.cancelFunc;
+	ShowUIPanel(ColorPickerFrame);
+end
+
+function ColorPicker_GetPreviousValues()
+	return ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g, ColorPickerFrame.previousValues.b;
 end

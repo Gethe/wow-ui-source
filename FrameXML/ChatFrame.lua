@@ -6,6 +6,8 @@ NUM_CHAT_WINDOWS = 7;
 DEFAULT_CHAT_FRAME = ChatFrame1;
 NUM_REMEMBERED_TELLS = 10;
 
+local showChatIcons = false;
+
 -- These hash tables are to improve performance of common lookups
 -- if you change what these tables point to (ie slash command, emote, chat)
 -- then you need to invalidate the entry in the hash table
@@ -75,23 +77,14 @@ ChatTypeInfo["CHANNEL10"]								= { sticky = 0 };
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
 	"CHAT_MSG_SYSTEM",
-	"CHAT_MSG_AFK",
-	"CHAT_MSG_DND",
-	"CHAT_MSG_IGNORED",
-	"CHAT_MSG_CHANNEL_LIST",
 	"TIME_PLAYED_MSG",
 	"PLAYER_LEVEL_UP",
 	"CHARACTER_POINTS_CHANGED",
-	"CHAT_MSG_BG_SYSTEM_NEUTRAL",
-	"CHAT_MSG_BG_SYSTEM_ALLIANCE",
-	"CHAT_MSG_BG_SYSTEM_HORDE",
-	"CHAT_MSG_FILTERED",
-};
-ChatTypeGroup["SYSTEM_NOMENU"] = {
-	"CHAT_MSG_RESTRICTED",
 };
 ChatTypeGroup["SAY"] = {
 	"CHAT_MSG_SAY",
+};
+ChatTypeGroup["EMOTE"] = {
 	"CHAT_MSG_EMOTE",
 	"CHAT_MSG_TEXT_EMOTE",
 };
@@ -104,37 +97,86 @@ ChatTypeGroup["WHISPER"] = {
 };
 ChatTypeGroup["PARTY"] = {
 	"CHAT_MSG_PARTY",
+	"CHAT_MSG_MONSTER_PARTY",
+};
+ChatTypeGroup["RAID"] = {
 	"CHAT_MSG_RAID",
+};
+ChatTypeGroup["RAID_LEADER"] = {
 	"CHAT_MSG_RAID_LEADER",
+};
+ChatTypeGroup["RAID_WARNING"] = {
 	"CHAT_MSG_RAID_WARNING",
+};
+ChatTypeGroup["BATTLEGROUND"] = {
 	"CHAT_MSG_BATTLEGROUND",
+};
+ChatTypeGroup["BATTLEGROUND_LEADER"] = {
 	"CHAT_MSG_BATTLEGROUND_LEADER",
 };
 ChatTypeGroup["GUILD"] = {
 	"CHAT_MSG_GUILD",
-	"CHAT_MSG_OFFICER",
 	"GUILD_MOTD",
 };
-ChatTypeGroup["CREATURE"] = {	
+ChatTypeGroup["GUILD_OFFICER"] = {
+	"CHAT_MSG_OFFICER",
+};
+ChatTypeGroup["MONSTER_SAYS"] = {
 	"CHAT_MSG_MONSTER_SAY",
+};
+ChatTypeGroup["MONSTER_YELL"] = {
 	"CHAT_MSG_MONSTER_YELL",
+};
+ChatTypeGroup["MONSTER_EMOTE"] = {
 	"CHAT_MSG_MONSTER_EMOTE",
+};
+ChatTypeGroup["MONSTER_WHISPER"] = {
 	"CHAT_MSG_MONSTER_WHISPER",
-	"CHAT_MSG_MONSTER_PARTY",
+};
+ChatTypeGroup["MONSTER_BOSS_EMOTE"] = {
 	"CHAT_MSG_RAID_BOSS_EMOTE",
+};
+ChatTypeGroup["MONSTER_BOSS_WHISPER"] = {
 	"CHAT_MSG_RAID_BOSS_WHISPER",
 };
-ChatTypeGroup["CHANNEL"] = {
-	"CHAT_MSG_CHANNEL_JOIN",
-	"CHAT_MSG_CHANNEL_LEAVE",
-	"CHAT_MSG_CHANNEL_NOTICE",
-	"CHAT_MSG_CHANNEL_NOTICE_USER",
+ChatTypeGroup["ERRORS"] = {
+	"CHAT_MSG_RESTRICTED",
+	"CHAT_MSG_FILTERED",
+};
+ChatTypeGroup["AFK"] = {
+	"CHAT_MSG_AFK",
+};
+ChatTypeGroup["DND"] = {
+	"CHAT_MSG_DND",
+};
+ChatTypeGroup["IGNORED"] = {
+	"CHAT_MSG_IGNORED",
+};
+ChatTypeGroup["BG_HORDE"] = {
+	"CHAT_MSG_BG_SYSTEM_HORDE",
+};
+ChatTypeGroup["BG_ALLIANCE"] = {
+	"CHAT_MSG_BG_SYSTEM_ALLIANCE",
+};
+ChatTypeGroup["BG_NEUTRAL"] = {
+	"CHAT_MSG_BG_SYSTEM_NEUTRAL",
+};
+ChatTypeGroup["COMBAT_XP_GAIN"] = {
+	"CHAT_MSG_COMBAT_XP_GAIN";
+}
+ChatTypeGroup["COMBAT_HONOR_GAIN"] = {
+	"CHAT_MSG_COMBAT_HONOR_GAIN";
+}
+ChatTypeGroup["COMBAT_FACTION_CHANGE"] = {
+	"CHAT_MSG_COMBAT_FACTION_CHANGE";
 };
 ChatTypeGroup["SKILL"] = {
 	"CHAT_MSG_SKILL",
 };
 ChatTypeGroup["LOOT"] = {
 	"CHAT_MSG_LOOT",
+};
+ChatTypeGroup["MONEY"] = {
 	"CHAT_MSG_MONEY",
 };
 ChatTypeGroup["OPENING"] = {
@@ -149,14 +191,12 @@ ChatTypeGroup["PET_INFO"] = {
 ChatTypeGroup["COMBAT_MISC_INFO"] = {
 	"CHAT_MSG_COMBAT_MISC_INFO";
 };
-ChatTypeGroup["COMBAT_XP_GAIN"] = {
-	"CHAT_MSG_COMBAT_XP_GAIN";
-}
-ChatTypeGroup["COMBAT_HONOR_GAIN"] = {
-	"CHAT_MSG_COMBAT_HONOR_GAIN";
-}
-ChatTypeGroup["COMBAT_FACTION_CHANGE"] = {
-	"CHAT_MSG_COMBAT_FACTION_CHANGE";
+ChatTypeGroup["CHANNEL"] = {
+	"CHAT_MSG_CHANNEL_JOIN",
+	"CHAT_MSG_CHANNEL_LEAVE",
+	"CHAT_MSG_CHANNEL_NOTICE",
+	"CHAT_MSG_CHANNEL_NOTICE_USER",
+	"CHAT_MSG_CHANNEL_LIST",
 };
 
 ChannelMenuChatTypeGroups = {};
@@ -1701,6 +1741,7 @@ function ChatFrame_OnLoad()
 	this:RegisterEvent("UPDATE_INSTANCE_INFO");
 	this:RegisterEvent("NEW_TITLE_EARNED");
 	this:RegisterEvent("OLD_TITLE_LOST");
+	this:RegisterEvent("CVAR_UPDATE");
 	this.tellTimer = GetTime();
 	this.channelList = {};
 	this.zoneChannelList = {};
@@ -1711,6 +1752,10 @@ function ChatFrame_OnLoad()
 		value.g = 1.0;
 		value.b = 1.0;
 		value.id = GetChatTypeIndex(index);
+	end
+	
+	if ( GetCVar("showChatIcons") == "1" ) then
+		showChatIcons = true;
 	end
 end
 
@@ -1844,8 +1889,7 @@ function ChatFrame_ConfigEventHandler(event)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		this.defaultLanguage = GetDefaultLanguage();
 		return true;
-	end
-	if ( event == "UPDATE_CHAT_WINDOWS" ) then
+	elseif ( event == "UPDATE_CHAT_WINDOWS" ) then
 		local name, fontSize, r, g, b, a, shown, locked = GetChatWindowInfo(this:GetID());
 		if ( fontSize > 0 ) then
 			local fontFile, unused, fontFlags = this:GetFont();
@@ -1858,8 +1902,7 @@ function ChatFrame_ConfigEventHandler(event)
 		ChatFrame_RegisterForMessages(GetChatWindowMessages(this:GetID()));
 		ChatFrame_RegisterForChannels(GetChatWindowChannels(this:GetID()));
 		return true;
-	end
-	if ( event == "UPDATE_CHAT_COLOR" ) then
+	elseif ( event == "UPDATE_CHAT_COLOR" ) then
 		local info = ChatTypeInfo[strupper(arg1)];
 		if ( info ) then
 			info.r = arg2;
@@ -1878,6 +1921,12 @@ function ChatFrame_ConfigEventHandler(event)
 			end
 		end
 		return true;
+	elseif ( event == "CVAR_UPDATE" and arg1 == "SHOW_CHAT_ICONS" ) then
+		if ( tonumber(arg2) == 1 ) then
+			showChatIcons = true;
+		else
+			showChatIcons = false;
+		end
 	end
 end
 
@@ -2064,11 +2113,13 @@ function ChatFrame_MessageEventHandler(event)
 			end
 			
 			-- Search for icon links and replace them with texture links.
-			local term;
-			for tag in string.gmatch(arg1, "%b{}") do
-				term = strlower(string.gsub(tag, "[{}]", ""));
-				if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
-					arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. fontHeight .. ":" .. fontHeight .. "|t");
+			if ( arg7 < 1 or ( arg7 >= 1 and showChatIcons ) ) then
+				local term;
+				for tag in string.gmatch(arg1, "%b{}") do
+					term = strlower(string.gsub(tag, "[{}]", ""));
+					if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
+						arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. fontHeight .. ":" .. fontHeight .. "|t");
+					end
 				end
 			end
 			

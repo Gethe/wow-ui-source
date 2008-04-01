@@ -946,6 +946,11 @@
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 								</FontString>
+								<FontString name="QuestLogPlayerTitleText" inherits="QuestFont" hidden="true" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
@@ -1014,6 +1019,15 @@
 								</Scripts>
 							</Frame>
 							<Frame name="QuestLogHonorFrame" inherits="QuestHonorFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="QuestLogItemReceiveText" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="QuestLogPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="QuestLogItemReceiveText" relativePoint="BOTTOMLEFT">
 										<Offset>

@@ -109,4 +109,6 @@ TalentFrameBase.lua
 Blizzard_TalentUITemplates.xml
 EasyMenu.lua
 TotemFrame.xml
+ChatConfigFrame.xml
 UIOptionsPanels.xml
+LocalizationPost.xml

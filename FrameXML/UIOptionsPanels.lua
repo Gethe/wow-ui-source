@@ -8,6 +8,7 @@ ControlsPanelOptions = {
 	deselectOnClick = { text = "GAMEFIELD_DESELECT_TEXT", default="1" },
 	autoDismountFlying = { text = "AUTO_DISMOUNT_FLYING_TEXT", default="0" },
 	autoClearAFK = { text = "CLEAR_AFK", default="1" },
+	BlockTrades = { text="BLOCK_TRADES", default="0" },
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT", default="0" },
 	autoLootCorpse = { text = "AUTO_LOOT_DEFAULT_TEXT", default="0" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text="AUTO_LOOT_KEY_TEXT", default="0" },
@@ -224,6 +225,73 @@ DisplayPanelOptions = {
 	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS", default="0" },
 }
 
+function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad ()
+	UIDropDownMenu_Initialize(InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay, InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_Initialize);
+	UIDropDownMenu_SetWidth(90, UIOptionsWorldPVPObjectiveDisplay);
+	this.defaultValue = "1";
+	this.value = GetCVar("displayWorldPVPObjectives");
+	this.currValue = this.value;
+	UIDropDownMenu_SetSelectedValue(InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay, this.value);
+	WORLD_PVP_OBJECTIVES_DISPLAY = this.value;
+	InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay.tooltip = getglobal("OPTION_TOOLTIP_WORLD_PVP_DISPLAY"..this.value);
+	this.SetValue = 
+		function (self, value)
+			UIDropDownMenu_SetSelectedValue(self, value);
+			SetCVar("displayWorldPVPObjectives", value, self.event);
+			self.value = value;
+			InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay.tooltip = getglobal("OPTION_TOOLTIP_WORLD_PVP_DISPLAY"..tostring(value));
+		end
+	this.GetValue =
+		function (self)
+			return UIDropDownMenu_GetSelectedValue(self);
+		end
+end
+
+function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnClick()
+	InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay:SetValue(this.value);
+end
+
+function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = ALWAYS;
+	info.func = InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnClick;
+	info.value = "1";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = ALWAYS;
+	info.tooltipText = OPTION_TOOLTIP_WORLD_PVP_DISPLAY_ALWAYS;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = DYNAMIC;
+	info.func = InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnClick;
+	info.value = "2";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = DYNAMIC;
+	info.tooltipText = OPTION_TOOLTIP_WORLD_PVP_DISPLAY_DYNAMIC;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = NEVER;
+	info.func = InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnClick;
+	info.value = "3";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NEVER;
+	info.tooltipText = OPTION_TOOLTIP_WORLD_PVP_DISPLAY_NEVER;
+	UIDropDownMenu_AddButton(info);
+end
+
 -- [[ Quest Options Panel ]] --
 
 QuestPanelOptions = {
@@ -241,7 +309,7 @@ SocialPanelOptions = {
 	removeChatDelay = { text="REMOVE_CHAT_DELAY_TEXT", default="0" },
 	guildMemberNotify = { text="GUILDMEMBER_ALERT", default="1" },
 	guildRecruitmentChannel = { text="AUTO_JOIN_GUILD_CHANNEL", default="1" },
-	BlockTrades = { text="BLOCK_TRADES", default="0" },
+	showChatIcons = { text="SHOW_CHAT_ICONS", default="0" },
 	chatLocked = { text="CHAT_LOCKED_TEXT", default="0" },	
 }
 
@@ -281,7 +349,7 @@ function InterfaceOptions_UpdateMultiActionBars ()
 	end
 	
 	if ( LOCK_ACTIONBAR == "0" ) then
-		LOCK_ACITONBAR = nil;
+		LOCK_ACTIONBAR = nil;
 	end
 	
 	SetActionBarToggles(SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4, ALWAYS_SHOW_MULTIBARS);
@@ -339,6 +407,12 @@ function InterfaceOptionsCombatTextPanelFCTDropDown_OnLoad()
 	UIDropDownMenu_Initialize(this, InterfaceOptionsCombatTextPanelFCTDropDown_Initialize);
 	this.defaultValue = "1";
 	this.value = GetCVar("combatTextFloatMode");
+	COMBAT_TEXT_FLOAT_MODE = this.value;
+	
+	if ( CombatText_UpdateDisplayedMessages ) then
+		-- If the CombatText AddOn has already been loaded, we need to reinit it to pick up the previous COMBAT_TEXT_FLOAT_MODE.
+		CombatText_UpdateDisplayedMessages();
+	end
 	this.currValue = this.value;
 	UIDropDownMenu_SetSelectedValue(this, this.value);
 	InterfaceOptionsCombatTextPanelFCTDropDown.tooltip = OPTION_TOOLTIP_COMBAT_TEXT_MODE;
@@ -347,6 +421,11 @@ function InterfaceOptionsCombatTextPanelFCTDropDown_OnLoad()
 		function (self, value) 
 			UIDropDownMenu_SetSelectedValue(self, value);
 			SetCVar("combatTextFloatMode", value, self.event);
+			COMBAT_TEXT_FLOAT_MODE = value;
+			
+			if ( CombatText_UpdateDisplayedMessages ) then
+				CombatText_UpdateDisplayedMessages();
+			end
 			this.value = value;
 		end;	
 	this.GetValue =
@@ -358,6 +437,7 @@ end
 function InterfaceOptionsCombatTextPanelFCTDropDown_OnClick()
 	UIDropDownMenu_SetSelectedValue(InterfaceOptionsCombatTextPanelFCTDropDown, this.value);
 	SetCVar("combatTextFloatMode", this.value);
+	COMBAT_TEXT_FLOAT_MODE = this.value
 	UIParentLoadAddOn("Blizzard_CombatText");
 	CombatText_UpdateDisplayedMessages();
 end
@@ -612,6 +692,83 @@ HelpPanelOptions = {
 	showNewbieTips = { text = "SHOW_NEWBIE_TIPS_TEXT", default="1" },
 }
 
+function InterfaceOptionsHelpPanel_OnLoad (panel)
+	panel.okay = function (self)
+		for _, control in next, self.controls do
+			securecall(BlizzardOptionsPanel_UpdateCurrentControlValue, control);
+		end
+		if ( InterfaceOptionsHelpPanelTutorials:GetChecked() and not TutorialsEnabled() ) then
+			ResetTutorials();
+		elseif ( ( not InterfaceOptionsHelpPanelTutorials:GetChecked() ) and TutorialsEnabled() ) then
+			ClearTutorials();
+			TutorialFrame_HideAllAlerts();
+		end
+	end
+end
+
+-- [[ Languages Options Panel ]] --
+
+function InterfaceOptionsLanguagesPanel_OnLoad (panel)
+	-- Check and see if we have more than one locale. If we don't, then don't register this panel.
+	if ( #({GetExistingLocales()}) <= 1 ) then				
+		return;
+	end
+	
+	BlizzardOptionsPanel_OnLoad(panel);
+end
+
+function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad ()
+	UIDropDownMenu_Initialize(this, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(this, GetCVar("locale"));
+	InterfaceOptionsLanguagesPanelLocaleDropDown.tooltip = OPTION_TOOLTIP_LOCALE;
+	UIDropDownMenu_SetWidth(120, InterfaceOptionsLanguagesPanelLocaleDropDown);
+	
+	this.defaultValue = GetCVar("locale");
+	this.value = GetCVar("locale");
+	this.origValue = this.value;
+	this.currValue = this.value;
+	this.SetValue = 
+		function (self, value)
+			UIDropDownMenu_SetSelectedValue(self, value);
+			SetCVar("locale", value, self.event);
+			self.value = value;
+			if ( this.origValue ~= value ) then
+				StaticPopup_Show("CLIENT_RESTART_ALERT");
+			end
+		end
+	this.GetValue =
+		function (self)
+			return UIDropDownMenu_GetSelectedValue(self);
+		end
+end
+
+function InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick ()
+	InterfaceOptionsLanguagesPanelLocaleDropDown:SetValue(this.value);
+end
+
+function InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize ()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsLanguagesPanelLocaleDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper(info, selectedValue, GetExistingLocales());
+end
+
+function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createInfo, selectedValue, ...)
+	for i = 1, select("#", ...) do
+		local value = select(i, ...);
+		if (value) then
+			createInfo.text = getglobal(strupper(value));
+			createInfo.func = InterfaceOptionsLanguagesPanelDropDown_OnClick;
+			createInfo.value = value;
+			if ( createInfo.value == selectedValue ) then
+				createInfo.checked = 1;
+			else
+				createInfo.checked = nil;
+			end
+			UIDropDownMenu_AddButton(createInfo);
+		end
+	end
+end
 -- [[ General functions ]] --
 
 local ALT_KEY = "altkey";
@@ -736,36 +893,25 @@ function BlizzardOptionsPanel_SetupDependentControl (dependency, control)
 end
 
 function BlizzardOptionsPanel_CheckButton_OnClick (checkButton)
-	if ( not checkButton.invert ) then
-		if ( checkButton:GetChecked() ) then
-			checkButton.value = "1"
-			SetCVar(checkButton.cvar, "1", checkButton.event);
-			if ( checkButton.uvar ) then
-				setglobal(checkButton.uvar, "1");
-			end
+	local setting = "0";
+	if ( checkButton:GetChecked() ) then
+		if ( checkButton.invert ) then
+			setting = "0"
 		else
-			checkButton.value = "0"
-			SetCVar(checkButton.cvar, "0", checkButton.event);
-			if ( checkButton.uvar ) then
-				setglobal(checkButton.uvar, "0");
-			end
+			setting = "1"
 		end
-	else
-		if ( checkButton:GetChecked() ) then
-			checkButton.value = "0"
-			SetCVar(checkButton.cvar, "0", checkButton.event);
-			if ( checkButton.uvar ) then
-				setglobal(checkButton.uvar, "0");
-			end
-		else
-			checkButton.value = "1"
-			SetCVar(checkButton.cvar, "1", checkButton.event);
-			if ( checkButton.uvar ) then
-				setglobal(checkButton.uvar, "1");
-			end
-		end
-	end
+	elseif ( checkButton.invert ) then
+		setting = "1"
+	end 
 	
+	if ( checkButton.cvar ) then
+		SetCVar(checkButton.cvar, setting);
+	end
+
+	if ( checkButton.uvar ) then
+		setglobal(checkButton.uvar, setting);
+	end
+
 	if ( checkButton.dependentControls ) then
 		if ( checkButton:GetChecked() ) then
 			for _, control in next, checkButton.dependentControls do

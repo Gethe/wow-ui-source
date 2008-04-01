@@ -1699,7 +1699,7 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<CheckButton name="AuctionsShortAuctionButton" inherits="AuctionRadioButtonTemplate" id="1">
+					<CheckButton name="AuctionsShortAuctionButton" inherits="UIRadioButtonTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="AuctionsDurationText" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -1716,7 +1716,7 @@
 							</OnClick>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="AuctionsMediumAuctionButton" inherits="AuctionRadioButtonTemplate" id="2">
+					<CheckButton name="AuctionsMediumAuctionButton" inherits="UIRadioButtonTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="AuctionsShortAuctionButton" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -1733,7 +1733,7 @@
 							</OnClick>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="AuctionsLongAuctionButton" inherits="AuctionRadioButtonTemplate" id="3">
+					<CheckButton name="AuctionsLongAuctionButton" inherits="UIRadioButtonTemplate" id="3">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="AuctionsMediumAuctionButton" relativePoint="BOTTOMLEFT">
 								<Offset>

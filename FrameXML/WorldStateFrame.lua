@@ -689,7 +689,7 @@ function WorldStateScoreFrame_Update()
 	if ( isArena ) then
 		for i=0, 1 do
 			teamName, teamRating, newTeamRating = GetBattlefieldTeamInfo(i);
-			if ( teamRating == 0 ) then
+			if ( teamRating < 0 ) then
 				teamDataFailed = 1;
 			end
 		end

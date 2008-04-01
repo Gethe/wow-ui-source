@@ -232,9 +232,25 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentLootAtMouse" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentBlockTrades" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAutoClearAFK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.type = CONTROLTYPE_CHECKBOX;
+						this.cvar = "BlockTrades";
+						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>			
+			<CheckButton name="$parentLootAtMouse" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBlockTrades" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -728,6 +744,41 @@
 				</Scripts>
 			</CheckButton>				
 			<!-- World PVP Objectives -->
+			<Frame name="InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowFreeBagSpace" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-13" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="WORLD_PVP_DISPLAY">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnLoad>
+						<!-- No, I don't think this name is long enough. Yes, I would name it something longer if I could. Hrm. I probably should have put DDL in there for a touch of hungarian.-->
+						InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad(self)
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 	</Frame>
 	
@@ -971,7 +1022,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentBlockTrades" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowChatIcons" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentGuildRecruitment" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -982,14 +1033,14 @@
 				<Scripts>
 					<OnLoad>
 						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "BlockTrades";
+						this.cvar = "showChatIcons";
 						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>
+			</CheckButton>		
 			<CheckButton name="$parentLockChatSettings" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentBlockTrades" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentShowChatIcons" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -1345,7 +1396,8 @@
 								this.type = CONTROLTYPE_CHECKBOX;
 								this.cvar = "UnitNameFriendlyPetName";
 								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
-								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelFriendlyPlayerNames, this);
+								<!-- No longer a dependent control -->
+								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelFriendlyPlayerNames, this); -->
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1362,7 +1414,8 @@
 								this.type = CONTROLTYPE_CHECKBOX;
 								this.cvar = "UnitNameFriendlyCreationName";
 								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
-								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelFriendlyPlayerNames, this);
+								<!-- No longer a dependent control -->
+								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelFriendlyPlayerNames, this); -->
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1409,7 +1462,8 @@
 								this.type = CONTROLTYPE_CHECKBOX;
 								this.cvar = "UnitNameEnemyPetName";
 								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
-								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelEnemyPlayerNames, this);
+								<!-- No longer a dependent control -->
+								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelEnemyPlayerNames, this); -->
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1426,7 +1480,8 @@
 								this.type = CONTROLTYPE_CHECKBOX;
 								this.cvar = "UnitNameEnemyCreationName";
 								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
-								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelEnemyPlayerNames, this);
+								<!-- No longer a dependent control -->
+								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelEnemyPlayerNames, this); -->
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -2542,6 +2597,7 @@
 				this.name = HELP_LABEL;
 				this.options = HelpPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
+				InterfaceOptionsHelpPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				BlizzardOptionsPanel_OnShow(self);
@@ -2549,6 +2605,7 @@
 		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentTutorials" inherits="InterfaceOptionsCheckButtonTemplate">
+				<!-- The Tutorials button LOVES being special -->
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -2559,10 +2616,20 @@
 				<Scripts>
 					<OnLoad>
 						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showTutorials";
-						this.setFunc = function (value) if ( tonumber(value) == 1 ) then ResetTutorials(); TutorialFrameCheckButton:SetChecked(1); else ClearTutorials(); end TutorialFrame_HideAllAlerts(); end;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						this.text = getglobal(this:GetName().."Text");
+						this.text:SetText(SHOW_TUTORIALS);
+						this.tooltipText = OPTION_TOOLTIP_SHOW_TUTORIALS;
 					</OnLoad>
+					<OnShow>
+						this:SetChecked(TutorialsEnabled())
+					</OnShow>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end					
+					</OnClick>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentLoadingScreenTips" inherits="InterfaceOptionsCheckButtonTemplate">
@@ -2640,6 +2707,89 @@
 				<NormalFont inherits="GameFontNormalSmall"/>
 				<HighlightFont inherits="GameFontHighlightSmall"/>				
 			</Button>
+		</Frames>
+	</Frame>
+	
+	<!-- Languages -->
+	
+	<Frame name="InterfaceOptionsLanguagesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="LANGUAGES_LABEL" inherits="GameFontNormalLarge" justifyh="LEFT" justifyv="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="LANGUAGES_SUBTEXT" inherits="GameFontHighlightSmall" nonSpaceWrap="true" maxLines="3" justifyh="LEFT" justifyv="TOP">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this.name = LANGUAGES_LABEL;
+				this.options = LanguagesPanelOptions;
+				InterfaceOptionsLanguagesPanel_OnLoad(self);			
+			</OnLoad>
+			<OnShow>
+				BlizzardOptionsPanel_OnShow(self);
+			</OnShow>
+		</Scripts>		
+		<Frames>
+			<Frame name="$parentLocaleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-16" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="LOCALE_INFORMATION">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad();
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
 		</Frames>
 	</Frame>
 	

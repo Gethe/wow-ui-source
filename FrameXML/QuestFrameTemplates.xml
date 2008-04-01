@@ -257,4 +257,29 @@
 			</Layer>
 		</Layers>
 	</Frame>
+	<Frame name="QuestPlayerTitleFrameTemplate" virtual="true">
+		<Size x="500" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTitleReceiveText" inherits="QuestFont" text="REWARD_TITLE" textjustifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTitle" inherits="QuestFont" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentTitleReceiveText" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
  </Ui>

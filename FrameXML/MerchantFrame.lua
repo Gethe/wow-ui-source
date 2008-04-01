@@ -450,7 +450,13 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton)
 	local index, itemTexture, itemLink, itemsString, itemCount = itemButton:GetID();
 	local costString, pointsTexture, button = "";
 	local honorPoints, arenaPoints, itemCount = GetMerchantItemCostInfo(index);
+	if ( (honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0) ) then
+		BuyMerchantItem( itemButton:GetID() );
+		return;
+	end
 	
+	local count = itemButton.count or 1;
+
 	if ( honorPoints and honorPoints ~= 0 ) then
 		local factionGroup = UnitFactionGroup("player");
 		if ( factionGroup ) then	
@@ -476,7 +482,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton)
 	
 	local itemName, _, itemQuality = GetItemInfo(itemButton.link);
 	local r, g, b = GetItemQualityColor(itemQuality);
-	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index});
+	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index, ["count"] = count});
 end
 
 function MerchantFrame_UpdateCanRepairAll()

@@ -36,7 +36,7 @@ function TotemFrame_Update()
 
 			buttonIndex = buttonIndex + 1;
 		else
-			button = getglobal("TotemFrameTotem"..MAX_TOTEMS - i + 1);
+			button = getglobal("TotemFrameTotem"..MAX_TOTEMS - i + buttonIndex);
 			button.slot = 0;
 
 			button:Hide();

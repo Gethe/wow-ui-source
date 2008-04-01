@@ -300,10 +300,8 @@ function FCFOptionsDropDown_Initialize()
 
 	-- Other messages list
 	info = UIDropDownMenu_CreateInfo();
-	info.text = OTHER_MESSAGES;
-	--info.notClickable = 1;
-	info.hasArrow = 1;
-	info.func = nil;
+	info.text = CHAT_CONFIGURATION;
+	info.func = function() ShowUIPanel(ChatConfigFrame); end;
 	info.notCheckable = 1;
 	UIDropDownMenu_AddButton(info);
 end
@@ -611,6 +609,7 @@ function FCF_SetWindowName(frame, name, doNotSave)
 			name = format(CHAT_NAME_TEMPLATE, frame:GetID());
 		end
 	end
+	frame.name = name;
 	local tab = getglobal(frame:GetName().."Tab");
 	tab:SetText(name);
 	PanelTemplates_TabResize(10, tab);
@@ -800,6 +799,9 @@ function FCF_OnUpdate(elapsed)
 							for index, value in pairs(CHAT_FRAME_TEXTURES) do
 								UIFrameFadeIn(getglobal(chatFrame:GetName()..value), CHAT_FRAME_FADE_TIME, chatFrame.oldAlpha, DEFAULT_CHATFRAME_ALPHA);
 							end
+							-- Fade in quick button frame
+							UIFrameFadeIn(CombatLogQuickButtonFrame, CHAT_FRAME_FADE_TIME, chatFrame.oldAlpha, 1.0);
+							
 							-- Set the fact that the chatFrame has been faded so we don't try to fade it again
 							chatFrame.hasBeenFaded = 1;
 						end
@@ -839,6 +841,9 @@ function FCF_OnUpdate(elapsed)
 					for index, value in pairs(CHAT_FRAME_TEXTURES) do
 						UIFrameFadeOut(getglobal(chatFrame:GetName()..value), CHAT_FRAME_FADE_TIME, DEFAULT_CHATFRAME_ALPHA, chatFrame.oldAlpha);
 					end
+					-- Fadeout combatlog
+					UIFrameFadeOut(CombatLogQuickButtonFrame, CHAT_FRAME_FADE_TIME, DEFAULT_CHATFRAME_ALPHA, chatFrame.oldAlpha);
+
 					chatFrame.hover = nil;
 					chatFrame.hasBeenFaded = nil;
 				end
@@ -1467,4 +1472,12 @@ function FCF_ResetChatWindows()
 
 	-- resets to hard coded defaults
 	ResetChatWindows();
+end
+
+function IsCombatLog(frame)
+	if ( frame == ChatFrame2 ) then
+		return true;
+	else
+		return false;
+	end
 end

@@ -164,6 +164,77 @@
 			<TexCoords left="0.25" right="0.75" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
 	</Slider>
+	<Slider name="UIPanelScrollBarTemplateLightBorder" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="0"/>
+		</Size>
+		<Frames>
+			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = this:GetParent();
+						parent:SetValue(parent:GetValue() - (parent:GetHeight() / 2));
+						PlaySound("UChatScrollButton");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = this:GetParent();
+						parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
+						PlaySound("UChatScrollButton");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentBorder">
+				<Size>
+					<AbsDimension x="24" y="0"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentScrollUpButton">
+						<Offset x="-5" y="5"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollDownButton">
+						<Offset x="5" y="-3"/>
+					</Anchor>
+				</Anchors>
+				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="12"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnValueChanged>
+				this:GetParent():SetVerticalScroll(arg1);
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size>
+				<AbsDimension x="16" y="24"/>
+			</Size>
+			<TexCoords left="0.25" right="0.75" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
 	<ScrollFrame name="UIPanelScrollFrameTemplate" virtual="true">
 		<Frames>
 			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate">
@@ -246,6 +317,58 @@
 		<Scripts>
 			<OnScrollRangeChanged>
 			</OnScrollRangeChanged>
+		</Scripts>
+		<ScrollChild>
+			<Frame name="$parentScrollChildFrame">
+				<Size>
+					<AbsDimension x="300" y="334"/>
+				</Size>
+			</Frame>
+		</ScrollChild>
+	</ScrollFrame>
+	<ScrollFrame name="FauxScrollFrameTemplateLight" virtual="true">
+		<Frames>
+			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplateLightBorder">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="-16"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ScrollFrame_OnLoad();
+			</OnLoad>
+			<OnScrollRangeChanged>
+			</OnScrollRangeChanged>
+			<OnVerticalScroll>
+				local scrollbar = getglobal(this:GetName().."ScrollBar");
+				scrollbar:SetValue(arg1);
+				local min;
+				local max;
+				min, max = scrollbar:GetMinMaxValues();
+				if ( arg1 == 0 ) then
+					getglobal(scrollbar:GetName().."ScrollUpButton"):Disable();
+				else
+					getglobal(scrollbar:GetName().."ScrollUpButton"):Enable();
+				end
+				if ((scrollbar:GetValue() - max) == 0) then
+					getglobal(scrollbar:GetName().."ScrollDownButton"):Disable();
+				else
+					getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
+				end
+			</OnVerticalScroll>
+			<OnMouseWheel>
+				ScrollFrameTemplate_OnMouseWheel(arg1);
+			</OnMouseWheel>
 		</Scripts>
 		<ScrollChild>
 			<Frame name="$parentScrollChildFrame">

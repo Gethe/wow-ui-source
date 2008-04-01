@@ -330,6 +330,7 @@ function QuestFrameItems_Update(questState)
 	local numQuestSpellRewards = 0;
 	local money;
 	local honor;
+	local playerTitle;
 	local spacerFrame;
 	if ( isQuestLog == 1 ) then
 		numQuestRewards = GetNumQuestLogRewards();
@@ -339,6 +340,7 @@ function QuestFrameItems_Update(questState)
 		end
 		money = GetQuestLogRewardMoney();
 		honor = GetQuestLogRewardHonor();
+		playerTitle = GetQuestLogRewardTitle();
 		spacerFrame = QuestLogSpacerFrame;
 	else
 		numQuestRewards = GetNumQuestRewards();
@@ -348,6 +350,7 @@ function QuestFrameItems_Update(questState)
 		end
 		money = GetRewardMoney();
 		honor = GetRewardHonor();
+		playerTitle = GetRewardTitle();
 		spacerFrame = QuestSpacerFrame;
 	end
 
@@ -357,8 +360,9 @@ function QuestFrameItems_Update(questState)
 	local questItemReceiveText = getglobal(questState.."ItemReceiveText")
 	local honorFrame = getglobal(questState.."HonorFrame");
 	local moneyFrame = getglobal(questState.."MoneyFrame");
+	local playerTitleFrame = getglobal(questState.."PlayerTitleFrame");
 	
-	if ( totalRewards == 0 and money == 0 and honor == 0) then
+	if ( totalRewards == 0 and money == 0 and honor == 0 and not playerTitleFrame ) then
 		getglobal(questState.."RewardTitleText"):Hide();
 	else
 		getglobal(questState.."RewardTitleText"):Show();
@@ -378,6 +382,22 @@ function QuestFrameItems_Update(questState)
 		honorFrame:Show();
 		QuestHonorFrame_Update(questState.."HonorFrame", honor);
 		QuestFrame_SetAsLastShown(honorFrame, spacerFrame);
+	end
+	if ( not playerTitle ) then
+		playerTitleFrame:Hide();
+	else
+		local anchorFrame;
+		if ( honor ~= 0 ) then
+			anchorFrame = honorFrame;
+		elseif ( money ~= 0 ) then
+			anchorFrame = moneyFrame;
+		else
+			anchorFrame = getglobal(questState.."RewardTitleText");
+		end
+		playerTitleFrame:SetPoint("TOPLEFT", anchorFrame, "BOTTOMLEFT", 0, -5);
+		getglobal(questState.."PlayerTitleFrameTitle"):SetText(playerTitle);
+		playerTitleFrame:Show();
+		QuestFrame_SetAsLastShown(playerTitleFrame, spacerFrame);
 	end
 
 	-- Hide unused rewards

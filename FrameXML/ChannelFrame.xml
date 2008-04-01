@@ -1075,7 +1075,7 @@
 	</Button>
 	
 	
-	<Button name="ChannelPulloutTab" frameStrata="DIALOG" parent="UIParent" movable="true" hidden="true">
+	<Button name="ChannelPulloutTab" frameStrata="LOW" parent="UIParent" movable="true" hidden="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="RIGHT">
 				<Offset>

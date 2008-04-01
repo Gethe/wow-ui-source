@@ -3,6 +3,18 @@
 	<Script file="localization.lua"/>
 	<Script file="Blizzard_CombatLog.lua"/>
 	<Frame name="CombatLogDropDown" inherits="UIDropDownMenuTemplate"/>
+	<Button name="CombatLogQuickButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="0" y="20"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				Blizzard_CombatLog_QuickButton_OnClick(this:GetID());
+			</OnClick>
+		</Scripts>
+		<NormalFont inherits="GameFontDisable"/>
+		<HighlightFont inherits="GameFontHighlight"/>
+	</Button>
 	<Frame name="CombatLogQuickButtonFrame" parent="ChatFrame2">
 		<Size>
 			<AbsDimension x="65" y="24"/>
@@ -11,7 +23,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentTexture" setAllPoints="true">
-					<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+					<Color r="0.0" g="0.0" b="0.0" a="0.3"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -24,141 +36,6 @@
 			</Anchor>
 		</Anchors>
 		<Frames>
-			<Button name="$parentDefault" inherits="GameMenuButtonTemplate" id="1">
-				<Size>
-					<AbsDimension x="80" y="20"/>
-				</Size>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" setAllPoints="true">
-							<!--<Color r="0.8" g="0.9" b="0.2" a="0.5"/>-->
-						</Texture>
-					</Layer>
-				</Layers>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="3" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						this:SetText("Default");
-					</OnLoad>
-					<OnClick>
-						 Blizzard_CombatLog_QuickButton_OnClick( this:GetID() )
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentEverything" inherits="GameMenuButtonTemplate" id="2">
-				<Size>
-					<AbsDimension x="80" y="20"/>
-				</Size>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" setAllPoints="true">
-							<!--<Color r="0.8" g="0.9" b="0.2" a="0.5"/>-->
-						</Texture>
-					</Layer>
-				</Layers>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDefault" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="3" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						this:SetText("Everything");
-					</OnLoad>
-					<OnClick>
-						 Blizzard_CombatLog_QuickButton_OnClick( this:GetID() )
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentMe" inherits="GameMenuButtonTemplate" id="3">
-				<Size>
-					<AbsDimension x="40" y="20"/>
-				</Size>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" setAllPoints="true">
-							<!--<Color r="0.8" g="0.9" b="0.2" a="0.5"/>-->
-						</Texture>
-					</Layer>
-				</Layers>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentEverything" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="3" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						this:SetText("Me");
-					</OnLoad>
-					<OnClick>
-						 Blizzard_CombatLog_QuickButton_OnClick( this:GetID() )
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentFriends" inherits="GameMenuButtonTemplate" id="4">
-				<Size>
-					<AbsDimension x="100" y="20"/>
-				</Size>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" setAllPoints="true">
-							<!--<Color r="0.8" g="0.9" b="0.2" a="0.5"/>-->
-						</Texture>
-					</Layer>
-				</Layers>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentMe" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="3" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						this:SetText("Friends");
-					</OnLoad>
-					<OnClick>
-						 Blizzard_CombatLog_QuickButton_OnClick( this:GetID() );
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentClear" inherits="GameMenuButtonTemplate">
-				<Size>
-					<AbsDimension x="40" y="20"/>
-				</Size>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" setAllPoints="true">
-							<!--<Color r="0.8" g="0.9" b="0.2" a="0.5"/>-->
-						</Texture>
-					</Layer>
-				</Layers>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-3" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						this:SetText("Clear");
-					</OnLoad>
-					<OnClick>
-						Blizzard_CombatLog_QuickButton_Clear_OnClick()
-					</OnClick>
-				</Scripts>
-			</Button>
 			<StatusBar name="$parentProgressBar" drawLayer="LOW" visible="false">
 				<Size>
 					<AbsDimension x="195" y="4"/>

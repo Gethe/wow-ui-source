@@ -62,7 +62,7 @@ function SecureButton_GetModifierPrefix(frame)
     if ( frame ) then
         local modlist = frame:GetAttribute("modifiers");
         if ( modlist ) then
-            local prefix = ParseModifierString(modlist);
+            local prefix = SecureButton_ParseModifierString(modlist);
             if ( prefix ) then
                 return prefix .. "-";
             end

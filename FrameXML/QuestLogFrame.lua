@@ -458,8 +458,9 @@ function QuestLog_UpdateQuestDetails(doNotScroll)
 	local numChoices = GetNumQuestLogChoices();
 	local money = GetQuestLogRewardMoney();
 	local honor = GetQuestLogRewardHonor();
+	local playerTitle = GetQuestLogRewardTitle();
 
-	if ( (numRewards + numChoices + money + honor) > 0 ) then
+	if ( playerTitle or (numRewards + numChoices + money + honor) > 0 ) then
 		QuestLogRewardTitleText:Show();
 		QuestFrame_SetAsLastShown(QuestLogRewardTitleText);
 	else

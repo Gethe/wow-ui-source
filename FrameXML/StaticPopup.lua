@@ -1,7 +1,20 @@
-
 STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
+
+StaticPopupDialogs["CONFIRM_RESET_SETTINGS"] = { 
+	text = CONFIRM_RESET_SETTINGS,
+	button1 = ALL_SETTINGS,
+	button3 = CURRENT_SETTINGS,
+	button2 = CANCEL,
+	OnAccept = InterfaceOptionsFrame_SetAllToDefaults,
+	OnAlt = InterfaceOptionsFrame_SetCurrentToDefaults,
+	OnCancel = function() end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+	whileDead = 1,
+}
 
 StaticPopupDialogs["CONFIRM_PURCHASE_TOKEN_ITEM"] = {
 	text = CONFIRM_PURCHASE_TOKEN_ITEM,
@@ -2016,6 +2029,44 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["CREATE_COMBAT_FILTER"] = {
+	text = ENTER_FILTER_NAME,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	whileDead = 1,
+	hasEditBox = 1,
+	OnAccept = function()
+		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+		CombatConfig_CreateCombatFilter(editBox:GetText());
+		editBox:SetText("");
+	end,
+	timeout = 0,
+	EditBoxOnEnterPressed = function(data)
+		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+		CombatConfig_CreateCombatFilter(editBox:GetText());
+		editBox:SetText("");
+		this:GetParent():Hide();
+	end,
+	EditBoxOnEscapePressed = function ()
+		this:GetParent():Hide();
+	end,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["CONFIRM_COMBAT_FILTER_DELETE"] = {
+	text = CONFIRM_COMBAT_FILTER_DELETE,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function()
+		CombatConfig_DeleteCurrentCombatFilter();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -2037,7 +2088,9 @@ function StaticPopup_Resize(dialog, which)
 	
 	local width = 320;
 	dialog:SetWidth(320);
-	if (StaticPopupDialogs[which].hasWideEditBox or StaticPopupDialogs[which].showAlert) then
+	if ( StaticPopupDialogs[which].button3 ) then
+		width = 440;
+	elseif (StaticPopupDialogs[which].hasWideEditBox or StaticPopupDialogs[which].showAlert) then
 		-- Widen
 		width = 420;
 	elseif ( which == "HELP_TICKET" ) then
@@ -2274,6 +2327,12 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 			local nameText = getglobal(dialog:GetName().."ItemFrameText");
 			nameText:SetTextColor(unpack(data.color or {1, 1, 1, 1}));
 			nameText:SetText(data.name);
+			if ( data.count and data.count > 1 ) then
+				getglobal(dialog:GetName().."ItemFrameCount"):SetText(data.count);
+				getglobal(dialog:GetName().."ItemFrameCount"):Show();
+			else
+				getglobal(dialog:GetName().."ItemFrameCount"):Hide();
+			end
 		end
 	else
 		getglobal(dialog:GetName().."ItemFrame"):Hide();
@@ -2282,7 +2341,56 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	-- Set the buttons of the dialog
 	local button1 = getglobal(dialog:GetName().."Button1");
 	local button2 = getglobal(dialog:GetName().."Button2");
-	if ( StaticPopupDialogs[which].button2 and
+	local button3 = getglobal(dialog:GetName().."Button3");
+	if ( StaticPopupDialogs[which].button3 and ( not StaticPopupDialogs[which].DisplayButton3 or StaticPopupDialogs[which].DisplayButton3() ) ) then
+		button1:ClearAllPoints();
+		button2:ClearAllPoints();
+		button3:ClearAllPoints();
+		if ( StaticPopupDialogs[which].hasEditBox ) then
+			button1:SetPoint("TOPRIGHT", editBox, "BOTTOM", -72, -8);
+			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
+			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
+			
+		elseif ( StaticPopupDialogs[which].hasMoneyFrame ) then
+			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -24);
+			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
+			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
+			
+		elseif ( StaticPopupDialogs[which].hasMoneyInputFrame ) then
+			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -30);
+			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
+			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
+			
+		elseif ( StaticPopupDialogs[which].hasItemFrame ) then
+			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -70);
+			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
+			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
+		else
+			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -8);
+			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
+			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
+		end
+		button2:SetText(StaticPopupDialogs[which].button2);
+		button3:SetText(StaticPopupDialogs[which].button3);
+		local width = button2:GetTextWidth();
+		if ( width > 110 ) then
+			button2:SetWidth(width + 20);
+		else
+			button2:SetWidth(120);
+		end
+		button2:Enable();
+		button2:Show();
+		
+		width = button3:GetTextWidth();
+		if ( width > 110 ) then
+			button3:SetWidth(width + 20);
+		else
+			button3:SetWidth(120);
+		end
+		button3:Enable();
+		button3:Show();
+		
+	elseif ( StaticPopupDialogs[which].button2 and
 	   ( not StaticPopupDialogs[which].DisplayButton2 or StaticPopupDialogs[which].DisplayButton2() ) ) then
 		button1:ClearAllPoints();
 		button2:ClearAllPoints();
@@ -2311,10 +2419,12 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		end
 		button2:Enable();
 		button2:Show();
+		button3:Hide();
 	else
 		button1:ClearAllPoints();
 		button1:SetPoint("TOP", text, "BOTTOM", 0, -8);
 		button2:Hide();
+		button3:Hide();
 	end
 	if ( StaticPopupDialogs[which].button1 ) then
 		button1:SetText(StaticPopupDialogs[which].button1);
@@ -2521,6 +2631,11 @@ function StaticPopup_OnClick(dialog, index)
 		local OnAccept = StaticPopupDialogs[dialog.which].OnAccept;
 		if ( OnAccept ) then
 			dontHide = OnAccept(dialog.data, dialog.data2);
+		end
+	elseif ( index == 3 ) then
+		local OnAlt = StaticPopupDialogs[dialog.which].OnAlt;
+		if ( OnAlt ) then
+			OnAlt(dialog.data, "clicked");
 		end
 	else
 		local OnCancel = StaticPopupDialogs[dialog.which].OnCancel;
