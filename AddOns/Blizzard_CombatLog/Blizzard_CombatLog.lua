@@ -14,7 +14,7 @@
 
 -- Version
 -- Constant -- Incrementing this number will erase saved filter settings!!
-COMBATLOG_FILTER_VERSION = 4;
+COMBATLOG_FILTER_VERSION = 4.1;
 -- Saved Variable
 Blizzard_CombatLog_Filter_Version = 0;
 
@@ -26,7 +26,7 @@ AURA_TYPE_BUFF = "BUFF";
 AURA_TYPE_DEBUFF = "DEBUFF"
 
 -- Message Limit
-COMBATLOG_LIMIT_PER_FRAME = 5;
+COMBATLOG_LIMIT_PER_FRAME = 1;
 COMBATLOG_HIGHLIGHT_MULTIPLIER = 1.5;
 
 -- Default Colors
@@ -265,10 +265,10 @@ local bit_band = _G.bit.band
 local tinsert = _G.tinsert
 local tremove = _G.tremove
 local math_floor = _G.math.floor
-local string_gsub = _G.string.gsub
 local format = _G.format
 local gsub = _G.gsub
 local strsub = _G.strsub
+local strreplace = _G.strreplace;
  
 -- Make all the constants upvalues. This prevents the global environment lookup + table lookup each time we use one (and they're used a lot)
 local COMBATLOG_OBJECT_AFFILIATION_MINE = COMBATLOG_OBJECT_AFFILIATION_MINE
@@ -345,7 +345,6 @@ local COMBATLOG_EVENT_LIST = COMBATLOG_EVENT_LIST
 
 local CombatLog_OnEvent		-- for later
 local CombatLog_Object_IsA = CombatLog_Object_IsA
-local CombatLog_Object_IsAll = CombatLog_Object_IsAll
 
 
 -- Create a dummy CombatLogQuickButtonFrame for line 803 of FloatingChatFrame.lua. It causes inappropriate show/hide behavior. Instead, we'll use our own frame display handling.
@@ -710,12 +709,10 @@ function Blizzard_CombatLog_Refilter()
 	
 	COMBATLOG:SetMaxLines(COMBATLOG_MESSAGE_LIMIT);
 
-	if ( count < COMBATLOG_MESSAGE_LIMIT ) then
-		CombatLogSetCurrentEntry(1); 
-	else
-		count = COMBATLOG_MESSAGE_LIMIT
-		CombatLogSetCurrentEntry(-COMBATLOG_MESSAGE_LIMIT); 
-	end
+	-- count should be between 1 and COMBATLOG_MESSAGE_LIMIT
+	count = max(1, min(count, COMBATLOG_MESSAGE_LIMIT));
+
+	CombatLogSetCurrentEntry(0);
 	
 	-- Clear the combat log
 	COMBATLOG:Clear();
@@ -738,25 +735,25 @@ end
 --
 function Blizzard_CombatLog_RefilterUpdate()
 	local valid = CombatLogGetCurrentEntry(); -- CombatLogAdvanceEntry(0);
-	local info = ChatTypeInfo["COMBAT_MISC_INFO"];
 	
 	-- Clear the combat log
 	local total = 0;
 	while (valid and total < COMBATLOG_LIMIT_PER_FRAME) do 
 		-- Log to the window
-		COMBATLOG:AddMessage(CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry()) )
+		local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
+		COMBATLOG:AddMessage( text, r, g, b, nil, true );
 
 		-- count can be 
 		--  positive to advance from oldest to newest
 		--  negative to advance from newest to oldest
-		valid = CombatLogAdvanceEntry(1)
+		valid = CombatLogAdvanceEntry(-1)
 		total = total + 1;
 	end
 
 	-- Show filtering progress bar
 	CombatLogQuickButtonFrameProgressBar:SetValue(CombatLogQuickButtonFrameProgressBar:GetValue() + total);
 
-	if ( not valid ) then
+	if ( not valid or (CombatLogQuickButtonFrameProgressBar:GetValue() >= COMBATLOG_MESSAGE_LIMIT) ) then
 		CombatLogUpdateFrame.refiltering = false
 		CombatLogUpdateFrame:SetScript("OnUpdate", nil)
 		CombatLogQuickButtonFrameProgressBar:Hide();
@@ -1495,7 +1492,6 @@ do
 		if ( (unitGUID == UnitGUID("player")) and (getglobal("COMBAT_LOG_UNIT_YOU_ENABLED") == "1") ) then
 			displayName = UNIT_YOU;
 		end
-
 		local unitMenu = {
 			[1] = {
 				text = string.format(BLIZZARD_COMBAT_LOG_MENU_BOTH, displayName); -- Dummy text
@@ -1520,6 +1516,7 @@ do
 			[6] = {
 				text = BLIZZARD_COMBAT_LOG_MENU_SAVE;
 				func = function () Blizzard_CombatLog_UnitMenuClick ("SAVE", unitName, unitGUID, special); end;
+				disabled = not CanCreateFilters();
 			},
 			[7] = {
 				text = BLIZZARD_COMBAT_LOG_MENU_RESET;
@@ -1919,31 +1916,31 @@ local function CombatLog_String_DamageResultString( resisted, blocked, absorbed,
 		local rFormat = _G[tMode.."_STRING_RESULT_FORMAT"]
 		local subStr
 		if resisted or blocked or absorbed then
-			subStr = string_gsub(result, "$resultString", rFormat)
+			subStr = strreplace(result, "$resultString", rFormat)
 		end
 		if ( resisted ) then
-			resultStr = string_gsub(resultStr..subStr, "$resultAmount", resisted);
-			resultStr = string_gsub(resultStr, "$resultType", _G[tMode.."_STRING_RESULT_RESISTED"]);
+			resultStr = strreplace(resultStr..subStr, "$resultAmount", resisted);
+			resultStr = strreplace(resultStr, "$resultType", _G[tMode.."_STRING_RESULT_RESISTED"]);
 		end
 		if ( blocked ) then
-			resultStr = string_gsub(resultStr..subStr,"$resultAmount", blocked);
-			resultStr = string_gsub(resultStr,"$resultType", _G[tMode.."_STRING_RESULT_BLOCKED"]);
+			resultStr = strreplace(resultStr..subStr,"$resultAmount", blocked);
+			resultStr = strreplace(resultStr,"$resultType", _G[tMode.."_STRING_RESULT_BLOCKED"]);
 		end
 		if ( absorbed ) then
-			resultStr = string_gsub(resultStr..subStr,"$resultAmount", absorbed);
-			resultStr = string_gsub(resultStr,"$resultType", _G[tMode.."_STRING_RESULT_ABSORBED"]);
+			resultStr = strreplace(resultStr..subStr,"$resultAmount", absorbed);
+			resultStr = strreplace(resultStr,"$resultType", _G[tMode.."_STRING_RESULT_ABSORBED"]);
 		end
 		if ( glancing ) then
-			resultStr = string_gsub(resultStr..result,"$resultString", _G[tMode.."_STRING_RESULT_GLANCING"]);
+			resultStr = strreplace(resultStr..result,"$resultString", _G[tMode.."_STRING_RESULT_GLANCING"]);
 		end
 		if ( crushing ) then
-			resultStr = string_gsub(resultStr..result,"$resultString", _G[tMode.."_STRING_RESULT_CRUSHING"]);
+			resultStr = strreplace(resultStr..result,"$resultString", _G[tMode.."_STRING_RESULT_CRUSHING"]);
 		end
 		if ( critical ) then
 			if ( spellId ) then
-				resultStr = string_gsub(resultStr..result,"$resultString", _G[tMode.."_STRING_RESULT_CRITICAL_SPELL"]);
+				resultStr = strreplace(resultStr..result,"$resultString", _G[tMode.."_STRING_RESULT_CRITICAL_SPELL"]);
 			else
-				resultStr = string_gsub(resultStr..result,"$resultString", _G[tMode.."_STRING_RESULT_CRITICAL"]);
+				resultStr = strreplace(resultStr..result,"$resultString", _G[tMode.."_STRING_RESULT_CRITICAL"]);
 			end
 		end
 	end
@@ -1956,33 +1953,39 @@ _G.CombatLog_String_DamageResultString = CombatLog_String_DamageResultString
 -- Get the appropriate raid icon for a unit
 --
 local function CombatLog_String_GetIcon ( unitFlags, direction )
+
+	-- Check for an appropriate icon for this unit
+	local raidTarget = bit_band(unitFlags, COMBATLOG_OBJECT_RAIDTARGET_MASK);
+	if ( raidTarget == 0 ) then
+		return "";
+	end
+
 	local iconString = TEXT_MODE_A_STRING_TOKEN_ICON;
 	local icon = nil;
 	local iconBit = 0;
-
-	-- Check for an appropriate icon for this unit
-	if (  CombatLog_Object_IsA(unitFlags, COMBATLOG_OBJECT_RAIDTARGET1) ) then
+	
+	if ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET1 ) then
 		icon = COMBATLOG_ICON_RAIDTARGET1;
 		iconBit = COMBATLOG_OBJECT_RAIDTARGET1;
-	elseif (  CombatLog_Object_IsA(unitFlags, COMBATLOG_OBJECT_RAIDTARGET2) ) then
+	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET2 ) then
 		icon = COMBATLOG_ICON_RAIDTARGET2;
 		iconBit = COMBATLOG_OBJECT_RAIDTARGET2;
-	elseif (  CombatLog_Object_IsA(unitFlags, COMBATLOG_OBJECT_RAIDTARGET3) ) then
+	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET3 ) then
 		icon = COMBATLOG_ICON_RAIDTARGET3;
 		iconBit = COMBATLOG_OBJECT_RAIDTARGET3;
-	elseif (  CombatLog_Object_IsA(unitFlags, COMBATLOG_OBJECT_RAIDTARGET4) ) then
+	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET4 ) then
 		icon = COMBATLOG_ICON_RAIDTARGET4;
 		iconBit = COMBATLOG_OBJECT_RAIDTARGET4;
-	elseif (  CombatLog_Object_IsA(unitFlags, COMBATLOG_OBJECT_RAIDTARGET5) ) then
+	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET5 ) then
 		icon = COMBATLOG_ICON_RAIDTARGET5;
 		iconBit = COMBATLOG_OBJECT_RAIDTARGET5;
-	elseif (  CombatLog_Object_IsA(unitFlags, COMBATLOG_OBJECT_RAIDTARGET6) ) then
+	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET6 ) then
 		icon = COMBATLOG_ICON_RAIDTARGET6;
 		iconBit = COMBATLOG_OBJECT_RAIDTARGET6;
-	elseif (  CombatLog_Object_IsA(unitFlags, COMBATLOG_OBJECT_RAIDTARGET7) ) then
+	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET7 ) then
 		icon = COMBATLOG_ICON_RAIDTARGET7;
 		iconBit = COMBATLOG_OBJECT_RAIDTARGET7;
-	elseif (  CombatLog_Object_IsA(unitFlags, COMBATLOG_OBJECT_RAIDTARGET8) ) then
+	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET8 ) then
 		icon = COMBATLOG_ICON_RAIDTARGET8;
 		iconBit = COMBATLOG_OBJECT_RAIDTARGET8;
 	end
@@ -1993,13 +1996,13 @@ local function CombatLog_String_GetIcon ( unitFlags, direction )
 		-- Insert a hyperlink for that icon
 
 		if ( direction == "source" ) then
-			iconString = string_gsub ( iconString, "$icon", TEXT_MODE_A_STRING_SOURCE_ICON);
+			iconString = strreplace ( iconString, "$icon", TEXT_MODE_A_STRING_SOURCE_ICON);
 		else 
-			iconString = string_gsub ( iconString, "$icon", TEXT_MODE_A_STRING_DEST_ICON );
+			iconString = strreplace ( iconString, "$icon", TEXT_MODE_A_STRING_DEST_ICON );
 		end
 
-		iconString = string_gsub ( iconString, "$iconTexture", icon);
-		iconString = string_gsub ( iconString, "$iconBit", iconBit);
+		iconString = strreplace ( iconString, "$iconTexture", icon);
+		iconString = strreplace ( iconString, "$iconBit", iconBit);
 
 	-- Otherwise remove the token
 	else
@@ -2025,8 +2028,8 @@ local function CombatLog_String_GetToken (unitGUID, unitName, unitFlags)
 		if ( Blizzard_CombatLog_UnitTokens[unitGUID] == unitName ) then
 			return unitName;
 		end
-		newName = string_gsub ( newName, "$token", Blizzard_CombatLog_UnitTokens[unitGUID] );
-		newName = string_gsub ( newName, "$unitName", unitName );
+		newName = strreplace ( newName, "$token", Blizzard_CombatLog_UnitTokens[unitGUID] );
+		newName = strreplace ( newName, "$unitName", unitName );
 	else
 		if ( not Blizzard_CombatLog_UnitTokens[unitName] or Blizzard_CombatLog_UnitTokens[unitName] > 26*26) then
 			Blizzard_CombatLog_UnitTokens[unitName] = 1;
@@ -2042,8 +2045,8 @@ local function CombatLog_String_GetToken (unitGUID, unitName, unitFlags)
 				Blizzard_CombatLog_UnitTokens[unitGUID] = string.char ( TEXT_MODE_A_STRING_TOKEN_BASE + math.fmod(Blizzard_CombatLog_UnitTokens[unitName], 26) );
 			end
 
-			newName = string_gsub ( newName, "$token", Blizzard_CombatLog_UnitTokens[unitGUID] );
-			newName = string_gsub ( newName, "$unitName", unitName );
+			newName = strreplace ( newName, "$token", Blizzard_CombatLog_UnitTokens[unitGUID] );
+			newName = strreplace ( newName, "$unitName", unitName );
 		end
 	end
 	]]
@@ -2209,7 +2212,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		missType = ...
 
 		-- Result String
-		resultStr = string_gsub(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
+		resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
 		
 		-- Miss Type
 		if ( settings.fullText ) then
@@ -2239,7 +2242,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			missType = select(4, ...);
 
 			-- Result String
-			resultStr = string_gsub(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
+			resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
 
 			-- Miss Event
 			if ( settings.fullText ) then
@@ -2290,7 +2293,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				missType = select(4, ...);
 				
 				-- Result String
-				resultStr = string_gsub(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
+				resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
 
 				-- Miss Event
 				if ( settings.fullText ) then
@@ -2337,7 +2340,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 
 				-- Result String
 				--resultStr = getglobal(textModeString .. "RESULT");
-				--resultStr = string_gsub(resultStr,"$resultString", getglobal("ACTION_"..event.."_RESULT")); 
+				--resultStr = strreplace(resultStr,"$resultString", getglobal("ACTION_"..event.."_RESULT")); 
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2353,7 +2356,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				valueType = 2;
 
 				-- Result String
-				resultStr = string_gsub(_G[textModeString .. "RESULT"], "$resultString", _G["ACTION_"..event.."_RESULT"]); 
+				resultStr = strreplace(_G[textModeString .. "RESULT"], "$resultString", _G["ACTION_"..event.."_RESULT"]); 
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2370,7 +2373,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				
 				-- Parse the result string
 				--resultStr = getglobal(textModeString .. "RESULT");
-				--resultStr = string_gsub(resultStr,"$resultString", getglobal("ACTION_"..event.."_RESULT")); 
+				--resultStr = strreplace(resultStr,"$resultString", getglobal("ACTION_"..event.."_RESULT")); 
 
 				if ( not resultStr ) then
 					resultEnabled = false
@@ -2402,7 +2405,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			missType = select(4, ...);
 
 			-- Result String
-			resultStr = string_gsub(_G[textModeString .. "RESULT"],"$resultString", missType);
+			resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", missType);
 
 			-- Disable appropriate sections
 			valueEnabled = false;
@@ -2434,7 +2437,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Result String
 			resultStr = _G[textModeString .. "RESULT"];
 			if ( resultStr ) then
-				resultStr = string_gsub(resultStr, "$resultString", _G["ACTION_"..event.."_RESULT"]); 
+				resultStr = strreplace(resultStr, "$resultString", _G["ACTION_"..event.."_RESULT"]); 
 			end
 
 			-- Disable appropriate sections
@@ -2450,7 +2453,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Replace the value token with a spell token
 			if ( extraSpellId ) then
 				extraSpellEnabled = true;
-				combatString = string_gsub(combatString, "$value", "$extraSpell");
+				combatString = strreplace(combatString, "$value", "$extraSpell");
 			end
 
 			-- Disable appropriate sections
@@ -2499,7 +2502,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Replace the value token with a spell token
 			if ( extraSpellId ) then
 				extraSpellEnabled = true;
-				combatString = string_gsub(combatString, "$value", "$extraSpell");
+				combatString = strreplace(combatString, "$value", "$extraSpell");
 			end
 
 			-- Disable appropriate sections
@@ -2515,7 +2518,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Replace the value token with a spell token
 			if ( extraSpellId ) then
 				extraSpellEnabled = true;
-				combatString = string_gsub(combatString, "$value", "$extraSpell");
+				combatString = strreplace(combatString, "$value", "$extraSpell");
 			end
 
 			-- Disable appropriate sections
@@ -2531,7 +2534,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Replace the value token with a spell token
 			if ( extraSpellId ) then
 				extraSpellEnabled = true;
-				combatString = string_gsub(combatString, "$value", "$extraSpell");
+				combatString = strreplace(combatString, "$value", "$extraSpell");
 			end
 
 			-- Disable appropriate sections
@@ -2632,7 +2635,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			missType = select(4, ...);
 
 			-- Result String
-			resultStr = string_gsub(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
+			resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
 			
 			-- Miss Type
 			if ( settings.fullText ) then
@@ -2659,7 +2662,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		spellId, spellName, spellSchool, missType = ...;
 
 		-- Result String
-		resultStr = string_gsub(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
+		resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
 
 		-- Miss Event
 		if ( settings.fullText ) then
@@ -2682,7 +2685,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		nameIsNotSpell = true;
 
 		-- Replace the value token with an item token
-		combatString = string_gsub(combatString, "$value", "$item");
+		combatString = strreplace(combatString, "$value", "$item");
 
 		-- Disable appropriate sections
 		itemEnabled = true;
@@ -2693,7 +2696,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		nameIsNotSpell = true;
 
 		-- Replace the value token with an item token
-		combatString = string_gsub(combatString, "$value", "$item");
+		combatString = strreplace(combatString, "$value", "$item");
 
 		-- Disable appropriate sections
 		itemEnabled = true;
@@ -2780,88 +2783,88 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 
 	-- Remove Timestamp
 	if ( not timestampEnabled ) then 
-		combatString = string_gsub(combatString,"$timestamp","");
+		combatString = strreplace(combatString,"$timestamp","");
 	else
-		combatString = string_gsub(combatString,"$timestamp", _G[textModeString .. "TIMESTAMP"]);
+		combatString = strreplace(combatString,"$timestamp", _G[textModeString .. "TIMESTAMP"]);
 	end
 
 	-- Remove Source
 	if ( not sourceEnabled ) then 
-		combatString = string_gsub(combatString,"$source","");
+		combatString = strreplace(combatString,"$source","");
 	else
-		combatString = string_gsub(combatString,"$source", _G[textModeString .. "SOURCE"]);
-		combatString = string_gsub(combatString,"$sourceString", _G[textModeString .. "SOURCE_UNIT"]);
+		combatString = strreplace(combatString,"$source", _G[textModeString .. "SOURCE"]);
+		combatString = strreplace(combatString,"$sourceString", _G[textModeString .. "SOURCE_UNIT"]);
 	end
 
 	-- Remove Dest
 	if ( not destEnabled ) then 
-		combatString = string_gsub(combatString,"$dest","");
+		combatString = strreplace(combatString,"$dest","");
 	else
-		combatString = string_gsub(combatString,"$dest", _G[textModeString .. "DEST"]);
-		combatString = string_gsub(combatString,"$destString", _G[textModeString .. "DEST_UNIT"]);
+		combatString = strreplace(combatString,"$dest", _G[textModeString .. "DEST"]);
+		combatString = strreplace(combatString,"$destString", _G[textModeString .. "DEST_UNIT"]);
 	end
 
 	-- Remove Spell
 	if ( not spellEnabled ) then
-		combatString = string_gsub(combatString,"$spell","");
+		combatString = strreplace(combatString,"$spell","");
 	else
 		if ( nameIsNotSpell ) then
-			combatString = string_gsub(combatString,"$spell", string_gsub(TEXT_MODE_A_STRING_ACTION, "$action", "$spellName"));
-			--combatString = string_gsub(combatString,"$spell","$spellName");
+			combatString = strreplace(combatString,"$spell", strreplace(TEXT_MODE_A_STRING_ACTION, "$action", "$spellName"));
+			--combatString = strreplace(combatString,"$spell","$spellName");
 		else
-			combatString = string_gsub(combatString,"$spell", _G[textModeString .. "SPELL"]);
---			combatString = string_gsub(combatString,"$spell",GetSpellLink(spellId));
+			combatString = strreplace(combatString,"$spell", _G[textModeString .. "SPELL"]);
+--			combatString = strreplace(combatString,"$spell",GetSpellLink(spellId));
 		end
 	end
 
 	-- Remove Extra Spell
 	if ( not extraSpellEnabled ) then
-		combatString = string_gsub(combatString,"$extraSpell","");
+		combatString = strreplace(combatString,"$extraSpell","");
 	else
 		if ( extraNameIsNotSpell ) then
-			combatString = string_gsub(combatString,"$extraSpell","$extraSpellName");
+			combatString = strreplace(combatString,"$extraSpell","$extraSpellName");
 		else
-			combatString = string_gsub(combatString,"$extraSpell", _G[textModeString .. "SPELL_EXTRA"]);
+			combatString = strreplace(combatString,"$extraSpell", _G[textModeString .. "SPELL_EXTRA"]);
 		end
 	end
 
 	-- Remove Action
 	if ( not actionEnabled ) then 
-		combatString = string_gsub(combatString,"$action","");
+		combatString = strreplace(combatString,"$action","");
 	else
-		combatString = string_gsub(combatString,"$action", _G[textModeString .. "ACTION"]);
+		combatString = strreplace(combatString,"$action", _G[textModeString .. "ACTION"]);
 	end
 
 	-- Remove Value
 	if ( not itemEnabled ) then 
-		combatString = string_gsub(combatString,"$item","");
+		combatString = strreplace(combatString,"$item","");
 	else
-		combatString = string_gsub(combatString,"$item", _G[textModeString .. "ITEM"]);
+		combatString = strreplace(combatString,"$item", _G[textModeString .. "ITEM"]);
 	end
 
 	-- Remove Value
 	if ( not valueEnabled ) then 
-		combatString = string_gsub(combatString,"$value","");
+		combatString = strreplace(combatString,"$value","");
 	else
-		combatString = string_gsub(combatString,"$value", _G[textModeString .. "VALUE"]);
+		combatString = strreplace(combatString,"$value", _G[textModeString .. "VALUE"]);
 	end
 
 	-- Remove type
 	if ( not valueTypeEnabled ) then 
-		combatString = string_gsub(combatString,"$amountType","");
+		combatString = strreplace(combatString,"$amountType","");
 	else
 		-- School Type
 		if ( valueType == 1 ) then 
-			combatString = string_gsub(combatString,"$amountType", _G[textModeString .. "VALUE_SCHOOL"]);
+			combatString = strreplace(combatString,"$amountType", _G[textModeString .. "VALUE_SCHOOL"]);
 		-- Power Type
 		elseif ( valueType == 2 ) then
-			combatString = string_gsub(combatString,"$amountType", _G[textModeString .. "VALUE_TYPE"]);
+			combatString = strreplace(combatString,"$amountType", _G[textModeString .. "VALUE_TYPE"]);
 		end
 	end
 
 	-- Remove Result
 	if ( not resultEnabled ) then 
-		combatString = string_gsub(combatString,"$result","");
+		combatString = strreplace(combatString,"$result","");
 	end
 
 	-- Actor name construction.
@@ -2912,14 +2915,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	else
 		-- Apply the possessive form to the source
 		if ( sourceName and spellName and _G["ACTION_"..event.."_POSSESSIVE"] == "1" ) then
-			sourceNameStr = string_gsub ( TEXT_MODE_A_STRING_POSSESSIVE, "$nameString", sourceNameStr );
-			sourceNameStr = string_gsub ( sourceNameStr, "$possessive", TEXT_MODE_A_STRING_POSSESSIVE_STRING );
+			sourceNameStr = strreplace ( TEXT_MODE_A_STRING_POSSESSIVE, "$nameString", sourceNameStr );
+			sourceNameStr = strreplace ( sourceNameStr, "$possessive", TEXT_MODE_A_STRING_POSSESSIVE_STRING );
 		end
 
 		-- Apply the possessive form to the dest if the dest has a spell
 		if ( ( extraSpellName or itemName ) and destName ) then
-			destNameStr = string_gsub ( TEXT_MODE_A_STRING_POSSESSIVE, "$nameString", destNameStr );
-			destNameStr = string_gsub ( destNameStr, "$possessive", TEXT_MODE_A_STRING_POSSESSIVE_STRING );
+			destNameStr = strreplace ( TEXT_MODE_A_STRING_POSSESSIVE, "$nameString", destNameStr );
+			destNameStr = strreplace ( destNameStr, "$possessive", TEXT_MODE_A_STRING_POSSESSIVE_STRING );
 		end
 	end
 
@@ -3046,7 +3049,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	-- Compile the arguments into the combat string
 	if ( resultStr ) then
 		-- Replace the action
-		combatString = string_gsub(combatString, "$result", resultStr);
+		combatString = strreplace(combatString, "$result", resultStr);
 	end
 
 	-- Color source names
@@ -3190,116 +3193,116 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		-- Unit specific braces
 		if ( settings.unitBraces ) then
 			if ( sourceName and settings.sourceBraces ) then
-				sourceNameStr = string_gsub(_G[textModeString .. "BRACE_UNIT"], "$unitName", sourceNameStr);
-				sourceNameStr = string_gsub(sourceNameStr, "$braceColor", braceColor);
+				sourceNameStr = strreplace(_G[textModeString .. "BRACE_UNIT"], "$unitName", sourceNameStr);
+				sourceNameStr = strreplace(sourceNameStr, "$braceColor", braceColor);
 			end
 	
 			if ( destName and settings.destBraces ) then
-				destNameStr = string_gsub(_G[textModeString .. "BRACE_UNIT"], "$unitName", destNameStr);
-				destNameStr = string_gsub(destNameStr, "$braceColor", braceColor);
+				destNameStr = strreplace(_G[textModeString .. "BRACE_UNIT"], "$unitName", destNameStr);
+				destNameStr = strreplace(destNameStr, "$braceColor", braceColor);
 			end
 		end
 
 		-- Spell name braces
 		if ( spellName and settings.spellBraces ) then 
-			spellNameStr = string_gsub(_G[textModeString .. "BRACE_SPELL"], "$spellName", spellNameStr);
-			spellNameStr = string_gsub(spellNameStr, "$braceColor", braceColor);
+			spellNameStr = strreplace(_G[textModeString .. "BRACE_SPELL"], "$spellName", spellNameStr);
+			spellNameStr = strreplace(spellNameStr, "$braceColor", braceColor);
 		end
 		if ( extraSpellName and settings.spellBraces ) then 
-			extraSpellNameStr = string_gsub(_G[textModeString .. "BRACE_SPELL"], "$spellName", extraSpellNameStr);
-			extraSpellNameStr = string_gsub(extraSpellNameStr, "$braceColor", braceColor); 
+			extraSpellNameStr = strreplace(_G[textModeString .. "BRACE_SPELL"], "$spellName", extraSpellNameStr);
+			extraSpellNameStr = strreplace(extraSpellNameStr, "$braceColor", braceColor); 
 		end
 
 		-- Build item braces
 		if ( itemName and settings.itemBraces ) then
-			itemNameStr = string_gsub(_G[textModeString .. "BRACE_ITEM"], "$itemName", itemNameStr);
-			itemNameStr = string_gsub(itemNameStr, "$braceColor", braceColor);
+			itemNameStr = strreplace(_G[textModeString .. "BRACE_ITEM"], "$itemName", itemNameStr);
+			itemNameStr = strreplace(itemNameStr, "$braceColor", braceColor);
 		end
 	end
 
 	-- Dest Icons
 	if ( sourceIcon ) then
-		combatString = string_gsub(combatString, "$sourceIcon", sourceIcon);
+		combatString = strreplace(combatString, "$sourceIcon", sourceIcon);
 	end
 	if ( destIcon ) then
-		combatString = string_gsub(combatString, "$destIcon", destIcon);
+		combatString = strreplace(combatString, "$destIcon", destIcon);
 	end
 
 
 	-- Unit Names
 	if ( sourceName ) then
-		combatString = string_gsub(combatString, "$sourceNameString", sourceNameStr);
-		combatString = string_gsub(combatString, "$sourceName", sourceName);
-		combatString = string_gsub(combatString, "$sourceGUID", sourceGUID);
+		combatString = strreplace(combatString, "$sourceNameString", sourceNameStr);
+		combatString = strreplace(combatString, "$sourceName", sourceName);
+		combatString = strreplace(combatString, "$sourceGUID", sourceGUID);
 	end
 	if ( destName ) then 
-		combatString = string_gsub(combatString, "$destNameString", destNameStr);
-		combatString = string_gsub(combatString, "$destName", destName);
-		combatString = string_gsub(combatString, "$destGUID", destGUID);
+		combatString = strreplace(combatString, "$destNameString", destNameStr);
+		combatString = strreplace(combatString, "$destName", destName);
+		combatString = strreplace(combatString, "$destGUID", destGUID);
 	end
 
 	if ( amount ) then
 		-- Replace the amount
-		combatString = string_gsub(combatString, "$amount", amount );
+		combatString = strreplace(combatString, "$amount", amount );
 	end
 	if ( extraAmount ) then
 		-- Replace the extra amount
-		combatString = string_gsub(combatString, "$extraAmount", extraAmount );
+		combatString = strreplace(combatString, "$extraAmount", extraAmount );
 	end
 
 	-- Spell Stuff
 	if ( spellName ) then
-		combatString = string_gsub(combatString, "$spellName", spellNameStr);
+		combatString = strreplace(combatString, "$spellName", spellNameStr);
 	end
 	if ( spellId ) then
-		combatString = string_gsub(combatString, "$spellId", spellId);
+		combatString = strreplace(combatString, "$spellId", spellId);
 	end
 	if ( extraSpellName ) then
-		combatString = string_gsub(combatString, "$extraSpellName", extraSpellNameStr);
+		combatString = strreplace(combatString, "$extraSpellName", extraSpellNameStr);
 	end
 	if ( extraSpellId ) then
-		combatString = string_gsub(combatString, "$extraSpellId", extraSpellId);
+		combatString = strreplace(combatString, "$extraSpellId", extraSpellId);
 	end
 
 	if ( itemName ) then
 		-- Replace the spell information
-		combatString = string_gsub(combatString, "$itemName", itemNameStr);
+		combatString = strreplace(combatString, "$itemName", itemNameStr);
 	end
 	if ( itemId ) then
-		combatString = string_gsub(combatString, "$itemId", itemId);
+		combatString = strreplace(combatString, "$itemId", itemId);
 	end
 
 	if ( schoolString ) then
 		-- Replace the school name
-		combatString = string_gsub(combatString, "$school", schoolString );
+		combatString = strreplace(combatString, "$school", schoolString );
 	end
 
 	if ( powerTypeString ) then
 		-- Replace the power type name
-		combatString = string_gsub(combatString, "$powerType", powerTypeString );
+		combatString = strreplace(combatString, "$powerType", powerTypeString );
 	end
 
 	if ( actionStr ) then
 		-- Replace the action
-		combatString = string_gsub(combatString, "$action", actionStr);
+		combatString = strreplace(combatString, "$action", actionStr);
 	end
 
 	if ( timestamp ) then
 		-- Replace the timestamp
-		combatString = string_gsub(combatString, "$time", date(settings.timestampFormat, timestamp));
+		combatString = strreplace(combatString, "$time", date(settings.timestampFormat, timestamp));
 	end
 
 	-- Replace the event
-	combatString = string_gsub(combatString, "$eventType", originalEvent);
+	combatString = strreplace(combatString, "$eventType", originalEvent);
 
 	-- Clean up formatting
-	combatString = string_gsub(combatString, " [ ]+", " " ); -- extra white spaces
-	combatString = string_gsub(combatString, " ([.,])", "%1" ); -- spaces before periods or comma
-	combatString = string_gsub(combatString, "^([ .,]+)", "" ); -- spaces, period or comma at the beginning of a line
-	--combatString = string_gsub(combatString, "([%(])[ ]+", "%1" ); whitespace after Parenthesis 
+	combatString = gsub(combatString, " [ ]+", " " ); -- extra white spaces
+	combatString = gsub(combatString, " ([.,])", "%1" ); -- spaces before periods or comma
+	combatString = gsub(combatString, "^([ .,]+)", "" ); -- spaces, period or comma at the beginning of a line
+	--combatString = gsub(combatString, "([%(])[ ]+", "%1" ); whitespace after Parenthesis 
 
 	-- Debug line for hyperlinks
-	-- combatString = string_gsub( combatString, "\124", "\124\124");
+	-- combatString = gsub( combatString, "\124", "\124\124");
 
 	return combatString, lineColor.r, lineColor.g, lineColor.b, 1;
 end
@@ -3307,9 +3310,6 @@ _G.CombatLog_OnEvent = CombatLog_OnEvent
 
 -- Process the event and add it to the combat log
 function CombatLog_AddEvent(...)
-	if ( CombatLogUpdateFrame.refiltering ) then
-		return;
-	end
 	if ( DEBUG == true ) then
 		local info = ChatTypeInfo["COMBAT_MISC_INFO"];
 		local timestamp, event, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags = ...
@@ -3405,21 +3405,22 @@ _G[COMBATLOG:GetName().."Tab"]:SetScript("OnDragStart",
 
 -- On Event
 function Blizzard_CombatLog_QuickButtonFrame_OnEvent(event)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		this:UnregisterEvent("PLAYER_ENTERING_WORLD");
-		Blizzard_CombatLog_Filters = _G.Blizzard_CombatLog_Filters or Blizzard_CombatLog_Filters
-		Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[1];
-		_G.Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_CurrentSettings;
-		
-		Blizzard_CombatLog_QuickButton_OnClick(	Blizzard_CombatLog_Filters.currentFilter );
-		Blizzard_CombatLog_Refilter();
-		for k,v in pairs (Blizzard_CombatLog_UnitTokens) do
-			Blizzard_CombatLog_UnitTokens[k] = nil;
-		end
-		Blizzard_CombatLog_Update_QuickButtons();
-		--Hide the quick button frame if chatframe1 is selected and the combat log is docked
-		if ( COMBATLOG.isDocked and SELECTED_CHAT_FRAME == ChatFrame1 ) then
-			this:Hide();
+	if ( event == "ADDON_LOADED" ) then
+		if ( arg1 == "Blizzard_CombatLog" ) then
+			Blizzard_CombatLog_Filters = _G.Blizzard_CombatLog_Filters or Blizzard_CombatLog_Filters
+			Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[1];
+			_G.Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_CurrentSettings;
+
+			Blizzard_CombatLog_QuickButton_OnClick(	Blizzard_CombatLog_Filters.currentFilter );
+			Blizzard_CombatLog_Refilter();
+			for k,v in pairs (Blizzard_CombatLog_UnitTokens) do
+				Blizzard_CombatLog_UnitTokens[k] = nil;
+			end
+			Blizzard_CombatLog_Update_QuickButtons();
+			--Hide the quick button frame if chatframe1 is selected and the combat log is docked
+			if ( COMBATLOG.isDocked and SELECTED_CHAT_FRAME == ChatFrame1 ) then
+				this:Hide();
+			end
 		end
 	end
 end
@@ -3461,7 +3462,7 @@ end
 -- On Load
 local hooksSet = false
 function Blizzard_CombatLog_QuickButtonFrame_OnLoad()
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
+	this:RegisterEvent("ADDON_LOADED");
 	
 	-- We're using the _Custom suffix to get around the show/hide bug in FloatingChatFrame.lua.
 	-- Once the fading is removed from FloatingChatFrame.lua these can do back to the non-custom values, and the dummy frame creation should be removed.
@@ -3669,4 +3670,78 @@ function Blizzard_CombatLog_RefreshGlobalLinks()
 	Blizzard_CombatLog_Filters = _G.Blizzard_CombatLog_Filters;
 	Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[Blizzard_CombatLog_Filters.currentFilter];
 	_G.Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_CurrentSettings;
+end
+
+--
+-- Backwards Compatibility
+--
+-- 	Generally, we do not attempt to fix combat log issues with backwards compatibility changes,
+-- 	but this would be a pretty noxious fix if we didn't.
+--
+-- 	This code should be removed after 2.4.2.
+--
+function Blizzard_CombatLog_Filter_Compatibility ( currentVersion, update ) 
+	if ( currentVersion == 4 ) then
+		-- Fixes the coloring for most users
+		local badKey = bit.bor(
+						COMBATLOG_OBJECT_AFFILIATION_PARTY,
+						COMBATLOG_OBJECT_AFFILIATION_RAID,
+						COMBATLOG_OBJECT_AFFILIATION_OUTSIDER,
+						COMBATLOG_OBJECT_REACTION_NEUTRAL,
+						COMBATLOG_OBJECT_REACTION_HOSTILE,
+						COMBATLOG_OBJECT_CONTROL_PLAYER,
+						COMBATLOG_OBJECT_TYPE_PLAYER,
+						COMBATLOG_OBJECT_TYPE_NPC,
+						COMBATLOG_OBJECT_TYPE_PET,
+						COMBATLOG_OBJECT_TYPE_GUARDIAN,
+						COMBATLOG_OBJECT_TYPE_OBJECT
+						);
+		local badKey2 = bit.bor(
+						COMBATLOG_OBJECT_AFFILIATION_PARTY,
+						COMBATLOG_OBJECT_AFFILIATION_RAID,
+						COMBATLOG_OBJECT_AFFILIATION_OUTSIDER,
+						COMBATLOG_OBJECT_REACTION_NEUTRAL,
+						COMBATLOG_OBJECT_REACTION_HOSTILE,
+						COMBATLOG_OBJECT_CONTROL_NPC,
+						COMBATLOG_OBJECT_TYPE_PLAYER,
+						COMBATLOG_OBJECT_TYPE_NPC,
+						COMBATLOG_OBJECT_TYPE_PET,
+						COMBATLOG_OBJECT_TYPE_GUARDIAN,
+						COMBATLOG_OBJECT_TYPE_OBJECT
+						);
+		for key, filter in pairs (Blizzard_CombatLog_Filters.filters) do
+			if ( filter.colors.unitColoring[badKey] ) then
+				filter.colors.unitColoring[COMBATLOG_FILTER_HOSTILE_PLAYERS] = filter.colors.unitColoring[badKey];
+				filter.colors.unitColoring[badKey] = nil;
+			else
+				filter.colors.unitColoring[COMBATLOG_FILTER_HOSTILE_PLAYERS] = COMBATLOG_DEFAULT_COLORS.unitColoring[COMBATLOG_FILTER_HOSTILE_PLAYERS];
+			end
+			if ( filter.filters[1].sourceFlags ) then
+				if ( filter.filters[1].sourceFlags[badKey] ) then
+					filter.filters[1].sourceFlags[COMBATLOG_FILTER_HOSTILE_PLAYERS] = filter.filters[1].sourceFlags[badKey];
+					filter.filters[1].sourceFlags[badKey] = nil;
+				end
+				if ( filter.filters[1].sourceFlags[badKey2] ) then
+					filter.filters[1].sourceFlags[COMBATLOG_FILTER_HOSTILE_UNITS] = filter.filters[1].sourceFlags[badKey2];
+					filter.filters[1].sourceFlags[badKey2] = nil;
+				end
+			end
+			if ( filter.filters[2].destFlags ) then
+				if ( filter.filters[2].destFlags[badKey] ) then
+					filter.filters[2].destFlags  [COMBATLOG_FILTER_HOSTILE_PLAYERS] = filter.filters[2].destFlags[badKey];
+					filter.filters[2].destFlags  [badKey] = nil;
+				end
+				if ( filter.filters[2].destFlags[badKey2] ) then
+					filter.filters[2].destFlags  [COMBATLOG_FILTER_HOSTILE_UNITS] = filter.filters[2].destFlags[badKey2];
+					filter.filters[2].destFlags  [badKey2] = nil;
+				end
+			end
+			if ( filter.colors.unitColoring[badKey2] ) then
+				filter.colors.unitColoring[COMBATLOG_FILTER_HOSTILE_UNITS] = filter.colors.unitColoring[badKey2];
+				filter.colors.unitColoring[badKey2] = nil;
+			else
+				filter.colors.unitColoring[COMBATLOG_FILTER_HOSTILE_UNITS] = COMBATLOG_DEFAULT_COLORS.unitColoring[COMBATLOG_FILTER_HOSTILE_UNITS];
+			end
+		end
+	end
 end

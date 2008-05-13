@@ -117,7 +117,11 @@
 				end
 			</OnEnter>
 			<OnClick>
-				if ( this.rewardType ~= "spell" ) then
+				if ( this.rewardType == "spell" ) then
+					if ( IsModifiedClick("CHATLINK") ) then
+						ChatEdit_InsertLink(GetQuestLogSpellLink());
+					end
+				else
 					HandleModifiedItemClick(GetQuestLogItemLink(this.type, this:GetID()));
 				end
 			</OnClick>

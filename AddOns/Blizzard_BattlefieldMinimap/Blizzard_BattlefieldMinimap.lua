@@ -389,8 +389,8 @@ function BattlefieldMinimap_ShowOpacity()
 	OpacityFrameSlider:SetValue(BattlefieldMinimapOptions.opacity);
 end
 
-function BattlefieldMinimap_SetOpacity()
-	BattlefieldMinimapOptions.opacity = OpacityFrameSlider:GetValue();
+function BattlefieldMinimap_SetOpacity (opacity)
+	BattlefieldMinimapOptions.opacity = opacity or OpacityFrameSlider:GetValue();
 	local alpha = 1.0 - BattlefieldMinimapOptions.opacity;
 	BattlefieldMinimapBackground:SetAlpha(alpha);
 	for i=1, NUM_WORLDMAP_DETAIL_TILES do

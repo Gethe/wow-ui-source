@@ -239,9 +239,9 @@ function MinimapMailFrameUpdate()
 	sender1,sender2,sender3 = GetLatestThreeSenders();
 	
 	if( sender1 or sender2 or sender3 ) then
-		toolText = GetText("HAVE_MAIL_FROM");
+		toolText = HAVE_MAIL_FROM;
 	else
-		toolText = GetText("HAVE_MAIL");
+		toolText = HAVE_MAIL;
 	end
 	
 	if( sender1 ) then

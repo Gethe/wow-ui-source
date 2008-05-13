@@ -159,7 +159,7 @@ function InboxFrame_Update()
 			end
 			-- Format expiration time
 			if ( daysLeft >= 1 ) then
-				daysLeft = GREEN_FONT_COLOR_CODE..floor(daysLeft).." "..GetText("DAYS_ABBR", nil, floor(daysLeft)).." "..FONT_COLOR_CODE_CLOSE;
+				daysLeft = GREEN_FONT_COLOR_CODE..floor(daysLeft).." "..DAYS_ABBR.." "..FONT_COLOR_CODE_CLOSE;
 			else
 				daysLeft = RED_FONT_COLOR_CODE..SecondsToTime(floor(daysLeft * 24 * 60 * 60))..FONT_COLOR_CODE_CLOSE;
 			end

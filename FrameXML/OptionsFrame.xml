@@ -183,17 +183,8 @@
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
 								end
-								OptionsFrame_UpdateCheckboxes();
 							</OnClick>	
 						</Scripts>
-					</CheckButton>
-					<CheckButton name="OptionsFrameCheckButton16" inherits="OptionsCheckButtonTemplate">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton14" relativePoint="BOTTOM">
-								<Offset x="5" y="4"/>
-							</Anchor>
-						</Anchors>
 					</CheckButton>
 					<CheckButton name="OptionsFrameCheckButton10" inherits="OptionsCheckButtonTemplate">
 						<Anchors>

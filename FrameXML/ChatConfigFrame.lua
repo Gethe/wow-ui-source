@@ -8,6 +8,7 @@ CHATCONFIG_SELECTED_FILTER_FILTERS = nil;
 CHATCONFIG_SELECTED_FILTER_COLORS = nil;
 CHATCONFIG_SELECTED_FILTER_SETTINGS = nil;
 CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = nil;
+MAX_COMBATLOG_FILTERS = 20;
 
 --Chat options
 CHAT_CONFIG_CHAT_RIGHT = {
@@ -630,7 +631,11 @@ end
 
 function ChatConfigFrame_OnEvent(event)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		if ( COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
+		-- This code should be removed after 2.4.2
+		if ( Blizzard_CombatLog_Filter_Version == 4 ) then
+			Blizzard_CombatLog_Filter_Compatibility(4, 4.1);
+			Blizzard_CombatLog_Filter_Version = 4.1;
+		elseif ( COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
 			CombatConfig_SetCombatFiltersToDefault();
 			Blizzard_CombatLog_Filter_Version = COMBATLOG_FILTER_VERSION;
 		end
@@ -1488,6 +1493,11 @@ function ChatConfig_UpdateCombatSettings()
 		ChatConfigCombatSettingsFiltersCopyFilterButton:Enable();
 		ChatConfigCombatSettingsFiltersDeleteButton:Enable();
 	end
+	if ( CanCreateFilters() ) then
+		ChatConfigCombatSettingsFiltersAddFilterButton:Enable();
+	else
+		ChatConfigCombatSettingsFiltersAddFilterButton:Disable();
+	end
 	
 	ChatConfig_UpdateCheckboxes(CombatConfigMessageSourcesDoneBy);
 	ChatConfig_UpdateCheckboxes(CombatConfigMessageSourcesDoneTo);
@@ -1742,4 +1752,11 @@ function ChatConfigCancel_OnClick()
 	CHATCONFIG_SELECTED_FILTER_SETTINGS = CHATCONFIG_SELECTED_FILTER.settings;
 	
 	HideUIPanel(ChatConfigFrame);
+end
+
+function CanCreateFilters()
+	if ( #Blizzard_CombatLog_Filters.filters == MAX_COMBATLOG_FILTERS ) then
+		return false;
+	end
+	return true;
 end

@@ -179,7 +179,7 @@ function LFMFrame_Update()
 	if ( totalCount > MAX_LFGS_FROM_SERVER ) then
 		displayedText = format(WHO_FRAME_SHOWN_TEMPLATE, MAX_WHOS_FROM_SERVER);
 	end
-	LFMFrameTotals:SetText(format(GetText("WHO_FRAME_TOTAL_TEMPLATE", nil, totalCount), totalCount).."  "..displayedText);
+	LFMFrameTotals:SetText(format(WHO_FRAME_TOTAL_TEMPLATE, totalCount).."  "..displayedText);
 	for i=1, LFGS_TO_DISPLAY, 1 do
 		resultIndex = scrollOffset + i;
 		button = getglobal("LFMFrameButton"..i);

@@ -257,7 +257,7 @@ function CombatText_OnEvent(event)
 		displayType = "crit";
 		message = "<"..data..">";
 	elseif ( messageType == "COMBO_POINTS" ) then
-		message = format(GetText("COMBAT_TEXT_COMBO_POINTS", nil, data), data);
+		message = format(COMBAT_TEXT_COMBO_POINTS, data);
 	else 
 		message = getglobal(messageType);
 		if ( not message ) then

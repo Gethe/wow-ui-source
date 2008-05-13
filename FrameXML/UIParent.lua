@@ -174,6 +174,7 @@ function UIParent_OnLoad()
 	this:RegisterEvent("RAID_ROSTER_UPDATE");
 	this:RegisterEvent("READY_CHECK");
 	this:RegisterEvent("RAID_INSTANCE_WELCOME");
+	this:RegisterEvent("LEVEL_GRANT_PROPOSED");
 
 	-- Events for auction UI handling
 	this:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -893,6 +894,10 @@ function UIParent_OnEvent(event)
 		if  ( GetCVar("VoiceChatMode") == "0" and PlayerSpeakerFrame:GetAlpha() > 0 ) then
 			UIFrameFadeOut(PlayerSpeakerFrame, 0.2, PlayerSpeakerFrame:GetAlpha(), 0);
 		end
+		return;
+	end
+	if ( event == "LEVEL_GRANT_PROPOSED" ) then
+		StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
 		return;
 	end
 end
@@ -1865,9 +1870,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 	if ( seconds >= 86400  ) then
 		tempTime = floor(seconds / 86400);
 		if ( notAbbreviated ) then
-			time = tempTime.." "..GetText("DAYS", nil, tempTime);
+			time = tempTime.." "..DAYS;
 		else
-			time = tempTime.." "..GetText("DAYS_ABBR", nil, tempTime);
+			time = tempTime.." "..DAYS_ABBR;
 		end
 		seconds = mod(seconds, 86400);
 		count = count + 1;
@@ -1878,9 +1883,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		end
 		tempTime = floor(seconds / 3600);
 		if ( notAbbreviated ) then
-			time = time..tempTime.." "..GetText("HOURS", nil, tempTime);
+			time = time..tempTime.." "..HOURS;
 		else
-			time = time..tempTime.." "..GetText("HOURS_ABBR", nil, tempTime);
+			time = time..tempTime.." "..HOURS_ABBR;
 		end
 		seconds = mod(seconds, 3600);
 		count = count + 1;
@@ -1891,9 +1896,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		end
 		tempTime = floor(seconds / 60);
 		if ( notAbbreviated ) then
-			time = time..tempTime.." "..GetText("MINUTES", nil, tempTime);
+			time = time..tempTime.." "..MINUTES;
 		else
-			time = time..tempTime.." "..GetText("MINUTES_ABBR", nil, tempTime);
+			time = time..tempTime.." "..MINUTES_ABBR;
 		end
 		seconds = mod(seconds, 60);
 		count = count + 1;
@@ -1904,9 +1909,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		end
 		seconds = format("%d", seconds);
 		if ( notAbbreviated ) then
-			time = time..seconds.." "..GetText("SECONDS", nil, seconds);
+			time = time..seconds.." "..SECONDS;
 		else
-			time = time..seconds.." "..GetText("SECONDS_ABBR", nil, seconds);
+			time = time..seconds.." "..SECONDS_ABBR;
 		end
 	end
 	return time;
@@ -1937,16 +1942,16 @@ function RecentTimeDate(year, month, day, hour)
 				if ( (hour == 0) or (hour == nil) ) then
 					lastOnline = LASTONLINE_MINS;
 				else
-					lastOnline = format(GetText("LASTONLINE_HOURS", nil, hour), hour);
+					lastOnline = format(LASTONLINE_HOURS, hour);
 				end
 			else
-				lastOnline = format(GetText("LASTONLINE_DAYS", nil, day), day);
+				lastOnline = format(LASTONLINE_DAYS, day);
 			end
 		else
-			lastOnline = format(GetText("LASTONLINE_MONTHS", nil, month), month);
+			lastOnline = format(LASTONLINE_MONTHS, month);
 		end
 	else
-		lastOnline = format(GetText("LASTONLINE_YEARS", nil, year), year);
+		lastOnline = format(LASTONLINE_YEARS, year);
 	end
 	return lastOnline;
 end

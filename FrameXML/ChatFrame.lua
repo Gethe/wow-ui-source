@@ -463,14 +463,22 @@ ICON_LIST = {
 --Links tags from Global Strings to indicies for entries in ICON_LIST. This way addons can easily replace icons
 ICON_TAG_LIST =
 {
-	[strlower(ICON_TAG_RAID_TARGET_STAR)] = 1,
-	[strlower(ICON_TAG_RAID_TARGET_CIRCLE)] = 2,
-	[strlower(ICON_TAG_RAID_TARGET_DIAMOND)] = 3,
-	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE)] = 4,
-	[strlower(ICON_TAG_RAID_TARGET_MOON)] = 5,
-	[strlower(ICON_TAG_RAID_TARGET_SQUARE)] = 6,
-	[strlower(ICON_TAG_RAID_TARGET_CROSS)] = 7,
-	[strlower(ICON_TAG_RAID_TARGET_SKULL)] = 8,
+	[strlower(ICON_TAG_RAID_TARGET_STAR1)] = 1,
+	[strlower(ICON_TAG_RAID_TARGET_STAR2)] = 1,
+	[strlower(ICON_TAG_RAID_TARGET_CIRCLE1)] = 2,
+	[strlower(ICON_TAG_RAID_TARGET_CIRCLE2)] = 2,
+	[strlower(ICON_TAG_RAID_TARGET_DIAMOND1)] = 3,
+	[strlower(ICON_TAG_RAID_TARGET_DIAMOND2)] = 3,
+	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE1)] = 4,
+	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE2)] = 4,
+	[strlower(ICON_TAG_RAID_TARGET_MOON1)] = 5,
+	[strlower(ICON_TAG_RAID_TARGET_MOON2)] = 5,
+	[strlower(ICON_TAG_RAID_TARGET_SQUARE1)] = 6,
+	[strlower(ICON_TAG_RAID_TARGET_SQUARE2)] = 6,
+	[strlower(ICON_TAG_RAID_TARGET_CROSS1)] = 7,
+	[strlower(ICON_TAG_RAID_TARGET_CROSS2)] = 7,
+	[strlower(ICON_TAG_RAID_TARGET_SKULL1)] = 8,
+	[strlower(ICON_TAG_RAID_TARGET_SKULL2)] = 8,
 	[strlower(RAID_TARGET_1)] = 1,
 	[strlower(RAID_TARGET_2)] = 2,
 	[strlower(RAID_TARGET_3)] = 3,
@@ -1956,7 +1964,7 @@ function ChatFrame_SystemEventHandler(event)
 		this:AddMessage(string, info.r, info.g, info.b, info.id);
 
 		if ( arg4 > 0 ) then
-			string = format(GetText("LEVEL_UP_CHAR_POINTS", nil, arg4), arg4);
+			string = format(LEVEL_UP_CHAR_POINTS, arg4);
 			this:AddMessage(string, info.r, info.g, info.b, info.id);
 		end
 
@@ -1987,7 +1995,7 @@ function ChatFrame_SystemEventHandler(event)
 		if ( arg2 > 0 ) then
 			local cp1, cp2 = UnitCharacterPoints("player");
 			if ( cp2 ) then
-				local string = format(GetText("LEVEL_UP_SKILL_POINTS", nil, cp2), cp2);
+				local string = format(LEVEL_UP_SKILL_POINTS, cp2);
 				this:AddMessage(string, info.r, info.g, info.b, info.id);
 			end
 		end
@@ -2122,7 +2130,7 @@ function ChatFrame_MessageEventHandler(event)
 			if(strlen(arg6) > 0) then
 				if ( arg6 == "GM" ) then
 					--Add Blizzard Icon, this was sent by a GM
-					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:18:12:0:-1|t ";
+					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
 				else
 					pflag = getglobal("CHAT_FLAG_"..arg6);
 				end

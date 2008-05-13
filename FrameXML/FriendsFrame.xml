@@ -4306,6 +4306,7 @@
 					<OnEvent>
 						if ( event == "GUILD_EVENT_LOG_UPDATE" ) then
 							GuildEventLog_Update();
+							GuildEventLogScroll();
 						end
 					</OnEvent>
 					<OnShow>

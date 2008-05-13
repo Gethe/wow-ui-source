@@ -16,7 +16,7 @@
 				ChatFrame_OnHyperlinkShow(arg1, arg2, arg3);
 			</OnHyperlinkClick>
 		</Scripts>
-		<FontString inherits="ChatFontNormal" justifyH="LEFT"/>
+		<FontString inherits="ChatFontNormal" justifyH="LEFT" indented="TRUE"/>
 	</ScrollingMessageFrame>
 	<EditBox name="ChatFrameEditBoxTemplate" ignoreArrows="true" frameStrata="DIALOG" toplevel="true" historyLines="32" letters="255" hidden="true" virtual="true">
 		<Layers>

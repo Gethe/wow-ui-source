@@ -1709,7 +1709,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName().."Text"):SetFormattedText(GetText("FORMATED_HOURS", nil, 12), 12);
+								getglobal(this:GetName().."Text"):SetFormattedText(FORMATED_HOURS, 12);
 							</OnLoad>
 							<OnClick>
 								AuctionsRadioButton_OnClick(this:GetID())
@@ -1726,7 +1726,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName().."Text"):SetFormattedText(GetText("FORMATED_HOURS", nil, 24), 24);
+								getglobal(this:GetName().."Text"):SetFormattedText(FORMATED_HOURS, 24);
 							</OnLoad>
 							<OnClick>
 								AuctionsRadioButton_OnClick(this:GetID())
@@ -1743,7 +1743,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName().."Text"):SetFormattedText(GetText("FORMATED_HOURS", nil, 48), 48);
+								getglobal(this:GetName().."Text"):SetFormattedText(FORMATED_HOURS, 48);
 							</OnLoad>
 							<OnClick>
 								AuctionsRadioButton_OnClick(this:GetID())

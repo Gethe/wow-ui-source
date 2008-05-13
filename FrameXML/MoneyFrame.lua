@@ -499,29 +499,5 @@ function AltCurrencyFrame_Update(frameName, texture, cost)
 end
 
 function GetDenominationsFromCopper(money)
-	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
-	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
-	local copper = mod(money, COPPER_PER_SILVER);
-
-	local copperString = "";
-	if ( copper > 0 ) then
-		copperString = copper.." "..COPPER;
-	end
-	
-	local silverString = "";
-	if ( silver > 0 ) then
-		silverString = silver.." "..SILVER;
-		if ( copper > 0 ) then
-			silverString = silverString.." ";
-		end
-	end
-	
-	local goldString = "";
-	if ( tonumber(gold) > 0 ) then
-		goldString = gold.." "..GOLD;
-		if ( copper > 0 or silver > 0 ) then
-			goldString = goldString.." ";
-		end
-	end
-	return goldString..silverString..copperString;
+	return GetCoinText(money, " ");
 end

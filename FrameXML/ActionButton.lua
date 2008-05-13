@@ -74,9 +74,9 @@ function ActionBar_PageDown()
 end
 
 function ActionButton_OnLoad()
-	this.showgrid = 0;
 	this.flashing = 0;
 	this.flashtime = 0;
+	this:SetAttribute("showgrid", 0);
 	this:SetAttribute("type", "action");
 	this:SetAttribute("checkselfcast", true);
 	this:SetAttribute("useparent-unit", true);
@@ -203,7 +203,7 @@ function ActionButton_Update()
 			this.eventsRegistered = nil;
 		end
 
-		if ( this.showgrid == 0 ) then
+		if ( this:GetAttribute("showgrid") == 0 ) then
 			this:Hide();
 		else
 			buttonCooldown:Hide();
@@ -259,10 +259,14 @@ function ActionButton_ShowGrid(button)
 	if ( not button ) then
 		button = this;
 	end
-	button.showgrid = button.showgrid+1;
+	
+	if ( issecure() ) then
+		button:SetAttribute("showgrid", button:GetAttribute("showgrid") + 1);
+	end
+	
 	getglobal(button:GetName().."NormalTexture"):SetVertexColor(1.0, 1.0, 1.0, 0.5);
 
-	if ( not button:GetAttribute("statehidden") ) then
+	if ( button:GetAttribute("showgrid") >= 1 and not button:GetAttribute("statehidden") ) then
 		button:Show();
 	end
 end
@@ -271,11 +275,16 @@ function ActionButton_HideGrid(button)
 	if ( not button ) then
 		button = this;
 	end
-	if ( button.showgrid > 0 ) then
-		button.showgrid = button.showgrid-1;
+	
+	local showgrid = button:GetAttribute("showgrid");
+	
+	if ( issecure() ) then
+		if ( showgrid > 0 ) then
+			button:SetAttribute("showgrid", showgrid - 1);
+		end
 	end
 	
-	if ( button.showgrid == 0 and not HasAction(button.action) ) then
+	if ( button:GetAttribute("showgrid") == 0 and not HasAction(button.action) ) then
 		button:Hide();
 	end
 end

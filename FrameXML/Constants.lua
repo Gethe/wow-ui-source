@@ -45,6 +45,16 @@ COMBATLOG_OBJECT_RAIDTARGET7			= 0x04000000;
 COMBATLOG_OBJECT_RAIDTARGET8			= 0x08000000;
 COMBATLOG_OBJECT_NONE				= 0x80000000;
 COMBATLOG_OBJECT_SPECIAL_MASK			= 0xFFFF0000;
+COMBATLOG_OBJECT_RAIDTARGET_MASK	= bit.bor(
+						COMBATLOG_OBJECT_RAIDTARGET1,
+						COMBATLOG_OBJECT_RAIDTARGET2,
+						COMBATLOG_OBJECT_RAIDTARGET3,
+						COMBATLOG_OBJECT_RAIDTARGET4,
+						COMBATLOG_OBJECT_RAIDTARGET5,
+						COMBATLOG_OBJECT_RAIDTARGET6,
+						COMBATLOG_OBJECT_RAIDTARGET7,
+						COMBATLOG_OBJECT_RAIDTARGET8
+						);
 
 -- Power Types
 SPELL_POWER_MANA = 0;
@@ -105,7 +115,6 @@ COMBATLOG_FILTER_HOSTILE_PLAYERS	= bit.bor(
 						COMBATLOG_OBJECT_AFFILIATION_PARTY,
 						COMBATLOG_OBJECT_AFFILIATION_RAID,
 						COMBATLOG_OBJECT_AFFILIATION_OUTSIDER,
-						COMBATLOG_OBJECT_REACTION_NEUTRAL,
 						COMBATLOG_OBJECT_REACTION_HOSTILE,
 						COMBATLOG_OBJECT_CONTROL_PLAYER,
 						COMBATLOG_OBJECT_TYPE_PLAYER,
@@ -119,7 +128,6 @@ COMBATLOG_FILTER_HOSTILE_UNITS		= bit.bor(
 						COMBATLOG_OBJECT_AFFILIATION_PARTY,
 						COMBATLOG_OBJECT_AFFILIATION_RAID,
 						COMBATLOG_OBJECT_AFFILIATION_OUTSIDER,
-						COMBATLOG_OBJECT_REACTION_NEUTRAL,
 						COMBATLOG_OBJECT_REACTION_HOSTILE,
 						COMBATLOG_OBJECT_CONTROL_NPC,
 						COMBATLOG_OBJECT_TYPE_PLAYER,
@@ -148,49 +156,6 @@ COMBATLOG_FILTER_EVERYTHING =	0xFFFFFFFF;
 -- 
 -- Combat Log Global Functions
 --
---[[
---
---	Checks if the unit is any of types passed to the function
---
---	args:
---		unitFlags - the unit flags in question
---		
---]]
-function CombatLog_Object_IsA(unitFlags,  ... )
-	for k = 1, select("#", ...) do
-		local flagType = select(k, ...)
-		if (
-			(
-			bit.band( bit.band ( unitFlags, flagType ), COMBATLOG_OBJECT_AFFILIATION_MASK ) > 0 and
-			bit.band( bit.band ( unitFlags, flagType ), COMBATLOG_OBJECT_REACTION_MASK ) > 0 and
-			bit.band( bit.band ( unitFlags, flagType ), COMBATLOG_OBJECT_CONTROL_MASK ) > 0 and
-			bit.band( bit.band ( unitFlags, flagType ), COMBATLOG_OBJECT_TYPE_MASK ) > 0
-			)
-			or
-			bit.band( bit.band ( unitFlags, flagType ), COMBATLOG_OBJECT_SPECIAL_MASK ) > 0
-		) then
-			return true
-		end
-	end
-
-	return false;
-end
-
-
---[[
---
---	Checks if the unit is all of types passed to the function
---
---	args:
---		unitFlags - the unit flags in question
---		
---]]
-function CombatLog_Object_IsAll(unitFlags, ...) 
-	local compoundType = bit.bor(...);
-	
-	-- ANTIARC: Can shorten this up a bit.
-	return bit.band( unitFlags, compoundType ) == compoundType
-end
 
 --[[
 --  

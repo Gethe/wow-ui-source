@@ -82,6 +82,12 @@ function InspectFrame_OnHide()
 	ClearInspectPlayer();
 end
 
+function InspectFrame_OnUpdate()
+	if ( not UnitIsVisible(this.unit) ) then
+		HideUIPanel(InspectFrame);
+	end
+end		
+
 function InspectSwitchTabs(newID)
 	local newFrame = getglobal(INSPECTFRAME_SUBFRAMES[newID]);
 	local oldFrame = getglobal(INSPECTFRAME_SUBFRAMES[PanelTemplates_GetSelectedTab(InspectFrame)]);

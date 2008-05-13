@@ -867,11 +867,11 @@ function WorldStateScoreFrame_Update()
 	-- Set count text and anchor team count to last button shown
 	WorldStateScorePlayerCount:Show();
 	if ( numHorde > 0 and numAlliance > 0 ) then
-		WorldStateScorePlayerCount:SetText(format(GetText("PLAYER_COUNT_ALLIANCE", nil, numAlliance), numAlliance).." / "..format(GetText("PLAYER_COUNT_HORDE", nil, numHorde), numHorde));
+		WorldStateScorePlayerCount:SetText(format(PLAYER_COUNT_ALLIANCE, numAlliance).." / "..format(PLAYER_COUNT_HORDE, numHorde));
 	elseif ( numAlliance > 0 ) then
-		WorldStateScorePlayerCount:SetFormattedText(GetText("PLAYER_COUNT_ALLIANCE", nil, numAlliance), numAlliance);
+		WorldStateScorePlayerCount:SetFormattedText(PLAYER_COUNT_ALLIANCE, numAlliance);
 	elseif ( numHorde > 0 ) then
-		WorldStateScorePlayerCount:SetFormattedText(GetText("PLAYER_COUNT_HORDE", nil, numHorde), numHorde);
+		WorldStateScorePlayerCount:SetFormattedText(PLAYER_COUNT_HORDE, numHorde);
 	else
 		WorldStateScorePlayerCount:Hide();
 	end

@@ -44,6 +44,8 @@ function MacOptionsFrame_Load()
 		
 		if(not MovieRecording_IsSupported() and (value.index < 7)) then
 			MacOptionsFrame_DisableCheckBox(button);
+		else
+			MacOptionsFrame_EnableCheckBox(button);
 		end
 	end
 	if(not MovieRecording_IsSupported()) then
@@ -59,6 +61,11 @@ function MacOptionsFrame_Load()
 		else
 			MacOptionsFrame_DisableCheckBox(getglobal("MacOptionsFrameCheckButton3"));
 		end
+	end
+	if(not MovieRecording_IsCursorRecordingSupported()) then
+		local button = getglobal("MacOptionsFrameCheckButton3");
+		button:SetChecked(0);
+		MacOptionsFrame_DisableCheckBox(button);
 	end
 end
 

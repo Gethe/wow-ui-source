@@ -17,7 +17,6 @@ OptionsFrameCheckButtons["DEATH_EFFECT"] = { index = 12, cvar = "ffxDeath", tool
 OptionsFrameCheckButtons["TRIPLE_BUFFER"] = { index = 13, cvar = "gxTripleBuffer", dependency = "VERTICAL_SYNC", tooltipText = OPTION_TOOLTIP_BUFFERING, gxRestart = 1};
 OptionsFrameCheckButtons["HARDWARE_CURSOR"] = { index = 14, cvar = "gxCursor", tooltipText = OPTION_TOOLTIP_HARDWARE_CURSOR, gxRestart = 1};
 --OptionsFrameCheckButtons["PHONG_SHADING"] = { index = 15, cvar = "M2UsePixelShaders", dependency = "VERTEX_ANIMATION_SHADERS", tooltipText = OPTION_TOOLTIP_PHONG_SHADING, };
-OptionsFrameCheckButtons["FIX_LAG"] = { index = 16, cvar = "gxFixLag", dependency = "HARDWARE_CURSOR", tooltipText = OPTION_TOOLTIP_FIX_LAG, gxRestart = 1};
 OptionsFrameCheckButtons["WINDOWED_MAXIMIZED"] = { index = 17, cvar = "gxMaximize", dependency = "WINDOWED_MODE", tooltipText = OPTION_TOOLTIP_WINDOWED_MAXIMIZED, gxRestart = 1};
 --OptionsFrameCheckButtons["USE_WEATHER_SHADER"] = { index = 18, cvar = "useWeatherShaders", tooltipText = OPTION_TOOLTIP_USE_WEATHER_SHADER};
 OptionsFrameCheckButtons["CHARACTER_SHADOWS"] = { index = 19, cvar = "shadowLOD", tooltipText = OPTION_TOOLTIP_CHARACTER_SHADOWS};

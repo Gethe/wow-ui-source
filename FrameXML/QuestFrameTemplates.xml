@@ -161,7 +161,11 @@
 				CursorOnUpdate();
 			</OnUpdate>
 			<OnClick>
-				if ( this.rewardType ~= "spell" ) then
+				if ( this.rewardType == "spell" ) then
+					if ( IsModifiedClick("CHATLINK") ) then
+						ChatEdit_InsertLink(GetQuestSpellLink());
+					end
+				else
 					HandleModifiedItemClick(GetQuestItemLink(this.type, this:GetID()));
 				end
 			</OnClick>
@@ -171,7 +175,11 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					if ( this.rewardType ~= "spell" ) then
+					if ( this.rewardType == "spell" ) then
+						if ( IsModifiedClick("CHATLINK") ) then
+							ChatEdit_InsertLink(GetQuestSpellLink());
+						end
+					else
 						HandleModifiedItemClick(GetQuestItemLink(this.type, this:GetID()));
 					end
 				else

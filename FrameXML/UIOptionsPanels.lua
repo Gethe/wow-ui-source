@@ -5,12 +5,13 @@ CONTROLTYPE_SLIDER = 3;
 -- [[ Controls Options Panel ]] --
 
 ControlsPanelOptions = {
-	deselectOnClick = { text = "GAMEFIELD_DESELECT_TEXT", default="1" },
-	autoDismountFlying = { text = "AUTO_DISMOUNT_FLYING_TEXT", default="0" },
-	autoClearAFK = { text = "CLEAR_AFK", default="1" },
-	BlockTrades = { text="BLOCK_TRADES", default="0" },
-	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT", default="0" },
-	autoLootCorpse = { text = "AUTO_LOOT_DEFAULT_TEXT", default="0" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
+	deselectOnClick = { text = "GAMEFIELD_DESELECT_TEXT" },
+	gxFixLag = { text = "FIX_LAG" },
+	autoDismountFlying = { text = "AUTO_DISMOUNT_FLYING_TEXT" },
+	autoClearAFK = { text = "CLEAR_AFK" },
+	BlockTrades = { text="BLOCK_TRADES" },
+	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
+	autoLootCorpse = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text="AUTO_LOOT_KEY_TEXT", default="NONE" },
 }
 
@@ -30,6 +31,7 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, 
 		UIDropDownMenu_SetWidth(90, InterfaceOptionsControlsPanelAutoLootKeyDropDown);
 		self.SetValue = 
 			function (self, value) 
+				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("AUTOLOOTTOGGLE", value);
 				SaveBindings(GetCurrentBindingSet());
@@ -48,10 +50,7 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, 
 end
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, this.value);
-	SetModifiedClick("AUTOLOOTTOGGLE", this.value);
-	SaveBindings(GetCurrentBindingSet());
-	InterfaceOptionsControlsPanelAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..this.value.."_KEY");
+	InterfaceOptionsControlsPanelAutoLootKeyDropDown:SetValue(this.value);
 end
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_Initialize()
@@ -122,13 +121,13 @@ end
 -- [[ Combat Options Panel ]] --
 
 CombatPanelOptions = {
-	assistAttack = { text = "ASSIST_ATTACK", default = "1" },
-	autoRangedCombat = { text = "AUTO_RANGED_COMBAT_TEXT", default = "1" },
-	autoSelfCast = { text = "AUTO_SELF_CAST_TEXT", default = "0" },
-	stopAutoAttackOnTargetChange = { text = "STOP_AUTO_ATTACK", default = "0" },
-	showTargetOfTarget = { text = "SHOW_TARGET_OF_TARGET_TEXT", default = "0" },
-	ShowTargetCastbar = { text = "SHOW_TARGET_CASTBAR", default = "0" },
-	ShowVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY", default = "0" },
+	assistAttack = { text = "ASSIST_ATTACK" },
+	autoRangedCombat = { text = "AUTO_RANGED_COMBAT_TEXT" },
+	autoSelfCast = { text = "AUTO_SELF_CAST_TEXT" },
+	stopAutoAttackOnTargetChange = { text = "STOP_AUTO_ATTACK" },
+	showTargetOfTarget = { text = "SHOW_TARGET_OF_TARGET_TEXT" },
+	ShowTargetCastbar = { text = "SHOW_TARGET_CASTBAR" },
+	ShowVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY" },
 }
 
 function InterfaceOptionsCombatPanelTOTDropDown_OnLoad()
@@ -224,33 +223,37 @@ end
 -- [[ Display Options Panel ]] --
 
 DisplayPanelOptions = {
-	buffDurations = { text = "SHOW_BUFF_DURATION_TEXT", default = "0" },
-	rotateMinimap = { text = "ROTATE_MINIMAP", default = "0" },
-	screenEdgeFlash = { text = "SHOW_FULLSCREEN_STATUS_TEXT", default="1" },
-	showLootSpam = { text = "SHOW_LOOT_SPAM", default="1" },
-	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS", default="0" },
+	buffDurations = { text = "SHOW_BUFF_DURATION_TEXT" },
+	rotateMinimap = { text = "ROTATE_MINIMAP" },
+	screenEdgeFlash = { text = "SHOW_FULLSCREEN_STATUS_TEXT" },
+	showLootSpam = { text = "SHOW_LOOT_SPAM" },
+	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS" },
 }
 
-function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad ()
+function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad (self)
 	UIDropDownMenu_Initialize(InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay, InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_Initialize);
 	UIDropDownMenu_SetWidth(90, UIOptionsWorldPVPObjectiveDisplay);
-	this.defaultValue = "1";
-	this.value = GetCVar("displayWorldPVPObjectives");
-	this.currValue = this.value;
-	UIDropDownMenu_SetSelectedValue(InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay, this.value);
-	WORLD_PVP_OBJECTIVES_DISPLAY = this.value;
-	InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay.tooltip = getglobal("OPTION_TOOLTIP_WORLD_PVP_DISPLAY"..this.value);
-	this.SetValue = 
+	local value = GetCVar("displayWorldPVPObjectives");
+	self.defaultValue = "1";
+	self.value = value;
+	self.currValue = value;
+	UIDropDownMenu_SetSelectedValue(InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay, value);
+	WORLD_PVP_OBJECTIVES_DISPLAY = value;
+	InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay.tooltip = getglobal("OPTION_TOOLTIP_WORLD_PVP_DISPLAY"..value);
+	self.SetValue = 
 		function (self, value)
 			UIDropDownMenu_SetSelectedValue(self, value);
 			SetCVar("displayWorldPVPObjectives", value, self.event);
 			self.value = value;
 			InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay.tooltip = getglobal("OPTION_TOOLTIP_WORLD_PVP_DISPLAY"..tostring(value));
+			WORLD_PVP_OBJECTIVES_DISPLAY = value;
+			WorldStateAlwaysUpFrame_Update();
 		end
-	this.GetValue =
+	self.GetValue =
 		function (self)
 			return UIDropDownMenu_GetSelectedValue(self);
 		end
+	BlizzardOptionsPanel_RegisterControl(self, InterfaceOptionsDisplayPanel);
 end
 
 function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnClick()
@@ -301,23 +304,23 @@ end
 -- [[ Quest Options Panel ]] --
 
 QuestPanelOptions = {
-	questFadingDisable = { text = "SHOW_QUEST_FADING_TEXT", default = "0" },
-	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT", default = "1" },
+	questFadingDisable = { text = "SHOW_QUEST_FADING_TEXT" },
+	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT" },
 }
 
 -- [[ Social Options Panel ]] --
 
 SocialPanelOptions = {
-	profanityFilter = { text = "PROFANITY_FILTER", default="1" },
-	ChatBubbles = { text="CHAT_BUBBLES_TEXT", default="1" },
-	ChatBubblesParty = { text="PARTY_CHAT_BUBBLES_TEXT", default="1" },
-	spamFilter = { text="DISABLE_SPAM_FILTER", default="1" },
-	removeChatDelay = { text="REMOVE_CHAT_DELAY_TEXT", default="0" },
-	guildMemberNotify = { text="GUILDMEMBER_ALERT", default="1" },
-	guildRecruitmentChannel = { text="AUTO_JOIN_GUILD_CHANNEL", default="1" },
-	showChatIcons = { text="SHOW_CHAT_ICONS", default="0" },
-	useSimpleChat = { text="SIMPLE_CHAT_TEXT", default="0" },
-	chatLocked = { text="CHAT_LOCKED_TEXT", default="0" },	
+	profanityFilter = { text = "PROFANITY_FILTER" },
+	ChatBubbles = { text="CHAT_BUBBLES_TEXT" },
+	ChatBubblesParty = { text="PARTY_CHAT_BUBBLES_TEXT" },
+	spamFilter = { text="DISABLE_SPAM_FILTER" },
+	removeChatDelay = { text="REMOVE_CHAT_DELAY_TEXT" },
+	guildMemberNotify = { text="GUILDMEMBER_ALERT" },
+	guildRecruitmentChannel = { text="AUTO_JOIN_GUILD_CHANNEL" },
+	showChatIcons = { text="SHOW_CHAT_ICONS" },
+	useSimpleChat = { text="SIMPLE_CHAT_TEXT" },
+	chatLocked = { text="CHAT_LOCKED_TEXT" },	
 }
 
 function InterfaceOptionsSocialPanel_OnLoad (panel)
@@ -343,9 +346,9 @@ ActionBarsPanelOptions = {
 	bottomRightActionBar = { text = "SHOW_MULTIBAR2_TEXT", default = "0" },
 	rightActionBar = { text = "SHOW_MULTIBAR3_TEXT", default = "0" },
 	rightTwoActionBar = { text = "SHOW_MULTIBAR4_TEXT", default = "0" },
-	lockActionBars = { text = "LOCK_ACTIONBAR_TEXT", default = "0" },
-	alwaysShowActionBars = { text = "ALWAYS_SHOW_MULTIBARS_TEXT", default = "0" },
-	secureAbilityToggle = { text = "SECURE_ABILITY_TOGGLE", default = "0" },
+	lockActionBars = { text = "LOCK_ACTIONBAR_TEXT" },
+	alwaysShowActionBars = { text = "ALWAYS_SHOW_MULTIBARS_TEXT" },
+	secureAbilityToggle = { text = "SECURE_ABILITY_TOGGLE" },
 }
 
 function InterfaceOptionsActionBarsPanel_OnLoad (panel)
@@ -354,10 +357,17 @@ end
 
 function InterfaceOptionsActionBarsPanel_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4, ALWAYS_SHOW_MULTIBARS = GetActionBarToggles();
+		SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
+		ALWAYS_SHOW_MULTIBARS = (GetCVar("alwaysShowActionBars") == "1" and "1") or "0";
 		MultiActionBar_Update();
 		UIParent_ManageFramePositions();
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+
+		for _, control in next, self.controls do
+			if ( control.setFunc ) then
+				control.setFunc(control.value);
+			end
+		end
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -399,38 +409,38 @@ end
 -- [[ Names Options Panel ]] --
 
 NamePanelOptions = {
-	UnitNameOwn = { text = "UNIT_NAME_OWN", default="1" },
-	UnitNameNPC = { text = "UNIT_NAME_NPC", default="1" },
-	UnitNamePlayerGuild = { text = "UNIT_NAME_GUILD", default="1" },
-	UnitNamePlayerPVPTitle = { text = "UNIT_NAME_PLAYER_TITLE", default="1" },
-	UnitNameEnemyPlayerName = { text = "UNIT_NAME_ENEMY", default="1" },
-	UnitNameEnemyPetName = { text = "UNIT_NAME_ENEMY_PETS", default="1" },
-	UnitNameEnemyCreationName = { text = "UNIT_NAME_ENEMY_CREATIONS", default="1" },
-	UnitNameFriendlyPlayerName = { text = "UNIT_NAME_FRIENDLY", default="1" },
-	UnitNameFriendlyPetName = { text = "UNIT_NAME_FRIENDLY_PETS", default="1" },
-	UnitNameFriendlyCreationName = { text = "UNIT_NAME_FRIENDLY_CREATIONS", default="1" },
-	UnitNameCompanionName = { text = "UNIT_NAME_COMPANIONS", default="1" },
+	UnitNameOwn = { text = "UNIT_NAME_OWN" },
+	UnitNameNPC = { text = "UNIT_NAME_NPC" },
+	UnitNamePlayerGuild = { text = "UNIT_NAME_GUILD" },
+	UnitNamePlayerPVPTitle = { text = "UNIT_NAME_PLAYER_TITLE" },
+	UnitNameEnemyPlayerName = { text = "UNIT_NAME_ENEMY" },
+	UnitNameEnemyPetName = { text = "UNIT_NAME_ENEMY_PETS" },
+	UnitNameEnemyCreationName = { text = "UNIT_NAME_ENEMY_CREATIONS" },
+	UnitNameFriendlyPlayerName = { text = "UNIT_NAME_FRIENDLY" },
+	UnitNameFriendlyPetName = { text = "UNIT_NAME_FRIENDLY_PETS" },
+	UnitNameFriendlyCreationName = { text = "UNIT_NAME_FRIENDLY_CREATIONS" },
+	UnitNameCompanionName = { text = "UNIT_NAME_COMPANIONS" },
 }
 
 -- [[ Combat Text Options Panel ]] --
 
 FCTPanelOptions = {
-	enableCombatText = { text = "SHOW_COMBAT_TEXT_TEXT", default="0" },
-	fctCombatState = { text = "COMBAT_TEXT_SHOW_COMBAT_STATE_TEXT", default="1" },
-	fctDodgeParryMiss = { text = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS_TEXT", default="0" },
-	fctDamageReduction = { text = "COMBAT_TEXT_SHOW_RESISTANCES_TEXT", default="0" },
-	fctRepChanges = { text = "COMBAT_TEXT_SHOW_REPUTATION_TEXT", default="0" },
-	fctReactives = { text = "COMBAT_TEXT_SHOW_REACTIVES_TEXT", default="0" },
-	fctFriendlyHealers = { text = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES_TEXT", default="0" },
-	fctComboPoints = { text = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT", default="0" },
-	fctLowManaHealth = { text = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT", default="1" },
-	fctEnergyGains = { text = "COMBAT_TEXT_SHOW_MANA_TEXT", default="0" },
-	fctHonorGains = { text = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT", default="1" },
-	fctAuras = { text = "COMBAT_TEXT_SHOW_AURAS_TEXT", default="1" },
-	CombatDamage = { text = "SHOW_DAMAGE_TEXT", default="1" },
-	CombatLogPeriodicSpells = { text = "LOG_PERIODIC_EFFECTS", default="1" },
-	PetMeleeDamage = { text = "SHOW_PET_MELEE_DAMAGE", default="1" },
-	CombatHealing = { text = "SHOW_COMBAT_HEALING", default="1" },
+	enableCombatText = { text = "SHOW_COMBAT_TEXT_TEXT" },
+	fctCombatState = { text = "COMBAT_TEXT_SHOW_COMBAT_STATE_TEXT" },
+	fctDodgeParryMiss = { text = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS_TEXT" },
+	fctDamageReduction = { text = "COMBAT_TEXT_SHOW_RESISTANCES_TEXT" },
+	fctRepChanges = { text = "COMBAT_TEXT_SHOW_REPUTATION_TEXT" },
+	fctReactives = { text = "COMBAT_TEXT_SHOW_REACTIVES_TEXT" },
+	fctFriendlyHealers = { text = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES_TEXT" },
+	fctComboPoints = { text = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT" },
+	fctLowManaHealth = { text = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
+	fctEnergyGains = { text = "COMBAT_TEXT_SHOW_MANA_TEXT" },
+	fctHonorGains = { text = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
+	fctAuras = { text = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
+	CombatDamage = { text = "SHOW_DAMAGE_TEXT" },
+	CombatLogPeriodicSpells = { text = "LOG_PERIODIC_EFFECTS" },
+	PetMeleeDamage = { text = "SHOW_PET_MELEE_DAMAGE" },
+	CombatHealing = { text = "SHOW_COMBAT_HEALING" },
 }
 
 function BlizzardOptionsPanel_UpdateCombatText ()
@@ -441,43 +451,43 @@ function BlizzardOptionsPanel_UpdateCombatText ()
 	end
 end
 
-function InterfaceOptionsCombatTextPanelFCTDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, InterfaceOptionsCombatTextPanelFCTDropDown_Initialize);
-	this.defaultValue = "1";
-	this.value = GetCVar("combatTextFloatMode");
-	COMBAT_TEXT_FLOAT_MODE = this.value;
+function InterfaceOptionsCombatTextPanelFCTDropDown_OnLoad (self)
+	UIDropDownMenu_Initialize(self, InterfaceOptionsCombatTextPanelFCTDropDown_Initialize);
+	self.defaultValue = "1";
+	local value = GetCVar("combatTextFloatMode");
+	self.value = value;
+	COMBAT_TEXT_FLOAT_MODE = value;
 	
 	if ( CombatText_UpdateDisplayedMessages ) then
 		-- If the CombatText AddOn has already been loaded, we need to reinit it to pick up the previous COMBAT_TEXT_FLOAT_MODE.
 		CombatText_UpdateDisplayedMessages();
 	end
-	this.currValue = this.value;
-	UIDropDownMenu_SetSelectedValue(this, this.value);
+	self.currValue = value;
+	UIDropDownMenu_SetSelectedValue(self, value);
 	InterfaceOptionsCombatTextPanelFCTDropDown.tooltip = OPTION_TOOLTIP_COMBAT_TEXT_MODE;
 	UIDropDownMenu_SetWidth(110, InterfaceOptionsCombatTextPanelFCTDropDown);
-	this.SetValue = 
+	self.SetValue = 
 		function (self, value) 
+			self.value = value;
 			UIDropDownMenu_SetSelectedValue(self, value);
 			SetCVar("combatTextFloatMode", value, self.event);
 			COMBAT_TEXT_FLOAT_MODE = value;
 			
 			if ( CombatText_UpdateDisplayedMessages ) then
 				CombatText_UpdateDisplayedMessages();
+			else
+				UIParentLoadAddOn("Blizzard_CombatText");
+				CombatText_UpdateDisplayedMessages();
 			end
-			this.value = value;
 		end;	
-	this.GetValue =
+	self.GetValue =
 		function (self)
 			return UIDropDownMenu_GetSelectedValue(self);
 		end
 end
 
 function InterfaceOptionsCombatTextPanelFCTDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(InterfaceOptionsCombatTextPanelFCTDropDown, this.value);
-	SetCVar("combatTextFloatMode", this.value);
-	COMBAT_TEXT_FLOAT_MODE = this.value
-	UIParentLoadAddOn("Blizzard_CombatText");
-	CombatText_UpdateDisplayedMessages();
+	InterfaceOptionsCombatTextPanelFCTDropDown:SetValue(this.value);
 end
 
 function InterfaceOptionsCombatTextPanelFCTDropDown_Initialize()
@@ -524,23 +534,23 @@ end
 -- [[ Status Text Options Panel ]] --
 
 StatusTextPanelOptions = {
-	xpBarText = { text = "XP_BAR_TEXT", default="0" },
-	playerStatusText = { text = "STATUS_TEXT_PLAYER", default="0" },
-	petStatusText = { text = "STATUS_TEXT_PET", default="0" },
-	partyStatusText = { text = "STATUS_TEXT_PARTY", default="0" },
-	targetStatusText = { text = "STATUS_TEXT_TARGET", default="0" },
-	statusTextPercentage = { text = "STATUS_TEXT_PERCENT", default="0" },
+	xpBarText = { text = "XP_BAR_TEXT" },
+	playerStatusText = { text = "STATUS_TEXT_PLAYER" },
+	petStatusText = { text = "STATUS_TEXT_PET" },
+	partyStatusText = { text = "STATUS_TEXT_PARTY" },
+	targetStatusText = { text = "STATUS_TEXT_TARGET" },
+	statusTextPercentage = { text = "STATUS_TEXT_PERCENT" },
 }
 
 -- [[ Party & Raid Options Panel ]] --
 
 PartyRaidPanelOptions = {
-	showPartyBackground = { text = "SHOW_PARTY_BACKGROUND_TEXT", default="0" },
-	hidePartyInRaid = { text = "HIDE_PARTY_INTERFACE_TEXT", default="0" },
-	showPartyPets = { text = "SHOW_PARTY_PETS_TEXT", default="1" },
-	showPartyDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT", default="0" },
-	showPartyBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT", default="0" },
-	showRaidRange = { text = "SHOW_RAID_RANGE_TEXT", default="0" },
+	showPartyBackground = { text = "SHOW_PARTY_BACKGROUND_TEXT" },
+	hidePartyInRaid = { text = "HIDE_PARTY_INTERFACE_TEXT" },
+	showPartyPets = { text = "SHOW_PARTY_PETS_TEXT" },
+	showPartyDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
+	showPartyBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },
+	showRaidRange = { text = "SHOW_RAID_RANGE_TEXT" },
 }
 
 function BlizzardOptionsPanel_UpdateRaidPullouts ()
@@ -560,12 +570,12 @@ end
 -- [[ Camera Options Panel ]] --
 
 CameraPanelOptions = {
-	cameraTerrainTilt = { text = "FOLLOW_TERRAIN", default="0" },
-	cameraBobbing = { text = "HEAD_BOB", default="0" },
-	cameraWaterCollision = { text = "WATER_COLLISION", default="0" },
-	cameraPivot = { text = "SMART_PIVOT", default="0" },
-	cameraYawSmoothSpeed = { text = "AUTO_FOLLOW_SPEED", minValue = 90, maxValue = 270, valueStep = 10, default = 180 },
-	cameraDistanceMaxFactor = { text = "MAX_FOLLOW_DIST", minValue = 1, maxValue = 2, valueStep = 0.1, default = 1 },
+	cameraTerrainTilt = { text = "FOLLOW_TERRAIN" },
+	cameraBobbing = { text = "HEAD_BOB" },
+	cameraWaterCollision = { text = "WATER_COLLISION" },
+	cameraPivot = { text = "SMART_PIVOT" },
+	cameraYawSmoothSpeed = { text = "AUTO_FOLLOW_SPEED", minValue = 90, maxValue = 270, valueStep = 10 },
+	cameraDistanceMaxFactor = { text = "MAX_FOLLOW_DIST", minValue = 1, maxValue = 2, valueStep = 0.1 },
 }
 
 function InterfaceOptionsCameraPanelStyleDropDown_OnLoad()
@@ -644,10 +654,10 @@ end
 -- [[ Mouse Options Panel ]] --
 
 MousePanelOptions = {
-	mouseInvertPitch = { text = "INVERT_MOUSE", default="0" },
-	autointeract = { text = "CLICK_TO_MOVE", default="0" },
-	mousespeed = { text = "MOUSE_SENSITIVITY", minValue = 0.5, maxValue = 1.5, valueStep = 0.05, default = 1 },
-	cameraYawMoveSpeed = { text = "MOUSE_LOOK_SPEED", minValue = 90, maxValue = 270, valueStep = 10, default = 180 },
+	mouseInvertPitch = { text = "INVERT_MOUSE" },
+	autointeract = { text = "CLICK_TO_MOVE" },
+	mousespeed = { text = "MOUSE_SENSITIVITY", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 },
+	cameraYawMoveSpeed = { text = "MOUSE_LOOK_SPEED", minValue = 90, maxValue = 270, valueStep = 10 },
 }
 
 function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnLoad()
@@ -724,11 +734,11 @@ end
 -- [[ Help Options Panel ]] --
 
 HelpPanelOptions = {
-	showTutorials = { text = "SHOW_TUTORIALS", default="1" },
-	showGameTips = { text = "SHOW_TIPOFTHEDAY_TEXT", default="1" },
-	UberTooltips = { text = "USE_UBERTOOLTIPS", default="1" },
-	showNewbieTips = { text = "SHOW_NEWBIE_TIPS_TEXT", default="1" },
-	scriptErrors = { text = "SHOW_LUA_ERRORS", default = "0" },
+	showTutorials = { text = "SHOW_TUTORIALS" },
+	showGameTips = { text = "SHOW_TIPOFTHEDAY_TEXT" },
+	UberTooltips = { text = "USE_UBERTOOLTIPS" },
+	showNewbieTips = { text = "SHOW_NEWBIE_TIPS_TEXT" },
+	scriptErrors = { text = "SHOW_LUA_ERRORS" },
 }
 
 function InterfaceOptionsHelpPanel_OnLoad (panel)
@@ -815,9 +825,25 @@ local CONTROL_KEY = "controlkey";
 local SHIFT_KEY = "shiftkey";
 local NO_KEY = "none";
 
+function BlizzardOptionsPanel_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		for i, control in next, self.controls do
+			if ( control.setFunc ) then
+				control.setFunc(control.value);
+			end
+		end
+		self:UnregisterEvent(event);
+	end
+end
+
 function BlizzardOptionsPanel_OnLoad (frame)
 	InterfaceOptionsFrame_SetupBlizzardPanel(frame);
 	InterfaceOptions_AddCategory(frame);
+	frame:RegisterEvent("PLAYER_ENTERING_WORLD");
+	if ( not frame:GetScript("OnEvent") ) then
+		frame:SetScript("OnEvent", BlizzardOptionsPanel_OnEvent);
+	end
+	
 	if ( frame.options and frame.controls ) then
 		local entry;
 		for i, control in next, frame.controls do
@@ -828,7 +854,12 @@ function BlizzardOptionsPanel_OnLoad (frame)
 					getglobal(control:GetName() .. "Text"):SetText(getglobal(entry.text) or entry.text);
 				end
 				
-				control.defaultValue = control.defaultValue or entry.default;
+				if ( control.cvar ) then
+					control.defaultValue = GetCVarDefault(control.cvar);
+				else
+					control.defaultValue = control.defaultValue or entry.default;
+				end
+				
 				control.event = entry.event or entry.text;
 				
 				if ( control.type == CONTROLTYPE_SLIDER ) then
@@ -878,7 +909,7 @@ function BlizzardOptionsPanel_OnShow (panel)
 					end
 				end
 			elseif ( control.type == CONTROLTYPE_SLIDER ) then
-				return
+				-- Don't do anything.
 			end
 		elseif ( control.GetValue ) then
 			if ( control.type == CONTROLTYPE_CHECKBOX ) then
@@ -933,9 +964,6 @@ function BlizzardOptionsPanel_RegisterControl (control, parentFrame)
 				setglobal(control.uvar, value);
 			end
 			
-			if ( control.setFunc ) then
-				control.setFunc(value);
-			end
 			control.GetValue = function(self) return GetCVar(self.cvar); end
 			control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
 		elseif ( control.type == CONTROLTYPE_SLIDER ) then
@@ -943,15 +971,11 @@ function BlizzardOptionsPanel_RegisterControl (control, parentFrame)
 		end
 	elseif ( control.GetValue ) then
 		if ( control.type == CONTROLTYPE_CHECKBOX ) then
-			value = control.GetValue();
+			value = ((control:GetValue() and "1") or "0");
 			control.currValue = value;
 			control.value = value;
 			if ( control.uvar ) then
 				setglobal(control.uvar, value);
-			end
-			
-			if ( control.setFunc ) then
-				control.setFunc(value);
 			end
 			
 			control.SetValue = function(self, value) self.value = value; if ( self.uvar ) then setglobal(self.uvar, value); end if ( self.setFunc ) then self.setFunc(value) end end;

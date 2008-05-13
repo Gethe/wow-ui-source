@@ -153,6 +153,9 @@
 			<OnHide>
 				InspectFrame_OnHide();
 			</OnHide>
+		        <OnUpdate>
+			          InspectFrame_OnUpdate();
+		        </OnUpdate>
         </Scripts>
     </Frame>
 </Ui>

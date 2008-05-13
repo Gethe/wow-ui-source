@@ -136,6 +136,7 @@ function GuildBankFrame_OnEvent(event)
 		else
 			GuildBankFrame_UpdateMoneyLog();
 		end
+		GuildBankLogScroll();
 	elseif ( event == "GUILDTABARD_UPDATE" ) then
 		GuildBankFrame_UpdateTabard();
 	elseif ( event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
@@ -459,7 +460,7 @@ function GuildBankFrame_UpdateTabs()
 	if ( withdrawalText ) then
 		local stackString;
 		if ( remainingWithdrawals > 0 ) then
-			stackString = format(GetText("STACKS", nil, remainingWithdrawals), remainingWithdrawals);
+			stackString = format(STACKS, remainingWithdrawals);
 		elseif ( remainingWithdrawals == 0 ) then
 			stackString = NONE;
 		else

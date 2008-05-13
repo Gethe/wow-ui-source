@@ -452,7 +452,7 @@
 		<OnShow>
 			SetMapToCurrentZone();
 			BattlefieldMinimap_Update();
-			BattlefieldMinimap_SetOpacity();
+			BattlefieldMinimap_SetOpacity(BattlefieldMinimapOptions.opacity);
 			BattlefieldMinimapTab:Show();
 		</OnShow>
 		<OnHide>

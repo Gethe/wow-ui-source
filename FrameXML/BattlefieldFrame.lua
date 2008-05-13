@@ -411,12 +411,14 @@ function MiniMapBattlefieldDropDown_Initialize()
 				info.notCheckable = 1;
 				UIDropDownMenu_AddButton(info);
 
-				info = UIDropDownMenu_CreateInfo();
-				info.text = LEAVE_QUEUE;
-				info.func = AcceptBattlefieldPort;
-				info.arg1 = i;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
+				if ( teamSize == 0 ) then
+					info = UIDropDownMenu_CreateInfo();
+					info.text = LEAVE_QUEUE;
+					info.func = AcceptBattlefieldPort;
+					info.arg1 = i;
+					info.notCheckable = 1;
+					UIDropDownMenu_AddButton(info);
+				end
 
 			end			
 

@@ -356,7 +356,7 @@ function WhoList_Update()
 	if ( totalCount > MAX_WHOS_FROM_SERVER ) then
 		displayedText = format(WHO_FRAME_SHOWN_TEMPLATE, MAX_WHOS_FROM_SERVER);
 	end
-	WhoFrameTotals:SetText(format(GetText("WHO_FRAME_TOTAL_TEMPLATE", nil, totalCount), totalCount).."  "..displayedText);
+	WhoFrameTotals:SetText(format(WHO_FRAME_TOTAL_TEMPLATE, totalCount).."  "..displayedText);
 	for i=1, WHOS_TO_DISPLAY, 1 do
 		whoIndex = whoOffset + i;
 		button = getglobal("WhoFrameButton"..i);
@@ -555,7 +555,7 @@ function GuildStatus_Update()
 			FriendsFrame.playersInBotRank = FriendsFrame.playersInBotRank + 1;
 		end
 	end
-	GuildFrameTotals:SetFormattedText(GetText("GUILD_TOTAL", nil, numGuildMembers), numGuildMembers);
+	GuildFrameTotals:SetFormattedText(GUILD_TOTAL, numGuildMembers);
 	GuildFrameOnlineTotals:SetFormattedText(GUILD_TOTALONLINE, onlinecount);
 
 	-- Update global guild frame buttons

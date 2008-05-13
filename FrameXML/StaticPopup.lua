@@ -950,6 +950,22 @@ StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["LEVEL_GRANT_PROPOSED"] = {
+	text = LEVEL_GRANT,
+	button1 = ACCEPT,
+	button2 = DECLINE,
+	sound = "igPlayerInvite",
+	OnAccept = function()
+		AcceptLevelGrant();
+	end,
+	OnCancel = function()
+		DeclineLevelGrant();
+	end,
+	timeout = 60,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 function ChatChannelPasswordHandler(data)
 	local password = getglobal(this:GetParent():GetName().."EditBox"):GetText();
 	local name = data;
@@ -2288,7 +2304,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
 	elseif ( which == "BILLING_NAG" ) then
-		text:SetFormattedText(StaticPopupDialogs[which].text, text_arg1, GetText("MINUTES", nil, text_arg1));
+		text:SetFormattedText(StaticPopupDialogs[which].text, text_arg1, MINUTES);
 	else
 		text:SetFormattedText(StaticPopupDialogs[which].text, text_arg1, text_arg2);
 	end
@@ -2547,21 +2563,21 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			timeleft = ceil(timeleft);
 			if ( which == "INSTANCE_BOOT" ) then
 				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, GetText("SECONDS_P1", nil, timeleft));
+					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, SECONDS);
 				else
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), ceil(timeleft / 60), GetText("MINUTES_P1", nil, ceil(timeleft / 60)));
+					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), ceil(timeleft / 60), MINUTES);
 				end
 			elseif ( which == "CONFIRM_SUMMON" ) then
 				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), timeleft, GetText("SECONDS_P1", nil, timeleft));
+					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), timeleft, SECONDS);
 				else
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), ceil(timeleft / 60), GetText("MINUTES_P1", nil, ceil(timeleft / 60)));
+					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), ceil(timeleft / 60), MINUTES);
 				end
 			else
 				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, GetText("SECONDS_P1", nil, timeleft));
+					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
 				else
-					text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), GetText("MINUTES_P1", nil, ceil(timeleft / 60)));
+					text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
 				end
 			end
 			if ( not hasText ) then
@@ -2592,15 +2608,15 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			timeleft = ceil(timeleft);
 			if ( (which == "RESURRECT") or (which == "RESURRECT_NO_SICKNESS") ) then
 				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].delayText, text.text_arg1, timeleft, GetText("SECONDS_P1", nil, timeleft));
+					text:SetFormattedText(StaticPopupDialogs[which].delayText, text.text_arg1, timeleft, SECONDS);
 				else
-					text:SetFormattedText(StaticPopupDialogs[which].delayText, text.text_arg1, ceil(timeleft / 60), GetText("MINUTES_P1", nil, ceil(timeleft / 60)));
+					text:SetFormattedText(StaticPopupDialogs[which].delayText, text.text_arg1, ceil(timeleft / 60), MINUTES);
 				end
 			else
 				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].delayText, timeleft, GetText("SECONDS_P1", nil, timeleft));
+					text:SetFormattedText(StaticPopupDialogs[which].delayText, timeleft, SECONDS);
 				else
-					text:SetFormattedText(StaticPopupDialogs[which].delayText, ceil(timeleft / 60), GetText("MINUTES_P1", nil, ceil(timeleft / 60)));
+					text:SetFormattedText(StaticPopupDialogs[which].delayText, ceil(timeleft / 60), MINUTES);
 				end
 			end
 			if ( not hasText ) then

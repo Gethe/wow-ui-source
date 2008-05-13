@@ -383,20 +383,10 @@ function TargetDebuffButton_Update()
 	
 	-- Figure out general information that affects buff sizing and positioning
 	local numFirstRowBuffs;
-	local buffSize = LARGE_BUFF_SIZE;
-	local buffFrameSize = LARGE_BUFF_FRAME_SIZE;
 	if ( TargetofTargetFrame:IsShown() ) then
 		numFirstRowBuffs = 5;
 	else
 		numFirstRowBuffs = 6;
-	end
-	if ( getn(largeBuffList) > 0 or getn(largeDebuffList) > 0 ) then
-		numFirstRowBuffs = numFirstRowBuffs - 1;
-	end
-	-- Shrink the buffs if there are too many of them
-	if ( (numBuffs >= numFirstRowBuffs) or (numDebuffs >= numFirstRowBuffs) ) then
-		buffSize = SMALL_BUFF_SIZE;
-		buffFrameSize = SMALL_BUFF_FRAME_SIZE;
 	end
 		
 	-- Reset number of buff rows
@@ -411,7 +401,7 @@ function TargetDebuffButton_Update()
 			offset = 3;
 			previousWasPlayerCast = 1;
 		else
-			size = buffSize;
+			size = SMALL_BUFF_SIZE;
 			offset = 3;
 			if ( previousWasPlayerCast ) then
 				offset = 6;
@@ -428,7 +418,7 @@ function TargetDebuffButton_Update()
 			offset = 4;
 			previousWasPlayerCast = 1;
 		else
-			size = buffSize;
+			size = SMALL_BUFF_SIZE;
 			offset = 4;
 			if ( previousWasPlayerCast ) then
 				offset = 6;

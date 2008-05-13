@@ -481,9 +481,9 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 		itemTexture, itemCount, itemLink = GetMerchantItemCostItem(index, i);
 		if ( itemLink ) then
 			if ( itemsString ) then
-				itemsString = itemsString .. LIST_DELIMITER .. ((itemCount or 0) * quantity) .. " " .. itemLink;
+				itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
 			else
-				itemsString = ((itemCount or 0) * quantity) .. " " .. itemLink;
+				itemsString = format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
 			end
 		end
 	end
