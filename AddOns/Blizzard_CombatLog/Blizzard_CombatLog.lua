@@ -698,20 +698,25 @@ end
 -- Combat Log Repopulation Code
 --
 
+-- Message Limit
+
+COMBATLOG_MESSAGE_LIMIT = 300;
+
 -- 
 -- Repopulate the combat log with message history
 --
 function Blizzard_CombatLog_Refilter()
 	local count = CombatLogGetNumEntries();
-	local valid;
 	
-	-- We're now allowing an unlimited number of MaxLines
-	-- CombatLogGetRetentionTime() will now be honored over the MaxLines
-	if ( count > COMBATLOG:GetMaxLines() ) then
-		COMBATLOG:SetMaxLines(count);
-	end
-	valid = CombatLogSetCurrentEntry(1); 
+	COMBATLOG:SetMaxLines(COMBATLOG_MESSAGE_LIMIT);
 
+	if ( count < COMBATLOG_MESSAGE_LIMIT ) then
+		CombatLogSetCurrentEntry(1); 
+	else
+		count = COMBATLOG_MESSAGE_LIMIT
+		CombatLogSetCurrentEntry(-COMBATLOG_MESSAGE_LIMIT); 
+	end
+	
 	-- Clear the combat log
 	COMBATLOG:Clear();
 	
@@ -3401,9 +3406,12 @@ _G[COMBATLOG:GetName().."Tab"]:SetScript("OnDragStart",
 -- On Event
 function Blizzard_CombatLog_QuickButtonFrame_OnEvent(event)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		this:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		Blizzard_CombatLog_Filters = _G.Blizzard_CombatLog_Filters or Blizzard_CombatLog_Filters
 		Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[1];
 		_G.Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_CurrentSettings;
+		
+		Blizzard_CombatLog_QuickButton_OnClick(	Blizzard_CombatLog_Filters.currentFilter );
 		Blizzard_CombatLog_Refilter();
 		for k,v in pairs (Blizzard_CombatLog_UnitTokens) do
 			Blizzard_CombatLog_UnitTokens[k] = nil;
