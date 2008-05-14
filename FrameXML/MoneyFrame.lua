@@ -352,7 +352,6 @@ function MoneyFrame_Update(frameName, money)
 				attachButton = copperButton;
 			end
 
-			--prefixText:ClearAllPoints();
 			if ( attachButton ) then
 				width = width + prefixText:GetWidth();
 				prefixText:Show();

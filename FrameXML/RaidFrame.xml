@@ -254,25 +254,6 @@
 								</Anchors>
 							</Slider>
 						</Frames>
-						<ScrollChild>
-							<Frame name="RaidInfoScrollChildFrame" enableMouse="true">
-								<Size x="220" y="40"/>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-								<Frames>
-									<Frame name="RaidInfoInstance1" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-								</Frames>
-							</Frame>
-						</ScrollChild>
 						<Scripts>
 							<OnLoad>
 								ScrollFrame_OnLoad();
@@ -302,6 +283,25 @@
 								ScrollFrameTemplate_OnMouseWheel(arg1);
 							</OnMouseWheel>
 						</Scripts>
+						<ScrollChild>
+							<Frame name="RaidInfoScrollChildFrame" enableMouse="true">
+								<Size x="220" y="40"/>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Frames>
+									<Frame name="RaidInfoInstance1" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+								</Frames>
+							</Frame>
+						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>

@@ -365,6 +365,7 @@
 				<xs:attribute name="justifyV" type="JUSTIFYVTYPE" default="MIDDLE"/>
 				<xs:attribute name="justifyH" type="JUSTIFYHTYPE" default="CENTER"/>
 				<xs:attribute name="maxLines" type="xs:unsignedInt" default="0"/>
+				<xs:attribute name="indented" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

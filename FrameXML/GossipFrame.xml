@@ -177,7 +177,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="GossipFrameNpcNameText" inherits="GameFontHighlight" justifyh="CENTER">
+						<FontString name="GossipFrameNpcNameText" inherits="GameFontHighlight">
 							<Anchors>
 								<Anchor point="LEFT"/>
 								<Anchor point="RIGHT"/>

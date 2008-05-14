@@ -1677,8 +1677,8 @@ function CombatConfig_DeleteCurrentCombatFilter()
 		return;
 	end
 	tremove(Blizzard_CombatLog_Filters.filters, ChatConfigCombatSettingsFilters.selectedFilter);
-	-- If the deleted filter is the selected filter, then select a new filter if possible
-	if ( ChatConfigCombatSettingsFilters.selectedFilter == Blizzard_CombatLog_Filters.currentFilter ) then
+	-- If the deleted filter comes before or is the selected filter, force the current filter to the first
+	if ( ChatConfigCombatSettingsFilters.selectedFilter <= Blizzard_CombatLog_Filters.currentFilter ) then
 		Blizzard_CombatLog_QuickButton_OnClick(1);
 	end
 	

@@ -337,6 +337,26 @@ function InterfaceOptionsSocialPanel_OnLoad (panel)
 			FCF_Set_NormalChat();
 		end
 	end
+	panel:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		SIMPLE_CHAT = (GetCVar("useSimpleChat") == "1" and "1") or "0";
+		-- bug 110191: The combat log overlaps the chat log after relogging with Simple Chat toggled.
+		-- to fix this, force the floating chat frames to simple chat mode so that the combat log is
+		-- correctly positioned and sized
+		if ( SIMPLE_CHAT == "1" ) then
+			FCF_Set_SimpleChat();
+		end
+
+		for _, control in next, self.controls do
+			if ( control.setFunc ) then
+				control.setFunc(control.value);
+			end
+		end
+		self:UnregisterEvent(event);
+	end
 end
 
 -- [[ ActionBars Options Panel ]] --

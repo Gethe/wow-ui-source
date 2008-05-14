@@ -691,11 +691,11 @@ function FCF_OnUpdate(elapsed)
 			if ( (MouseIsOver(chatFrame, yOffset, -10, -5, 5) or chatFrame.resizing) ) then
 				-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 				if ( chatFrame.hover ) then
-					if ( (chatFrame.oldX == xPos and chatFrame.oldy == yPos) or REMOVE_CHAT_DELAY == "1" ) then
+					if ( (chatFrame.oldx == xPos and chatFrame.oldy == yPos) or REMOVE_CHAT_DELAY == "1" ) then
 						chatFrame.hoverTime = chatFrame.hoverTime + elapsed;
 					else
 						chatFrame.hoverTime = 0;
-						chatFrame.oldX = xPos;
+						chatFrame.oldx = xPos;
 						chatFrame.oldy = yPos;
 					end
 					-- If the hover delay has been reached or the user is dragging a chat frame over the dock show the tab
@@ -1299,6 +1299,9 @@ function FCF_Set_NormalChat()
 	ChatFrame2:StartMoving();
 	ChatFrame2:StopMovingOrSizing();
 	FCF_SetLocked(ChatFrame2, nil);
+	-- to fix a bug with the combat log not repositioning its tab properly when coming out of
+	-- simple chat, we need to update now
+	FCF_DockUpdate();
 end
 
 -- Lockout all chatframes from being movable/editable

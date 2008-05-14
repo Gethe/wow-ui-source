@@ -962,6 +962,9 @@
 			<OnShow>
 				BlizzardOptionsPanel_OnShow(self);
 			</OnShow>
+			<OnEvent>
+				InterfaceOptionsSocialPanel_OnEvent(self, event, ...);
+			</OnEvent>
 		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentProfanityFilter" inherits="InterfaceOptionsCheckButtonTemplate">

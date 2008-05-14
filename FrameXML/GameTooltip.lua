@@ -96,17 +96,17 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 		frame.numMoneyFrames = frame.numMoneyFrames+1;
 		moneyFrame = CreateFrame("Frame", name, frame, "TooltipMoneyFrameTemplate");
 		name = moneyFrame:GetName();
-		if ( prefixText ) then
-			getglobal(name.."PrefixText"):SetText(prefixText);
-		else
-			getglobal(name.."PrefixText"):SetText(nil);
-		end
-		if ( suffixText ) then
-			getglobal(name.."SuffixText"):SetText(suffixText);
-		else
-			getglobal(name.."SuffixText"):SetText(nil);
-		end
 		MoneyFrame_SetType("STATIC", moneyFrame);
+	end
+	if ( prefixText ) then
+		getglobal(name.."PrefixText"):SetText(prefixText);
+	else
+		getglobal(name.."PrefixText"):SetText(nil);
+	end
+	if ( suffixText ) then
+		getglobal(name.."SuffixText"):SetText(suffixText);
+	else
+		getglobal(name.."SuffixText"):SetText(nil);
 	end
 	if ( type ) then
 		MoneyFrame_SetType(type, moneyFrame);

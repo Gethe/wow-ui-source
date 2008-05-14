@@ -132,7 +132,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<FontString name="MacroFrameSelectedMacroName" frameStrata="HIGH" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<FontString name="MacroFrameSelectedMacroName" inherits="GameFontNormalLarge" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="256" y="16"/>
 					</Size>
