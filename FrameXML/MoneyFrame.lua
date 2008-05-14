@@ -339,49 +339,29 @@ function MoneyFrame_Update(frameName, money)
 		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "RIGHT", 0, 0);
 	end
 
+	-- make sure the copper button is in the right place
+	copperButton:ClearAllPoints();
+	copperButton:SetPoint("RIGHT", frameName, "RIGHT", -13, 0);
+
 	-- attach text now that denominations have been computed
 	local prefixText = getglobal(frameName.."PrefixText");
 	if ( prefixText ) then
-		if ( prefixText:GetText() ) then
-			local attachButton;
-			if ( goldButton:IsShown() ) then
-				attachButton = goldButton;
-			elseif ( silverButton:IsShown() ) then
-				attachButton = silverButton;
-			elseif ( copperButton:IsShown() ) then
-				attachButton = copperButton;
-			end
-
-			if ( attachButton ) then
-				width = width + prefixText:GetWidth();
-				prefixText:Show();
-				attachButton:SetPoint("LEFT", frameName.."PrefixText", "RIGHT", 0, 0);
-			else
-				prefixText:Hide();
-			end
+		if ( prefixText:GetText() and money > 0 ) then
+			prefixText:Show();
+			copperButton:ClearAllPoints();
+			copperButton:SetPoint("RIGHT", frameName.."PrefixText", "RIGHT", width, 0);
+			width = width + prefixText:GetWidth();
 		else
 			prefixText:Hide();
 		end
 	end
 	local suffixText = getglobal(frameName.."SuffixText");
 	if ( suffixText ) then
-		if ( suffixText:GetText() ) then
-			local attachButtonName;
-			if ( copperButton:IsShown() ) then
-				attachButtonName = "CopperButton";
-			elseif ( silverButton:IsShown() ) then
-				attachButtonName = "SilverButton";
-			elseif ( goldButton:IsShown() ) then
-				attachButtonName = "GoldButton";
-			end
-
-			if ( attachButtonName ) then
-				width = width + suffixText:GetWidth();
-				suffixText:Show();
-				suffixText:SetPoint("LEFT", frameName..attachButtonName, "RIGHT", 0, 0);
-			else
-				suffixText:Hide();
-			end
+		if ( suffixText:GetText() and money > 0 ) then
+			suffixText:Show();
+			suffixText:ClearAllPoints();
+			suffixText:SetPoint("LEFT", frameName.."CopperButton", "RIGHT", 0, 0);
+			width = width + suffixText:GetWidth();
 		else
 			suffixText:Hide();
 		end

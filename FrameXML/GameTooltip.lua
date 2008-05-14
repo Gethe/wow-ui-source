@@ -98,16 +98,8 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 		name = moneyFrame:GetName();
 		MoneyFrame_SetType("STATIC", moneyFrame);
 	end
-	if ( prefixText ) then
-		getglobal(name.."PrefixText"):SetText(prefixText);
-	else
-		getglobal(name.."PrefixText"):SetText(nil);
-	end
-	if ( suffixText ) then
-		getglobal(name.."SuffixText"):SetText(suffixText);
-	else
-		getglobal(name.."SuffixText"):SetText(nil);
-	end
+	getglobal(name.."PrefixText"):SetText(prefixText);
+	getglobal(name.."SuffixText"):SetText(suffixText);
 	if ( type ) then
 		MoneyFrame_SetType(type, moneyFrame);
 	end
@@ -120,7 +112,7 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 	end
 	MoneyFrame_Update(moneyFrame:GetName(), money);
 	frame:SetMinimumWidth(moneyFrame:GetWidth());
-	frame.hasMoney = 1 ;
+	frame.hasMoney = 1;
 end
 
 function GameTooltip_ClearMoney()
