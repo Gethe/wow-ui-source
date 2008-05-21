@@ -79,7 +79,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CoinPickupFrameLeft_Click();
+						CoinPickupFrameLeft_Click(self);
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\Arrow-Left-Up"/>
@@ -99,7 +99,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CoinPickupFrameRight_Click();
+						CoinPickupFrameRight_Click(self);
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\Arrow-Right-Up"/>
@@ -119,7 +119,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CoinPickupFrameOkay_Click();
+						CoinPickupFrameOkay_Click(self);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -136,7 +136,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CoinPickupFrameCancel_Click();
+						CoinPickupFrameCancel_Click(self);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -149,17 +149,17 @@
 				PlaySound("MONEYFRAMEOPEN");
 			</OnShow>
 			<OnHide>
-				CoinPickupFrame_OnHide();
+				CoinPickupFrame_OnHide(self);
 				PlaySound("MONEYFRAMECLOSE");
 			</OnHide>
 			<OnChar>
-				CoinPickupFrame_OnChar();
+				CoinPickupFrame_OnChar(self, text);
 			</OnChar>
 			<OnKeyDown>
-				CoinPickupFrame_OnKeyDown();
+				CoinPickupFrame_OnKeyDown(self, key);
 			</OnKeyDown>
 			<OnKeyUp>
-				CoinPickupFrame_OnKeyUp();
+				CoinPickupFrame_OnKeyUp(self, key);
 			</OnKeyUp>
 		</Scripts>
 	</Frame>

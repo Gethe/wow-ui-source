@@ -89,8 +89,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("STATIC");
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -632,8 +632,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								SmallMoneyFrame_OnLoad();
-								MoneyFrame_SetType("STATIC");
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "STATIC");
 							</OnLoad>
 						</Scripts>
 					</Frame>

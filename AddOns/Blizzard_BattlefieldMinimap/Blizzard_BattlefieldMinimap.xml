@@ -380,7 +380,7 @@
 			</Anchors>
 			<Scripts>
 				<OnClick>
-					SHOW_BATTLEFIELD_MINIMAP = "0";
+					SetCVar("showBattlefieldMinimap", "0");
 					HideUIPanel(this:GetParent());
 					WorldMapZoneMinimapDropDown_Update();
 				</OnClick>

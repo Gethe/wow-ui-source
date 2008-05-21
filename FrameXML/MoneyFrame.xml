@@ -131,13 +131,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				MoneyFrame_OnLoad();
+				MoneyFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				MoneyFrame_OnEvent();
+				MoneyFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				MoneyFrame_UpdateMoney();
+				MoneyFrame_UpdateMoney(self);
 			</OnShow>
 			<OnHide>
 				if ( this.hasPickup == 1 ) then
@@ -278,13 +278,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				SmallMoneyFrame_OnLoad();
+				SmallMoneyFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				MoneyFrame_OnEvent();
+				MoneyFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				MoneyFrame_UpdateMoney();
+				MoneyFrame_UpdateMoney(self);
 			</OnShow>
 			<OnHide>
 				if ( this.hasPickup == 1 ) then

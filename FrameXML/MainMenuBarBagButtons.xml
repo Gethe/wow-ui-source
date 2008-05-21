@@ -28,36 +28,36 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PaperDollItemSlotButton_OnLoad();
-				this:RegisterEvent("BAG_UPDATE");
-				this.isBag = 1;
-				this.UpdateTooltip = BagSlotButton_OnEnter;
+				PaperDollItemSlotButton_OnLoad(self);
+				self:RegisterEvent("BAG_UPDATE");
+				self.isBag = 1;
+				self.UpdateTooltip = BagSlotButton_OnEnter;
 			</OnLoad>
 			<OnEvent>
 				if ( event == "BAG_UPDATE" ) then
-					PaperDollItemSlotButton_Update();
-					return;
+					PaperDollItemSlotButton_Update(self);
+				else
+					PaperDollItemSlotButton_OnEvent(self, event, ...);
 				end
-				PaperDollItemSlotButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				PaperDollItemSlotButton_OnShow();
+				PaperDollItemSlotButton_OnShow(self);
 			</OnShow>
 			<OnHide>
-				PaperDollItemSlotButton_OnHide();
+				PaperDollItemSlotButton_OnHide(self);
 			</OnHide>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					BagSlotButton_OnModifiedClick();
+					BagSlotButton_OnModifiedClick(self, button);
 				else
-					BagSlotButton_OnClick();
+					BagSlotButton_OnClick(self, button);
 				end
 			</OnClick>
 			<OnDragStart>
-				BagSlotButton_OnDrag();
+				BagSlotButton_OnDrag(self);
 			</OnDragStart>
 			<OnReceiveDrag>
-				BagSlotButton_OnClick();
+				BagSlotButton_OnClick(self, button);
 			</OnReceiveDrag>
 			<OnEnter>
 				BagSlotButton_OnEnter(self);
@@ -93,21 +93,21 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
-				this:RegisterEvent("PLAYER_ENTERING_WORLD");
-				this:RegisterEvent("CVAR_UPDATE");
-				this:RegisterEvent("BAG_UPDATE");
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
+				self:RegisterEvent("CVAR_UPDATE");
+				self:RegisterEvent("BAG_UPDATE");
 			</OnLoad>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					BackpackButton_OnModifiedClick();
+					BackpackButton_OnModifiedClick(self, button);
 				else
-					BackpackButton_OnClick();
+					BackpackButton_OnClick(self, button);
 				end
 			</OnClick>
 			<OnReceiveDrag>
-				BackpackButton_OnClick();
+				BackpackButton_OnClick(self, button);
 			</OnReceiveDrag>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -186,8 +186,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:SetID(KEYRING_CONTAINER);
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:SetID(KEYRING_CONTAINER);
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick>
 				if (CursorHasItem()) then
@@ -202,7 +202,7 @@
 				end
 			</OnReceiveDrag>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(KEYRING, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				GameTooltip:AddLine();
 			</OnEnter>

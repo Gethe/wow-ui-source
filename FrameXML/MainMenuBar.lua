@@ -172,7 +172,7 @@ end
 --KeyRing Functions
 
 function MainMenuBar_UpdateKeyRing()
-	if ( SHOW_KEYRING == 1 ) then
+	if ( GetCVarBool("showKeyring") ) then
 		MainMenuBarTexture3:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-KeyRing");
 		MainMenuBarTexture3:SetTexCoord(0, 1, 0.1640625, 0.5);
 		MainMenuBarTexture2:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-KeyRing");

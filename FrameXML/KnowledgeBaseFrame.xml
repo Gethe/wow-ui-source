@@ -62,19 +62,19 @@
 				KnowledgeBaseArticleListItem_OnClick();
 			</OnClick>
 			<OnEnter>
-				KnowledgeBaseArticleListItem_OnEnter();
+				KnowledgeBaseArticleListItem_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				KnowledgeBaseArticleListItem_OnLeave();
+				KnowledgeBaseArticleListItem_OnLeave(self);
 			</OnLeave>
 			<OnUpdate>
-				KnowledgeBaseArticleListItem_OnUpdate(arg1);
+				KnowledgeBaseArticleListItem_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
 
-	<Frame name="KnowledgeBaseFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+	<Frame name="KnowledgeBaseFrame" parent="HelpFrame" setAllPoints="true" hidden="true">
 		<Size>
 			<AbsDimension x="640" y="512"/>
 		</Size>
@@ -89,64 +89,6 @@
 			<AbsInset left="0" right="44" top="0" bottom="13"/>
 		</HitRectInsets>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-Top">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="256" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="256" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="KnowledgeBaseFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
@@ -207,7 +149,7 @@
 						KnowledgeBaseFrame_LoadTopIssues();
 					</OnClick>
 					<OnUpdate>
-						SearchButton_OnUpdate(arg1);
+						SearchButton_OnUpdate(self, elapsed);
 					</OnUpdate>
 				</Scripts>
 			</Button>
@@ -243,7 +185,7 @@
 						KnowledgeBaseMotdTextFrame_OnEnter();
 					</OnEnter>
 					<OnUpdate>
-						KnowledgeBaseMotdTextFrame_OnUpdate(arg1);
+						KnowledgeBaseMotdTextFrame_OnUpdate(self, elapsed);
 					</OnUpdate>
 					<OnLeave>
 						KnowledgeBaseMotdTextFrame_OnLeave();
@@ -282,7 +224,7 @@
 						KnowledgeBaseServerMessageTextFrame_OnEnter();
 					</OnEnter>
 					<OnUpdate>
-						KnowledgeBaseServerMessageTextFrame_OnUpdate(arg1);
+						KnowledgeBaseServerMessageTextFrame_OnUpdate(self, elapsed);
 					</OnUpdate>
 					<OnLeave>
 						KnowledgeBaseServerMessageTextFrame_OnLeave();
@@ -317,13 +259,13 @@
 						end
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEscapePressed>
 					<OnEditFocusLost>
-						this:HighlightText(0, 0);
+						self:HighlightText(0, 0);
 					</OnEditFocusLost>
 					<OnEditFocusGained>
-						this:HighlightText();
+						self:HighlightText();
 					</OnEditFocusGained>
 				</Scripts>
 			</EditBox>
@@ -372,7 +314,7 @@
 						KnowledgeBaseFrame_Search(1);
 					</OnClick>
 					<OnUpdate>
-						SearchButton_OnUpdate(arg1);
+						SearchButton_OnUpdate(self, elapsed);
 					</OnUpdate>
 				</Scripts>
 			</Button>
@@ -705,16 +647,8 @@
 				</Layers>
 			</Frame>
 
-			<Button name="KnowledgeBaseFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-42" y="-3"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="KnowledgeBaseFrameOpenTicket" inherits="GameMenuButtonTemplate" text="HELP_TICKET_OPEN">
+			<Button name="KnowledgeBaseFrameGMTalk" inherits="GameMenuButtonTemplate" text="KBASE_GMTALK">
+				<Size x="150" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
@@ -724,55 +658,83 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						OpenHelpFrame();						
+						HelpFrame_ShowFrame("GMTalk");
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="KnowledgeBaseFrameOpenTicketCancel" inherits="GameMenuButtonTemplate" text="HELP_TICKET_ABANDON">
+			<Button name="KnowledgeBaseFrameReportIssue" inherits="GameMenuButtonTemplate" text="KBASE_REPORTISSUE">
+				<Size x="150" y="20"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
+					<Anchor point="LEFT" relativeTo="KnowledgeBaseFrameGMTalk" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-51" y="21"/>
+							<AbsDimension x="0" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(KnowledgeBaseFrame);
-						StaticPopup_Show("HELP_TICKET_ABANDON_CONFIRM");					
+						HelpFrame_ShowFrame("ReportIssue");
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="KnowledgeBaseFrameOpenTicketEdit" inherits="GameMenuButtonTemplate" text="HELP_TICKET_EDIT">
+			<Button name="KnowledgeBaseFrameStuck" inherits="GameMenuButtonTemplate" text="KBASE_CHARSTUCK">
+				<Size x="150" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="KnowledgeBaseFrameOpenTicketCancel" relativePoint="TOPLEFT">
+					<Anchor point="LEFT" relativeTo="KnowledgeBaseFrameReportIssue" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="3" y="0"/>
+							<AbsDimension x="0" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(KnowledgeBaseFrame);
-						ShowUIPanel(HelpFrame);
+						HelpFrame_ShowFrame("Stuck");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="KnowledgeBaseFrameOpenTicketEdit" inherits="GameMenuButtonTemplate" text="HELP_TICKET_EDIT" hidden="true">
+				<Size x="150" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="12" y="21"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
 						HelpFrame_ShowFrame("OpenTicket");
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="KnowledgeBaseFrameOpenTicketCancel" inherits="GameMenuButtonTemplate" text="HELP_TICKET_ABANDON" hidden="true">
+				<Size x="150" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="KnowledgeBaseFrameOpenTicketEdit" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(HelpFrame);
+						StaticPopup_Show("HELP_TICKET_ABANDON_CONFIRM");					
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="KnowledgeBaseFrameCancel" inherits="HelpFrameCancelButtonTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				KnowledgeBaseFrame_OnLoad();
+				KnowledgeBaseFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				KnowledgeBaseFrame_OnShow();
 			</OnShow>
 			<OnEvent>
-				KnowledgeBaseFrame_OnEvent();
+				KnowledgeBaseFrame_OnEvent(self, event, ...);
 			</OnEvent>
-			<OnHide>
-				KnowledgeBaseFrame_OnHide();
-			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

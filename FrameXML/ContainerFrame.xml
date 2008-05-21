@@ -122,6 +122,19 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<Texture name="$parentBackground1Slot" file="Interface\ContainerFrame\UI-Bag-1Slot" hidden="true">
+					<Size>
+						<AbsDimension x="99" y="74"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.7734375" top="0" bottom="0.578125"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

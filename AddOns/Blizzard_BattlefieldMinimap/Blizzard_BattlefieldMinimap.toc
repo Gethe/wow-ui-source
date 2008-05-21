@@ -1,4 +1,4 @@
-## Interface: 20400
+## Interface: 30000
 ## Title: Blizzard Battlefield Minimap
 ## Secure: 1
 ## LoadOnDemand: 1

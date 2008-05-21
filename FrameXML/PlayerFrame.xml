@@ -210,7 +210,7 @@
 						</Anchors>
 						<Scripts>
 							<OnUpdate>
-								VoiceChat_OnUpdate(arg1);
+								VoiceChat_OnUpdate(self, elapsed);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -227,7 +227,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel() +2);
+								self:SetFrameLevel(self:GetFrameLevel() + 2);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -240,7 +240,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(this.tooltipTitle, 1.0, 1.0, 1.0, this.tooltipText, 1);
+								GameTooltip_AddNewbieTip(self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -287,7 +287,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel()+3);
+								self:SetFrameLevel(self:GetFrameLevel() + 3);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -309,8 +309,8 @@
 						</Layers>
 						<Scripts>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-								GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 							</OnEnter>						
 							<OnLeave>
 								GameTooltip:Hide();
@@ -332,16 +332,16 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize();
-						this.textLockable = 1;
-						this.cvar = "playerStatusText";
-						this.cvarLabel = "STATUS_TEXT_PLAYER";
+						TextStatusBar_Initialize(self);
+						self.textLockable = 1;
+						self.cvar = "playerStatusText";
+						self.cvarLabel = "STATUS_TEXT_PLAYER";
 					</OnLoad>
 					<OnMouseUp>
-						this:GetParent():Click(button);
+						self:GetParent():Click(button);
 					</OnMouseUp>
 					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(arg1);
+						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -359,13 +359,13 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize();
-						this.textLockable = 1;
-						this.cvar = "playerStatusText";
-						this.cvarLabel = "STATUS_TEXT_PLAYER";
+						TextStatusBar_Initialize(self);
+						self.textLockable = 1;
+						self.cvar = "playerStatusText";
+						self.cvarLabel = "STATUS_TEXT_PLAYER";
 					</OnLoad>
 					<OnMouseUp>
-						this:GetParent():Click(button);
+						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -384,7 +384,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						PlayerFrameDropDown_OnLoad();
+						PlayerFrameDropDown_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -452,25 +452,25 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				UnitFrame_Initialize("player", PlayerName, PlayerPortrait,
+				UnitFrame_Initialize(self, "player", PlayerName, PlayerPortrait,
 									 PlayerFrameHealthBar, PlayerFrameHealthBarText, 
 									 PlayerFrameManaBar, PlayerFrameManaBarText);
-				PlayerFrame_OnLoad();
+				PlayerFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				PlayerFrame_OnEvent(event);
+				PlayerFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				PlayerFrame_OnUpdate(arg1);
+				PlayerFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnEnter>
 				UnitFrame_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				UnitFrame_OnLeave();
+				UnitFrame_OnLeave(self);
 			</OnLeave>
 			<OnReceiveDrag>
-				PlayerFrame_OnReceiveDrag();
+				PlayerFrame_OnReceiveDrag(self);
 			</OnReceiveDrag>
 		</Scripts>
 	</Button>

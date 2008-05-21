@@ -96,7 +96,7 @@
 				</Layers>
 				<Scripts>
                      <OnLoad>
-                        this:SetFrameLevel(this:GetFrameLevel() + 2);
+                        self:SetFrameLevel(self:GetFrameLevel() + 2);
                     </OnLoad>
                 </Scripts>
 			</Frame>
@@ -178,7 +178,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								ArenaRegistrar_ShowPurchaseFrame(2);
+								ArenaRegistrar_ShowPurchaseFrame(self, 2);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -188,7 +188,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								ArenaRegistrar_ShowPurchaseFrame(3);
+								ArenaRegistrar_ShowPurchaseFrame(self, 3);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -198,7 +198,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								ArenaRegistrar_ShowPurchaseFrame(5);
+								ArenaRegistrar_ShowPurchaseFrame(self, 5);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -212,7 +212,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								ArenaRegistrar_TurnInPetition(2);
+								ArenaRegistrar_TurnInPetition(self, 2);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -222,7 +222,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								ArenaRegistrar_TurnInPetition(3);
+								ArenaRegistrar_TurnInPetition(self, 3);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -232,7 +232,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								ArenaRegistrar_TurnInPetition(5);
+								ArenaRegistrar_TurnInPetition(self, 5);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -275,8 +275,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								MoneyFrame_OnLoad();
-								MoneyFrame_SetType("STATIC");
+								MoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "STATIC");
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -375,18 +375,18 @@
  		</Frames>
 		<Scripts>
 			<OnLoad>
-				ArenaRegistrar_OnLoad();
+				ArenaRegistrar_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				ArenaRegistrar_OnEvent();
+				ArenaRegistrar_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				ArenaRegistrar_OnShow();
+				ArenaRegistrar_OnShow(self);
 				PlaySound("igQuestListOpen");
 			</OnShow>
 			<OnHide>
 				PlaySound("igQuestListClose");
-				if ( not this.dontClose ) then
+				if ( not self.dontClose ) then
 					ClosePetitionVendor();
 				end
 			</OnHide>
@@ -457,7 +457,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PVPBannerCustomization_Left(this:GetParent():GetID());
+						PVPBannerCustomization_Left(self:GetParent():GetID());
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -478,7 +478,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PVPBannerCustomization_Right(this:GetParent():GetID());
+						PVPBannerCustomization_Right(self:GetParent():GetID());
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
@@ -858,7 +858,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PVPBannerFrame_OpenColorPicker(this, PVPBannerFrameStandardEmblem);
+								PVPBannerFrame_OpenColorPicker(self, PVPBannerFrameStandardEmblem);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -875,7 +875,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PVPBannerFrame_OpenColorPicker(this, PVPBannerFrameStandardBorder);
+								PVPBannerFrame_OpenColorPicker(self, PVPBannerFrameStandardBorder);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -892,7 +892,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PVPBannerFrame_OpenColorPicker(this, PVPBannerFrameStandardBanner);
+								PVPBannerFrame_OpenColorPicker(self, PVPBannerFrameStandardBanner);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -909,10 +909,10 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel() + 1);
+								self:SetFrameLevel(self:GetFrameLevel() + 1);
 							</OnLoad>
 							<OnClick>
-								HideUIPanel(this:GetParent());
+								HideUIPanel(self:GetParent());
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -929,7 +929,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								-- PVPBannerFrame_SaveDesign();
+								
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -948,7 +948,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PVPBannerFrame_SaveBanner();
+						PVPBannerFrame_SaveBanner(self);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -965,7 +965,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>	
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -981,7 +981,7 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				PVPBannerFrame_OnShow();
+				PVPBannerFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
 				HideUIPanel(ColorPickerFrame);
@@ -989,7 +989,7 @@
 			</OnHide>
 			<OnKeyDown>
 				if (arg1 == "ESCAPE") then
-					HideUIPanel(this);
+					HideUIPanel(self);
 				end
 			</OnKeyDown>
 	</Scripts>

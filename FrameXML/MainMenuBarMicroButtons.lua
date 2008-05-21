@@ -67,7 +67,7 @@ function UpdateMicroButtons()
 		LFGMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( HelpFrame:IsShown() or KnowledgeBaseFrame:IsShown() ) then
+	if ( HelpFrame:IsShown() ) then
 		HelpMicroButton:SetButtonState("PUSHED", 1);
 	else
 		HelpMicroButton:SetButtonState("NORMAL");

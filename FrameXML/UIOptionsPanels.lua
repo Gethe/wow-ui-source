@@ -9,9 +9,9 @@ ControlsPanelOptions = {
 	gxFixLag = { text = "FIX_LAG" },
 	autoDismountFlying = { text = "AUTO_DISMOUNT_FLYING_TEXT" },
 	autoClearAFK = { text = "CLEAR_AFK" },
-	BlockTrades = { text="BLOCK_TRADES" },
+	blockTrades = { text="BLOCK_TRADES" },
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
-	autoLootCorpse = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
+	autoLootDefault = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text="AUTO_LOOT_KEY_TEXT", default="NONE" },
 }
 
@@ -41,7 +41,7 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, 
 			function (self)
 				return UIDropDownMenu_GetSelectedValue(self);
 			end
-		if ( GetCVar("autoLootCorpse") == "1" ) then
+		if ( GetCVar("autoLootDefault") == "1" ) then
 			InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(LOOT_KEY_TEXT);
 		else
 			InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(AUTO_LOOT_KEY_TEXT);
@@ -126,8 +126,8 @@ CombatPanelOptions = {
 	autoSelfCast = { text = "AUTO_SELF_CAST_TEXT" },
 	stopAutoAttackOnTargetChange = { text = "STOP_AUTO_ATTACK" },
 	showTargetOfTarget = { text = "SHOW_TARGET_OF_TARGET_TEXT" },
-	ShowTargetCastbar = { text = "SHOW_TARGET_CASTBAR" },
-	ShowVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY" },
+	showTargetCastbar = { text = "SHOW_TARGET_CASTBAR" },
+	showVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY" },
 }
 
 function InterfaceOptionsCombatPanelTOTDropDown_OnLoad()
@@ -232,7 +232,7 @@ DisplayPanelOptions = {
 
 function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad (self)
 	UIDropDownMenu_Initialize(InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay, InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_Initialize);
-	UIDropDownMenu_SetWidth(90, UIOptionsWorldPVPObjectiveDisplay);
+	UIDropDownMenu_SetWidth(90, self);
 	local value = GetCVar("displayWorldPVPObjectives");
 	self.defaultValue = "1";
 	self.value = value;
@@ -312,8 +312,8 @@ QuestPanelOptions = {
 
 SocialPanelOptions = {
 	profanityFilter = { text = "PROFANITY_FILTER" },
-	ChatBubbles = { text="CHAT_BUBBLES_TEXT" },
-	ChatBubblesParty = { text="PARTY_CHAT_BUBBLES_TEXT" },
+	chatBubbles = { text="CHAT_BUBBLES_TEXT" },
+	chatBubblesParty = { text="PARTY_CHAT_BUBBLES_TEXT" },
 	spamFilter = { text="DISABLE_SPAM_FILTER" },
 	removeChatDelay = { text="REMOVE_CHAT_DELAY_TEXT" },
 	guildMemberNotify = { text="GUILDMEMBER_ALERT" },
@@ -382,6 +382,25 @@ function InterfaceOptionsActionBarsPanel_OnEvent (self, event, ...)
 		MultiActionBar_Update();
 		UIParent_ManageFramePositions();
 
+		--This is straight out of BlizzardOptionsPanel_OnEvent and needs to mirror what it does for PLAYER_ENTERING_WORLD.
+		for i, control in next, self.controls do
+			if ( control.cvar ) then
+				if ( control.type == CONTROLTYPE_CHECKBOX ) then			
+					value = GetCVar(control.cvar);
+					control.currValue = value;
+					control.value = value;
+					if ( control.uvar ) then
+						setglobal(control.uvar, value);
+					end
+					
+					control.GetValue = function(self) return GetCVar(self.cvar); end
+					control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
+				elseif ( control.type == CONTROLTYPE_SLIDER ) then
+					control.currValue = GetCVar(control.cvar);
+				end
+			end
+		end
+		
 		for _, control in next, self.controls do
 			if ( control.setFunc ) then
 				control.setFunc(control.value);
@@ -568,8 +587,8 @@ PartyRaidPanelOptions = {
 	showPartyBackground = { text = "SHOW_PARTY_BACKGROUND_TEXT" },
 	hidePartyInRaid = { text = "HIDE_PARTY_INTERFACE_TEXT" },
 	showPartyPets = { text = "SHOW_PARTY_PETS_TEXT" },
-	showPartyDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
-	showPartyBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },
+	showDispelDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
+	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },
 	showRaidRange = { text = "SHOW_RAID_RANGE_TEXT" },
 }
 
@@ -598,15 +617,21 @@ CameraPanelOptions = {
 	cameraDistanceMaxFactor = { text = "MAX_FOLLOW_DIST", minValue = 1, maxValue = 2, valueStep = 0.1 },
 }
 
-function InterfaceOptionsCameraPanelStyleDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, InterfaceOptionsCameraPanelStyleDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(this, GetCVar("cameraSmoothStyle"));
+function InterfaceOptionsCameraPanelStyleDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, InterfaceOptionsCameraPanelStyleDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, GetCVar("cameraSmoothStyle"));
 	InterfaceOptionsCameraPanelStyleDropDown.tooltip = getglobal("OPTION_TOOLTIP_CAMERA"..UIDropDownMenu_GetSelectedID(InterfaceOptionsCameraPanelStyleDropDown));
 	UIDropDownMenu_SetWidth(144, InterfaceOptionsCameraPanelStyleDropDown);
-	this.defaultValue = "1";
-	this.value = GetCVar("cameraSmoothStyle");
-	this.currValue = this.value;
-	this.SetValue = 
+	self.defaultValue = "1";
+	self.value = GetCVar("cameraSmoothStyle");
+	self.currValue = self.value;
+	
+	if ( tostring(self.value) == "0" ) then
+		OptionsFrame_DisableSlider(InterfaceOptionsCameraPanelFollowSpeedSlider);
+		InterfaceOptionsCameraPanelFollowTerrain:Disable();
+	end
+	
+	self.SetValue = 
 		function (self, value)
 			UIDropDownMenu_SetSelectedValue(self, value);
 			SetCVar("cameraSmoothStyle", value, self.event);
@@ -615,12 +640,14 @@ function InterfaceOptionsCameraPanelStyleDropDown_OnLoad()
 				--For the purposes of tooltips and the dropdown list, value "0" in the CVar cameraSmoothStyle is actually "3".
 				InterfaceOptionsCameraPanelStyleDropDown.tooltip = OPTION_TOOLTIP_CAMERA3;
 				OptionsFrame_DisableSlider(InterfaceOptionsCameraPanelFollowSpeedSlider);
+				InterfaceOptionsCameraPanelFollowTerrain:Disable();
 			else
 				InterfaceOptionsCameraPanelStyleDropDown.tooltip = getglobal("OPTION_TOOLTIP_CAMERA" .. tostring(value));
 				OptionsFrame_EnableSlider(InterfaceOptionsCameraPanelFollowSpeedSlider);
+				InterfaceOptionsCameraPanelFollowTerrain:Enable();
 			end	
 		end
-	this.GetValue =
+	self.GetValue =
 		function (self)
 			return UIDropDownMenu_GetSelectedValue(self);
 		end
@@ -676,7 +703,7 @@ end
 MousePanelOptions = {
 	mouseInvertPitch = { text = "INVERT_MOUSE" },
 	autointeract = { text = "CLICK_TO_MOVE" },
-	mousespeed = { text = "MOUSE_SENSITIVITY", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 },
+	mouseSpeed = { text = "MOUSE_SENSITIVITY", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 },
 	cameraYawMoveSpeed = { text = "MOUSE_LOOK_SPEED", minValue = 90, maxValue = 270, valueStep = 10 },
 }
 
@@ -848,6 +875,21 @@ local NO_KEY = "none";
 function BlizzardOptionsPanel_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		for i, control in next, self.controls do
+			if ( control.cvar ) then
+				if ( control.type == CONTROLTYPE_CHECKBOX ) then			
+					value = GetCVar(control.cvar);
+					control.currValue = value;
+					control.value = value;
+					if ( control.uvar ) then
+						setglobal(control.uvar, value);
+					end
+					
+					control.GetValue = function(self) return GetCVar(self.cvar); end
+					control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
+				elseif ( control.type == CONTROLTYPE_SLIDER ) then
+					control.currValue = GetCVar(control.cvar);
+				end
+			end
 			if ( control.setFunc ) then
 				control.setFunc(control.value);
 			end
@@ -877,7 +919,7 @@ function BlizzardOptionsPanel_OnLoad (frame)
 				if ( control.cvar ) then
 					control.defaultValue = GetCVarDefault(control.cvar);
 				else
-					control.defaultValue = control.defaultValue or entry.default;
+				control.defaultValue = control.defaultValue or entry.default;
 				end
 				
 				control.event = entry.event or entry.text;
@@ -976,19 +1018,7 @@ function BlizzardOptionsPanel_RegisterControl (control, parentFrame)
 	
 	local value;
 	if ( control.cvar ) then
-		if ( control.type == CONTROLTYPE_CHECKBOX ) then
-			value = GetCVar(control.cvar);
-			control.currValue = value;
-			control.value = value;
-			if ( control.uvar ) then
-				setglobal(control.uvar, value);
-			end
-			
-			control.GetValue = function(self) return GetCVar(self.cvar); end
-			control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
-		elseif ( control.type == CONTROLTYPE_SLIDER ) then
-			control.currValue = GetCVar(control.cvar);
-		end
+		-- Don't do anything here any more, just wait.
 	elseif ( control.GetValue ) then
 		if ( control.type == CONTROLTYPE_CHECKBOX ) then
 			value = ((control:GetValue() and "1") or "0");

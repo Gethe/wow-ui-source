@@ -9,12 +9,12 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
-				if ( HandleModifiedItemClick(GetGuildBankItemLink(GetCurrentGuildBankTab(), this:GetID())) ) then
+				if ( HandleModifiedItemClick(GetGuildBankItemLink(GetCurrentGuildBankTab(), self:GetID())) ) then
 					return;
 				end
 				if ( IsModifiedClick("SPLITSTACK") ) then
-					if ( not this.locked ) then
-						OpenStackSplitFrame(this.count, this, "BOTTOMLEFT", "TOPLEFT");
+					if ( not self.locked ) then
+						OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 					end
 					return;
 				end
@@ -27,40 +27,40 @@
 					ClearCursor();
 				else
 				  if ( button == "RightButton" ) then
-					AutoStoreGuildBankItem(GetCurrentGuildBankTab(), this:GetID());
+					AutoStoreGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
 				  else
-							  PickupGuildBankItem(GetCurrentGuildBankTab(), this:GetID());
+							  PickupGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
 				  end
 				end
 			</OnClick>
 			<OnLoad>
-				GuildBankItemButton_OnLoad();
+				GuildBankItemButton_OnLoad(self);
 			</OnLoad>
 			<OnEnter>
-				GuildBankItemButton_OnEnter();
+				GuildBankItemButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				this.updateTooltip = nil;
+				self.updateTooltip = nil;
 				GameTooltip:Hide();
 				ResetCursor();
 			</OnLeave>
 			<OnHide>
-				if ( this.hasStackSplit and (this.hasStackSplit == 1) ) then
+				if ( self.hasStackSplit and (self.hasStackSplit == 1) ) then
 					StackSplitFrame:Hide();
 				end
 			</OnHide>
 			<OnDragStart>
-				PickupGuildBankItem(GetCurrentGuildBankTab(), this:GetID());
+				PickupGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
 			</OnDragStart>
 			<OnReceiveDrag>
-				PickupGuildBankItem(GetCurrentGuildBankTab(), this:GetID());
+				PickupGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
 			</OnReceiveDrag>
 			<OnUpdate>
-				--GuildBankItemButton_OnUpdate(arg1);
+				--GuildBankItemButton_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnEvent>
-				if ( GameTooltip:IsOwned(this) ) then
-					GuildBankItemButton_OnEnter();
+				if ( GameTooltip:IsOwned(self) ) then
+					GuildBankItemButton_OnEnter(self);
 				end
 			</OnEvent>
 		</Scripts>
@@ -224,18 +224,18 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnClick>
-						local currentTab = this:GetParent():GetID();
-						if ( GetCurrentGuildBankTab() ~= currentTab or arg1 == "RightButton" ) then
+						local currentTab = self:GetParent():GetID();
+						if ( GetCurrentGuildBankTab() ~= currentTab or button == "RightButton" ) then
 							PlaySound("GuildBankOpenBag");
 						end
-						GuildBankTab_OnClick(arg1, currentTab);
+						GuildBankTab_OnClick(self, button, currentTab);
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_LEFT");
-						GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -262,7 +262,7 @@
 	<CheckButton name="GuildBankPopupButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				GuildBankPopupButton_OnClick();	
+				GuildBankPopupButton_OnClick(self, button);	
 			</OnClick>
 		</Scripts>
 	</CheckButton>
@@ -736,7 +736,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad("GUILDBANK");
+						SmallMoneyFrame_OnLoad(self, "GUILDBANK");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -748,7 +748,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad("GUILDBANKWITHDRAW");
+						SmallMoneyFrame_OnLoad(self, "GUILDBANKWITHDRAW");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -809,14 +809,14 @@
 				</Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
-						GuildBankFrameTab_OnClick(this:GetID());
+						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
                 </Scripts>
             </Button>
@@ -830,14 +830,14 @@
                 </Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
-						GuildBankFrameTab_OnClick(this:GetID());
+						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
                 </Scripts>
             </Button>
@@ -851,14 +851,14 @@
                 </Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
-						GuildBankFrameTab_OnClick(this:GetID());
+						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
                 </Scripts>
             </Button>
@@ -872,14 +872,14 @@
                 </Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
-						GuildBankFrameTab_OnClick(this:GetID());
+						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
                 </Scripts>
             </Button>
@@ -971,8 +971,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								SmallMoneyFrame_OnLoad();
-								MoneyFrame_SetType("STATIC");
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "STATIC");
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -995,7 +995,7 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						GuildBankFrame_UpdateTabBuyingInfo();
+						GuildBankFrame_UpdateTabBuyingInfo(self);
 					</OnShow>
 				</Scripts>
 			</Frame>
@@ -1020,7 +1020,7 @@
 						</Anchors>
 						<Scripts>
 							<OnHyperlinkClick>
-								SetItemRef(arg1, arg2, arg3);
+								SetItemRef(link, text, button);
 							</OnHyperlinkClick>
 						</Scripts>
 						<FontString inherits="ChatFontNormal" justifyH="LEFT"/>
@@ -1093,7 +1093,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetWidth(getglobal(this:GetName().."Text"):GetWidth()+40);
+								self:SetWidth(getglobal(self:GetName().."Text"):GetWidth()+40);
 							</OnLoad>
 							<OnClick>
 								if ( GuildBankTabInfoEditBox:GetText() ) then
@@ -1136,15 +1136,15 @@
 								</Size>
 								<Scripts>
 									<OnEscapePressed>
-										this:ClearFocus();
+										self:ClearFocus();
 									</OnEscapePressed>
 									<OnTextChanged>
-										local scrollBar = getglobal(this:GetParent():GetName().."ScrollBar")
+										local scrollBar = getglobal(self:GetParent():GetName().."ScrollBar")
 										local min;
 										local max;
 										min, max = scrollBar:GetMinMaxValues();
 										if ( max > 0 and (this.max ~= max) ) then
-											this.max = max;
+											self.max = max;
 											scrollBar:SetValue(max);
 										end
 										local currentTab = GetCurrentGuildBankTab();
@@ -1171,13 +1171,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				GuildBankFrame_OnLoad();
+				GuildBankFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				GuildBankFrame_OnEvent(event);
+				GuildBankFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				GuildBankFrame_OnShow();
+				GuildBankFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
 				GuildBankPopupFrame:Hide();
@@ -1302,11 +1302,11 @@
 				</Layers>
 				<Scripts>
 					<OnEscapePressed>
-						GuildBankPopupFrame_CancelEdit();
+						GuildBankPopupFrame_CancelEdit(self);
 					</OnEscapePressed>
 					<OnEnterPressed>
 						if ( GuildBankPopupOkayButton:IsEnabled() ~= 0 ) then
-							GuildBankPopupOkayButton_OnClick();
+							GuildBankPopupOkayButton_OnClick(self);
 						end
 						GuildBankPopupEditBox:ClearFocus();
 					</OnEnterPressed>
@@ -1451,7 +1451,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						GuildBankPopupFrame_CancelEdit()
+						GuildBankPopupFrame_CancelEdit(self)
 						PlaySound("gsTitleOptionOK");
 					</OnClick>
 				</Scripts>
@@ -1469,7 +1469,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						GuildBankPopupOkayButton_OnClick();
+						GuildBankPopupOkayButton_OnClick(self);
 						PlaySound("gsTitleOptionOK");
 					</OnClick>
 				</Scripts>
@@ -1477,7 +1477,7 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				GuildBankPopupFrame_OnShow();
+				GuildBankPopupFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
 				PlaySound("igCharacterInfoTab");

@@ -7,16 +7,17 @@
 		</Size>
 		<Scripts>
 			<OnLoad>
-				getglobal(this:GetName().."Border"):SetWidth(13);
-				getglobal(this:GetName().."Border"):SetHeight(13);
+				local border = getglobal(self:GetName().."Border");
+				border:SetWidth(13);
+				border:SetHeight(13);
 			</OnLoad>
 			<OnEnter>
-				if ( this:GetCenter() > GetScreenWidth()/2 ) then
-					GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				if ( self:GetCenter() > GetScreenWidth()/2 ) then
+					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 				else
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				end
-				GameTooltip:SetUnitDebuff(this:GetParent().unit, this:GetID(), SHOW_DISPELLABLE_DEBUFFS);
+				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), GetCVarBool("showDispelDebuffs"));
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -57,7 +58,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true" drawEdge="true" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER">
 						<Offset>
@@ -69,13 +70,13 @@
 		</Frames>
 		<Scripts>
 			<OnUpdate>
-				if ( GameTooltip:IsOwned(this) ) then
-					GameTooltip:SetUnitDebuff("target", this.id);
+				if ( GameTooltip:IsOwned(self) ) then
+					GameTooltip:SetUnitDebuff("target", self.id);
 				end
 			</OnUpdate>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT", 15, -25);
-				GameTooltip:SetUnitDebuff("target", this.id);
+				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
+				GameTooltip:SetUnitDebuff("target", self.id);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -103,7 +104,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true">
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true" drawEdge="true">
 				<Anchors>
 					<Anchor point="CENTER">
 						<Offset>
@@ -115,13 +116,13 @@
 		</Frames>
 		<Scripts>
 			<OnUpdate>
-				if ( GameTooltip:IsOwned(this) ) then
-					GameTooltip:SetUnitBuff("target", this.id);
+				if ( GameTooltip:IsOwned(self) ) then
+					GameTooltip:SetUnitBuff("target", self.id);
 				end
 			</OnUpdate>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT", 15, -25);
-				GameTooltip:SetUnitBuff("target", this.id);
+				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
+				GameTooltip:SetUnitBuff("target", self.id);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -319,7 +320,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TargetFrameDropDown_OnLoad();
+						TargetFrameDropDown_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -336,15 +337,15 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize();
-						this.textLockable = 1;
-						this.cvar = "targetStatusText";
-						this.cvarLabel = "STATUS_TEXT_TARGET";
-						this.zeroText = "";
+						TextStatusBar_Initialize(self);
+						self.textLockable = 1;
+						self.cvar = "targetStatusText";
+						self.cvarLabel = "STATUS_TEXT_TARGET";
+						self.zeroText = "";
 					</OnLoad>
 					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(arg1);
-						TargetHealthCheck();
+						UnitFrameHealthBar_OnValueChanged(self, value);
+						TargetHealthCheck(self, value);
 					</OnValueChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -362,10 +363,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize();
-						this.textLockable = 1;
-						this.cvar = "targetStatusText";
-						this.cvarLabel = "STATUS_TEXT_TARGET";
+						TextStatusBar_Initialize(self);
+						self.textLockable = 1;
+						self.cvar = "targetStatusText";
+						self.cvarLabel = "STATUS_TEXT_TARGET";
 					</OnLoad>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -384,13 +385,13 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						Target_Spellbar_AdjustPosition();
+						Target_Spellbar_AdjustPosition(self);
 					</OnShow>
 					<OnLoad>
-						Target_Spellbar_OnLoad();
+						Target_Spellbar_OnLoad(self);
 					</OnLoad>
 					<OnEvent>
-						Target_Spellbar_OnEvent();
+						Target_Spellbar_OnEvent(self, event, ...);
 					</OnEvent>
 				</Scripts>
 			</StatusBar>
@@ -407,27 +408,27 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				UnitFrame_Initialize("target", TargetName, TargetPortrait,
+				UnitFrame_Initialize(self, "target", TargetName, TargetPortrait,
 									 TargetFrameHealthBar, TargetFrameHealthBarText,
 									 TargetFrameManaBar, TargetFrameManaBarText);
-				this.noTextPrefix = true;
-				TargetFrame_OnLoad();
+				self.noTextPrefix = true;
+				TargetFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				TargetFrame_OnEvent(event);
+				TargetFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				TargetFrame_OnUpdate();
-				TargetFrame_HealthUpdate(arg1, "target");
+				TargetFrame_OnUpdate(self, elapsed);
+				TargetFrame_HealthUpdate(self, elapsed, "target");
 			</OnUpdate>
 			<OnHide>
-				TargetFrame_OnHide();
+				TargetFrame_OnHide(self);
 			</OnHide>
 			<OnEnter>
 				UnitFrame_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				UnitFrame_OnLeave();
+				UnitFrame_OnLeave(self);
 			</OnLeave>
 		</Scripts>
 	</Button>
@@ -505,7 +506,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						RaiseFrameLevel(this);
+						RaiseFrameLevel(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -522,7 +523,7 @@
 				</Anchors>
 				<Scripts>
 					<OnValueChanged>
-						TargetofTargetHealthCheck();
+						TargetofTargetHealthCheck(self, value);
 					</OnValueChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -581,19 +582,19 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				TargetofTarget_OnLoad();
+				TargetofTarget_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				TargetDebuffButton_Update();
+				TargetDebuffButton_Update(self);
 			</OnShow>
 			<OnHide>
-				TargetofTarget_OnHide();
+				TargetofTarget_OnHide(self);
 			</OnHide>
 			<OnEvent>
-				UnitFrame_OnEvent(event);
+				UnitFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				TargetofTarget_Update();
+				TargetofTarget_Update(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Button>

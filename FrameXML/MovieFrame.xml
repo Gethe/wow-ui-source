@@ -1,0 +1,51 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MovieFrame.lua"/>
+	<MovieFrame name="MovieFrame" setAllPoints="true" hidden="true" enableKeyboard="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="MovieFrameSubtitleString" inherits="MovieSubtitleFont" hidden="true">
+					<Size>
+						<AbsDimension x="800" y="138"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-630"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				MovieFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				MovieFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				MovieFrame_OnHide();
+			</OnHide>
+			<OnEvent>
+				MovieFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				MovieFrame_OnUpdate(arg1);
+			</OnUpdate>
+			<OnKeyUp>
+				MovieFrame_OnKeyUp();
+			</OnKeyUp>
+			<OnMovieFinished>
+				MovieFrame_OnMovieFinished();
+			</OnMovieFinished>
+			<OnMovieShowSubtitle>
+				MovieFrame_OnMovieShowSubtitle(arg1);
+			</OnMovieShowSubtitle>
+			<OnMovieHideSubtitle>
+				MovieFrame_OnMovieHideSubtitle();
+			</OnMovieHideSubtitle>
+		</Scripts>
+	</MovieFrame>
+</Ui>

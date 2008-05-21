@@ -274,7 +274,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				GameTooltip_OnLoad();
+				GameTooltip_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -307,24 +307,20 @@
 		</Backdrop> 
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("VARIABLES_LOADED");
-				this:SetFrameLevel(1);
-
-				PARTYBACKGROUND_OPACITY = 0.5;
-				RegisterForSave("PARTYBACKGROUND_OPACITY");
+				self:RegisterEvent("VARIABLES_LOADED");
 			</OnLoad>
 			<OnShow>
-				this:SetFrameLevel(1);
+				self:SetFrameLevel(1);
 			</OnShow>
 			<OnEvent>
 				if ( event == "VARIABLES_LOADED" ) then
 					UpdatePartyMemberBackground();
-					OpacityFrameSlider:SetValue(PARTYBACKGROUND_OPACITY);
+					OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
 					PartyMemberBackground_SetOpacity();
 				end
 			</OnEvent>
 			<OnMouseUp>
-				if ( arg1 == "RightButton" ) then
+				if ( button == "RightButton" ) then
 					PartyMemberBackground_ToggleOpacity();
 				end
 			</OnMouseUp>

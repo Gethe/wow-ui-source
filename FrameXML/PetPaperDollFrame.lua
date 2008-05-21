@@ -1,24 +1,24 @@
 NUM_PET_RESISTANCE_TYPES = 5;
 NUM_PET_STATS = 5;
 
-function PetPaperDollFrame_OnLoad()
-	this:RegisterEvent("PET_UI_UPDATE");
-	this:RegisterEvent("PET_BAR_UPDATE");
-	this:RegisterEvent("PET_UI_CLOSE");
-	this:RegisterEvent("UNIT_PET");
-	this:RegisterEvent("UNIT_PET_EXPERIENCE");
-	this:RegisterEvent("UNIT_MODEL_CHANGED");
-	this:RegisterEvent("UNIT_LEVEL");
-	this:RegisterEvent("UNIT_RESISTANCES");
-	this:RegisterEvent("UNIT_STATS");
-	this:RegisterEvent("UNIT_DAMAGE");
-	this:RegisterEvent("UNIT_RANGEDDAMAGE");
-	this:RegisterEvent("UNIT_ATTACK_SPEED");
-	this:RegisterEvent("UNIT_ATTACK_POWER");
-	this:RegisterEvent("UNIT_RANGED_ATTACK_POWER");
-	this:RegisterEvent("UNIT_DEFENSE");
-	this:RegisterEvent("UNIT_ATTACK");
-	this:RegisterEvent("UNIT_PET_TRAINING_POINTS");
+function PetPaperDollFrame_OnLoad (self)
+	self:RegisterEvent("PET_UI_UPDATE");
+	self:RegisterEvent("PET_BAR_UPDATE");
+	self:RegisterEvent("PET_UI_CLOSE");
+	self:RegisterEvent("UNIT_PET");
+	self:RegisterEvent("UNIT_PET_EXPERIENCE");
+	self:RegisterEvent("UNIT_MODEL_CHANGED");
+	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("UNIT_RESISTANCES");
+	self:RegisterEvent("UNIT_STATS");
+	self:RegisterEvent("UNIT_DAMAGE");
+	self:RegisterEvent("UNIT_RANGEDDAMAGE");
+	self:RegisterEvent("UNIT_ATTACK_SPEED");
+	self:RegisterEvent("UNIT_ATTACK_POWER");
+	self:RegisterEvent("UNIT_RANGED_ATTACK_POWER");
+	self:RegisterEvent("UNIT_DEFENSE");
+	self:RegisterEvent("UNIT_ATTACK");
+	self:RegisterEvent("UNIT_PET_TRAINING_POINTS");
 	PetDamageFrameLabel:SetText(DAMAGE_COLON);
 	PetAttackPowerFrameLabel:SetText(ATTACK_POWER_COLON);
 	PetArmorFrameLabel:SetText(ARMOR_COLON);
@@ -28,7 +28,8 @@ function PetPaperDollFrame_OnLoad()
 	PetTab_Update();
 end
 
-function PetPaperDollFrame_OnEvent()
+function PetPaperDollFrame_OnEvent (self, event, ...)
+	local arg1 = ...;
 	if ( event == "PET_UI_UPDATE" or event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") ) then
 		-- Needs to be an "IsVisible" check - Bug  ID: 86808
 		if ( PetPaperDollFrame:IsVisible() and not HasPetUI() ) then

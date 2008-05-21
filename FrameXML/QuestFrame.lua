@@ -305,9 +305,9 @@ function QuestTitleButton_OnClick()
 	PlaySound("igQuestListSelect");
 end
 
-function QuestMoneyFrame_OnLoad()
-	MoneyFrame_OnLoad();
-	MoneyFrame_SetType("STATIC");
+function QuestMoneyFrame_OnLoad (self)
+	MoneyFrame_OnLoad(self);
+	MoneyFrame_SetType(self, "STATIC");
 end
 
 function QuestHonorFrame_Update(honorFrame, honor)

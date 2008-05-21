@@ -26,17 +26,17 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				BuffButton_OnLoad();
+				BuffButton_OnLoad(self);
 			</OnLoad>
 			<OnUpdate>
-				BuffButton_OnUpdate();
+				BuffButton_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnClick>
-				BuffButton_OnClick();
+				BuffButton_OnClick(self, button);
 			</OnClick>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
-				GameTooltip:SetPlayerBuff(this:GetID());
+				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+				GameTooltip:SetPlayerBuff(self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -46,8 +46,8 @@
 	<Button name="BuffButtonHelpful" inherits="BuffButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				this.buffFilter = "HELPFUL";
-				BuffButton_OnLoad();
+				self.buffFilter = "HELPFUL";
+				BuffButton_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Button>
@@ -89,18 +89,18 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				BuffFrame_EnchantButton_OnLoad();
+				BuffFrame_EnchantButton_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
 			</OnEvent>
 			<OnUpdate>
-				BuffFrame_EnchantButton_OnUpdate();
+				BuffFrame_EnchantButton_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnClick>
-				BuffFrame_EnchantButton_OnClick();
+				BuffFrame_EnchantButton_OnClick(self, button);
 			</OnClick>
 			<OnEnter>
-				BuffFrame_EnchantButton_OnEnter();
+				BuffFrame_EnchantButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -121,13 +121,13 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				BuffFrame_OnLoad();
+				BuffFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				BuffFrame_OnEvent(event);
+				BuffFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				BuffFrame_OnUpdate(arg1);
+				BuffFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>
@@ -168,7 +168,7 @@
 				TempEnchant2Duration:SetPoint("TOP", "TempEnchant2", "BOTTOM", 0, 0);
 			</OnLoad>
 			<OnUpdate>
-				BuffFrame_Enchant_OnUpdate(arg1);
+				BuffFrame_Enchant_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

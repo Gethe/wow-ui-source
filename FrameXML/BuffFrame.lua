@@ -18,15 +18,15 @@ DebuffTypeColor["Disease"]	= { r = 0.60, g = 0.40, b = 0 };
 DebuffTypeColor["Poison"]	= { r = 0.00, g = 0.60, b = 0 };
 
 
-function BuffFrame_OnLoad()
+function BuffFrame_OnLoad (self)
 	BuffFrame.BuffFrameUpdateTime = 0;
 	BuffFrame.BuffFrameFlashTime = 0;
 	BuffFrame.BuffFrameFlashState = 1;
 	BuffFrame.BuffAlphaValue = 1;
-	this:RegisterEvent("PLAYER_AURAS_CHANGED");
+	self:RegisterEvent("PLAYER_AURAS_CHANGED");
 end
 
-function BuffFrame_OnEvent(event)
+function BuffFrame_OnEvent (self, event, ...)
 	if ( event == "PLAYER_AURAS_CHANGED" ) then
 		BuffFrame_Update();
 	end
@@ -132,7 +132,7 @@ end
 
 
 
-function BuffFrame_OnUpdate(elapsed)
+function BuffFrame_OnUpdate (self, elapsed)
 	if ( BuffFrame.BuffFrameUpdateTime > 0 ) then
 		BuffFrame.BuffFrameUpdateTime = BuffFrame.BuffFrameUpdateTime - elapsed;
 	else
@@ -162,39 +162,39 @@ function BuffFrame_OnUpdate(elapsed)
 	BuffFrame.BuffAlphaValue = (BuffFrame.BuffAlphaValue * (1 - BUFF_MIN_ALPHA)) + BUFF_MIN_ALPHA;
 end
 
-function BuffButton_OnLoad()
+function BuffButton_OnLoad (self)
 	-- Valid tokens for "buffFilter" include: HELPFUL, HARMFUL, CANCELABLE, NOT_CANCELABLE
-	this:RegisterForClicks("RightButtonUp");
+	self:RegisterForClicks("RightButtonUp");
 end
 
-function BuffButton_OnUpdate()
-	local buffDuration = getglobal(this:GetName().."Duration");
-	if ( this.untilCancelled == 1 ) then
+function BuffButton_OnUpdate (self, elapsed)
+	local buffDuration = getglobal(self:GetName().."Duration");
+	if ( self.untilCancelled == 1 ) then
 		buffDuration:Hide();
 		return;
 	end
 
-	local buffIndex = this:GetID();
+	local buffIndex = self:GetID();
 	local timeLeft = GetPlayerBuffTimeLeft(buffIndex);
 	if ( timeLeft < BUFF_WARNING_TIME ) then
-		this:SetAlpha(BuffFrame.BuffAlphaValue);
+		self:SetAlpha(BuffFrame.BuffAlphaValue);
 	else
-		this:SetAlpha(1.0);
+		self:SetAlpha(1.0);
 	end
 
 	-- Update duration
-	BuffFrame_UpdateDuration(this, timeLeft);
+	BuffFrame_UpdateDuration(self, timeLeft);
 
 	if ( BuffFrame.BuffFrameUpdateTime > 0 ) then
 		return;
 	end
-	if ( GameTooltip:IsOwned(this) ) then
+	if ( GameTooltip:IsOwned(self) ) then
 		GameTooltip:SetPlayerBuff(buffIndex);
 	end
 end
 
-function BuffButton_OnClick()
-	CancelPlayerBuff(this:GetID());
+function BuffButton_OnClick (self)
+	CancelPlayerBuff(self:GetID());
 end
 
 function BuffButtons_UpdatePositions()
@@ -242,7 +242,7 @@ function BuffButton_UpdateAnchors(buttonName, index, filter)
 end
 
 
-function BuffFrame_Enchant_OnUpdate(elapsed)
+function BuffFrame_Enchant_OnUpdate(self, elapsed)
 	local hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges = GetWeaponEnchantInfo();
 	
 	-- No enchants, kick out early
@@ -313,26 +313,26 @@ function BuffFrame_Enchant_OnUpdate(elapsed)
 	BuffFrame:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPLEFT", -5, 0);
 end
 
-function BuffFrame_EnchantButton_OnLoad()
-	this:RegisterForClicks("RightButtonUp");
+function BuffFrame_EnchantButton_OnLoad (self)
+	self:RegisterForClicks("RightButtonUp");
 end
 
-function BuffFrame_EnchantButton_OnUpdate()
+function BuffFrame_EnchantButton_OnUpdate (self, elapsed)
 	-- Update duration
-	if ( GameTooltip:IsOwned(this) ) then
-		BuffFrame_EnchantButton_OnEnter();
+	if ( GameTooltip:IsOwned(self) ) then
+		BuffFrame_EnchantButton_OnEnter(self);
 	end
 end
 
-function BuffFrame_EnchantButton_OnEnter()
-	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
-	GameTooltip:SetInventoryItem("player", this:GetID());
+function BuffFrame_EnchantButton_OnEnter (self)
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+	GameTooltip:SetInventoryItem("player", self:GetID());
 end
 
-function BuffFrame_EnchantButton_OnClick()
-	if ( this:GetID() == 16 ) then
+function BuffFrame_EnchantButton_OnClick (self, button)
+	if ( self:GetID() == 16 ) then
 		CancelItemTempEnchantment(1);
-	elseif ( this:GetID() == 17 ) then
+	elseif ( self:GetID() == 17 ) then
 		CancelItemTempEnchantment(2);
 	end;
 end
@@ -368,7 +368,7 @@ function RefreshBuffs(button, showBuffs, unit)
 		end
 		-- Show all buffs and debuffs
 		if ( showBuffs == 1 ) then
-			name, rank, icon = UnitBuff(unit, i, SHOW_CASTABLE_BUFFS);
+			name, rank, icon = UnitBuff(unit, i, GetCVarBool("showCastableBuffs"));
 			debuffBorder:Show();
 		-- Show all debuffs
 		elseif ( showBuffs == 0 ) then
@@ -376,7 +376,7 @@ function RefreshBuffs(button, showBuffs, unit)
 			debuffBorder:Show();
 		-- Show dispellable debuffs (value nil or anything ~= 0 or 1)
 		else
-			name, rank, icon, debuffStack, debuffType = UnitDebuff(unit, i, SHOW_DISPELLABLE_DEBUFFS);
+			name, rank, icon, debuffStack, debuffType = UnitDebuff(unit, i, GetCVarBool("showDispelDebuffs"));
 			debuffBorder:Show();
 		end
 		

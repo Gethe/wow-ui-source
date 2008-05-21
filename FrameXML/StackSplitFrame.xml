@@ -102,7 +102,7 @@
 		</Frames>
 		<Scripts>
 			<OnHide>
-				StackSplitFrame_OnHide();
+				StackSplitFrame_OnHide(self);
 			</OnHide>
 			<OnChar>
 				StackSplitFrame_OnChar(self,text);

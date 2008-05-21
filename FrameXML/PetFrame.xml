@@ -45,7 +45,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						PetFrameDropDown_OnLoad();
+						PetFrameDropDown_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -135,13 +135,13 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize();
-						this.textLockable = 1;
-						this.cvar = "petStatusText";
-						this.cvarLabel = "STATUS_TEXT_PET";
+						TextStatusBar_Initialize(self);
+						self.textLockable = 1;
+						self.cvar = "petStatusText";
+						self.cvarLabel = "STATUS_TEXT_PET";
 					</OnLoad>
 					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(arg1);
+						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -159,10 +159,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize();
-						this.textLockable = 1;
-						this.cvar = "petStatusText";
-						this.cvarLabel = "STATUS_TEXT_PET";
+						TextStatusBar_Initialize(self);
+						self.textLockable = 1;
+						self.cvar = "petStatusText";
+						self.cvarLabel = "STATUS_TEXT_PET";
 					</OnLoad>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -178,8 +178,8 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff("pet", this:GetID());
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetUnitDebuff("pet", self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
@@ -193,8 +193,8 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff("pet", this:GetID());
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetUnitDebuff("pet", self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
@@ -208,8 +208,8 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff("pet", this:GetID());
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetUnitDebuff("pet", self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
@@ -223,8 +223,8 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff("pet", this:GetID());
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetUnitDebuff("pet", self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
@@ -251,14 +251,14 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						if ( this.tooltip ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetText(this.tooltip);
-							if ( this.tooltipDamage ) then
-								GameTooltip:AddLine(this.tooltipDamage, "", 1, 1, 1);
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip);
+							if ( self.tooltipDamage ) then
+								GameTooltip:AddLine(self.tooltipDamage, "", 1, 1, 1);
 							end
-							if ( this.tooltipLoyalty ) then
-								GameTooltip:AddLine(this.tooltipLoyalty, "", 1, 1, 1);
+							if ( self.tooltipLoyalty ) then
+								GameTooltip:AddLine(self.tooltipLoyalty, "", 1, 1, 1);
 							end
 							GameTooltip:Show();
 						end
@@ -271,33 +271,32 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				UnitFrame_Initialize("pet", PetName, PetPortrait,
+				UnitFrame_Initialize(self, "pet", PetName, PetPortrait,
 									 PetFrameHealthBar, PetFrameHealthBarText, 
 									 PetFrameManaBar, PetFrameManaBarText);
-				PetFrame_OnLoad();
+				PetFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				PetFrame_OnEvent(event);
+				PetFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				UnitFrame_Update();
-				PetFrame_Update();
-				TotemFrame_Update();
+				UnitFrame_Update(self);
+				PetFrame_Update(self);
+				TotemFrame_Update(self);
 			</OnShow>
 			<OnHide>
-				TotemFrame_Update();
+				TotemFrame_Update(self);
 			</OnHide>
 			<OnUpdate>
-				local elapsed = arg1;
-				PetFrame_OnUpdate(elapsed);
+				PetFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnEnter>
 				UnitFrame_OnEnter(self);
-				PartyMemberBuffTooltip:SetPoint("TOPLEFT", this, "TOPLEFT", 60, -35);
-				PartyMemberBuffTooltip_Update("pet");
+				PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 60, -35);
+				PartyMemberBuffTooltip_Update(self, true);
 			</OnEnter>
 			<OnLeave>
-				UnitFrame_OnLeave();
+				UnitFrame_OnLeave(self);
 				PartyMemberBuffTooltip:Hide();
 			</OnLeave>
 		</Scripts>
@@ -315,10 +314,10 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				PetCastingBarFrame_OnLoad();
+				PetCastingBarFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				PetCastingBarFrame_OnEvent();
+				PetCastingBarFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</StatusBar>

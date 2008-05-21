@@ -402,18 +402,16 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								<Scripts>
 									<OnLoad>
 										OptionsCheckButton_SetText(AUTO_ADD_MEMBERS);
-										RegisterForSave("LFM_AUTO_ADD");
 										this:RegisterEvent("VARIABLES_LOADED");
-										LFM_AUTO_ADD = nil;
 									</OnLoad>
 									<OnEvent>
-										this:SetChecked(LFM_AUTO_ADD);
-										LFMFrame_UpdateAutoAdd(LFM_AUTO_ADD);
+										this:SetChecked(GetCVarBool("lfgAutoFill"));
+										LFMFrame_UpdateAutoAdd(this:GetChecked());
 									</OnEvent>
 									<OnClick>
 										-- Included here to prevent the comment from being overridden
 										LFGFrame_SetLFGComment();
-										
+
 										if ( this:GetChecked() ) then
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										else
@@ -961,12 +959,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								<Scripts>
 									<OnLoad>
 										OptionsCheckButton_SetText(AUTO_JOIN);
-										RegisterForSave("LFG_AUTO_JOIN");
 										this:RegisterEvent("VARIABLES_LOADED");
-										LFG_AUTO_JOIN = nil;
 									</OnLoad>
 									<OnEvent>
-										this:SetChecked(LFG_AUTO_JOIN);
+										this:SetChecked(GetCVarBool("lfgAutoJoin"));
 										LFGFrame_UpdateAutoJoin();
 									</OnEvent>
 									<OnClick>
@@ -978,7 +974,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 										else
 											PlaySound("igMainMenuOptionCheckBoxOff");
 										end
-										LFGFrame_UpdateAutoJoin();
 										LFGFrame_Update();
 									</OnClick>
 									<OnEnter>

@@ -421,38 +421,34 @@
 		AssistUnit("target");
 	</Binding>
 	<Binding name="NAMEPLATES">
-		if ( NAMEPLATES_ON and not FRIENDNAMEPLATES_ON) then
-			HideNameplates();
-			NAMEPLATES_ON = nil;
+		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
+		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
+		if ( SHOW_ENEMIES and not SHOW_FRIENDS ) then
+			SetCVar("nameplateShowEnemies", 0);
 		else
-			ShowNameplates();
-			NAMEPLATES_ON = 1;
-			HideFriendNameplates();
-			FRIENDNAMEPLATES_ON = nil;
+			SetCVar("nameplateShowEnemies", 1);
+			SetCVar("nameplateShowFriends", 0);
 		end
 	</Binding>
 	<Binding name="FRIENDNAMEPLATES">
-		if ( FRIENDNAMEPLATES_ON and not NAMEPLATES_ON) then
-			HideFriendNameplates();
-			FRIENDNAMEPLATES_ON = nil;
+		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
+		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
+		if ( SHOW_FRIENDS and not SHOW_ENEMIES ) then
+			SetCVar("nameplateShowFriends", 0);
 		else
-			ShowFriendNameplates();
-			FRIENDNAMEPLATES_ON = 1;
-			HideNameplates();
-			NAMEPLATES_ON = nil;
+			SetCVar("nameplateShowFriends", 1);
+			SetCVar("nameplateShowEnemies", 0);
 		end
 	</Binding>
 	<Binding name="ALLNAMEPLATES">
-		if ( not (NAMEPLATES_ON and FRIENDNAMEPLATES_ON) ) then
-			ShowNameplates();
-			NAMEPLATES_ON = 1;
-			ShowFriendNameplates();
-			FRIENDNAMEPLATES_ON = 1;
+		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
+		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
+		if ( not SHOW_ENEMIES and not SHOW_FRIENDS ) then
+			SetCVar("nameplateShowEnemies", 1);
+			SetCVar("nameplateShowFriends", 1);
 		else
-			HideNameplates();
-			NAMEPLATES_ON = nil;
-			HideFriendNameplates();
-			FRIENDNAMEPLATES_ON = nil;
+			SetCVar("nameplateShowEnemies", 0);
+			SetCVar("nameplateShowFriends", 0);
 		end
 	</Binding>
 	<Binding name="ATTACKTARGET">

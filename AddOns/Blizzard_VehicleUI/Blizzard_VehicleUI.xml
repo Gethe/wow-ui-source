@@ -1,0 +1,270 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+
+	<Script file="Blizzard_VehicleUI.lua"/>
+	<Frame name="VehicleSlider1" movable="true" hidden="true">
+		<Size>
+			<AbsDimension x="100" y="384"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT">
+				<Offset>
+					<AbsDimension x="128"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" title="true" frameStrata="BACKGROUND">
+			<BackgroundInsets>
+				<AbsInset left="4" right="3" top="4" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<Slider name="$parentSlider" orientation="VERTICAL">
+				<Size>
+					<AbsDimension x="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="40" y="-32"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="40" y="32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="3" right="3" top="6" bottom="6"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+				</HitRectInsets>
+				<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</ThumbTexture>			
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" text="SLIDER1_DEFAULT_VALUE"/>
+						<FontString name="$parentHigh" inherits="GameFontHighlight" text="SLIDER1_MAX">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="-2" y="4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentLow" inherits="GameFontHighlight" text="SLIDER1_MIN">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="-3" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentLabel" inherits="GameFontNormalLarge" nonSpaceWrap="true" text="P o w e r" spacing="8">
+							<Size>
+								<AbsDimension x="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-8" y="-8"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="-8" y="8"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>	
+						this.cvar = "VehiclePower"
+						this:SetMinMaxValues(SLIDER1_MIN, SLIDER1_MAX);
+						this.oGetValue = this.GetValue;
+						this.GetValue = function (self) return SLIDER1_MAX - self:oGetValue() end
+						this:RegisterEvent("ADDON_LOADED")
+						this:SetScript("OnEvent", function (...) VehicleSlider1_OnEvent(...) end);
+					</OnLoad>
+					<OnValueChanged>
+						VehicleSlider1SliderText:ClearAllPoints()
+						VehicleSlider1SliderText:SetPoint("LEFT", VehicleSlider1SliderThumb, "RIGHT", 0, 2);
+						VehicleSlider1SliderText:SetText(math.round(this:GetValue()));
+						VehicleSlider_UpdateCVar(this);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				this:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				this:StopMovingOrSizing();
+			</OnMouseUp>
+			<OnLoad>
+				this:RegisterEvent("VEHICLE_POWER_SHOW");
+			</OnLoad>
+			<OnEvent>
+				if ( arg1 ) then
+					this:Show();
+				else
+					this:Hide();
+				end
+			</OnEvent>			
+		</Scripts>		
+	</Frame>
+	<Frame name="VehicleSlider2" hidden="true" movable="true">
+		<Size>
+			<AbsDimension x="100" y="384"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT">
+				<Offset>
+					<AbsDimension x="256"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" title="true" frameStrata="BACKGROUND">
+			<BackgroundInsets>
+				<AbsInset left="4" right="3" top="4" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<Slider name="$parentSlider" orientation="VERTICAL">
+				<Size>
+					<AbsDimension x="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="40" y="-32"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="40" y="32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="3" right="3" top="6" bottom="6"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+				</HitRectInsets>
+				<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</ThumbTexture>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" text="SLIDER2_DEFAULT_VALUE"/>
+						<FontString name="$parentHigh" inherits="GameFontHighlight" text="SLIDER2_MAX">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="-2" y="4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentLow" inherits="GameFontHighlight" text="SLIDER2_MIN">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="-3" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentLabel" inherits="GameFontNormalLarge" nonSpaceWrap="true" text="A n g l e" spacing="8">
+							<Size>
+								<AbsDimension x="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-8" y="-8"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="-8" y="8"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>	
+						this.cvar = "VehicleAngle";
+						this:SetMinMaxValues(SLIDER2_MIN, SLIDER2_MAX);
+						this.oGetValue = this.GetValue;
+						this.GetValue = function (self) return SLIDER2_MAX - self:oGetValue() end
+						this:RegisterEvent("ADDON_LOADED")
+						this:RegisterEvent("VEHICLE_ANGLE_UPDATE");
+						this:SetScript("OnEvent", function (...) VehicleSlider2_OnEvent(...) end);
+					</OnLoad>
+				</Scripts>				
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				this:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				this:StopMovingOrSizing();
+			</OnMouseUp>
+			<OnLoad>
+				this:RegisterEvent("VEHICLE_ANGLE_SHOW");
+			</OnLoad>
+			<OnEvent>
+				if ( arg1 ) then
+					this:Show();
+				else
+					this:Hide();
+				end
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

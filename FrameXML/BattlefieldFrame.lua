@@ -12,17 +12,17 @@ CURRENT_BATTLEFIELD_QUEUES = {};
 PREVIOUS_BATTLEFIELD_QUEUES = {};
 
 
-function BattlefieldFrame_OnLoad()
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("BATTLEFIELDS_SHOW");
-	this:RegisterEvent("BATTLEFIELDS_CLOSED");
-	this:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
-	this:RegisterEvent("PARTY_LEADER_CHANGED");
+function BattlefieldFrame_OnLoad (self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("BATTLEFIELDS_SHOW");
+	self:RegisterEvent("BATTLEFIELDS_CLOSED");
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	
 	BattlefieldFrame.timerDelay = 0;
 end
 
-function BattlefieldFrame_OnEvent()
+function BattlefieldFrame_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		MiniMapBattlefieldDropDown_OnLoad();
 	elseif ( event == "BATTLEFIELDS_SHOW" ) then
@@ -50,7 +50,7 @@ function BattlefieldFrame_OnEvent()
 	end
 end
 
-function BattlefieldFrame_OnUpdate(elapsed)
+function BattlefieldFrame_OnUpdate(self, elapsed)
 	if ( BATTLEFIELD_SHUTDOWN_TIMER == 0 ) then
 		return;
 	end
@@ -67,7 +67,7 @@ function BattlefieldFrame_OnUpdate(elapsed)
 	
 	local threshold = BATTLEFIELD_TIMER_THRESHOLDS[BATTLEFIELD_TIMER_THRESHOLD_INDEX];
 	if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
-		if ( BATTLEFIELD_SHUTDOWN_TIMER < threshold and BATTLEFIELD_TIMER_THRESHOLD_INDEX ~= getn(BATTLEFIELD_TIMER_THRESHOLDS) ) then
+		if ( BATTLEFIELD_SHUTDOWN_TIMER < threshold and BATTLEFIELD_TIMER_THRESHOLD_INDEX ~= #BATTLEFIELD_TIMER_THRESHOLDS ) then
 			-- If timer past current threshold advance to the next one
 			BATTLEFIELD_TIMER_THRESHOLD_INDEX = BATTLEFIELD_TIMER_THRESHOLD_INDEX + 1;
 		else
@@ -84,7 +84,6 @@ function BattlefieldFrame_OnUpdate(elapsed)
 				end
 				DEFAULT_CHAT_FRAME:AddMessage(string, info.r, info.g, info.b, info.id);
 				PREVIOUS_BATTLEFIELD_MOD = currentMod;
-				
 			end
 		end
 	else

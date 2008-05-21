@@ -4,28 +4,28 @@
 	<CheckButton name="ActionBarButtonTemplate" inherits="SecureActionButtonTemplate, ActionButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				ActionButton_OnLoad();
+				ActionButton_OnLoad(self);
 			</OnLoad>
 			<OnAttributeChanged>
-				ActionButton_UpdateAction();
+				ActionButton_UpdateAction(self);
 			</OnAttributeChanged>
 			<OnEvent>
-				ActionButton_OnEvent(event);
+				ActionButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<PostClick>
-				ActionButton_UpdateState();
+				ActionButton_UpdateState(self);
 			</PostClick>
 			<OnDragStart>
 				if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION") ) then
-					PickupAction(this.action);
-					ActionButton_UpdateState();
-					ActionButton_UpdateFlash();
+					PickupAction(self.action);
+					ActionButton_UpdateState(self);
+					ActionButton_UpdateFlash(self);
 				end
 			</OnDragStart>
 			<OnReceiveDrag>
-				PlaceAction(this.action);
-				ActionButton_UpdateState();
-				ActionButton_UpdateFlash();
+				PlaceAction(self.action);
+				ActionButton_UpdateState(self);
+				ActionButton_UpdateFlash(self);
 			</OnReceiveDrag>
 			<OnEnter>
 				ActionButton_SetTooltip(self);
@@ -34,7 +34,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnUpdate>
-				ActionButton_OnUpdate(arg1);
+				ActionButton_OnUpdate(self, arg1);
 			</OnUpdate>
 		</Scripts>
 	</CheckButton>
@@ -162,7 +162,7 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnClick>
-				ActionBar_PageUp();
+				ActionBar_PageUp(self);
 				PlaySound("UChatScrollButton");
 			</OnClick>
 		</Scripts>
@@ -187,7 +187,7 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnClick>
-				ActionBar_PageDown();
+				ActionBar_PageDown(self);
 				PlaySound("UChatScrollButton");
 			</OnClick>
 		</Scripts>

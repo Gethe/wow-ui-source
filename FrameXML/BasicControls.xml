@@ -8,19 +8,87 @@
 	<!-- This function is called when a script error occurs -->
 	<Script>
 		_ERROR_COUNT = 0; _ERROR_LIMIT = 1000;
-
+		
+		errors = {};
+		errorsSeen = {};
+		
+		stacks = {}
+		
+		function removeFromDebugStack (table)
+			for k, v in next, errors do
+				if ( v == table ) then
+					tremove(errors, k);
+					break;
+				end
+			end
+			
+			errorsSeen[table.message..table.stackTrace] = nil;
+			
+			for k, v in next, table do
+				table[k] = nil;
+			end
+			tinsert(stacks, table);
+		end
+		
+		function addToDebugStack (message, stackTrace)
+			if ( errorsSeen[message..stackTrace] ) then
+				return;
+			end
+			
+			local entry;
+			if ( stacks[1] ) then
+				entry = stacks[1];
+				tremove(stacks, 1);
+			else
+				entry = {};
+			end
+				
+			entry.message = message;
+			entry.stackTrace = stackTrace;
+			tinsert(errors, entry);
+			errorsSeen[message..stackTrace] = true;
+		end
+		
+		function getdebugstack ()
+			return errors;
+		end
+		
+		function cleardebugstack ()
+			for k, table in next, errors do
+				tremove(errors, k);
+				
+				errorsSeen[table.message..table.stackTrace] = nil;
+				
+				for k, v in next, table do
+					table[k] = nil;
+				end
+				
+				tinsert(stacks, table);
+			end
+		end
+		
 		function _ERRORMESSAGE(message)
-			-- Show debugging information for internal use
-			debuginfo();
 
 			-- Show an error dialog for developers
-			if ( GetCVar("scriptErrors") == "1" ) then
+			if ( GetCVarBool("scriptErrors") ) then
 				if ( not ScriptErrors:IsShown() ) then
 					ScriptErrors_Message:SetText(message);
 					ScriptErrors:Show();
 				end
-			end
 
+				-- Show debugging information for internal use
+				debuginfo();
+			
+				local errors = errors;
+				
+				if ( errors[(_ERROR_LIMIT/10)] ) then
+					-- If we reach the limit, remove the oldest error and stack from the errors table.
+					removeFromDebugStack(errors[1]);
+				end
+				
+				addToDebugStack(message, debugstack(2));
+			end
+			
 			-- Show a warning if there are too many errors
 			_ERROR_COUNT = _ERROR_COUNT + 1;
 			if ( _ERROR_COUNT == _ERROR_LIMIT ) then
@@ -89,7 +157,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>
 				<NormalTexture inherits="DialogButtonNormalTexture"/>
@@ -122,5 +190,10 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.errors = {};
+			</OnLoad>
+		</Scripts>
 	</Frame>
 </Ui>

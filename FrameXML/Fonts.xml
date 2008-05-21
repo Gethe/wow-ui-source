@@ -49,7 +49,8 @@
 			["ROGUE"] = { r = 1.0, g = 0.96, b = 0.41 },
 			["DRUID"] = { r = 1.0, g = 0.49, b = 0.04 },
 			["SHAMAN"] = { r = 0.14, g = 0.35, b = 1.0 },
-			["WARRIOR"] = { r = 0.78, g = 0.61, b = 0.43 }
+			["WARRIOR"] = { r = 0.78, g = 0.61, b = 0.43 },
+			["DEATHKNIGHT"] = { r = 0.77, g = 0.12 , b = 0.23 },
 		};
 	</Script>
 	<Font name="MasterFont" virtual="true">
@@ -334,5 +335,17 @@
 			<AbsValue val="25"/>
 		</FontHeight>
 		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="MovieSubtitleFont" inherits="MasterFont" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
+		<FontHeight>
+			<AbsValue val="22"/>
+		</FontHeight>
+		<Color r="1.0" g="0.78" b="0"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="2" y="-2"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
 	</Font>
 </Ui>

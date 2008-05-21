@@ -7,7 +7,7 @@ function OpenCoinPickupFrame(multiplier, maxMoney, parent)
 
 	if ( GetCursorMoney() > 0 ) then
 		if ( CoinPickupFrame.owner ) then
-			MoneyTypeInfo[parent.moneyType].DropFunc();
+			MoneyTypeInfo[parent.moneyType].DropFunc(CoinPickupFrame);
 			PlaySound("igBackPackCoinSelect");
 		end
 		CoinPickupFrame:Hide();
@@ -87,28 +87,28 @@ function UpdateCoinPickupFrame(maxMoney)
 	end
 end
 
-function CoinPickupFrame_OnChar()
-	if ( arg1 < "0" or arg1 > "9" ) then
+function CoinPickupFrame_OnChar(self, text)
+	if ( text < "0" or text > "9" ) then
 		return;
 	end
 
-	if ( this.typing == 0 ) then
-		this.typing = 1;
-		this.money = 0;
+	if ( self.typing == 0 ) then
+		self.typing = 1;
+		self.money = 0;
 	end
 
-	local money = (this.money * 10) + arg1;
-	if ( money == this.money ) then
-		if( this.money == 0 ) then
-			this.money = 1;
+	local money = (self.money * 10) + text;
+	if ( money == self.money ) then
+		if( self.money == 0 ) then
+			self.money = 1;
 		end
 		return;
 	end
 
-	if ( money <= this.maxMoney ) then
-		this.money = money;
+	if ( money <= self.maxMoney ) then
+		self.money = money;
 		CoinPickupText:SetText(money);
-		if ( money == this.maxMoney ) then
+		if ( money == self.maxMoney ) then
 			CoinPickupRightButton:Disable();
 		else
 			CoinPickupRightButton:Enable();
@@ -119,53 +119,53 @@ function CoinPickupFrame_OnChar()
 			CoinPickupLeftButton:Enable();
 		end
 	elseif ( money == 0 ) then
-		this.money = 1;
+		self.money = 1;
 	end
 end
 
-function CoinPickupFrame_OnKeyDown()
-	if ( arg1 == "BACKSPACE" or arg1 == "DELETE" ) then
-		if ( this.typing == 0 or this.money == 1 ) then
+function CoinPickupFrame_OnKeyDown(self, key)
+	if ( key == "BACKSPACE" or key == "DELETE" ) then
+		if ( self.typing == 0 or self.money == 1 ) then
 			return;
 		end
 
-		this.money = floor(this.money / 10);
-		if ( this.money <= 1 ) then
-			this.money = 1;
-			this.typing = 0;
+		self.money = floor(self.money / 10);
+		if ( self.money <= 1 ) then
+			self.money = 1;
+			self.typing = 0;
 			CoinPickupLeftButton:Disable();
 		else
 			CoinPickupLeftButton:Enable();
 		end
-		CoinPickupText:SetText(this.money);
-		if ( this.money == this.maxMoney ) then
+		CoinPickupText:SetText(self.money);
+		if ( self.money == self.maxMoney ) then
 			CoinPickupRightButton:Disable();
 		else
 			CoinPickupRightButton:Enable();
 		end
-	elseif ( arg1 == "ENTER" ) then
+	elseif ( key == "ENTER" ) then
 		CoinPickupFrameOkay_Click();
-	elseif ( arg1 == "ESCAPE" ) then
+	elseif ( key == "ESCAPE" ) then
 		CoinPickupFrameCancel_Click();
-	elseif ( arg1 == "LEFT" or arg1 == "DOWN" ) then
+	elseif ( key == "LEFT" or key == "DOWN" ) then
 		CoinPickupFrameLeft_Click();
-	elseif ( arg1 == "RIGHT" or arg1 == "UP" ) then
+	elseif ( key == "RIGHT" or key == "UP" ) then
 		CoinPickupFrameRight_Click();
-	elseif ( not ( tonumber(arg1) ) and GetBindingAction(arg1) ) then
+	elseif ( not ( tonumber(key) ) and GetBindingAction(key) ) then
 		--Running bindings not used by the CoinPickup frame allows players to retain control of their characters.
-		RunBinding(GetBindingAction(arg1));
+		RunBinding(GetBindingAction(key));
 	end
 	
-	COINFRAME_BINDING_CACHE[arg1] = true;
+	COINFRAME_BINDING_CACHE[key] = true;
 end
 
-function CoinPickupFrame_OnKeyUp()
-	if ( not ( tonumber(arg1) ) and GetBindingAction(arg1) ) then
+function CoinPickupFrame_OnKeyUp(self, key)
+	if ( not ( tonumber(key) ) and GetBindingAction(key) ) then
 		--If we don't run the up bindings as well, interesting things happen (like you never stop moving)
-		RunBinding(GetBindingAction(arg1), "up");
+		RunBinding(GetBindingAction(key), "up");
 	end
 	
-	COINFRAME_BINDING_CACHE[arg1] = nil;
+	COINFRAME_BINDING_CACHE[key] = nil;
 end
 
 function CoinPickupFrameLeft_Click()
@@ -196,7 +196,7 @@ end
 
 function CoinPickupFrameOkay_Click()
 	if ( (CoinPickupFrame.money > 0) and CoinPickupFrame.owner ) then
-		MoneyTypeInfo[CoinPickupFrame.owner.moneyType].PickupFunc(CoinPickupFrame.money * CoinPickupFrame.multiplier);
+		MoneyTypeInfo[CoinPickupFrame.owner.moneyType].PickupFunc(CoinPickupFrame, CoinPickupFrame.money * CoinPickupFrame.multiplier);
 	end
 	CoinPickupFrame:Hide();
 	PlaySound("igBackPackCoinOK");

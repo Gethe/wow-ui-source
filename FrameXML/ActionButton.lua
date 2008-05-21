@@ -73,48 +73,48 @@ function ActionBar_PageDown()
 	ChangeActionBarPage(prevPage);
 end
 
-function ActionButton_OnLoad()
-	this.flashing = 0;
-	this.flashtime = 0;
-	this:SetAttribute("showgrid", 0);
-	this:SetAttribute("type", "action");
-	this:SetAttribute("checkselfcast", true);
-	this:SetAttribute("useparent-unit", true);
-	this:SetAttribute("useparent-actionpage", true);
-	this:RegisterForDrag("LeftButton", "RightButton");
-	this:RegisterForClicks("AnyUp");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("ACTIONBAR_SHOWGRID");
-	this:RegisterEvent("ACTIONBAR_HIDEGRID");
-	this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
-	this:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
-	this:RegisterEvent("UPDATE_BINDINGS");
-	ActionButton_UpdateAction();
-	ActionButton_UpdateHotkeys(this.buttonType);
+function ActionButton_OnLoad (self)
+	self.flashing = 0;
+	self.flashtime = 0;
+	self:SetAttribute("showgrid", 0);
+	self:SetAttribute("type", "action");
+	self:SetAttribute("checkselfcast", true);
+	self:SetAttribute("useparent-unit", true);
+	self:SetAttribute("useparent-actionpage", true);
+	self:RegisterForDrag("LeftButton", "RightButton");
+	self:RegisterForClicks("AnyUp");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("ACTIONBAR_SHOWGRID");
+	self:RegisterEvent("ACTIONBAR_HIDEGRID");
+	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
+	self:RegisterEvent("UPDATE_BINDINGS");
+	ActionButton_UpdateAction(self);
+	ActionButton_UpdateHotkeys(self, self.buttonType);
 end
 
-function ActionButton_UpdateHotkeys(actionButtonType)
+function ActionButton_UpdateHotkeys (self, actionButtonType)
     if ( not actionButtonType ) then
         actionButtonType = "ACTIONBUTTON";
     end
 
-    local hotkey = getglobal(this:GetName().."HotKey");
-    local key = GetBindingKey(actionButtonType..this:GetID()) or
-                GetBindingKey("CLICK "..this:GetName()..":LeftButton");
+    local hotkey = getglobal(self:GetName().."HotKey");
+    local key = GetBindingKey(actionButtonType..self:GetID()) or
+                GetBindingKey("CLICK "..self:GetName()..":LeftButton");
 
 	local text = GetBindingText(key, "KEY_", 1);
     if ( text == "" ) then
         hotkey:SetText(RANGE_INDICATOR);
-        hotkey:SetPoint("TOPLEFT", this, "TOPLEFT", 1, -2);
+        hotkey:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
         hotkey:Hide();
     else
         hotkey:SetText(text);
-        hotkey:SetPoint("TOPLEFT", this, "TOPLEFT", -2, -2);
+        hotkey:SetPoint("TOPLEFT", self, "TOPLEFT", -2, -2);
         hotkey:Show();
     end
 end
 
-function ActionButton_CalculateAction(self, button)
+function ActionButton_CalculateAction (self, button)
 	if ( not button ) then
 		button = SecureButton_GetEffectiveButton(self);
 	end
@@ -136,82 +136,84 @@ function ActionButton_CalculateAction(self, button)
 	end
 end
 
-function ActionButton_UpdateAction()
-	local action = ActionButton_CalculateAction(this);
-	if ( action ~= this.action ) then
-		this.action = action;
-		ActionButton_Update();
+function ActionButton_UpdateAction (self)
+	local action = ActionButton_CalculateAction(self);
+	if ( action ~= self.action ) then
+		self.action = action;
+		ActionButton_Update(self);
 	end
 end
 
-function ActionButton_Update()
+function ActionButton_Update (self)
 	-- Special case code for bonus bar buttons
 	-- Prevents the button from updating if the bonusbar is still in an animation transition
-	if ( this.isBonus and this.inTransition ) then
-		this.needsUpdate = true;
-		ActionButton_UpdateUsable();
+	if ( self.isBonus and self.inTransition ) then
+		self.needsUpdate = true;
+		ActionButton_UpdateUsable(self);
 		return;
 	end
+	
+	local name = self:GetName();
 
-	local action = this.action;
-	local icon = getglobal(this:GetName().."Icon");
-	local buttonCooldown = getglobal(this:GetName().."Cooldown");
+	local action = self.action;
+	local icon = getglobal(name.."Icon");
+	local buttonCooldown = getglobal(name.."Cooldown");
 	local texture = GetActionTexture(action);	
 	
 	if ( HasAction(action) ) then
-		if ( not this.eventsRegistered ) then
-			this:RegisterEvent("ACTIONBAR_UPDATE_STATE");
-			this:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
-			this:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
-			this:RegisterEvent("UPDATE_INVENTORY_ALERTS");
-			this:RegisterEvent("PLAYER_AURAS_CHANGED");
-			this:RegisterEvent("PLAYER_TARGET_CHANGED");
-			this:RegisterEvent("CRAFT_SHOW");
-			this:RegisterEvent("CRAFT_CLOSE");
-			this:RegisterEvent("TRADE_SKILL_SHOW");
-			this:RegisterEvent("TRADE_SKILL_CLOSE");
-			this:RegisterEvent("PLAYER_ENTER_COMBAT");
-			this:RegisterEvent("PLAYER_LEAVE_COMBAT");
-			this:RegisterEvent("START_AUTOREPEAT_SPELL");
-			this:RegisterEvent("STOP_AUTOREPEAT_SPELL");
-			this.eventsRegistered = 1;
+		if ( not self.eventsRegistered ) then
+			self:RegisterEvent("ACTIONBAR_UPDATE_STATE");
+			self:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
+			self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
+			self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
+			self:RegisterEvent("PLAYER_AURAS_CHANGED");
+			self:RegisterEvent("PLAYER_TARGET_CHANGED");
+			self:RegisterEvent("CRAFT_SHOW");
+			self:RegisterEvent("CRAFT_CLOSE");
+			self:RegisterEvent("TRADE_SKILL_SHOW");
+			self:RegisterEvent("TRADE_SKILL_CLOSE");
+			self:RegisterEvent("PLAYER_ENTER_COMBAT");
+			self:RegisterEvent("PLAYER_LEAVE_COMBAT");
+			self:RegisterEvent("START_AUTOREPEAT_SPELL");
+			self:RegisterEvent("STOP_AUTOREPEAT_SPELL");
+			self.eventsRegistered = true;
 		end
 
-		if ( not this:GetAttribute("statehidden") ) then
-			this:Show();
+		if ( not self:GetAttribute("statehidden") ) then
+			self:Show();
 		end
-		ActionButton_UpdateState();
-		ActionButton_UpdateUsable();
-		ActionButton_UpdateCooldown();
-		ActionButton_UpdateFlash();
+		ActionButton_UpdateState(self);
+		ActionButton_UpdateUsable(self);
+		ActionButton_UpdateCooldown(self);
+		ActionButton_UpdateFlash(self);
 	else
-		if ( this.eventsRegistered ) then
-			this:UnregisterEvent("ACTIONBAR_UPDATE_STATE");
-			this:UnregisterEvent("ACTIONBAR_UPDATE_USABLE");
-			this:UnregisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
-			this:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
-			this:UnregisterEvent("PLAYER_AURAS_CHANGED");
-			this:UnregisterEvent("PLAYER_TARGET_CHANGED");
-			this:UnregisterEvent("CRAFT_SHOW");
-			this:UnregisterEvent("CRAFT_CLOSE");
-			this:UnregisterEvent("TRADE_SKILL_SHOW");
-			this:UnregisterEvent("TRADE_SKILL_CLOSE");
-			this:UnregisterEvent("PLAYER_ENTER_COMBAT");
-			this:UnregisterEvent("PLAYER_LEAVE_COMBAT");
-			this:UnregisterEvent("START_AUTOREPEAT_SPELL");
-			this:UnregisterEvent("STOP_AUTOREPEAT_SPELL");
-			this.eventsRegistered = nil;
+		if ( self.eventsRegistered ) then
+			self:UnregisterEvent("ACTIONBAR_UPDATE_STATE");
+			self:UnregisterEvent("ACTIONBAR_UPDATE_USABLE");
+			self:UnregisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
+			self:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
+			self:UnregisterEvent("PLAYER_AURAS_CHANGED");
+			self:UnregisterEvent("PLAYER_TARGET_CHANGED");
+			self:UnregisterEvent("CRAFT_SHOW");
+			self:UnregisterEvent("CRAFT_CLOSE");
+			self:UnregisterEvent("TRADE_SKILL_SHOW");
+			self:UnregisterEvent("TRADE_SKILL_CLOSE");
+			self:UnregisterEvent("PLAYER_ENTER_COMBAT");
+			self:UnregisterEvent("PLAYER_LEAVE_COMBAT");
+			self:UnregisterEvent("START_AUTOREPEAT_SPELL");
+			self:UnregisterEvent("STOP_AUTOREPEAT_SPELL");
+			self.eventsRegistered = nil;
 		end
 
-		if ( this:GetAttribute("showgrid") == 0 ) then
-			this:Hide();
+		if ( self:GetAttribute("showgrid") == 0 ) then
+			self:Hide();
 		else
 			buttonCooldown:Hide();
 		end
 	end
 
 	-- Add a green border if button is an equipped item
-	local border = getglobal(this:GetName().."Border");
+	local border = getglobal(name.."Border");
 	if ( IsEquippedAction(action) ) then
 		border:SetVertexColor(0, 1.0, 0, 0.35);
 		border:Show();
@@ -220,7 +222,7 @@ function ActionButton_Update()
 	end
 
 	-- Update Macro Text
-	local macroName = getglobal(this:GetName().."Name");
+	local macroName = getglobal(name.."Name");
 	if ( not IsConsumableAction(action) and not IsStackableAction(action) ) then
 		macroName:SetText(GetActionText(action));
 	else
@@ -231,34 +233,32 @@ function ActionButton_Update()
 	if ( texture ) then
 		icon:SetTexture(texture);
 		icon:Show();
-		this.rangeTimer = -1;
-		this:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
+		self.rangeTimer = -1;
+		self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
 	else
 		icon:Hide();
 		buttonCooldown:Hide();
-		this.rangeTimer = nil;
-		this:SetNormalTexture("Interface\\Buttons\\UI-Quickslot");
-		local hotkey = getglobal(this:GetName().."HotKey");
+		self.rangeTimer = nil;
+		self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot");
+		local hotkey = getglobal(name.."HotKey");
         if ( hotkey:GetText() == RANGE_INDICATOR ) then
 			hotkey:Hide();
 		else
 			hotkey:SetVertexColor(0.6, 0.6, 0.6);
 		end
 	end
-	ActionButton_UpdateCount();	
+	ActionButton_UpdateCount(self);	
 	
 	-- Update tooltip
-	if ( GameTooltip:GetOwner() == this ) then
-		ActionButton_SetTooltip(this);
+	if ( GameTooltip:GetOwner() == self ) then
+		ActionButton_SetTooltip(self);
 	end
 
-	this.feedback_action = action;
+	self.feedback_action = action;
 end
 
-function ActionButton_ShowGrid(button)
-	if ( not button ) then
-		button = this;
-	end
+function ActionButton_ShowGrid (button)
+	assert(button);
 	
 	if ( issecure() ) then
 		button:SetAttribute("showgrid", button:GetAttribute("showgrid") + 1);
@@ -271,10 +271,8 @@ function ActionButton_ShowGrid(button)
 	end
 end
 
-function ActionButton_HideGrid(button)	
-	if ( not button ) then
-		button = this;
-	end
+function ActionButton_HideGrid (button)	
+	assert(button);
 	
 	local showgrid = button:GetAttribute("showgrid");
 	
@@ -289,10 +287,9 @@ function ActionButton_HideGrid(button)
 	end
 end
 
-function ActionButton_UpdateState(button)
-	if ( not button ) then
-		button = this;
-	end
+function ActionButton_UpdateState (button)
+	assert(button);
+	
 	local action = button.action;
 	if ( IsCurrentAction(action) or IsAutoRepeatAction(action) ) then
 		button:SetChecked(1);
@@ -301,10 +298,11 @@ function ActionButton_UpdateState(button)
 	end
 end
 
-function ActionButton_UpdateUsable()
-	local icon = getglobal(this:GetName().."Icon");
-	local normalTexture = getglobal(this:GetName().."NormalTexture");
-	local isUsable, notEnoughMana = IsUsableAction(this.action);
+function ActionButton_UpdateUsable (self)
+	local name = self:GetName();
+	local icon = getglobal(name.."Icon");
+	local normalTexture = getglobal(name.."NormalTexture");
+	local isUsable, notEnoughMana = IsUsableAction(self.action);
 	if ( isUsable ) then
 		icon:SetVertexColor(1.0, 1.0, 1.0);
 		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
@@ -317,9 +315,9 @@ function ActionButton_UpdateUsable()
 	end
 end
 
-function ActionButton_UpdateCount()
-	local text = getglobal(this:GetName().."Count");
-	local action = this.action;
+function ActionButton_UpdateCount (self)
+	local text = getglobal(self:GetName().."Count");
+	local action = self.action;
 	if ( IsConsumableAction(action) or IsStackableAction(action) ) then
 		text:SetText(GetActionCount(action));
 	else
@@ -327,76 +325,78 @@ function ActionButton_UpdateCount()
 	end
 end
 
-function ActionButton_UpdateCooldown()
-	local cooldown = getglobal(this:GetName().."Cooldown");
-	local start, duration, enable = GetActionCooldown(this.action);
+function ActionButton_UpdateCooldown (self)
+	local cooldown = getglobal(self:GetName().."Cooldown");
+	local start, duration, enable = GetActionCooldown(self.action);
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 end
 
-function ActionButton_OnEvent(event)
+function ActionButton_OnEvent (self, event, ...)
+	local arg1 = ...;
 	if ( event == "ACTIONBAR_SLOT_CHANGED" ) then
-		if ( arg1 == 0 or arg1 == this.action ) then
-			ActionButton_Update();
+		if ( arg1 == 0 or arg1 == self.action ) then
+			ActionButton_Update(self);
 		end
 		return;
 	end
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		ActionButton_Update();
+		ActionButton_Update(self);
 		return;
 	end
 	if ( event == "ACTIONBAR_PAGE_CHANGED" or event == "UPDATE_BONUS_ACTIONBAR" ) then
-		ActionButton_UpdateAction();
+		ActionButton_UpdateAction(self);
 		return;
 	end
 	if ( event == "ACTIONBAR_SHOWGRID" ) then
-		ActionButton_ShowGrid();
+		ActionButton_ShowGrid(self);
 		return;
 	end
 	if ( event == "ACTIONBAR_HIDEGRID" ) then
-		ActionButton_HideGrid();
+		ActionButton_HideGrid(self);
 		return;
 	end
 	if ( event == "UPDATE_BINDINGS" ) then
-		ActionButton_UpdateHotkeys(this.buttonType);
+		ActionButton_UpdateHotkeys(self, self.buttonType);
 		return;
 	end
 
 	-- All event handlers below this line are only set when the button has an action
 
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
-		this.rangeTimer = -1;
+		self.rangeTimer = -1;
 	elseif ( event == "ACTIONBAR_UPDATE_STATE" ) then
-		ActionButton_UpdateState();
+		ActionButton_UpdateState(self);
 	elseif ( event == "ACTIONBAR_UPDATE_USABLE" ) then
-		ActionButton_UpdateUsable();
+		ActionButton_UpdateUsable(self);
 	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
-		ActionButton_UpdateCooldown();
+		ActionButton_UpdateCooldown(self);
 	elseif ( event == "CRAFT_SHOW" or event == "CRAFT_CLOSE" or event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" ) then
-		ActionButton_UpdateState();
+		ActionButton_UpdateState(self);
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
-		if ( IsAttackAction(this.action) ) then
-			ActionButton_StartFlash();
+		if ( IsAttackAction(self.action) ) then
+			ActionButton_StartFlash(self);
 		end
 	elseif ( event == "PLAYER_LEAVE_COMBAT" ) then
-		if ( IsAttackAction(this.action) ) then
-			ActionButton_StopFlash();
+		if ( IsAttackAction(self.action) ) then
+			ActionButton_StopFlash(self);
 		end
 	elseif ( event == "START_AUTOREPEAT_SPELL" ) then
-		if ( IsAutoRepeatAction(this.action) ) then
-			ActionButton_StartFlash();
+		if ( IsAutoRepeatAction(self.action) ) then
+			ActionButton_StartFlash(self);
 		end
 	elseif ( event == "STOP_AUTOREPEAT_SPELL" ) then
-		if ( ActionButton_IsFlashing() and not IsAttackAction(this.action) ) then
-			ActionButton_StopFlash();
+		if ( ActionButton_IsFlashing(self) and not IsAttackAction(self.action) ) then
+			ActionButton_StopFlash(self);
 		end
 	end
 end
 
-function ActionButton_SetTooltip(self)
+function ActionButton_SetTooltip (self)
 	if ( GetCVar("UberTooltips") == "1" ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
-		if ( self:GetParent() == MultiBarBottomRight or self:GetParent() == MultiBarRight or self:GetParent() == MultiBarLeft ) then
+		local parent = self:GetParent();
+		if ( parent == MultiBarBottomRight or parent == MultiBarRight or parent == MultiBarLeft ) then
 			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		else
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -409,32 +409,37 @@ function ActionButton_SetTooltip(self)
 	end
 end
 
-function ActionButton_OnUpdate(elapsed)
-	if ( ActionButton_IsFlashing() ) then
-		this.flashtime = this.flashtime - elapsed;
-		if ( this.flashtime <= 0 ) then
-			local overtime = -this.flashtime;
+function ActionButton_OnUpdate (self, elapsed)
+	if ( ActionButton_IsFlashing(self) ) then
+		local flashtime = self.flashtime;
+		flashtime = flashtime - elapsed;
+		
+		if ( flashtime <= 0 ) then
+			local overtime = -flashtime;
 			if ( overtime >= ATTACK_BUTTON_FLASH_TIME ) then
 				overtime = 0;
 			end
-			this.flashtime = ATTACK_BUTTON_FLASH_TIME - overtime;
+			flashtime = ATTACK_BUTTON_FLASH_TIME - overtime;
 
-			local flashTexture = getglobal(this:GetName().."Flash");
+			local flashTexture = getglobal(self:GetName().."Flash");
 			if ( flashTexture:IsShown() ) then
 				flashTexture:Hide();
 			else
 				flashTexture:Show();
 			end
 		end
+		
+		self.flashtime = flashtime;
 	end
 	
 	-- Handle range indicator
-	if ( this.rangeTimer ) then
-		this.rangeTimer = this.rangeTimer - elapsed;
+	local rangeTime = self.rangeTimer;
+	if ( rangeTimer ) then
+		rangeTimer = rangeTimer - elapsed;
 
-		if ( this.rangeTimer <= 0 ) then
-			local count = getglobal(this:GetName().."HotKey");
-			local valid = IsActionInRange(this.action);
+		if ( rangeTimer <= 0 ) then
+			local count = getglobal(self:GetName().."HotKey");
+			local valid = IsActionInRange(self.action);
 			if ( count:GetText() == RANGE_INDICATOR ) then
 				if ( valid == 0 ) then
 					count:Show();
@@ -452,40 +457,42 @@ function ActionButton_OnUpdate(elapsed)
 					count:SetVertexColor(0.6, 0.6, 0.6);
 				end
 			end
-			this.rangeTimer = TOOLTIP_UPDATE_TIME;
+			rangeTimer = TOOLTIP_UPDATE_TIME;
 		end
+		
+		self.rangeTimer = rangeTimer;
 	end
 end
 
-function ActionButton_GetPagedID(self)
+function ActionButton_GetPagedID (self)
     return self.action;
 end
 
-function ActionButton_UpdateFlash()
-	local action = this.action;
+function ActionButton_UpdateFlash (self)
+	local action = self.action;
 	if ( (IsAttackAction(action) and IsCurrentAction(action)) or IsAutoRepeatAction(action) ) then
-		ActionButton_StartFlash();
+		ActionButton_StartFlash(self);
 	else
-		ActionButton_StopFlash();
+		ActionButton_StopFlash(self);
 	end
 end
 
-function ActionButton_StartFlash()
-	this.flashing = 1;
-	this.flashtime = 0;
-	ActionButton_UpdateState();
+function ActionButton_StartFlash (self)
+	self.flashing = 1;
+	self.flashtime = 0;
+	ActionButton_UpdateState(self);
 end
 
-function ActionButton_StopFlash()
-	this.flashing = 0;
-	getglobal(this:GetName().."Flash"):Hide();
-	ActionButton_UpdateState();
+function ActionButton_StopFlash (self)
+	self.flashing = 0;
+	getglobal(self:GetName().."Flash"):Hide();
+	ActionButton_UpdateState (self);
 end
 
-function ActionButton_IsFlashing()
-	if ( this.flashing == 1 ) then
+function ActionButton_IsFlashing (self)
+	if ( self.flashing == 1 ) then
 		return 1;
-	else
-		return nil;
 	end
+	
+	return nil;
 end

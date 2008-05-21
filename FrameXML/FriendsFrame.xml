@@ -2294,25 +2294,21 @@
 								</Layers>
 								<Scripts>
 									<OnLoad>
-										RegisterForSave("SHOW_OFFLINE_GUILD_MEMBERS");
 										this:RegisterEvent("VARIABLES_LOADED");
 									</OnLoad>
 									<OnEvent>
 										if ( event == "VARIABLES_LOADED" ) then
-											SetGuildRosterShowOffline(SHOW_OFFLINE_GUILD_MEMBERS);
 											this:SetChecked(GetGuildRosterShowOffline());
 										end
 									</OnEvent>
 									<OnClick>
 										SetGuildRosterSelection(0);
 										if ( this:GetChecked() ) then
-											SHOW_OFFLINE_GUILD_MEMBERS = 1;
 											PlaySound("igMainMenuOptionCheckBoxOff");
 										else
-											SHOW_OFFLINE_GUILD_MEMBERS = 0;
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										end
-										SetGuildRosterShowOffline(SHOW_OFFLINE_GUILD_MEMBERS);
+										SetGuildRosterShowOffline(this:GetChecked());
 										GuildStatus_Update();
 									</OnClick>
 								</Scripts>
@@ -3257,6 +3253,15 @@
 							<CheckButton name="GuildControlPopupFrameCheckbox12" inherits="GuildControlPopupFrameCheckboxTemplate" id="12">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox10" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="1"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox17" inherits="GuildControlPopupFrameCheckboxTemplate" id="17">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox12" relativePoint="BOTTOM">
 										<Offset>
 											<AbsDimension x="0" y="1"/>
 										</Offset>

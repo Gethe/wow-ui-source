@@ -7,29 +7,29 @@
 		</Frames>
         <Scripts>
             <OnLoad>
-                PaperDollItemSlotButton_OnLoad();
+                PaperDollItemSlotButton_OnLoad(self);
             </OnLoad>
             <OnEvent>
                 PaperDollItemSlotButton_OnEvent(self, event, ...);
             </OnEvent>
 			<OnShow>
-				PaperDollItemSlotButton_OnShow();
+				PaperDollItemSlotButton_OnShow(self);
 			</OnShow>
 			<OnHide>
-				PaperDollItemSlotButton_OnHide();
+				PaperDollItemSlotButton_OnHide(self);
 			</OnHide>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					PaperDollItemSlotButton_OnModifiedClick(arg1);
+					PaperDollItemSlotButton_OnModifiedClick(self, button);
 				else
-					PaperDollItemSlotButton_OnClick(arg1);
+					PaperDollItemSlotButton_OnClick(self, button);
 				end
 			</OnClick>
             <OnDragStart>
-				PickupInventoryItem(this:GetID());
+				PickupInventoryItem(self:GetID());
 			</OnDragStart>
             <OnReceiveDrag>
-				PickupInventoryItem(this:GetID());
+				PickupInventoryItem(self:GetID());
 			</OnReceiveDrag>
             <OnEnter>
 				PaperDollItemSlotButton_OnEnter(self);
@@ -74,7 +74,7 @@
 		</Frames>
 		<Scripts>
 			<OnEnter>
-				PaperDollStatTooltip("player");
+				PaperDollStatTooltip(self, "player");
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -87,10 +87,10 @@
         </Size>
 		<Scripts>
 			<OnEnter>
-				if ( this.tooltip ) then
-					GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
-					GameTooltip:SetText(this.tooltip, 1.0,1.0,1.0);
-					GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				if ( self.tooltip ) then
+					GameTooltip:SetOwner(self,"ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, 1.0,1.0,1.0);
+					GameTooltip:AddLine(self.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -189,11 +189,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						PlayerTitleDropDown_OnLoad();
+						PlayerTitleDropDown_OnLoad(self);
 					</OnLoad>
 					<OnShow>
-						UIDropDownMenu_Initialize(this, PlayerTitleDropDown_Initialize);
-						UIDropDownMenu_SetSelectedValue(this,GetCurrentTitle());
+						UIDropDownMenu_Initialize(self, PlayerTitleDropDown_Initialize);
+						UIDropDownMenu_SetSelectedValue(self,GetCurrentTitle());
 					</OnShow>
 				</Scripts>
 			</Frame>
@@ -210,20 +210,20 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        Model_OnLoad();
-						this:RegisterEvent("DISPLAY_SIZE_CHANGED");
+                        Model_OnLoad(self);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
                     </OnLoad>
 					<OnEvent>
-						this:RefreshUnit();
+						self:RefreshUnit();
 					</OnEvent>
                     <OnUpdate>
-						Model_OnUpdate(arg1, this);
+						Model_OnUpdate(self, elapsed);
                     </OnUpdate>
 					<OnMouseUp>
-						CharacterModelFrame_OnMouseUp(arg1);
+						CharacterModelFrame_OnMouseUp(self, button);
 					</OnMouseUp>
 					<OnReceiveDrag>
-						CharacterModelFrame_OnMouseUp("LeftButton");
+						CharacterModelFrame_OnMouseUp(self, "LeftButton");
 					</OnReceiveDrag>
                 </Scripts>
 				<Frames>
@@ -236,10 +236,10 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
-								Model_RotateLeft(this:GetParent());
+								Model_RotateLeft(self:GetParent());
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
@@ -255,10 +255,10 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
-								Model_RotateRight(this:GetParent());
+								Model_RotateRight(self:GetParent());
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
@@ -479,10 +479,10 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								PlayerStatFrameLeftDropDown_OnLoad();
+								PlayerStatFrameLeftDropDown_OnLoad(self);
 							</OnLoad>
 							<OnShow>
-								PlayerStatFrameLeftDropDown_OnLoad();
+								PlayerStatFrameLeftDropDown_OnLoad(self);
 							</OnShow>
 						</Scripts>
 					</Frame>
@@ -496,10 +496,10 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								PlayerStatFrameRightDropDown_OnLoad();
+								PlayerStatFrameRightDropDown_OnLoad(self);
 							</OnLoad>
 							<OnShow>
-								PlayerStatFrameRightDropDown_OnLoad();
+								PlayerStatFrameRightDropDown_OnLoad(self);
 							</OnShow>
 						</Scripts>
 					</Frame>
@@ -864,41 +864,37 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						PaperDollItemSlotButton_OnLoad();
+						PaperDollItemSlotButton_OnLoad(self);
 					</OnLoad>
 					<OnEvent>
 						if ( event == "MERCHANT_UPDATE" ) then
 							-- update ammo amount shown in frame after selling ammo to a vendor
-							PaperDollItemSlotButton_Update();
-							return;
-						end
-						if ( event == "PLAYERBANKSLOTS_CHANGED" ) then
+							PaperDollItemSlotButton_Update(self);
+						elseif ( event == "PLAYERBANKSLOTS_CHANGED" ) then
 							-- update ammo amount shown in frame after moving ammo to the bank
-							PaperDollItemSlotButton_Update();
-							return;
+							PaperDollItemSlotButton_Update(self);
+						else
+							PaperDollItemSlotButton_OnEvent(self, event, ...);
 						end
-						PaperDollItemSlotButton_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnShow>
-						PaperDollItemSlotButton_OnShow();
-
-						this:RegisterEvent("MERCHANT_UPDATE");
-						this:RegisterEvent("PLAYERBANKSLOTS_CHANGED");
+						PaperDollItemSlotButton_OnShow(self);
+						self:RegisterEvent("MERCHANT_UPDATE");
+						self:RegisterEvent("PLAYERBANKSLOTS_CHANGED");
 					</OnShow>
 					<OnHide>
-						PaperDollItemSlotButton_OnHide();
-
-						this:UnregisterEvent("MERCHANT_UPDATE");
-						this:UnregisterEvent("PLAYERBANKSLOTS_CHANGED");
+						PaperDollItemSlotButton_OnHide(self);
+						self:UnregisterEvent("MERCHANT_UPDATE");
+						self:UnregisterEvent("PLAYERBANKSLOTS_CHANGED");
 					</OnHide>
 					<OnClick>
-						PaperDollItemSlotButton_OnClick(arg1);
+						PaperDollItemSlotButton_OnClick(self, button);
 					</OnClick>
 					<OnDragStart>
-						PaperDollItemSlotButton_OnClick("LeftButton", 1);
+						PaperDollItemSlotButton_OnClick(self, "LeftButton", 1);
 					</OnDragStart>
 					<OnReceiveDrag>
-						PaperDollItemSlotButton_OnClick("LeftButton", 1);
+						PaperDollItemSlotButton_OnClick(self, "LeftButton", 1);
 					</OnReceiveDrag>
 					<OnEnter>
 						PaperDollItemSlotButton_OnEnter(self);
@@ -926,16 +922,16 @@
         </Frames>
         <Scripts>
             <OnLoad>
-                PaperDollFrame_OnLoad();
+                PaperDollFrame_OnLoad(self);
             </OnLoad>
             <OnEvent>
-                PaperDollFrame_OnEvent(event, ...);
+                PaperDollFrame_OnEvent(self, event, ...);
             </OnEvent>
             <OnShow>
-                PaperDollFrame_OnShow();
+                PaperDollFrame_OnShow(self);
             </OnShow>
 			<OnHide>
-				PaperDollFrame_OnHide();
+				PaperDollFrame_OnHide(self);
 			</OnHide>
         </Scripts>
     </Frame>

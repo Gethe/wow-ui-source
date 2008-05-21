@@ -472,8 +472,8 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										SmallMoneyFrame_OnLoad();
-										MoneyFrame_SetType("STATIC");
+										SmallMoneyFrame_OnLoad(self);
+										MoneyFrame_SetType(self, "STATIC");
 									</OnLoad>
 								</Scripts>
 							</Frame>
@@ -531,9 +531,6 @@
 			</OnLoad>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
-				SetTrainerServiceTypeFilter("available", TRAINER_FILTER_AVAILABLE);
-				SetTrainerServiceTypeFilter("unavailable", TRAINER_FILTER_UNAVAILABLE);
-				SetTrainerServiceTypeFilter("used", TRAINER_FILTER_USED);
 			</OnShow>
 			<OnHide>
 				CloseTrainer();

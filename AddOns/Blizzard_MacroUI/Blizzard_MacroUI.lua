@@ -1,4 +1,5 @@
-MAX_MACROS = 18;
+MAX_ACCOUNT_MACROS = 36;
+MAX_CHARACTER_MACROS = 18;
 NUM_MACRO_ICONS_SHOWN = 20;
 NUM_ICONS_PER_ROW = 5;
 NUM_ICON_ROWS = 4;
@@ -30,6 +31,7 @@ end
 
 function MacroFrame_SetAccountMacros()
 	MacroFrame.macroBase = 0;
+	MacroFrame.macroMax = MAX_ACCOUNT_MACROS;
 	local numAccountMacros, numCharacterMacros = GetNumMacros();
 	if ( numAccountMacros > 0 ) then
 		MacroFrame_SelectMacro(MacroFrame.macroBase + 1);
@@ -39,7 +41,8 @@ function MacroFrame_SetAccountMacros()
 end
 
 function MacroFrame_SetCharacterMacros()
-	MacroFrame.macroBase = MAX_MACROS;
+	MacroFrame.macroBase = MAX_ACCOUNT_MACROS;
+	MacroFrame.macroMax = MAX_CHARACTER_MACROS;
 	local numAccountMacros, numCharacterMacros = GetNumMacros();
 	if ( numCharacterMacros > 0 ) then
 		MacroFrame_SelectMacro(MacroFrame.macroBase + 1);
@@ -52,7 +55,7 @@ function MacroFrame_Update()
 	local numMacros;
 	local numAccountMacros, numCharacterMacros = GetNumMacros();
 	local macroButton, macroIcon, macroName;
-	local name, texture, body, isLocal;
+	local name, texture, body;
 	local selectedName, selectedBody, selectedIcon;
 
 	if ( MacroFrame.macroBase == 0 ) then
@@ -62,12 +65,16 @@ function MacroFrame_Update()
 	end
 
 	-- Macro List
-	for i=1, MAX_MACROS do
+	for i=1, MacroFrame.macroMax do
 		macroButton = getglobal("MacroButton"..i);
 		macroIcon = getglobal("MacroButton"..i.."Icon");
 		macroName = getglobal("MacroButton"..i.."Name");
+		if ( not macroButton ) then
+			-- FIXME: Add UI for this
+			break;
+		end
 		if ( i <= numMacros ) then
-			name, texture, body, isLocal = GetMacroInfo(MacroFrame.macroBase + i);
+			name, texture, body = GetMacroInfo(MacroFrame.macroBase + i);
 			macroIcon:SetTexture(texture);
 			macroName:SetText(name);
 			macroButton:Enable();
@@ -100,10 +107,10 @@ function MacroFrame_Update()
 	end
 	
 	--Update New Button
-	if ( numMacros == MAX_MACROS ) then
-		MacroNewButton:Disable();
-	else
+	if ( numMacros < MacroFrame.macroMax ) then
 		MacroNewButton:Enable();
+	else
+		MacroNewButton:Disable();
 	end
 
 	-- Disable Buttons
@@ -205,7 +212,7 @@ function MacroPopupFrame_OnHide()
 	else
 		numMacros = numCharacterMacros;
 	end
-	if ( numMacros < MAX_MACROS ) then
+	if ( numMacros < MacroFrame.macroMax ) then
 		MacroNewButton:Enable();
 	end
 	-- Enable tabs
@@ -222,7 +229,7 @@ function MacroPopupFrame_Update()
 	if ( this.mode == "new" ) then
 		MacroPopupEditBox:SetText("");
 	elseif ( this.mode == "edit" ) then
-		local name, texture, body, isLocal = GetMacroInfo(MacroFrame.selectedMacro);
+		local name, texture, body = GetMacroInfo(MacroFrame.selectedMacro);
 		MacroPopupEditBox:SetText(name);
 	end
 	
@@ -282,7 +289,7 @@ end
 function MacroPopupOkayButton_OnClick()
 	local index = 1
 	if ( MacroPopupFrame.mode == "new" ) then
-		index = CreateMacro(MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon, nil, nil, (MacroFrame.macroBase > 0));
+		index = CreateMacro(MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon, nil, (MacroFrame.macroBase > 0));
 	elseif ( MacroPopupFrame.mode == "edit" ) then
 		index = EditMacro(MacroFrame.selectedMacro, MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon);
 	end

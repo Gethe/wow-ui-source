@@ -1,14 +1,13 @@
 MAX_ARENA_BATTLES = 6;
 
-function ArenaFrame_OnLoad()
-	this:RegisterEvent("BATTLEFIELDS_SHOW");
-	this:RegisterEvent("BATTLEFIELDS_CLOSED");
-	this:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
-	this:RegisterEvent("PARTY_LEADER_CHANGED");
-
+function ArenaFrame_OnLoad (self)
+	self:RegisterEvent("BATTLEFIELDS_SHOW");
+	self:RegisterEvent("BATTLEFIELDS_CLOSED");
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	self:RegisterEvent("PARTY_LEADER_CHANGED");
 end
 
-function ArenaFrame_OnEvent()
+function ArenaFrame_OnEvent (self, event, ...)
 	if ( IsBattlefieldArena() ) then
 		if ( event == "BATTLEFIELDS_SHOW" ) then
 			ShowUIPanel(ArenaFrame);
@@ -21,14 +20,14 @@ function ArenaFrame_OnEvent()
 				CloseBattlefield();
 				return;
 			end
-			ArenaFrame_Update();
+			ArenaFrame_Update(self);
 		elseif ( event == "BATTLEFIELDS_CLOSED" ) then
 			HideUIPanel(ArenaFrame);
 		elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
-			ArenaFrame_Update();
+			ArenaFrame_Update(self);
 		end
 		if ( event == "PARTY_LEADER_CHANGED" ) then
-			ArenaFrame_Update();
+			ArenaFrame_Update(self);
 		end
 	end
 end
@@ -39,22 +38,26 @@ function ArenaButton_OnClick(id)
 	ArenaFrame_Update();
 end
 
-function ArenaFrame_Update()
+function ArenaFrame_Update (self)
 	local ARENA_TEAMS = {};
 	ARENA_TEAMS[1] = {size = 2};
 	ARENA_TEAMS[2] = {size = 3};
 	ARENA_TEAMS[3] = {size = 5};
-
+	
+	-- This is a magic number. #ARENA_TEAMS is a slow operation. If the size of ARENA_TEAMS changes, update this.
+	local numArenaTeams = 3;
+	
+	
+	local button, battleType, teamSize;
+	
 	for i=1, MAX_ARENA_BATTLES, 1 do
-		local button = getglobal("ArenaZone"..i);
-		local battleType;
-		local teamSize = i;
+		button = getglobal("ArenaZone"..i);
+		battleType = ARENA_RATED;
+		teamSize = i;
 		-- if buttons begin a second set of buttons for casual games, change text elements.
-		if ( i > getn(ARENA_TEAMS) ) then
-			teamSize = teamSize - getn(ARENA_TEAMS);
+		if ( i > numArenaTeams ) then
+			teamSize = teamSize - numArenaTeams;
 			battleType = ARENA_CASUAL;
-		else
-			battleType = ARENA_RATED;
 		end
 		-- build text string to populate each element.
 		button:SetText(format(PVP_TEAMTYPE, ARENA_TEAMS[teamSize].size, ARENA_TEAMS[teamSize].size).." "..battleType);
@@ -66,7 +69,7 @@ function ArenaFrame_Update()
 		end
 	end
 
-	if ( ArenaFrame.selection > getn(ARENA_TEAMS) ) then
+	if ( ArenaFrame.selection > numArenaTeams ) then
 		ArenaFrameJoinButton:Enable();
 	else
 		ArenaFrameJoinButton:Disable();

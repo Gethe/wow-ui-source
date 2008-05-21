@@ -3,15 +3,15 @@
 	<Button name="TalentTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("PLAYER_LEVEL_UP");	
+				self:RegisterEvent("PLAYER_LEVEL_UP");	
 			</OnLoad>
 			<OnEvent>
-				if (UnitLevel("player") == 9 and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= this:GetID()) then
-					SetButtonPulse(this, 60, 0.75);
+				if (UnitLevel("player") == 9 and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID()) then
+					SetButtonPulse(self, 60, 0.75);
 				end
 			</OnEvent>
 			<OnClick>
-				TalentFrameTab_OnClick();
+				TalentFrameTab_OnClick(self);
 			</OnClick>
 			<OnEnter>
 				
@@ -82,24 +82,24 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("CHARACTER_POINTS_CHANGED");
+				self:RegisterEvent("CHARACTER_POINTS_CHANGED");
 			</OnLoad>
 			<OnEvent>
-				if (this.talentButton_OnEvent) then
-					this.talentButton_OnEvent();
+				if (self.talentButton_OnEvent) then
+					self.talentButton_OnEvent(self, event, ...);
 				end
 			</OnEvent>
 			<OnEnter>
-				if (this.talentButton_OnEnter) then
-					this.talentButton_OnEnter();
+				if (self.talentButton_OnEnter) then
+					self.talentButton_OnEnter(self);
 				end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				if (this.talentButton_OnClick) then
-					this.talentButton_OnClick();
+				if (self.talentButton_OnClick) then
+					self.talentButton_OnClick(self);
 				end
 			</OnClick>
 		</Scripts>

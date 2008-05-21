@@ -10,7 +10,6 @@ MAX_IGNORE = 50;
 MAX_WHOS_FROM_SERVER = 50;
 MAX_GUILDCONTROL_OPTIONS = 12;
 CURRENT_GUILD_MOTD = "";
-SHOW_OFFLINE_GUILD_MEMBERS = 1;	-- This variable is saved
 GUILD_DETAIL_NORM_HEIGHT = 195
 GUILD_DETAIL_OFFICER_HEIGHT = 255
 MAX_GUILDBANK_TABS = 6;
@@ -344,7 +343,7 @@ end
 function WhoList_Update()
 	local numWhos, totalCount = GetNumWhoResults();
 	local name, guild, level, race, class, zone;
-	local button, buttonText, classTextColor;
+	local button, buttonText, classTextColor, classFileName;
 	local columnTable;
 	local whoOffset = FauxScrollFrame_GetOffset(WhoListScrollFrame);
 	local whoIndex;
@@ -655,7 +654,8 @@ function GuildStatus_Update()
 		local year, month, day, hour;
 		local yearlabel, monthlabel, daylabel, hourlabel;
 		local guildOffset = FauxScrollFrame_GetOffset(GuildListScrollFrame);
-
+		local classFileName;
+		
 		for i=1, GUILDMEMBERS_TO_DISPLAY, 1 do
 			guildIndex = guildOffset + i;
 			button = getglobal("GuildFrameGuildStatusButton"..i);
@@ -962,7 +962,7 @@ end
 
 function GuildControlPopupFrame_OnLoad()
 	local buttonText;
-	for i=1, 16 do	
+	for i=1, 17 do	
 		buttonText = getglobal("GuildControlPopupFrameCheckbox"..i.."Text");
 		if ( buttonText ) then
 			buttonText:SetText(getglobal("GUILDCONTROL_OPTION"..i));

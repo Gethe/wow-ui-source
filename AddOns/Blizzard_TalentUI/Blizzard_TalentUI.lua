@@ -86,6 +86,10 @@ function PlayerTalentFrame_OnLoad()
 end
 
 function  PlayerTalentFrame_OnShow()
+	if ( MISTER_SPARKLE and MISTER_SPARKLE ~= 0 ) then
+		PlayerTalentFrame:Hide();
+		return;
+	end
 	-- Stop buttons from flashing after skill up
 	SetButtonPulse(TalentMicroButton, 0, 1);
 
@@ -95,8 +99,8 @@ function  PlayerTalentFrame_OnShow()
 	TalentFrame_Update(PlayerTalentFrame);
 
 	-- Set flag
-	if ( TALENT_FRAME_WAS_SHOWN ~= 1 ) then
-		TALENT_FRAME_WAS_SHOWN = 1;
+	if ( not GetCVarBool("talentFrameShown") ) then
+		SetCVar("talentFrameShown", 1);
 		UIFrameFlash(PlayerTalentFrameScrollButtonOverlay, 0.5, 0.5, 60);
 	end
 end

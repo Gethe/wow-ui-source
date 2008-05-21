@@ -22,8 +22,8 @@ function EasyMenu(menuList, menuFrame, anchor, x, y, displayMode, autoHideDelay 
 	ToggleDropDownMenu(1, nil, menuFrame, anchor, x, y, menuList);	
 end
 
-function EasyMenu_Initialize( level, menuList )
-	for index = 1, table.getn( menuList ) do
+function EasyMenu_Initialize( frame, level, menuList )
+	for index = 1, #menuList do
 		value = menuList[index]
 		if (value.text) then
 			value.index = index;

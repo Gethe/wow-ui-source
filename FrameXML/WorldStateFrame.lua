@@ -30,8 +30,6 @@ FILTERED_BG_CHAT_END = {};
 ADDED_PLAYERS = {};
 SUBTRACTED_PLAYERS = {};
 
-SHOW_BATTLEFIELD_MINIMAP = "0";
-
 CLASS_BUTTONS = {
 	["WARRIOR"]	= {0, 0.25, 0, 0.25},
 	["MAGE"]		= {0.25, 0.49609375, 0, 0.25},
@@ -42,6 +40,7 @@ CLASS_BUTTONS = {
 	["PRIEST"]		= {0.49609375, 0.7421875, 0.25, 0.5},
 	["WARLOCK"]	= {0.7421875, 0.98828125, 0.25, 0.5},
 	["PALADIN"]		= {0, 0.25, 0.5, 0.75},
+	["DEATHKNIGHT"]	= {0.25, 0.49609375, 0.5, 0.75},
 };
 
 
@@ -51,7 +50,6 @@ ExtendedUI = {};
 function WorldStateAlwaysUpFrame_OnLoad()
 	this:RegisterEvent("UPDATE_WORLD_STATES");
 	this:RegisterEvent("UPDATE_BATTLEFIELD_SCORE");
-	RegisterForSavePerCharacter("SHOW_BATTLEFIELD_MINIMAP");
 	WorldStateAlwaysUpFrame_Update();
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 
@@ -447,11 +445,11 @@ function WorldStateFrame_CanShowBattlefieldMinimap()
 	local _, instanceType = IsInInstance();
 
 	if ( instanceType == "pvp" ) then
-		return SHOW_BATTLEFIELD_MINIMAP == "1";
+		return GetCVar("showBattlefieldMinimap") == "1";
 	end
 
 	if ( instanceType == "none" ) then
-		return SHOW_BATTLEFIELD_MINIMAP == "2";
+		return GetCVar("showBattlefieldMinimap") == "2";
 	end
 
 	return false;

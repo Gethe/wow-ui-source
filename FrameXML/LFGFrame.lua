@@ -345,7 +345,7 @@ function LFMFrame_UpdateAutoAdd(autoaddStatus, setCheckbox)
 	if ( setCheckbox ) then
 		AutoAddMembersCheckButton:SetChecked(autoaddStatus);
 	end
-	LFM_AUTO_ADD = autoaddStatus;
+	SetCVar("lfgAutoFill", autoaddStatus);
 end
 
 function LFMButton_OnClick(button)
@@ -587,7 +587,7 @@ function LFGFrame_Update()
 	else
 		LFGEye:Hide();
 	end
-	LFMFrame_UpdateAutoAdd(autoaddStatus, 1);
+	LFMFrame_UpdateAutoAdd(autoaddStatus, true);
 end
 
 function LFGFrame_UpdateDropDowns()
@@ -641,7 +641,7 @@ function LFGFrame_UpdateAutoJoin()
 	else
 		ClearLFGAutojoin();
 	end
-	LFG_AUTO_JOIN = AutoJoinCheckButton:GetChecked();
+	SetCVar("lfgAutoFill", AutoJoinCheckButton:GetChecked());
 end
 
 function LFGFrame_DisableAutoJoin()

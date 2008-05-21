@@ -11,19 +11,20 @@ RAID_SINGLE_POSITIONS = {};
 
 RAID_CLASS_BUTTONS = {
 	["WARRIOR"]	= {button = 1, coords = {0, 0.25, 0, 0.25};},
-	["MAGE"]		= {button = 7, coords = {0.25, 0.49609375, 0, 0.25};},
-	["ROGUE"]		= {button = 6, coords = {0.49609375, 0.7421875, 0, 0.25};},
-	["DRUID"]		= {button = 5, coords = {0.7421875, 0.98828125, 0, 0.25};},
-	["HUNTER"]		= {button = 9, coords = {0, 0.25, 0.25, 0.5};},
-	["SHAMAN"]	 	= {button = 4, coords = {0.25, 0.49609375, 0.25, 0.5};},
-	["PRIEST"]		= {button = 3, coords = {0.49609375, 0.7421875, 0.25, 0.5};},
-	["WARLOCK"]	= {button = 8, coords = {0.7421875, 0.98828125, 0.25, 0.5};},
-	["PALADIN"]		= {button = 2, coords = {0, 0.25, 0.5, 0.75};},
-	["PETS"]		= {button = 10, coords = {0, 1, 0, 1};},
-	["MAINTANK"]	= {button = 11, coords = {0, 1, 0, 1};},
-	["MAINASSIST"]	= {button = 12, coords = {0, 1, 0, 1};}
+	["MAGE"]		= {button = 8, coords = {0.25, 0.49609375, 0, 0.25};},
+	["ROGUE"]		= {button = 7, coords = {0.49609375, 0.7421875, 0, 0.25};},
+	["DRUID"]		= {button = 6, coords = {0.7421875, 0.98828125, 0, 0.25};},
+	["HUNTER"]		= {button = 10, coords = {0, 0.25, 0.25, 0.5};},
+	["SHAMAN"]	 	= {button = 5, coords = {0.25, 0.49609375, 0.25, 0.5};},
+	["PRIEST"]		= {button = 4, coords = {0.49609375, 0.7421875, 0.25, 0.5};},
+	["WARLOCK"]	= {button = 9, coords = {0.7421875, 0.98828125, 0.25, 0.5};},
+	["PALADIN"]		= {button = 3, coords = {0, 0.25, 0.5, 0.75};},
+	["DEATHKNIGHT"]		= {button = 2, coords = {0.25, .5, 0.5, .75};},
+	["PETS"]		= {button = 11, coords = {0, 1, 0, 1};}, 
+	["MAINTANK"]	= {button = 12, coords = {0, 1, 0, 1};},
+	["MAINASSIST"]	= {button = 13, coords = {0, 1, 0, 1};}
 };
-MAX_CLASSES = 12;
+MAX_CLASSES = 13;
 
 RAID_PULLOUT_SAVED_SETTINGS = { 
 	["showTarget"] = true, 

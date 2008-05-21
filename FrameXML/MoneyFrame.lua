@@ -13,15 +13,15 @@ COIN_BUTTON_WIDTH = 32;
 
 MoneyTypeInfo = { };
 MoneyTypeInfo["PLAYER"] = {
-	UpdateFunc = function()
+	UpdateFunc = function(self)
 		return (GetMoney() - GetCursorMoney() - GetPlayerTradeMoney());
 	end,
 
-	PickupFunc = function(amount)
+	PickupFunc = function(self, amount)
 		PickupPlayerMoney(amount);
 	end,
 
-	DropFunc = function()
+	DropFunc = function(self)
 		DropCursorMoney();
 	end,
 
@@ -30,15 +30,15 @@ MoneyTypeInfo["PLAYER"] = {
 	showSmallerCoins = "Backpack"
 };
 MoneyTypeInfo["STATIC"] = {
-	UpdateFunc = function()
-		return this.staticMoney;
+	UpdateFunc = function(self)
+		return self.staticMoney;
 	end,
 
 	collapse = 1,
 };
 MoneyTypeInfo["AUCTION"] = {
-	UpdateFunc = function()
-		return this.staticMoney;
+	UpdateFunc = function(self)
+		return self.staticMoney;
 	end,
 	showSmallerCoins = "Backpack",
 	fixedWidth = 1,
@@ -46,15 +46,15 @@ MoneyTypeInfo["AUCTION"] = {
 	truncateSmallCoins = nil,
 };
 MoneyTypeInfo["PLAYER_TRADE"] = {
-	UpdateFunc = function()
+	UpdateFunc = function(self)
 		return GetPlayerTradeMoney();
 	end,
 
-	PickupFunc = function(amount)
+	PickupFunc = function(self, amount)
 		PickupTradeMoney(amount);
 	end,
 
-	DropFunc = function()
+	DropFunc = function(self)
 		AddTradeMoney();
 	end,
 
@@ -62,22 +62,22 @@ MoneyTypeInfo["PLAYER_TRADE"] = {
 	canPickup = 1,
 };
 MoneyTypeInfo["TARGET_TRADE"] = {
-	UpdateFunc = function()
+	UpdateFunc = function(self)
 		return GetTargetTradeMoney();
 	end,
 
 	collapse = 1,
 };
 MoneyTypeInfo["SEND_MAIL"] = {
-	UpdateFunc = function()
+	UpdateFunc = function(self)
 		return GetSendMailMoney();
 	end,
 
-	PickupFunc = function(amount)
+	PickupFunc = function(self, amount)
 		PickupSendMailMoney(amount);
 	end,
 
-	DropFunc = function()
+	DropFunc = function(self)
 		AddSendMailMoney();
 	end,
 
@@ -86,15 +86,15 @@ MoneyTypeInfo["SEND_MAIL"] = {
 	showSmallerCoins = "Backpack",
 };
 MoneyTypeInfo["SEND_MAIL_COD"] = {
-	UpdateFunc = function()
+	UpdateFunc = function(self)
 		return GetSendMailCOD();
 	end,
 
-	PickupFunc = function(amount)
+	PickupFunc = function(self, amount)
 		PickupSendMailCOD(amount);
 	end,
 
-	DropFunc = function()
+	DropFunc = function(self)
 		AddSendMailCOD();
 	end,
 
@@ -102,19 +102,19 @@ MoneyTypeInfo["SEND_MAIL_COD"] = {
 	canPickup = 1,
 };
 MoneyTypeInfo["GUILDBANK"] = {
-	OnloadFunc = function()
-		this:RegisterEvent("GUILDBANK_UPDATE_MONEY");
+	OnloadFunc = function(self)
+		self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
 	end,
 
-	UpdateFunc = function()
+	UpdateFunc = function(self)
 		return (GetGuildBankMoney() - GetCursorMoney());
 	end,
 
-	PickupFunc = function(amount)
+	PickupFunc = function(self, amount)
 		PickupGuildBankMoney(amount);
 	end,
 
-	DropFunc = function()
+	DropFunc = function(self)
 		DropCursorMoney();
 	end,
 
@@ -123,11 +123,11 @@ MoneyTypeInfo["GUILDBANK"] = {
 };
 
 MoneyTypeInfo["GUILDBANKWITHDRAW"] = {
-	OnloadFunc = function()
-		this:RegisterEvent("GUILDBANK_UPDATE_WITHDRAWMONEY");
+	OnloadFunc = function(self)
+		self:RegisterEvent("GUILDBANK_UPDATE_WITHDRAWMONEY");
 	end,
 
-	UpdateFunc = function()
+	UpdateFunc = function(self)
 		GuildBankFrame_UpdateWithdrawMoney();
 		return nil;
 	end,
@@ -137,8 +137,8 @@ MoneyTypeInfo["GUILDBANKWITHDRAW"] = {
 };
 
 MoneyTypeInfo["GUILD_REPAIR"] = {
-	UpdateFunc = function()
-		return this.staticMoney;
+	UpdateFunc = function(self)
+		return self.staticMoney;
 	end,
 
 	collapse = 1,
@@ -147,72 +147,72 @@ MoneyTypeInfo["GUILD_REPAIR"] = {
 
 
 
-function MoneyFrame_OnLoad()
-	this:RegisterEvent("PLAYER_MONEY");
-	this:RegisterEvent("PLAYER_TRADE_MONEY");
-	this:RegisterEvent("TRADE_MONEY_CHANGED");
-	this:RegisterEvent("SEND_MAIL_MONEY_CHANGED");
-	this:RegisterEvent("SEND_MAIL_COD_CHANGED");
-	MoneyFrame_SetType("PLAYER");
+function MoneyFrame_OnLoad (self)
+	self:RegisterEvent("PLAYER_MONEY");
+	self:RegisterEvent("PLAYER_TRADE_MONEY");
+	self:RegisterEvent("TRADE_MONEY_CHANGED");
+	self:RegisterEvent("SEND_MAIL_MONEY_CHANGED");
+	self:RegisterEvent("SEND_MAIL_COD_CHANGED");
+	MoneyFrame_SetType(self, "PLAYER");
 end
 
-function SmallMoneyFrame_OnLoad(moneyType)
+function SmallMoneyFrame_OnLoad(self, moneyType)
 	--If there's a moneyType we'll use the new way of doing things, otherwise do things the old way
 	if ( moneyType ) then
 		local info = MoneyTypeInfo[moneyType];
 		if ( info and info.OnloadFunc ) then
 			--This way you can just register for the events that you care about
 			--Should write OnloadFunc's for all money frames, but don't have time right now
-			info.OnloadFunc();
-			this.small = 1;
-			MoneyFrame_SetType(moneyType);
+			info.OnloadFunc(self);
+			self.small = 1;
+			MoneyFrame_SetType(self, moneyType);
 		end
 	else
 		--The old sucky way of doing things
-		this:RegisterEvent("PLAYER_MONEY");
-		this:RegisterEvent("PLAYER_TRADE_MONEY");
-		this:RegisterEvent("TRADE_MONEY_CHANGED");
-		this:RegisterEvent("SEND_MAIL_MONEY_CHANGED");
-		this:RegisterEvent("SEND_MAIL_COD_CHANGED");
-		this.small = 1;
-		MoneyFrame_SetType("PLAYER");
+		self:RegisterEvent("PLAYER_MONEY");
+		self:RegisterEvent("PLAYER_TRADE_MONEY");
+		self:RegisterEvent("TRADE_MONEY_CHANGED");
+		self:RegisterEvent("SEND_MAIL_MONEY_CHANGED");
+		self:RegisterEvent("SEND_MAIL_COD_CHANGED");
+		self.small = 1;
+		MoneyFrame_SetType(self, "PLAYER");
 	end
 end
 
-function MoneyFrame_OnEvent()
-	if ( not this.info or not this:IsVisible() ) then
+function MoneyFrame_OnEvent (self, event, ...)
+	if ( not self.info or not self:IsVisible() ) then
 		return;
 	end
 
-	if ( event == "PLAYER_MONEY" and this.moneyType == "PLAYER" ) then
-		MoneyFrame_UpdateMoney();
-	elseif ( event == "PLAYER_TRADE_MONEY" and (this.moneyType == "PLAYER" or this.moneyType == "PLAYER_TRADE") ) then
-		MoneyFrame_UpdateMoney();
-	elseif ( event == "TRADE_MONEY_CHANGED" and this.moneyType == "TARGET_TRADE" ) then
-		MoneyFrame_UpdateMoney();
-	elseif ( event == "SEND_MAIL_MONEY_CHANGED" and (this.moneyType == "PLAYER" or this.moneyType == "SEND_MAIL") ) then
-		MoneyFrame_UpdateMoney();
-	elseif ( event == "SEND_MAIL_COD_CHANGED" and (this.moneyType == "PLAYER" or this.moneyType == "SEND_MAIL_COD") ) then
-		MoneyFrame_UpdateMoney();
-	elseif ( event == "GUILDBANK_UPDATE_MONEY" and (this.moneyType == "GUILDBANK") ) then
-		MoneyFrame_UpdateMoney();
-	elseif ( event == "GUILDBANK_UPDATE_WITHDRAWMONEY" and (this.moneyType == "GUILDBANKWITHDRAW") ) then
-		MoneyFrame_UpdateMoney();
+	local moneyType = self.moneyType;
+	
+	if ( event == "PLAYER_MONEY" and moneyType == "PLAYER" ) then
+		MoneyFrame_UpdateMoney(self);
+	elseif ( event == "PLAYER_TRADE_MONEY" and (moneyType == "PLAYER" or moneyType == "PLAYER_TRADE") ) then
+		MoneyFrame_UpdateMoney(self);
+	elseif ( event == "TRADE_MONEY_CHANGED" and moneyType == "TARGET_TRADE" ) then
+		MoneyFrame_UpdateMoney(self);
+	elseif ( event == "SEND_MAIL_MONEY_CHANGED" and (moneyType == "PLAYER" or moneyType == "SEND_MAIL") ) then
+		MoneyFrame_UpdateMoney(self);
+	elseif ( event == "SEND_MAIL_COD_CHANGED" and (moneyType == "PLAYER" or moneyType == "SEND_MAIL_COD") ) then
+		MoneyFrame_UpdateMoney(self);
+	elseif ( event == "GUILDBANK_UPDATE_MONEY" and moneyType == "GUILDBANK" ) then
+		MoneyFrame_UpdateMoney(self);
+	elseif ( event == "GUILDBANK_UPDATE_WITHDRAWMONEY" and moneyType == "GUILDBANKWITHDRAW" ) then
+		MoneyFrame_UpdateMoney(self);
 	end
 end
 
-function MoneyFrame_SetType(type, moneyFrame)
-	if ( not moneyFrame ) then
-		moneyFrame = this;
-	end
+function MoneyFrame_SetType(self, type)
+
 	local info = MoneyTypeInfo[type];
 	if ( not info ) then
 		message("Invalid money type: "..type);
 		return;
 	end
-	moneyFrame.info = info;
-	moneyFrame.moneyType = type;
-	local frameName = moneyFrame:GetName();
+	self.info = info;
+	self.moneyType = type;
+	local frameName = self:GetName();
 	if ( info.canPickup ) then
 		getglobal(frameName.."GoldButton"):EnableMouse(true);
 		getglobal(frameName.."SilverButton"):EnableMouse(true);
@@ -223,16 +223,15 @@ function MoneyFrame_SetType(type, moneyFrame)
 		getglobal(frameName.."CopperButton"):EnableMouse(false);
 	end
 
-	MoneyFrame_UpdateMoney(moneyFrame);
+	MoneyFrame_UpdateMoney(self);
 end
 
 -- Update the money shown in a money frame
 function MoneyFrame_UpdateMoney(moneyFrame)
-	if ( not moneyFrame ) then
-		moneyFrame = this;
-	end
+	assert(moneyFrame);
+	
 	if ( moneyFrame.info ) then
-		local money = moneyFrame.info.UpdateFunc();
+		local money = moneyFrame.info.UpdateFunc(moneyFrame);
 		if ( money ) then
 			MoneyFrame_Update(moneyFrame:GetName(), money);
 		end
@@ -245,7 +244,14 @@ function MoneyFrame_UpdateMoney(moneyFrame)
 end
 
 function MoneyFrame_Update(frameName, money)
-	local frame = getglobal(frameName);
+	local frame;
+	if ( type(frameName) == "table" ) then
+		frame = frameName;
+		frameName = frame:GetName();
+	else
+		frame = getglobal(frameName);
+	end
+	
 	local info = frame.info;
 	if ( not info ) then
 		message("Error moneyType not set");

@@ -69,15 +69,15 @@
         </Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 4);
+				self:SetFrameLevel(self:GetFrameLevel() + 4);
 			</OnLoad>
 			<OnClick>
 				PanelTemplates_Tab_OnClick(AudioOptionsFrame);
-				AudioOptionsFrameTab_OnClick();
+				AudioOptionsFrameTab_OnClick(self);
 			</OnClick>
 			<OnShow>
 				PanelTemplates_TabResize(0);
-				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 30);
+				getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 30);
 			</OnShow>
 		</Scripts>
 		<ButtonText name="$parentText">
@@ -149,12 +149,12 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				if ( this.tooltipText ) then
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				if ( self.tooltipText ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 				end
-				if ( this.tooltipRequirement ) then
-					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+				if ( self.tooltipRequirement ) then
+					GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -204,12 +204,12 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				if ( this.tooltipText ) then
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				if ( self.tooltipText ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 				end
-				if ( this.tooltipRequirement ) then
-					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+				if ( self.tooltipRequirement ) then
+					GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -279,13 +279,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PanelTemplates_SetNumTabs(this, 2);
-				PanelTemplates_SetTab(this, 1);
-				this:RegisterEvent("VOICE_CHAT_ENABLED_UPDATE");
+				PanelTemplates_SetNumTabs(self, 2);
+				PanelTemplates_SetTab(self, 1);
+				self:RegisterEvent("VOICE_CHAT_ENABLED_UPDATE");
 			</OnLoad>
 			<OnEvent>
 				if ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
-					VoiceChat_Toggle();
+					VoiceChat_Toggle(self);
 				end
 			</OnEvent>
 			<OnShow>
@@ -303,11 +303,11 @@
 				end
 			</OnKeyDown>
 			<OnHide>
-				if ( not this.okay ) then
+				if ( not self.okay ) then
 					SoundOptionsFrame_Cancel();
 					VoiceOptionsFrame_Cancel();
 				end
-				this.okay = nil;
+				self.okay = nil;
 				ShowUIPanel(GameMenuFrame);
 				UpdateMicroButtons();
 			</OnHide>

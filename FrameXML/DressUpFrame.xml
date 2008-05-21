@@ -197,10 +197,10 @@
 			</Anchors>
 			<Scripts>
                 <OnLoad>
-                    Model_OnLoad();					
+                    Model_OnLoad(self);					
                 </OnLoad>
                 <OnUpdate>
-					Model_OnUpdate(arg1, this);
+					Model_OnUpdate(self, elapsed);
                 </OnUpdate>
             </Scripts>
 			<Frames>
@@ -217,10 +217,10 @@
 					</Anchors>
 					<Scripts>
 						<OnLoad>
-							this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 						</OnLoad>
 						<OnClick>
-							Model_RotateLeft(this:GetParent());
+							Model_RotateLeft(self:GetParent());
 						</OnClick>
 					</Scripts>
 					<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
@@ -236,10 +236,10 @@
 					</Anchors>
 					<Scripts>
 						<OnLoad>
-							this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 						</OnLoad>
 						<OnClick>
-							Model_RotateRight(this:GetParent());
+							Model_RotateRight(self:GetParent());
 						</OnClick>
 					</Scripts>
 					<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>

@@ -18,10 +18,10 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				StatsFrame_OnLoad();
+				StatsFrame_OnLoad(self);
 			</OnLoad>
 			<OnUpdate>
-				StatsFrame_OnUpdate(arg1);
+				StatsFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

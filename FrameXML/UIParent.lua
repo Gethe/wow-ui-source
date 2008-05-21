@@ -195,10 +195,6 @@ function UIParent_OnLoad()
 	-- Events for Item socketing UI
 	this:RegisterEvent("SOCKET_INFO_UPDATE");
 
-	-- Variable to scroll the talent frame
-	TALENT_FRAME_WAS_SHOWN = nil;
-	RegisterForSave("TALENT_FRAME_WAS_SHOWN");
-
 	-- Events for taxi benchmarking
 	this:RegisterEvent("ENABLE_TAXI_BENCHMARK");
 	this:RegisterEvent("DISABLE_TAXI_BENCHMARK");
@@ -210,12 +206,8 @@ function UIParent_OnLoad()
 	-- Events for Guild bank UI
 	this:RegisterEvent("GUILDBANKFRAME_OPENED");
 	this:RegisterEvent("GUILDBANKFRAME_CLOSED");
-	
-	-- Nameplate variables
-	NAMEPLATES_ON = nil;
-	FRIENDNAMEPLATES_ON = nil;	
-	RegisterForSave("NAMEPLATES_ON");
-	RegisterForSave("FRIENDNAMEPLATES_ON");
+
+	RegisterForSave("MISTER_SPARKLE");
 end
 
 function AuctionFrame_LoadUI()
@@ -285,6 +277,9 @@ function ShowMacroFrame()
 end
 
 function ToggleTalentFrame()
+	if ( MISTER_SPARKLE and MISTER_SPARKLE ~= 0 ) then
+		return;
+	end
 	if ( UnitLevel("player") < 10 ) then
 		return;
 	end
@@ -312,8 +307,6 @@ end
 function UIParent_OnEvent(event)
 	if ( event == "VARIABLES_LOADED" ) then
 		LocalizeFrames();
-		-- Update nameplates
-		UpdateNameplates();
 		if ( WorldStateFrame_CanShowBattlefieldMinimap() ) then
 			if ( not BattlefieldMinimap ) then
 				BattlefieldMinimap_LoadUI();
@@ -519,9 +512,6 @@ function UIParent_OnEvent(event)
 
 		-- Close any windows that were previously open
 		CloseAllWindows(1);
-
-		-- Update nameplates
-		UpdateNameplates();
 	
 		-- Until PVPFrame is checked in, this is placed here.
 		for i=1, MAX_ARENA_TEAMS do
@@ -877,7 +867,7 @@ function UIParent_OnEvent(event)
 	
 	-- Push to talk
 	if ( event == "VOICE_PUSH_TO_TALK_START" and GetVoiceCurrentSessionID() ) then
-		if ( PUSHTOTALK_SOUND == "1" ) then
+		if ( GetCVarBool("PushToTalkSound") ) then
 			PlaySound("VoiceChatOn");
 		end
 		-- Animate the player frame speaker even if not broadcasting
@@ -887,7 +877,7 @@ function UIParent_OnEvent(event)
 		return;
 	end
 	if ( event == "VOICE_PUSH_TO_TALK_STOP" ) then
-		if ( PUSHTOTALK_SOUND == "1" and GetVoiceCurrentSessionID() ) then
+		if ( GetCVarBool("PushToTalkSound") and GetVoiceCurrentSessionID() ) then
 			PlaySound("VoiceChatOff");
 		end
 		-- Stop Animation
@@ -2377,9 +2367,9 @@ function MouseIsOver(frame, topOffset, bottomOffset, leftOffset, rightOffset)
 end
 
 -- Generic model rotation functions
-function Model_OnLoad()
-	this.rotation = 0.61;
-	this:SetRotation(this.rotation);
+function Model_OnLoad (self)
+	self.rotation = 0.61;
+	self:SetRotation(self.rotation);
 end
 
 function Model_RotateLeft(model, rotationIncrement)
@@ -2400,23 +2390,23 @@ function Model_RotateRight(model, rotationIncrement)
 	PlaySound("igInventoryRotateCharacter");
 end
 
-function Model_OnUpdate(elapsedTime, model, rotationsPerSecond)
+function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 	if ( not rotationsPerSecond ) then
 		rotationsPerSecond = ROTATIONS_PER_SECOND;
 	end
-	if ( getglobal(model:GetName().."RotateLeftButton"):GetButtonState() == "PUSHED" ) then
-		model.rotation = model.rotation + (elapsedTime * 2 * PI * rotationsPerSecond);
-		if ( model.rotation < 0 ) then
-			model.rotation = model.rotation + (2 * PI);
+	if ( getglobal(self:GetName().."RotateLeftButton"):GetButtonState() == "PUSHED" ) then
+		self.rotation = self.rotation + (elapsedTime * 2 * PI * rotationsPerSecond);
+		if ( self.rotation < 0 ) then
+			self.rotation = self.rotation + (2 * PI);
 		end
-		model:SetRotation(model.rotation);
+		self:SetRotation(self.rotation);
 	end
-	if ( getglobal(model:GetName().."RotateRightButton"):GetButtonState() == "PUSHED" ) then
-		model.rotation = model.rotation - (elapsedTime * 2 * PI * rotationsPerSecond);
-		if ( model.rotation > (2 * PI) ) then
-			model.rotation = model.rotation - (2 * PI);
+	if ( getglobal(self:GetName().."RotateRightButton"):GetButtonState() == "PUSHED" ) then
+		self.rotation = self.rotation - (elapsedTime * 2 * PI * rotationsPerSecond);
+		if ( self.rotation > (2 * PI) ) then
+			self.rotation = self.rotation - (2 * PI);
 		end
-		model:SetRotation(model.rotation);
+		self:SetRotation(self.rotation);
 	end
 end
 
@@ -2505,27 +2495,6 @@ function ValidateFramePosition(frame, offscreenPadding, returnOffscreen)
 		end
 	end
 end
-
---[[
-function PlayerStatus_OnUpdate(elapsed)
-	
-	debugprint("running");
-	local min, max = PlayerFrameHealthBar:GetMinMaxValues();
-	if ( (PlayerFrameHealthBar:GetValue()/(max - min) <= 0.2) and not LowHealthFrame.flashing and tonumber(SHOW_FULLSCREEN_STATUS) ~= 0 ) then
-		UIFrameFlash(LowHealthFrame, 0.5, 0.5, 100);
-		LowHealthFrame.flashing = 1;
-	elseif ( ((PlayerFrameHealthBar:GetValue()/(max - min) > 0.1) and LowHealthFrame.flashing) or UnitIsDead("player") ) then
-		UIFrameFlash(LowHealthFrame, 1, 1, 0);
-		LowHealthFrame.flashing = nil;
-	elseif ( UIParent.isOutOfControl and not OutOfControlFrame.flashing and tonumber(SHOW_FULLSCREEN_STATUS) ~= 0 ) then
-		UIFrameFlash(OutOfControlFrame, 0.5, 0.5, 100);
-		OutOfControlFrame.flashing = 1;
-	elseif ( not UIParent.isOutOfControl and OutOfControlFrame.flashing ) then
-		UIFrameFlash(OutOfControlFrame, 0.5, 0.5, 0);
-		OutOfControlFrame.flashing = nil;
-	end
-end
---]]
 
 
 -- Call this function to update the positions of all frames that can appear on the right side of the screen
@@ -2830,20 +2799,6 @@ function UnitHasMana(unit)
 		return 1;
 	end
 	return nil;
-end
-
--- Nameplate display function -- It was not used by the options ui, but somebody put it there. It's here now.
-function UpdateNameplates()
-	if ( NAMEPLATES_ON ) then
-		ShowNameplates();
-	else
-		HideNameplates();
-	end
-	if ( FRIENDNAMEPLATES_ON ) then
-		ShowFriendNameplates();
-	else
-		HideFriendNameplates();
-	end
 end
 
 function CopyTable(settings)

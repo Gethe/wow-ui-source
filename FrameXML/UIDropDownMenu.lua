@@ -51,7 +51,7 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 	-- Set the initialize function and call it.  The initFunction populates the dropdown list.
 	if ( initFunction ) then
 		frame.initialize = initFunction;
-		initFunction(level, frame.menuList);
+		initFunction(frame, level, frame.menuList);
 	end
 
 	-- Change appearance based on the displayMode

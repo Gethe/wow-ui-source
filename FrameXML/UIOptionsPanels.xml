@@ -21,12 +21,12 @@
 				BlizzardOptionsPanel_CheckButton_OnClick(self);
 			</OnClick>
 			<OnEnter>
-				if ( this.tooltipText ) then
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				if ( self.tooltipText ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 				end
-				if ( this.tooltipRequirement ) then
-					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+				if ( self.tooltipRequirement ) then
+					GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -117,12 +117,12 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				if ( this.tooltipText ) then
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				if ( self.tooltipText ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 				end
-				if ( this.tooltipRequirement ) then
-					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+				if ( self.tooltipRequirement ) then
+					GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -172,8 +172,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = CONTROLS_LABEL;
-				this.options = ControlsPanelOptions;
+				self.name = CONTROLS_LABEL;
+				self.options = ControlsPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 				UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, GetModifiedClick("AUTOLOOTTOGGLE"));
 				UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelAutoLootKeyDropDown);
@@ -193,10 +193,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.invert = true;
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "deselectOnClick";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.invert = true;
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "deselectOnClick";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -210,10 +210,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "gxFixLag";
-						this.setFunc = function(value) if (value ~= GetCVar("gxFixLag")) then ConsoleExec("gxRestart") end end;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "gxFixLag";
+						self.setFunc = function(value) if (value ~= GetCVar("gxFixLag")) then ConsoleExec("gxRestart") end end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -227,9 +227,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "autoDismountFlying";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoDismountFlying";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>			
 			</CheckButton>
@@ -243,9 +243,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "autoClearAFK";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoClearAFK";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -259,9 +259,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "BlockTrades";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "blockTrades";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -275,9 +275,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "lootUnderMouse";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "lootUnderMouse";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -291,17 +291,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "autoLootCorpse";
-						this.setFunc = function (value)
-							if ( value == "1" ) then
-								SetAutoLootDefault(true);
-							else
-								SetAutoLootDefault(false);
-							end
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoLootDefault";
+						self.setFunc = function (value)
 							BlizzardOptionsPanel_UpdateAutoLootDropDown(value);
 						end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -328,15 +323,15 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_DROPDOWN;
-						this:RegisterEvent("PLAYER_ENTERING_WORLD");
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad();
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad(self);
 					</OnLoad>
 					<OnEnter>
-						if ( not this.isDisabled ) then
-							GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+						if ( not self.isDisabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 						end
 					</OnEnter>
 					<OnEvent>
@@ -385,8 +380,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = COMBAT_LABEL;
-				this.options = CombatPanelOptions;
+				self.name = COMBAT_LABEL;
+				self.options = CombatPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
@@ -404,9 +399,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "assistAttack";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "assistAttack";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -420,9 +415,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "autoRangedCombat";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoRangedCombat";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -436,9 +431,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "autoSelfCast";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoSelfCast";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -452,9 +447,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "stopAutoAttackOnTargetChange";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "stopAutoAttackOnTargetChange";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -468,10 +463,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showTargetOfTarget";
-						this.uvar = "SHOW_TARGET_OF_TARGET";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showTargetOfTarget";
+						self.uvar = "SHOW_TARGET_OF_TARGET";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -500,17 +495,17 @@
 				-->
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_DROPDOWN;
-						this.cvar = "targetOfTargetMode";
-						this.uvar = "SHOW_TARGET_OF_TARGET_STATE";
-						this:RegisterEvent("VARIABLES_LOADED");
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelTargetOfTarget, this);
+						self.type = CONTROLTYPE_DROPDOWN;
+						self.cvar = "targetOfTargetMode";
+						self.uvar = "SHOW_TARGET_OF_TARGET_STATE";
+						self:RegisterEvent("VARIABLES_LOADED");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelTargetOfTarget, self);
 					</OnLoad>
 					<OnEnter>
-						if ( not this.isDisabled ) then
-							GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+						if ( not self.isDisabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 						end
 					</OnEnter>
 					<OnEvent>
@@ -559,9 +554,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this.type = CONTROLTYPE_CHECKBOX;
-								this.cvar = "ShowTargetCastbar";
-								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "showTargetCastbar";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
 					</CheckButton>	
@@ -575,9 +570,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this.type = CONTROLTYPE_CHECKBOX;
-								this.cvar = "ShowVKeyCastbar";
-								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "showVKeyCastbar";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
 					</CheckButton>						
@@ -621,8 +616,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = DISPLAY_LABEL;
-				this.options = DisplayPanelOptions;
+				self.name = DISPLAY_LABEL;
+				self.options = DisplayPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
@@ -725,11 +720,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "buffDurations";
-						this.uvar = "SHOW_BUFF_DURATIONS";
-						this.setFunc = BuffButtons_UpdatePositions;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "buffDurations";
+						self.uvar = "SHOW_BUFF_DURATIONS";
+						self.setFunc = BuffButtons_UpdatePositions;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -743,10 +738,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "rotateMinimap";
-						this.setFunc = Minimap_UpdateRotationSetting;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "rotateMinimap";
+						self.setFunc = Minimap_UpdateRotationSetting;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -760,10 +755,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "screenEdgeFlash";
-						this.uvar = "SHOW_FULLSCREEN_STATUS";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "screenEdgeFlash";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -777,9 +771,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showLootSpam";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showLootSpam";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -793,9 +787,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "displayFreeBagSlots";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "displayFreeBagSlots";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -823,14 +817,14 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnLoad>
-						<!-- No, I don't think this name is long enough. Yes, I would name it something longer if I could. Hrm. I probably should have put DDL in there for a touch of hungarian.-->
+						<!-- No, I don't think self name is long enough. Yes, I would name it something longer if I could. Hrm. I probably should have put DDL in there for a touch of hungarian.-->
 						InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad(self)
 					</OnLoad>
 				</Scripts>
@@ -873,8 +867,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = QUESTS_LABEL;
-				this.options = QuestPanelOptions;
+				self.name = QUESTS_LABEL;
+				self.options = QuestPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
@@ -892,10 +886,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "questFadingDisable";
-						this.uvar = "QUEST_FADING_DISABLE";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "questFadingDisable";
+						self.uvar = "QUEST_FADING_DISABLE";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -909,10 +903,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "autoQuestWatch";
-						this.uvar = "AUTO_QUEST_WATCH";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoQuestWatch";
+						self.uvar = "AUTO_QUEST_WATCH";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -954,8 +948,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = SOCIAL_LABEL;
-				this.options = SocialPanelOptions;
+				self.name = SOCIAL_LABEL;
+				self.options = SocialPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 				InterfaceOptionsSocialPanel_OnLoad(self);
 			</OnLoad>
@@ -977,9 +971,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "profanityFilter";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "profanityFilter";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -993,9 +987,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "ChatBubbles";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "chatBubbles";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -1009,9 +1003,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "ChatBubblesParty";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "chatBubblesParty";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1025,10 +1019,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.invert = true;
-						this.cvar = "spamFilter";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.invert = true;
+						self.cvar = "spamFilter";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1042,10 +1036,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "removeChatDelay";
-						this.uvar = "REMOVE_CHAT_DELAY";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "removeChatDelay";
+						self.uvar = "REMOVE_CHAT_DELAY";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1059,9 +1053,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "guildMemberNotify";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "guildMemberNotify";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1075,9 +1069,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "guildRecruitmentChannel";
-						this.setFunc = function (value) SetGuildRecruitmentMode(tonumber(value)) end;
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "guildRecruitmentChannel";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1092,9 +1085,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showChatIcons";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showChatIcons";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -1108,10 +1101,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "useSimpleChat";
-						this.uvar = "SIMPLE_CHAT";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "useSimpleChat";
+						self.uvar = "SIMPLE_CHAT";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -1125,10 +1118,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "chatLocked";
-						this.uvar = "CHAT_LOCKED";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "chatLocked";
+						self.uvar = "CHAT_LOCKED";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -1193,12 +1186,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.label = "bottomLeftActionBar";
-						this.uvar = "SHOW_MULTI_ACTIONBAR_1";
-						this.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						this.GetValue = function() return(select(1, GetActionBarToggles())) end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.label = "bottomLeftActionBar";
+						self.uvar = "SHOW_MULTI_ACTIONBAR_1";
+						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
+						self.GetValue = function() return(select(1, GetActionBarToggles())) end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1212,12 +1205,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.label = "bottomRightActionBar";
-						this.uvar = "SHOW_MULTI_ACTIONBAR_2";
-						this.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						this.GetValue = function() return(select(2, GetActionBarToggles())) end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.label = "bottomRightActionBar";
+						self.uvar = "SHOW_MULTI_ACTIONBAR_2";
+						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
+						self.GetValue = function() return(select(2, GetActionBarToggles())) end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1231,12 +1224,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.label = "rightActionBar";
-						this.uvar = "SHOW_MULTI_ACTIONBAR_3";
-						this.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						this.GetValue = function() return(select(3, GetActionBarToggles())) end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.label = "rightActionBar";
+						self.uvar = "SHOW_MULTI_ACTIONBAR_3";
+						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
+						self.GetValue = function() return(select(3, GetActionBarToggles())) end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1250,13 +1243,13 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.label = "rightTwoActionBar";
-						this.uvar = "SHOW_MULTI_ACTIONBAR_4";
-						this.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						this.GetValue = function() return(select(4, GetActionBarToggles())) end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsActionBarsPanelRight, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.label = "rightTwoActionBar";
+						self.uvar = "SHOW_MULTI_ACTIONBAR_4";
+						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
+						self.GetValue = function() return(select(4, GetActionBarToggles())) end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsActionBarsPanelRight, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1270,11 +1263,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "lockActionBars";
-						this.uvar = "LOCK_ACTIONBAR";
-						this.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "lockActionBars";
+						self.uvar = "LOCK_ACTIONBAR";
+						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1288,11 +1281,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "alwaysShowActionBars";
-						this.uvar = "ALWAYS_SHOW_MULTIBARS";
-						this.setFunc = function() MultiActionBar_UpdateGridVisibility(); InterfaceOptions_UpdateMultiActionBars(); end;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "alwaysShowActionBars";
+						self.uvar = "ALWAYS_SHOW_MULTIBARS";
+						self.setFunc = function() MultiActionBar_UpdateGridVisibility(); InterfaceOptions_UpdateMultiActionBars(); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1306,9 +1299,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "secureAbilityToggle";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "secureAbilityToggle";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -1350,8 +1343,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = NAMES_LABEL;
-				this.options = NamePanelOptions;
+				self.name = NAMES_LABEL;
+				self.options = NamePanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
@@ -1369,9 +1362,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "UnitNameOwn";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNameOwn";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -1385,9 +1378,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "UnitNameNPC";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNameNPC";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -1401,9 +1394,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "UnitNameCompanionName";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNameCompanionName";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -1417,9 +1410,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "UnitNamePlayerGuild";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNamePlayerGuild";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -1433,9 +1426,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "UnitNamePlayerPVPTitle";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNamePlayerPVPTitle";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -1461,9 +1454,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this.type = CONTROLTYPE_CHECKBOX;
-								this.cvar = "UnitNameFriendlyPlayerName";
-								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameFriendlyPlayerName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1477,11 +1470,11 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this.type = CONTROLTYPE_CHECKBOX;
-								this.cvar = "UnitNameFriendlyPetName";
-								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameFriendlyPetName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 								<!-- No longer a dependent control -->
-								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelFriendlyPlayerNames, this); -->
+								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelFriendlyPlayerNames, self); -->
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1495,11 +1488,11 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this.type = CONTROLTYPE_CHECKBOX;
-								this.cvar = "UnitNameFriendlyCreationName";
-								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameFriendlyCreationName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 								<!-- No longer a dependent control -->
-								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelFriendlyPlayerNames, this); -->
+								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelFriendlyPlayerNames, self); -->
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1527,9 +1520,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this.type = CONTROLTYPE_CHECKBOX;
-								this.cvar = "UnitNameEnemyPlayerName";
-								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameEnemyPlayerName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1543,11 +1536,11 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this.type = CONTROLTYPE_CHECKBOX;
-								this.cvar = "UnitNameEnemyPetName";
-								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameEnemyPetName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 								<!-- No longer a dependent control -->
-								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelEnemyPlayerNames, this); -->
+								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelEnemyPlayerNames, self); -->
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1561,11 +1554,11 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this.type = CONTROLTYPE_CHECKBOX;
-								this.cvar = "UnitNameEnemyCreationName";
-								BlizzardOptionsPanel_RegisterControl(this, this:GetParent():GetParent());
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameEnemyCreationName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 								<!-- No longer a dependent control -->
-								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelEnemyPlayerNames, this); -->
+								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelEnemyPlayerNames, self); -->
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1609,8 +1602,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = COMBATTEXT_LABEL;
-				this.options = FCTPanelOptions;
+				self.name = COMBATTEXT_LABEL;
+				self.options = FCTPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
@@ -1628,9 +1621,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "CombatDamage";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "CombatDamage";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1644,10 +1637,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "CombatLogPeriodicSpells";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelTargetDamage, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "CombatLogPeriodicSpells";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelTargetDamage, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1661,11 +1654,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "PetMeleeDamage";
-						this.setFunc = function (value) SetCVar("PetSpellDamage", value); end;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelTargetDamage, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "PetMeleeDamage";
+						self.setFunc = function (value) SetCVar("PetSpellDamage", value); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelTargetDamage, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1679,9 +1672,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "CombatHealing";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "CombatHealing";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1695,16 +1688,16 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "enableCombatText";
-						this.uvar = "SHOW_COMBAT_TEXT";
-						this.setFunc = function (value)
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "enableCombatText";
+						self.uvar = "SHOW_COMBAT_TEXT";
+						self.setFunc = function (value)
 							if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
 								UIParentLoadAddOn("Blizzard_CombatText");
 							end
 							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1760,12 +1753,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctDodgeParryMiss";
-						this.uvar = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS";
-						this.setFunc = BlizzardOptionsPanel_UpdateCombatText;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctDodgeParryMiss";
+						self.uvar = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1777,12 +1770,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctDamageReduction";
-						this.uvar = "COMBAT_TEXT_SHOW_RESISTANCES";
-						this.setFunc = BlizzardOptionsPanel_UpdateCombatText;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctDamageReduction";
+						self.uvar = "COMBAT_TEXT_SHOW_RESISTANCES";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1794,12 +1787,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctRepChanges";
-						this.uvar = "COMBAT_TEXT_SHOW_REPUTATION";
-						this.setFunc = BlizzardOptionsPanel_UpdateCombatText;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctRepChanges";
+						self.uvar = "COMBAT_TEXT_SHOW_REPUTATION";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1811,12 +1804,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctReactives";
-						this.uvar = "COMBAT_TEXT_SHOW_REACTIVES";
-						this.setFunc = BlizzardOptionsPanel_UpdateCombatText;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctReactives";
+						self.uvar = "COMBAT_TEXT_SHOW_REACTIVES";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1828,12 +1821,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctFriendlyHealers";
-						this.uvar = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES";
-						this.setFunc = BlizzardOptionsPanel_UpdateCombatText;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctFriendlyHealers";
+						self.uvar = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1845,12 +1838,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctCombatState";
-						this.uvar = "COMBAT_TEXT_SHOW_COMBAT_STATE";
-						this.setFunc = BlizzardOptionsPanel_UpdateCombatText;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctCombatState";
+						self.uvar = "COMBAT_TEXT_SHOW_COMBAT_STATE";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -1862,12 +1855,12 @@
 				</Anchors>			
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctComboPoints";
-						this.uvar = "COMBAT_TEXT_SHOW_COMBO_POINTS";
-						<!-- This runs first so the new Disable method will be registered when BlizzardOptionsPanel_RegisterControl runs the control's setFunc at startup -->
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
-						this.setFunc = function (value)
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctComboPoints";
+						self.uvar = "COMBAT_TEXT_SHOW_COMBO_POINTS";
+						<!-- self runs first so the new Disable method will be registered when BlizzardOptionsPanel_RegisterControl runs the control's setFunc at startup -->
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
+						self.setFunc = function (value)
 							local _, class = UnitClass("player");
 							if ( class ~= "ROGUE" and class ~= "DRUID" ) then
 								InterfaceOptionsCombatTextPanelComboPoints:SetChecked(false);
@@ -1875,9 +1868,9 @@
 							end					
 							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						this.Enable = function (self) 
-							<!-- fix for bug 106687: This button can no longer be enabled if you're not a rogue or a druid -->
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self.Enable = function (self) 
+							<!-- fix for bug 106687: self button can no longer be enabled if you're not a rogue or a druid -->
 							local _, class = UnitClass("player");
 							if ( class ~= "ROGUE" and class ~= "DRUID" ) then
 								return;
@@ -1896,12 +1889,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctLowManaHealth";
-						this.uvar = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA";
-						this.setFunc = BlizzardOptionsPanel_UpdateCombatText;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctLowManaHealth";
+						self.uvar = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1913,12 +1906,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctEnergyGains";
-						this.uvar = "COMBAT_TEXT_SHOW_MANA";
-						this.setFunc = BlizzardOptionsPanel_UpdateCombatText;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctEnergyGains";
+						self.uvar = "COMBAT_TEXT_SHOW_MANA";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -1930,12 +1923,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctHonorGains";
-						this.uvar = "COMBAT_TEXT_SHOW_HONOR_GAINED";
-						this.setFunc = BlizzardOptionsPanel_UpdateCombatText;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctHonorGains";
+						self.uvar = "COMBAT_TEXT_SHOW_HONOR_GAINED";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -1947,12 +1940,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "fctAuras";
-						this.uvar = "COMBAT_TEXT_SHOW_AURAS";
-						this.setFunc = BlizzardOptionsPanel_UpdateCombatText;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, this);
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctAuras";
+						self.uvar = "COMBAT_TEXT_SHOW_AURAS";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -1994,8 +1987,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = STATUSTEXT_LABEL;
-				this.options = StatusTextPanelOptions;
+				self.name = STATUSTEXT_LABEL;
+				self.options = StatusTextPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
@@ -2013,9 +2006,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "playerStatusText";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "playerStatusText";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -2029,9 +2022,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "petStatusText";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "petStatusText";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -2045,9 +2038,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "partyStatusText";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "partyStatusText";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -2061,9 +2054,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "targetStatusText";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "targetStatusText";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -2077,9 +2070,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "statusTextPercentage";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "statusTextPercentage";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -2093,9 +2086,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "xpBarText";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "xpBarText";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -2137,8 +2130,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = PARTYRAID_LABEL;
-				this.options = PartyRaidPanelOptions;
+				self.name = PARTYRAID_LABEL;
+				self.options = PartyRaidPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
@@ -2156,11 +2149,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showPartyBackground";
-						this.uvar = "SHOW_PARTY_BACKGROUND";
-						this.setFunc = UpdatePartyMemberBackground;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showPartyBackground";
+						self.uvar = "SHOW_PARTY_BACKGROUND";
+						self.setFunc = UpdatePartyMemberBackground;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -2174,11 +2167,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "hidePartyInRaid";
-						this.uvar = "HIDE_PARTY_INTERFACE";
-						this.setFunc = RaidOptionsFrame_UpdatePartyFrames;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "hidePartyInRaid";
+						self.uvar = "HIDE_PARTY_INTERFACE";
+						self.setFunc = RaidOptionsFrame_UpdatePartyFrames;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -2192,11 +2185,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showPartyPets";
-						this.uvar = "SHOW_PARTY_PETS";
-						this.setFunc = function() for i=1, MAX_PARTY_MEMBERS do PartyMemberFrame_UpdatePet(i); end end;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showPartyPets";
+						self.uvar = "SHOW_PARTY_PETS";
+						self.setFunc = function() for i=1, MAX_PARTY_MEMBERS do PartyMemberFrame_UpdatePet("PartyMemberFrame" .. i, i); end end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -2210,11 +2203,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showPartyDebuffs";
-						this.uvar = "SHOW_DISPELLABLE_DEBUFFS";
-						this.setFunc = BlizzardOptionsPanel_UpdateRaidPullouts;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showDispelDebuffs";
+						self.setFunc = BlizzardOptionsPanel_UpdateRaidPullouts;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -2228,11 +2220,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showPartyBuffs";
-						this.uvar = "SHOW_CASTABLE_BUFFS";
-						this.setFunc = BlizzardOptionsPanel_UpdateRaidPullouts;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showCastableBuffs";
+						self.setFunc = BlizzardOptionsPanel_UpdateRaidPullouts;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -2246,16 +2237,16 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.setFunc = function(value)
+						self.setFunc = function(value)
 							if ( value == "1") then
 								RaidFrame.showRange = 1;
 							else
 								RaidFrame.showRange = nil;
 							end
 						end;
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showRaidRange";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showRaidRange";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -2297,8 +2288,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = CAMERA_LABEL;
-				this.options = CameraPanelOptions;
+				self.name = CAMERA_LABEL;
+				self.options = CameraPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self)
 			</OnLoad>
 			<OnShow>
@@ -2329,19 +2320,19 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_DROPDOWN;
-						this:RegisterEvent("VARIABLES_LOADED");
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("VARIABLES_LOADED");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnEnter>
-						if ( not this.isDisabled ) then
-							GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+						if ( not self.isDisabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 						end
 					</OnEnter>
 					<OnEvent>
 						if ( event == "VARIABLES_LOADED" ) then
-							InterfaceOptionsCameraPanelStyleDropDown_OnLoad();
+							InterfaceOptionsCameraPanelStyleDropDown_OnLoad(self);
 						end
 					</OnEvent>
 					<OnLeave>
@@ -2359,20 +2350,20 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_SLIDER;
-						this.cvar = "cameraYawSmoothSpeed";
-						this.oldSetValue = this.SetValue;
-						this.SetValue = function (self, value)
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "cameraYawSmoothSpeed";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
 							self:oldSetValue(value);
 							self.value = value;
 							SetCVar(self.cvar, value);
 							SetCVar("cameraPitchSmoothSpeed", value/4);
 						end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						this.value = this:GetValue();
-						this:SetValue(this:GetValue());
+						self.value = self:GetValue();
+						self:SetValue(self:GetValue());
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
@@ -2386,19 +2377,19 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_SLIDER;
-						this.cvar = "cameraDistanceMaxFactor";
-						this.oldSetValue = this.SetValue;
-						this.SetValue = function (self, value)
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "cameraDistanceMaxFactor";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
 							self:oldSetValue(value);
 							self.value = value;
 							SetCVar(self.cvar, value);
 						end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						this.value = this:GetValue();
-						this:SetValue(this:GetValue());
+						self.value = self:GetValue();
+						self:SetValue(self:GetValue());
 					</OnValueChanged>
 				</Scripts>
 			</Slider>			
@@ -2412,9 +2403,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "cameraTerrainTilt";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "cameraTerrainTilt";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -2428,9 +2419,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "cameraBobbing";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "cameraBobbing";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>					
@@ -2444,9 +2435,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "cameraWaterCollision";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "cameraWaterCollision";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>					
@@ -2460,9 +2451,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "cameraPivot";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "cameraPivot";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>					
@@ -2504,8 +2495,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = MOUSE_LABEL;
-				this.options = MousePanelOptions;
+				self.name = MOUSE_LABEL;
+				self.options = MousePanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow>
@@ -2523,9 +2514,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "mouseInvertPitch";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "mouseInvertPitch";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -2539,9 +2530,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "autointeract";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autointeract";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -2555,19 +2546,19 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_SLIDER;
-						this.cvar = "mousespeed";
-						this.oldSetValue = this.SetValue;
-						this.SetValue = function (self, value)
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "mouseSpeed";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
 							self:oldSetValue(value);
 							self.value = value;
 							SetCVar(self.cvar, value);
 						end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						this.value = this:GetValue();
-						this:SetValue(this:GetValue());
+						self.value = self:GetValue();
+						self:SetValue(self:GetValue());
 					</OnValueChanged>
 				</Scripts>
 			</Slider>				
@@ -2581,20 +2572,20 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_SLIDER;
-						this.cvar = "cameraYawMoveSpeed";
-						this.oldSetValue = this.SetValue;
-						this.SetValue = function (self, value)
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "cameraYawMoveSpeed";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
 							self:oldSetValue(value);
 							self.value = value;
 							SetCVar(self.cvar, value);
 							SetCVar("cameraPitchMoveSpeed", value/2);
 						end
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						this.value = this:GetValue();
-						this:SetValue(this:GetValue());
+						self.value = self:GetValue();
+						self:SetValue(self:GetValue());
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
@@ -2621,20 +2612,20 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_DROPDOWN;
-						this:RegisterEvent("VARIABLES_LOADED");
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsMousePanelClickToMove, this);
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("VARIABLES_LOADED");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsMousePanelClickToMove, self);
 					</OnLoad>
 					<OnEnter>
-						if ( not this.isDisabled ) then
-							GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+						if ( not self.isDisabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 						end
 					</OnEnter>
 					<OnEvent>
 						if ( event == "VARIABLES_LOADED" ) then
-							InterfaceOptionsMousePanelClickMoveStyleDropDown_OnLoad();
+							InterfaceOptionsMousePanelClickMoveStyleDropDown_OnLoad(self);
 						end
 					</OnEvent>
 					<OnLeave>
@@ -2680,8 +2671,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = HELP_LABEL;
-				this.options = HelpPanelOptions;
+				self.name = HELP_LABEL;
+				self.options = HelpPanelOptions;
 				BlizzardOptionsPanel_OnLoad(self);
 				InterfaceOptionsHelpPanel_OnLoad(self);
 			</OnLoad>
@@ -2701,16 +2692,16 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.text = getglobal(this:GetName().."Text");
-						this.text:SetText(SHOW_TUTORIALS);
-						this.tooltipText = OPTION_TOOLTIP_SHOW_TUTORIALS;
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.text = getglobal(self:GetName().."Text");
+						self.text:SetText(SHOW_TUTORIALS);
+						self.tooltipText = OPTION_TOOLTIP_SHOW_TUTORIALS;
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(TutorialsEnabled())
+						self:SetChecked(TutorialsEnabled())
 					</OnShow>
 					<OnClick>
-						if ( this:GetChecked() ) then
+						if ( self:GetChecked() ) then
 							PlaySound("igMainMenuOptionCheckBoxOn");
 						else
 							PlaySound("igMainMenuOptionCheckBoxOff");
@@ -2728,9 +2719,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showGameTips";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showGameTips";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -2744,9 +2735,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "UberTooltips";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UberTooltips";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -2760,10 +2751,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showNewbieTips";
-						this.uvar = "SHOW_NEWBIE_TIPS";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showNewbieTips";
+						self.uvar = "SHOW_NEWBIE_TIPS";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -2777,9 +2768,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "scriptErrors";
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "scriptErrors";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
@@ -2801,8 +2792,8 @@
 						TutorialFrame_HideAllAlerts();
 						TutorialFrameCheckButton:SetChecked(1);
 						--Check the show tutorials option
-						if not (getglobal(this:GetParent():GetName() .. "Tutorials"):GetChecked()) then
-							getglobal(this:GetParent():GetName() .. "Tutorials"):Click()
+						if not (getglobal(self:GetParent():GetName() .. "Tutorials"):GetChecked()) then
+							getglobal(self:GetParent():GetName() .. "Tutorials"):Click()
 						end
 					</OnClick>
 				</Scripts>
@@ -2847,8 +2838,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.name = LANGUAGES_LABEL;
-				this.options = LanguagesPanelOptions;
+				self.name = LANGUAGES_LABEL;
+				self.options = LanguagesPanelOptions;
 				InterfaceOptionsLanguagesPanel_OnLoad(self);			
 			</OnLoad>
 			<OnShow>
@@ -2879,13 +2870,16 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_DROPDOWN;
-						BlizzardOptionsPanel_RegisterControl(this, this:GetParent());
-						InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad();
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
+					<OnEvent>
+						InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad(self);
+					</OnEvent>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

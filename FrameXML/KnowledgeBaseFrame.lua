@@ -11,17 +11,16 @@ KBASE_SEARCH_PERFORMED = 0;
 KBASE_SETUP_LOADED = 0;
 KBASE_ENABLE_SEARCH = 1;
 
-function KnowledgeBaseFrame_OnLoad()
-	this:RegisterEvent("UPDATE_GM_STATUS");
-	this:RegisterEvent("UPDATE_TICKET");
-	this:RegisterEvent("KNOWLEDGE_BASE_SETUP_LOAD_SUCCESS");
-	this:RegisterEvent("KNOWLEDGE_BASE_SETUP_LOAD_FAILURE");
-	this:RegisterEvent("KNOWLEDGE_BASE_QUERY_LOAD_SUCCESS");
-	this:RegisterEvent("KNOWLEDGE_BASE_QUERY_LOAD_FAILURE");
-	this:RegisterEvent("KNOWLEDGE_BASE_ARTICLE_LOAD_SUCCESS");
-	this:RegisterEvent("KNOWLEDGE_BASE_ARTICLE_LOAD_FAILURE");
-	this:RegisterEvent("KNOWLEDGE_BASE_SYSTEM_MOTD_UPDATE");
-	this:RegisterEvent("KNOWLEDGE_BASE_SERVER_MESSAGE");
+function KnowledgeBaseFrame_OnLoad(self)
+	self:RegisterEvent("UPDATE_GM_STATUS");
+	self:RegisterEvent("KNOWLEDGE_BASE_SETUP_LOAD_SUCCESS");
+	self:RegisterEvent("KNOWLEDGE_BASE_SETUP_LOAD_FAILURE");
+	self:RegisterEvent("KNOWLEDGE_BASE_QUERY_LOAD_SUCCESS");
+	self:RegisterEvent("KNOWLEDGE_BASE_QUERY_LOAD_FAILURE");
+	self:RegisterEvent("KNOWLEDGE_BASE_ARTICLE_LOAD_SUCCESS");
+	self:RegisterEvent("KNOWLEDGE_BASE_ARTICLE_LOAD_FAILURE");
+	self:RegisterEvent("KNOWLEDGE_BASE_SYSTEM_MOTD_UPDATE");
+	self:RegisterEvent("KNOWLEDGE_BASE_SERVER_MESSAGE");
 
 	-- ADDITIONAL LAYOUT
 	KnowledgeBaseFrame_DisableButtons();
@@ -45,8 +44,6 @@ function KnowledgeBaseFrame_OnLoad()
 end
 
 function KnowledgeBaseFrame_OnShow()
-	UpdateMicroButtons();
-	PlaySound("igCharacterInfoOpen");
 	if ( KBASE_SETUP_LOADED == 0 ) then
 		KBSetup_BeginLoading(KBASE_NUM_ARTICLES_PER_PAGE, KBASE_CURRENT_PAGE);
 	end
@@ -56,14 +53,11 @@ function KnowledgeBaseFrame_OnShow()
 	KnowledgeBaseFrame_UpdateMotd();
 	KnowledgeBaseFrame_UpdateServerMessage();
 	KnowledgeBaseFrameEditBox:SetFocus();
+
+	HelpFrame.back = KnowledgeBaseFrameCancel;
 end
 
-function KnowledgeBaseFrame_OnHide()
-	PlaySound("igCharacterInfoClose");
-	UpdateMicroButtons();
-end
-
-function KnowledgeBaseFrame_OnEvent()
+function KnowledgeBaseFrame_OnEvent(self, event, ...)
 	if ( event ==  "KNOWLEDGE_BASE_SETUP_LOAD_SUCCESS" ) then
 		KBASE_SETUP_LOADED = 1;
 
@@ -132,26 +126,12 @@ function KnowledgeBaseFrame_OnEvent()
 	end
 
 	if ( event ==  "UPDATE_GM_STATUS" ) then
-		if ( arg1 == 1 ) then
+		local status = ...;
+		if ( status == 1 ) then
 			GetGMTicket();
 		else
-			KnowledgeBaseFrameOpenTicket:Disable();
-			KnowledgeBaseFrameOpenTicketEdit:Disable();
-			KnowledgeBaseFrameOpenTicketCancel:Disable();
-		end
-	end
-
-	if ( event == "UPDATE_TICKET" ) then
-		if ( PETITION_QUEUE_ACTIVE ) then
-			if (  arg1 and arg1 ~= 0 ) then
-				KnowledgeBaseFrameOpenTicket:Disable();
-				KnowledgeBaseFrameOpenTicketEdit:Enable();
-				KnowledgeBaseFrameOpenTicketCancel:Enable();
-			else
-				KnowledgeBaseFrameOpenTicket:Enable();
-				KnowledgeBaseFrameOpenTicketEdit:Disable();
-				KnowledgeBaseFrameOpenTicketCancel:Disable();
-			end
+			KnowledgeBaseFrameGMTalk:Disable();
+			KnowledgeBaseFrameReportIssue:Disable();
 		end
 	end
 
@@ -161,29 +141,6 @@ function KnowledgeBaseFrame_OnEvent()
 
 	if ( event ==  "KNOWLEDGE_BASE_SERVER_MESSAGE" ) then
 		KnowledgeBaseFrame_UpdateServerMessage();
-	end
-end
-
-function ToggleKnowledgeBaseFrame()
-	if ( KnowledgeBaseFrame:IsShown() ) then
-		HideUIPanel(KnowledgeBaseFrame);
-	elseif ( HelpFrame:IsShown() ) then
-		HideUIPanel(HelpFrame);		
-	else
-		StaticPopup_Hide("HELP_TICKET");
-		StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
-		HideUIPanel(HelpFrame);
-		ShowUIPanel(KnowledgeBaseFrame);
-	end
-end
-
-function OpenHelpFrame()
-	HideUIPanel(KnowledgeBaseFrame);
-
-	if ( PETITION_QUEUE_ACTIVE ) then
-		ShowUIPanel(HelpFrame);
-	else
-		StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
 	end
 end
 
@@ -536,29 +493,31 @@ function KnowledgeBaseArticleListItem_OnClick()
 	KBArticle_BeginLoading(this.articleId, searchType);
 end
 
-function KnowledgeBaseArticleListItem_OnEnter()
-	this.tooltipDelay = KBASE_TOOLTIP_DELAY;
+function KnowledgeBaseArticleListItem_OnEnter(self)
+	self.tooltipDelay = KBASE_TOOLTIP_DELAY;
 end
 
-function KnowledgeBaseArticleListItem_OnUpdate(elapsed)
-	if ( not this.tooltipDelay ) then
-		return;
-	end
-	this.tooltipDelay = this.tooltipDelay - elapsed;
-	if ( this.tooltipDelay > 0 ) then
+function KnowledgeBaseArticleListItem_OnUpdate(self, ...)
+	if ( not self.tooltipDelay ) then
 		return;
 	end
 
-	this.tooltipDelay = nil;
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT", 15);
-	GameTooltip:SetText(this.articleHeader, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+	local elapsed = ...;
+	self.tooltipDelay = self.tooltipDelay - elapsed;
+	if ( self.tooltipDelay > 0 ) then
+		return;
+	end
 
-	if ( this.isArticleHot ) then
+	self.tooltipDelay = nil;
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 15);
+	GameTooltip:SetText(self.articleHeader, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+
+	if ( self.isArticleHot ) then
 		GameTooltip:AddLine(KBASE_HOT_ISSUE);
 		GameTooltip:AddTexture("Interface\\HelpFrame\\HotIssueIcon");
 	end
 
-	if ( this.isArticleUpdated ) then
+	if ( self.isArticleUpdated ) then
 		GameTooltip:AddLine(KBASE_RECENTLY_UPDATED);
 		GameTooltip:AddTexture("Interface\\GossipFrame\\AvailableQuestIcon");
 	end
@@ -567,8 +526,8 @@ function KnowledgeBaseArticleListItem_OnUpdate(elapsed)
 	GameTooltip:Show();
 end
 
-function KnowledgeBaseArticleListItem_OnLeave()
-	this.tooltipDelay = nil;
+function KnowledgeBaseArticleListItem_OnLeave(self)
+	self.tooltipDelay = nil;
 	GameTooltip:SetMinimumWidth(0, 0);
 	GameTooltip:Hide();
 end
@@ -577,17 +536,19 @@ function KnowledgeBaseServerMessageTextFrame_OnEnter()
 	this.tooltipDelay = KBASE_TOOLTIP_DELAY;
 end
 
-function KnowledgeBaseServerMessageTextFrame_OnUpdate(elapsed)
-	if ( not this.tooltipDelay ) then
-		return;
-	end
-	this.tooltipDelay = this.tooltipDelay - elapsed;
-	if ( this.tooltipDelay > 0 ) then
+function KnowledgeBaseServerMessageTextFrame_OnUpdate(self, ...)
+	if ( not self.tooltipDelay ) then
 		return;
 	end
 
-	this.tooltipDelay = nil;
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT", 15);
+	local elapsed = ...;
+	self.tooltipDelay = self.tooltipDelay - elapsed;
+	if ( self.tooltipDelay > 0 ) then
+		return;
+	end
+
+	self.tooltipDelay = nil;
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 15);
 	GameTooltip:SetText(KnowledgeBaseServerMessageText:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
 	GameTooltip:SetMinimumWidth(220, 1);
 	GameTooltip:Show();
@@ -603,17 +564,19 @@ function KnowledgeBaseMotdTextFrame_OnEnter()
 	this.tooltipDelay = KBASE_TOOLTIP_DELAY;
 end
 
-function KnowledgeBaseMotdTextFrame_OnUpdate(elapsed)
-	if ( not this.tooltipDelay ) then
-		return;
-	end
-	this.tooltipDelay = this.tooltipDelay - elapsed;
-	if ( this.tooltipDelay > 0 ) then
+function KnowledgeBaseMotdTextFrame_OnUpdate(self, ...)
+	if ( not self.tooltipDelay ) then
 		return;
 	end
 
-	this.tooltipDelay = nil;
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT", 15);
+	local elapsed = ...;
+	self.tooltipDelay = self.tooltipDelay - elapsed;
+	if ( self.tooltipDelay > 0 ) then
+		return;
+	end
+
+	self.tooltipDelay = nil;
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 15);
 	GameTooltip:SetText(KnowledgeBaseMotdText:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
 	GameTooltip:SetMinimumWidth(220, 1);
 	GameTooltip:Show();
@@ -625,20 +588,21 @@ function KnowledgeBaseMotdTextFrame_OnLeave()
 	GameTooltip:Hide();
 end
 
-function SearchButton_OnUpdate(elapsed)
+function SearchButton_OnUpdate(self, ...)
 	if ( KBASE_ENABLE_SEARCH == 0 ) then
 		return;
 	end
 
-	if ( not this.enableDelay ) then
+	if ( not self.enableDelay ) then
 		return;
 	end
 
-	this.enableDelay = this.enableDelay - elapsed;
+	local elapsed = ...;
+	self.enableDelay = self.enableDelay - elapsed;
 	if ( this.enableDelay > 0 ) then
 		return;
 	end
 
-	this.enableDelay = nil;
-	this:Enable();
+	self.enableDelay = nil;
+	self:Enable();
 end

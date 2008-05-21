@@ -3,30 +3,30 @@ NUM_BAG_SLOTS = 4;
 NUM_BANKGENERIC_SLOTS = 28;
 NUM_BANKBAGSLOTS = 7;
 
-function ButtonInventorySlot(self)
+function ButtonInventorySlot (self)
 	return BankButtonIDToInvSlotID(self:GetID(),self.isBag)
 end
 
-function BankFrameBaseButton_OnLoad()
-	this:RegisterForDrag("LeftButton");
-	this:RegisterForClicks("LeftButtonUp","RightButtonUp");
-	this.GetInventorySlot = ButtonInventorySlot;
-	this.UpdateTooltip = BankFrameItemButton_OnEnter;
+function BankFrameBaseButton_OnLoad (self)
+	self:RegisterForDrag("LeftButton");
+	self:RegisterForClicks("LeftButtonUp","RightButtonUp");
+	self.GetInventorySlot = ButtonInventorySlot;
+	self.UpdateTooltip = BankFrameItemButton_OnEnter;
 end
 
-function BankFrameItemButton_OnLoad() 
-	BankFrameBaseButton_OnLoad();
-	this.SplitStack = function(button, split)
+function BankFrameItemButton_OnLoad (self) 
+	BankFrameBaseButton_OnLoad (self);
+	self.SplitStack = function(button, split)
 		SplitContainerItem(BANK_CONTAINER, button:GetID(), split);
 	end
 end
 
-function BankFrameBagButton_OnLoad()
-	this.isBag = 1;
-	BankFrameBaseButton_OnLoad();
+function BankFrameBagButton_OnLoad (self)
+	self.isBag = 1;
+	BankFrameBaseButton_OnLoad(self);
 end
 
-function BankFrameItemButton_OnEnter(self)
+function BankFrameItemButton_OnEnter (self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( not GameTooltip:SetInventoryItem("player", self:GetInventorySlot()) ) then
 		if ( self.isBag ) then
@@ -36,7 +36,7 @@ function BankFrameItemButton_OnEnter(self)
 	CursorUpdate();
 end
 
-function BankFrameItemButton_Update(button)
+function BankFrameItemButton_Update (button)
 	local texture = getglobal(button:GetName().."IconTexture");
 	local inventoryID = button:GetInventorySlot();
 	local textureName = GetInventoryItemTexture("player",inventoryID);
@@ -66,7 +66,7 @@ function BankFrameItemButton_Update(button)
 	BankFrameItemButton_UpdateLocked(button);
 end
 
-function BankFrameItemButton_UpdateLocked(button) 
+function BankFrameItemButton_UpdateLocked (button) 
 	local inventoryID = button:GetInventorySlot();
 	if ( IsInventoryItemLocked(inventoryID) ) then
 		SetItemButtonDesaturated(button, 1, 0.5, 0.5, 0.5);
@@ -78,12 +78,12 @@ function BankFrameItemButton_UpdateLocked(button)
 	end
 end
 
-function BankFrame_OnLoad()
-	this:RegisterEvent("BANKFRAME_OPENED");
-	this:RegisterEvent("BANKFRAME_CLOSED");
+function BankFrame_OnLoad (self)
+	self:RegisterEvent("BANKFRAME_OPENED");
+	self:RegisterEvent("BANKFRAME_CLOSED");
 end
 
-function UpdateBagSlotStatus() 
+function UpdateBagSlotStatus () 
 	local purchaseFrame = BankFramePurchaseInfo;
 	if( purchaseFrame == nil ) then
 		return;
@@ -121,24 +121,24 @@ function UpdateBagSlotStatus()
 	end
 end
 
-function CloseBankBagFrames() 
+function CloseBankBagFrames () 
 	for i=NUM_BAG_SLOTS+1, (NUM_BAG_SLOTS + NUM_BANKBAGSLOTS), 1 do
 		CloseBag(i);
 	end
 end
 
-function BankFrame_OnEvent(event)
+function BankFrame_OnEvent (self, event, ...)
 	if ( event == "BANKFRAME_OPENED" ) then
 		BankFrameTitleText:SetText(UnitName("npc"));
 		SetPortraitTexture(BankPortraitTexture,"npc");
-		ShowUIPanel(this);
-		if ( not this:IsShown() ) then
+		ShowUIPanel(self);
+		if ( not self:IsShown() ) then
 			CloseBankFrame();
 		end
 	elseif ( event == "BANKFRAME_CLOSED" ) then
-		HideUIPanel(this);
+		HideUIPanel(self);
 	elseif ( event == "ITEM_LOCK_CHANGED" ) then
-		local bag, slot = arg1, arg2;
+		local bag, slot = ...;
 		if ( bag == BANK_CONTAINER ) then
 			if ( slot <= NUM_BANKGENERIC_SLOTS ) then
 				BankFrameItemButton_UpdateLocked(getglobal("BankFrameItem"..slot));
@@ -147,7 +147,7 @@ function BankFrame_OnEvent(event)
 			end
 		end
 	elseif ( event == "PLAYERBANKSLOTS_CHANGED" ) then
-		local slot = arg1;
+		local slot = ...;
 		if ( slot <= NUM_BANKGENERIC_SLOTS ) then
 			BankFrameItemButton_Update(getglobal("BankFrameItem"..slot));
 		else
@@ -158,13 +158,13 @@ function BankFrame_OnEvent(event)
 	end
 end
 
-function BankFrame_OnShow()
+function BankFrame_OnShow (self)
 	PlaySound("igMainMenuOpen");
 
-	this:RegisterEvent("ITEM_LOCK_CHANGED");
-	this:RegisterEvent("PLAYERBANKSLOTS_CHANGED");
-	this:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
-	this:RegisterEvent("PLAYER_MONEY");
+	self:RegisterEvent("ITEM_LOCK_CHANGED");
+	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED");
+	self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
+	self:RegisterEvent("PLAYER_MONEY");
 
 	for i=1, NUM_BANKGENERIC_SLOTS, 1 do
 		button = getglobal("BankFrameItem"..i);
@@ -177,13 +177,13 @@ function BankFrame_OnShow()
 	UpdateBagSlotStatus();
 end
 
-function BankFrame_OnHide()
+function BankFrame_OnHide (self)
 	PlaySound("igMainMenuClose");
 
-	this:UnregisterEvent("ITEM_LOCK_CHANGED");
-	this:UnregisterEvent("PLAYERBANKSLOTS_CHANGED");
-	this:UnregisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
-	this:UnregisterEvent("PLAYER_MONEY");
+	self:UnregisterEvent("ITEM_LOCK_CHANGED");
+	self:UnregisterEvent("PLAYERBANKSLOTS_CHANGED");
+	self:UnregisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
+	self:UnregisterEvent("PLAYER_MONEY");
 
 	StaticPopup_Hide("CONFIRM_BUY_BANK_SLOT");
 	CloseBankBagFrames();
@@ -191,38 +191,39 @@ function BankFrame_OnHide()
 	updateContainerFrameAnchors();
 end
 
-function BankFrameItemButtonGeneric_OnClick(button)
+function BankFrameItemButtonGeneric_OnClick (self, button)
 	if ( button == "LeftButton" ) then
-		PickupContainerItem(BANK_CONTAINER, this:GetID());
+		PickupContainerItem(BANK_CONTAINER, self:GetID());
 	else
-		UseContainerItem(BANK_CONTAINER, this:GetID());
+		UseContainerItem(BANK_CONTAINER, self:GetID());
 	end
 end
 
-function BankFrameItemButtonGeneric_OnModifiedClick(button)
-	if ( this.isBag ) then
+function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
+	if ( self.isBag ) then
 		return;
 	end
-	if ( HandleModifiedItemClick(GetContainerItemLink(BANK_CONTAINER, this:GetID())) ) then
+	if ( HandleModifiedItemClick(GetContainerItemLink(BANK_CONTAINER, self:GetID())) ) then
 		return;
 	end
 	if ( IsModifiedClick("SPLITSTACK") ) then
-		local texture, itemCount, locked = GetContainerItemInfo(BANK_CONTAINER, this:GetID());
+		local texture, itemCount, locked = GetContainerItemInfo(BANK_CONTAINER, self:GetID());
 		if ( not locked ) then
-			OpenStackSplitFrame(this.count, this, "BOTTOMLEFT", "TOPLEFT");
+			OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 		end
 		return;
 	end
 end
 
-function UpdateBagButtonHighlight(id) 
+function UpdateBagButtonHighlight (id) 
 	local texture = getglobal("BankFrameBag"..(id - NUM_BAG_SLOTS).."HighlightFrameTexture");
 	if ( not texture ) then
 		return;
 	end
 
+	local frame;
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
-		local frame = getglobal("ContainerFrame"..i);
+		frame = getglobal("ContainerFrame"..i);
 		if ( ( frame:GetID() == id ) and frame:IsShown() ) then
 			texture:Show();
 			return;
@@ -231,10 +232,10 @@ function UpdateBagButtonHighlight(id)
 	texture:Hide();
 end
 
-function BankFrameItemButtonBag_OnClick(button) 
-	local inventoryID = this:GetInventorySlot();
+function BankFrameItemButtonBag_OnClick (self, button) 
+	local inventoryID = self:GetInventorySlot();
 	local hadItem = PutItemInBag(inventoryID);
-	local id = this:GetID();
+	local id = self:GetID();
 	if ( not hadItem ) then
 		-- open bag
 		ToggleBag(id);
@@ -242,8 +243,8 @@ function BankFrameItemButtonBag_OnClick(button)
 	UpdateBagButtonHighlight(id);
 end
 
-function BankFrameItemButtonBag_Pickup()
-	local inventoryID = this:GetInventorySlot();
+function BankFrameItemButtonBag_Pickup (self)
+	local inventoryID = self:GetInventorySlot();
 	PickupBagFromSlot(inventoryID);
-	UpdateBagButtonHighlight(this:GetID());
+	UpdateBagButtonHighlight(self:GetID());
 end

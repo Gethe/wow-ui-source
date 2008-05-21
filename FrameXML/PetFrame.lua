@@ -2,32 +2,32 @@
 --PET_FLASH_ON_TIME = 0.5;
 --PET_FLASH_OFF_TIME = 0.5;
 
-function PetFrame_OnLoad()
-	this.attackModeCounter = 0;
-	this.attackModeSign = -1;
+function PetFrame_OnLoad (self)
+	self.attackModeCounter = 0;
+	self.attackModeSign = -1;
 	--this.flashState = 1;
 	--this.flashTimer = 0;
 	CombatFeedback_Initialize(PetHitIndicator, 30);
-	PetFrame_Update();
-	this:RegisterEvent("UNIT_PET");
-	this:RegisterEvent("UNIT_COMBAT");
-	this:RegisterEvent("UNIT_AURA");
-	this:RegisterEvent("PET_ATTACK_START");
-	this:RegisterEvent("PET_ATTACK_STOP");
-	this:RegisterEvent("UNIT_HAPPINESS");
-	this:RegisterEvent("PET_UI_UPDATE");
+	PetFrame_Update(self);
+	self:RegisterEvent("UNIT_PET");
+	self:RegisterEvent("UNIT_COMBAT");
+	self:RegisterEvent("UNIT_AURA");
+	self:RegisterEvent("PET_ATTACK_START");
+	self:RegisterEvent("PET_ATTACK_STOP");
+	self:RegisterEvent("UNIT_HAPPINESS");
+	self:RegisterEvent("PET_UI_UPDATE");
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, PetFrameDropDown);
 	end
-	SecureUnitButton_OnLoad(this, "pet", showmenu);
+	SecureUnitButton_OnLoad(self, "pet", showmenu);
 end
 
-function PetFrame_Update()
+function PetFrame_Update (self)
 	if ( UnitIsVisible("pet") ) then
-		if ( this:IsShown() ) then
-			UnitFrame_Update();
+		if ( self:IsShown() ) then
+			UnitFrame_Update(self);
 		else
-			this:Show();
+			self:Show();
 		end
 		--this.flashState = 1;
 		--this.flashTimer = PET_FLASH_ON_TIME;
@@ -39,25 +39,26 @@ function PetFrame_Update()
 		end
 		PetAttackModeTexture:Hide();
 
-		PetFrame_SetHappiness();
-		RefreshBuffs(getglobal("PetFrame"), 0, "pet");
+		PetFrame_SetHappiness(self);
+		RefreshBuffs(self, 0, "pet");
 	else
-		this:Hide();
+		self:Hide();
 	end
 end
 
-function PetFrame_OnEvent(event)
-	UnitFrame_OnEvent(event);
+function PetFrame_OnEvent (self, event, ...)
+	UnitFrame_OnEvent(self, event, ...);
 
+	local arg1, arg2, arg3, arg4, arg5 = ...;
 	if ( (event == "UNIT_PET" and arg1 == "player" ) or event == "PET_UI_UPDATE" ) then
-		PetFrame_Update();
+		PetFrame_Update(self);
 	elseif ( event == "UNIT_COMBAT" ) then
 		if ( arg1 == "pet" ) then
 			CombatFeedback_OnCombatEvent(arg2, arg3, arg4, arg5);
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == "pet" ) then
-			RefreshBuffs(this, 0, "pet");
+			RefreshBuffs(self, 0, "pet");
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
@@ -65,22 +66,22 @@ function PetFrame_OnEvent(event)
 	elseif ( event == "PET_ATTACK_STOP" ) then
 		PetAttackModeTexture:Hide();
 	elseif ( event == "UNIT_HAPPINESS" ) then
-		PetFrame_SetHappiness();
+		PetFrame_SetHappiness(self);
 	end
 end
 
-function PetFrame_OnUpdate(elapsed)
+function PetFrame_OnUpdate (self, elapsed)
 	if ( PetAttackModeTexture:IsShown() ) then
 		local alpha = 255;
-		local counter = this.attackModeCounter + elapsed;
-		local sign    = this.attackModeSign;
+		local counter = self.attackModeCounter + elapsed;
+		local sign    = self.attackModeSign;
 
 		if ( counter > 0.5 ) then
 			sign = -sign;
-			this.attackModeSign = sign;
+			self.attackModeSign = sign;
 		end
 		counter = mod(counter, 0.5);
-		this.attackModeCounter = counter;
+		self.attackModeCounter = counter;
 
 		if ( sign == 1 ) then
 			alpha = (55  + (counter * 400)) / 255;
@@ -89,7 +90,7 @@ function PetFrame_OnUpdate(elapsed)
 		end
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, alpha);
 	end
-	CombatFeedback_OnUpdate(elapsed);
+	CombatFeedback_OnUpdate(self, elapsed);
 	-- Expiration flash stuff
 	--local petTimeRemaining = nil;
 	--if ( GetPetTimeRemaining() ) then
@@ -115,7 +116,7 @@ function PetFrame_OnUpdate(elapsed)
 	
 end
 
-function PetFrame_SetHappiness()
+function PetFrame_SetHappiness ()
 	local happiness, damagePercentage, loyaltyRate = GetPetHappiness();
 	local hasPetUI, isHunterPet = HasPetUI();
 	if ( not happiness or not isHunterPet ) then
@@ -141,36 +142,37 @@ function PetFrame_SetHappiness()
 	end
 end
 
-function PetFrameDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, PetFrameDropDown_Initialize, "MENU");
+function PetFrameDropDown_OnLoad (self)
+	UIDropDownMenu_Initialize(self, PetFrameDropDown_Initialize, "MENU");
 end
 
-function PetFrameDropDown_Initialize()
+function PetFrameDropDown_Initialize ()
 	if ( UnitExists("pet") ) then
 		UnitPopup_ShowMenu(PetFrameDropDown, "PET", "pet");
 	end
 end
 
-function PetCastingBarFrame_OnLoad()
-	CastingBarFrame_OnLoad("pet", false);
+function PetCastingBarFrame_OnLoad (self)
+	CastingBarFrame_OnLoad(self, "pet", false);
 
-	this:RegisterEvent("UNIT_PET");
+	self:RegisterEvent("UNIT_PET");
 
-	this.showCastbar = UnitIsPossessed("pet");
+	self.showCastbar = UnitIsPossessed("pet");
 end
 
-function PetCastingBarFrame_OnEvent()
+function PetCastingBarFrame_OnEvent (self, event, ...)
+	local arg1 = ...;
 	if ( event == "UNIT_PET" ) then
 		if ( arg1 == "player" ) then
-			this.showCastbar = UnitIsPossessed("pet");
+			self.showCastbar = UnitIsPossessed("pet");
 
-			if ( not this.showCastbar ) then
-				this:Hide();
-			elseif ( this.casting or this.channeling ) then
-				this:Show();
+			if ( not self.showCastbar ) then
+				self:Hide();
+			elseif ( self.casting or self.channeling ) then
+				self:Show();
 			end
 		end
 		return;
 	end
-	CastingBarFrame_OnEvent(event, arg1);
+	CastingBarFrame_OnEvent(self, event, ...);
 end

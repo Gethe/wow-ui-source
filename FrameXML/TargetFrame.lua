@@ -20,27 +20,27 @@ UnitReactionColor = {
 	{ r = 0.0, g = 1.0, b = 0.0 },
 };
 
-function TargetFrame_OnLoad()
-	this.statusCounter = 0;
-	this.statusSign = -1;
-	this.unitHPPercent = 1;
+function TargetFrame_OnLoad (self)
+	self.statusCounter = 0;
+	self.statusSign = -1;
+	self.unitHPPercent = 1;
 
-	this.buffStartX = 5;
-	this.buffStartY = 32;
-	this.buffSpacing = 3;
+	self.buffStartX = 5;
+	self.buffStartY = 32;
+	self.buffSpacing = 3;
 
-	TargetFrame_Update();
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("PLAYER_TARGET_CHANGED");
-	this:RegisterEvent("PLAYER_FOCUS_CHANGED");
-	this:RegisterEvent("UNIT_HEALTH");
-	this:RegisterEvent("UNIT_LEVEL");
-	this:RegisterEvent("UNIT_FACTION");
-	this:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
-	this:RegisterEvent("UNIT_AURA");
-	this:RegisterEvent("PLAYER_FLAGS_CHANGED");
-	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	this:RegisterEvent("RAID_TARGET_UPDATE");
+	TargetFrame_Update(self);
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED");
+	self:RegisterEvent("UNIT_HEALTH");
+	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("UNIT_FACTION");
+	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
+	self:RegisterEvent("UNIT_AURA");
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("RAID_TARGET_UPDATE");
 
 	local frameLevel = TargetFrameTextureFrame:GetFrameLevel();
 	TargetFrameHealthBar:SetFrameLevel(frameLevel-1);
@@ -50,45 +50,46 @@ function TargetFrame_OnLoad()
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "TargetFrame", 120, 10);
 	end
-	SecureUnitButton_OnLoad(this, "target", showmenu);
+	SecureUnitButton_OnLoad(self, "target", showmenu);
 end
 
-function TargetFrame_Update()
+function TargetFrame_Update (self)
 	-- This check is here so the frame will hide when the target goes away
 	-- even if some of the functions below are hooked by addons.
 	if ( not UnitExists("target") ) then
-		this:Hide();
+		self:Hide();
 	else
-		this:Show();
+		self:Show();
 
 		-- Moved here to avoid taint from functions below
-		TargetofTarget_Update();
+		TargetofTarget_Update(self);
 
-		UnitFrame_Update();
-		TargetFrame_CheckLevel();
-		TargetFrame_CheckFaction();
-		TargetFrame_CheckClassification();
-		TargetFrame_CheckDead();
-		TargetFrame_CheckFocus();
+		UnitFrame_Update(self);
+		TargetFrame_CheckLevel(self);
+		TargetFrame_CheckFaction(self);
+		TargetFrame_CheckClassification(self);
+		TargetFrame_CheckDead(self);
+		TargetFrame_CheckFocus(self);
 		if ( UnitIsPartyLeader("target") ) then
 			TargetLeaderIcon:Show();
 		else
 			TargetLeaderIcon:Hide();
 		end
-		TargetDebuffButton_Update();
+		TargetDebuffButton_Update(self);
 		TargetPortrait:SetAlpha(1.0);
 	end
 end
 
-function TargetFrame_OnEvent(event)
-	UnitFrame_OnEvent(event);
+function TargetFrame_OnEvent (self, event, ...)
+	UnitFrame_OnEvent(self, event, ...);
 
+	local arg1 = ...;
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		TargetFrame_Update();
+		TargetFrame_Update(self);
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
 		-- Moved here to avoid taint from functions below
-		TargetFrame_Update();
-		TargetFrame_UpdateRaidTargetIcon();
+		TargetFrame_Update(self);
+		TargetFrame_UpdateRaidTargetIcon(self);
 		CloseDropDownMenus();
 
 		if ( UnitExists("target") ) then
@@ -101,27 +102,27 @@ function TargetFrame_OnEvent(event)
 			end
 		end
 	elseif ( event == "PLAYER_FOCUS_CHANGED" ) then
-		TargetFrame_CheckFocus();
+		TargetFrame_CheckFocus(self);
 	elseif ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == "target" ) then
-			TargetFrame_CheckDead();
+			TargetFrame_CheckDead(self);
 		end
 	elseif ( event == "UNIT_LEVEL" ) then
 		if ( arg1 == "target" ) then
-			TargetFrame_CheckLevel();
+			TargetFrame_CheckLevel(self);
 		end
 	elseif ( event == "UNIT_FACTION" ) then
 		if ( arg1 == "target" or arg1 == "player" ) then
-			TargetFrame_CheckFaction();
-			TargetFrame_CheckLevel();
+			TargetFrame_CheckFaction(self);
+			TargetFrame_CheckLevel(self);
 		end
 	elseif ( event == "UNIT_CLASSIFICATION_CHANGED" ) then
 		if ( arg1 == "target" ) then
-			TargetFrame_CheckClassification();
+			TargetFrame_CheckClassification(self);
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == "target" ) then
-			TargetDebuffButton_Update();
+			TargetDebuffButton_Update(self);
 		end
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 		if ( arg1 == "target" ) then
@@ -132,19 +133,19 @@ function TargetFrame_OnEvent(event)
 			end
 		end
 	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
-		TargetofTarget_Update();
-		TargetFrame_CheckFaction();
+		TargetofTarget_Update(self);
+		TargetFrame_CheckFaction(self);
 	elseif ( event == "RAID_TARGET_UPDATE" ) then
-		TargetFrame_UpdateRaidTargetIcon();
+		TargetFrame_UpdateRaidTargetIcon(self);
 	end
 end
 
-function TargetFrame_OnHide()
+function TargetFrame_OnHide (self)
 	PlaySound("INTERFACESOUND_LOSTTARGETUNIT");
 	CloseDropDownMenus();
 end
 
-function TargetFrame_CheckLevel()
+function TargetFrame_CheckLevel (self)
 	local targetLevel = UnitLevel("target");
 	
 	if ( UnitIsCorpse("target") ) then
@@ -169,7 +170,7 @@ function TargetFrame_CheckLevel()
 	end
 end
 
-function TargetFrame_CheckFaction()
+function TargetFrame_CheckFaction (self)
 	if ( UnitPlayerControlled("target") ) then
 		local r, g, b;
 		if ( UnitCanAttack("target", "player") ) then
@@ -230,7 +231,7 @@ function TargetFrame_CheckFaction()
 	end
 end
 
-function TargetFrame_CheckClassification()
+function TargetFrame_CheckClassification (self)
 	local classification = UnitClassification("target");
 	if ( classification == "worldboss" ) then
 		TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
@@ -245,7 +246,7 @@ function TargetFrame_CheckClassification()
 	end
 end
 
-function TargetFrame_CheckDead()
+function TargetFrame_CheckDead (self)
 	if ( (UnitHealth("target") <= 0) and UnitIsConnected("target") ) then
 		TargetDeadText:Show();
 	else
@@ -253,7 +254,7 @@ function TargetFrame_CheckDead()
 	end
 end
 
-function TargetFrame_CheckFocus()
+function TargetFrame_CheckFocus (self)
 	if ( UnitIsUnit("target", "focus") ) then
 		TargetFrameFlash:Show();
 	else
@@ -261,13 +262,13 @@ function TargetFrame_CheckFocus()
 	end
 end
 
-function TargetFrame_OnUpdate()
+function TargetFrame_OnUpdate (self, elapsed)
 	if ( TargetofTargetFrame:IsShown() ~= UnitExists("targettarget") ) then
-		TargetofTarget_Update();
+		TargetofTarget_Update(self, elapsed);
 	end
 end
 
-function TargetDebuffButton_Update()
+function TargetDebuffButton_Update (self)
 	local button;
 	local name, rank, icon, count, duration, timeLeft;
 	local buffCount;
@@ -509,19 +510,19 @@ function TargetFrame_UpdateDebuffAnchor(buffName, index, numFirstRowBuffs, numBu
 	debuffFrame:SetHeight(buffSize+2);
 end
 
-function TargetFrame_HealthUpdate(elapsed, unit)
+function TargetFrame_HealthUpdate (self, elapsed, unit)
 	if ( UnitIsPlayer(unit) ) then
-		if ( (this.unitHPPercent > 0) and (this.unitHPPercent <= 0.2) ) then
+		if ( (self.unitHPPercent > 0) and (self.unitHPPercent <= 0.2) ) then
 			local alpha = 255;
-			local counter = this.statusCounter + elapsed;
-			local sign    = this.statusSign;
+			local counter = self.statusCounter + elapsed;
+			local sign    = self.statusSign;
 	
 			if ( counter > 0.5 ) then
 				sign = -sign;
-				this.statusSign = sign;
+				self.statusSign = sign;
 			end
 			counter = mod(counter, 0.5);
-			this.statusCounter = counter;
+			self.statusCounter = counter;
 	
 			if ( sign == 1 ) then
 				alpha = (127  + (counter * 256)) / 255;
@@ -533,17 +534,17 @@ function TargetFrame_HealthUpdate(elapsed, unit)
 	end
 end
 
-function TargetHealthCheck()
+function TargetHealthCheck (self)
 	if ( UnitIsPlayer("target") ) then
 		local unitHPMin, unitHPMax, unitCurrHP;
-		unitHPMin, unitHPMax = this:GetMinMaxValues();
-		unitCurrHP = this:GetValue();
-		this:GetParent().unitHPPercent = unitCurrHP / unitHPMax;
+		unitHPMin, unitHPMax = self:GetMinMaxValues();
+		unitCurrHP = self:GetValue();
+		self:GetParent().unitHPPercent = unitCurrHP / unitHPMax;
 		if ( UnitIsDead("target") ) then
 			TargetPortrait:SetVertexColor(0.35, 0.35, 0.35, 1.0);
 		elseif ( UnitIsGhost("target") ) then
 			TargetPortrait:SetVertexColor(0.2, 0.2, 0.75, 1.0);
-		elseif ( (this:GetParent().unitHPPercent > 0) and (this:GetParent().unitHPPercent <= 0.2) ) then
+		elseif ( (self:GetParent().unitHPPercent > 0) and (self:GetParent().unitHPPercent <= 0.2) ) then
 			TargetPortrait:SetVertexColor(1.0, 0.0, 0.0);
 		else
 			TargetPortrait:SetVertexColor(1.0, 1.0, 1.0, 1.0);
@@ -551,11 +552,11 @@ function TargetHealthCheck()
 	end
 end
 
-function TargetFrameDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, TargetFrameDropDown_Initialize, "MENU");
+function TargetFrameDropDown_OnLoad (self)
+	UIDropDownMenu_Initialize(self, TargetFrameDropDown_Initialize, "MENU");
 end
 
-function TargetFrameDropDown_Initialize()
+function TargetFrameDropDown_Initialize (self)
 	local menu;
 	local name;
 	local id = nil;
@@ -578,7 +579,7 @@ function TargetFrameDropDown_Initialize()
 		name = RAID_TARGET_ICON;
 	end
 	if ( menu ) then
-		UnitPopup_ShowMenu(TargetFrameDropDown, menu, "target", name, id);
+		UnitPopup_ShowMenu(self, menu, "target", name, id);
 	end
 end
 
@@ -589,7 +590,7 @@ RAID_TARGET_ICON_DIMENSION = 64;
 RAID_TARGET_TEXTURE_DIMENSION = 256;
 RAID_TARGET_TEXTURE_COLUMNS = 4;
 RAID_TARGET_TEXTURE_ROWS = 4;
-function TargetFrame_UpdateRaidTargetIcon()
+function TargetFrame_UpdateRaidTargetIcon (self)
 	local index = GetRaidTargetIndex("target");
 	if ( index ) then
 		SetRaidTargetIconTexture(TargetRaidTargetIcon, index);
@@ -600,7 +601,7 @@ function TargetFrame_UpdateRaidTargetIcon()
 end
 
 
-function SetRaidTargetIconTexture(texture, raidTargetIconIndex)
+function SetRaidTargetIconTexture (texture, raidTargetIconIndex)
 	raidTargetIconIndex = raidTargetIconIndex - 1;
 	local left, right, top, bottom;
 	local coordIncrement = RAID_TARGET_ICON_DIMENSION / RAID_TARGET_TEXTURE_DIMENSION;
@@ -611,7 +612,7 @@ function SetRaidTargetIconTexture(texture, raidTargetIconIndex)
 	texture:SetTexCoord(left, right, top, bottom);
 end
 
-function SetRaidTargetIcon(unit, index)
+function SetRaidTargetIcon (unit, index)
 	if ( GetRaidTargetIndex(unit) and GetRaidTargetIndex(unit) == index ) then
 		SetRaidTarget(unit, 0);
 	else
@@ -619,19 +620,19 @@ function SetRaidTargetIcon(unit, index)
 	end
 end
 
-function TargetofTarget_OnLoad()
-	UnitFrame_Initialize("targettarget", TargetofTargetName, TargetofTargetPortrait, TargetofTargetHealthBar, TargetofTargetHealthBarText, TargetofTargetManaBar, TargetofTargetFrameManaBarText);
+function TargetofTarget_OnLoad (self)
+	UnitFrame_Initialize(self, "targettarget", TargetofTargetName, TargetofTargetPortrait, TargetofTargetHealthBar, TargetofTargetHealthBarText, TargetofTargetManaBar, TargetofTargetFrameManaBarText);
 	SetTextStatusBarTextZeroText(TargetofTargetHealthBar, DEAD);
-	this:RegisterEvent("UNIT_AURA");
+	self:RegisterEvent("UNIT_AURA");
 
-	SecureUnitButton_OnLoad(this, "targettarget");
+	SecureUnitButton_OnLoad(self, "targettarget");
 end
 
-function TargetofTarget_OnHide()
-	TargetDebuffButton_Update();
+function TargetofTarget_OnHide (self)
+	TargetDebuffButton_Update(self);
 end
 
-function TargetofTarget_Update()
+function TargetofTarget_Update (self)
 	local show;
 	if ( SHOW_TARGET_OF_TARGET == "1" and UnitExists("target") and UnitExists("targettarget") and ( not UnitIsUnit("player", "target") ) and ( UnitHealth("target") > 0 ) ) then
 		if ( ( SHOW_TARGET_OF_TARGET_STATE == "5" ) or
@@ -646,21 +647,21 @@ function TargetofTarget_Update()
 	if ( show ) then
 		if ( not TargetofTargetFrame:IsShown() ) then
 			TargetofTargetFrame:Show();
-			Target_Spellbar_AdjustPosition();
+			Target_Spellbar_AdjustPosition(self);
 		end
-		UnitFrame_Update();
-		TargetofTarget_CheckDead();
-		TargetofTargetHealthCheck();
+		UnitFrame_Update(self);
+		TargetofTarget_CheckDead(self);
+		TargetofTargetHealthCheck(self);
 		RefreshBuffs(TargetofTargetFrame, 0, "targettarget");
 	else
 		if ( TargetofTargetFrame:IsShown() ) then
 			TargetofTargetFrame:Hide();
-			Target_Spellbar_AdjustPosition();
+			Target_Spellbar_AdjustPosition(self);
 		end
 	end
 end
 
-function TargetofTarget_CheckDead()
+function TargetofTarget_CheckDead ()
 	if ( (UnitHealth("targettarget") <= 0) and UnitIsConnected("targettarget") ) then
 		TargetofTargetBackground:SetAlpha(0.9);
 		TargetofTargetDeadText:Show();
@@ -670,7 +671,7 @@ function TargetofTarget_CheckDead()
 	end
 end
 
-function TargetofTargetHealthCheck()
+function TargetofTargetHealthCheck ()
 	if ( UnitIsPlayer("targettarget") ) then
 		local unitHPMin, unitHPMax, unitCurrHP;
 		unitHPMin, unitHPMax = TargetofTargetHealthBar:GetMinMaxValues();
@@ -716,65 +717,65 @@ function SetTargetSpellbarAspect()
 	end
 end
 
-function Target_Spellbar_OnLoad()
-	this:RegisterEvent("PLAYER_TARGET_CHANGED");
-	this:RegisterEvent("CVAR_UPDATE");
+function Target_Spellbar_OnLoad (self)
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("CVAR_UPDATE");
 	
-	CastingBarFrame_OnLoad("target", false);
+	CastingBarFrame_OnLoad(self, "target", false);
 
-	local barIcon = getglobal(this:GetName().."Icon");
+	local barIcon = getglobal(self:GetName().."Icon");
 	barIcon:Show();
 
 	SetTargetSpellbarAspect();
 	
 	-- check to see if the castbar should be shown
-	if ( GetCVar("ShowTargetCastbar") == "0") then
-		this.showCastbar = false;	
+	if ( GetCVar("showTargetCastbar") == "0") then
+		self.showCastbar = false;	
 	end
 end
 
-function Target_Spellbar_OnEvent()
-	local newevent = event;
-	local newarg1 = arg1;
+function Target_Spellbar_OnEvent (self, event, ...)
+	local arg1 = ...
+	
 	--	Check for target specific events
 	if ( (event == "CVAR_UPDATE") and (arg1 == "SHOW_TARGET_CASTBAR") ) then
-		if ( GetCVar("ShowTargetCastbar") == "0") then
-			this.showCastbar = false;
+		if ( GetCVar("showTargetCastbar") == "0") then
+			self.showCastbar = false;
 		else
-			this.showCastbar = true;
+			self.showCastbar = true;
 		end
 		
-		if ( not this.showCastbar ) then
-			this:Hide();
-		elseif ( this.casting or this.channeling ) then
-			this:Show();
+		if ( not self.showCastbar ) then
+			self:Hide();
+		elseif ( self.casting or self.channeling ) then
+			self:Show();
 		end
 		return;
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
 		-- check if the new target is casting a spell
-		local nameChannel  = UnitChannelInfo(this.unit);
-		local nameSpell  = UnitCastingInfo(this.unit);
+		local nameChannel  = UnitChannelInfo(self.unit);
+		local nameSpell  = UnitCastingInfo(self.unit);
 		if ( nameChannel ) then
-			newevent = "UNIT_SPELLCAST_CHANNEL_START";
-			newarg1 = "target";
+			event = "UNIT_SPELLCAST_CHANNEL_START";
+			arg1 = "target";
 		elseif ( nameSpell ) then
-			newevent = "UNIT_SPELLCAST_START";
-			newarg1 = "target";
+			event = "UNIT_SPELLCAST_START";
+			arg1 = "target";
 		else
-			this.casting = nil;
-			this.channeling = nil;
-			this:SetMinMaxValues(0, 0);
-			this:SetValue(0);
-			this:Hide();
+			self.casting = nil;
+			self.channeling = nil;
+			self:SetMinMaxValues(0, 0);
+			self:SetValue(0);
+			self:Hide();
 			return;
 		end
 		-- The position depends on the classification of the target
-		Target_Spellbar_AdjustPosition();
+		Target_Spellbar_AdjustPosition(self);
 	end
-	CastingBarFrame_OnEvent(newevent, newarg1);
+	CastingBarFrame_OnEvent(self, event, arg1, select(2, ...));
 end
 
-function Target_Spellbar_AdjustPosition()
+function Target_Spellbar_AdjustPosition (self)
 	local yPos = 5;
 	if ( TargetFrame.buffRows and TargetFrame.buffRows <= 2 ) then
 		yPos = 38;

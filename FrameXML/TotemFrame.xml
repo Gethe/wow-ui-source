@@ -55,22 +55,22 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(getglobal(this:GetParent():GetName().."Icon"):GetFrameLevel() + 1);
+						self:SetFrameLevel(getglobal(self:GetParent():GetName().."Icon"):GetFrameLevel() + 1);
 					</OnLoad>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnClick>
-				TotemButton_OnClick(arg1);
+				TotemButton_OnClick(self, button);
 			</OnClick>
 			<OnLoad>
-				this:RegisterForClicks("RightButtonUp");
-				getglobal(this:GetName().."Background"):SetAlpha(0.6);
+				self:RegisterForClicks("RightButtonUp");
+				getglobal(self:GetName().."Background"):SetAlpha(0.6);
 			</OnLoad>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-				GameTooltip:SetTotem(this.slot);
+				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+				GameTooltip:SetTotem(self.slot);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -128,7 +128,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				TotemFrame_OnLoad();
+				TotemFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
 				TotemFrame_OnEvent(self, event, ...);

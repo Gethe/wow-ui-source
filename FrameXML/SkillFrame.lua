@@ -1,23 +1,23 @@
 SKILLS_TO_DISPLAY = 12;
 SKILLFRAME_SKILL_HEIGHT = 15;
 
-function SkillFrame_OnShow()
-	SkillFrame_UpdateSkills();
+function SkillFrame_OnShow (self)
+	SkillFrame_UpdateSkills(self);
 end
 
-function SkillFrame_OnLoad()
-	this:RegisterEvent("SKILL_LINES_CHANGED");
-	this:RegisterEvent("CHARACTER_POINTS_CHANGED");
+function SkillFrame_OnLoad (self)
+	self:RegisterEvent("SKILL_LINES_CHANGED");
+	self:RegisterEvent("CHARACTER_POINTS_CHANGED");
 	SkillListScrollFrameScrollBar:SetValue(0);
 	SetSelectedSkill(0);
 	SkillFrame.statusBarClickedID = 0;
 	SkillFrame.showSkillDetails = nil;
-	SkillFrame_UpdateSkills();
+	SkillFrame_UpdateSkills(self);
 end
 
-function SkillFrame_OnEvent(event)
+function SkillFrame_OnEvent(self, event, ...)
 	if ( SkillFrame:IsVisible() ) then
-		SkillFrame_UpdateSkills();
+		SkillFrame_UpdateSkills(self);
 	end
 end
 
@@ -445,8 +445,8 @@ function SkillFrame_UpdateSkills()
 	SkillDetailFrame_SetStatusBar(GetSelectedSkill(),adjustedSkillPoints)
 end
 
-function SkillBar_OnClick()
-	SkillFrame.statusBarClickedID = this:GetParent():GetID() + FauxScrollFrame_GetOffset(SkillListScrollFrame);
+function SkillBar_OnClick (self)
+	SkillFrame.statusBarClickedID = self:GetParent():GetID() + FauxScrollFrame_GetOffset(SkillListScrollFrame);
 	SetSelectedSkill(SkillFrame.statusBarClickedID);
 	SkillFrame.showSkillDetails = 1
 	SkillFrame_UpdateSkills();

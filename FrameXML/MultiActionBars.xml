@@ -4,32 +4,32 @@
 	<CheckButton name="MultiBar1ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<Scripts>
 			<OnLoad>
-				this.buttonType = "MULTIACTIONBAR1BUTTON"
-				ActionButton_OnLoad();
+				self.buttonType = "MULTIACTIONBAR1BUTTON"
+				ActionButton_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="MultiBar2ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<Scripts>
 			<OnLoad>
-				this.buttonType = "MULTIACTIONBAR2BUTTON"
-				ActionButton_OnLoad();
+				self.buttonType = "MULTIACTIONBAR2BUTTON"
+				ActionButton_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<Scripts>
 			<OnLoad>
-				this.buttonType = "MULTIACTIONBAR3BUTTON"
-				ActionButton_OnLoad();
+				self.buttonType = "MULTIACTIONBAR3BUTTON"
+				ActionButton_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<Scripts>
 			<OnLoad>
-				this.buttonType = "MULTIACTIONBAR4BUTTON"
-				ActionButton_OnLoad();
+				self.buttonType = "MULTIACTIONBAR4BUTTON"
+				ActionButton_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
@@ -542,7 +542,7 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				MultiActionBarFrame_OnLoad();
+				MultiActionBarFrame_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Frame>

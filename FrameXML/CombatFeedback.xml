@@ -7,11 +7,5 @@
 				<Texture file="Interface\FullScreenTextures\LowHealth" alphaMode="ADD"/>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				SHOW_FULLSCREEN_STATUS = "1";
-				RegisterForSave("SHOW_FULLSCREEN_STATUS");
-			</OnLoad>
-		</Scripts>
 	</Frame>
 </Ui>

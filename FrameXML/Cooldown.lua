@@ -1,9 +1,9 @@
 
-function CooldownFrame_SetTimer(this, start, duration, enable)
+function CooldownFrame_SetTimer(self, start, duration, enable)
 	if ( start > 0 and duration > 0 and enable > 0) then
-		this:SetCooldown(start, duration);
-		this:Show();
+		self:SetCooldown(start, duration);
+		self:Show();
 	else
-		this:Hide();
+		self:Hide();
 	end
 end

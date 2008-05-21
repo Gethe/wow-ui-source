@@ -7,11 +7,11 @@
 		</Size>
 		<Scripts>
 			<OnLoad>
-				this.isBonus = 1;
-				ActionButton_OnLoad();
-				this:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
-				this:SetFrameLevel(this:GetFrameLevel() + 2);
-				local cooldown = getglobal(this:GetName().."Cooldown");
+				self.isBonus = 1;
+				ActionButton_OnLoad(self);
+				self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
+				self:SetFrameLevel(self:GetFrameLevel() + 2);
+				local cooldown = getglobal(self:GetName().."Cooldown");
 				cooldown:SetFrameLevel(cooldown:GetFrameLevel() + 2);
 			</OnLoad>
 		</Scripts>
@@ -22,16 +22,16 @@
 		</Size>
 		<Scripts>
 			<OnClick>
-				this:SetChecked(not this:GetChecked());
-				ShapeshiftBar_ChangeForm(this:GetID());
+				self:SetChecked(not self:GetChecked());
+				ShapeshiftBar_ChangeForm(self:GetID());
 			</OnClick>
 			<OnEnter>
 				if ( GetCVar("UberTooltips") == "1" ) then
-					GameTooltip_SetDefaultAnchor(GameTooltip, this);
+					GameTooltip_SetDefaultAnchor(GameTooltip, self);
 				else
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				end
-				GameTooltip:SetShapeshift(this:GetID());
+				GameTooltip:SetShapeshift(self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -44,11 +44,11 @@
     </Size>
     <Scripts>
       <OnClick>
-        PossessBar_Clicked(this:GetID());
+        PossessBar_Clicked(self:GetID());
         PlaySound("GAMEABILITYACTIVATE");
       </OnClick>
       <OnEnter>
-        PossessBar_OnEnter(this:GetID());
+        PossessBar_OnEnter(self, self:GetID());
       </OnEnter>
       <OnLeave>
         GameTooltip:Hide();
@@ -197,13 +197,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				BonusActionBar_OnLoad();
+				BonusActionBar_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				BonusActionBar_OnEvent();
+				BonusActionBar_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				BonusActionBar_OnUpdate(arg1);
+				BonusActionBar_OnUpdate(self, arg1);
 			</OnUpdate>
 		</Scripts>
 	</Frame>
@@ -339,10 +339,10 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ShapeshiftBar_OnLoad();
+				ShapeshiftBar_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				ShapeshiftBar_OnEvent();
+				ShapeshiftBar_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
 				UIParent_ManageFramePositions();
@@ -405,10 +405,10 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        PossessBar_OnLoad();
+        PossessBar_OnLoad(self);
       </OnLoad>
       <OnEvent>
-        PossessBar_OnEvent();
+        PossessBar_OnEvent(self, event, ...);
       </OnEvent>
       <OnShow>
         UIParent_ManageFramePositions();

@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 20400
+## Interface: 30000
 GlobalStrings.lua
 Constants.lua
 Fonts.xml
@@ -109,7 +109,9 @@ MacOptionsFrame.xml
 RatingMenuFrame.xml
 TalentFrameBase.lua
 Blizzard_TalentUITemplates.xml
+RuneFrame.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 UIOptionsPanels.xml
 LocalizationPost.xml
+MovieFrame.xml

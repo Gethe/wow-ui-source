@@ -16,11 +16,6 @@ function RaidFrame_OnLoad()
 	this:RegisterEvent("READY_CHECK");
 	this:RegisterEvent("READY_CHECK_CONFIRM");
 	this:RegisterEvent("READY_CHECK_FINISHED");
-	-- Raid option uvars
-	SHOW_DISPELLABLE_DEBUFFS = "0";
-	RegisterForSave("SHOW_DISPELLABLE_DEBUFFS");
-	SHOW_CASTABLE_BUFFS = "0";
-	RegisterForSave("SHOW_CASTABLE_BUFFS");
 
 	-- Update party frame visibility
 	RaidOptionsFrame_UpdatePartyFrames();

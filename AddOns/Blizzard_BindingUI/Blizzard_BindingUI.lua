@@ -11,7 +11,7 @@ StaticPopupDialogs["CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS"] = {
 	text = CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function()
+	OnAccept = function(self)
 		SaveBindings(KeyBindingFrame.which);
 		KeyBindingFrameOutputText:SetText("");
 		KeyBindingFrame.selected = nil;
@@ -27,11 +27,11 @@ StaticPopupDialogs["CONFIRM_LOSE_BINDING_CHANGES"] = {
 	text = CONFIRM_LOSE_BINDING_CHANGES,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function()
+	OnAccept = function(self)
 		KeyBindingFrame_ChangeBindingProfile();
 		KeyBindingFrame.bindingsChanged = nil;
 	end,
-	OnCancel = function()
+	OnCancel = function(self)
 		if ( KeyBindingFrameCharacterButton:GetChecked() ) then
 			KeyBindingFrameCharacterButton:SetChecked();
 		else

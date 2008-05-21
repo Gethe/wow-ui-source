@@ -154,15 +154,15 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize();
-						SetTextStatusBarText(this, PetPaperDollFrameExpBarText);
+						TextStatusBar_Initialize(self);
+						SetTextStatusBarText(self, PetPaperDollFrameExpBarText);
 					</OnLoad>
 					<OnEnter>
-						TextStatusBar_UpdateTextString();
-						ShowTextStatusBarText(this);
+						TextStatusBar_UpdateTextString(self);
+						ShowTextStatusBarText(self);
 					</OnEnter>
 					<OnLeave>
-						HideTextStatusBarText(this);
+						HideTextStatusBarText(self);
 					</OnLeave>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -181,14 +181,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						Model_OnLoad();
-						this:RegisterEvent("DISPLAY_SIZE_CHANGED");
+						Model_OnLoad(self);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 					</OnLoad>
 					<OnEvent>
-						this:RefreshUnit();
+						self:RefreshUnit();
 					</OnEvent>
 					<OnUpdate>
-                        Model_OnUpdate(arg1, this);
+                        Model_OnUpdate(self, elapsed);
                     </OnUpdate>
 				</Scripts>
 				<Frames>
@@ -205,7 +205,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
 								Model_RotateLeft(PetModelFrame);
@@ -224,7 +224,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
 								Model_RotateRight(PetModelFrame);
@@ -259,7 +259,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(format(PET_DIET_TEMPLATE, BuildListString(GetPetFoodTypes())));
 					</OnEnter>
 					<OnLeave>
@@ -280,7 +280,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(this:GetParent():GetParent());
+						HideUIPanel(self:GetParent():GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -336,7 +336,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								PaperDollStatTooltip("pet");
+								PaperDollStatTooltip(self, "pet");
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -353,7 +353,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								PaperDollStatTooltip("pet");
+								PaperDollStatTooltip(self, "pet");
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -370,7 +370,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								PaperDollStatTooltip("pet");
+								PaperDollStatTooltip(self, "pet");
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -387,7 +387,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								PaperDollStatTooltip("pet");
+								PaperDollStatTooltip(self, "pet");
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -404,7 +404,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								PaperDollStatTooltip("pet");
+								PaperDollStatTooltip(self, "pet");
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -421,7 +421,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								PaperDollStatTooltip("pet");
+								PaperDollStatTooltip(self, "pet");
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -438,7 +438,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								CharacterDamageFrame_OnEnter();
+								CharacterDamageFrame_OnEnter(self);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -455,7 +455,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								PaperDollStatTooltip("pet");
+								PaperDollStatTooltip(self, "pet");
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -472,7 +472,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								PaperDollStatTooltip("pet");
+								PaperDollStatTooltip(self, "pet");
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -603,16 +603,16 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PetPaperDollFrame_OnLoad();
+				PetPaperDollFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				PetPaperDollFrame_OnEvent();
+				PetPaperDollFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				PetPaperDollFrame_OnShow()
+				PetPaperDollFrame_OnShow(self)
 			</OnShow>
 			<OnHide>
-				PetPaperDollFrame_OnHide();
+				PetPaperDollFrame_OnHide(self);
 			</OnHide>
 		</Scripts>
 	</Frame>

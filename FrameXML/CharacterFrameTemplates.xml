@@ -68,11 +68,11 @@
         </Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 4);
+				self:SetFrameLevel(this:GetFrameLevel() + 4);
 			</OnLoad>
 			<OnClick>
 				PanelTemplates_Tab_OnClick(CharacterFrame);
-				CharacterFrameTab_OnClick();
+				CharacterFrameTab_OnClick(self, button);
 			</OnClick>
 			<OnShow>
 				PanelTemplates_TabResize(0);

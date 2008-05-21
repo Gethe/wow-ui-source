@@ -53,7 +53,7 @@
 				</HitRectInsets>
 				<Scripts>
 					<OnClick>
-						SkillBar_OnClick();				
+						SkillBar_OnClick(self, button);				
 					</OnClick>
 				</Scripts>
 				<NormalTexture name="$parentNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder"/>
@@ -69,14 +69,14 @@
 		</Size>
 		<Scripts>
 			<OnClick>
-				if (this.isExpanded) then
-					CollapseSkillHeader(this.skillIndex);
+				if (self.isExpanded) then
+					CollapseSkillHeader(self.skillIndex);
 					local dialog = StaticPopup_FindVisible("UNLEARN_SKILL");
 					if ( dialog and ( dialog.data ~= GetSelectedSkill() ) ) then
 						StaticPopup_Hide("UNLEARN_SKILL");
 					end
 				else
-					ExpandSkillHeader(this.skillIndex);
+					ExpandSkillHeader(self.skillIndex);
 				end
 			</OnClick>
 		</Scripts>
@@ -302,16 +302,16 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetText(ALL);
-								this.skillIndex = 0;
-								this.isExpanded = 1;
+								self:SetText(ALL);
+								self.skillIndex = 0;
+								self.isExpanded = 1;
 							</OnLoad>
 						</Scripts>
 					</Button>
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						this:SetWidth(SkillFrameCollapseAllButton:GetTextWidth()+45);
+						self:SetWidth(SkillFrameCollapseAllButton:GetTextWidth()+45);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -350,7 +350,7 @@
 				<Scripts>
 					<OnClick>
 						CancelSkillUps();
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 						HideUIPanel(CharacterFrame);
 					</OnClick>
 				</Scripts>
@@ -553,8 +553,8 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						ScrollFrame_OnLoad();
-						this.scrollBarHideable = 1;
+						ScrollFrame_OnLoad(self);
+						self.scrollBarHideable = 1;
 					</OnLoad>
 				</Scripts>
 				<ScrollChild>
@@ -649,10 +649,10 @@
 									<Button name="$parentLearnSkillButton" setAllPoints="true">
 										<Scripts>
 											<OnClick>
-												BuySkillTier(this:GetParent().skillIndex)
+												BuySkillTier(self:GetParent().skillIndex)
 											</OnClick>
 											<OnEnter>
-												GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 												GameTooltip:SetText(CLICK_TO_LEARN)
 											</OnEnter>
 											<OnLeave>
@@ -673,7 +673,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												RemoveSkillUp(this:GetParent().skillIndex);
+												RemoveSkillUp(self:GetParent().skillIndex);
 											</OnClick>
 										</Scripts>
 										<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -694,7 +694,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												AddSkillUp(this:GetParent().skillIndex);
+												AddSkillUp(self:GetParent().skillIndex);
 											</OnClick>
 										</Scripts>
 										<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
@@ -718,13 +718,13 @@
 										</HitRectInsets>
 										<Scripts>
 											<OnClick>
-												local dialog = StaticPopup_Show("UNLEARN_SKILL", this.skillName);
+												local dialog = StaticPopup_Show("UNLEARN_SKILL", self.skillName);
 												if ( dialog ) then
-													dialog.data = this:GetParent().skillIndex;
+													dialog.data = self:GetParent().skillIndex;
 												end
 											</OnClick>
 											<OnEnter>
-												GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 												GameTooltip:SetText(UNLEARN_SKILL_TOOLTIP);
 											</OnEnter>
 											<OnLeave>
@@ -854,13 +854,13 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				SkillFrame_OnShow();
+				SkillFrame_OnShow(self);
 			</OnShow>
 			<OnLoad>
-				SkillFrame_OnLoad();
+				SkillFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				SkillFrame_OnEvent(event);
+				SkillFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnHide>
 				CancelSkillUps();

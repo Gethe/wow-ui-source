@@ -81,19 +81,19 @@ function GuildBankFrame_UpdateEmblem()
 end
 
 
-function GuildBankFrame_OnLoad()
+function GuildBankFrame_OnLoad(self)
 	NUM_GUILDBANK_ICONS_SHOWN = NUM_GUILDBANK_ICONS_PER_ROW * NUM_GUILDBANK_ICON_ROWS;
-	this:RegisterEvent("GUILDBANKBAGSLOTS_CHANGED");
-	this:RegisterEvent("GUILDBANK_ITEM_LOCK_CHANGED");
-	this:RegisterEvent("GUILDBANK_UPDATE_TABS");
-	this:RegisterEvent("GUILDBANK_UPDATE_MONEY");
-	this:RegisterEvent("GUILDBANK_UPDATE_WITHDRAWMONEY");
-	this:RegisterEvent("GUILD_ROSTER_UPDATE");
-	this:RegisterEvent("GUILDBANKLOG_UPDATE");
-	this:RegisterEvent("GUILDTABARD_UPDATE");
-	this:RegisterEvent("GUILDBANK_UPDATE_TEXT");
-	this:RegisterEvent("GUILDBANK_TEXT_CHANGED");
-	this:RegisterEvent("PLAYER_MONEY");
+	self:RegisterEvent("GUILDBANKBAGSLOTS_CHANGED");
+	self:RegisterEvent("GUILDBANK_ITEM_LOCK_CHANGED");
+	self:RegisterEvent("GUILDBANK_UPDATE_TABS");
+	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
+	self:RegisterEvent("GUILDBANK_UPDATE_WITHDRAWMONEY");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("GUILDBANKLOG_UPDATE");
+	self:RegisterEvent("GUILDTABARD_UPDATE");
+	self:RegisterEvent("GUILDBANK_UPDATE_TEXT");
+	self:RegisterEvent("GUILDBANK_TEXT_CHANGED");
+	self:RegisterEvent("PLAYER_MONEY");
 	-- Set the button id's
 	local index, column, button;
 	for i=1, MAX_GUILDBANK_SLOTS_PER_TAB do
@@ -112,7 +112,7 @@ function GuildBankFrame_OnLoad()
 
 end
 
-function GuildBankFrame_OnEvent(event)
+function GuildBankFrame_OnEvent(self, event, ...)
 	if ( not GuildBankFrame:IsVisible() ) then
 		return;
 	end
@@ -142,8 +142,9 @@ function GuildBankFrame_OnEvent(event)
 	elseif ( event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
 		GuildBankFrame_UpdateWithdrawMoney();
 	elseif ( event == "GUILDBANK_UPDATE_TEXT" ) then
-		GuildBankFrame_UpdateTabInfo(arg1);
+		GuildBankFrame_UpdateTabInfo(...);
 	elseif ( event == "GUILDBANK_TEXT_CHANGED" ) then
+		local arg1 = ...
 		if ( GetCurrentGuildBankTab() == tonumber(arg1) ) then
 			QueryGuildBankText(arg1);
 		end
@@ -161,7 +162,7 @@ function GuildBankFrame_SelectAvailableTab()
 		GuildBankFrame_Update();
 	else
 		if ( GuildBankFrame.nextAvailableTab ) then
-			GuildBankTab_OnClick("LeftButton", GuildBankFrame.nextAvailableTab);
+			GuildBankTab_OnClick(getglobal("GuildBankTab" .. GuildBankFrame.nextAvailableTab), "LeftButton", GuildBankFrame.nextAvailableTab);
 		else
 			GuildBankFrame_UpdateTabs();
 			GuildBankFrame_Update();
@@ -170,7 +171,7 @@ function GuildBankFrame_SelectAvailableTab()
 end
 
 function GuildBankFrame_OnShow()
-	GuildBankFrameTab_OnClick(1);
+	GuildBankFrameTab_OnClick(GuildBankFrameTab1, 1);
 	GuildBankFrame_UpdateTabard();
 	GuildBankFrame_SelectAvailableTab();
 	PlaySound("GuildVaultOpen");
@@ -259,7 +260,7 @@ function GuildBankFrame_Update()
 	GuildBankFrame_UpdateWithdrawMoney();
 end
 
-function GuildBankFrameTab_OnClick(id, doNotUpdate)
+function GuildBankFrameTab_OnClick(tab, id, doNotUpdate)
 	PanelTemplates_SetTab(GuildBankFrame, id);
 	if ( id == 1 ) then
 		--Bank
@@ -306,7 +307,7 @@ function GuildBankFrame_UpdateTabBuyingInfo()
 	GuildBankFrameBuyInfoNumTabsPurchasedText:SetText(format(NUM_GUILDBANK_TABS_PURCHASED, numTabs, MAX_GUILDBANK_TABS));
 	if ( not tabCost ) then
 		--You've bought all the tabs
-		GuildBankTab_OnClick("LeftButton", 1);
+		GuildBankTab_OnClick(GuildBankTab1, "LeftButton", 1);
 	else
 		if( GetMoney() >= tabCost or (GetMoney() + GetGuildBankMoney()) >= tabCost ) then
 			SetMoneyFrameColor("GuildBankFrameTabCostMoneyFrame", 1.0, 1.0, 1.0);
@@ -315,7 +316,7 @@ function GuildBankFrame_UpdateTabBuyingInfo()
 			SetMoneyFrameColor("GuildBankFrameTabCostMoneyFrame", 1.0, 0.1, 0.1);
 			GuildBankFramePurchaseButton:Disable();
 		end
-		GuildBankTab_OnClick("LeftButton", numTabs+1);
+		GuildBankTab_OnClick(getglobal("GuildBankTab" .. numTabs+1), "LeftButton", numTabs+1);
 		MoneyFrame_Update("GuildBankFrameTabCostMoneyFrame", tabCost);
 	end
 end
@@ -489,12 +490,12 @@ function GuildBankFrame_UpdateTabs()
 	end
 end
 
-function GuildBankTab_OnClick(mouseButton, currentTab)
+function GuildBankTab_OnClick(self, mouseButton, currentTab)
 	if ( GuildBankInfo:IsShown() ) then
 		GuildBankInfoSaveButton:Click();
 	end
 	if ( not currentTab ) then
-		currentTab = this:GetParent():GetID();
+		currentTab = self:GetParent():GetID();
 	end
 	SetCurrentGuildBankTab(currentTab);
 	GuildBankFrame_UpdateTabs();
@@ -543,17 +544,17 @@ function GuildBankFrame_DesaturateColumns(isDesaturated)
 	end
 end
 
-function GuildBankItemButton_OnLoad()
-	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	this:RegisterForDrag("LeftButton");
-	this.SplitStack = function(button, split)
+function GuildBankItemButton_OnLoad(self)
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterForDrag("LeftButton");
+	self.SplitStack = function(button, split)
 		SplitGuildBankItem(GetCurrentGuildBankTab(), button:GetID(), split);
 	end
 end
 
-function GuildBankItemButton_OnEnter()
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-	GameTooltip:SetGuildBankItem(GetCurrentGuildBankTab(), this:GetID());
+function GuildBankItemButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
 end
 
 function GuildBankFrame_UpdateLog()
@@ -748,7 +749,7 @@ function GuildBankPopupFrame_Update(tab)
 	FauxScrollFrame_Update(GuildBankPopupScrollFrame, ceil(numguildBankIcons / NUM_GUILDBANK_ICONS_PER_ROW) , NUM_GUILDBANK_ICON_ROWS, GUILDBANK_ICON_ROW_HEIGHT );
 end
 
-function GuildBankPopupFrame_OnShow()
+function GuildBankPopupFrame_OnShow(self)
 	local name = GetGuildBankTabInfo(GetCurrentGuildBankTab());
 	if ( not name or name == "" ) then
 		name = format(GUILDBANK_TAB_NUMBER, GetCurrentGuildBankTab());
@@ -757,14 +758,14 @@ function GuildBankPopupFrame_OnShow()
 	GuildBankPopupFrame.selectedIcon = nil;
 end
 
-function GuildBankPopupButton_OnClick()
+function GuildBankPopupButton_OnClick(self, button)
 	local offset = FauxScrollFrame_GetOffset(GuildBankPopupScrollFrame);
-	local index = (offset * NUM_GUILDBANK_ICONS_PER_ROW)+this:GetID();
+	local index = (offset * NUM_GUILDBANK_ICONS_PER_ROW)+self:GetID();
 	GuildBankPopupFrame.selectedIcon = index;
 	GuildBankPopupFrame_Update(GetCurrentGuildBankTab());
 end
 
-function GuildBankPopupOkayButton_OnClick()
+function GuildBankPopupOkayButton_OnClick(self)
 	local name = GuildBankPopupEditBox:GetText();
 	local tab = GetCurrentGuildBankTab();
 	if ( not name or name == "" ) then

@@ -82,8 +82,16 @@ function WorldMapFrame_Update()
 		OutlandButton:Hide();
 		AzerothButton:Hide();
 	end
+
+	local texName;
+	local dungeonLevel = GetCurrentMapDungeonLevel();
 	for i=1, NUM_WORLDMAP_DETAIL_TILES, 1 do
-		getglobal("WorldMapDetailTile"..i):SetTexture("Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i);
+		if ( dungeonLevel > 0 ) then
+			texName = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..dungeonLevel.."_"..i;
+		else
+			texName = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i;
+		end
+		getglobal("WorldMapDetailTile"..i):SetTexture(texName);
 	end		
 	--WorldMapHighlight:Hide();
 
@@ -288,11 +296,12 @@ end
 
 function WorldMapZoneMinimapDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
+	local value = GetCVar("showBattlefieldMinimap");
 
 	info.value = "0";
 	info.text = WorldMapZoneMinimapDropDown_GetText(info.value);
 	info.func = WorldMapZoneMinimapDropDown_OnClick;
-	if ( SHOW_BATTLEFIELD_MINIMAP == info.value ) then
+	if ( value == info.value ) then
 		info.checked = 1;
 		UIDropDownMenu_SetText(info.text, WorldMapZoneMinimapDropDown);
 	else
@@ -303,7 +312,7 @@ function WorldMapZoneMinimapDropDown_Initialize()
 	info.value = "1";
 	info.text = WorldMapZoneMinimapDropDown_GetText(info.value);
 	info.func = WorldMapZoneMinimapDropDown_OnClick;
-	if ( SHOW_BATTLEFIELD_MINIMAP == info.value ) then
+	if ( value == info.value ) then
 		info.checked = 1;
 		UIDropDownMenu_SetText(info.text, WorldMapZoneMinimapDropDown);
 	else
@@ -314,7 +323,7 @@ function WorldMapZoneMinimapDropDown_Initialize()
 	info.value = "2";
 	info.text = WorldMapZoneMinimapDropDown_GetText(info.value);
 	info.func = WorldMapZoneMinimapDropDown_OnClick;
-	if ( SHOW_BATTLEFIELD_MINIMAP == info.value ) then
+	if ( value == info.value ) then
 		info.checked = 1;
 		UIDropDownMenu_SetText(info.text, WorldMapZoneMinimapDropDown);
 	else
@@ -325,7 +334,7 @@ end
 
 function WorldMapZoneMinimapDropDown_OnClick()
 	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, this.value);
-	SHOW_BATTLEFIELD_MINIMAP = this.value;
+	SetCVar("showBattlefieldMinimap", this.value);
 
 	if ( WorldStateFrame_CanShowBattlefieldMinimap() ) then
 		if ( not BattlefieldMinimap ) then
@@ -354,8 +363,8 @@ function WorldMapZoneMinimapDropDown_GetText(value)
 end
 
 function WorldMapZoneMinimapDropDown_Update()
-	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, SHOW_BATTLEFIELD_MINIMAP);
-	UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown_GetText(SHOW_BATTLEFIELD_MINIMAP), WorldMapZoneMinimapDropDown);
+	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, GetCVar("showBattlefieldMinimap"));
+	UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown_GetText(GetCVar("showBattlefieldMinimap")), WorldMapZoneMinimapDropDown);
 end
 
 function WorldMapContinentButton_OnClick()

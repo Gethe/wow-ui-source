@@ -23,7 +23,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				AuctionFrameFilter_OnClick();
+				AuctionFrameFilter_OnClick(self, button);
 			</OnClick>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
@@ -244,29 +244,29 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						this:GetParent():LockHighlight();
-						AuctionFrameItem_OnEnter("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
+						self:GetParent():LockHighlight();
+						AuctionFrameItem_OnEnter(self, "list", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
 					</OnEnter>
 					<OnLeave>
 						local selected = GetSelectedAuctionItem("list");
-						if ( selected and ( selected == this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame) ) ) then
+						if ( selected and ( selected == self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame) ) ) then
 							<!-- Do nothing -->
 						else
-							this:GetParent():UnlockHighlight();
+							self:GetParent():UnlockHighlight();
 						end
 						GameTooltip:Hide();
 						ResetCursor();
 					</OnLeave>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							HandleModifiedItemClick(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+							HandleModifiedItemClick(GetAuctionItemLink("list", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 						else
-							BrowseButton_OnClick(this:GetParent());
+							BrowseButton_OnClick(self:GetParent());
 						end
 					</OnClick>
 					<OnUpdate>
-						if ( GameTooltip:IsOwned(this) ) then
-							AuctionFrameItem_OnEnter("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
+						if ( GameTooltip:IsOwned(self) ) then
+							AuctionFrameItem_OnEnter(self, "list", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
 						end
 					</OnUpdate>
 				</Scripts>
@@ -310,16 +310,16 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						this:GetParent():LockHighlight();
-						GameTooltip:SetOwner(this);
-						GameTooltip:SetText(this.tooltip);
+						self:GetParent():LockHighlight();
+						GameTooltip:SetOwner(self);
+						GameTooltip:SetText(self.tooltip);
 					</OnEnter>
 					<OnLeave>
 						local selected = GetSelectedAuctionItem("list");
-						if ( selected and ( selected == this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame) ) ) then
+						if ( selected and ( selected == self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame) ) ) then
 							<!-- Do nothing -->
 						else
-							this:GetParent():UnlockHighlight();
+							self:GetParent():UnlockHighlight();
 						end
 						GameTooltip:Hide();
 					</OnLeave>
@@ -335,8 +335,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("AUCTION");
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "AUCTION");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -367,9 +367,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("AUCTION");
-						SetMoneyFrameColor(this:GetName(), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "AUCTION");
+						SetMoneyFrameColor(self:GetName(), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -402,9 +402,9 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetAuctionItemLink("list", this:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+					HandleModifiedItemClick(GetAuctionItemLink("list", self:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 				else
-					BrowseButton_OnClick();
+					BrowseButton_OnClick(self);
 				end
 			</OnClick>
 		</Scripts>
@@ -547,29 +547,29 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						this:GetParent():LockHighlight();
-						AuctionFrameItem_OnEnter("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame));
+						self:GetParent():LockHighlight();
+						AuctionFrameItem_OnEnter(self, "bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame));
 					</OnEnter>
 					<OnLeave>
 						local selected = GetSelectedAuctionItem("bidder");
-						if ( selected and ( selected == this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame) ) ) then
+						if ( selected and ( selected == self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame) ) ) then
 							<!-- Do nothing -->
 						else
-							this:GetParent():UnlockHighlight();
+							self:GetParent():UnlockHighlight();
 						end
 						GameTooltip:Hide();
 						ResetCursor();
 					</OnLeave>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							HandleModifiedItemClick(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
+							HandleModifiedItemClick(GetAuctionItemLink("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 						else
-							BidButton_OnClick(this:GetParent());
+							BidButton_OnClick(self:GetParent());
 						end
 					</OnClick>
 					<OnUpdate>
-						if ( GameTooltip:IsOwned(this) ) then
-							AuctionFrameItem_OnEnter("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame));
+						if ( GameTooltip:IsOwned(self) ) then
+							AuctionFrameItem_OnEnter(self, "bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame));
 						end
 					</OnUpdate>
 				</Scripts>
@@ -613,16 +613,16 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						this:GetParent():LockHighlight();
-						GameTooltip:SetOwner(this);
-						GameTooltip:SetText(this.tooltip);
+						self:GetParent():LockHighlight();
+						GameTooltip:SetOwner(self);
+						GameTooltip:SetText(self.tooltip);
 					</OnEnter>
 					<OnLeave>
 						local selected = GetSelectedAuctionItem("bidder");
-						if ( selected and ( selected == this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame) ) ) then
+						if ( selected and ( selected == self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame) ) ) then
 							<!-- Do nothing -->
 						else
-							this:GetParent():UnlockHighlight();
+							self:GetParent():UnlockHighlight();
 						end
 						GameTooltip:Hide();
 					</OnLeave>
@@ -638,8 +638,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("AUCTION");
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "AUCTION");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -653,8 +653,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("AUCTION");
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "AUCTION");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -662,9 +662,9 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetAuctionItemLink("bidder", this:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
+					HandleModifiedItemClick(GetAuctionItemLink("bidder", self:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 				else
-					BidButton_OnClick();
+					BidButton_OnClick(self);
 				end
 			</OnClick>
 		</Scripts>
@@ -795,29 +795,29 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						this:GetParent():LockHighlight();
-						AuctionFrameItem_OnEnter("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
+						self:GetParent():LockHighlight();
+						AuctionFrameItem_OnEnter(self, "owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
 					</OnEnter>
 					<OnLeave>
 						local selected = GetSelectedAuctionItem("owner");
-						if ( selected and ( selected == ( this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame) ) ) ) then
+						if ( selected and ( selected == ( self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame) ) ) ) then
 							<!-- Do nothing -->
 						else
-							this:GetParent():UnlockHighlight();
+							self:GetParent():UnlockHighlight();
 						end
 						GameTooltip:Hide();
 						ResetCursor();
 					</OnLeave>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							HandleModifiedItemClick(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
+							HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
 						else
-							AuctionsButton_OnClick(this:GetParent());
+							AuctionsButton_OnClick(self:GetParent());
 						end
 					</OnClick>
 					<OnUpdate>
-						if ( GameTooltip:IsOwned(this) ) then
-							AuctionFrameItem_OnEnter("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
+						if ( GameTooltip:IsOwned(self) ) then
+							AuctionFrameItem_OnEnter(self, "owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
 						end
 					</OnUpdate>
 				</Scripts>
@@ -861,16 +861,16 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						this:GetParent():LockHighlight();
-						GameTooltip:SetOwner(this);
-						GameTooltip:SetText(this.tooltip);
+						self:GetParent():LockHighlight();
+						GameTooltip:SetOwner(self);
+						GameTooltip:SetText(self.tooltip);
 					</OnEnter>
 					<OnLeave>
 						local selected = GetSelectedAuctionItem("owner");
-						if ( selected and ( selected == ( this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame) ) ) ) then
+						if ( selected and ( selected == ( self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame) ) ) ) then
 							<!-- Do nothing -->
 						else
-							this:GetParent():UnlockHighlight();
+							self:GetParent():UnlockHighlight();
 						end
 						GameTooltip:Hide();
 					</OnLeave>
@@ -886,8 +886,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("AUCTION");
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "AUCTION");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -914,8 +914,8 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("AUCTION");
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "AUCTION");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -923,9 +923,9 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetAuctionItemLink("owner", this:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
+					HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
 				else
-					AuctionsButton_OnClick();
+					AuctionsButton_OnClick(self);
 				end
 			</OnClick>
 		</Scripts>
@@ -946,7 +946,7 @@
 	<Button name="AuctionTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				AuctionFrameTab_OnClick();
+				AuctionFrameTab_OnClick(self);
 			</OnClick>
 		</Scripts>
 	</Button>

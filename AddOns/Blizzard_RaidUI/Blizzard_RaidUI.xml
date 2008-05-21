@@ -3,13 +3,13 @@
 	<Script file="Blizzard_RaidUI.lua"/>
 	<Button name="RaidClassButtonTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="20" y="20"/>
+			<AbsDimension x="18" y="18"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
 					<Size>
-						<AbsDimension x="42" y="42"/>
+						<AbsDimension x="40" y="40"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -23,7 +23,7 @@
 			<Layer level="BORDER">
 				<Texture name="$parentIconTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
 					<Size>
-						<AbsDimension x="20" y="20"/>
+						<AbsDimension x="18" y="18"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
@@ -70,7 +70,7 @@
 		<NormalTexture/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
 			<Size>
-				<AbsDimension x="20" y="20"/>
+				<AbsDimension x="18" y="18"/>
 			</Size>
 			<Anchors>
 				<Anchor point="TOP" relativeTo="$parentIconTexture">
@@ -445,9 +445,9 @@
 				end
 
 				if ( this:GetParent():GetParent().showBuffs ) then
-					GameTooltip:SetUnitBuff(this:GetParent().unit, this:GetID(), SHOW_CASTABLE_BUFFS);
+					GameTooltip:SetUnitBuff(this:GetParent().unit, this:GetID(), GetCVarBool("showCastableBuffs"));
 				else
-					GameTooltip:SetUnitDebuff(this:GetParent().unit, this:GetID(), SHOW_DISPELLABLE_DEBUFFS);
+					GameTooltip:SetUnitDebuff(this:GetParent().unit, this:GetID(), GetCVarBool("showDispelDebuffs"));
 				end
 			</OnEnter>
 			<OnLeave>
@@ -949,11 +949,20 @@
 		<HighlightFont inherits="GameFontHighlightSmall"/>
 		<DisabledFont inherits="GameFontDisableSmall"/>
 	</Button>
-	<Button name="RaidClassButton12"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="12">
+	<Button name="RaidClassButton13"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="13">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-36" y="95"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton12"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="12">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton13" relativePoint="TOP">
+				<Offset>
+					<AbsDimension x="0" y="12"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

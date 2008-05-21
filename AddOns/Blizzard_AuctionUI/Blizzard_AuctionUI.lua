@@ -195,11 +195,11 @@ StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	text = BUYOUT_AUCTION_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function()
+	OnAccept = function(self)
 		PlaceAuctionBid(AuctionFrame.type, GetSelectedAuctionItem(AuctionFrame.type), AuctionFrame.buyoutPrice);
 	end,
-	OnShow = function()
-		MoneyFrame_Update(this:GetName().."MoneyFrame", AuctionFrame.buyoutPrice);
+	OnShow = function(self)
+		MoneyFrame_Update(self.moneyFrame, AuctionFrame.buyoutPrice);
 	end,
 	hasMoneyFrame = 1,
 	showAlert = 1,
@@ -214,12 +214,12 @@ StaticPopupDialogs["CANCEL_AUCTION"] = {
 	OnAccept = function()
 		CancelAuction(GetSelectedAuctionItem("owner"));
 	end,
-	OnShow = function()
-		MoneyFrame_Update(this:GetName().."MoneyFrame", AuctionFrameAuctions.cancelPrice);
+	OnShow = function(self)
+		MoneyFrame_Update(self.moneyFrame, AuctionFrameAuctions.cancelPrice);
 		if ( AuctionFrameAuctions.cancelPrice > 0 ) then
-			getglobal(this:GetName().."Text"):SetText(CANCEL_AUCTION_CONFIRMATION_MONEY);
+			self.text:SetText(CANCEL_AUCTION_CONFIRMATION_MONEY);
 		else
-			getglobal(this:GetName().."Text"):SetText(CANCEL_AUCTION_CONFIRMATION);
+			self.text:SetText(CANCEL_AUCTION_CONFIRMATION);
 		end
 		
 	end,
@@ -230,13 +230,11 @@ StaticPopupDialogs["CANCEL_AUCTION"] = {
 	hideOnEscape = 1
 };
 
-function AuctionFrame_OnLoad()
-	this:RegisterEvent("ADDON_LOADED");
-	AUCTION_DISPLAY_ON_CHARACTER = "0";
+function AuctionFrame_OnLoad (self)
 
 	-- Tab Handling code
-	PanelTemplates_SetNumTabs(this, 3);
-	PanelTemplates_SetTab(AuctionFrame, 1);
+	PanelTemplates_SetNumTabs(self, 3);
+	PanelTemplates_SetTab(self, 1);
 	AuctionsBuyoutText:SetText(BUYOUT_PRICE.." |cff808080("..OPTIONAL..")|r");
 
 	-- Set focus rules
@@ -297,27 +295,18 @@ function AuctionFrame_Hide()
 	HideUIPanel(AuctionFrame);
 end
 
-function AuctionFrame_OnShow()
-	this.gotAuctions = nil;
-	this.gotBids = nil;
-	AuctionFrameTab_OnClick(1);
+function AuctionFrame_OnShow (self)
+	self.gotAuctions = nil;
+	self.gotBids = nil;
+	AuctionFrameTab_OnClick(nil, 1);
 	SetPortraitTexture(AuctionPortraitTexture,"npc");
 	BrowseNoResultsText:SetText(BROWSE_SEARCH_TEXT);
 	PlaySound("AuctionWindowOpen");
 end
 
-function AuctionFrame_OnEvent()
-	if ( event == "ADDON_LOADED" ) then
-		if ( arg1 == "Blizzard_AuctionUI" ) then
-			ShowOnPlayerCheckButton:SetChecked(AUCTION_DISPLAY_ON_CHARACTER);
-			this:UnregisterEvent("ADDON_LOADED");
-		end
-	end
-end
-
-function AuctionFrameTab_OnClick(index)
+function AuctionFrameTab_OnClick(self, index)
 	if ( not index ) then
-		index = this:GetID();
+		index = self:GetID();
 	end
 	PanelTemplates_SetTab(AuctionFrame, index);
 	AuctionFrameAuctions:Hide();
@@ -358,8 +347,8 @@ end
 
 -- Browse tab functions
 
-function AuctionFrameBrowse_OnLoad()
-	this:RegisterEvent("AUCTION_ITEM_LIST_UPDATE");
+function AuctionFrameBrowse_OnLoad(self)
+	self:RegisterEvent("AUCTION_ITEM_LIST_UPDATE");
 
 	-- set default sort
 	AuctionFrame_SetSort("list", "quality", false);
@@ -381,7 +370,7 @@ function AuctionFrameBrowse_UpdateArrows()
 	SortButton_UpdateArrow(BrowseCurrentBidSort, "list", "bid");
 end
 
-function AuctionFrameBrowse_OnEvent()
+function AuctionFrameBrowse_OnEvent(self, event, ...)
 	if ( event == "AUCTION_ITEM_LIST_UPDATE" ) then
 		AuctionFrameBrowse_Update();
 		-- Stop "searching" messaging
@@ -393,10 +382,9 @@ function AuctionFrameBrowse_OnEvent()
 end
 
 function BrowseButton_OnClick(button)
-	if ( not button ) then
-		button = this;
-	end
-	if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
+	assert(button);
+	
+	if ( GetCVarBool("auctionDisplayOnCharacter") ) then
 		DressUpItemLink(GetAuctionItemLink("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 	end
 	SetSelectedAuctionItem("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
@@ -405,8 +393,8 @@ function BrowseButton_OnClick(button)
 	AuctionFrameBrowse_Update();
 end
 
-function BrowseDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, BrowseDropDown_Initialize);
+function BrowseDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, BrowseDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(BrowseDropDown,-1);
 end
 
@@ -425,8 +413,8 @@ function BrowseDropDown_Initialize()
 	end
 end
 
-function BrowseDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(BrowseDropDown, this.value);
+function BrowseDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(BrowseDropDown, self.value);
 end
 
 function AuctionFrameBrowse_InitClasses(...)
@@ -435,7 +423,7 @@ function AuctionFrameBrowse_InitClasses(...)
 	end
 end
 
-function AuctionFrameBrowse_Reset()
+function AuctionFrameBrowse_Reset(self)
 	BrowseName:SetText("");
 	BrowseMinLevel:SetText("");
 	BrowseMaxLevel:SetText("");
@@ -452,17 +440,17 @@ function AuctionFrameBrowse_Reset()
 	AuctionFrameBrowse.selectedInvtypeIndex = nil;
 
 	AuctionFrameFilters_Update()
-	this:Disable();
+	self:Disable();
 end
 
-function BrowseResetButton_OnUpdate()
+function BrowseResetButton_OnUpdate(self, elapsed)
 	if ( (BrowseName:GetText() == "") and (BrowseMinLevel:GetText() == "") and (BrowseMaxLevel:GetText() == "") and
 	     (not IsUsableCheckButton:GetChecked()) and (UIDropDownMenu_GetSelectedValue(BrowseDropDown) == -1) and
 	     (not AuctionFrameBrowse.selectedClass) and (not AuctionFrameBrowse.selectedSubclass) and (not AuctionFrameBrowse.selectedInvtype) )
 	then
-		this:Disable();
+		self:Disable();
 	else
-		this:Enable();
+		self:Enable();
 	end
 end
 
@@ -511,9 +499,9 @@ function AuctionFrameBrowse_Search(page)
 	AuctionFrameBrowse.isSearching = 1;
 end
 
-function BrowseSearchButton_OnUpdate()
+function BrowseSearchButton_OnUpdate(self, elapsed)
 	if (CanSendAuctionQuery("list")) then
-		this:Enable();
+		self:Enable();
 		if ( BrowsePrevPageButton.isEnabled ) then
 			BrowsePrevPageButton:Enable();
 		else
@@ -531,7 +519,7 @@ function BrowseSearchButton_OnUpdate()
 		BrowseCurrentBidSort:Enable();
 		AuctionFrameBrowse_UpdateArrows();
 	else
-		this:Disable();
+		self:Disable();
 		BrowsePrevPageButton:Disable();
 		BrowseNextPageButton:Disable();
 		BrowseQualitySort:Disable();
@@ -555,7 +543,7 @@ function BrowseSearchButton_OnUpdate()
 			BrowseNoResultsText:SetText(SEARCHING_FOR_ITEMS);
 			AuctionFrameBrowse.isSearchingThrottle = 0.3;
 		else
-			AuctionFrameBrowse.isSearchingThrottle = AuctionFrameBrowse.isSearchingThrottle - arg1;
+			AuctionFrameBrowse.isSearchingThrottle = AuctionFrameBrowse.isSearchingThrottle - elapsed;
 		end
 	else
 		BrowseSearchDotsText:Hide();
@@ -681,32 +669,32 @@ function FilterButton_SetType(button, type, text, isLast)
 	button.type = type; 
 end
 
-function AuctionFrameFilter_OnClick()
-	if ( this.type == "class" ) then
-		if ( AuctionFrameBrowse.selectedClass == this:GetText() ) then
+function AuctionFrameFilter_OnClick(self, button)
+	if ( self.type == "class" ) then
+		if ( AuctionFrameBrowse.selectedClass == self:GetText() ) then
 			AuctionFrameBrowse.selectedClass = nil;
 			AuctionFrameBrowse.selectedClassIndex = nil;
 		else
-			AuctionFrameBrowse.selectedClass = this:GetText();
-			AuctionFrameBrowse.selectedClassIndex = this.index;
+			AuctionFrameBrowse.selectedClass = self:GetText();
+			AuctionFrameBrowse.selectedClassIndex = self.index;
 		end
 		AuctionFrameBrowse.selectedSubclass = nil;
 		AuctionFrameBrowse.selectedSubclassIndex = nil;
 		AuctionFrameBrowse.selectedInvtype = nil;
 		AuctionFrameBrowse.selectedInvtypeIndex = nil;
-	elseif ( this.type == "subclass" ) then
-		if ( AuctionFrameBrowse.selectedSubclass == this:GetText() ) then
+	elseif ( self.type == "subclass" ) then
+		if ( AuctionFrameBrowse.selectedSubclass == self:GetText() ) then
 			AuctionFrameBrowse.selectedSubclass = nil;
 			AuctionFrameBrowse.selectedSubclassIndex = nil;
 		else
-			AuctionFrameBrowse.selectedSubclass = this:GetText();
-			AuctionFrameBrowse.selectedSubclassIndex = this.index;
+			AuctionFrameBrowse.selectedSubclass = self:GetText();
+			AuctionFrameBrowse.selectedSubclassIndex = self.index;
 		end
 		AuctionFrameBrowse.selectedInvtype = nil;
 		AuctionFrameBrowse.selectedInvtypeIndex = nil;
-	elseif ( this.type == "invtype" ) then
-		AuctionFrameBrowse.selectedInvtype = this:GetText();
-		AuctionFrameBrowse.selectedInvtypeIndex = this.index;
+	elseif ( self.type == "invtype" ) then
+		AuctionFrameBrowse.selectedInvtype = self:GetText();
+		AuctionFrameBrowse.selectedInvtypeIndex = self.index;
 	end
 	AuctionFrameFilters_Update()
 end
@@ -908,14 +896,14 @@ end
 
 -- Bid tab functions
 
-function AuctionFrameBid_OnLoad()
-	this:RegisterEvent("AUCTION_BIDDER_LIST_UPDATE");
+function AuctionFrameBid_OnLoad(self)
+	self:RegisterEvent("AUCTION_BIDDER_LIST_UPDATE");
 
 	-- set default sort
 	AuctionFrame_SetSort("bidder", "duration", false);
 end
 
-function AuctionFrameBid_OnEvent()
+function AuctionFrameBid_OnEvent(self, event, ...)
 	if ( event == "AUCTION_BIDDER_LIST_UPDATE" ) then
 		AuctionFrameBid_Update();
 	end
@@ -1077,10 +1065,9 @@ function AuctionFrameBid_Update()
 end
 
 function BidButton_OnClick(button)
-	if ( not button ) then
-		button = this;
-	end
-	if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
+	assert(button)
+	
+	if ( GetCVarBool("auctionDisplayOnCharacter") ) then
 		DressUpItemLink(GetAuctionItemLink("bidder", button:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 	end
 	SetSelectedAuctionItem("bidder", button:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame));
@@ -1092,8 +1079,8 @@ end
 
 -- Auctions tab functions
 
-function AuctionFrameAuctions_OnLoad()
-	this:RegisterEvent("AUCTION_OWNED_LIST_UPDATE");
+function AuctionFrameAuctions_OnLoad(self)
+	self:RegisterEvent("AUCTION_OWNED_LIST_UPDATE");
 
 	-- set default sort
 	AuctionFrame_SetSort("owner", "duration", false);
@@ -1101,7 +1088,7 @@ function AuctionFrameAuctions_OnLoad()
 	AuctionsRadioButton_OnClick(2);
 end
 
-function AuctionFrameAuctions_OnEvent()
+function AuctionFrameAuctions_OnEvent(self, event, ...)
 	if ( event == "AUCTION_OWNED_LIST_UPDATE" ) then
 		AuctionFrameAuctions_Update();
 	end
@@ -1275,10 +1262,9 @@ function AuctionFrameAuctions_Update()
 end
 
 function AuctionsButton_OnClick(button)
-	if ( not button ) then
-		button = this;
-	end
-	if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
+	assert(button);
+	
+	if ( GetCVarBool("auctionDisplayOnCharacter") ) then
 		DressUpItemLink(GetAuctionItemLink("owner", button:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
 	end
 	SetSelectedAuctionItem("owner", button:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
@@ -1310,7 +1296,7 @@ function UpdateDeposit()
 	MoneyFrame_Update("AuctionsDepositMoneyFrame", CalculateAuctionDeposit(AuctionFrameAuctions.duration));
 end
 
-function AuctionSellItemButton_OnEvent()
+function AuctionSellItemButton_OnEvent(self, event, ...)
 	if ( event == "NEW_AUCTION_UPDATE") then
 		local name, texture, count, quality, canUse, price = GetAuctionSellItemInfo();
 		AuctionsItemButton:SetNormalTexture(texture);
@@ -1387,26 +1373,26 @@ function AuctionFrame_GetTimeLeftTooltipText(id)
 	return getglobal("AUCTION_TIME_LEFT"..id.."_DETAIL");
 end
 
-function AuctionFrameItem_OnEnter(type, index)
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+function AuctionFrameItem_OnEnter(self, type, index)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetAuctionItem(type, index);
 
 	-- add price per unit info
 	local button;
 	if ( type == "owner" ) then
-		button = getglobal("AuctionsButton"..this:GetParent():GetID());
+		button = getglobal("AuctionsButton"..self:GetParent():GetID());
 	elseif ( type == "bidder" ) then
-		button = getglobal("BidButton"..this:GetParent():GetID());
+		button = getglobal("BidButton"..self:GetParent():GetID());
 	elseif ( type == "list" ) then
-		button = getglobal("BrowseButton"..this:GetParent():GetID());
+		button = getglobal("BrowseButton"..self:GetParent():GetID());
 	end
 	if ( button and button.itemCount > 1 ) then
 		if ( button.bidAmount > 0 ) then
 			GameTooltip:AddLine("|n");
-			SetTooltipMoney(GameTooltip, ceil(button.bidAmount / button.itemCount), "STATIC", "<"..AUCTION_TOOLTIP_BID_PREFIX, ">");
+			SetTooltipMoney(GameTooltip, ceil(button.bidAmount / button.itemCount), "STATIC", AUCTION_TOOLTIP_BID_PREFIX);
 		end
 		if ( button.buyoutPrice > 0 ) then
-			SetTooltipMoney(GameTooltip, ceil(button.buyoutPrice / button.itemCount), "STATIC", "<"..AUCTION_TOOLTIP_BUYOUT_PREFIX, ">");
+			SetTooltipMoney(GameTooltip, ceil(button.buyoutPrice / button.itemCount), "STATIC", AUCTION_TOOLTIP_BUYOUT_PREFIX);
 		end
 		GameTooltip:Show();
 	end

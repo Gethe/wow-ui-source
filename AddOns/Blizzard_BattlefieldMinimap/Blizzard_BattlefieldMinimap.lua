@@ -15,17 +15,17 @@ BattlefieldMinimapDefaults = {
 
 function BattlefieldMinimap_Toggle()
 	if ( BattlefieldMinimap:IsShown() ) then
-		SHOW_BATTLEFIELD_MINIMAP = "0";
+		SetCVar("showBattlefieldMinimap", "0");
 		BattlefieldMinimap:Hide();
 		WorldMapZoneMinimapDropDown_Update();
 	else
 		local _, instanceType = IsInInstance();
 		if ( instanceType == "pvp" ) then
-			SHOW_BATTLEFIELD_MINIMAP = "1";
+			SetCVar("showBattlefieldMinimap", "1");
 			BattlefieldMinimap:Show();
 			WorldMapZoneMinimapDropDown_Update();
 		elseif ( instanceType == "none" ) then
-			SHOW_BATTLEFIELD_MINIMAP = "2";
+			SetCVar("showBattlefieldMinimap", "2");
 			BattlefieldMinimap:Show();
 			WorldMapZoneMinimapDropDown_Update();
 		end
@@ -96,9 +96,16 @@ function BattlefieldMinimap_Update()
 	if ( not mapFileName ) then
 		return;
 	end
-	
+
+	local texName;
+	local dungeonLevel = GetCurrentMapDungeonLevel();
 	for i=1, NUM_WORLDMAP_DETAIL_TILES do
-		getglobal("BattlefieldMinimap"..i):SetTexture("Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i);
+		if ( dungeonLevel > 0 ) then
+			texName = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..dungeonLevel.."_"..i;
+		else
+			texName = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i;
+		end
+		getglobal("BattlefieldMinimap"..i):SetTexture(texName);
 	end
 
 	-- Setup the POI's
@@ -217,6 +224,10 @@ function BattlefieldMinimap_OnUpdate(elapsed)
 	--Position player
 	UpdateWorldMapArrowFrames();
 	local playerX, playerY = GetPlayerMapPosition("player");
+	if ( playerX == 0 and playerY == 0 ) then
+		SetMapToCurrentZone();
+		playerX, playerY = GetPlayerMapPosition("player");
+	end
 	if ( playerX == 0 and playerY == 0 ) then
 		ShowMiniWorldMapArrowFrame(nil);
 	else

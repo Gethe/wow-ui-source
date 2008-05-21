@@ -27,7 +27,7 @@ function InterfaceOptionsFrameOkay_OnClick ()
 	for _, category in next, addOnCategories do
 		securecall("pcall", category.okay, category);
 	end
-	
+
 	InterfaceOptionsFrame_Show();
 end
 
@@ -46,7 +46,7 @@ function InterfaceOptionsFrame_SetAllToDefaults ()
 		securecall("pcall", category.default, category);
 	end
 	
-	--Run the OnShow method of the currently displayed panel so that it can update and values that were changed. D
+	--Run the OnShow method of the currently displayed panel so that it can update any values that were changed.
 	local displayedFrame = InterfaceOptionsFramePanelContainer.displayedFrame;
 	if ( displayedFrame and displayedFrame.GetScript ) then
 		local script = displayedFrame:GetScript("OnShow");
@@ -119,7 +119,7 @@ uvarInfo = {
 	["WORLD_PVP_OBJECTIVES_DISPLAY"] = { default = "2", cvar = "displayWorldPVPObjectives", event = "WORLD_PVP_OBJECTIVES_DISPLAY" },
 	["AUTO_QUEST_WATCH"] = { default = "1", cvar = "autoQuestWatch", event = "AUTO_QUEST_WATCH_TEXT" },
 	["LOOT_UNDER_MOUSE"] = { default = "0", cvar = "lootUnderMouse", event = "LOOT_UNDER_MOUSE_TEXT" },
-	["AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "autoLootCorpse", event = "AUTO_LOOT_DEFAULT_TEXT" },
+	["AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "autoLootDefault", event = "AUTO_LOOT_DEFAULT_TEXT" },
 	
 	["SHOW_COMBAT_TEXT"] = { default = "0", cvar = "enableCombatText", event = "SHOW_COMBAT_TEXT_TEXT" },
 	["COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"] = { default = "0", cvar = "fctLowManaHealth", event = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
@@ -136,8 +136,8 @@ uvarInfo = {
 	["COMBAT_TEXT_FLOAT_MODE"] = { default = "1", cvar = "combatTextFloatMode", event = "COMBAT_TEXT_FLOAT_MODE" },
 	["COMBAT_TEXT_SHOW_HONOR_GAINED"] = { default = "0", cvar = "fctHonorGains", event = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
 	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", },
-	["SHOW_CASTABLE_BUFFS"] = { default = "0", cvar = "showPartyBuffs", event = "SHOW_CASTABLE_BUFFS_TEXT" },
-	["SHOW_DISPELLABLE_DEBUFFS"] = { default = "1", cvar = "showPartyDebuffs", event = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
+	["SHOW_CASTABLE_BUFFS"] = { default = "0", cvar = "showCastableBuffs", event = "SHOW_CASTABLE_BUFFS_TEXT" },
+	["SHOW_DISPELLABLE_DEBUFFS"] = { default = "1", cvar = "showDispelDebuffs", event = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
 }
 
  function InterfaceOptionsFrame_OnEvent (self, event, ...)

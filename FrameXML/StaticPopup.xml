@@ -7,7 +7,7 @@
 		</Size>
 		<Scripts>
 			<OnClick>
-				StaticPopup_OnClick(this:GetParent(), this:GetID());
+				StaticPopup_OnClick(self:GetParent(), self:GetID());
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
@@ -125,14 +125,17 @@
 				</Layers>
 				<Scripts>
 					<OnEnterPressed>
-						StaticPopup_EditBoxOnEnterPressed();
+						StaticPopup_EditBoxOnEnterPressed(self);
 					</OnEnterPressed>
 					<OnEscapePressed>
-						StaticPopup_EditBoxOnEscapePressed();
+						StaticPopup_EditBoxOnEscapePressed(self);
 					</OnEscapePressed>
 					<OnTextChanged>
-						StaticPopup_EditBoxOnTextChanged();
+						StaticPopup_EditBoxOnTextChanged(self);
 					</OnTextChanged>
+					<OnLoad>
+						self:GetParent().editBox = self;
+					</OnLoad>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
@@ -193,11 +196,14 @@
 				</Layers>
 				<Scripts>
 					<OnEnterPressed>
-						StaticPopup_EditBoxOnEnterPressed();
+						StaticPopup_EditBoxOnEnterPressed(self);
 					</OnEnterPressed>
 					<OnEscapePressed>
-						StaticPopup_EditBoxOnEscapePressed();
+						StaticPopup_EditBoxOnEscapePressed(self);
 					</OnEscapePressed>
+					<OnLoad>
+						self:GetParent().wideEditBox = self;
+					</OnLoad>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
@@ -211,8 +217,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("STATIC");
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+						self:GetParent().moneyFrame = self;
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -271,27 +278,39 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						if ( this.link ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetHyperlink(this.link);
+						if ( self.link ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetHyperlink(self.link);
 						end
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
+					<OnLoad>
+						self:GetParent().itemFrame = self;
+					</OnLoad>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnUpdate>
-				StaticPopup_OnUpdate(this, arg1);
+				StaticPopup_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnShow>
-				StaticPopup_OnShow();
+				StaticPopup_OnShow(self);
 			</OnShow>
 			<OnHide>
-				StaticPopup_OnHide();
+				StaticPopup_OnHide(self);
 			</OnHide>
+			<OnLoad>
+				local name = self:GetName();
+				self.button1 = getglobal(name .. "Button1");
+				self.button2 = getglobal(name .. "Button2");
+				self.button3 = getglobal(name .. "Button3");
+				self.text = getglobal(name .. "Text");
+				self.icon = getglobal(name .. "AlertIcon");
+				self.moneyInputFrame = getglobal(name .. "MoneyInputFrame");
+			</OnLoad>
 		</Scripts>
 	</Frame>
 	<Frame name="StaticPopup1" inherits="StaticPopupTemplate" parent="UIParent">

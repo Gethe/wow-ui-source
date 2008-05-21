@@ -229,7 +229,7 @@
 				</Anchors>
 				<Scripts>
 					<OnValueChanged>
-						HealthBar_OnValueChanged(arg1);
+						HealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 				</Scripts>
 				<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
@@ -237,19 +237,19 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				GameTooltip_OnLoad();
+				GameTooltip_OnLoad(self);
 			</OnLoad>
 			<OnHide>
-				GameTooltip_OnHide();
+				GameTooltip_OnHide(self);
 			</OnHide>
 			<OnTooltipSetDefaultAnchor>
-				GameTooltip_SetDefaultAnchor(this, UIParent);
+				GameTooltip_SetDefaultAnchor(self, UIParent);
 			</OnTooltipSetDefaultAnchor>
 			<OnTooltipAddMoney>
-				SetTooltipMoney(this, arg1);
+				SetTooltipMoney(self, cost);
 			</OnTooltipAddMoney>
 			<OnTooltipCleared>
-				GameTooltip_ClearMoney();
+				GameTooltip_ClearMoney(self);
 			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>
@@ -358,7 +358,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				GameTooltip_OnLoad();
+				GameTooltip_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</GameTooltip>
@@ -390,7 +390,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				SmallMoneyFrame_OnLoad();
+				SmallMoneyFrame_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Frame>

@@ -1,6 +1,6 @@
 CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame", "PVPFrame" };
 
-function ToggleCharacter(tab)
+function ToggleCharacter (tab)
 	-- Needs to be an "IsVisible" check
 	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() ) then
 		return;
@@ -23,7 +23,7 @@ function ToggleCharacter(tab)
 	end
 end
 
-function CharacterFrame_ShowSubFrame(frameName)
+function CharacterFrame_ShowSubFrame (frameName)
 	for index, value in pairs(CHARACTERFRAME_SUBFRAMES) do
 		if ( value == frameName ) then
 			getglobal(value):Show()
@@ -33,39 +33,43 @@ function CharacterFrame_ShowSubFrame(frameName)
 	end 
 end
 
-function CharacterFrameTab_OnClick()
-	if ( this:GetName() == "CharacterFrameTab1" ) then
+function CharacterFrameTab_OnClick (self, button)
+	local name = self:GetName();
+	
+	if ( name == "CharacterFrameTab1" ) then
 		ToggleCharacter("PaperDollFrame");
-	elseif ( this:GetName() == "CharacterFrameTab2" ) then
+	elseif ( name == "CharacterFrameTab2" ) then
 		ToggleCharacter("PetPaperDollFrame");
-	elseif ( this:GetName() == "CharacterFrameTab3" ) then
+	elseif ( name == "CharacterFrameTab3" ) then
 		ToggleCharacter("ReputationFrame");	
-	elseif ( this:GetName() == "CharacterFrameTab4" ) then
+	elseif ( name == "CharacterFrameTab4" ) then
 		ToggleCharacter("SkillFrame");	
-	elseif ( this:GetName() == "CharacterFrameTab5" ) then
+	elseif ( name == "CharacterFrameTab5" ) then
 		ToggleCharacter("PVPFrame");	
 	end
 	PlaySound("igCharacterInfoTab");
 end
 
-function CharacterFrame_OnLoad()
-	this:RegisterEvent("UNIT_NAME_UPDATE");
-	this:RegisterEvent("UNIT_PORTRAIT_UPDATE");
-	this:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
+function CharacterFrame_OnLoad (self)
+	self:RegisterEvent("UNIT_NAME_UPDATE");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
 
 	SetTextStatusBarTextPrefix(PlayerFrameHealthBar, HEALTH);
 	SetTextStatusBarTextPrefix(PlayerFrameManaBar, MANA);
 	SetTextStatusBarTextPrefix(MainMenuExpBar, XP);
 	TextStatusBar_UpdateTextString(MainMenuExpBar);
 	-- Tab Handling code
-	PanelTemplates_SetNumTabs(this, 5);
-	PanelTemplates_SetTab(this, 1);
+	PanelTemplates_SetNumTabs(self, 5);
+	PanelTemplates_SetTab(self, 1);
 end
 
-function CharacterFrame_OnEvent(event)
-	if ( not this:IsShown() ) then
+function CharacterFrame_OnEvent (self, event, ...)
+	if ( not self:IsShown() ) then
 		return;
 	end
+	
+	local arg1 = ...;
 	if ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		if ( arg1 == "player" ) then
 			SetPortraitTexture(CharacterFramePortrait, arg1);
@@ -81,7 +85,7 @@ function CharacterFrame_OnEvent(event)
 	end
 end
 
-function CharacterFrame_OnShow()
+function CharacterFrame_OnShow (self)
 	PlaySound("igCharacterInfoOpen");
 	SetPortraitTexture(CharacterFramePortrait, "player");
 	CharacterNameText:SetText(UnitPVPName("player"));
@@ -94,7 +98,7 @@ function CharacterFrame_OnShow()
 	ShowWatchedReputationBarText();
 end
 
-function CharacterFrame_OnHide()
+function CharacterFrame_OnHide (self)
 	PlaySound("igCharacterInfoClose");
 	UpdateMicroButtons();
 	HideTextStatusBarText(PlayerFrameHealthBar);

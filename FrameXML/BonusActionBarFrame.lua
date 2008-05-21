@@ -5,74 +5,68 @@ NUM_BONUS_ACTION_SLOTS = 12;
 NUM_SHAPESHIFT_SLOTS = 10;
 NUM_POSSESS_SLOTS = 2;
 
-function BonusActionBar_OnLoad()
-	this:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
-	this:RegisterEvent("ACTIONBAR_SHOWGRID");
-	this:RegisterEvent("ACTIONBAR_HIDEGRID");
-	this:SetFrameLevel(this:GetFrameLevel() + 2);
-	this.mode = "none";
-	this.completed = 1;
-	this.lastBonusBar = 1;
+function BonusActionBar_OnLoad (self)
+	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
+	self:RegisterEvent("ACTIONBAR_SHOWGRID");
+	self:RegisterEvent("ACTIONBAR_HIDEGRID");
+	self:SetFrameLevel(this:GetFrameLevel() + 2);
+	self.mode = "none";
+	self.completed = 1;
+	self.lastBonusBar = 1;
 	if ( GetBonusBarOffset() > 0 and GetActionBarPage() == 1 ) then
 		ShowBonusActionBar();
 	end
 end
 
-function BonusActionBar_OnEvent()
+function BonusActionBar_OnEvent (self, event, ...)
 	if ( event == "UPDATE_BONUS_ACTIONBAR" ) then
 		if ( GetBonusBarOffset() > 0 ) then
-			this.lastBonusBar = GetBonusBarOffset();
-			--UnlockPetActionBar();
-			--HidePetActionBar();
+			self.lastBonusBar = GetBonusBarOffset();
 			ShowBonusActionBar();
 		else
 			HideBonusActionBar();
-			--if ( PetHasActionBar() ) then
-			--	ShowPetActionBar();
-			--	LockPetActionBar();
-			--end
 		end
 	end
 end
 
-function BonusActionBar_OnUpdate(elapsed)
+function BonusActionBar_OnUpdate(self, elapsed)
 	local yPos;
-	if ( this.slideTimer and (this.slideTimer < this.timeToSlide) ) then
+	if ( self.slideTimer and (self.slideTimer < self.timeToSlide) ) then
 		-- Animating
-		this.completed = nil;
-		if ( this.mode == "show" ) then
-			yPos = (this.slideTimer/this.timeToSlide) * BONUSACTIONBAR_YPOS;
-			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, yPos);
-			this.state = "showing";
-			this:Show();
-		elseif ( this.mode == "hide" ) then
-			yPos = (1 - (this.slideTimer/this.timeToSlide)) * BONUSACTIONBAR_YPOS;
-			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, yPos);
-			this.state = "hiding";
+		self.completed = nil;
+		if ( self.mode == "show" ) then
+			yPos = (self.slideTimer/self.timeToSlide) * BONUSACTIONBAR_YPOS;
+			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, yPos);
+			self.state = "showing";
+			self:Show();
+		elseif ( self.mode == "hide" ) then
+			yPos = (1 - (self.slideTimer/self.timeToSlide)) * BONUSACTIONBAR_YPOS;
+			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, yPos);
+			self.state = "hiding";
 		end
-		this.slideTimer = this.slideTimer + elapsed;
+		self.slideTimer = self.slideTimer + elapsed;
 	else
 		-- Animation complete
-		if ( this.completed == 1 ) then
+		if ( self.completed == 1 ) then
 			return;
 		else
-			this.completed = 1;
+			self.completed = 1;
 		end
-		BonusActionBar_SetButtonTransitionState(nil);
-		if ( this.mode == "show" ) then
-			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, BONUSACTIONBAR_YPOS);
-			this.state = "top";
+		BonusActionBar_SetButtonTransitionState(self, nil);
+		if ( self.mode == "show" ) then
+			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, BONUSACTIONBAR_YPOS);
+			self.state = "top";
 			PlaySound("igBonusBarOpen");
-		elseif ( this.mode == "hide" ) then
-			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, 0);
-			this.state = "bottom";
-			this:Hide();
+		elseif ( self.mode == "hide" ) then
+			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, 0);
+			self.state = "bottom";
+			self:Hide();
 		end
-		this.mode = "none";
+		self.mode = "none";
 	end
 end
 
-function ShowBonusActionBar()
+function ShowBonusActionBar ()
 	BonusActionBar_SetButtonTransitionState(nil);
 	if ( BonusActionBarFrame.mode ~= "show" and BonusActionBarFrame.state ~= "top") then
 		BonusActionBarFrame:Show();
@@ -84,7 +78,7 @@ function ShowBonusActionBar()
 	end
 end
 
-function HideBonusActionBar()
+function HideBonusActionBar ()
 	if ( BonusActionBarFrame:IsShown() ) then
 		BonusActionBar_SetButtonTransitionState(1);
 		if ( BonusActionBarFrame.completed ) then
@@ -96,42 +90,39 @@ function HideBonusActionBar()
 	
 end
 
-function BonusActionButtonUp(id)
+function BonusActionButtonUp (id)
 	PetActionButtonUp(id);
 end
 
-function BonusActionButtonDown(id)
+function BonusActionButtonDown (id)
 	PetActionButtonDown(id);
 end
 
-function BonusActionBar_SetButtonTransitionState(state)
+function BonusActionBar_SetButtonTransitionState (self, state)
 	local button, icon;
-	local _this = this;
 	for i=1, NUM_BONUS_ACTION_SLOTS, 1 do
 		button = getglobal("BonusActionButton"..i);
 		icon = getglobal("BonusActionButton"..i.."Icon");
 		button.inTransition = state;
 		if ( button.needsUpdate ) then
-			this = button;
-			securecall("ActionButton_Update");
+			securecall("ActionButton_Update", button);
 			button.needsUpdate = nil;
 		end
 	end
-	this = _this;
 end
 
-function ShapeshiftBar_OnLoad()
-	ShapeshiftBar_Update();
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("UPDATE_SHAPESHIFT_FORMS");
-	this:RegisterEvent("UPDATE_INVENTORY_ALERTS");	-- Wha??
-	this:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-	this:RegisterEvent("SPELL_UPDATE_USABLE");
-	this:RegisterEvent("PLAYER_AURAS_CHANGED");
-	this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+function ShapeshiftBar_OnLoad (self)
+	ShapeshiftBar_Update (self);
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS");
+	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");	-- Wha?? Still Wha...
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:RegisterEvent("SPELL_UPDATE_USABLE");
+	self:RegisterEvent("PLAYER_AURAS_CHANGED");
+	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 end
 
-function ShapeshiftBar_OnEvent()
+function ShapeshiftBar_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_SHAPESHIFT_FORMS" ) then
 		ShapeshiftBar_Update();
 	elseif ( event == "ACTIONBAR_PAGE_CHANGED" ) then
@@ -145,7 +136,7 @@ function ShapeshiftBar_OnEvent()
 	end
 end
 
-function ShapeshiftBar_Update()
+function ShapeshiftBar_Update ()
 	local numForms = GetNumShapeshiftForms();
 	if ( numForms > 0 ) then
 		--Setup the shapeshift bar to display the appropriate number of slots
@@ -173,7 +164,7 @@ function ShapeshiftBar_Update()
 	UIParent_ManageFramePositions();
 end
 
-function ShapeshiftBar_UpdateState()
+function ShapeshiftBar_UpdateState ()
 	local numForms = GetNumShapeshiftForms();
 	local texture, name, isActive, isCastable;
 	local button, icon, cooldown;
@@ -215,21 +206,21 @@ function ShapeshiftBar_UpdateState()
 	end
 end
 
-function ShapeshiftBar_ChangeForm(id)
+function ShapeshiftBar_ChangeForm (id)
 	ShapeshiftBarFrame.lastSelected = id;
 	local check = 1;
 	CastShapeshiftForm(id);
 end
 
-function PossessBar_OnLoad()
+function PossessBar_OnLoad (self)
 	PossessBar_Update();
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
-	this:RegisterEvent("PLAYER_AURAS_CHANGED");
-	this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
+	self:RegisterEvent("PLAYER_AURAS_CHANGED");
+	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 end
 
-function PossessBar_OnEvent()
+function PossessBar_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_BONUS_ACTIONBAR" ) then
 		PossessBar_Update();
 	elseif ( event == "ACTIONBAR_PAGE_CHANGED" ) then
@@ -243,7 +234,7 @@ function PossessBar_OnEvent()
 	end
 end
 
-function PossessBar_Update()
+function PossessBar_Update ()
 	if ( IsPossessBarVisible() ) then
 		PossessBarFrame:Show();
 		ShapeshiftBarFrame:Hide();
@@ -257,7 +248,7 @@ function PossessBar_Update()
 	UIParent_ManageFramePositions();
 end
 
-function PossessBar_UpdateState()
+function PossessBar_UpdateState ()
 	local texture, name;
 	local button, icon, cooldown;
 
@@ -279,7 +270,7 @@ function PossessBar_UpdateState()
 	end
 end
 
-function PossessBar_Clicked(id)
+function PossessBar_Clicked (id)
 	local button = getglobal("PossessButton"..id);
 	button:SetChecked(0);
 	
@@ -289,17 +280,17 @@ function PossessBar_Clicked(id)
 	end
 end
 
-function PossessBar_OnEnter(id)
+function PossessBar_OnEnter (self, id)
 	local button = getglobal("PossessButton"..id);
 	if ( GetCVar("UberTooltips") == "1" ) then
-		GameTooltip_SetDefaultAnchor(GameTooltip, this);
+		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
     end
     
     if ( id == 2 ) then
 		GameTooltip:SetText(CANCEL);
     else
-		GameTooltip:SetPossession(this:GetID());
+		GameTooltip:SetPossession(self:GetID());
 	end
 end

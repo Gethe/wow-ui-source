@@ -231,8 +231,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								MoneyFrame_OnLoad();
-								MoneyFrame_SetType("STATIC");
+								MoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "STATIC");
 							</OnLoad>
 						</Scripts>
 					</Frame>

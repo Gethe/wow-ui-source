@@ -3,7 +3,7 @@ VOICE_OPTIONS_BINDING_FADE = 3;
 VoiceOptionsFrameCheckButtons = { };
 VoiceOptionsFrameCheckButtons["ENABLE_VOICECHAT"] = { index = 1, cvar = "EnableVoiceChat", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_VOICECHAT};
 VoiceOptionsFrameCheckButtons["ENABLE_MICROPHONE"] = { index = 2, cvar = "EnableMicrophone", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_MICROPHONE};
-VoiceOptionsFrameCheckButtons["PUSHTOTALK_SOUND_TEXT"] = { index = 3, uvar = "PUSHTOTALK_SOUND", initialValue = nil , tooltipText = OPTION_TOOLTIP_PUSHTOTALK_SOUND};
+VoiceOptionsFrameCheckButtons["PUSHTOTALK_SOUND_TEXT"] = { index = 3, cvar = "PushToTalkSound", initialValue = nil , tooltipText = OPTION_TOOLTIP_PUSHTOTALK_SOUND};
 
 VoiceOptionsFrameSliders = {
 	{ index = 1, text = VOICE_ACTIVATION_SENSITIVITY, cvar = "VoiceActivationSensitivity", minValue = 0, maxValue = 1, valueStep = 0.02, initialValue = nil, tooltipText = OPTION_TOOLTIP_VOICE_ACTIVATION_SENSITIVITY},
@@ -32,8 +32,6 @@ PUSH_TO_TALK_BUTTON = "";
 PUSH_TO_TALK_MODIFIER = "";
 
 function VoiceOptionsFrame_Init()
-	PUSHTOTALK_SOUND = "0";
-	RegisterForSave("PUSHTOTALK_SOUND");
 	this:RegisterEvent("CVAR_UPDATE");
 	this:RegisterEvent("SOUND_DEVICE_UPDATE");
 end

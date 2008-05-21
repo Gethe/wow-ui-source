@@ -5,6 +5,8 @@ ManaBarColor[1] = { r = 1.00, g = 0.00, b = 0.00, prefix = RAGE_POINTS };
 ManaBarColor[2] = { r = 1.00, g = 0.50, b = 0.25, prefix = FOCUS_POINTS };
 ManaBarColor[3] = { r = 1.00, g = 1.00, b = 0.00, prefix = ENERGY_POINTS };
 ManaBarColor[4] = { r = 0.00, g = 1.00, b = 1.00, prefix = HAPPINESS_POINTS };
+ManaBarColor[5] = { r = 0.50, g = 0.50, b = 0.50, prefix = RUNE_POINTS };
+ManaBarColor[6] = { r = 1.00, g = 1.00, b = 1.00, prefix = RUNIC_POWER_POINTS };
 
 --[[
 	This system uses "update" functions as OnUpdate, and OnEvent handlers.
@@ -16,45 +18,48 @@ ManaBarColor[4] = { r = 0.00, g = 1.00, b = 1.00, prefix = HAPPINESS_POINTS };
 	I needed a seperate OnUpdate and OnEvent handlers. And needed to parse the event.
 ]]--
 
-function UnitFrame_Initialize(unit, name, portrait, healthbar, healthtext, manabar, manatext)
-	this.unit = unit;
-	this.name = name;
-	this.portrait = portrait;
-	this.healthbar = healthbar;
-	this.manabar = manabar;
+function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext, manabar, manatext)
+	self.unit = unit;
+	self.name = name;
+	self.portrait = portrait;
+	self.healthbar = healthbar;
+	self.manabar = manabar;
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext);
 	UnitFrameManaBar_Initialize(unit, manabar, manatext);
-	UnitFrame_Update();
-	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	this:RegisterEvent("UNIT_NAME_UPDATE");
-	this:RegisterEvent("UNIT_PORTRAIT_UPDATE");
-	this:RegisterEvent("UNIT_DISPLAYPOWER");
+	UnitFrame_Update(self);
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterEvent("UNIT_NAME_UPDATE");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("UNIT_DISPLAYPOWER");
 end
 
-function UnitFrame_Update()
-	this.name:SetText(GetUnitName(this.unit));
-	SetPortraitTexture(this.portrait, this.unit);
-	UnitFrameHealthBar_Update(this.healthbar, this.unit);
-	UnitFrameManaBar_Update(this.manabar, this.unit);
+function UnitFrame_Update (self)
+	self.name:SetText(GetUnitName(self.unit));
+	SetPortraitTexture(self.portrait, self.unit);
+	UnitFrameHealthBar_Update(self.healthbar, self.unit);
+	UnitFrameManaBar_Update(self.manabar, self.unit);
 end
 
-function UnitFrame_OnEvent(event)
+function UnitFrame_OnEvent(self, event, ...)
+	local arg1 = ...
+	
+	local unit = self.unit;
 	if ( event == "UNIT_NAME_UPDATE" ) then
-		if ( arg1 == this.unit ) then
-			this.name:SetText(GetUnitName(this.unit));
+		if ( arg1 == unit ) then
+			self.name:SetText(GetUnitName(unit));
 		end
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
-		if ( arg1 == this.unit ) then
-			SetPortraitTexture(this.portrait, this.unit);
+		if ( arg1 == unit ) then
+			SetPortraitTexture(self.portrait, unit);
 		end
 	elseif ( event == "UNIT_DISPLAYPOWER" ) then
-		if ( arg1 == this.unit ) then
-			UnitFrame_UpdateManaType();
+		if ( arg1 == unit ) then
+			UnitFrame_UpdateManaType(self);
 		end
 	end
 end
 
-function UnitFrame_OnEnter(self)
+function UnitFrame_OnEnter (self)
 	if ( SpellIsTargeting() ) then
 		if ( SpellCanTargetUnit(self.unit) ) then
 			SetCursor("CAST_CURSOR");
@@ -77,7 +82,7 @@ function UnitFrame_OnEnter(self)
 	UnitFrame_UpdateTooltip(self);
 end
 
-function UnitFrame_OnLeave()
+function UnitFrame_OnLeave ()
 	if ( SpellIsTargeting() ) then
 		SetCursor("CAST_ERROR_CURSOR");
 	end
@@ -88,7 +93,7 @@ function UnitFrame_OnLeave()
 	end
 end
 
-function UnitFrame_UpdateTooltip(self)
+function UnitFrame_UpdateTooltip (self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	if ( GameTooltip:SetUnit(self.unit) ) then
 		self.UpdateTooltip = UnitFrame_UpdateTooltip;
@@ -100,10 +105,8 @@ function UnitFrame_UpdateTooltip(self)
 	GameTooltipTextLeft1:SetTextColor(r, g, b);
 end
 
-function UnitFrame_UpdateManaType(unitFrame)
-	if ( not unitFrame ) then
-		unitFrame = this;
-	end
+function UnitFrame_UpdateManaType (unitFrame)
+	assert(unitFrame);
 	if ( not unitFrame.manabar ) then
 		return;
 	end
@@ -129,7 +132,7 @@ function UnitFrame_UpdateManaType(unitFrame)
 	end
 end
 
-function UnitFrameHealthBar_Initialize(unit, statusbar, statustext)
+function UnitFrameHealthBar_Initialize (unit, statusbar, statustext)
 	if ( not statusbar ) then
 		return;
 	end
@@ -141,7 +144,7 @@ function UnitFrameHealthBar_Initialize(unit, statusbar, statustext)
 	statusbar:SetScript("OnEvent", UnitFrameHealthBar_OnEvent);
 
 	-- Setup newbie tooltip
-	if ( this and (this:GetName() == "PlayerFrame") ) then
+	if ( statusbar and (statusbar:GetParent() == PlayerFrame) ) then
 		statusbar.tooltipTitle = HEALTH;
 		statusbar.tooltipText = NEWBIE_TOOLTIP_HEALTHBAR;
 	else
@@ -192,12 +195,12 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 	TextStatusBar_UpdateTextString(statusbar);
 end
 
-function UnitFrameHealthBar_OnValueChanged(value)
-	TextStatusBar_OnValueChanged();
-	HealthBar_OnValueChanged(value);
+function UnitFrameHealthBar_OnValueChanged(self, value)
+	TextStatusBar_OnValueChanged(self, value);
+	HealthBar_OnValueChanged(self, value);
 end
 
-function UnitFrameManaBar_Initialize(unit, statusbar, statustext)
+function UnitFrameManaBar_Initialize (unit, statusbar, statustext)
 	if ( not statusbar ) then
 		return;
 	end
@@ -208,11 +211,13 @@ function UnitFrameManaBar_Initialize(unit, statusbar, statustext)
 	statusbar:RegisterEvent("UNIT_FOCUS");
 	statusbar:RegisterEvent("UNIT_ENERGY");
 	statusbar:RegisterEvent("UNIT_HAPPINESS");
+	statusbar:RegisterEvent("UNIT_RUNIC_POWER");
 	statusbar:RegisterEvent("UNIT_MAXMANA");
 	statusbar:RegisterEvent("UNIT_MAXRAGE");
 	statusbar:RegisterEvent("UNIT_MAXFOCUS");
 	statusbar:RegisterEvent("UNIT_MAXENERGY");
 	statusbar:RegisterEvent("UNIT_MAXHAPPINESS");
+	statusbar:RegisterEvent("UNIT_MAXRUNIC_POWER");
 	statusbar:RegisterEvent("UNIT_DISPLAYPOWER");
 	statusbar:SetScript("OnEvent", UnitFrameManaBar_OnEvent);
 end

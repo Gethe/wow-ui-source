@@ -228,8 +228,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("STATIC");
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -896,8 +896,8 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								SmallMoneyFrame_OnLoad();
-								MoneyFrame_SetType("STATIC");
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "STATIC");
 								MoneyFrame_Update("SendMailCostMoneyFrame", GetSendMailPrice());	
 							</OnLoad>
 						</Scripts>
@@ -1774,8 +1774,8 @@
 										</Anchors>
 										<Scripts>
 											<OnLoad>
-												SmallMoneyFrame_OnLoad();
-												MoneyFrame_SetType("AUCTION");
+												SmallMoneyFrame_OnLoad(self);
+												MoneyFrame_SetType(self, "AUCTION");
 											</OnLoad>
 										</Scripts>
 									</Frame>
@@ -1802,8 +1802,8 @@
 										</Layers>
 										<Scripts>
 											<OnLoad>
-												SmallMoneyFrame_OnLoad();
-												MoneyFrame_SetType("AUCTION");
+												SmallMoneyFrame_OnLoad(self);
+												MoneyFrame_SetType(self, "AUCTION");
 											</OnLoad>
 										</Scripts>
 									</Frame>
@@ -1830,8 +1830,8 @@
 										</Layers>
 										<Scripts>
 											<OnLoad>
-												SmallMoneyFrame_OnLoad();
-												MoneyFrame_SetType("AUCTION");
+												SmallMoneyFrame_OnLoad(self);
+												MoneyFrame_SetType(self, "AUCTION");
 											</OnLoad>
 										</Scripts>
 									</Frame>
@@ -1845,8 +1845,8 @@
 										</Anchors>
 										<Scripts>
 											<OnLoad>
-												SmallMoneyFrame_OnLoad();
-												MoneyFrame_SetType("AUCTION");
+												SmallMoneyFrame_OnLoad(self);
+												MoneyFrame_SetType(self, "AUCTION");
 											</OnLoad>
 										</Scripts>
 									</Frame>

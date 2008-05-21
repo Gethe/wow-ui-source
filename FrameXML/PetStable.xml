@@ -192,14 +192,14 @@
                 </Anchors>
                 <Scripts>
 					<OnLoad>
-						Model_OnLoad();
-						this:RegisterEvent("DISPLAY_SIZE_CHANGED");
+						Model_OnLoad(self);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 					</OnLoad>
 					<OnEvent>
-						this:RefreshUnit();
+						self:RefreshUnit();
 					</OnEvent>
                     <OnUpdate>
-                        Model_OnUpdate(arg1, this);
+                        Model_OnUpdate(self, elapsed);
                     </OnUpdate>
                 </Scripts>
 				<Frames>
@@ -358,7 +358,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
+						SmallMoneyFrame_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -372,8 +372,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("STATIC");
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
 					</OnLoad>
 				</Scripts>
 			</Frame>

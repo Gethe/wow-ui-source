@@ -96,12 +96,12 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 		frame.numMoneyFrames = frame.numMoneyFrames+1;
 		moneyFrame = CreateFrame("Frame", name, frame, "TooltipMoneyFrameTemplate");
 		name = moneyFrame:GetName();
-		MoneyFrame_SetType("STATIC", moneyFrame);
+		MoneyFrame_SetType(moneyFrame, "STATIC");
 	end
 	getglobal(name.."PrefixText"):SetText(prefixText);
 	getglobal(name.."SuffixText"):SetText(suffixText);
 	if ( type ) then
-		MoneyFrame_SetType(type, moneyFrame);
+		MoneyFrame_SetType(moneyFrame, type);
 	end
 	moneyFrame:SetPoint("LEFT", frame:GetName().."TextLeft"..numLines, "LEFT", 4, 0);
 	moneyFrame:Show();
@@ -125,7 +125,7 @@ function GameTooltip_ClearMoney()
 		moneyFrame = getglobal(this:GetName().."MoneyFrame"..i);
 		if(moneyFrame) then
 			moneyFrame:Hide();
-			MoneyFrame_SetType("STATIC", moneyFrame);
+			MoneyFrame_SetType(moneyFrame, "STATIC");
 		end
 	end
 	this.shownMoneyFrames = nil;

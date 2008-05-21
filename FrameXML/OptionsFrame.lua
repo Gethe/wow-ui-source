@@ -1,5 +1,5 @@
 OPTIONS_FARCLIP_MIN = 177;
-OPTIONS_FARCLIP_MAX = 777;
+OPTIONS_FARCLIP_MAX = 1277;
 
 OptionsFrameCheckButtons = { };
 OptionsFrameCheckButtons["DESKTOP_GAMMA"] = { index = 1, cvar = "desktopGamma", tooltipText = OPTION_TOOLTIP_USE_DESKTOP_GAMMA};

@@ -143,7 +143,7 @@ UnitPopupFrames = {
 	"FriendsDropDown"
 };
 
-function UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
+function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	local server = nil;
 	-- Init variables
 	dropdownMenu.which = which;
@@ -367,7 +367,7 @@ function UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 	PlaySound("igMainMenuOpen");
 end
 
-function UnitPopup_HideButtons()
+function UnitPopup_HideButtons ()
 	local dropdownMenu = getglobal(UIDROPDOWNMENU_INIT_MENU);
 	local inInstance, instanceType = IsInInstance();
 	local inParty = 0;
@@ -623,7 +623,7 @@ function UnitPopup_HideButtons()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PVP_REPORT_AFK" ) then
-			if ( inBattleground == 0 or GetCVar("enablePVPNotifyAFK") == "0") then
+			if ( inBattleground == 0 or GetCVar("enablePVPNotifyAFK") == "0" ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( dropdownMenu.unit ) then
 				if ( UnitIsUnit(dropdownMenu.unit,"player") ) then
@@ -820,7 +820,7 @@ function UnitPopup_HideButtons()
 	end
 end
 
-function UnitPopup_OnUpdate(elapsed)
+function UnitPopup_OnUpdate (elapsed)
 	if ( not DropDownList1:IsShown() ) then
 		return;
 	end
@@ -957,9 +957,11 @@ function UnitPopup_OnUpdate(elapsed)
 	end
 end
 
-function UnitPopup_OnClick()
+function UnitPopup_OnClick (self)
+	--Ick. Kill the Lua error for now.
+	self = self or this;
 	local dropdownFrame = getglobal(UIDROPDOWNMENU_INIT_MENU);
-	local button = this.value;
+	local button = self.value;
 	local unit = dropdownFrame.unit;
 	local name = dropdownFrame.name;
 	local server = dropdownFrame.server;
@@ -1110,8 +1112,9 @@ function UnitPopup_OnClick()
 	elseif ( button == "PVP_REPORT_AFK" ) then
 		ReportPlayerIsPVPAFK(name);
 	elseif ( button == "ITEM_QUALITY2_DESC" or button == "ITEM_QUALITY3_DESC" or button == "ITEM_QUALITY4_DESC" ) then
-		SetLootThreshold(this:GetID()+1);
-		local color = ITEM_QUALITY_COLORS[this:GetID()+1];
+		local id = self:GetID()+1;
+		SetLootThreshold(id);
+		local color = ITEM_QUALITY_COLORS[id];
 		UIDropDownMenu_SetButtonText(1, 4, UnitPopupButtons[button].text, color.r, color.g, color.b);
 	elseif ( strsub(button, 1, 12) == "RAID_TARGET_" and button ~= "RAID_TARGET_ICON" ) then
 		local raidTargetIndex = strsub(button, 13);

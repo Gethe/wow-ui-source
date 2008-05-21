@@ -454,9 +454,9 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								SmallMoneyFrame_OnLoad();
+								SmallMoneyFrame_OnLoad(self);
 								this.small = 0;
-								MoneyFrame_SetType("STATIC");
+								MoneyFrame_SetType(self, "STATIC");
 							</OnLoad>
 						</Scripts>
 					</Frame>					

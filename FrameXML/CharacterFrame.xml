@@ -58,7 +58,7 @@
                 </Layers>
                 <Scripts>
                      <OnLoad>
-                        this:SetFrameLevel(this:GetFrameLevel() + 1);
+                        self:SetFrameLevel(self:GetFrameLevel() + 1);
                     </OnLoad>
                 </Scripts>
             </Frame>
@@ -72,7 +72,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        this:SetFrameLevel(this:GetFrameLevel() + 4);
+                        self:SetFrameLevel(self:GetFrameLevel() + 4);
                     </OnLoad>
                 </Scripts>
             </Button>
@@ -86,7 +86,7 @@
                 </Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(CHARACTER_INFO, "TOGGLECHARACTER0"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
@@ -104,7 +104,7 @@
                 </Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(PET, "TOGGLECHARACTER3"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
@@ -122,7 +122,7 @@
                 </Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(REPUTATION, "TOGGLECHARACTER2"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
@@ -140,7 +140,7 @@
                 </Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(SKILLS, "TOGGLECHARACTER1"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
@@ -158,7 +158,7 @@
                 </Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
@@ -169,16 +169,16 @@
         </Frames>
         <Scripts>
 			<OnLoad>
-				CharacterFrame_OnLoad();
+				CharacterFrame_OnLoad(self);
 			</OnLoad>
             <OnEvent>
-                CharacterFrame_OnEvent(event);
+                CharacterFrame_OnEvent(self, event, ...);
             </OnEvent>
             <OnShow>
-                CharacterFrame_OnShow();
+                CharacterFrame_OnShow(self);
             </OnShow>
 			<OnHide>
-				CharacterFrame_OnHide();
+				CharacterFrame_OnHide(self);
 			</OnHide>
         </Scripts>
     </Frame>

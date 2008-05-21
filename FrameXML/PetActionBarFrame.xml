@@ -22,43 +22,264 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Model name="$parentAutoCast" file="Interface\Buttons\UI-AutoCastButton.mdx" scale="1.2" hidden="true" setAllPoints="true">
+			<Frame name="$parentShine">
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="28" y="28"/>
+				</Size>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parent1" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="13" y="13"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent2" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="10" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent3" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="7" y="7"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent4" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="4" y="4"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent5" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="13" y="13"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent6" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="10" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent7" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="7" y="7"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent8" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="4" y="4"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent9" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="13" y="13"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent10" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="10" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent11" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="7" y="7"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent12" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="4" y="4"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent13" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="13" y="13"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent14" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="10" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent15" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="7" y="7"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>
+						<Texture name="$parent16" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="4" y="4"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+						</Texture>					
+					</Layer>
+				</Layers>				
 				<Scripts>
 					<OnLoad>
-						this:SetSequence(0);
-						this:SetSequenceTime(0, 0);
+						PetActionButtonShine_OnLoad(self);
 					</OnLoad>
 				</Scripts>
-			</Model>
+			</Frame>		
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PetActionButton_OnLoad();
+				PetActionButton_OnLoad(self); 
 			</OnLoad>
 			<OnEvent>
-				PetActionButton_OnEvent();
+				PetActionButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<PreClick>
-				this:SetChecked(0);
+				self:SetChecked(0);
 			</PreClick>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					PetActionButton_OnModifiedClick(arg1);
+					PetActionButton_OnModifiedClick(self, button);
 				else
-					PetActionButton_OnClick(arg1);
+					PetActionButton_OnClick(self, button);
 				end
 			</OnClick>
 			<OnDragStart>
-				PetActionButton_OnDragStart();
+				PetActionButton_OnDragStart(self);
 			</OnDragStart>
 			<OnReceiveDrag>
-				PetActionButton_OnReceiveDrag();
+				PetActionButton_OnReceiveDrag(self);
 			</OnReceiveDrag>
 			<OnEnter>
-				PetActionButton_OnEnter();
+				PetActionButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				PetActionButton_OnLeave();
+				PetActionButton_OnLeave(self);
 			</OnLeave>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
@@ -201,13 +422,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PetActionBar_OnLoad();
+				PetActionBar_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				PetActionBar_OnEvent();
+				PetActionBar_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				PetActionBarFrame_OnUpdate(arg1);
+				PetActionBarFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnShow>
 				UIParent_ManageFramePositions();

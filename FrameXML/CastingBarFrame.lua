@@ -2,91 +2,100 @@ CASTING_BAR_ALPHA_STEP = 0.05;
 CASTING_BAR_FLASH_STEP = 0.2;
 CASTING_BAR_HOLD_TIME = 1;
 
-function CastingBarFrame_OnLoad(unit, showTradeSkills)
-	this:RegisterEvent("UNIT_SPELLCAST_START");
-	this:RegisterEvent("UNIT_SPELLCAST_STOP");
-	this:RegisterEvent("UNIT_SPELLCAST_FAILED");
-	this:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
-	this:RegisterEvent("UNIT_SPELLCAST_DELAYED");
-	this:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
-	this:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
-	this:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
+function CastingBarFrame_OnLoad (self, unit, showTradeSkills)
+	self:RegisterEvent("UNIT_SPELLCAST_START");
+	self:RegisterEvent("UNIT_SPELLCAST_STOP");
+	self:RegisterEvent("UNIT_SPELLCAST_FAILED");
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+	self:RegisterEvent("UNIT_SPELLCAST_DELAYED");
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
-	this.unit = unit;
-	this.showTradeSkills = showTradeSkills;
-	this.casting = nil;
-	this.channeling = nil;
-	this.holdTime = 0;
-	this.showCastbar = true;
+	self.unit = unit;
+	self.showTradeSkills = showTradeSkills;
+	self.casting = nil;
+	self.channeling = nil;
+	self.holdTime = 0;
+	self.showCastbar = true;
 
-	local barIcon = getglobal(this:GetName().."Icon");
+	local barIcon = getglobal(self:GetName().."Icon");
 	if ( barIcon ) then
 		barIcon:Hide();
 	end
 end
 
-function CastingBarFrame_OnEvent(newevent, newarg1)
-	if ( newevent == "PLAYER_ENTERING_WORLD" ) then
-		local nameChannel  = UnitChannelInfo(this.unit);
-		local nameSpell  = UnitCastingInfo(this.unit);
+function CastingBarFrame_OnEvent (self, event, ...)
+	local arg1 = ...;
+	
+	local unit = self.unit;
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local nameChannel  = UnitChannelInfo(unit);
+		local nameSpell  = UnitCastingInfo(unit);
 		if ( nameChannel ) then
-			newevent = "UNIT_SPELLCAST_CHANNEL_START";
-			newarg1 = this.unit;
+			event = "UNIT_SPELLCAST_CHANNEL_START";
+			arg1 = unit;
 		elseif ( nameSpell ) then
-			newevent = "UNIT_SPELLCAST_START";
-			newarg1 = this.unit;
+			event = "UNIT_SPELLCAST_START";
+			arg1 = unit;
 		else
-		    CastingBarFrame_FinishSpell();
+		    CastingBarFrame_FinishSpell(self);
 		end
 	end
 
-	if ( newarg1 ~= this.unit ) then
+	if ( arg1 ~= unit ) then
 		return;
 	end
+	
+	if ( not self.GetName ) then
+		error(self);
+	end
+	
+	local selfName = self:GetName();
 
-	local barSpark = getglobal(this:GetName().."Spark");
-	local barText = getglobal(this:GetName().."Text");
-	local barFlash = getglobal(this:GetName().."Flash");
-	local barIcon = getglobal(this:GetName().."Icon");
+	local barSpark = getglobal(selfName.."Spark");
+	local barText = getglobal(selfName.."Text");
+	local barFlash = getglobal(selfName.."Flash");
+	local barIcon = getglobal(selfName.."Icon");
 
-	if ( newevent == "UNIT_SPELLCAST_START" ) then
-		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill = UnitCastingInfo(this.unit);
+	if ( event == "UNIT_SPELLCAST_START" ) then
+		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill = UnitCastingInfo(unit);
 		if ( not name or (not this.showTradeSkills and isTradeSkill)) then
-			this:Hide();
+			self:Hide();
 			return;
 		end
 
-		this:SetStatusBarColor(1.0, 0.7, 0.0);
+		self:SetStatusBarColor(1.0, 0.7, 0.0);
 		if ( barSpark ) then
 			barSpark:Show();
 		end
-		this.startTime = startTime / 1000;
-		this.maxValue = endTime / 1000;
+		self.startTime = startTime / 1000;
+		self.maxValue = endTime / 1000;
 
 		-- startTime to maxValue		no endTime
-		this:SetMinMaxValues(this.startTime, this.maxValue);
-		this:SetValue(this.startTime);
+		self:SetMinMaxValues(self.startTime, self.maxValue);
+		self:SetValue(self.startTime);
 		if ( barText ) then
 			barText:SetText(text);
 		end
 		if ( barIcon ) then
 			barIcon:SetTexture(texture);
 		end
-		this:SetAlpha(1.0);
-		this.holdTime = 0;
-		this.casting = 1;
-		this.channeling = nil;
-		this.fadeOut = nil;
-		if ( this.showCastbar ) then
-			this:Show();
+		self:SetAlpha(1.0);
+		self.holdTime = 0;
+		self.casting = 1;
+		self.channeling = nil;
+		self.fadeOut = nil;
+		if ( self.showCastbar ) then
+			self:Show();
 		end
 
-	elseif ( newevent == "UNIT_SPELLCAST_STOP" or newevent == "UNIT_SPELLCAST_CHANNEL_STOP") then
-		if ( not this:IsVisible() ) then
-			this:Hide();
+	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP") then
+		if ( not self:IsVisible() ) then
+			self:Hide();
 		end
-		if ( this.casting or this.channeling ) then
+		if ( self.casting or self.channeling ) then
 			if ( barSpark ) then
 				barSpark:Hide();
 			end
@@ -94,49 +103,49 @@ function CastingBarFrame_OnEvent(newevent, newarg1)
 				barFlash:SetAlpha(0.0);
 				barFlash:Show();
 			end
-			this:SetValue(this.maxValue);
-			if ( newevent == "UNIT_SPELLCAST_STOP" ) then
-				this.casting = nil;
-				this:SetStatusBarColor(0.0, 1.0, 0.0);
+			self:SetValue(self.maxValue);
+			if ( event == "UNIT_SPELLCAST_STOP" ) then
+				self.casting = nil;
+				self:SetStatusBarColor(0.0, 1.0, 0.0);
 			else
-				this.channeling = nil;
+				self.channeling = nil;
 			end
-			this.flash = 1;
-			this.fadeOut = 1;
-			this.holdTime = 0;
+			self.flash = 1;
+			self.fadeOut = 1;
+			self.holdTime = 0;
 		end
-	elseif ( newevent == "UNIT_SPELLCAST_FAILED" or newevent == "UNIT_SPELLCAST_INTERRUPTED" ) then
-		if ( this:IsShown() and not this.channeling and not this.fadeOut ) then
-			this:SetValue(this.maxValue);
-			this:SetStatusBarColor(1.0, 0.0, 0.0);
+	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
+		if ( self:IsShown() and not self.channeling and not self.fadeOut ) then
+			self:SetValue(self.maxValue);
+			self:SetStatusBarColor(1.0, 0.0, 0.0);
 			if ( barSpark ) then
 				barSpark:Hide();
 			end
 			if ( barText ) then
-				if ( newevent == "UNIT_SPELLCAST_FAILED" ) then
+				if ( event == "UNIT_SPELLCAST_FAILED" ) then
 					barText:SetText(FAILED);
 				else
 					barText:SetText(INTERRUPTED);
 				end
 			end
-			this.casting = nil;
-			this.channeling = nil;
-			this.fadeOut = 1;
-			this.holdTime = GetTime() + CASTING_BAR_HOLD_TIME;
+			self.casting = nil;
+			self.channeling = nil;
+			self.fadeOut = 1;
+			self.holdTime = GetTime() + CASTING_BAR_HOLD_TIME;
 		end
-	elseif ( newevent == "UNIT_SPELLCAST_DELAYED" ) then
-		if ( this:IsShown() ) then
-			local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill = UnitCastingInfo(this.unit);
-			if ( not name or (not this.showTradeSkills and isTradeSkill)) then
+	elseif ( event == "UNIT_SPELLCAST_DELAYED" ) then
+		if ( self:IsShown() ) then
+			local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill = UnitCastingInfo(unit);
+			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 				-- if there is no name, there is no bar
-				this:Hide();
+				self:Hide();
 				return;
 			end
-			this.startTime = startTime / 1000;
-			this.maxValue = endTime / 1000;
-			this:SetMinMaxValues(this.startTime, this.maxValue);
-			if ( not this.casting ) then
-				this:SetStatusBarColor(1.0, 0.7, 0.0);
+			self.startTime = startTime / 1000;
+			self.maxValue = endTime / 1000;
+			self:SetMinMaxValues(this.startTime, this.maxValue);
+			if ( not self.casting ) then
+				self:SetStatusBarColor(1.0, 0.7, 0.0);
 				if ( barSpark ) then
 					barSpark:Show();
 				end
@@ -144,29 +153,29 @@ function CastingBarFrame_OnEvent(newevent, newarg1)
 					barFlash:SetAlpha(0.0);
 					barFlash:Hide();
 				end
-				this.casting = 1;
-				this.channeling = nil;
-				this.flash = 0;
-				this.fadeOut = 0;
+				self.casting = 1;
+				self.channeling = nil;
+				self.flash = 0;
+				self.fadeOut = 0;
 			end
 		end
-	elseif ( newevent == "UNIT_SPELLCAST_CHANNEL_START" ) then
-		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(this.unit);
-		if ( not name or (not this.showTradeSkills and isTradeSkill)) then
+	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" ) then
+		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(unit);
+		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			-- if there is no name, there is no bar
-			this:Hide();
+			self:Hide();
 			return;
 		end
 
-		this:SetStatusBarColor(0.0, 1.0, 0.0);
-		this.startTime = startTime / 1000;
-		this.endTime = endTime / 1000;
-		this.duration = this.endTime - this.startTime;
-		this.maxValue = this.startTime;
+		self:SetStatusBarColor(0.0, 1.0, 0.0);
+		self.startTime = startTime / 1000;
+		self.endTime = endTime / 1000;
+		self.duration = self.endTime - self.startTime;
+		self.maxValue = self.startTime;
 
 		-- startTime to endTime		no maxValue
-		this:SetMinMaxValues(this.startTime, this.endTime);
-		this:SetValue(this.endTime);
+		self:SetMinMaxValues(self.startTime, self.endTime);
+		self:SetValue(self.endTime);
 		if ( barText ) then
 			barText:SetText(text);
 		end
@@ -176,72 +185,72 @@ function CastingBarFrame_OnEvent(newevent, newarg1)
 		if ( barSpark ) then
 			barSpark:Hide();
 		end
-		this:SetAlpha(1.0);
-		this.holdTime = 0;
-		this.casting = nil;
-		this.channeling = 1;
-		this.fadeOut = nil;
-		if ( this.showCastbar ) then
-			this:Show();
+		self:SetAlpha(1.0);
+		self.holdTime = 0;
+		self.casting = nil;
+		self.channeling = 1;
+		self.fadeOut = nil;
+		if ( self.showCastbar ) then
+			self:Show();
 		end
-	elseif ( newevent == "UNIT_SPELLCAST_CHANNEL_UPDATE" ) then
-		if ( this:IsShown() ) then
-			local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(this.unit);
-			if ( not name or (not this.showTradeSkills and isTradeSkill)) then
+	elseif ( event == "UNIT_SPELLCAST_CHANNEL_UPDATE" ) then
+		if ( self:IsShown() ) then
+			local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(unit);
+			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 				-- if there is no name, there is no bar
-				this:Hide();
+				self:Hide();
 				return;
 			end
-			this.startTime = startTime / 1000;
-			this.endTime = endTime / 1000;
-			this.maxValue = this.startTime;
-			this:SetMinMaxValues(this.startTime, this.endTime);
+			self.startTime = startTime / 1000;
+			self.endTime = endTime / 1000;
+			self.maxValue = self.startTime;
+			self:SetMinMaxValues(self.startTime, self.endTime);
 		end
 	end
 end
 
-function CastingBarFrame_OnUpdate()
-	local barSpark = getglobal(this:GetName().."Spark");
-	local barFlash = getglobal(this:GetName().."Flash");
+function CastingBarFrame_OnUpdate (self, elapsed)
+	local barSpark = getglobal(self:GetName().."Spark");
+	local barFlash = getglobal(self:GetName().."Flash");
 
-	if ( this.casting ) then
+	if ( self.casting ) then
 		local status = GetTime();
-		if ( status > this.maxValue ) then
-			status = this.maxValue;
+		if ( status > self.maxValue ) then
+			status = self.maxValue;
 		end
-		if ( status == this.maxValue ) then
-			this:SetValue(this.maxValue);
-			CastingBarFrame_FinishSpell(barSpark, barFlash);
+		if ( status == self.maxValue ) then
+			self:SetValue(self.maxValue);
+			CastingBarFrame_FinishSpell(self, barSpark, barFlash);
 			return;
 		end
-		this:SetValue(status);
+		self:SetValue(status);
 		if ( barFlash ) then
 			barFlash:Hide();
 		end
-		local sparkPosition = ((status - this.startTime) / (this.maxValue - this.startTime)) * this:GetWidth();
+		local sparkPosition = ((status - self.startTime) / (self.maxValue - self.startTime)) * self:GetWidth();
 		if ( sparkPosition < 0 ) then
 			sparkPosition = 0;
 		end
 		if ( barSpark ) then
-			barSpark:SetPoint("CENTER", this, "LEFT", sparkPosition, 2);
+			barSpark:SetPoint("CENTER", self, "LEFT", sparkPosition, 2);
 		end
-	elseif ( this.channeling ) then
+	elseif ( self.channeling ) then
 		local time = GetTime();
-		if ( time > this.endTime ) then
-			time = this.endTime;
+		if ( time > self.endTime ) then
+			time = self.endTime;
 		end
-		if ( time == this.endTime ) then
-			CastingBarFrame_FinishSpell(barSpark, barFlash);
+		if ( time == self.endTime ) then
+			CastingBarFrame_FinishSpell(self, barSpark, barFlash);
 			return;
 		end
-		local barValue = this.startTime + (this.endTime - time);
-		this:SetValue( barValue );
+		local barValue = self.startTime + (self.endTime - time);
+		self:SetValue( barValue );
 		if ( barFlash ) then
 			barFlash:Hide();
 		end
-	elseif ( GetTime() < this.holdTime ) then
+	elseif ( GetTime() < self.holdTime ) then
 		return;
-	elseif ( this.flash ) then
+	elseif ( self.flash ) then
 		local alpha = 0;
 		if ( barFlash ) then
 			alpha = barFlash:GetAlpha() + CASTING_BAR_FLASH_STEP;
@@ -254,21 +263,21 @@ function CastingBarFrame_OnUpdate()
 			if ( barFlash ) then
 				barFlash:SetAlpha(1.0);
 			end
-			this.flash = nil;
+			self.flash = nil;
 		end
-	elseif ( this.fadeOut ) then
-		local alpha = this:GetAlpha() - CASTING_BAR_ALPHA_STEP;
+	elseif ( self.fadeOut ) then
+		local alpha = self:GetAlpha() - CASTING_BAR_ALPHA_STEP;
 		if ( alpha > 0 ) then
-			this:SetAlpha(alpha);
+			self:SetAlpha(alpha);
 		else
-			this.fadeOut = nil;
-			this:Hide();
+			self.fadeOut = nil;
+			self:Hide();
 		end
 	end
 end
 
-function CastingBarFrame_FinishSpell(barSpark, barFlash)
-	this:SetStatusBarColor(0.0, 1.0, 0.0);
+function CastingBarFrame_FinishSpell (self, barSpark, barFlash)
+	self:SetStatusBarColor(0.0, 1.0, 0.0);
 	if ( barSpark ) then
 		barSpark:Hide();
 	end
@@ -276,8 +285,8 @@ function CastingBarFrame_FinishSpell(barSpark, barFlash)
 		barFlash:SetAlpha(0.0);
 		barFlash:Show();
 	end
-	this.flash = 1;
-	this.fadeOut = 1;
-	this.casting = nil;
-	this.channeling = nil;
+	self.flash = 1;
+	self.fadeOut = 1;
+	self.casting = nil;
+	self.channeling = nil;
 end

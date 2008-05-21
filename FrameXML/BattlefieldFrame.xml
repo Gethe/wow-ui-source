@@ -20,15 +20,15 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				getglobal(this:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
+				getglobal(self:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
 			</OnLoad>
 			<OnClick>
-				BattlefieldButton_OnClick(this:GetID());
+				BattlefieldButton_OnClick(self:GetID());
 			</OnClick>
 			<OnEnter>
-				GameTooltip_SetDefaultAnchor(GameTooltip, this)
-				GameTooltip:SetText(this.title, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				GameTooltip:AddLine(this.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				GameTooltip_SetDefaultAnchor(GameTooltip, self)
+				GameTooltip:SetText(self.title, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
@@ -314,7 +314,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -351,7 +351,7 @@
 						BattlefieldFrameJoinButton_OnClick(1);
 					</OnClick>
 					<OnEnter>
-						GameTooltip_SetDefaultAnchor(GameTooltip, this)
+						GameTooltip_SetDefaultAnchor(GameTooltip, self)
 						GameTooltip:SetText(BATTLEFIELD_GROUP_JOIN, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(NEWBIE_TOOLTIP_BATTLEFIELD_GROUP_JOIN, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 						GameTooltip:Show();
@@ -360,7 +360,7 @@
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnEvent>
-						BattlefieldFrame_OnEvent();
+						BattlefieldFrame_OnEvent(self, event, ...);
 					</OnEvent>
 				</Scripts>
 			</Button>
@@ -376,7 +376,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				BattlefieldFrame_OnLoad();
+				BattlefieldFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
@@ -388,7 +388,7 @@
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
 			<OnEvent>
-				BattlefieldFrame_OnEvent(event);
+				BattlefieldFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnMouseWheel>
 				return;

@@ -20,10 +20,10 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				getglobal(this:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
+				getglobal(self:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
 			</OnLoad>
 			<OnClick>
-				ArenaButton_OnClick(this:GetID());
+				ArenaButton_OnClick(self:GetID());
 			</OnClick>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -230,7 +230,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -267,7 +267,7 @@
 						ArenaFrameJoinButton_OnClick(1);
 					</OnClick>
 					<OnEnter>
-						GameTooltip_SetDefaultAnchor(GameTooltip, this)
+						GameTooltip_SetDefaultAnchor(GameTooltip, self)
 						GameTooltip:SetText(BATTLEFIELD_GROUP_JOIN, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(NEWBIE_TOOLTIP_BATTLEFIELD_GROUP_JOIN, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 						GameTooltip:Show();
@@ -289,10 +289,10 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ArenaFrame_OnLoad();
+				ArenaFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				ArenaFrame_OnEvent();
+				ArenaFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");

@@ -15,19 +15,19 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	text = format(PROFESSION_CONFIRMATION1, "XXX"),
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function()
+	OnAccept = function(self)
 		BuyTrainerService(ClassTrainerFrame.selectedService);
 		ClassTrainerFrame.showSkillDetails = 1;
 		ClassTrainerFrame.showDialog = nil;		
 		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
 		ClassTrainerFrame_Update();
 	end,
-	OnShow = function()
+	OnShow = function(self)
 		local cp1, cp2 = UnitCharacterPoints("player");
 		if ( cp2 < MAX_LEARNABLE_PROFESSIONS ) then
-			getglobal(this:GetName().."Text"):SetFormattedText(PROFESSION_CONFIRMATION2, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
+			self.text:SetFormattedText(PROFESSION_CONFIRMATION2, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
 		else
-			getglobal(this:GetName().."Text"):SetFormattedText(PROFESSION_CONFIRMATION1, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
+			self.text:SetFormattedText(PROFESSION_CONFIRMATION1, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
 		end
 	end,
 	showAlert = 1,
@@ -57,16 +57,10 @@ end
 
 function ClassTrainerFrame_OnLoad()
 	this:RegisterEvent("TRAINER_UPDATE");
-	this:RegisterEvent("ADDON_LOADED");
 	ClassTrainerDetailScrollFrame.scrollBarHideable = 1;
 end
 
 function ClassTrainerFrame_OnEvent()
-	if ( event == "ADDON_LOADED" and arg1 == "Blizzard_TrainerUI" ) then
-		SetTrainerServiceTypeFilter("available", TRAINER_FILTER_AVAILABLE);
-		SetTrainerServiceTypeFilter("unavailable", TRAINER_FILTER_UNAVAILABLE);
-		SetTrainerServiceTypeFilter("used", TRAINER_FILTER_USED);
-	end
 	if ( not this:IsShown() ) then
 		return;
 	end
@@ -500,10 +494,8 @@ end
 function ClassTrainerFrameFilterDropDown_OnClick()	
 	ClassTrainerListScrollFrameScrollBar:SetValue(0);
 	if ( UIDropDownMenuButton_GetChecked() ) then
-		setglobal("TRAINER_FILTER_"..strupper(this.value), 1);
 		SetTrainerServiceTypeFilter(this.value, 1);
 	else
-		setglobal("TRAINER_FILTER_"..strupper(this.value), 0);
 		SetTrainerServiceTypeFilter(this.value, 0);
 	end
 end

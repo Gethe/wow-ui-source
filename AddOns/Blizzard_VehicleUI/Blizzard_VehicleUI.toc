@@ -1,0 +1,5 @@
+## Interface: 30000
+## Title: Blizzard_VehicleUI
+## Notes: Placeholder for eventual vehicle controls, currently just two sliders
+## Version: 1
+Blizzard_VehicleUI.xml

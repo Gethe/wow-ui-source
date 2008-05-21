@@ -582,8 +582,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad();
-						MoneyFrame_SetType("TARGET_TRADE");
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "TARGET_TRADE");
 					</OnLoad>
 				</Scripts>
 			</Frame>

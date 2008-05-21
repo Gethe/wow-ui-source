@@ -1,6 +1,6 @@
 AUDIOOPTIONSFRAME_SUBFRAMES = { "VoiceOptionsFrame", "SoundOptionsFrame" };
 
-function ToggleAudioOption(tab)
+function ToggleAudioOption (tab)
 	local subFrame = getglobal(tab);
 	if ( subFrame ) then
 		PanelTemplates_SetTab(AudioOptionsFrame, subFrame:GetID());
@@ -14,7 +14,7 @@ function ToggleAudioOption(tab)
 	end
 end
 
-function AudioOptionsFrame_ShowSubFrame(frameName)
+function AudioOptionsFrame_ShowSubFrame (frameName)
 	for index, value in pairs(AUDIOOPTIONSFRAME_SUBFRAMES) do
 		if ( value == frameName ) then
 			getglobal(frameName):Show()
@@ -24,16 +24,16 @@ function AudioOptionsFrame_ShowSubFrame(frameName)
 	end 
 end
 
-function AudioOptionsFrameTab_OnClick()
-	if ( this:GetName() == "AudioOptionsFrameTab1" ) then
+function AudioOptionsFrameTab_OnClick (self)
+	if ( self:GetName() == "AudioOptionsFrameTab1" ) then
 		ToggleAudioOption("SoundOptionsFrame");
-	elseif ( this:GetName() == "AudioOptionsFrameTab2" ) then
+	elseif ( self:GetName() == "AudioOptionsFrameTab2" ) then
 		ToggleAudioOption("VoiceOptionsFrame");
 	end
 	PlaySound("igCharacterInfoTab");
 end
 
-function AudioOptionsFrame_DisableSlider(slider)
+function AudioOptionsFrame_DisableSlider (slider)
 	local name = slider:GetName();
 	local value = getglobal(name.."Value");
 	slider:EnableMouse(false);
@@ -44,7 +44,7 @@ function AudioOptionsFrame_DisableSlider(slider)
 	end
 end
 
-function AudioOptionsFrame_EnableSlider(slider)
+function AudioOptionsFrame_EnableSlider (slider)
 	local name = slider:GetName();
 	local value = getglobal(name.."Value");
 	slider:EnableMouse(true);
@@ -55,9 +55,9 @@ function AudioOptionsFrame_EnableSlider(slider)
 	end
 end
 
-function AudioOptionsFrame_Load()
-	SoundOptionsFrame_Load();
-	VoiceOptionsFrame_Load();
+function AudioOptionsFrame_Load (self)
+	SoundOptionsFrame_Load(self);
+	VoiceOptionsFrame_Load(self);
 end
 
 function AudioOptionsFrame_RestartEngine()

@@ -1,10 +1,10 @@
 
-function HealthBar_OnValueChanged(value, smooth)
+function HealthBar_OnValueChanged(self, value, smooth)
 	if ( not value ) then
 		return;
 	end
 	local r, g, b;
-	local min, max = this:GetMinMaxValues();
+	local min, max = self:GetMinMaxValues();
 	if ( (value < min) or (value > max) ) then
 		return;
 	end
@@ -26,5 +26,5 @@ function HealthBar_OnValueChanged(value, smooth)
 		g = 1.0;
 	end
 	b = 0.0;
-	this:SetStatusBarColor(r, g, b);
+	self:SetStatusBarColor(r, g, b);
 end
