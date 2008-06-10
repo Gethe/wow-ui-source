@@ -167,11 +167,11 @@ function UIOptionsFrame_Init()
 	AdvancedOptionsActionBars:SetPoint("TOPLEFT", AdvancedOptions, "TOPLEFT", 32, -104);
 	AdvancedOptionsActionBars:SetPoint("TOPRIGHT", AdvancedOptions, "TOPRIGHT", -32, -104);
 	AdvancedOptionsChat:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", 0, -20);
-	AdvancedOptionsChat:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", UIOptionsFrame:GetWidth()*-0.68, -20);
-	AdvancedOptionsRaid:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", UIOptionsFrame:GetWidth()*0.33, -20);
-	AdvancedOptionsRaid:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", UIOptionsFrame:GetWidth()*-0.33, -20);
+	AdvancedOptionsChat:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", BasicOptions:GetWidth()*-0.65, -20);
+	AdvancedOptionsRaid:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", BasicOptions:GetWidth()*0.32, -20);
+	AdvancedOptionsRaid:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", BasicOptions:GetWidth()*-0.32, -20);
 	AdvancedOptionsRaid:SetPoint("BOTTOMLEFT", AdvancedOptionsChat, "BOTTOMRIGHT", 0, 0);
-	AdvancedOptionsCombatText:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", UIOptionsFrame:GetWidth()*0.68, -20);
+	AdvancedOptionsCombatText:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", BasicOptions:GetWidth()*0.65, -20);
 	AdvancedOptionsCombatText:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", 0, -20);
 	AdvancedOptionsCombatText:SetPoint("BOTTOMLEFT", AdvancedOptionsRaid, "BOTTOMRIGHT", 0, 0);
 
@@ -736,6 +736,7 @@ function UIOptionsFrame_UpdateDependencies()
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton63);
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton64);
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton65);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton69);
 		OptionsFrame_DisableDropDown(UIOptionsFrameCombatTextDropDown);
 	else
 		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton53);
@@ -749,6 +750,7 @@ function UIOptionsFrame_UpdateDependencies()
 		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton63);
 		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton64);
 		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton65);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton69);
 		OptionsFrame_EnableDropDown(UIOptionsFrameCombatTextDropDown);
 	end
 

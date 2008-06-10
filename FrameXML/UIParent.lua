@@ -1605,9 +1605,9 @@ function UIParent_ManageFramePositions()
 	if ( SHOW_MULTI_ACTIONBAR_1 ) then
 		tinsert(yOffsetFrames, "bottomLeft");
 	end
-	if ( SHOW_MULTI_ACTIONBAR_3  or SHOW_MULTI_ACTIONBAR_4 ) then
+	if ( MultiBarLeft:IsShown() ) then
 		tinsert(xOffsetFrames, "rightLeft");
-	elseif ( SHOW_MULTI_ACTIONBAR_3 ) then
+	elseif ( MultiBarRight:IsShown() ) then
 		tinsert(xOffsetFrames, "rightRight");
 	end
 
@@ -1744,6 +1744,7 @@ function UIParent_ManageFramePositions()
 		for i=1, NUM_EXTENDED_UI_FRAMES do
 			captureBar = getglobal("WorldStateCaptureBar"..i);
 			if ( captureBar and captureBar:IsShown() ) then
+				captureBar:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 				anchorY = anchorY - captureBar:GetHeight();
 			end
 		end	

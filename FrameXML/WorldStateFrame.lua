@@ -14,12 +14,15 @@ function WorldStateAlwaysUpFrame_OnLoad()
 	SHOW_BATTLEFIELD_MINIMAP = "0";
 	RegisterForSave("SHOW_BATTLEFIELD_MINIMAP");
 	WorldStateAlwaysUpFrame_Update();
+	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function WorldStateAlwaysUpFrame_OnEvent()
 	if ( event == "UPDATE_WORLD_STATES" ) then
 		WorldStateAlwaysUpFrame_Update();
 		WorldStateFrame_ToggleMinimap();	
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		WorldStateFrame_ToggleMinimap();
 	end
 end
 
@@ -27,7 +30,7 @@ function WorldStateAlwaysUpFrame_Update()
 	local numUI = GetNumWorldStateUI();
 	local name, frame, frameText, frameDynamicIcon, frameIcon, frameFlash, flashTexture, frameDynamicButton;
 	local extendedUI, extendedUIState1, extendedUIState2, extendedUIState3, uiInfo; 
-	local text, icon, state, dynamicIcon, tooltip, dynamicTooltip;
+	local text, icon, state, dynamicIcon, tooltip, dynamicTooltip, flash;
 	local inInstance, instanceType = IsInInstance();
 	local alwaysUpShown = 1;
 	local extendedUIShown = 1;
@@ -74,7 +77,11 @@ function WorldStateAlwaysUpFrame_Update()
 					frameText:SetText(text);
 					frameIcon:SetTexture(icon);
 					frameDynamicIcon:SetTexture(dynamicIcon);
-					flashTexture:SetTexture(dynamicIcon.."Flash");
+					flash = nil;
+					if ( dynamicIcon ~= "" ) then
+						flash = dynamicIcon.."Flash"
+					end
+					flashTexture:SetTexture(flash);
 					frameDynamicButton.tooltip = dynamicTooltip;
 					if ( state == 2 ) then
 						UIFrameFlash(frameFlash, 0.5, 0.5, -1);
@@ -106,16 +113,16 @@ end
 function WorldStateFrame_ToggleMinimap()
 	local numUI = GetNumWorldStateUI();
 	if ( SHOW_BATTLEFIELD_MINIMAP == "1" ) then
-		if ( ( numUI > 0 ) and ( GetCurrentMapZone() > 0 ) ) then
+		if ( numUI == 0 ) then
+			if ( BattlefieldMinimap ) then
+				BattlefieldMinimap:Hide();
+			end
+		else
 			if ( not BattlefieldMinimap ) then
 				BattlefieldMinimap_LoadUI();
 				BattlefieldMinimap:Show();
 			else
 				BattlefieldMinimap:Show();				
-			end
-		else
-			if ( BattlefieldMinimap ) then
-				BattlefieldMinimap:Hide();
 			end
 		end
 	end
@@ -128,7 +135,7 @@ function CaptureBar_Create(id)
 end
 
 function CaptureBar_Update(id, value)
-	local position = 25 + 124*(1 - value/100) + CONTAINER_OFFSET_X;
+	local position = 25 + 124*(1 - value/100);
 	local bar = getglobal("WorldStateCaptureBar"..id);
 	if ( not bar.oldValue ) then
 		bar.oldValue = position;
@@ -295,7 +302,7 @@ function WorldStateScoreFrame_Update()
 				buttonIcon:Hide();
 			end
 			
-			buttonName:SetText("Jihan - Black Dragon Flight");
+			buttonName:SetText(name);
 			nameButton:SetWidth(buttonName:GetWidth());
 			if ( not race ) then
 				race = "";
