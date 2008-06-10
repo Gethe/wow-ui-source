@@ -383,7 +383,7 @@ function UIOptionsFrame_SetDefaults()
 		elseif ( index == "SHOW_TUTORIALS" ) then
 			OptionsFrame_EnableCheckBox(checkButton, 1);
 		elseif ( index == "AUTO_JOIN_GUILD_CHANNEL" ) then
-			SetGuildRecruitmentChannel(1);
+			SetGuildRecruitmentMode(1);
 		elseif ( value.uvar ) then	
 			if ( value.default ) then 
 				if ( value.default == "1" ) then
