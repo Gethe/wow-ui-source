@@ -124,8 +124,10 @@ function UIOptionsFrame_Load()
 				checked = 1;
 			end
 		elseif ( index == "AUTO_JOIN_GUILD_CHANNEL" ) then
-			if ( GetGuildRecruitmentMode() == "1" ) then
+			if ( GetGuildRecruitmentMode() == 1 ) then
 				checked = 1;
+			else
+				checked = 0;
 			end
 		elseif ( index == "GAMEFIELD_DESELECT_TEXT" ) then
 			if ( GetCVar(value.cvar) == "0" ) then

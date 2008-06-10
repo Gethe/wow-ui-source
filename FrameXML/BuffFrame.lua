@@ -80,7 +80,7 @@ function BuffButton_Update()
 
 	-- Set color of debuff border based on dispel class.
 	local color;
-	local debuffType = GetPlayerBuffDispelType(GetPlayerBuff(this:GetID(), HARMFUL));
+	local debuffType = GetPlayerBuffDispelType(GetPlayerBuff(this:GetID(), "HARMFUL"));
 	local debuffSlot = getglobal(this:GetName().."Border");
 	if ( debuffType ) then
 		color = DebuffTypeColor[debuffType];

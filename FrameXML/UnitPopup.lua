@@ -416,7 +416,9 @@ function UnitPopup_HideButtons()
 			end
 			if ( not (dropdownMenu.which == "SELF") ) then
 				if (UnitExists("target")) then
-					if ( not UnitReaction("player", "target") ) then
+					if ( UnitInParty(dropdownMenu.unit) ) then
+						-- Do nothing
+					elseif ( not UnitReaction("player", "target") ) then
 						UnitPopupShown[index] = 0;
 					elseif ( UnitIsPlayer("target") and (not UnitCanCooperate("player", "target") and not UnitIsUnit("target", "player")) ) then
 						UnitPopupShown[index] = 0;
@@ -626,4 +628,17 @@ function UnitPopup_OnClick()
 		SetRaidTargetIcon(unit, tonumber(raidTargetIndex));
 	end
 	PlaySound("UChatScrollButton");
+end
+
+function UnitInParty(unit)
+	local name = UnitName(unit);
+	local partyName;
+	for i=1, GetNumPartyMembers() do
+		if ( UnitIsUnit(unit, "party"..i) ) then
+			return 1;
+		elseif ( UnitIsUnit(unit, "partypet"..i ) ) then
+			return 1;
+		end
+	end
+	return nil;
 end

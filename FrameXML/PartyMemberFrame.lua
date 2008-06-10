@@ -260,14 +260,13 @@ function PartyMemberFrame_RefreshBuffs()
 		if ( debuff ) then
 			partyDebuff:SetTexture(debuff);
 			if ( debuffType ) then
-				if ( not debuffType ) then
-					partyStatus:Hide();
-				end
 				borderColor = DebuffTypeColor[debuffType];
 				color = DebuffTypeColor[debuffType];
 				debuffTotal = debuffTotal + 1;
+				this.hasDispellable = 1;
 			else
 				borderColor = DebuffTypeColor["none"];
+				color = nil;
 			end
 			debuffBorder:SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
 			getglobal(this:GetName().."Debuff"..i):Show();
@@ -282,6 +281,8 @@ function PartyMemberFrame_RefreshBuffs()
 	this.numDebuffs = debuffTotal;
 	if ( color ) then
 		partyStatus:SetVertexColor(color.r, color.g, color.b);
+	else
+		partyStatus:Hide();	
 	end
 end
 
@@ -358,7 +359,6 @@ function PartyMemberBuffTooltip_Update(isPet)
 			index = index + 1;
 		end
 	end
-	debuginfo(index, numBuffs, numDebuffs);
 	for i=index, MAX_PARTY_TOOLTIP_DEBUFFS do
 		getglobal("PartyMemberBuffTooltipDebuff"..i):Hide();
 	end

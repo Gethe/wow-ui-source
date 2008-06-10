@@ -14,7 +14,6 @@ function GMSurveyFrame_Update()
 		questionFrame = getglobal("GMSurveyQuestion"..i);
 		if ( surveyQuestion ) then
 			GMSurveyFrame.numQuestions = GMSurveyFrame.numQuestions + 1;
-			surveyQuestion = "How would you rate your GM experience?";
 			getglobal("GMSurveyQuestion"..i.."Text"):SetText(surveyQuestion);
 			questionFrame:Show();
 		else
@@ -71,7 +70,7 @@ end
 
 function GMSurveySubmitButton_OnClick()
 	for i=1, GMSurveyFrame.numQuestions do
-		GMSurveyAnswerSubmit(i, getglobal("GMSurveyQuestion"..i).selectedRadioButton)
+		GMSurveyAnswerSubmit(i, getglobal("GMSurveyQuestion"..i).selectedRadioButton, "");
 	end
 	GMSurveyCommentSubmit(GMSurveyFrameComment:GetText());
 	GMSurveySubmit();

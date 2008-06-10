@@ -1116,7 +1116,13 @@ SlashCmdList["PVP"] = function(msg)
 end
 
 SlashCmdList["RAID_INFO"] = function(msg)
-	RequestRaidInfo();
+	RaidFrame.slashCommand = 1;
+	if ( ( GetNumSavedInstances() > 0 ) and not RaidInfoFrame:IsShown() ) then
+		ToggleFriendsFrame(4);
+		RaidInfoFrame:Show();
+	elseif ( not RaidFrame:IsShown() ) then
+		ToggleFriendsFrame(4);
+	end
 end
 
 SlashCmdList["READYCHECK"] = function(msg)
@@ -1457,12 +1463,13 @@ function ChatFrame_OnEvent(event)
 		return;
 	end
 	if ( event == "UPDATE_INSTANCE_INFO" ) then
+		if ( not RaidFrame.hasRaidInfo ) then
+			return;
+		end
 		local info = ChatTypeInfo["SYSTEM"];
-		if ( not RaidFrame:IsShown() and ( GetNumSavedInstances() > 0 ) ) then
-			ToggleFriendsFrame(4);
-			RaidInfoFrame:Show();
-		elseif ( not RaidFrame:IsShown() and GetNumSavedInstances() == 0 and this == DEFAULT_CHAT_FRAME) then
+		if ( RaidFrame.slashCommand and GetNumSavedInstances() == 0 and this == DEFAULT_CHAT_FRAME) then
 			this:AddMessage(TEXT(NO_RAID_INSTANCES_SAVED), info.r, info.g, info.b, info.id);
+			RaidFrame.slashCommand = nil;
 		end
 	end
 end

@@ -289,9 +289,9 @@
 						<AbsDimension x="120" y="120"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
+						<Anchor point="TOPLEFT">d
 							<Offset>
-								<AbsDimension x="-30" y="11"/>
+								<AbsDimension x="-30" y="15"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

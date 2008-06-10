@@ -304,61 +304,54 @@ function TargetDebuffButton_Update()
 		button.id = i;
 	end
 
-	-- Position buffs depending on whether the targeted unit is friendly or not
+	local debuffFrame, debuffWrap, debuffSize, debuffFrameSize;
+	local targetofTarget = TargetofTargetFrame:IsShown();
 
-	local limit;
 	if ( UnitIsFriend("player", "target") ) then
-		limit = 5;
 		TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
 		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrameBuff1", "BOTTOMLEFT", 0, -2);
 	else
-		limit = 6; 
 		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
-		if ( numDebuffs >= 5 and numDebuffs < 10 ) then
-			if ( TargetofTargetFrame:IsShown() ) then
+		if ( targetofTarget ) then
+			if ( numDebuffs >= 5 and numDebuffs < 10  ) then
 				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff6", "BOTTOMLEFT", 0, -2);
-			else
-				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff7", "BOTTOMLEFT", 0, -2);
+			elseif (  numDebuffs >= 10 ) then
+				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff11", "BOTTOMLEFT", 0, -2);
 			end
-		elseif ( TargetofTargetFrame:IsShown() and numDebuffs >= 10 ) then
-			TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff11", "BOTTOMLEFT", 0, -2);
 		else
-			TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff1", "BOTTOMLEFT", 0, -2);
+			TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff7", "BOTTOMLEFT", 0, -2);
 		end
 	end
-
-	-- Shrinks the debuffs if they begin to overlap the TargetFrame
-	local debuffFrame;
-	local debuffWrap;
-	local debuffSize, debuffFrameSize;
-
-	debuffSize = 21;
-	debuffFrameSize = 23;
-
-	if ( TargetofTargetFrame:IsShown() ) then
-		if ( ( ( numBuffs > 4 ) and ( numDebuffs > 5 ) ) or ( ( numBuffs < 4 ) and ( numDebuffs > 5 ) ) ) then
-			debuffSize = 17;
-			debuffFrameSize = 19;
-		end
+	
+	-- set the wrap point for the rows of de/buffs.
+	if ( targetofTarget ) then
 		debuffWrap = 5;
 	else
 		debuffWrap = 6;
 	end
 
-	if ( numDebuffs >= debuffWrap ) then
+	-- and shrinks the debuffs if they begin to overlap the TargetFrame
+	if ( ( targetofTarget and ( numBuffs == 5 ) ) or ( numDebuffs >= debuffWrap ) ) then
 		debuffSize = 17;
 		debuffFrameSize = 19;
+	else
+		debuffSize = 21;
+		debuffFrameSize = 23;
+	end
+	
+	-- resize Buffs
+	for i=1, 5 do
+		button = getglobal("TargetFrameBuff"..i);
+		if ( button ) then
+			button:SetWidth(debuffSize);
+			button:SetHeight(debuffSize);
+		end
 	end
 
-
-	-- Make size adjustments for wrapping
-	for i=1, limit do
-		if ( UnitIsFriend("player", "target") ) then
-			button = getglobal("TargetFrameBuff"..i);
-		else
-			button = getglobal("TargetFrameDebuff"..i);
-			debuffFrame = getglobal("TargetFrameDebuff"..i.."Border");
-		end
+	-- resize Debuffs
+	for i=1, 6 do
+		button = getglobal("TargetFrameDebuff"..i);
+		debuffFrame = getglobal("TargetFrameDebuff"..i.."Border");
 		if ( debuffFrame ) then
 			debuffFrame:SetWidth(debuffFrameSize);
 			debuffFrame:SetHeight(debuffFrameSize);
@@ -448,6 +441,9 @@ function TargetFrameDropDown_Initialize()
 		else
 			menu = "PLAYER";
 		end
+	elseif ( UnitInParty("target") ) then
+		menu = "RAID_TARGET_ICON";
+		name = RAID_TARGET_ICON;
 	end
 	if ( menu ) then
 		UnitPopup_ShowMenu(TargetFrameDropDown, menu, "target", name);

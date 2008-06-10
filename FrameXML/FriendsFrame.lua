@@ -133,6 +133,7 @@ function FriendsFrame_OnHide()
 	GuildControlPopupFrame:Hide();
 	GuildMemberDetailFrame:Hide();
 	GuildInfoFrame:Hide();
+	RaidInfoFrame:Hide();
 	for index, value in FRIENDSFRAME_SUBFRAMES do
 		getglobal(value):Hide();
 	end

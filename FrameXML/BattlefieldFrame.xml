@@ -133,7 +133,7 @@
 				</FontString>
 				<FontString name="$parentZoneDescription" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
 					<Size>
-						<AbsDimension x="293" y="110"/>
+						<AbsDimension x="293" y="115"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">

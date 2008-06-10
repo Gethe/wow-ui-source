@@ -87,7 +87,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>					
+					<OnClick>
 						if ( RaidInfoFrame:IsShown() ) then
 							RaidInfoFrame:Hide();
 						else
@@ -171,7 +171,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="RaidInfoSubheader" relativePoint="BOTTOMLEFT">
 									<Offset>
-										<AbsDimension x="0" y="-10"/>
+										<AbsDimension x="0" y="-13"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -212,7 +212,7 @@
 							<Layer level="BACKGROUND">
 								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size>
-										<AbsDimension x="30" y="105"/>
+										<AbsDimension x="30" y="125"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
@@ -241,7 +241,7 @@
 						<ScrollChild>
 							<Frame name="RaidInfoScrollChildFrame" enableMouse="true">
 								<Size>
-									<AbsDimension x="220" y="40"/>
+									<AbsDimension x="223" y="40"/>
 								</Size>
 								<Frames>
 									<Frame name="RaidInfoInstance1" inherits="RaidInfoInstanceTemplate">
@@ -347,16 +347,11 @@
 			</OnLoad>
 			<OnShow>
 				RaidFrame_Update();
+				RequestRaidInfo();
 			</OnShow>
 			<OnEvent>
 				RaidFrame_OnEvent();
 			</OnEvent>
-			<OnHide>
-				RaidInfoFrame:Hide();
-			</OnHide>
-			<OnShow>
-				RequestRaidInfo();
-			</OnShow>
 		</Scripts>
 	</Frame>
 </Ui>

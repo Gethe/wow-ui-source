@@ -20,6 +20,9 @@ function RaidFrame_OnLoad()
 	-- Update party frame visibility
 	RaidOptionsFrame_UpdatePartyFrames();
 	RaidFrame_Update();
+
+	RaidFrame.hasRaidInfo = nil;
+	RequestRaidInfo();
 end
 
 function RaidFrame_OnEvent()
@@ -34,6 +37,11 @@ function RaidFrame_OnEvent()
 		RaidFrame_Update();
 	end
 	if ( event == "UPDATE_INSTANCE_INFO" ) then
+		if ( not RaidFrame.hasRaidInfo ) then
+			-- Set flag
+			RaidFrame.hasRaidInfo = 1;
+			return;
+		end
 		if ( GetNumSavedInstances() > 0 ) then
 			RaidFrameRaidInfoButton:Enable();
 		else
@@ -90,14 +98,12 @@ function RaidInfoFrame_Update()
 			end
 			
 		end
-		if ( savedInstances > 5 ) then
+		if ( savedInstances > 4 ) then
 			RaidInfoScrollFrameScrollBar:Show();
-			RaidInfoScrollFrameScrollBar:SetPoint("TOPLEFT", RaidInfoScrollFrame, "TOPRIGHT", 8, -2);
+			RaidInfoScrollFrameScrollBar:SetPoint("TOPLEFT", RaidInfoScrollFrame, "TOPRIGHT", 8, -3);
 		else
 			RaidInfoScrollFrameScrollBar:Hide();
 		end
 		RaidInfoScrollFrame:UpdateScrollChildRect();
-	else
-		RaidInfoFrame:Hide();
 	end
 end
