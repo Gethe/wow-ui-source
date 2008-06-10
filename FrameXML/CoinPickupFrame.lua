@@ -60,6 +60,11 @@ function UpdateCoinPickupFrame(maxMoney)
 		return;
 	end
 
+	if ( not CoinPickupFrame.money or not CoinPickupFrame.maxMoney ) then
+		-- Failsafe
+		return;
+	end
+
 	if ( CoinPickupFrame.money > CoinPickupFrame.maxMoney ) then
 		CoinPickupFrame.money = CoinPickupFrame.maxMoney;
 		CoinPickupText:SetText(CoinPickupFrame.money);
