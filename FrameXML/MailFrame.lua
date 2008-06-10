@@ -117,6 +117,7 @@ function InboxFrame_Update()
 			button = getglobal("MailItem"..i.."Button");
 			button:Show();
 			button.index = index;
+			button.hasItem = hasItem;
 			buttonIcon = getglobal("MailItem"..i.."ButtonIcon");
 			buttonIcon:SetTexture(icon);
 			subjectText = getglobal("MailItem"..i.."Subject");
@@ -211,11 +212,20 @@ end
 
 function InboxFrameItem_OnEnter()
 	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+	if ( this.hasItem ) then
+		GameTooltip:SetInboxItem(this.index);
+	end
 	if (this.money) then
+		if ( this.hasItem ) then
+			GameTooltip:AddLine(" ");
+		end
 		GameTooltip:AddLine(ENCLOSED_MONEY, "", 1, 1, 1);
 		SetTooltipMoney(GameTooltip, this.money);
 		SetMoneyFrameColor("GameTooltipMoneyFrame", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	elseif (this.cod) then
+		if ( this.hasItem ) then
+			GameTooltip:AddLine(" ");
+		end
 		GameTooltip:AddLine(COD_AMOUNT, "", 1, 1, 1);
 		SetTooltipMoney(GameTooltip, this.cod);
 		if ( this.cod > GetMoney() ) then
@@ -350,12 +360,17 @@ function OpenMail_Update()
 	end
 
 	-- Set letter
+	local hasAttachments;
 	if ( isTakeable and not textCreated ) then
 		SetItemButtonTexture(OpenMailLetterButton, stationeryIcon);
 		OpenMailLetterButton:Enable();
+		OpenMailLetterButton:Show();
+		OpenMailPackageButton:SetPoint("LEFT", "OpenMailLetterButton", "RIGHT", 10, 0);
+		hasAttachments = 1;
 	else
 		SetItemButtonTexture(OpenMailLetterButton, "");
-		OpenMailLetterButton:Disable();
+		OpenMailLetterButton:Hide();
+		OpenMailPackageButton:SetPoint("LEFT", "OpenMailLetterButton", "LEFT", 0, 0);
 	end
 	
 	-- Set Item
@@ -363,9 +378,13 @@ function OpenMail_Update()
 	if ( name ) then
 		OpenMailFrame.itemName = name;
 		OpenMailPackageButton:Enable();
+		OpenMailPackageButton:Show();
+		OpenMailMoneyButton:SetPoint("LEFT", "OpenMailPackageButton", "RIGHT", 10, 0);
+		hasAttachments = 1;
 	else
 		OpenMailFrame.itemName = nil;
-		OpenMailPackageButton:Disable();
+		OpenMailPackageButton:Hide();
+		OpenMailMoneyButton:SetPoint("LEFT", "OpenMailPackageButton", "LEFT", 0, 0);
 	end
 	SetItemButtonTexture(OpenMailPackageButton, itemTexture);
 	SetItemButtonCount(OpenMailPackageButton, count);
@@ -383,18 +402,30 @@ function OpenMail_Update()
 	-- Set Money
 	if ( money == 0 ) then
 		SetItemButtonTexture(OpenMailMoneyButton, "");
-		OpenMailMoneyButton:Disable();
+		OpenMailMoneyButton:Hide();
 		OpenMailFrame.money = nil;
 	else
 		SetItemButtonTexture(OpenMailMoneyButton, GetCoinIcon(money));
 		OpenMailMoneyButton:Enable();
+		OpenMailMoneyButton:Show();
 		OpenMailFrame.money = money;
+		hasAttachments = 1;
 	end
 	-- Set button to delete or return to sender
 	if ( InboxItemCanDelete(InboxFrame.openMailID) ) then
 		OpenMailDeleteButton:SetText(DELETE);
 	else
 		OpenMailDeleteButton:SetText(MAIL_RETURN);
+	end
+	-- Set attachment text
+	if ( hasAttachments ) then
+		OpenMailAttachmentText:SetText(TAKE_ATTACHMENTS);
+		OpenMailAttachmentText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		OpenMailAttachmentText:SetPoint("BOTTOM", "OpenMailFrame", "BOTTOM", -68, 123);
+	else
+		OpenMailAttachmentText:SetText(NO_ATTACHMENTS);
+		OpenMailAttachmentText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		OpenMailAttachmentText:SetPoint("BOTTOM", "OpenMailFrame", "BOTTOM", -5, 123);
 	end
 end
 
@@ -426,6 +457,7 @@ function OpenMail_Delete()
 		end
 	else
 		ReturnInboxItem(InboxFrame.openMailID);
+		StaticPopup_Hide("COD_CONFIRMATION");
 	end
 	InboxFrame.openMailID = nil;
 	HideUIPanel(OpenMailFrame);
@@ -582,11 +614,11 @@ function SendMailFrame_SendeeAutocomplete()
 	local numFriends, name;
 
 	-- First check your friends list
-    numFriends = GetNumFriends();
+	numFriends = GetNumFriends();
 	if ( numFriends > 0 ) then
 		for i=1, numFriends do
 			name = GetFriendInfo(i);
-			if ( strfind(strupper(name), "^"..strupper(text)) ) then
+			if ( strfind(strupper(name), strupper(text), 1, 1) == 1 ) then
 				this:SetText(name);
 				this:HighlightText(textlen, -1);
 				return;
@@ -599,7 +631,7 @@ function SendMailFrame_SendeeAutocomplete()
 	if ( numFriends > 0 ) then
 		for i=1, numFriends do
 			name = GetGuildRosterInfo(i);
-			if ( strfind(strupper(name), "^"..strupper(text)) ) then
+			if ( strfind(strupper(name), strupper(text), 1, 1) == 1 ) then
 				this:SetText(name);
 				this:HighlightText(textlen, -1);
 				return;

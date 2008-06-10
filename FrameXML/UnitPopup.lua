@@ -499,18 +499,23 @@ function UnitPopup_OnClick()
 	elseif ( button == "FREE_FOR_ALL" ) then
 		SetLootMethod("freeforall");
 		UIDropDownMenu_SetButtonText(1, 2, UnitPopupButtons[button].text);
+		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "ROUND_ROBIN" ) then
 		SetLootMethod("roundrobin");
 		UIDropDownMenu_SetButtonText(1, 2, UnitPopupButtons[button].text);
+		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "MASTER_LOOTER" ) then
 		SetLootMethod("master", name);
 		UIDropDownMenu_SetButtonText(1, 2, UnitPopupButtons[button].text);
+		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "GROUP_LOOT" ) then
 		SetLootMethod("group");
 		UIDropDownMenu_SetButtonText(1, 2, UnitPopupButtons[button].text);
+		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "NEED_BEFORE_GREED" ) then
 		SetLootMethod("needbeforegreed");
 		UIDropDownMenu_SetButtonText(1, 2, UnitPopupButtons[button].text);
+		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "LOOT_PROMOTE" ) then
 		SetLootMethod("master", name);
 	elseif ( button == "FOLLOW" ) then

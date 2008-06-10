@@ -83,11 +83,13 @@ function InspectPaperDollItemSlotButton_OnLoad()
 	local slotName = this:GetName();
 	local id;
 	local textureName;
-	id, textureName = GetInventorySlotInfo(strsub(slotName,8));
+	local checkRelic;
+	id, textureName, checkRelic = GetInventorySlotInfo(strsub(slotName,8));
 	this:SetID(id);
 	local texture = getglobal(slotName.."IconTexture");
 	texture:SetTexture(textureName);
 	this.backgroundTextureName = textureName;
+	this.checkRelic = checkRelic;
 end
 
 function InspectPaperDollItemSlotButton_OnEvent(event)
@@ -117,7 +119,11 @@ function InspectPaperDollItemSlotButton_Update(button)
 		SetItemButtonCount(button, GetInventoryItemCount(unit, button:GetID()));
 		button.hasItem = 1;
 	else
-		SetItemButtonTexture(button, button.backgroundTextureName);
+		local textureName = button.backgroundTextureName;
+		if ( button.checkRelic and UnitHasRelicSlot(unit) ) then
+			textureName = "Interface\\Paperdoll\\UI-PaperDoll-Slot-Relic.blp";
+		end
+		SetItemButtonTexture(button, textureName);
 		SetItemButtonCount(button, 0);
 		button.hasItem = nil;
 	end

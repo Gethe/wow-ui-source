@@ -77,10 +77,13 @@
 	</Button>
 	<StatusBar name="ReputationBarTemplate" virtual="true" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
 		<Size>
-			<AbsDimension x="133" y="13"/>
+			<AbsDimension x="137" y="13"/>
 		</Size>
+		<HitRectInsets>
+			<AbsInset left="-126" right="3" top="-2" bottom="-2"/>
+		</HitRectInsets>
 		<Layers>
-			<Layer level="OVERLAY">
+			<Layer level="ARTWORK">
 				<Texture name="$parentReputationBarLeft" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
 					<Size>
 						<AbsDimension x="256" y="22"/>
@@ -96,7 +99,7 @@
 				</Texture>
 				<Texture name="$parentReputationBarRight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
 					<Size>
-						<AbsDimension x="37" y="24"/>
+						<AbsDimension x="16" y="24"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentReputationBarLeft" relativePoint="TOPRIGHT">
@@ -105,9 +108,10 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0" right="0.14453125" top="0.34375" bottom="0.71875"/>
+					<TexCoords left="0" right="0.0625" top="0.34375" bottom="0.71875"/>
 				</Texture>
-				<FontString name="$parentFactionName" inherits="GameFontHighlightSmall" text="Orcish Horde">
+				<FontString name="$parentFactionName" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="100" y="10"/>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
@@ -126,71 +130,101 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentHighlight1" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="256" y="28"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentReputationBarLeft">
+							<Offset>
+								<AbsDimension x="-2" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.4375"/>
+				</Texture>
+				<Texture name="$parentHighlight2" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="17" y="28"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentHighlight1" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.06640625" top="0.4375" bottom="0.875"/>
+				</Texture>
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentFactionName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentAlliedCheckButton">
+			<Frame name="$parentAtWarCheck" hidden="true">
 				<Size>
-					<AbsDimension x="30" y="30"/>
+					<AbsDimension x="24" y="22"/>
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentReputationBarRight" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="35" y="0"/>
+							<AbsDimension x="-2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+							<Size>
+								<AbsDimension x="24" y="22"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.15625" top="0.34375" bottom="0.71875"/>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
-					<OnClick>
-						if ( this.disabled ) then
-							if ( this:GetChecked() ) then
-								this:SetChecked(nil);
-							else
-								this:SetChecked(1);
-							end
-							return;
-						end
-						if ( this:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
-						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
-						end
-						FactionToggleAtWar(this:GetParent():GetID());
-						ReputationFrame_Update();
-					</OnClick>
 					<OnEnter>
-						if ( this.tooltip ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
-						end
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(REPUTATION_STATUS_AT_WAR, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
-					<Size>
-						<AbsDimension x="40" y="30"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-5" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</HighlightTexture>
-				<CheckedTexture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check"/>
-			</CheckButton>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEnter>
 				if (this.tooltip) then
 					getglobal(this:GetName().."FactionStanding"):SetText(this.tooltip);
 				end
+				getglobal(this:GetName().."Highlight1"):Show();
+				getglobal(this:GetName().."Highlight2"):Show();
 			</OnEnter>
 			<OnLeave>
 				getglobal(this:GetName().."FactionStanding"):SetText(this.standingText);
+				if (GetSelectedFaction() ~= this.id) then
+					getglobal(this:GetName().."Highlight1"):Hide();
+					getglobal(this:GetName().."Highlight2"):Hide();
+				end
 			</OnLeave>
+			<OnMouseUp>
+				ReputationBar_OnClick();
+			</OnMouseUp>
 		</Scripts>
 		<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 		<BarColor r=".25" g=".25" b=".75"/>
@@ -201,7 +235,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -213,7 +247,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -253,7 +287,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="26" y="-79"/>
+								<AbsDimension x="70" y="-57"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -262,16 +296,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="185" y="-79"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="ReputationFrameAlliedLabel" inherits="GameFontHighlight" text="AT_WAR">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="285" y="-79"/>
+								<AbsDimension x="215" y="-59"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -283,7 +308,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="150" y="-107"/>
+							<AbsDimension x="150" y="-86"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -531,14 +556,32 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<StatusBar name="ReputationBar15" inherits="ReputationBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar14" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+			<Button  name="ReputationHeader15" inherits="ReputationHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationBar15">
+						<Offset>
+							<AbsDimension x="-125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
 			<ScrollFrame name="ReputationListScrollFrame" inherits="FauxScrollFrameTemplate">
 				<Size>
-					<AbsDimension x="296" y="332"/>
+					<AbsDimension x="296" y="354"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-66" y="-98"/>
+							<AbsDimension x="-66" y="-76"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -606,19 +649,227 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame name="AlliedMouseOver">
+			<Frame name="ReputationDetailFrame" enableMouse="true" hidden="true">
+				<Size>
+					<AbsDimension x="212" y="203"/>
+				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ReputationFrameAlliedLabel"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="ReputationFrameAlliedLabel"/>
+					<Anchor point="TOPLEFT" relativeTo="ReputationFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-33" y="-28"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(AT_WAR, 1.0, 1.0, 1.0, REPUTATION_AT_WAR_DESCRIPTION, 1);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="ReputationDetailFactionName" inherits="GameFontNormal" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="0" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-21"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ReputationDetailFactionDescription" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="170" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ReputationDetailFactionName" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Reputation-DetailBackground">
+							<Size>
+								<AbsDimension x="256" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-11"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="ReputationDetailCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-6" y="-7"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="ReputationDetailDivider" file="Interface\DialogFrame\UI-DialogBox-Divider">
+							<Size>
+								<AbsDimension x="256" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="9" y="-131"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="ReputationDetailCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-3" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<CheckButton name="ReputationDetailAtWarCheckBox">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="14" y="34"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(AT_WAR);
+								getglobal(this:GetName().."Text"):SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+							</OnLoad>
+							<OnClick>
+								FactionToggleAtWar(GetSelectedFaction());
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+								ReputationFrame_Update();
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(REPUTATION_AT_WAR_DESCRIPTION, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-SwordCheck">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="3" y="-5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</CheckedTexture>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+					</CheckButton>
+					<CheckButton name="ReputationDetailInactiveCheckBox" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="ReputationDetailAtWarCheckBoxText" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="3" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="0" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(MOVE_TO_INACTIVE);
+							</OnLoad>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+									SetFactionInactive(GetSelectedFaction());
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+									SetFactionActive(GetSelectedFaction());
+								end
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="ReputationDetailMainScreenCheckBox" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ReputationDetailAtWarCheckBox" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="0" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(SHOW_FACTION_ON_MAINSCREEN);
+							</OnLoad>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+									SetWatchedFactionIndex(GetSelectedFaction());
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+									SetWatchedFactionIndex(0);
+								end
+								ReputationWatchBar_Update();
+							</OnClick>	
+						</Scripts>
+					</CheckButton>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -634,6 +885,174 @@
 			<OnMouseWheel>
 				return;
 			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+	<Frame name="ReputationWatchBar" enableMouse="true" parent="MainMenuBar" hidden="true">
+		<Size>
+			<AbsDimension x="1024" y="11"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-3"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<StatusBar name="ReputationWatchStatusBar" drawLayer="ARTWORK">
+				<Size>
+					<AbsDimension x="1024" y="8"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="ReputationWatchBarTexture0" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size>
+								<AbsDimension x="256" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.171875"/>
+						</Texture>
+						<Texture name="ReputationWatchBarTexture1" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size>
+								<AbsDimension x="256" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="ReputationWatchBarTexture0" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.171875" bottom="0.34375"/>
+						</Texture>
+						<Texture name="ReputationWatchBarTexture2" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size>
+								<AbsDimension x="256" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="ReputationWatchBarTexture1" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.34375" bottom="0.515625"/>
+						</Texture>
+						<Texture name="ReputationWatchBarTexture3" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size>
+								<AbsDimension x="256" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="ReputationWatchBarTexture2" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.515625" bottom="0.6875"/>
+						</Texture>
+						<Texture name="ReputationXPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
+						</Texture>
+						<Texture name="ReputationXPBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="ReputationXPBarTexture0" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
+						</Texture>
+						<Texture name="ReputationXPBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="ReputationXPBarTexture1" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
+						</Texture>
+						<Texture name="ReputationXPBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="ReputationXPBarTexture2" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.04296875" bottom="0.08203125"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="ReputationWatchStatusBarBackground">
+							<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.58" g="0.0" b="0.55"/>
+			</StatusBar>
+			<Frame name="ReputationWatchBarOverlayFrame" frameStrata="DIALOG" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="ReputationWatchStatusBarText" inherits="NumberFontNormal" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("UPDATE_FACTION");
+				this:RegisterEvent("PLAYER_LEVEL_UP");
+				this:RegisterEvent("CVAR_UPDATE");
+			</OnLoad>
+			<OnEvent>
+				if( event == "UPDATE_FACTION" and this:IsVisible() ) then
+					ReputationFrame_Update();
+					ReputationWatchBar_Update();
+				elseif( event == "PLAYER_LEVEL_UP" ) then
+					ReputationWatchBar_Update(arg1);
+				elseif( event == "CVAR_UPDATE" and arg1 == "STATUS_BAR_TEXT" ) then
+					if( arg2 == "1" ) then
+						ShowWatchedReputationBarText("lock");
+					else
+						HideWatchedReputationBarText("unlock");
+					end
+				else
+					ReputationWatchBar_Update();
+				end
+			</OnEvent>
+			<OnShow>
+				if( UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value == "1" ) then
+					ShowWatchedReputationBarText("lock");
+				end
+				UIParent_ManageFramePositions();
+			</OnShow>
+			<OnHide>
+				UIParent_ManageFramePositions();
+			</OnHide>
+			<OnEnter>
+				ReputationWatchStatusBarText:Show();
+			</OnEnter>
+			<OnLeave>
+				if(not ReputationWatchBar.textLocked) then
+					ReputationWatchStatusBarText:Hide();
+				end
+			</OnLeave>
 		</Scripts>
 	</Frame>
 </Ui>

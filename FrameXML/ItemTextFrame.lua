@@ -44,6 +44,7 @@ function ItemTextFrame_OnEvent(event)
 			ItemTextPageText:SetText("\n"..ItemTextGetText().."\n");
 		end
 		
+		ItemTextScrollFrameScrollBar:SetValue(0);
 		ItemTextScrollFrame:UpdateScrollChildRect();
 		ItemTextScrollFrame:Show();	
 		local page = ItemTextGetPage();

@@ -9,6 +9,7 @@ AUCTIONS_BUTTON_HEIGHT = 37;
 CLASS_FILTERS = {};
 OPEN_FILTER_LIST = {};
 AUCTION_TIMER_UPDATE_DELAY = 0.3;
+MAXIMUM_BID_PRICE = 2000000000;
 
 UIPanelWindows["AuctionFrame"] = { area = "doublewide", pushable = 0 };
 
@@ -370,6 +371,7 @@ function AuctionFrameBrowse_Update()
 	local index;
 	local isLastSlotEmpty;
 	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
+	local displayedPrice, requiredBid;
 	BrowseBidButton:Disable();
 	BrowseBuyoutButton:Disable();
 	-- Update sort arrows
@@ -453,17 +455,24 @@ function AuctionFrameBrowse_Update()
 			buyoutText = getglobal(buttonName.."BuyoutText");
 			-- If not bidAmount set the bid amount to the min bid
 			if ( bidAmount == 0 ) then
-				MoneyFrame_Update(moneyFrame:GetName(), minBid);
+				displayedPrice = minBid;
+				requiredBid = minBid;
 			else
-				MoneyFrame_Update(moneyFrame:GetName(), bidAmount);
+				displayedPrice = bidAmount;
+				requiredBid = bidAmount + minIncrement ;
 			end
+			MoneyFrame_Update(moneyFrame:GetName(), displayedPrice);
 
 			if ( highBidder ) then
 				yourBidText:Show();
 			else
 				yourBidText:Hide();
 			end
-
+			
+			if ( requiredBid > MAXIMUM_BID_PRICE ) then
+				-- Lie about our buyout price
+				buyoutPrice = requiredBid;
+			end
 			if ( buyoutPrice > 0 ) then
 				moneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 10, 10);
 				MoneyFrame_Update(buyoutMoneyFrame:GetName(), buyoutPrice);
@@ -498,14 +507,9 @@ function AuctionFrameBrowse_Update()
 					AuctionFrame.buyoutPrice = nil;
 				end
 				-- Set bid
-				if ( bidAmount > 0 ) then
-					bidAmount = bidAmount + minIncrement ;
-					MoneyInputFrame_SetCopper(BrowseBidPrice, bidAmount);
-				else
-					MoneyInputFrame_SetCopper(BrowseBidPrice, minBid);
-				end
+				MoneyInputFrame_SetCopper(BrowseBidPrice, requiredBid);
 
-				if ( not highBidder and GetMoney() >= MoneyInputFrame_GetCopper(BrowseBidPrice) ) then
+				if ( not highBidder and GetMoney() >= MoneyInputFrame_GetCopper(BrowseBidPrice) and MoneyInputFrame_GetCopper(BrowseBidPrice) <= MAXIMUM_BID_PRICE ) then
 					BrowseBidButton:Enable();
 				end
 			else

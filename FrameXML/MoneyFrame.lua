@@ -149,13 +149,13 @@ function MoneyFrame_SetType(type)
 	this.moneyType = type;
 	local frameName = this:GetName();
 	if ( info.canPickup ) then
-		getglobal(frameName.."GoldButton"):Enable();
-		getglobal(frameName.."SilverButton"):Enable();
-		getglobal(frameName.."CopperButton"):Enable();
+		getglobal(frameName.."GoldButton"):EnableMouse(true);
+		getglobal(frameName.."SilverButton"):EnableMouse(true);
+		getglobal(frameName.."CopperButton"):EnableMouse(true);
 	else
-		getglobal(frameName.."GoldButton"):Disable();
-		getglobal(frameName.."SilverButton"):Disable();
-		getglobal(frameName.."CopperButton"):Disable();
+		getglobal(frameName.."GoldButton"):EnableMouse(false);
+		getglobal(frameName.."SilverButton"):EnableMouse(false);
+		getglobal(frameName.."CopperButton"):EnableMouse(false);
 	end
 
 	MoneyFrame_UpdateMoney();

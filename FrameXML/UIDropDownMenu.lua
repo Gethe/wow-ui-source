@@ -12,6 +12,8 @@ UIDROPDOWNMENU_MENU_LEVEL = 1;
 UIDROPDOWNMENU_MENU_VALUE = nil;
 -- Time to wait to hide the menu
 UIDROPDOWNMENU_SHOW_TIME = 2;
+-- Default dropdown text height
+UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = nil;
 
 function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level)
 	if ( not frame ) then
@@ -128,6 +130,7 @@ info.tooltipText = [nil, STRING] -- Text of the tooltip shown on mouseover
 info.justifyH = [nil, "CENTER"] -- Justify button text
 info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
+info.textHeight = [NUMBER] -- font height for button text
 ]]
 
 function UIDropDownMenu_AddButton(info, level)
@@ -148,13 +151,13 @@ function UIDropDownMenu_AddButton(info, level)
 
 	-- If too many buttons error out
 	if ( index > UIDROPDOWNMENU_MAXBUTTONS ) then
-		_ERRORMESSAGE("Too many buttons in UIDropDownMenu: "..UIDROPDOWNMENU_OPEN_MENU);
+		message("Too many buttons in UIDropDownMenu: "..UIDROPDOWNMENU_OPEN_MENU);
 		return;
 	end
 
 	-- If too many levels error out
 	if ( level > UIDROPDOWNMENU_MAXLEVELS ) then
-		_ERRORMESSAGE("Too many levels in UIDropDownMenu: "..UIDROPDOWNMENU_OPEN_MENU);
+		message("Too many levels in UIDropDownMenu: "..UIDROPDOWNMENU_OPEN_MENU);
 		return;
 	end
 	
@@ -177,11 +180,20 @@ function UIDropDownMenu_AddButton(info, level)
 	-- Configure button
 	if ( info.text ) then
 		button:SetText(info.text);
+		if ( info.textHeight ) then
+			normalText:SetFont(STANDARD_TEXT_FONT, info.textHeight);
+			highlightText:SetFont(STANDARD_TEXT_FONT, info.textHeight);
+			disabledText:SetFont(STANDARD_TEXT_FONT, info.textHeight);
+		else
+			normalText:SetFont(STANDARD_TEXT_FONT, UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT);
+			highlightText:SetFont(STANDARD_TEXT_FONT, UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT);
+			disabledText:SetFont(STANDARD_TEXT_FONT, UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT);
+		end
 		-- Determine the maximum width of a button
 		width = normalText:GetWidth() + 60;
 		-- Add padding if has and expand arrow or color swatch
 		if ( info.hasArrow or info.hasColorSwatch ) then
-			width = width + 50 - 30;
+			width = width + 10;
 		end
 		if ( info.notCheckable ) then
 			width = width - 30;
@@ -214,6 +226,9 @@ function UIDropDownMenu_AddButton(info, level)
 	button.tooltipText = info.tooltipText;
 	button.arg1 = info.arg1;
 	button.arg2 = info.arg2;
+	button.hasArrow = info.hasArrow;
+	button.hasColorSwatch = info.hasColorSwatch;
+	button.notCheckable = info.notCheckable;
 
 	if ( info.value ) then
 		button.value = info.value;
@@ -334,15 +349,19 @@ function UIDropDownMenu_AddButton(info, level)
 	button:Show();
 end
 
-function UIDropDownMenu_Refresh(frame, useValue)
-	local button, checked, checkImage;
+function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
+	local button, checked, checkImage, normalText;
+	local maxWidth = 0;
 	if ( not frame ) then
 		frame = this;
+	end
+	if ( not dropdownLevel ) then
+		dropdownLevel = UIDROPDOWNMENU_MENU_LEVEL;
 	end
 	
 	-- Just redraws the existing menu
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-		button = getglobal("DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i);
+		button = getglobal("DropDownList"..dropdownLevel.."Button"..i);
 		checked = nil;
 		-- See if checked or not
 		if ( UIDropDownMenu_GetSelectedName(frame) ) then
@@ -360,7 +379,7 @@ function UIDropDownMenu_Refresh(frame, useValue)
 		end
 
 		-- If checked show check image
-		checkImage = getglobal("DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."Check");
+		checkImage = getglobal("DropDownList"..dropdownLevel.."Button"..i.."Check");
 		if ( checked ) then
 			if ( useValue ) then
 				UIDropDownMenu_SetText(button.value, frame);
@@ -373,8 +392,34 @@ function UIDropDownMenu_Refresh(frame, useValue)
 			button:UnlockHighlight();
 			checkImage:Hide();
 		end
+
+		if ( not level ) then
+			level = 1;
+		end
+		
+		if ( button:IsShown() ) then
+			normalText = getglobal(button:GetName().."NormalText");
+			-- Determine the maximum width of a button
+			width = normalText:GetWidth() + 60;
+			-- Add padding if has and expand arrow or color swatch
+			if ( button.hasArrow or button.hasColorSwatch ) then
+				width = width + 10;
+			end
+			if ( button.notCheckable ) then
+				width = width - 30;
+			end
+			if ( width > maxWidth ) then
+				maxWidth = width;
+			end
+		end
 	end
+	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
+		button = getglobal("DropDownList"..dropdownLevel.."Button"..i);
+		button:SetWidth(maxWidth);
+	end
+	getglobal("DropDownList"..dropdownLevel):SetWidth(maxWidth+15);
 end
+
 
 function UIDropDownMenu_SetSelectedName(frame, name, useValue)
 	frame.selectedName = name;

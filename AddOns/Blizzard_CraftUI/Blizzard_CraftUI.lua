@@ -240,8 +240,7 @@ function CraftFrame_Update()
 	local numHeaders = 0;
 	local notExpanded = 0;
 	for i=1, numCrafts, 1 do
-		local index = i + craftOffset;
-		local craftName, craftSubSpellName, craftType, numAvailable, isExpanded = GetCraftInfo(index);
+		local craftName, craftSubSpellName, craftType, numAvailable, isExpanded = GetCraftInfo(i);
 		if ( craftName and craftType == "header" ) then
 			numHeaders = numHeaders + 1;
 			if ( not isExpanded ) then

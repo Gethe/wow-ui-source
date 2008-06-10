@@ -29,6 +29,7 @@ OptionsFrameSliders = {
 	{ text = GAMMA, func = "Gamma", cvar1="gamma", minValue = -0.5, maxValue = 0.5, valueStep = 0.1 , tooltipText = OPTION_TOOLTIP_GAMMA},
 	{ text = ANISOTROPIC, func = "anisotropic", minValue = 1, maxValue = 4, valueStep = 1 , tooltipText = OPTION_TOOLTIP_ANISOTROPIC, restartClient = 1, tooltipRequirement = OPTION_RESTART_REQUIREMENT},
 	{ text = SPELL_DETAIL, func = "spellEffectLevel", minValue = 0, maxValue = 2, valueStep = 1 , tooltipText = OPTION_TOOLTIP_SPELL_DETAIL},
+	{ text = WEATHER_DETAIL, func = "weatherDensity", minValue = 0, maxValue = 3, valueStep = 1 , tooltipText = OPTION_TOOLTIP_WEATHER_DETAIL},
 };
 
 ANISOTROPIC_VALUES = {"1", "2", "4", "8", "16"};
@@ -296,7 +297,7 @@ function OptionsFrameRefreshDropDown_OnLoad()
 end
 
 function OptionsFrameRefreshDropDown_Initialize()
-	OptionsFrame_GetRefreshRates(GetRefreshRates(UIDropDownMenu_GetSelectedID(OptionsFrameRefreshDropDown)));
+	OptionsFrame_GetRefreshRates(GetRefreshRates());
 end
 
 function OptionsFrame_GetRefreshRates(...)
@@ -495,4 +496,12 @@ function OptionsFrame_EnableDropDown(dropDown)
 	getglobal(dropDown:GetName().."Label"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	getglobal(dropDown:GetName().."Text"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	getglobal(dropDown:GetName().."Button"):Enable();
+end
+
+function PlayClickSound()
+	if ( this:GetChecked() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
+	end
 end

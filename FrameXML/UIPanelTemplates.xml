@@ -209,6 +209,10 @@
 		</Scripts>
 	</ScrollFrame>
 	<ScrollFrame name="FauxScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<Scripts>
+			<OnScrollRangeChanged>
+			</OnScrollRangeChanged>
+		</Scripts>
 		<ScrollChild>
 			<Frame name="$parentScrollChildFrame">
 				<Size>
@@ -216,10 +220,6 @@
 				</Size>
 			</Frame>
 		</ScrollChild>
-		<Scripts>
-			<OnScrollRangeChanged>
-			</OnScrollRangeChanged>
-		</Scripts>
 	</ScrollFrame>
 	<EditBox name="InputBoxTemplate" enableMouse="true" virtual="true">
 		<Layers>
@@ -244,7 +244,7 @@
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
-								<AbsDimension x="-10" y="0"/>
+								<AbsDimension x="0" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

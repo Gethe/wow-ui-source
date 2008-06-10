@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 10900
+## Interface: 11000
 GlobalStrings.lua
 Fonts.xml
 Localization.xml

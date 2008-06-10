@@ -4,18 +4,18 @@
 	<Frame name="CinematicFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture>
+				<Texture name="UpperBlackBar">
 					<Size>
-						<AbsDimension x="2048" y="128"/>
+						<AbsDimension x="1024" y="128"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
-				<Texture>
+				<Texture name="LowerBlackBar">
 					<Size>
-						<AbsDimension x="2048" y="128"/>
+						<AbsDimension x="1024" y="128"/>
 					</Size>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>

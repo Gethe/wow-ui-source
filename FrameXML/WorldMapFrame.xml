@@ -4,6 +4,17 @@
 	<Include file="WorldMapFrameTemplates.xml"/>
 	<Frame name="WorldMapFrame" setAllPoints="true" frameStrata="FULLSCREEN" hidden="true" enableKeyboard="true">
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="BlackoutWorld">
+					<Size>
+						<AbsDimension x="1024" y="768"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\WorldMap\UI-WorldMap-Top1">
 					<Size>
@@ -427,48 +438,6 @@
 								</Anchors>
 							</Texture>	
 					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="WorldMapOverlay1" hidden="true"/>
-						<Texture name="WorldMapOverlay2" hidden="true"/>
-						<Texture name="WorldMapOverlay3" hidden="true"/>
-						<Texture name="WorldMapOverlay4" hidden="true"/>
-						<Texture name="WorldMapOverlay5" hidden="true"/>
-						<Texture name="WorldMapOverlay6" hidden="true"/>
-						<Texture name="WorldMapOverlay7" hidden="true"/>
-						<Texture name="WorldMapOverlay8" hidden="true"/>
-						<Texture name="WorldMapOverlay9" hidden="true"/>
-						<Texture name="WorldMapOverlay10" hidden="true"/>
-						<Texture name="WorldMapOverlay11" hidden="true"/>
-						<Texture name="WorldMapOverlay12" hidden="true"/>
-						<Texture name="WorldMapOverlay13" hidden="true"/>
-						<Texture name="WorldMapOverlay14" hidden="true"/>
-						<Texture name="WorldMapOverlay15" hidden="true"/>
-						<Texture name="WorldMapOverlay16" hidden="true"/>
-						<Texture name="WorldMapOverlay17" hidden="true"/>
-						<Texture name="WorldMapOverlay18" hidden="true"/>
-						<Texture name="WorldMapOverlay19" hidden="true"/>
-						<Texture name="WorldMapOverlay20" hidden="true"/>
-						<Texture name="WorldMapOverlay21" hidden="true"/>
-						<Texture name="WorldMapOverlay22" hidden="true"/>
-						<Texture name="WorldMapOverlay23" hidden="true"/>
-						<Texture name="WorldMapOverlay24" hidden="true"/>
-						<Texture name="WorldMapOverlay25" hidden="true"/>
-						<Texture name="WorldMapOverlay26" hidden="true"/>
-						<Texture name="WorldMapOverlay27" hidden="true"/>
-						<Texture name="WorldMapOverlay28" hidden="true"/>
-						<Texture name="WorldMapOverlay29" hidden="true"/>
-						<Texture name="WorldMapOverlay30" hidden="true"/>
-						<Texture name="WorldMapOverlay31" hidden="true"/>
-						<Texture name="WorldMapOverlay32" hidden="true"/>
-						<Texture name="WorldMapOverlay33" hidden="true"/>
-						<Texture name="WorldMapOverlay34" hidden="true"/>
-						<Texture name="WorldMapOverlay35" hidden="true"/>
-						<Texture name="WorldMapOverlay36" hidden="true"/>
-						<Texture name="WorldMapOverlay37" hidden="true"/>
-						<Texture name="WorldMapOverlay38" hidden="true"/>
-						<Texture name="WorldMapOverlay39" hidden="true"/>
-						<Texture name="WorldMapOverlay40" hidden="true"/>
-					</Layer>
 					<Layer level="OVERLAY">
 							<Texture name="WorldMapHighlight" alphaMode="ADD" hidden="true">
 								<Size>
@@ -578,56 +547,6 @@
 					<Frame name="WorldMapFlag1" inherits="WorldMapFlagTemplate" id="1"/>
 					<Frame name="WorldMapFlag2" inherits="WorldMapFlagTemplate" id="2"/>
 					<Frame name="WorldMapCorpse" inherits="WorldMapCorpseTemplate"/>
-					<Button name="WorldMapFramePOI1" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI2" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI3" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI4" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI5" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI6" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI7" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI8" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI9" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI10" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI11" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI12" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI13" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI14" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI15" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI16" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI17" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI18" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI19" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI20" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI21" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI22" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI23" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI24" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI25" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI26" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI27" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI28" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI29" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI30" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI31" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI32" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI33" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI34" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI35" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI36" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI37" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI38" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI39" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI40" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI41" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI42" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI43" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI44" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI45" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI46" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI47" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI48" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI49" inherits="WorldMapFramePOIButtonTemplate"/>
-					<Button name="WorldMapFramePOI50" inherits="WorldMapFramePOIButtonTemplate"/>
 					<Model name="WorldMapPing" file="Interface\MiniMap\Ping\MinimapPing.mdx" scale="0.4" hidden="true">
 						<Size>
 							<AbsDimension x="50" y="50"/>

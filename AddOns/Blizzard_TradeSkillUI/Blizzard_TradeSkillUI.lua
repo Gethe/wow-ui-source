@@ -20,6 +20,7 @@ function TradeSkillFrame_Show()
 	TradeSkillInvSlotDropDown:Show();
 	ShowUIPanel(TradeSkillFrame);
 	TradeSkillCreateButton:Disable();
+	TradeSkillCreateAllButton:Disable();
 	if ( GetTradeSkillSelectionIndex() == 0 ) then
 		TradeSkillFrame_SetSelection(GetFirstTradeSkill());
 	else
@@ -48,7 +49,8 @@ function TradeSkillFrame_OnEvent()
 	end
 	if ( event == "TRADE_SKILL_UPDATE" ) then
 		TradeSkillCreateButton:Disable();
-		if ( GetTradeSkillSelectionIndex() > 1 ) then
+		TradeSkillCreateAllButton:Disable();
+		if ( GetTradeSkillSelectionIndex() > 1 and GetTradeSkillSelectionIndex() <= GetNumTradeSkills() ) then
 			TradeSkillFrame_SetSelection(GetTradeSkillSelectionIndex());
 		else
 			if ( GetNumTradeSkills() > 0 ) then
@@ -77,6 +79,7 @@ function TradeSkillFrame_Update()
 --		TradeSkillSkillLineName:Hide();
 		TradeSkillSkillIcon:Hide();
 		TradeSkillRequirementLabel:Hide();
+		TradeSkillRequirementText:SetText("");
 		TradeSkillCollapseAllButton:Disable();
 		for i=1, MAX_TRADE_SKILL_REAGENTS, 1 do
 			getglobal("TradeSkillReagent"..i):Hide();
@@ -135,8 +138,6 @@ function TradeSkillFrame_Update()
 				if ( GetTradeSkillSelectionIndex() == skillIndex ) then
 					TradeSkillHighlightFrame:SetPoint("TOPLEFT", "TradeSkillSkill"..i, "TOPLEFT", 0, 0);
 					TradeSkillHighlightFrame:Show();
-					-- Set the max makeable items for the create all button
-					TradeSkillFrame.numAvailable = numAvailable;
 					getglobal("TradeSkillSkill"..i):LockHighlight();
 				else
 					getglobal("TradeSkillSkill"..i):UnlockHighlight();
@@ -152,13 +153,16 @@ function TradeSkillFrame_Update()
 	local numHeaders = 0;
 	local notExpanded = 0;
 	for i=1, numTradeSkills, 1 do
-		local index = i + skillOffset;
-		local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(index);
+		local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(i);
 		if ( skillName and skillType == "header" ) then
 			numHeaders = numHeaders + 1;
 			if ( not isExpanded ) then
 				notExpanded = notExpanded + 1;
 			end
+		end
+		if ( GetTradeSkillSelectionIndex() == i ) then
+			-- Set the max makeable items for the create all button
+			TradeSkillFrame.numAvailable = numAvailable;
 		end
 	end
 	-- If all headers are not expanded then show collapse button, otherwise show the expand button
@@ -205,7 +209,6 @@ function TradeSkillFrame_SetSelection(id)
 	TradeSkillRankFrameSkillRank:SetText(skillLineRank.."/"..skillLineMaxRank);
 
 	TradeSkillSkillName:SetText(skillName);
---	TradeSkillSkillLineName:SetText(GetTradeSkillLine());
 	if ( GetTradeSkillCooldown(id) ) then
 		TradeSkillSkillCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(GetTradeSkillCooldown(id)));
 	else
@@ -260,9 +263,6 @@ function TradeSkillFrame_SetSelection(id)
 	if ( (numReagents > 0) and (mod(numReagents, 2) == 0) ) then
 		reagentToAnchorTo = reagentToAnchorTo - 1;
 	end
---	if ( numReagents > 0 ) then
---		TradeSkillRequirementLabel:SetPoint("TOPLEFT", "TradeSkillReagent"..reagentToAnchorTo, "BOTTOMLEFT", 0, 0);
---	end
 	
 	for i=numReagents + 1, MAX_TRADE_SKILL_REAGENTS, 1 do
 		getglobal("TradeSkillReagent"..i):Hide();

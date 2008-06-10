@@ -747,9 +747,9 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString inherits="GameFontHighlightSmall" text="-">
+								<FontString name="BrowseLevelHyphen" inherits="GameFontHighlightSmall" text="-">
 									<Anchors>
-										<Anchor point="LEFT" relativePoint="RIGHT">
+										<Anchor point="LEFT" relativeTo="BrowseMinLevel" relativePoint="RIGHT">
 											<Offset>
 												<AbsDimension x="-5" y="0"/>
 											</Offset>

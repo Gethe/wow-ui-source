@@ -247,6 +247,7 @@ function RaidGroupButton_OnDragStop(raidButton)
 	if ( not raidButton ) then
 		raidButton = this;
 	end
+	
 	raidButton:StopMovingOrSizing();
 	MOVING_RAID_MEMBER = nil;
 	if ( TARGET_RAID_SLOT and TARGET_RAID_SLOT:GetParent():GetID() ~= raidButton.subgroup ) then

@@ -76,17 +76,11 @@ function PetActionBarFrame_OnUpdate(elapsed)
 			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, this.yTarget);
 			this.state = "top";
 			--Move the chat frame and edit box up a bit
-			FCF_UpdateDockPosition();
-			--Move the casting bar up
-			CastingBarFrame_UpdatePosition();
 		elseif ( this.mode == "hide" ) then
 			this:SetPoint("TOPLEFT", this:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
 			this.state = "bottom";
 			this:Hide();
 			--Move the chat frame and edit box back down to original position
-			FCF_UpdateDockPosition();
-			--Move the casting bar back down
-			CastingBarFrame_UpdatePosition();
 		end
 		this.mode = "none";
 	end
@@ -162,7 +156,7 @@ function PetActionBar_UpdateCooldowns()
 end
 
 function ShowPetActionBar()
-	PetActionBar_UpdatePosition();
+	UIParent_ManageFramePositions();
 	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and not PetActionBarFrame.locked and not PetActionBarFrame.ctrlPressed ) then
 		PetActionBarFrame:Show();
 		if ( PetActionBarFrame.completed ) then
@@ -240,11 +234,11 @@ function PetActionButton_OnLoad()
 	this:RegisterForDrag("LeftButton", "RightButton");
 	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	this:RegisterEvent("UPDATE_BINDINGS");
-	getglobal(this:GetName().."Cooldown"):SetScale(0.65);
+	getglobal(this:GetName().."Cooldown"):SetScale(1);
 	getglobal(this:GetName().."Cooldown"):ClearAllPoints();
-	getglobal(this:GetName().."Cooldown"):SetWidth(30);
-	getglobal(this:GetName().."Cooldown"):SetHeight(32);
-	getglobal(this:GetName().."Cooldown"):SetPoint("CENTER", this, "CENTER", 0, 0);
+	getglobal(this:GetName().."Cooldown"):SetWidth(33);
+	getglobal(this:GetName().."Cooldown"):SetHeight(33);
+	getglobal(this:GetName().."Cooldown"):SetPoint("CENTER", this, "CENTER", -2, -1);
 	PetActionButton_SetHotkeys();
 end
 
@@ -352,6 +346,9 @@ function PetActionBar_UpdatePosition()
 		PETACTIONBAR_YPOS = 98;
 		SlidingActionBarTexture0:Show();
 		SlidingActionBarTexture1:Show();
+	end
+	if ( ReputationWatchBar:IsShown() ) then
+		PETACTIONBAR_YPOS = PETACTIONBAR_YPOS + 9;
 	end
 	if ( not PetActionBarFrame:IsShown() ) then
 		return;

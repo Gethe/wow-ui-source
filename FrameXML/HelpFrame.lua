@@ -257,7 +257,7 @@ function HelpFrame_SetupGeneralFrame(key)
 				end
 				bulletIndex = bulletIndex + 1;
 			else
-				_ERRORMESSAGE("Not enough bullets!  Tell Derek");
+				message("Not enough bullets!  Tell Derek");
 			end
 		end
 	end
@@ -281,7 +281,7 @@ function HelpFrame_SetupGeneralFrame(key)
 				end
 				bulletIndex = bulletIndex + 1;
 			else
-				_ERRORMESSAGE("Not enough bullets!  Tell Derek");
+				message("Not enough bullets!  Tell Derek");
 			end
 		end
 	end
@@ -302,7 +302,7 @@ function HelpFrame_SetupGeneralFrame(key)
 	end
 	
 	-- Configure the button
-	if ( info.buttonText ) then
+	if ( info.buttonText and (not (CATEGORY_TO_NOT_DISPLAY and (CATEGORY_TO_NOT_DISPLAY == key))) ) then
 		HelpFrameGeneralButton:SetText(info.buttonText);
 		HelpFrameGeneralButton:SetWidth(HelpFrameGeneralButtonText:GetWidth()+40);
 		if ( info.endText ) then
@@ -447,23 +447,18 @@ function HelpFrameGM_UpdateCategories(...)
 		getglobal("HelpFrameButton"..i):Hide();
 	end
 	for i=1, NUM_GM_CATEGORIES_TO_DISPLAY do
-		-- European version of WoW need to hide the billing category
-		if ( CATEGORY_TO_NOT_DISPLAY and i == CATEGORY_TO_NOT_DISPLAY ) then
-			
+		index = 2 * (offset + i) - 1;
+		button = getglobal("HelpFrameButton"..categoryCount);
+		text = getglobal("HelpFrameButton"..categoryCount.."Text");
+		if ( index <= arg.n  ) then
+			text:SetText(arg[index+1]);
+			button.key = arg[index];
+			button.ticketType = arg[index];
+			button:Show();
 		else
-			index = 2 * (offset + i) - 1;
-			button = getglobal("HelpFrameButton"..categoryCount);
-			text = getglobal("HelpFrameButton"..categoryCount.."Text");
-			if ( index <= arg.n  ) then
-				text:SetText(arg[index+1]);
-				button.key = arg[index];
-				button.ticketType = arg[index];
-				button:Show();
-			else
-				button:Hide();
-			end
-			categoryCount = categoryCount + 1;
+			button:Hide();
 		end
+		categoryCount = categoryCount + 1;
 	end
 
 	FauxScrollFrame_Update(HelpFrameGMScrollFrame, arg.n/2, NUM_GM_CATEGORIES_TO_DISPLAY, 37);

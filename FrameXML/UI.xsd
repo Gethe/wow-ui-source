@@ -42,6 +42,7 @@
 			<xs:enumeration value="BLEND"/>
 			<xs:enumeration value="ALPHAKEY"/>
 			<xs:enumeration value="ADD"/>
+			<xs:enumeration value="MOD"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="OUTLINETYPE">
@@ -152,6 +153,14 @@
 		<xs:attribute name="b" type="ColorFloat" use="required"/>
 		<xs:attribute name="a" type="ColorFloat" default="1.0"/>
 	</xs:complexType>
+	<xs:complexType name="ShadowType">
+		<xs:sequence minOccurs="0">
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="Color" type="ColorType"/>
+				<xs:element name="Offset" type="Dimension"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="GradientType">
 		<xs:sequence>
 			<xs:element name="MinColor" type="ColorType"/>
@@ -211,6 +220,31 @@
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="FontType">
+		<xs:sequence minOccurs="0">
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="FontHeight" type="Value"/>
+				<xs:element name="Color" type="ColorType"/>
+				<xs:element name="Shadow" type="ShadowType"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="inherits" type="xs:string"/>
+		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
+		<xs:attribute name="font" type="xs:string"/>
+		<xs:attribute name="spacing" type="xs:float" default="0"/>
+		<xs:attribute name="outline" type="OUTLINETYPE" default="NONE"/>
+		<xs:attribute name="monochrome" type="xs:boolean" default="false"/>
+		<xs:attribute name="justifyV" type="JUSTIFYVTYPE" default="MIDDLE"/>
+		<xs:attribute name="justifyH" type="JUSTIFYHTYPE" default="CENTER"/>
+	</xs:complexType>
+	<xs:element name="Font">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="FontType"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
 	<xs:complexType name="LayoutFrameType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
@@ -282,16 +316,7 @@
 					<xs:choice maxOccurs="unbounded">
 						<xs:element name="FontHeight" type="Value"/>
 						<xs:element name="Color" type="ColorType"/>
-						<xs:element name="Shadow">
-							<xs:complexType>
-								<xs:sequence minOccurs="0">
-									<xs:choice maxOccurs="unbounded">
-										<xs:element name="Color" type="ColorType"/>
-										<xs:element name="Offset" type="Dimension"/>
-									</xs:choice>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
+						<xs:element name="Shadow" type="ShadowType"/>
 					</xs:choice>
 				</xs:sequence>
 				<xs:attribute name="font" type="xs:string"/>
@@ -420,6 +445,7 @@
 				<xs:attribute name="minValue" type="xs:float"/>
 				<xs:attribute name="maxValue" type="xs:float"/>
 				<xs:attribute name="defaultValue" type="xs:float"/>
+				<xs:attribute name="orientation" type="ui:ORIENTATION" default="HORIZONTAL"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -452,6 +478,7 @@
 						<xs:element name="TextInsets" type="Inset"/>
 					</xs:choice>
 				</xs:sequence>
+				<xs:attribute name="font" type="xs:string"/>
 				<xs:attribute name="letters" type="xs:int" default="0"/>
 				<xs:attribute name="blinkSpeed" type="xs:float" default="0.5"/>
 				<xs:attribute name="numeric" type="xs:boolean" default="false"/>
@@ -514,6 +541,7 @@
 						</xs:choice>
 					</xs:sequence>
 				</xs:sequence>
+				<xs:attribute name="font" type="xs:string"/>
 				<xs:attribute name="file" type="xs:string"/>
 				<xs:attribute name="hyperlinkFormat" type="xs:string" default="|H%s|h%s|h"/>
 			</xs:extension>
@@ -529,6 +557,7 @@
 						<xs:element name="TextInsets" type="Inset"/>
 					</xs:choice>
 				</xs:sequence>
+				<xs:attribute name="font" type="xs:string"/>
 				<xs:attribute name="fadeDuration" type="xs:float" default="3.0"/>
 				<xs:attribute name="insertMode" type="INSERTMODE" default="BOTTOM"/>
 			</xs:extension>
@@ -544,6 +573,7 @@
 						<xs:element name="TextInsets" type="Inset"/>
 					</xs:choice>
 				</xs:sequence>
+				<xs:attribute name="font" type="xs:string"/>
 				<xs:attribute name="fade" type="xs:boolean" default="true"/>
 				<xs:attribute name="fadeDuration" type="xs:float" default="3.0"/>
 				<xs:attribute name="displayDuration" type="xs:float" default="10.0"/>
@@ -604,6 +634,7 @@
 							</xs:simpleContent>
 						</xs:complexType>
 					</xs:element>
+					<xs:element ref="Font" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="LayoutFrame" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>

@@ -1,6 +1,15 @@
 <Bindings>
 	<!-- User interface key bindings -->
-	<Binding name="MOVEFORWARD" runOnUp="true" header="MOVEMENT">
+	<Binding name="MOVEANDSTEER" runOnUp="true" header="MOVEMENT">
+		if ( keystate == "down" ) then
+			CameraOrSelectOrMoveStart();
+			TurnOrActionStart();
+		else
+			CameraOrSelectOrMoveStop();
+			TurnOrActionStop();
+		end
+	</Binding>
+	<Binding name="MOVEFORWARD" runOnUp="true">
 		if ( keystate == "down" ) then
 			MoveForwardStart();
 		else
@@ -54,7 +63,7 @@
 	<Binding name="TOGGLEAUTORUN">
 		ToggleAutoRun();
 	</Binding>
-		<Binding name="PITCHUP" runOnUp="true">
+	<Binding name="PITCHUP" runOnUp="true">
 		if ( keystate == "down" ) then
 			PitchUpStart();
 		else
@@ -92,6 +101,9 @@
 	</Binding>
 	<Binding name="REPLY">
 		ChatFrame_ReplyTell();
+	</Binding>
+	<Binding name="REPLY2">
+		ChatFrame_ReplyTell2();
 	</Binding>
 	<Binding name="COMBATLOGPAGEUP">
  		ChatFrame2:PageUp();

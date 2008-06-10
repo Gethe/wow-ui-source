@@ -369,6 +369,9 @@
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
+					<OnEvent>
+						BattlefieldFrame_OnEvent();
+					</OnEvent>
 				</Scripts>
 			</Button>
 			<Button name="BattlefieldFrameCloseButton" inherits="UIPanelCloseButton">

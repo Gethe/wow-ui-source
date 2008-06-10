@@ -45,11 +45,11 @@ function QuestTimerButton_OnClick()
 end
 
 function QuestTimerFrame_OnShow()
-	UIParent_ManageRightSideFrames();
+	UIParent_ManageFramePositions();
 end
 
 function QuestTimerFrame_OnHide()
-	UIParent_ManageRightSideFrames();
+	UIParent_ManageFramePositions();
 end
 
 --[[

@@ -1,8 +1,8 @@
 NUM_WORLDMAP_DETAIL_TILES = 12;
-NUM_WORLDMAP_POIS = 50;
+NUM_WORLDMAP_POIS = 0;
 NUM_WORLDMAP_POI_COLUMNS = 8;
 WORLDMAP_POI_TEXTURE_WIDTH = 128;
-NUM_WORLDMAP_OVERLAYS = 40;
+NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_FLAGS = 2;
 
 function WorldMapFrame_OnLoad()
@@ -13,6 +13,18 @@ function WorldMapFrame_OnLoad()
 	this.areaName = nil;
 	CreateWorldMapArrowFrame("WorldMapFrame");
 	WorldMapFrame_Update();
+
+	-- Hide the world behind the map when we're in widescreen mode
+	local width = GetScreenWidth();
+	local height = GetScreenHeight();
+	
+	if ( width / height < 4 / 3 ) then
+		width = width * 1.25;
+		height = height * 1.25;
+	end
+	
+	BlackoutWorld:SetWidth( width );
+	BlackoutWorld:SetHeight( height );
 end
 
 function WorldMapFrame_OnEvent()
@@ -49,13 +61,13 @@ function WorldMapFrame_Update()
 	local worldMapPOI;
 	local x1, x2, y1, y2;
 
-	if ( GetCVar("errors") ~= "0" ) then
-		if ( numPOIs > NUM_WORLDMAP_POIS ) then
-			message("Not enough POI buttons, add more to the XML");
+	if ( NUM_WORLDMAP_POIS < numPOIs ) then
+		for i=NUM_WORLDMAP_POIS+1, numPOIs do
+			WorldMap_CreatePOI(i);
 		end
+		NUM_WORLDMAP_POIS = numPOIs;
 	end
-
-	for i=1, NUM_WORLDMAP_POIS, 1 do
+	for i=1, NUM_WORLDMAP_POIS do
 		worldMapPOI = getglobal("WorldMapFramePOI"..i);
 		if ( i <= numPOIs ) then
 			name, description, textureIndex, x, y = GetMapLandmarkInfo(i);
@@ -72,10 +84,10 @@ function WorldMapFrame_Update()
 		end
 	end
 
-	-- Overlay stuff
+	-- Setup the overlays
 	local numOverlays = GetNumMapOverlays();
 	local textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY;
-	local textureCount = 1;
+	local textureCount = 0, neededTextures;
 	local texture;
 	local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;
 	local numTexturesWide, numTexturesTall;
@@ -83,6 +95,13 @@ function WorldMapFrame_Update()
 		textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY = GetMapOverlayInfo(i);
 		numTexturesWide = ceil(textureWidth/256);
 		numTexturesTall = ceil(textureHeight/256);
+		neededTextures = textureCount + (numTexturesWide * numTexturesTall);
+		if ( neededTextures > NUM_WORLDMAP_OVERLAYS ) then
+			for j=NUM_WORLDMAP_OVERLAYS+1, neededTextures do
+				WorldMapDetailFrame:CreateTexture("WorldMapOverlay"..j, "ARTWORK");
+			end
+			NUM_WORLDMAP_OVERLAYS = neededTextures;
+		end
 		for j=1, numTexturesTall do
 			if ( j < numTexturesTall ) then
 				texturePixelHeight = 256;
@@ -98,10 +117,7 @@ function WorldMapFrame_Update()
 				end
 			end
 			for k=1, numTexturesWide do
-				if ( textureCount > NUM_WORLDMAP_OVERLAYS ) then
-					message("Too many worldmap overlays!");
-					return;
-				end
+				textureCount = textureCount + 1;
 				texture = getglobal("WorldMapOverlay"..textureCount);
 				if ( k < numTexturesWide ) then
 					texturePixelWidth = 256;
@@ -119,21 +135,56 @@ function WorldMapFrame_Update()
 				texture:SetWidth(texturePixelWidth);
 				texture:SetHeight(texturePixelHeight);
 				texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight);
-				texture:ClearAllPoints();
-				texture:SetPoint("TOPLEFT", "WorldMapDetailFrame", "TOPLEFT", offsetX + (256 * (k-1)), -(offsetY + (256 * (j - 1))));
+				texture:SetPoint("TOPLEFT", offsetX + (256 * (k-1)), -(offsetY + (256 * (j - 1))));
 				texture:SetTexture(textureName..(((j - 1) * numTexturesWide) + k));
 				texture:Show();
-				textureCount = textureCount +1;
 			end
 		end
 	end
-	for i=textureCount, NUM_WORLDMAP_OVERLAYS do
+	for i=textureCount+1, NUM_WORLDMAP_OVERLAYS do
 		getglobal("WorldMapOverlay"..i):Hide();
 	end
 end
 
+function WorldMapPOI_OnEnter()
+	WorldMapFrame.poiHighlight = 1;
+	if ( this.description and strlen(this.description) > 0 ) then
+		WorldMapFrameAreaLabel:SetText(this.name);
+		WorldMapFrameAreaDescription:SetText(this.description);
+	else
+		WorldMapFrameAreaLabel:SetText(this.name);
+		WorldMapFrameAreaDescription:SetText("");
+	end
+end
+
+function WorldMapPOI_OnLeave()
+	WorldMapFrame.poiHighlight = nil;
+	WorldMapFrameAreaLabel:SetText(WorldMapFrame.areaName);
+	WorldMapFrameAreaDescription:SetText("");
+end
+
+function WorldMapPOI_OnClick()
+	WorldMapButton_OnClick(arg1, WorldMapButton);
+end
+
+function WorldMap_CreatePOI(index)
+	local button = CreateFrame("Button", "WorldMapFramePOI"..index, WorldMapButton);
+	button:SetWidth(32);
+	button:SetHeight(32);
+	button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	button:SetScript("OnEnter", WorldMapPOI_OnEnter);
+	button:SetScript("OnLeave", WorldMapPOI_OnLeave);
+	button:SetScript("OnClick", WorldMapPOI_OnClick);
+
+	local texture = button:CreateTexture(button:GetName().."Texture", "BACKGROUND");
+	texture:SetWidth(16);
+	texture:SetHeight(16);
+	texture:SetPoint("CENTER", 0, 0);
+	texture:SetTexture("Interface\\Minimap\\POIIcons");
+end
+
 function WorldMap_GetPOITextureCoords(index)
-	local worldMapIconDimension = WorldMapFramePOI1Texture:GetWidth();
+	local worldMapIconDimension = 16;
 	local xCoord1, xCoord2, yCoord1, yCoord2; 
 	local coordIncrement = worldMapIconDimension / WORLDMAP_POI_TEXTURE_WIDTH;
 	xCoord1 = mod(index , NUM_WORLDMAP_POI_COLUMNS) * coordIncrement;

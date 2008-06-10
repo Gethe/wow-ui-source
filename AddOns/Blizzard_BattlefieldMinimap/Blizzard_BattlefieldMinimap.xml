@@ -1,19 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 <Script file="Blizzard_BattlefieldMinimap.lua"/>
-<Frame name="BattlefieldMinimapPOITemplate" virtual="true" enableMouse="false">
-	<Size>
-		<AbsDimension x="12" y="12"/>
-	</Size>
-	<Anchors>
-		<Anchor point="CENTER"/>
-	</Anchors>
-	<Layers>
-		<Layer level="BACKGROUND">
-			<Texture name="$parentTexture" file="Interface\Minimap\POIIcons" setAllPoints="true"/>
-		</Layer>
-	</Layers>
-</Frame>
 <Frame name="BattlefieldMinimapUnitTemplate" inherits="WorldMapUnitTemplate" enableMouse="true" virtual="true" hidden="true">
 	<Size>
 		<AbsDimension x="12" y="12"/>
@@ -315,48 +302,6 @@
 				</Anchors>
 			</Texture>
 		</Layer>
-		<Layer level="ARTWORK">
-			<Texture name="BattlefieldMinimapOverlay1" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay2" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay3" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay4" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay5" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay6" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay7" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay8" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay9" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay10" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay11" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay12" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay13" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay14" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay15" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay16" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay17" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay18" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay19" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay20" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay21" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay22" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay23" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay24" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay25" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay26" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay27" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay28" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay29" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay30" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay31" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay32" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay33" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay34" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay35" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay36" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay37" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay38" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay39" hidden="true"/>
-			<Texture name="BattlefieldMinimapOverlay40" hidden="true"/>
-		</Layer>
 		<Layer level="BORDER">
 			<Texture name="BattlefieldMinimapCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
 				<Size>
@@ -472,36 +417,6 @@
 		<Frame name="BattlefieldMinimapRaid39" inherits="BattlefieldMinimapRaidUnitTemplate" id="39"/>
 		<Frame name="BattlefieldMinimapRaid40" inherits="BattlefieldMinimapRaidUnitTemplate" id="40"/>
 		<Frame name="BattlefieldMinimapCorpse" inherits="WorldMapCorpseTemplate"/>
-		<Frame name="BattlefieldMinimapPOI1" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI2" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI3" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI4" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI5" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI6" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI7" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI8" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI9" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI10" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI11" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI12" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI13" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI14" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI15" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI16" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI17" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI18" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI19" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI20" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI21" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI22" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI23" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI24" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI25" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI26" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI27" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI28" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI29" inherits="BattlefieldMinimapPOITemplate"/>
-		<Frame name="BattlefieldMinimapPOI30" inherits="BattlefieldMinimapPOITemplate"/>
 		<Frame name="BattlefieldMinimapFlag1" inherits="WorldMapFlagTemplate" id="1">
 			<Size>
 				<AbsDimension x="18" y="18"/>

@@ -71,8 +71,6 @@ function DurabilityFrame_SetAlerts()
 	else
 		DurabilityFrame:Hide();
 	end
-
-	UIParent_ManageRightSideFrames();
 end
 
 function DurabilityFrame_OnUpdate(elapsed)

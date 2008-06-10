@@ -1,4 +1,4 @@
-## Interface: 10900
+## Interface: 11000
 ## Title: Blizzard Battlefield Minimap
 ## LoadOnDemand: 1
 ## SavedVariablesPerCharacter: BattlefieldMinimapOptions

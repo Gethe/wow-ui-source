@@ -75,8 +75,8 @@ end
 function MoneyInputFrame_SetMode(frame, mode)
 	local frameName = frame:GetName();
 	if ( mode == "compact" ) then
-		getglobal(frameName.."Copper"):SetPoint("LEFT", frameName.."Silver", "RIGHT", 13, 0);
-		getglobal(frameName.."Silver"):SetPoint("LEFT", frameName.."Gold", "RIGHT", 13, 0);
+		getglobal(frameName.."Copper"):SetPoint("LEFT", frameName.."Silver", "RIGHT", 11, 0);
+		getglobal(frameName.."Silver"):SetPoint("LEFT", frameName.."Gold", "RIGHT", 22, 0);
 		getglobal(frameName.."Gold"):SetWidth(56);
 	end
 end

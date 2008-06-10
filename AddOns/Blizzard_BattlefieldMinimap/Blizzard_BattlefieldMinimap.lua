@@ -4,7 +4,8 @@ BATTLEFIELD_TAB_FADE_TIME = 0.15;
 DEFAULT_BATTLEFIELD_TAB_ALPHA = 0.75;
 DEFAULT_POI_ICON_SIZE = 12;
 BATTLEFIELD_MINIMAP_UPDATE_RATE = 0.1;
-NUM_BATTLEFIELDMAP_POIS = 30;
+NUM_BATTLEFIELDMAP_POIS = 0;
+NUM_BATTLEFIELDMAP_OVERLAYS = 0;
 
 BattlefieldMinimapDefaults = {
 	opacity = 0.7,
@@ -93,10 +94,11 @@ function BattlefieldMinimap_Update()
 	local name, description, textureIndex, x, y;
 	local battlefieldPOI;
 	local x1, x2, y1, y2;
-	if ( GetCVar("errors") ~= "0" ) then
-		if ( numPOIs > NUM_BATTLEFIELDMAP_POIS ) then
-			message("Not enough POI buttons, add more to the XML");
+	if ( NUM_BATTLEFIELDMAP_POIS < numPOIs ) then
+		for i=NUM_BATTLEFIELDMAP_POIS+1, numPOIs do
+			BattlefieldMinimap_CreatePOI(i);
 		end
+		NUM_BATTLEFIELDMAP_POIS = numPOIs;
 	end
 	for i=1, NUM_BATTLEFIELDMAP_POIS, 1 do
 		battlefieldPOI = getglobal("BattlefieldMinimapPOI"..i);
@@ -115,10 +117,10 @@ function BattlefieldMinimap_Update()
 		end
 	end
 
-	-- Overlay stuff
+	-- Setup the overlays
 	local numOverlays = GetNumMapOverlays();
 	local textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY;
-	local textureCount = 1;
+	local textureCount = 0, neededTextures;
 	local texture;
 	local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;
 	local numTexturesWide, numTexturesTall;
@@ -128,6 +130,13 @@ function BattlefieldMinimap_Update()
 		textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY = GetMapOverlayInfo(i);
 		numTexturesWide = ceil(textureWidth/256);
 		numTexturesTall = ceil(textureHeight/256);
+		neededTextures = textureCount + (numTexturesWide * numTexturesTall);
+		if ( neededTextures > NUM_BATTLEFIELDMAP_OVERLAYS ) then
+			for j=NUM_BATTLEFIELDMAP_OVERLAYS+1, neededTextures do
+				BattlefieldMinimap:CreateTexture("BattlefieldMinimapOverlay"..j, "ARTWORK");
+			end
+			NUM_BATTLEFIELDMAP_OVERLAYS = neededTextures;
+		end
 		for j=1, numTexturesTall do
 			if ( j < numTexturesTall ) then
 				texturePixelHeight = 256;
@@ -143,10 +152,7 @@ function BattlefieldMinimap_Update()
 				end
 			end
 			for k=1, numTexturesWide do
-				if ( textureCount > NUM_WORLDMAP_OVERLAYS ) then
-					message("Too many worldmap overlays!");
-					return;
-				end
+				textureCount = textureCount + 1;
 				texture = getglobal("BattlefieldMinimapOverlay"..textureCount);
 				if ( k < numTexturesWide ) then
 					texturePixelWidth = 256;
@@ -164,17 +170,25 @@ function BattlefieldMinimap_Update()
 				texture:SetWidth(texturePixelWidth*battlefieldMinimapScale);
 				texture:SetHeight(texturePixelHeight*battlefieldMinimapScale);
 				texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight);
-				texture:ClearAllPoints();
 				texture:SetPoint("TOPLEFT", "BattlefieldMinimap", "TOPLEFT", (offsetX + (256 * (k-1)))*battlefieldMinimapScale, -((offsetY + (256 * (j - 1)))*battlefieldMinimapScale));
 				texture:SetTexture(textureName..(((j - 1) * numTexturesWide) + k));
 				texture:Show();
-				textureCount = textureCount +1;
 			end
 		end
 	end
-	for i=textureCount, NUM_WORLDMAP_OVERLAYS do
+	for i=textureCount+1, NUM_BATTLEFIELDMAP_OVERLAYS do
 		getglobal("BattlefieldMinimapOverlay"..i):Hide();
 	end
+end
+
+function BattlefieldMinimap_CreatePOI(index)
+	local frame = CreateFrame("Frame", "BattlefieldMinimapPOI"..index, BattlefieldMinimap);
+	frame:SetWidth(DEFAULT_POI_ICON_SIZE);
+	frame:SetHeight(DEFAULT_POI_ICON_SIZE);
+
+	local texture = frame:CreateTexture(frame:GetName().."Texture", "BACKGROUND");
+	texture:SetAllPoints(frame);
+	texture:SetTexture("Interface\\Minimap\\POIIcons");
 end
 
 function BattlefieldMinimap_OnUpdate(elapsed)
@@ -369,7 +383,7 @@ function BattlefieldMinimap_SetOpacity()
 	if ( alpha >= 0.15 ) then
 		alpha = alpha - 0.15;
 	end
-	for i=1, NUM_WORLDMAP_OVERLAYS do
+	for i=1, NUM_BATTLEFIELDMAP_OVERLAYS do
 		getglobal("BattlefieldMinimapOverlay"..i):SetAlpha(alpha);
 	end
 	BattlefieldMinimapCloseButton:SetAlpha(alpha);

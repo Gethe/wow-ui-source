@@ -165,8 +165,10 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button
 	-- If more than one screen full of skills then show the scrollbar
 	local frameName = frame:GetName();
 	local scrollBar = getglobal( frameName.."ScrollBar" );
+	local showScrollBar;
 	if ( numItems > numToDisplay ) then
 		frame:Show();
+		showScrollBar = 1;
 	else
 		scrollBar:SetValue(0);
 		frame:Hide();
@@ -224,6 +226,7 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button
 			end
 		end
 	end
+	return showScrollBar;
 end
 
 function FauxScrollFrame_OnVerticalScroll(itemHeight, updateFunction)

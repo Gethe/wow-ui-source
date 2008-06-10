@@ -104,7 +104,8 @@ function FCFOptionsDropDown_Initialize()
 				info.value = value;
 				info.func = FCF_SetChatWindowFontSize;
 
-				if ( value == floor(FCF_GetCurrentChatFrame():GetFontHeight()+0.5) ) then
+				local fontFile, fontHeight, fontFlags = FCF_GetCurrentChatFrame():GetFont();
+				if ( value == floor(fontHeight+0.5) ) then
 					info.checked = 1;
 				end
 
@@ -633,6 +634,7 @@ function FCF_OpenNewWindow(name)
 			ChatFrame_AddMessageGroup(chatFrame, "GUILD");
 			ChatFrame_AddMessageGroup(chatFrame, "WHISPER");
 			ChatFrame_AddMessageGroup(chatFrame, "PARTY");
+			ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
 
 			-- Show the frame and tab
 			chatFrame:Show();
@@ -750,7 +752,8 @@ function FCF_SetChatWindowFontSize(chatFrame, fontSize)
 	if ( not fontSize ) then
 		fontSize = this.value;
 	end
-	chatFrame:SetFontHeight(fontSize);
+	local fontFile, unused, fontFlags = chatFrame:GetFont();
+	chatFrame:SetFont(fontFile, fontSize, fontFlags);
 	SetChatWindowSize(chatFrame:GetID(), fontSize);
 end
 
@@ -1385,7 +1388,6 @@ function FCF_Set_SimpleChat()
 	ChatFrame1:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 32, 85);
 	ChatFrame1:SetWidth(608);
 	ChatFrame1:SetHeight(120);
-	FCF_UpdateDockPosition();
 	ChatFrame1Tab:Hide();
 	FCF_SetButtonSide(ChatFrame1, "left")
 	FCF_SetLocked(ChatFrame1, 1);
@@ -1413,7 +1415,7 @@ function FCF_Set_SimpleChat()
 	end
 
 	-- Update all the anchors
-	UIParent_ManageRightSideFrames();
+	UIParent_ManageFramePositions();
 end
 
 function FCF_Set_NormalChat()
@@ -1445,7 +1447,6 @@ function ToggleCombatLog()
 		if ( ChatFrame2:IsVisible() ) then
 			ChatFrame2:Hide();
 		else
-			FCF_UpdateCombatLogPosition();
 			ChatFrame2:Show();
 		end
 	end

@@ -10,6 +10,7 @@ function CastingBarFrame_OnLoad()
 	this:RegisterEvent("SPELLCAST_DELAYED");
 	this:RegisterEvent("SPELLCAST_CHANNEL_START");
 	this:RegisterEvent("SPELLCAST_CHANNEL_UPDATE");
+	this:RegisterEvent("SPELLCAST_CHANNEL_STOP");
 	this.casting = nil;
 	this.holdTime = 0;
 	CastingBarFrameStatusBar = CastingBarFrame;
@@ -31,7 +32,7 @@ function CastingBarFrame_OnEvent()
 		this:Show();
 
 		this.mode = "casting";
-	elseif ( event == "SPELLCAST_STOP" ) then
+	elseif ( event == "SPELLCAST_STOP" or event == "SPELLCAST_CHANNEL_STOP" ) then
 		if ( not this:IsVisible() ) then
 			this:Hide();
 		end
@@ -41,14 +42,18 @@ function CastingBarFrame_OnEvent()
 			CastingBarSpark:Hide();
 			CastingBarFlash:SetAlpha(0.0);
 			CastingBarFlash:Show();
-			this.casting = nil;
+			if ( event == "SPELLCAST_STOP" ) then
+				this.casting = nil;
+			else
+				this.channeling = nil;
+			end
 			this.flash = 1;
 			this.fadeOut = 1;
 
 			this.mode = "flash";
 		end
 	elseif ( event == "SPELLCAST_FAILED" or event == "SPELLCAST_INTERRUPTED" ) then
-		if ( this:IsShown() ) then
+		if ( this:IsShown() and not this.channeling ) then
 			CastingBarFrameStatusBar:SetValue(this.maxValue);
 			CastingBarFrameStatusBar:SetStatusBarColor(1.0, 0.0, 0.0);
 			CastingBarSpark:Hide();
@@ -84,9 +89,7 @@ function CastingBarFrame_OnEvent()
 		this.fadeOut = nil;
 		this:Show();
 	elseif ( event == "SPELLCAST_CHANNEL_UPDATE" ) then
-		if ( arg1 == 0 ) then
-			this.channeling = nil;
-		elseif ( this:IsShown() ) then
+		if ( this:IsShown() ) then
 			local origDuration = this.endTime - this.startTime
 			this.endTime = GetTime() + (arg1 / 1000)
 			this.startTime = this.endTime - origDuration
@@ -145,6 +148,7 @@ function CastingBarFrame_OnUpdate()
 	end
 end
 
+--[[
 function CastingBarFrame_UpdatePosition()
 	local castingBarPosition = 55;
 	if ( PetActionBarFrame:IsShown() or ShapeshiftBarFrame:IsShown() ) then
@@ -155,3 +159,4 @@ function CastingBarFrame_UpdatePosition()
 	end
 	CastingBarFrame:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, castingBarPosition);
 end
+]]

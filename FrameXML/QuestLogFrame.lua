@@ -665,7 +665,7 @@ function QuestWatch_Update()
 		getglobal("QuestWatchLine"..i):Hide();
 	end
 
-	UIParent_ManageRightSideFrames();
+	UIParent_ManageFramePositions();
 end
 
 function GetQuestLogIndexByName(name)

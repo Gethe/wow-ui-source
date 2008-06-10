@@ -1,4 +1,4 @@
-## Interface: 10900
+## Interface: 11000
 ## Title: Blizzard Auction UI
 ## LoadOnDemand: 1
 ## SavedVariables: AUCTION_DISPLAY_ON_CHARACTER

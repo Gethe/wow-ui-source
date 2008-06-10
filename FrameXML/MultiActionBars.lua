@@ -1,8 +1,9 @@
 NUM_MULTIBAR_BUTTONS = 12;
-SHOW_MULTI_ACTIONBAR_1 = nil;
-SHOW_MULTI_ACTIONBAR_2 = nil;
-SHOW_MULTI_ACTIONBAR_3 = nil;
-SHOW_MULTI_ACTIONBAR_4 = nil;
+
+-- Multi Actionbar Toggles and Temp State Variables
+SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = nil;
+STATE_MultiBar1, STATE_MultiBar2, STATE_MultiBar3, STATE_MultiBar4 = nil;
+
 
 function MultiActionBarFrame_OnLoad()
 	-- Hack to get around load order dependencies
@@ -115,18 +116,22 @@ function Multibar_EmptyFunc(show)
 end
 
 function MultiBar1_IsVisible()
+	STATE_MultiBar1 = SHOW_MULTI_ACTIONBAR_1;
 	return SHOW_MULTI_ACTIONBAR_1;
 end
 
 function MultiBar2_IsVisible()
+	STATE_MultiBar2 = SHOW_MULTI_ACTIONBAR_2;
 	return SHOW_MULTI_ACTIONBAR_2;
 end
 
 function MultiBar3_IsVisible()
+	STATE_MultiBar3 = SHOW_MULTI_ACTIONBAR_3;
 	return SHOW_MULTI_ACTIONBAR_3;
 end
 
 function MultiBar4_IsVisible()
+	STATE_MultiBar4 = SHOW_MULTI_ACTIONBAR_4;
 	return SHOW_MULTI_ACTIONBAR_4;
 end
 

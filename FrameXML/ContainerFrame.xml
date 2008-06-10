@@ -233,10 +233,4 @@
 	<Frame name="ContainerFrame9" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 	<Frame name="ContainerFrame10" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 	<Frame name="ContainerFrame11" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame12" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame14" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame15" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame16" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame17" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 </Ui>

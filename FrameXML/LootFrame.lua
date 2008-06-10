@@ -152,6 +152,9 @@ function LootFrameItem_OnClick(button)
 			ChatFrameEditBox:Insert(GetLootSlotLink(this.slot));
 		end
 	end
+	-- Close any loot distribution confirmation windows
+	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
+	
 	LootFrame.selectedLootButton = this:GetName();
 	LootFrame.selectedSlot = this.slot;
 	LootFrame.selectedQuality = this.quality;
@@ -173,6 +176,7 @@ function GroupLootDropDown_Initialize()
 				-- Add candidate button
 				info = {};
 				info.text = candidate;
+				info.textHeight = 12;
 				info.value = i;
 				info.notCheckable = 1;
 				info.func = GroupLootDropDown_GiveLoot;
@@ -186,6 +190,7 @@ function GroupLootDropDown_Initialize()
 		-- In a raid
 		info = {};
 		info.text = GIVE_LOOT;
+		info.textHeight = 12;
 		info.notCheckable = 1;
 		info.isTitle = 1;
 		UIDropDownMenu_AddButton(info);
@@ -196,6 +201,7 @@ function GroupLootDropDown_Initialize()
 					-- Add raid group
 					info = {};
 					info.text = GROUP.." "..ceil(i/5);
+					info.textHeight = 12;
 					info.hasArrow = 1;
 					info.notCheckable = 1;
 					info.value = j;
@@ -214,6 +220,7 @@ function GroupLootDropDown_Initialize()
 				-- Add candidate button
 				info = {};
 				info.text = candidate;
+				info.textHeight = 12;
 				info.value = i;
 				info.notCheckable = 1;
 				info.value = i;

@@ -167,7 +167,7 @@ function TalentFrame_Update()
 	local numTalents = GetNumTalents(PanelTemplates_GetSelectedTab(TalentFrame));
 	-- Just a reminder error if there are more talents than available buttons
 	if ( numTalents > MAX_NUM_TALENTS ) then
-		_ERRORMESSAGE("Too many talents in talent frame!");
+		message("Too many talents in talent frame!");
 	end
 
 	TalentFrame_ResetBranches();
@@ -336,7 +336,7 @@ function TalentFrame_GetArrowTexture()
 	local arrowTexture = getglobal("TalentFrameArrow"..TalentFrame.arrowIndex);
 	TalentFrame.arrowIndex = TalentFrame.arrowIndex + 1;
 	if ( not arrowTexture ) then
-		_ERRORMESSAGE("Not enough arrow textures");
+		message("Not enough arrow textures");
 	else
 		arrowTexture:Show();
 		return arrowTexture;
@@ -347,7 +347,7 @@ function TalentFrame_GetBranchTexture()
 	local branchTexture = getglobal("TalentFrameBranch"..TalentFrame.textureIndex);
 	TalentFrame.textureIndex = TalentFrame.textureIndex + 1;
 	if ( not branchTexture ) then
-		_ERRORMESSAGE("Not enough branch textures");
+		message("Not enough branch textures");
 	else
 		branchTexture:Show();
 		return branchTexture;

@@ -605,9 +605,11 @@
 			</OnLoad>
 			<OnShow>
 				MacroFrame_OnShow();
+				UpdateMicroButtons();
 			</OnShow>
 			<OnHide>
 				MacroFrame_OnHide();
+				UpdateMicroButtons();
 			</OnHide>
 			<OnMouseWheel>
 				return;

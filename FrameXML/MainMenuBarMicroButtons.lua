@@ -44,7 +44,14 @@ function UpdateMicroButtons()
 		QuestLogMicroButton:SetButtonState("NORMAL");
 	end
 	
-	if ( ( GameMenuFrame:IsVisible()) or ( OptionsFrame:IsVisible()) ) then
+	if ( ( GameMenuFrame:IsVisible() ) 
+		
+		or ( OptionsFrame:IsVisible()) 
+		or ( SoundOptionsFrame:IsVisible()) 
+		or ( UIOptionsFrame:IsVisible()) 
+		or ( KeyBindingFrame and KeyBindingFrame:IsVisible()) 
+		or ( MacroFrame and MacroFrame:IsVisible()) ) then
+		
 		MainMenuMicroButton:SetButtonState("PUSHED", 1);
 	else
 		MainMenuMicroButton:SetButtonState("NORMAL");

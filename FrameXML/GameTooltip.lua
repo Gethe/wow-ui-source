@@ -94,7 +94,9 @@ end
 
 function GameTooltip_ClearMoney()
 	local moneyFrame = getglobal(this:GetName().."MoneyFrame");
-	moneyFrame:Hide();
+	if(moneyFrame) then
+		moneyFrame:Hide();
+	end
 end
 
 function GameTooltip_OnHide()

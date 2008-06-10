@@ -8,6 +8,9 @@ FLASHFRAMES = {};
 -- Pulsing stuff
 PULSEBUTTONS = {};
 
+-- Needs to be defined here so the manage frames function works properly
+BATTLEFIELD_TAB_OFFSET_Y = 0;
+
 UIPanelWindows = {};
 UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["OptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
@@ -36,6 +39,7 @@ UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["PetStableFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["WorldStateScoreFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
+UIPanelWindows["MinigameFrame"] =		{ area = "left",	pushable = 0 };
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
 UIChildWindows = {
@@ -106,7 +110,10 @@ function UIParent_OnLoad()
 	this:RegisterEvent("REPLACE_ENCHANT");
 	this:RegisterEvent("TRADE_REPLACE_ENCHANT");
 	this:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+	this:RegisterEvent("MACRO_ACTION_FORBIDDEN");
+	this:RegisterEvent("ADDON_ACTION_FORBIDDEN");
 	this:RegisterEvent("MEMORY_EXHAUSTED");
+	this:RegisterEvent("MEMORY_RECOVERED");
 	this:RegisterEvent("PLAYER_CONTROL_LOST");
 	this:RegisterEvent("PLAYER_CONTROL_GAINED");
 	this:RegisterEvent("START_LOOT_ROLL");
@@ -228,6 +235,7 @@ function UIParent_OnEvent(event)
 	end	
 	if ( event == "PLAYER_ALIVE" ) then
 		StaticPopup_Hide("DEATH");
+		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		return;
 	end
 	if ( event == "PLAYER_UNGHOST" ) then
@@ -332,6 +340,7 @@ function UIParent_OnEvent(event)
 		return;
 	end
 	if ( event == "CURSOR_UPDATE" ) then
+		StaticPopup_Hide("EQUIP_BIND");
 		StaticPopup_Hide("AUTOEQUIP_BIND");
 		StaticPopup_Hide("DELETE_ITEM");
 		return;
@@ -426,6 +435,17 @@ function UIParent_OnEvent(event)
 		StaticPopup_Hide("BIND_ENCHANT");
 		StaticPopup_Hide("REPLACE_ENCHANT");
 		StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
+		return;
+	end
+	if ( event == "MACRO_ACTION_FORBIDDEN" ) then
+		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
+		return;
+	end
+	if ( event == "ADDON_ACTION_FORBIDDEN" ) then
+		local dialog = StaticPopup_Show("ADDON_ACTION_FORBIDDEN", arg1);
+		if ( dialog ) then
+			dialog.data = arg1;
+		end
 		return;
 	end
 	if ( event == "MEMORY_EXHAUSTED" ) then
@@ -920,6 +940,8 @@ end
 function CloseAllWindows_WithExceptions()
 	-- Insert exceptions here, right now we just don't close the scoreFrame when the player loses control i.e. the game over spell effect
 	if ( GetCenterFrame() == WorldStateScoreFrame ) then
+		CloseAllWindows(1);
+	elseif ( IsOptionFrameOpen() ) then
 		CloseAllWindows(1);
 	else
 		CloseAllWindows();
@@ -1522,70 +1544,196 @@ function ValidateFramePosition(frame, offscreenPadding, returnOffscreen)
 	end
 end
 
+--[[ 
+UIPARENT_MANAGED_FRAME_POSITIONS stores all the frames that have positioning dependencies based on other frames.  
+
+UIPARENT_MANAGED_FRAME_POSITIONS["FRAME"] = {
+	none = This value is used if no dependent frames are shown
+	reputation = This is the offset used if the reputation watch bar is shown
+	anchorTo = This is the object that the stored frame is anchored to
+	point = This is the point on the frame used as the anchor
+	rpoint = This is the point on the "anchorTo" frame that the stored frame is anchored to
+	bottomEither = This offset is used if either bottom multibar is shown
+	bottomLeft
+	var = If this is set use setglobal(varName, value) instead of setpoint
+};
+]]
+UIPARENT_MANAGED_FRAME_POSITIONS = {};
+-- Frames
+UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomLeft"] = {baseY = 17, reputation = 9, maxLevel = -5, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT"};
+UIPARENT_MANAGED_FRAME_POSITIONS["GroupLootFrame1"] = {baseY = 60, bottomEither = 42, pet = 42, reputation = 9};
+UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameParent"] = {baseY = 55, bottomEither = 47, pet = 42, reputation = 9};
+UIPARENT_MANAGED_FRAME_POSITIONS["FramerateLabel"] = {baseY = 64, bottomEither = 42, pet = 42, reputation = 9};
+UIPARENT_MANAGED_FRAME_POSITIONS["CastingBarFrame"] = {baseY = 60, bottomEither = 40, pet = 40, reputation = 9};
+UIPARENT_MANAGED_FRAME_POSITIONS["ChatFrame1"] = {baseY = 85, bottomLeft = 17, pet = 17, reputation = 9, maxLevel = -5, anchorTo = "UIParent", point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
+UIPARENT_MANAGED_FRAME_POSITIONS["ChatFrame2"] = {baseY = 85, bottomRight = 17, rightLeft = -88, rightRight = -43, reputation = 9, maxLevel = -5, anchorTo = "UIParent", point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
+UIPARENT_MANAGED_FRAME_POSITIONS["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = 45, reputation = 9, maxLevel = -5, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+
+-- Vars
+UIPARENT_MANAGED_FRAME_POSITIONS["CONTAINER_OFFSET_X"] = {baseX = 0, rightLeft = 90, rightRight = 45, isVar = "xAxis"};
+UIPARENT_MANAGED_FRAME_POSITIONS["CONTAINER_OFFSET_Y"] = {baseY = 70, bottomRight = 27, reputation = 9, isVar = "yAxis"};
+UIPARENT_MANAGED_FRAME_POSITIONS["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 210, bottomRight = 40, reputation = 9, isVar = "yAxis"};
+UIPARENT_MANAGED_FRAME_POSITIONS["PETACTIONBAR_YPOS"] = {baseY = 98, bottomLeft = 43, reputation = 9, maxLevel = -5, isVar = "yAxis"};
+
 -- Call this function to update the positions of all frames that can appear on the right side of the screen
-function UIParent_ManageRightSideFrames()
-	local anchorX = 0;
-	local anchorY = 0;
-
-	-- Update group loot frame anchor
-	if ( MultiBarBottomRight:IsVisible() or MultiBarBottomLeft:IsVisible() ) then
-		GroupLootFrame1:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 102);
-	else
-		GroupLootFrame1:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 60);
-	end
+function UIParent_ManageFramePositions()
+	-- Frames that affect offsets in y axis
+	local yOffsetFrames = {};
+	-- Frames that affect offsets in x axis
+	local xOffsetFrames = {};
 	
-	-- Update tutorial anchor
-	if ( MultiBarBottomRight:IsVisible() or MultiBarBottomLeft:IsVisible() ) then
-		TutorialFrameParent:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 94);
-		FramerateLabel:SetPoint("BOTTOM", "WorldFrame", "BOTTOM", 0, 104);
-	else
-		TutorialFrameParent:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 52);
-		FramerateLabel:SetPoint("BOTTOM", "WorldFrame", "BOTTOM", 0, 64);
+	-- Set up flags
+	if ( MultiBarBottomRight:IsShown() or MultiBarBottomLeft:IsShown() ) then
+		tinsert(yOffsetFrames, "bottomEither");
 	end
-	
-	-- Update bag anchor
-	if ( MultiBarBottomRight:IsVisible() ) then
-		CONTAINER_OFFSET_Y = 97;
-		BATTLEFIELD_TAB_OFFSET_Y = 252;
-	else
-		CONTAINER_OFFSET_Y = 70;
-		BATTLEFIELD_TAB_OFFSET_Y = 210;
+	if ( MultiBarBottomRight:IsShown() ) then
+		tinsert(yOffsetFrames, "bottomRight");
 	end
-	-- Setup x anchor
-	if ( MultiBarLeft:IsVisible() ) then
-		CONTAINER_OFFSET_X = 90;
-		anchorX = 90;
-	elseif ( MultiBarRight:IsVisible() ) then
-		CONTAINER_OFFSET_X = 45;
-		anchorX = 45;
-	else
-		CONTAINER_OFFSET_X = 0;
-		anchorX = 0;
+	if ( MultiBarBottomLeft:IsShown() ) then
+		tinsert(yOffsetFrames, "bottomLeft");
+	end
+	if ( MultiBarLeft:IsShown() ) then
+		tinsert(xOffsetFrames, "rightLeft");
+	elseif ( MultiBarRight:IsShown() ) then
+		tinsert(xOffsetFrames, "rightRight");
 	end
 
+	if ( PetActionBarFrame:IsShown() or ShapeshiftBarFrame:IsShown() ) then
+		tinsert(yOffsetFrames, "pet");
+	end
+	if ( ReputationWatchBar:IsShown() and MainMenuExpBar:IsShown() ) then
+		tinsert(yOffsetFrames, "reputation");
+	end
+	if ( MainMenuBarMaxLevelBar:IsShown() ) then
+		tinsert(yOffsetFrames, "maxLevel");
+	end
+	
+	-- Iterate through frames and set anchors according to the flags set
+	local frame, xOffset, yOffset, anchorTo, point, rpoint;
+	for index, value in UIPARENT_MANAGED_FRAME_POSITIONS do
+		frame = getglobal(index);
+		if ( frame ) then
+			-- Always start with base as the base offset or default to zero if no "none" specified
+			xOffset = 0;
+			if ( value["baseX"] ) then
+				xOffset = value["baseX"];
+			elseif ( value["xOffset"] ) then
+				xOffset = value["xOffset"];
+			end
+			yOffset = 0;
+			if ( value["baseY"] ) then
+				yOffset = value["baseY"];
+			end
+			
+			-- Iterate through frames that affect y offsets
+			local hasBottomLeft, hasPetBar;
+			for flag, flagValue in yOffsetFrames do
+				if ( value[flagValue] ) then
+					if ( flagValue == "bottomLeft" ) then
+						hasBottomLeft = 1;
+					elseif ( flagValue == "pet" ) then
+						hasPetBar = 1;
+					end
+					yOffset = yOffset + value[flagValue];
+				end
+			end
+
+			if ( hasBottomLeft and hasPetBar ) then
+				yOffset = yOffset + 23;
+			end
+
+			-- Iterate through frames that affect x offsets
+			for flag, flagValue in xOffsetFrames do
+				if ( value[flagValue] ) then
+					xOffset = xOffset + value[flagValue];
+				end
+			end
+			
+			-- Set up anchoring info
+			anchorTo = value["anchorTo"];
+			point = value["point"];
+			rpoint = value["rpoint"];
+			if ( not anchorTo ) then
+				anchorTo = "UIParent";
+			end
+			if ( not point ) then
+				point = "BOTTOM";
+			end
+			if ( not rpoint ) then
+				rpoint = "BOTTOM";
+			end
+			
+			-- Anchor frame
+			if ( value["isVar"] ) then
+				if ( value["isVar"] == "xAxis" ) then
+					setglobal(index, xOffset);
+				else
+					setglobal(index, yOffset);
+				end
+			else
+				if ((frame == ChatFrame1 or frame == ChatFrame2) and SIMPLE_CHAT == "1") then
+					frame:SetPoint(point, anchorTo, rpoint, xOffset, yOffset);
+				elseif ( not(frame:IsObjectType("frame") and frame:IsUserPlaced()) ) then
+					frame:SetPoint(point, anchorTo, rpoint, xOffset, yOffset);
+				end
+			end
+		end
+	end
+	
+	-- Custom positioning not handled by the loop
 	-- Set battlefield minimap position
 	if ( BattlefieldMinimapTab and not BattlefieldMinimapTab:IsUserPlaced() ) then
 		BattlefieldMinimapTab:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMRIGHT", -225-CONTAINER_OFFSET_X, BATTLEFIELD_TAB_OFFSET_Y);
 	end
 
+	-- Update shapeshift bar appearance
+	if ( MultiBarBottomLeft:IsShown() ) then
+		ShapeshiftBarLeft:Hide();
+		ShapeshiftBarRight:Hide();
+		ShapeshiftBarMiddle:Hide();
+		for i=1, GetNumShapeshiftForms() do
+			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetWidth(50);
+			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetHeight(50);
+		end
+	else
+		if ( GetNumShapeshiftForms() > 2 ) then
+			ShapeshiftBarMiddle:Show();
+		end
+		ShapeshiftBarLeft:Show();
+		ShapeshiftBarRight:Show();
+		for i=1, GetNumShapeshiftForms() do
+			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetWidth(64);
+			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetHeight(64);
+		end
+	end
+
+	-- If petactionbar is already shown have to set its point is addition to changing its y target
+	if ( PetActionBarFrame:IsShown() ) then
+		PetActionBarFrame:SetPoint("TOPLEFT", MainMenuBar, "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
+	end
+
 	-- Setup y anchors
-	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -anchorX, anchorY);
-	if ( QuestTimerFrame:IsVisible() ) then
+	local anchorY = 0;
+	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+	if ( QuestTimerFrame:IsShown() ) then
 		anchorY = anchorY - QuestTimerFrame:GetHeight();
 	end
 	-- Setup durability offset
-	local durabilityOffset = 0;
-	if ( DurabilityShield:IsShown() or DurabilityOffWeapon:IsShown() or DurabilityRanged:IsShown() ) then
-		durabilityOffset = 20;
+	if ( DurabilityFrame ) then
+		local durabilityOffset = 0;
+		if ( DurabilityShield:IsShown() or DurabilityOffWeapon:IsShown() or DurabilityRanged:IsShown() ) then
+			durabilityOffset = 20;
+		end
+		DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X-durabilityOffset, anchorY);
+		if ( DurabilityFrame:IsShown() ) then
+			anchorY = anchorY - DurabilityFrame:GetHeight();
+		end
 	end
-	DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -anchorX-durabilityOffset, anchorY);
-	if ( DurabilityFrame:IsVisible() ) then
-		anchorY = anchorY - DurabilityFrame:GetHeight();
-	end
-	QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -anchorX, anchorY);
+	
+	QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 
-	-- Update combat log anchor
-	FCF_UpdateCombatLogPosition();
+	-- Update chat dock since the dock could have moved
+	FCF_DockUpdate();
 end
 
 function PlayerStatus_OnUpdate(elapsed)
@@ -1682,4 +1830,12 @@ function GetMaterialTextColors(material)
 		titleColor = MATERIAL_TITLETEXT_COLOR_TABLE["Default"];
 	end
 	return textColor, titleColor;
+end
+
+function LowerFrameLevel(frame)
+	frame:SetFrameLevel(frame:GetFrameLevel()-1);
+end
+
+function RaiseFrameLevel(frame)
+	frame:SetFrameLevel(frame:GetFrameLevel()+1);
 end

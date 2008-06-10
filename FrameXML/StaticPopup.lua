@@ -18,6 +18,29 @@ StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT"] = {
 	hideOnEscape = 1,
 };
 
+StaticPopupDialogs["MACRO_ACTION_FORBIDDEN"] = {
+	text = TEXT(MACRO_ACTION_FORBIDDEN),
+	button1 = TEXT(OKAY),
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["ADDON_ACTION_FORBIDDEN"] = {
+	text = TEXT(ADDON_ACTION_FORBIDDEN),
+	button1 = TEXT(DISABLE),
+	button2 = TEXT(IGNORE),
+	OnAccept = function(data)
+		DisableAddOn(data);
+		ReloadUI();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 	text = TEXT(CONFIRM_LOOT_DISTRIBUTION),
 	button1 = TEXT(YES),
@@ -538,7 +561,6 @@ StaticPopupDialogs["LOOT_BIND"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	hideOnEscape = 1,
 	hideOnEscape = 1
 };
 StaticPopupDialogs["EQUIP_BIND"] = {
@@ -1529,8 +1551,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	end
 
 	-- Finally size and show the dialog
-	StaticPopup_Resize(dialog, which);
 	dialog:Show();
+	StaticPopup_Resize(dialog, which);
 
 	if ( StaticPopupDialogs[which].sound ) then
 		PlaySound(StaticPopupDialogs[which].sound);

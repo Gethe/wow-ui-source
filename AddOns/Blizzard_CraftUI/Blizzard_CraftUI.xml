@@ -322,7 +322,7 @@
 								getglobal(this:GetName()):SetText(ALL);
 							</OnLoad>
 							<OnClick>
-								TradeSkillCollapseAllButton_OnClick();
+								CraftCollapseAllButton_OnClick();
 							</OnClick>
 						</Scripts>
 					</Button>

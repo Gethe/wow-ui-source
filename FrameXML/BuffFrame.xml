@@ -21,7 +21,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.buffFilter = "HELPFUL|HARMFUL|PASSIVE";
+				this.buffFilter = "HELPFUL|HARMFUL";
 				BuffButton_OnLoad();
 			</OnLoad>
 			<OnEvent>

@@ -18,7 +18,11 @@
             <OnEnter>
                 GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
                 if ( not GameTooltip:SetInventoryItem(InspectFrame.unit, this:GetID()) ) then
-					GameTooltip:SetText(TEXT(getglobal(strupper(strsub(this:GetName(), 8)))));
+					local text = TEXT(getglobal(strupper(strsub(this:GetName(), 8))));
+					if ( this.checkRelic and UnitHasRelicSlot(InspectFrame.unit) ) then
+						text = TEXT(getglobal("RELICSLOT"));
+					end
+					GameTooltip:SetText(text);
 				end
 				CursorUpdate();
             </OnEnter>

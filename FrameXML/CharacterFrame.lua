@@ -87,6 +87,9 @@ function CharacterFrame_OnShow()
 	ShowTextStatusBarText(PlayerFrameHealthBar);
 	ShowTextStatusBarText(PlayerFrameManaBar);
 	ShowTextStatusBarText(MainMenuExpBar);
+	ShowTextStatusBarText(PetFrameHealthBar);
+	ShowTextStatusBarText(PetFrameManaBar);
+	ShowWatchedReputationBarText();
 end
 
 function CharacterFrame_OnHide()
@@ -95,4 +98,7 @@ function CharacterFrame_OnHide()
 	HideTextStatusBarText(PlayerFrameHealthBar);
 	HideTextStatusBarText(PlayerFrameManaBar);
 	HideTextStatusBarText(MainMenuExpBar);
+	HideTextStatusBarText(PetFrameHealthBar);
+	HideTextStatusBarText(PetFrameManaBar);
+	HideWatchedReputationBarText();
 end

@@ -25,6 +25,10 @@ function TargetFrame_OnLoad()
 	this:RegisterEvent("UNIT_AURA");
 	this:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
+
+	local frameLevel = TargetFrameTextureFrame:GetFrameLevel();
+	TargetFrameHealthBar:SetFrameLevel(frameLevel-1);
+	TargetFrameManaBar:SetFrameLevel(frameLevel-1);
 end
 
 function TargetFrame_Update()

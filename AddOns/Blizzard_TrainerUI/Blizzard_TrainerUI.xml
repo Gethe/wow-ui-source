@@ -74,7 +74,7 @@
 				</FontString>
 				<FontString name="ClassTrainerGreetingText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
 					<Size>
-						<AbsDimension x="260" y="26"/>
+						<AbsDimension x="260" y="30"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">

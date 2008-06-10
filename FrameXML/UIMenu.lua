@@ -33,7 +33,7 @@ end
 function UIMenu_AddButton(text, shortcut, func, nested)
 	local id = this.numButtons + 1;
 	if ( id > UIMENU_NUMBUTTONS ) then
-		_ERRORMESSAGE("Too many buttons in UIMenu: "..this:GetName());
+		message("Too many buttons in UIMenu: "..this:GetName());
 		return;
 	end
 

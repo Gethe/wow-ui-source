@@ -15,10 +15,20 @@
             <OnLeave>
 				GameTooltip:Hide();
             </OnLeave>
-			<OnClick>
+ 			<OnClick>
 				TakeTaxiNode(this:GetID());
 			</OnClick>
 		</Scripts>
+		<HighlightTexture file="Interface\TaxiFrame\UI-Taxi-Icon-Highlight">
+			<Size x="32" y="32"/>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
 	</Button>
 	<Frame name="TaxiFrame" toplevel="true" movable="true" hidden="true" parent="UIParent" enableMouse="true">
 		<Size>
@@ -107,12 +117,12 @@
 			<Layer level="OVERLAY">
 				<Texture name="TaxiMap">
 					<Size>
-						<AbsDimension x="280" y="280"/>
+						<AbsDimension x="316" y="352"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="-10" y="-85"/>
+								<AbsDimension x="-13" y="-75"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -129,18 +139,31 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-
 			<TaxiRouteFrame name="TaxiRouteMap">
 				<Size>
-					<AbsDimension x="280" y="280"/>
+					<AbsDimension x="316" y="352"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOP">
 						<Offset>
-							<AbsDimension x="-10" y="-85"/>
+							<AbsDimension x="-13" y="-75"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="TaxiRoute1" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="TaxiRoute2" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="TaxiRoute3" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="TaxiRoute4" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="TaxiRoute5" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="TaxiRoute6" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="TaxiRoute7" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="TaxiRoute8" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="TaxiRoute9" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="TaxiRoute10" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Button name="TaxiButton1" inherits="TaxiButtonTemplate" id="1"/>
 					<Button name="TaxiButton2" inherits="TaxiButtonTemplate" id="2"/>
@@ -218,6 +241,7 @@
 			</OnEvent>
 			<OnShow>
 				PlaySound("igMainMenuOpen");
+				DrawOneHopLines();
 			</OnShow>
 			<OnHide>
 				CloseTaxiMap();

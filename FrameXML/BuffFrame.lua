@@ -84,7 +84,7 @@ function BuffButton_Update()
 end
 
 function BuffButton_OnLoad()
-	-- Valid tokens for "buffFilter" include: HELPFUL, HARMFUL, PASSIVE, CANCELABLE, NOT_CANCELABLE
+	-- Valid tokens for "buffFilter" include: HELPFUL, HARMFUL, CANCELABLE, NOT_CANCELABLE
 	BuffButton_Update();
 	this:RegisterForClicks("RightButtonUp");
 	this:RegisterEvent("PLAYER_AURAS_CHANGED");

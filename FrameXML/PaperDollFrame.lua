@@ -87,11 +87,13 @@ function PaperDollItemSlotButton_OnLoad()
 	local slotName = this:GetName();
 	local id;
 	local textureName;
-	id, textureName = GetInventorySlotInfo(strsub(slotName,10));
+	local checkRelic;
+	id, textureName, checkRelic = GetInventorySlotInfo(strsub(slotName,10));
 	this:SetID(id);
 	local texture = getglobal(slotName.."IconTexture");
 	texture:SetTexture(textureName);
 	this.backgroundTextureName = textureName;
+	this.checkRelic = checkRelic;
 	PaperDollItemSlotButton_Update();
 end
 
@@ -305,7 +307,11 @@ function PaperDollFrame_SetDamage(unit, prefix)
 	local colorPos = "|cff20ff20";
 	local colorNeg = "|cffff2020";
 	if ( totalBonus == 0 ) then
-		damageText:SetText(displayMin.." - "..displayMax);
+		if ( ( displayMin < 100 ) and ( displayMax < 100 ) ) then 
+			damageText:SetText(displayMin.." - "..displayMax);	
+		else
+			damageText:SetText(displayMin.."-"..displayMax);
+		end
 	else
 		
 		local color;
@@ -314,7 +320,11 @@ function PaperDollFrame_SetDamage(unit, prefix)
 		else
 			color = colorNeg;
 		end
-		damageText:SetText(color..displayMin.." - "..displayMax.."|r");
+		if ( ( displayMin < 100 ) and ( displayMax < 100 ) ) then 
+			damageText:SetText(color..displayMin.."-"..displayMax.."|r");	
+		else
+			damageText:SetText(color..displayMin.." - "..displayMax.."|r");
+		end
 		if ( physicalBonusPos > 0 ) then
 			damageTooltip = damageTooltip..colorPos.." +"..physicalBonusPos.."|r";
 		end
@@ -416,6 +426,7 @@ function PaperDollFrame_SetRangedAttack(unit, prefix)
 		prefix = "Character";
 	end
 
+	local hasRelic = UnitHasRelicSlot(unit);
 	local rangedAttackBase, rangedAttackMod = UnitRangedAttack(unit);
 	local frame = getglobal(prefix.."RangedAttackFrame"); 
 	local text = getglobal(prefix.."RangedAttackFrameStatText");
@@ -423,7 +434,7 @@ function PaperDollFrame_SetRangedAttack(unit, prefix)
 	-- If no ranged texture then set stats to n/a
 	local rangedTexture = GetInventoryItemTexture("player", 18);
 	local oldValue = PaperDollFrame.noRanged;
-	if ( rangedTexture ) then
+	if ( rangedTexture and not hasRelic ) then
 		PaperDollFrame.noRanged = nil;
 	else
 		text:SetText(NOT_APPLICABLE);
@@ -435,7 +446,7 @@ function PaperDollFrame_SetRangedAttack(unit, prefix)
 		PaperDollFrame_SetRangedAttackPower();
 		PaperDollFrame_SetRangedDamage();
 	end
-	if ( not rangedTexture ) then
+	if ( not rangedTexture or hasRelic ) then
 		return;
 	end
 	
@@ -559,6 +570,11 @@ function PaperDollFrame_OnShow()
 	PaperDollFrame_SetRangedAttack();
 	PaperDollFrame_SetRangedDamage();
 	PaperDollFrame_SetRangedAttackPower();
+	if ( UnitHasRelicSlot("player") ) then
+		CharacterAmmoSlot:Hide();
+	else
+		CharacterAmmoSlot:Show();
+	end
 end
  
 function PaperDollFrame_OnHide()
@@ -647,13 +663,17 @@ function PaperDollItemSlotButton_Update(cooldownOnly)
 		if ( GetInventoryItemBroken("player", this:GetID()) ) then
 			SetItemButtonTextureVertexColor(this, 0.9, 0, 0);
 			SetItemButtonNormalTextureVertexColor(this, 0.9, 0, 0);
-		elseif ( not IsInventoryItemLocked(this:GetID()) ) then 
+		else
 			SetItemButtonTextureVertexColor(this, 1.0, 1.0, 1.0);
 			SetItemButtonNormalTextureVertexColor(this, 1.0, 1.0, 1.0);
 		end
 		this.hasItem = 1;
 	else
-		SetItemButtonTexture(this, this.backgroundTextureName);
+		local textureName = this.backgroundTextureName;
+		if ( this.checkRelic and UnitHasRelicSlot("player") ) then
+			textureName = "Interface\\Paperdoll\\UI-PaperDoll-Slot-Relic.blp";
+		end
+		SetItemButtonTexture(this, textureName);
 		SetItemButtonCount(this, 0);
 		SetItemButtonTextureVertexColor(this, 1.0, 1.0, 1.0);
 		SetItemButtonNormalTextureVertexColor(this, 1.0, 1.0, 1.0);
@@ -713,7 +733,11 @@ function PaperDollItemSlotButton_OnEnter()
 	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", this:GetID());
 	if ( not hasItem ) then
-		GameTooltip:SetText(TEXT(getglobal(strupper(strsub(this:GetName(), 10)))));
+		local text = TEXT(getglobal(strupper(strsub(this:GetName(), 10))));
+		if ( this.checkRelic and UnitHasRelicSlot("player") ) then
+			text = TEXT(getglobal("RELICSLOT"));
+		end
+		GameTooltip:SetText(text);
 	end
 	if ( hasCooldown ) then
 		--this.updateTooltip = TOOLTIP_UPDATE_TIME;

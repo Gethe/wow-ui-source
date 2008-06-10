@@ -204,7 +204,7 @@
 				<Frames>
 					<Button name="GossipFrameGreetingGoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">
 						<Size>
-							<AbsDimension x="77" y="22"/>
+							<AbsDimension x="78" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="GossipFrame" relativePoint="BOTTOMRIGHT">

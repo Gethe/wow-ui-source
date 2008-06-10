@@ -185,20 +185,10 @@ function ShapeshiftBar_Update()
 		end
 		
 		ShapeshiftBarFrame:Show();
-		--Move the chat frame and edit box up a bit
-		FCF_UpdateDockPosition();
-		--Move the casting bar up
-		CastingBarFrame_UpdatePosition();
 	else
 		ShapeshiftBarFrame:Hide();
-		--Move the chat frame and edit box back down to original position
-		FCF_UpdateDockPosition();
-		--Move the casting bar back down
-		CastingBarFrame_UpdatePosition();
 	end
-
 	ShapeshiftBar_UpdateState();
-	ShapeshiftBar_UpdatePosition();
 end
 
 function ShapeshiftBar_UpdateState()

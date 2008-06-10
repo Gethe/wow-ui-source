@@ -1059,18 +1059,6 @@ SlashCmdList["DUEL_CANCEL"] = function(msg)
 	CancelDuel()
 end
 
-SlashCmdList["SPLIT"] = function(msg)
-	if ( msg ~= "" ) then
-		if ( SplitMoney(msg) ) then
-			return;
-		end
-	end
-
-	local splithelp = TEXT(SPLIT_MONEY_HELP);
-	local info = ChatTypeInfo["SYSTEM"];
-	DEFAULT_CHAT_FRAME:AddMessage(splithelp, info.r, info.g, info.b, info.id);
-end
-
 SlashCmdList["SCRIPT"] = function(msg)
 	RunScript(msg);
 end
@@ -1248,7 +1236,8 @@ function ChatFrame_OnEvent(event)
 	if ( event == "UPDATE_CHAT_WINDOWS" ) then
 		local name, fontSize, r, g, b, a, shown, locked = GetChatWindowInfo(this:GetID());
 		if ( fontSize > 0 ) then
-			this:SetFontHeight(fontSize);
+			local fontFile, unused, fontFlags = this:GetFont();
+			this:SetFont(fontFile, fontSize, fontFlags);
 		end
 		if ( shown ) then
 			this:Show();
@@ -1319,9 +1308,11 @@ function ChatFrame_OnEvent(event)
 		return;
 	end
 	if ( event == "GUILD_MOTD" ) then
-		local info = ChatTypeInfo["GUILD"];
-		local string = format(TEXT(GUILD_MOTD_TEMPLATE), arg1);
-		this:AddMessage(string, info.r, info.g, info.b, info.id);
+		if ( arg1 and (strlen(arg1) > 0) ) then
+			local info = ChatTypeInfo["GUILD"];
+			local string = format(TEXT(GUILD_MOTD_TEMPLATE), arg1);
+			this:AddMessage(string, info.r, info.g, info.b, info.id);
+		end
 		return;
 	end
 	if ( event == "EXECUTE_CHAT_LINE" ) then
@@ -1355,7 +1346,7 @@ function ChatFrame_OnEvent(event)
 		local info = ChatTypeInfo[type];
 
 		local channelLength = strlen(arg4);
-		if ( (strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and (arg1 ~= "INVITE") ) then
+		if ( (strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER")) ) then
 			local found = 0;
 			for index, value in this.channelList do
 				if ( channelLength > strlen(value) ) then
@@ -1605,6 +1596,24 @@ function ChatFrame_ReplyTell(chatFrame)
 	end
 end
 
+function ChatFrame_ReplyTell2(chatFrame)
+	if ( not chatFrame ) then
+		chatFrame = DEFAULT_CHAT_FRAME;
+	end
+
+	local lastTold = ChatEdit_GetLastToldTarget(chatFrame.editBox);
+	if ( strlen(lastTold) > 0 ) then
+		chatFrame.editBox.chatType = "WHISPER";
+		chatFrame.editBox.tellTarget = lastTold;
+		ChatEdit_UpdateHeader(chatFrame.editBox);
+		if ( not chatFrame.editBox:IsVisible() ) then
+			ChatFrame_OpenChat("", chatFrame);
+		end
+	else
+		-- Error message
+	end
+end
+
 function ChatFrame_DisplayStartupText(frame)
 	if ( not frame ) then
 		return;
@@ -1770,6 +1779,20 @@ function ChatEdit_GetLastTellTarget(editBox)
 	return "";
 end
 
+function ChatEdit_GetLastToldTarget(editBox)
+	local lastTold = editBox.toldTarget;
+	if(not (lastTold == nil)) then
+		return lastTold
+	else
+		--Error
+		return ""
+	end
+end
+
+function ChatEdit_SetLastToldTarget(editBox, name)
+	editBox.toldTarget = name;
+end
+
 function ChatEdit_SetLastTellTarget(editBox, target)
 	local found = NUM_REMEMBERED_TELLS;
 	for index, value in editBox.lastTell do
@@ -1872,6 +1895,9 @@ function ChatEdit_SendText(editBox, addHistory)
 	local text = editBox:GetText();
 	if ( strlen(gsub(text, "%s*(.*)", "%1")) > 0 ) then
 		if ( type == "WHISPER") then
+			if(strlen(text) > 0) then
+				ChatEdit_SetLastToldTarget(editBox, editBox.tellTarget);
+			end
 			SendChatMessage(text, type, editBox.language, editBox.tellTarget);
 		elseif ( type == "CHANNEL") then
 			SendChatMessage(text, type, editBox.language, editBox.channelTarget);

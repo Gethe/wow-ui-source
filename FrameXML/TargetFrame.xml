@@ -120,86 +120,82 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame setAllPoints="true">
-				<Frames>
-					<Frame setAllPoints="true">
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="TargetFrameTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
-									<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
-								</Texture>
-								<FontString name="TargetName" inherits="GameFontNormalSmall">
-									<Size>
-										<AbsDimension x="100" y="10"/>
-									</Size>
-									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-50" y="19"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="TargetLevelText" inherits="GameFontNormalSmall">
-									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="63" y="-16"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="TargetDeadText" inherits="GameFontNormalSmall" text="DEAD">
-									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-50" y="3"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture name="TargetHighLevelTexture" file="Interface\TargetingFrame\UI-TargetingFrame-Skull">
-									<Size>
-										<AbsDimension x="16" y="16"/>
-									</Size>
-									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="63" y="-16"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-								<Texture name="TargetLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
-									<Size>
-										<AbsDimension x="16" y="16"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-44" y="-10"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-								<Texture name="TargetPVPIcon" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="3" y="-20"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
+			<Frame name="TargetFrameTextureFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="TargetFrameTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
+							<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
+						</Texture>
+						<FontString name="TargetName" inherits="GameFontNormalSmall">
+							<Size>
+								<AbsDimension x="100" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-50" y="19"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="TargetLevelText" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="63" y="-16"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="TargetDeadText" inherits="GameFontNormalSmall" text="DEAD">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-50" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="TargetHighLevelTexture" file="Interface\TargetingFrame\UI-TargetingFrame-Skull">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="63" y="-16"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="TargetLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-44" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="TargetPVPIcon" hidden="true">
+							<Size>
+								<AbsDimension x="64" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="3" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 			<Frame name="TargetFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 				<Size>

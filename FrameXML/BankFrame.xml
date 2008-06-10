@@ -501,7 +501,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound("igMainMenuOption");
-								PurchaseSlot();
+								StaticPopup_Show("CONFIRM_BUY_BANK_SLOT");
 							</OnClick>
 						</Scripts>
 					</Button>

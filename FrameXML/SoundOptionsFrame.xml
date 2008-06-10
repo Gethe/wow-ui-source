@@ -230,6 +230,7 @@
 			<OnShow>
 				SoundOptionsFrame_Load();
 				Disable_BagButtons();
+				UpdateMicroButtons();
 			</OnShow>
 			<OnKeyDown>
 				if ( arg1 == "ESCAPE" ) then
@@ -243,6 +244,7 @@
 			</OnKeyDown>
 			<OnHide>
 				ShowUIPanel(GameMenuFrame);
+				UpdateMicroButtons();
 			</OnHide>
 		</Scripts>
 	</Frame>

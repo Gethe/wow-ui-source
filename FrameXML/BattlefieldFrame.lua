@@ -16,6 +16,7 @@ function BattlefieldFrame_OnLoad()
 	this:RegisterEvent("BATTLEFIELDS_SHOW");
 	this:RegisterEvent("BATTLEFIELDS_CLOSED");
 	this:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	this:RegisterEvent("PARTY_LEADER_CHANGED");
 
 	BattlefieldFrame.timerDelay = 0;
 end
@@ -37,6 +38,9 @@ function BattlefieldFrame_OnEvent()
 		HideUIPanel(BattlefieldFrame);
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		BattlefieldFrame_UpdateStatus();
+		BattlefieldFrame_Update();
+	end
+	if ( event == "PARTY_LEADER_CHANGED" ) then
 		BattlefieldFrame_Update();
 	end
 end

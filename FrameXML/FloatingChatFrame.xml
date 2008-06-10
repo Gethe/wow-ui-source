@@ -830,13 +830,8 @@
 	<Button name="ChatFrame7Tab" inherits="ChatTabTemplate" id="7"/>
 	<ScrollingMessageFrame name="ChatFrame7" inherits="FloatingChatFrameTemplate" id="7"/>
 	<!-- Hack to get around load order issue -->
-	<Frame name="HiddenFrame" hidden="true">
-		<Scripts>
-			<OnLoad>
-				FCF_DockFrame(ChatFrame1, 1);
-				FCF_UpdateCombatLogPosition();
-			</OnLoad>
-		</Scripts>
-	</Frame>
+	<Script>
+		FCF_DockFrame(ChatFrame1, 1);
+	</Script>
 </Ui>
 	

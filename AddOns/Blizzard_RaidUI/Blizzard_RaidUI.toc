@@ -1,4 +1,4 @@
-## Interface: 10900
+## Interface: 11000
 ## Title: Blizzard Raid UI
 ## LoadOnDemand: 1
 ..\..\FrameXML\Fonts.xml

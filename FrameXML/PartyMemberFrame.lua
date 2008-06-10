@@ -377,7 +377,7 @@ function UpdatePartyMemberBackground()
 	if ( not PartyMemberBackground ) then
 		return;
 	end
-	if ( SHOW_PARTY_BACKGROUND == "1" and GetNumPartyMembers() > 0 ) then
+	if ( SHOW_PARTY_BACKGROUND == "1" and GetNumPartyMembers() > 0 and HIDE_PARTY_INTERFACE ~= "1" ) then
 		if ( getglobal("PartyMemberFrame"..GetNumPartyMembers().."PetFrame"):IsShown() ) then
 			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..GetNumPartyMembers(), "BOTTOMLEFT", -5, -21);
 		else

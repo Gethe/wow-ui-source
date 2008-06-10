@@ -190,6 +190,12 @@
 							ValidateFramePosition(MOVING_RAID_PULLOUT, 25);
 						end
 					</OnDragStop>
+					<OnHide>
+						if ( MOVING_RAID_PULLOUT ) then
+							MOVING_RAID_PULLOUT:StopMovingOrSizing();
+							ValidateFramePosition(MOVING_RAID_PULLOUT, 25);
+						end
+					</OnHide>
 				</Scripts>
 				<NormalText inherits="GameFontNormalSmall"/>
 				<HighlightText inherits="GameFontHighlightSmall"/>
@@ -507,10 +513,12 @@
 				RaidPullout_OnEvent();
 			</OnEvent>
 			<OnDragStart>
+				this:SetFrameStrata("DIALOG");
 				this:StartMoving();
 			</OnDragStart>
 			<OnDragStop>
 				this:StopMovingOrSizing();
+				this:SetFrameStrata("BACKGROUND");
 				ValidateFramePosition(this, 25);
 			</OnDragStop>
 			<OnClick>
@@ -520,6 +528,7 @@
 			</OnClick>
 			<OnMouseUp>
 				this:StopMovingOrSizing();
+				this:SetFrameStrata("BACKGROUND");
 			</OnMouseUp> 
 		</Scripts>
 	</Button>

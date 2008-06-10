@@ -568,12 +568,12 @@
 				<Frames>
 					<ScrollFrame name="SendMailScrollFrame" inherits="UIPanelScrollFrameTemplate">
 						<Size>
-							<AbsDimension x="296" y="258"/>
+							<AbsDimension x="296" y="257"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="23" y="-97"/>
+									<AbsDimension x="21" y="-97"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -581,7 +581,7 @@
 							<Layer level="BACKGROUND">
 								<Texture name="StationeryBackgroundLeft">
 									<Size>
-										<AbsDimension x="256" y="256"/>
+										<AbsDimension x="252" y="256"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
@@ -589,7 +589,7 @@
 								</Texture>
 								<Texture name="StationeryBackgroundRight">
 									<Size>
-										<AbsDimension x="60" y="256"/>
+										<AbsDimension x="64" y="256"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="StationeryBackgroundLeft" relativePoint="TOPRIGHT"/>
@@ -1533,7 +1533,7 @@
 					<Layer level="BACKGROUND">
 						<Texture name="OpenStationeryBackgroundLeft">
 							<Size>
-								<AbsDimension x="256" y="256"/>
+								<AbsDimension x="252" y="256"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
@@ -1541,7 +1541,7 @@
 						</Texture>
 						<Texture name="OpenStationeryBackgroundRight">
 							<Size>
-								<AbsDimension x="60" y="256"/>
+								<AbsDimension x="64" y="256"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="OpenStationeryBackgroundLeft" relativePoint="TOPRIGHT"/>
@@ -1565,12 +1565,12 @@
 							<Layer level="BACKGROUND">
 								<FontString name="OpenMailBodyText" inherits="MailTextFontNormal">
 									<Size>
-										<AbsDimension x="270" y="0"/>
+										<AbsDimension x="276" y="0"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOPLEFT">
 											<Offset>
-												<AbsDimension x="20" y="-10"/>
+												<AbsDimension x="10" y="-10"/>
 											</Offset>
 										</Anchor>
 									</Anchors>

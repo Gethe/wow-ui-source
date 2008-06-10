@@ -60,7 +60,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Model name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+			<Model name="$parentCooldown" inherits="CooldownFrameTemplate">
+				<Size x="36" y="36"/>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors> 
+			</Model>
 		</Frames>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Size>

@@ -4,7 +4,7 @@
 	<Include file="OptionsFrameTemplates.xml"/>
 	<Frame name="OptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="450" y="660"/>
+			<AbsDimension x="450" y="645"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -258,7 +258,7 @@
 			</Frame>
 			<Frame name="OptionsFrameWorldAppearance" inherits="OptionFrameBoxTemplate">
 				<Size>
-					<AbsDimension x="425" y="100"/>
+					<AbsDimension x="425" y="140"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="OptionsFrameDisplay" relativePoint="BOTTOMLEFT">
@@ -315,13 +315,31 @@
 					</Slider>
 					<CheckButton name="OptionsFrameCheckButton7" inherits="OptionsCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="OptionsFrameSlider7" relativePoint="BOTTOMLEFT">
+							<Anchor point="LEFT" relativeTo="OptionsFrameSlider5" relativePoint="RIGHT">
 								<Offset>
-									<AbsDimension x="0" y="-15"/>
+									<AbsDimension x="10" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 					</CheckButton>
+					<Slider name="OptionsFrameSlider8" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameSlider4" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-23"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="OptionsFrameSlider9" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="OptionsFrameSlider8" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -411,7 +429,7 @@
 			</Frame>
 			<Frame name="OptionsFramePixelShaders" inherits="OptionFrameBoxTemplate">
 				<Size>
-					<AbsDimension x="212" y="230"/>
+					<AbsDimension x="212" y="175"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="OptionsFrameBrightness" relativePoint="BOTTOMLEFT">
@@ -518,7 +536,7 @@
 			</Frame>
 			<Frame name="OptionsFrameMiscellaneous" inherits="OptionFrameBoxTemplate">
 				<Size>
-					<AbsDimension x="212" y="230"/>
+					<AbsDimension x="212" y="175"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="OptionsFramePixelShaders" relativePoint="TOPRIGHT">
@@ -608,15 +626,6 @@
 							</Anchor>
 						</Anchors>
 					</CheckButton>
-					<Slider name="OptionsFrameSlider8" inherits="OptionsSliderTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="OptionsFrameCheckButton16" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="-10" y="-20"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Slider>
 				</Frames>
 				<Scripts>
 					<OnLoad>

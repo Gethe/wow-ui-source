@@ -101,6 +101,7 @@ function UpdateBagSlotStatus()
 
 	-- pass in # of current slots, returns cost of next slot
 	local cost = GetBankSlotCost(numSlots);
+	BankFrame.nextSlotCost = cost;
 	if( GetMoney() >= cost ) then
 		SetMoneyFrameColor("BankFrameDetailMoneyFrame", 1.0, 1.0, 1.0);
 	else

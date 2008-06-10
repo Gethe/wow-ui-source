@@ -1,4 +1,4 @@
-NUM_FACTIONS_DISPLAYED = 14;
+NUM_FACTIONS_DISPLAYED = 15;
 REPUTATIONFRAME_FACTIONHEIGHT = 26;
 FACTION_BAR_COLORS = {
 	[1] = {r = 0.8, g = 0.3, b = 0.22},
@@ -10,6 +10,9 @@ FACTION_BAR_COLORS = {
 	[7] = {r = 0, g = 0.6, b = 0.1},
 	[8] = {r = 0, g = 0.6, b = 0.1},
 };
+-- Hard coded =(, will need to change when we up the level cap
+MAX_PLAYER_LEVEL = 60;
+
 function ReputationFrame_OnLoad()
 	this:RegisterEvent("UPDATE_FACTION");
 end
@@ -28,20 +31,23 @@ end
 
 function ReputationFrame_Update()
 	local numFactions = GetNumFactions();
-	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame);
-	local factionIndex, factionStanding, factionBar, factionHeader, color, tooltipStanding;
-	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed;
-	local checkbox, check, rightBarTexture;
+	local factionIndex, factionName, factionCheck, factionStanding, factionBar, factionHeader, color, tooltipStanding;
+	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, isWatched;
+	local atWarIndicator, rightBarTexture;
 
 	-- Update scroll frame
-	FauxScrollFrame_Update(ReputationListScrollFrame, numFactions, NUM_FACTIONS_DISPLAYED, REPUTATIONFRAME_FACTIONHEIGHT )
-		
+	if ( not FauxScrollFrame_Update(ReputationListScrollFrame, numFactions, NUM_FACTIONS_DISPLAYED, REPUTATIONFRAME_FACTIONHEIGHT ) ) then
+		ReputationListScrollFrameScrollBar:SetValue(0);
+	end
+	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame);
+
 	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
 		factionIndex = factionOffset + i;
 		factionBar = getglobal("ReputationBar"..i);
 		factionHeader = getglobal("ReputationHeader"..i);
+		factionCheck = getglobal("ReputationBar"..i.."Check");
 		if ( factionIndex <= numFactions ) then
-			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed = GetFactionInfo(factionIndex);
+			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, isWatched = GetFactionInfo(factionIndex);
 			if ( isHeader ) then
 				factionHeader:SetText(name);
 				if ( isCollapsed ) then
@@ -53,65 +59,28 @@ function ReputationFrame_Update()
 				factionHeader.isCollapsed = isCollapsed;
 				factionBar:Hide();
 				factionHeader:Show();
+				factionCheck:Hide();
 			else
 				factionStanding = getglobal("FACTION_STANDING_LABEL"..standingID);
-				getglobal("ReputationBar"..i.."FactionName"):SetText(name);
+				factionName = getglobal("ReputationBar"..i.."FactionName");
+				factionName:SetText(name);
 				getglobal("ReputationBar"..i.."FactionStanding"):SetText(factionStanding);
 				
-				checkbox = getglobal("ReputationBar"..i.."AlliedCheckButton");
-				check = getglobal("ReputationBar"..i.."AlliedCheckButtonCheck");
+				atWarIndicator = getglobal("ReputationBar"..i.."AtWarCheck");
 				rightBarTexture = getglobal("ReputationBar"..i.."ReputationBarRight");
-				checkbox:SetChecked(atWarWith);
-				checkbox.disabled = nil;
-				checkbox:Enable();
-				if ( canToggleAtWar ) then
-					check:SetVertexColor(1.0, 1.0, 1.0);
-					rightBarTexture:SetTexCoord(0, 0.14453125, 0.34375, 0.71875);
-					-- Set checkbox tooltip
-					if ( atWarWith ) then
-						checkbox.tooltip = REPUTATION_STATUS_NOT_AT_PEACE;
-					else
-						checkbox.tooltip = REPUTATION_STATUS_AT_PEACE;
-					end
+				
+				if ( atWarWith ) then
+					atWarIndicator:Show();
 				else
-					if ( atWarWith ) then
-						check:SetVertexColor(1.0, 0.1, 0.1);
-						rightBarTexture:SetTexCoord(0.1484375, 0.29296875, 0.34375, 0.71875);
-						checkbox.tooltip = REPUTATION_STATUS_AT_WAR
-					else
-						check:SetVertexColor(1.0, 1.0, 1.0);
-						rightBarTexture:SetTexCoord(0.296875, 0.44140625, 0.34375, 0.71875);
-						checkbox:Disable();
-					end
-					checkbox.disabled = 1;
+					atWarIndicator:Hide();
 				end
 
-				-- Update tooltip if its owned by the checkbox
-				if ( GameTooltip:IsOwned(checkbox) ) then
-					GameTooltip:SetOwner(checkbox, "ANCHOR_RIGHT");
-					GameTooltip:SetText(checkbox.tooltip, nil, nil, nil, nil, 1);
-				end
-				
 				-- Normalize values
 				barMax = barMax - barMin;
 				barValue = barValue - barMin;
 				barMin = 0;
 				
-
-				--[[
-				-- Don't show standing anymore
-				tooltipStanding = "";
-				if ( standingID < 8 ) then
-					tooltipStanding = " ("..getglobal("FACTION_STANDING_LABEL"..standingID+1)..")";
-				end
-
-				if ( standingID == 7 ) then
-					factionBar.tooltip = "";
-				else
-					factionBar.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
-				end
-				]]
-
+				factionBar.id = factionIndex;
 				factionBar.standingText = factionStanding;
 				factionBar.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
 				factionBar:SetMinMaxValues(0, barMax);
@@ -121,10 +90,180 @@ function ReputationFrame_Update()
 				factionBar:SetID(factionIndex);
 				factionBar:Show();
 				factionHeader:Hide();
+
+				-- Show a checkmark if this faction is being watched
+				if ( isWatched ) then
+					factionCheck:Show();
+					factionName:SetWidth(100);
+					factionCheck:SetPoint("LEFT", factionName, "LEFT", factionName:GetStringWidth(), 0);
+				else
+					factionCheck:Hide();
+					factionName:SetWidth(110);
+				end
+				
+				-- Update details if this is the selected faction
+				if ( factionIndex == GetSelectedFaction() ) then
+					if ( ReputationDetailFrame:IsShown() ) then
+						ReputationDetailFactionName:SetText(name);
+						ReputationDetailFactionDescription:SetText(description);
+						if ( atWarWith ) then
+							ReputationDetailAtWarCheckBox:SetChecked(1);
+						else
+							ReputationDetailAtWarCheckBox:SetChecked(nil);
+						end
+						if ( canToggleAtWar ) then
+							ReputationDetailAtWarCheckBox:Enable();
+							ReputationDetailAtWarCheckBoxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						else
+							ReputationDetailAtWarCheckBox:Disable();
+							ReputationDetailAtWarCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+
+						end
+						if ( IsFactionInactive(factionIndex) ) then
+							ReputationDetailInactiveCheckBox:SetChecked(1);
+						else
+							ReputationDetailInactiveCheckBox:SetChecked(nil);
+						end
+						if ( isWatched ) then
+							ReputationDetailMainScreenCheckBox:SetChecked(1);
+						else
+							ReputationDetailMainScreenCheckBox:SetChecked(nil);
+						end
+					end
+					getglobal("ReputationBar"..i.."Highlight1"):Show();
+					getglobal("ReputationBar"..i.."Highlight2"):Show();
+				else
+					getglobal("ReputationBar"..i.."Highlight1"):Hide();
+					getglobal("ReputationBar"..i.."Highlight2"):Hide();
+				end
 			end
 		else
 			factionHeader:Hide();
 			factionBar:Hide();
 		end
+	end
+	if ( GetSelectedFaction() == 0 ) then
+		ReputationDetailFrame:Hide();
+	end
+end
+
+function ReputationBar_OnClick()
+	if ( ReputationDetailFrame:IsShown() and (GetSelectedFaction() == this.id) ) then
+		ReputationDetailFrame:Hide();
+	else
+		SetSelectedFaction(this.id);
+		ReputationDetailFrame:Show();
+		ReputationFrame_Update();
+	end
+end
+
+function ReputationWatchBar_Update(newLevel)
+	local name, reaction, min, max, value = GetWatchedFactionInfo();
+	local visibilityChanged = nil;
+	if ( not newLevel ) then
+		newLevel = UnitLevel("player");
+	end
+	if ( name ) then
+		-- See if it was already shown or not
+		if ( not ReputationWatchBar:IsShown() ) then
+			visibilityChanged = 1;
+		end
+		
+		-- Normalize values
+		max = max - min;
+		value = value - min;
+		min = 0;
+		ReputationWatchStatusBar:SetMinMaxValues(min, max);
+		ReputationWatchStatusBar:SetValue(value);
+		ReputationWatchStatusBarText:SetText(name.." "..value.." / "..max);
+		local color = FACTION_BAR_COLORS[reaction];
+		ReputationWatchStatusBar:SetStatusBarColor(color.r, color.g, color.b);
+		ReputationWatchBar:Show();
+		
+		-- If the player is max level then replace the xp bar with the watched reputation, otherwise stack the reputation watch bar on top of the xp bar
+		ReputationWatchStatusBar:SetFrameLevel(MainMenuBarArtFrame:GetFrameLevel()-1);
+		if ( newLevel < MAX_PLAYER_LEVEL ) then
+			-- Reconfigure reputation bar
+			ReputationWatchStatusBar:SetHeight(8);
+			ReputationWatchBar:ClearAllPoints();
+			ReputationWatchBar:SetPoint("BOTTOM", MainMenuBar, "TOP", 0, -3);
+			ReputationWatchStatusBarText:SetPoint("CENTER", ReputationWatchBarOverlayFrame, "CENTER", 0, 3);
+			ReputationWatchBarTexture0:Show();
+			ReputationWatchBarTexture1:Show();
+			ReputationWatchBarTexture2:Show();
+			ReputationWatchBarTexture3:Show();
+
+			ReputationXPBarTexture0:Hide();
+			ReputationXPBarTexture1:Hide();
+			ReputationXPBarTexture2:Hide();
+			ReputationXPBarTexture3:Hide();
+
+			-- Show the XP bar
+			MainMenuExpBar:Show();
+
+			-- Hide max level bar
+			MainMenuBarMaxLevelBar:Hide();
+		else
+			-- Replace xp bar
+			ReputationWatchStatusBar:SetHeight(13);
+			ReputationWatchBar:ClearAllPoints();
+			ReputationWatchBar:SetPoint("TOP", MainMenuBar, "TOP", 0, 0);
+			ReputationWatchStatusBarText:SetPoint("CENTER", ReputationWatchBarOverlayFrame, "CENTER", 0, 1);
+			ReputationWatchBarTexture0:Hide();
+			ReputationWatchBarTexture1:Hide();
+			ReputationWatchBarTexture2:Hide();
+			ReputationWatchBarTexture3:Hide();
+
+			ReputationXPBarTexture0:Show();
+			ReputationXPBarTexture1:Show();
+			ReputationXPBarTexture2:Show();
+			ReputationXPBarTexture3:Show();
+	
+			ExhaustionTick:Hide();
+
+			-- Hide the XP bar
+			MainMenuExpBar:Hide();
+
+			-- Hide max level bar
+			MainMenuBarMaxLevelBar:Hide();
+		end
+		
+	else
+		if ( ReputationWatchBar:IsShown() ) then
+			visibilityChanged = 1;
+		end
+		ReputationWatchBar:Hide();
+		if ( newLevel == MAX_PLAYER_LEVEL ) then
+			MainMenuExpBar:Hide();
+			MainMenuBarMaxLevelBar:Show();
+			ExhaustionTick:Hide();
+		else
+			MainMenuExpBar:Show();
+			MainMenuBarMaxLevelBar:Hide();
+		end
+	end
+	if ( visibilityChanged ) then
+		UIParent_ManageFramePositions();
+		updateContainerFrameAnchors();
+	end
+end
+
+function ShowWatchedReputationBarText(lock)
+	if ( lock ) then
+		ReputationWatchBar.cvarLocked = lock;
+	end
+	if ( UnitLevel("player") == MAX_PLAYER_LEVEL and ReputationWatchBar:IsVisible() ) then
+		ReputationWatchStatusBarText:Show();
+		ReputationWatchBar.textLocked = 1;
+	else
+		HideWatchedReputationBarText();
+	end
+end
+
+function HideWatchedReputationBarText(unlock)
+	if ( unlock or not ReputationWatchBar.cvarLocked ) then
+		ReputationWatchBar.cvarLocked = nil;
+		ReputationWatchStatusBarText:Hide();
+		ReputationWatchBar.textLocked = nil;
 	end
 end

@@ -1,4 +1,4 @@
-NUM_CONTAINER_FRAMES = 9;
+NUM_CONTAINER_FRAMES = 11;
 NUM_BAG_FRAMES = 4;
 MAX_CONTAINER_ITEMS = 36;
 NUM_CONTAINER_COLUMNS = 4;
@@ -24,7 +24,7 @@ end
 
 function ContainerFrame_OnEvent()
 	if ( event == "BAG_UPDATE" ) then
-		if ( this:IsVisible() and this:GetID() == arg1 ) then
+		if ( this:IsShown() and this:GetID() == arg1 ) then
  			ContainerFrame_Update(this);
 		end
 	elseif ( event == "BAG_CLOSED" ) then
@@ -36,7 +36,7 @@ function ContainerFrame_OnEvent()
 			this:Show();
 		end
 	elseif ( event == "ITEM_LOCK_CHANGED" or event == "BAG_UPDATE_COOLDOWN" or event == "UPDATE_INVENTORY_ALERTS" ) then
-		if ( this:IsVisible() ) then
+		if ( this:IsShown() ) then
 			ContainerFrame_Update(this);
 		end
 	end
@@ -52,7 +52,7 @@ function ToggleBag(id)
 		local containerShowing;
 		for i=1, NUM_CONTAINER_FRAMES, 1 do
 			local frame = getglobal("ContainerFrame"..i);
-			if ( frame:IsVisible() and frame:GetID() == id ) then
+			if ( frame:IsShown() and frame:GetID() == id ) then
 				containerShowing = i;
 				frame:Hide();
 			end
@@ -71,7 +71,7 @@ function ToggleBackpack()
 	if ( IsBagOpen(0) ) then
 		for i=1, NUM_CONTAINER_FRAMES, 1 do
 			local frame = getglobal("ContainerFrame"..i);
-			if ( frame:IsVisible() ) then
+			if ( frame:IsShown() ) then
 				frame:Hide();
 			end
 		end
@@ -139,7 +139,7 @@ function OpenBag(id)
 		local containerShowing;
 		for i=1, NUM_CONTAINER_FRAMES, 1 do
 			local frame = getglobal("ContainerFrame"..i);
-			if ( frame:IsVisible() and frame:GetID() == id ) then
+			if ( frame:IsShown() and frame:GetID() == id ) then
 				containerShowing = i;
 			end
 		end
@@ -152,7 +152,7 @@ end
 function CloseBag(id)
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local containerFrame = getglobal("ContainerFrame"..i);
-		if ( containerFrame:IsVisible() and (containerFrame:GetID() == id) ) then
+		if ( containerFrame:IsShown() and (containerFrame:GetID() == id) ) then
 			containerFrame:Hide();
 			return;
 		end
@@ -162,7 +162,7 @@ end
 function IsBagOpen(id)
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local containerFrame = getglobal("ContainerFrame"..i);
-		if ( containerFrame:IsVisible() and (containerFrame:GetID() == id) ) then
+		if ( containerFrame:IsShown() and (containerFrame:GetID() == id) ) then
 			return 1;
 		end
 	end
@@ -179,7 +179,7 @@ function OpenBackpack()
 
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local containerFrame = getglobal("ContainerFrame"..i);
-		if ( containerFrame:IsVisible() and (containerFrame:GetID() == 0) ) then
+		if ( containerFrame:IsShown() and (containerFrame:GetID() == 0) ) then
 			ContainerFrame1.backpackWasOpen = 1;
 			return;
 		else
@@ -195,7 +195,7 @@ end
 function CloseBackpack()
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local containerFrame = getglobal("ContainerFrame"..i);
-		if ( containerFrame:IsVisible() and (containerFrame:GetID() == 0) and (ContainerFrame1.backpackWasOpen == nil) ) then
+		if ( containerFrame:IsShown() and (containerFrame:GetID() == 0) and (ContainerFrame1.backpackWasOpen == nil) ) then
 			containerFrame:Hide();
 			return;
 		end
@@ -205,7 +205,7 @@ end
 function ContainerFrame_GetOpenFrame()
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local frame = getglobal("ContainerFrame"..i);
-		if ( not frame:IsVisible() ) then
+		if ( not frame:IsShown() ) then
 			return frame;
 		end
 		-- If all frames open return the last frame
@@ -257,7 +257,7 @@ function ContainerFrame_Update(frame)
 					GameTooltip:AddLine(TEXT(REPAIR_COST), "", 1, 1, 1);
 					SetTooltipMoney(GameTooltip, repairCost);
 					GameTooltip:Show();
-				elseif ( MerchantFrame:IsVisible() and not locked) then
+				elseif ( MerchantFrame:IsShown() and not locked) then
 					showSell = 1;
 				end
 			else
@@ -443,7 +443,6 @@ end
 
 function updateContainerFrameAnchors()
 	-- Adjust the start anchor for bags depending on the multibars
-	UIParent_ManageRightSideFrames();
 	local xOffset = CONTAINER_OFFSET_X;
 	local uiScale = GetCVar("uiscale") + 0;
 	local screenHeight = 768;
@@ -479,7 +478,7 @@ function updateContainerFrameAnchors()
 	else
 		DEFAULT_TOOLTIP_POSITION = -((column + 1) * CONTAINER_WIDTH) - xOffset;
 	end
-	if ( DEFAULT_TOOLTIP_POSITION ~= oldContainerPosition and GameTooltip.default and GameTooltip:IsVisible() ) then
+	if ( DEFAULT_TOOLTIP_POSITION ~= oldContainerPosition and GameTooltip.default and GameTooltip:IsShown() ) then
 		GameTooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", DEFAULT_TOOLTIP_POSITION, 64);
 	end
 	]]
@@ -500,7 +499,7 @@ function ContainerFrameItemButton_OnClick(button, ignoreModifiers)
 		if ( IsControlKeyDown() and not ignoreModifiers ) then
 			DressUpItemLink(GetContainerItemLink(this:GetParent():GetID(), this:GetID()));
 		elseif ( IsShiftKeyDown() and not ignoreModifiers ) then
-			if ( ChatFrameEditBox:IsVisible() ) then
+			if ( ChatFrameEditBox:IsShown() ) then
 				ChatFrameEditBox:Insert(GetContainerItemLink(this:GetParent():GetID(), this:GetID()));
 			else
 				local texture, itemCount, locked = GetContainerItemInfo(this:GetParent():GetID(), this:GetID());
@@ -518,13 +517,13 @@ function ContainerFrameItemButton_OnClick(button, ignoreModifiers)
 	else
 		if ( IsControlKeyDown() and not ignoreModifiers ) then
 			return;
-		elseif ( IsShiftKeyDown() and MerchantFrame:IsVisible() and not ignoreModifiers ) then
+		elseif ( IsShiftKeyDown() and MerchantFrame:IsShown() and not ignoreModifiers ) then
 			this.SplitStack = function(button, split)
 				SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 				MerchantItemButton_OnClick("LeftButton");
 			end
 			OpenStackSplitFrame(this.count, this, "BOTTOMRIGHT", "TOPRIGHT");
-		elseif ( MerchantFrame:IsVisible() and MerchantFrame.selectedTab == 2 ) then
+		elseif ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 2 ) then
 			-- Don't sell the item if the buyback tab is selected
 			return;
 		else
@@ -538,7 +537,15 @@ function ContainerFrameItemButton_OnEnter(button)
 	if ( not button ) then
 		button = this;
 	end
-	GameTooltip:SetOwner(button, "ANCHOR_LEFT");
+
+	local x,y;
+	x,y = button:GetRight();
+	if ( x >= ( GetScreenWidth() / 2 ) ) then
+		GameTooltip:SetOwner(button, "ANCHOR_LEFT");
+	else
+		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+	end
+
 	local hasCooldown, repairCost = GameTooltip:SetBagItem(button:GetParent():GetID(),button:GetID());
 	--[[
 	Commented out to make dressup cursor work.
@@ -552,10 +559,10 @@ function ContainerFrameItemButton_OnEnter(button)
 		GameTooltip:AddLine(TEXT(REPAIR_COST), "", 1, 1, 1);
 		SetTooltipMoney(GameTooltip, repairCost);
 		GameTooltip:Show();
+	elseif ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 1 ) then
+		ShowContainerSellCursor(button:GetParent():GetID(),button:GetID());
 	elseif ( this.readable or (IsControlKeyDown() and button.hasItem) ) then
 		ShowInspectCursor();
-	elseif ( MerchantFrame:IsVisible() and MerchantFrame.selectedTab == 1 ) then
-		ShowContainerSellCursor(button:GetParent():GetID(),button:GetID());
 	else
 		ResetCursor();
 	end
@@ -579,6 +586,10 @@ function ContainerFrameItemButton_OnUpdate(elapsed)
 end
 
 function OpenAllBags(forceOpen)
+	if ( not UIParent:IsVisible() ) then
+		return;
+	end
+	
 	local bagsOpen = 0;
 	local totalBags = 1;
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
@@ -587,7 +598,7 @@ function OpenAllBags(forceOpen)
 		if ( (i <= NUM_BAG_FRAMES) and GetContainerNumSlots(bagButton:GetID() - CharacterBag0Slot:GetID() + 1) > 0) then
 			totalBags = totalBags + 1;
 		end
-		if ( containerFrame:IsVisible() ) then
+		if ( containerFrame:IsShown() ) then
 			containerFrame:Hide();
 			bagsOpen = bagsOpen + 1;
 		end

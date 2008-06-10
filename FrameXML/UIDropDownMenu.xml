@@ -7,6 +7,10 @@
 			<AbsDimension x="180" y="10"/>
 		</Size>
 		<Scripts>
+			<OnLoad>
+				local fontName, fontHeight, fontFlags = getglobal("DropDownList1Button1NormalText"):GetFont();
+				UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = fontHeight;
+			</OnLoad>
 			<OnHide>
 				CloseDropDownMenus(2);
 			</OnHide>

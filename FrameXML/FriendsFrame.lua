@@ -11,6 +11,9 @@ MAX_WHOS_FROM_SERVER = 50;
 MAX_GUILDCONTROL_OPTIONS = 12;
 CURRENT_GUILD_MOTD = "";
 SHOW_OFFLINE_GUILD_MEMBERS = 1;	-- This variable is saved
+GUILD_DETAIL_NORM_HEIGHT = 195
+GUILD_DETAIL_OFFICER_HEIGHT = 255
+
 
 WHOFRAME_DROPDOWN_LIST = {
 	{name = ZONE, sortType = "zone"},
@@ -378,11 +381,11 @@ function GuildStatus_Update()
 			-- Resize detail frame
 			GuildMemberDetailOfficerNoteLabel:Show();
 			GuildMemberOfficerNoteBackground:Show();
-			GuildMemberDetailFrame:SetHeight(255);
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT);
 		else
 			GuildMemberDetailOfficerNoteLabel:Hide();
 			GuildMemberOfficerNoteBackground:Hide();
-			GuildMemberDetailFrame:SetHeight(195);
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT);
 		end
 
 		-- Manage guild member related buttons
@@ -890,6 +893,7 @@ end
 function GuildControlPopupFrameRemoveRankButton_OnClick()
 	GuildControlDelRank(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
 	GuildControlSetRank(1);
+	GuildStatus_Update();
 	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, 1);
 	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(1));
 	GuildControlCheckboxUpdate(GuildControlGetRankFlags());

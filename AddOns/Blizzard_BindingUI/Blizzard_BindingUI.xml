@@ -547,10 +547,12 @@
 			<OnShow>
 				KeyBindingFrame_OnShow();
 				Disable_BagButtons();
+				UpdateMicroButtons();
 			</OnShow>
 			<OnHide>
 				KeyBindingFrameOutputText:SetText("");
 				ShowUIPanel(GameMenuFrame);
+				UpdateMicroButtons();
 			</OnHide>
 			<OnMouseWheel>
 				return;

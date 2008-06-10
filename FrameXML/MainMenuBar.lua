@@ -31,12 +31,10 @@ function ExhaustionTick_Update()
 			ExhaustionLevelFillBar:Hide();
 		else
 			local exhaustionTickSet = max(((playerCurrXP + exhaustionThreshold) / playerMaxXP) * MainMenuExpBar:GetWidth(), 0);
-			ExhaustionTick:Show();
-			ExhaustionLevelFillBar:Show();
 --			local exhaustionTotalXP = playerCurrXP + (exhaustionMaxXP - exhaustionCurrXP);
 --			local exhaustionTickSet = (exhaustionTotalXP / playerMaxXP) * MainMenuExpBar:GetWidth();
 			ExhaustionTick:ClearAllPoints();
-			if (exhaustionTickSet > MainMenuExpBar:GetWidth()) then
+			if (exhaustionTickSet > MainMenuExpBar:GetWidth() or MainMenuBarMaxLevelBar:IsShown()) then
 				ExhaustionTick:Hide();
 				ExhaustionLevelFillBar:Hide();
 				-- Saving this code in case we want to always leave the exhaustion tick onscreen
@@ -48,6 +46,11 @@ function ExhaustionTick_Update()
 				ExhaustionLevelFillBar:Show();
 				ExhaustionLevelFillBar:SetPoint("TOPRIGHT", "MainMenuExpBar", "TOPLEFT", exhaustionTickSet, 0);
 			end
+		end
+
+		-- Hide exhaustion tick if player is max level and the reputation watch bar is shown
+		if ( UnitLevel("player") == MAX_PLAYER_LEVEL and ReputationWatchBar:IsShown() ) then
+			ExhaustionTick:Hide();
 		end
 	end
 	if ((event == "PLAYER_ENTERING_WORLD") or (event == "UPDATE_EXHAUSTION")) then
