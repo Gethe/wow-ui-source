@@ -141,6 +141,12 @@
 	<Font name="GameFontRedLarge" inherits="GameFontNormalLarge" virtual="true">
 		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
+	<Font name="GameFontNormalHuge" inherits="MasterFont" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="20"/>
+		</FontHeight>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 	<Font name="NumberFontNormal" font="Fonts\ARIALN.TTF" outline="NORMAL" virtual="true" >
 		<FontHeight>
 			<AbsValue val="14"/>

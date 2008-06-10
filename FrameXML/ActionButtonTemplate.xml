@@ -12,12 +12,12 @@
 				<Texture name="$parentFlash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
 				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
 					<Size>
-						<AbsDimension x="32" y="10"/>
+						<AbsDimension x="36" y="10"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="2" y="-2"/>
+								<AbsDimension x="-2" y="-2"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

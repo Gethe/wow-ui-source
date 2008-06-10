@@ -210,9 +210,11 @@ function SkillDetailFrame_SetStatusBar(skillIndex, adjustedSkillPoints)
 	-- Hide or show skill bar
 	if ( not skillName or skillName == "" ) then
 		statusBar:Hide();
+		SkillDetailDescriptionText:Hide();
 		return;
 	else
 		statusBar:Show();
+		SkillDetailDescriptionText:Show();
 	end
 
 	-- Hide or show abandon button

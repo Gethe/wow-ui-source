@@ -277,13 +277,25 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="-5" y="10"/>
+								<AbsDimension x="-5" y="5"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture name="$parentDecoration" file="Interface\DialogFrame\UI-DialogBox-Gold-Dragon" hidden="true">
+					<Size>
+						<AbsDimension x="120" y="120"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-30" y="11"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
 					<Size>
 						<AbsDimension x="32" y="32"/>
@@ -349,7 +361,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button inherits="UIPanelCloseButton">
+			<Button name="$parentPassButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentCorner" relativePoint="TOPRIGHT">
 						<Offset>
@@ -444,7 +456,7 @@
 							<Anchors>
 								<Anchor point="TOP">
 									<Offset>
-										<AbsDimension x="-2" y="5"/>
+										<AbsDimension x="0" y="5"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -496,7 +508,7 @@
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="GroupLootFrame1" relativePoint="TOP">
 				<Offset>
-					<AbsDimension x="0" y="3"/>
+					<AbsDimension x="0" y="15"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -505,7 +517,7 @@
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="GroupLootFrame2" relativePoint="TOP">
 				<Offset>
-					<AbsDimension x="0" y="3"/>
+					<AbsDimension x="0" y="15"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -514,9 +526,10 @@
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="GroupLootFrame3" relativePoint="TOP">
 				<Offset>
-					<AbsDimension x="0" y="3"/>
+					<AbsDimension x="0" y="15"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
 	</Frame>
+
 </Ui>

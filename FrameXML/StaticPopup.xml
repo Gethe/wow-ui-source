@@ -22,9 +22,9 @@
 		<HighlightTexture file="Interface\Buttons\UI-DialogBox-Button-Highlight" alphaMode="ADD">
 			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625"/>
 		</HighlightTexture>
-		<NormalText inherits="GameFontNormal"/>
-		<DisabledText inherits="GameFontDisable"/>
-		<HighlightText inherits="GameFontHighlight"/>
+		<NormalFont inherits="GameFontNormal"/>
+		<DisabledFont inherits="GameFontDisable"/>
+		<HighlightFont inherits="GameFontHighlight"/>
 	</Button>
 	<Frame name="StaticPopupTemplate" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">
 		<Size>

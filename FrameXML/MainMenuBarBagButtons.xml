@@ -2,13 +2,6 @@
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBarBagButtons.lua"/>
 	<Model name="ItemAnimTemplate" file="Interface\ItemAnimations\ForcedBackpackItem.mdx" hidden="true" virtual="true">
-		<Anchors>
-			<Anchor point="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-10" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
 		<Scripts>
 			<OnLoad>
 				ItemAnim_OnLoad();
@@ -23,7 +16,15 @@
 	</Model>
 	<CheckButton name="BagSlotButtonTemplate" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
 		<Frames>
-			<Model name="$parentItemAnim" inherits="ItemAnimTemplate"/>
+			<Model name="$parentItemAnim" inherits="ItemAnimTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Model>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -62,7 +63,15 @@
 			</Anchor>
 		</Anchors>
 		<Frames>
-			<Model name="$parentItemAnim" inherits="ItemAnimTemplate"/>
+			<Model name="$parentItemAnim" inherits="ItemAnimTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Model>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -129,5 +138,60 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+	</CheckButton>
+	<CheckButton name="KeyRingButton" parent="MainMenuBarArtFrame" hidden="true">
+		<Size x="18" y="39"/>
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="CharacterBag3Slot" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Model name="$parentItemAnim" inherits="ItemAnimTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Model>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetID(KEYRING_CONTAINER);
+			</OnLoad>
+			<OnClick>
+				if (CursorHasItem()) then
+					PutKeyInKeyRing();
+				else
+					ToggleKeyRing();
+				end
+			</OnClick>
+			<OnReceiveDrag>
+				if (CursorHasItem()) then
+					PutKeyInKeyRing();
+				end
+			</OnReceiveDrag>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetText(KEYRING, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				GameTooltip:AddLine();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-Button-KeyRing">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Buttons\UI-Button-KeyRing-Highlight" alphaMode="ADD">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</HighlightTexture>
+		<PushedTexture file="Interface\Buttons\UI-Button-KeyRing-Down">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</PushedTexture>
 	</CheckButton>
 </Ui>

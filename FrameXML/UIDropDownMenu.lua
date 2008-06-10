@@ -166,14 +166,13 @@ function UIDropDownMenu_AddButton(info, level)
 	
 	local button = getglobal(listFrameName.."Button"..index);
 	local normalText = getglobal(button:GetName().."NormalText");
-	local highlightText = getglobal(button:GetName().."HighlightText");
-	local disabledText = getglobal(button:GetName().."DisabledText");
+	local icon = getglobal(button:GetName().."Icon");
 	-- This button is used to capture the mouse OnEnter/OnLeave events if the dropdown button is disabled, since a disabled button doesn't receive any events
 	-- This is used specifically for drop down menu time outs
 	local invisibleButton = getglobal(button:GetName().."InvisibleButton");
 	
 	-- Default settings
-	disabledText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	button:SetDisabledTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	invisibleButton:Hide();
 	button:Enable();
 	
@@ -181,15 +180,11 @@ function UIDropDownMenu_AddButton(info, level)
 	if ( info.text ) then
 		button:SetText(info.text);
 		if ( info.textHeight ) then
-			normalText:SetFont(STANDARD_TEXT_FONT, info.textHeight);
-			highlightText:SetFont(STANDARD_TEXT_FONT, info.textHeight);
-			disabledText:SetFont(STANDARD_TEXT_FONT, info.textHeight);
+			button:SetFont(STANDARD_TEXT_FONT, info.textHeight);
 		else
-			normalText:SetFont(STANDARD_TEXT_FONT, UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT);
-			highlightText:SetFont(STANDARD_TEXT_FONT, UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT);
-			disabledText:SetFont(STANDARD_TEXT_FONT, UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT);
+			button:SetFont(STANDARD_TEXT_FONT, UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT);
 		end
-		-- Determine the maximum width of a button
+		-- Determine the width of the button
 		width = normalText:GetWidth() + 60;
 		-- Add padding if has and expand arrow or color swatch
 		if ( info.hasArrow or info.hasColorSwatch ) then
@@ -198,16 +193,29 @@ function UIDropDownMenu_AddButton(info, level)
 		if ( info.notCheckable ) then
 			width = width - 30;
 		end
+		-- Set icon
+		if ( info.icon ) then
+			icon:SetTexture(info.icon);
+			if ( info.tCoordLeft ) then
+				icon:SetTexCoord(info.tCoordLeft, info.tCoordRight, info.tCoordTop, info.tCoordBottom);
+			end
+			icon:Show();
+			-- Add padding for the icon
+			width = width + 10;
+		else
+			icon:Hide();
+		end
+		-- Set maximum button width
 		if ( width > listFrame.maxWidth ) then
 			listFrame.maxWidth = width;
 		end
 		-- If a textR is set then set the vertex color of the button text
 		if ( info.textR ) then
-			normalText:SetTextColor(info.textR, info.textG, info.textB);
-			highlightText:SetTextColor(info.textR, info.textG, info.textB);
+			button:SetTextColor(info.textR, info.textG, info.textB);
+			button:SetHighlightTextColor(info.textR, info.textG, info.textB);
 		else
-			normalText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			highlightText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			button:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			button:SetHighlightTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		end
 	else
 		button:SetText("");
@@ -250,25 +258,17 @@ function UIDropDownMenu_AddButton(info, level)
 	local xPos = 5;
 	local yPos = -((button:GetID() - 1) * UIDROPDOWNMENU_BUTTON_HEIGHT) - UIDROPDOWNMENU_BORDER_HEIGHT;
 	normalText:ClearAllPoints();
-	highlightText:ClearAllPoints();
-	disabledText:ClearAllPoints();
 	if ( info.notCheckable ) then
 		if ( info.justifyH and info.justifyH == "CENTER" ) then
 			normalText:SetPoint("CENTER", button, "CENTER", -7, 0);
-			highlightText:SetPoint("CENTER", button, "CENTER", -7, 0);
-			disabledText:SetPoint("CENTER", button, "CENTER", -7, 0);
 		else
 			normalText:SetPoint("LEFT", button, "LEFT", 0, 0);
-			highlightText:SetPoint("LEFT", button, "LEFT", 0, 0);
-			disabledText:SetPoint("LEFT", button, "LEFT", 0, 0);
 		end
 		xPos = xPos + 10;
 		
 	else
 		xPos = xPos + 12;
 		normalText:SetPoint("LEFT", button, "LEFT", 27, 0);
-		highlightText:SetPoint("LEFT", button, "LEFT", 27, 0);
-		disabledText:SetPoint("LEFT", button, "LEFT", 27, 0);
 	end
 
 	-- Adjust offset if displayMode is menu
@@ -328,13 +328,13 @@ function UIDropDownMenu_AddButton(info, level)
 	-- If not clickable then disable the button and set it white
 	if ( info.notClickable ) then
 		info.disabled = 1;
-		disabledText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		button:SetDisabledTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	end
 
 	-- Set the text color and disable it if its a title
 	if ( info.isTitle ) then
 		info.disabled = 1;
-		disabledText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		button:SetDisabledTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 	
 	-- Disable the button if disabled
@@ -821,9 +821,10 @@ function UIDropDownMenu_EnableButton(level, id)
 end
 
 function UIDropDownMenu_SetButtonText(level, id, text, r, g, b)
-	getglobal("DropDownList"..level.."Button"..id):SetText(text);
+	local button = getglobal("DropDownList"..level.."Button"..id);
+	button:SetText(text);
 	if ( r ) then
-		getglobal("DropDownList"..level.."Button"..id.."NormalText"):SetTextColor(r, g, b);
-		getglobal("DropDownList"..level.."Button"..id.."HighlightText"):SetTextColor(r, g, b);
+		button:SetTextColor(r, g, b);
+		button:SetHighlightTextColor(r, g, b);
 	end
 end

@@ -1,8 +1,8 @@
-## Interface: 11000
+## Interface: 11100
 ## Title: Blizzard Battlefield Minimap
+## Secure: 1
 ## LoadOnDemand: 1
 ## SavedVariablesPerCharacter: BattlefieldMinimapOptions
-..\..\FrameXML\Fonts.xml
 ..\..\FrameXML\UIDropDownMenuTemplates.xml
 ..\..\FrameXML\UIPanelTemplates.xml
 ..\..\FrameXML\WorldMapFrameTemplates.xml

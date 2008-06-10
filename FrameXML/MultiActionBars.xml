@@ -1,20 +1,44 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+..\FrameXML\UI.xsd">
 	<Script file="MultiActionBars.lua"/>
-	<CheckButton name="MultiBarButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+	<CheckButton name="MultiBar1ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<Scripts>
 			<OnLoad>
+				this.buttonType = "MULTIACTIONBAR1BUTTON"
 				ActionButton_OnLoad();
-				getglobal(this:GetName().."HotKey"):Hide();
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
-	<Frame name="HorizontalMultiBarTemplate" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+	<CheckButton name="MultiBar2ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<Scripts>
+			<OnLoad>
+				this.buttonType = "MULTIACTIONBAR2BUTTON"
+				ActionButton_OnLoad();
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<Scripts>
+			<OnLoad>
+				this.buttonType = "MULTIACTIONBAR3BUTTON"
+				ActionButton_OnLoad();
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<Scripts>
+			<OnLoad>
+				this.buttonType = "MULTIACTIONBAR4BUTTON"
+				ActionButton_OnLoad();
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	<Frame name="HorizontalMultiBar1" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="500" y="38"/>
 		</Size>
 		<Frames>
-			<CheckButton name="$parentButton1" inherits="MultiBarButtonTemplate" id="1">
+			<CheckButton name="$parentButton1" inherits="MultiBar1ButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
@@ -23,7 +47,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton2" inherits="MultiBarButtonTemplate" id="2">
+			<CheckButton name="$parentButton2" inherits="MultiBar1ButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT">
 						<Offset>
@@ -32,7 +56,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton3" inherits="MultiBarButtonTemplate" id="3">
+			<CheckButton name="$parentButton3" inherits="MultiBar1ButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT">
 						<Offset>
@@ -41,7 +65,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton4" inherits="MultiBarButtonTemplate" id="4">
+			<CheckButton name="$parentButton4" inherits="MultiBar1ButtonTemplate" id="4">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT">
 						<Offset>
@@ -50,7 +74,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton5" inherits="MultiBarButtonTemplate" id="5">
+			<CheckButton name="$parentButton5" inherits="MultiBar1ButtonTemplate" id="5">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton4" relativePoint="RIGHT">
 						<Offset>
@@ -59,7 +83,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton6" inherits="MultiBarButtonTemplate" id="6">
+			<CheckButton name="$parentButton6" inherits="MultiBar1ButtonTemplate" id="6">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton5" relativePoint="RIGHT">
 						<Offset>
@@ -68,7 +92,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton7" inherits="MultiBarButtonTemplate" id="7">
+			<CheckButton name="$parentButton7" inherits="MultiBar1ButtonTemplate" id="7">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton6" relativePoint="RIGHT">
 						<Offset>
@@ -77,7 +101,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton8" inherits="MultiBarButtonTemplate" id="8">
+			<CheckButton name="$parentButton8" inherits="MultiBar1ButtonTemplate" id="8">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton7" relativePoint="RIGHT">
 						<Offset>
@@ -86,7 +110,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton9" inherits="MultiBarButtonTemplate" id="9">
+			<CheckButton name="$parentButton9" inherits="MultiBar1ButtonTemplate" id="9">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton8" relativePoint="RIGHT">
 						<Offset>
@@ -95,7 +119,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton10" inherits="MultiBarButtonTemplate" id="10">
+			<CheckButton name="$parentButton10" inherits="MultiBar1ButtonTemplate" id="10">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton9" relativePoint="RIGHT">
 						<Offset>
@@ -104,7 +128,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton11" inherits="MultiBarButtonTemplate" id="11">
+			<CheckButton name="$parentButton11" inherits="MultiBar1ButtonTemplate" id="11">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton10" relativePoint="RIGHT">
 						<Offset>
@@ -113,7 +137,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton12" inherits="MultiBarButtonTemplate" id="12">
+			<CheckButton name="$parentButton12" inherits="MultiBar1ButtonTemplate" id="12">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton11" relativePoint="RIGHT">
 						<Offset>
@@ -124,12 +148,127 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="VerticalMultiBarTemplate" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+	<Frame name="HorizontalMultiBar2" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="500" y="38"/>
+		</Size>
+		<Frames>
+			<CheckButton name="$parentButton1" inherits="MultiBar2ButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton2" inherits="MultiBar2ButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton3" inherits="MultiBar2ButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton4" inherits="MultiBar2ButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton5" inherits="MultiBar2ButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton6" inherits="MultiBar2ButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton7" inherits="MultiBar2ButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton8" inherits="MultiBar2ButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton9" inherits="MultiBar2ButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton10" inherits="MultiBar2ButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton11" inherits="MultiBar2ButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton10" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton12" inherits="MultiBar2ButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton11" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="VerticalMultiBar3" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="38" y="500"/>
 		</Size>
 		<Frames>
-			<CheckButton name="$parentButton1" inherits="MultiBarButtonTemplate" id="1">
+			<CheckButton name="$parentButton1" inherits="MultiBar3ButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
@@ -138,7 +277,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton2" inherits="MultiBarButtonTemplate" id="2">
+			<CheckButton name="$parentButton2" inherits="MultiBar3ButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM">
 						<Offset>
@@ -147,7 +286,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton3" inherits="MultiBarButtonTemplate" id="3">
+			<CheckButton name="$parentButton3" inherits="MultiBar3ButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM">
 						<Offset>
@@ -156,7 +295,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton4" inherits="MultiBarButtonTemplate" id="4">
+			<CheckButton name="$parentButton4" inherits="MultiBar3ButtonTemplate" id="4">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM">
 						<Offset>
@@ -165,7 +304,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton5" inherits="MultiBarButtonTemplate" id="5">
+			<CheckButton name="$parentButton5" inherits="MultiBar3ButtonTemplate" id="5">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM">
 						<Offset>
@@ -174,7 +313,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton6" inherits="MultiBarButtonTemplate" id="6">
+			<CheckButton name="$parentButton6" inherits="MultiBar3ButtonTemplate" id="6">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM">
 						<Offset>
@@ -183,7 +322,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton7" inherits="MultiBarButtonTemplate" id="7">
+			<CheckButton name="$parentButton7" inherits="MultiBar3ButtonTemplate" id="7">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton6" relativePoint="BOTTOM">
 						<Offset>
@@ -192,7 +331,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton8" inherits="MultiBarButtonTemplate" id="8">
+			<CheckButton name="$parentButton8" inherits="MultiBar3ButtonTemplate" id="8">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton7" relativePoint="BOTTOM">
 						<Offset>
@@ -201,7 +340,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton9" inherits="MultiBarButtonTemplate" id="9">
+			<CheckButton name="$parentButton9" inherits="MultiBar3ButtonTemplate" id="9">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton8" relativePoint="BOTTOM">
 						<Offset>
@@ -210,7 +349,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton10" inherits="MultiBarButtonTemplate" id="10">
+			<CheckButton name="$parentButton10" inherits="MultiBar3ButtonTemplate" id="10">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton9" relativePoint="BOTTOM">
 						<Offset>
@@ -219,7 +358,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton11" inherits="MultiBarButtonTemplate" id="11">
+			<CheckButton name="$parentButton11" inherits="MultiBar3ButtonTemplate" id="11">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton10" relativePoint="BOTTOM">
 						<Offset>
@@ -228,7 +367,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton12" inherits="MultiBarButtonTemplate" id="12">
+			<CheckButton name="$parentButton12" inherits="MultiBar3ButtonTemplate" id="12">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentButton11" relativePoint="BOTTOM">
 						<Offset>
@@ -239,7 +378,122 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="MultiBarBottomLeft" inherits="HorizontalMultiBarTemplate" parent="UIParent">
+	<Frame name="VerticalMultiBar4" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="38" y="500"/>
+		</Size>
+		<Frames>
+			<CheckButton name="$parentButton1" inherits="MultiBar4ButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton2" inherits="MultiBar4ButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton3" inherits="MultiBar4ButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton4" inherits="MultiBar4ButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton5" inherits="MultiBar4ButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton6" inherits="MultiBar4ButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton7" inherits="MultiBar4ButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton8" inherits="MultiBar4ButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton9" inherits="MultiBar4ButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton10" inherits="MultiBar4ButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton9" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton11" inherits="MultiBar4ButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton10" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton12" inherits="MultiBar4ButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton11" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="MultiBarBottomLeft" inherits="HorizontalMultiBar1" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="ActionButton1" relativePoint="TOPLEFT">
 				<Offset>
@@ -248,7 +502,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Anchor>
 		</Anchors>
 	</Frame>
-	<Frame name="MultiBarBottomRight" inherits="HorizontalMultiBarTemplate" parent="UIParent">
+	<Frame name="MultiBarBottomRight" inherits="HorizontalMultiBar2" parent="UIParent">
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="MultiBarBottomLeft" relativePoint="RIGHT">
 				<Offset>
@@ -257,7 +511,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Anchor>
 		</Anchors>
 	</Frame>
-	<Frame name="MultiBarRight" inherits="VerticalMultiBarTemplate" parent="UIParent">
+	<Frame name="MultiBarRight" inherits="VerticalMultiBar3" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT">
 				<Offset>
@@ -266,7 +520,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Anchor>
 		</Anchors>
 	</Frame>
-	<Frame name="MultiBarLeft" inherits="VerticalMultiBarTemplate" parent="UIParent">
+	<Frame name="MultiBarLeft" inherits="VerticalMultiBar4" parent="UIParent">
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="MultiBarRight" relativePoint="TOPLEFT">
 				<Offset>

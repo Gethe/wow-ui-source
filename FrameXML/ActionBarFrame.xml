@@ -23,13 +23,17 @@
 			<OnDragStart>
 				if ( LOCK_ACTIONBAR ~= "1" ) then
 					PickupAction(ActionButton_GetPagedID(this));
+					ActionButton_UpdateHotkeys(this.buttonType);
 					ActionButton_UpdateState();
+					ActionButton_UpdateFlash();
 				end
 			</OnDragStart>
 			<OnReceiveDrag>
 				if ( LOCK_ACTIONBAR ~= "1" ) then
 					PlaceAction(ActionButton_GetPagedID(this));
+					ActionButton_UpdateHotkeys(this.buttonType);
 					ActionButton_UpdateState();
+					ActionButton_UpdateFlash();
 				end
 			</OnReceiveDrag>
 			<OnEnter>

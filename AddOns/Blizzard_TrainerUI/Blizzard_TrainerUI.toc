@@ -1,7 +1,8 @@
-## Interface: 11000
+## Interface: 11100
 ## Title: Blizzard Trainer UI
+## Secure: 1
 ## LoadOnDemand: 1
-..\..\FrameXML\Fonts.xml
+## SavedVariables: TRAINER_FILTER_AVAILABLE, TRAINER_FILTER_UNAVAILABLE, TRAINER_FILTER_USED
 ..\..\FrameXML\UIDropDownMenuTemplates.xml
 ..\..\FrameXML\UIPanelTemplates.xml
 ..\..\FrameXML\MoneyFrame.xml

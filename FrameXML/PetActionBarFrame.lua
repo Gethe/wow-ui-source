@@ -270,6 +270,7 @@ function PetActionButton_OnDragStart()
 	if ( LOCK_ACTIONBAR ~= "1" ) then
 		this:SetChecked(0);
 		PickupPetAction(this:GetID());
+		PetActionBar_Update();
 	end
 end
 
@@ -277,6 +278,7 @@ function PetActionButton_OnReceiveDrag()
 	if ( LOCK_ACTIONBAR ~= "1" ) then
 		this:SetChecked(0);
 		PickupPetAction(this:GetID());
+		PetActionBar_Update();
 	end
 end
 
@@ -307,7 +309,7 @@ function PetActionButton_OnLeave()
 end
 
 function PetActionButton_SetHotkeys()
-	local binding = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..this:GetID()));
+	local binding = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..this:GetID()), 1);
 	local bindingSuffix = gsub(binding, ".*%-", "");
 	local hotkey = getglobal(this:GetName().."HotKey");
 	if ( bindingSuffix == this:GetID() ) then
@@ -335,25 +337,6 @@ end
 
 function UnlockPetActionBar()
 	PetActionBarFrame.locked = nil;
-end
-
-function PetActionBar_UpdatePosition()
-	if ( MultiBarBottomLeft.isShowing ) then
-		PETACTIONBAR_YPOS = 141;
-		SlidingActionBarTexture0:Hide();
-		SlidingActionBarTexture1:Hide();
-	else
-		PETACTIONBAR_YPOS = 98;
-		SlidingActionBarTexture0:Show();
-		SlidingActionBarTexture1:Show();
-	end
-	if ( ReputationWatchBar:IsShown() ) then
-		PETACTIONBAR_YPOS = PETACTIONBAR_YPOS + 9;
-	end
-	if ( not PetActionBarFrame:IsShown() ) then
-		return;
-	end
-	PetActionBarFrame:SetPoint("TOPLEFT", "MainMenuBar", "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 end
 
 --function ControlPressed()

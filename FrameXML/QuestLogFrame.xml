@@ -89,7 +89,7 @@
 				</Anchor>
 			</Anchors>
 		</HighlightTexture>
-		<NormalText name="$parentNormalText" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="true">
+		<ButtonText name="$parentNormalText" nonspacewrap="true">
 			<Size>
 				<AbsDimension x="275" y="10"/>
 			</Size>
@@ -100,31 +100,10 @@
 					</Offset>
 				</Anchor>
 			</Anchors> 
-		</NormalText>
-		<HighlightText name="$parentHighlightText" inherits="GameFontHighlight" justifyH="LEFT" nonspacewrap="true">
-			<Size>
-				<AbsDimension x="275" y="10"/>
-			</Size>
-			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="20" y="0"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightText>
-		<DisabledText name="$parentDisabledText" inherits="GameFontHighlight" justifyH="LEFT" nonspacewrap="true">
-			<Size>
-				<AbsDimension x="275" y="10"/>
-			</Size>
-			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="20" y="0"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</DisabledText>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormal" justifyH="LEFT"/>
+		<HighlightFont inherits="GameFontHighlight" justifyH="LEFT"/>
+		<DisabledFont inherits="GameFontHighlight" justifyH="LEFT"/>
 	</Button>
 	<Button name="QuestLogRewardItemTemplate" inherits="QuestItemTemplate" virtual="true">
 		<Scripts>
@@ -844,7 +823,12 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString name="QuestLogItemReceiveText" inherits="QuestFont" text="Reward receive text" hidden="true" justifyH="LEFT">
+								<FontString name="QuestLogItemReceiveText" inherits="QuestFont" hidden="true" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</FontString>
+								<FontString name="QuestLogSpellLearnText" inherits="QuestFont" hidden="true" justifyH="LEFT">
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
 									</Anchors>

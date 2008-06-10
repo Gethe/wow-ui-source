@@ -21,6 +21,18 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
+				<Texture name="$parentIcon" hidden="true">
+					<Size>
+						<AbsDimension x="15" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -137,9 +149,10 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<NormalText name="$parentNormalText" inherits="GameFontHighlightSmall" justifyH="LEFT"/>
-		<HighlightText name="$parentHighlightText" inherits="GameFontHighlightSmall" justifyH="LEFT"/>
-		<DisabledText name="$parentDisabledText" inherits="GameFontDisableSmall" justifyH="LEFT"/>
+		<ButtonText name="$parentNormalText"/>
+		<NormalFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
+		<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
+		<DisabledFont inherits="GameFontDisableSmall" justifyH="LEFT"/>
 	</Button>
 	<Button name="UIDropDownListTemplate" frameStrata="DIALOG" enableMouse="true" virtual="true">
 		<Frames>

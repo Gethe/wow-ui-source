@@ -386,16 +386,85 @@ function HelpFrameOpenTicketDropDown_OnShow()
 	GetGMTicket();
 end
 
-function HelpFrameOpenTicket_OnEvent()
+function HelpFrameOpenTicket_OnEvent(event)
+	-- If there's a survey to display then fill out info and return
+	if ( event == "GMSURVEY_DISPLAY" ) then
+		TicketStatusTitleText:SetText(CHOSEN_FOR_GMSURVEY);
+		TicketStatusTime:Hide();
+		TicketStatusFrame.hasGMSurvey = 1;
+		TicketStatusFrame:SetHeight(TicketStatusTitleText:GetHeight() + 20);
+		TicketStatusFrame:Show();
+		HelpFrameOpenTicket.hasTicket = nil;
+		UIFrameFlash(TicketStatusButton, 0.75, 0.75, 20);
+		return;
+	end
+	
 	-- If there are args then the player has a ticket
-	if ( arg1 ~= 0 ) then
+	if ( arg1 and arg1 ~= 0 ) then
 		-- Has an open ticket
+		TicketStatusTitleText:SetText(TICKET_STATUS1);
 		HelpFrameOpenTicket.ticketType = arg1;
 		HelpFrameOpenTicketText:SetText(arg2);
+		-- Setup estimated wait time
+		--[[
+		arg1 - Category
+		arg2 - Ticket Description
+		arg3 - Ticket Age (days)
+		arg4 - Oldest Ticket Time (days)
+		arg5 - Update Time (days)
+			How recent is the data for oldest ticket time, measured in days.  If this number 1 hour, we have bad data.
+		arg6 - AssignedToGM flag
+			0 - ticket is not currently assigned to a gm
+			1 - ticket is assigned to a normal gm
+			2 - ticket is in the escalation queue
+		arg7 - OpenedByGM flag
+			0 - ticket has never been opened by a gm
+			1 - ticket has been opened by a gm
+		]]
+		local ticketFrameHeight = 35;
+		local twoLineHeight = 52;
+		local statusText;
+		HelpFrameOpenTicket.ticketTimer = nil;
+		-- if ticket has been opened by a gm
+		if ( arg7 == 1 ) then
+			if ( arg6 == 2 ) then
+				statusText = GM_TICKET_ESCALATED;
+			else
+				statusText = GM_TICKET_SERVICE_SOON;
+			end
+		else
+			-- convert from days to seconds
+			local estimatedWaitTime = (arg4 - arg3) * 24 * 60 * 60;
+			if ( estimatedWaitTime < 0 ) then
+				estimatedWaitTime = 0;
+			end 
+
+			if ( arg4 < 0 or arg5 < 0 or arg5 > 0.042 ) then
+				statusText = GM_TICKET_UNAVAILABLE;
+				ticketFrameHeight = 40;
+			elseif ( estimatedWaitTime > 7200 ) then
+				-- if wait is over 2 hrs
+				statusText = GM_TICKET_HIGH_VOLUME;
+			elseif ( estimatedWaitTime > 300 ) then
+				-- if wait is over 5 mins
+				statusText = format(GM_TICKET_WAIT_TIME, SecondsToTime(estimatedWaitTime, 1));
+				ticketFrameHeight = twoLineHeight;
+				HelpFrameOpenTicket.ticketTimer = estimatedWaitTime;
+			else
+				statusText = GM_TICKET_SERVICE_SOON;
+			end
+		end
+		if ( statusText ) then
+			TicketStatusTime:Show();
+			TicketStatusTime:SetText(statusText);
+			TicketStatusFrame:SetHeight(TicketStatusTitleText:GetHeight() + TicketStatusTime:GetHeight() + 20);
+		end
+		
 		HelpFrameOpenTicket.hasTicket = 1;
 		HelpFrameOpenTicketSubmit:SetText(EDIT_TICKET);
 		HelpFrameOpenTicketCancel:SetText(EXIT);
 		HelpFrameOpenTicketLabel:SetText(HELPFRAME_OPENTICKET_EDITTEXT);
+
 	else
 		-- Doesn't have an open ticket
 		HelpFrameOpenTicketText:SetText("");
@@ -483,6 +552,10 @@ function TicketStatus_OnUpdate(elapsed)
 				refreshTime = GMTICKET_CHECK_INTERVAL;
 				GetGMTicket();
 			end
-		end	
+		end
+		if ( HelpFrameOpenTicket.ticketTimer ) then
+			HelpFrameOpenTicket.ticketTimer = HelpFrameOpenTicket.ticketTimer - elapsed;
+			TicketStatusTime:SetText(format(GM_TICKET_WAIT_TIME, SecondsToTime(HelpFrameOpenTicket.ticketTimer, 1)));
+		end
 	end
 end

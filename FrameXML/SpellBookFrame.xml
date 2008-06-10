@@ -56,7 +56,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<NormalText inherits="GameFontNormalSmall">
+		<ButtonText>
 			<Anchors>
 				<Anchor point="CENTER">
 					<Offset>
@@ -64,27 +64,12 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
-		<HighlightText inherits="GameFontHighlightSmall">
-			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="3"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightText>
-		<DisabledText inherits="GameFontHighlightSmall">
-			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="6"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</DisabledText>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
+		<DisabledFont inherits="GameFontHighlightSmall"/>
 		<NormalTexture file="Interface\SpellBook\UI-SpellBook-Tab-Unselected"/>
-        <HighlightTexture file="Interface\SpellBook\UI-SpellbookPanel-Tab-Highlight"/>
+        <HighlightTexture file="Interface\SpellBook\UI-SpellbookPanel-Tab-Highlight" alphaMode="ADD"/>
     </Button>
 	<CheckButton name="SpellButtonTemplate" virtual="true">
 		<Size>

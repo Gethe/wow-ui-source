@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_RaidUI.lua"/>
-	<Button name="RaidGroupButtonTemplate" parent="RaidFrame" movable="true" virtual="true">
+	<Button name="RaidGroupButtonTemplate" parent="RaidFrame" movable="true" clampedToScreen="true" virtual="true">
 		<Size>
 			<AbsDimension x="156" y="14"/>
 		</Size>
@@ -65,13 +65,10 @@
 						RaidPulloutButton_OnDragStart(RaidPullout_GenerateClassFrame(this:GetText(), this:GetParent().class));
 					</OnDragStart>
 					<OnDragStop>
-						if ( MOVING_RAID_PULLOUT ) then
-							MOVING_RAID_PULLOUT:StopMovingOrSizing();
-							ValidateFramePosition(MOVING_RAID_PULLOUT, 25);
-						end
+						RaidPulloutStopMoving();
 					</OnDragStop>
 				</Scripts>
-				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<ButtonText>
 					<Size>
 						<AbsDimension x="50" y="8"/>
 					</Size>
@@ -82,19 +79,9 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</NormalText>
-				<HighlightText inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="50" y="8"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</HighlightText>
+				</ButtonText>
+				<NormalFont inherits="GameFontNormalSmall" justifyH="LEFT"/>
+				<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -185,20 +172,14 @@
 						RaidPulloutButton_OnDragStart(RaidPullout_GenerateGroupFrame());
 					</OnDragStart>
 					<OnDragStop>
-						if ( MOVING_RAID_PULLOUT ) then
-							MOVING_RAID_PULLOUT:StopMovingOrSizing();
-							ValidateFramePosition(MOVING_RAID_PULLOUT, 25);
-						end
+						RaidPulloutStopMoving();
 					</OnDragStop>
 					<OnHide>
-						if ( MOVING_RAID_PULLOUT ) then
-							MOVING_RAID_PULLOUT:StopMovingOrSizing();
-							ValidateFramePosition(MOVING_RAID_PULLOUT, 25);
-						end
+						RaidPulloutStopMoving();
 					</OnHide>
 				</Scripts>
-				<NormalText inherits="GameFontNormalSmall"/>
-				<HighlightText inherits="GameFontHighlightSmall"/>
+				<NormalFont inherits="GameFontNormalSmall"/>
+				<HighlightFont inherits="GameFontHighlightSmall"/>
 			</Button>
 			<Button name="$parentSlot1" inherits="RaidGroupSlotTemplate">
 				<Anchors>
@@ -258,8 +239,8 @@
 		</Size>
 		<Scripts>
 			<OnLoad>
-				getglobal(this:GetName().."Overlay"):SetWidth(13);
-				getglobal(this:GetName().."Overlay"):SetHeight(13);
+				getglobal(this:GetName().."Border"):SetWidth(13);
+				getglobal(this:GetName().."Border"):SetHeight(13);
 			</OnLoad>
 			<OnEnter>
 				if ( this:GetCenter() > GetScreenWidth()/2 ) then
@@ -425,7 +406,7 @@
 			</OnEvent>
 		</Scripts>
 	</Frame>
-	<Button name="RaidPulloutFrameTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" virtual="true">
+	<Button name="RaidPulloutFrameTemplate" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="72" y="10"/>
 		</Size>
@@ -534,12 +515,12 @@
 	</Button>
 	<Button name="RaidFrameAddMemberButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="ADD_RAID_MEMBER">
 		<Size>
-			<AbsDimension x="115" y="21"/>
+			<AbsDimension x="90" y="21"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>
-					<AbsDimension x="80" y="-37"/>
+					<AbsDimension x="71" y="-37"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -552,9 +533,29 @@
 				end
 			</OnClick>
 		</Scripts>
-		<NormalText inherits="GameFontNormalSmall"/>
-		<HighlightText inherits="GameFontHighlightSmall"/>
-		<DisabledText inherits="GameFontDisableSmall"/>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
+		<DisabledFont inherits="GameFontDisableSmall"/>
+	</Button>
+	<Button name="RaidFrameReadyCheckButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="READY_CHECK">
+		<Size>
+			<AbsDimension x="90" y="21"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="RaidFrameAddMemberButton" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="2" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				DoReadyCheck();
+			</OnClick>
+		</Scripts>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
+		<DisabledFont inherits="GameFontDisableSmall"/>
 	</Button>
 	<Frame name="RaidGroup1" inherits="RaidGroupTemplate" id="1">
 		<Anchors>
@@ -680,8 +681,99 @@
 	<Button name="RaidPullout10" inherits="RaidPulloutFrameTemplate" id="10"/>
 	<Button name="RaidPullout11" inherits="RaidPulloutFrameTemplate" id="11"/>
 	<Button name="RaidPullout12" inherits="RaidPulloutFrameTemplate" id="12"/>
-	<!-- This must be the last section in the file! -->
+	<!-- This must be after all of the raid pullout stuff! -->
 	<Script>
 		RaidGroupFrame_OnLoad();
 	</Script>
+	<Frame name="ReadyCheckFrame" toplevel="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="323" y="97"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="ReadyCheckPortrait">
+					<Size>
+						<AbsDimension x="50" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\RaidFrame\UI-ReadyCheckFrame">
+					<Size>
+						<AbsDimension x="323" y="97"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.630859375" top="0" bottom="0.7578125"/>
+				</Texture>
+				<FontString name="ReadyCheckFrameText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="15" y="-24"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="ReadyCheckFrameYesButton" inherits="UIPanelButtonTemplate" text="YES">
+				<Size>
+					<AbsDimension x="109" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="55" y="18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ConfirmReadyCheck(1);
+						ReadyCheckFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ReadyCheckFrameNoButton" inherits="UIPanelButtonTemplate" text="NO">
+				<Size>
+					<AbsDimension x="109" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ReadyCheckFrameYesButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ConfirmReadyCheck();
+						ReadyCheckFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				ReadyCheck_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
 </Ui>

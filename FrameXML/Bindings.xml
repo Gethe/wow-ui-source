@@ -543,6 +543,9 @@
 	<Binding name="OPENALLBAGS">
 		OpenAllBags();
 	</Binding>
+	<Binding name="TOGGLEKEYRING">
+		ToggleKeyRing();
+	</Binding>
 	<Binding name="TOGGLESPELLBOOK">
 		ToggleSpellBook(BOOKTYPE_SPELL);
 	</Binding>
@@ -627,7 +630,7 @@
 	<Binding name="TOGGLEFPS">
 		ToggleFramerate();
 	</Binding>
-	<Binding name="SCREENSHOT" hidden="true">
+	<Binding name="SCREENSHOT">
 		TakeScreenshot();
 	</Binding>
 
@@ -1096,6 +1099,33 @@
 			MultiActionButtonUp("MultiBarLeft", 12);
 		end
 	</Binding>
+	<Binding name="RAIDTARGET1" header="RAID_TARGET">
+		SetRaidTargetIcon("target", 1);
+	</Binding>
+	<Binding name="RAIDTARGET2">
+		SetRaidTargetIcon("target", 2);
+	</Binding>
+	<Binding name="RAIDTARGET3">
+		SetRaidTargetIcon("target", 3);
+	</Binding>
+	<Binding name="RAIDTARGET4">
+		SetRaidTargetIcon("target", 4);
+	</Binding>
+	<Binding name="RAIDTARGET5">
+		SetRaidTargetIcon("target", 5);
+	</Binding>
+	<Binding name="RAIDTARGET6">
+		SetRaidTargetIcon("target", 6);
+	</Binding>
+	<Binding name="RAIDTARGET7">
+		SetRaidTargetIcon("target", 7);
+	</Binding>
+	<Binding name="RAIDTARGET8">
+		SetRaidTargetIcon("target", 8);
+	</Binding>
+	<Binding name="RAIDTARGETNONE">
+		SetRaidTarget("target", 0);
+	</Binding>
 	<!-- Hidden bindings -->
 	<Binding name="TURNORACTION" runOnUp="true" hidden="true">
 		if ( keystate == "down" ) then
@@ -1118,4 +1148,5 @@
 			CameraOrSelectOrMoveStop(1);
 		end
 	</Binding>
+	
 </Bindings>

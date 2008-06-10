@@ -51,6 +51,9 @@ function OpenCoinPickupFrame(multiplier, maxMoney, parent)
 end
 
 function UpdateCoinPickupFrame(maxMoney)
+	if ( not CoinPickupFrame.multiplier ) then
+		return;
+	end
 	CoinPickupFrame.maxMoney = floor(maxMoney / CoinPickupFrame.multiplier);
 	if ( CoinPickupFrame.maxMoney == 0 ) then
 		if ( CoinPickupFrame.owner ) then

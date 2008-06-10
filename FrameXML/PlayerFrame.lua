@@ -7,7 +7,7 @@ function PlayerFrame_OnLoad()
 	PlayerFrame_Update();
 	this:RegisterEvent("UNIT_LEVEL");
 	this:RegisterEvent("UNIT_COMBAT");
-	this:RegisterEvent("UNIT_PVP_UPDATE");
+	this:RegisterEvent("UNIT_FACTION");
 	this:RegisterEvent("UNIT_MAXMANA");
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	this:RegisterEvent("PLAYER_ENTER_COMBAT");
@@ -89,7 +89,7 @@ function PlayerFrame_OnEvent(event)
 		if ( arg1 == "player" ) then
 			CombatFeedback_OnCombatEvent(arg2, arg3, arg4, arg5);
 		end
-	elseif ( event == "UNIT_PVP_UPDATE" ) then
+	elseif ( event == "UNIT_FACTION" ) then
 		if ( arg1 == "player" ) then
 			PlayerFrame_UpdatePvPStatus();
 		end

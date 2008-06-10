@@ -741,9 +741,10 @@
 				<Scripts>
 					<OnLoad>
 						this:RegisterEvent("UPDATE_TICKET");
+						this:RegisterEvent("GMSURVEY_DISPLAY");
 					</OnLoad>
 					<OnEvent>
-						HelpFrameOpenTicket_OnEvent();
+						HelpFrameOpenTicket_OnEvent(event);
 					</OnEvent>
 					<OnShow>
 						--HelpFrameOpenTicketDropDown_OnShow();
@@ -1408,7 +1409,7 @@
 	</Frame>
 	<Frame name="TicketStatusFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size>
-			<AbsDimension x="174" y="35"/>
+			<AbsDimension x="208" y="52"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPRIGHT">
@@ -1430,11 +1431,22 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="TicketStatusTitleText" inherits="GameFontNormalSmall" text="TICKET_STATUS1">
+				<FontString name="TicketStatusTitleText" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="168" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="13" y="-10"/>
+								<AbsDimension x="10" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="TicketStatusTime" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="168" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1471,7 +1483,11 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						if ( StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") or StaticPopup_Visible("HELP_TICKET") ) then
+						if ( TicketStatusFrame.hasGMSurvey ) then
+							GMSurveyFrame_LoadUI();
+							ShowUIPanel(GMSurveyFrame);
+							TicketStatusFrame:Hide();
+						elseif ( StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") or StaticPopup_Visible("HELP_TICKET") ) then
 							StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
 							StaticPopup_Hide("HELP_TICKET");
 						elseif ( not HelpFrame:IsVisible() ) then
@@ -1495,7 +1511,11 @@
 				TicketStatus_OnUpdate(arg1);						
 			</OnUpdate>
 			<OnMouseUp>
-				if ( StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") or StaticPopup_Visible("HELP_TICKET") ) then
+				if ( TicketStatusFrame.hasGMSurvey ) then
+					GMSurveyFrame_LoadUI();
+					ShowUIPanel(GMSurveyFrame);
+					TicketStatusFrame:Hide();
+				elseif ( StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") or StaticPopup_Visible("HELP_TICKET") ) then
 					StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
 					StaticPopup_Hide("HELP_TICKET");
 				elseif ( not HelpFrame:IsVisible() ) then

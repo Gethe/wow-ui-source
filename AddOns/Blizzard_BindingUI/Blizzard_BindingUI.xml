@@ -10,9 +10,9 @@
 				this:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp", "Button4Up", "Button5Up");
 			</OnLoad>
 		</Scripts>
-		<NormalText inherits="GameFontHighlightSmall"/>
-		<DisabledText inherits="GameFontDisable"/>
-		<HighlightText inherits="GameFontHighlightSmall"/>
+		<NormalFont inherits="GameFontHighlightSmall"/>
+		<DisabledFont inherits="GameFontDisable"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
 	</Button>
 	<Frame name="KeyBindingFrameBindingTemplate" virtual="true">
 		<Size>

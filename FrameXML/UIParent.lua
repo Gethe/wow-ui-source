@@ -129,6 +129,7 @@ function UIParent_OnLoad()
 	this:RegisterEvent("IGR_BILLING_NAG_DIALOG");
 	this:RegisterEvent("VARIABLES_LOADED");
 	this:RegisterEvent("RAID_ROSTER_UPDATE");
+	this:RegisterEvent("READY_CHECK");
 
 	-- Events for auction UI handling
 	this:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -185,6 +186,10 @@ end
 
 function TradeSkillFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TradeSkillUI");
+end
+
+function GMSurveyFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_GMSurveyUI");
 end
 
 function ShowMacroFrame()
@@ -268,7 +273,7 @@ function UIParent_OnEvent(event)
 			StaticPopup_Show("SKINNED");
 		end
 		]]
-		UIErrorsFrame:AddMessage(DEATH_CORPSE_SKINNED, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+		UIErrorsFrame:AddMessage(DEATH_CORPSE_SKINNED, 1.0, 0.1, 0.1, 1.0);
 		return;		
 	end
 	if ( event == "TRADE_REQUEST" ) then
@@ -349,7 +354,6 @@ function UIParent_OnEvent(event)
 		-- Get multi-actionbar states
 		SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		MultiActionBar_Update();
-		CloseAllWindows();
 		return;
 	end
 	if ( event == "RAID_ROSTER_UPDATE" ) then
@@ -550,6 +554,10 @@ function UIParent_OnEvent(event)
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
+		return;
+	end
+	if ( event == "READY_CHECK" ) then
+		ShowReadyCheck();
 		return;
 	end
 
@@ -1533,7 +1541,7 @@ function ValidateFramePosition(frame, offscreenPadding, returnOffscreen)
 				newAnchorY = top - GetScreenHeight();
 			end
 			frame:ClearAllPoints();
-			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", newAnchorX, newAnchorY);
+			frame:SetPoint("TOPLEFT", nil, "TOPLEFT", newAnchorX, newAnchorY);
 		end
 		
 		
@@ -1571,9 +1579,9 @@ UIPARENT_MANAGED_FRAME_POSITIONS["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft 
 
 -- Vars
 UIPARENT_MANAGED_FRAME_POSITIONS["CONTAINER_OFFSET_X"] = {baseX = 0, rightLeft = 90, rightRight = 45, isVar = "xAxis"};
-UIPARENT_MANAGED_FRAME_POSITIONS["CONTAINER_OFFSET_Y"] = {baseY = 70, bottomRight = 27, reputation = 9, isVar = "yAxis"};
+UIPARENT_MANAGED_FRAME_POSITIONS["CONTAINER_OFFSET_Y"] = {baseY = 70, bottomEither = 27, reputation = 9, isVar = "yAxis", pet = 35};
 UIPARENT_MANAGED_FRAME_POSITIONS["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 210, bottomRight = 40, reputation = 9, isVar = "yAxis"};
-UIPARENT_MANAGED_FRAME_POSITIONS["PETACTIONBAR_YPOS"] = {baseY = 98, bottomLeft = 43, reputation = 9, maxLevel = -5, isVar = "yAxis"};
+UIPARENT_MANAGED_FRAME_POSITIONS["PETACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = 43, reputation = 9, maxLevel = -5, isVar = "yAxis"};
 
 -- Call this function to update the positions of all frames that can appear on the right side of the screen
 function UIParent_ManageFramePositions()
@@ -1583,22 +1591,22 @@ function UIParent_ManageFramePositions()
 	local xOffsetFrames = {};
 	
 	-- Set up flags
-	if ( MultiBarBottomRight:IsShown() or MultiBarBottomLeft:IsShown() ) then
+	if ( SHOW_MULTI_ACTIONBAR_1 or SHOW_MULTI_ACTIONBAR_2 ) then
 		tinsert(yOffsetFrames, "bottomEither");
 	end
-	if ( MultiBarBottomRight:IsShown() ) then
+	if ( SHOW_MULTI_ACTIONBAR_2) then
 		tinsert(yOffsetFrames, "bottomRight");
 	end
-	if ( MultiBarBottomLeft:IsShown() ) then
+	if ( SHOW_MULTI_ACTIONBAR_1 ) then
 		tinsert(yOffsetFrames, "bottomLeft");
 	end
-	if ( MultiBarLeft:IsShown() ) then
+	if ( SHOW_MULTI_ACTIONBAR_3 ) then
 		tinsert(xOffsetFrames, "rightLeft");
 	elseif ( MultiBarRight:IsShown() ) then
 		tinsert(xOffsetFrames, "rightRight");
 	end
 
-	if ( PetActionBarFrame:IsShown() or ShapeshiftBarFrame:IsShown() ) then
+	if ( ( PetActionBarFrame and PetActionBarFrame:IsShown() ) or ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) ) then
 		tinsert(yOffsetFrames, "pet");
 	end
 	if ( ReputationWatchBar:IsShown() and MainMenuExpBar:IsShown() ) then
@@ -1688,22 +1696,30 @@ function UIParent_ManageFramePositions()
 
 	-- Update shapeshift bar appearance
 	if ( MultiBarBottomLeft:IsShown() ) then
-		ShapeshiftBarLeft:Hide();
-		ShapeshiftBarRight:Hide();
-		ShapeshiftBarMiddle:Hide();
-		for i=1, GetNumShapeshiftForms() do
-			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetWidth(50);
-			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetHeight(50);
+		SlidingActionBarTexture0:Hide();
+		SlidingActionBarTexture1:Hide();
+		if ( ShapeshiftBarFrame ) then
+			ShapeshiftBarLeft:Hide();
+			ShapeshiftBarRight:Hide();
+			ShapeshiftBarMiddle:Hide();
+			for i=1, GetNumShapeshiftForms() do
+				getglobal("ShapeshiftButton"..i.."NormalTexture"):SetWidth(50);
+				getglobal("ShapeshiftButton"..i.."NormalTexture"):SetHeight(50);
+			end
 		end
 	else
 		if ( GetNumShapeshiftForms() > 2 ) then
 			ShapeshiftBarMiddle:Show();
 		end
-		ShapeshiftBarLeft:Show();
-		ShapeshiftBarRight:Show();
-		for i=1, GetNumShapeshiftForms() do
-			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetWidth(64);
-			getglobal("ShapeshiftButton"..i.."NormalTexture"):SetHeight(64);
+		SlidingActionBarTexture0:Show();
+		SlidingActionBarTexture1:Show();
+		if ( ShapeshiftBarFrame ) then
+			ShapeshiftBarLeft:Show();
+			ShapeshiftBarRight:Show();
+			for i=1, GetNumShapeshiftForms() do
+				getglobal("ShapeshiftButton"..i.."NormalTexture"):SetWidth(64);
+				getglobal("ShapeshiftButton"..i.."NormalTexture"):SetHeight(64);
+			end
 		end
 	end
 
@@ -1734,6 +1750,7 @@ function UIParent_ManageFramePositions()
 
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
+	updateContainerFrameAnchors();
 end
 
 function PlayerStatus_OnUpdate(elapsed)
@@ -1778,19 +1795,21 @@ function CursorOnUpdate()
 	end
 end
 
-function GetBindingText(name, prefix)
+function GetBindingText(name, prefix, returnAbbr)
 	if ( not name ) then
 		return "";
 	end
 	local tempName = name;
 	local i = strfind(name, "-");
 	local dashIndex = nil;
+	local count = 0;
 	while ( i ) do
 		if ( not dashIndex ) then
 			dashIndex = i;
 		else
 			dashIndex = dashIndex + i;
 		end
+		count = count + 1;
 		tempName = strsub(tempName, i + 1);
 		i = strfind(tempName, "-");
 	end
@@ -1800,8 +1819,23 @@ function GetBindingText(name, prefix)
 		dashIndex = 0;
 	else
 		modKeys = strsub(name, 1, dashIndex);
+		if ( tempName == "CAPSLOCK" ) then
+			gsub(tempName, "CAPSLOCK", "Caps");
+		end
 		if ( GetLocale() == "deDE") then
 			modKeys = gsub(modKeys, "CTRL", "STRG");
+		end
+
+	end
+
+	if ( returnAbbr ) then
+		if ( count > 1 ) then
+			return "·";
+		else 
+			modKeys = gsub(modKeys, "CTRL", "c");
+			modKeys = gsub(modKeys, "SHIFT", "s");
+			modKeys = gsub(modKeys, "ALT", "a");
+			modKeys = gsub(modKeys, "STRG", "st");
 		end
 	end
 

@@ -177,7 +177,7 @@
 				MOVING_CHATFRAME = nil;
 			</OnDragStop>
 		</Scripts>
-		<NormalText name="$parentText" inherits="GameFontNormalSmall">
+		<ButtonText name="$parentText">
 			<Size>
 				<AbsDimension x="50" y="8"/>
 			</Size>
@@ -188,7 +188,8 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormalSmall"/>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentLeft">

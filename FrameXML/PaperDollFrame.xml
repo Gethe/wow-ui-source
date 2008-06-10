@@ -962,7 +962,7 @@
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="-5" y="2"/>
+										<AbsDimension x="-1" y="2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

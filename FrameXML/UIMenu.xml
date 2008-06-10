@@ -28,9 +28,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<NormalText inherits="GameFontNormal" justifyH="LEFT"/>
-		<HighlightText inherits="GameFontHighlight" justifyH="LEFT"/>
-		<DisabledText inherits="GameFontDisable" justifyH="LEFT"/>
+		<NormalFont inherits="GameFontNormal" justifyH="LEFT"/>
+		<HighlightFont inherits="GameFontHighlight" justifyH="LEFT"/>
+		<DisabledFont inherits="GameFontDisable" justifyH="LEFT"/>
 	</Button>
 	<Frame name="UIMenuTemplate" frameStrata="DIALOG" toplevel="true" virtual="true">
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">

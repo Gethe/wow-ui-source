@@ -842,7 +842,7 @@ function FCF_OnUpdate(elapsed)
 			end
 			
 			dockRegion = getglobal(value:GetName().."TabDockRegion");
-			if ( MouseIsOver(dockRegion) and MOVING_CHATFRAME ~= DEFAULT_CHAT_FRAME and not UIOptionsFrame:IsVisible() ) then
+			if ( MouseIsOver(dockRegion) and MOVING_CHATFRAME ~= DEFAULT_CHAT_FRAME and not UIOptionsFrame:IsShown() ) then
 				dockRegion:Show();
 			else
 				dockRegion:Hide();
@@ -860,7 +860,7 @@ function FCF_OnUpdate(elapsed)
 		
 		-- New version of the crazy function
 		if ( FCF_IsValidChatFrame(chatFrame) ) then
-			if ( (MouseIsOver(chatFrame, 45, -10, -5, 5) or chatFrame.resizing) and not UIOptionsFrame:IsVisible()) then
+			if ( (MouseIsOver(chatFrame, 45, -10, -5, 5) or chatFrame.resizing) and not UIOptionsFrame:IsShown()) then
 				-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 				if ( chatFrame.hover ) then
 					if ( (chatFrame.oldX == xPos and chatFrame.oldy == yPos) or REMOVE_CHAT_DELAY == "1" ) then
@@ -1000,7 +1000,7 @@ function FCF_IsValidChatFrame(chatFrame)
 		return nil;
 	end
 
-	if ( not chatFrame:IsVisible() and not chatFrame.isDocked ) then
+	if ( not chatFrame:IsShown() and not chatFrame.isDocked ) then
 		return nil;
 	end
 	
@@ -1070,13 +1070,13 @@ function FCF_DockUpdate()
 		PanelTemplates_TabResize(5, chatTab);
 		if ( value == SELECTED_DOCK_FRAME ) then
 			value:Show();
-			if ( chatTab:IsVisible() ) then
+			if ( chatTab:IsShown() ) then
 				chatTab:SetAlpha(1.0);
 			end
 			
 		else
 			value:Hide();
-			if ( chatTab:IsVisible() ) then
+			if ( chatTab:IsShown() ) then
 				chatTab:SetAlpha(0.5);
 			end
 		end
@@ -1270,7 +1270,7 @@ end
 function FCF_GetActiveDockRegion()
 	for index, value in DOCKED_CHAT_FRAMES do
 		dockRegion = getglobal(value:GetName().."TabDockRegion");
-		if ( dockRegion:IsVisible() ) then
+		if ( dockRegion:IsShown() ) then
 			return index + 1;
 		end
 	end
@@ -1370,12 +1370,12 @@ function FCF_UpdateCombatLogPosition()
 	if ( SIMPLE_CHAT == "1" ) then
 		local xOffset = -32;
 		local yOffset = 75;
-		if ( MultiBarBottomRight:IsVisible() ) then
+		if ( MultiBarBottomRight:IsShown() ) then
 			yOffset = yOffset + 40;
 		end
-		if ( MultiBarLeft:IsVisible() ) then
+		if ( MultiBarLeft:IsShown() ) then
 			xOffset = xOffset - 88;
-		elseif ( MultiBarRight:IsVisible() ) then
+		elseif ( MultiBarRight:IsShown() ) then
 			xOffset = xOffset - 43;
 		end
 		ChatFrame2:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", xOffset, yOffset);
@@ -1444,7 +1444,7 @@ end
 -- Function to toggle the combat log if in simple chat mode
 function ToggleCombatLog()
 	if ( SIMPLE_CHAT == "1" ) then
-		if ( ChatFrame2:IsVisible() ) then
+		if ( ChatFrame2:IsShown() ) then
 			ChatFrame2:Hide();
 		else
 			ChatFrame2:Show();

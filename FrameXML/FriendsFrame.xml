@@ -206,7 +206,7 @@
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 		</Scripts>
-		<NormalText inherits="GameFontHighlightSmall">
+		<ButtonText>
 			<Anchors>
 				<Anchor point="LEFT">
 					<Offset>
@@ -214,7 +214,8 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
+		</ButtonText>
+		<NormalFont inherits="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parentLeft">
@@ -445,7 +446,7 @@
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 		</Scripts>
-		<NormalText inherits="GameFontHighlightSmall">
+		<ButtonText>
 			<Anchors>
 				<Anchor point="LEFT">
 					<Offset>
@@ -453,7 +454,8 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
+		</ButtonText>
+		<NormalFont inherits="GameFontHighlightSmall"/>
 	</Button>
 	<CheckButton name="GuildControlPopupFrameCheckboxTemplate" virtual="true">
 		<Size>
@@ -1626,6 +1628,7 @@
 						<Scripts>
 							<OnClick>
 								WhoFrameEditBox_OnEnterPressed();
+								WhoFrame.selectedWho = nil;
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -2316,7 +2319,7 @@
 						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
 						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-						<NormalText inherits="GameFontNormalSmall">
+						<ButtonText>
 							<Anchors>
 								<Anchor point="RIGHT">
 									<Offset>
@@ -2324,7 +2327,8 @@
 									</Offset>
 								</Anchor>
 							</Anchors>
-						</NormalText>
+						</ButtonText>
+						<NormalFont inherits="GameFontNormalSmall"/>
 						<PushedTextOffset>
 							<AbsDimension x="0" y="0"/>
 						</PushedTextOffset>
@@ -2358,9 +2362,9 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
+						<NormalFont inherits="GameFontNormalSmall"/>
+						<HighlightFont inherits="GameFontHighlightSmall"/>
+						<DisabledFont inherits="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildFrameAddMemberButton" inherits="UIPanelButtonTemplate" text="ADDMEMBER">
 						<Size>
@@ -2384,9 +2388,9 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
+						<NormalFont inherits="GameFontNormalSmall"/>
+						<HighlightFont inherits="GameFontHighlightSmall"/>
+						<DisabledFont inherits="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildFrameGuildInformationButton" inherits="UIPanelButtonTemplate" text="GUILD_INFORMATION">
 						<Size>
@@ -2410,9 +2414,9 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
+						<NormalFont inherits="GameFontNormalSmall"/>
+						<HighlightFont inherits="GameFontHighlightSmall"/>
+						<DisabledFont inherits="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildMOTDEditButton">
 						<Anchors>
@@ -3027,9 +3031,9 @@
 								GuildInfoFrame:Hide();
 							</OnClick>
 						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
+						<NormalFont inherits="GameFontNormalSmall"/>
+						<HighlightFont inherits="GameFontHighlightSmall"/>
+						<DisabledFont inherits="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildInfoCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 						<Size>
@@ -3047,9 +3051,9 @@
 								GuildInfoFrame:Hide();
 							</OnClick>
 						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
+						<NormalFont inherits="GameFontNormalSmall"/>
+						<HighlightFont inherits="GameFontHighlightSmall"/>
+						<DisabledFont inherits="GameFontDisableSmall"/>
 					</Button>
 				</Frames>
 				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
@@ -3242,9 +3246,9 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
+						<NormalFont inherits="GameFontNormalSmall"/>
+						<HighlightFont inherits="GameFontHighlightSmall"/>
+						<DisabledFont inherits="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildMemberGroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
 						<Size>
@@ -3268,9 +3272,9 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
+						<NormalFont inherits="GameFontNormalSmall"/>
+						<HighlightFont inherits="GameFontHighlightSmall"/>
+						<DisabledFont inherits="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildFramePromoteButton">
 						<Size>
@@ -3436,7 +3440,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="11" y="45"/>
+							<AbsDimension x="11" y="47"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

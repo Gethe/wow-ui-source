@@ -87,7 +87,7 @@
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<NormalText inherits="DialogButtonNormalText"/>
+				<NormalFont inherits="DialogButtonNormalText"/>
 			</Button>
 		</Frames>
 		<Scripts>

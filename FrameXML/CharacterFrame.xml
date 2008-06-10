@@ -80,7 +80,7 @@
                 <Anchors>
                     <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
                         <Offset>
-                            <AbsDimension x="60" y="61"/>
+                            <AbsDimension x="60" y="62"/>
                         </Offset>
                     </Anchor>
                 </Anchors>

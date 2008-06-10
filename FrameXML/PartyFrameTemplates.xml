@@ -9,7 +9,7 @@
 				<Texture name="$parentIcon" setAllPoints="true"/>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentOverlay" file="Interface\Buttons\UI-Debuff-Border">
+				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
 					<Size>
 						<AbsDimension x="17" y="17"/>
 					</Size>
@@ -20,7 +20,8 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</Texture>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+				</Texture>	
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -198,7 +199,7 @@
 			<AbsInset left="7" right="85" top="6" bottom="7"/>
 		</HitRectInsets>
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="BACKGROUND">
 				<Texture name="$parentPortrait">
 					<Size>
 						<AbsDimension x="37" y="37"/>
@@ -235,7 +236,7 @@
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>
-							<Layer level="ARTWORK">
+							<Layer level="BACKGROUND">
 								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
 									<Size>
 										<AbsDimension x="128" y="64"/>
@@ -257,6 +258,21 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture name="$parentStatus" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
+									<Size>
+										<AbsDimension x="36" y="36"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="$parentPortrait">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
+								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
@@ -396,6 +412,8 @@
 		<Scripts>
 			<OnLoad>
 				local id = this:GetID();
+				this.debuffCountdown = 0; 
+				this.numDebuffs = 0;
 				local prefix = "PartyMemberFrame"..id;
 				UnitFrame_Initialize("party"..id,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
 					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"), 
@@ -422,7 +440,7 @@
 				PartyMemberFrame_OnClick();
 			</OnClick>
 			<OnUpdate>
-				PartyMemberFrame_UpdateMemberHealth(arg1);
+				PartyMemberFrame_OnUpdate(arg1);
 			</OnUpdate>
 		</Scripts>
 	</Button>

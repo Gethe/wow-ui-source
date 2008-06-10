@@ -52,7 +52,7 @@
         			</Size>
         			<Anchors>
         				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-        			</Anchors>
+					</Anchors>
 					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentRight" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
@@ -79,7 +79,7 @@
 				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 30);
 			</OnShow>
 		</Scripts>
-		<NormalText name="$parentText" inherits="GameFontNormalSmall">
+		<ButtonText name="$parentText">
 			<Anchors>
 				<Anchor point="CENTER">
 					<Offset>
@@ -87,25 +87,10 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
-		<HighlightText name="$parentHighlightText" inherits="GameFontHighlightSmall">
-			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="2"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightText>
-		<DisabledText name="$parentDisabledText" inherits="GameFontHighlightSmall">
-			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="2"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</DisabledText>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
+		<DisabledFont inherits="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="LEFT">

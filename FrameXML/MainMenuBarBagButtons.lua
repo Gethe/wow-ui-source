@@ -1,3 +1,4 @@
+KEYRING_CONTAINER = -2;
 
 function BagSlotButton_OnClick()
 	local id = this:GetID();

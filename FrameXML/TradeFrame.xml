@@ -515,9 +515,10 @@
 						AcceptTrade();
 					</OnClick>
 				</Scripts>
-				<NormalText inherits="GameFontNormal" text="TRADE"/>
-				<DisabledText inherits="GameFontDisable" text="TRADE"/>
-				<HighlightText inherits="GameFontHighlight" text="TRADE"/>
+				<ButtonText text="TRADE"/>
+				<NormalFont inherits="GameFontNormal"/>
+				<HighlightFont inherits="GameFontHighlight"/>
+				<DisabledFont inherits="GameFontDisable"/>
 			</Button>
 			<Button name="TradeFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size>
@@ -535,9 +536,10 @@
 						TradeFrameCancelButton_OnClick();
 					</OnClick>
 				</Scripts>
-				<NormalText inherits="GameFontNormal" text="CANCEL"/>
-				<DisabledText inherits="GameFontDisable" text="CANCEL"/>
-				<HighlightText inherits="GameFontHighlight" text="CANCEL"/>
+				<ButtonText text="CANCEL"/>
+				<NormalFont inherits="GameFontNormal"/>
+				<HighlightFont inherits="GameFontHighlight"/>
+				<DisabledFont inherits="GameFontDisable"/>
 			</Button>
 			<Button name="TradeFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>

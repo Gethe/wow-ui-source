@@ -3,6 +3,35 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["TAKE_GM_SURVEY"] = {
+	text = TEXT(TAKE_GM_SURVEY),
+	button1 = TEXT(YES),
+	button2 = TEXT(NO),
+	OnAccept = function()
+		GMSurveyFrame_LoadUI();
+		ShowUIPanel(GMSurveyFrame);
+		TicketStatusFrame:Hide();
+	end,
+	OnCancel = function()
+		TicketStatusFrame.hasGMSurvey = nil;
+		TicketStatusFrame:Hide();
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+};
+
+StaticPopupDialogs["CONFIRM_RESET_INSTANCES"] = {
+	text = TEXT(CONFIRM_RESET_INSTANCES),
+	button1 = TEXT(YES),
+	button2 = TEXT(NO),
+	OnAccept = function()
+		ResetInstances();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
 StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT"] = {
 	text = TEXT(CONFIRM_BUY_BANK_SLOT),
 	button1 = TEXT(YES),
@@ -114,6 +143,7 @@ StaticPopupDialogs["RENAME_GUILD"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
+	whileDead = 1,
 	hideOnEscape = 1
 };
 
@@ -751,6 +781,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
+	whileDead = 1,
 	hideOnEscape = 1
 };
 StaticPopupDialogs["ADD_RAIDMEMBER"] = {
@@ -797,6 +828,7 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
+	whileDead = 1,
 	hideOnEscape = 1
 };
 StaticPopupDialogs["ADD_GUILDRANK"] = {
@@ -838,6 +870,7 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
+	whileDead = 1,
 	hideOnEscape = 1
 };
 StaticPopupDialogs["SET_GUILDMOTD"] = {
@@ -872,6 +905,7 @@ StaticPopupDialogs["SET_GUILDMOTD"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
+	whileDead = 1,
 	hideOnEscape = 1
 };
 StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
@@ -908,6 +942,7 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
+	whileDead = 1,
 	hideOnEscape = 1
 };
 StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
@@ -944,6 +979,7 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
+	whileDead = 1,
 	hideOnEscape = 1
 };
 StaticPopupDialogs["RENAME_PET"] = {
@@ -1400,11 +1436,26 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	end
 	if ( not dialog ) then
 		-- Find a free dialog
-		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
-			local frame = getglobal("StaticPopup"..index);
+		local index = 1;
+		if ( StaticPopupDialogs[which].preferredIndex ) then
+			index = StaticPopupDialogs[which].preferredIndex;
+		end
+		for i = index, STATICPOPUP_NUMDIALOGS do
+			local frame = getglobal("StaticPopup"..i);
 			if ( not frame:IsShown() ) then
 				dialog = frame;
 				break;
+			end
+		end
+		
+		--If dialog not found and there's a preferredIndex then try to find an available frame before the preferredIndex
+		if ( not dialog and StaticPopupDialogs[which].preferredIndex ) then
+			for i = 1, StaticPopupDialogs[which].preferredIndex do
+				local frame = getglobal("StaticPopup"..i);
+				if ( not frame:IsShown() ) then
+					dialog = frame;
+					break;
+				end
 			end
 		end
 	end

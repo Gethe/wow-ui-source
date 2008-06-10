@@ -1,0 +1,25 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="RaidWarning.lua"/>
+	<MessageFrame name="RaidWarningFrame" insertMode="TOP" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size>
+			<AbsDimension x="512" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIErrorsFrame" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				RaidWarningFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				RaidWarningFrame_OnEvent(event, arg1);
+			</OnEvent>
+		</Scripts>
+		<FontString inherits="GameFontNormalHuge" justifyH="CENTER"/>
+	</MessageFrame>
+</Ui>

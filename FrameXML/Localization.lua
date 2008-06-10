@@ -8,4 +8,8 @@ end
 
 function LocalizeFrames()
 	-- Put all locale specific UI adjustments here
+
+	-- Hide billing help option.  If the number of help options changes this will need to change also.
+	CATEGORY_TO_NOT_DISPLAY = 9;
+
 end

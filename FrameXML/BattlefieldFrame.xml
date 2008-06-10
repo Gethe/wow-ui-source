@@ -36,7 +36,7 @@
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
-		<NormalText name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+		<ButtonText name="$parentText">
 			<Size>
 				<AbsDimension x="0" y="0"/>
 			</Size>
@@ -47,19 +47,9 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
-		<HighlightText name="$parentHighlightText" inherits="GameFontHighlight" justifyH="LEFT">
-			<Size>
-				<AbsDimension x="0" y="0"/>
-			</Size>
-			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="5" y="1"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightText>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormal" justifyH="LEFT"/>
+		<HighlightFont inherits="GameFontHighlight" justifyH="LEFT"/>
 	</Button>
 	<Frame name="BattlefieldFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>

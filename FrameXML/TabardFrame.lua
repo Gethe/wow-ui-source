@@ -86,10 +86,10 @@ function TabardCustomization_Right(id)
 end
 
 function TabardFrame_UpdateTextures()
-	TabardModel:GetUpperEmblemTexture("TabardFrameEmblemTopLeft");
-	TabardModel:GetUpperEmblemTexture("TabardFrameEmblemTopRight");
-	TabardModel:GetLowerEmblemTexture("TabardFrameEmblemBottomLeft");
-	TabardModel:GetLowerEmblemTexture("TabardFrameEmblemBottomRight");
+	TabardModel:GetUpperEmblemTexture(TabardFrameEmblemTopLeft);
+	TabardModel:GetUpperEmblemTexture(TabardFrameEmblemTopRight);
+	TabardModel:GetLowerEmblemTexture(TabardFrameEmblemBottomLeft);
+	TabardModel:GetLowerEmblemTexture(TabardFrameEmblemBottomRight);
 end
 
 function TabardFrame_UpdateButtons()

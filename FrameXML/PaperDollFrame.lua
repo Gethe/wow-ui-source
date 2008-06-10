@@ -223,7 +223,7 @@ function PaperDollFrame_SetResistances()
 		else
 			resistanceLevel = RESISTANCE_NONE;
 		end
-		frame.tooltipSubtext = format(RESISTANCE_TOOLTIP_SUBTEXT, resistanceName, unitLevel, resistanceLevel);
+		frame.tooltipSubtext = format(RESISTANCE_TOOLTIP_SUBTEXT, getglobal("RESISTANCE_TYPE"..frame:GetID()), unitLevel, resistanceLevel);
 	end
 end
 

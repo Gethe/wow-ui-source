@@ -1,7 +1,7 @@
 ## Interface: 11100
-## Title: Blizzard Key Binding UI
+## Title: Blizzard GM Survey UI
 ## Secure: 1
 ## LoadOnDemand: 1
 ..\..\FrameXML\UIPanelTemplates.xml
-Blizzard_BindingUI.xml
+Blizzard_GMSurveyUI.xml
 Localization.lua

@@ -394,6 +394,7 @@
 				<xs:attribute name="id" type="xs:int" default="0"/>
 				<xs:attribute name="enableMouse" type="xs:boolean" default="false"/>
 				<xs:attribute name="enableKeyboard" type="xs:boolean" default="false"/>
+				<xs:attribute name="clampedToScreen" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -407,9 +408,13 @@
 						<xs:element name="PushedTexture" type="ui:TextureType"/>
 						<xs:element name="DisabledTexture" type="ui:TextureType"/>
 						<xs:element name="HighlightTexture" type="ui:TextureType"/>
-						<xs:element name="NormalText" type="FontStringType"/>
-						<xs:element name="HighlightText" type="FontStringType"/>
-						<xs:element name="DisabledText" type="FontStringType"/>
+						<xs:element name="ButtonText" type="FontStringType"/>
+						<xs:element name="NormalFont" type="FontType"/>
+						<xs:element name="HighlightFont" type="FontType"/>
+						<xs:element name="DisabledFont" type="FontType"/>
+						<xs:element name="NormalColor" type="ColorType"/>
+						<xs:element name="HighlightColor" type="ColorType"/>
+						<xs:element name="DisabledColor" type="ColorType"/>
 						<xs:element name="PushedTextOffset" type="Dimension"/>
 					</xs:choice>
 				</xs:sequence>
@@ -528,6 +533,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Model" type="ModelType" substitutionGroup="ui:Frame"/>
+	<xs:element name="ModelFFX" type="ModelType" substitutionGroup="ui:Frame"/>
 	<xs:complexType name="SimpleHTMLType">
 		<xs:complexContent>
 			<xs:extension base="ui:FrameType">
@@ -558,7 +564,9 @@
 					</xs:choice>
 				</xs:sequence>
 				<xs:attribute name="font" type="xs:string"/>
+				<xs:attribute name="fade" type="xs:boolean" default="true"/>
 				<xs:attribute name="fadeDuration" type="xs:float" default="3.0"/>
+				<xs:attribute name="displayDuration" type="xs:float" default="10.0"/>
 				<xs:attribute name="insertMode" type="INSERTMODE" default="BOTTOM"/>
 			</xs:extension>
 		</xs:complexContent>

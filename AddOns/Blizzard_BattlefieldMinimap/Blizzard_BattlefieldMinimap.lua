@@ -29,12 +29,12 @@ function BattlefieldMinimap_OnLoad()
 	this:RegisterEvent("PLAYER_LOGOUT");
 	this:RegisterEvent("WORLD_MAP_UPDATE");
 
-	CreateMiniWorldMapArrowFrame("BattlefieldMinimap");
+	CreateMiniWorldMapArrowFrame(BattlefieldMinimap);
 
 	BattlefieldMinimap.updateTimer = 0;
 end
 
-function BattlefieldMinimap_OnEvent()
+function BattlefieldMinimap_OnEvent(event)
 	if ( event == "ADDON_LOADED" ) then
 		if ( arg1 == "Blizzard_BattlefieldMinimap" ) then
 			if ( not BattlefieldMinimapOptions ) then
@@ -43,12 +43,7 @@ function BattlefieldMinimap_OnEvent()
 
 			if ( BattlefieldMinimapOptions.position ) then
 				BattlefieldMinimapTab:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", BattlefieldMinimapOptions.position.x, BattlefieldMinimapOptions.position.y);
-				-- If off the screen set to default position
-				if ( ValidateFramePosition(BattlefieldMinimapTab, 0, 1) ) then
-					BattlefieldMinimapTab:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMRIGHT", -225-CONTAINER_OFFSET_X, BATTLEFIELD_TAB_OFFSET_Y);
-				else
-					BattlefieldMinimapTab:SetUserPlaced(true);
-				end
+				BattlefieldMinimapTab:SetUserPlaced(true);
 			else
 				BattlefieldMinimapTab:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMRIGHT", -225-CONTAINER_OFFSET_X, BATTLEFIELD_TAB_OFFSET_Y);
 			end
@@ -61,6 +56,8 @@ function BattlefieldMinimap_OnEvent()
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		if ( MiniMapBattlefieldFrame.status ~= "active" ) then
 			BattlefieldMinimap:Hide();
+		elseif ( BattlefieldMinimap:IsShown() ) then
+			SetMapToCurrentZone();
 		end
 	elseif ( event == "PLAYER_LOGOUT" ) then
 		if ( BattlefieldMinimapTab:IsUserPlaced() ) then

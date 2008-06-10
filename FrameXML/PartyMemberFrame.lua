@@ -28,7 +28,7 @@ function PartyMemberFrame_OnLoad()
 	this:RegisterEvent("PARTY_MEMBER_ENABLE");
 	this:RegisterEvent("PARTY_MEMBER_DISABLE");
 	this:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
-	this:RegisterEvent("UNIT_PVP_UPDATE");
+	this:RegisterEvent("UNIT_FACTION");
 	this:RegisterEvent("UNIT_AURA");
 	this:RegisterEvent("UNIT_PET");
 	this:RegisterEvent("VARIABLES_LOADED");
@@ -159,7 +159,7 @@ function PartyMemberFrame_OnEvent(event)
 		return;
 	end
 
-	if ( event == "UNIT_PVP_UPDATE" ) then
+	if ( event == "UNIT_FACTION" ) then
 		local unit = "party"..this:GetID();
 		if ( arg1 == unit ) then
 			PartyMemberFrame_UpdatePvPStatus();
@@ -193,6 +193,22 @@ function PartyMemberFrame_OnEvent(event)
 
 	if ( event == "VARIABLES_LOADED" ) then
 		PartyMemberFrame_UpdatePet();
+	end
+end
+
+function PartyMemberFrame_OnUpdate(elapsed)
+	PartyMemberFrame_UpdateMemberHealth(arg1);
+	local partyStatus = getglobal(this:GetName().."Status");
+	if ( this.hasDispellable ) then
+		partyStatus:Show();
+		partyStatus:SetAlpha(BUFF_ALPHA_VALUE);
+		if ( this.debuffCountdown ) then
+			this.debuffCountdown = this.debuffCountdown - elapsed;
+		else
+			partyStatus:Hide();
+		end
+	else
+		partyStatus:Hide();
 	end
 end
 
@@ -234,15 +250,40 @@ function PartyMemberPetFrame_OnClick()
 end
 
 function PartyMemberFrame_RefreshBuffs()
-	local debuff, debuffButton;
+	local debuff, debuffButton, debuffStack, debuffType, color, borderColor;
+	local partyStatus = getglobal(this:GetName().."Status");
+	local debuffTotal = 0;
+	this.hasDispellable = nil;
 	for i=1, MAX_PARTY_DEBUFFS do
-		debuff = UnitDebuff("party"..this:GetID(), i);
+		local debuffBorder = getglobal(this:GetName().."Debuff"..i.."Border");
+		local partyDebuff = getglobal(this:GetName().."Debuff"..i.."Icon");
+		debuff, debuffStack, debuffType = UnitDebuff("party"..this:GetID(), i);
 		if ( debuff ) then
-			getglobal(this:GetName().."Debuff"..i.."Icon"):SetTexture(debuff);
+			partyDebuff:SetTexture(debuff);
+			if ( debuffType ) then
+				if ( not debuffType ) then
+					partyStatus:Hide();
+				end
+				borderColor = DebuffTypeColor[debuffType];
+				color = DebuffTypeColor[debuffType];
+				this.hasDispellable = 1;
+				debuffTotal = debuffTotal + 1;
+			else
+				borderColor = DebuffTypeColor["none"];
+			end
+			debuffBorder:SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
 			getglobal(this:GetName().."Debuff"..i):Show();
 		else
 			getglobal(this:GetName().."Debuff"..i):Hide();
 		end
+	end
+	-- Reset Party Status overlay graphic timer
+	if ( debuffTotal >= this.numDebuffs ) then
+		this.debuffCountdown = 30;
+	end
+	this.numDebuffs = debuffTotal;
+	if ( color ) then
+		partyStatus:SetVertexColor(color.r, color.g, color.b);
 	end
 end
 
@@ -263,7 +304,7 @@ function PartyMemberFrame_RefreshPetBuffs(id)
 end
 
 function PartyMemberBuffTooltip_Update(isPet)
-	local buff, buffButton;
+	local buff;
 	local numBuffs = 0;
 	local numDebuffs = 0;
 	local index = 1;
@@ -275,7 +316,7 @@ function PartyMemberBuffTooltip_Update(isPet)
 		end
 		if ( buff ) then
 			getglobal("PartyMemberBuffTooltipBuff"..index.."Icon"):SetTexture(buff);
-			getglobal("PartyMemberBuffTooltipBuff"..index.."Overlay"):Hide();
+			getglobal("PartyMemberBuffTooltipBuff"..index.."Border"):Hide();
 			getglobal("PartyMemberBuffTooltipBuff"..index):Show();
 			index = index + 1;
 			numBuffs = numBuffs + 1;
@@ -294,17 +335,31 @@ function PartyMemberBuffTooltip_Update(isPet)
 	end
 
 	index = 1;
+
+	local debuffButton, debuffStack, debuffType, color, countdown;
+	this.hasDispellable = nil;
 	for i=1, MAX_PARTY_TOOLTIP_DEBUFFS do
+		local debuffBorder = getglobal("PartyMemberBuffTooltipDebuff"..index.."Border")
+		local partyDebuff = getglobal("PartyMemberBuffTooltipDebuff"..index.."Icon");
+		buff, debuffStack, debuffType = UnitDebuff("party"..this:GetID(), i);
 		if ( isPet ) then
-			buff = UnitDebuff("pet", i);
+			buff, debuffStack, debuffType = UnitDebuff("pet", i);
 		else
-			buff = UnitDebuff("party"..this:GetID(), i);
+			buff, debuffStack, debuffType = UnitDebuff("party"..this:GetID(), i);
 		end
 		
 		if ( buff ) then
-			getglobal("PartyMemberBuffTooltipDebuff"..index.."Icon"):SetTexture(buff);
-			getglobal("PartyMemberBuffTooltipDebuff"..index.."Overlay"):Show();
-			getglobal("PartyMemberBuffTooltipDebuff"..index):Show();
+			partyDebuff:SetTexture(buff);
+			if ( debuffType ) then
+				color = DebuffTypeColor[debuffType];
+				this.hasDispellable = 1;
+			else
+				color = DebuffTypeColor["none"];
+			end
+			debuffBorder:SetVertexColor(color.r, color.g, color.b);
+			if ( this.hasDispellable ) then
+				getglobal("PartyMemberBuffTooltipDebuff"..index):Show();
+			end
 			index = index + 1;
 			numDebuffs = numDebuffs + 1;
 		end
@@ -370,7 +425,7 @@ function PartyFrameDropDown_Initialize()
 	else
 		dropdown = this;
 	end
-	UnitPopup_ShowMenu(dropdown, "PARTY", "party"..this:GetID());
+	UnitPopup_ShowMenu(dropdown, "PARTY", "party"..dropdown:GetParent():GetID());
 end
 
 function UpdatePartyMemberBackground()

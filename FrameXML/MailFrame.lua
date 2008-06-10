@@ -97,19 +97,21 @@ end
 function InboxFrame_Update()
 	local numItems = GetInboxNumItems();
 	local index = ((InboxFrame.pageNum - 1) * INBOXITEMS_TO_DISPLAY) + 1;
-	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, hasItem, wasRead;
+	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, hasItem, wasRead, isGM;
 	local icon, button, expireTime, senderText, subjectText, buttonIcon;
 	for i=1, INBOXITEMS_TO_DISPLAY do
 		if ( index <= numItems ) then
 			-- Setup mail item
-			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, hasItem, wasRead = GetInboxHeaderInfo(index);
+			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, hasItem, wasRead, x, y, z, isGM = GetInboxHeaderInfo(index);
 			
 			-- Set icon
-			if ( packageIcon ) then
+			if ( packageIcon ) and ( not isGM ) then
 				icon = packageIcon;
 			else
 				icon = stationeryIcon;
 			end
+
+			
 			-- If no sender set it to "Unknown"
 			if ( not sender ) then
 				sender = UNKNOWN;

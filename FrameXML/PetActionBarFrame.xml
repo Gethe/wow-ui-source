@@ -74,7 +74,7 @@
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="40" y="114"/>
+					<AbsDimension x="40" y="112"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -82,21 +82,21 @@
 			<Layer level="OVERLAY">
 				<Texture name="SlidingActionBarTexture0" file="Interface\PetActionBar\UI-PetBar">
 					<Size>
-						<AbsDimension x="256" y="46"/>
+						<AbsDimension x="256" y="44"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
-					<TexCoords left="0" right="1.0" top="0" bottom="0.359375"/>
+					<TexCoords left="0" right="1.0" top="0.015625" bottom="0.359375"/>
 				</Texture>
 				<Texture name="SlidingActionBarTexture1" file="Interface\PetActionBar\UI-PetBar">
 					<Size>
-						<AbsDimension x="184" y="46"/>
+						<AbsDimension x="184" y="44"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="SlidingActionBarTexture0" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0" right="0.71875" top="0.359375" bottom="0.71875"/>
+					<TexCoords left="0" right="0.71875" top="0.375" bottom="0.71875"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -105,7 +105,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="36" y="1"/>
+							<AbsDimension x="36" y="2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -159,7 +159,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="PetActionButton6" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="8" y="0"/>
+							<AbsDimension x="7" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

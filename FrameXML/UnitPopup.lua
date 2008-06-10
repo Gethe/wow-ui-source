@@ -13,6 +13,7 @@ UnitPopupButtons = { };
 UnitPopupButtons["CANCEL"] = { text = TEXT(CANCEL), dist = 0, space = 1 };
 UnitPopupButtons["TRADE"] = { text = TEXT(TRADE), dist = 2 };
 UnitPopupButtons["INSPECT"] = { text = TEXT(INSPECT), dist = 1 };
+UnitPopupButtons["TARGET"] = { text = TEXT(TARGET), dist = 0 };
 UnitPopupButtons["DUEL"] = { text = TEXT(DUEL), dist = 3, space = 1 };
 UnitPopupButtons["WHISPER"]	= { text = TEXT(WHISPER), dist = 0 };
 UnitPopupButtons["INVITE"]	= { text = TEXT(PARTY_INVITE), dist = 0 };
@@ -39,30 +40,43 @@ UnitPopupButtons["ROUND_ROBIN"] = { text = TEXT(LOOT_ROUND_ROBIN), dist = 0 };
 UnitPopupButtons["MASTER_LOOTER"] = { text = TEXT(LOOT_MASTER_LOOTER), dist = 0 };
 UnitPopupButtons["GROUP_LOOT"] = { text = TEXT(LOOT_GROUP_LOOT), dist = 0 };
 UnitPopupButtons["NEED_BEFORE_GREED"] = { text = TEXT(LOOT_NEED_BEFORE_GREED), dist = 0 };
+UnitPopupButtons["RESET_INSTANCES"] = { text = TEXT(RESET_INSTANCES), dist = 0 };
 
 UnitPopupButtons["LOOT_THRESHOLD"] = { text = TEXT(LOOT_THRESHOLD), dist = 0, nested = 1 };
 UnitPopupButtons["LOOT_PROMOTE"] = { text = TEXT(LOOT_PROMOTE), dist = 0 };
-UnitPopupButtons["ITEM_QUALITY2_DESC"] = { text = TEXT(ITEM_QUALITY2_DESC), dist = 0 };
-UnitPopupButtons["ITEM_QUALITY3_DESC"] = { text = TEXT(ITEM_QUALITY3_DESC), dist = 0 };
-UnitPopupButtons["ITEM_QUALITY4_DESC"] = { text = TEXT(ITEM_QUALITY4_DESC), dist = 0 };
+UnitPopupButtons["ITEM_QUALITY2_DESC"] = { text = TEXT(ITEM_QUALITY2_DESC), dist = 0, color = ITEM_QUALITY_COLORS[2] };
+UnitPopupButtons["ITEM_QUALITY3_DESC"] = { text = TEXT(ITEM_QUALITY3_DESC), dist = 0, color = ITEM_QUALITY_COLORS[3] };
+UnitPopupButtons["ITEM_QUALITY4_DESC"] = { text = TEXT(ITEM_QUALITY4_DESC), dist = 0, color = ITEM_QUALITY_COLORS[4] };
 
 UnitPopupButtons["RAID_LEADER"] = { text = TEXT(NEW_LEADER), dist = 0 };
 UnitPopupButtons["RAID_PROMOTE"] = { text = TEXT(PROMOTE), dist = 0 };
 UnitPopupButtons["RAID_DEMOTE"] = { text = TEXT(DEMOTE), dist = 0 };
 UnitPopupButtons["RAID_REMOVE"] = { text = TEXT(REMOVE), dist = 0 };
 
+UnitPopupButtons["RAID_TARGET_ICON"] = { text = TEXT(RAID_TARGET_ICON), dist = 0, nested = 1 };
+UnitPopupButtons["RAID_TARGET_1"] = { text = TEXT(RAID_TARGET_1), dist = 0, checkable = 1, color = {r = 1.0, g = 0.92, b = 0}, icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons", tCoordLeft = 0, tCoordRight = 0.25, tCoordTop = 0, tCoordBottom = 0.25 };
+UnitPopupButtons["RAID_TARGET_2"] = { text = TEXT(RAID_TARGET_2), dist = 0, checkable = 1, color = {r = 0.98, g = 0.57, b = 0}, icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons", tCoordLeft = 0.25, tCoordRight = 0.5, tCoordTop = 0, tCoordBottom = 0.25 };
+UnitPopupButtons["RAID_TARGET_3"] = { text = TEXT(RAID_TARGET_3), dist = 0, checkable = 1, color = {r = 0.83, g = 0.22, b = 0.9}, icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons", tCoordLeft = 0.5, tCoordRight = 0.75, tCoordTop = 0, tCoordBottom = 0.25 };
+UnitPopupButtons["RAID_TARGET_4"] = { text = TEXT(RAID_TARGET_4), dist = 0, checkable = 1, color = {r = 0.04, g = 0.95, b = 0}, icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons", tCoordLeft = 0.75, tCoordRight = 1, tCoordTop = 0, tCoordBottom = 0.25 };
+UnitPopupButtons["RAID_TARGET_5"] = { text = TEXT(RAID_TARGET_5), dist = 0, checkable = 1, color = {r = 0.7, g = 0.82, b = 0.875}, icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons", tCoordLeft = 0, tCoordRight = 0.25, tCoordTop = 0.25, tCoordBottom = 0.5 };
+UnitPopupButtons["RAID_TARGET_6"] = { text = TEXT(RAID_TARGET_6), dist = 0, checkable = 1, color = {r = 0, g = 0.71, b = 1}, icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons", tCoordLeft = 0.25, tCoordRight = 0.5, tCoordTop = 0.25, tCoordBottom = 0.5 };
+UnitPopupButtons["RAID_TARGET_7"] = { text = TEXT(RAID_TARGET_7), dist = 0, checkable = 1, color = {r = 1.0, g = 0.24, b = 0.168}, icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons", tCoordLeft = 0.5, tCoordRight = 0.75, tCoordTop = 0.25, tCoordBottom = 0.5 };
+UnitPopupButtons["RAID_TARGET_8"] = { text = TEXT(RAID_TARGET_8), dist = 0, checkable = 1, color = {r = 0.98, g = 0.98, b = 0.98}, icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons", tCoordLeft = 0.75, tCoordRight = 1, tCoordTop = 0.25, tCoordBottom = 0.5 };
+UnitPopupButtons["RAID_TARGET_NONE"] = { text = TEXT(NONE), dist = 0, checkable = 1, };
+
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "LOOT_METHOD", "LOOT_THRESHOLD", "LOOT_PROMOTE", "LEAVE", "CANCEL" };
+UnitPopupMenus["SELF"] = { "LOOT_METHOD", "LOOT_THRESHOLD", "LOOT_PROMOTE", "LEAVE", "RESET_INSTANCES", "RAID_TARGET_ICON", "CANCEL" };
 UnitPopupMenus["PET"] = { "PET_PAPERDOLL", "PET_RENAME", "PET_ABANDON", "PET_DISMISS", "CANCEL" };
-UnitPopupMenus["PARTY"] = { "WHISPER", "PROMOTE", "LOOT_PROMOTE", "UNINVITE", "INSPECT", "TRADE", "FOLLOW", "DUEL", "CANCEL" };
-UnitPopupMenus["PLAYER"] = { "WHISPER", "INSPECT", "INVITE", "TRADE", "FOLLOW", "DUEL", "CANCEL" };
+UnitPopupMenus["PARTY"] = { "WHISPER", "PROMOTE", "LOOT_PROMOTE", "UNINVITE", "INSPECT", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "CANCEL" };
+UnitPopupMenus["PLAYER"] = { "WHISPER", "INSPECT", "INVITE", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "CANCEL" };
 UnitPopupMenus["RAID"] = { "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "RAID_REMOVE", "CANCEL" };
-UnitPopupMenus["FRIEND"] = { "WHISPER", "INVITE", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
+UnitPopupMenus["FRIEND"] = { "WHISPER", "INVITE", "TARGET", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
+UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
 
 -- Second level menus
-UnitPopupMenus[1] = { "FREE_FOR_ALL", "ROUND_ROBIN", "MASTER_LOOTER", "GROUP_LOOT", "NEED_BEFORE_GREED", "CANCEL" };
-UnitPopupMenus[2] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" };
+UnitPopupMenus["LOOT_METHOD"] = { "FREE_FOR_ALL", "ROUND_ROBIN", "MASTER_LOOTER", "GROUP_LOOT", "NEED_BEFORE_GREED", "CANCEL" };
+UnitPopupMenus["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" };
 
 UnitPopupShown = { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
@@ -124,9 +138,10 @@ function UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 		UnitPopupButtons["LOOT_THRESHOLD"].nested = nil;
 	end
 
-	-- If level2 dropdown
+	-- If level 2 dropdown
 	local info;
 	local color;
+	local icon;
 	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
 		dropdownMenu.which = UIDROPDOWNMENU_MENU_VALUE;
 		for index, value in UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] do
@@ -134,19 +149,31 @@ function UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 			info.text = UnitPopupButtons[value].text;
 			info.owner = UIDROPDOWNMENU_MENU_VALUE;
 			-- Set the text color
-			if ( value ~= "CANCEL" and UIDROPDOWNMENU_MENU_VALUE == 2 ) then
-				color = ITEM_QUALITY_COLORS[index+1];
+			color = UnitPopupButtons[value].color;
+			if ( color ) then
 				info.textR = color.r;
 				info.textG = color.g;
 				info.textB = color.b;
 			end
+			-- Icons
+			info.icon = UnitPopupButtons[value].icon;
+			info.tCoordLeft = UnitPopupButtons[value].tCoordLeft;
+			info.tCoordRight = UnitPopupButtons[value].tCoordRight;
+			info.tCoordTop = UnitPopupButtons[value].tCoordTop;
+			info.tCoordBottom = UnitPopupButtons[value].tCoordBottom;
+			-- Checked conditions
 			if ( info.text == dropdownMenu.selectedLootMethod  ) then
 				info.checked = 1;
 			elseif ( info.text == dropdownMenu.selectedLootThreshold ) then
 				info.checked = 1;
+			elseif ( strsub(value, 1, 12) == "RAID_TARGET_" ) then
+				local raidTargetIndex = GetRaidTargetIndex(unit);
+				if ( raidTargetIndex == index ) then
+					info.checked = 1;
+				end
 			end
 			
-			info.value = index;
+			info.value = value;
 			info.func = UnitPopup_OnClick;
 			-- Setup newbie tooltips
 			info.tooltipTitle = UnitPopupButtons[value].text;
@@ -175,20 +202,44 @@ function UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 		if( UnitPopupShown[index] == 1 ) then
 			info = {};
 			info.text = UnitPopupButtons[value].text;
-			info.value = index;
+			info.value = value;
 			info.owner = which;
 			info.func = UnitPopup_OnClick;
-			info.notCheckable = 1;
-			if ( UnitPopupButtons[value].nested ) then
-				info.hasArrow = 1;
+			if ( not UnitPopupButtons[value].checkable ) then
+				info.notCheckable = 1;
 			end
+			-- Text color
 			if ( value == "LOOT_THRESHOLD" ) then
 				-- Set the text color
 				color = ITEM_QUALITY_COLORS[GetLootThreshold()];
 				info.textR = color.r;
 				info.textG = color.g;
 				info.textB = color.b;
+			else
+				color = UnitPopupButtons[value].color;
+				if ( color ) then
+					info.textR = color.r;
+					info.textG = color.g;
+					info.textB = color.b;
+				end
 			end
+			-- Icons
+			info.icon = UnitPopupButtons[value].icon;
+			info.tCoordLeft = UnitPopupButtons[value].tCoordLeft;
+			info.tCoordRight = UnitPopupButtons[value].tCoordRight;
+			info.tCoordTop = UnitPopupButtons[value].tCoordTop;
+			info.tCoordBottom = UnitPopupButtons[value].tCoordBottom;
+			-- Checked conditions
+			if ( strsub(value, 1, 12) == "RAID_TARGET_" ) then
+				local raidTargetIndex = GetRaidTargetIndex("target");
+				if ( raidTargetIndex == index ) then
+					info.checked = 1;
+				end
+			end
+			if ( UnitPopupButtons[value].nested ) then
+				info.hasArrow = 1;
+			end
+			
 			-- Setup newbie tooltips
 			info.tooltipTitle = UnitPopupButtons[value].text;
 			tooltipText = getglobal("NEWBIE_TOOLTIP_UNIT_"..value);
@@ -243,6 +294,22 @@ function UnitPopup_HideButtons()
 					 dropdownMenu.name == UnitName("player")) then
 					UnitPopupShown[index] = 0;
 				end
+			end
+		elseif ( value == "FOLLOW" ) then
+			if ( canCoop == 0 ) then
+				UnitPopupShown[index] = 0;
+			end
+		elseif ( value == "WHISPER" ) then
+			if ( canCoop == 0 ) then
+				UnitPopupShown[index] = 0;
+			end
+		elseif ( value == "DUEL" ) then
+			if ( canCoop == 0 ) then
+				UnitPopupShown[index] = 0;
+			end
+		elseif ( value == "INSPECT" ) then
+			if ( canCoop == 0 ) then
+				UnitPopupShown[index] = 0;
 			end
 		elseif ( value == "PROMOTE" ) then
 			if ( (inParty == 0) or (isLeader == 0) ) then
@@ -303,6 +370,10 @@ function UnitPopup_HideButtons()
 			if ( inParty == 0 ) then
 				UnitPopupShown[index] = 0;
 			end
+		elseif ( value == "RESET_INSTANCES" ) then
+			if ( not CanShowResetInstances() or ((inParty == 1) and (isLeader == 0)) ) then
+				UnitPopupShown[index] = 0;
+			end
 		elseif ( value == "RAID_LEADER" ) then
 			local name, rank = GetRaidRosterInfo(dropdownMenu.userData);
 			if ( (isLeader == 0) or (rank == 2) or not dropdownMenu.name ) then
@@ -339,8 +410,11 @@ function UnitPopup_HideButtons()
 			if( PetCanBeAbandoned() ) then
 				UnitPopupShown[index] = 0;
 			end
+		elseif ( strsub(value, 1, 12)  == "RAID_TARGET_" ) then
+			if ( (inParty == 0) or ((isLeader == 0) and (isAssistant == 0)) or (UnitExists("target") and not UnitReaction("player", "target")) ) then
+				UnitPopupShown[index] = 0;
+			end
 		end
-
 	end
 end
 
@@ -445,9 +519,8 @@ function UnitPopup_OnUpdate(elapsed)
 end
 
 function UnitPopup_OnClick()
-	local index = this.value;
 	local dropdownFrame = getglobal(UIDROPDOWNMENU_INIT_MENU);
-	local button = UnitPopupMenus[this.owner][index];
+	local button = this.value;
 	local unit = dropdownFrame.unit;
 	local name = dropdownFrame.name;
 
@@ -457,6 +530,8 @@ function UnitPopup_OnClick()
 		ChatFrame_SendTell(name);
 	elseif ( button == "INSPECT" ) then
 		InspectUnit(unit);
+	elseif ( button == "TARGET" ) then
+		TargetByName(name, 1);
 	elseif ( button == "DUEL" ) then
 		StartDuelUnit(unit);
 	elseif ( button == "INVITE" ) then
@@ -518,8 +593,10 @@ function UnitPopup_OnClick()
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "LOOT_PROMOTE" ) then
 		SetLootMethod("master", name);
+	elseif ( button == "RESET_INSTANCES" ) then
+		StaticPopup_Show("CONFIRM_RESET_INSTANCES");
 	elseif ( button == "FOLLOW" ) then
-		FollowUnit(unit);
+		FollowByName(name, 1);
 	elseif ( button == "RAID_LEADER" ) then
 		PromoteByName(name);
 	elseif ( button == "RAID_PROMOTE" ) then
@@ -532,6 +609,12 @@ function UnitPopup_OnClick()
 		SetLootThreshold(this:GetID()+1);
 		color = ITEM_QUALITY_COLORS[this:GetID()+1];
 		UIDropDownMenu_SetButtonText(1, 3, UnitPopupButtons[button].text, color.r, color.g, color.b);
+	elseif ( strsub(button, 1, 12) == "RAID_TARGET_" and button ~= "RAID_TARGET_ICON" ) then
+		local raidTargetIndex = strsub(button, 13);
+		if ( raidTargetIndex == "NONE" ) then
+			raidTargetIndex = 0;
+		end
+		SetRaidTargetIcon(unit, tonumber(raidTargetIndex));
 	end
 	PlaySound("UChatScrollButton");
 end

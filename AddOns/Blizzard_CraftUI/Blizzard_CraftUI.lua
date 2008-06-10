@@ -162,19 +162,22 @@ function CraftFrame_Update()
 	
 	CraftHighlightFrame:Hide();
 	
-	local craftIndex, craftName, craftButton, craftButtonSubText, craftButtonCost;
+	local craftIndex, craftName, craftButton, craftButtonSubText, craftButtonCost, craftButtonText;
 	for i=1, CRAFTS_DISPLAYED, 1 do
 		craftIndex = i + craftOffset;
 		craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel = GetCraftInfo(craftIndex);
 		craftButton = getglobal("Craft"..i);
 		craftButtonSubText = getglobal("Craft"..i.."SubText");
 		craftButtonCost = getglobal("Craft"..i.."Cost");
+		craftButtonText = getglobal("Craft"..i.."Text");
 		if ( craftIndex <= numCrafts ) then	
 			-- Set button widths if scrollbar is shown or hidden
 			if ( CraftListScrollFrame:IsVisible() ) then
 				craftButton:SetWidth(293);
+				craftButtonText:SetWidth(290);
 			else
 				craftButton:SetWidth(323);
+				craftButtonText:SetWidth(320);
 			end
 			local color = CraftTypeColor[craftType];
 			local subColor = CraftSubTypeColor[craftType];
@@ -262,16 +265,12 @@ function CraftFrame_Update()
 		-- If has headers then move all the names to the right
 		for i=1, CRAFTS_DISPLAYED, 1 do
 			getglobal("Craft"..i.."Text"):SetPoint("TOPLEFT", "Craft"..i, "TOPLEFT", 21, 0);
-			getglobal("Craft"..i.."HighlightText"):SetPoint("TOPLEFT", "Craft"..i, "TOPLEFT", 21, 0);
-			getglobal("Craft"..i.."DisabledText"):SetPoint("TOPLEFT", "Craft"..i, "TOPLEFT", 21, 0);
 		end
 		CraftExpandButtonFrame:Show();
 	else
 		-- If no headers then move all the names to the left
 		for i=1, CRAFTS_DISPLAYED, 1 do
 			getglobal("Craft"..i.."Text"):SetPoint("TOPLEFT", "Craft"..i, "TOPLEFT", 3, 0);
-			getglobal("Craft"..i.."HighlightText"):SetPoint("TOPLEFT", "Craft"..i, "TOPLEFT", 3, 0);
-			getglobal("Craft"..i.."DisabledText"):SetPoint("TOPLEFT", "Craft"..i, "TOPLEFT", 3, 0);
 		end
 		CraftExpandButtonFrame:Hide();
 	end

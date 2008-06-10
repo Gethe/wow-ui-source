@@ -60,7 +60,7 @@
 				<Frames>
 					<Frame name="BasicOptionsGeneral" inherits="OptionFrameBoxTemplate">
 						<Size>
-							<AbsDimension x="10" y="60"/>
+							<AbsDimension x="10" y="55"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -88,7 +88,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameSlider1" relativePoint="TOPRIGHT">
 										<Offset>
-											<AbsDimension x="50" y="5"/>
+											<AbsDimension x="60" y="5"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -104,7 +104,7 @@
 					</Frame>
 					<Frame name="BasicOptionsDisplay" inherits="OptionFrameBoxTemplate">
 						<Size>
-							<AbsDimension x="10" y="100"/>
+							<AbsDimension x="10" y="95"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="BasicOptionsGeneral">
@@ -146,20 +146,11 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
-							<CheckButton name="UIOptionsFrameCheckButton41" inherits="UIOptionsCheckButtonTemplate">
+							<CheckButton name="UIOptionsFrameCheckButton30" inherits="UIOptionsCheckButtonTemplate">
 								<Anchors>
 									<Anchor point="TOP">
 										<Offset>
 											<AbsDimension x="-80" y="-8"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="UIOptionsFrameCheckButton30" inherits="UIOptionsCheckButtonTemplate">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton41" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -223,7 +214,7 @@
 					</Frame>
 					<Frame name="BasicOptionsChat" inherits="OptionFrameBoxTemplate">
 						<Size>
-							<AbsDimension x="10" y="100"/>
+							<AbsDimension x="10" y="95"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="BasicOptionsDisplay">
@@ -358,7 +349,7 @@
 					</Frame>
 					<Frame name="BasicOptionsActionBars" inherits="OptionFrameBoxTemplate">
 						<Size>
-							<AbsDimension x="10" y="70"/>
+							<AbsDimension x="10" y="67"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="BasicOptionsChat">
@@ -393,6 +384,7 @@
 								<Scripts>
 									<OnClick>
 										PlayClickSound();
+										STATE_MULTI_ACTIONBAR_1 =  SHOW_MULTI_ACTIONBAR_1;
 										SHOW_MULTI_ACTIONBAR_1 = this:GetChecked();
 										MultiActionBar_Update();
 										UIParent_ManageFramePositions();
@@ -494,7 +486,7 @@
 					</Frame>
 					<Frame name="BasicOptionsRaid" inherits="OptionFrameBoxTemplate">
 						<Size>
-							<AbsDimension x="10" y="50"/>
+							<AbsDimension x="10" y="67"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="BasicOptionsActionBars">
@@ -539,6 +531,15 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
+							<CheckButton name="UIOptionsFrameCheckButton41" inherits="UIOptionsCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton48" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
 							<CheckButton name="UIOptionsFrameCheckButton49" inherits="UIOptionsCheckButtonTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
@@ -548,12 +549,30 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
+							<CheckButton name="UIOptionsFrameCheckButton50" inherits="UIOptionsCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCheckButton47" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnEvent>
+									</OnEvent>
+									<OnClick>
+										PlayClickSound();
+										SHOW_TARGET_OF_TARGET =  this:GetChecked();
+
+									</OnClick>
+								</Scripts>
+							</CheckButton>
 						</Frames>
 						<Scripts>
 							<OnLoad>
 								this:SetBackdropBorderColor(0.4, 0.4, 0.4);
 								this:SetBackdropColor(0.15, 0.15, 0.15);
-								getglobal(this:GetName().."Title"):SetText(RAID);
+								getglobal(this:GetName().."Title"):SetText(RAID_AND_PARTY);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -1031,6 +1050,7 @@
 						MultiActionBar_Update();
 						ALWAYS_SHOW_MULTIBARS = STATE_AlwaysShowMultiBars;
 						MultiActionBar_UpdateGridVisibility();
+						UIParent_ManageFramePositions();
 					</OnClick>
 				</Scripts>
 			</Button>

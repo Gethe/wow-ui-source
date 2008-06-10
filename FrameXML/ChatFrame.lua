@@ -106,6 +106,9 @@ ChatTypeInfo["BG_SYSTEM_ALLIANCE"]						= { sticky = 0 };
 ChatTypeInfo["BG_SYSTEM_HORDE"]							= { sticky = 0 };
 ChatTypeInfo["COMBAT_FACTION_CHANGE"]					= { sticky = 0 };
 ChatTypeInfo["MONEY"]									= { sticky = 0 };
+ChatTypeInfo["RAID_LEADER"]								= { sticky = 0 };
+ChatTypeInfo["RAID_WARNING"]							= { sticky = 0 };
+ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0 };
 
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
@@ -136,6 +139,8 @@ ChatTypeGroup["WHISPER"] = {
 ChatTypeGroup["PARTY"] = {
 	"CHAT_MSG_PARTY",
 	"CHAT_MSG_RAID",
+	"CHAT_MSG_RAID_LEADER",
+	"CHAT_MSG_RAID_WARNING",
 };
 ChatTypeGroup["GUILD"] = {
 	"CHAT_MSG_GUILD",
@@ -147,6 +152,7 @@ ChatTypeGroup["CREATURE"] = {
 	"CHAT_MSG_MONSTER_YELL",
 	"CHAT_MSG_MONSTER_EMOTE",
 	"CHAT_MSG_MONSTER_WHISPER",
+	"CHAT_MSG_RAID_BOSS_EMOTE",
 };
 ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_JOIN",
@@ -744,13 +750,7 @@ SlashCmdList["FOLLOW"] = function(msg)
 	if ( GetSlashCmdTarget(msg) ) then
 		FollowByName(GetSlashCmdTarget(msg));
 	else
-		if ( not UnitExists("target") ) then
-			UIErrorsFrame:AddMessage(ERR_GENERIC_NO_TARGET, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
-		elseif ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") ) then
-			FollowUnit("target");
-		else
-			UIErrorsFrame:AddMessage(ERR_INVALID_FOLLOW_TARGET, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
-		end
+		FollowUnit("target");
 	end
 end
 
@@ -1116,7 +1116,20 @@ SlashCmdList["PVP"] = function(msg)
 end
 
 SlashCmdList["RAID_INFO"] = function(msg)
+	local info = ChatTypeInfo["SYSTEM"]
 	RequestRaidInfo();
+	if ( not RaidFrame:IsShown() and ( GetNumSavedInstances() > 0 ) ) then
+		ToggleFriendsFrame(4);
+		RaidInfoFrame:Show();
+	elseif ( GetNumSavedInstances() == 0 ) then
+		DEFAULT_CHAT_FRAME:AddMessage(TEXT(NO_RAID_INSTANCES_SAVED), info.r, info.g, info.b, info.id);
+	end
+end
+
+SlashCmdList["READYCHECK"] = function(msg)
+	if ( IsRaidLeader() and GetNumRaidMembers() > 0 ) then
+		DoReadyCheck();
+	end
 end
 
 -- ChatFrame functions

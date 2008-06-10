@@ -6,7 +6,6 @@ UIOptionsFrameCheckButtons["INVERT_MOUSE"] =			{ index = 1, cvar = "mouseInvertP
 UIOptionsFrameCheckButtons["USE_UBERTOOLTIPS"] =		{ index = 12, cvar = "UberTooltips" , tooltipText = OPTION_TOOLTIP_UBERTOOLTIPS};
 UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"] =			{ index = 2,  cvar = "statusBarText" , tooltipText = OPTION_TOOLTIP_STATUS_BAR_TEXT};
 UIOptionsFrameCheckButtons["PROFANITY_FILTER"] =		{ index = 5,  cvar = "profanityFilter" , tooltipText = OPTION_TOOLTIP_PROFANITY_FILTER};
-UIOptionsFrameCheckButtons["SHOW_PARTY_PETS_TEXT"] =		{ index = 41, uvar = "SHOW_PARTY_PETS", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_PETS, default = "1"};
 UIOptionsFrameCheckButtons["SHOW_CLOAK"] =			{ index = 30, func = ShowingCloak, setFunc = ShowCloak, tooltipText = OPTION_TOOLTIP_SHOW_CLOAK};
 UIOptionsFrameCheckButtons["SHOW_HELM"] =			{ index = 31, func = ShowingHelm , setFunc = ShowHelm , tooltipText = OPTION_TOOLTIP_SHOW_HELM};
 UIOptionsFrameCheckButtons["SHOW_QUEST_FADING_TEXT"] =	{ index = 42, uvar = "QUEST_FADING_DISABLE", tooltipText = OPTION_TOOLTIP_SHOW_QUEST_FADING, default = "0"};
@@ -27,10 +26,12 @@ UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"] =		{ index = 34, func = MultiB
 UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"] =		{ index = 35, func = MultiBar3_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR3};
 UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"] =		{ index = 36, func = MultiBar4_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR4};
 UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"] =	{ index = 40, uvar = "ALWAYS_SHOW_MULTIBARS", tooltipText = OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS, default = "0"};
--- Raid Options
+-- Raid & Party Options
 UIOptionsFrameCheckButtons["HIDE_PARTY_INTERFACE_TEXT"] =	{ index = 47, uvar = "HIDE_PARTY_INTERFACE" , tooltipText = OPTION_TOOLTIP_HIDE_PARTY_INTERFACE, default = "1"};
 UIOptionsFrameCheckButtons["SHOW_DISPELLABLE_DEBUFFS_TEXT"] =	{ index = 48, uvar = "SHOW_DISPELLABLE_DEBUFFS" , tooltipText = OPTION_TOOLTIP_SHOW_DISPELLABLE_DEBUFFS, default = "1"};
 UIOptionsFrameCheckButtons["SHOW_CASTABLE_BUFFS_TEXT"] =	{ index = 49, uvar = "SHOW_CASTABLE_BUFFS" , tooltipText = OPTION_TOOLTIP_SHOW_CASTABLE_BUFFS, default = "1"};
+UIOptionsFrameCheckButtons["SHOW_TARGET_OF_TARGET_TEXT"] =	{ index = 50, uvar = "SHOW_TARGET_OF_TARGET" , tooltipText = OPTION_TOOLTIP_SHOW_TARGET_OF_TARGET, default = "0"};
+UIOptionsFrameCheckButtons["SHOW_PARTY_PETS_TEXT"] =		{ index = 41, uvar = "SHOW_PARTY_PETS", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_PETS, default = "1"};
 
 ------------------- Advanced Options -------------------
 -- General
@@ -89,6 +90,8 @@ function UIOptionsFrame_Init()
 	RegisterForSave("SHOW_PARTY_BACKGROUND");
 	HIDE_PARTY_INTERFACE = "0";
 	RegisterForSave("HIDE_PARTY_INTERFACE");
+	SHOW_TARGET_OF_TARGET = "0";
+	RegisterForSave("SHOW_TARGET_OF_TARGET");
 	UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value = GetCVar("statusBarText");
 	this:RegisterEvent("CVAR_UPDATE");
 

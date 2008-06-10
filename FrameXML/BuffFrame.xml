@@ -58,9 +58,9 @@
 	<Button name="BuffButtonHarmful" inherits="BuffButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Border">
+				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
 					<Size>
-						<AbsDimension x="32" y="32"/>
+						<AbsDimension x="33" y="32"/>
 					</Size>
 					<Anchors>
 						<Anchor point="CENTER">
@@ -69,6 +69,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 				</Texture>	
 			</Layer>
 		</Layers>

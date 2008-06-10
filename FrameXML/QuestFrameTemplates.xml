@@ -197,7 +197,7 @@
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
-		<NormalText inherits="QuestFont" justifyH="LEFT">
+		<ButtonText>
 			<Size>
 				<AbsDimension x="275" y="0"/>
 			</Size>
@@ -208,6 +208,7 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
+		</ButtonText>
+		<NormalFont inherits="QuestFont" justifyH="LEFT"/>
 	</Button>
  </Ui>

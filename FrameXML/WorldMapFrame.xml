@@ -309,7 +309,7 @@
 						WorldMapZoomOutButton_OnClick();
 					</OnClick>
 				</Scripts>
-				<NormalText inherits="GameFontHighlightSmall" text="ZOOM_OUT_BUTTON_TEXT">
+				<ButtonText text="ZOOM_OUT_BUTTON_TEXT">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -317,7 +317,8 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</NormalText>
+				</ButtonText>
+				<NormalFont inherits="GameFontHighlightSmall"/>
 			</Button>
 			<Button name="WorldMapFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>

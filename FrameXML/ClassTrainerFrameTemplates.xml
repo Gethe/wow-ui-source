@@ -59,9 +59,9 @@
 				</Anchor>
 			</Anchors>
 		</DisabledTexture>
-		<NormalText name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+		<ButtonText name="$parentText">
 			<Size>
-				<AbsDimension x="0" y="0"/>
+				<AbsDimension x="0" y="13"/>
 			</Size>
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
@@ -70,31 +70,10 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
-		<HighlightText name="$parentHighlightText" inherits="GameFontHighlight" justifyH="LEFT">
-			<Size>
-				<AbsDimension x="0" y="0"/>
-			</Size>
-			<Anchors>
-				<Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
-					<Offset>
-						<AbsDimension x="2" y="1"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightText>
-		<DisabledText name="$parentDisabledText" inherits="GameFontDisable" justifyH="LEFT">
-			<Size>
-				<AbsDimension x="0" y="0"/>
-			</Size>
-			<Anchors>
-				<Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
-					<Offset>
-						<AbsDimension x="2" y="1"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</DisabledText>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormal" justifyH="LEFT"/>
+		<HighlightFont inherits="GameFontHighlight" justifyH="LEFT"/>
+		<DisabledFont inherits="GameFontDisable" justifyH="LEFT"/>
 	</Button>
 	<ScrollFrame name="ClassTrainerDetailScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Layers>

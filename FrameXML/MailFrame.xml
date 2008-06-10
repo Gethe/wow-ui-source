@@ -1,37 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MailFrame.lua"/>
-	<CheckButton name="SendMailRadioButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="16" y="16"/>
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString name="$parentText" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="5" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+	<CheckButton name="SendMailRadioButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
 				SendMailRadioButton_OnClick(this:GetID());
 			</OnClick>
 		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-RadioButton">
-			<TexCoords left="0" right="0.25" top="0" bottom="1"/>
-		</NormalTexture>
-		<HighlightTexture file="Interface\Buttons\UI-RadioButton" alphaMode="ADD">
-			<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
-		</HighlightTexture>
-		<CheckedTexture file="Interface\Buttons\UI-RadioButton">
-			<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
-		</CheckedTexture>
 	</CheckButton>
 	<Frame name="MailItemTemplate" virtual="true">
 		<Size>
@@ -120,7 +95,7 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
-				<NormalText inherits="GameFontHighlightSmall" justifyH="RIGHT"/>
+				<NormalFont inherits="GameFontHighlightSmall" justifyH="RIGHT"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/> 
 				</PushedTextOffset>
@@ -1006,9 +981,9 @@
 								end
 							</OnClick>
 						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
+						<NormalFont inherits="GameFontNormalSmall"/>
+						<HighlightFont inherits="GameFontHighlightSmall"/>
+						<DisabledFont inherits="GameFontDisableSmall"/>
 						<NormalTexture inherits="UIPanelButtonUpTexture"/>
 						<PushedTexture inherits="UIPanelButtonDownTexture"/>
 						<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>

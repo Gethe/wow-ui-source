@@ -83,6 +83,10 @@ function AuctionFrame_OnLoad()
 
 	MoneyInputFrame_SetPreviousFocus(BuyoutPrice, StartPriceCopper);
 	MoneyInputFrame_SetNextFocus(BuyoutPrice, StartPriceGold);
+
+	-- Init search dot count
+	AuctionFrameBrowse.dotCount = 0;
+	AuctionFrameBrowse.isSearchingThrottle = 0;
 end
 
 function AuctionFrame_Show()
@@ -179,6 +183,9 @@ end
 function AuctionFrameBrowse_OnEvent()
 	if ( event == "AUCTION_ITEM_LIST_UPDATE" ) then
 		AuctionFrameBrowse_Update();
+		-- Stop "searching" messaging
+		AuctionFrameBrowse.isSearching = nil;
+		BrowseNoResultsText:SetText(BROWSE_NO_RESULTS);
 	end
 end
 
@@ -227,6 +234,48 @@ function AuctionFrameBrowse_Search(page)
 		AuctionFrameBrowse.page = 0;
 	end
 	QueryAuctionItems(BrowseName:GetText(), BrowseMinLevel:GetText(), BrowseMaxLevel:GetText(), AuctionFrameBrowse.selectedInvtypeIndex, AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown));
+	-- Start "searching" messaging
+	AuctionFrameBrowse.isSearching = 1;
+end
+
+function BrowseSearchButton_OnUpdate()
+	if (CanSendAuctionQuery()) then
+		this:Enable();
+		if ( BrowsePrevPageButton.isEnabled ) then
+			BrowsePrevPageButton:Enable();
+		else
+			BrowsePrevPageButton:Disable();
+		end
+		if ( BrowseNextPageButton.isEnabled ) then
+			BrowseNextPageButton:Enable();
+		else
+			BrowseNextPageButton:Disable();
+		end
+	else
+		this:Disable();
+		BrowsePrevPageButton:Disable();
+		BrowseNextPageButton:Disable();
+	end
+	if (AuctionFrameBrowse.isSearching) then
+		if ( AuctionFrameBrowse.isSearchingThrottle <= 0 ) then
+			AuctionFrameBrowse.dotCount = AuctionFrameBrowse.dotCount + 1;
+			if ( AuctionFrameBrowse.dotCount > 3 ) then
+				AuctionFrameBrowse.dotCount = 0
+			end
+			local dotString = "";
+			for i=1, AuctionFrameBrowse.dotCount do
+				dotString = dotString..".";
+			end
+			BrowseSearchDotsText:Show();
+			BrowseSearchDotsText:SetText(dotString);
+			BrowseNoResultsText:SetText(SEARCHING_FOR_ITEMS);
+			AuctionFrameBrowse.isSearchingThrottle = 0.3;
+		else
+			AuctionFrameBrowse.isSearchingThrottle = AuctionFrameBrowse.isSearchingThrottle - arg1;
+		end
+	else
+		BrowseSearchDotsText:Hide();
+	end
 end
 
 function AuctionFrameFilters_Update()
@@ -304,25 +353,21 @@ end
 
 function FilterButton_SetType(button, type, text, isLast)
 	local normalText = getglobal(button:GetName().."NormalText");
-	local highlightText = getglobal(button:GetName().."HighlightText");
 	local normalTexture = getglobal(button:GetName().."NormalTexture");
 	local line = getglobal(button:GetName().."Lines");
 	if ( type == "class" ) then
 		button:SetText(text);
 		normalText:SetPoint("LEFT", button, "LEFT", 4, 0);
-		highlightText:SetPoint("LEFT", button, "LEFT", 4, 0);
 		normalTexture:SetAlpha(1.0);	
 		line:Hide();
 	elseif ( type == "subclass" ) then
 		button:SetText(HIGHLIGHT_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE);
 		normalText:SetPoint("LEFT", button, "LEFT", 12, 0);
-		highlightText:SetPoint("LEFT", button, "LEFT", 12, 0);
 		normalTexture:SetAlpha(0.4);
 		line:Hide();
 	elseif ( type == "invtype" ) then
 		button:SetText(HIGHLIGHT_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE);
 		normalText:SetPoint("LEFT", button, "LEFT", 20, 0);
-		highlightText:SetPoint("LEFT", button, "LEFT", 20, 0);
 		normalTexture:SetAlpha(0.0);	
 		if ( isLast ) then
 			line:SetTexCoord(0.4375, 0.875, 0, 0.625);
@@ -406,7 +451,7 @@ function AuctionFrameBrowse_Update()
 			duration = GetAuctionItemTimeLeft("list", offset + i);
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal("BrowseButton"..i.."Highlight");
-			if ( numBatchAuctions <= NUM_BROWSE_TO_DISPLAY ) then
+			if ( numBatchAuctions < NUM_BROWSE_TO_DISPLAY ) then
 				button:SetWidth(625);
 				buttonHighlight:SetWidth(589);
 				BrowseCurrentBidSort:SetWidth(207);

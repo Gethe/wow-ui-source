@@ -25,7 +25,7 @@ function PetStable_OnEvent()
 			PetStable_NoPetsAllowed();
 			return;
 		end
-		SetPetStablePaperdoll("PetStableModel");
+		SetPetStablePaperdoll(PetStableModel);
 	elseif ( event == "PET_STABLE_CLOSED" ) then
 		HideUIPanel(this);
 	end
@@ -91,7 +91,7 @@ function PetStable_Update()
 					button:SetChecked(1);
 					PetStableLevelText:SetText(name.." "..format(TEXT(UNIT_LEVEL_TEMPLATE),level).." "..family);
 					PetStableLoyaltyText:SetText(loyalty);
-					SetPetStablePaperdoll("PetStableModel");
+					SetPetStablePaperdoll(PetStableModel);
 					PetStablePetInfo.tooltip = format(PET_DIET_TEMPLATE, BuildListString(GetStablePetFoodTypes(i)));
 					if ( not PetStableModel:IsShown() ) then
 						PetStableModel:Show();
@@ -128,7 +128,7 @@ function PetStable_Update()
 			end
 			PetStableLevelText:SetText(UnitName("pet").." "..format(TEXT(UNIT_LEVEL_TEMPLATE),UnitLevel("pet")).." "..family);
 			PetStableLoyaltyText:SetText(GetPetLoyalty());
-			SetPetStablePaperdoll("PetStableModel");
+			SetPetStablePaperdoll(PetStableModel);
 			if ( not PetStableModel:IsShown() ) then
 				PetStableModel:Show();
 			end
@@ -141,7 +141,7 @@ function PetStable_Update()
 			icon, name, level, family, loyalty = GetStablePetInfo(0);
 			PetStableLevelText:SetText(name.." "..format(TEXT(UNIT_LEVEL_TEMPLATE),level).." "..family);
 			PetStableLoyaltyText:SetText(loyalty);
-			SetPetStablePaperdoll("PetStableModel");
+			SetPetStablePaperdoll(PetStableModel);
 			if ( not PetStableModel:IsShown() ) then
 				PetStableModel:Show();
 			end

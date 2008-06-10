@@ -2,10 +2,14 @@
 MAX_RAID_MEMBERS = 40;
 NUM_RAID_GROUPS = 8;
 MEMBERS_PER_RAID_GROUP = 5;
+MAX_RAID_INFOS = 10;
 
 function RaidFrame_OnLoad()
 	this:RegisterEvent("PLAYER_LOGIN");
 	this:RegisterEvent("RAID_ROSTER_UPDATE");
+	this:RegisterEvent("UPDATE_INSTANCE_INFO");
+	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	this:RegisterEvent("PARTY_LEADER_CHANGED");
 
 	-- Raid option uvars
 	SHOW_DISPELLABLE_DEBUFFS = "0";
@@ -15,6 +19,7 @@ function RaidFrame_OnLoad()
 
 	-- Update party frame visibility
 	RaidOptionsFrame_UpdatePartyFrames();
+	RaidFrame_Update();
 end
 
 function RaidFrame_OnEvent()
@@ -28,13 +33,24 @@ function RaidFrame_OnEvent()
 		RaidFrame_LoadUI();
 		RaidFrame_Update();
 	end
+	if ( event == "UPDATE_INSTANCE_INFO" ) then
+		if ( GetNumSavedInstances() > 0 ) then
+			RaidFrameRaidInfoButton:Enable();
+		else
+			RaidFrameRaidInfoButton:Disable();
+		end
+		RaidInfoFrame_Update();
+	end
+	if ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" ) then
+		RaidFrame_Update();
+	end
 end
 
 function RaidFrame_Update()
 	-- If not in a raid hide all the UI and just display raid explanation text
 	if ( GetNumRaidMembers() == 0 ) then
 		RaidFrameConvertToRaidButton:Show();
-		if ( IsRaidLeader() ) then
+		if ( GetPartyMember(1) and IsPartyLeader() ) then
 			RaidFrameConvertToRaidButton:Enable();
 		else
 			RaidFrameConvertToRaidButton:Disable();
@@ -54,4 +70,27 @@ end
 function RaidOptionsFrame_UpdatePartyFrames()
 	HidePartyFrame();
 	ShowPartyFrame();
+end
+
+-- Populates Raid Info Data
+function RaidInfoFrame_Update()
+	local savedInstances = GetNumSavedInstances();
+	local instanceName, instanceID, instanceReset;
+	if ( savedInstances > 0 ) then
+		for i=1, MAX_RAID_INFOS do
+			if ( i <=  savedInstances) then
+				instanceName, instanceID, instanceReset = GetSavedInstanceInfo(i);
+				getglobal("RaidInfoInstance"..i.."Name"):SetText(instanceName);
+				getglobal("RaidInfoInstance"..i.."ID"):SetText(instanceID);
+				getglobal("RaidInfoInstance"..i.."Reset"):SetText(RESETS_IN.." "..SecondsToTime(instanceReset));
+				getglobal("RaidInfoInstance"..i):Show();
+			else
+				getglobal("RaidInfoInstance"..i):Hide();
+			end
+			
+		end
+		RaidInfoScrollFrame:UpdateScrollChildRect();
+	else
+		RaidInfoFrame:Hide();
+	end
 end

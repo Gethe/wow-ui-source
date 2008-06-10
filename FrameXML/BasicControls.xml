@@ -70,8 +70,9 @@
 				<NormalTexture inherits="DialogButtonNormalTexture"/>
 				<PushedTexture inherits="DialogButtonPushedTexture"/>
 				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
-				<NormalText inherits="DialogButtonNormalText" text="OKAY"/>
-				<HighlightText inherits="DialogButtonHighlightText" text="OKAY"/>
+				<ButtonText text="OKAY"/>
+				<NormalFont inherits="DialogButtonNormalText"/>
+				<HighlightFont inherits="DialogButtonHighlightText"/>
 			</Button>
 		</Frames>
 	</Frame>

@@ -347,6 +347,12 @@
 			<OnEvent>
 				ShapeshiftBar_OnEvent();
 			</OnEvent>
+			<OnShow>
+				UIParent_ManageFramePositions();
+			</OnShow>
+			<OnHide>
+				UIParent_ManageFramePositions();
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

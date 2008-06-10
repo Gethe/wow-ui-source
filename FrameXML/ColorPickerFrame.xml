@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<ColorSelect name="ColorPickerFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" enableKeyboard="true" hidden="false">
+	<ColorSelect name="ColorPickerFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" enableKeyboard="true" hidden="true">
 		<Size>
 			<AbsDimension x="365" y="200"/>
 		</Size>

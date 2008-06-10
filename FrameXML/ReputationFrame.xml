@@ -38,7 +38,7 @@
 				</Anchor>
 			</Anchors>
 		</HighlightTexture>
-		<NormalText name="$parentNormalText" inherits="GameFontNormal" justifyH="LEFT">
+		<ButtonText name="$parentNormalText">
 			<Size>
 				<AbsDimension x="275" y="12"/>
 			</Size>
@@ -49,31 +49,10 @@
 					</Offset>
 				</Anchor>
 			</Anchors> 
-		</NormalText>
-		<HighlightText name="$parentHighlightText" inherits="GameFontHighlight" justifyH="LEFT">
-			<Size>
-				<AbsDimension x="275" y="12"/>
-			</Size>
-			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="20" y="0"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightText>
-		<DisabledText name="$parentDisabledText" inherits="GameFontHighlight" justifyH="LEFT">
-			<Size>
-				<AbsDimension x="275" y="12"/>
-			</Size>
-			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="20" y="0"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</DisabledText>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormal" justifyH="LEFT"/>
+		<HighlightFont inherits="GameFontHighlight" justifyH="LEFT"/>
+		<DisabledFont inherits="GameFontHighlight" justifyH="LEFT"/>
 	</Button>
 	<StatusBar name="ReputationBarTemplate" virtual="true" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
 		<Size>

@@ -14,8 +14,8 @@
 		<HighlightTexture file="Interface\Buttons\UI-DialogBox-Button-Highlight" alphaMode="ADD">
 			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625"/>
 		</HighlightTexture>
-		<NormalText inherits="GameFontNormal"/>
-		<HighlightText inherits="GameFontHighlight"/>
+		<NormalFont inherits="GameFontNormal"/>
+		<HighlightFont inherits="GameFontHighlight"/>
 	</Button>
 	<Frame name="PetRenamePopup" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
@@ -106,8 +106,9 @@
 						PetPopup_Confirm();
 					</OnClick>
 				</Scripts>
-				<NormalText inherits="GameFontNormalSmall" text="ACCEPT"/>
-				<HighlightText inherits="GameFontNormalSmall" text="ACCEPT"/>
+				<ButtonText text="ACCEPT"/>
+				<NormalFont inherits="GameFontNormalSmall"/>
+				<HighlightFont inherits="GameFontNormalSmall"/>
 			</Button>
 			<Button name="PetRenamePopupCancelButton" inherits="PetPopupButtonTemplate">
 				<Anchors>
@@ -122,8 +123,9 @@
 						PetPopup_Cancel();
 					</OnClick>
 				</Scripts>
-				<NormalText inherits="GameFontNormalSmall" text="CANCEL"/>
-				<HighlightText inherits="GameFontNormalSmall" text="CANCEL"/>
+				<ButtonText text="CANCEL"/>
+				<NormalFont inherits="GameFontNormalSmall"/>
+				<HighlightFont inherits="GameFontNormalSmall"/>
 			</Button>
 		</Frames>
 	</Frame>

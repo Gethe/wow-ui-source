@@ -83,7 +83,7 @@ function LootFrame_Update()
 				getglobal("LootButton"..index.."IconTexture"):SetTexture(texture);
 				getglobal("LootButton"..index.."Text"):SetText(item);
 				getglobal("LootButton"..index.."Text"):SetVertexColor(color.r, color.g, color.b);
-
+				
 				countString = getglobal("LootButton"..index.."Count");
 				if ( quantity > 1 ) then
 					countString:SetText(quantity);
@@ -258,7 +258,18 @@ function GroupLootFrame_OpenNewFrame(id, rollTime)
 end
 
 function GroupLootFrame_OnShow()
-	local texture, name, count, quality = GetLootRollItemInfo(this.rollID);
+	local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(this.rollID);
+	
+	if ( bindOnPickUp ) then
+		this:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border", tile = true, tileSize = 32, edgeSize = 32, insets = { left = 11, right = 12, top = 12, bottom = 11 } } );
+		getglobal(this:GetName().."Corner"):SetTexture("Interface\\DialogFrame\\UI-DialogBox-Gold-Corner");
+		getglobal(this:GetName().."Decoration"):Show();
+	else 
+		this:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", tile = true, tileSize = 32, edgeSize = 32, insets = { left = 11, right = 12, top = 12, bottom = 11 } } );
+		getglobal(this:GetName().."Corner"):SetTexture("Interface\\DialogFrame\\UI-DialogBox-Corner");
+		getglobal(this:GetName().."Decoration"):Hide();
+	end
+	
 	getglobal("GroupLootFrame"..this:GetID().."IconFrameIcon"):SetTexture(texture);
 	getglobal("GroupLootFrame"..this:GetID().."Name"):SetText(name);
 	local color = ITEM_QUALITY_COLORS[quality];

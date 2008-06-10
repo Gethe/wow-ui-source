@@ -61,8 +61,6 @@ function WorldStateScoreFrame_OnLoad()
 
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(this, 3);
-
-	WorldStateScoreFrame_Resize();
 end
 
 function WorldStateScoreFrame_Update()
@@ -185,6 +183,12 @@ function WorldStateScoreFrame_Update()
 			
 			buttonName:SetText(name);
 			nameButton:SetWidth(buttonName:GetWidth());
+			if ( not race ) then
+				race = "";
+			end
+			if ( not class ) then
+				class = "";
+			end
 			nameButton.tooltip = race.." "..class;
 			getglobal("WorldStateScoreButton"..i.."RankButton").tooltip = rankName;
 			buttonKills:SetText(honorableKills);
@@ -276,7 +280,7 @@ end
 
 function WorldStateScoreFrame_Resize(width)
 	if ( not width ) then
-		if ( WorldStateScoreScrollFrame:IsVisible() ) then
+		if ( WorldStateScoreScrollFrame:IsShown() ) then
 			width = WORLDSTATESCOREFRAME_BASE_WIDTH + 37 + GetNumBattlefieldStats()*WORLDSTATESCOREFRAME_COLUMN_SPACING;
 		else
 			width = WORLDSTATESCOREFRAME_BASE_WIDTH + GetNumBattlefieldStats()*WORLDSTATESCOREFRAME_COLUMN_SPACING;

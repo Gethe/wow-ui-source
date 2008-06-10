@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+..\FrameXML\UI.xsd">
 	<Script file="WorldStateFrame.lua"/>
 	<Frame name="WorldStateAlwaysUpTemplate" virtual="true" hidden="true" enableMouse="true">
 		<Size>
@@ -466,7 +466,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				WorldStateScoreFrameTab_OnClick();
 			</OnClick>
 		</Scripts>
-		<NormalText name="$parentText" inherits="GameFontNormalSmall">
+		<ButtonText name="$parentText">
 			<Anchors>
 				<Anchor point="CENTER">
 					<Offset>
@@ -474,25 +474,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
-		<HighlightText name="$parentHighlightText" inherits="GameFontHighlightSmall">
-			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="9"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightText>
-		<DisabledText name="$parentDisabledText" inherits="GameFontHighlightSmall">
-			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="9"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</DisabledText>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
+		<DisabledFont inherits="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="LEFT">
@@ -1249,6 +1234,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnEvent>
 				if	( event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES") then
 					if ( WorldStateScoreFrame:IsVisible() or GetBattlefieldWinner() ) then
+						WorldStateScoreFrame_Resize();
 						WorldStateScoreFrame_Update();
 					end
 				end
@@ -1258,8 +1244,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				end
 			</OnEvent>
 			<OnShow>
-				WorldStateScoreFrame_Update();
 				WorldStateScoreFrame_Resize();
+				WorldStateScoreFrame_Update();
 				WorldStateScoreFrameTab_OnClick(WorldStateScoreFrameTab1);
 			</OnShow>
 			<OnUpdate>

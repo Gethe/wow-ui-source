@@ -49,7 +49,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="ComboFrame" frameStrata="MEDIUM" toplevel="true" movable="true" parent="UIParent" hidden="true" alpha="0">
+	<Frame name="ComboFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true" alpha="0">
 		<Size>
 			<AbsDimension x="256" y="32"/>
 		</Size>

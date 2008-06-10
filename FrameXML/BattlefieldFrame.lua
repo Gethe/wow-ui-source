@@ -199,7 +199,7 @@ function BattlefieldFrame_Update()
 	local zoneIndex;
 	local zoneOffset = FauxScrollFrame_GetOffset(BattlefieldListScrollFrame);
 	local playerLevel = UnitLevel("player");
-	local button, buttonName, buttonStatus, buttonHighlight;
+	local button, buttonStatus;
 	local instanceID;
 	local mapName, mapDescription, minLevel, maxLevel, mapID, mapX, mapY, mapFull = GetBattlefieldInfo();
 	
@@ -212,14 +212,11 @@ function BattlefieldFrame_Update()
 	for i=1, BATTLEFIELD_ZONES_DISPLAYED, 1 do
 		zoneIndex = zoneOffset + i;
 		button = getglobal("BattlefieldZone"..i);
-		buttonName = getglobal("BattlefieldZone"..i.."Text");
 		buttonStatus = getglobal("BattlefieldZone"..i.."Status");
-		buttonHighlightText = getglobal("BattlefieldZone"..i.."HighlightText");
 
 		if ( zoneIndex == 1 ) then
 			-- The first entry in the list is always "first available"
-			buttonName:SetText(FIRST_AVAILABLE);
-			buttonHighlightText:SetText(FIRST_AVAILABLE);
+			button:SetText(FIRST_AVAILABLE);
 			-- Set tooltip
 			button.title = FIRST_AVAILABLE;
 			button.tooltip = NEWBIE_TOOLTIP_FIRST_AVAILABLE;
@@ -228,8 +225,7 @@ function BattlefieldFrame_Update()
 			button:Hide();
 		else
 			instanceID = GetBattlefieldInstanceInfo(zoneIndex - 1);
-			buttonName:SetText(mapName.." "..instanceID);
-			buttonHighlightText:SetText(mapName.." "..instanceID);
+			button:SetText(mapName.." "..instanceID);
 			-- Set tooltip
 			button.title = mapName.." "..instanceID;
 			button.tooltip = NEWBIE_TOOLTIP_ENTER_BATTLEGROUND;

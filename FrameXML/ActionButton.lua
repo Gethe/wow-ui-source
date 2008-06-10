@@ -7,12 +7,13 @@ BOTTOMLEFT_ACTIONBAR_PAGE = 6;
 BOTTOMRIGHT_ACTIONBAR_PAGE = 5;
 LEFT_ACTIONBAR_PAGE = 4;
 RIGHT_ACTIONBAR_PAGE = 3;
+RANGE_INDICATOR = "●";
 
 -- Table of actionbar pages and whether they're viewable or not
 VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 
 function ActionButtonDown(id)
-	if ( BonusActionBarFrame:IsVisible() ) then
+	if ( BonusActionBarFrame:IsShown() ) then
 		local button = getglobal("BonusActionButton"..id);
 		if ( button:GetButtonState() == "NORMAL" ) then
 			button:SetButtonState("PUSHED");
@@ -27,7 +28,7 @@ function ActionButtonDown(id)
 end
 
 function ActionButtonUp(id, onSelf)
-	if ( BonusActionBarFrame:IsVisible() ) then
+	if ( BonusActionBarFrame:IsShown() ) then
 		local button = getglobal("BonusActionButton"..id);
 		if ( button:GetButtonState() == "PUSHED" ) then
 			button:SetButtonState("NORMAL");
@@ -113,7 +114,8 @@ function ActionButton_OnLoad()
 	this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	this:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 	this:RegisterEvent("UPDATE_BINDINGS");
-	ActionButton_UpdateHotkeys();
+
+	ActionButton_UpdateHotkeys(this.buttonType);
 end
 
 function ActionButton_UpdateHotkeys(actionButtonType)
@@ -122,7 +124,23 @@ function ActionButton_UpdateHotkeys(actionButtonType)
 	end
 	local hotkey = getglobal(this:GetName().."HotKey");
 	local action = actionButtonType..this:GetID();
-	hotkey:SetText(GetBindingText(GetBindingKey(action), "KEY_"));
+	local button = ActionButton_GetPagedID(this);
+
+	if ( GetBindingText(GetBindingKey(action), "KEY_", 1) == "" ) then
+		if ( not HasAction(button) ) then
+			hotkey:SetText("");
+		elseif ( ActionHasRange(button) ) then
+			if ( IsActionInRange(button) ) then
+				hotkey:SetText(RANGE_INDICATOR);
+				hotkey:SetTextHeight(8);
+				hotkey:SetPoint("TOPRIGHT", this:GetName(), "TOPRIGHT", -3, 5);
+			else
+				hotkey:SetText("");			
+			end
+		end
+	else
+		hotkey:SetText(GetBindingText(GetBindingKey(action), "KEY_", 1));
+	end
 end
 
 function ActionButton_Update()
@@ -281,7 +299,7 @@ end
 
 function ActionButton_OnEvent(event)
 	if ( event == "ACTIONBAR_SLOT_CHANGED" ) then
-		if ( arg1 == -1 or arg1 == ActionButton_GetPagedID(this) ) then
+		if ( arg1 == 0 or arg1 == ActionButton_GetPagedID(this) ) then
 			ActionButton_Update();
 		end
 		return;
@@ -305,7 +323,7 @@ function ActionButton_OnEvent(event)
 		return;
 	end
 	if ( event == "UPDATE_BINDINGS" ) then
-		ActionButton_UpdateHotkeys();
+		ActionButton_UpdateHotkeys(this.buttonType);
 		return;
 	end
 
@@ -313,6 +331,7 @@ function ActionButton_OnEvent(event)
 
 	if ( event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_AURAS_CHANGED" ) then
 		ActionButton_UpdateUsable();
+		ActionButton_UpdateHotkeys(this.buttonType);
 	elseif ( event == "UNIT_INVENTORY_CHANGED" ) then
 		if ( arg1 == "player" ) then
 			ActionButton_Update();
@@ -363,6 +382,18 @@ function ActionButton_SetTooltip()
 end
 
 function ActionButton_OnUpdate(elapsed)
+
+	local hotkey = getglobal(this:GetName().."HotKey");
+	local button = ActionButton_GetPagedID(this);
+
+	if ( hotkey:GetText() == RANGE_INDICATOR ) then
+		if ( IsActionInRange(button) == 1 ) then
+			hotkey:Hide();
+		else
+			hotkey:Show();
+		end
+	end
+
 	if ( ActionButton_IsFlashing() ) then
 		this.flashtime = this.flashtime - elapsed;
 		if ( this.flashtime <= 0 ) then

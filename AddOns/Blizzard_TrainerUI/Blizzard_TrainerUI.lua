@@ -2,6 +2,9 @@
 CLASS_TRAINER_SKILLS_DISPLAYED = 11;
 CLASS_TRAINER_SKILL_HEIGHT = 16;
 MAX_LEARNABLE_PROFESSIONS = 2;
+TRAINER_FILTER_AVAILABLE = 1;
+TRAINER_FILTER_UNAVAILABLE = 1;
+TRAINER_FILTER_USED = 0;
 
 UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0 };
 
@@ -43,6 +46,7 @@ function ClassTrainerFrame_Show()
 	ClassTrainer_SelectFirstLearnableSkill();
 	ClassTrainerFrame_Update();
 	UpdateMicroButtons();
+	
 end
 
 function ClassTrainerFrame_Hide()
@@ -51,10 +55,16 @@ end
 
 function ClassTrainerFrame_OnLoad()
 	this:RegisterEvent("TRAINER_UPDATE");
+	this:RegisterEvent("ADDON_LOADED");
 	ClassTrainerDetailScrollFrame.scrollBarHideable = 1;
 end
 
 function ClassTrainerFrame_OnEvent()
+	if ( event == "ADDON_LOADED" and arg1 == "Blizzard_TrainerUI" ) then
+		SetTrainerServiceTypeFilter("available", TRAINER_FILTER_AVAILABLE);
+		SetTrainerServiceTypeFilter("unavailable", TRAINER_FILTER_UNAVAILABLE);
+		SetTrainerServiceTypeFilter("used", TRAINER_FILTER_USED);
+	end
 	if ( not this:IsVisible() ) then
 		return;
 	end
@@ -103,11 +113,13 @@ function ClassTrainerFrame_Update()
 	
 	--ClassTrainerUsedButton:Show();
 	ClassTrainerMoneyFrame:Show();
+	
+
 	ClassTrainerSkillHighlightFrame:Hide();
 	-- Fill in the skill buttons
 	for i=1, CLASS_TRAINER_SKILLS_DISPLAYED, 1 do
 		local skillIndex = i + skillOffset;
-		local skillButton = getglobal("ClassTrainerSkill"..i);
+		local skillButton = getglobal("ClassTrainerSkill"..i); 
 		local serviceName, serviceSubText, serviceType, isExpanded;
 		local moneyCost, cpCost1, cpCost2;
 		if ( skillIndex <= numTrainerServices ) then	
@@ -157,7 +169,7 @@ function ClassTrainerFrame_Update()
 				else
 					skillButton:SetTextColor(0.9, 0, 0);
 					ClassTrainer_SetSubTextColor(skillButton, 0.6, 0, 0);
-				end
+				end		
 			end
 			skillButton:SetID(skillIndex);
 			skillButton:Show();
@@ -231,7 +243,9 @@ function ClassTrainer_SetSelection(id)
 		return;
 	end
 	local serviceName, serviceSubText, serviceType, isExpanded = GetTrainerServiceInfo(id);
+
 	ClassTrainerSkillHighlightFrame:Show();
+	
 	if ( serviceType == "available" ) then
 		ClassTrainerSkillHighlight:SetVertexColor(0, 1.0, 0);
 	elseif ( serviceType == "used" ) then
@@ -248,7 +262,6 @@ function ClassTrainer_SetSelection(id)
 		end
 		return;
 	end
-
 	if ( ClassTrainerFrame.showSkillDetails ) then
 		ClassTrainer_ShowSkillDetails();
 	else
@@ -505,11 +518,14 @@ function ClassTrainerFrameFilterDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function ClassTrainerFrameFilterDropDown_OnClick()
+function ClassTrainerFrameFilterDropDown_OnClick()	
 	if ( UIDropDownMenuButton_GetChecked() ) then
+		setglobal("TRAINER_FILTER_"..strupper(this.value), 0);
 		SetTrainerServiceTypeFilter(this.value, 0);
 	else
+		setglobal("TRAINER_FILTER_"..strupper(this.value), 1);
 		SetTrainerServiceTypeFilter(this.value, 1);
 	end
+	
 	ClassTrainerListScrollFrameScrollBar:SetValue(0);
 end

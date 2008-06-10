@@ -11,7 +11,7 @@ function WorldMapFrame_OnLoad()
 	this:RegisterEvent("WORLD_MAP_NAME_UPDATE");
 	this.poiHighlight = nil;
 	this.areaName = nil;
-	CreateWorldMapArrowFrame("WorldMapFrame");
+	CreateWorldMapArrowFrame(WorldMapFrame);
 	WorldMapFrame_Update();
 
 	-- Hide the world behind the map when we're in widescreen mode

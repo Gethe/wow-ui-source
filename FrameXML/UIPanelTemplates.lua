@@ -40,8 +40,6 @@ function PanelTemplates_TabResize(padding, tab, absoluteSize, maxWidth)
 	local buttonMiddleDisabled = getglobal(tabName.."MiddleDisabled");
 	local sideWidths = 2 * getglobal(tabName.."Left"):GetWidth();
 	local tabText = getglobal(tab:GetName().."Text");
-	local tabHighlightText = getglobal(tab:GetName().."HighlightText");
-	local tabDisabledText = getglobal(tab:GetName().."DisabledText");
 	local width, tabWidth;
 	
 	-- If there's an absolute size specified then use it
@@ -69,8 +67,6 @@ function PanelTemplates_TabResize(padding, tab, absoluteSize, maxWidth)
 				width = maxWidth + 24;
 			end
 			tabText:SetWidth(width);
-			tabHighlightText:SetWidth(width);
-			tabDisabledText:SetWidth(width);
 		else
 			tabText:SetWidth(0);
 		end
@@ -289,6 +285,7 @@ function ScrollFrame_OnScrollRangeChanged(scrollrange)
 	-- Hide/show scrollframe borders
 	local top = getglobal(this:GetName().."Top");
 	local bottom = getglobal(this:GetName().."Bottom");
+	local middle = getglobal(this:GetName().."Middle");
 	if ( top and bottom and this.scrollBarHideable) then
 		if ( this:GetVerticalScrollRange() == 0 ) then
 			top:Hide();
@@ -296,6 +293,13 @@ function ScrollFrame_OnScrollRangeChanged(scrollrange)
 		else
 			top:Show();
 			bottom:Show();
+		end
+	end
+	if ( middle and this.scrollBarHideable) then
+		if ( this:GetVerticalScrollRange() == 0 ) then
+			middle:Hide();
+		else
+			middle:Show();
 		end
 	end
 end

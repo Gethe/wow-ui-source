@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="TutorialFrame.lua"/>
-	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" frameStrata="HIGH" hidden="true">
+	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" frameStrata="HIGH" hidden="true">
 		<Size>
 			<AbsDimension x="230" y="128"/>
 		</Size>
@@ -102,8 +102,9 @@
 				<NormalTexture inherits="DialogButtonNormalTexture"/>
 				<PushedTexture inherits="DialogButtonPushedTexture"/>
 				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
-				<NormalText inherits="GameFontNormalSmall" text="OKAY"/>
-				<HighlightText inherits="GameFontHighlightSmall" text="OKAY"/>
+				<ButtonText text="OKAY"/>
+				<NormalFont inherits="GameFontNormalSmall"/>
+				<HighlightFont inherits="GameFontHighlightSmall"/>
 			</Button>
 		</Frames>
 		<Scripts>

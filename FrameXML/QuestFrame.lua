@@ -170,7 +170,6 @@ function QuestFrameProgressItems_Update()
 		
 		-- If there's money required then anchor and display it
 		if ( GetQuestMoneyToGet() > 0 ) then
-			QuestLogRequiredMoneyText:SetPoint("TOPLEFT", "QuestProgressRequiredMoneyText", "BOTTOMLEFT", -3, -4);
 			MoneyFrame_Update("QuestProgressRequiredMoneyFrame", GetQuestMoneyToGet());
 			
 			if ( GetQuestMoneyToGet() > GetMoney() ) then
@@ -356,16 +355,26 @@ function QuestFrameItems_Update(questState)
 		MoneyFrame_Update(questState.."MoneyFrame", money);
 	end
 	
+	-- Hide unused rewards
 	for i=totalRewards + 1, MAX_NUM_ITEMS, 1 do
 		getglobal(questItemName..i):Hide();
 	end
-	local questItem, name, texture, quality, isUsable, numItems = 1;
+
+	local questItem, name, texture, isTradeskillSpell, quality, isUsable, numItems = 1;
+	local rewardsCount = 0;
+	
+	-- Setup choosable rewards
 	if ( numQuestChoices > 0 ) then
-		getglobal(questState.."ItemChooseText"):Show();
-		QuestFrame_SetTextColor(getglobal(questState.."ItemChooseText"), material);
-		QuestFrame_SetAsLastShown(getglobal(questState.."ItemChooseText"), spacerFrame);
+		local itemChooseText = getglobal(questState.."ItemChooseText");
+		itemChooseText:Show();
+		QuestFrame_SetTextColor(itemChooseText, material);
+		QuestFrame_SetAsLastShown(itemChooseText, spacerFrame);
+		
+		local index;
+		local baseIndex = rewardsCount;
 		for i=1, numQuestChoices, 1 do	
-			questItem = getglobal(questItemName..i);
+			index = i + baseIndex;
+			questItem = getglobal(questItemName..index);
 			questItem.type = "choice";
 			numItems = 1;
 			if ( isQuestLog == 1 ) then
@@ -378,7 +387,7 @@ function QuestFrameItems_Update(questState)
 			-- For the tooltip
 			questItem.rewardType = "item"
 			QuestFrame_SetAsLastShown(questItem, spacerFrame);
-			getglobal(questItemName..i.."Name"):SetText(name);
+			getglobal(questItemName..index.."Name"):SetText(name);
 			SetItemButtonCount(questItem, numItems);
 			SetItemButtonTexture(questItem, texture);
 			if ( isUsable ) then
@@ -390,23 +399,66 @@ function QuestFrameItems_Update(questState)
 			end
 			if ( i > 1 ) then
 				if ( mod(i,2) == 1 ) then
-					questItem:SetPoint("TOPLEFT", questItemName..(i - 2), "BOTTOMLEFT", 0, -2);
+					questItem:SetPoint("TOPLEFT", questItemName..(index - 2), "BOTTOMLEFT", 0, -2);
 				else
-					questItem:SetPoint("TOPLEFT", questItemName..(i - 1), "TOPRIGHT", 1, 0);
+					questItem:SetPoint("TOPLEFT", questItemName..(index - 1), "TOPRIGHT", 1, 0);
 				end
 			else
-				questItem:SetPoint("TOPLEFT", questState.."ItemChooseText", "BOTTOMLEFT", -3, -5);
+				questItem:SetPoint("TOPLEFT", itemChooseText, "BOTTOMLEFT", -3, -5);
 			end
-			
+			rewardsCount = rewardsCount + 1;
 		end
 	else
 		getglobal(questState.."ItemChooseText"):Hide();
 	end
-	local rewardsCount = 0;
-	if ( numQuestRewards > 0 or money > 0 or numQuestSpellRewards > 0) then
+	
+	-- Setup spell rewards
+	if ( numQuestSpellRewards > 0 ) then
+		local learnSpellText = getglobal(questState.."SpellLearnText");
+		learnSpellText:Show();
+		QuestFrame_SetTextColor(learnSpellText, material);
+		QuestFrame_SetAsLastShown(learnSpellText, spacerFrame);
+
+		--Anchor learnSpellText if there were choosable rewards
+		if ( rewardsCount > 0 ) then
+			learnSpellText:SetPoint("TOPLEFT", questItemName..rewardsCount, "BOTTOMLEFT", 3, -5);
+		else
+			learnSpellText:SetPoint("TOPLEFT", questState.."RewardTitleText", "BOTTOMLEFT", 0, -5);
+		end
+
+		if ( isQuestLog == 1 ) then
+			texture, name, isTradeskillSpell = GetQuestLogRewardSpell();
+		else
+			texture, name, isTradeskillSpell = GetRewardSpell();
+		end
+		
+		if ( isTradeskillSpell ) then
+			learnSpellText:SetText(REWARD_TRADESKILL_SPELL);
+		else
+			learnSpellText:SetText(REWARD_SPELL);
+		end
+		
+		rewardsCount = rewardsCount + 1;
+		questItem = getglobal(questItemName..rewardsCount);
+		questItem:Show();
+		-- For the tooltip
+		questItem.rewardType = "spell";
+		SetItemButtonCount(questItem, 0);
+		SetItemButtonTexture(questItem, texture);
+		getglobal(questItemName..rewardsCount.."Name"):SetText(name);
+		questItem:SetPoint("TOPLEFT", learnSpellText, "BOTTOMLEFT", -3, -5);
+	else
+		getglobal(questState.."SpellLearnText"):Hide();
+	end
+	
+	-- Setup mandatory rewards
+	if ( numQuestRewards > 0 or money > 0) then
 		QuestFrame_SetTextColor(questItemReceiveText, material);
 		-- Anchor the reward text differently if there are choosable rewards
-		if ( numQuestChoices > 0  ) then
+		if ( numQuestSpellRewards > 0  ) then
+			questItemReceiveText:SetText(TEXT(REWARD_ITEMS));
+			questItemReceiveText:SetPoint("TOPLEFT", questItemName..rewardsCount, "BOTTOMLEFT", 3, -5);		
+		elseif ( numQuestChoices > 0  ) then
 			questItemReceiveText:SetText(TEXT(REWARD_ITEMS));
 			local index = numQuestChoices;
 			if ( mod(index, 2) == 0 ) then
@@ -420,8 +472,11 @@ function QuestFrameItems_Update(questState)
 		questItemReceiveText:Show();
 		QuestFrame_SetAsLastShown(questItemReceiveText, spacerFrame);
 		-- Setup mandatory rewards
+		local index;
+		local baseIndex = rewardsCount;
 		for i=1, numQuestRewards, 1 do
-			questItem = getglobal(questItemName..(i + numQuestChoices));
+			index = i + baseIndex;
+			questItem = getglobal(questItemName..index);
 			questItem.type = "reward";
 			numItems = 1;
 			if ( isQuestLog == 1 ) then
@@ -434,7 +489,7 @@ function QuestFrameItems_Update(questState)
 			-- For the tooltip
 			questItem.rewardType = "item";
 			QuestFrame_SetAsLastShown(questItem, spacerFrame);
-			getglobal(questItemName..(i + numQuestChoices).."Name"):SetText(name);
+			getglobal(questItemName..index.."Name"):SetText(name);
 			SetItemButtonCount(questItem, numItems);
 			SetItemButtonTexture(questItem, texture);
 			if ( isUsable ) then
@@ -447,38 +502,14 @@ function QuestFrameItems_Update(questState)
 			
 			if ( i > 1 ) then
 				if ( mod(i,2) == 1 ) then
-					questItem:SetPoint("TOPLEFT", questItemName..((i + numQuestChoices) - 2), "BOTTOMLEFT", 0, -2);
+					questItem:SetPoint("TOPLEFT", questItemName..(index - 2), "BOTTOMLEFT", 0, -2);
 				else
-					questItem:SetPoint("TOPLEFT", questItemName..((i + numQuestChoices) - 1), "TOPRIGHT", 1, 0);
+					questItem:SetPoint("TOPLEFT", questItemName..(index - 1), "TOPRIGHT", 1, 0);
 				end
 			else
 				questItem:SetPoint("TOPLEFT", questState.."ItemReceiveText", "BOTTOMLEFT", -3, -5);
 			end
 			rewardsCount = rewardsCount + 1;
-		end
-		-- Setup spell reward
-		if ( numQuestSpellRewards > 0 ) then
-			if ( isQuestLog == 1 ) then
-				texture, name = GetQuestLogRewardSpell();
-			else
-				texture, name = GetRewardSpell();
-			end
-			questItem = getglobal(questItemName..(rewardsCount + numQuestChoices + 1));
-			questItem:Show();
-			-- For the tooltip
-			questItem.rewardType = "spell";
-			SetItemButtonCount(questItem, 0);
-			SetItemButtonTexture(questItem, texture);
-			getglobal(questItemName..(rewardsCount + numQuestChoices + 1).."Name"):SetText(name);
-			if ( rewardsCount > 0 ) then
-				if ( mod(rewardsCount,2) == 0 ) then
-					questItem:SetPoint("TOPLEFT", questItemName..((rewardsCount + numQuestChoices) - 1), "BOTTOMLEFT", 0, -2);
-				else
-					questItem:SetPoint("TOPLEFT", questItemName..((rewardsCount + numQuestChoices)), "TOPRIGHT", 1, 0);
-				end
-			else
-				questItem:SetPoint("TOPLEFT", questState.."ItemReceiveText", "BOTTOMLEFT", -3, -5);
-			end
 		end
 	else	
 		questItemReceiveText:Hide();

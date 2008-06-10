@@ -115,7 +115,7 @@ function QuestLog_Update()
 	-- Update the quest listing
 	QuestLogHighlightFrame:Hide();
 	
-	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questHighlightText, questDisabledText, questHighlight, questCheck;
+	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questHighlight, questCheck;
 	local questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete, color;
 	local numPartyMembers, partyMembersOnQuest, tempWidth, textWidth;
 	for i=1, QUESTS_DISPLAYED, 1 do
@@ -125,8 +125,6 @@ function QuestLog_Update()
 		questNumGroupMates = getglobal("QuestLogTitle"..i.."GroupMates");
 		questCheck = getglobal("QuestLogTitle"..i.."Check");
 		questNormalText = getglobal("QuestLogTitle"..i.."NormalText");
-		questHighlightText = getglobal("QuestLogTitle"..i.."HighlightText");
-		questDisabledText = getglobal("QuestLogTitle"..i.."DisabledText");
 		questHighlight = getglobal("QuestLogTitle"..i.."Highlight");
 		if ( questIndex <= numEntries ) then
 			questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete = GetQuestLogTitle(questIndex);
@@ -191,8 +189,6 @@ function QuestLog_Update()
 				end
 				
 				questNormalText:SetWidth(tempWidth);
-				questHighlightText:SetWidth(tempWidth);
-				questDisabledText:SetWidth(tempWidth);
 				
 				-- If there's quest tag position check accordingly
 				questCheck:Hide();
@@ -204,8 +200,6 @@ function QuestLog_Update()
 				questTitleTag:SetText("");
 				-- Reset to max text width
 				questNormalText:SetWidth(275);
-				questHighlightText:SetWidth(275);
-				questDisabledText:SetWidth(275);
 
 				-- Show check if quest is being watched
 				questCheck:Hide();
@@ -381,7 +375,6 @@ function QuestLog_UpdateQuestDetails(doNotScroll)
 	for i=numObjectives + 1, MAX_OBJECTIVES, 1 do
 		getglobal("QuestLogObjective"..i):Hide();
 	end
-
 	-- If there's money required then anchor and display it
 	if ( GetQuestLogRequiredMoney() > 0 ) then
 		if ( numObjectives > 0 ) then
@@ -468,12 +461,12 @@ function QuestLogTitleButton_OnClick(button)
 			else
 				-- Set error if no objectives
 				if ( GetNumQuestLeaderBoards(questIndex) == 0 ) then
-					UIErrorsFrame:AddMessage(QUEST_WATCH_NO_OBJECTIVES, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+					UIErrorsFrame:AddMessage(QUEST_WATCH_NO_OBJECTIVES, 1.0, 0.1, 0.1, 1.0);
 					return;
 				end
 				-- Set an error message if trying to show too many quests
 				if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then
-					UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+					UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
 					return;
 				end
 				AddQuestWatch(questIndex);

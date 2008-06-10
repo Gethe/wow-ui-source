@@ -14,6 +14,11 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
+				--KeyRing special case code
+				if ( this:GetParent():GetID() == KEYRING_CONTAINER ) then
+					KeyRingItemButton_OnClick(arg1);
+					return;
+				end
 				ContainerFrameItemButton_OnClick(arg1);
 			</OnClick>
 			<OnLoad>
@@ -33,9 +38,19 @@
 				end
 			</OnHide>
 			<OnDragStart>
+				--KeyRing special case code
+				if ( this:GetParent():GetID() == KEYRING_CONTAINER ) then
+					KeyRingItemButton_OnClick("LeftButton", 1);
+					return;
+				end
 				ContainerFrameItemButton_OnClick("LeftButton", 1);
 			</OnDragStart>
 			<OnReceiveDrag>
+				--KeyRing special case code
+				if ( this:GetParent():GetID() == KEYRING_CONTAINER ) then
+					KeyRingItemButton_OnClick("LeftButton", 1);
+					return;
+				end
 				ContainerFrameItemButton_OnClick("LeftButton", 1);
 			</OnReceiveDrag>
 			<OnUpdate>
@@ -65,7 +80,7 @@
 			<Layer level="ARTWORK">
 				<Texture name="$parentBackgroundTop" file="Interface\ContainerFrame\UI-Bag-Components">
 					<Size>
-						<AbsDimension x="256" y="256"/>
+						<AbsDimension x="256" y="512"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="$parent">
@@ -75,21 +90,23 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBackgroundMiddle1" file="Interface\ContainerFrame\UI-Bag-Middle">
+				<Texture name="$parentBackgroundMiddle1" file="Interface\ContainerFrame\UI-Bag-Components">
 					<Size>
-						<AbsDimension x="256" y="256"/>
+						<AbsDimension x="256" y="512"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentBackgroundTop" relativePoint="BOTTOM"/>
 					</Anchors>
+					<TexCoords left="0" right="1" top="0.3515625" bottom="0.8515625"/>
 				</Texture>
-				<Texture name="$parentBackgroundMiddle2" file="Interface\ContainerFrame\UI-Bag-Middle" hidden="true">
+				<Texture name="$parentBackgroundMiddle2" file="Interface\ContainerFrame\UI-Bag-Components" hidden="true">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
 					</Anchors>
+					<TexCoords left="0" right="1" top="0.353515625" bottom="0.8515625"/>
 				</Texture>
 				<Texture name="$parentBackgroundBottom" file="Interface\ContainerFrame\UI-Bag-Components">
 					<Size>
@@ -98,7 +115,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
 					</Anchors>
-					<TexCoords left="0" right="1" top="0.66015625" bottom="0.69921875"/>
+					<TexCoords left="0" right="1" top="0.330078125" bottom="0.349609375"/>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontHighlight">
 					<Size>
@@ -180,6 +197,11 @@
 							if (GetBindingKey("TOGGLEBACKPACK")) then
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
 							end
+						elseif ( this:GetID() == KEYRING_CONTAINER ) then
+							GameTooltip:SetText(TEXT(KEYRING), 1.0, 1.0, 1.0);
+							if (GetBindingKey("TOGGLEKEYRING")) then
+								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEKEYRING")..")"..FONT_COLOR_CODE_CLOSE)
+							end
 						elseif ( GameTooltip:SetInventoryItem("player", ContainerIDToInventoryID(this:GetID())) ) then
 							local binding = GetBindingKey("TOGGLEBAG"..(4 - this:GetID() + 1));
 							if ( binding ) then
@@ -233,4 +255,5 @@
 	<Frame name="ContainerFrame9" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 	<Frame name="ContainerFrame10" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 	<Frame name="ContainerFrame11" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame12" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 </Ui>

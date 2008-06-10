@@ -64,6 +64,10 @@ function ExhaustionTick_Update()
 			ExhaustionLevelFillBar:SetVertexColor(0.58, 0.0, 0.55, 0.15);
 			ExhaustionTickHighlight:SetVertexColor(0.58, 0.0, 0.55);
 		end
+
+	end
+	if ( ReputationWatchBar:IsShown() ) then
+		ExhaustionTick:Hide();
 	end
 end
 
@@ -162,5 +166,18 @@ function ExhaustionTick_OnUpdate(elapsed)
 		else
 			ExhaustionTick.timer = ExhaustionTick.timer - elapsed;
 		end
+	end
+end
+
+--KeyRing Functions
+
+function MainMenuBar_UpdateKeyRing()
+	if ( SHOW_KEYRING == 1 ) then
+		MainMenuBarTexture3:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-KeyRing");
+		MainMenuBarTexture3:SetTexCoord(0, 1, 0.1640625, 0.5);
+		MainMenuBarTexture2:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-KeyRing");
+		MainMenuBarTexture2:SetTexCoord(0, 1, 0.6640625, 1);
+		MainMenuBarPerformanceBarFrame:SetPoint("BOTTOMRIGHT", MainMenuBar, "BOTTOMRIGHT", -235, -10);
+		KeyRingButton:Show();
 	end
 end

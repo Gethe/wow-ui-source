@@ -229,11 +229,20 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="BrowseNoResultsText" inherits="GameFontNormal" text="BROWSE_SEARCH_TEXT" hidden="true">
+						<FontString name="BrowseNoResultsText" inherits="GameFontNormal" text="BROWSE_SEARCH_TEXT"  hidden="true">
 							<Anchors>
 								<Anchor point="TOP">
 									<Offset>
 										<AbsDimension x="115" y="-120"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BrowseSearchDotsText" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="BrowseNoResultsText" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -728,7 +737,6 @@
 							</OnTabPressed>
 							<OnEnterPressed>
 								AuctionFrameBrowse_Search();
-								BrowseNoResultsText:SetText(BROWSE_NO_RESULTS);		
 								this:ClearFocus();
 							</OnEnterPressed>
 						</Scripts>
@@ -736,7 +744,7 @@
 					</EditBox>
 					<EditBox name="BrowseMinLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
 						<Size>
-							<AbsDimension x="30" y="16"/>
+							<AbsDimension x="25" y="16"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="BrowseLevelText" relativePoint="BOTTOMLEFT">
@@ -751,7 +759,7 @@
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="BrowseMinLevel" relativePoint="RIGHT">
 											<Offset>
-												<AbsDimension x="-5" y="0"/>
+												<AbsDimension x="0" y="1"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -773,12 +781,12 @@
 					</EditBox>
 					<EditBox name="BrowseMaxLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
 						<Size>
-							<AbsDimension x="30" y="16"/>
+							<AbsDimension x="25" y="16"/>
 						</Size>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="BrowseMinLevel" relativePoint="RIGHT">
 								<Offset>
-									<AbsDimension x="8" y="0"/>
+									<AbsDimension x="12" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -799,7 +807,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="BrowseLevelText" relativePoint="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="10" y="-2"/>
+									<AbsDimension x="-5" y="-1"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -901,26 +909,9 @@
 						<Scripts>
 							<OnClick>
 								AuctionFrameBrowse_Search();
-								BrowseNoResultsText:SetText(BROWSE_NO_RESULTS);								
 							</OnClick>
 							<OnUpdate>
-								if (CanSendAuctionQuery()) then
-									this:Enable();
-									if ( BrowsePrevPageButton.isEnabled ) then
-										BrowsePrevPageButton:Enable();
-									else
-										BrowsePrevPageButton:Disable();
-									end
-									if ( BrowseNextPageButton.isEnabled ) then
-										BrowseNextPageButton:Enable();
-									else
-										BrowseNextPageButton:Disable();
-									end
-								else
-									this:Disable();
-									BrowsePrevPageButton:Disable();
-									BrowseNextPageButton:Disable();
-								end
+								BrowseSearchButton_OnUpdate(arg1);
 							</OnUpdate>
 						</Scripts>
 					</Button>

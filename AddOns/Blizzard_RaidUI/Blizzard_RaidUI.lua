@@ -56,7 +56,17 @@ function RaidGroupFrame_Update()
 		else
 			RaidFrameAddMemberButton:Disable();
 		end
+		if ( IsRaidLeader() ) then
+			RaidFrameReadyCheckButton:Show();
+		else
+			RaidFrameReadyCheckButton:Hide();
+		end
 	end
+
+	if ( RaidFrameReadyCheckButton:IsShown() ) then
+		RaidFrameRaidInfoButton:SetPoint("LEFT", "RaidFrameReadyCheckButton", "RIGHT", 2, 0);
+	end
+
 
 	-- Reset group index counters;
 	for i=1, NUM_RAID_GROUPS do
@@ -79,7 +89,7 @@ function RaidGroupFrame_Update()
 	-- Fill out buttons
 	local numRaidMembers = GetNumRaidMembers();
 	local raidGroup, color;
-	local buttonName, buttonLevel, buttonClassText, buttonClass, buttonRank;
+	local buttonName, buttonLevel, buttonClass, buttonRank;
 	local name, rank, subgroup, level, class, fileName, zone, online, isDead;
 	for i=1, MAX_RAID_MEMBERS do
 		button = getglobal("RaidGroupButton"..i);
@@ -89,7 +99,6 @@ function RaidGroupFrame_Update()
 			-- To prevent errors when the server hiccups
 			if ( raidGroup.nextIndex <= MEMBERS_PER_RAID_GROUP ) then
 				buttonName = getglobal("RaidGroupButton"..i.."Name");
-				buttonClassText = getglobal("RaidGroupButton"..i.."ClassText");
 				buttonClass = getglobal("RaidGroupButton"..i.."Class");
 				buttonLevel = getglobal("RaidGroupButton"..i.."Level");
 				buttonRank = getglobal("RaidGroupButton"..i.."Rank");
@@ -130,21 +139,21 @@ function RaidGroupFrame_Update()
 				
 				if ( online ) then
 					if ( isDead ) then
-						buttonName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-						buttonClassText:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-						buttonLevel:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						buttonName:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						buttonClass:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						buttonLevel:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 					else
 						color = RAID_CLASS_COLORS[fileName];
 						if ( color ) then
-							buttonName:SetVertexColor(color.r, color.g, color.b);
-							buttonClassText:SetVertexColor(color.r, color.g, color.b);
-							buttonLevel:SetVertexColor(color.r, color.g, color.b);
+							buttonName:SetTextColor(color.r, color.g, color.b);
+							buttonClass:SetTextColor(color.r, color.g, color.b);
+							buttonLevel:SetTextColor(color.r, color.g, color.b);
 						end
 					end
 				else
-					buttonName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-					buttonClassText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-					buttonLevel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					buttonName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					buttonClass:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					buttonLevel:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 				end
 
 				if ( rank == 2 ) then
@@ -187,26 +196,26 @@ function RaidGroupFrame_UpdateHealth(id)
 	local name, rank, subgroup, level, class, fileName, zone, online, isDead = GetRaidRosterInfo(id);
 
 	local buttonName = getglobal("RaidGroupButton"..id.."Name");
-	local buttonClass = getglobal("RaidGroupButton"..id.."ClassText");
+	local buttonClass = getglobal("RaidGroupButton"..id.."Class");
 	local buttonLevel = getglobal("RaidGroupButton"..id.."Level");
 
 	if ( online ) then
 		if ( isDead ) then
-			buttonName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-			buttonClass:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-			buttonLevel:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			buttonName:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			buttonClass:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			buttonLevel:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		else
 			color = RAID_CLASS_COLORS[fileName];
 			if ( color ) then
-				buttonName:SetVertexColor(color.r, color.g, color.b);
-				buttonClass:SetVertexColor(color.r, color.g, color.b);
-				buttonLevel:SetVertexColor(color.r, color.g, color.b);
+				buttonName:SetTextColor(color.r, color.g, color.b);
+				buttonClass:SetTextColor(color.r, color.g, color.b);
+				buttonLevel:SetTextColor(color.r, color.g, color.b);
 			end
 		end
 	else
-		buttonName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		buttonClass:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		buttonLevel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		buttonName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		buttonClass:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		buttonLevel:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
 end
 
@@ -234,7 +243,7 @@ function RaidGroupButton_OnDragStart()
 	end
 	local cursorX, cursorY = GetCursorPosition();
 	this:ClearAllPoints();
-	this:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", cursorX*GetScreenWidthScale(), cursorY*GetScreenHeightScale());
+	this:SetPoint("CENTER", nil, "BOTTOMLEFT", cursorX*GetScreenWidthScale(), cursorY*GetScreenHeightScale());
 	this:StartMoving();
 	MOVING_RAID_MEMBER = this;
 	SetRaidRosterSelection(this.id);
@@ -463,18 +472,27 @@ end
 
 function RaidPulloutButton_UpdateBuffs(button, showBuffs, unit)
 	-- Handle buffs/debuffs
-	local debuff;
+	local debuff, debuffButton, debuffStack, debuffType, color;
+	this.hasDispellable = nil;
 	for i=1, MAX_PARTY_DEBUFFS do
+		local debuffBorder = getglobal(button:GetName().."Debuff"..i.."Border");
+		local raidDebuff = getglobal(button:GetName().."Debuff"..i.."Icon");
 		if ( showBuffs ) then
 			debuff = UnitBuff(unit, i, SHOW_CASTABLE_BUFFS);
-			getglobal(button:GetName().."Debuff"..i.."Overlay"):Hide();
+			debuffBorder:Hide();
 		else
-			debuff = UnitDebuff(unit, i, SHOW_DISPELLABLE_DEBUFFS);
-			getglobal(button:GetName().."Debuff"..i.."Overlay"):Show();
+			debuff, debuffStack, debuffType = UnitDebuff(unit, i, SHOW_DISPELLABLE_DEBUFFS);
+			debuffBorder:Show();
 		end
-		
 		if ( debuff ) then
-			getglobal(button:GetName().."Debuff"..i.."Icon"):SetTexture(debuff);
+			raidDebuff:SetTexture(debuff);
+			if ( debuffType ) then
+				color = DebuffTypeColor[debuffType];
+				this.hasDispellable = 1;
+			else
+				color = DebuffTypeColor["none"];
+			end
+			debuffBorder:SetVertexColor(color.r, color.g, color.b);
 			getglobal(button:GetName().."Debuff"..i):Show();
 		else
 			getglobal(button:GetName().."Debuff"..i):Hide();
@@ -520,10 +538,19 @@ function RaidPulloutButton_OnDragStart(frame)
 		return;
 	end
 	local cursorX, cursorY = GetCursorPosition();
+	frame:SetFrameStrata("DIALOG");
 	frame:ClearAllPoints();
-	frame:SetPoint("TOP", "UIParent", "BOTTOMLEFT", cursorX*GetScreenWidthScale(), cursorY*GetScreenHeightScale());
+	frame:SetPoint("TOP", nil, "BOTTOMLEFT", cursorX*GetScreenWidthScale(), cursorY*GetScreenHeightScale());
 	frame:StartMoving();
 	MOVING_RAID_PULLOUT = frame;
+end
+
+function RaidPulloutStopMoving()
+	if ( MOVING_RAID_PULLOUT ) then
+		MOVING_RAID_PULLOUT:StopMovingOrSizing();
+		MOVING_RAID_PULLOUT:SetFrameStrata("BACKGROUND");
+		ValidateFramePosition(MOVING_RAID_PULLOUT, 25);
+	end
 end
 
 function RaidPullout_GetFrame(filterID)
@@ -610,3 +637,37 @@ function RaidPulloutDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
+-- Ready Check Functions
+function ShowReadyCheck()
+	local name, rank, leader;
+	for i=1, MAX_RAID_MEMBERS do
+		name, rank = GetRaidRosterInfo(i);
+		if ( name ) then
+			-- find leader
+			if ( rank == 2 ) then
+				leader = "raid"..i;
+				break;
+			end
+		end
+	end
+	SetPortraitTexture(ReadyCheckPortrait, leader);
+	ReadyCheckFrameText:SetText(format(READY_CHECK_MESSAGE, name));
+	ReadyCheckFrame:Show();
+	ReadyCheckFrame.timer = 30;
+	PlaySound("ReadyCheck");
+end
+
+function ReadyCheck_OnUpdate(elapsed)
+	if ( not ReadyCheckFrame.timer ) then
+		return;
+	end
+	ReadyCheckFrame.timer = ReadyCheckFrame.timer-elapsed;
+	if ( ReadyCheckFrame.timer < 0 ) then
+		-- Timed out
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(TEXT(READY_CHECK_YOU_WERE_AFK), info.r, info.g, info.b, info.id);
+		ReadyCheckFrame.timer = nil;
+		ReadyCheckFrame:Hide();
+	end
+	
+end

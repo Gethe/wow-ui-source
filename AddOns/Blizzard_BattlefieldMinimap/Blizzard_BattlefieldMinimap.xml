@@ -23,7 +23,7 @@
 		</OnLoad>
 	</Scripts>
 </Frame>
-<Button name="BattlefieldMinimapTab" hidden="true" frameStrata="LOW" parent="UIParent" movable="true">
+<Button name="BattlefieldMinimapTab" hidden="true" frameStrata="LOW" parent="UIParent" movable="true" clampedToScreen="true">
 	<Size>
 		<AbsDimension x="64" y="32"/>
 	</Size>
@@ -117,7 +117,7 @@
 			BattlefieldMinimap:StopMovingOrSizing();
 		</OnDragStop>
 	</Scripts>
-	<NormalText name="$parentText" inherits="GameFontNormalSmall" text="BATTLEFIELD_MINIMAP">
+	<ButtonText name="$parentText" text="BATTLEFIELD_MINIMAP">
 		<Size>
 			<AbsDimension x="50" y="8"/>
 		</Size>
@@ -128,7 +128,8 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-	</NormalText>
+	</ButtonText>
+	<NormalFont inherits="GameFontNormalSmall"/>
 	<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="$parentLeft">
@@ -442,7 +443,7 @@
 			BattlefieldMinimapTab:Hide();
 		</OnHide>
 		<OnEvent>
-			BattlefieldMinimap_OnEvent();
+			BattlefieldMinimap_OnEvent(event);
 		</OnEvent>
 		<OnUpdate>
 			BattlefieldMinimap_OnUpdate(arg1);

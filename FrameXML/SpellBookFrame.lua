@@ -20,6 +20,21 @@ function ToggleSpellBook(bookType)
 			ShowUIPanel(SpellBookFrame);
 		end
 		local currentPage, maxPages = SpellBook_GetCurrentPage();
+		if ( currentPage > maxPages ) then
+			SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = maxPages;
+			currentPage = maxPages;
+			UpdateSpells();
+			if ( currentPage == 1 ) then
+				SpellBookPrevPageButton:Disable();
+			else
+				SpellBookPrevPageButton:Enable();
+			end
+			if ( currentPage == maxPages ) then
+				SpellBookNextPageButton:Disable();
+			else
+				SpellBookNextPageButton:Enable();
+			end
+		end
 		if ( currentPage == 1 ) then
 			SpellBookPrevPageButton:Disable();
 		else
@@ -61,12 +76,17 @@ function SpellBookFrame_OnEvent()
 	if ( event == "SPELLS_CHANGED" ) then
 		if ( SpellBookFrame:IsVisible() ) then
 			SpellBookFrame_Update();
+			SpellBook_UpdatePageArrows();
 		end
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
 		local flashFrame = getglobal("SpellBookSkillLineTab"..arg1.."Flash");
-		if ( flashFrame ) then
-			flashFrame:Show();
-			SpellBookFrame.flashTabs = 1;
+		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
+			return;
+		else
+			if ( flashFrame ) then
+				flashFrame:Show();
+				SpellBookFrame.flashTabs = 1;
+			end
 		end
 	end
 end

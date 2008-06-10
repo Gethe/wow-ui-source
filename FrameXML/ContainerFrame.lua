@@ -1,15 +1,16 @@
-NUM_CONTAINER_FRAMES = 11;
+NUM_CONTAINER_FRAMES = 12;
 NUM_BAG_FRAMES = 4;
 MAX_CONTAINER_ITEMS = 36;
 NUM_CONTAINER_COLUMNS = 4;
 ROWS_IN_BG_TEXTURE = 6;
 MAX_BG_TEXTURES = 2;
-BG_TEXTURE_HEIGHT = 256;
+BG_TEXTURE_HEIGHT = 512;
 CONTAINER_WIDTH = 192;
 CONTAINER_SPACING = 0;
 VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = 0;
+CONTAINER_SCALE = 0.75;
 
 function ContainerFrame_OnLoad()
 	this:RegisterEvent("BAG_UPDATE");
@@ -48,7 +49,7 @@ function ToggleBag(id)
 	end
 	
 	local size = GetContainerNumSlots(id);
-	if ( size > 0 ) then
+	if ( size > 0 or id == KEYRING_CONTAINER ) then
 		local containerShowing;
 		for i=1, NUM_CONTAINER_FRAMES, 1 do
 			local frame = getglobal("ContainerFrame"..i);
@@ -93,7 +94,6 @@ function ContainerFrame_OnHide()
 			UpdateBagButtonHighlight(this:GetID()); 
 		end
 	end
-	PlaySound("igBackPackClose");
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown - 1;
 	-- Remove the closed bag from the list and collapse the rest of the entries
 	local index = 1;
@@ -112,6 +112,13 @@ function ContainerFrame_OnHide()
 		index = index + 1;
 	end
 	updateContainerFrameAnchors();
+
+	if ( this:GetID() == KEYRING_CONTAINER ) then
+		UpdateMicroButtons();
+		PlaySound("KeyRingClose");
+	else
+		PlaySound("igBackPackClose");
+	end
 end
 
 function ContainerFrame_OnShow()
@@ -122,8 +129,16 @@ function ContainerFrame_OnShow()
 		if ( button ) then
 			button:SetChecked(1);
 		end
+	else
+		UpdateBagButtonHighlight(this:GetID());
 	end
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown + 1;
+	if ( this:GetID() == KEYRING_CONTAINER ) then
+		UpdateMicroButtons();
+		PlaySound("KeyRingOpen");
+	else
+		PlaySound("igBackPackOpen");
+	end
 end
 
 function OpenBag(id)
@@ -163,7 +178,7 @@ function IsBagOpen(id)
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local containerFrame = getglobal("ContainerFrame"..i);
 		if ( containerFrame:IsShown() and (containerFrame:GetID() == id) ) then
-			return 1;
+			return i;
 		end
 	end
 	return nil;
@@ -219,9 +234,12 @@ end
 function ContainerFrame_Update(frame)
 	local id = frame:GetID();
 	local name = frame:GetName();
+	local texture, itemCount, locked, quality, readable;
 	for j=1, frame.size, 1 do
 		local itemButton = getglobal(name.."Item"..j);
-		local texture, itemCount, locked, quality, readable = GetContainerItemInfo(id, itemButton:GetID());
+		
+		texture, itemCount, locked, quality, readable = GetContainerItemInfo(id, itemButton:GetID());
+		
 		SetItemButtonTexture(itemButton, texture);
 		SetItemButtonCount(itemButton, itemCount);
 
@@ -311,11 +329,13 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		local bagTextureSuffix = "";
 		if ( id > NUM_BAG_FRAMES ) then
 			bagTextureSuffix = "-Bank";
+		elseif ( id == KEYRING_CONTAINER ) then
+			bagTextureSuffix = "-Keyring";
 		end
 		-- Set textures
 		bgTextureTop:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
 		for i=1, MAX_BG_TEXTURES do
-			getglobal(name.."BackgroundMiddle"..i):SetTexture("Interface\\ContainerFrame\\UI-Bag-Middle"..bagTextureSuffix);
+			getglobal(name.."BackgroundMiddle"..i):SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
 			getglobal(name.."BackgroundMiddle"..i):Hide();
 		end
 		bgTextureBottom:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
@@ -335,15 +355,15 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 		-- Bag background display stuff
 		if ( isPlusTwoBag ) then
-			bgTextureTop:SetTexCoord(0, 1, 0.375, 0.66015625);
-			bgTextureTop:SetHeight(73);
+			bgTextureTop:SetTexCoord(0, 1, 0.189453125, 0.330078125);
+			bgTextureTop:SetHeight(72);
 		else
 			if ( rows == 1 ) then
 				-- If only one row chop off the bottom of the texture
-				bgTextureTop:SetTexCoord(0, 1, 0, 0.3359375);
+				bgTextureTop:SetTexCoord(0, 1, 0.00390625, 0.16796875);
 				bgTextureTop:SetHeight(86);
 			else
-				bgTextureTop:SetTexCoord(0, 1, 0, 0.37109375);
+				bgTextureTop:SetTexCoord(0, 1, 0.00390625, 0.18359375);
 				bgTextureTop:SetHeight(94);
 			end
 		end
@@ -362,14 +382,14 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		else
 			-- Try to cycle all the middle bg textures
 			local firstRowPixelOffset = 9;
-			local firstRowTexCoordOffset = 0.03515625;
+			local firstRowTexCoordOffset = 0.353515625;
 			for i=1, bgTextureCount do
 				bgTextureMiddle = getglobal(name.."BackgroundMiddle"..i);
 				if ( remainingRows > ROWS_IN_BG_TEXTURE ) then
 					-- If more rows left to draw than can fit in a texture then draw the max possible
-					height = ROWS_IN_BG_TEXTURE*rowHeight;
+					height = ( ROWS_IN_BG_TEXTURE*rowHeight ) + firstRowTexCoordOffset;
 					bgTextureMiddle:SetHeight(height);
-					bgTextureMiddle:SetTexCoord(0, 1, 0, height/BG_TEXTURE_HEIGHT);
+					bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
 					bgTextureMiddle:Show();
 					remainingRows = remainingRows - ROWS_IN_BG_TEXTURE;
 					middleBgHeight = middleBgHeight + height;
@@ -378,7 +398,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 					bgTextureMiddle:Show();
 					height = remainingRows*rowHeight-firstRowPixelOffset;
 					bgTextureMiddle:SetHeight(height);
-					bgTextureMiddle:SetTexCoord(0, 1, 0, height/BG_TEXTURE_HEIGHT);
+					bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
 					middleBgHeight = middleBgHeight + height;
 				end
 			end
@@ -389,10 +409,19 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		-- Set the frame height
 		frame:SetHeight(bgTextureTop:GetHeight()+bgTextureBottom:GetHeight()+middleBgHeight);	
 	end
-	getglobal(frame:GetName().."Name"):SetText(GetBagName(id));
-	getglobal(frame:GetName().."PortraitButton"):SetID(id);
 	frame:SetWidth(CONTAINER_WIDTH);
 	frame:SetID(id);
+	getglobal(frame:GetName().."PortraitButton"):SetID(id);
+	
+	--Special case code for keyrings
+	if ( id == KEYRING_CONTAINER ) then
+		getglobal(frame:GetName().."Name"):SetText(KEYRING);
+		SetPortraitToTexture(frame:GetName().."Portrait", "Interface\\ContainerFrame\\KeyRing-Bag-Icon");
+	else
+		getglobal(frame:GetName().."Name"):SetText(GetBagName(id));
+		SetBagPortaitTexture(getglobal(frame:GetName().."Portrait"), id);
+	end
+	
 	for j=1, size, 1 do
 		local index = size - j + 1;
 		local itemButton =getglobal(name.."Item"..j);
@@ -401,9 +430,9 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		if ( j == 1 ) then
 			-- Anchor the first item differently if its the backpack frame
 			if ( id == 0 ) then
-				itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -11, 30);
+				itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 30);
 			else
-				itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -11, 9);
+				itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 9);
 			end
 			
 		else
@@ -433,42 +462,84 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	for j=size + 1, MAX_CONTAINER_ITEMS, 1 do
 		getglobal(name.."Item"..j):Hide();
 	end
-	SetBagPortaitTexture(getglobal(frame:GetName().."Portrait"), id);
+	
 	-- Add the bag to the baglist
 	ContainerFrame1.bags[ContainerFrame1.bagsShown + 1] = frame:GetName();
 	updateContainerFrameAnchors();
 	frame:Show();
-	PlaySound("igBackPackOpen");
 end
 
 function updateContainerFrameAnchors()
 	-- Adjust the start anchor for bags depending on the multibars
+	local shrinkFrames, frame;
 	local xOffset = CONTAINER_OFFSET_X;
-	local uiScale = GetCVar("uiscale") + 0;
+	local yOffset = CONTAINER_OFFSET_Y;
+	local uiScale = 1;
+	local screenWidth = 1024;
 	local screenHeight = 768;
+	local containerScale = CONTAINER_SCALE;
 	if ( GetCVar("useUiScale") == "1" ) then
+		uiScale = GetCVar("uiscale") + 0;
+		screenWidth = 1024 / uiScale;
 		screenHeight = 768 / uiScale;
+		xOffset = CONTAINER_OFFSET_X / uiScale; 
+		yOffset = CONTAINER_OFFSET_Y / uiScale;
+		containerScale = uiScale * CONTAINER_SCALE;
 	end
-	local freeScreenHeight = screenHeight - CONTAINER_OFFSET_Y;
+	local freeScreenHeight = screenHeight - yOffset;
 	local index = 1;
 	local column = 0;
 	while ContainerFrame1.bags[index] do
-		local frame = getglobal(ContainerFrame1.bags[index]);
+		frame = getglobal(ContainerFrame1.bags[index]);
+		frame:SetScale(uiScale);
 		-- freeScreenHeight determines when to start a new column of bags
 		if ( index == 1 ) then
 			-- First bag
-			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -xOffset, CONTAINER_OFFSET_Y);
-		elseif ( freeScreenHeight < frame:GetHeight() ) then
+			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -xOffset, yOffset );
+		elseif ( freeScreenHeight < ( frame:GetHeight() * uiScale ) ) then
 			-- Start a new column
 			column = column + 1;
-			freeScreenHeight = UIParent:GetHeight() - CONTAINER_OFFSET_Y;
-			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH) - xOffset, CONTAINER_OFFSET_Y);
+			freeScreenHeight = screenHeight - yOffset;
+			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH) - xOffset, yOffset );
+			if ( BankFrame:IsShown() ) then
+				if ( frame:GetLeft() < ( BankFrame:GetRight() - 30 ) ) then
+					shrinkFrames = 1;
+					break;
+				end
+			end
 		else
 			-- Anchor to the previous bag
 			frame:SetPoint("BOTTOMRIGHT", ContainerFrame1.bags[index - 1], "TOPRIGHT", 0, CONTAINER_SPACING);	
 		end
-		freeScreenHeight = freeScreenHeight - frame:GetHeight() - VISIBLE_CONTAINER_SPACING;
+		freeScreenHeight = freeScreenHeight - ( frame:GetHeight() * uiScale ) - VISIBLE_CONTAINER_SPACING;
 		index = index + 1;
+	end
+
+	if ( shrinkFrames ) then
+		screenHeight = 768 / containerScale;
+		xOffset = xOffset / containerScale; 
+		yOffset = yOffset / containerScale; 
+		freeScreenHeight = screenHeight - yOffset;
+		index = 1;
+		column = 0;
+		while ContainerFrame1.bags[index] do
+			frame = getglobal(ContainerFrame1.bags[index]);
+			frame:SetScale(containerScale);
+			if ( index == 1 ) then
+				-- First bag
+				frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -xOffset, yOffset );
+			elseif ( freeScreenHeight < frame:GetHeight() ) then
+				-- Start a new column
+				column = column + 1;
+				freeScreenHeight = screenHeight - CONTAINER_OFFSET_Y;
+				frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH) - xOffset, yOffset );
+			else
+				-- Anchor to the previous bag
+				frame:SetPoint("BOTTOMRIGHT", ContainerFrame1.bags[index - 1], "TOPRIGHT", 0, CONTAINER_SPACING);	
+			end
+			freeScreenHeight = freeScreenHeight - frame:GetHeight() - VISIBLE_CONTAINER_SPACING;
+			index = index + 1;
+		end
 	end
 	-- This is used to position the unit tooltip
 	--[[
@@ -546,7 +617,15 @@ function ContainerFrameItemButton_OnEnter(button)
 		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 	end
 
+	-- Keyring specific code
+	if ( this:GetParent():GetID() == KEYRING_CONTAINER ) then
+		GameTooltip:SetInventoryItem("player", KeyRingButtonIDToInvSlotID(this:GetID()));
+		CursorUpdate();
+		return;
+	end
+
 	local hasCooldown, repairCost = GameTooltip:SetBagItem(button:GetParent():GetID(),button:GetID());
+	
 	--[[
 	Commented out to make dressup cursor work.
 	if ( hasCooldown ) then
@@ -595,24 +674,34 @@ function OpenAllBags(forceOpen)
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local containerFrame = getglobal("ContainerFrame"..i);
 		local bagButton = getglobal("CharacterBag"..(i -1).."Slot");
-		if ( (i <= NUM_BAG_FRAMES) and GetContainerNumSlots(bagButton:GetID() - CharacterBag0Slot:GetID() + 1) > 0) then
+		if ( (i <= NUM_BAG_FRAMES) and GetContainerNumSlots(bagButton:GetID() - CharacterBag0Slot:GetID() + 1) > 0) then		
 			totalBags = totalBags + 1;
 		end
 		if ( containerFrame:IsShown() ) then
 			containerFrame:Hide();
-			bagsOpen = bagsOpen + 1;
+			if ( containerFrame:GetID() ~= KEYRING_CONTAINER ) then
+				bagsOpen = bagsOpen + 1;
+			end
 		end
 	end
-	
-	if ( bagsOpen == totalBags and not forceOpen ) then
+	if ( bagsOpen >= totalBags and not forceOpen ) then
 		return;
+	else
+		ToggleBackpack();
+		ToggleBag(1);
+		ToggleBag(2);
+		ToggleBag(3);
+		ToggleBag(4);
+		if ( BankFrame:IsVisible() ) then
+			ToggleBag(5);
+			ToggleBag(6);
+			ToggleBag(7);
+			ToggleBag(8);
+			ToggleBag(9);
+			ToggleBag(10);
+		end
 	end
-	
-	ToggleBackpack();
-	ToggleBag(1);
-	ToggleBag(2);
-	ToggleBag(3);
-	ToggleBag(4);
+
 end
 
 function CloseAllBags()
@@ -620,4 +709,83 @@ function CloseAllBags()
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		CloseBag(i);
 	end
+end
+
+--KeyRing functions
+function KeyRingItemButton_OnClick(button)
+	if ( button == "LeftButton" ) then
+		if ( IsControlKeyDown() and not this.isBag ) then
+			DressUpItemLink(GetContainerItemLink(KEYRING_CONTAINER, this:GetID()));
+		elseif ( IsShiftKeyDown() and not this.isBag ) then
+			if ( ChatFrameEditBox:IsVisible() ) then
+				ChatFrameEditBox:Insert(GetContainerItemLink(KEYRING_CONTAINER, this:GetID()));
+			else
+				local texture, itemCount, locked = GetContainerItemInfo(KEYRING_CONTAINER, this:GetID());
+				if ( not locked ) then
+					OpenStackSplitFrame(this.count, this, "BOTTOMLEFT", "TOPLEFT");
+				end
+			end
+		else
+			PickupContainerItem(KEYRING_CONTAINER, this:GetID());
+		end
+	else
+		if ( IsControlKeyDown() and not this.isBag ) then
+			return;
+		elseif ( IsShiftKeyDown() and not this.isBag ) then
+			local texture, itemCount, locked = GetContainerItemInfo(KEYRING_CONTAINER, this:GetID());
+			if ( not locked ) then
+				OpenStackSplitFrame(this.count, this, "BOTTOMLEFT", "TOPLEFT");
+			end
+		else
+			UseContainerItem(KEYRING_CONTAINER, this:GetID());
+		end
+	end
+end
+
+function PutKeyInKeyRing()
+	local texture;
+	local emptyKeyRingSlot;
+	for i=1, GetKeyRingSize() do
+		texture = GetContainerItemInfo(KEYRING_CONTAINER, i);
+		if ( not texture ) then
+			emptyKeyRingSlot = i;
+			break;
+		end
+	end
+	if ( emptyKeyRingSlot ) then
+		PickupContainerItem(KEYRING_CONTAINER, emptyKeyRingSlot);
+	else
+		UIErrorsFrame:AddMessage(NO_EMPTY_KEYRING_SLOTS, 1.0, 0.1, 0.1, 1.0);
+	end
+end
+
+function ToggleKeyRing()
+	if ( IsOptionFrameOpen() ) then
+		return;
+	end
+	
+	local shownContainerID = IsBagOpen(KEYRING_CONTAINER);
+	if ( shownContainerID ) then
+		getglobal("ContainerFrame"..shownContainerID):Hide();
+	else
+		ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), GetKeyRingSize(), KEYRING_CONTAINER);
+
+		-- Stop keyring button pulse
+		SetButtonPulse(KeyRingButton, 0, 1);
+	end
+end
+
+function GetKeyRingSize()
+	local level = UnitLevel("player");
+	local size;
+	if ( level > 60 ) then
+		size = 16;
+	elseif ( level >= 50 ) then
+		size = 12;
+	elseif ( level >= 40 ) then
+		size = 8;
+	else
+		size = 4;
+	end
+	return size;
 end

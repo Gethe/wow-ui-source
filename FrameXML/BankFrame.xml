@@ -92,55 +92,31 @@
 			<Layer level="BACKGROUND">
 				<Texture name="BankPortraitTexture">
 					<Size>
-						<AbsDimension x="58" y="58"/>
+						<AbsDimension x="60" y="60"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="12" y="-8"/>
+                                <AbsDimension x="7" y="-6"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\BankFrame\UI-BankFrame-TopLeft">
+				<Texture file="Interface\BankFrame\UI-BankFrame">
 					<Size>
-						<AbsDimension x="256" y="256"/>
+						<AbsDimension x="512" y="512"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\BankFrame\UI-BankFrame-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\BankFrame\UI-BankFrame-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\BankFrame\UI-BankFrame-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 				<FontString name="BankFrameTitleText" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
-								<AbsDimension x="6" y="230"/>
+								<AbsDimension x="6" y="233"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -546,6 +522,7 @@
 				CloseBankBagFrames();
 				CloseBankFrame();
 				PlaySound("igMainMenuClose");
+				updateContainerFrameAnchors();
 			</OnHide>
 
 		</Scripts>

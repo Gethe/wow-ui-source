@@ -139,7 +139,7 @@ function DrawOneHopLines()
 		getglobal("TaxiRoute"..i):Hide();
 	end
 	if ( numSingleHops == 0 ) then
-		UIErrorsFrame:AddMessage(ERR_TAXINOPATHS, 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME);
+		UIErrorsFrame:AddMessage(ERR_TAXINOPATHS, 1.0, 0.1, 0.1, 1.0);
 		HideUIPanel(TaxiFrame);
 	end
 end

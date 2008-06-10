@@ -32,7 +32,7 @@
 					</Anchors>
 					<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 				</NormalTexture>
-				<NormalText name="$parentText" inherits="NumberFontNormalLarge" justifyH="RIGHT">
+				<ButtonText name="$parentText">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -40,7 +40,8 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</NormalText>
+				</ButtonText>
+				<NormalFont inherits="NumberFontNormalLarge" justifyH="RIGHT"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -72,7 +73,7 @@
 					</Anchors>
 					<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 				</NormalTexture>
-				<NormalText name="$parentText" inherits="NumberFontNormalLarge" justifyH="RIGHT">
+				<ButtonText name="$parentText">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -80,7 +81,8 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</NormalText>
+				</ButtonText>
+				<NormalFont inherits="NumberFontNormalLarge" justifyH="RIGHT"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -112,7 +114,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 				</NormalTexture>
-				<NormalText name="$parentText" inherits="NumberFontNormalLarge" justifyH="RIGHT">
+				<ButtonText name="$parentText">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -120,7 +122,8 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</NormalText>
+				</ButtonText>
+				<NormalFont inherits="NumberFontNormalLarge" justifyH="RIGHT"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -176,7 +179,7 @@
 					</Anchors>
 					<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 				</NormalTexture>
-				<NormalText name="$parentText" inherits="NumberFontNormal" justifyH="RIGHT">
+				<ButtonText name="$parentText">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -184,7 +187,8 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</NormalText>
+				</ButtonText>
+				<NormalFont inherits="NumberFontNormal" justifyH="RIGHT"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -216,7 +220,7 @@
 					</Anchors>
 					<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 				</NormalTexture>
-				<NormalText name="$parentText" inherits="NumberFontNormal" justifyH="RIGHT">
+				<ButtonText name="$parentText">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -224,7 +228,8 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</NormalText>
+				</ButtonText>
+				<NormalFont inherits="NumberFontNormal" justifyH="RIGHT"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -256,7 +261,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 				</NormalTexture>
-				<NormalText name="$parentText" inherits="NumberFontNormal" justifyH="RIGHT">
+				<ButtonText name="$parentText">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -264,7 +269,8 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</NormalText>
+				</ButtonText>
+				<NormalFont inherits="NumberFontNormal" justifyH="RIGHT"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>

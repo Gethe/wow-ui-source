@@ -71,6 +71,10 @@
 			<OnClick>
 				if (this.isExpanded) then
 					CollapseSkillHeader(this.skillIndex);
+					local dialog = StaticPopup_FindVisible("UNLEARN_SKILL");
+					if ( dialog and ( dialog.data ~= GetSelectedSkill() ) ) then
+						StaticPopup_Hide("UNLEARN_SKILL");
+					end
 				else
 					ExpandSkillHeader(this.skillIndex);
 				end
@@ -112,7 +116,7 @@
 				</Anchor>
 			</Anchors>
 		</DisabledTexture>
-		<NormalText inherits="GameFontHighlight" justifyH="LEFT">
+		<ButtonText>
 			<Anchors>
 				<Anchor point="LEFT">
 					<Offset>
@@ -120,7 +124,8 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
+		</ButtonText>
+		<NormalFont inherits="GameFontHighlight" justifyH="LEFT"/>
 	</Button>
 	<Frame name="SkillFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true" id="4">
 		<HitRectInsets>

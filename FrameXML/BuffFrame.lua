@@ -4,6 +4,16 @@ BUFF_MIN_ALPHA = 0.3;
 BUFF_WARNING_TIME = 31;
 BUFF_DURATION_WARNING_TIME = 60;
 
+DEBUFF_MAX_DISPLAY = 7;
+
+DebuffTypeColor = { };
+DebuffTypeColor["none"]	= { r = 0.80, g = 0, b = 0 };
+DebuffTypeColor["Magic"]	= { r = 0.20, g = 0.60, b = 1.00 };
+DebuffTypeColor["Curse"]	= { r = 0.60, g = 0.00, b = 1.00 };
+DebuffTypeColor["Disease"]	= { r = 0.60, g = 0.40, b = 0 };
+DebuffTypeColor["Poison"]	= { r = 0.00, g = 0.60, b = 0 };
+
+
 function BuffFrame_OnLoad()
 	BuffFrameUpdateTime = 0;
 	BuffFrameFlashTime = 0;
@@ -68,6 +78,19 @@ function BuffButton_Update()
 	local icon = getglobal(this:GetName().."Icon");
 	icon:SetTexture(GetPlayerBuffTexture(buffIndex));
 
+	-- Set color of debuff border based on dispel class.
+	local color;
+	local debuffType = GetPlayerBuffDispelType(GetPlayerBuff(this:GetID(), HARMFUL));
+	local debuffSlot = getglobal(this:GetName().."Border");
+	if ( debuffType ) then
+		color = DebuffTypeColor[debuffType];
+	else
+		color = DebuffTypeColor["none"];
+	end
+	if ( debuffSlot ) then
+		debuffSlot:SetVertexColor(color.r, color.g, color.b);
+	end
+
 	-- Set the number of applications of an aura if its a debuff
 	local buffCount = getglobal(this:GetName().."Count");
 	local count = GetPlayerBuffApplications(buffIndex);
@@ -91,7 +114,9 @@ function BuffButton_OnLoad()
 end
 
 function BuffButton_OnEvent(event)
-	BuffButton_Update();
+	if ( event == "PLAYER_AURAS_CHANGED" ) then
+		BuffButton_Update();
+	end
 end
 
 function BuffButton_OnUpdate()

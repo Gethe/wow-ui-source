@@ -109,7 +109,7 @@
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
-		<NormalText inherits="QuestFont" justifyH="LEFT">
+		<ButtonText>
 			<Size>
 				<AbsDimension x="275" y="0"/>
 			</Size>
@@ -120,7 +120,8 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
+		</ButtonText>
+		<NormalFont inherits="QuestFont" justifyH="LEFT"/>
 	</Button>
 	<Frame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
  		<Size>

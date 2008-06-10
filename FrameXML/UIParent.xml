@@ -21,6 +21,7 @@
 				UnitPopup_OnUpdate(arg1);
 				BattlefieldFrame_OnUpdate(arg1);
 				RequestBattlefieldPositions();
+				CheckReadyCheckTime();
 			</OnUpdate>
 			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
 			<OnShow>

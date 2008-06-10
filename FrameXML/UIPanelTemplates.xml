@@ -16,9 +16,10 @@
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
 	<Button name="UIPanelButtonTemplate" virtual="true">
-		<NormalText name="$parentText" inherits="GameFontNormal"/>
-		<DisabledText inherits="GameFontDisable"/>
-		<HighlightText inherits="GameFontHighlight"/>
+		<ButtonText name="$parentText"/>
+		<NormalFont inherits="GameFontNormal"/>
+		<HighlightFont inherits="GameFontHighlight"/>
+		<DisabledFont inherits="GameFontDisable"/>
 		<NormalTexture inherits="UIPanelButtonUpTexture"/>
 		<PushedTexture inherits="UIPanelButtonDownTexture"/>
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
@@ -72,15 +73,16 @@
 				getglobal(this:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 			</OnMouseUp>
 		</Scripts>
-		<NormalText name="$parentText" inherits="GameFontNormal"/>
-		<DisabledText inherits="GameFontDisable"/>
-		<HighlightText inherits="GameFontHighlight"/>
+		<ButtonText name="$parentText"/>
+		<NormalFont inherits="GameFontNormal"/>
+		<HighlightFont inherits="GameFontHighlight"/>
+		<DisabledFont inherits="GameFontDisable"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
 	<Button name="UIPanelButtonGrayTemplate" virtual="true">
-		<NormalText inherits="GameFontHighlight"/>
-		<DisabledText inherits="GameFontDisable"/>
-		<HighlightText inherits="GameFontHighlight"/>
+		<NormalFont inherits="GameFontHighlight"/>
+		<HighlightFont inherits="GameFontHighlight"/>
+		<DisabledFont inherits="GameFontDisable"/>
 		<NormalTexture inherits="UIPanelButtonDisabledTexture"/>
 		<PushedTexture inherits="UIPanelButtonDisabledDownTexture"/>
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
@@ -370,7 +372,7 @@
 				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
 			</OnLoad>
 		</Scripts>
-		<NormalText name="$parentText" inherits="GameFontNormalSmall">
+		<ButtonText name="$parentText">
 			<Size>
 				<AbsDimension x="0" y="13"/>
 			</Size>
@@ -381,31 +383,10 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
-		</NormalText>
-		<HighlightText name="$parentHighlightText" inherits="GameFontHighlightSmall">
-			<Size>
-				<AbsDimension x="0" y="13"/>
-			</Size>
-			<Anchors>
-				<Anchor point="BOTTOM">
-					<Offset>
-						<AbsDimension x="0" y="5"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightText>
-		<DisabledText name="$parentDisabledText" inherits="GameFontHighlightSmall">
-			<Size>
-				<AbsDimension x="0" y="13"/>
-			</Size>
-			<Anchors>
-				<Anchor point="BOTTOM">
-					<Offset>
-						<AbsDimension x="0" y="5"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</DisabledText>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
+		<DisabledFont inherits="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Size>
 				<AbsDimension x="5" y="32"/>
@@ -423,8 +404,35 @@
 		<Size>
 			<AbsDimension x="144" y="21"/>
 		</Size>
-		<NormalText inherits="GameFontHighlight"/>
-		<DisabledText inherits="GameFontDisable"/>
-		<HighlightText inherits="GameFontHighlight"/>
+		<NormalFont inherits="GameFontHighlight"/>
+		<HighlightFont inherits="GameFontHighlight"/>
+		<DisabledFont inherits="GameFontDisable"/>
 	</Button>
+	<CheckButton name="UIRadioButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-RadioButton">
+			<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Buttons\UI-RadioButton" alphaMode="ADD">
+			<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
+		</HighlightTexture>
+		<CheckedTexture file="Interface\Buttons\UI-RadioButton">
+			<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+		</CheckedTexture>
+	</CheckButton>
 </Ui>

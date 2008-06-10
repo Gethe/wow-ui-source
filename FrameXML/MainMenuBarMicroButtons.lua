@@ -75,6 +75,12 @@ function UpdateMicroButtons()
 		HelpMicroButton:SetButtonState("NORMAL");
 	end
 	
+	-- Keyring microbutton
+	if ( IsBagOpen(KEYRING_CONTAINER) ) then
+		KeyRingButton:SetButtonState("PUSHED", 1);
+	else
+		KeyRingButton:SetButtonState("NORMAL");
+	end
 end
 
 function CharacterMicroButton_OnLoad()

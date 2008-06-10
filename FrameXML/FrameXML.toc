@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 11000
+## Interface: 11100
 GlobalStrings.lua
 Fonts.xml
 Localization.xml
@@ -88,3 +88,4 @@ PetStable.xml
 DurabilityFrame.xml
 WorldStateFrame.xml
 DressUpFrame.xml
+RaidWarning.xml

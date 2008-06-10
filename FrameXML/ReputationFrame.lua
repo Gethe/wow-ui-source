@@ -41,6 +41,7 @@ function ReputationFrame_Update()
 	end
 	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame);
 
+	local gender = UnitSex("player");
 	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
 		factionIndex = factionOffset + i;
 		factionBar = getglobal("ReputationBar"..i);
@@ -61,7 +62,7 @@ function ReputationFrame_Update()
 				factionHeader:Show();
 				factionCheck:Hide();
 			else
-				factionStanding = getglobal("FACTION_STANDING_LABEL"..standingID);
+				factionStanding = GetText("FACTION_STANDING_LABEL"..standingID, gender);
 				factionName = getglobal("ReputationBar"..i.."FactionName");
 				factionName:SetText(name);
 				getglobal("ReputationBar"..i.."FactionStanding"):SetText(factionStanding);
