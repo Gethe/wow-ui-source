@@ -13,7 +13,9 @@
 				if ( IsShiftKeyDown() ) then
 					PickupAction(ActionButton_GetPagedID(this));
 				else
-					MacroFrame_EditMacro();
+					if ( MacroFrame_SaveMacro ) then
+						MacroFrame_SaveMacro();
+					end
 					UseAction(ActionButton_GetPagedID(this), 1);
 				end
 				ActionButton_UpdateState();

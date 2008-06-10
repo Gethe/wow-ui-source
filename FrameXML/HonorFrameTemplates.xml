@@ -1,0 +1,149 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="HonorFrameTextButtonTemplate" enableMouse="true" virtual="true">
+		<Size>
+			<AbsDimension x="278" y="12"/>
+		</Size>
+		<Scripts>
+			<OnEnter>
+				GameTooltip_SetDefaultAnchor(GameTooltip, this)
+				GameTooltip:SetText(this.title, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				GameTooltip:AddLine(this.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="HonorFrameHKButtonTemplate" inherits="HonorFrameTextButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="HONORABLE_KILLS" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentValue" inherits="GameFontGreenSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this.title = HONORABLE_KILLS;
+				this.tooltip = NEWBIE_TOOLTIP_HONORABLE_KILLS;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="HonorFrameDKButtonTemplate" inherits="HonorFrameTextButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="DISHONORABLE_KILLS" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentValue" inherits="GameFontRedSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this.title = DISHONORABLE_KILLS;
+				this.tooltip = NEWBIE_TOOLTIP_DISHONORABLE_KILLS;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="HonorFrameContributionButtonTemplate" inherits="HonorFrameTextButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="HONOR_CONTRIBUTION_POINTS" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentValue" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this.title = HONOR_CONTRIBUTION_POINTS;
+				this.tooltip = NEWBIE_TOOLTIP_HONOR_CONTRIBUTION_POINTS;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="HonorFrameStandingButtonTemplate" inherits="HonorFrameTextButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="HONOR_STANDING" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentValue" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this.title = HONOR_STANDING;
+				this.tooltip = NEWBIE_TOOLTIP_HONOR_STANDING;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="HonorFrameRankButtonTemplate" inherits="HonorFrameTextButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="HONOR_HIGHEST_RANK" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentValue" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="278" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this.title = RANK;
+				this.tooltip = NEWBIE_TOOLTIP_RANK;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

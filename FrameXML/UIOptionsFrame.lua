@@ -38,6 +38,8 @@ UIOptionsFrameCheckButtons["SHOW_BUFF_DURATION_TEXT"] = { index = 39, uvar = "SH
 UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"] = { index = 40, uvar = "ALWAYS_SHOW_MULTIBARS", tooltipText = OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS};
 UIOptionsFrameCheckButtons["SHOW_PARTY_PETS_TEXT"] = { index = 41, uvar = "SHOW_PARTY_PETS", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_PETS};
 UIOptionsFrameCheckButtons["SHOW_QUEST_FADING_TEXT"] = { index = 42, uvar = "QUEST_FADING_DISABLE", tooltipText = OPTION_TOOLTIP_SHOW_QUEST_FADING};
+UIOptionsFrameCheckButtons["SHOW_PARTY_BACKGROUND_TEXT"] = { index = 43, uvar = "SHOW_PARTY_BACKGROUND", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_BACKGROUND};
+--UIOptionsFrameCheckButtons["SHOW_TIPOFTHEDAY_TEXT"] = { index = 44, cvar = "showGameTips", tooltipText = OPTION_TOOLTIP_SHOW_TIPOFTHEDAY};
 
 UIOptionsFrameSliders = {
 	{ text = MOUSE_SENSITIVITY, cvar = "mousespeed", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 , tooltipText = OPTION_TOOLTIP_MOUSE_SENSITIVITY},
@@ -65,6 +67,8 @@ function UIOptionsFrame_Init()
 	RegisterForSave("SHOW_PARTY_PETS");
 	QUEST_FADING_DISABLE = "0";
 	RegisterForSave("QUEST_FADING_DISABLE");
+	SHOW_PARTY_BACKGROUND = "0";
+	RegisterForSave("SHOW_PARTY_BACKGROUND");
 	UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value = GetCVar("statusBarText");
 	this:RegisterEvent("CVAR_UPDATE");
 end

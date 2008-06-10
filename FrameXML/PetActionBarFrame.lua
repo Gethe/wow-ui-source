@@ -294,7 +294,7 @@ function PetActionButton_OnEnter()
 		else
 			GameTooltip_SetDefaultAnchor(GameTooltip, this);
 		end
-		GameTooltip:SetText(this.tooltipName..NORMAL_FONT_COLOR_CODE.." ("..KeyBindingFrame_GetLocalizedName(GetBindingKey("BONUSACTIONBUTTON"..this:GetID()), "KEY_")..")"..FONT_COLOR_CODE_CLOSE, 1.0, 1.0, 1.0);
+		GameTooltip:SetText(this.tooltipName..NORMAL_FONT_COLOR_CODE.." ("..GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..this:GetID()), "KEY_")..")"..FONT_COLOR_CODE_CLOSE, 1.0, 1.0, 1.0);
 		if ( this.tooltipSubtext ) then
 			GameTooltip:AddLine(this.tooltipSubtext, "", 0.5, 0.5, 0.5);
 		end
@@ -310,7 +310,7 @@ function PetActionButton_OnLeave()
 end
 
 function PetActionButton_SetHotkeys()
-	local binding = KeyBindingFrame_GetLocalizedName(GetBindingKey("BONUSACTIONBUTTON"..this:GetID()));
+	local binding = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..this:GetID()));
 	local bindingSuffix = gsub(binding, ".*%-", "");
 	local hotkey = getglobal(this:GetName().."HotKey");
 	if ( bindingSuffix == this:GetID() ) then

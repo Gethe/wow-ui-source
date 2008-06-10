@@ -298,6 +298,36 @@
 							</OnClick>
 						</Scripts>
 					</CheckButton>
+					<CheckButton name="UIOptionsFrameCheckButton43" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton39" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterEvent("VARIABLES_LOADED");
+							</OnLoad>
+							<OnEvent>
+								if ( event == "VARIABLES_LOADED" ) then
+									UIOptionsFrameCheckButtons["SHOW_PARTY_BACKGROUND_TEXT"].value = SHOW_PARTY_BACKGROUND;
+									this:SetChecked(SHOW_PARTY_BACKGROUND);
+									UpdatePartyMemberBackground();
+								end
+							</OnEvent>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+								SHOW_PARTY_BACKGROUND = tostring(this:GetChecked());
+								UpdatePartyMemberBackground();
+							</OnClick>
+						</Scripts>
+					</CheckButton>
 					<CheckButton name="UIOptionsFrameCheckButton19" inherits="OptionsCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOP">
@@ -790,6 +820,17 @@
 							</Anchor>
 						</Anchors>
 					</CheckButton>
+					<!--
+					<CheckButton name="UIOptionsFrameCheckButton44" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCheckButton29" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					-->
 				</Frames>
 				<Scripts>
 					<OnLoad>

@@ -183,7 +183,7 @@ function PaperDollFrame_SetResistances()
 		base, resistance, positive, negative = UnitResistance("player", frame:GetID());
 
 		local resistanceName = getglobal("RESISTANCE"..(frame:GetID()).."_NAME");
-		frame.tooltip = resistanceName.." "..RESISTANCE_LABEL.." "..resistance;
+		frame.tooltip = resistanceName.." "..resistance;
 
 		-- resistances can now be negative. Show Red if negative, Green if positive, white otherwise
 		if( abs(negative) > positive ) then

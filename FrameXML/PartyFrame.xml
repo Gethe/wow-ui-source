@@ -2,429 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PartyMemberFrame.lua"/>
 	<Script file="TextStatusBar.lua"/>
-	<Button name="PartyBuffButtonTemplate" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="15" y="15"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" setAllPoints="true"/>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentOverlay" file="Interface\Buttons\UI-Debuff-Border">
-					<Size>
-						<AbsDimension x="17" y="17"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-				GameTooltip:SetUnitDebuff("party"..this:GetParent():GetID(), this:GetID());
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Button>
-	<Button name="PartyPetBuffButtonTemplate" inherits="PartyBuffButtonTemplate" virtual="true" hidden="true">
-		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-				GameTooltip:SetUnitDebuff("partypet"..this:GetParent():GetParent():GetID(), this:GetID());
-			</OnEnter>
-		</Scripts>
-	</Button>
-	<Button name="PartyMemberPetFrameTemplate" frameStrata="LOW" toplevel="true" virtual="true">
-		<Size>
-			<AbsDimension x="64" y="26"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="20" y="-47"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="3" right="33" top="3" bottom="3"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentPortrait">
-					<Size>
-						<AbsDimension x="18" y="18"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="3" y="-3"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame setAllPoints="true">
-				<Frames>
-					<Frame setAllPoints="true">
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture file="Interface\TargetingFrame\UI-PartyFrame">
-									<Size>
-										<AbsDimension x="64" y="32"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-1"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-								<FontString name="$parentName" inherits="GameFontNormalSmall">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="25" y="21"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
-			</Frame>
-			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="35" y="4"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="23" y="-6"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEvent>
-						UnitFrameHealthBar_Update(this, arg1);
-					</OnEvent>
-					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(arg1);
-					</OnValueChanged>
-				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-			</StatusBar>
-			<Button name="$parentDebuff1" inherits="PartyPetBuffButtonTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="24" y="-16"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentDebuff2" inherits="PartyPetBuffButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentDebuff3" inherits="PartyPetBuffButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentDebuff4" inherits="PartyPetBuffButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				local id = this:GetParent():GetID();
-				local prefix = "PartyMemberFrame"..id.."PetFrame";
-				UnitFrame_Initialize("partypet"..id,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
-					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"));
-				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), TEXT(DEAD));
-				getglobal(prefix.."Name"):Hide();
-			</OnLoad>
-			<OnShow>
-				UnitFrame_Update();
-			</OnShow>
-			<OnEvent>
-				UnitFrame_OnEvent(event);
-			</OnEvent>
-			<OnEnter>
-				UnitFrame_OnEnter();
-			</OnEnter>
-			<OnLeave>
-				UnitFrame_OnLeave();
-			</OnLeave>
-			<OnUpdate>
-				UnitFrame_OnUpdate(arg1);
-			</OnUpdate>
-			<OnClick>
-				PartyMemberPetFrame_OnClick();
-			</OnClick>
-		</Scripts>
-	</Button>
-	<Button name="PartyMemberFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" virtual="true">
-		<Size>
-			<AbsDimension x="128" y="53"/>
-		</Size>
-		<HitRectInsets>
-			<AbsInset left="7" right="66" top="6" bottom="7"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentPortrait">
-					<Size>
-						<AbsDimension x="37" y="37"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-6"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="-20" y="-10"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						PartyFrameDropDown_OnLoad();
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame setAllPoints="true">
-				<Frames>
-					<Frame setAllPoints="true">
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
-									<Size>
-										<AbsDimension x="128" y="64"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-								<FontString name="$parentName" inherits="GameFontNormalSmall">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="50" y="43"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-							<Layer level="OVERLAY">
-								<Texture name="$parentLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
-									<Size>
-										<AbsDimension x="16" y="16"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</Texture>
-								<Texture name="$parentMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
-									<Size>
-										<AbsDimension x="16" y="16"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="32" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-								<Texture name="$parentPVPIcon" hidden="true">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="-9" y="-15"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-								<Texture name="$parentDisconnect" file="Interface\CharacterFrame\Disconnect-Icon" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
-									<Anchors>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="-7" y="-1"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
-			</Frame>
-			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="70" y="8"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="47" y="-12"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEvent>
-						UnitFrameHealthBar_Update(this, arg1);
-					</OnEvent>
-					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(arg1);
-						PartyMemberHealthCheck();
-					</OnValueChanged>
-					<OnMouseUp>
-						--PartyMemberFrame_OnClick(this:GetParent());
-					</OnMouseUp> 
-				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-			</StatusBar>
-			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="70" y="8"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="47" y="-21"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEvent>
-						UnitFrameManaBar_Update(this, arg1);
-					</OnEvent>
-					<OnMouseUp>
-						--PartyMemberFrame_OnClick(this:GetParent());
-					</OnMouseUp> 
-				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-				<BarColor r="0" g="0" b="1.0"/>
-			</StatusBar>
-			<Button name="$parentDebuff1" inherits="PartyBuffButtonTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="48" y="-32"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentDebuff2" inherits="PartyBuffButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentDebuff3" inherits="PartyBuffButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentDebuff4" inherits="PartyBuffButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentPetFrame" inherits="PartyMemberPetFrameTemplate"/>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				local id = this:GetID();
-				local prefix = "PartyMemberFrame"..id;
-				UnitFrame_Initialize("party"..id,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
-					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"), 
-					  getglobal(prefix.."ManaBar"), getglobal(prefix.."ManaBarText"));
-				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), TEXT(DEAD));
-				PartyMemberFrame_OnLoad();
-			</OnLoad>
-			<OnEvent>
-				PartyMemberFrame_OnEvent(event);
-			</OnEvent>
-			<OnEnter>
-				UnitFrame_OnEnter();
-				PartyMemberBuffTooltip:SetPoint("TOPLEFT", this, "TOPLEFT", 60, -25);
-				PartyMemberBuffTooltip_Update();
-			</OnEnter>
-			<OnLeave>
-				UnitFrame_OnLeave();
-				PartyMemberBuffTooltip:Hide();
-			</OnLeave>
-			<OnClick>
-				PartyMemberFrame_OnClick();
-			</OnClick>
-			<OnUpdate>
-				PartyMemberFrame_UpdateMemberHealth(arg1);
-			</OnUpdate>
-		</Scripts>
-	</Button>
+	<Include file="PartyFrameTemplates.xml"/>
 	<Button name="PartyMemberFrame1" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="1">
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -700,4 +278,57 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	<Frame name="PartyMemberBackground" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="134" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame1">
+				<Offset>
+					<AbsDimension x="-5" y="6"/>
+				</Offset>
+			</Anchor>
+			<Anchor point="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\CharacterFrame\UI-Party-Background" edgeFile="Interface\CharacterFrame\UI-Party-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="32" right="32" top="32" bottom="32"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop> 
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+				this:SetFrameLevel(1);
+
+				PARTYBACKGROUND_OPACITY = 0.5;
+				RegisterForSave("PARTYBACKGROUND_OPACITY");
+			</OnLoad>
+			<OnShow>
+				this:SetFrameLevel(1);
+			</OnShow>
+			<OnEvent>
+				if ( event == "VARIABLES_LOADED" ) then
+					UpdatePartyMemberBackground();
+					OpacityFrameSlider:SetValue(PARTYBACKGROUND_OPACITY);
+					PartyMemberBackground_SetOpacity();
+				end
+			</OnEvent>
+			<OnMouseUp>
+				if ( arg1 == "RightButton" ) then
+					PartyMemberBackground_ToggleOpacity();
+				end
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
 </Ui>

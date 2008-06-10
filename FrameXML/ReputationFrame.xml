@@ -164,6 +164,16 @@
 				<CheckedTexture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check"/>
 			</CheckButton>
 		</Frames>
+		<Scripts>
+			<OnEnter>
+				if (this.tooltip) then
+					getglobal(this:GetName().."FactionStanding"):SetText(this.tooltip);
+				end
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName().."FactionStanding"):SetText(this.standingText);
+			</OnLeave>
+		</Scripts>
 		<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 		<BarColor r=".25" g=".25" b=".75"/>
 	</StatusBar>

@@ -73,7 +73,7 @@
 					</Anchors>
 					<TexCoords left="0.015625" right="1.0" top="0.83203125" bottom="1.0"/>
 				</Texture>
-				<Texture file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+				<Texture name="BonusActionBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 					<Size>
 						<AbsDimension x="253" y="43"/>
 					</Size>

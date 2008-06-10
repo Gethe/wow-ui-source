@@ -42,7 +42,7 @@ function WorldStateAlwaysUpFrame_Update()
 				UIFrameFlash(frameFlash, 0.5, 0.5, -1);
 				frameDynamicButton:Show();
 			else
-				UIFrameFlash(frameFlash, 0.5, 0.5, 0);
+				UIFrameFlashStop(frameFlash);
 				frameDynamicButton:Hide();
 			end
 			frame:Show();

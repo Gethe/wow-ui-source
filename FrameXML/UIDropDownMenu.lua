@@ -470,13 +470,13 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		listFrame:Hide();
 	else
 		-- Set the dropdownframe scale
-		if ( GetCVar("useUiScale") == "1" and (tempFrame ~= WorldMapContinentDropDown and tempFrame ~= WorldMapZoneDropDown) ) then
-			local uiScale = GetCVar("uiscale") + 0;
-			listFrame:SetScale(uiScale);
-		else
-			-- Don't scale if these are the world map dropdowns, since they're fullscreen
-			listFrame:SetScale(1.0);
+		local uiScale = 1.0;
+		if ( GetCVar("useUiScale") == "1" ) then
+			if ( tempFrame ~= WorldMapContinentDropDown and tempFrame ~= WorldMapZoneDropDown ) then
+				uiScale = tonumber(GetCVar("uiscale"));
+			end
 		end
+		listFrame:SetScale(uiScale);
 		
 		-- Hide the listframe anyways since it is redrawn OnShow() 
 		listFrame:Hide();
@@ -515,6 +515,9 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			elseif ( anchorName == "cursor" ) then
 				relativeTo = "UIParent";
 				local cursorX, cursorY = GetCursorPosition();
+				cursorX = cursorX/uiScale;
+				cursorY =  cursorY/uiScale;
+
 				if ( not xOffset ) then
 					xOffset = 0;
 				end

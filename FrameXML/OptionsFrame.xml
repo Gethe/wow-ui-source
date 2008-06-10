@@ -326,6 +326,7 @@
 									PlaySound("igMainMenuOptionCheckBoxOff");
 								end
 								OptionsFrame_UpdateCheckboxes();
+								OptionsFrame_UpdateGammaControls();
 							</OnClick>	
 						</Scripts>
 					</CheckButton>

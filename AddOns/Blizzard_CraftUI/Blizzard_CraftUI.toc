@@ -1,0 +1,9 @@
+## Interface: 1800
+## Title: Blizzard Craft UI
+## LoadOnDemand: 1
+..\..\FrameXML\Fonts.xml
+..\..\FrameXML\UIPanelTemplates.xml
+..\..\FrameXML\ClassTrainerFrameTemplates.xml
+..\..\FrameXML\QuestFrameTemplates.xml
+Blizzard_CraftUI.xml
+Localization.lua

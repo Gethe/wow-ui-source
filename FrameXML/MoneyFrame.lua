@@ -92,24 +92,6 @@ MoneyTypeInfo["SEND_MAIL_COD"] = {
 	collapse = 1,
 	canPickup = 1,
 };
-MoneyTypeInfo["AUCTION"] = {
-	UpdateFunc = function()
-		return this.staticMoney;
-	end,
-	showSmallerCoins = 1,
-	fixedWidth = 1,
-	collapse = 1,
-	truncateSmallCoins = nil,
-};
-MoneyTypeInfo["AUCTION_DEPOSIT"] = {
-	UpdateFunc = function()
-		if ( not AuctionFrameAuctions.duration ) then
-			AuctionFrameAuctions.duration = 0
-		end
-		return CalculateAuctionDeposit(AuctionFrameAuctions.duration);
-	end,
-	collapse = 1,
-};
 
 function MoneyFrame_OnLoad()
 	this:RegisterEvent("PLAYER_MONEY");

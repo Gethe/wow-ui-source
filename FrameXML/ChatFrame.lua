@@ -658,10 +658,10 @@ SlashCmdList["CHATLOG"] = function()
 	local info = ChatTypeInfo["SYSTEM"];
 	if ( LoggingChat() ) then
 		LoggingChat(false);
-		this.chatFrame:AddMessage(TEXT(CHATLOGDISABLED), info.r, info.g, info.b, info.id);
+		DEFAULT_CHAT_FRAME:AddMessage(TEXT(CHATLOGDISABLED), info.r, info.g, info.b, info.id);
 	else
 		LoggingChat(true);
-		this.chatFrame:AddMessage(TEXT(CHATLOGENABLED), info.r, info.g, info.b, info.id);
+		DEFAULT_CHAT_FRAME:AddMessage(TEXT(CHATLOGENABLED), info.r, info.g, info.b, info.id);
 	end
 end
 
@@ -669,10 +669,10 @@ SlashCmdList["COMBATLOG"] = function()
 	local info = ChatTypeInfo["SYSTEM"];
 	if ( LoggingCombat() ) then
 		LoggingCombat(false);
-		this.chatFrame:AddMessage(TEXT(COMBATLOGDISABLED), info.r, info.g, info.b, info.id);
+		DEFAULT_CHAT_FRAME:AddMessage(TEXT(COMBATLOGDISABLED), info.r, info.g, info.b, info.id);
 	else
 		LoggingCombat(true);
-		this.chatFrame:AddMessage(TEXT(COMBATLOGENABLED), info.r, info.g, info.b, info.id);
+		DEFAULT_CHAT_FRAME:AddMessage(TEXT(COMBATLOGENABLED), info.r, info.g, info.b, info.id);
 	end
 end
 
@@ -704,15 +704,15 @@ SlashCmdList["REPLY"] = function(msg)
 end
 
 SlashCmdList["HELP"] = function(msg)
-	ChatFrame_DisplayHelpText(this.chatFrame);
+	ChatFrame_DisplayHelpText(DEFAULT_CHAT_FRAME);
 end
 
 SlashCmdList["MACROHELP"] = function(msg)
-	ChatFrame_DisplayMacroHelpText(this.chatFrame);
+	ChatFrame_DisplayMacroHelpText(DEFAULT_CHAT_FRAME);
 end
 
 SlashCmdList["TIME"] = function(msg)
-	ChatFrame_DisplayGameTime(this.chatFrame);
+	ChatFrame_DisplayGameTime(DEFAULT_CHAT_FRAME);
 end
 
 SlashCmdList["PLAYED"] = function(msg)
@@ -769,9 +769,9 @@ SlashCmdList["JOIN"] = 	function(msg)
 	if(strlen(name) <= 0) then
 		local joinhelp = TEXT(CHAT_JOIN_HELP);
 		local info = ChatTypeInfo["SYSTEM"];
-		this.chatFrame:AddMessage(joinhelp, info.r, info.g, info.b, info.id);
+		DEFAULT_CHAT_FRAME:AddMessage(joinhelp, info.r, info.g, info.b, info.id);
 	else
-		local zoneChannel, channelName = JoinChannelByName(name, password, this.chatFrame:GetID());
+		local zoneChannel, channelName = JoinChannelByName(name, password, DEFAULT_CHAT_FRAME:GetID());
 		if ( channelName ) then
 			name = channelName;
 		end
@@ -780,11 +780,11 @@ SlashCmdList["JOIN"] = 	function(msg)
 		end
 
 		local i = 1;
-		while ( this.chatFrame.channelList[i] ) do
+		while ( DEFAULT_CHAT_FRAME.channelList[i] ) do
 			i = i + 1;
 		end
-		this.chatFrame.channelList[i] = name;
-		this.chatFrame.zoneChannelList[i] = zoneChannel;
+		DEFAULT_CHAT_FRAME.channelList[i] = name;
+		DEFAULT_CHAT_FRAME.zoneChannelList[i] = zoneChannel;
 	end
 end
 
@@ -804,7 +804,7 @@ end
 
 SlashCmdList["CHAT_HELP"] = 
 	function(msg)
-		ChatFrame_DisplayChatHelp(this.chatFrame)
+		ChatFrame_DisplayChatHelp(DEFAULT_CHAT_FRAME)
 	end
 
 SlashCmdList["CHAT_PASSWORD"] =
@@ -986,7 +986,7 @@ SlashCmdList["GUILD_ROSTER"] = function(msg)
 end
 
 --SlashCmdList["GUILD_HELP"] = function(msg)
---	ChatFrame_DisplayGuildHelp(this.chatFrame);
+--	ChatFrame_DisplayGuildHelp(DEFAULT_CHAT_FRAME);
 --end
 
 SlashCmdList["CHAT_AFK"] = function(msg)
@@ -1062,7 +1062,7 @@ SlashCmdList["SPLIT"] = function(msg)
 
 	local splithelp = TEXT(SPLIT_MONEY_HELP);
 	local info = ChatTypeInfo["SYSTEM"];
-	this.chatFrame:AddMessage(splithelp, info.r, info.g, info.b, info.id);
+	DEFAULT_CHAT_FRAME:AddMessage(splithelp, info.r, info.g, info.b, info.id);
 end
 
 SlashCmdList["SCRIPT"] = function(msg)
@@ -2322,11 +2322,6 @@ end
 function LanguageMenu_Click()
 	this:GetParent():GetParent().chatFrame.editBox.language = GetLanguageByIndex(this:GetID());
 	ChatMenu:Hide();
-end
-
--- Included here so that it exists when the ChatMenu is initialized
-function ShowMacroFrame()
-	ShowUIPanel(MacroFrame);
 end
 
 function ChatFrame_ActivateCombatMessages(chatFrame)

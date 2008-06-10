@@ -15,6 +15,30 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["CONFIRM_GUILD_LEAVE"] = {
+	text = TEXT(CONFIRM_GUILD_LEAVE),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	OnAccept = function()
+		GuildLeave();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_GUILD_PROMOTE"] = {
+	text = TEXT(CONFIRM_GUILD_PROMOTE),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	OnAccept = function(name)
+		GuildSetLeaderByName(name);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["RENAME_GUILD"] = {
 	text = TEXT(RENAME_GUILD_LABEL),
 	button1 = TEXT(ACCEPT),
@@ -68,51 +92,6 @@ StaticPopupDialogs["CLIENT_RESTART_ALERT"] = {
 	timeout = 0,
 };
 
-StaticPopupDialogs["CONFIRM_PROFESSION"] = {
-	text = TEXT(format(PROFESSION_CONFIRMATION1, "XXX")),
-	button1 = TEXT(ACCEPT),
-	button2 = TEXT(CANCEL),
-	OnAccept = function()
-		BuyTrainerService(ClassTrainerFrame.selectedService);
-		ClassTrainerFrame.showSkillDetails = nil;
-		ClassTrainer_SetSelection(ClassTrainerFrame.selectedService);
-		ClassTrainerFrame_Update();
-	end,
-	OnShow = function()
-		local cp1, cp2 = UnitCharacterPoints("player");
-		if ( cp2 < MAX_LEARNABLE_PROFESSIONS ) then
-			getglobal(this:GetName().."Text"):SetText(format(PROFESSION_CONFIRMATION2, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService)));
-		else
-			getglobal(this:GetName().."Text"):SetText(format(PROFESSION_CONFIRMATION1, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService)));
-		end
-	end,
-	showAlert = 1,
-	timeout = 0,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["CANCEL_AUCTION"] = {
-	text = TEXT(CANCEL_AUCTION_CONFIRMATION),
-	button1 = TEXT(ACCEPT),
-	button2 = TEXT(CANCEL),
-	OnAccept = function()
-		CancelAuction(GetSelectedAuctionItem("owner"));
-	end,
-	OnShow = function()
-		MoneyFrame_Update(this:GetName().."MoneyFrame", AuctionFrameAuctions.cancelPrice);
-		if ( AuctionFrameAuctions.cancelPrice > 0 ) then
-			getglobal(this:GetName().."Text"):SetText(CANCEL_AUCTION_CONFIRMATION_MONEY);
-		else
-			getglobal(this:GetName().."Text"):SetText(CANCEL_AUCTION_CONFIRMATION);
-		end
-		
-	end,
-	hasMoneyFrame = 1,
-	showAlert = 1,
-	timeout = 0,
-	hideOnEscape = 1
-};
-
 StaticPopupDialogs["MEMORY_EXHAUSTED"] = {
 	text = TEXT(MEMORY_EXHAUSTED),
 	button1 = TEXT(QUIT_NOW),
@@ -141,22 +120,6 @@ StaticPopupDialogs["COD_CONFIRMATION"] = {
 		MoneyFrame_Update(this:GetName().."MoneyFrame", OpenMailFrame.cod);
 	end,
 	hasMoneyFrame = 1,
-	timeout = 0,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["BUYOUT_AUCTION"] = {
-	text = TEXT(BUYOUT_AUCTION_CONFIRMATION),
-	button1 = TEXT(ACCEPT),
-	button2 = TEXT(CANCEL),
-	OnAccept = function()
-		PlaceAuctionBid(AuctionFrame.type, GetSelectedAuctionItem(AuctionFrame.type), AuctionFrame.buyoutPrice);
-	end,
-	OnShow = function()
-		MoneyFrame_Update(this:GetName().."MoneyFrame", AuctionFrame.buyoutPrice);
-	end,
-	hasMoneyFrame = 1,
-	showAlert = 1,
 	timeout = 0,
 	hideOnEscape = 1
 };
@@ -939,7 +902,7 @@ StaticPopupDialogs["RENAME_PET"] = {
 	button1 = TEXT(ACCEPT),
 	button2 = TEXT(CANCEL),
 	hasEditBox = 1,
-	maxLetters = 16,
+	maxLetters = 12,
 	OnAccept = function()
 		local text = getglobal(this:GetParent():GetName().."EditBox"):GetText();
 		local dialogFrame = StaticPopup_Show("PETRENAMECONFIRM", text);

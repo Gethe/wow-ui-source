@@ -18,6 +18,8 @@ UnitPopupButtons["WHISPER"]	= { text = TEXT(WHISPER), dist = 0 };
 UnitPopupButtons["INVITE"]	= { text = TEXT(PARTY_INVITE), dist = 0 };
 UnitPopupButtons["UNINVITE"] = { text = TEXT(PARTY_UNINVITE), dist = 0 };
 UnitPopupButtons["PROMOTE"] = { text = TEXT(PARTY_PROMOTE), dist = 0 };
+UnitPopupButtons["GUILD_PROMOTE"] = { text = TEXT(GUILD_PROMOTE), dist = 0 };
+UnitPopupButtons["GUILD_LEAVE"] = { text = TEXT(GUILD_LEAVE), dist = 0 };
 UnitPopupButtons["LEAVE"] = { text = TEXT(PARTY_LEAVE), dist = 0 };
 UnitPopupButtons["FOLLOW"] = { text = TEXT(FOLLOW), dist = 4 };
 UnitPopupButtons["PET_PASSIVE"] = { text = TEXT(PET_PASSIVE), dist = 0 };
@@ -56,7 +58,7 @@ UnitPopupMenus["PET"] = { "PET_PAPERDOLL", "PET_RENAME", "PET_ABANDON", "PET_DIS
 UnitPopupMenus["PARTY"] = { "WHISPER", "PROMOTE", "LOOT_PROMOTE", "UNINVITE", "INSPECT", "TRADE", "FOLLOW", "DUEL", "CANCEL" };
 UnitPopupMenus["PLAYER"] = { "WHISPER", "INSPECT", "INVITE", "TRADE", "FOLLOW", "DUEL", "CANCEL" };
 UnitPopupMenus["RAID"] = { "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "RAID_REMOVE", "CANCEL" };
-UnitPopupMenus["FRIEND"] = { "WHISPER", "INVITE", "CANCEL" };
+UnitPopupMenus["FRIEND"] = { "WHISPER", "INVITE", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
 
 -- Second level menus
 UnitPopupMenus[1] = { "FREE_FOR_ALL", "ROUND_ROBIN", "MASTER_LOOTER", "GROUP_LOOT", "NEED_BEFORE_GREED", "CANCEL" };
@@ -237,7 +239,8 @@ function UnitPopup_HideButtons()
 				if ( dropdownMenu.name == UnitName("party1") or
 					 dropdownMenu.name == UnitName("party2") or
 					 dropdownMenu.name == UnitName("party3") or
-					 dropdownMenu.name == UnitName("party4") ) then
+					 dropdownMenu.name == UnitName("party4") or
+					 dropdownMenu.name == UnitName("player")) then
 					UnitPopupShown[index] = 0;
 				end
 			end
@@ -245,8 +248,20 @@ function UnitPopup_HideButtons()
 			if ( (inParty == 0) or (isLeader == 0) ) then
 				UnitPopupShown[index] = 0;
 			end
+		elseif ( value == "GUILD_PROMOTE" ) then
+			if ( not IsGuildLeader() or dropdownMenu.name == UnitName("player") or not GuildFrame:IsVisible() ) then
+				UnitPopupShown[index] = 0;
+			end
+		elseif ( value == "GUILD_LEAVE" ) then
+			if ( dropdownMenu.name ~= UnitName("player") or not GuildFrame:IsVisible() ) then
+				UnitPopupShown[index] = 0;
+			end
 		elseif ( value == "UNINVITE" ) then
 			if ( (inParty == 0) or (isLeader == 0) ) then
+				UnitPopupShown[index] = 0;
+			end
+		elseif ( value == "WHISPER" ) then
+			if ( dropdownMenu.name == UnitName("player") ) then
 				UnitPopupShown[index] = 0;
 			end
 		elseif ( value == "LEAVE" ) then
@@ -454,6 +469,11 @@ function UnitPopup_OnClick()
 		UninviteFromParty(unit);
 	elseif ( button == "PROMOTE" ) then
 		PromoteToPartyLeader(unit);
+	elseif ( button == "GUILD_PROMOTE" ) then
+		local dialog = StaticPopup_Show("CONFIRM_GUILD_PROMOTE", name);
+		dialog.data = name;
+	elseif ( button == "GUILD_LEAVE" ) then
+		StaticPopup_Show("CONFIRM_GUILD_LEAVE", GetGuildInfo("player"));
 	elseif ( button == "LEAVE" ) then
 		LeaveParty();
 	elseif ( button == "PET_PASSIVE" ) then

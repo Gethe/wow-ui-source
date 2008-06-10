@@ -61,6 +61,7 @@ function PartyMemberFrame_UpdateMember()
 	PartyMemberFrame_UpdatePvPStatus();
 	PartyMemberFrame_RefreshBuffs();
 	PartyMemberFrame_UpdatePet();
+	UpdatePartyMemberBackground();
 end
 
 function PartyMemberFrame_UpdatePet(id)
@@ -79,6 +80,7 @@ function PartyMemberFrame_UpdatePet(id)
 		petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -27);
 	end
 	PartyMemberFrame_RefreshPetBuffs(id);
+	UpdatePartyMemberBackground();
 end
 
 function PartyMemberFrame_UpdateMemberHealth(elapsed)
@@ -374,4 +376,41 @@ function PartyFrameDropDown_Initialize()
 		dropdown = this;
 	end
 	UnitPopup_ShowMenu(dropdown, "PARTY", "party"..this:GetID());
+end
+
+function UpdatePartyMemberBackground()
+	if ( not PartyMemberBackground ) then
+		return;
+	end
+	if ( SHOW_PARTY_BACKGROUND == "1" and GetNumPartyMembers() > 0 ) then
+		if ( getglobal("PartyMemberFrame"..GetNumPartyMembers().."PetFrame"):IsShown() ) then
+			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..GetNumPartyMembers(), "BOTTOMLEFT", -5, -21);
+		else
+			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..GetNumPartyMembers(), "BOTTOMLEFT", -5, -5);
+		end
+		PartyMemberBackground:Show();
+	else
+		PartyMemberBackground:Hide();
+	end
+end
+
+function PartyMemberBackground_ToggleOpacity()
+	if ( OpacityFrame:IsVisible() ) then
+		OpacityFrame:Hide();
+		return;
+	end
+	OpacityFrame:ClearAllPoints();
+	OpacityFrame:SetPoint("TOPLEFT", "PartyMemberBackground", "TOPRIGHT", 0, 7);
+	OpacityFrame.opacityFunc = PartyMemberBackground_SetOpacity;
+	OpacityFrame.saveOpacityFunc = PartyMemberBackground_SaveOpacity;
+	OpacityFrame:Show();
+end
+
+function PartyMemberBackground_SetOpacity()
+	local alpha = 1.0 - OpacityFrameSlider:GetValue();
+	PartyMemberBackground:SetAlpha(alpha);
+end
+
+function PartyMemberBackground_SaveOpacity()
+	PARTYBACKGROUND_OPACITY = OpacityFrameSlider:GetValue();
 end

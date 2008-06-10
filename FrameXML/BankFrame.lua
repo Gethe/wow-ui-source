@@ -154,7 +154,16 @@ function BankFrameItemButtonGeneric_OnClick(button)
 			PickupContainerItem(BANK_CONTAINER, this:GetID());
 		end
 	else
-		UseContainerItem(BANK_CONTAINER, this:GetID());
+		if ( IsControlKeyDown() and not this.isBag ) then
+			return;
+		elseif ( IsShiftKeyDown() and not this.isBag ) then
+			local texture, itemCount, locked = GetContainerItemInfo(BANK_CONTAINER, this:GetID());
+			if ( not locked ) then
+				OpenStackSplitFrame(this.count, this, "BOTTOMLEFT", "TOPLEFT");
+			end
+		else
+			UseContainerItem(BANK_CONTAINER, this:GetID());
+		end
 	end
 end
 

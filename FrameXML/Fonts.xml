@@ -223,6 +223,12 @@
 		</FontHeight>
 		<Color r="0.18" g="0.12" b="0.06"/>
 	</FontString>
+	<FontString name="MailTextFontNormal" font="Fonts\MORPHEUS.TTF" justifyH="LEFT" virtual="true">
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+		<Color r="0.18" g="0.12" b="0.06"/>
+	</FontString>
 	<FontString name="SubSpellFont" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<FontHeight>
 			<AbsValue val="10"/>

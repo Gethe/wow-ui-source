@@ -81,7 +81,7 @@ function MirrorTimerFrame_OnEvent()
 		this:Hide();
 		this.timer = nil;
 	end
-	if ( not this:IsVisible() or (arg1 ~= this.timer) ) then
+	if ( not this:IsShown() or (arg1 ~= this.timer) ) then
 		return;
 	end
 	if ( event == "MIRROR_TIMER_PAUSE" ) then

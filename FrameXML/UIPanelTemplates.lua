@@ -55,9 +55,9 @@ function PanelTemplates_TabResize(padding, tab, absoluteSize)
 	else
 		-- Otherwise try to use padding
 		if ( padding ) then
-			width = tabText:GetStringWidth() + padding;
+			width = tabText:GetWidth() + padding;
 		else
-			width = tabText:GetStringWidth() + 24;
+			width = tabText:GetWidth() + 24;
 		end
 		tabWidth = width + sideWidths;
 		tabText:SetWidth(0);

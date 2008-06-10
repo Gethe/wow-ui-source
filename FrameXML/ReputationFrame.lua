@@ -29,8 +29,8 @@ end
 function ReputationFrame_Update()
 	local numFactions = GetNumFactions();
 	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame);
-	local factionIndex, factionStanding, factionBar, factionHeader, color;
-	local name, description, standingID, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed;
+	local factionIndex, factionStanding, factionBar, factionHeader, color, tooltipStanding;
+	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed;
 	local checkbox, check, rightBarTexture;
 
 	-- Update scroll frame
@@ -41,7 +41,7 @@ function ReputationFrame_Update()
 		factionBar = getglobal("ReputationBar"..i);
 		factionHeader = getglobal("ReputationHeader"..i);
 		if ( factionIndex <= numFactions ) then
-			name, description, standingID, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed = GetFactionInfo(factionIndex);
+			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed = GetFactionInfo(factionIndex);
 			if ( isHeader ) then
 				factionHeader:SetText(name);
 				if ( isCollapsed ) then
@@ -57,6 +57,7 @@ function ReputationFrame_Update()
 				factionStanding = getglobal("FACTION_STANDING_LABEL"..standingID);
 				getglobal("ReputationBar"..i.."FactionName"):SetText(name);
 				getglobal("ReputationBar"..i.."FactionStanding"):SetText(factionStanding);
+				
 				checkbox = getglobal("ReputationBar"..i.."AlliedCheckButton");
 				check = getglobal("ReputationBar"..i.."AlliedCheckButtonCheck");
 				rightBarTexture = getglobal("ReputationBar"..i.."ReputationBarRight");
@@ -75,6 +76,23 @@ function ReputationFrame_Update()
 					end
 					checkbox:Disable();
 				end
+				
+				-- Normalize values
+				barMax = barMax - barMin;
+				barValue = barValue - barMin;
+				barMin = 0;
+				
+				--[[
+				-- Don't show standing anymore
+				tooltipStanding = "";
+				if ( standingID < 8 ) then
+					tooltipStanding = " ("..getglobal("FACTION_STANDING_LABEL"..standingID+1)..")";
+				end
+				]]
+
+				factionBar.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
+				factionBar.standingText = factionStanding;
+				factionBar:SetMinMaxValues(0, barMax);
 				factionBar:SetValue(barValue);
 				color = FACTION_BAR_COLORS[standingID];
 				factionBar:SetStatusBarColor(color.r, color.g, color.b);

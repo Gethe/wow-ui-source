@@ -1,0 +1,10 @@
+## Interface: 1800
+## Title: Blizzard Trainer UI
+## LoadOnDemand: 1
+..\..\FrameXML\Fonts.xml
+..\..\FrameXML\UIDropDownMenuTemplates.xml
+..\..\FrameXML\UIPanelTemplates.xml
+..\..\FrameXML\MoneyFrame.xml
+..\..\FrameXML\ClassTrainerFrameTemplates.xml
+Blizzard_TrainerUI.xml
+Localization.lua

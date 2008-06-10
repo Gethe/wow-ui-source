@@ -1,0 +1,10 @@
+## Interface: 1800
+## Title: Blizzard Battlefield Minimap
+## LoadOnDemand: 1
+## SavedVariablesPerCharacter: BattlefieldMinimapOptions
+..\..\FrameXML\Fonts.xml
+..\..\FrameXML\UIDropDownMenuTemplates.xml
+..\..\FrameXML\UIPanelTemplates.xml
+..\..\FrameXML\WorldMapFrameTemplates.xml
+Blizzard_BattlefieldMinimap.xml
+Localization.lua

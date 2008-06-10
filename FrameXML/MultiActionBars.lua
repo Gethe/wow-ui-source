@@ -30,8 +30,9 @@ function MultiActionButtonUp(bar, id, onSelf)
 	local button = getglobal(bar.."Button"..id);
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
-		-- Used to save a macro
-		MacroFrame_EditMacro();
+		if ( MacroFrame_SaveMacro ) then
+			MacroFrame_SaveMacro();
+		end
 		UseAction(ActionButton_GetPagedID(button), 0, onSelf);
 		if ( IsCurrentAction(ActionButton_GetPagedID(button)) ) then
 			button:SetChecked(1);

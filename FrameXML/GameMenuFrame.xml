@@ -109,6 +109,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOption");
+						KeyBindingFrame_LoadUI();
 						ShowUIPanel(KeyBindingFrame);
 					</OnClick>
 				</Scripts>
@@ -125,7 +126,7 @@
 					<OnClick>
 						PlaySound("igMainMenuOption");
 						HideUIPanel(GameMenuFrame);
-						ShowUIPanel(MacroFrame);
+						ShowMacroFrame();
 					</OnClick>
 				</Scripts>
 			</Button>

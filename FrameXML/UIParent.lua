@@ -14,44 +14,33 @@ UIPanelWindows["OptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1
 UIPanelWindows["SoundOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["UIOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 2 ,	whileDead = 1};
-UIPanelWindows["InspectFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["LootFrame"] =			{ area = "left",	pushable = 7 };
 UIPanelWindows["TaxiFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["QuestFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["QuestLogFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["ClassTrainerFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["TradeSkillFrame"] =		{ area = "left",	pushable = 3 };
 UIPanelWindows["MerchantFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["TradeFrame"] =			{ area = "left",	pushable = 1 };
 UIPanelWindows["BankFrame"] =			{ area = "left",	pushable = 6 };
 UIPanelWindows["FriendsFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["SuggestFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["CraftFrame"] =			{ area = "left",	pushable = 4 };
 UIPanelWindows["WorldMapFrame"] =		{ area = "full",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["KeyBindingFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["CinematicFrame"] =		{ area = "full",	pushable = 0 };
 UIPanelWindows["TabardFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["GuildRegistrarFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["PetitionFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["HelpFrame"] =			{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["MacroFrame"] =			{ area = "left",	pushable = 5,	whileDead = 1 };
 UIPanelWindows["GossipFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["MailFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["TalentFrame"] =			{ area = "left",	pushable = 6,	whileDead = 1 };
 UIPanelWindows["PetStableFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["AuctionFrame"] =		{ area = "doublewide",	pushable = 0 };
 UIPanelWindows["WorldStateScoreFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
---UIPanelWindows["BattlefieldMinimap"] =		{ area = "center",	pushable = 0 };
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
 UIChildWindows = {
 	"OpenMailFrame",
 	"GuildControlPopupFrame",
-
 };
 
 UISpecialFrames = {
@@ -121,6 +110,94 @@ function UIParent_OnLoad()
 	this:RegisterEvent("BILLING_NAG_DIALOG");
 	this:RegisterEvent("IGR_BILLING_NAG_DIALOG");
 	this:RegisterEvent("VARIABLES_LOADED");
+
+	-- Events for auction UI handling
+	this:RegisterEvent("AUCTION_HOUSE_SHOW");
+	this:RegisterEvent("AUCTION_HOUSE_CLOSED");
+
+	-- Events for trainer UI handling
+	this:RegisterEvent("TRAINER_SHOW");
+	this:RegisterEvent("TRAINER_CLOSED");
+
+	-- Events for trade skill UI handling
+	this:RegisterEvent("TRADE_SKILL_SHOW");
+	this:RegisterEvent("TRADE_SKILL_CLOSE");
+
+	-- Events for craft UI handling
+	this:RegisterEvent("CRAFT_SHOW");
+	this:RegisterEvent("CRAFT_CLOSE");
+end
+
+function AuctionFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_AuctionUI");
+end
+
+function BattlefieldMinimap_LoadUI()
+	UIParentLoadAddOn("Blizzard_BattlefieldMinimap");
+end
+
+function ClassTrainerFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_TrainerUI");
+end
+
+function CraftFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_CraftUI");
+end
+
+function InspectFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_InspectUI");
+end
+
+function KeyBindingFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_BindingUI");
+end
+
+function MacroFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_MacroUI");
+end
+
+function RaidFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_RaidUI");
+end
+
+function TalentFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_TalentUI");
+end
+
+function TradeSkillFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_TradeSkillUI");
+end
+
+function ShowMacroFrame()
+	MacroFrame_LoadUI();
+	if ( MacroFrame_Show ) then
+		MacroFrame_Show();
+	end
+end
+
+function ToggleTalentFrame()
+	if ( UnitLevel("player") < 10 ) then
+		return;
+	end
+
+	TalentFrame_LoadUI();
+	if ( TalentFrame_Toggle ) then
+		TalentFrame_Toggle();
+	end
+end
+
+function ToggleBattlefieldMinimap()
+	BattlefieldMinimap_LoadUI();
+	if ( BattlefieldMinimap_Toggle ) then
+		BattlefieldMinimap_Toggle();
+	end
+end
+
+function InspectUnit(unit)
+	InspectFrame_LoadUI();
+	if ( InspectFrame_Show ) then
+		InspectFrame_Show(unit);
+	end
 end
 
 function UIParent_OnEvent(event)
@@ -440,12 +517,77 @@ function UIParent_OnEvent(event)
 		end
 		return;
 	end
+
+	-- Events for auction UI handling
+	if ( event == "AUCTION_HOUSE_SHOW" ) then
+		AuctionFrame_LoadUI();
+		if ( AuctionFrame_Show ) then
+			AuctionFrame_Show();
+		end
+		return;
+	end
+	if ( event == "AUCTION_HOUSE_CLOSED" ) then
+		if ( AuctionFrame_Hide ) then
+			AuctionFrame_Hide();
+		end
+		return;
+	end
+
+	-- Events for trainer UI handling
+	if ( event == "TRAINER_SHOW" ) then
+		ClassTrainerFrame_LoadUI();
+		if ( ClassTrainerFrame_Show ) then
+			ClassTrainerFrame_Show();
+		end
+		return;
+	end
+	if ( event == "TRAINER_CLOSED" ) then
+		if ( ClassTrainerFrame_Hide ) then
+			ClassTrainerFrame_Hide();
+		end
+		return;
+	end
+
+	-- Events for trade skill UI handling
+	if ( event == "TRADE_SKILL_SHOW" ) then
+		TradeSkillFrame_LoadUI();
+		if ( TradeSkillFrame_Show ) then
+			TradeSkillFrame_Show();
+		end
+		return;
+	end
+	if ( event == "TRADE_SKILL_CLOSE" ) then
+		if ( TradeSkillFrame_Hide ) then
+			TradeSkillFrame_Hide();
+		end
+		return;
+	end
+
+	-- Events for craft UI handling
+	if ( event == "CRAFT_SHOW" ) then
+		CraftFrame_LoadUI();
+		if ( CraftFrame_Show ) then
+			CraftFrame_Show();
+		end
+		return;
+	end
+	if ( event == "CRAFT_CLOSE" ) then
+		if ( CraftFrame_Hide ) then
+			CraftFrame_Hide();
+		end
+		return;
+	end
 end
+
+local FailedAddOnLoad = {};
 
 function UIParentLoadAddOn(name)
 	local loaded, reason = LoadAddOn(name);
 	if ( not loaded ) then
-		message(format(TEXT(ADDON_LOAD_FAILED), name, TEXT(getglobal("ADDON_"..reason))));
+		if ( not FailedAddOnLoad[name] ) then
+			message(format(TEXT(ADDON_LOAD_FAILED), name, TEXT(getglobal("ADDON_"..reason))));
+			FailedAddOnLoad[name] = true;
+		end
 	end
 	return loaded;
 end
@@ -795,6 +937,14 @@ function CloseMenus()
 	return menusVisible;
 end
 
+function IsOptionFrameOpen()
+	if ( GameMenuFrame:IsVisible() or OptionsFrame:IsVisible() or UIOptionsFrame:IsVisible() or SoundOptionsFrame:IsVisible() or (KeyBindingFrame and KeyBindingFrame:IsVisible()) ) then
+		return 1;
+	else
+		return nil;
+	end
+end
+
 function SecondsToTime(seconds, noSeconds)
 	local time = "";
 	local count = 0;
@@ -1030,6 +1180,15 @@ end
 -- Function to start a frame flashing
 function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDone, flashInHoldTime, flashOutHoldTime)
 	if ( frame ) then
+		local index = 1;
+		-- If frame is already set to flash then return
+		while FLASHFRAMES[index] do
+			if ( FLASHFRAMES[index] == frame ) then
+				return;
+			end
+			index = index + 1;
+		end
+		
 		-- Time it takes to fade in a flashing frame
 		frame.fadeInTime = fadeInTime;
 		-- Time it takes to fade out a flashing frame
@@ -1046,14 +1205,7 @@ function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDon
 		frame.flashInHoldTime = flashInHoldTime;
 		-- How long to hold the faded out state
 		frame.flashOutHoldTime = flashOutHoldTime;
-		local index = 1;
-		-- If frame is already set to flash then return
-		while FLASHFRAMES[index] do
-			if ( FLASHFRAMES[index] == frame ) then
-				return;
-			end
-			index = index + 1;
-		end
+		
 		tinsert(FLASHFRAMES, frame);
 	end
 end
@@ -1122,6 +1274,12 @@ function UIFrameIsFlashing(frame)
 	return nil;
 end
 
+-- Function to stop flashing
+function UIFrameFlashStop(frame)
+	frame.flashDuration = 0;
+	frame:Hide();
+end
+
 -- Functions to handle button pulsing (Highlight, Unhighlight)
 function SetButtonPulse(button, duration, pulseRate)
 	button.pulseDuration = pulseRate;
@@ -1171,8 +1329,9 @@ function tDeleteItem(table, item)
 	while table[index] do
 		if ( item == table[index] ) then
 			tremove(table, index);
+		else
+			index = index + 1;
 		end
-		index = index + 1;
 	end
 end
 
@@ -1376,7 +1535,7 @@ function UIParent_ManageRightSideFrames()
 	end
 
 	-- Set battlefield minimap position
-	if ( not BattlefieldMinimapTab:IsUserPlaced() ) then
+	if ( BattlefieldMinimapTab and not BattlefieldMinimapTab:IsUserPlaced() ) then
 		BattlefieldMinimapTab:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMRIGHT", -225-CONTAINER_OFFSET_X, BATTLEFIELD_TAB_OFFSET_Y);
 	end
 
@@ -1435,4 +1594,48 @@ function CursorOnUpdate()
 	if ( GameTooltip:IsOwned(this) ) then
 		CursorUpdate();
 	end
+end
+
+function GetBindingText(name, prefix)
+	if ( not name ) then
+		return "";
+	end
+	local tempName = name;
+	local i = strfind(name, "-");
+	local dashIndex = nil;
+	while ( i ) do
+		if ( not dashIndex ) then
+			dashIndex = i;
+		else
+			dashIndex = dashIndex + i;
+		end
+		tempName = strsub(tempName, i + 1);
+		i = strfind(tempName, "-");
+	end
+
+	local modKeys = '';
+	if ( not dashIndex ) then
+		dashIndex = 0;
+	else
+		modKeys = strsub(name, 1, dashIndex);
+		if ( GetLocale() == "deDE") then
+			modKeys = gsub(modKeys, "CTRL", "STRG");
+		end
+	end
+
+	if ( not prefix ) then
+		prefix = "";
+	end
+	local localizedName = nil;
+	if ( IsMacClient() ) then
+		-- see if there is a mac specific name for the key
+		localizedName = getglobal(prefix..tempName.."_MAC");
+	end
+	if ( not localizedName ) then
+		localizedName = getglobal(prefix..tempName);
+	end
+	if ( not localizedName ) then
+		localizedName = tempName;
+	end
+	return modKeys..localizedName;
 end

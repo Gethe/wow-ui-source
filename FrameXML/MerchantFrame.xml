@@ -62,20 +62,25 @@
 					</OnDragStart>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetMerchantItem(this:GetID());
-						if ( ShoppingTooltip1:SetMerchantCompareItem(this:GetID(), 1) ) then
-							ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_BOTTOMRIGHT");
-							ShoppingTooltip1:SetPoint("TOPLEFT", "GameTooltip", "TOPRIGHT", 0, -10);
-							ShoppingTooltip1:SetMerchantCompareItem(this:GetID(), 1);
-							ShoppingTooltip1:Show();
+						if ( MerchantFrame.selectedTab == 1 ) then
+							GameTooltip:SetMerchantItem(this:GetID());
+							if ( ShoppingTooltip1:SetMerchantCompareItem(this:GetID(), 1) ) then
+								ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_BOTTOMRIGHT");
+								ShoppingTooltip1:SetPoint("TOPLEFT", "GameTooltip", "TOPRIGHT", 0, -10);
+								ShoppingTooltip1:SetMerchantCompareItem(this:GetID(), 1);
+								ShoppingTooltip1:Show();
+							end
+							if ( ShoppingTooltip2:SetMerchantCompareItem(this:GetID(), 2) ) then
+								ShoppingTooltip2:SetOwner(ShoppingTooltip1, "ANCHOR_BOTTOMRIGHT");
+								ShoppingTooltip2:SetPoint("TOPLEFT", "ShoppingTooltip1", "TOPRIGHT", 0, 0);
+								ShoppingTooltip2:SetMerchantCompareItem(this:GetID(), 2);
+								ShoppingTooltip2:Show();
+							end
+							MerchantFrame.itemHover = this:GetID();
+						else
+							GameTooltip:SetBuybackItem(this:GetID());
+							ShowBuybackSellCursor(this:GetID());
 						end
-						if ( ShoppingTooltip2:SetMerchantCompareItem(this:GetID(), 2) ) then
-							ShoppingTooltip2:SetOwner(ShoppingTooltip1, "ANCHOR_BOTTOMRIGHT");
-							ShoppingTooltip2:SetPoint("TOPLEFT", "ShoppingTooltip1", "TOPRIGHT", 0, 0);
-							ShoppingTooltip2:SetMerchantCompareItem(this:GetID(), 2);
-							ShoppingTooltip2:Show();
-						end
-						MerchantFrame.itemHover = this:GetID();
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -135,7 +140,7 @@
                     </Anchors>
                 </Texture>
             </Layer>
-			<Layer level="ARTWORK">
+			<Layer level="BORDER">
 				<Texture file="Interface\MerchantFrame\UI-Merchant-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
@@ -198,6 +203,68 @@
  						</Anchor>
  					</Anchors>
  				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="BuybackFrameTopLeft" file="Interface\MerchantFrame\UI-BuyBack-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="19" y="-71"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="BuybackFrameTopRight" file="Interface\MerchantFrame\UI-BuyBack-TopRight">
+					<Size>
+						<AbsDimension x="64" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="BuybackFrameTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="BuybackFrameBotLeft" file="Interface\MerchantFrame\UI-BuyBack-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="BuybackFrameTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="BuybackFrameBotRight" file="Interface\MerchantFrame\UI-BuyBack-BotRight">
+					<Size>
+						<AbsDimension x="64" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="BuybackFrameTopLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="MerchantFrameBottomLeftBorder" file="Interface\MerchantFrame\UI-Merchant-BottomBorder">
+					<Size>
+						<AbsDimension x="256" y="61"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="14" y="85"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.4765625"/>
+				</Texture>
+				<Texture name="MerchantFrameBottomRightBorder" file="Interface\MerchantFrame\UI-Merchant-BottomBorder">
+					<Size>
+						<AbsDimension x="76" y="61"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="MerchantFrameBottomLeftBorder" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.296875" top="0.4765625" bottom="0.953125"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -291,6 +358,24 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
+			<Frame name="MerchantItem11" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantItem12" inherits="MerchantItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem11" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
 			<Button name="MerchantRepairAllButton">
 				<Size>
 					<AbsDimension x="36" y="36"/>
@@ -328,6 +413,7 @@
 						GameTooltip:Hide();
 					</OnClick>
 				</Scripts>
+				<NormalTexture file=""/>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
@@ -365,6 +451,7 @@
 						end
 					</OnClick>
 				</Scripts>
+				<NormalTexture file=""/>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
@@ -432,17 +519,17 @@
 							<OnEvent>
 								if ( event == "MERCHANT_UPDATE" ) then
 									if ( GameTooltip:IsOwned(this) ) then
-										GameTooltip:SetBuybackItem();
+										GameTooltip:SetBuybackItem(GetNumBuybackItems());
 										GameTooltip:Show();
 									end
 								end
 							</OnEvent>
 							<OnClick>
-								BuybackItem();
+								BuybackItem(GetNumBuybackItems());
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-								GameTooltip:SetBuybackItem();
+								GameTooltip:SetBuybackItem(GetNumBuybackItems());
 								ShowMerchantSellCursor(this:GetID());
 							</OnEnter>
 							<OnLeave>  
@@ -495,6 +582,18 @@
 								<Anchor point="LEFT" relativeTo="MerchantPrevPageButton" relativePoint="RIGHT"/>
 							</Anchors>
 						</FontString>
+						<Texture file="Interface\Buttons\UI-PageButton-Background">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -529,6 +628,18 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<Texture file="Interface\Buttons\UI-PageButton-Background">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -550,6 +661,50 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<Button name="MerchantFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="MERCHANT">
+                <Anchors>
+                    <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="60" y="46"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText("", 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PanelTemplates_SetTab(MerchantFrame, this:GetID());
+						MerchantFrame_Update();
+					</OnClick>
+                </Scripts>
+            </Button>
+            <Button name="MerchantFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="BUYBACK">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="MerchantFrameTab1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText("", 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PanelTemplates_SetTab(MerchantFrame, this:GetID());
+						MerchantFrame_Update();
+					</OnClick>
+                </Scripts>
+            </Button>
 		</Frames>
 		<Scripts>
 			<OnHide>
@@ -572,6 +727,13 @@
 						ShowInspectCursor();
 					else
 						ShowMerchantSellCursor(MerchantFrame.itemHover);
+					end
+				end
+				if ( this:IsVisible() and MerchantRepairItemButton:IsVisible() ) then
+					if ( InRepairMode() ) then
+						MerchantRepairItemButton:LockHighlight();
+					else
+						MerchantRepairItemButton:UnlockHighlight();
 					end
 				end
 			</OnUpdate>

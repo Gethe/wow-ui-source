@@ -45,6 +45,18 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<Texture name="$parentBorder" file="Interface\Buttons\UI-ActionButton-Border" hidden="true" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="62" y="62"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -52,7 +64,7 @@
 		</Frames>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Size>
-				<AbsDimension x="64" y="64"/>
+				<AbsDimension x="66" y="66"/>
 			</Size>
 			<Anchors>
 				<Anchor point="CENTER">

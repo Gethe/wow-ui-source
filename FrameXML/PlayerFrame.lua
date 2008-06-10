@@ -1,3 +1,4 @@
+REQUIRED_REST_HOURS = 5;
 
 function PlayerFrame_OnLoad()
 	this.statusCounter = 0;
@@ -18,6 +19,9 @@ function PlayerFrame_OnLoad()
 	this:RegisterEvent("PARTY_LEADER_CHANGED");
 	this:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
 	this:RegisterEvent("RAID_ROSTER_UPDATE");
+	-- Chinese playtime stuff
+	this:RegisterEvent("PLAYTIME_CHANGED");
+
 	PlayerAttackBackground:SetVertexColor(0.8, 0.1, 0.1);
 	PlayerAttackBackground:SetAlpha(0.4);
 end
@@ -28,6 +32,7 @@ function PlayerFrame_Update()
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdatePvPStatus();
 		PlayerFrame_UpdateStatus();
+		PlayerFrame_UpdatePlaytime();
 	end
 end
 
@@ -119,6 +124,8 @@ function PlayerFrame_OnEvent(event)
 		else
 			PlayerMasterIcon:Hide();
 		end
+	elseif ( event == "PLAYTIME_CHANGED" ) then
+		PlayerFrame_UpdatePlaytime();
 	end
 end
 
@@ -231,4 +238,18 @@ end
 
 function PlayerFrameDropDown_Initialize()
 	UnitPopup_ShowMenu(PlayerFrameDropDown, "SELF", "player");
+end
+
+function PlayerFrame_UpdatePlaytime()
+	if ( PartialPlayTime() ) then
+		PlayerPlayTimeIcon:SetTexture("Interface\\CharacterFrame\\UI-Player-PlayTimeTired");
+		PlayerPlayTime.tooltip = format(PLAYTIME_TIRED, REQUIRED_REST_HOURS - GetBillingTimeRested());
+		PlayerPlayTime:Show();
+	elseif ( NoPlayTime() ) then
+		PlayerPlayTimeIcon:SetTexture("Interface\\CharacterFrame\\UI-Player-PlayTimeUnhealthy");
+		PlayerPlayTime.tooltip = format(PLAYTIME_UNHEALTHY, REQUIRED_REST_HOURS - GetBillingTimeRested());
+		PlayerPlayTime:Show();
+	else
+		PlayerPlayTime:Hide();
+	end
 end

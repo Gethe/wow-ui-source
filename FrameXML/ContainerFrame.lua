@@ -63,6 +63,10 @@ function ContainerFrame_OnEvent()
 end
 
 function ToggleBag(id)
+	if ( IsOptionFrameOpen() ) then
+		return;
+	end
+	
 	local size = GetContainerNumSlots(id);
 	if ( size > 0 ) then
 		local containerShowing;
@@ -80,6 +84,10 @@ function ToggleBag(id)
 end
 
 function ToggleBackpack()
+	if ( IsOptionFrameOpen() ) then
+		return;
+	end
+	
 	if ( IsBagOpen(0) ) then
 		for i=1, NUM_CONTAINER_FRAMES, 1 do
 			local frame = getglobal("ContainerFrame"..i);
@@ -443,8 +451,8 @@ function ContainerFrameItemButton_OnClick(button, ignoreModifiers)
 			PickupContainerItem(this:GetParent():GetID(), this:GetID());
 			StackSplitFrame:Hide();
 		end
-	elseif ( button == "RightButton" ) then
-		if ( IsControlKeyDown() ) then
+	else
+		if ( IsControlKeyDown() and not ignoreModifiers ) then
 			return;
 		elseif ( IsShiftKeyDown() and MerchantFrame:IsVisible() and not ignoreModifiers ) then
 			this.SplitStack = function(button, split)
@@ -452,6 +460,9 @@ function ContainerFrameItemButton_OnClick(button, ignoreModifiers)
 				MerchantItemButton_OnClick("LeftButton");
 			end
 			OpenStackSplitFrame(this.count, this, "BOTTOMRIGHT", "TOPRIGHT");
+		elseif ( MerchantFrame:IsVisible() and MerchantFrame.selectedTab == 2 ) then
+			-- Don't sell the item if the buyback tab is selected
+			return;
 		else
 			UseContainerItem(this:GetParent():GetID(), this:GetID());
 			StackSplitFrame:Hide();
@@ -479,7 +490,7 @@ function ContainerFrameItemButton_OnEnter(button)
 		GameTooltip:Show();
 	elseif ( this.readable or (IsControlKeyDown() and button.hasItem) ) then
 		ShowInspectCursor();
-	elseif ( MerchantFrame:IsVisible() ) then
+	elseif ( MerchantFrame:IsVisible() and MerchantFrame.selectedTab == 1 ) then
 		ShowContainerSellCursor(button:GetParent():GetID(),button:GetID());
 	else
 		ResetCursor();

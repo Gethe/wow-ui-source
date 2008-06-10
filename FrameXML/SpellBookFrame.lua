@@ -249,7 +249,7 @@ function SpellButton_OnClick(drag)
 	if ( drag ) then
 		PickupSpell(id, SpellBookFrame.bookType);
 	elseif ( IsShiftKeyDown() ) then
-		if ( MacroFrame:IsVisible() ) then
+		if ( MacroFrame and MacroFrame:IsVisible() ) then
 			local spellName, subSpellName = GetSpellName(id, SpellBookFrame.bookType);
 			if ( spellName and not IsSpellPassive(id, SpellBookFrame.bookType) ) then
 				if ( subSpellName and (strlen(subSpellName) > 0) ) then

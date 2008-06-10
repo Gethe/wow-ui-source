@@ -1,0 +1,10 @@
+## Interface: 1800
+## Title: Blizzard Raid UI
+## LoadOnDemand: 1
+..\..\FrameXML\Fonts.xml
+..\..\FrameXML\UIDropDownMenuTemplates.xml
+..\..\FrameXML\UIPanelTemplates.xml
+..\..\FrameXML\TextStatusBar.xml
+..\..\FrameXML\PartyFrameTemplates.xml
+Blizzard_RaidUI.xml
+Localization.lua

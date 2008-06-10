@@ -686,7 +686,7 @@
 							</Layer>
 						</Layers>
 						<ScrollChild>
-							<EditBox name="HelpFrameOpenTicketText" multiLine="true" letters="2000">
+							<EditBox name="HelpFrameOpenTicketText" multiLine="true" letters="500">
 								<Size>
 									<AbsDimension x="541" y="357"/>
 								</Size>
@@ -996,7 +996,7 @@
 				<Frames>
 					<Frame name="HelpFrameVerbalHarassment">
 						<Size>
-							<AbsDimension x="564" y="185"/>
+							<AbsDimension x="564" y="165"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -1118,7 +1118,7 @@
 					</Frame>
 					<Frame name="HelpFramePhysicalHarassment">
 						<Size>
-							<AbsDimension x="568" y="200"/>
+							<AbsDimension x="568" y="220"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="HelpFrameHarassmentDivider2" relativePoint="BOTTOMLEFT">
@@ -1221,6 +1221,20 @@
 								<Scripts>
 									<OnLoad>
 										getglobal(this:GetName().."Text"):SetText(PHYSICAL_HARASSMENT_TEXT5);
+									</OnLoad>
+								</Scripts>
+							</Frame>
+							<Frame name="PhysicalAbuseTip5" inherits="HelpFrameBulletPointTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="PhysicalAbuseTip4" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(PHYSICAL_HARASSMENT_TEXT6);
 									</OnLoad>
 								</Scripts>
 							</Frame>

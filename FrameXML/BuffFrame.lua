@@ -105,6 +105,8 @@ function BuffButton_OnUpdate()
 	local timeLeft = GetPlayerBuffTimeLeft(buffIndex);
 	if ( timeLeft < BUFF_WARNING_TIME ) then
 		this:SetAlpha(BUFF_ALPHA_VALUE);
+	else
+		this:SetAlpha(1.0);
 	end
 
 	-- Update duration

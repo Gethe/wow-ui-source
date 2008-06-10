@@ -257,6 +257,32 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
+					<Frame name="PlayerPlayTime" enableMouse="true" hidden="true">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-4" y="-17"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="PlayerPlayTimeIcon" file="Interface\CharacterFrame\UI-Player-PlayTimeTired" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+							</OnEnter>						
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
 				</Frames>
 			</Frame>
 			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar">

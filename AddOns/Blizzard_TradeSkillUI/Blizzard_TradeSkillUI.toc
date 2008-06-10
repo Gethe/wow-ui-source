@@ -1,0 +1,10 @@
+## Interface: 1800
+## Title: Blizzard Trade Skill UI
+## LoadOnDemand: 1
+..\..\FrameXML\Fonts.xml
+..\..\FrameXML\UIDropDownMenuTemplates.xml
+..\..\FrameXML\UIPanelTemplates.xml
+..\..\FrameXML\ClassTrainerFrameTemplates.xml
+..\..\FrameXML\QuestFrameTemplates.xml
+Blizzard_TradeSkillUI.xml
+Localization.lua

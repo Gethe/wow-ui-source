@@ -652,7 +652,7 @@
 												this:ClearFocus();
 											</OnEscapePressed>
 										</Scripts>
-										<FontString inherits="ItemTextFontNormal"/>
+										<FontString inherits="MailTextFontNormal"/>
 									</EditBox>
 								</Frames>
 								<Scripts>
@@ -1163,7 +1163,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="StationeryPopupScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+			<ScrollFrame name="StationeryPopupScrollFrame" inherits="FauxScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="200" y="250"/>
 				</Size>
@@ -1174,6 +1174,36 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+							<Size>
+								<AbsDimension x="30" y="120"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+									<Offset>
+										<AbsDimension x="-2" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+							<Size>
+								<AbsDimension x="30" y="123"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+									<Offset>
+										<AbsDimension x="-2" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnVerticalScroll>
 						FauxScrollFrame_OnVerticalScroll(STATIONERY_ICON_ROW_HEIGHT, StationeryPopupFrame_Update);
@@ -1526,7 +1556,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString name="OpenMailBodyText" inherits="ItemTextFontNormal">
+								<FontString name="OpenMailBodyText" inherits="MailTextFontNormal">
 									<Size>
 										<AbsDimension x="276" y="0"/>
 									</Size>

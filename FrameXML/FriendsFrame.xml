@@ -215,6 +215,20 @@
 				</Anchor>
 			</Anchors>
 		</NormalText>
+		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentLeft">
+					<Offset>
+						<AbsDimension x="-2" y="5"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight">
+					<Offset>
+						<AbsDimension x="2" y="-7"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
 	</Button>
 	<Button name="FriendsFrameGuildPlayerStatusButtonTemplate" virtual="true">
 		<Size>
@@ -291,6 +305,12 @@
 			<OnClick>
 				FriendsFrameGuildPlayerStatusButton_OnClick(arg1);
 			</OnClick>
+			<OnEnter>
+				GameTooltip_AddNewbieTip(GUILD_MEMBER_OPTIONS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_MEMBER_OPTIONS, 1);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
 			<Size>
@@ -1306,6 +1326,24 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture name="WhoFrameDropDownHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="15" y="3"/>
+													</Offset>
+												</Anchor>
+												<Anchor point="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="-30" y="-2"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
 								<Scripts>
 									<OnLoad>
 										WhoFrameDropDown_OnLoad();
@@ -1317,6 +1355,12 @@
 									<OnEvent>
 										WhoFrameDropDown_OnEvent()
 									</OnEvent>
+									<OnEnter>
+										WhoFrameDropDownHighlightTexture:Show();
+									</OnEnter>
+									<OnLeave>
+										WhoFrameDropDownHighlightTexture:Hide();
+									</OnLeave>
 									<OnMouseUp>
 										if ( WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)].sortType ) then
 											SortWho(WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)].sortType);
@@ -3084,7 +3128,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_FRIENDSTAB, 1);
+						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(FRIENDS), "TOGGLEFRIENDSTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_FRIENDSTAB);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -3120,7 +3164,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_WHOTAB, 1);
+						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(WHO), "TOGGLEWHOTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_WHOTAB);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -3142,11 +3186,10 @@
 					</OnLoad>
 					<OnClick>
 						PanelTemplates_Tab_OnClick(FriendsFrame);
-						--[[ GuildRoster();		I don't think this one's necessary... ]]
 						FriendsFrame_OnShow();
 					</OnClick>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_GUILDTAB, 1);
+						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(GUILD), "TOGGLEGUILDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDTAB);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -3163,22 +3206,17 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						--InGuildCheck();
 						FriendsFrame_Update();
 					</OnLoad>
 					<OnEvent>
-						--InGuildCheck();
 						FriendsFrame_Update();
 					</OnEvent>
-					<OnUpdate>
-						--InGuildCheck();
-					</OnUpdate>
 					<OnClick>
 						PanelTemplates_Tab_OnClick(FriendsFrame);
 						FriendsFrame_OnShow();
 					</OnClick>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_RAIDTAB, 1);
+						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(RAID), "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

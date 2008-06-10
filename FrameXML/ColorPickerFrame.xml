@@ -71,6 +71,7 @@
 						if ( ColorPickerFrame.cancelFunc ) then
 							ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);
 						end
+						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -89,6 +90,7 @@
 						if ( ColorPickerFrame.opacityFunc ) then
 							ColorPickerFrame.opacityFunc();
 						end
+						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>
 			</Button>

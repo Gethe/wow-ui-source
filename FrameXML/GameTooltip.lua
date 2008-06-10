@@ -115,7 +115,7 @@ function GameTooltip_AddNewbieTip(normalText, r, g, b, newbieText, noNormalText)
 		GameTooltip:Show();
 	else
 		if ( not noNormalText ) then
-			GameTooltip:SetOwner(this);
+			GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 			GameTooltip:SetText(normalText, r, g, b);
 		end
 	end

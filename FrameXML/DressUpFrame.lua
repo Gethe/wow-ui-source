@@ -1,15 +1,9 @@
+
 function DressUpItem(item)
-	if ( AuctionFrame:IsVisible() ) then
-		if ( not AuctionDressUpFrame:IsVisible() ) then
-			ShowUIPanel(AuctionDressUpFrame);
-		end
-		AuctionDressUpModel:TryOn(item);
-	else
-		if ( not DressUpFrame:IsVisible() ) then
-			ShowUIPanel(DressUpFrame);
-		end
-		DressUpModel:TryOn(item);
+	if ( not DressUpFrame:IsVisible() ) then
+		ShowUIPanel(DressUpFrame);
 	end
+	DressUpModel:TryOn(item);
 end
 
 function DressUpItemLink(link)
@@ -20,7 +14,7 @@ function DressUpItemLink(link)
 	DressUpItem(item);
 end
 
-function SetDressUpBackground(isAuctionFrame)
+function DressUpTexturePath()
 	-- HACK!!!
 	local race, fileName = UnitRace("player");
 	if ( fileName == "Gnome" or fileName == "GNOME" ) then
@@ -33,14 +27,13 @@ function SetDressUpBackground(isAuctionFrame)
 	end
 	-- END HACK
 
-	local texture = "Interface\\DressUpFrame\\DressUpBackground-"..fileName;
-	if ( isAuctionFrame ) then
-		AuctionDressUpBackgroundTop:SetTexture(texture..1);
-		AuctionDressUpBackgroundBot:SetTexture(texture..3);
-	else
-		DressUpBackgroundTopLeft:SetTexture(texture..1);
-		DressUpBackgroundTopRight:SetTexture(texture..2);
-		DressUpBackgroundBotLeft:SetTexture(texture..3);
-		DressUpBackgroundBotRight:SetTexture(texture..4);
-	end
+	return "Interface\\DressUpFrame\\DressUpBackground-"..fileName;
+end
+
+function SetDressUpBackground()
+	local texture = DressUpTexturePath();
+	DressUpBackgroundTopLeft:SetTexture(texture..1);
+	DressUpBackgroundTopRight:SetTexture(texture..2);
+	DressUpBackgroundBotLeft:SetTexture(texture..3);
+	DressUpBackgroundBotRight:SetTexture(texture..4);
 end

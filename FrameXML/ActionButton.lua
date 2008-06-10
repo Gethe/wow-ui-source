@@ -31,8 +31,9 @@ function ActionButtonUp(id, onSelf)
 		local button = getglobal("BonusActionButton"..id);
 		if ( button:GetButtonState() == "PUSHED" ) then
 			button:SetButtonState("NORMAL");
-			-- Used to save a macro
-			MacroFrame_EditMacro();
+			if ( MacroFrame_SaveMacro ) then
+				MacroFrame_SaveMacro();
+			end
 			UseAction(ActionButton_GetPagedID(button), 0);
 			if ( IsCurrentAction(ActionButton_GetPagedID(button)) ) then
 				button:SetChecked(1);
@@ -46,8 +47,9 @@ function ActionButtonUp(id, onSelf)
 	local button = getglobal("ActionButton"..id);
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
-		-- Used to save a macro
-		MacroFrame_EditMacro();
+		if ( MacroFrame_SaveMacro ) then
+			MacroFrame_SaveMacro();
+		end
 		UseAction(ActionButton_GetPagedID(button), 0, onSelf);
 		if ( IsCurrentAction(ActionButton_GetPagedID(button)) ) then
 			button:SetChecked(1);
@@ -142,7 +144,7 @@ function ActionButton_UpdateHotkeys(actionButtonType)
 	end
 	local hotkey = getglobal(this:GetName().."HotKey");
 	local action = actionButtonType..this:GetID();
-	hotkey:SetText(KeyBindingFrame_GetLocalizedName(GetBindingKey(action), "KEY_"));
+	hotkey:SetText(GetBindingText(GetBindingKey(action), "KEY_"));
 end
 
 function ActionButton_Update()
@@ -160,7 +162,7 @@ function ActionButton_Update()
 	if ( texture ) then
 		icon:SetTexture(texture);
 		icon:Show();
-		this.rangeTimer = TOOLTIP_UPDATE_TIME;
+		this.rangeTimer = -1;
 		this:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
 		-- Save texture if the button is a bonus button, will be needed later
 		if ( this.isBonus ) then
@@ -185,6 +187,16 @@ function ActionButton_Update()
 	else
 		buttonCooldown:Hide();
 	end
+
+	-- Add a green border if button is an equipped item
+	local border = getglobal(this:GetName().."Border");
+	if ( IsEquippedAction(ActionButton_GetPagedID(this)) ) then
+		border:SetVertexColor(0, 1.0, 0, 0.35);
+		border:Show();
+	else
+		border:Hide();
+	end
+
 	if ( GameTooltip:IsOwned(this) ) then
 		ActionButton_SetTooltip();
 	else
@@ -372,7 +384,9 @@ function ActionButton_OnUpdate(elapsed)
 	
 	-- Handle range indicator
 	if ( this.rangeTimer ) then
-		if ( this.rangeTimer < 0 ) then
+		this.rangeTimer = this.rangeTimer - elapsed;
+
+		if ( this.rangeTimer <= 0 ) then
 			local count = getglobal(this:GetName().."HotKey");
 			if ( IsActionInRange( ActionButton_GetPagedID(this)) == 0 ) then
 				count:SetVertexColor(1.0, 0.1, 0.1);
@@ -380,8 +394,6 @@ function ActionButton_OnUpdate(elapsed)
 				count:SetVertexColor(0.6, 0.6, 0.6);
 			end
 			this.rangeTimer = TOOLTIP_UPDATE_TIME;
-		else
-			this.rangeTimer = this.rangeTimer - elapsed;
 		end
 	end
 
@@ -402,23 +414,22 @@ function ActionButton_OnUpdate(elapsed)
 end
 
 function ActionButton_GetPagedID(button)
-	if( button == nil ) then
-		message("nil button passed into ActionButton_GetPagedID(), contact Jeff");
-		return 0;
-	end
 	if ( button.isBonus and CURRENT_ACTIONBAR_PAGE == 1 ) then
 		local offset = GetBonusBarOffset();
 		if ( offset == 0 and BonusActionBarFrame and BonusActionBarFrame.lastBonusBar ) then
 			offset = BonusActionBarFrame.lastBonusBar;
 		end
 		return (button:GetID() + ((NUM_ACTIONBAR_PAGES + offset - 1) * NUM_ACTIONBAR_BUTTONS));
-	elseif ( button:GetParent():GetName() == "MultiBarBottomLeft" ) then
+	end
+	
+	local parentName = button:GetParent():GetName();
+	if ( parentName == "MultiBarBottomLeft" ) then
 		return (button:GetID() + ((BOTTOMLEFT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
-	elseif ( button:GetParent():GetName() == "MultiBarBottomRight" ) then
+	elseif ( parentName == "MultiBarBottomRight" ) then
 		return (button:GetID() + ((BOTTOMRIGHT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
-	elseif ( button:GetParent():GetName() == "MultiBarLeft" ) then
+	elseif ( parentName == "MultiBarLeft" ) then
 		return (button:GetID() + ((LEFT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
-	elseif ( button:GetParent():GetName() == "MultiBarRight" ) then
+	elseif ( parentName == "MultiBarRight" ) then
 		return (button:GetID() + ((RIGHT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
 	else
 		return (button:GetID() + ((CURRENT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS))

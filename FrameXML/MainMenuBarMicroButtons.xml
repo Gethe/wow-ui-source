@@ -102,6 +102,7 @@
 				this:RegisterEvent("PLAYER_LEVEL_UP");
 				this:RegisterEvent("UPDATE_BINDINGS");
 				this:RegisterEvent("UNIT_LEVEL");
+				this:RegisterEvent("PLAYER_ENTERING_WORLD");
 			</OnLoad>
 			<OnClick>
 				ToggleTalentFrame();

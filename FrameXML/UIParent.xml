@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="UIParent.lua"/>
 	<Script file="LocaleProperties.lua"/>
-	<Frame name="UIParent" setAllPoints="true" frameStrata="MEDIUM" parent="WorldFrame">
+	<Frame name="UIParent" setAllPoints="true" frameStrata="MEDIUM">
 		<Scripts>
 			<!-- Register here for any events you want to monitor globally -->
 			<OnLoad>

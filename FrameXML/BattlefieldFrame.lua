@@ -97,7 +97,7 @@ function BattlefieldFrame_UpdateStatus()
 		local waitTime = GetBattlefieldEstimatedWaitTime();
 		local timeInQueue = GetBattlefieldTimeWaited()/1000;
 		if ( waitTime == 0 ) then
-			waitTime = UNAVAILABLE;
+			waitTime = QUEUE_TIME_UNAVAILABLE;
 		elseif ( waitTime < 60000 ) then 
 			waitTime = LESS_THAN_ONE_MINUTE;
 		else

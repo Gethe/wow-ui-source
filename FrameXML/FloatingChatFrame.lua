@@ -849,6 +849,7 @@ function FCF_OnUpdate(elapsed)
 	
 	-- Handle hiding and showing chat tabs
 	local showAllDockTabs = nil;
+	local hideAnyDockTabs = nil;
 	local xPos, yPos = GetCursorPosition();
 	for j=1, NUM_CHAT_WINDOWS do
 		chatFrame = getglobal("ChatFrame"..j);
@@ -916,18 +917,23 @@ function FCF_OnUpdate(elapsed)
 					chatFrame.hover = nil;
 					chatFrame.hasBeenFaded = nil;
 				end
-				if ( chatTab.hasBeenFaded ) then					
-					local fadeInfo = {};
-					fadeInfo.mode = "OUT";
-					fadeInfo.startAlpha = chatTab.oldAlpha;
-					fadeInfo.timeToFade = CHAT_FRAME_FADE_TIME;
-					fadeInfo.finishedArg1 = chatTab;
-					fadeInfo.finishedArg2 = getglobal("ChatFrame"..chatTab:GetID());
-					fadeInfo.finishedFunc = FCF_ChatTabFadeFinished;
-					UIFrameFade(chatTab, fadeInfo);
+				if ( chatTab.hasBeenFaded ) then
+					if (chatFrame.isDocked) then
+						hideAnyDockTabs = true;
+						chatTab.needsHide = true;
+					else
+						local fadeInfo = {};
+						fadeInfo.mode = "OUT";
+						fadeInfo.startAlpha = chatTab.oldAlpha;
+						fadeInfo.timeToFade = CHAT_FRAME_FADE_TIME;
+						fadeInfo.finishedArg1 = chatTab;
+						fadeInfo.finishedArg2 = getglobal("ChatFrame"..chatTab:GetID());
+						fadeInfo.finishedFunc = FCF_ChatTabFadeFinished;
+						UIFrameFade(chatTab, fadeInfo);
 
-					chatFrame.hover = nil;
-					chatTab.hasBeenFaded = nil;
+						chatFrame.hover = nil;
+						chatTab.hasBeenFaded = nil;
+					end
 				end
 				chatFrame.hoverTime = 0;
 			end	
@@ -942,6 +948,7 @@ function FCF_OnUpdate(elapsed)
 	if ( showAllDockTabs ) then
 		for index, value in DOCKED_CHAT_FRAMES do
 			chatTab = getglobal(value:GetName().."Tab");
+			chatTab.needsHide = nil;
 			if ( not chatTab.hasBeenFaded ) then
 				if ( SELECTED_DOCK_FRAME:GetID() == chatTab:GetID() ) then
 					UIFrameFadeIn(chatTab, CHAT_FRAME_FADE_TIME);
@@ -952,6 +959,24 @@ function FCF_OnUpdate(elapsed)
 				end
 				chatTab.hasBeenFaded = 1;
 			end
+		end
+	elseif ( hideAnyDockTabs) then
+		for index, value in DOCKED_CHAT_FRAMES do
+			chatTab = getglobal(value:GetName().."Tab");
+			if ( chatTab.needsHide ) then
+				local fadeInfo = {};
+				fadeInfo.mode = "OUT";
+				fadeInfo.startAlpha = chatTab.oldAlpha;
+				fadeInfo.timeToFade = CHAT_FRAME_FADE_TIME;
+				fadeInfo.finishedArg1 = chatTab;
+				fadeInfo.finishedArg2 = getglobal("ChatFrame"..chatTab:GetID());
+				fadeInfo.finishedFunc = FCF_ChatTabFadeFinished;
+				UIFrameFade(chatTab, fadeInfo);
+
+				chatFrame.hover = nil;
+				chatTab.hasBeenFaded = nil;
+				chatTab.needsHide = nil;
+			end 
 		end
 	end
 		

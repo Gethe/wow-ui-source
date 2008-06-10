@@ -390,7 +390,7 @@ end
 
 function OptionsFrame_UpdateGammaControls()
 	local value = "0";
-	if ( OptionsFrameCheckButton1:GetChecked() ) then
+	if ( OptionsFrameCheckButton1:GetChecked() or OptionsFrameCheckButton10:GetChecked() ) then
 		OptionsFrame_DisableSlider(OptionsFrameSlider6);
 		value = "1";
 	else

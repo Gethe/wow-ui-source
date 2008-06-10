@@ -317,13 +317,15 @@ function WorldMapButton_OnUpdate(elapsed)
 			partyMemberFrame:Hide();
 		end
 		for i=1, MAX_RAID_MEMBERS do
-			partyX, partyY = GetPlayerMapPosition("raid"..i);
+			local unit = "raid"..i;
+			partyX, partyY = GetPlayerMapPosition(unit);
 			partyMemberFrame = getglobal("WorldMapRaid"..playerCount + 1);
-			if ( (partyX ~= 0 or partyY ~= 0) and not UnitIsUnit("raid"..i, "player") ) then
+			if ( (partyX ~= 0 or partyY ~= 0) and not UnitIsUnit(unit, "player") ) then
 				partyX = partyX * WorldMapDetailFrame:GetWidth();
 				partyY = -partyY * WorldMapDetailFrame:GetHeight();
 				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
 				partyMemberFrame.name = nil;
+				partyMemberFrame.unit = unit;
 				partyMemberFrame:Show();
 				playerCount = playerCount + 1;
 			end

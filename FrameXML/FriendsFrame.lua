@@ -18,20 +18,20 @@ WHOFRAME_DROPDOWN_LIST = {
 	{name = RACE, sortType = "race"}
 };
 
-RAIDFRAME_SUBFRAMES = { "FriendsListFrame", "IgnoreListFrame", "WhoFrame", "GuildFrame", "RaidFrame" };
-function RaidFrame_ShowSubFrame(frameName)
-	for index, value in RAIDFRAME_SUBFRAMES do
+FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "IgnoreListFrame", "WhoFrame", "GuildFrame", "RaidFrame" };
+function FriendsFrame_ShowSubFrame(frameName)
+	for index, value in FRIENDSFRAME_SUBFRAMES do
 		if ( value == frameName ) then
 			getglobal(value):Show()
 		else
-			getglobal(value):Hide();	
+			getglobal(value):Hide();
 		end	
 	end 
 end
 
 function FriendsFrame_ShowDropdown(name, connected)
 	HideDropDownMenu(1);
-	if ( connected and name ~= UnitName("player") ) then
+	if ( connected ) then
 		FriendsDropDown.initialize = FriendsFrameDropDown_Initialize;
 		FriendsDropDown.displayMode = "MENU";
 		FriendsDropDown.name = name;
@@ -82,7 +82,7 @@ function FriendsFrame_Update()
 			FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-BotLeft");
 			FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-BotRight");
 			FriendsFrameTitleText:SetText(FRIENDS_LIST);
-			RaidFrame_ShowSubFrame("FriendsListFrame");
+			FriendsFrame_ShowSubFrame("FriendsListFrame");
 		else
 			FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
 			FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
@@ -90,7 +90,7 @@ function FriendsFrame_Update()
 			FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-IgnoreFrame-BotRight");
 			IgnoreList_Update();
 			FriendsFrameTitleText:SetText(IGNORE_LIST);
-			RaidFrame_ShowSubFrame("IgnoreListFrame");
+			FriendsFrame_ShowSubFrame("IgnoreListFrame");
 		end
 	elseif ( FriendsFrame.selectedTab == 2 ) then
 		FriendsFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
@@ -99,7 +99,7 @@ function FriendsFrame_Update()
 		FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotRight");
 		FriendsFrameTitleText:SetText(WHO_LIST);
 		WhoList_Update();
-		RaidFrame_ShowSubFrame("WhoFrame");
+		FriendsFrame_ShowSubFrame("WhoFrame");
 	elseif ( FriendsFrame.selectedTab == 3 ) then
 		FriendsFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
 		FriendsFrameTopRight:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight");
@@ -108,7 +108,7 @@ function FriendsFrame_Update()
 		local guildName;
 		guildName = GetGuildInfo("player");
 		FriendsFrameTitleText:SetText(guildName);
-		RaidFrame_ShowSubFrame("GuildFrame");
+		FriendsFrame_ShowSubFrame("GuildFrame");
 		if ( FriendsFrame.playerStatusFrame ) then
 			GuildPlayerStatusFrame:Show();
 			GuildStatusFrame:Hide();
@@ -124,7 +124,7 @@ function FriendsFrame_Update()
 		FriendsFrameBottomLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomLeft");
 		FriendsFrameBottomRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomRight");
 		FriendsFrameTitleText:SetText(RAID);
-		RaidFrame_ShowSubFrame("RaidFrame");
+		FriendsFrame_ShowSubFrame("RaidFrame");
 	end
 end
 
@@ -134,7 +134,7 @@ function FriendsFrame_OnHide()
 	SetGuildRosterSelection(0);
 	GuildFrame.selectedGuildMember = 0;
 	GuildControlPopupFrame:Hide();
-	for index, value in RAIDFRAME_SUBFRAMES do
+	for index, value in FRIENDSFRAME_SUBFRAMES do
 		getglobal(value):Hide();
 	end
 end

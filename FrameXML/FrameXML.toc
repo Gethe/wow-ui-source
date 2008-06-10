@@ -1,16 +1,19 @@
 # Do not delete the following line!
-## Interface: 1700
+## Interface: 1800
 GlobalStrings.lua
 Fonts.xml
 Localization.xml
 BasicControls.xml
 WorldFrame.xml
 UIParent.xml
+MoneyFrame.lua
 MoneyFrame.xml
+MoneyInputFrame.lua
 MoneyInputFrame.xml
 GameTooltip.xml
 UIMenu.xml
 UIDropDownMenu.xml
+UIPanelTemplates.lua
 UIPanelTemplates.xml
 GameMenuFrame.xml
 OptionsFrame.xml
@@ -19,7 +22,6 @@ UIOptionsFrame.xml
 UIErrorsFrame.xml
 StaticPopup.xml
 MirrorTimer.xml
-KeyBindingFrame.xml
 CoinPickupFrame.xml
 StackSplitFrame.xml
 FadingFrame.xml
@@ -27,6 +29,7 @@ ZoneText.xml
 BattlefieldFrame.xml
 Minimap.xml
 GameTime.xml
+TextStatusBar.lua
 TextStatusBar.xml
 MainMenuBar.xml
 MainMenuBarMicroButtons.xml
@@ -54,14 +57,9 @@ SkillFrame.xml
 ReputationFrame.xml
 HonorFrame.xml
 MainMenuBarBagButtons.xml
-InspectFrame.xml
-InspectPaperDollFrame.xml
-InspectHonorFrame.xml
 QuestFrame.xml
 QuestLogFrame.xml
 QuestTimerFrame.xml
-ClassTrainerFrame.xml
-TradeSkillFrame.xml
 MerchantFrame.xml
 TradeFrame.xml
 ContainerFrame.xml
@@ -73,7 +71,6 @@ BankFrame.xml
 FriendsFrame.xml
 RaidFrame.xml
 PetActionBarFrame.xml
-CraftFrame.xml
 BonusActionBarFrame.xml
 WorldMapFrame.xml
 CinematicFrame.xml
@@ -84,14 +81,10 @@ TutorialFrame.xml
 GuildRegistrarFrame.xml
 PetitionFrame.xml
 HelpFrame.xml
-MacroFrame.xml
 ColorPickerFrame.xml
 GossipFrame.xml
 MailFrame.xml
-TalentFrame.xml
-AuctionFrame.xml
 PetStable.xml
 DurabilityFrame.xml
 WorldStateFrame.xml
-BattlefieldMinimap.xml
 DressUpFrame.xml

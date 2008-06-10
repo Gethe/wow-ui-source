@@ -32,7 +32,7 @@ function UpdateMicroButtons()
 		SpellbookMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( TalentFrame:IsVisible() ) then
+	if ( TalentFrame and TalentFrame:IsVisible() ) then
 		TalentMicroButton:SetButtonState("PUSHED", 1);
 	else
 		TalentMicroButton:SetButtonState("NORMAL");
@@ -110,7 +110,7 @@ function TalentMicroButton_OnEvent()
 		if ( not CharacterFrame:IsVisible() ) then
 			SetButtonPulse(this, 60, 1);
 		end
-	elseif ( event == "UNIT_LEVEL" ) then
+	elseif ( event == "UNIT_LEVEL" or event == "PLAYER_ENTERING_WORLD" ) then
 		UpdateTalentButton();
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		this.tooltipText =  MicroButtonTooltipText(TEXT(TALENTS_BUTTON), "TOGGLETALENTS");

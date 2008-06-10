@@ -1,0 +1,8 @@
+## Interface: 1800
+## Title: Blizzard Macro UI
+## LoadOnDemand: 1
+..\..\FrameXML\Fonts.xml
+..\..\FrameXML\UIPanelTemplates.xml
+..\..\FrameXML\ClassTrainerFrameTemplates.xml
+Blizzard_MacroUI.xml
+Localization.lua
