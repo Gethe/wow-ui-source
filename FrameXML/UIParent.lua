@@ -606,7 +606,7 @@ function UIParent_OnEvent(event)
 	if ( event == "TRADE_SKILL_SHOW" ) then
 		TradeSkillFrame_LoadUI();
 		if ( TradeSkillFrame_Show ) then
-			TradeSkillFrame_Show();
+			TradeSkillFrame_Show();						
 		end
 		return;
 	end
@@ -1584,7 +1584,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft 
 
 -- Vars
 UIPARENT_MANAGED_FRAME_POSITIONS["CONTAINER_OFFSET_X"] = {baseX = 0, rightLeft = 90, rightRight = 45, isVar = "xAxis"};
-UIPARENT_MANAGED_FRAME_POSITIONS["CONTAINER_OFFSET_Y"] = {baseY = 70, bottomEither = 27, reputation = 9, isVar = "yAxis", pet = 35};
+UIPARENT_MANAGED_FRAME_POSITIONS["CONTAINER_OFFSET_Y"] = {baseY = 70, bottomEither = 27, bottomRight = 0, reputation = 9, isVar = "yAxis", pet = 23};
 UIPARENT_MANAGED_FRAME_POSITIONS["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 210, bottomRight = 40, reputation = 9, isVar = "yAxis"};
 UIPARENT_MANAGED_FRAME_POSITIONS["PETACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = 43, reputation = 9, maxLevel = -5, isVar = "yAxis"};
 
@@ -1605,9 +1605,9 @@ function UIParent_ManageFramePositions()
 	if ( SHOW_MULTI_ACTIONBAR_1 ) then
 		tinsert(yOffsetFrames, "bottomLeft");
 	end
-	if ( MultiBarLeft:IsShown() ) then
+	if ( SHOW_MULTI_ACTIONBAR_3  or SHOW_MULTI_ACTIONBAR_4 ) then
 		tinsert(xOffsetFrames, "rightLeft");
-	elseif ( MultiBarRight:IsShown() ) then
+	elseif ( SHOW_MULTI_ACTIONBAR_3 ) then
 		tinsert(xOffsetFrames, "rightRight");
 	end
 
@@ -1646,6 +1646,8 @@ function UIParent_ManageFramePositions()
 						hasBottomLeft = 1;
 					elseif ( flagValue == "pet" ) then
 						hasPetBar = 1;
+					elseif ( flagValue == "bottomRight" ) then
+						hasBottomRight = 1;
 					end
 					yOffset = yOffset + value[flagValue];
 				end

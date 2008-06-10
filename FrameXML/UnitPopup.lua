@@ -145,6 +145,8 @@ function UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 	local icon;
 	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
 		dropdownMenu.which = UIDROPDOWNMENU_MENU_VALUE;
+		-- Set which menu is being opened
+		OPEN_DROPDOWNMENUS[UIDROPDOWNMENU_MENU_LEVEL] = {which = dropdownMenu.which, unit = dropdownMenu.unit};
 		for index, value in UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] do
 			info = {};
 			info.text = UnitPopupButtons[value].text;
@@ -197,6 +199,8 @@ function UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 		UIDropDownMenu_AddButton(info);
 	end
 	
+	-- Set which menu is being opened
+	OPEN_DROPDOWNMENUS[UIDROPDOWNMENU_MENU_LEVEL] = {which = dropdownMenu.which, unit = dropdownMenu.unit};
 	-- Show the buttons which are used by this menu
 	local tooltipText;
 	for index, value in UnitPopupMenus[which] do
@@ -453,74 +457,77 @@ function UnitPopup_OnUpdate(elapsed)
 	if ( IsRaidOfficer() ) then
 		isAssistant = 1;
 	end
-	local count = 0;
-	local dropdownFrame = getglobal(UIDROPDOWNMENU_OPEN_MENU);
-	for index, value in UnitPopupMenus[dropdownFrame.which] do
-		if ( UnitPopupShown[index] == 1 ) then
-			count = count + 1;
-			local enable = 1;
+	-- Loop through all menus and enable/disable their buttons appropriately
+	local count;
+	for level, dropdownFrame in OPEN_DROPDOWNMENUS do
+		if ( dropdownFrame ) then
+			count = 0;
+			for index, value in UnitPopupMenus[dropdownFrame.which] do
+				if ( UnitPopupShown[index] == 1 ) then
+					count = count + 1;
+					local enable = 1;
+					if ( UnitPopupButtons[value].dist > 0 ) then
+						if ( not CheckInteractDistance(dropdownFrame.unit, UnitPopupButtons[value].dist) ) then
+							enable = 0;
+						end
+					end
+					if ( value == "TRADE" ) then
+						if ( UnitIsDeadOrGhost("player") or (not HasFullControl()) or UnitIsDeadOrGhost(dropdownFrame.unit) ) then
+							enable = 0;
+						end
+					elseif ( value == "LEAVE" ) then
+						if ( inParty == 0 ) then
+							enable = 0;
+						end
+					elseif ( value == "INVITE" ) then
+						if ( inParty == 1 and (isLeader == 0 and isAssistant == 0)) then
+							enable = 0;
+						end
+					elseif ( value == "UNINVITE" or value == "PROMOTE" ) then
+						if ( inParty == 0 or isLeader == 0 ) then
+							enable = 0;
+						end
+					elseif ( value == "WHISPER" ) then
+						if ( dropdownFrame.unit and not UnitIsConnected(dropdownFrame.unit) ) then
+							enable = 0;
+						end
+					elseif ( value == "INSPECT" ) then
+						if ( UnitIsDeadOrGhost("player") ) then
+							enable = 0;
+						end
+					elseif ( value == "FOLLOW" ) then
+						if ( UnitIsDead("player") ) then
+							enable = 0;
+						end
+					elseif ( value == "DUEL" ) then
+						if ( UnitIsDeadOrGhost("player") or (not HasFullControl()) or UnitIsDeadOrGhost(dropdownFrame.unit) ) then
+							enable = 0;
+						end
+					elseif ( value == "LOOT_PROMOTE" ) then
+						local lootMethod;
+						local lootMaster;
+						lootMethod, lootMaster = GetLootMethod();
+						if ( (inParty == 0) or (isLeader == 0) or (lootMethod ~= "master") ) then
+							enable = 0;
+						else
+							local masterName = 0;
+							if ( not lootMaster or (lootMaster == 0) ) then
+								masterName = "player";
+							else
+								masterName = "party"..lootMaster;
+							end
+							if ( dropdownFrame.unit and UnitIsUnit(dropdownFrame.unit, masterName) ) then
+								enable = 0;
+							end
+						end
+					end
 
-			if ( UnitPopupButtons[value].dist > 0 ) then
-				if ( not CheckInteractDistance(dropdownFrame.unit, UnitPopupButtons[value].dist) ) then
-					enable = 0;
-				end
-			end
-
-			if ( value == "TRADE" ) then
-				if ( UnitIsDeadOrGhost("player") or (not HasFullControl()) or UnitIsDeadOrGhost(dropdownFrame.unit) ) then
-					enable = 0;
-				end
-			elseif ( value == "LEAVE" ) then
-				if ( inParty == 0 ) then
-					enable = 0;
-				end
-			elseif ( value == "INVITE" ) then
-				if ( inParty == 1 and (isLeader == 0 and isAssistant == 0)) then
-					enable = 0;
-				end
-			elseif ( value == "UNINVITE" or value == "PROMOTE" ) then
-				if ( inParty == 0 or isLeader == 0 ) then
-					enable = 0;
-				end
-			elseif ( value == "WHISPER" ) then
-				if ( dropdownFrame.unit and not UnitIsConnected(dropdownFrame.unit) ) then
-					enable = 0;
-				end
-			elseif ( value == "INSPECT" ) then
-				if ( UnitIsDeadOrGhost("player") ) then
-					enable = 0;
-				end
-			elseif ( value == "FOLLOW" ) then
-				if ( UnitIsDead("player") ) then
-					enable = 0;
-				end
-			elseif ( value == "DUEL" ) then
-				if ( UnitIsDeadOrGhost("player") or (not HasFullControl()) or UnitIsDeadOrGhost(dropdownFrame.unit) ) then
-					enable = 0;
-				end
-			elseif ( value == "LOOT_PROMOTE" ) then
-				local lootMethod;
-				local lootMaster;
-				lootMethod, lootMaster = GetLootMethod();
-				if ( (inParty == 0) or (isLeader == 0) or (lootMethod ~= "master") ) then
-					enable = 0;
-				else
-					local masterName = 0;
-					if ( not lootMaster or (lootMaster == 0) ) then
-						masterName = "player";
+					if ( enable == 1 ) then
+						UIDropDownMenu_EnableButton(level, count+1);
 					else
-						masterName = "party"..lootMaster;
-					end
-					if ( dropdownFrame.unit and UnitIsUnit(dropdownFrame.unit, masterName) ) then
-						enable = 0;
+						UIDropDownMenu_DisableButton(level, count+1);
 					end
 				end
-			end
-
-			if ( enable == 1 ) then
-				UIDropDownMenu_EnableButton(1, count+1);
-			else
-				UIDropDownMenu_DisableButton(1, count+1);
 			end
 		end
 	end

@@ -79,8 +79,12 @@ end
 
 -- Function for raid options
 function RaidOptionsFrame_UpdatePartyFrames()
-	HidePartyFrame();
-	ShowPartyFrame();
+	if ( HIDE_PARTY_INTERFACE == "1" and GetNumRaidMembers() > 0) then
+		HidePartyFrame();
+	else
+		HidePartyFrame();
+		ShowPartyFrame();
+	end
 end
 
 -- Populates Raid Info Data

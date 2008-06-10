@@ -167,11 +167,11 @@ function UIOptionsFrame_Init()
 	AdvancedOptionsActionBars:SetPoint("TOPLEFT", AdvancedOptions, "TOPLEFT", 32, -104);
 	AdvancedOptionsActionBars:SetPoint("TOPRIGHT", AdvancedOptions, "TOPRIGHT", -32, -104);
 	AdvancedOptionsChat:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", 0, -20);
-	AdvancedOptionsChat:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", UIOptionsFrame:GetWidth()*-0.62, -20);
-	AdvancedOptionsRaid:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", UIOptionsFrame:GetWidth()*0.32, -20);
-	AdvancedOptionsRaid:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", UIOptionsFrame:GetWidth()*-0.32, -20);
+	AdvancedOptionsChat:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", UIOptionsFrame:GetWidth()*-0.68, -20);
+	AdvancedOptionsRaid:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", UIOptionsFrame:GetWidth()*0.33, -20);
+	AdvancedOptionsRaid:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", UIOptionsFrame:GetWidth()*-0.33, -20);
 	AdvancedOptionsRaid:SetPoint("BOTTOMLEFT", AdvancedOptionsChat, "BOTTOMRIGHT", 0, 0);
-	AdvancedOptionsCombatText:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", UIOptionsFrame:GetWidth()*0.62, -20);
+	AdvancedOptionsCombatText:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", UIOptionsFrame:GetWidth()*0.68, -20);
 	AdvancedOptionsCombatText:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", 0, -20);
 	AdvancedOptionsCombatText:SetPoint("BOTTOMLEFT", AdvancedOptionsRaid, "BOTTOMRIGHT", 0, 0);
 
@@ -246,6 +246,10 @@ function UIOptionsFrame_Load()
 				checked = 0;
 			end
 		elseif ( index == "GAMEFIELD_DESELECT_TEXT" ) then
+			if ( GetCVar(value.cvar) == "0" ) then
+				checked = 1;
+			end
+		elseif ( index == "DISABLE_SPAM_FILTER" ) then
 			if ( GetCVar(value.cvar) == "0" ) then
 				checked = 1;
 			end
@@ -329,7 +333,7 @@ function UIOptionsFrame_Save()
 		elseif ( index == "SHOW_PET_MELEE_DAMAGE" ) then
 			SetCVar(value.cvar, value.value, index);
 			SetCVar("PetSpellDamage", value.value);
-		elseif ( index == "GAMEFIELD_DESELECT_TEXT" ) then
+		elseif ( index == "GAMEFIELD_DESELECT_TEXT" or index == "DISABLE_SPAM_FILTER" ) then
 			if ( value.value == "1" ) then
 				value.value = "0";
 			else

@@ -485,8 +485,7 @@ function PaperDollFrame_SetRangedDamage(unit, prefix)
 		return;
 	end
 
-	local temp1, temp2, temp3, temp4, physicalBonusPos, physicalBonusNeg, percent = UnitDamage(unit);
-	local rangedAttackSpeed, minDamage, maxDamage = UnitRangedDamage(unit);
+	local rangedAttackSpeed, minDamage, maxDamage, physicalBonusPos, physicalBonusNeg, percent = UnitRangedDamage(unit);
 	local displayMin = max(floor(minDamage),1);
 	local displayMax = max(ceil(maxDamage),1);
 

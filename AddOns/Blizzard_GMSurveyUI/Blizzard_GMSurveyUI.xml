@@ -687,7 +687,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="GMSurveyCancelButton" inherits="UIPanelButtonGrayTemplate" text="CANCEL">
+			<Button name="GMSurveyCancelButton" inherits="GameMenuButtonTemplate" text="CANCEL">
 				<Size>
 					<AbsDimension x="130" y="22"/>
 				</Size>

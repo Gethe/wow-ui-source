@@ -1005,7 +1005,7 @@
 					ReputationWatchBar_Update();
 				elseif( event == "PLAYER_LEVEL_UP" ) then
 					ReputationWatchBar_Update(arg1);
-				elseif( event == "CVAR_UPDATE" and arg1 == "STATUS_BAR_TEXT" ) then
+				elseif( event == "CVAR_UPDATE" and arg1 == "statusBarText" ) then
 					if( arg2 == "1" ) then
 						ShowWatchedReputationBarText("lock");
 					else
@@ -1016,7 +1016,7 @@
 				end
 			</OnEvent>
 			<OnShow>
-				if( UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value == "1" ) then
+				if ( GetCVar("statusBarText") == "1" ) then
 					ShowWatchedReputationBarText("lock");
 				end
 				UIParent_ManageFramePositions();

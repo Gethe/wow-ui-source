@@ -66,7 +66,7 @@ function ExhaustionTick_Update()
 		end
 
 	end
-	if ( ReputationWatchBar:IsShown() ) then
+	if ( ReputationWatchBar:IsShown() and not MainMenuExpBar:IsShown() ) then
 		ExhaustionTick:Hide();
 	end
 end

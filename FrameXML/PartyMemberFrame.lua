@@ -11,7 +11,7 @@ end
 
 function ShowPartyFrame()
 	for i=1, MAX_PARTY_MEMBERS, 1 do
-		if ( GetPartyMember(i) and not((HIDE_PARTY_INTERFACE == "1") and (GetNumRaidMembers() > 0))) then
+		if ( GetPartyMember(i) ) then
 			getglobal("PartyMemberFrame"..i):Show();
 		end
 	end
@@ -35,6 +35,9 @@ function PartyMemberFrame_OnLoad()
 end
 
 function PartyMemberFrame_UpdateMember()
+	if ( HIDE_PARTY_INTERFACE == "1" and GetNumRaidMembers() > 0 ) then
+		return;
+	end
 	local id = this:GetID();
 	if ( GetPartyMember(id) ) then
 		UnitFrame_UpdateManaType();

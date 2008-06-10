@@ -659,9 +659,9 @@ function GetSlashCmdTarget(msg)
 	if ( target and (target == "player" or target == "target" or
 	     strfind(target, "^party[1-4]") or
 		 strfind(target, "^raid[0-9]")) ) then
-		target = UnitName(target);
+		target,server = UnitName(target);
 	end
-	return target;
+	return target,server;
 end
 
 
@@ -1042,7 +1042,12 @@ end
 
 SlashCmdList["IGNORE"] = function(msg)
 	if ( GetSlashCmdTarget(msg) ) then
-		AddOrDelIgnore(GetSlashCmdTarget(msg));
+		local name, server = GetSlashCmdTarget(msg);
+		if(not (server == nil)) then
+			AddOrDelIgnore(name.."-"..server);
+		else
+			AddOrDelIgnore(name);
+		end
 	else
 		ShowIgnorePanel();
 	end

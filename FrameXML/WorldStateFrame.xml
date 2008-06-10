@@ -168,7 +168,7 @@
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="LEFT">
 							<Offset>
-								<AbsDimension x="137" y="0"/>
+								<AbsDimension x="127" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -177,7 +177,7 @@
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="LEFT">
 							<Offset>
-								<AbsDimension x="203" y="0"/>
+								<AbsDimension x="127" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -186,7 +186,7 @@
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="LEFT">
 							<Offset>
-								<AbsDimension x="203" y="0"/>
+								<AbsDimension x="127" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -352,12 +352,12 @@
 			</Frame>
 			<Frame name="$parentNameButton" enableMouse="true">
 				<Size>
-					<AbsDimension x="120" y="16"/>
+					<AbsDimension x="160" y="16"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT">
 						<Offset>
-							<AbsDimension x="21" y="0"/>
+							<AbsDimension x="15" y="1"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -365,7 +365,7 @@
 					<Layer level="BACKGROUND">
 						<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
 							<Size>
-								<AbsDimension x="110" y="16"/>
+								<AbsDimension x="160" y="16"/>
 							</Size>
 						</FontString>
 					</Layer>
@@ -852,7 +852,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameName" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="120" y="0"/>
+							<AbsDimension x="160" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -867,7 +867,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameKB" relativePoint="CENTER">
 						<Offset>
-							<AbsDimension x="68" y="0"/>
+							<AbsDimension x="58" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -882,7 +882,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameDeaths" relativePoint="CENTER">
 						<Offset>
-							<AbsDimension x="68" y="0"/>
+							<AbsDimension x="58" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -900,7 +900,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHK" relativePoint="CENTER">
 						<Offset>
-							<AbsDimension x="68" y="0"/>
+							<AbsDimension x="58" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -920,7 +920,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHK" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="45" y="0"/>
+							<AbsDimension x="38" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -929,7 +929,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="WorldStateScoreColumn1" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="40" y="0"/>
+							<AbsDimension x="38" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -938,7 +938,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="WorldStateScoreColumn2" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="40" y="0"/>
+							<AbsDimension x="38" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -947,7 +947,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="WorldStateScoreColumn3" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="40" y="0"/>
+							<AbsDimension x="38" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -956,7 +956,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="WorldStateScoreColumn4" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="40" y="0"/>
+							<AbsDimension x="38" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

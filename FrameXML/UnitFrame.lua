@@ -127,7 +127,7 @@ function UnitFrame_UpdateManaType(unitFrame)
 	end
 	-- Update the manabar text if shown in the ui options
 	SetTextStatusBarTextPrefix(unitFrame.manabar, info.prefix);
-	if ( UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value == "1" ) then
+	if ( GetCVar("statusBarText") == "1" ) then
 		TextStatusBar_UpdateTextString(unitFrame.manabar);
 	end
 

@@ -250,6 +250,11 @@ end
 
 function CombatText_OnUpdate(elapsed)
 	local lowestMessage = COMBAT_TEXT_LOCATIONS.startY;
+	local uiScale = 1;
+	if ( GetCVar("useUiScale") == "1" ) then
+		uiScale = GetCVar("uiscale") + 0;
+		lowestMessage = lowestMessage / uiScale;
+	end
 	local alpha, xPos, yPos;
 	for index, value in COMBAT_TEXT_TO_ANIMATE do
 		if ( value.scrollTime >= COMBAT_TEXT_SCROLLSPEED ) then
@@ -327,6 +332,8 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 		end
 	end
 
+	local uiScale = 1;
+
 	-- Handle crits
 	if ( displayType == "crit" ) then
 		string.endY = COMBAT_TEXT_LOCATIONS.startY;
@@ -336,7 +343,13 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 		string.endY = COMBAT_TEXT_LOCATIONS.startY;
 		string:SetTextHeight(COMBAT_TEXT_HEIGHT);
 	else
-		string.endY = COMBAT_TEXT_LOCATIONS.endY;
+		if ( GetCVar("useUiScale") == "1" ) then
+			uiScale = GetCVar("uiscale") + 0;
+			string.endY = COMBAT_TEXT_LOCATIONS.endY / uiScale;
+		else
+			string.endY = COMBAT_TEXT_LOCATIONS.endY;
+		end
+		
 		string:SetTextHeight(COMBAT_TEXT_HEIGHT);
 	end
 

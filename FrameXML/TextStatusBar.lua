@@ -44,7 +44,7 @@ function TextStatusBar_UpdateTextString(textStatusBar)
 				else
 					string:SetText(value.." / "..valueMax);
 				end
-				if ( UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value == "1" and textStatusBar.textLockable ) then
+				if ( GetCVar("statusBarText") == "1" and textStatusBar.textLockable ) then
 					string:Show();
 				elseif ( textStatusBar.lockShow > 0 ) then
 					string:Show();
@@ -94,7 +94,7 @@ function HideTextStatusBarText(bar)
 		end
 		if ( bar.lockShow > 0 or this.isZero == 1) then
 			bar.TextString:Show();
-		elseif ( UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value == "1" and bar.textLockable ) then
+		elseif ( GetCVar("statusBarText") == "1" and bar.textLockable ) then
 			bar.TextString:Show();
 		else
 			bar.TextString:Hide();

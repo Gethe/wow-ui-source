@@ -10,7 +10,7 @@ CONTAINER_SPACING = 0;
 VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = 0;
-CONTAINER_SCALE = 0.75;
+CONTAINER_SCALE = 0.90;
 
 function ContainerFrame_OnLoad()
 	this:RegisterEvent("BAG_UPDATE");
@@ -474,18 +474,18 @@ function updateContainerFrameAnchors()
 	local shrinkFrames, frame;
 	local xOffset = CONTAINER_OFFSET_X;
 	local yOffset = CONTAINER_OFFSET_Y;
-	local uiScale = 1;
 	local screenHeight = GetScreenHeight();
 	local containerScale = CONTAINER_SCALE;
-	if ( GetCVar("useUiScale") == "1" ) then
-		uiScale = GetCVar("uiscale") + 0;
-		if ( uiScale < containerScale ) then
-			containerScale = uiScale * CONTAINER_SCALE;
-		end		
-	end
 	local freeScreenHeight = screenHeight - yOffset;
 	local index = 1;
 	local column = 0;
+	local uiScale = 1;
+	if ( GetCVar("useUiScale") == "1" ) then
+		uiScale = GetCVar("uiscale") + 0;
+		if ( uiScale > containerScale ) then
+			containerScale = uiScale * containerScale;
+		end
+	end
 	while ContainerFrame1.bags[index] do
 		frame = getglobal(ContainerFrame1.bags[index]);
 		frame:SetScale(1);
@@ -498,20 +498,19 @@ function updateContainerFrameAnchors()
 			column = column + 1;
 			freeScreenHeight = screenHeight - yOffset;
 			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH) - xOffset, yOffset );
-			if ( BankFrame:IsShown() ) then
-				if ( frame:GetLeft() < ( BankFrame:GetRight() - 45 ) ) then
-					shrinkFrames = 1;
-					break;
-				end
-			end
 		else
 			-- Anchor to the previous bag
 			frame:SetPoint("BOTTOMRIGHT", ContainerFrame1.bags[index - 1], "TOPRIGHT", 0, CONTAINER_SPACING);	
 		end
+		if ( frame:GetLeft() < ( BankFrame:GetRight() - 45 ) ) then 
+			if ( frame:GetTop() > ( BankFrame:GetBottom() + 50 ) ) then
+				shrinkFrames = 1;
+				break;
+			end
+		end
 		freeScreenHeight = freeScreenHeight - frame:GetHeight() - VISIBLE_CONTAINER_SPACING;
 		index = index + 1;
 	end
-
 	if ( shrinkFrames ) then
 		screenHeight = screenHeight / containerScale;
 		xOffset = xOffset / containerScale; 
@@ -551,7 +550,6 @@ function updateContainerFrameAnchors()
 	end
 	]]
 end
-
 
 function ContainerFrameItemButton_OnLoad()
 	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");

@@ -34,7 +34,7 @@ function GMSurveyFrame_Update()
 	if ( GMSurveyScrollFrame:GetVerticalScrollRange() ~= 0 ) then
 		scrollBarOffset = 0;
 	end
-	GMSurveyScrollFrame:SetPoint("TOPRIGHT", GMSurveyFrame, "TOPRIGHT", -80+scrollBarOffset, -55);
+	GMSurveyScrollFrame:SetPoint("TOPRIGHT", GMSurveyFrame, "TOPRIGHT", -105+scrollBarOffset, -55);
 	GMSurveyScrollFrame:SetWidth(541+scrollBarOffset);
 	GMSurveyCommentFrame:SetWidth(543+scrollBarOffset);
 	GMSurveyCommentScrollFrame:SetWidth(505+scrollBarOffset);

@@ -13,6 +13,7 @@
 			</OnLoad>
 			<OnHide>
 				CloseDropDownMenus(2);
+				OPEN_DROPDOWNMENUS[1] = nil;
 			</OnHide>
 		</Scripts>
 	</Button>
@@ -23,6 +24,7 @@
 		<Scripts>
 			<OnHide>
 				CloseDropDownMenus(3);
+				OPEN_DROPDOWNMENUS[2] = nil;
 			</OnHide>
 		</Scripts>
 	</Button>
@@ -30,5 +32,10 @@
 		<Size>
 			<AbsDimension x="180" y="10"/>
 		</Size>
+		<Scripts>
+			<OnHide>
+				OPEN_DROPDOWNMENUS[3] = nil;
+			</OnHide>
+		</Scripts>
 	</Button>
 </Ui>

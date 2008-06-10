@@ -78,7 +78,7 @@
 					<Frame setAllPoints="true">
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture file="Interface\TargetingFrame\UI-PartyFrame">
+								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
 									<Size>
 										<AbsDimension x="64" y="32"/>
 									</Size>

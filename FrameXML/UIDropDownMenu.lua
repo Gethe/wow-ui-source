@@ -14,6 +14,8 @@ UIDROPDOWNMENU_MENU_VALUE = nil;
 UIDROPDOWNMENU_SHOW_TIME = 2;
 -- Default dropdown text height
 UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = nil;
+-- List of open menus
+OPEN_DROPDOWNMENUS = {};
 
 function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level)
 	if ( not frame ) then

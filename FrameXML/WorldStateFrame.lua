@@ -11,15 +11,15 @@ ExtendedUI = {};
 -- Always up stuff (i.e. capture the flag indicators)
 function WorldStateAlwaysUpFrame_OnLoad()
 	this:RegisterEvent("UPDATE_WORLD_STATES");
-	this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	SHOW_BATTLEFIELD_MINIMAP = "0";
 	RegisterForSave("SHOW_BATTLEFIELD_MINIMAP");
 	WorldStateAlwaysUpFrame_Update();
 end
 
 function WorldStateAlwaysUpFrame_OnEvent()
-	if ( event == "UPDATE_WORLD_STATES" or event == "ZONE_CHANGED_NEW_AREA" ) then
+	if ( event == "UPDATE_WORLD_STATES" ) then
 		WorldStateAlwaysUpFrame_Update();
+		WorldStateFrame_ToggleMinimap();	
 	end
 end
 
@@ -59,7 +59,7 @@ function WorldStateAlwaysUpFrame_Update()
 						frame = getglobal(name);
 					end
 					if ( alwaysUpShown == 1 ) then
-						frame:SetPoint("TOP", WorldStateAlwaysUpFrame);
+						frame:SetPoint("TOP", WorldStateAlwaysUpFrame, -23 , -20);
 					else
 						relative = getglobal("AlwaysUpFrame"..(alwaysUpShown - 1));
 						frame:SetPoint("TOP", relative, "BOTTOM");
@@ -101,11 +101,12 @@ function WorldStateAlwaysUpFrame_Update()
 		end
 	end
 	UIParent_ManageFramePositions();
+end
+
+function WorldStateFrame_ToggleMinimap()
+	local numUI = GetNumWorldStateUI();
 	if ( SHOW_BATTLEFIELD_MINIMAP == "1" ) then
-		SetMapToCurrentZone();
-		local mapFileName, textureHeight = GetMapInfo();
-		-- textureHeight is a small hack to keep the Worldmap from flashing when the player is in a worldstate subzone.
-		if ( ( numUI ~= 0 ) and ( textureHeight < 1500 ) ) then
+		if ( ( numUI > 0 ) and ( GetCurrentMapZone() > 0 ) ) then
 			if ( not BattlefieldMinimap ) then
 				BattlefieldMinimap_LoadUI();
 				BattlefieldMinimap:Show();
@@ -127,7 +128,7 @@ function CaptureBar_Create(id)
 end
 
 function CaptureBar_Update(id, value)
-	local position = 25 + 124*(1 - value/100);
+	local position = 25 + 124*(1 - value/100) + CONTAINER_OFFSET_X;
 	local bar = getglobal("WorldStateCaptureBar"..id);
 	if ( not bar.oldValue ) then
 		bar.oldValue = position;
@@ -260,7 +261,7 @@ function WorldStateScoreFrame_Update()
 	end
 	
 	-- Anchor the bonus honor gained to the last column shown
-	WorldStateScoreFrameHonorGained:SetPoint("CENTER", honorGainedAnchorFrame, "CENTER", 88, 0);
+	WorldStateScoreFrameHonorGained:SetPoint("CENTER", honorGainedAnchorFrame, "CENTER", 58, 0);
 	
 	-- Last button shown is what the player count anchors to
 	local lastButtonShown = "WorldStateScoreButton1";
@@ -294,7 +295,7 @@ function WorldStateScoreFrame_Update()
 				buttonIcon:Hide();
 			end
 			
-			buttonName:SetText(name);
+			buttonName:SetText("Jihan - Black Dragon Flight");
 			nameButton:SetWidth(buttonName:GetWidth());
 			if ( not race ) then
 				race = "";
@@ -386,9 +387,9 @@ function WorldStateScoreFrame_Update()
 	else
 		WorldStateScorePlayerCount:Hide();
 	end
-	WorldStateScorePlayerCount:SetPoint("TOPLEFT", lastButtonShown, "BOTTOMLEFT", 22, -6);
+	WorldStateScorePlayerCount:SetPoint("TOPLEFT", lastButtonShown, "BOTTOMLEFT", 15, -6);
 	WorldStateScoreBattlegroundRunTime:SetText(TIME_ELAPSED.." "..SecondsToTime(GetBattlefieldInstanceRunTime()/1000, 1));
-	WorldStateScoreBattlegroundRunTime:SetPoint("TOPRIGHT", lastButtonShown, "BOTTOMRIGHT", -10, -7);
+	WorldStateScoreBattlegroundRunTime:SetPoint("TOPRIGHT", lastButtonShown, "BOTTOMRIGHT", -20, -7);
 end
 
 function WorldStateScoreFrame_Resize(width)
