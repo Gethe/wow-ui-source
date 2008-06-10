@@ -86,7 +86,11 @@
 					<AbsDimension x="130" y="32"/>
 				</Size>
 				<Anchors>
-					<Anchor point="CENTER"/>
+					<Anchor point="BOTTOM" >
+						<Offset>
+							<AbsDimension x="0" y="45"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -125,6 +129,9 @@
 					<OnEscapePressed>
 						StaticPopup_EditBoxOnEscapePressed();
 					</OnEscapePressed>
+					<OnTextChanged>
+						StaticPopup_EditBoxOnTextChanged();
+					</OnTextChanged>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>

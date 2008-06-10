@@ -34,7 +34,7 @@ function PetFrame_Update()
 		PetAttackModeTexture:Hide();
 
 		PetFrame_SetHappiness();
-		PetFrame_RefreshBuffs();
+		RefreshBuffs(getglobal("PetFrame"), 0, "pet");
 	else
 		this:Hide();
 	end
@@ -53,7 +53,7 @@ function PetFrame_OnEvent(event)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == "pet" ) then
-			PetFrame_RefreshBuffs();
+			RefreshBuffs(this, 1, "pet");
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
@@ -152,19 +152,6 @@ function PetFrame_SetHappiness()
 		PetFrameHappiness.tooltipLoyalty = getglobal("GAINING_LOYALTY");
 	else
 		PetFrameHappiness.tooltipLoyalty = nil;
-	end
-end
-
-function PetFrame_RefreshBuffs()
-	local debuff, debuffButton;
-	for i=1, MAX_PARTY_DEBUFFS do
-		debuff = UnitDebuff("pet", i);
-		if ( debuff ) then
-			getglobal("PetDebuff"..i.."Icon"):SetTexture(debuff);
-			getglobal("PetDebuff"..i):Show();
-		else
-			getglobal("PetDebuff"..i):Hide();
-		end
 	end
 end
 

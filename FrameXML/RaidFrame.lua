@@ -10,6 +10,7 @@ function RaidFrame_OnLoad()
 	this:RegisterEvent("UPDATE_INSTANCE_INFO");
 	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	this:RegisterEvent("PARTY_LEADER_CHANGED");
+	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 	-- Raid option uvars
 	SHOW_DISPELLABLE_DEBUFFS = "0";
@@ -22,10 +23,12 @@ function RaidFrame_OnLoad()
 	RaidFrame_Update();
 
 	RaidFrame.hasRaidInfo = nil;
-	RequestRaidInfo();
 end
 
 function RaidFrame_OnEvent()
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		RequestRaidInfo();
+	end
 	if ( event == "PLAYER_LOGIN" ) then
 		if ( GetNumRaidMembers() > 0 ) then
 			RaidFrame_LoadUI();

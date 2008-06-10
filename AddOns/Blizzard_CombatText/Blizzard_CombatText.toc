@@ -1,0 +1,6 @@
+## Interface: 11100
+## Title: Blizzard CombatText
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_CombatText.xml
+Localization.lua

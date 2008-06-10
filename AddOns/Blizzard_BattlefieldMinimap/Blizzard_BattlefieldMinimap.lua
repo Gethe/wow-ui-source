@@ -16,8 +16,10 @@ BattlefieldMinimapDefaults = {
 function BattlefieldMinimap_Toggle()
 	if ( BattlefieldMinimap:IsVisible() ) then
 		BattlefieldMinimap:Hide();
+		SHOW_BATTLEFIELD_MINIMAP = "0";
 	else
-		if ( MiniMapBattlefieldFrame.status == "active" ) then
+		if ( ( MiniMapBattlefieldFrame.status == "active" ) or ( GetNumWorldStateUI() > 0 ) ) then
+			SHOW_BATTLEFIELD_MINIMAP = "1";
 			BattlefieldMinimap:Show();
 		end
 	end
@@ -54,7 +56,7 @@ function BattlefieldMinimap_OnEvent(event)
 			BattlefieldMinimap_SetOpacity();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		if ( MiniMapBattlefieldFrame.status ~= "active" ) then
+		if ( ( MiniMapBattlefieldFrame.status ~= "active" ) and ( GetNumWorldStateUI() == 0 ) ) then
 			BattlefieldMinimap:Hide();
 		elseif ( BattlefieldMinimap:IsShown() ) then
 			SetMapToCurrentZone();

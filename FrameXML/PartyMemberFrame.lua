@@ -54,7 +54,7 @@ function PartyMemberFrame_UpdateMember()
 		this:Hide();
 	end
 	PartyMemberFrame_UpdatePvPStatus();
-	PartyMemberFrame_RefreshBuffs();
+	RefreshBuffs(this, 0, "party"..id);
 	PartyMemberFrame_UpdatePet();
 	UpdatePartyMemberBackground();
 end
@@ -170,7 +170,7 @@ function PartyMemberFrame_OnEvent(event)
 	if ( event =="UNIT_AURA" ) then
 		local unit = "party"..this:GetID();
 		if ( arg1 == unit ) then
-			PartyMemberFrame_RefreshBuffs();
+			RefreshBuffs(this, 0, unit);
 			if ( PartyMemberBuffTooltip:IsVisible() ) then
 				PartyMemberBuffTooltip_Update();
 			end
@@ -249,57 +249,11 @@ function PartyMemberPetFrame_OnClick()
 	end
 end
 
-function PartyMemberFrame_RefreshBuffs()
-	local debuff, debuffButton, debuffStack, debuffType, color, borderColor;
-	local partyStatus = getglobal(this:GetName().."Status");
-	local debuffTotal = 0;
-	for i=1, MAX_PARTY_DEBUFFS do
-		local debuffBorder = getglobal(this:GetName().."Debuff"..i.."Border");
-		local partyDebuff = getglobal(this:GetName().."Debuff"..i.."Icon");
-		debuff, debuffStack, debuffType = UnitDebuff("party"..this:GetID(), i);
-		if ( debuff ) then
-			partyDebuff:SetTexture(debuff);
-			if ( debuffType ) then
-				borderColor = DebuffTypeColor[debuffType];
-				color = DebuffTypeColor[debuffType];
-				debuffTotal = debuffTotal + 1;
-				this.hasDispellable = 1;
-			else
-				borderColor = DebuffTypeColor["none"];
-				color = nil;
-			end
-			debuffBorder:SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
-			getglobal(this:GetName().."Debuff"..i):Show();
-		else
-			getglobal(this:GetName().."Debuff"..i):Hide();
-		end
-	end
-	-- Reset Party Status overlay graphic timer
-	if ( debuffTotal >= this.numDebuffs ) then
-		this.debuffCountdown = 30;
-	end
-	this.numDebuffs = debuffTotal;
-	if ( color ) then
-		partyStatus:SetVertexColor(color.r, color.g, color.b);
-	else
-		partyStatus:Hide();	
-	end
-end
-
 function PartyMemberFrame_RefreshPetBuffs(id)
 	if ( not id ) then
 		id = this:GetID();
 	end
-	local petFrameDebuffName = "PartyMemberFrame"..id.."PetFrameDebuff";
-	for i=1, MAX_PARTY_DEBUFFS do
-		debuff = UnitDebuff("partypet"..id, i);
-		if ( debuff ) then
-			getglobal(petFrameDebuffName..i.."Icon"):SetTexture(debuff);
-			getglobal(petFrameDebuffName..i):Show();
-		else
-			getglobal(petFrameDebuffName..i):Hide();
-		end
-	end
+	RefreshBuffs(getglobal("PartyMemberFrame"..id.."PetFrame"), 0, "partypet"..id)
 end
 
 function PartyMemberBuffTooltip_Update(isPet)

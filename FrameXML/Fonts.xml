@@ -301,4 +301,10 @@
 		</FontHeight>
 		<Color r="0.18" g="0.12" b="0.06"/>
 	</Font>
+	<Font name="CombatTextFont" inherits="MasterFont" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="25"/>
+		</FontHeight>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 </Ui>

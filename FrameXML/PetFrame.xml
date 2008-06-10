@@ -170,7 +170,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Button name="PetDebuff1" inherits="PartyBuffButtonTemplate" id="1">
+			<Button name="$parentDebuff1" inherits="PartyBuffButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -185,9 +185,9 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="PetDebuff2" inherits="PartyBuffButtonTemplate" id="2">
+			<Button name="$parentDebuff2" inherits="PartyBuffButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetDebuff1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
@@ -200,9 +200,9 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="PetDebuff3" inherits="PartyBuffButtonTemplate" id="3">
+			<Button name="$parentDebuff3" inherits="PartyBuffButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetDebuff2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
@@ -215,9 +215,9 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="PetDebuff4" inherits="PartyBuffButtonTemplate" id="4">
+			<Button name="$parentDebuff4" inherits="PartyBuffButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetDebuff3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>

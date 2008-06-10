@@ -17,6 +17,7 @@ function TargetFrame_OnLoad()
 	this.statusSign = -1;
 	this.unitHPPercent = 1;
 	TargetFrame_Update();
+	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	this:RegisterEvent("PLAYER_TARGET_CHANGED");
 	this:RegisterEvent("UNIT_HEALTH");
 	this:RegisterEvent("UNIT_LEVEL");
@@ -56,7 +57,9 @@ end
 function TargetFrame_OnEvent(event)
 	UnitFrame_OnEvent(event);
 
-	if ( event == "PLAYER_TARGET_CHANGED" ) then
+	if ( event == "PLAYER_ENTERING_WORLD"  and ( not TargetFrame:IsVisible() ) ) then
+		TargetFrame_Update();
+	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
 		TargetFrame_Update();
 		TargetFrame_UpdateRaidTargetIcon();
 		TargetofTarget_Update();
@@ -313,7 +316,9 @@ function TargetDebuffButton_Update()
 	else
 		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
 		if ( targetofTarget ) then
-			if ( numDebuffs >= 5 and numDebuffs < 10  ) then
+			if ( numDebuffs < 5 ) then
+				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff6", "BOTTOMLEFT", 0, -2);
+			elseif ( numDebuffs >= 5 and numDebuffs < 10  ) then
 				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff6", "BOTTOMLEFT", 0, -2);
 			elseif (  numDebuffs >= 10 ) then
 				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff11", "BOTTOMLEFT", 0, -2);
@@ -491,15 +496,27 @@ function TargetofTarget_OnUpdate(elapsed)
 	TargetofTargetFrame.timeleft = TargetofTargetFrame.timeleft - elapsed;
 	if ( TargetofTargetFrame.timeleft <= 0 ) then
 		UnitFrame_Update();
+		TargetofTarget_Update();
 		TargetofTarget_CheckDead();
 		TargetofTargetPortrait:SetAlpha(1.0);
 		TargetofTargetFrame.timeleft = 0.25;
+		RefreshBuffs(this, 0, "targettarget");
 	end
 end
 
 function TargetofTarget_Update()
-	if ( ( SHOW_TARGET_OF_TARGET == "1")  and UnitExists("target")  and  UnitExists("targettarget")  and  not UnitIsUnit("player", "target") ) then
-		TargetofTargetFrame:Show();
+	if ( UnitExists("target")  and  UnitExists("targettarget")  and ( not UnitIsUnit("player", "target") ) and SHOW_TARGET_OF_TARGET == "1" ) then
+		if ( ( SHOW_TARGET_OF_TARGET_STATE == "1")  and ( GetNumRaidMembers() > 0 ) ) then
+			TargetofTargetFrame:Show();
+		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "2")  and ( GetNumPartyMembers() > 0 ) ) then
+			TargetofTargetFrame:Show();
+		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "3")  and  ( ( GetNumRaidMembers() == 0 ) or  ( GetNumPartyMembers() == 0 ) ) ) then
+			TargetofTargetFrame:Show();
+		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "4")  and ( ( GetNumRaidMembers() > 0 ) or  ( GetNumPartyMembers() > 0 ) ) ) then
+			TargetofTargetFrame:Show();
+		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "5") ) then
+			TargetofTargetFrame:Show();
+		end
 	else
 		TargetofTargetFrame:Hide();
 	end

@@ -96,7 +96,7 @@ function OptionsFrame_Load()
 		if ( button.disabled ) then
 			OptionsFrame_DisableCheckBox(button);
 		else
-			OptionsFrame_EnableCheckBox(button, checked);
+			OptionsFrame_EnableCheckBox(button);
 		end
 		
 		if ( index == "ENABLE_ALL_SHADERS" and hasPixelShaders ) then
@@ -383,7 +383,7 @@ function OptionsFrame_UpdateCheckboxes()
 				end
 			end
 			if ( enable ) then
-				OptionsFrame_EnableCheckBox(button, button:GetChecked());
+				OptionsFrame_EnableCheckBox(button);
 			else
 				OptionsFrame_DisableCheckBox(button);
 			end
@@ -460,8 +460,10 @@ function OptionsFrame_DisableCheckBox(checkBox)
 	getglobal(checkBox:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 end
 
-function OptionsFrame_EnableCheckBox(checkBox, checked, isWhite)
-	checkBox:SetChecked(checked);
+function OptionsFrame_EnableCheckBox(checkBox, setChecked, checked, isWhite)
+	if ( setChecked ) then
+		checkBox:SetChecked(checked);
+	end
 	checkBox:Enable();
 	if ( isWhite ) then
 		getglobal(checkBox:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);

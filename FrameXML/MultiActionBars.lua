@@ -2,7 +2,7 @@ NUM_MULTIBAR_BUTTONS = 12;
 
 -- Multi Actionbar Toggles and Temp State Variables
 SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = nil;
-STATE_MultiBar1, STATE_MultiBar2, STATE_MultiBar3, STATE_MultiBar4 = nil;
+STATE_MultiBar1, STATE_MultiBar2, STATE_MultiBar3, STATE_MultiBar4, STATE_AlwaysShowMultibars = nil;
 
 
 function MultiActionBarFrame_OnLoad()
@@ -11,11 +11,12 @@ function MultiActionBarFrame_OnLoad()
 	UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"].setFunc = Multibar_EmptyFunc;
 	UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"].setFunc = Multibar_EmptyFunc;
 	UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"].setFunc = Multibar_EmptyFunc;
+	UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"].setFunc = Multibar_EmptyFunc;
 	UIOptionsFrameCheckButtons["SHOW_MULTIBAR1_TEXT"].func = MultiBar1_IsVisible;
 	UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"].func = MultiBar2_IsVisible;
 	UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"].func = MultiBar3_IsVisible;
 	UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"].func = MultiBar4_IsVisible;
-	
+	UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"].func = MultibarGrid_IsVisible;
 	-- This is where i will load the actionbar states
 	--MultiActionBar_Update();
 end
@@ -113,6 +114,11 @@ end
 
 function Multibar_EmptyFunc(show)
 	
+end
+
+function MultibarGrid_IsVisible()
+	STATE_AlwaysShowMultibars = ALWAYS_SHOW_MULTIBARS;
+	return ALWAYS_SHOW_MULTIBARS;
 end
 
 function MultiBar1_IsVisible()

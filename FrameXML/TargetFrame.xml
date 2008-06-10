@@ -1,6 +1,28 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="TargetFrame.lua"/>
+	<Frame name="TargetofTargetBuffButtonTemplate" inherits="PartyBuffButtonTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="12" y="12"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Border"):SetWidth(13);
+				getglobal(this:GetName().."Border"):SetHeight(13);
+			</OnLoad>
+			<OnEnter>
+				if ( this:GetCenter() > GetScreenWidth()/2 ) then
+					GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				else
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				end
+				GameTooltip:SetUnitDebuff(this:GetParent().unit, this:GetID(), SHOW_DISPELLABLE_DEBUFFS);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
 	<Button name="TargetDebuffButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="17" y="17"/>
@@ -610,12 +632,49 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
+			<Frame name="$parentDebuff1" inherits="TargetofTargetBuffButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff2" inherits="TargetofTargetBuffButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff3" inherits="TargetofTargetBuffButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDebuff1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff4" inherits="TargetofTargetBuffButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				UnitFrame_Initialize("targettarget", TargetofTargetName, TargetofTargetPortrait, TargetofTargetHealthBar, TargetofTargetHealthBarText, TargetofTargetManaBar, TargetofTargetFrameManaBarText);
 				SetTextStatusBarTextZeroText(TargetofTargetHealthBar, TEXT(DEAD));
 				TargetofTargetFrame.timeleft = 0;
+				this:RegisterEvent("UNIT_AURA");
 			</OnLoad>
 			<OnEvent>
 				UnitFrame_OnEvent(event);

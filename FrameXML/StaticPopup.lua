@@ -32,6 +32,18 @@ StaticPopupDialogs["CONFIRM_RESET_INSTANCES"] = {
 	hideOnEscape = 1,
 };
 
+StaticPopupDialogs["CONFIRM_GUILD_DISBAND"] = {
+	text = TEXT(CONFIRM_GUILD_DISBAND),
+	button1 = TEXT(YES),
+	button2 = TEXT(NO),
+	OnAccept = function()
+		GuildDisband();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
 StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT"] = {
 	text = TEXT(CONFIRM_BUY_BANK_SLOT),
 	button1 = TEXT(YES),
@@ -131,6 +143,7 @@ StaticPopupDialogs["RENAME_GUILD"] = {
 	EditBoxOnEnterPressed = function()
 		local text = getglobal(this:GetParent():GetName().."EditBox"):GetText();
 		RenamePetition(text);
+		this:GetParent():Hide();
 	end,
 	OnShow = function()
 		getglobal(this:GetName().."EditBox"):SetFocus();
@@ -650,11 +663,66 @@ StaticPopupDialogs["DELETE_ITEM"] = {
 	OnAccept = function()
 		DeleteCursorItem();
 	end,
+	OnCancel = function ()
+		ClearCursor();
+	end,
+	OnUpdate = function ()
+		if ( not CursorHasItem() ) then
+			StaticPopup_Hide("DELETE_ITEM");
+		end
+	end,
 	timeout = 0,
 	whileDead = 1,
 	exclusive = 1,
 	showAlert = 1,
 	hideOnEscape = 1
+};
+StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
+	text = TEXT(DELETE_GOOD_ITEM),
+	button1 = TEXT(YES),
+	button2 = TEXT(NO),
+	OnAccept = function()
+		DeleteCursorItem();
+	end,
+	OnCancel = function ()
+		ClearCursor();
+	end,
+	OnUpdate = function ()
+		if ( not CursorHasItem() ) then
+			StaticPopup_Hide("DELETE_GOOD_ITEM");
+		end
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+	hasEditBox = 1,
+	maxLetters = 32,
+	OnShow = function()
+		getglobal(this:GetName().."Button1"):Disable();
+		getglobal(this:GetName().."EditBox"):SetFocus();
+	end,
+	OnHide = function()
+		if ( ChatFrameEditBox:IsVisible() ) then
+			ChatFrameEditBox:SetFocus();
+		end
+		getglobal(this:GetName().."EditBox"):SetText("");
+	end,
+	EditBoxOnEnterPressed = function()
+		if ( getglobal(this:GetParent():GetName().."Button1"):IsEnabled() == 1 ) then
+			DeleteCursorItem();
+			this:GetParent():Hide();
+		end
+	end,
+	EditBoxOnTextChanged = function ()
+		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+		if ( strupper(editBox:GetText()) ==  DELETE_ITEM_CONFIRM_STRING ) then
+			getglobal(this:GetParent():GetName().."Button1"):Enable();
+		else
+			getglobal(this:GetParent():GetName().."Button1"):Disable();
+		end
+	end
 };
 StaticPopupDialogs["QUEST_ACCEPT"] = {
 	text = TEXT(QUEST_ACCEPT),
@@ -1004,6 +1072,7 @@ StaticPopupDialogs["RENAME_PET"] = {
 		if ( dialogFrame ) then
 			dialogFrame.data = text;
 		end
+		this:GetParent():Hide();
 	end,
 	OnShow = function()
 		getglobal(this:GetName().."EditBox"):SetFocus();
@@ -1195,6 +1264,9 @@ StaticPopupDialogs["INSTANCE_BOOT"] = {
 	text = TEXT(INSTANCE_BOOT_TIMER),
 	OnShow = function()
 		this.timeleft = GetInstanceBootTimeRemaining();
+		if ( this.timeleft <= 0 ) then
+			StaticPopup_Hide("INSTANCE_BOOT");
+		end
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1726,7 +1798,6 @@ function StaticPopup_EditBoxOnEnterPressed()
 	local EditBoxOnEnterPressed = StaticPopupDialogs[this:GetParent().which].EditBoxOnEnterPressed;
 	if ( EditBoxOnEnterPressed ) then
 		EditBoxOnEnterPressed(this:GetParent().data);
-		this:GetParent():Hide();
 	end
 end
 
@@ -1737,10 +1808,17 @@ function StaticPopup_EditBoxOnEscapePressed()
 	end
 end
 
+function StaticPopup_EditBoxOnTextChanged()
+	local EditBoxOnTextChanged = StaticPopupDialogs[this:GetParent().which].EditBoxOnTextChanged;
+	if ( EditBoxOnTextChanged ) then
+		EditBoxOnTextChanged(this:GetParent().data);
+	end
+end
+
 function StaticPopup_OnShow()
 	PlaySound("igMainMenuOpen");
-
 	local OnShow = StaticPopupDialogs[this.which].OnShow;
+
 	if ( OnShow ) then
 		OnShow(this.data);
 	end

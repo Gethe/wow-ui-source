@@ -437,6 +437,13 @@
 			LOCK_ACTIONBAR = "1";
 		end
 	</Binding>
+	<Binding name="TOGGLEAUTOSELFCAST">
+		if ( GetCVar("autoSelfCast") == "1" ) then
+			SetCVar("autoSelfCast", "0");
+		else
+			SetCVar("autoSelfCast", "1");
+		end
+	</Binding>
 	<!-- Target function key bindings -->
 	<Binding name="TARGETNEARESTENEMY" header="TARGETING">
 		TargetNearestEnemy();
@@ -513,6 +520,31 @@
 		else
 			ShowNameplates();
 			NAMEPLATES_ON = 1;
+		end
+	</Binding>
+	<Binding name="FRIENDNAMEPLATES">
+		if ( FRIENDNAMEPLATES_ON ) then
+			HideFriendNameplates();
+			FRIENDNAMEPLATES_ON = nil;
+		else
+			ShowFriendNameplates();
+			FRIENDNAMEPLATES_ON = 1;
+		end
+	</Binding>
+	<Binding name="ALLNAMEPLATES">
+		if ( NAMEPLATES_ON ) then
+			HideNameplates();
+			NAMEPLATES_ON = nil;
+		else
+			ShowNameplates();
+			NAMEPLATES_ON = 1;
+		end
+		if ( FRIENDNAMEPLATES_ON ) then
+			HideFriendNameplates();
+			FRIENDNAMEPLATES_ON = nil;
+		else
+			ShowFriendNameplates();
+			FRIENDNAMEPLATES_ON = 1;
 		end
 	</Binding>
 	<Binding name="ATTACKTARGET">
@@ -1148,5 +1180,22 @@
 			CameraOrSelectOrMoveStop(1);
 		end
 	</Binding>
-	
+
+	<!-- iTunes Bindings -->
+	<Binding name="ITUNES_PLAYPAUSE" header="ITUNES_REMOTE" platform="mac">
+		MusicPlayer_PlayPause();
+	</Binding>
+	<Binding name="ITUNES_NEXTTRACK" platform="mac">
+		MusicPlayer_NextTrack();
+	</Binding>
+	<Binding name="ITUNES_BACKTRACK" platform="mac">
+		MusicPlayer_BackTrack();
+	</Binding>
+	<Binding name="ITUNES_VOLUMEUP" platform="mac">
+		MusicPlayer_VolumeUp();
+	</Binding>
+	<Binding name="ITUNES_VOLUMEDOWN" platform="mac">
+		MusicPlayer_VolumeDown();
+	</Binding>
+
 </Bindings>

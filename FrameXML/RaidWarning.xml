@@ -22,4 +22,17 @@
 		</Scripts>
 		<FontString inherits="GameFontNormalHuge" justifyH="CENTER"/>
 	</MessageFrame>
+	<MessageFrame name="RaidBossEmoteFrame" insertMode="TOP" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size>
+			<AbsDimension x="512" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="RaidWarningFrame" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<FontString inherits="GameFontNormalHuge" justifyH="CENTER"/>
+	</MessageFrame>
 </Ui>

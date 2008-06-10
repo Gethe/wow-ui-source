@@ -146,6 +146,9 @@ function UIParent_OnLoad()
 	-- Events for craft UI handling
 	this:RegisterEvent("CRAFT_SHOW");
 	this:RegisterEvent("CRAFT_CLOSE");
+
+	TALENT_FRAME_WAS_SHOWN = nil;
+	RegisterForSave("TALENT_FRAME_WAS_SHOWN");
 end
 
 function AuctionFrame_LoadUI()
@@ -227,6 +230,8 @@ end
 function UIParent_OnEvent(event)
 	if ( event == "VARIABLES_LOADED" ) then
 		LocalizeFrames();
+		-- Update nameplates
+		UpdateNameplates();
 		return;
 	end
 	if ( event == "PLAYER_DEAD" ) then
@@ -337,7 +342,12 @@ function UIParent_OnEvent(event)
 		return;
 	end
 	if ( event == "DELETE_ITEM_CONFIRM" ) then
-		StaticPopup_Show("DELETE_ITEM", arg1);
+		-- Check quality
+		if ( arg2 >= 3 ) then
+			StaticPopup_Show("DELETE_GOOD_ITEM", arg1);
+		else
+			StaticPopup_Show("DELETE_ITEM", arg1);
+		end
 		return;
 	end
 	if ( event == "QUEST_ACCEPT_CONFIRM" ) then
@@ -347,13 +357,14 @@ function UIParent_OnEvent(event)
 	if ( event == "CURSOR_UPDATE" ) then
 		StaticPopup_Hide("EQUIP_BIND");
 		StaticPopup_Hide("AUTOEQUIP_BIND");
-		StaticPopup_Hide("DELETE_ITEM");
 		return;
 	end
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Get multi-actionbar states
 		SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		MultiActionBar_Update();
+		-- Update nameplates
+		UpdateNameplates();
 		return;
 	end
 	if ( event == "RAID_ROSTER_UPDATE" ) then

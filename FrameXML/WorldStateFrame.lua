@@ -8,37 +8,42 @@ WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET = -32;
 -- Always up stuff (i.e. capture the flag indicators)
 function WorldStateAlwaysUpFrame_OnLoad()
 	this:RegisterEvent("UPDATE_WORLD_STATES");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
+	this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	SHOW_BATTLEFIELD_MINIMAP = "1";
+	RegisterForSave("SHOW_BATTLEFIELD_MINIMAP");
 end
 
 function WorldStateAlwaysUpFrame_OnEvent()
-	if ( event == "UPDATE_WORLD_STATES" or event == "PLAYER_ENTERING_WORLD" ) then
+	if ( event == "UPDATE_WORLD_STATES" or event == "ZONE_CHANGED_NEW_AREA" ) then
 		WorldStateAlwaysUpFrame_Update();
 	end
 end
 
 function WorldStateAlwaysUpFrame_Update()
 	local numUI = GetNumWorldStateUI();
-	local frame, frameText, frameDynamicIcon, frameIcon, frameFlash, flashTexture, frameDynamicButton; 
-	local text, icon, isFlashing, dynamicIcon, tooltip, dynamicTooltip;
+	local name, frame, frameText, frameDynamicIcon, frameIcon, frameFlash, flashTexture, frameDynamicButton; 
+	local text, icon, state, dynamicIcon, tooltip, dynamicTooltip;
+	local inInstance, instanceType;
 	for i=1, MAX_ALWAYS_UP_UI_FRAMES do
-		frame = getglobal("AlwaysUpFrame"..i);
-		if ( i <= numUI ) then
-			frameText = getglobal("AlwaysUpFrame"..i.."Text");
-			frameDynamicIcon = getglobal("AlwaysUpFrame"..i.."DynamicIconButtonIcon");
-			frameIcon = getglobal("AlwaysUpFrame"..i.."Icon");
-			frameFlash = getglobal("AlwaysUpFrame"..i.."Flash");
-			flashTexture = getglobal("AlwaysUpFrame"..i.."FlashTexture");
-			frameDynamicButton = getglobal("AlwaysUpFrame"..i.."DynamicIconButton");
+		name = "AlwaysUpFrame"..i;
+		frame = getglobal(name);
+		state, text, icon, dynamicIcon, tooltip, dynamicTooltip = GetWorldStateUIInfo(i);
+		inInstance, instanceType = IsInInstance();
+		if ( state > 0 and (HIDE_OUTDOOR_WORLD_STATE == "0" or instanceType == "pvp")) then
+			frameText = getglobal(name.."Text");
+			frameIcon = getglobal(name.."Icon");
+			frameDynamicIcon = getglobal(name.."DynamicIconButtonIcon");
+			frameFlash = getglobal(name.."Flash");
+			flashTexture = getglobal(name.."FlashTexture");
+			frameDynamicButton = getglobal(name.."DynamicIconButton");
 
-			text, icon, isFlashing, dynamicIcon, tooltip, dynamicTooltip = GetWorldStateUIInfo(i);
 			frameText:SetText(text);
-			frameDynamicIcon:SetTexture(dynamicIcon);
 			frameIcon:SetTexture(icon);
+			frameDynamicIcon:SetTexture(dynamicIcon);
 			flashTexture:SetTexture(dynamicIcon.."Flash");
 			frame.tooltip = tooltip;
 			frameDynamicButton.tooltip = dynamicTooltip;
-			if ( isFlashing ) then
+			if ( state == 2 ) then
 				UIFrameFlash(frameFlash, 0.5, 0.5, -1);
 				frameDynamicButton:Show();
 			else
@@ -48,6 +53,19 @@ function WorldStateAlwaysUpFrame_Update()
 			frame:Show();
 		else
 			frame:Hide();
+		end
+	end
+	if ( SHOW_BATTLEFIELD_MINIMAP == "1" ) then
+		if ( numUI > 0 ) then
+			BattlefieldMinimap_LoadUI();
+			if ( BattlefieldMinimap ) then
+				SetMapToCurrentZone();
+				BattlefieldMinimap:Show();
+			end
+		else
+			if ( BattlefieldMinimap ) then
+				BattlefieldMinimap:Hide();
+			end
 		end
 	end
 end

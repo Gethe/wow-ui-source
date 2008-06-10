@@ -5,6 +5,7 @@ function DressUpItem(item)
 	if ( AuctionFrame:IsVisible() ) then
 		if ( not AuctionDressUpFrame:IsVisible() ) then
 			ShowUIPanel(AuctionDressUpFrame);
+			AuctionDressUpModel:SetUnit("player");
 		end
 		AuctionDressUpModel:TryOn(item);
 	else

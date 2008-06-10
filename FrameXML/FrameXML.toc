@@ -42,8 +42,8 @@ CombatFeedback.xml
 UnitPopup.xml
 UnitFrame.xml
 PlayerFrame.xml
-TargetFrame.xml
 PartyFrame.xml
+TargetFrame.xml
 PetFrame.xml
 ChatFrame.xml
 FloatingChatFrame.xml

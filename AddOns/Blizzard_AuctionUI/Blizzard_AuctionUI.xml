@@ -813,7 +813,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<FontString inherits="GameFontHighlightSmall" text="RARITY">
+								<FontString name="BrowseDropDownName" inherits="GameFontHighlightSmall" text="RARITY">
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
 											<Offset>

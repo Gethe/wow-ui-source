@@ -85,7 +85,7 @@ function ShowBonusActionBar()
 end
 
 function HideBonusActionBar()
-	if ( BonusActionBarFrame:IsVisible() ) then
+	if ( BonusActionBarFrame:IsShown() ) then
 		BonusActionBar_SetButtonTransitionState(1);
 		if ( BonusActionBarFrame.completed ) then
 			BonusActionBarFrame.slideTimer = 0;
@@ -131,17 +131,11 @@ function ShapeshiftBar_OnLoad()
 	ShapeshiftBar_Update();
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	this:RegisterEvent("UPDATE_SHAPESHIFT_FORMS");
-	this:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
 	this:RegisterEvent("UPDATE_INVENTORY_ALERTS");	-- Wha??
 	this:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	this:RegisterEvent("SPELL_UPDATE_USABLE");
 	this:RegisterEvent("PLAYER_AURAS_CHANGED");
 	this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
-	this:RegisterEvent("UNIT_HEALTH");
-	this:RegisterEvent("UNIT_MANA");
-	this:RegisterEvent("UNIT_RAGE");
-	this:RegisterEvent("UNIT_FOCUS");
-	this:RegisterEvent("UNIT_ENERGY");
 end
 
 function ShapeshiftBar_OnEvent()
@@ -152,10 +146,6 @@ function ShapeshiftBar_OnEvent()
 			ShowBonusActionBar();
 		else
 			HideBonusActionBar();
-		end
-	elseif ( event == "UNIT_HEALTH" or event == "UNIT_MANA" or event == "UNIT_RAGE" or event == "UNIT_FOCUS" or event == "UNIT_ENERGY" ) then
-		if ( arg1 == "player" ) then
-			ShapeshiftBar_UpdateState();
 		end
 	else
 		ShapeshiftBar_UpdateState();

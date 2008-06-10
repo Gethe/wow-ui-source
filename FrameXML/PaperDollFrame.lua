@@ -321,9 +321,9 @@ function PaperDollFrame_SetDamage(unit, prefix)
 			color = colorNeg;
 		end
 		if ( ( displayMin < 100 ) and ( displayMax < 100 ) ) then 
-			damageText:SetText(color..displayMin.."-"..displayMax.."|r");	
+			damageText:SetText(color..displayMin.." - "..displayMax.."|r");	
 		else
-			damageText:SetText(color..displayMin.." - "..displayMax.."|r");
+			damageText:SetText(color..displayMin.."-"..displayMax.."|r");
 		end
 		if ( physicalBonusPos > 0 ) then
 			damageTooltip = damageTooltip..colorPos.." +"..physicalBonusPos.."|r";
@@ -500,7 +500,11 @@ function PaperDollFrame_SetRangedDamage(unit, prefix)
 	local tooltip = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
 
 	if ( totalBonus == 0 ) then
-		damageText:SetText(displayMin.." - "..displayMax);
+		if ( ( displayMin < 100 ) and ( displayMax < 100 ) ) then 
+			damageText:SetText(displayMin.." - "..displayMax);	
+		else
+			damageText:SetText(displayMin.."-"..displayMax);
+		end
 	else
 		local colorPos = "|cff20ff20";
 		local colorNeg = "|cffff2020";
@@ -510,7 +514,11 @@ function PaperDollFrame_SetRangedDamage(unit, prefix)
 		else
 			color = colorNeg;
 		end
-		damageText:SetText(color..displayMin.." - "..displayMax.."|r");
+		if ( ( displayMin < 100 ) and ( displayMax < 100 ) ) then 
+			damageText:SetText(color..displayMin.." - "..displayMax.."|r");	
+		else
+			damageText:SetText(color..displayMin.."-"..displayMax.."|r");
+		end
 		if ( physicalBonusPos > 0 ) then
 			tooltip = tooltip..colorPos.." +"..physicalBonusPos.."|r";
 		end

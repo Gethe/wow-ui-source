@@ -172,16 +172,8 @@
 	</Frames>
 	<Scripts>
 		<OnLoad>
-			this:RegisterEvent("PLAYER_ENTERING_WORLD");
 			SetAuctionDressUpBackground();
-			AuctionDressUpModel:SetUnit("player");
         </OnLoad>
-        <OnEvent>
-			if ( event == "PLAYER_ENTERING_WORLD" ) then
-				AuctionDressUpModel:SetUnit("player");
-				return;
-			end
-        </OnEvent>
 		<OnShow>
 			PlaySound("igCharacterInfoOpen");
 		</OnShow>

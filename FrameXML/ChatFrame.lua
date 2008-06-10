@@ -109,7 +109,9 @@ ChatTypeInfo["MONEY"]									= { sticky = 0 };
 ChatTypeInfo["RAID_LEADER"]								= { sticky = 0 };
 ChatTypeInfo["RAID_WARNING"]							= { sticky = 0 };
 ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0 };
-
+ChatTypeInfo["FILTERED"]								= { sticky = 0 };
+ChatTypeInfo["BATTLEGROUND"]                            = { sticky = 1 };
+ChatTypeInfo["BATTLEGROUND_LEADER"]                     = { sticky = 0 };
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
 	"CHAT_MSG_SYSTEM",
@@ -123,6 +125,7 @@ ChatTypeGroup["SYSTEM"] = {
 	"CHAT_MSG_BG_SYSTEM_NEUTRAL",
 	"CHAT_MSG_BG_SYSTEM_ALLIANCE",
 	"CHAT_MSG_BG_SYSTEM_HORDE",
+	"CHAT_MSG_FILTERED",
 };
 ChatTypeGroup["SAY"] = {
 	"CHAT_MSG_SAY",
@@ -141,6 +144,8 @@ ChatTypeGroup["PARTY"] = {
 	"CHAT_MSG_RAID",
 	"CHAT_MSG_RAID_LEADER",
 	"CHAT_MSG_RAID_WARNING",
+	"CHAT_MSG_BATTLEGROUND",
+	"CHAT_MSG_BATTLEGROUND_LEADER",
 };
 ChatTypeGroup["GUILD"] = {
 	"CHAT_MSG_GUILD",
@@ -977,7 +982,7 @@ SlashCmdList["GUILD_LEAVE"] = function(msg)
 end
 
 SlashCmdList["GUILD_DISBAND"] = function(msg)
-	GuildDisband();
+	StaticPopup_Show("CONFIRM_GUILD_DISBAND");
 end
 
 SlashCmdList["GUILD_INFO"] = function(msg)
@@ -1390,6 +1395,8 @@ function ChatFrame_OnEvent(event)
 			this:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
 			this:AddMessage(format(TEXT(CHAT_IGNORED), arg2), info.r, info.g, info.b, info.id);
+		elseif ( type == "FILTERED" ) then
+			this:AddMessage(format(TEXT(CHAT_FILTERED), arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
 				this:AddMessage(format(TEXT(getglobal("CHAT_"..type.."_GET"))..arg1, arg4), info.r, info.g, info.b, info.id);
@@ -1409,7 +1416,6 @@ function ChatFrame_OnEvent(event)
 			end
 			this:AddMessage(format(TEXT(getglobal("CHAT_"..arg1.."_NOTICE")), arg4), info.r, info.g, info.b, info.id);
 		else
-			arg1 = gsub(arg1, "%%", "%%%%");
 			local body;
 
 			-- Add AFK/DND flags
@@ -1421,8 +1427,10 @@ function ChatFrame_OnEvent(event)
 			end
 
 			local showLink = 1;
-			if ( strsub(type, 1, 7) == "MONSTER" ) then
+			if ( strsub(type, 1, 7) == "MONSTER" or type == "RAID_BOSS_EMOTE" ) then
 				showLink = nil;
+			else
+				arg1 = gsub(arg1, "%%", "%%%%");
 			end
 			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= this.defaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
@@ -1436,6 +1444,11 @@ function ChatFrame_OnEvent(event)
 					body = format(TEXT(getglobal("CHAT_"..type.."_GET"))..arg1, pflag.."|Hplayer:"..arg2.."|h".."["..arg2.."]".."|h");
 				else
 					body = format(TEXT(getglobal("CHAT_"..type.."_GET"))..arg1, pflag..arg2);
+
+					-- Add raid boss emote message
+					if ( type == "RAID_BOSS_EMOTE" ) then
+						RaidBossEmoteFrame:AddMessage(body, info.r, info.g, info.b, 1.0);
+					end
 				end
 			end
 
@@ -1537,6 +1550,9 @@ function ChatFrame_OpenChat(text, chatFrame)
 			ChatEdit_UpdateHeader(chatFrame.editBox);
 		elseif ( (chatFrame.editBox.stickyType == "RAID") and (GetNumRaidMembers() == 0) ) then
 			chatFrame.editBox.chatType = "SAY";
+			ChatEdit_UpdateHeader(chatFrame.editBox);
+		elseif ( (chatFrame.editBox.stickyType == "BATTLEGROUND") and (GetNumRaidMembers() == 0) ) then
+			chatFrame.editBox.chatType = "BATTLEGROUND";
 			ChatEdit_UpdateHeader(chatFrame.editBox);
 		end
 	end
@@ -1784,6 +1800,9 @@ function ChatEdit_OnShow()
 		this.chatType = "SAY";
 	end
 	if ( (this.chatType == "GUILD" or this.chatType == "OFFICER") and not IsInGuild() ) then
+		this.chatType = "SAY";
+	end
+	if ( this.chatType == "BATTLEGROUND" and (GetNumRaidMembers() == 0) ) then
 		this.chatType = "SAY";
 	end
 	this.tabCompleteIndex = 1;

@@ -2,6 +2,7 @@
 function DressUpItem(item)
 	if ( not DressUpFrame:IsVisible() ) then
 		ShowUIPanel(DressUpFrame);
+		DressUpModel:SetUnit("player");
 	end
 	DressUpModel:TryOn(item);
 end

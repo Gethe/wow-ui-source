@@ -435,7 +435,7 @@ function RaidPullout_Update(pullOutFrame)
 			end
 			
 			-- Handle buffs/debuffs
-			RaidPulloutButton_UpdateBuffs(pulloutButton, pullOutFrame.showBuffs, unit);
+			RefreshBuffs(pulloutButton, pullOutFrame.showBuffs, unit);
 
 			pulloutButton:RegisterEvent("UNIT_HEALTH");
 			pulloutButton:RegisterEvent("UNIT_AURA");
@@ -461,37 +461,7 @@ function RaidPulloutButton_OnEvent()
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == this.unit ) then
-			RaidPulloutButton_UpdateBuffs(this, this:GetParent().showBuffs, this.unit);
-		end
-	end
-end
-
-function RaidPulloutButton_UpdateBuffs(button, showBuffs, unit)
-	-- Handle buffs/debuffs
-	local debuff, debuffButton, debuffStack, debuffType, color;
-	this.hasDispellable = nil;
-	for i=1, MAX_PARTY_DEBUFFS do
-		local debuffBorder = getglobal(button:GetName().."Debuff"..i.."Border");
-		local raidDebuff = getglobal(button:GetName().."Debuff"..i.."Icon");
-		if ( showBuffs ) then
-			debuff = UnitBuff(unit, i, SHOW_CASTABLE_BUFFS);
-			debuffBorder:Hide();
-		else
-			debuff, debuffStack, debuffType = UnitDebuff(unit, i, SHOW_DISPELLABLE_DEBUFFS);
-			debuffBorder:Show();
-		end
-		if ( debuff ) then
-			raidDebuff:SetTexture(debuff);
-			if ( debuffType ) then
-				color = DebuffTypeColor[debuffType];
-				this.hasDispellable = 1;
-			else
-				color = DebuffTypeColor["none"];
-			end
-			debuffBorder:SetVertexColor(color.r, color.g, color.b);
-			getglobal(button:GetName().."Debuff"..i):Show();
-		else
-			getglobal(button:GetName().."Debuff"..i):Hide();
+			RefreshBuffs(this, this:GetParent().showBuffs, this.unit);
 		end
 	end
 end

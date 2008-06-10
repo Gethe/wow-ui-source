@@ -149,7 +149,7 @@ end
 function SoundOptionsFrame_SetDefaults()
 	for index, value in SoundOptionsFrameCheckButtons do
 		checkButton = getglobal("SoundOptionsFrameCheckButton"..value.index);
-		OptionsFrame_EnableCheckBox(checkButton, GetCVarDefault(value.cvar), 1);
+		OptionsFrame_EnableCheckBox(checkButton, 1, GetCVarDefault(value.cvar), 1);
 		SetCVar(value.cvar, GetCVarDefault(value.cvar));
 	end
 	for index, value in SoundOptionsFrameSliders do
@@ -162,8 +162,8 @@ end
 
 function SoundOptionsFrame_UpdateDependencies()
 	if ( SoundOptionsFrameCheckButton1:GetChecked() ) then
-		OptionsFrame_EnableCheckBox(SoundOptionsFrameCheckButton2, SoundOptionsFrameCheckButton2:GetChecked());
-		OptionsFrame_EnableCheckBox(SoundOptionsFrameCheckButton4, SoundOptionsFrameCheckButton4:GetChecked());
+		OptionsFrame_EnableCheckBox(SoundOptionsFrameCheckButton2);
+		OptionsFrame_EnableCheckBox(SoundOptionsFrameCheckButton4);
 	else
 		OptionsFrame_DisableCheckBox(SoundOptionsFrameCheckButton2);
 		OptionsFrame_DisableCheckBox(SoundOptionsFrameCheckButton4);

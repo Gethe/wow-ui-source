@@ -1,0 +1,60 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CombatText.lua"/>
+	<FontString name="CombatTextTemplate" inherits="CombatTextFont" hidden="true" virtual="true">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIParent" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="384"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</FontString>
+	<Frame name="CombatText" toplevel="true" parent="UIParent" hidden="false">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="CombatText1" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText2" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText3" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText4" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText5" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText6" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText7" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText8" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText9" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText10" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText11" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText12" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText13" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText14" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText15" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText16" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText17" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText18" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText19" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText20" inherits="CombatTextTemplate"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CombatText_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				CombatText_OnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				CombatText_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

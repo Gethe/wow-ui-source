@@ -258,3 +258,57 @@ function BuffFrame_UpdateDuration(buffButton, timeLeft)
 		duration:Hide();
 	end
 end
+
+function RefreshBuffs(button, showBuffs, unit)
+	button = button:GetName();
+	local debuff,  debuffType, debuffStack, debuffColor, unitStatus, statusColor;
+	local debuffTotal = 0;
+	this.hasDispellable = nil;
+
+	for i=1, MAX_PARTY_DEBUFFS do
+
+		local debuffBorder = getglobal(button.."Debuff"..i.."Border");
+		local debuffIcon = getglobal(button.."Debuff"..i.."Icon");
+
+		if ( unit == "party"..i ) then
+			unitStatus = getglobal(button.."Status");
+		end
+		if ( showBuffs == 1 ) then
+			debuff = UnitBuff(unit, i, SHOW_CASTABLE_BUFFS);
+			debuffBorder:Show();
+		elseif ( showBuffs == 0 ) then
+			debuff, debuffStack, debuffType = UnitDebuff(unit, i);
+			debuffBorder:Show();
+		else
+			debuff, debuffStack, debuffType = UnitDebuff(unit, i, SHOW_DISPELLABLE_DEBUFFS);
+			debuffBorder:Show();
+		end
+		
+		if ( debuff ) then
+			debuffIcon:SetTexture(debuff);
+			if ( debuffType ) then
+				debuffColor = DebuffTypeColor[debuffType];
+				statusColor = DebuffTypeColor[debuffType];
+				this.hasDispellable = 1;
+				debuffTotal = debuffTotal + 1;
+			else
+				debuffColor = DebuffTypeColor["none"];
+			end
+			debuffBorder:SetVertexColor(debuffColor.r, debuffColor.g, debuffColor.b);
+			getglobal(button.."Debuff"..i):Show();
+		else
+			getglobal(button.."Debuff"..i):Hide();
+		end
+	end
+	-- Reset unitStatus overlay graphic timer
+	if ( this.numDebuffs ) then
+		if ( debuffTotal >= this.numDebuffs ) then
+			this.debuffCountdown = 30;
+		end
+	end
+	if ( unitStatus and statusColor ) then
+		unitStatus:SetVertexColor(statusColor.r, statusColor.g, statusColor.b);
+	end
+
+end
+

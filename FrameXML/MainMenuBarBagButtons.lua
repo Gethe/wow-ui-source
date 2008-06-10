@@ -36,7 +36,20 @@ function BagSlotButton_OnDrag()
 end
 
 function BagSlotButton_OnShiftClick()
-	OpenAllBags();
+	if ( GetInventoryItemTexture("player", this:GetID()) ) then
+		OpenAllBags();
+	end
+	local translatedID = this:GetID() - CharacterBag0Slot:GetID() + 1;
+	local isVisible = 0;
+	local frame;
+	for i=1, NUM_CONTAINER_FRAMES, 1 do
+		frame = getglobal("ContainerFrame"..i);
+		if ( (frame:GetID() == translatedID) and frame:IsVisible() ) then
+			isVisible = 1;
+			break;
+		end
+	end
+	this:SetChecked(isVisible);
 end
 
 function BackpackButton_OnClick()

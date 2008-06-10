@@ -1,70 +1,91 @@
 UIOptionsFrameCheckButtons = { };
 ------------------- Basic Options -------------------
 -- Controls
-UIOptionsFrameCheckButtons["INVERT_MOUSE"] =			{ index = 1, cvar = "mouseInvertPitch" , tooltipText = OPTION_TOOLTIP_INVERT_MOUSE};
+UIOptionsFrameCheckButtons["INVERT_MOUSE"] =				{ index = 1, cvar = "mouseInvertPitch" };
+
+-- General
+UIOptionsFrameCheckButtons["CLICK_TO_MOVE"] =				{ index = 6,  cvar = "autointeract" };
+UIOptionsFrameCheckButtons["GAMEFIELD_DESELECT_TEXT"] =			{ index = 45, cvar = "deselectOnClick"};
+UIOptionsFrameCheckButtons["ASSIST_ATTACK"] =				{ index = 3,  cvar = "assistAttack" };
+UIOptionsFrameCheckButtons["CLEAR_AFK"] =				{ index = 16, cvar = "autoClearAFK" };
+UIOptionsFrameCheckButtons["BLOCK_TRADES"] =				{ index = 14, cvar = "BlockTrades" };
+UIOptionsFrameCheckButtons["AUTO_SELF_CAST_TEXT"] =			{ index = 61, cvar = "autoSelfCast"};
+
 -- Display
-UIOptionsFrameCheckButtons["USE_UBERTOOLTIPS"] =		{ index = 12, cvar = "UberTooltips" , tooltipText = OPTION_TOOLTIP_UBERTOOLTIPS};
-UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"] =			{ index = 2,  cvar = "statusBarText" , tooltipText = OPTION_TOOLTIP_STATUS_BAR_TEXT};
-UIOptionsFrameCheckButtons["PROFANITY_FILTER"] =		{ index = 5,  cvar = "profanityFilter" , tooltipText = OPTION_TOOLTIP_PROFANITY_FILTER};
-UIOptionsFrameCheckButtons["SHOW_CLOAK"] =			{ index = 30, func = ShowingCloak, setFunc = ShowCloak, tooltipText = OPTION_TOOLTIP_SHOW_CLOAK};
-UIOptionsFrameCheckButtons["SHOW_HELM"] =			{ index = 31, func = ShowingHelm , setFunc = ShowHelm , tooltipText = OPTION_TOOLTIP_SHOW_HELM};
-UIOptionsFrameCheckButtons["SHOW_QUEST_FADING_TEXT"] =	{ index = 42, uvar = "QUEST_FADING_DISABLE", tooltipText = OPTION_TOOLTIP_SHOW_QUEST_FADING, default = "0"};
-UIOptionsFrameCheckButtons["SHOW_BUFF_DURATION_TEXT"] =	{ index = 39, uvar = "SHOW_BUFF_DURATIONS", tooltipText = OPTION_TOOLTIP_SHOW_BUFF_DURATION, default = "0"};
--- Chat
-UIOptionsFrameCheckButtons["SIMPLE_CHAT_TEXT"] =		{ index = 7,  uvar = "SIMPLE_CHAT" , tooltipText = OPTION_TOOLTIP_SIMPLE_CHAT, default = "1"};
-UIOptionsFrameCheckButtons["CHAT_LOCKED_TEXT"] =		{ index = 8,  uvar = "CHAT_LOCKED" , tooltipText = OPTION_TOOLTIP_CHAT_LOCKED, default = "1"};
-UIOptionsFrameCheckButtons["GUILDMEMBER_ALERT"] =		{ index = 13, cvar = "guildMemberNotify" , tooltipText = OPTION_TOOLTIP_GUILDMEMBER_ALERT};
-UIOptionsFrameCheckButtons["REMOVE_CHAT_DELAY_TEXT"] =	{ index = 18, uvar = "REMOVE_CHAT_DELAY", tooltipText = OPTION_TOOLTIP_REMOVE_CHAT_DELAY, default = "0"};
-UIOptionsFrameCheckButtons["CHAT_BUBBLES_TEXT"] =		{ index = 37, cvar = "ChatBubbles", tooltipText = OPTION_TOOLTIP_CHAT_BUBBLES_TEXT};
-UIOptionsFrameCheckButtons["PARTY_CHAT_BUBBLES_TEXT"] =	{ index = 38, cvar = "ChatBubblesParty", tooltipText = OPTION_TOOLTIP_PARTY_CHAT_BUBBLES_TEXT};
-UIOptionsFrameCheckButtons["SHOW_LOOT_SPAM"] =			{ index = 46, cvar = "showLootSpam", tooltipText = OPTION_TOOLTIP_SHOW_LOOT_SPAM};
-UIOptionsFrameCheckButtons["AUTO_JOIN_GUILD_CHANNEL"] =	{ index = 51, tooltipText = OPTION_TOOLTIP_AUTO_JOIN_GUILD_CHANNEL};
--- Action Bars
-UIOptionsFrameCheckButtons["LOCK_ACTIONBAR_TEXT"] =		{ index = 32, uvar = "LOCK_ACTIONBAR", tooltipText = OPTION_TOOLTIP_LOCK_ACTIONBAR, default = "0"};
-UIOptionsFrameCheckButtons["SHOW_MULTIBAR1_TEXT"] =		{ index = 33, func = MultiBar1_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR1};
-UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"] =		{ index = 34, func = MultiBar2_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR2};
-UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"] =		{ index = 35, func = MultiBar3_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR3};
-UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"] =		{ index = 36, func = MultiBar4_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR4};
-UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"] =	{ index = 40, uvar = "ALWAYS_SHOW_MULTIBARS", tooltipText = OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS, default = "0"};
--- Raid & Party Options
-UIOptionsFrameCheckButtons["HIDE_PARTY_INTERFACE_TEXT"] =	{ index = 47, uvar = "HIDE_PARTY_INTERFACE" , tooltipText = OPTION_TOOLTIP_HIDE_PARTY_INTERFACE, default = "1"};
-UIOptionsFrameCheckButtons["SHOW_DISPELLABLE_DEBUFFS_TEXT"] =	{ index = 48, uvar = "SHOW_DISPELLABLE_DEBUFFS" , tooltipText = OPTION_TOOLTIP_SHOW_DISPELLABLE_DEBUFFS, default = "1"};
-UIOptionsFrameCheckButtons["SHOW_CASTABLE_BUFFS_TEXT"] =	{ index = 49, uvar = "SHOW_CASTABLE_BUFFS" , tooltipText = OPTION_TOOLTIP_SHOW_CASTABLE_BUFFS, default = "1"};
-UIOptionsFrameCheckButtons["SHOW_TARGET_OF_TARGET_TEXT"] =	{ index = 50, uvar = "SHOW_TARGET_OF_TARGET" , tooltipText = OPTION_TOOLTIP_SHOW_TARGET_OF_TARGET, default = "0"};
-UIOptionsFrameCheckButtons["SHOW_PARTY_PETS_TEXT"] =		{ index = 41, uvar = "SHOW_PARTY_PETS", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_PETS, default = "1"};
+UIOptionsFrameCheckButtons["USE_UBERTOOLTIPS"] =			{ index = 12, cvar = "UberTooltips" };
+UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"] =				{ index = 2,  cvar = "statusBarText" };
+UIOptionsFrameCheckButtons["PROFANITY_FILTER"] =			{ index = 5,  cvar = "profanityFilter" };
+UIOptionsFrameCheckButtons["SHOW_CLOAK"] =				{ index = 31, func = ShowingCloak, setFunc = ShowCloak};
+UIOptionsFrameCheckButtons["SHOW_HELM"] =				{ index = 20, func = ShowingHelm , setFunc = ShowHelm };
+UIOptionsFrameCheckButtons["SHOW_QUEST_FADING_TEXT"] =			{ index = 42, uvar = "QUEST_FADING_DISABLE", default = "0"};
+UIOptionsFrameCheckButtons["SHOW_BUFF_DURATION_TEXT"] =			{ index = 39, uvar = "SHOW_BUFF_DURATIONS", default = "0"};
+UIOptionsFrameCheckButtons["SHOW_PLAYER_NAMES"] =			{ index = 21, cvar = "UnitNamePlayer"};
+UIOptionsFrameCheckButtons["SHOW_GUILD_NAMES"] =			{ index = 22, cvar = "UnitNamePlayerGuild"};
+UIOptionsFrameCheckButtons["SHOW_PLAYER_TITLES"] =			{ index = 23, cvar = "UnitNamePlayerPVPTitle"};
+UIOptionsFrameCheckButtons["SHOW_NPC_NAMES"] =				{ index = 30, cvar = "UnitNameNPC"};
+UIOptionsFrameCheckButtons["SHOW_OWN_NAME"] =				{ index = 67, cvar = "UnitNameOwn"};
+UIOptionsFrameCheckButtons["SHOW_PARTY_BACKGROUND_TEXT"] =		{ index = 43, uvar = "SHOW_PARTY_BACKGROUND"};
+UIOptionsFrameCheckButtons["HIDE_OUTDOOR_WORLD_STATE_TEXT"] =		{ index = 62, uvar = "HIDE_OUTDOOR_WORLD_STATE", default = "0"};
+UIOptionsFrameCheckButtons["AUTO_QUEST_WATCH_TEXT"] =			{ index = 66, uvar = "AUTO_QUEST_WATCH", default = "1"};
+
+-- Camera Controls
+UIOptionsFrameCheckButtons["FOLLOW_TERRAIN"] =				{ index = 24, cvar = "cameraTerrainTilt"};
+UIOptionsFrameCheckButtons["HEAD_BOB"] =				{ index = 26, cvar = "cameraBobbing"};
+UIOptionsFrameCheckButtons["WATER_COLLISION"] =				{ index = 27, cvar = "cameraWaterCollision"};
+UIOptionsFrameCheckButtons["SMART_PIVOT"] =				{ index = 15, cvar = "cameraPivot" };
+-- Help
+UIOptionsFrameCheckButtons["SHOW_TUTORIALS"] =				{ index = 28};
+UIOptionsFrameCheckButtons["SHOW_NEWBIE_TIPS_TEXT"] =		{ index = 29, uvar = "SHOW_NEWBIE_TIPS"};
+UIOptionsFrameCheckButtons["SHOW_TIPOFTHEDAY_TEXT"] =		{ index = 44, cvar = "showGameTips"};
 
 ------------------- Advanced Options -------------------
--- General
-UIOptionsFrameCheckButtons["CLICK_TO_MOVE"] =			{ index = 6,  cvar = "autointeract" , tooltipText = OPTION_TOOLTIP_CLICK_TO_MOVE};
-UIOptionsFrameCheckButtons["GAMEFIELD_DESELECT_TEXT"] =		{ index = 45, cvar = "deselectOnClick", tooltipText = OPTION_TOOLTIP_GAMEFIELD_DESELECT};
-UIOptionsFrameCheckButtons["ASSIST_ATTACK"] =			{ index = 3,  cvar = "assistAttack" , tooltipText = OPTION_TOOLTIP_ASSIST_ATTACK};
-UIOptionsFrameCheckButtons["CLEAR_AFK"] =			{ index = 16, cvar = "autoClearAFK" , tooltipText = OPTION_TOOLTIP_CLEAR_AFK};
-UIOptionsFrameCheckButtons["BLOCK_TRADES"] =			{ index = 14, cvar = "BlockTrades" , tooltipText = OPTION_TOOLTIP_BLOCK_TRADES};
--- Display
-UIOptionsFrameCheckButtons["SHOW_PLAYER_NAMES"] =		{ index = 21, cvar = "UnitNamePlayer", tooltipText = OPTION_TOOLTIP_SHOW_PLAYER_NAMES};
-UIOptionsFrameCheckButtons["SHOW_GUILD_NAMES"] =		{ index = 22, cvar = "UnitNamePlayerGuild", tooltipText = OPTION_TOOLTIP_SHOW_GUILD_NAMES};
-UIOptionsFrameCheckButtons["SHOW_PLAYER_TITLES"] =		{ index = 23, cvar = "UnitNamePlayerPVPTitle", tooltipText = OPTION_TOOLTIP_SHOW_PLAYER_TITLES};
-UIOptionsFrameCheckButtons["SHOW_PET_NAMEPLATES"] =		{ index = 17, cvar = "PetNamePlates", tooltipText = OPTION_TOOLTIP_PET_NAMEPLATES};
-UIOptionsFrameCheckButtons["SHOW_NPC_NAMES"] =			{ index = 20, cvar = "UnitNameNPC", tooltipText = OPTION_TOOLTIP_SHOW_NPC_NAMES};
-UIOptionsFrameCheckButtons["SHOW_PARTY_BACKGROUND_TEXT"] =	{ index = 43, uvar = "SHOW_PARTY_BACKGROUND", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_BACKGROUND, default = "0"};
-UIOptionsFrameCheckButtons["SHOW_DAMAGE_TEXT"] =		{ index = 19, cvar = "CombatDamage", tooltipText = OPTION_TOOLTIP_SHOW_DAMAGE};
-UIOptionsFrameCheckButtons["LOG_PERIODIC_EFFECTS"] =		{ index = 11, cvar = "CombatLogPeriodicSpells" , tooltipText = OPTION_TOOLTIP_PERIODIC_EFFECTS};
-UIOptionsFrameCheckButtons["SHOW_PET_MELEE_DAMAGE"] =		{ index = 9,  cvar = "PetMeleeDamage" , tooltipText = OPTION_TOOLTIP_PET_MELEE_DAMAGE };
--- Camera Controls
-UIOptionsFrameCheckButtons["FOLLOW_TERRAIN"] =			{ index = 24, cvar = "cameraTerrainTilt", tooltipText = OPTION_TOOLTIP_FOLLOW_TERRAIN};
-UIOptionsFrameCheckButtons["HEAD_BOB"] =			{ index = 26, cvar = "cameraBobbing", tooltipText = OPTION_TOOLTIP_HEAD_BOB};
-UIOptionsFrameCheckButtons["WATER_COLLISION"] =			{ index = 27, cvar = "cameraWaterCollision", tooltipText = OPTION_TOOLTIP_WATER_COLLISION};
-UIOptionsFrameCheckButtons["SMART_PIVOT"] =			{ index = 15, cvar = "cameraPivot" , tooltipText = OPTION_TOOLTIP_CAMERA_MODE};
--- Help
-UIOptionsFrameCheckButtons["SHOW_TUTORIALS"] =			{ index = 28, tooltipText = OPTION_TOOLTIP_SHOW_TUTORIALS};
-UIOptionsFrameCheckButtons["SHOW_NEWBIE_TIPS_TEXT"] =		{ index = 29, uvar = "SHOW_NEWBIE_TIPS", tooltipText = OPTION_TOOLTIP_SHOW_NEWBIE_TIPS, default = "1"};
-UIOptionsFrameCheckButtons["SHOW_TIPOFTHEDAY_TEXT"] =		{ index = 44, cvar = "showGameTips", tooltipText = OPTION_TOOLTIP_SHOW_TIPOFTHEDAY};
+-- Chat
+UIOptionsFrameCheckButtons["SIMPLE_CHAT_TEXT"] =			{ index = 7,  uvar = "SIMPLE_CHAT" , default = "1"};
+UIOptionsFrameCheckButtons["CHAT_LOCKED_TEXT"] =			{ index = 8,  uvar = "CHAT_LOCKED" , default = "1"};
+UIOptionsFrameCheckButtons["GUILDMEMBER_ALERT"] =			{ index = 13, cvar = "guildMemberNotify" };
+UIOptionsFrameCheckButtons["REMOVE_CHAT_DELAY_TEXT"] =		{ index = 18, uvar = "REMOVE_CHAT_DELAY", default = "0"};
+UIOptionsFrameCheckButtons["CHAT_BUBBLES_TEXT"] =			{ index = 37, cvar = "ChatBubbles"};
+UIOptionsFrameCheckButtons["PARTY_CHAT_BUBBLES_TEXT"] =		{ index = 38, cvar = "ChatBubblesParty"};
+UIOptionsFrameCheckButtons["SHOW_LOOT_SPAM"] =			{ index = 46, cvar = "showLootSpam"};
+UIOptionsFrameCheckButtons["AUTO_JOIN_GUILD_CHANNEL"] =		{ index = 51};
+
+-- Action Bars
+UIOptionsFrameCheckButtons["LOCK_ACTIONBAR_TEXT"] =			{ index = 32, uvar = "LOCK_ACTIONBAR", default = "0"};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR1_TEXT"] =			{ index = 33, func = MultiBar1_IsVisible, setFunc = Multibar_EmptyFunc};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"] =			{ index = 34, func = MultiBar2_IsVisible, setFunc = Multibar_EmptyFunc};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"] =			{ index = 35, func = MultiBar3_IsVisible, setFunc = Multibar_EmptyFunc};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"] =			{ index = 36, func = MultiBar4_IsVisible, setFunc = Multibar_EmptyFunc};
+UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"] =	{ index = 40, func = MultibarGrid_IsVisible, setFunc = Multibar_EmptyFunc};
+
+-- Raid & Party Options
+UIOptionsFrameCheckButtons["HIDE_PARTY_INTERFACE_TEXT"] =		{ index = 47, uvar = "HIDE_PARTY_INTERFACE" , default = "0"};
+UIOptionsFrameCheckButtons["SHOW_DISPELLABLE_DEBUFFS_TEXT"] =	{ index = 48, uvar = "SHOW_DISPELLABLE_DEBUFFS" , default = "1"};
+UIOptionsFrameCheckButtons["SHOW_CASTABLE_BUFFS_TEXT"] =	{ index = 49, uvar = "SHOW_CASTABLE_BUFFS" , default = "1"};
+UIOptionsFrameCheckButtons["SHOW_TARGET_OF_TARGET_TEXT"] =	{ index = 50, uvar = "SHOW_TARGET_OF_TARGET" , default = "0"};
+UIOptionsFrameCheckButtons["SHOW_PARTY_PETS_TEXT"] =		{ index = 41, uvar = "SHOW_PARTY_PETS", default = "1"};
+
+-- Combat Text
+UIOptionsFrameCheckButtons["SHOW_COMBAT_TEXT_TEXT"] =					{ index = 52, uvar = "SHOW_COMBAT_TEXT" , default = "0"};
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT"] =	{ index = 53, uvar = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA" , default = "1"};
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_AURAS_TEXT"] =				{ index = 54, uvar = "COMBAT_TEXT_SHOW_AURAS" , default = "1"};
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_AURA_FADE_TEXT"] =			{ index = 55, uvar = "COMBAT_TEXT_SHOW_AURA_FADE" , default = "0"};
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_COMBAT_STATE_TEXT"] =		{ index = 56, uvar = "COMBAT_TEXT_SHOW_COMBAT_STATE" , default = "1"};
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_DODGE_PARRY_MISS_TEXT"] =	{ index = 57, uvar = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS", default = "0"};
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_RESISTANCES_TEXT"] =	{ index = 58, uvar = "COMBAT_TEXT_SHOW_RESISTANCES", default = "0"};
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_REPUTATION_TEXT"] =	{ index = 60, uvar = "COMBAT_TEXT_SHOW_REPUTATION", default = "0"};
+UIOptionsFrameCheckButtons["SHOW_DAMAGE_TEXT"] =			{ index = 19, cvar = "CombatDamage"};
+UIOptionsFrameCheckButtons["LOG_PERIODIC_EFFECTS"] =			{ index = 11, cvar = "CombatLogPeriodicSpells" };
+UIOptionsFrameCheckButtons["SHOW_PET_MELEE_DAMAGE"] =			{ index = 9,  cvar = "PetMeleeDamage" };
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_REACTIVES_TEXT"] =		{ index = 63, uvar = "COMBAT_TEXT_SHOW_REACTIVES", default = "0"};
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_FRIENDLY_NAMES_TEXT"] =	{ index = 64, uvar = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES", default = "0"};
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT"] =	{ index = 65, uvar = "COMBAT_TEXT_SHOW_COMBO_POINTS", default = "0"};
+UIOptionsFrameCheckButtons["COMBAT_TEXT_SHOW_MANA_TEXT"] =		{ index = 59, uvar = "COMBAT_TEXT_SHOW_MANA", default = "0"};
 
 UIOptionsFrameSliders = {
-	{ text = MOUSE_SENSITIVITY, cvar = "mousespeed", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 , tooltipText = OPTION_TOOLTIP_MOUSE_SENSITIVITY},
-	{ text = AUTO_FOLLOW_SPEED, cvar = "cameraYawSmoothSpeed", minValue = 90, maxValue = 270, valueStep = 10 , tooltipText = OPTION_TOOLTIP_AUTO_FOLLOW_SPEED},
-	{ text = MOUSE_LOOK_SPEED,  cvar = "cameraYawMoveSpeed", minValue = 90, maxValue = 270, valueStep = 10 , tooltipText = OPTION_TOOLTIP_MOUSE_LOOK_SPEED},
-	{ text = MAX_FOLLOW_DIST,   cvar = "cameraDistanceMaxFactor", minValue = 1, maxValue = 2, valueStep = 0.1 , tooltipText = OPTION_TOOLTIP_MAX_FOLLOW_DIST},
+	{ text = MOUSE_SENSITIVITY, cvar = "mousespeed", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 },
+	{ text = AUTO_FOLLOW_SPEED, cvar = "cameraYawSmoothSpeed", minValue = 90, maxValue = 270, valueStep = 10 },
+	{ text = MOUSE_LOOK_SPEED,  cvar = "cameraYawMoveSpeed", minValue = 90, maxValue = 270, valueStep = 10 },
+	{ text = MAX_FOLLOW_DIST,   cvar = "cameraDistanceMaxFactor", minValue = 1, maxValue = 2, valueStep = 0.1 },
 };
 
 function UIOptionsFrame_Init()
@@ -91,13 +112,70 @@ function UIOptionsFrame_Init()
 	HIDE_PARTY_INTERFACE = "0";
 	RegisterForSave("HIDE_PARTY_INTERFACE");
 	SHOW_TARGET_OF_TARGET = "0";
+	SHOW_TARGET_OF_TARGET_STATE = "5";
 	RegisterForSave("SHOW_TARGET_OF_TARGET");
-	UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value = GetCVar("statusBarText");
+	RegisterForSave("SHOW_TARGET_OF_TARGET_STATE");
+	HIDE_OUTDOOR_WORLD_STATE = "0";
+	RegisterForSave("HIDE_OUTDOOR_WORLD_STATE");
+	AUTO_QUEST_WATCH = 1;
+	RegisterForSave("AUTO_QUEST_WATCH");
+	-- Combat text uvars
+	SHOW_COMBAT_TEXT = "0";
+	RegisterForSave("SHOW_COMBAT_TEXT");
+	COMBAT_TEXT_SHOW_LOW_HEALTH_MANA = "1";
+	RegisterForSave("COMBAT_TEXT_SHOW_LOW_HEALTH_MANA");
+	COMBAT_TEXT_SHOW_AURAS = "1";
+	RegisterForSave("COMBAT_TEXT_SHOW_AURAS");
+	COMBAT_TEXT_SHOW_AURA_FADE = "0";
+	RegisterForSave("COMBAT_TEXT_SHOW_AURA_FADE");
+	COMBAT_TEXT_SHOW_COMBAT_STATE = "1";
+	RegisterForSave("COMBAT_TEXT_SHOW_COMBAT_STATE");
+	COMBAT_TEXT_SHOW_DODGE_PARRY_MISS = "0";
+	RegisterForSave("COMBAT_TEXT_SHOW_DODGE_PARRY_MISS");
+	COMBAT_TEXT_SHOW_RESISTANCES = "0";
+	RegisterForSave("COMBAT_TEXT_SHOW_RESISTANCES");
+	COMBAT_TEXT_SHOW_REPUTATION = "0";
+	RegisterForSave("COMBAT_TEXT_SHOW_REPUTATION");
+	COMBAT_TEXT_SHOW_REACTIVES = "0";
+	RegisterForSave("COMBAT_TEXT_SHOW_REACTIVES");
+	COMBAT_TEXT_SHOW_FRIENDLY_NAMES = "0";
+	RegisterForSave("COMBAT_TEXT_SHOW_FRIENDLY_NAMES");
+	COMBAT_TEXT_SHOW_COMBO_POINTS = "0";
+	RegisterForSave("COMBAT_TEXT_SHOW_COMBO_POINTS");
+	COMBAT_TEXT_SHOW_MANA = "0";
+	RegisterForSave("COMBAT_TEXT_SHOW_MANA");
+	COMBAT_TEXT_FLOAT_MODE = "1";
+	RegisterForSave("COMBAT_TEXT_FLOAT_MODE");
+
 	this:RegisterEvent("CVAR_UPDATE");
+	this:RegisterEvent("VARIABLES_LOADED");
+	this:RegisterEvent("ADDON_LOADED");
 
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(this, 2);
 	PanelTemplates_SetTab(this, 1);
+
+	-- Position sections
+	BasicOptionsGeneral:SetHeight(95);
+	--BasicOptionsGeneral:SetPoint("TOPRIGHT", BasicOptions, "BOTTOMRIGHT", UIOptionsFrame:GetWidth()*-0.5, -104);
+	BasicOptionsDisplay:SetPoint("TOPLEFT", BasicOptionsGeneral, "BOTTOMLEFT", 0, -20);
+	BasicOptionsDisplay:SetPoint("TOPRIGHT", BasicOptionsGeneral, "BOTTOMRIGHT", 0, -20);
+	AdvancedOptionsActionBars:SetPoint("TOPLEFT", AdvancedOptions, "TOPLEFT", 32, -104);
+	AdvancedOptionsActionBars:SetPoint("TOPRIGHT", AdvancedOptions, "TOPRIGHT", -32, -104);
+	AdvancedOptionsChat:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", 0, -20);
+	AdvancedOptionsChat:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", UIOptionsFrame:GetWidth()*-0.62, -20);
+	AdvancedOptionsRaid:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", UIOptionsFrame:GetWidth()*0.32, -20);
+	AdvancedOptionsRaid:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", UIOptionsFrame:GetWidth()*-0.32, -20);
+	AdvancedOptionsRaid:SetPoint("BOTTOMLEFT", AdvancedOptionsChat, "BOTTOMRIGHT", 0, 0);
+	AdvancedOptionsCombatText:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", UIOptionsFrame:GetWidth()*0.62, -20);
+	AdvancedOptionsCombatText:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", 0, -20);
+	AdvancedOptionsCombatText:SetPoint("BOTTOMLEFT", AdvancedOptionsRaid, "BOTTOMRIGHT", 0, 0);
+
+	-- Variables not displayed in the ui options but they needed a home
+	RegisterForSave("NAMEPLATES_ON");
+	NAMEPLATES_ON = nil;
+	RegisterForSave("NAMEPLATES_ON");
+	FRIENDNAMEPLATES_ON = nil;
 end
 
 function UIOptionsFrame_OnEvent()
@@ -107,6 +185,40 @@ function UIOptionsFrame_OnEvent()
 			info.value = arg2;
 		end
 		return;
+	elseif ( event == "VARIABLES_LOADED" or (event == "ADDON_LOADED" and arg1 == "Blizzard_CombatText") ) then
+		local button, checked;
+		for index, value in UIOptionsFrameCheckButtons do
+			checked = nil;
+			if ( value.uvar ) then
+				button = getglobal("UIOptionsFrameCheckButton"..value.index);
+				checked = getglobal(value.uvar);
+				value.value = checked;
+				button:SetChecked(checked);
+			end
+		end
+		-- Option specific function calls
+		-- Buff Durations
+		BuffButtons_UpdatePositions();
+		-- Simple Chat
+		if ( SIMPLE_CHAT == "1" ) then
+			FCF_Set_SimpleChat();
+		end
+		-- Chat Locked
+		if ( CHAT_LOCKED == "1" ) then
+			FCF_Set_ChatLocked(1);
+		end
+		-- Chat mouse over delay
+		SetChatMouseOverDelay(REMOVE_CHAT_DELAY);
+		-- Always show multibars
+		if ( ALWAYS_SHOW_MULTIBARS == "1" or ALWAYS_SHOW_MULTIBARS == 1 ) then
+			MultiActionBar_ShowAllGrids();
+		end
+		-- Hide party interface
+		RaidOptionsFrame_UpdatePartyFrames();
+		-- Update combat text options
+		if ( SHOW_COMBAT_TEXT == "1" ) then
+			UIParentLoadAddOn("Blizzard_CombatText");
+		end
 	end
 end
 
@@ -141,7 +253,7 @@ function UIOptionsFrame_Load()
 		OptionsFrame_EnableCheckBox(button);
 		button:SetChecked(checked);
 		string:SetText(TEXT(getglobal(index)));
-		button.tooltipText = value.tooltipText;
+		button.tooltipText = getglobal("OPTION_TOOLTIP_"..gsub(index, "_TEXT$", ""));
 	end
 	for index, value in UIOptionsFrameSliders do
 		local slider = getglobal("UIOptionsFrameSlider"..index);
@@ -236,12 +348,20 @@ function UIOptionsFrame_Save()
 	end
 
 	-- Save multibar state
-	SetActionBarToggles(SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4);
-
+	SetActionBarToggles(SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4, ALWAYS_SHOW_MULTIBARS);
+	-- Save Target of Target options
+	SHOW_TARGET_OF_TARGET_STATE = UIDropDownMenu_GetSelectedValue(UIOptionsFrameTargetofTargetDropDown);
 	-- Save Click to move camera style
 	SetCVar("cameraSmoothTrackingStyle", UIDropDownMenu_GetSelectedValue(UIOptionsFrameClickCameraDropDown));
 	-- Save move camera style
 	SetCVar("cameraSmoothStyle", UIDropDownMenu_GetSelectedValue(UIOptionsFrameCameraDropDown));
+	-- Update combat text
+	if ( SHOW_COMBAT_TEXT == "1" ) then
+		UIParentLoadAddOn("Blizzard_CombatText");
+	end
+	if ( CombatText_UpdateDisplayedMessages ) then
+		CombatText_UpdateDisplayedMessages();
+	end
 end
 
 function UIOptionsFrameClickCameraDropDown_OnLoad()
@@ -294,6 +414,78 @@ function UIOptionsFrameClickCameraDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
+function UIOptionsFrameTargetofTargetDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, UIOptionsFrameTargetofTargetDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(this, SHOW_TARGET_OF_TARGET_STATE);
+	UIOptionsFrameTargetofTargetDropDown.tooltip = getglobal("OPTION_TOOLTIP_TARGETOFTARGET"..UIDropDownMenu_GetSelectedValue(UIOptionsFrameTargetofTargetDropDown));
+	UIDropDownMenu_SetWidth(110, UIOptionsFrameTargetofTargetDropDown);
+end
+
+function UIOptionsFrameTargetofTargetDropDown_OnClick()
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameTargetofTargetDropDown, this.value);
+	UIOptionsFrameTargetofTargetDropDown.tooltip = getglobal("OPTION_TOOLTIP_TARGETOFTARGET"..this:GetID());
+end
+
+function UIOptionsFrameTargetofTargetDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(UIOptionsFrameTargetofTargetDropDown);
+	local info;
+
+	info = {};
+	info.text = RAID;
+	info.func = UIOptionsFrameTargetofTargetDropDown_OnClick;
+	info.value = "1"
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	end
+	info.tooltipTitle = RAID;
+	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_RAID;
+	UIDropDownMenu_AddButton(info);
+
+	info = {};
+	info.text = PARTY;
+	info.func = UIOptionsFrameTargetofTargetDropDown_OnClick;
+	info.value = "2"
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	end
+	info.tooltipTitle = PARTY;
+	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_PARTY;
+	UIDropDownMenu_AddButton(info);
+
+	info = {};
+	info.text = SOLO;
+	info.func = UIOptionsFrameTargetofTargetDropDown_OnClick;
+	info.value = "3"
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	end
+	info.tooltipTitle = PARTY;
+	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_SOLO;
+	UIDropDownMenu_AddButton(info);
+
+	info = {};
+	info.text = RAID_AND_PARTY;
+	info.func = UIOptionsFrameTargetofTargetDropDown_OnClick;
+	info.value = "4"
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	end
+	info.tooltipTitle = RAID_AND_PARTY;
+	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_RAID_AND_PARTY;
+	UIDropDownMenu_AddButton(info);
+
+	info = {};
+	info.text = ALWAYS;
+	info.func = UIOptionsFrameTargetofTargetDropDown_OnClick;
+	info.value = "5"
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	end
+	info.tooltipTitle = ALWAYS;
+	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_ALWAYS;
+	UIDropDownMenu_AddButton(info);
+
+end
 function UIOptionsFrameCameraDropDown_OnLoad()
 	UIDropDownMenu_Initialize(this, UIOptionsFrameCameraDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(this, GetCVar("cameraSmoothStyle"));
@@ -349,10 +541,62 @@ function UIOptionsFrameCameraDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
+function UIOptionsFrameCombatTextDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, UIOptionsFrameCombatTextDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(this, COMBAT_TEXT_FLOAT_MODE);
+	UIOptionsFrameCombatTextDropDown.tooltip = OPTION_TOOLTIP_COMBAT_TEXT_MODE;
+	UIDropDownMenu_SetWidth(90, UIOptionsFrameCombatTextDropDown);
+end
+
+function UIOptionsFrameCombatTextDropDown_OnClick()
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameCombatTextDropDown, this.value);
+	COMBAT_TEXT_FLOAT_MODE = this.value;
+	UIParentLoadAddOn("Blizzard_CombatText");
+	CombatText_UpdateDisplayedMessages();
+end
+
+function UIOptionsFrameCombatTextDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(UIOptionsFrameCombatTextDropDown);
+	local info;
+
+	info = {};
+	info.text = COMBAT_TEXT_SCROLL_UP;
+	info.func = UIOptionsFrameCombatTextDropDown_OnClick;
+	info.value = "1"
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	end
+	info.tooltipTitle = COMBAT_TEXT_SCROLL_UP;
+	info.tooltipText = OPTION_TOOLTIP_SCROLL_UP;
+	UIDropDownMenu_AddButton(info);
+
+	info = {};
+	info.text = COMBAT_TEXT_SCROLL_DOWN;
+	info.func = UIOptionsFrameCombatTextDropDown_OnClick;
+	info.value = "2"
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	end
+	info.tooltipTitle = COMBAT_TEXT_SCROLL_DOWN;
+	info.tooltipText = OPTION_TOOLTIP_SCROLL_DOWN;
+	UIDropDownMenu_AddButton(info);
+
+	info = {};
+	info.text = COMBAT_TEXT_SCROLL_ARC;
+	info.func = UIOptionsFrameCombatTextDropDown_OnClick;
+	info.value = "3"
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	end
+	info.tooltipTitle = COMBAT_TEXT_SCROLL_ARC;
+	info.tooltipText = OPTION_TOOLTIP_SCROLL_ARC;
+	UIDropDownMenu_AddButton(info);
+end
+
 function UIOptionsFrame_SetDamageCheckBoxes(showDamage)
 	if ( showDamage == "1" ) then
-		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton11, UIOptionsFrameCheckButton11:GetChecked());
-		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton9, UIOptionsFrameCheckButton9:GetChecked());
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton11);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton9);
 	else
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton11);
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton9);
@@ -365,6 +609,7 @@ function UIOptionsFrameMultiBar_Reset()
 	SHOW_MULTI_ACTIONBAR_2 = STATE_MultiBar2;
 	SHOW_MULTI_ACTIONBAR_3 = STATE_MultiBar3;
 	SHOW_MULTI_ACTIONBAR_4 = STATE_MultiBar4;
+	ALWAYS_SHOW_MULTIBARS = STATE_AlwaysShowMultibars;
 end
 
 function UIOptionsFrame_SetDefaults()
@@ -384,9 +629,9 @@ function UIOptionsFrame_SetDefaults()
 		elseif ( index == "SHOW_MULTIBAR4_TEXT" ) then
 			checkButton:SetChecked(0);
 		elseif ( value.cvar ) then
-			OptionsFrame_EnableCheckBox(checkButton, GetCVarDefault(value.cvar));
+			OptionsFrame_EnableCheckBox(checkButton, 1, GetCVarDefault(value.cvar));
 		elseif ( index == "SHOW_TUTORIALS" ) then
-			OptionsFrame_EnableCheckBox(checkButton, 1);
+			OptionsFrame_EnableCheckBox(checkButton, 1, 1);
 		elseif ( index == "AUTO_JOIN_GUILD_CHANNEL" ) then
 			SetGuildRecruitmentMode(1);
 		elseif ( value.uvar ) then	
@@ -416,29 +661,46 @@ function UIOptionsFrame_SetDefaults()
 	UIDropDownMenu_SetSelectedValue(UIOptionsFrameCameraDropDown, "1");
 	OptionsFrame_EnableDropDown(UIOptionsFrameCameraDropDown);
 
+	UIDropDownMenu_Initialize(UIOptionsFrameTargetofTargetDropDown, UIOptionsFrameTargetofTargetDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameTargetofTargetDropDown, "5");
+	SHOW_TARGET_OF_TARGET_STATE = "5";
+	
+	UIDropDownMenu_Initialize(UIOptionsFrameCombatTextDropDown, UIOptionsFrameCombatTextDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameCombatTextDropDown, "1");
+	COMBAT_TEXT_FLOAT_MODE = "1";
+
 	-- Enable/disable the proper checkboxes, sliders, and dropdowns
 	UIOptionsFrame_UpdateDependencies();
 end
 
 function UIOptionsFrame_UpdateDependencies()
+	-- Dependency for Click to Move Camera dropdown
 	if ( not UIOptionsFrameCheckButton6:GetChecked() ) then
 		OptionsFrame_DisableDropDown(UIOptionsFrameClickCameraDropDown);
 	else
 		OptionsFrame_EnableDropDown(UIOptionsFrameClickCameraDropDown);
 	end
+
+	-- Dependency for Target of Target dropdown
+	if ( not UIOptionsFrameCheckButton50:GetChecked() ) then
+		OptionsFrame_DisableDropDown(UIOptionsFrameTargetofTargetDropDown);
+	else
+		OptionsFrame_EnableDropDown(UIOptionsFrameTargetofTargetDropDown);
+	end
+
 	if ( not UIOptionsFrameCheckButton21:GetChecked() ) then
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton22);
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton23);
 	else
-		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton22, UIOptionsFrameCheckButton22:GetChecked());
-		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton23, UIOptionsFrameCheckButton23:GetChecked());
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton22);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton23);
 	end
 	if ( not UIOptionsFrameCheckButton19:GetChecked() ) then
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton9);
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton11);
 	else
-		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton9, UIOptionsFrameCheckButton9:GetChecked());
-		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton11, UIOptionsFrameCheckButton11:GetChecked());
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton9);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton11);
 	end
 	if ( UIDropDownMenu_GetSelectedID(UIOptionsFrameCameraDropDown) == 3 ) then
 		OptionsFrame_DisableSlider(UIOptionsFrameSlider2);
@@ -448,6 +710,57 @@ function UIOptionsFrame_UpdateDependencies()
 	if ( not UIOptionsFrameCheckButton35:GetChecked() ) then
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton36);
 	else
-		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton36, MultiBar4_IsVisible());
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton36, 1, MultiBar4_IsVisible());
+	end
+	-- Additional combat text dependancies
+	if ( not UIOptionsFrameCheckButton52:GetChecked() ) then
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton53);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton54);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton55);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton56);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton57);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton58);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton59);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton60);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton63);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton64);
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton65);
+		OptionsFrame_DisableDropDown(UIOptionsFrameCombatTextDropDown);
+	else
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton53);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton54);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton55);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton56);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton57);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton58);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton59);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton60);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton63);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton64);
+		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton65);
+		OptionsFrame_EnableDropDown(UIOptionsFrameCombatTextDropDown);
+	end
+
+	-- Disable combo point combat text checkbox if not a rogue or druid
+	local temp, class = UnitClass("player");
+	class = strupper(class);
+	if ( class ~= "ROGUE" and class ~= "DRUID" ) then
+		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton65);
+	end
+end
+
+
+-- Nameplate display function -- It is not used by the options ui, but I put it here since this is the most closely related file.
+function UpdateNameplates()
+	if ( NAMEPLATES_ON ) then
+		ShowNameplates();
+	else
+		HideNameplates();
+	end
+	if ( FRIENDNAMEPLATES_ON ) then
+		ShowFriendNameplates();
+		HideFriendNameplates();
+	else
+		HideFriendNameplates();
 	end
 end

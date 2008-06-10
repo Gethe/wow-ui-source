@@ -251,16 +251,8 @@
 	</Frames>
     <Scripts>
         <OnLoad>
-			this:RegisterEvent("PLAYER_ENTERING_WORLD");
 			SetDressUpBackground();
-			DressUpModel:SetUnit("player");
 		</OnLoad>
-        <OnEvent>
-			if ( event == "PLAYER_ENTERING_WORLD" ) then
-				DressUpModel:SetUnit("player");
-				return;
-			end
-        </OnEvent>
 		<OnShow>
 			SetPortraitTexture(DressUpFramePortrait, "player");
 			PlaySound("igCharacterInfoOpen");

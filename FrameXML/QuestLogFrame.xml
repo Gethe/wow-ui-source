@@ -91,7 +91,7 @@
 		</HighlightTexture>
 		<ButtonText name="$parentNormalText" nonspacewrap="true">
 			<Size>
-				<AbsDimension x="275" y="10"/>
+				<AbsDimension x="260" y="10"/>
 			</Size>
 			<Anchors>
 				<Anchor point="LEFT">
@@ -1131,5 +1131,10 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnUpdate>
+				AutoQuestWatch_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
 	</Frame>
 </Ui>

@@ -343,129 +343,111 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 							<Texture name="WorldMapDetailTile1">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-							</Texture>
-							<Texture name="WorldMapDetailTile2">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile1" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Texture>
-							<Texture name="WorldMapDetailTile3">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile2" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Texture>
-							<Texture name="WorldMapDetailTile4">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile3" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Texture>	
-							<Texture name="WorldMapDetailTile5">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile1" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Texture>
-							<Texture name="WorldMapDetailTile6">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile5" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Texture>
-							<Texture name="WorldMapDetailTile7">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile6" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Texture>
-							<Texture name="WorldMapDetailTile8">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile7" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Texture>
-							<Texture name="WorldMapDetailTile9">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile5" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Texture>
-							<Texture name="WorldMapDetailTile10">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile9" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Texture>
-							<Texture name="WorldMapDetailTile11">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile10" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Texture>
-							<Texture name="WorldMapDetailTile12">
-								<Size>
-									<AbsDimension x="256" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile11" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Texture>	
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldMapDetailTile2">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile1" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldMapDetailTile3">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile2" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldMapDetailTile4">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile3" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>	
+						<Texture name="WorldMapDetailTile5">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile1" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldMapDetailTile6">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile5" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldMapDetailTile7">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile6" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldMapDetailTile8">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile7" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldMapDetailTile9">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile5" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldMapDetailTile10">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile9" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldMapDetailTile11">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile10" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldMapDetailTile12">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WorldMapDetailTile11" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>	
 					</Layer>
-					<Layer level="OVERLAY">
-							<Texture name="WorldMapHighlight" alphaMode="ADD" hidden="true">
-								<Size>
-									<AbsDimension x="128" y="128"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-							</Texture>
-							<FontString name="WorldMapFrameAreaLabel" inherits="WorldMapTextFont">
-								<Anchors>
-									<Anchor point="TOP">
-										<Offset>
-											<AbsDimension x="20" y="-20"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</FontString>
-							<FontString name="WorldMapFrameAreaDescription" inherits="SubZoneTextFont">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="WorldMapFrameAreaLabel" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</FontString>
+					<Layer level="ARTWORK">
+						<Texture name="WorldMapHighlight" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="128" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -562,6 +544,38 @@
 							</OnLoad>
 						</Scripts>
 					</Model>
+					<Frame name="WorldMapFrameAreaFrame">
+						<Size x="400" y="128"/>
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="WorldMapFrameAreaLabel" inherits="WorldMapTextFont" text="BLAH!">
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="20" y="-20"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="WorldMapFrameAreaDescription" inherits="SubZoneTextFont">
+									<Anchors>
+										<Anchor point="TOP" relativeTo="WorldMapFrameAreaLabel" relativePoint="BOTTOM">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad>
