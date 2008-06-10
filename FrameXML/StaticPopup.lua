@@ -3,16 +3,28 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
+	text = TEXT(CONFIRM_LOOT_DISTRIBUTION),
+	button1 = TEXT(YES),
+	button2 = TEXT(NO),
+	OnAccept = function(data)
+		GiveMasterLoot(LootFrame.selectedSlot, data);
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+};
+
 StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	text = TEXT(CONFIRM_BATTLEFIELD_ENTRY),
 	button1 = TEXT(ENTER_BATTLE),
 	button2 = TEXT(HIDE),
-	OnAccept = function()
-		BattlefieldFrame_EnterBattlefield();
+	OnAccept = function(data)
+		AcceptBattlefieldPort(data, 1);
 	end,
 	timeout = 0,
 	whileDead = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	multiple = 1
 };
 
 StaticPopupDialogs["CONFIRM_GUILD_LEAVE"] = {
@@ -758,12 +770,12 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 	OnAccept = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		GuildControlAddRank(editBox:GetText());
-		--GuildRoster();
 		GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
 		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
 		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
 		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
 		CloseDropDownMenus();
+		GuildControlPopupFrame.update = 1;
 	end,
 	OnShow = function()
 		getglobal(this:GetName().."EditBox"):SetFocus();
@@ -777,13 +789,13 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 	EditBoxOnEnterPressed = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		GuildControlAddRank(editBox:GetText());
-		--GuildRoster();
 		GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
 		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
 		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
 		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
 		CloseDropDownMenus();
 		this:GetParent():Hide();
+		GuildControlPopupFrame.update = 1;
 	end,
 	EditBoxOnEscapePressed = function()
 		this:GetParent():Hide();
@@ -797,14 +809,15 @@ StaticPopupDialogs["SET_GUILDMOTD"] = {
 	button1 = TEXT(ACCEPT),
 	button2 = TEXT(CANCEL),
 	hasEditBox = 1,
-	maxLetters = 60,
+	maxLetters = 128,
 	hasWideEditBox = 1,
 	OnAccept = function()
 		local editBox = getglobal(this:GetParent():GetName().."WideEditBox");
 		GuildSetMOTD(editBox:GetText());
 	end,
 	OnShow = function()
-		getglobal(this:GetName().."WideEditBox"):SetText(GetGuildRosterMOTD());
+		--getglobal(this:GetName().."WideEditBox"):SetText(GetGuildRosterMOTD());
+		getglobal(this:GetName().."WideEditBox"):SetText(CURRENT_GUILD_MOTD);
 		getglobal(this:GetName().."WideEditBox"):SetFocus();
 	end,
 	OnHide = function()
@@ -837,8 +850,8 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 		GuildRosterSetPublicNote(GetGuildRosterSelection(), editBox:GetText());
 	end,
 	OnShow = function()
-		local name, rank, rankIndex, level, class, zone, group, note, officernote, online;
-		name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
+		local name, rank, rankIndex, level, class, zone, note, officernote, online;
+		name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
 
 		getglobal(this:GetName().."WideEditBox"):SetText(note);
 		getglobal(this:GetName().."WideEditBox"):SetFocus();
@@ -873,8 +886,8 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 		GuildRosterSetOfficerNote(GetGuildRosterSelection(), editBox:GetText());
 	end,
 	OnShow = function()
-		local name, rank, rankIndex, level, class, zone, group, note, officernote, online;
-		name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
+		local name, rank, rankIndex, level, class, zone, note, officernote, online;
+		name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
 
 		getglobal(this:GetName().."WideEditBox"):SetText(officernote);
 		getglobal(this:GetName().."WideEditBox"):SetFocus();
@@ -1238,10 +1251,14 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 	hideOnEscape = 1
 };
 
-function StaticPopup_FindVisible(which)
+function StaticPopup_FindVisible(which, data)
+	local info = StaticPopupDialogs[which];
+	if ( not info ) then
+		return nil;
+	end
 	for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 		local frame = getglobal("StaticPopup"..index);
-		if ( frame:IsShown() and (frame.which == which) ) then
+		if ( frame:IsShown() and (frame.which == which) and (not info.multiple or (frame.data == data)) ) then
 			return frame;
 		end
 	end
@@ -1261,7 +1278,7 @@ function StaticPopup_Resize(dialog, which)
 	end
 end
 
-function StaticPopup_Show(which, text_arg1, text_arg2)
+function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
 		return nil;
@@ -1336,16 +1353,14 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 
 	-- Pick a free dialog to use
 	local dialog = nil;
-	if ( not dialog ) then
-		-- Find an open dialog of the requested type
-		dialog = StaticPopup_FindVisible(which);
-		if ( dialog ) then
-			local OnCancel = StaticPopupDialogs[which].OnCancel;
-			if ( OnCancel ) then
-				OnCancel(dialog.data, "override");
-			end
-			dialog:Hide();
+	-- Find an open dialog of the requested type
+	dialog = StaticPopup_FindVisible(which, data);
+	if ( dialog ) then
+		local OnCancel = StaticPopupDialogs[which].OnCancel;
+		if ( OnCancel ) then
+			OnCancel(dialog.data, "override");
 		end
+		dialog:Hide();
 	end
 	if ( not dialog ) then
 		-- Find a free dialog
@@ -1510,10 +1525,10 @@ function StaticPopup_Show(which, text_arg1, text_arg2)
 	return dialog;
 end
 
-function StaticPopup_Hide(which)
+function StaticPopup_Hide(which, data)
 	for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 		local dialog = getglobal("StaticPopup"..index);
-		if ( dialog.which == which ) then
+		if ( (dialog.which == which) and (not data or (data == dialog.data)) ) then
 			dialog:Hide();
 		end
 	end

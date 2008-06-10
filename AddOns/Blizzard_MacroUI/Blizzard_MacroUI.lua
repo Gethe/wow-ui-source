@@ -11,11 +11,9 @@ function MacroFrame_Show()
 end
 
 function MacroFrame_OnLoad()
-	if ( GetNumMacros() > 0 ) then
-		MacroFrame_SelectMacro(1);
-	else
-		MacroFrame_SelectMacro(nil);
-	end
+	MacroFrame_SetAccountMacros();
+	PanelTemplates_SetNumTabs(MacroFrame, 2);
+	PanelTemplates_SetTab(MacroFrame, 1);
 end
 
 function MacroFrame_OnShow()
@@ -30,24 +28,51 @@ function MacroFrame_OnHide()
 	PlaySound("igCharacterInfoClose");
 end
 
+function MacroFrame_SetAccountMacros()
+	MacroFrame.macroBase = 0;
+	local numAccountMacros, numCharacterMacros = GetNumMacros();
+	if ( numAccountMacros > 0 ) then
+		MacroFrame_SelectMacro(MacroFrame.macroBase + 1);
+	else
+		MacroFrame_SelectMacro(nil);
+	end
+end
+
+function MacroFrame_SetCharacterMacros()
+	MacroFrame.macroBase = MAX_MACROS;
+	local numAccountMacros, numCharacterMacros = GetNumMacros();
+	if ( numCharacterMacros > 0 ) then
+		MacroFrame_SelectMacro(MacroFrame.macroBase + 1);
+	else
+		MacroFrame_SelectMacro(nil);
+	end
+end
+
 function MacroFrame_Update()
-	local numMacros	= GetNumMacros();
+	local numMacros;
+	local numAccountMacros, numCharacterMacros = GetNumMacros();
 	local macroButton, macroIcon, macroName;
 	local name, texture, body, isLocal;
 	local selectedName, selectedBody, selectedIcon;
-	
+
+	if ( MacroFrame.macroBase == 0 ) then
+		numMacros = numAccountMacros;
+	else
+		numMacros = numCharacterMacros;
+	end
+
 	-- Macro List
 	for i=1, MAX_MACROS do
 		macroButton = getglobal("MacroButton"..i);
 		macroIcon = getglobal("MacroButton"..i.."Icon");
 		macroName = getglobal("MacroButton"..i.."Name");
 		if ( i <= numMacros ) then
-			name, texture, body, isLocal = GetMacroInfo(i);
+			name, texture, body, isLocal = GetMacroInfo(MacroFrame.macroBase + i);
 			macroIcon:SetTexture(texture);
 			macroName:SetText(name);
 			macroButton:Enable();
 			-- Highlight Selected Macro
-			if ( i == MacroFrame.selectedMacro ) then
+			if ( i == (MacroFrame.selectedMacro - MacroFrame.macroBase) ) then
 				macroButton:SetChecked(1);
 				MacroFrameSelectedMacroName:SetText(name);
 				MacroFrameText:SetText(body);
@@ -74,7 +99,7 @@ function MacroFrame_Update()
 	end
 	
 	--Update New Button
-	if ( GetNumMacros() == MAX_MACROS ) then
+	if ( numMacros == MAX_MACROS ) then
 		MacroNewButton:Disable();
 	else
 		MacroNewButton:Enable();
@@ -102,7 +127,7 @@ end
 
 function MacroButton_OnClick()
 	MacroFrame_SaveMacro();
-	MacroFrame_SelectMacro(this:GetID());
+	MacroFrame_SelectMacro(MacroFrame.macroBase + this:GetID());
 	MacroFrame_Update();
 	MacroPopupFrame:Hide();
 	MacroFrameText:ClearFocus();
@@ -160,6 +185,8 @@ function MacroPopupFrame_OnShow()
 	MacroEditButton:Disable();
 	MacroDeleteButton:Disable();
 	MacroNewButton:Disable();
+	MacroFrameTab1:Disable();
+	MacroFrameTab2:Disable();
 end
 
 function MacroPopupFrame_OnHide()
@@ -171,9 +198,18 @@ function MacroPopupFrame_OnHide()
 	-- Enable Buttons
 	MacroEditButton:Enable();
 	MacroDeleteButton:Enable();
-	if ( GetNumMacros() < MAX_MACROS ) then
+	local numMacros;
+	local numAccountMacros, numCharacterMacros = GetNumMacros();
+	if ( MacroFrame.macroBase == 0 ) then
+		numMacros = numAccountMacros;
+	else
+		numMacros = numCharacterMacros;
+	end
+	if ( numMacros < MAX_MACROS ) then
 		MacroNewButton:Enable();
 	end
+	-- Enable tabs
+	PanelTemplates_UpdateTabs(MacroFrame);
 end
 
 function MacroPopupFrame_Update()
@@ -234,7 +270,7 @@ end
 function MacroPopupOkayButton_OnClick()
 	local index = 1
 	if ( MacroPopupFrame.mode == "new" ) then
-		index = CreateMacro(MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon, nil, 1);
+		index = CreateMacro(MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon, nil, nil, (MacroFrame.macroBase > 0));
 	elseif ( MacroPopupFrame.mode == "edit" ) then
 		index = EditMacro(MacroFrame.selectedMacro, MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon);
 	end
@@ -245,7 +281,7 @@ end
 
 function MacroFrame_SaveMacro()
 	if ( MacroFrame.textChanged and MacroFrame.selectedMacro ) then
-		EditMacro(MacroFrame.selectedMacro, nil, nil, MacroFrameText:GetText(), 1);
+		EditMacro(MacroFrame.selectedMacro, nil, nil, MacroFrameText:GetText());
 		MacroFrame.textChanged = nil;
 	end
 end

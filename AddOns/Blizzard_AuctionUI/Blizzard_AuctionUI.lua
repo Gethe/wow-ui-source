@@ -12,15 +12,6 @@ AUCTION_TIMER_UPDATE_DELAY = 0.3;
 
 UIPanelWindows["AuctionFrame"] = { area = "doublewide", pushable = 0 };
 
-MoneyTypeInfo["AUCTION"] = {
-	UpdateFunc = function()
-		return this.staticMoney;
-	end,
-	showSmallerCoins = 1,
-	fixedWidth = 1,
-	collapse = 1,
-	truncateSmallCoins = nil,
-};
 MoneyTypeInfo["AUCTION_DEPOSIT"] = {
 	UpdateFunc = function()
 		if ( not AuctionFrameAuctions.duration ) then
@@ -476,9 +467,17 @@ function AuctionFrameBrowse_Update()
 			if ( GetSelectedAuctionItem("list") and (offset + i) == GetSelectedAuctionItem("list") ) then
 				button:LockHighlight();
 				
-				if ( buyoutPrice > 0 and buyoutPrice >= minBid and GetMoney() >= buyoutPrice ) then
-					BrowseBuyoutButton:Enable();
-					AuctionFrame.buyoutPrice = buyoutPrice;
+				if ( buyoutPrice > 0 and buyoutPrice >= minBid ) then
+					local canBuyout = 1;
+					if ( GetMoney() < buyoutPrice ) then
+						if ( not highBidder or GetMoney()+bidAmount < buyoutPrice ) then
+							canBuyout = nil;
+						end
+					end
+					if ( canBuyout ) then
+						BrowseBuyoutButton:Enable();
+						AuctionFrame.buyoutPrice = buyoutPrice;
+					end
 				else
 					AuctionFrame.buyoutPrice = nil;
 				end
@@ -653,9 +652,17 @@ function AuctionFrameBid_Update()
 			if ( GetSelectedAuctionItem("bidder") and (offset + i) == GetSelectedAuctionItem("bidder") ) then
 				button:LockHighlight();
 				
-				if ( buyoutPrice > 0 and buyoutPrice >= bidAmount and GetMoney() >= buyoutPrice ) then
-					AuctionFrame.buyoutPrice = buyoutPrice;
-					BidBuyoutButton:Enable();
+				if ( buyoutPrice > 0 and buyoutPrice >= bidAmount ) then
+					local canBuyout = 1;
+					if ( GetMoney() < buyoutPrice ) then
+						if ( not highBidder or GetMoney()+bidAmount < buyoutPrice ) then
+							canBuyout = nil;
+						end
+					end
+					if ( canBuyout ) then
+						BidBuyoutButton:Enable();
+						AuctionFrame.buyoutPrice = buyoutPrice;
+					end
 				else
 					AuctionFrame.buyoutPrice = nil;
 				end

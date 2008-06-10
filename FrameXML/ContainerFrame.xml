@@ -63,7 +63,7 @@
                 </Texture>
             </Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBackgroundTexture" file="Interface\ContainerFrame\UI-BackpackBackground">
+				<Texture name="$parentBackgroundTop" file="Interface\ContainerFrame\UI-Bag-Components">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -74,6 +74,31 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
+				</Texture>
+				<Texture name="$parentBackgroundMiddle1" file="Interface\ContainerFrame\UI-Bag-Middle">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBackgroundTop" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBackgroundMiddle2" file="Interface\ContainerFrame\UI-Bag-Middle" hidden="true">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBackgroundBottom" file="Interface\ContainerFrame\UI-Bag-Components">
+					<Size>
+						<AbsDimension x="256" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.66015625" bottom="0.69921875"/>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontHighlight">
 					<Size>
@@ -119,6 +144,23 @@
 			<Button name="$parentItem18" inherits="ContainerFrameItemButtonTemplate"/>
 			<Button name="$parentItem19" inherits="ContainerFrameItemButtonTemplate"/>
 			<Button name="$parentItem20" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem21" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem22" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem23" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem24" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem25" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem26" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem27" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem28" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem29" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem30" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem31" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem32" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem33" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem34" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
+
 			<Button name="$parentPortraitButton">
 				<Size>
 					<AbsDimension x="40" y="40"/>

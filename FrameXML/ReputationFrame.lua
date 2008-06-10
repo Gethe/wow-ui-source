@@ -62,19 +62,34 @@ function ReputationFrame_Update()
 				check = getglobal("ReputationBar"..i.."AlliedCheckButtonCheck");
 				rightBarTexture = getglobal("ReputationBar"..i.."ReputationBarRight");
 				checkbox:SetChecked(atWarWith);
+				checkbox.disabled = nil;
+				checkbox:Enable();
 				if ( canToggleAtWar ) then
-					checkbox:Enable();
 					check:SetVertexColor(1.0, 1.0, 1.0);
 					rightBarTexture:SetTexCoord(0, 0.14453125, 0.34375, 0.71875);
+					-- Set checkbox tooltip
+					if ( atWarWith ) then
+						checkbox.tooltip = REPUTATION_STATUS_NOT_AT_PEACE;
+					else
+						checkbox.tooltip = REPUTATION_STATUS_AT_PEACE;
+					end
 				else
 					if ( atWarWith ) then
 						check:SetVertexColor(1.0, 0.1, 0.1);
 						rightBarTexture:SetTexCoord(0.1484375, 0.29296875, 0.34375, 0.71875);
+						checkbox.tooltip = REPUTATION_STATUS_AT_WAR
 					else
 						check:SetVertexColor(1.0, 1.0, 1.0);
 						rightBarTexture:SetTexCoord(0.296875, 0.44140625, 0.34375, 0.71875);
+						checkbox:Disable();
 					end
-					checkbox:Disable();
+					checkbox.disabled = 1;
+				end
+
+				-- Update tooltip if its owned by the checkbox
+				if ( GameTooltip:IsOwned(checkbox) ) then
+					GameTooltip:SetOwner(checkbox, "ANCHOR_RIGHT");
+					GameTooltip:SetText(checkbox.tooltip, nil, nil, nil, nil, 1);
 				end
 				
 				-- Normalize values
@@ -82,16 +97,23 @@ function ReputationFrame_Update()
 				barValue = barValue - barMin;
 				barMin = 0;
 				
+
 				--[[
 				-- Don't show standing anymore
 				tooltipStanding = "";
 				if ( standingID < 8 ) then
 					tooltipStanding = " ("..getglobal("FACTION_STANDING_LABEL"..standingID+1)..")";
 				end
+
+				if ( standingID == 7 ) then
+					factionBar.tooltip = "";
+				else
+					factionBar.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
+				end
 				]]
 
-				factionBar.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
 				factionBar.standingText = factionStanding;
+				factionBar.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
 				factionBar:SetMinMaxValues(0, barMax);
 				factionBar:SetValue(barValue);
 				color = FACTION_BAR_COLORS[standingID];

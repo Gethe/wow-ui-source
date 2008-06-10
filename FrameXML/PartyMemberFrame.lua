@@ -1,5 +1,4 @@
 MAX_PARTY_MEMBERS = 4;
-PARTY_FRAME_SHOWN = 1;
 MAX_PARTY_DEBUFFS = 4;
 MAX_PARTY_TOOLTIP_BUFFS = 16;
 MAX_PARTY_TOOLTIP_DEBUFFS = 8;
@@ -8,16 +7,14 @@ function HidePartyFrame()
 	for i=1, MAX_PARTY_MEMBERS, 1 do
 		getglobal("PartyMemberFrame"..i):Hide();
 	end
-	PARTY_FRAME_SHOWN = 0;
 end
 
 function ShowPartyFrame()
 	for i=1, MAX_PARTY_MEMBERS, 1 do
-		if ( GetPartyMember(i) ) then
+		if ( GetPartyMember(i) and not((HIDE_PARTY_INTERFACE == "1") and (GetNumRaidMembers() > 0))) then
 			getglobal("PartyMemberFrame"..i):Show();
 		end
 	end
-	PARTY_FRAME_SHOWN = 1;
 end
 
 function PartyMemberFrame_OnLoad()
@@ -42,9 +39,7 @@ function PartyMemberFrame_UpdateMember()
 	if ( GetPartyMember(id) ) then
 		UnitFrame_UpdateManaType();
 		UnitFrame_Update();
-		if ( PARTY_FRAME_SHOWN == 1 ) then
-			this:Show();
-		end
+		this:Show();
 		
 		local masterIcon = getglobal(this:GetName().."MasterIcon");
 		local lootMethod;
@@ -108,7 +103,7 @@ end
 function PartyMemberFrame_UpdateLeader()
 	local id = this:GetID();
 	local icon = getglobal("PartyMemberFrame"..id.."LeaderIcon");
-	if( (GetPartyLeaderIndex() == id) and (PARTY_FRAME_SHOWN == 1) ) then
+	if( GetPartyLeaderIndex() == id ) then
 		icon:Show();
 	else
 		icon:Hide();

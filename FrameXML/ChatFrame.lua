@@ -104,6 +104,7 @@ ChatTypeInfo["SPELL_FAILED_LOCALPLAYER"]				= { sticky = 0 };
 ChatTypeInfo["BG_SYSTEM_NEUTRAL"]						= { sticky = 0 };
 ChatTypeInfo["BG_SYSTEM_ALLIANCE"]						= { sticky = 0 };
 ChatTypeInfo["BG_SYSTEM_HORDE"]							= { sticky = 0 };
+ChatTypeInfo["COMBAT_FACTION_CHANGE"]					= { sticky = 0 };
 
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
@@ -329,6 +330,9 @@ ChatTypeGroup["SPELL_PERIODIC_CREATURE_BUFFS"] = {
 ChatTypeGroup["SPELL_FAILED_LOCALPLAYER"] = {
 	"CHAT_MSG_SPELL_FAILED_LOCALPLAYER";
 };
+ChatTypeGroup["COMBAT_FACTION_CHANGE"] = {
+	"CHAT_MSG_COMBAT_FACTION_CHANGE";
+};
 
 ChannelMenuChatTypeGroups = {};
 ChannelMenuChatTypeGroups[1] = "SAY";
@@ -359,6 +363,7 @@ CombatLogMenuChatTypeGroups[18] = "COMBAT_FRIENDLY_DEATH";
 CombatLogMenuChatTypeGroups[19] = "COMBAT_HOSTILE_DEATH";
 CombatLogMenuChatTypeGroups[20] = "COMBAT_XP_GAIN";
 CombatLogMenuChatTypeGroups[21] = "COMBAT_HONOR_GAIN";
+CombatLogMenuChatTypeGroups[22] = "COMBAT_FACTION_CHANGE";
 
 SpellLogMenuChatTypeGroups = {};
 SpellLogMenuChatTypeGroups[1]  = "SPELL_SELF_DAMAGE";
@@ -978,7 +983,6 @@ SlashCmdList["GUILD_INFO"] = function(msg)
 end
 
 SlashCmdList["GUILD_ROSTER"] = function(msg)
-	--GuildRoster();
 	if ( IsInGuild() ) then
 		PanelTemplates_SetTab(FriendsFrame, 3);
 		ShowUIPanel(FriendsFrame);
@@ -2381,4 +2385,5 @@ function ChatFrame_ActivateCombatMessages(chatFrame)
 	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_CREATURE_DAMAGE");
 	ChatFrame_AddMessageGroup(chatFrame, "SPELL_PERIODIC_CREATURE_BUFFS");
 	ChatFrame_AddMessageGroup(chatFrame, "SPELL_FAILED_LOCALPLAYER");
+	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FACTION_CHANGE");
 end

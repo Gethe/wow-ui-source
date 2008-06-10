@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_RaidUI.lua"/>
 	<Button name="RaidGroupButtonTemplate" parent="RaidFrame" movable="true" virtual="true">
 		<Size>
@@ -263,9 +263,9 @@
 				end
 
 				if ( this:GetParent():GetParent().showBuffs ) then
-					GameTooltip:SetUnitBuff(this:GetParent().unit, this:GetID());
+					GameTooltip:SetUnitBuff(this:GetParent().unit, this:GetID(), SHOW_CASTABLE_BUFFS);
 				else
-					GameTooltip:SetUnitDebuff(this:GetParent().unit, this:GetID());
+					GameTooltip:SetUnitDebuff(this:GetParent().unit, this:GetID(), SHOW_DISPELLABLE_DEBUFFS);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -413,8 +413,6 @@
 				if ( this:GetID() ~= 1 ) then
 					this:SetPoint("TOP", this:GetParent():GetName().."Button"..(this:GetID()-1), "BOTTOM", 0, -8);
 				end
-				this:RegisterEvent("UNIT_HEALTH");
-				this:RegisterEvent("UNIT_AURA");
 			</OnLoad>
 			<OnEvent>
 				RaidPulloutButton_OnEvent();

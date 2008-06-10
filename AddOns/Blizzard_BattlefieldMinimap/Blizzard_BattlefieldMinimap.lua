@@ -16,8 +16,7 @@ function BattlefieldMinimap_Toggle()
 	if ( BattlefieldMinimap:IsVisible() ) then
 		BattlefieldMinimap:Hide();
 	else
-		local status, mapName, instanceID = GetBattlefieldStatus();
-		if ( status == "active" ) then
+		if ( MiniMapBattlefieldFrame.status == "active" ) then
 			BattlefieldMinimap:Show();
 		end
 	end
@@ -54,8 +53,7 @@ function BattlefieldMinimap_OnEvent()
 			BattlefieldMinimap_SetOpacity();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		local status, mapName, instanceID = GetBattlefieldStatus();
-		if ( status ~= "active" ) then
+		if ( MiniMapBattlefieldFrame.status ~= "active" ) then
 			BattlefieldMinimap:Hide();
 		end
 	elseif ( event == "PLAYER_LOGOUT" ) then

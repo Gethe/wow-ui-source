@@ -243,11 +243,11 @@ end
 function PlayerFrame_UpdatePlaytime()
 	if ( PartialPlayTime() ) then
 		PlayerPlayTimeIcon:SetTexture("Interface\\CharacterFrame\\UI-Player-PlayTimeTired");
-		PlayerPlayTime.tooltip = format(PLAYTIME_TIRED, REQUIRED_REST_HOURS - GetBillingTimeRested());
+		PlayerPlayTime.tooltip = format(PLAYTIME_TIRED, REQUIRED_REST_HOURS - floor(GetBillingTimeRested()/60));
 		PlayerPlayTime:Show();
 	elseif ( NoPlayTime() ) then
 		PlayerPlayTimeIcon:SetTexture("Interface\\CharacterFrame\\UI-Player-PlayTimeUnhealthy");
-		PlayerPlayTime.tooltip = format(PLAYTIME_UNHEALTHY, REQUIRED_REST_HOURS - GetBillingTimeRested());
+		PlayerPlayTime.tooltip = format(PLAYTIME_UNHEALTHY, REQUIRED_REST_HOURS - floor(GetBillingTimeRested()/60));
 		PlayerPlayTime:Show();
 	else
 		PlayerPlayTime:Hide();

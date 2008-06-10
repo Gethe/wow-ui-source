@@ -1,5 +1,6 @@
 LOOTFRAME_NUMBUTTONS = 4;
 NUM_GROUP_LOOT_FRAMES = 4;
+MASTER_LOOT_THREHOLD = 4;
 
 function LootFrame_OnLoad()
 	this:RegisterEvent("LOOT_OPENED");
@@ -92,6 +93,7 @@ function LootFrame_Update()
 				end
 				button:SetSlot(slot);
 				button.slot = slot;
+				button.quality = quality;
 				button:Show();
 			else
 				button:Hide();
@@ -152,6 +154,8 @@ function LootFrameItem_OnClick(button)
 	end
 	LootFrame.selectedLootButton = this:GetName();
 	LootFrame.selectedSlot = this.slot;
+	LootFrame.selectedQuality = this.quality;
+	LootFrame.selectedItemName = getglobal(this:GetName().."Text"):GetText();
 end
 
 function GroupLootDropDown_OnLoad()
@@ -221,7 +225,14 @@ function GroupLootDropDown_Initialize()
 end
 
 function GroupLootDropDown_GiveLoot()
-	GiveMasterLoot(LootFrame.selectedSlot, this.value);
+	if ( LootFrame.selectedQuality >= MASTER_LOOT_THREHOLD ) then
+		local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName..FONT_COLOR_CODE_CLOSE, this:GetText());
+		if ( dialog ) then
+			dialog.data = this.value;
+		end
+	else
+		GiveMasterLoot(LootFrame.selectedSlot, this.value);
+	end
 	CloseDropDownMenus();
 end
 

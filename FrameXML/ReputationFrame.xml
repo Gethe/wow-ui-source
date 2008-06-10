@@ -141,13 +141,31 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						if ( this.disabled ) then
+							if ( this:GetChecked() ) then
+								this:SetChecked(nil);
+							else
+								this:SetChecked(1);
+							end
+							return;
+						end
 						if ( this:GetChecked() ) then
 							PlaySound("igMainMenuOptionCheckBoxOff");
 						else
 							PlaySound("igMainMenuOptionCheckBoxOn");
 						end
 						FactionToggleAtWar(this:GetParent():GetID());
+						ReputationFrame_Update();
 					</OnClick>
+					<OnEnter>
+						if ( this.tooltip ) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
 					<Size>
@@ -531,14 +549,14 @@
 				</Scripts>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="ReputationListScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 							<Size>
 								<AbsDimension x="31" y="256"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="ReputationListScrollFrameScrollBarScrollUpButton">
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="5"/>
+										<AbsDimension x="-2" y="5"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -549,9 +567,9 @@
 								<AbsDimension x="31" y="108"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="ReputationListScrollFrameScrollBarScrollDownButton">
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="-4"/>
+										<AbsDimension x="-2" y="-4"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -560,6 +578,48 @@
 					</Layer>
 				</Layers>
 			</ScrollFrame>
+			<Frame name="FactionMouseOver">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationFrameFactionLabel"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="ReputationFrameFactionLabel"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(FACTION, 1.0, 1.0, 1.0, REPUTATION_FACTION_DESCRIPTION, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>		
+				</Scripts>
+			</Frame>
+			<Frame name="StandingMouseOver">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationFrameStandingLabel"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="ReputationFrameStandingLabel"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(STANDING, 1.0, 1.0, 1.0, REPUTATION_STANDING_DESCRIPTION, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="AlliedMouseOver">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ReputationFrameAlliedLabel"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="ReputationFrameAlliedLabel"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(AT_WAR, 1.0, 1.0, 1.0, REPUTATION_AT_WAR_DESCRIPTION, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>

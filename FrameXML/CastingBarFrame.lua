@@ -108,7 +108,7 @@ function CastingBarFrame_OnUpdate()
 		if ( sparkPosition < 0 ) then
 			sparkPosition = 0;
 		end
-		CastingBarSpark:SetPoint("CENTER", CastingBarFrame, "LEFT", sparkPosition, -2);
+		CastingBarSpark:SetPoint("CENTER", CastingBarFrame, "LEFT", sparkPosition, 2);
 	elseif ( this.channeling ) then
 		local time = GetTime();
 		if ( time > this.endTime ) then
@@ -123,7 +123,7 @@ function CastingBarFrame_OnUpdate()
 		CastingBarFrameStatusBar:SetValue( barValue );
 		CastingBarFlash:Hide();
 		local sparkPosition = ((barValue - this.startTime) / (this.endTime - this.startTime)) * 195;
-		CastingBarSpark:SetPoint("CENTER", CastingBarFrame, "LEFT", sparkPosition, -2);
+		CastingBarSpark:SetPoint("CENTER", CastingBarFrame, "LEFT", sparkPosition, 2);
 	elseif ( GetTime() < this.holdTime ) then
 		return;
 	elseif ( this.flash ) then
@@ -131,6 +131,7 @@ function CastingBarFrame_OnUpdate()
 		if ( alpha < 1 ) then
 			CastingBarFlash:SetAlpha(alpha);
 		else
+			CastingBarFlash:SetAlpha(1.0);
 			this.flash = nil;
 		end
 	elseif ( this.fadeOut ) then
@@ -145,7 +146,7 @@ function CastingBarFrame_OnUpdate()
 end
 
 function CastingBarFrame_UpdatePosition()
-	local castingBarPosition = 60;
+	local castingBarPosition = 55;
 	if ( PetActionBarFrame:IsVisible() or ShapeshiftBarFrame:IsVisible() ) then
 		castingBarPosition = castingBarPosition + 40;
 	end

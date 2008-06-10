@@ -3,6 +3,7 @@ STATIONERY_ICON_ROW_HEIGHT = 36;
 STATIONERYITEMS_TO_DISPLAY = 5;
 PACKAGEITEMS_TO_DISPLAY = 4;
 STATIONERY_PATH = "Interface\\Stationery\\";
+MAX_COD_AMOUNT = 10000;
 
 function MailFrame_Onload()
 	-- Init pagenum
@@ -276,7 +277,7 @@ function OpenMail_Update()
 	OpenMailSender:SetText(sender);
 	OpenMailSubject:SetText(subject);
 	-- Set Text
-	local bodyText, texture, isTakeable = GetInboxText(InboxFrame.openMailID);
+	local bodyText, texture, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
 	OpenMailBodyText:SetText(bodyText);
 	OpenMailScrollFrame:UpdateScrollChildRect();
 	if ( texture ) then
@@ -284,6 +285,71 @@ function OpenMail_Update()
 		OpenStationeryBackgroundRight:SetTexture(STATIONERY_PATH..texture.."2");
 	end
 	
+	-- Is an invoice
+	if ( isInvoice ) then
+		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment = GetInboxInvoiceInfo(InboxFrame.openMailID);
+		if ( not playerName ) then
+			return;
+		end
+		-- Setup based on whether player is the buyer or the seller
+		local buyMode;
+		if ( invoiceType == "buyer" ) then
+			if ( bid == buyout ) then
+				buyMode = "("..BUYOUT..")";
+			else
+				buyMode = "("..HIGH_BIDDER..")";
+			end
+			OpenMailInvoiceItemLabel:SetText(ITEM_PURCHASED_COLON.." "..itemName.."  "..buyMode);
+			OpenMailInvoicePurchaser:SetText(SOLD_BY_COLON.." "..playerName);
+			OpenMailInvoiceAmountReceived:SetText(AMOUNT_PAID_COLON);
+			-- Clear buymode
+			OpenMailInvoiceBuyMode:SetText("");
+			-- Position amount paid
+			OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceSalePrice", "TOPRIGHT", 0, 0);
+			-- Update purchase price
+			MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid);	
+			-- Position buy line
+			OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoicePurchaser", "BOTTOMLEFT", 125, 0);
+			-- Not used for a purchase invoice
+			OpenMailInvoiceSalePrice:Hide();
+			OpenMailInvoiceDeposit:Hide();
+			OpenMailInvoiceHouseCut:Hide();
+			OpenMailDepositMoneyFrame:Hide();
+			OpenMailHouseCutMoneyFrame:Hide();
+			OpenMailSalePriceMoneyFrame:Hide();
+		else
+			OpenMailInvoiceItemLabel:SetText(ITEM_SOLD_COLON.." "..itemName);
+			OpenMailInvoicePurchaser:SetText(PURCHASED_BY_COLON.." "..playerName);
+			OpenMailInvoiceAmountReceived:SetText(AMOUNT_RECEIVED_COLON);
+			-- Determine if auction was bought out or bid on
+			if ( bid == buyout ) then
+				OpenMailInvoiceBuyMode:SetText("("..BUYOUT..")");
+			else
+				OpenMailInvoiceBuyMode:SetText("("..HIGH_BIDDER..")");
+			end
+			-- Position amount received
+			OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", 0, -18);
+			-- Position buy line
+			OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", 0, 9);
+			MoneyFrame_Update("OpenMailSalePriceMoneyFrame", bid);
+			MoneyFrame_Update("OpenMailDepositMoneyFrame", deposit);
+			MoneyFrame_Update("OpenMailHouseCutMoneyFrame", consignment);
+			SetMoneyFrameColor("OpenMailHouseCutMoneyFrame", 1.0, 0, 0);
+			MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid+deposit-consignment);
+
+			-- Show these guys if the player was the seller
+			OpenMailInvoiceSalePrice:Show();
+			OpenMailInvoiceDeposit:Show();
+			OpenMailInvoiceHouseCut:Show();
+			OpenMailDepositMoneyFrame:Show();
+			OpenMailHouseCutMoneyFrame:Show();
+			OpenMailSalePriceMoneyFrame:Show();
+		end
+		OpenMailInvoiceFrame:Show();
+	else
+		OpenMailInvoiceFrame:Hide();
+	end
+
 	-- Set letter
 	if ( isTakeable and not textCreated ) then
 		SetItemButtonTexture(OpenMailLetterButton, stationeryIcon);
@@ -476,7 +542,21 @@ function SendMailFrame_CanSend()
 	if ( strlen(SendMailSubjectEditBox:GetText()) > 0 ) then
 		checks = checks + 1;
 	end
-	if ( checks == 3 ) then
+	-- check c.o.d. amount
+	if ( not SendMailCODButton:GetChecked() ) then
+		return;
+	end
+	-- COD must be less than 10000 gold
+	if ( MoneyInputFrame_GetCopper(SendMailMoney) > MAX_COD_AMOUNT*COPPER_PER_GOLD ) then
+		SendMailErrorText:Show();
+		SendMailErrorCoin:Show();
+	else
+		SendMailErrorText:Hide();
+		SendMailErrorCoin:Hide();
+		checks = checks + 1;
+	end
+	
+	if ( checks == 4 ) then
 		SendMailMailButton:Enable();
 	else
 		SendMailMailButton:Disable();

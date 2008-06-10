@@ -6,6 +6,15 @@ MEMBERS_PER_RAID_GROUP = 5;
 function RaidFrame_OnLoad()
 	this:RegisterEvent("PLAYER_LOGIN");
 	this:RegisterEvent("RAID_ROSTER_UPDATE");
+
+	-- Raid option uvars
+	SHOW_DISPELLABLE_DEBUFFS = "0";
+	RegisterForSave("SHOW_DISPELLABLE_DEBUFFS");
+	SHOW_CASTABLE_BUFFS = "0";
+	RegisterForSave("SHOW_CASTABLE_BUFFS");
+
+	-- Update party frame visibility
+	RaidOptionsFrame_UpdatePartyFrames();
 end
 
 function RaidFrame_OnEvent()
@@ -39,4 +48,10 @@ function RaidFrame_Update()
 	if ( RaidGroupFrame_Update ) then
 		RaidGroupFrame_Update();
 	end
+end
+
+-- Function for raid options
+function RaidOptionsFrame_UpdatePartyFrames()
+	HidePartyFrame();
+	ShowPartyFrame();
 end

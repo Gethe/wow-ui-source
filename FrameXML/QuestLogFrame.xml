@@ -9,7 +9,7 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentTag" inherits="GameFontNormal" justifyH="RIGHT">
 					<Size>
-						<AbsDimension x="80" y="16"/>
+						<AbsDimension x="0" y="16"/>
 					</Size>
 					<Anchors>
 						<Anchor point="RIGHT">

@@ -36,6 +36,15 @@ MoneyTypeInfo["STATIC"] = {
 
 	collapse = 1,
 };
+MoneyTypeInfo["AUCTION"] = {
+	UpdateFunc = function()
+		return this.staticMoney;
+	end,
+	showSmallerCoins = 1,
+	fixedWidth = 1,
+	collapse = 1,
+	truncateSmallCoins = nil,
+};
 MoneyTypeInfo["PLAYER_TRADE"] = {
 	UpdateFunc = function()
 		return GetPlayerTradeMoney();

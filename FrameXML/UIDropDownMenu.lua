@@ -126,7 +126,9 @@ info.keepShownOnClick = [nil, 1]  --  Don't hide the dropdownlist after a button
 info.tooltipTitle = [nil, STRING] -- Title of the tooltip shown on mouseover
 info.tooltipText = [nil, STRING] -- Text of the tooltip shown on mouseover
 info.justifyH = [nil, "CENTER"] -- Justify button text
-]]--
+info.arg1 = [ANYTHING] -- This is the first argument used by info.func
+info.arg2 = [ANYTHING] -- This is the second argument used by info.func
+]]
 
 function UIDropDownMenu_AddButton(info, level)
 	--[[
@@ -210,6 +212,8 @@ function UIDropDownMenu_AddButton(info, level)
 	button.keepShownOnClick = info.keepShownOnClick;
 	button.tooltipTitle = info.tooltipTitle;
 	button.tooltipText = info.tooltipText;
+	button.arg1 = info.arg1;
+	button.arg2 = info.arg2;
 
 	if ( info.value ) then
 		button.value = info.value;
@@ -427,7 +431,7 @@ end
 function UIDropDownMenuButton_OnClick()
 	local func = this.func;
 	if ( func ) then
-		func();
+		func(this.arg1, this.arg2);
 	else
 		return;
 	end

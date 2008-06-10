@@ -112,7 +112,7 @@ function QuestLog_Update()
 	
 	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questHighlightText, questDisabledText, questHighlight, questCheck;
 	local questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete, color;
-	local numPartyMembers, isOnQuest, partyMembersOnQuest, tempWidth;
+	local numPartyMembers, isOnQuest, partyMembersOnQuest, tempWidth, textWidth;
 	for i=1, QUESTS_DISPLAYED, 1 do
 		questIndex = i + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
 		questLogTitle = getglobal("QuestLogTitle"..i);
@@ -178,7 +178,14 @@ function QuestLog_Update()
 			if ( questTag ) then
 				questTitleTag:SetText("("..questTag..")");
 				-- Shrink text to accomdate quest tags without wrapping
-				tempWidth = 275 - 5 - questTitleTag:GetWidth();
+				tempWidth = 275 - 15 - questTitleTag:GetWidth();
+				
+				if ( QuestLogDummyText:GetWidth() > tempWidth ) then
+					textWidth = tempWidth;
+				else
+					textWidth = QuestLogDummyText:GetWidth();
+				end
+				
 				questNormalText:SetWidth(tempWidth);
 				questHighlightText:SetWidth(tempWidth);
 				questDisabledText:SetWidth(tempWidth);
@@ -186,7 +193,7 @@ function QuestLog_Update()
 				-- If there's quest tag position check accordingly
 				questCheck:Hide();
 				if ( IsQuestWatched(questIndex) ) then
-					questCheck:SetPoint("LEFT", questLogTitle, "LEFT", tempWidth+24, 0);
+					questCheck:SetPoint("LEFT", questLogTitle, "LEFT", textWidth+24, 0);
 					questCheck:Show();
 				end
 			else
@@ -512,8 +519,10 @@ function QuestLog_UpdatePartyInfoTooltip()
 end
 
 function QuestLogRewardItem_OnClick()
-	if ( IsControlKeyDown() and this.rewardType ~= "spell" ) then
-		DressUpItemLink(GetQuestLogItemLink(this.type, this:GetID()));
+	if ( IsControlKeyDown() ) then
+		if ( this.rewardType ~= "spell" ) then
+			DressUpItemLink(GetQuestLogItemLink(this.type, this:GetID()));
+		end
 	elseif ( IsShiftKeyDown() and this.rewardType ~= "spell" ) then
 		if ( ChatFrameEditBox:IsVisible() ) then
 			ChatFrameEditBox:Insert(GetQuestLogItemLink(this.type, this:GetID()));

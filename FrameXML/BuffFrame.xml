@@ -58,7 +58,7 @@
 	<Button name="BuffButtonHarmful" inherits="BuffButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture file="Interface\Buttons\UI-Debuff-Border">
+				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Border">
 					<Size>
 						<AbsDimension x="32" y="32"/>
 					</Size>

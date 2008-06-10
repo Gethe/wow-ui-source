@@ -1,35 +1,15 @@
 NUM_CONTAINER_FRAMES = 9;
 NUM_BAG_FRAMES = 4;
-MAX_CONTAINER_ITEMS = 20;
+MAX_CONTAINER_ITEMS = 36;
 NUM_CONTAINER_COLUMNS = 4;
+ROWS_IN_BG_TEXTURE = 6;
+MAX_BG_TEXTURES = 2;
+BG_TEXTURE_HEIGHT = 256;
 CONTAINER_WIDTH = 192;
 CONTAINER_SPACING = 0;
 VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = 0;
-
--- [n] = {textureName, textureWidth, textureHeight, frameHeight}
-CONTAINER_FRAME_TABLE = {
-	[0] = {"Interface\\ContainerFrame\\UI-BackpackBackground", 256, 256, 239},
-	[1] = {"Interface\\ContainerFrame\\UI-Bag-1x4", 256, 128, 96},
-	[2] = {"Interface\\ContainerFrame\\UI-Bag-1x4", 256, 128, 96},
-	[3] = {"Interface\\ContainerFrame\\UI-Bag-1x4", 256, 128, 96},
-	[4] = {"Interface\\ContainerFrame\\UI-Bag-1x4", 256, 128, 96},
-	[5] = {"Interface\\ContainerFrame\\UI-Bag-1x4+2", 256, 128, 116},
-	[6] = {"Interface\\ContainerFrame\\UI-Bag-1x4+2", 256, 128, 116},
-	[7] = {"Interface\\ContainerFrame\\UI-Bag-1x4+2", 256, 128, 116},
-	[8] = {"Interface\\ContainerFrame\\UI-Bag-2x4", 256, 256, 137},
-	[9] = {"Interface\\ContainerFrame\\UI-Bag-2x4+2", 256, 256, 157},
-	[10] = {"Interface\\ContainerFrame\\UI-Bag-2x4+2", 256, 256, 157},
-	[11] = {"Interface\\ContainerFrame\\UI-Bag-2x4+2", 256, 256, 157},
-	[12] = {"Interface\\ContainerFrame\\UI-Bag-3x4", 256, 256, 178},
-	[13] = {"Interface\\ContainerFrame\\UI-Bag-3x4+2", 256, 256, 198},
-	[14] = {"Interface\\ContainerFrame\\UI-Bag-3x4+2", 256, 256, 198},
-	[15] = {"Interface\\ContainerFrame\\UI-Bag-3x4+2", 256, 256, 198},
-	[16] = {"Interface\\ContainerFrame\\UI-Bag-4x4", 256, 256, 219},
-	[18] = {"Interface\\ContainerFrame\\UI-Bag-4x4+2", 256, 256, 239},
-	[20] = {"Interface\\ContainerFrame\\UI-Bag-5x4", 256, 256, 259},
-};
 
 function ContainerFrame_OnLoad()
 	this:RegisterEvent("BAG_UPDATE");
@@ -305,25 +285,113 @@ end
 
 function ContainerFrame_GenerateFrame(frame, size, id)
 	frame.size = size;
-	local frameSettings = CONTAINER_FRAME_TABLE[size];
 	local name = frame:GetName();
-	local bgTexture = getglobal(name.."BackgroundTexture");
+	local bgTextureTop = getglobal(name.."BackgroundTop");
+	local bgTextureMiddle = getglobal(name.."BackgroundMiddle1");
+	local bgTextureBottom = getglobal(name.."BackgroundBottom");
+	local columns = NUM_CONTAINER_COLUMNS;
+	local rows = ceil(size / columns);
 	-- if size = 0 then its the backpack
 	if ( id == 0 ) then
-		frameSettings = CONTAINER_FRAME_TABLE[0];
 		getglobal(name.."MoneyFrame"):Show();
+		-- Set Backpack texture
+		bgTextureTop:SetTexture("Interface\\ContainerFrame\\UI-BackpackBackground");
+		bgTextureTop:SetHeight(256);
+		bgTextureTop:SetTexCoord(0, 1, 0, 1);
+		
+		-- Hide unused textures
+		for i=1, MAX_BG_TEXTURES do
+			getglobal(name.."BackgroundMiddle"..i):Hide();
+		end
+		bgTextureBottom:Hide();
+		frame:SetHeight(240);
 	else
-		getglobal(name.."MoneyFrame"):Hide();
+		-- Not the backpack
+		-- Set whether or not its a bank bag
+		local bagTextureSuffix = "";
+		if ( id > NUM_BAG_FRAMES ) then
+			bagTextureSuffix = "-Bank";
+		end
+		-- Set textures
+		bgTextureTop:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
+		for i=1, MAX_BG_TEXTURES do
+			getglobal(name.."BackgroundMiddle"..i):SetTexture("Interface\\ContainerFrame\\UI-Bag-Middle"..bagTextureSuffix);
+			getglobal(name.."BackgroundMiddle"..i):Hide();
+		end
+		bgTextureBottom:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
+		-- Hide the moneyframe since its not the backpack
+		getglobal(name.."MoneyFrame"):Hide();	
+		
+		local bgTextureCount, height;
+		local rowHeight = 41;
+		-- Subtract one, since the top texture contains one row already
+		local remainingRows = rows-1;
+
+		-- See if the bag needs the texture with two slots at the top
+		local isPlusTwoBag;
+		if ( mod(size,columns) == 2 ) then
+			isPlusTwoBag = 1;
+		end
+
+		-- Bag background display stuff
+		if ( isPlusTwoBag ) then
+			bgTextureTop:SetTexCoord(0, 1, 0.375, 0.66015625);
+			bgTextureTop:SetHeight(73);
+		else
+			if ( rows == 1 ) then
+				-- If only one row chop off the bottom of the texture
+				bgTextureTop:SetTexCoord(0, 1, 0, 0.3359375);
+				bgTextureTop:SetHeight(86);
+			else
+				bgTextureTop:SetTexCoord(0, 1, 0, 0.37109375);
+				bgTextureTop:SetHeight(94);
+			end
+		end
+		-- Calculate the number of background textures we're going to need
+		bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
+		
+		local middleBgHeight = 0;
+		-- If one row only special case
+		if ( rows == 1 ) then
+			bgTextureBottom:SetPoint("TOP", bgTextureMiddle:GetName(), "TOP", 0, 0);
+			bgTextureBottom:Show();
+			-- Hide middle bg textures
+			for i=1, MAX_BG_TEXTURES do
+				getglobal(name.."BackgroundMiddle"..i):Hide();
+			end
+		else
+			-- Try to cycle all the middle bg textures
+			local firstRowPixelOffset = 9;
+			local firstRowTexCoordOffset = 0.03515625;
+			for i=1, bgTextureCount do
+				bgTextureMiddle = getglobal(name.."BackgroundMiddle"..i);
+				if ( remainingRows > ROWS_IN_BG_TEXTURE ) then
+					-- If more rows left to draw than can fit in a texture then draw the max possible
+					height = ROWS_IN_BG_TEXTURE*rowHeight;
+					bgTextureMiddle:SetHeight(height);
+					bgTextureMiddle:SetTexCoord(0, 1, 0, height/BG_TEXTURE_HEIGHT);
+					bgTextureMiddle:Show();
+					remainingRows = remainingRows - ROWS_IN_BG_TEXTURE;
+					middleBgHeight = middleBgHeight + height;
+				else
+					-- If not its a huge bag
+					bgTextureMiddle:Show();
+					height = remainingRows*rowHeight-firstRowPixelOffset;
+					bgTextureMiddle:SetHeight(height);
+					bgTextureMiddle:SetTexCoord(0, 1, 0, height/BG_TEXTURE_HEIGHT);
+					middleBgHeight = middleBgHeight + height;
+				end
+			end
+			-- Position bottom texture
+			bgTextureBottom:SetPoint("TOP", bgTextureMiddle:GetName(), "BOTTOM", 0, 0);
+			bgTextureBottom:Show();
+		end
+		-- Set the frame height
+		frame:SetHeight(bgTextureTop:GetHeight()+bgTextureBottom:GetHeight()+middleBgHeight);	
 	end
 	getglobal(frame:GetName().."Name"):SetText(GetBagName(id));
 	getglobal(frame:GetName().."PortraitButton"):SetID(id);
-	local columns = NUM_CONTAINER_COLUMNS;
-	local rows = ceil(size / columns);
 	frame:SetWidth(CONTAINER_WIDTH);
-	frame:SetHeight(frameSettings[4]);
-	bgTexture:SetTexture(frameSettings[1]); 
-	bgTexture:SetWidth(frameSettings[2]);
-	bgTexture:SetHeight(frameSettings[3]);
 	frame:SetID(id);
 	for j=1, size, 1 do
 		local index = size - j + 1;
@@ -349,7 +417,6 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		local texture, itemCount, locked, quality, readable = GetContainerItemInfo(id, index);
 		SetItemButtonTexture(itemButton, texture);
 		SetItemButtonCount(itemButton, itemCount);
-
 		SetItemButtonDesaturated(itemButton, locked, 0.5, 0.5, 0.5);
 
 		if ( texture ) then
@@ -359,12 +426,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			getglobal(name.."Item"..j.."Cooldown"):Hide();
 			itemButton.hasItem = nil;
 		end
-		--if ( quality and quality ~= -1 ) then
-		---	local color = getglobal("ITEM_QUALITY".. quality .."_COLOR");
-		--	SetItemButtonNormalTextureVertexColor(itemButton, color.r, color.g, color.b);
-		--else
-		--	SetItemButtonNormalTextureVertexColor(itemButton, TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-		--end
+		
 		itemButton.readable = readable;
 		itemButton:Show();
 	end
@@ -410,6 +472,7 @@ function updateContainerFrameAnchors()
 		index = index + 1;
 	end
 	-- This is used to position the unit tooltip
+	--[[
 	local oldContainerPosition = OPEN_CONTAINER_POSITION;
 	if ( index == 1 ) then
 		DEFAULT_TOOLTIP_POSITION = -13;
@@ -419,6 +482,7 @@ function updateContainerFrameAnchors()
 	if ( DEFAULT_TOOLTIP_POSITION ~= oldContainerPosition and GameTooltip.default and GameTooltip:IsVisible() ) then
 		GameTooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", DEFAULT_TOOLTIP_POSITION, 64);
 	end
+	]]
 end
 
 

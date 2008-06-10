@@ -4,12 +4,12 @@ IGNORES_TO_DISPLAY = 20;
 FRIENDS_FRAME_IGNORE_HEIGHT = 16;
 WHOS_TO_DISPLAY = 17;
 FRIENDS_FRAME_WHO_HEIGHT = 16;
-GUILDMEMBERS_TO_DISPLAY = 14;
+GUILDMEMBERS_TO_DISPLAY = 13;
 FRIENDS_FRAME_GUILD_HEIGHT = 14;
 MAX_IGNORE = 50;
 MAX_WHOS_FROM_SERVER = 50;
 MAX_GUILDCONTROL_OPTIONS = 12;
-
+CURRENT_GUILD_MOTD = "";
 SHOW_OFFLINE_GUILD_MEMBERS = 1;	-- This variable is saved
 
 WHOFRAME_DROPDOWN_LIST = {
@@ -53,6 +53,7 @@ function FriendsFrame_OnLoad()
 	this:RegisterEvent("WHO_LIST_UPDATE");
 	this:RegisterEvent("GUILD_ROSTER_UPDATE");
 	this:RegisterEvent("PLAYER_GUILD_UPDATE");
+	this:RegisterEvent("GUILD_MOTD");
 	FriendsFrame.playersInBotRank = 0;
 	FriendsFrame.playerStatusFrame = 1;
 	FriendsFrame.selectedFriend = 1;
@@ -61,6 +62,7 @@ function FriendsFrame_OnLoad()
 	GuildFrame.notesToggle = 1;
 	GuildFrame.selectedGuildMember = 0;
 	SetGuildRosterSelection(0);
+	CURRENT_GUILD_MOTD = GetGuildRosterMOTD();
 end
 
 function FriendsFrame_OnShow()
@@ -109,15 +111,7 @@ function FriendsFrame_Update()
 		guildName = GetGuildInfo("player");
 		FriendsFrameTitleText:SetText(guildName);
 		FriendsFrame_ShowSubFrame("GuildFrame");
-		if ( FriendsFrame.playerStatusFrame ) then
-			GuildPlayerStatusFrame:Show();
-			GuildStatusFrame:Hide();
-			GuildPlayerStatus_Update();
-		else
-			GuildPlayerStatusFrame:Hide();
-			GuildStatusFrame:Show();
-			GuildStatus_Update();
-		end
+		GuildStatus_Update();
 	elseif ( FriendsFrame.selectedTab == 4 ) then
 		FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
 		FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
@@ -134,6 +128,8 @@ function FriendsFrame_OnHide()
 	SetGuildRosterSelection(0);
 	GuildFrame.selectedGuildMember = 0;
 	GuildControlPopupFrame:Hide();
+	GuildMemberDetailFrame:Hide();
+	GuildInfoFrame:Hide();
 	for index, value in FRIENDSFRAME_SUBFRAMES do
 		getglobal(value):Hide();
 	end
@@ -175,14 +171,14 @@ function FriendsList_Update()
 	local friendIndex;
 	for i=1, FRIENDS_TO_DISPLAY, 1 do
 		friendIndex = friendOffset + i;
-		name, level, class, area, connected = GetFriendInfo(friendIndex);
+		name, level, class, area, connected, status = GetFriendInfo(friendIndex);
 		nameLocationText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNameLocation");
 		infoText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextInfo");
 		if ( not name ) then
 			name = UNKNOWN
 		end
 		if ( connected ) then
-			nameLocationText:SetText(format(TEXT(FRIENDS_LIST_TEMPLATE), name, area));
+			nameLocationText:SetText(format(TEXT(FRIENDS_LIST_TEMPLATE), name, area, status));
 			infoText:SetText(format(TEXT(FRIENDS_LEVEL_TEMPLATE), level, class));
 		else
 			nameLocationText:SetText(format(TEXT(FRIENDS_LIST_OFFLINE_TEMPLATE), name));
@@ -252,7 +248,7 @@ end
 
 function WhoList_Update()
 	local numWhos, totalCount = GetNumWhoResults();
-	local name, guild, level, race, class, zone, group;
+	local name, guild, level, race, class, zone;
 	local button;
 	local columnTable;
 	local whoOffset = FauxScrollFrame_GetOffset(WhoListScrollFrame);
@@ -270,17 +266,13 @@ function WhoList_Update()
 		whoIndex = whoOffset + i;
 		button = getglobal("WhoFrameButton"..i);
 		button.whoIndex = whoIndex;
-		name, guild, level, race, class, zone, group = GetWhoInfo(whoIndex);
+		name, guild, level, race, class, zone = GetWhoInfo(whoIndex);
 		columnTable = { zone, guild, race };
 		getglobal("WhoFrameButton"..i.."Name"):SetText(name);
 		getglobal("WhoFrameButton"..i.."Level"):SetText(level);
 		getglobal("WhoFrameButton"..i.."Class"):SetText(class);
 		local variableText = getglobal("WhoFrameButton"..i.."Variable");
 		variableText:SetText(columnTable[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)]);
-		if ( not group  ) then
-			group = "";
-		end
-		--getglobal("WhoFrameButton"..i.."Group"):SetText(getglobal(strupper(group)));
 		
 		-- If need scrollbar resize columns
 		if ( showScrollBar ) then
@@ -328,40 +320,72 @@ function WhoList_Update()
 	ShowUIPanel(FriendsFrame);
 end
 
-function GuildPlayerStatus_Update()
+function GuildStatus_Update()
+	-- Set the tab
 	PanelTemplates_SetTab(FriendsFrame, 3);
+	-- Show the frame
 	ShowUIPanel(FriendsFrame);
-
+	-- Number of players in the lowest rank
 	FriendsFrame.playersInBotRank = 0;
-	FriendsFrame.playerStatusFrame = 1;
+
 	local numGuildMembers = GetNumGuildMembers();
-	local name, rank, rankIndex, level, class, zone, group, note, officernote, online;
+	local name, rank, rankIndex, level, class, zone, note, officernote, online;
 	local guildName, guildRankName, guildRankIndex = GetGuildInfo("player");
 	local maxRankIndex = GuildControlGetNumRanks() - 1;
 	local button;
 	local onlinecount = 0;
-	local guildOffset = FauxScrollFrame_GetOffset(GuildListScrollFrame);
 	local guildIndex;
-	local showScrollBar = nil;
-	if ( numGuildMembers > GUILDMEMBERS_TO_DISPLAY ) then
-		showScrollBar = 1;
-	end
 
-	if ( IsGuildLeader() ) then
-		GuildFrameControlButton:Enable();
-	else
-		GuildFrameControlButton:Disable();
-	end
-
-	if ( CanGuildInvite() ) then
-		GuildFrameAddMemberButton:Enable();
-	else
-		GuildFrameAddMemberButton:Disable();
-	end
-
-	name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
-
+	-- Get selected guild member info
+	name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
+	GuildFrame.selectedName = name;
+	-- If there's a selected guildmember
 	if ( GetGuildRosterSelection() > 0 ) then
+		-- Update the guild member details frame
+		GuildMemberDetailName:SetText(GuildFrame.selectedName);
+		GuildMemberDetailLevel:SetText(format(TEXT(FRIENDS_LEVEL_TEMPLATE), level, class));
+		GuildMemberDetailZoneText:SetText(zone);
+		GuildMemberDetailRankText:SetText(rank);
+		if ( online ) then
+			GuildMemberDetailOnlineText:SetText(GUILD_ONLINE_LABEL);
+		else
+			GuildMemberDetailOnlineText:SetText(GuildFrame_GetLastOnline(GetGuildRosterSelection()));
+		end
+		-- Update public note
+		if ( CanEditPublicNote() ) then
+			PersonalNoteText:SetTextColor(1.0, 1.0, 1.0);
+			if ( (not note) or (note == "") ) then
+				note = GUILD_NOTE_EDITLABEL;
+			end
+		else
+			PersonalNoteText:SetTextColor(0.65, 0.65, 0.65);
+		end
+		GuildMemberNoteBackground:EnableMouse(CanEditPublicNote());
+		PersonalNoteText:SetText(note);
+		-- Update officer note
+		if ( CanViewOfficerNote() ) then
+			if ( CanEditOfficerNote() ) then
+				if ( (not officernote) or (officernote == "") ) then
+					officernote = GUILD_OFFICERNOTE_EDITLABEL;
+				end
+				OfficerNoteText:SetTextColor(1.0, 1.0, 1.0);
+			else
+				OfficerNoteText:SetTextColor(0.65, 0.65, 0.65);
+			end
+			GuildMemberOfficerNoteBackground:EnableMouse(CanEditOfficerNote());
+			OfficerNoteText:SetText(officernote);
+
+			-- Resize detail frame
+			GuildMemberDetailOfficerNoteLabel:Show();
+			GuildMemberOfficerNoteBackground:Show();
+			GuildMemberDetailFrame:SetHeight(255);
+		else
+			GuildMemberDetailOfficerNoteLabel:Hide();
+			GuildMemberOfficerNoteBackground:Hide();
+			GuildMemberDetailFrame:SetHeight(195);
+		end
+
+		-- Manage guild member related buttons
 		if ( CanGuildPromote() and ( rankIndex > 1 ) and ( rankIndex > (guildRankIndex + 1) ) ) then
 			GuildFramePromoteButton:Enable();
 		else 
@@ -372,79 +396,51 @@ function GuildPlayerStatus_Update()
 		else
 			GuildFrameDemoteButton:Disable();
 		end
-		if ( CanGuildRemove() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) ) then
-			GuildFrameRemoveMemberButton:Enable();
+		-- Hide promote/demote buttons if both disabled
+		if ( GuildFrameDemoteButton:IsEnabled() == 0 and GuildFramePromoteButton:IsEnabled() == 0 ) then
+			GuildFramePromoteButton:Hide();
+			GuildFrameDemoteButton:Hide();
 		else
-			GuildFrameRemoveMemberButton:Disable();
+			GuildFramePromoteButton:Show();
+			GuildFrameDemoteButton:Show();
+		end
+		if ( CanGuildRemove() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) ) then
+			GuildMemberRemoveButton:Enable();
+		else
+			GuildMemberRemoveButton:Disable();
 		end
 		if ( (UnitName("player") == name) or (not online) ) then
-			GuildFrameGroupInviteButton:Disable();
+			GuildMemberGroupInviteButton:Disable();
 		else
-			GuildFrameGroupInviteButton:Enable();
+			GuildMemberGroupInviteButton:Enable();
 		end
 
 		GuildFrame.selectedName = GetGuildRosterInfo(GetGuildRosterSelection()); 
+	end
+	
+	-- Message of the day stuff
+	local guildMOTD = GetGuildRosterMOTD();
+	if ( CanEditMOTD() ) then
+		if ( (not guildMOTD) or (guildMOTD == "") ) then
+			guildMOTD = GUILD_MOTD_EDITLABEL;
+		end
+		GuildFrameNotesText:SetTextColor(1.0, 1.0, 1.0);
+		GuildMOTDEditButton:Enable();
 	else
-		GuildFramePromoteButton:Disable();
-		GuildFrameDemoteButton:Disable();
-		GuildFrameRemoveMemberButton:Disable();
-		GuildFrameGroupInviteButton:Disable();
+		GuildFrameNotesText:SetTextColor(0.65, 0.65, 0.65);
+		GuildMOTDEditButton:Disable();
 	end
+	GuildFrameNotesText:SetText(CURRENT_GUILD_MOTD);
 
-	GuildFrameNoteCheck();
-
-	for i=1, GUILDMEMBERS_TO_DISPLAY, 1 do
-		guildIndex = guildOffset + i;
-		button = getglobal("GuildFrameButton"..i);
-		button.guildIndex = guildIndex;
-		name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(guildIndex);
-		getglobal("GuildFrameButton"..i.."Name"):SetText(name);
-		getglobal("GuildFrameButton"..i.."Zone"):SetText(zone);
-		getglobal("GuildFrameButton"..i.."Level"):SetText(level);
-		getglobal("GuildFrameButton"..i.."Class"):SetText(class);
-		--if ( not group ) then
-		--	group = "";
-		--end
-		--getglobal("GuildFrameButton"..i.."Group"):SetText(getglobal(strupper(group)));
-		
-		if ( not online ) then
-			getglobal("GuildFrameButton"..i.."Name"):SetTextColor(0.5, 0.5, 0.5);
-			getglobal("GuildFrameButton"..i.."Zone"):SetTextColor(0.5, 0.5, 0.5);
-			getglobal("GuildFrameButton"..i.."Level"):SetTextColor(0.5, 0.5, 0.5);
-			getglobal("GuildFrameButton"..i.."Class"):SetTextColor(0.5, 0.5, 0.5);
-			--getglobal("GuildFrameButton"..i.."Group"):SetTextColor(0.5, 0.5, 0.5);
-		else
-			getglobal("GuildFrameButton"..i.."Name"):SetTextColor(1.0, 0.82, 0.0);
-			getglobal("GuildFrameButton"..i.."Zone"):SetTextColor(1.0, 1.0, 1.0);
-			getglobal("GuildFrameButton"..i.."Level"):SetTextColor(1.0, 1.0, 1.0);
-			getglobal("GuildFrameButton"..i.."Class"):SetTextColor(1.0, 1.0, 1.0);
-			--getglobal("GuildFrameButton"..i.."Group"):SetTextColor(1.0, 1.0, 1.0);
-		end
-
-		-- If need scrollbar resize columns
-		if ( showScrollBar ) then
-			getglobal("GuildFrameButton"..i.."Zone"):SetWidth(95);
-		else
-			getglobal("GuildFrameButton"..i.."Zone"):SetWidth(110);
-		end
-
-		-- Highlight the correct who
-		if ( GetGuildRosterSelection() == guildIndex ) then
-			button:LockHighlight();
-		else
-			button:UnlockHighlight();
-		end
-		
-		if ( guildIndex > numGuildMembers ) then
-			button:Hide();
-		else
-			button:Show();
-		end
+	-- Scrollbar stuff
+	local showScrollBar = nil;
+	if ( numGuildMembers > GUILDMEMBERS_TO_DISPLAY ) then
+		showScrollBar = 1;
 	end
-
+	
 	-- Get number of online members
 	for i=1, numGuildMembers, 1 do
-		name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(i);
+		name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(i);
 		if ( online ) then
 			onlinecount = onlinecount + 1;
 		end
@@ -452,183 +448,154 @@ function GuildPlayerStatus_Update()
 			FriendsFrame.playersInBotRank = FriendsFrame.playersInBotRank + 1;
 		end
 	end
-
 	GuildFrameTotals:SetText(format(GetText("GUILD_TOTAL", nil, numGuildMembers), numGuildMembers));
 	GuildFrameOnlineTotals:SetText(format(GUILD_TOTALONLINE, onlinecount));
-	GuildFrameGuildListToggleButton:SetText(GUILD_STATUS);
 
-	-- If need scrollbar resize columns
-	if ( showScrollBar ) then
-		WhoFrameColumn_SetWidth(105, GuildFrameColumnHeader2);
-		GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 284, -80);
-	else
-		WhoFrameColumn_SetWidth(120, GuildFrameColumnHeader2);
-		GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 307, -80);
-	end
-
-
-	-- ScrollFrame update
-	FauxScrollFrame_Update(GuildListScrollFrame, numGuildMembers, GUILDMEMBERS_TO_DISPLAY, FRIENDS_FRAME_GUILD_HEIGHT );
-end
-
-function GuildStatus_Update()
-	PanelTemplates_SetTab(FriendsFrame, 3);
-	ShowUIPanel(FriendsFrame);
-	
-	FriendsFrame.playersInBotRank = 0;
-	FriendsFrame.playerStatusFrame = nil;
-	local numGuildMembers = GetNumGuildMembers();
-	local name, rank, rankIndex, level, class, zone, group, note, officernote, online;
-	local guildName, guildRankName, guildRankIndex = GetGuildInfo("player");
-	local maxRankIndex = GuildControlGetNumRanks() - 1;
-	local year, month, day, hour;
-	local yearlabel, monthlabel, daylabel, hourlabel;
-	local button;
-	local onlinecount = 0;
-	local guildOffset = FauxScrollFrame_GetOffset(GuildStatusScrollFrame);
-	local guildIndex;
-	local showScrollBar = nil;
-	if ( numGuildMembers > GUILDMEMBERS_TO_DISPLAY ) then
-		showScrollBar = 1;
-	end
-
+	-- Update global guild frame buttons
 	if ( IsGuildLeader() ) then
 		GuildFrameControlButton:Enable();
 	else
 		GuildFrameControlButton:Disable();
 	end
-
 	if ( CanGuildInvite() ) then
 		GuildFrameAddMemberButton:Enable();
 	else
 		GuildFrameAddMemberButton:Disable();
 	end
 
-	name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
 
-	if ( GetGuildRosterSelection() > 0 ) then
-		if ( CanGuildPromote() and ( rankIndex > 1 ) and ( rankIndex > (guildRankIndex + 1) ) ) then
-			GuildFramePromoteButton:Enable();
-		else 
-			GuildFramePromoteButton:Disable();
-		end
-		if ( CanGuildDemote() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) and ( rankIndex ~= maxRankIndex ) ) then
-			GuildFrameDemoteButton:Enable();
-		else
-			GuildFrameDemoteButton:Disable();
-		end
-		if ( CanGuildRemove() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) ) then
-			GuildFrameRemoveMemberButton:Enable();
-		else
-			GuildFrameRemoveMemberButton:Disable();
-		end
-		if ( (UnitName("player") == name) or (not online) ) then
-			GuildFrameGroupInviteButton:Disable();
-		else
-			GuildFrameGroupInviteButton:Enable();
-		end
+	if ( FriendsFrame.playerStatusFrame ) then
+		-- Player specific info
+		local guildOffset = FauxScrollFrame_GetOffset(GuildListScrollFrame);
 
-		GuildFrame.selectedName = GetGuildRosterInfo(GetGuildRosterSelection()); 
-	else
-		GuildFramePromoteButton:Disable();
-		GuildFrameDemoteButton:Disable();
-		GuildFrameRemoveMemberButton:Disable();
-		GuildFrameGroupInviteButton:Disable();
-	end
-
-	GuildFrameNoteCheck();
-
-	for i=1, GUILDMEMBERS_TO_DISPLAY, 1 do
-		guildIndex = guildOffset + i;
-		button = getglobal("GuildFrameGuildStatusButton"..i);
-		button.guildIndex = guildIndex;
-		name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(guildIndex);
-
-		getglobal("GuildFrameGuildStatusButton"..i.."Name"):SetText(name);
-		getglobal("GuildFrameGuildStatusButton"..i.."Rank"):SetText(rank);
-		getglobal("GuildFrameGuildStatusButton"..i.."Note"):SetText(note);
-
-		if ( online ) then
-			getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetText(GUILD_ONLINE_LABEL);
-
-			getglobal("GuildFrameGuildStatusButton"..i.."Name"):SetTextColor(1.0, 0.82, 0.0);
-			getglobal("GuildFrameGuildStatusButton"..i.."Rank"):SetTextColor(1.0, 1.0, 1.0);
-			getglobal("GuildFrameGuildStatusButton"..i.."Note"):SetTextColor(1.0, 1.0, 1.0);
-			getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetTextColor(1.0, 1.0, 1.0);
-		else
-			year, month, day, hour = GetGuildRosterLastOnline(guildIndex);
-			if ( (year == 0) or (year == nil) ) then
-				if ( (month == 0) or (month == nil) ) then
-					if ( (day == 0) or (day == nil) ) then
-						if ( (hour == 0) or (hour == nil) ) then
-							getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetText(LASTONLINE_MINS);
-						else
-							getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetText(format(GetText("LASTONLINE_HOURS", nil, hour), hour));
-						end
-					else
-						getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetText(format(GetText("LASTONLINE_DAYS", nil, day), day));
-					end
-				else
-					getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetText(format(GetText("LASTONLINE_MONTHS", nil, month), month));
-				end
+		for i=1, GUILDMEMBERS_TO_DISPLAY, 1 do
+			guildIndex = guildOffset + i;
+			button = getglobal("GuildFrameButton"..i);
+			button.guildIndex = guildIndex;
+			name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(guildIndex);
+			getglobal("GuildFrameButton"..i.."Name"):SetText(name);
+			getglobal("GuildFrameButton"..i.."Zone"):SetText(zone);
+			getglobal("GuildFrameButton"..i.."Level"):SetText(level);
+			getglobal("GuildFrameButton"..i.."Class"):SetText(class);
+			if ( not online ) then
+				getglobal("GuildFrameButton"..i.."Name"):SetTextColor(0.5, 0.5, 0.5);
+				getglobal("GuildFrameButton"..i.."Zone"):SetTextColor(0.5, 0.5, 0.5);
+				getglobal("GuildFrameButton"..i.."Level"):SetTextColor(0.5, 0.5, 0.5);
+				getglobal("GuildFrameButton"..i.."Class"):SetTextColor(0.5, 0.5, 0.5);
 			else
-				getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetText(format(GetText("LASTONLINE_YEARS", nil, year), year));
+				getglobal("GuildFrameButton"..i.."Name"):SetTextColor(1.0, 0.82, 0.0);
+				getglobal("GuildFrameButton"..i.."Zone"):SetTextColor(1.0, 1.0, 1.0);
+				getglobal("GuildFrameButton"..i.."Level"):SetTextColor(1.0, 1.0, 1.0);
+				getglobal("GuildFrameButton"..i.."Class"):SetTextColor(1.0, 1.0, 1.0);
 			end
 
-			getglobal("GuildFrameGuildStatusButton"..i.."Name"):SetTextColor(0.5, 0.5, 0.5);
-			getglobal("GuildFrameGuildStatusButton"..i.."Rank"):SetTextColor(0.5, 0.5, 0.5);
-			getglobal("GuildFrameGuildStatusButton"..i.."Note"):SetTextColor(0.5, 0.5, 0.5);
-			getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetTextColor(0.5, 0.5, 0.5);
-		end
+			-- If need scrollbar resize columns
+			if ( showScrollBar ) then
+				getglobal("GuildFrameButton"..i.."Zone"):SetWidth(95);
+			else
+				getglobal("GuildFrameButton"..i.."Zone"):SetWidth(110);
+			end
 
+			-- Highlight the correct who
+			if ( GetGuildRosterSelection() == guildIndex ) then
+				button:LockHighlight();
+			else
+				button:UnlockHighlight();
+			end
+			
+			if ( guildIndex > numGuildMembers ) then
+				button:Hide();
+			else
+				button:Show();
+			end
+		end
+		
+		GuildFrameGuildListToggleButton:SetText(PLAYER_STATUS);
+		-- If need scrollbar resize column headers
+		if ( showScrollBar ) then
+			WhoFrameColumn_SetWidth(105, GuildFrameColumnHeader2);
+			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 284, -67);
+		else
+			WhoFrameColumn_SetWidth(120, GuildFrameColumnHeader2);
+			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 307, -67);
+		end
+		-- ScrollFrame update
+		FauxScrollFrame_Update(GuildListScrollFrame, numGuildMembers, GUILDMEMBERS_TO_DISPLAY, FRIENDS_FRAME_GUILD_HEIGHT );
+		
+		GuildPlayerStatusFrame:Show();
+		GuildStatusFrame:Hide();
+	else
+		-- Guild specific info
+		local year, month, day, hour;
+		local yearlabel, monthlabel, daylabel, hourlabel;
+		local guildOffset = FauxScrollFrame_GetOffset(GuildStatusScrollFrame);
+
+		for i=1, GUILDMEMBERS_TO_DISPLAY, 1 do
+			guildIndex = guildOffset + i;
+			button = getglobal("GuildFrameGuildStatusButton"..i);
+			button.guildIndex = guildIndex;
+			name, rank, rankIndex, level, class, zone, note, officernote, online, status = GetGuildRosterInfo(guildIndex);
+
+			getglobal("GuildFrameGuildStatusButton"..i.."Name"):SetText(name);
+			getglobal("GuildFrameGuildStatusButton"..i.."Rank"):SetText(rank);
+			getglobal("GuildFrameGuildStatusButton"..i.."Note"):SetText(note);
+
+			if ( online ) then
+				if ( status == "" ) then
+					getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetText(GUILD_ONLINE_LABEL);
+				else
+					getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetText(status);
+				end
+
+				getglobal("GuildFrameGuildStatusButton"..i.."Name"):SetTextColor(1.0, 0.82, 0.0);
+				getglobal("GuildFrameGuildStatusButton"..i.."Rank"):SetTextColor(1.0, 1.0, 1.0);
+				getglobal("GuildFrameGuildStatusButton"..i.."Note"):SetTextColor(1.0, 1.0, 1.0);
+				getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetTextColor(1.0, 1.0, 1.0);
+			else
+				getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetText(GuildFrame_GetLastOnline(guildIndex));
+				getglobal("GuildFrameGuildStatusButton"..i.."Name"):SetTextColor(0.5, 0.5, 0.5);
+				getglobal("GuildFrameGuildStatusButton"..i.."Rank"):SetTextColor(0.5, 0.5, 0.5);
+				getglobal("GuildFrameGuildStatusButton"..i.."Note"):SetTextColor(0.5, 0.5, 0.5);
+				getglobal("GuildFrameGuildStatusButton"..i.."Online"):SetTextColor(0.5, 0.5, 0.5);
+			end
+
+			-- If need scrollbar resize columns
+			if ( showScrollBar ) then
+				getglobal("GuildFrameGuildStatusButton"..i.."Note"):SetWidth(70);
+			else
+				getglobal("GuildFrameGuildStatusButton"..i.."Note"):SetWidth(85);
+			end
+
+			-- Highlight the correct who
+			if ( GetGuildRosterSelection() == guildIndex ) then
+				button:LockHighlight();
+			else
+				button:UnlockHighlight();
+			end
+
+			if ( guildIndex > numGuildMembers ) then
+				button:Hide();
+			else
+				button:Show();
+			end
+		end
+		
+		GuildFrameGuildListToggleButton:SetText(GUILD_STATUS);
 		-- If need scrollbar resize columns
 		if ( showScrollBar ) then
-			getglobal("GuildFrameGuildStatusButton"..i.."Note"):SetWidth(85);
+			WhoFrameColumn_SetWidth(75, GuildFrameGuildStatusColumnHeader3);
+			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 284, -67);
 		else
-			getglobal("GuildFrameGuildStatusButton"..i.."Note"):SetWidth(100);
+			WhoFrameColumn_SetWidth(90, GuildFrameGuildStatusColumnHeader3);
+			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 307, -67);
 		end
+		
+		-- ScrollFrame update
+		FauxScrollFrame_Update(GuildStatusScrollFrame, numGuildMembers, GUILDMEMBERS_TO_DISPLAY, FRIENDS_FRAME_GUILD_HEIGHT );
 
-		-- Highlight the correct who
-		if ( GetGuildRosterSelection() == guildIndex ) then
-			button:LockHighlight();
-		else
-			button:UnlockHighlight();
-		end
-
-		if ( guildIndex > numGuildMembers ) then
-			button:Hide();
-		else
-			button:Show();
-		end
+		GuildPlayerStatusFrame:Hide();
+		GuildStatusFrame:Show();
 	end
-
-	-- Get number of online members
-	for i=1, numGuildMembers, 1 do
-		name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(i);
-		if ( online ) then
-			onlinecount = onlinecount + 1;
-		end
-		if ( rankIndex == maxRankIndex ) then
-			FriendsFrame.playersInBotRank = FriendsFrame.playersInBotRank + 1;
-		end
-	end
-
-	GuildFrameTotals:SetText(format(GetText("GUILD_TOTAL", nil, numGuildMembers), numGuildMembers));
-	GuildFrameOnlineTotals:SetText(format(GUILD_TOTALONLINE, onlinecount));
-	GuildFrameGuildListToggleButton:SetText(PLAYER_STATUS);
-
-	-- If need scrollbar resize column headers
-	if ( showScrollBar ) then
-		WhoFrameColumn_SetWidth(75, GuildFrameGuildStatusColumnHeader3);
-		GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 284, -80);
-	else
-		WhoFrameColumn_SetWidth(90, GuildFrameGuildStatusColumnHeader3);
-		GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 307, -80);
-	end
-
-
-	-- ScrollFrame update
-	FauxScrollFrame_Update(GuildStatusScrollFrame, numGuildMembers, GUILDMEMBERS_TO_DISPLAY, FRIENDS_FRAME_GUILD_HEIGHT );
 end
 
 function WhoFrameColumn_SetWidth(width, frame)
@@ -677,17 +644,16 @@ function FriendsFrame_OnEvent()
 			if ( arg1 ) then
 				GuildRoster();
 			end
-			if ( FriendsFrame.playerStatusFrame ) then
-				GuildPlayerStatus_Update();
-			else
-				GuildStatus_Update();
-			end
+			GuildStatus_Update();
 			FriendsFrame_Update();
 		end
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
 		if ( FriendsFrame:IsVisible() ) then
 			InGuildCheck();
 		end
+	elseif ( event == "GUILD_MOTD") then
+		CURRENT_GUILD_MOTD = arg1;
+		GuildFrameNotesText:SetText(CURRENT_GUILD_MOTD);
 	end
 end
 
@@ -717,43 +683,28 @@ function FriendsFrameWhoButton_OnClick(button)
 	end
 end
 
-function FriendsFrameGuildPlayerStatusButton_OnClick(button)
+function FriendsFrameGuildStatusButton_OnClick(button)
 	if ( button == "LeftButton" ) then
+		GuildFrame.previousSelectedGuildMember = GuildFrame.selectedGuildMember;
 		GuildFrame.selectedGuildMember = getglobal("GuildFrameButton"..this:GetID()).guildIndex;
 		GuildFrame.selectedName = getglobal("GuildFrameButton"..this:GetID().."Name"):GetText();
 		SetGuildRosterSelection(GuildFrame.selectedGuildMember);
-		GuildPlayerStatus_Update();
-	else
-		local guildIndex = getglobal("GuildFrameButton"..this:GetID()).guildIndex;
-		local name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(guildIndex);
-		FriendsFrame_ShowDropdown(name, online);
-	end
-end
-
-function FriendsFrameGuildStatusButton_OnClick(button)
-	if ( button == "LeftButton" ) then
-		GuildFrame.selectedGuildMember = getglobal("GuildFrameGuildStatusButton"..this:GetID()).guildIndex;
-		GuildFrame.selectedName = getglobal("GuildFrameGuildStatusButton"..this:GetID().."Name"):GetText();
-		SetGuildRosterSelection(GuildFrame.selectedGuildMember);
+		-- Toggle guild details frame
+		if ( GuildMemberDetailFrame:IsVisible() and (GuildFrame.previousSelectedGuildMember and (GuildFrame.previousSelectedGuildMember == GuildFrame.selectedGuildMember)) ) then
+			GuildMemberDetailFrame:Hide();
+			GuildFrame.selectedGuildMember = 0;
+			SetGuildRosterSelection(0);
+		else
+			GuildMemberDetailFrame:Show();
+			GuildControlPopupFrame:Hide();
+			GuildInfoFrame:Hide();
+		end
 		GuildStatus_Update();
 	else
-		HideDropDownMenu(1);
-		local guildIndex = getglobal("GuildFrameGuildStatusButton"..this:GetID()).guildIndex;
-		local name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(guildIndex);
+		local guildIndex = getglobal("GuildFrameButton"..this:GetID()).guildIndex;
+		local name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(guildIndex);
 		FriendsFrame_ShowDropdown(name, online);
 	end
-end
-
-function GuildPlayerStatusButton_OnClick()
-	GuildStatusFrame:Hide();
-	GuildPlayerStatusFrame:Show();
-	GuildPlayerStatus_Update();
-end
-
-function GuildStatusButton_OnClick()
-	GuildPlayerStatusFrame:Hide();
-	GuildStatusFrame:Show();
-	GuildStatus_Update();
 end
 
 function FriendsFrame_UnIgnore()
@@ -857,6 +808,7 @@ function GuildControlPopupFrame_OnLoad()
 	GuildControlPopupFrameCheckbox10Label:SetText(GUILDCONTROL_OPTION10);
 	GuildControlPopupFrameCheckbox11Label:SetText(GUILDCONTROL_OPTION11);
 	GuildControlPopupFrameCheckbox12Label:SetText(GUILDCONTROL_OPTION12);
+	GuildControlPopupFrameCheckbox13Label:SetText(GUILDCONTROL_OPTION13);
 end
 
 function GuildControlPopupFrame_OnShow()
@@ -870,6 +822,9 @@ function GuildControlPopupFrame_OnShow()
 	if ( GetCenterFrame() ) then
 		HideUIPanel(GetCenterFrame());
 	end
+	-- Hide guild member detail frame if its open
+	GuildMemberDetailFrame:Hide();
+	GuildInfoFrame:Hide();
 end
 
 function GuildControlPopupFrame_OnHide()
@@ -878,14 +833,10 @@ end
 
 function GuildControlPopupAcceptButton_OnClick()
 	GuildControlSaveRank(GuildControlPopupFrameEditBox:GetText());
-	if ( FriendsFrame.playerStatusFrame ) then
-		GuildPlayerStatus_Update();
-	else
-		GuildStatus_Update();
-	end
+	GuildStatus_Update();
 	GuildControlPopupAcceptButton:Disable();
 	UIDropDownMenu_SetText(GuildControlPopupFrameEditBox:GetText(), GuildControlPopupFrameDropDown);
-	--GuildRoster();
+	GuildControlPopupFrame:Hide();
 end
 
 function GuildControlPopupFrameDropDown_OnLoad()
@@ -917,10 +868,14 @@ function GuildControlPopupFrameDropDownButton_OnClick()
 end
 
 function GuildControlCheckboxUpdate(...)
-	local checkbox = "GuildControlPopupFrameCheckbox";
-	
+	local checkbox;
 	for i=1, arg.n, 1 do
-		getglobal(checkbox..i):SetChecked(arg[i]);
+		checkbox = getglobal("GuildControlPopupFrameCheckbox"..i)
+		if ( checkbox ) then
+			checkbox:SetChecked(arg[i]);
+		else
+			message("GuildControlPopupFrameCheckbox"..i.." does not exist!");
+		end
 	end
 end
 
@@ -939,6 +894,8 @@ function GuildControlPopupFrameRemoveRankButton_OnClick()
 	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(1));
 	GuildControlCheckboxUpdate(GuildControlGetRankFlags());
 	CloseDropDownMenus();
+	-- Set this to call guildroster in the next frame
+	GuildControlPopupFrame.update = 1;
 end
 
 function GuildControlPopupFrameRemoveRankButton_OnUpdate()
@@ -969,10 +926,11 @@ end
 
 function GuildFrameGuildListToggleButton_OnClick()
 	if ( FriendsFrame.playerStatusFrame ) then
-		GuildStatusButton_OnClick();
+		FriendsFrame.playerStatusFrame = nil;
 	else
-		GuildPlayerStatusButton_OnClick();		
+		FriendsFrame.playerStatusFrame = 1;		
 	end
+	GuildStatus_Update();
 end
 
 function GuildFrameControlButton_OnUpdate()
@@ -981,84 +939,44 @@ function GuildFrameControlButton_OnUpdate()
 	else
 		GuildFrameControlButton:UnlockHighlight();
 	end
-end
-
-function GuildFrameEditBox_UpdateText()
-	if ( (GetGuildRosterSelection() == 0) or (GuildFrame.notesToggle == 1) ) then
-		StaticPopup_Show("SET_GUILDMOTD");
-	elseif ( (GuildFrame.notesToggle == 2) ) then
-		StaticPopup_Show("SET_GUILDPLAYERNOTE");
-	elseif ( (GuildFrame.notesToggle == 3) ) then
-		StaticPopup_Show("SET_GUILDOFFICERNOTE");
+	-- Janky way to make sure a change made to the guildroster will reflect in the guildroster call
+	if ( GuildControlPopupFrame.update == 1 ) then
+		GuildControlPopupFrame.update = 2;
+	elseif ( GuildControlPopupFrame.update == 2 ) then
+		GuildRoster();
+		GuildControlPopupFrame.update = nil;
 	end
 end
 
-function GuildFrameNoteCheck()
-	local guildMOTD = GetGuildRosterMOTD();
-	local name, rank, rankIndex, level, class, zone, group, note, officernote, online;
-	name, rank, rankIndex, level, class, zone, group, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
-
-	if ( GetGuildRosterSelection() == 0 ) then
-		GuildFrameNotesLabel:SetText(GUILD_MOTD_LABEL)
-		if ( CanEditMOTD() ) then
-			if ( (not guildMOTD) or (guildMOTD == "") ) then
-				guildMOTD = GUILD_MOTD_EDITLABEL;
-			end
-			GuildFrameEditBox:Enable();
-			GuildFrameEditBoxText:SetTextColor(1.0, 1.0, 1.0);
-		else
-			GuildFrameEditBox:Disable();
-			GuildFrameEditBoxText:SetTextColor(0.65, 0.65, 0.65);
-		end
-		GuildFrameEditBoxText:SetText(guildMOTD);
-	else
-		if ( GuildFrame.notesToggle == 1 ) then
-			GuildFrameNotesLabel:SetText(GUILD_MOTD_LABEL)
-			GuildFrameGuildMOTDToggleButton:LockHighlight();
-			if ( CanEditMOTD() ) then
-				if ( (not guildMOTD) or (guildMOTD == "") ) then
-					guildMOTD = GUILD_MOTD_EDITLABEL;
-				end
-				GuildFrameEditBox:Enable();
-				GuildFrameEditBoxText:SetTextColor(1.0, 1.0, 1.0);
-			else
-				GuildFrameEditBox:Disable();
-				GuildFrameEditBoxText:SetTextColor(0.65, 0.65, 0.65);
-			end
-			GuildFrameEditBoxText:SetText(guildMOTD);
-		elseif ( GuildFrame.notesToggle == 2 ) then
-			GuildFrameNotesLabel:SetText(GUILD_NOTES_LABEL)
-			if ( CanEditPublicNote() ) then
-				GuildFrameEditBox:Enable();
-				GuildFrameEditBoxText:SetTextColor(1.0, 1.0, 1.0);
-				if ( (not note) or (note == "") ) then
-					note = GUILD_NOTE_EDITLABEL;
-				end
-			else
-				GuildFrameEditBox:Disable();
-				GuildFrameEditBoxText:SetTextColor(0.65, 0.65, 0.65);
-			end
-			GuildFrameEditBoxText:SetText(note);
-		elseif ( GuildFrame.notesToggle == 3 ) then
-			GuildFrameNotesLabel:SetText(GUILD_OFFICERNOTES_LABEL)
-			if ( CanViewOfficerNote() ) then
-				if ( CanEditOfficerNote() ) then
-					GuildFrameEditBox:Enable();
-					GuildFrameEditBoxText:SetTextColor(1.0, 1.0, 1.0);
-					if ( (not officernote) or (officernote == "") ) then
-						officernote = GUILD_OFFICERNOTE_EDITLABEL;
-					end
+function GuildFrame_GetLastOnline(guildIndex)
+	year, month, day, hour = GetGuildRosterLastOnline(guildIndex);
+	local lastOnline;
+	if ( (year == 0) or (year == nil) ) then
+		if ( (month == 0) or (month == nil) ) then
+			if ( (day == 0) or (day == nil) ) then
+				if ( (hour == 0) or (hour == nil) ) then
+					lastOnline = LASTONLINE_MINS;
 				else
-					GuildFrameEditBox:Disable();
-					GuildFrameEditBoxText:SetTextColor(0.65, 0.65, 0.65);
+					lastOnline = format(GetText("LASTONLINE_HOURS", nil, hour), hour);
 				end
-				GuildFrameEditBoxText:SetText(officernote);
 			else
-				officernote="";
-				GuildFrameEditBoxText:SetText(officernote);
-				GuildFrameEditBox:Disable();
-				GuildFrame.notesToggle = 1;
+				lastOnline = format(GetText("LASTONLINE_DAYS", nil, day), day);
 			end
+		else
+			lastOnline = format(GetText("LASTONLINE_MONTHS", nil, month), month);
 		end
+	else
+		lastOnline = format(GetText("LASTONLINE_YEARS", nil, year), year);
+	end
+	return lastOnline;
+end
+
+function ToggleGuildInfoFrame()
+	if ( GuildInfoFrame:IsShown() ) then
+		GuildInfoFrame:Hide();
+	else
+		GuildInfoFrame:Show();
+		GuildMemberDetailFrame:Hide();
+		GuildControlPopupFrame:Hide();
 	end
 end

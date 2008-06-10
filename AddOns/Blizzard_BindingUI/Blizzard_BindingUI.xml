@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_BindingUI.lua"/>
 	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
 		<Scripts>
@@ -145,7 +145,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="26" y="-32"/>
+								<AbsDimension x="26" y="-35"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -181,21 +181,24 @@
 			<Layer level="ARTWORK">
 				<Texture name="KeyBindingFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
-						<AbsDimension x="256" y="64"/>
+						<AbsDimension x="400" y="64"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="12"/>
+								<AbsDimension x="-30" y="12"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<FontString inherits="GameFontNormal" text="KEY_BINDINGS">
+				<FontString name="KeyBindingFrameHeaderText" inherits="GameFontNormal" text="KEY_BINDINGS">
+					<Size>
+						<AbsDimension x="175" y="13"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="KeyBindingFrameHeader">
 							<Offset>
-								<AbsDimension x="0" y="-12"/>
+								<AbsDimension x="0" y="-13"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -384,6 +387,40 @@
 					</OnMouseWheel>
 				</Scripts>
 			</ScrollFrame>
+			<CheckButton name="KeyBindingFrameCharacterButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-245" y="-12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-100" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						KeyBindingFrameCharacterButtonText:SetText(HIGHLIGHT_FONT_COLOR_CODE..CHARACTER_SPECIFIC_KEYBINDINGS..FONT_COLOR_CODE_CLOSE);
+					</OnLoad>
+					<OnClick>
+						if ( KeyBindingFrame.bindingsChanged ) then
+							StaticPopup_Show("CONFIRM_LOSE_BINDING_CHANGES");
+						else
+							KeyBindingFrame_ChangeBindingProfile();
+						end
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(CHARACTER_SPECIFIC_KEYBINDING_TOOLTIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
 			<Button name="KeyBindingFrameDefaultButton" inherits="UIPanelButtonGrayTemplate" text="RESET_TO_DEFAULT">
 				<Size>
 					<AbsDimension x="130" y="22"/>
@@ -397,7 +434,9 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						DefaultBindings();
+						LoadBindings(DEFAULT_BINDINGS);
+						KeyBindingFrameOutputText:SetText("");
+						KeyBindingFrame.selected = nil;
 						KeyBindingFrame_Update();
 					</OnClick>
 				</Scripts>
@@ -415,7 +454,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ResetBindings();
+						LoadBindings(GetCurrentBindingSet());
+						KeyBindingFrameOutputText:SetText("");
 						KeyBindingFrame.selected = nil;
 						HideUIPanel(KeyBindingFrame);
 					</OnClick>
@@ -434,7 +474,19 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						SaveBindings();
+						if ( KeyBindingFrameCharacterButton:GetChecked() ) then
+							KeyBindingFrame.which = CHARACTER_BINDINGS;
+						else
+							KeyBindingFrame.which = ACCOUNT_BINDINGS;
+							if ( GetCurrentBindingSet() == CHARACTER_BINDINGS ) then
+								if ( not HAS_CHARACTER_SPECIFIC_BINDINGS ) then
+									StaticPopup_Show("CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS");
+									return;
+								end
+							end
+						end
+						SaveBindings(KeyBindingFrame.which);
+						KeyBindingFrameOutputText:SetText("");
 						KeyBindingFrame.selected = nil;
 						HideUIPanel(KeyBindingFrame);
 					</OnClick>

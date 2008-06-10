@@ -476,9 +476,9 @@
 								<AbsDimension x="30" y="128"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="-2" y="3"/>
+										<AbsDimension x="-3" y="5"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -489,9 +489,9 @@
 								<AbsDimension x="30" y="128"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="-2" y="-1"/>
+										<AbsDimension x="-3" y="-2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -518,27 +518,27 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentTop" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 							<Size>
 								<AbsDimension x="30" y="100"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="-2" y="5"/>
+										<AbsDimension x="-3" y="5"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 							<TexCoords left="0" right="0.46875" top="0" bottom="0.78125"/>
 						</Texture>
-						<Texture name="$parentBottom" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 							<Size>
 								<AbsDimension x="30" y="100"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="-2" y="-1"/>
+										<AbsDimension x="-3" y="-2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

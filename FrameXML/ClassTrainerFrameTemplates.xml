@@ -104,7 +104,7 @@
 						<AbsDimension x="30" y="123"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 							<Offset>
 								<AbsDimension x="-2" y="5"/>
 							</Offset>
@@ -117,7 +117,7 @@
 						<AbsDimension x="30" y="123"/>
 					</Size>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 							<Offset>
 								<AbsDimension x="-2" y="-1"/>
 							</Offset>
@@ -142,9 +142,9 @@
 						<AbsDimension x="30" y="120"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 							<Offset>
-								<AbsDimension x="-2" y="2"/>
+								<AbsDimension x="-3" y="2"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -155,9 +155,9 @@
 						<AbsDimension x="30" y="123"/>
 					</Size>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 							<Offset>
-								<AbsDimension x="-2" y="-1"/>
+								<AbsDimension x="-3" y="-2"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

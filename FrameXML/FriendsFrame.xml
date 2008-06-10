@@ -303,7 +303,7 @@
 				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick>
-				FriendsFrameGuildPlayerStatusButton_OnClick(arg1);
+				FriendsFrameGuildStatusButton_OnClick(arg1);
 			</OnClick>
 			<OnEnter>
 				GameTooltip_AddNewbieTip(GUILD_MEMBER_OPTIONS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_MEMBER_OPTIONS, 1);
@@ -357,12 +357,12 @@
 				</FontString>
 				<FontString name="$parentNote" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="100" y="14"/>
+						<AbsDimension x="85" y="14"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="5" y="0"/>
+								<AbsDimension x="11" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -374,7 +374,7 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentNote" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="5" y="0"/>
+								<AbsDimension x="10" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -495,6 +495,9 @@
 				PanelTemplates_Tab_OnClick(FriendsFrame);
 				FriendsFrame_OnShow();
 				GuildControlPopupFrame:Hide();
+				GuildMemberDetailFrame:Hide();
+				GuildInfoFrame:Hide();
+				GuildFrame:Hide();
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -835,14 +838,14 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size>
 										<AbsDimension x="31" y="256"/>
 									</Size>
 									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 											<Offset>
-												<AbsDimension x="0" y="5"/>
+												<AbsDimension x="-2" y="5"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -853,9 +856,9 @@
 										<AbsDimension x="31" y="106"/>
 									</Size>
 									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 											<Offset>
-												<AbsDimension x="0" y="-2"/>
+												<AbsDimension x="-2" y="-2"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -1139,7 +1142,7 @@
 					</Button>
 					<ScrollFrame name="FriendsFrameIgnoreScrollFrame" inherits="FauxScrollFrameTemplate">
 						<Size>
-							<AbsDimension x="296" y="330"/>
+							<AbsDimension x="296" y="332"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame">
@@ -1150,14 +1153,14 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size>
 										<AbsDimension x="31" y="256"/>
 									</Size>
 									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 											<Offset>
-												<AbsDimension x="0" y="5"/>
+												<AbsDimension x="-2" y="5"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -1168,9 +1171,9 @@
 										<AbsDimension x="31" y="106"/>
 									</Size>
 									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 											<Offset>
-												<AbsDimension x="0" y="-2"/>
+												<AbsDimension x="-2" y="-2"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -1668,14 +1671,14 @@
 						</Scripts>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="WhoListScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size>
 										<AbsDimension x="31" y="256"/>
 									</Size>
 									<Anchors>
-										<Anchor point="TOP" relativeTo="WhoListScrollFrameScrollBarScrollUpButton">
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 											<Offset>
-												<AbsDimension x="0" y="5"/>
+												<AbsDimension x="-2" y="5"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -1686,9 +1689,9 @@
 										<AbsDimension x="31" y="106"/>
 									</Size>
 									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 											<Offset>
-												<AbsDimension x="0" y="-2"/>
+												<AbsDimension x="-2" y="-2"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -1720,7 +1723,7 @@
 							<Anchors>
 								<Anchor point="BOTTOM">
 									<Offset>
-										<AbsDimension x="-122" y="168"/>
+										<AbsDimension x="-122" y="181"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1737,14 +1740,26 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="GuildFrameNotesLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+						<FontString name="GuildFrameNotesLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="GUILD_MOTD_LABEL">
 							<Size>
-								<AbsDimension x="225" y="14"/>
+								<AbsDimension x="225" y="11"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="23" y="-358"/>
+										<AbsDimension x="23" y="-344"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildFrameNotesText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP">
+							<Size>
+								<AbsDimension x="315" y="45"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="GuildFrameNotesLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-3"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1840,11 +1855,7 @@
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										end
 										SetGuildRosterShowOffline(SHOW_OFFLINE_GUILD_MEMBERS);
-										if ( FriendsFrame.playerStatusFrame ) then
-											GuildPlayerStatus_Update();
-										else
-											GuildStatus_Update();
-										end
+										GuildStatus_Update();
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
@@ -1927,23 +1938,6 @@
 									</OnLoad>
 								</Scripts>
 							</Button>
-							<!--
-							<Button name="GuildFrameColumnHeader5" inherits="GuildFrameColumnHeaderTemplate" text="GROUP">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="GuildFrameColumnHeader4" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="-2" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										WhoFrameColumn_SetWidth(53);
-										this.sortType = "group";
-									</OnLoad>
-								</Scripts>
-							</Button>
-							-->
 							<Button name="GuildFrameButton1" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="1">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GuildFrame">
@@ -2061,54 +2055,45 @@
 									</Anchor>
 								</Anchors>
 							</Button>
-							<Button name="GuildFrameButton14" inherits="FriendsFrameGuildPlayerStatusButtonTemplate" id="14">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton13" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
 							<ScrollFrame name="GuildListScrollFrame" inherits="FauxScrollFrameTemplate">
 								<Size>
-									<AbsDimension x="296" y="257"/>
+									<AbsDimension x="296" y="237"/>
 								</Size>
 								<Anchors>
 									<Anchor point="TOPRIGHT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
 										<Offset>
-											<AbsDimension x="-67" y="-96"/>
+											<AbsDimension x="-67" y="-98"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 								<Scripts>
 									<OnVerticalScroll>
-										FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_GUILD_HEIGHT, GuildPlayerStatus_Update);
+										FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_GUILD_HEIGHT, GuildStatus_Update);
 									</OnVerticalScroll>
 								</Scripts>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture name="GuildListScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 											<Size>
-												<AbsDimension x="31" y="256"/>
+												<AbsDimension x="31" y="226"/>
 											</Size>
 											<Anchors>
-												<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 													<Offset>
-														<AbsDimension x="0" y="5"/>
+														<AbsDimension x="-2" y="5"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
-											<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+											<TexCoords left="0" right="0.484375" top="0" bottom="0.8828125"/>
 										</Texture>
-										<Texture name="GuildListScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 											<Size>
 												<AbsDimension x="31" y="106"/>
 											</Size>
 											<Anchors>
-												<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 													<Offset>
-														<AbsDimension x="0" y="-2"/>
+														<AbsDimension x="-2" y="-2"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -2308,23 +2293,14 @@
 									</Anchor>
 								</Anchors>
 							</Button>
-							<Button name="GuildFrameGuildStatusButton14" inherits="FriendsFrameGuildStatusButtonTemplate" id="14">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="GuildFrameButton13" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
 							<ScrollFrame name="GuildStatusScrollFrame" inherits="FauxScrollFrameTemplate">
 								<Size>
-									<AbsDimension x="296" y="257"/>
+									<AbsDimension x="296" y="237"/>
 								</Size>
 								<Anchors>
 									<Anchor point="TOPRIGHT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
 										<Offset>
-											<AbsDimension x="-67" y="-96"/>
+											<AbsDimension x="-67" y="-98"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2335,27 +2311,27 @@
 								</Scripts>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture name="GuildStatusScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 											<Size>
-												<AbsDimension x="31" y="256"/>
+												<AbsDimension x="31" y="226"/>
 											</Size>
 											<Anchors>
-												<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 													<Offset>
-														<AbsDimension x="0" y="5"/>
+														<AbsDimension x="-2" y="5"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
-											<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+											<TexCoords left="0" right="0.484375" top="0" bottom="0.8828125"/>
 										</Texture>
-										<Texture name="GuildStatusScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 											<Size>
 												<AbsDimension x="31" y="106"/>
 											</Size>
 											<Anchors>
-												<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 													<Offset>
-														<AbsDimension x="0" y="-2"/>
+														<AbsDimension x="-2" y="-2"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -2373,7 +2349,7 @@
 						<Anchors>
 							<Anchor point="LEFT">
 								<Offset>
-									<AbsDimension x="245" y="-200"/>
+									<AbsDimension x="245" y="-67"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2400,118 +2376,14 @@
 							<AbsDimension x="0" y="0"/>
 						</PushedTextOffset>
 					</Button>
-					<Button name="GuildFramePromoteButton" inherits="UIPanelButtonTemplate" text="PROMOTE">
-						<Size>
-							<AbsDimension x="65" y="21"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="19" y="82"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								GuildPromoteByName(GuildFrame.selectedName);
-							</OnClick>
-							<OnEnter>
-								GameTooltip_AddNewbieTip(PROMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PROMOTE, 1);
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
-					</Button>
-					<Button name="GuildFrameDemoteButton" inherits="UIPanelButtonTemplate" text="DEMOTE">
-						<Size>
-							<AbsDimension x="65" y="21"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildFramePromoteButton" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="7" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								GuildDemoteByName(GuildFrame.selectedName);
-							</OnClick>
-							<OnEnter>
-								GameTooltip_AddNewbieTip(DEMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_DEMOTE, 1);
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
-					</Button>
-					<Button name="GuildFrameRemoveMemberButton" inherits="UIPanelButtonTemplate" text="REMOVE">
-						<Size>
-							<AbsDimension x="86" y="21"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildFrameDemoteButton" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="7" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								StaticPopup_Show("REMOVE_GUILDMEMBER");
-							</OnClick>
-							<OnEnter>
-								GameTooltip_AddNewbieTip(REMOVE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
-					</Button>
-					<Button name="GuildFrameAddMemberButton" inherits="UIPanelButtonTemplate" text="ADDMEMBER">
-						<Size>
-							<AbsDimension x="86" y="21"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildFrameRemoveMemberButton" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="7" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								StaticPopup_Show("ADD_GUILDMEMBER");
-							</OnClick>
-							<OnEnter>
-								GameTooltip_AddNewbieTip(ADDMEMBER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDMEMBER, 1);
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-						<NormalText inherits="GameFontNormalSmall"/>
-						<HighlightText inherits="GameFontHighlightSmall"/>
-						<DisabledText inherits="GameFontDisableSmall"/>
-					</Button>
 					<Button name="GuildFrameControlButton" inherits="UIPanelButtonTemplate" text="GUILDCONTROL">
 						<Size>
-							<AbsDimension x="86" y="21"/>
+							<AbsDimension x="104" y="22"/>
 						</Size>
 						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="GuildFrameAddMemberButton" relativePoint="TOP">
+							<Anchor point="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="0" y="5"/>
+									<AbsDimension x="-39" y="82"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2537,23 +2409,23 @@
 						<HighlightText inherits="GameFontHighlightSmall"/>
 						<DisabledText inherits="GameFontDisableSmall"/>
 					</Button>
-					<Button name="GuildFrameGroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
+					<Button name="GuildFrameAddMemberButton" inherits="UIPanelButtonTemplate" text="ADDMEMBER">
 						<Size>
-							<AbsDimension x="86" y="21"/>
+							<AbsDimension x="98" y="22"/>
 						</Size>
 						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="GuildFrameControlButton" relativePoint="TOP">
+							<Anchor point="RIGHT" relativeTo="GuildFrameControlButton" relativePoint="LEFT">
 								<Offset>
-									<AbsDimension x="0" y="3"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								InviteByName(GuildFrame.selectedName);
+								StaticPopup_Show("ADD_GUILDMEMBER");
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDGROUPINVITE, 1);
+								GameTooltip_AddNewbieTip(ADDMEMBER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDMEMBER, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -2563,154 +2435,48 @@
 						<HighlightText inherits="GameFontHighlightSmall"/>
 						<DisabledText inherits="GameFontDisableSmall"/>
 					</Button>
-					<Button name="GuildFrameGuildMOTDToggleButton">
+					<Button name="GuildFrameGuildInformationButton" inherits="UIPanelButtonTemplate" text="GUILD_INFORMATION">
 						<Size>
-							<AbsDimension x="16" y="16"/>
+							<AbsDimension x="123" y="22"/>
 						</Size>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildFrameNotesLabel" relativePoint="LEFT">
+							<Anchor point="RIGHT" relativeTo="GuildFrameAddMemberButton" relativePoint="LEFT">
 								<Offset>
-									<AbsDimension x="173" y="0"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								GuildFrame.notesToggle = 1;
-								GuildFrameNoteCheck();
-								GuildFrameGuildMOTDToggleButton:LockHighlight();
-								GuildFramePublicNoteToggleButton:UnlockHighlight();
-								GuildFrameOfficerNoteToggleButton:UnlockHighlight();
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								ToggleGuildInfoFrame();
 							</OnClick>
 							<OnEnter>
-								if ( SHOW_NEWBIE_TIPS == "1" ) then
-									GameTooltip_AddNewbieTip(GUILD_MOTD_LABEL2, 1.0, 1.0, 1.0, GUILDNOTE_BUTTON_TOOLTIP, 1);
-								else
-									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-									GameTooltip:SetText(GUILDMOTD_BUTTON_TOOLTIP);
-								end
+								GameTooltip_AddNewbieTip(FIXME, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDMEMBER, 1);
 							</OnEnter>
 							<OnLeave>
-								GameTooltip:Hide();						
+								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-GuildButton-MOTD-Up"/>
-						<DisabledTexture file="Interface\Buttons\UI-GuildButton-MOTD-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-GuildButton-MOTD-Up" alphaMode="ADD"/>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
 					</Button>
-					<Button name="GuildFramePublicNoteToggleButton">
-						<Size>
-							<AbsDimension x="16" y="16"/>
-						</Size>
+					<Button name="GuildMOTDEditButton">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildFrameGuildMOTDToggleButton" relativePoint="RIGHT">
+							<Anchor point="TOPLEFT" relativeTo="GuildFrameNotesText">
 								<Offset>
-									<AbsDimension x="1" y="0"/>
+									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnUpdate>
-								if ( GetGuildRosterSelection() == 0 ) then
-									this:Disable();
-								else
-									this:Enable();
-								end
-							</OnUpdate>
-							<OnClick>
-								GuildFrame.notesToggle = 2;
-								GuildFrameNoteCheck();
-								GuildFrameGuildMOTDToggleButton:UnlockHighlight();
-								GuildFramePublicNoteToggleButton:LockHighlight();
-								GuildFrameOfficerNoteToggleButton:UnlockHighlight();
-								PlaySound("igMainMenuOptionCheckBoxOn");
-							</OnClick>
-							<OnEnter>
-								if ( SHOW_NEWBIE_TIPS == "1" ) then
-									GameTooltip_AddNewbieTip(PUBLIC_NOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDPUBLICNOTE, 1);
-								else
-									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-									GameTooltip:SetText(PUBLICNOTE_BUTTON_TOOLTIP);
-								end
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();						
-							</OnLeave>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-GuildButton-PublicNote-Up"/>
-						<DisabledTexture file="Interface\Buttons\UI-GuildButton-PublicNote-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-GuildButton-PublicNote-Up" alphaMode="ADD"/>
-					</Button>
-					<Button name="GuildFrameOfficerNoteToggleButton">
-						<Size>
-							<AbsDimension x="16" y="16"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildFramePublicNoteToggleButton" relativePoint="RIGHT">
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildFrameNotesText">
 								<Offset>
 									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnUpdate>
-								if ( (GetGuildRosterSelection() == 0) or (not CanViewOfficerNote()) ) then
-									this:Disable();
-								else
-									this:Enable();
-								end
-							</OnUpdate>
 							<OnClick>
-								GuildFrame.notesToggle = 3;
-								GuildFrameNoteCheck();
-								GuildFrameGuildMOTDToggleButton:UnlockHighlight();
-								GuildFramePublicNoteToggleButton:UnlockHighlight();
-								GuildFrameOfficerNoteToggleButton:LockHighlight();
-								PlaySound("igMainMenuOptionCheckBoxOn");
-							</OnClick>
-							<OnEnter>
-								if ( SHOW_NEWBIE_TIPS == "1" ) then
-									GameTooltip_AddNewbieTip(GUILD_OFFICER_NOTE, 1.0, 1.0, 1.0, GUILDOFFICERNOTE_BUTTON_TOOLTIP, 1);
-								else
-									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-									GameTooltip:SetText(GUILDOFFICERNOTE_BUTTON_TOOLTIP);
-								end
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();						
-							</OnLeave>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-GuildButton-OfficerNote-Up"/>
-						<DisabledTexture file="Interface\Buttons\UI-GuildButton-OfficerNote-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-GuildButton-OfficerNote-Up" alphaMode="ADD"/>
-					</Button>
-					<Button name="GuildFrameEditBox">
-						<Size>
-							<AbsDimension x="225" y="30"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="GuildFrameNotesLabel" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP" nonspacewrap="true">
-									<Size>
-										<AbsDimension x="225" y="30"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick>
-								GuildFrameEditBox_UpdateText();
+								StaticPopup_Show("SET_GUILDMOTD");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -2731,7 +2497,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-40" y="-65"/>
+							<AbsDimension x="-35" y="-65"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2790,11 +2556,11 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GameFontHighlight" text="GUILDCONTROL_ALLOWRANK">
+						<FontString inherits="GameFontHighlightSmall" text="GUILDCONTROL_ALLOWRANK">
 							<Anchors>
 								<Anchor point="TOP">
 									<Offset>
-										<AbsDimension x="0" y="-108"/>
+										<AbsDimension x="0" y="-106"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -2869,7 +2635,7 @@
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="GuildControlPopupFrameAddRankButton" relativePoint="RIGHT">
 										<Offset>
-											<AbsDimension x="2" y="0"/>
+											<AbsDimension x="-2" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2897,7 +2663,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT">
 										<Offset>
-											<AbsDimension x="25" y="-125"/>
+											<AbsDimension x="25" y="-123"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2906,7 +2672,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox1" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-3"/>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2915,7 +2681,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox3" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-3"/>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2924,7 +2690,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox5" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-3"/>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2933,7 +2699,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox7" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-3"/>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2942,7 +2708,16 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox9" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-3"/>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox13" inherits="GuildControlPopupFrameCheckboxTemplate" id="13">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox11" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2960,7 +2735,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox2" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-3"/>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2969,7 +2744,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox4" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-3"/>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2978,7 +2753,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox6" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-3"/>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2987,7 +2762,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox8" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-3"/>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2996,7 +2771,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox10" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-3"/>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3044,7 +2819,7 @@
 						<Anchors>
 							<Anchor point="TOP">
 								<Offset>
-									<AbsDimension x="35" y="-70"/>
+									<AbsDimension x="35" y="-68"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -3117,6 +2892,591 @@
 						GuildControlPopupFrame_OnHide();
 					</OnHide>
 				</Scripts>
+			</Frame>
+			<Frame name="GuildInfoFrame" toplevel="true" enableMouse="true" hidden="true">
+				<Size>
+					<AbsDimension x="297" y="298"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildControlPopupFrame">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="GuildInfoCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-6" y="-7"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="GuildInfoTitle" inherits="GameFontNormal" text="GUILD_INFORMATION">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="17" y="-17"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture file="Interface\FriendsFrame\UI-GuildMember-Patch">
+							<Size>
+								<AbsDimension x="375" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="12" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="GuildInfoTextBackground">
+						<Size>
+							<AbsDimension x="276" y="230"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="11" y="-32"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="5" right="5" top="5" bottom="5"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Frames>
+							<ScrollFrame name="GuildInfoFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
+								<Size>
+									<AbsDimension x="243" y="218"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="5" y="-7"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<ScrollChild>
+									<EditBox name="GuildInfoEditBox" letters="500" multiLine="true" autoFocus="false">
+										<Size>
+											<AbsDimension x="240" y="218"/>
+										</Size>
+										<Scripts>
+											<OnEscapePressed>
+												this:ClearFocus();
+											</OnEscapePressed>
+											<OnTextChanged>
+												local scrollBar = getglobal(this:GetParent():GetName().."ScrollBar")
+												this:GetParent():UpdateScrollChildRect();
+												local min;
+												local max;
+												min, max = scrollBar:GetMinMaxValues();
+												if ( max > 0 and (this.max ~= max) ) then
+													this.max = max;
+													scrollBar:SetValue(max);
+												end
+											</OnTextChanged>
+										</Scripts>
+										<FontString inherits="GameFontHighlight"/>
+									</EditBox>
+								</ScrollChild>
+								<Scripts>
+									<OnMouseDown>
+										if ( CanEditGuildInfo() ) then
+											GuildInfoEditBox:SetFocus();
+										else
+											GuildInfoEditBox:ClearFocus();
+										end
+									</OnMouseDown>
+									<OnMouseUp>
+										if ( CanEditGuildInfo() ) then
+											GuildInfoEditBox:SetFocus();
+										else
+											GuildInfoEditBox:ClearFocus();
+										end
+									</OnMouseUp> 
+								</Scripts>
+							</ScrollFrame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+							</OnLoad>
+							<OnShow>
+								local guildInfoText = GetGuildInfoText();
+								if ( not guildInfoText ) then
+									guildInfoText = "";
+								end
+								if ( CanEditGuildInfo() ) then
+									if ( guildInfoText ~= "" ) then
+										GuildInfoEditBox:SetText(guildInfoText);
+									else
+										GuildInfoEditBox:SetText(GUILD_INFO_EDITLABEL);
+									end
+									GuildInfoEditBox:SetTextColor(1, 1, 1);
+									GuildInfoEditBox:EnableMouse(1);
+									GuildInfoSaveButton:Enable();
+								else
+									GuildInfoEditBox:SetText(guildInfoText);
+									GuildInfoEditBox:SetTextColor(0.65, 0.65, 0.65);
+									GuildInfoEditBox:EnableMouse();
+									GuildInfoSaveButton:Disable();
+								end
+							</OnShow>
+						</Scripts>
+					</Frame>
+					<Button name="GuildInfoCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-3" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="GuildInfoSaveButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+						<Size>
+							<AbsDimension x="139" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SetGuildInfoText(GuildInfoEditBox:GetText());
+								GuildRoster();
+								GuildInfoFrame:Hide();
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(FIXME, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildInfoCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size>
+							<AbsDimension x="139" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildInfoSaveButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildInfoFrame:Hide();
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(FIXME, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+					</Button>
+				</Frames>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+			</Frame>
+			<Frame name="GuildMemberDetailFrame" toplevel="true" enableMouse="true" hidden="true">
+				<Size>
+					<AbsDimension x="212" y="270"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-33" y="-28"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="GuildMemberDetailName" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="0" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="17" y="-18"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildMemberDetailLevel" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailName" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildMemberDetailZoneLabel" inherits="GameFontNormalSmall" text="ZONE_COLON">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailLevel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-11"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildMemberDetailZoneText" inherits="GameFontHighlight">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildMemberDetailZoneLabel" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildMemberDetailRankLabel" inherits="GameFontNormalSmall" text="RANK_COLON">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailZoneLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-8"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildMemberDetailRankText" inherits="GameFontHighlight">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildMemberDetailOnlineLabel" inherits="GameFontNormalSmall" text="LAST_ONLINE_COLON">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-8"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildMemberDetailOnlineText" inherits="GameFontHighlight">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildMemberDetailOnlineLabel" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildMemberDetailNoteLabel" inherits="GameFontNormalSmall" text="NOTE_COLON">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailOnlineLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-8"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildMemberDetailOfficerNoteLabel" inherits="GameFontNormalSmall" text="OFFICER_NOTE_COLON">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailNoteLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-43"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture file="Interface\FriendsFrame\UI-GuildMember-Patch">
+							<Size>
+								<AbsDimension x="256" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="12" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="GuildMemberDetailCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-6" y="-7"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="GuildMemberDetailCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-3" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="GuildMemberRemoveButton" inherits="UIPanelButtonTemplate" text="REMOVE">
+						<Size>
+							<AbsDimension x="96" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								StaticPopup_Show("REMOVE_GUILDMEMBER");
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(REMOVE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildMemberGroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
+						<Size>
+							<AbsDimension x="96" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildMemberRemoveButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="1" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildFramePromoteButton">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildMemberDetailRankText" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="6" right="6" top="7" bottom="7"/>
+						</HitRectInsets>
+						<Scripts>
+							<OnClick>
+								GuildPromoteByName(GuildFrame.selectedName);
+								PlaySound("UChatScrollButton");
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(PROMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PROMOTE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
+						<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Down"/>
+						<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Disabled"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Highlight"/>
+					</Button>
+					<Button name="GuildFrameDemoteButton">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildFramePromoteButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="6" right="6" top="7" bottom="7"/>
+						</HitRectInsets>
+						<Scripts>
+							<OnClick>
+								GuildDemoteByName(GuildFrame.selectedName);
+								PlaySound("UChatScrollButton");
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(DEMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_DEMOTE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
+						<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
+						<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Disabled"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
+					</Button>
+					<Frame name="GuildMemberNoteBackground" enableMouse="true">
+						<Size>
+							<AbsDimension x="181" y="40"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailNoteLabel" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="PersonalNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+									<Size>
+										<AbsDimension x="165" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="1" y="-6"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="5" right="5" top="5" bottom="5"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+								this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
+							</OnLoad>
+							<OnMouseUp>
+								StaticPopup_Show("SET_GUILDPLAYERNOTE");
+							</OnMouseUp> 
+						</Scripts>
+					</Frame>
+					<Frame name="GuildMemberOfficerNoteBackground">
+						<Size>
+							<AbsDimension x="181" y="40"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailOfficerNoteLabel" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="OfficerNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+									<Size>
+										<AbsDimension x="165" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="1" y="-6"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="5" right="5" top="5" bottom="5"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+								this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
+							</OnLoad>
+							<OnMouseUp>
+								StaticPopup_Show("SET_GUILDOFFICERNOTE");
+							</OnMouseUp> 
+						</Scripts>
+					</Frame>
+				</Frames>
 			</Frame>
 			<Button name="FriendsFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="FRIENDS">
 				<Anchors>
@@ -3211,10 +3571,6 @@
 					<OnEvent>
 						FriendsFrame_Update();
 					</OnEvent>
-					<OnClick>
-						PanelTemplates_Tab_OnClick(FriendsFrame);
-						FriendsFrame_OnShow();
-					</OnClick>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(RAID), "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB);
 					</OnEnter>

@@ -8,7 +8,7 @@
 		<Anchors>
 			<Anchor point="BOTTOM">
 				<Offset>
-					<AbsDimension x="0" y="60"/>
+					<AbsDimension x="0" y="55"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -24,7 +24,11 @@
 						<AbsDimension x="185" y="16"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOP"/>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="5"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</FontString>
 				<Texture name="CastingBarBorder" file="Interface\CastingBar\UI-CastingBar-Border">
@@ -34,7 +38,7 @@
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="23"/>
+								<AbsDimension x="0" y="28"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -56,7 +60,7 @@
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="23"/>
+								<AbsDimension x="0" y="28"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

@@ -7,6 +7,7 @@ PREVIOUS_BATTLEFIELD_MOD = 0;
 BATTLEFIELD_TIMER_DELAY = 3;
 BATTLEFIELD_MAP_WIDTH = 320;
 BATTLEFIELD_MAP_HEIGHT = 213;
+MAX_BATTLEFIELD_QUEUES = 3;
 
 function BattlefieldFrame_OnLoad()
 	this:RegisterEvent("BATTLEFIELDS_SHOW");
@@ -79,56 +80,95 @@ function BattlefieldFrame_OnUpdate(elapsed)
 	end
 end
 
-function BattlefieldFrame_UpdateStatus()
-	local status, mapName, instanceID = GetBattlefieldStatus();
-	if ( instanceID ~= 0 ) then
-		mapName = mapName.." "..instanceID;
-	end
-	MiniMapBattlefieldFrame.status = status;
-	MiniMapBattlefieldFrame.mapName = mapName;
-	MiniMapBattlefieldFrame.instanceID = instanceID;
-
-	if ( status == "none" ) then
-		-- Clear everything out
-		MiniMapBattlefieldFrame:Hide();
-		StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY");
-	elseif ( status == "queued" ) then
-		-- Update queue info show button on minimap
-		local waitTime = GetBattlefieldEstimatedWaitTime();
-		local timeInQueue = GetBattlefieldTimeWaited()/1000;
-		if ( waitTime == 0 ) then
-			waitTime = QUEUE_TIME_UNAVAILABLE;
-		elseif ( waitTime < 60000 ) then 
-			waitTime = LESS_THAN_ONE_MINUTE;
-		else
-			waitTime = SecondsToTime(waitTime/1000, 1);
+function BattlefieldFrame_UpdateStatus(tooltipOnly)
+	local status, mapName, instanceID;
+	local numberQueues = 0;
+	local waitTime, timeInQueue;
+	local tooltip;
+	local showRightClickText;
+	-- Reset tooltip
+	MiniMapBattlefieldFrame.tooltip = nil;
+	MiniMapBattlefieldFrame.waitTime = {};
+	MiniMapBattlefieldFrame.status = nil;
+	for i=1, MAX_BATTLEFIELD_QUEUES do
+		status, mapName, instanceID = GetBattlefieldStatus(i);
+		if ( instanceID ~= 0 ) then
+			mapName = mapName.." "..instanceID;
 		end
-		MiniMapBattlefieldFrame.waitTime = waitTime;
-		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime, SecondsToTime(timeInQueue)).."\n"..RIGHT_CLICK_MESSAGE;
-
-		PlaySound("PVPENTERQUEUE");
-		UIFrameFadeIn(MiniMapBattlefieldFrame, CHAT_FRAME_FADE_TIME);
-		BattlegroundShineFadeIn();
-	elseif ( status == "confirm" ) then
-		-- Have been accepted show enter battleground dialog
-		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration()/1000)).."\n"..RIGHT_CLICK_MESSAGE;
-		StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName);
-		PlaySound("PVPTHROUGHQUEUE");
-		MiniMapBattlefieldFrame:Show();
-	elseif ( status == "active" ) then
-		-- In the battleground
-		MiniMapBattlefieldFrame.tooltip = format(BATTLEFIELD_IN_BATTLEFIELD, mapName);
-		BATTLEFIELD_SHUTDOWN_TIMER = GetBattlefieldInstanceExpiration()/1000;
-		BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
-		PREVIOUS_BATTLEFIELD_MOD = 0;
-		MiniMapBattlefieldFrame:Show();
-	elseif ( status == "error" ) then
-		-- Should never happen haha
+		tooltip = nil;
+		if ( status ~= "none" ) then
+			numberQueues = numberQueues+1;
+			if ( status == "queued" ) then
+				-- Update queue info show button on minimap
+				waitTime = GetBattlefieldEstimatedWaitTime(i);
+				timeInQueue = GetBattlefieldTimeWaited(i)/1000;
+				if ( waitTime == 0 ) then
+					waitTime = QUEUE_TIME_UNAVAILABLE;
+				elseif ( waitTime < 60000 ) then 
+					waitTime = LESS_THAN_ONE_MINUTE;
+				else
+					waitTime = SecondsToTime(waitTime/1000, 1);
+				end
+				MiniMapBattlefieldFrame.waitTime[i] = waitTime;
+				tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime, SecondsToTime(timeInQueue));
+				
+				if ( not tooltipOnly ) then
+					PlaySound("PVPENTERQUEUE");
+					UIFrameFadeIn(MiniMapBattlefieldFrame, CHAT_FRAME_FADE_TIME);
+					BattlegroundShineFadeIn();
+				end
+				showRightClickText = 1;
+			elseif ( status == "confirm" ) then
+				-- Have been accepted show enter battleground dialog
+				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration(i)/1000));
+				if ( not tooltipOnly ) then
+					local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
+					if ( dialog ) then
+						dialog.data = i;
+					end
+					PlaySound("PVPTHROUGHQUEUE");
+					MiniMapBattlefieldFrame:Show();
+				end
+				showRightClickText = 1;
+			elseif ( status == "active" ) then
+				-- In the battleground
+				tooltip = format(BATTLEFIELD_IN_BATTLEFIELD, mapName);
+				
+				BATTLEFIELD_SHUTDOWN_TIMER = GetBattlefieldInstanceExpiration()/1000;
+				BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
+				PREVIOUS_BATTLEFIELD_MOD = 0;
+				MiniMapBattlefieldFrame.status = status;
+			elseif ( status == "error" ) then
+				-- Should never happen haha
+			end
+			if ( tooltip ) then
+				if ( MiniMapBattlefieldFrame.tooltip ) then
+					MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..tooltip;
+				else
+					MiniMapBattlefieldFrame.tooltip = tooltip;
+				end
+			end
+		else
+			StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY", i);
+		end
+	end
+	-- See if should add right click message
+	if ( MiniMapBattlefieldFrame.tooltip and showRightClickText ) then
+		MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n"..RIGHT_CLICK_MESSAGE;
 	end
 	
-	-- Set minimap icon here since it bugs out on login
-	if ( UnitFactionGroup("player") ) then
-		MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));
+	if ( not tooltipOnly ) then
+		if ( numberQueues == 0 ) then
+			-- Clear everything out
+			MiniMapBattlefieldFrame:Hide();
+		else
+			MiniMapBattlefieldFrame:Show();
+		end
+		
+		-- Set minimap icon here since it bugs out on login
+		if ( UnitFactionGroup("player") ) then
+			MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));
+		end
 	end
 end
 
@@ -174,14 +214,21 @@ function BattlefieldFrame_Update()
 		end
 		
 		-- Set queued status
-		if ( MiniMapBattlefieldFrame.instanceID == zoneIndex - 1 and MiniMapBattlefieldFrame.mapName == button.title ) then
-			if ( MiniMapBattlefieldFrame.status == "queued" ) then
-				buttonStatus:SetText(BATTLEFIELD_QUEUE_STATUS);
-			elseif ( MiniMapBattlefieldFrame.status == "confirm" ) then
-				buttonStatus:SetText(BATTLEFIELD_CONFIRM_STATUS);
+		buttonStatus:SetText("");
+		local queueStatus, queueMapName, queueInstanceID;
+		for i=1, MAX_BATTLEFIELD_QUEUES do
+			queueStatus, queueMapName, queueInstanceID = GetBattlefieldStatus(i);
+			if ( queueStatus ~= "none" and queueMapName.." "..queueInstanceID == button.title ) then
+				if ( queueStatus == "queued" ) then
+					buttonStatus:SetText(BATTLEFIELD_QUEUE_STATUS);
+				elseif ( queueStatus == "confirm" ) then
+					buttonStatus:SetText(BATTLEFIELD_CONFIRM_STATUS);
+				end
+			elseif ( button.title == FIRST_AVAILABLE and queueMapName == mapName and GetNumBattlefields() == 0 ) then
+				if ( queueStatus == "queued" ) then
+					buttonStatus:SetText(BATTLEFIELD_QUEUE_STATUS);
+				end
 			end
-		else
-			buttonStatus:SetText("");
 		end
 		
 		-- Set selected instance
@@ -235,33 +282,58 @@ end
 
 function MiniMapBattlefieldDropDown_Initialize()
 	local info;
-	if ( MiniMapBattlefieldFrame.status == "queued" ) then
-		info = {};
-		info.text = CHANGE_INSTANCE;
-		info.func = ShowBattlefieldList;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-		info = {};
-		info.text = LEAVE_QUEUE;
-		info.func = AcceptBattlefieldPort;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-	elseif ( MiniMapBattlefieldFrame.status == "confirm" ) then
-		info = {};
-		info.text = ENTER_BATTLE;
-		info.func = BattlefieldFrame_EnterBattlefield;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-		info = {};
-		info.text = LEAVE_QUEUE;
-		info.func = AcceptBattlefieldPort;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
+	local status, mapName, instanceID;
+	local numQueued = 0;
+	for i=1, MAX_BATTLEFIELD_QUEUES do
+		status, mapName, instanceID = GetBattlefieldStatus(i);
+		if ( status == "queued" or status == "confirm" ) then
+			numQueued = numQueued+1;
+			-- Add a spacer if there were dropdown items before this
+			if ( numQueued > 1 ) then
+				info = {};
+				info.text = "";
+				info.isTitle = 1;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+			end
+			
+			info = {};
+			info.text = mapName;
+			info.isTitle = 1;
+			info.notCheckable = 1;
+			UIDropDownMenu_AddButton(info);
+			if ( status == "queued" ) then
+				info = {};
+				info.text = CHANGE_INSTANCE;
+				info.func = ShowBattlefieldList;
+				info.arg1 = i;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+				info = {};
+				info.text = LEAVE_QUEUE;
+				info.func = AcceptBattlefieldPort;
+				info.arg1 = i;
+				info.arg2 = nil;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+			elseif ( status == "confirm" ) then
+				info = {};
+				info.text = ENTER_BATTLE;
+				info.func = AcceptBattlefieldPort;
+				info.arg1 = i;
+				info.arg2 = 1;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+				info = {};
+				info.text = LEAVE_QUEUE;
+				info.func = AcceptBattlefieldPort;
+				info.arg1 = i;
+				info.arg2 = nil;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+			end			
+		end
 	end
-end
-
-function BattlefieldFrame_EnterBattlefield()
-	AcceptBattlefieldPort(1);
 end
 
 function BattlegroundShineFadeIn()

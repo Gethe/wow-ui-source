@@ -28,7 +28,7 @@ function PanelTemplates_UpdateTabs(frame)
 	end
 end
 
-function PanelTemplates_TabResize(padding, tab, absoluteSize)
+function PanelTemplates_TabResize(padding, tab, absoluteSize, maxWidth)
 	local tabName;
 	if ( tab ) then
 		tabName = tab:GetName();
@@ -40,6 +40,8 @@ function PanelTemplates_TabResize(padding, tab, absoluteSize)
 	local buttonMiddleDisabled = getglobal(tabName.."MiddleDisabled");
 	local sideWidths = 2 * getglobal(tabName.."Left"):GetWidth();
 	local tabText = getglobal(tab:GetName().."Text");
+	local tabHighlightText = getglobal(tab:GetName().."HighlightText");
+	local tabDisabledText = getglobal(tab:GetName().."DisabledText");
 	local width, tabWidth;
 	
 	-- If there's an absolute size specified then use it
@@ -59,8 +61,20 @@ function PanelTemplates_TabResize(padding, tab, absoluteSize)
 		else
 			width = tabText:GetWidth() + 24;
 		end
+		-- If greater than the maxWidth then cap it
+		if ( maxWidth and width > maxWidth ) then
+			if ( padding ) then
+				width = maxWidth + padding;
+			else
+				width = maxWidth + 24;
+			end
+			tabText:SetWidth(width);
+			tabHighlightText:SetWidth(width);
+			tabDisabledText:SetWidth(width);
+		else
+			tabText:SetWidth(0);
+		end
 		tabWidth = width + sideWidths;
-		tabText:SetWidth(0);
 	end
 	
 	if ( buttonMiddle ) then

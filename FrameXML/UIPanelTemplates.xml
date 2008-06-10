@@ -307,7 +307,7 @@
         			<Anchors>
         				<Anchor point="BOTTOMLEFT">
         					<Offset>
-        						<AbsDimension x="0" y="-4"/>
+        						<AbsDimension x="0" y="-3"/>
         					</Offset>
         				</Anchor>
         			</Anchors>
@@ -367,6 +367,9 @@
 			</OnLoad>
 		</Scripts>
 		<NormalText name="$parentText" inherits="GameFontNormalSmall">
+			<Size>
+				<AbsDimension x="0" y="13"/>
+			</Size>
 			<Anchors>
 				<Anchor point="BOTTOM">
 					<Offset>
@@ -375,7 +378,10 @@
 				</Anchor>
 			</Anchors>
 		</NormalText>
-		<HighlightText inherits="GameFontHighlightSmall">
+		<HighlightText name="$parentHighlightText" inherits="GameFontHighlightSmall">
+			<Size>
+				<AbsDimension x="0" y="13"/>
+			</Size>
 			<Anchors>
 				<Anchor point="BOTTOM">
 					<Offset>
@@ -384,7 +390,10 @@
 				</Anchor>
 			</Anchors>
 		</HighlightText>
-		<DisabledText inherits="GameFontHighlightSmall">
+		<DisabledText name="$parentDisabledText" inherits="GameFontHighlightSmall">
+			<Size>
+				<AbsDimension x="0" y="13"/>
+			</Size>
 			<Anchors>
 				<Anchor point="BOTTOM">
 					<Offset>
@@ -406,4 +415,12 @@
 			</Anchors>
 		</HighlightTexture>
     </Button>
+	<Button name="GameMenuButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="144" y="21"/>
+		</Size>
+		<NormalText inherits="GameFontHighlight"/>
+		<DisabledText inherits="GameFontDisable"/>
+		<HighlightText inherits="GameFontHighlight"/>
+	</Button>
 </Ui>

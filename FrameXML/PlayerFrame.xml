@@ -197,7 +197,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame name="PlayerPVPIconHitArea" enableMouse="true">
+					<Frame name="PlayerPVPIconHitArea" enableMouse="true" hidden="true">
 						<Size>
 							<AbsDimension x="39" y="37"/>
 						</Size>

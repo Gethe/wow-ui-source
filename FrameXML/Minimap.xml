@@ -368,11 +368,8 @@
 								GameTooltip:SetText(this.tooltip);
 							</OnEnter>
 							<OnUpdate>
-								if ( GameTooltip:IsOwned(this) and MiniMapBattlefieldFrame.status == "confirm") then
-									this.tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, MiniMapBattlefieldFrame.mapName, SecondsToTime(GetBattlefieldPortExpiration()/1000));
-									GameTooltip:SetText(this.tooltip);
-								elseif ( GameTooltip:IsOwned(this) and MiniMapBattlefieldFrame.status == "queued" ) then
-									this.tooltip = format(BATTLEFIELD_IN_QUEUE, MiniMapBattlefieldFrame.mapName, MiniMapBattlefieldFrame.waitTime, SecondsToTime(GetBattlefieldTimeWaited()/1000)).."\n"..RIGHT_CLICK_MESSAGE;
+								if ( GameTooltip:IsOwned(this) ) then
+									BattlefieldFrame_UpdateStatus(1);
 									GameTooltip:SetText(this.tooltip);
 								end
 							</OnUpdate>
@@ -380,8 +377,12 @@
 								GameTooltip:Hide();
 							</OnLeave>
 							<OnClick>
+								-- Hide tooltip
+								GameTooltip:Hide();
 								if ( MiniMapBattlefieldFrame.status == "active") then
 									if ( arg1 == "RightButton" ) then
+										ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
+									elseif ( IsShiftKeyDown() ) then
 										ToggleBattlefieldMinimap();
 									else
 										ToggleWorldStateScoreFrame();

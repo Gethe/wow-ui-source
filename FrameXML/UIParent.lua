@@ -41,6 +41,8 @@ UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
 UIChildWindows = {
 	"OpenMailFrame",
 	"GuildControlPopupFrame",
+	"GuildMemberDetailFrame",
+	"GuildInfoFrame",
 };
 
 UISpecialFrames = {
@@ -110,6 +112,7 @@ function UIParent_OnLoad()
 	this:RegisterEvent("BILLING_NAG_DIALOG");
 	this:RegisterEvent("IGR_BILLING_NAG_DIALOG");
 	this:RegisterEvent("VARIABLES_LOADED");
+	this:RegisterEvent("RAID_ROSTER_UPDATE");
 
 	-- Events for auction UI handling
 	this:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -328,9 +331,12 @@ function UIParent_OnEvent(event)
 		-- Get multi-actionbar states
 		SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		MultiActionBar_Update();
-		
 		CloseAllWindows();
 		return;
+	end
+	if ( event == "RAID_ROSTER_UPDATE" ) then
+		-- Hide/Show party member frames
+		RaidOptionsFrame_UpdatePartyFrames();
 	end
 	if ( event == "MIRROR_TIMER_START" ) then
 		MirrorTimer_Show(arg1, arg2, arg3, arg4, arg5, arg6);

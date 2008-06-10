@@ -71,7 +71,7 @@ function BuffButton_Update()
 	-- Set the number of applications of an aura if its a debuff
 	local buffCount = getglobal(this:GetName().."Count");
 	local count = GetPlayerBuffApplications(buffIndex);
-	if ( this.buffFilter == "HARMFUL" and count > 1 ) then
+	if ( count > 1 ) then
 		buffCount:SetText(count);
 		buffCount:Show();
 	else

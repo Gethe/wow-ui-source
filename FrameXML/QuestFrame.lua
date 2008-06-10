@@ -126,7 +126,9 @@ end
 
 function QuestRewardItem_OnClick()
 	if ( IsControlKeyDown() ) then
-		DressUpItemLink(GetQuestItemLink(this.type, this:GetID()));
+		if ( this.rewardType ~= "spell" ) then
+			DressUpItemLink(GetQuestItemLink(this.type, this:GetID()));
+		end
 	elseif ( IsShiftKeyDown() ) then
 		if ( ChatFrameEditBox:IsVisible() ) then
 			ChatFrameEditBox:Insert(GetQuestItemLink(this.type, this:GetID()));

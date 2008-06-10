@@ -431,8 +431,12 @@ function RaidPullout_Update(pullOutFrame)
 			-- Handle buffs/debuffs
 			RaidPulloutButton_UpdateBuffs(pulloutButton, pullOutFrame.showBuffs, unit);
 
+			pulloutButton:RegisterEvent("UNIT_HEALTH");
+			pulloutButton:RegisterEvent("UNIT_AURA");
 			pulloutButton:Show();
 		else
+			pulloutButton:UnregisterEvent("UNIT_HEALTH");
+			pulloutButton:UnregisterEvent("UNIT_AURA");
 			pulloutButton:Hide();
 		end
 	end
@@ -461,10 +465,10 @@ function RaidPulloutButton_UpdateBuffs(button, showBuffs, unit)
 	local debuff;
 	for i=1, MAX_PARTY_DEBUFFS do
 		if ( showBuffs ) then
-			debuff = UnitBuff(unit, i);
+			debuff = UnitBuff(unit, i, SHOW_CASTABLE_BUFFS);
 			getglobal(button:GetName().."Debuff"..i.."Overlay"):Hide();
 		else
-			debuff = UnitDebuff(unit, i);
+			debuff = UnitDebuff(unit, i, SHOW_DISPELLABLE_DEBUFFS);
 			getglobal(button:GetName().."Debuff"..i.."Overlay"):Show();
 		end
 		
@@ -604,3 +608,4 @@ function RaidPulloutDropDown_Initialize()
 	end;
 	UIDropDownMenu_AddButton(info);
 end
+

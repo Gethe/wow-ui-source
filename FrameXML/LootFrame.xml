@@ -299,7 +299,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentIconFrame" enableMouse="true">
+			<Button name="$parentIconFrame" enableMouse="true">
 				<Size>
 					<AbsDimension x="34" y="34"/>
 				</Size>
@@ -324,22 +324,31 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						--this.hasItem = 1;
+						this.hasItem = 1;
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 						GameTooltip:SetLootRollItem(this:GetParent().rollID);
-						--CursorUpdate();
+						CursorUpdate();
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
-						--ResetCursor();
+						ResetCursor();
 					</OnLeave>
 					<OnUpdate>
-						--CursorOnUpdate();
+						CursorOnUpdate();
 					</OnUpdate>
+					<OnClick>
+						if ( IsControlKeyDown() ) then
+							DressUpItemLink(GetLootRollItemLink(this:GetParent().rollID));
+						elseif ( IsShiftKeyDown() ) then
+							if ( ChatFrameEditBox:IsVisible() ) then
+								ChatFrameEditBox:Insert(GetLootRollItemLink(this:GetParent().rollID));
+							end
+						end
+					</OnClick>
 				</Scripts>
-			</Frame>
+			</Button>
 			<Button inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentCorner" relativePoint="TOPRIGHT">

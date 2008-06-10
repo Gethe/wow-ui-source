@@ -336,8 +336,7 @@ function ToggleWorldStateScoreFrame()
 	if ( WorldStateScoreFrame:IsVisible() ) then
 		HideUIPanel(WorldStateScoreFrame);
 	else
-		local status, mapName, instanceID = GetBattlefieldStatus();
-		if ( status == "active" ) then
+		if ( MiniMapBattlefieldFrame.status == "active" ) then
 			ShowUIPanel(WorldStateScoreFrame);
 		end
 	end

@@ -452,7 +452,7 @@ function ToggleWorldMap()
 	if ( WorldMapFrame:IsVisible() ) then
 		HideUIPanel(WorldMapFrame);
 	else
-		SetupWorldMapScale();
+		SetupWorldMapScale(WorldMapFrame);
 		ShowUIPanel(WorldMapFrame);
 	end
 end

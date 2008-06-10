@@ -112,29 +112,7 @@ function ActionButton_OnLoad()
 	this:RegisterEvent("ACTIONBAR_HIDEGRID");
 	this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	this:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
-	this:RegisterEvent("ACTIONBAR_UPDATE_STATE");
-	this:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
-	this:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
-	this:RegisterEvent("UPDATE_INVENTORY_ALERTS");
-	this:RegisterEvent("PLAYER_AURAS_CHANGED");
-	this:RegisterEvent("PLAYER_TARGET_CHANGED");
-	this:RegisterEvent("UNIT_AURASTATE");
-	this:RegisterEvent("UNIT_INVENTORY_CHANGED");
-	this:RegisterEvent("CRAFT_SHOW");
-	this:RegisterEvent("CRAFT_CLOSE");
-	this:RegisterEvent("TRADE_SKILL_SHOW");
-	this:RegisterEvent("TRADE_SKILL_CLOSE");
-	this:RegisterEvent("UNIT_HEALTH");
-	this:RegisterEvent("UNIT_MANA");
-	this:RegisterEvent("UNIT_RAGE");
-	this:RegisterEvent("UNIT_FOCUS");
-	this:RegisterEvent("UNIT_ENERGY");
-	this:RegisterEvent("PLAYER_ENTER_COMBAT");
-	this:RegisterEvent("PLAYER_LEAVE_COMBAT");
-	this:RegisterEvent("PLAYER_COMBO_POINTS");
 	this:RegisterEvent("UPDATE_BINDINGS");
-	this:RegisterEvent("START_AUTOREPEAT_SPELL");
-	this:RegisterEvent("STOP_AUTOREPEAT_SPELL");
 	ActionButton_UpdateHotkeys();
 end
 
@@ -177,15 +155,51 @@ function ActionButton_Update()
 	end
 	ActionButton_UpdateCount();
 	if ( HasAction(ActionButton_GetPagedID(this)) ) then
+		this:RegisterEvent("ACTIONBAR_UPDATE_STATE");
+		this:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
+		this:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
+		this:RegisterEvent("UPDATE_INVENTORY_ALERTS");
+		this:RegisterEvent("PLAYER_AURAS_CHANGED");
+		this:RegisterEvent("PLAYER_TARGET_CHANGED");
+		this:RegisterEvent("UNIT_INVENTORY_CHANGED");
+		this:RegisterEvent("CRAFT_SHOW");
+		this:RegisterEvent("CRAFT_CLOSE");
+		this:RegisterEvent("TRADE_SKILL_SHOW");
+		this:RegisterEvent("TRADE_SKILL_CLOSE");
+		this:RegisterEvent("PLAYER_ENTER_COMBAT");
+		this:RegisterEvent("PLAYER_LEAVE_COMBAT");
+		this:RegisterEvent("PLAYER_COMBO_POINTS");
+		this:RegisterEvent("START_AUTOREPEAT_SPELL");
+		this:RegisterEvent("STOP_AUTOREPEAT_SPELL");
+
 		this:Show();
 		ActionButton_UpdateState();
 		ActionButton_UpdateUsable();
 		ActionButton_UpdateCooldown();
 		ActionButton_UpdateFlash();
-	elseif ( this.showgrid == 0 ) then
-		this:Hide();
 	else
-		buttonCooldown:Hide();
+		this:UnregisterEvent("ACTIONBAR_UPDATE_STATE");
+		this:UnregisterEvent("ACTIONBAR_UPDATE_USABLE");
+		this:UnregisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
+		this:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
+		this:UnregisterEvent("PLAYER_AURAS_CHANGED");
+		this:UnregisterEvent("PLAYER_TARGET_CHANGED");
+		this:UnregisterEvent("UNIT_INVENTORY_CHANGED");
+		this:UnregisterEvent("CRAFT_SHOW");
+		this:UnregisterEvent("CRAFT_CLOSE");
+		this:UnregisterEvent("TRADE_SKILL_SHOW");
+		this:UnregisterEvent("TRADE_SKILL_CLOSE");
+		this:UnregisterEvent("PLAYER_ENTER_COMBAT");
+		this:UnregisterEvent("PLAYER_LEAVE_COMBAT");
+		this:UnregisterEvent("PLAYER_COMBO_POINTS");
+		this:UnregisterEvent("START_AUTOREPEAT_SPELL");
+		this:UnregisterEvent("STOP_AUTOREPEAT_SPELL");
+
+		if ( this.showgrid == 0 ) then
+			this:Hide();
+		else
+			buttonCooldown:Hide();
+		end
 	end
 
 	-- Add a green border if button is an equipped item
@@ -297,21 +311,10 @@ function ActionButton_OnEvent(event)
 		return;
 	end
 
-	-- All event handlers below this line MUST only be valid when the button is visible
-	if ( not this:IsVisible() ) then
-		return;
-	end
+	-- All event handlers below this line are only set when the button has an action
 
-	if ( event == "UNIT_HEALTH" or event == "UNIT_MANA" or event == "UNIT_RAGE" or event == "UNIT_FOCUS" or event == "UNIT_ENERGY" ) then
-		if ( arg1 == "player" ) then
-			ActionButton_UpdateUsable();
-		end
-	elseif ( event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_AURAS_CHANGED" ) then
+	if ( event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_AURAS_CHANGED" ) then
 		ActionButton_UpdateUsable();
-	elseif ( event == "UNIT_AURASTATE" ) then
-		if ( arg1 == "player" or arg1 == "target" ) then
-			ActionButton_UpdateUsable();
-		end
 	elseif ( event == "UNIT_INVENTORY_CHANGED" ) then
 		if ( arg1 == "player" ) then
 			ActionButton_Update();

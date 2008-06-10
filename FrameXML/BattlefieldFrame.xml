@@ -61,38 +61,6 @@
 			</Anchors>
 		</HighlightText>
 	</Button>
-	<ScrollFrame name="BattlefieldListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-					<Size>
-						<AbsDimension x="30" y="36"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
-							<Offset>
-								<AbsDimension x="-2" y="2"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.28125"/>
-				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-					<Size>
-						<AbsDimension x="30" y="38"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
-							<Offset>
-								<AbsDimension x="-2" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.53125" right="1.0" top="0.703125" bottom="1.0"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</ScrollFrame>
 	<Frame name="BattlefieldFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>
 			<AbsDimension x="384" y="512"/>
@@ -309,14 +277,14 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 							<Size>
 								<AbsDimension x="31" y="128"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="5"/>
+										<AbsDimension x="-2" y="5"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -327,9 +295,9 @@
 								<AbsDimension x="31" y="106"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="-2"/>
+										<AbsDimension x="-2" y="-2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

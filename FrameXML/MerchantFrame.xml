@@ -65,13 +65,15 @@
 						if ( MerchantFrame.selectedTab == 1 ) then
 							GameTooltip:SetMerchantItem(this:GetID());
 							if ( ShoppingTooltip1:SetMerchantCompareItem(this:GetID(), 1) ) then
-								ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_BOTTOMRIGHT");
+								ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_NONE");
+								ShoppingTooltip1:ClearAllPoints();
 								ShoppingTooltip1:SetPoint("TOPLEFT", "GameTooltip", "TOPRIGHT", 0, -10);
 								ShoppingTooltip1:SetMerchantCompareItem(this:GetID(), 1);
 								ShoppingTooltip1:Show();
 							end
 							if ( ShoppingTooltip2:SetMerchantCompareItem(this:GetID(), 2) ) then
-								ShoppingTooltip2:SetOwner(ShoppingTooltip1, "ANCHOR_BOTTOMRIGHT");
+								ShoppingTooltip2:SetOwner(ShoppingTooltip1, "ANCHOR_NONE");
+								ShoppingTooltip2:ClearAllPoints();
 								ShoppingTooltip2:SetPoint("TOPLEFT", "ShoppingTooltip1", "TOPRIGHT", 0, 0);
 								ShoppingTooltip2:SetMerchantCompareItem(this:GetID(), 2);
 								ShoppingTooltip2:Show();

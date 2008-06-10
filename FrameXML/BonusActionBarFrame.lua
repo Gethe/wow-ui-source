@@ -138,7 +138,7 @@ function ShapeshiftBar_OnLoad()
 	this:RegisterEvent("PLAYER_AURAS_CHANGED");
 	this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	this:RegisterEvent("UNIT_HEALTH");
-	this:RegisterEvent("UNIT_HEALTH");
+	this:RegisterEvent("UNIT_MANA");
 	this:RegisterEvent("UNIT_RAGE");
 	this:RegisterEvent("UNIT_FOCUS");
 	this:RegisterEvent("UNIT_ENERGY");
@@ -202,10 +202,11 @@ function ShapeshiftBar_Update()
 end
 
 function ShapeshiftBar_UpdateState()
+	local numForms = GetNumShapeshiftForms();
 	for i=1, NUM_SHAPESHIFT_SLOTS do
 		button = getglobal("ShapeshiftButton"..i);
 		icon = getglobal("ShapeshiftButton"..i.."Icon");
-		if ( i <= GetNumShapeshiftForms() ) then
+		if ( i <= numForms ) then
 			texture, name, isActive, isCastable = GetShapeshiftFormInfo(i);
 			icon:SetTexture(texture);
 			

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="DurabilityFrame.lua"/>
-	<Frame name="DurabilityFrame" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="false">
+	<Frame name="DurabilityFrame" parent="UIParent" frameStrata="LOW" hidden="false">
 		<Size>
 			<AbsDimension x="10" y="65"/>
 		</Size>

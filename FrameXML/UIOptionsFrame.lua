@@ -1,45 +1,62 @@
 UIOptionsFrameCheckButtons = { };
-UIOptionsFrameCheckButtons["INVERT_MOUSE"] = { index = 1, cvar = "mouseInvertPitch" , tooltipText = OPTION_TOOLTIP_INVERT_MOUSE};
-UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"] = { index = 2, cvar = "statusBarText" , tooltipText = OPTION_TOOLTIP_STATUS_BAR_TEXT};
-UIOptionsFrameCheckButtons["ASSIST_ATTACK"] = { index = 3, cvar = "assistAttack" , tooltipText = OPTION_TOOLTIP_ASSIST_ATTACK};
-UIOptionsFrameCheckButtons["PROFANITY_FILTER"] = { index = 5, cvar = "profanityFilter" , tooltipText = OPTION_TOOLTIP_PROFANITY_FILTER};
-UIOptionsFrameCheckButtons["CLICK_TO_MOVE"] = { index = 6, cvar = "autointeract" , tooltipText = OPTION_TOOLTIP_CLICK_TO_MOVE};
-UIOptionsFrameCheckButtons["SIMPLE_CHAT_TEXT"] = { index = 7, uvar = "SIMPLE_CHAT" , tooltipText = OPTION_TOOLTIP_SIMPLE_CHAT};
-UIOptionsFrameCheckButtons["CHAT_LOCKED_TEXT"] = { index = 8, uvar = "CHAT_LOCKED" , tooltipText = OPTION_TOOLTIP_CHAT_LOCKED};
-UIOptionsFrameCheckButtons["SHOW_PET_MELEE_DAMAGE"] = { index = 9, cvar = "PetMeleeDamage" , tooltipText = OPTION_TOOLTIP_PET_MELEE_DAMAGE };
-UIOptionsFrameCheckButtons["LOG_PERIODIC_EFFECTS"] = { index = 11, cvar = "CombatLogPeriodicSpells" , tooltipText = OPTION_TOOLTIP_PERIODIC_EFFECTS};
-UIOptionsFrameCheckButtons["USE_UBERTOOLTIPS"] = { index = 12, cvar = "UberTooltips" , tooltipText = OPTION_TOOLTIP_UBERTOOLTIPS};
-UIOptionsFrameCheckButtons["GUILDMEMBER_ALERT"] = { index = 13, cvar = "guildMemberNotify" , tooltipText = OPTION_TOOLTIP_GUILDMEMBER_ALERT};
-UIOptionsFrameCheckButtons["BLOCK_TRADES"] = { index = 14, cvar = "BlockTrades" , tooltipText = OPTION_TOOLTIP_BLOCK_TRADES};
-UIOptionsFrameCheckButtons["SMART_PIVOT"] = { index = 15, cvar = "cameraPivot" , tooltipText = OPTION_TOOLTIP_CAMERA_MODE};
-UIOptionsFrameCheckButtons["CLEAR_AFK"] = { index = 16, cvar = "autoClearAFK" , tooltipText = OPTION_TOOLTIP_CLEAR_AFK};
-UIOptionsFrameCheckButtons["SHOW_PET_NAMEPLATES"] = { index = 17, cvar = "PetNamePlates", tooltipText = OPTION_TOOLTIP_PET_NAMEPLATES};
-UIOptionsFrameCheckButtons["REMOVE_CHAT_DELAY_TEXT"] = { index = 18, uvar = "REMOVE_CHAT_DELAY", tooltipText = OPTION_TOOLTIP_REMOVE_CHAT_DELAY};
-UIOptionsFrameCheckButtons["SHOW_DAMAGE_TEXT"] = { index = 19, cvar = "CombatDamage", tooltipText = OPTION_TOOLTIP_SHOW_DAMAGE};
-UIOptionsFrameCheckButtons["SHOW_NPC_NAMES"] = { index = 20, cvar = "UnitNameNPC", tooltipText = OPTION_TOOLTIP_SHOW_NPC_NAMES};
-UIOptionsFrameCheckButtons["SHOW_PLAYER_NAMES"] = { index = 21, cvar = "UnitNamePlayer", tooltipText = OPTION_TOOLTIP_SHOW_PLAYER_NAMES};
-UIOptionsFrameCheckButtons["SHOW_GUILD_NAMES"] = { index = 22, cvar = "UnitNamePlayerGuild", tooltipText = OPTION_TOOLTIP_SHOW_GUILD_NAMES};
-UIOptionsFrameCheckButtons["SHOW_PLAYER_TITLES"] = { index = 23, cvar = "UnitNamePlayerPVPTitle", tooltipText = OPTION_TOOLTIP_SHOW_PLAYER_TITLES};
-UIOptionsFrameCheckButtons["FOLLOW_TERRAIN"] = { index = 24, cvar = "cameraTerrainTilt", tooltipText = OPTION_TOOLTIP_FOLLOW_TERRAIN};
-UIOptionsFrameCheckButtons["HEAD_BOB"] = { index = 26, cvar = "cameraBobbing", tooltipText = OPTION_TOOLTIP_HEAD_BOB};
-UIOptionsFrameCheckButtons["WATER_COLLISION"] = { index = 27, cvar = "cameraWaterCollision", tooltipText = OPTION_TOOLTIP_WATER_COLLISION};
-UIOptionsFrameCheckButtons["SHOW_TUTORIALS"] = { index = 28, tooltipText = OPTION_TOOLTIP_SHOW_TUTORIALS};
-UIOptionsFrameCheckButtons["SHOW_NEWBIE_TIPS_TEXT"] = { index = 29, uvar = "SHOW_NEWBIE_TIPS", tooltipText = OPTION_TOOLTIP_SHOW_NEWBIE_TIPS};
-UIOptionsFrameCheckButtons["SHOW_CLOAK"] = { index = 30, func = ShowingCloak, setFunc = ShowCloak , tooltipText = OPTION_TOOLTIP_SHOW_CLOAK};
-UIOptionsFrameCheckButtons["SHOW_HELM"] = { index = 31, func = ShowingHelm , setFunc = ShowHelm, tooltipText = OPTION_TOOLTIP_SHOW_HELM};
-UIOptionsFrameCheckButtons["LOCK_ACTIONBAR_TEXT"] = { index = 32, uvar="LOCK_ACTIONBAR", tooltipText = OPTION_TOOLTIP_LOCK_ACTIONBAR};
-UIOptionsFrameCheckButtons["SHOW_MULTIBAR1_TEXT"] = { index = 33, func = MultiBar1_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR1};
-UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"] = { index = 34, func = MultiBar2_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR2};
-UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"] = { index = 35, func = MultiBar3_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR3};
-UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"] = { index = 36, func = MultiBar4_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR4};
-UIOptionsFrameCheckButtons["CHAT_BUBBLES_TEXT"] = { index = 37, cvar = "ChatBubbles", tooltipText = OPTION_TOOLTIP_CHAT_BUBBLES_TEXT};
-UIOptionsFrameCheckButtons["PARTY_CHAT_BUBBLES_TEXT"] = { index = 38, cvar = "ChatBubblesParty", tooltipText = OPTION_TOOLTIP_PARTY_CHAT_BUBBLES_TEXT};
-UIOptionsFrameCheckButtons["SHOW_BUFF_DURATION_TEXT"] = { index = 39, uvar = "SHOW_BUFF_DURATIONS", tooltipText = OPTION_TOOLTIP_SHOW_BUFF_DURATION};
-UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"] = { index = 40, uvar = "ALWAYS_SHOW_MULTIBARS", tooltipText = OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS};
-UIOptionsFrameCheckButtons["SHOW_PARTY_PETS_TEXT"] = { index = 41, uvar = "SHOW_PARTY_PETS", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_PETS};
-UIOptionsFrameCheckButtons["SHOW_QUEST_FADING_TEXT"] = { index = 42, uvar = "QUEST_FADING_DISABLE", tooltipText = OPTION_TOOLTIP_SHOW_QUEST_FADING};
-UIOptionsFrameCheckButtons["SHOW_PARTY_BACKGROUND_TEXT"] = { index = 43, uvar = "SHOW_PARTY_BACKGROUND", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_BACKGROUND};
---UIOptionsFrameCheckButtons["SHOW_TIPOFTHEDAY_TEXT"] = { index = 44, cvar = "showGameTips", tooltipText = OPTION_TOOLTIP_SHOW_TIPOFTHEDAY};
+------------------- Basic Options -------------------
+-- Controls
+UIOptionsFrameCheckButtons["INVERT_MOUSE"] =			{ index = 1, cvar = "mouseInvertPitch" , tooltipText = OPTION_TOOLTIP_INVERT_MOUSE};
+-- Display
+UIOptionsFrameCheckButtons["USE_UBERTOOLTIPS"] =		{ index = 12, cvar = "UberTooltips" , tooltipText = OPTION_TOOLTIP_UBERTOOLTIPS};
+UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"] =			{ index = 2, cvar = "statusBarText" , tooltipText = OPTION_TOOLTIP_STATUS_BAR_TEXT};
+UIOptionsFrameCheckButtons["PROFANITY_FILTER"] =		{ index = 5, cvar = "profanityFilter" , tooltipText = OPTION_TOOLTIP_PROFANITY_FILTER};
+UIOptionsFrameCheckButtons["SHOW_PARTY_PETS_TEXT"] =		{ index = 41, uvar = "SHOW_PARTY_PETS", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_PETS};
+UIOptionsFrameCheckButtons["SHOW_CLOAK"] =			{ index = 30, func = ShowingCloak, setFunc = ShowCloak , tooltipText = OPTION_TOOLTIP_SHOW_CLOAK};
+UIOptionsFrameCheckButtons["SHOW_HELM"] =			{ index = 31, func = ShowingHelm , setFunc = ShowHelm, tooltipText = OPTION_TOOLTIP_SHOW_HELM};
+UIOptionsFrameCheckButtons["SHOW_QUEST_FADING_TEXT"] =		{ index = 42, uvar = "QUEST_FADING_DISABLE", tooltipText = OPTION_TOOLTIP_SHOW_QUEST_FADING};
+UIOptionsFrameCheckButtons["SHOW_BUFF_DURATION_TEXT"] =		{ index = 39, uvar = "SHOW_BUFF_DURATIONS", tooltipText = OPTION_TOOLTIP_SHOW_BUFF_DURATION};
+-- Chat
+UIOptionsFrameCheckButtons["SIMPLE_CHAT_TEXT"] =		{ index = 7, uvar = "SIMPLE_CHAT" , tooltipText = OPTION_TOOLTIP_SIMPLE_CHAT};
+UIOptionsFrameCheckButtons["CHAT_LOCKED_TEXT"] =		{ index = 8, uvar = "CHAT_LOCKED" , tooltipText = OPTION_TOOLTIP_CHAT_LOCKED};
+UIOptionsFrameCheckButtons["GUILDMEMBER_ALERT"] =		{ index = 13, cvar = "guildMemberNotify" , tooltipText = OPTION_TOOLTIP_GUILDMEMBER_ALERT};
+UIOptionsFrameCheckButtons["REMOVE_CHAT_DELAY_TEXT"] =		{ index = 18, uvar = "REMOVE_CHAT_DELAY", tooltipText = OPTION_TOOLTIP_REMOVE_CHAT_DELAY};
+UIOptionsFrameCheckButtons["CHAT_BUBBLES_TEXT"] =		{ index = 37, cvar = "ChatBubbles", tooltipText = OPTION_TOOLTIP_CHAT_BUBBLES_TEXT};
+UIOptionsFrameCheckButtons["PARTY_CHAT_BUBBLES_TEXT"] =		{ index = 38, cvar = "ChatBubblesParty", tooltipText = OPTION_TOOLTIP_PARTY_CHAT_BUBBLES_TEXT};
+UIOptionsFrameCheckButtons["SHOW_LOOT_SPAM"] =			{ index = 46, cvar = "showLootSpam", tooltipText = OPTION_TOOLTIP_SHOW_LOOT_SPAM};
+-- Action Bars
+UIOptionsFrameCheckButtons["LOCK_ACTIONBAR_TEXT"] =		{ index = 32, uvar="LOCK_ACTIONBAR", tooltipText = OPTION_TOOLTIP_LOCK_ACTIONBAR};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR1_TEXT"] =		{ index = 33, func = MultiBar1_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR1};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR2_TEXT"] =		{ index = 34, func = MultiBar2_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR2};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR3_TEXT"] =		{ index = 35, func = MultiBar3_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR3};
+UIOptionsFrameCheckButtons["SHOW_MULTIBAR4_TEXT"] =		{ index = 36, func = MultiBar4_IsVisible, setFunc = Multibar_EmptyFunc, tooltipText = OPTION_TOOLTIP_SHOW_MULTIBAR4};
+UIOptionsFrameCheckButtons["ALWAYS_SHOW_MULTIBARS_TEXT"] =	{ index = 40, uvar = "ALWAYS_SHOW_MULTIBARS", tooltipText = OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS};
+-- Raid Options
+UIOptionsFrameCheckButtons["HIDE_PARTY_INTERFACE_TEXT"] =	{ index = 47, uvar = "HIDE_PARTY_INTERFACE" , tooltipText = OPTION_TOOLTIP_HIDE_PARTY_INTERFACE};
+UIOptionsFrameCheckButtons["SHOW_DISPELLABLE_DEBUFFS_TEXT"] =	{ index = 48, uvar = "SHOW_DISPELLABLE_DEBUFFS" , tooltipText = OPTION_TOOLTIP_SHOW_DISPELLABLE_DEBUFFS};
+UIOptionsFrameCheckButtons["SHOW_CASTABLE_BUFFS_TEXT"] =	{ index = 49, uvar = "SHOW_CASTABLE_BUFFS" , tooltipText = OPTION_TOOLTIP_SHOW_CASTABLE_BUFFS};
+
+------------------- Advanced Options -------------------
+-- General
+UIOptionsFrameCheckButtons["CLICK_TO_MOVE"] =			{ index = 6, cvar = "autointeract" , tooltipText = OPTION_TOOLTIP_CLICK_TO_MOVE};
+UIOptionsFrameCheckButtons["GAMEFIELD_DESELECT_TEXT"] =		{ index = 45, cvar = "deselectOnClick", tooltipText = OPTION_TOOLTIP_GAMEFIELD_DESELECT};
+UIOptionsFrameCheckButtons["ASSIST_ATTACK"] =			{ index = 3, cvar = "assistAttack" , tooltipText = OPTION_TOOLTIP_ASSIST_ATTACK};
+UIOptionsFrameCheckButtons["CLEAR_AFK"] =			{ index = 16, cvar = "autoClearAFK" , tooltipText = OPTION_TOOLTIP_CLEAR_AFK};
+UIOptionsFrameCheckButtons["BLOCK_TRADES"] =			{ index = 14, cvar = "BlockTrades" , tooltipText = OPTION_TOOLTIP_BLOCK_TRADES};
+-- Display
+UIOptionsFrameCheckButtons["SHOW_PLAYER_NAMES"] =		{ index = 21, cvar = "UnitNamePlayer", tooltipText = OPTION_TOOLTIP_SHOW_PLAYER_NAMES};
+UIOptionsFrameCheckButtons["SHOW_GUILD_NAMES"] =		{ index = 22, cvar = "UnitNamePlayerGuild", tooltipText = OPTION_TOOLTIP_SHOW_GUILD_NAMES};
+UIOptionsFrameCheckButtons["SHOW_PLAYER_TITLES"] =		{ index = 23, cvar = "UnitNamePlayerPVPTitle", tooltipText = OPTION_TOOLTIP_SHOW_PLAYER_TITLES};
+UIOptionsFrameCheckButtons["SHOW_PET_NAMEPLATES"] =		{ index = 17, cvar = "PetNamePlates", tooltipText = OPTION_TOOLTIP_PET_NAMEPLATES};
+UIOptionsFrameCheckButtons["SHOW_NPC_NAMES"] =			{ index = 20, cvar = "UnitNameNPC", tooltipText = OPTION_TOOLTIP_SHOW_NPC_NAMES};
+UIOptionsFrameCheckButtons["SHOW_PARTY_BACKGROUND_TEXT"] =	{ index = 43, uvar = "SHOW_PARTY_BACKGROUND", tooltipText = OPTION_TOOLTIP_SHOW_PARTY_BACKGROUND};
+UIOptionsFrameCheckButtons["SHOW_DAMAGE_TEXT"] =		{ index = 19, cvar = "CombatDamage", tooltipText = OPTION_TOOLTIP_SHOW_DAMAGE};
+UIOptionsFrameCheckButtons["LOG_PERIODIC_EFFECTS"] =		{ index = 11, cvar = "CombatLogPeriodicSpells" , tooltipText = OPTION_TOOLTIP_PERIODIC_EFFECTS};
+UIOptionsFrameCheckButtons["SHOW_PET_MELEE_DAMAGE"] =		{ index = 9, cvar = "PetMeleeDamage" , tooltipText = OPTION_TOOLTIP_PET_MELEE_DAMAGE };
+-- Camera Controls
+UIOptionsFrameCheckButtons["FOLLOW_TERRAIN"] =			{ index = 24, cvar = "cameraTerrainTilt", tooltipText = OPTION_TOOLTIP_FOLLOW_TERRAIN};
+UIOptionsFrameCheckButtons["HEAD_BOB"] =			{ index = 26, cvar = "cameraBobbing", tooltipText = OPTION_TOOLTIP_HEAD_BOB};
+UIOptionsFrameCheckButtons["WATER_COLLISION"] =			{ index = 27, cvar = "cameraWaterCollision", tooltipText = OPTION_TOOLTIP_WATER_COLLISION};
+UIOptionsFrameCheckButtons["SMART_PIVOT"] =			{ index = 15, cvar = "cameraPivot" , tooltipText = OPTION_TOOLTIP_CAMERA_MODE};
+-- Help
+UIOptionsFrameCheckButtons["SHOW_TUTORIALS"] =			{ index = 28, tooltipText = OPTION_TOOLTIP_SHOW_TUTORIALS};
+UIOptionsFrameCheckButtons["SHOW_NEWBIE_TIPS_TEXT"] =		{ index = 29, uvar = "SHOW_NEWBIE_TIPS", tooltipText = OPTION_TOOLTIP_SHOW_NEWBIE_TIPS};
+UIOptionsFrameCheckButtons["SHOW_TIPOFTHEDAY_TEXT"] =		{ index = 44, cvar = "showGameTips", tooltipText = OPTION_TOOLTIP_SHOW_TIPOFTHEDAY};
 
 UIOptionsFrameSliders = {
 	{ text = MOUSE_SENSITIVITY, cvar = "mousespeed", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 , tooltipText = OPTION_TOOLTIP_MOUSE_SENSITIVITY},
@@ -69,8 +86,14 @@ function UIOptionsFrame_Init()
 	RegisterForSave("QUEST_FADING_DISABLE");
 	SHOW_PARTY_BACKGROUND = "0";
 	RegisterForSave("SHOW_PARTY_BACKGROUND");
+	HIDE_PARTY_INTERFACE = "0";
+	RegisterForSave("HIDE_PARTY_INTERFACE");
 	UIOptionsFrameCheckButtons["STATUS_BAR_TEXT"].value = GetCVar("statusBarText");
 	this:RegisterEvent("CVAR_UPDATE");
+
+	-- Tab Handling code
+	PanelTemplates_SetNumTabs(this, 2);
+	PanelTemplates_SetTab(this, 1);
 end
 
 function UIOptionsFrame_OnEvent()
@@ -94,6 +117,10 @@ function UIOptionsFrame_Load()
 			checked = value.func();
 		elseif ( index == "SHOW_TUTORIALS" ) then
 			if ( TutorialsEnabled() ) then
+				checked = 1;
+			end
+		elseif ( index == "GAMEFIELD_DESELECT_TEXT" ) then
+			if ( GetCVar(value.cvar) == "0" ) then
 				checked = 1;
 			end
 		elseif ( value.uvar ) then
@@ -148,6 +175,9 @@ function UIOptionsFrame_Save()
 			for i=1, MAX_PARTY_MEMBERS do
 					PartyMemberFrame_UpdatePet(i);
 			end
+		elseif ( value.uvar == "HIDE_PARTY_INTERFACE" ) then
+			setglobal(value.uvar, value.value);
+			RaidOptionsFrame_UpdatePartyFrames();
 		elseif ( value.uvar ) then
 			setglobal(value.uvar, value.value);
 		elseif ( index == "SHOW_TUTORIALS" ) then
@@ -163,6 +193,13 @@ function UIOptionsFrame_Save()
 		elseif ( index == "SHOW_PET_MELEE_DAMAGE" ) then
 			SetCVar(value.cvar, value.value, index);
 			SetCVar("PetSpellDamage", value.value);
+		elseif ( index == "GAMEFIELD_DESELECT_TEXT" ) then
+			if ( value.value == "1" ) then
+				value.value = "0";
+			else
+				value.value = "1";
+			end
+			SetCVar(value.cvar, value.value, index);
 		else
 			SetCVar(value.cvar, value.value, index);
 		end

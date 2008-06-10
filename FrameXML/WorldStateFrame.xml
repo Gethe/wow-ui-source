@@ -1064,25 +1064,25 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+						<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 							<Size>
 								<AbsDimension x="31" y="254"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="3"/>
+										<AbsDimension x="-2" y="3"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 							<TexCoords left="0" right="0.484375" top="0.0078125" bottom="1.0"/>
 						</Texture>
-						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 							<Size>
 								<AbsDimension x="31" y="56"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM">
+								<Anchor point="TOP" relativeTo="$parentScrollBarTop" relativePoint="BOTTOM">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>
@@ -1095,9 +1095,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								<AbsDimension x="31" y="105"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="-1"/>
+										<AbsDimension x="-2" y="-1"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

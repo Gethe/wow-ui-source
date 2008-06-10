@@ -171,7 +171,7 @@
 			<Layer level="ARTWORK">
 				<FontString name="AutoFollowStatusText" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="CENTER">
+						<Anchor point="CENTER" relativeTo="WorldFrame">
 							<Offset>
 								<AbsDimension x="0" y="0"/>
 							</Offset>

@@ -1,6 +1,5 @@
 
 SoundOptionsFrameCheckButtons = { };
-SoundOptionsFrameCheckButtons["ENABLE_GROUP_SPEECH"] = { index = 3, cvar = "EnableGroupSpeech", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_GROUP_SPEECH};
 SoundOptionsFrameCheckButtons["ENABLE_ERROR_SPEECH"] = { index = 4, cvar = "EnableErrorSpeech", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_ERROR_SPEECH};
 SoundOptionsFrameCheckButtons["ENABLE_MUSIC"] = { index = 5, cvar = "EnableMusic", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_MUSIC};
 SoundOptionsFrameCheckButtons["ENABLE_AMBIENCE"] = { index = 2, cvar = "EnableAmbience", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_AMBIENCE};
@@ -129,24 +128,6 @@ function SoundOptionsFrame_ToggleSound(isClicked)
 		
 	end
 	SoundOptionsFrame_UpdateDependencies();
-	--[[
-	local string, button;
-	for index, value in SoundOptionsFrameCheckButtons do
-		if ( index == "ENABLE_GROUP_SPEECH" or index == "ENABLE_ERROR_SPEECH" or index == "ENABLE_AMBIENCE" ) then
-			SetCVar(value.cvar, GetCVar(value.cvar));
-			button = getglobal("SoundOptionsFrameCheckButton"..value.index);
-			string = getglobal("SoundOptionsFrameCheckButton"..value.index.."Text");
-			if ( not checked ) then
-				-- Enable
-				string:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				button:Enable();
-			else
-				-- Disable
-				string:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-				button:Disable();
-			end
-		end
-	end]]
 end
 
 function SoundOptionsFrame_MasterVolumeUp()
@@ -182,11 +163,9 @@ end
 function SoundOptionsFrame_UpdateDependencies()
 	if ( SoundOptionsFrameCheckButton1:GetChecked() ) then
 		OptionsFrame_EnableCheckBox(SoundOptionsFrameCheckButton2, SoundOptionsFrameCheckButton2:GetChecked());
-		OptionsFrame_EnableCheckBox(SoundOptionsFrameCheckButton3, SoundOptionsFrameCheckButton3:GetChecked());
 		OptionsFrame_EnableCheckBox(SoundOptionsFrameCheckButton4, SoundOptionsFrameCheckButton4:GetChecked());
 	else
 		OptionsFrame_DisableCheckBox(SoundOptionsFrameCheckButton2);
-		OptionsFrame_DisableCheckBox(SoundOptionsFrameCheckButton3);
 		OptionsFrame_DisableCheckBox(SoundOptionsFrameCheckButton4);
 	end
 end

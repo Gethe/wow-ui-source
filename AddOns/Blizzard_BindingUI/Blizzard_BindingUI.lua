@@ -1,7 +1,48 @@
 KEY_BINDINGS_DISPLAYED = 17;
 KEY_BINDING_HEIGHT = 25;
 
+DEFAULT_BINDINGS = 0;
+ACCOUNT_BINDINGS = 1;
+CHARACTER_BINDINGS = 2;
+
 UIPanelWindows["KeyBindingFrame"] = { area = "center", pushable = 0, whileDead = 1 };
+
+StaticPopupDialogs["CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS"] = {
+	text = TEXT(CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS),
+	button1 = TEXT(OKAY),
+	button2 = TEXT(CANCEL),
+	OnAccept = function()
+		SaveBindings(KeyBindingFrame.which);
+		KeyBindingFrameOutputText:SetText("");
+		KeyBindingFrame.selected = nil;
+		HideUIPanel(KeyBindingFrame);
+		RegisterForSave("HAS_CHARACTER_SPECIFIC_BINDINGS");
+		HAS_CHARACTER_SPECIFIC_BINDINGS = 1;
+	end,
+	timeout = 0,
+	whileDead = 1,
+	showAlert = 1,
+};
+
+StaticPopupDialogs["CONFIRM_LOSE_BINDING_CHANGES"] = {
+	text = TEXT(CONFIRM_LOSE_BINDING_CHANGES),
+	button1 = TEXT(OKAY),
+	button2 = TEXT(CANCEL),
+	OnAccept = function()
+		KeyBindingFrame_ChangeBindingProfile();
+		KeyBindingFrame.bindingsChanged = nil;
+	end,
+	OnCancel = function()
+		if ( KeyBindingFrameCharacterButton:GetChecked() ) then
+			KeyBindingFrameCharacterButton:SetChecked();
+		else
+			KeyBindingFrameCharacterButton:SetChecked(1);
+		end
+	end,
+	timeout = 0,
+	whileDead = 1,
+	showAlert = 1,
+};
 
 function KeyBindingFrame_OnLoad()
 	this:RegisterForClicks("MiddleButtonUp", "Button4Up", "Button5Up");
@@ -10,6 +51,18 @@ end
 
 function KeyBindingFrame_OnShow()
 	KeyBindingFrame_Update();
+
+	-- Update character button
+	KeyBindingFrameCharacterButton:SetChecked(GetCurrentBindingSet() == 2);
+	-- Update header text
+	if ( KeyBindingFrameCharacterButton:GetChecked() ) then
+		KeyBindingFrameHeaderText:SetText(format(CHARACTER_KEY_BINDINGS, UnitName("player")));
+	else
+		KeyBindingFrameHeaderText:SetText(KEY_BINDINGS);
+	end
+
+	-- Reset bindingsChanged
+	KeyBindingFrame.bindingsChanged = nil;
 end
 
 function KeyBindingFrame_Update()
@@ -164,9 +217,10 @@ function KeyBindingFrame_OnKeyDown(button)
 		-- Button highlighting stuff
 		KeyBindingFrame.selected = nil;
 		KeyBindingFrame.buttonPressed:UnlockHighlight();
+		KeyBindingFrame.bindingsChanged = 1;
 	else
 		if ( arg1 == "ESCAPE" ) then
-			ResetBindings();
+			LoadBindings(GetCurrentBindingSet());
 			KeyBindingFrameOutputText:SetText("");
 			KeyBindingFrame.selected = nil;
 			HideUIPanel(this);
@@ -215,7 +269,7 @@ function KeyBindingFrame_SetBinding(key, selectedBinding, oldKey)
 			SetBinding(oldKey, selectedBinding);
 		end
 		--Error message
-		KeyBindingFrameOutputText:SetText("Can't bind mousewheel to actions with up and down states");
+		KeyBindingFrameOutputText:SetText(KEYBINDINGFRAME_MOUSEWHEEL_ERROR);
 	end
 end
 
@@ -225,4 +279,17 @@ function KeyBindingFrame_UpdateUnbindKey()
 	else
 		KeyBindingFrameUnbindButton:Disable();
 	end
+end
+
+function KeyBindingFrame_ChangeBindingProfile()
+	if ( KeyBindingFrameCharacterButton:GetChecked() ) then
+		LoadBindings(CHARACTER_BINDINGS);
+		KeyBindingFrameHeaderText:SetText(format(CHARACTER_KEY_BINDINGS, UnitName("player")));
+	else
+		LoadBindings(ACCOUNT_BINDINGS);
+		KeyBindingFrameHeaderText:SetText(KEY_BINDINGS);
+	end
+	KeyBindingFrameOutputText:SetText("");
+	KeyBindingFrame.selected = nil;
+	KeyBindingFrame_Update();
 end

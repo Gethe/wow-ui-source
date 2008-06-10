@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="FloatingChatFrame.lua"/>
 	<!-- DockRegion Template -->
-	<Frame name="DockRegionTemplate" virtual="true" parent="UIParent" hidden="false">
+	<Frame name="DockRegionTemplate" virtual="true" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="0" y="65"/>
 		</Size>
@@ -207,7 +207,7 @@
 
 	<!-- ===============================================================================-->
 	<!-- Floating frame template-->
-	<ScrollingMessageFrame name="FloatingChatFrameTemplate" movable="true" enableMouse="false" resizable="true" inherits="ChatFrameTemplate" parent="UIParent" hidden="false" virtual="true">
+	<ScrollingMessageFrame name="FloatingChatFrameTemplate" movable="true" enableMouse="false" resizable="true" inherits="ChatFrameTemplate" parent="UIParent" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="430" y="128"/>
 		</Size>
@@ -681,7 +681,7 @@
 	</ScrollingMessageFrame>
 
 	<!-- Main chat window -->
-	<ScrollingMessageFrame name="ChatFrame1" inherits="FloatingChatFrameTemplate" id="1">
+	<ScrollingMessageFrame name="ChatFrame1" hidden="false" inherits="FloatingChatFrameTemplate" id="1">
 		<Size>
 			<AbsDimension x="430" y="120"/>
 		</Size>

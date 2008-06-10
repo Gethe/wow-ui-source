@@ -519,6 +519,24 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<FontString name="SendMailErrorText" inherits="GameFontRedSmall" hidden="true">
+							<Size>
+								<AbsDimension x="0" y="10"/>
+							</Size>
+						</FontString>
+						<Texture name="SendMailErrorCoin" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
+							<Size>
+								<AbsDimension x="10" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SendMailErrorText" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="1" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+						</Texture>
 						<Texture name="SendMailHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 							<Size>
 								<AbsDimension x="256" y="16"/>
@@ -579,14 +597,14 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size>
 										<AbsDimension x="31" y="256"/>
 									</Size>
 									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 											<Offset>
-												<AbsDimension x="0" y="5"/>
+												<AbsDimension x="-2" y="5"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -597,9 +615,9 @@
 										<AbsDimension x="31" y="106"/>
 									</Size>
 									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 											<Offset>
-												<AbsDimension x="0" y="-2"/>
+												<AbsDimension x="-2" y="-2"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -877,7 +895,7 @@
 									<Anchors>
 										<Anchor point="TOPLEFT">
 											<Offset>
-												<AbsDimension x="49" y="-4"/>
+												<AbsDimension x="49" y="-5"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -904,6 +922,11 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
+								<Scripts>
+									<OnLoad>
+										MoneyInputFrame_SetOnvalueChangedFunc(this, SendMailFrame_CanSend);
+									</OnLoad>
+								</Scripts>
 							</Frame>
 							<CheckButton name="SendMailSendMoneyButton" inherits="SendMailRadioButtonTemplate" id="1">
 								<Anchors>
@@ -1037,6 +1060,10 @@
 					</Button>
 				</Frames>
 				<Scripts>
+					<OnLoad>
+						SendMailErrorText:SetText(format(MAIL_COD_ERROR, MAX_COD_AMOUNT));
+						SendMailErrorText:SetPoint("BOTTOMLEFT", "SendMailMoneyText", "TOPLEFT", 0, 2);
+					</OnLoad>
 					<OnShow>
 						StationeryPopupFrame_Update();
 						StationeryPopupButton_OnClick(1);
@@ -1181,9 +1208,9 @@
 								<AbsDimension x="30" y="120"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="-2" y="2"/>
+										<AbsDimension x="-3" y="2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1194,9 +1221,9 @@
 								<AbsDimension x="30" y="123"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="-2" y="-1"/>
+										<AbsDimension x="-3" y="-2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1476,51 +1503,31 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 							<Size>
 								<AbsDimension x="31" y="256"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="5"/>
+										<AbsDimension x="-2" y="5"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 							<Size>
 								<AbsDimension x="31" y="106"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="-2"/>
+										<AbsDimension x="-2" y="-2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="$parentBack">
-							<Size>
-								<AbsDimension x="27" y="10"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTop">
-									<Offset>
-										<AbsDimension x="2" y="0"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="BOTTOM" relativeTo="$parentBottom">
-									<Offset>
-										<AbsDimension x="2" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<Color r="0" g="0" b="0"/>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND">
@@ -1570,6 +1577,180 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame name="OpenMailInvoiceFrame" setAllPoints="true">
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="OpenMailInvoiceItemLabel" inherits="InvoiceTextFontNormal" text="ITEM_SOLD_COLON">
+											<Size>
+												<AbsDimension x="240" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="30" y="-35"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoicePurchaser" inherits="InvoiceTextFontNormal" text="PURCHASED_BY_COLON">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="OpenMailInvoiceItemLabel" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-5"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceBuyMode" inherits="InvoiceTextFontSmall">
+											<Anchors>
+												<Anchor point="LEFT" relativeTo="OpenMailInvoicePurchaser" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="5" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceSalePrice" inherits="InvoiceTextFontNormal" text="SALE_PRICE_COLON">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoicePurchaser" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="125" y="-26"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceDeposit" inherits="InvoiceTextFontNormal" text="DEPOSIT_COLON">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="-13"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceHouseCut" inherits="InvoiceTextFontNormal" text="AUCTION_HOUSE_CUT_COLON">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="-13"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceAmountReceived" inherits="InvoiceTextFontNormal" text="AMOUNT_RECEIVED_COLON">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="-13"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<Texture name="OpenMailArithmeticLine" file="Interface\MailFrame\UI-MailFrame-InvoiceLine">
+											<Size>
+												<AbsDimension x="256" y="32"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOP" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="9"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame name="OpenMailTransactionAmountMoneyFrame" inherits="SmallMoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceAmountReceived" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												SmallMoneyFrame_OnLoad();
+												MoneyFrame_SetType("AUCTION");
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<Frame name="OpenMailDepositMoneyFrame" inherits="SmallMoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<FontString inherits="InvoiceTextFontNormal" text="+">
+													<Anchors>
+														<Anchor point="RIGHT" relativePoint="LEFT">
+															<Offset>
+																<AbsDimension x="-5" y="0"/>
+															</Offset>
+														</Anchor>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad>
+												SmallMoneyFrame_OnLoad();
+												MoneyFrame_SetType("AUCTION");
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<Frame name="OpenMailHouseCutMoneyFrame" inherits="SmallMoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceHouseCut" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<FontString inherits="InvoiceTextFontNormal" text="-">
+													<Anchors>
+														<Anchor point="RIGHT" relativePoint="LEFT">
+															<Offset>
+																<AbsDimension x="-5" y="0"/>
+															</Offset>
+														</Anchor>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad>
+												SmallMoneyFrame_OnLoad();
+												MoneyFrame_SetType("AUCTION");
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<Frame name="OpenMailSalePriceMoneyFrame" inherits="SmallMoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												SmallMoneyFrame_OnLoad();
+												MoneyFrame_SetType("AUCTION");
+											</OnLoad>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+						</Frames>
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>

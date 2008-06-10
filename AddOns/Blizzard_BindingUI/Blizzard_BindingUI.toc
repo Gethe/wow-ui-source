@@ -1,4 +1,4 @@
-## Interface: 1800
+## Interface: 10900
 ## Title: Blizzard Key Binding UI
 ## LoadOnDemand: 1
 ..\..\FrameXML\Fonts.xml

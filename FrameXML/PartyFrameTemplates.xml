@@ -190,12 +190,12 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="PartyMemberFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" virtual="true">
+	<Button name="PartyMemberFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="128" y="53"/>
 		</Size>
 		<HitRectInsets>
-			<AbsInset left="7" right="66" top="6" bottom="7"/>
+			<AbsInset left="7" right="85" top="6" bottom="7"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
