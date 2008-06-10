@@ -232,7 +232,7 @@ function UIParent_OnEvent(event)
 	if ( event == "PLAYER_DEAD" ) then
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
-			if ( GetReleaseTimeRemaining() > 0 ) then
+			if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 				StaticPopup_Show("DEATH");
 			end
 		end

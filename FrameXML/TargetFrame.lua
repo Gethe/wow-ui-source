@@ -59,6 +59,7 @@ function TargetFrame_OnEvent(event)
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
 		TargetFrame_Update();
 		TargetFrame_UpdateRaidTargetIcon();
+		TargetofTarget_Update();
 	elseif ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == "target" ) then
 			TargetFrame_CheckDead();
@@ -479,7 +480,7 @@ function TargetofTarget_OnUpdate(elapsed)
 end
 
 function TargetofTarget_Update()
-	if ( ( ( GetNumRaidMembers() >= 1 ) or ( GetNumPartyMembers() >= 1) ) and ( SHOW_TARGET_OF_TARGET == "1")  and UnitExists("target")  and  UnitExists("targettarget" )  and  not UnitIsUnit("player", "target")  ) then
+	if ( ( SHOW_TARGET_OF_TARGET == "1")  and UnitExists("target")  and  UnitExists("targettarget")  and  not UnitIsUnit("player", "target") ) then
 		TargetofTargetFrame:Show();
 	else
 		TargetofTargetFrame:Hide();

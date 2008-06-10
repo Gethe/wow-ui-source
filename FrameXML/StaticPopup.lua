@@ -369,6 +369,9 @@ StaticPopupDialogs["DEATH"] = {
 		if ( text ) then
 			getglobal(this:GetName().."Button2"):SetText(text);
 		end
+		if ( this.timeleft == -1 ) then
+			getglobal(this:GetName().."Text"):SetText(DEATH_RELEASE_NOTIMER);
+		end
 	end,
 	OnAccept = function()
 		RepopMe();

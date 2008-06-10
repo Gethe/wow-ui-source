@@ -370,12 +370,12 @@
 									</Button>
 									<Button name="GossipTitleButton23" inherits="GossipTitleButtonTemplate">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton24" relativePoint="BOTTOMLEFT"/>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton22" relativePoint="BOTTOMLEFT"/>
 										</Anchors>
 									</Button>
 									<Button name="GossipTitleButton24" inherits="GossipTitleButtonTemplate">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton16" relativePoint="BOTTOMLEFT"/>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton23" relativePoint="BOTTOMLEFT"/>
 										</Anchors>
 									</Button>
 									<Button name="GossipTitleButton25" inherits="GossipTitleButtonTemplate">

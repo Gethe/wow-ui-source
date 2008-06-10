@@ -3,11 +3,6 @@
 ## Secure: 1
 ## LoadOnDemand: 1
 ## SavedVariables: AUCTION_DISPLAY_ON_CHARACTER
-..\..\FrameXML\UIDropDownMenuTemplates.xml
-..\..\FrameXML\UIPanelTemplates.xml
-..\..\FrameXML\MoneyFrame.xml
-..\..\FrameXML\MoneyInputFrame.xml
-..\..\FrameXML\CharacterFrameTemplates.xml
 Blizzard_AuctionUI.xml
 Blizzard_AuctionDressUp.xml
 Localization.lua

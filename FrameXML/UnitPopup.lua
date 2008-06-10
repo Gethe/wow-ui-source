@@ -300,7 +300,7 @@ function UnitPopup_HideButtons()
 				UnitPopupShown[index] = 0;
 			end
 		elseif ( value == "WHISPER" ) then
-			if ( canCoop == 0 ) then
+			if ( dropdownMenu.unit and canCoop == 0 ) then
 				UnitPopupShown[index] = 0;
 			end
 		elseif ( value == "DUEL" ) then

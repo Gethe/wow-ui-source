@@ -89,3 +89,4 @@ DurabilityFrame.xml
 WorldStateFrame.xml
 DressUpFrame.xml
 RaidWarning.xml
+ClassTrainerFrameTemplates.xml

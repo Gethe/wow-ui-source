@@ -46,30 +46,31 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 	-- Set Tab Name
 	FCF_SetWindowName(chatFrame, name, 1)
 
-	-- Set Frame Color and Alpha
-	FCF_SetWindowColor(chatFrame, r, g, b, 1);
-	FCF_SetWindowAlpha(chatFrame, a, 1);
-	
 	-- Locked display stuff
 	local init = nil;
+	-- Only do this if the frame is not initialized
 	if ( onUpdateEvent and not chatFrame.isInitialized) then
-		init = 1;
+		-- Set Frame Color and Alpha
+		FCF_SetWindowColor(chatFrame, r, g, b, 1);
+		FCF_SetWindowAlpha(chatFrame, a, 1);
+		FCF_SetLocked(chatFrame, locked);
 	end
-	FCF_SetLocked(chatFrame, locked, init);
 
 	if ( shown ) then
 		chatFrame:Show();
 		FCF_SetTabPosition(chatFrame, 0);
 	else
-		chatFrame:Hide();
-		chatTab:Hide();
+		if ( not chatFrame.isDocked ) then
+			chatFrame:Hide();
+			chatTab:Hide();
+		end
 	end
 	
 	if ( docked ) then
 		FCF_DockFrame(chatFrame, docked);
 	else
 		if ( shown ) then
-			FCF_UnDockFrame(chatFrame);		
+			FCF_UnDockFrame(chatFrame);
 		else
 			FCF_Close(chatFrame);
 		end
@@ -798,11 +799,7 @@ function FCF_ToggleLock()
 	end
 end
 
-function FCF_SetLocked(chatFrame, isLocked, init)
-	if ( not chatFrame.isInitialized and not init) then
-		return;
-	end
-
+function FCF_SetLocked(chatFrame, isLocked)
 	chatFrame.isLocked = isLocked;
 	SetChatWindowLocked(chatFrame:GetID(), isLocked);
 end
@@ -1164,7 +1161,6 @@ function FCF_DockFrame(frame, index)
 	
 	-- Save docked state
 	FCF_SaveDock();
-	--SetChatWindowDocked(frame:GetID(), index);
 	FCF_SelectDockFrame(frame);
 
 	-- Set scroll button side
@@ -1179,7 +1175,7 @@ function FCF_DockFrame(frame, index)
 end
 
 function FCF_UnDockFrame(frame)
-	if ( frame == DEFAULT_CHAT_FRAME ) then
+	if ( frame == DEFAULT_CHAT_FRAME or not frame.isDocked ) then
 		return;
 	end
 	-- Undock frame regardless of whether its docked or not
@@ -1291,6 +1287,10 @@ end
 function FCF_Close(frame)
 	if ( not frame ) then
 		frame = FCF_GetCurrentChatFrame();
+	end
+	if ( not frame:IsShown() ) then
+		FCF_DockUpdate();
+		return;
 	end
 	if ( frame == DEFAULT_CHAT_FRAME ) then
 		return;

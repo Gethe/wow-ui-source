@@ -2,8 +2,5 @@
 ## Title: Blizzard Craft UI
 ## Secure: 1
 ## LoadOnDemand: 1
-..\..\FrameXML\UIPanelTemplates.xml
-..\..\FrameXML\ClassTrainerFrameTemplates.xml
-..\..\FrameXML\QuestFrameTemplates.xml
 Blizzard_CraftUI.xml
 Localization.lua

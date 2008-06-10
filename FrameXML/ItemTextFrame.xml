@@ -155,7 +155,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 							<Size>
 								<AbsDimension x="28" y="256"/>
 							</Size>
@@ -168,7 +168,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 							<Size>
 								<AbsDimension x="28" y="107"/>
 							</Size>

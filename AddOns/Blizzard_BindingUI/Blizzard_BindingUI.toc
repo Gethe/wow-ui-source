@@ -2,6 +2,5 @@
 ## Title: Blizzard Key Binding UI
 ## Secure: 1
 ## LoadOnDemand: 1
-..\..\FrameXML\UIPanelTemplates.xml
 Blizzard_BindingUI.xml
 Localization.lua

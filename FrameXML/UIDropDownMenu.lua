@@ -562,7 +562,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 					relativePoint = dropDownFrame.relativePoint;
 				end
 			elseif ( anchorName == "cursor" ) then
-				relativeTo = "UIParent";
+				relativeTo = nil;
 				local cursorX, cursorY = GetCursorPosition();
 				cursorX = cursorX/uiScale;
 				cursorY =  cursorY/uiScale;

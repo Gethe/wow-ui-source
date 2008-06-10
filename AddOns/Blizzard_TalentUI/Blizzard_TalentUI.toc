@@ -2,8 +2,5 @@
 ## Title: Blizzard Talent UI
 ## Secure: 1
 ## LoadOnDemand: 1
-..\..\FrameXML\UIPanelTemplates.xml
-..\..\FrameXML\CharacterFrameTemplates.xml
-..\..\FrameXML\ItemButtonTemplate.xml
 Blizzard_TalentUI.xml
 Localization.lua

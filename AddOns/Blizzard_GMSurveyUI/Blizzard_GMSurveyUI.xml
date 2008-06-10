@@ -369,6 +369,16 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad>
+						ScrollFrame_OnLoad();
+						this.scrollBarHideable = 1;
+					</OnLoad>
+					<OnScrollRangeChanged>
+						ScrollFrame_OnScrollRangeChanged(arg2);
+						GMSurveyFrame_Update();
+					</OnScrollRangeChanged>
+				</Scripts>
 				<ScrollChild>
 					<Frame name="GMSurveyScrollChildFrame">
 						<Size>
@@ -561,6 +571,14 @@
 												</Offset>
 											</Anchor>
 										</Anchors>
+										<Scripts>
+											<OnMouseDown>
+												GMSurveyFrameComment:SetFocus();
+											</OnMouseDown>
+											<OnMouseUp>
+												GMSurveyFrameComment:SetFocus();
+											</OnMouseUp> 
+										</Scripts>
 										<ScrollChild>
 											<EditBox name="GMSurveyFrameComment" multiLine="true" letters="500" enableMouse="true" autoFocus="false">
 												<Size>
@@ -588,14 +606,6 @@
 												<FontString inherits="GameFontHighlightSmall"/>
 											</EditBox>
 										</ScrollChild>
-										<Scripts>
-											<OnMouseDown>
-												GMSurveyFrameComment:SetFocus();
-											</OnMouseDown>
-											<OnMouseUp>
-												GMSurveyFrameComment:SetFocus();
-											</OnMouseUp> 
-										</Scripts>
 									</ScrollFrame>
 								</Frames>
 								<Scripts>
@@ -608,16 +618,6 @@
 						</Frames>
 					</Frame>
 				</ScrollChild>
-				<Scripts>
-					<OnLoad>
-						ScrollFrame_OnLoad();
-						this.scrollBarHideable = 1;
-					</OnLoad>
-					<OnScrollRangeChanged>
-						ScrollFrame_OnScrollRangeChanged(arg2);
-						GMSurveyFrame_Update();
-					</OnScrollRangeChanged>
-				</Scripts>
 			</ScrollFrame>
 			<Button name="GMSurveyCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>

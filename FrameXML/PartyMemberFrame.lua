@@ -359,9 +359,9 @@ function PartyMemberBuffTooltip_Update(isPet)
 			debuffBorder:SetVertexColor(color.r, color.g, color.b);
 			if ( this.hasDispellable ) then
 				getglobal("PartyMemberBuffTooltipDebuff"..index):Show();
+				numDebuffs = numDebuffs + 1;
 			end
 			index = index + 1;
-			numDebuffs = numDebuffs + 1;
 		end
 	end
 	for i=index, MAX_PARTY_TOOLTIP_DEBUFFS do

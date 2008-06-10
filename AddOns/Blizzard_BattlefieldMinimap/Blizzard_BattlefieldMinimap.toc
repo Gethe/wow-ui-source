@@ -3,8 +3,5 @@
 ## Secure: 1
 ## LoadOnDemand: 1
 ## SavedVariablesPerCharacter: BattlefieldMinimapOptions
-..\..\FrameXML\UIDropDownMenuTemplates.xml
-..\..\FrameXML\UIPanelTemplates.xml
-..\..\FrameXML\WorldMapFrameTemplates.xml
 Blizzard_BattlefieldMinimap.xml
 Localization.lua

@@ -2,9 +2,5 @@
 ## Title: Blizzard Trade Skill UI
 ## Secure: 1
 ## LoadOnDemand: 1
-..\..\FrameXML\UIDropDownMenuTemplates.xml
-..\..\FrameXML\UIPanelTemplates.xml
-..\..\FrameXML\ClassTrainerFrameTemplates.xml
-..\..\FrameXML\QuestFrameTemplates.xml
 Blizzard_TradeSkillUI.xml
 Localization.lua
