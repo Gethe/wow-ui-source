@@ -58,6 +58,15 @@ UIMenus = {
 	"DropDownList2"
 };
 
+ITEM_QUALITY_COLORS = { };
+for i = -1, 6 do
+	ITEM_QUALITY_COLORS[i] = { };
+	ITEM_QUALITY_COLORS[i].r,
+	ITEM_QUALITY_COLORS[i].g,
+	ITEM_QUALITY_COLORS[i].b,
+	ITEM_QUALITY_COLORS[i].hex = GetItemQualityColor(i);
+end
+
 function UIParent_OnLoad()
 	this:RegisterEvent("PLAYER_DEAD");
 	this:RegisterEvent("PLAYER_ALIVE");

@@ -3,6 +3,21 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT"] = {
+	text = TEXT(CONFIRM_BUY_BANK_SLOT),
+	button1 = TEXT(YES),
+	button2 = TEXT(NO),
+	OnAccept = function()
+		PurchaseSlot();
+	end,
+	OnShow = function()
+		MoneyFrame_Update(this:GetName().."MoneyFrame", BankFrame.nextSlotCost);
+	end,
+	hasMoneyFrame = 1,
+	timeout = 0,
+	hideOnEscape = 1,
+};
+
 StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 	text = TEXT(CONFIRM_LOOT_DISTRIBUTION),
 	button1 = TEXT(YES),
@@ -753,6 +768,7 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	button2 = TEXT(NO),
 	OnAccept = function()
 		GuildUninviteByName(GuildFrame.selectedName);
+		GuildMemberDetailFrame:Hide();
 	end,
 	OnShow = function()
 		getglobal(this:GetName().."Text"):SetText(format(TEXT(REMOVE_GUILDMEMBER_LABEL), GuildFrame.selectedName));
@@ -775,7 +791,6 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
 		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
 		CloseDropDownMenus();
-		GuildControlPopupFrame.update = 1;
 	end,
 	OnShow = function()
 		getglobal(this:GetName().."EditBox"):SetFocus();
@@ -795,7 +810,6 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
 		CloseDropDownMenus();
 		this:GetParent():Hide();
-		GuildControlPopupFrame.update = 1;
 	end,
 	EditBoxOnEscapePressed = function()
 		this:GetParent():Hide();

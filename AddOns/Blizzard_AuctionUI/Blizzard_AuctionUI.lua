@@ -35,6 +35,7 @@ StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	hasMoneyFrame = 1,
 	showAlert = 1,
 	timeout = 0,
+	exclusive = 1,
 	hideOnEscape = 1
 };
 StaticPopupDialogs["CANCEL_AUCTION"] = {
@@ -56,6 +57,7 @@ StaticPopupDialogs["CANCEL_AUCTION"] = {
 	hasMoneyFrame = 1,
 	showAlert = 1,
 	timeout = 0,
+	exclusive = 1,
 	hideOnEscape = 1
 };
 
@@ -172,6 +174,8 @@ function BrowseButton_OnClick(button)
 		button = this;
 	end
 	SetSelectedAuctionItem("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
+	-- Close any auction related popups
+	CloseAuctionStaticPopups();
 	AuctionFrameBrowse_Update();
 end
 
@@ -719,7 +723,9 @@ function BidButton_OnClick(button)
 	if ( not button ) then
 		button = this;
 	end
-	SetSelectedAuctionItem("bidder", button:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame))
+	SetSelectedAuctionItem("bidder", button:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame));
+	-- Close any auction related popups
+	CloseAuctionStaticPopups();
 	AuctionFrameBid_Update();
 end
 
@@ -915,6 +921,8 @@ function AuctionsButton_OnClick(button)
 		button = this;
 	end
 	SetSelectedAuctionItem("owner", button:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
+	-- Close any auction related popups
+	CloseAuctionStaticPopups();
 	AuctionFrameAuctions.cancelPrice = button.cancelPrice;
 	AuctionFrameAuctions_Update();
 end
@@ -1038,4 +1046,10 @@ function SortButton_UpdateArrow(button, type, sort)
 	else
 		getglobal(button:GetName().."Arrow"):SetTexCoord(0, 0.5625, 0, 1.0);
 	end
+end
+
+-- Function to close popups if another auction item is selected
+function CloseAuctionStaticPopups()
+	StaticPopup_Hide("BUYOUT_AUCTION");
+	StaticPopup_Hide("CANCEL_AUCTION");
 end

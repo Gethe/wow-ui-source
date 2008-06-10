@@ -72,7 +72,7 @@ function MacroFrame_Update()
 			macroName:SetText(name);
 			macroButton:Enable();
 			-- Highlight Selected Macro
-			if ( i == (MacroFrame.selectedMacro - MacroFrame.macroBase) ) then
+			if ( MacroFrame.selectedMacro and (i == (MacroFrame.selectedMacro - MacroFrame.macroBase)) ) then
 				macroButton:SetChecked(1);
 				MacroFrameSelectedMacroName:SetText(name);
 				MacroFrameText:SetText(body);

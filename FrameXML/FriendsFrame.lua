@@ -895,7 +895,8 @@ function GuildControlPopupFrameRemoveRankButton_OnClick()
 	GuildControlCheckboxUpdate(GuildControlGetRankFlags());
 	CloseDropDownMenus();
 	-- Set this to call guildroster in the next frame
-	GuildControlPopupFrame.update = 1;
+	--GuildRoster();
+	--GuildControlPopupFrame.update = 1;
 end
 
 function GuildControlPopupFrameRemoveRankButton_OnUpdate()

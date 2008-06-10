@@ -40,7 +40,7 @@ MoneyTypeInfo["AUCTION"] = {
 	UpdateFunc = function()
 		return this.staticMoney;
 	end,
-	showSmallerCoins = 1,
+	showSmallerCoins = "Backpack",
 	fixedWidth = 1,
 	collapse = 1,
 	truncateSmallCoins = nil,

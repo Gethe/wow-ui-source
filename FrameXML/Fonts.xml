@@ -37,16 +37,6 @@
 			["Silver"] = {0.93, 0.82, 0},
 			["Bronze"] = {0.93, 0.82, 0}
 		};
-		ITEM_QUALITY_COLORS = {
-			[-1] = { r = 1.0, g = 1.0, b = 1.0, hex = "|cffffffff" };
-			[0] = { r = 0.8, g = 0.8, b = 0.8, hex = "|cffcccccc" };
-			[1] = { r = 1.0, g = 1.0, b = 1.0, hex = "|cffffffff" };
-			[2] = { r = 0, g = 1.0, b = 0, hex = "|cff00ff00" };
-			[3] = { r = 0, g = 0.42, b = 1.0, hex = "|cff006bff" };
-			[4] = { r = 0.5, g = 0, b = 1.0, hex = "|cff7f00ff" };
-			[5] = { r = 1.0, g = 0.5, b = 0, hex = "|cfffff700" };
-			[6] = { r = 0.9, g = 0.8, b = 0.5, hex = "|cffe5ccf7" };
-		};
 		RAID_CLASS_COLORS = {
 			["HUNTER"] = { r = 0.67, g = 0.83, b = 0.45 },
 			["WARLOCK"] = { r = 0.58, g = 0.51, b = 0.79 },

@@ -153,16 +153,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnScrollRangeChanged>
-						ScrollFrame_OnScrollRangeChanged(arg2);
-						if ( this:GetVerticalScrollRange() == 0 ) then
-							getglobal(this:GetName().."Back"):Hide();
-						else
-							getglobal(this:GetName().."Back"):Show();
-						end
-					</OnScrollRangeChanged>
-				</Scripts>
 				<ScrollChild>
 					<Frame name="ItemTextPageScrollChild">
 						<Size>
@@ -180,11 +170,7 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
-								<FontString name="ItemTextFontString" inherits="ItemTextFontNormal">
-									<Size>
-										<AbsDimension x="270" y="0"/>
-									</Size>
-								</FontString>
+								<FontString inherits="ItemTextFontNormal"/>
 							</SimpleHTML>
 						</Frames>
 					</Frame>

@@ -191,11 +191,6 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button
 		scrollBar:SetMinMaxValues(0, scrollFrameHeight); 
 		scrollBar:SetValueStep(valueStep);
 		scrollChildFrame:SetHeight(scrollChildHeight);
-
-		-- To handle bad initialization
-		if ( scrollBar:GetValue() < 0 ) then
-			scrollBar:SetValue(0);
-		end
 		
 		-- Arrow button handling
 		if ( scrollBar:GetValue() == 0 ) then
@@ -250,6 +245,10 @@ end
 function ScrollFrame_OnLoad()
 	getglobal(this:GetName().."ScrollBarScrollDownButton"):Disable();
 	getglobal(this:GetName().."ScrollBarScrollUpButton"):Disable();
+
+	local scrollbar = getglobal(this:GetName().."ScrollBar");
+	scrollbar:SetMinMaxValues(0, 0);
+	scrollbar:SetValue(0);
 	this.offset = 0;
 end
 

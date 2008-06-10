@@ -288,64 +288,63 @@ function OpenMail_Update()
 	-- Is an invoice
 	if ( isInvoice ) then
 		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment = GetInboxInvoiceInfo(InboxFrame.openMailID);
-		if ( not playerName ) then
-			return;
-		end
-		-- Setup based on whether player is the buyer or the seller
-		local buyMode;
-		if ( invoiceType == "buyer" ) then
-			if ( bid == buyout ) then
-				buyMode = "("..BUYOUT..")";
+		if ( playerName ) then
+			-- Setup based on whether player is the buyer or the seller
+			local buyMode;
+			if ( invoiceType == "buyer" ) then
+				if ( bid == buyout ) then
+					buyMode = "("..BUYOUT..")";
+				else
+					buyMode = "("..HIGH_BIDDER..")";
+				end
+				OpenMailInvoiceItemLabel:SetText(ITEM_PURCHASED_COLON.." "..itemName.."  "..buyMode);
+				OpenMailInvoicePurchaser:SetText(SOLD_BY_COLON.." "..playerName);
+				OpenMailInvoiceAmountReceived:SetText(AMOUNT_PAID_COLON);
+				-- Clear buymode
+				OpenMailInvoiceBuyMode:SetText("");
+				-- Position amount paid
+				OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceSalePrice", "TOPRIGHT", 0, 0);
+				-- Update purchase price
+				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid);	
+				-- Position buy line
+				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoicePurchaser", "BOTTOMLEFT", 125, 0);
+				-- Not used for a purchase invoice
+				OpenMailInvoiceSalePrice:Hide();
+				OpenMailInvoiceDeposit:Hide();
+				OpenMailInvoiceHouseCut:Hide();
+				OpenMailDepositMoneyFrame:Hide();
+				OpenMailHouseCutMoneyFrame:Hide();
+				OpenMailSalePriceMoneyFrame:Hide();
 			else
-				buyMode = "("..HIGH_BIDDER..")";
-			end
-			OpenMailInvoiceItemLabel:SetText(ITEM_PURCHASED_COLON.." "..itemName.."  "..buyMode);
-			OpenMailInvoicePurchaser:SetText(SOLD_BY_COLON.." "..playerName);
-			OpenMailInvoiceAmountReceived:SetText(AMOUNT_PAID_COLON);
-			-- Clear buymode
-			OpenMailInvoiceBuyMode:SetText("");
-			-- Position amount paid
-			OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceSalePrice", "TOPRIGHT", 0, 0);
-			-- Update purchase price
-			MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid);	
-			-- Position buy line
-			OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoicePurchaser", "BOTTOMLEFT", 125, 0);
-			-- Not used for a purchase invoice
-			OpenMailInvoiceSalePrice:Hide();
-			OpenMailInvoiceDeposit:Hide();
-			OpenMailInvoiceHouseCut:Hide();
-			OpenMailDepositMoneyFrame:Hide();
-			OpenMailHouseCutMoneyFrame:Hide();
-			OpenMailSalePriceMoneyFrame:Hide();
-		else
-			OpenMailInvoiceItemLabel:SetText(ITEM_SOLD_COLON.." "..itemName);
-			OpenMailInvoicePurchaser:SetText(PURCHASED_BY_COLON.." "..playerName);
-			OpenMailInvoiceAmountReceived:SetText(AMOUNT_RECEIVED_COLON);
-			-- Determine if auction was bought out or bid on
-			if ( bid == buyout ) then
-				OpenMailInvoiceBuyMode:SetText("("..BUYOUT..")");
-			else
-				OpenMailInvoiceBuyMode:SetText("("..HIGH_BIDDER..")");
-			end
-			-- Position amount received
-			OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", 0, -18);
-			-- Position buy line
-			OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", 0, 9);
-			MoneyFrame_Update("OpenMailSalePriceMoneyFrame", bid);
-			MoneyFrame_Update("OpenMailDepositMoneyFrame", deposit);
-			MoneyFrame_Update("OpenMailHouseCutMoneyFrame", consignment);
-			SetMoneyFrameColor("OpenMailHouseCutMoneyFrame", 1.0, 0, 0);
-			MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid+deposit-consignment);
+				OpenMailInvoiceItemLabel:SetText(ITEM_SOLD_COLON.." "..itemName);
+				OpenMailInvoicePurchaser:SetText(PURCHASED_BY_COLON.." "..playerName);
+				OpenMailInvoiceAmountReceived:SetText(AMOUNT_RECEIVED_COLON);
+				-- Determine if auction was bought out or bid on
+				if ( bid == buyout ) then
+					OpenMailInvoiceBuyMode:SetText("("..BUYOUT..")");
+				else
+					OpenMailInvoiceBuyMode:SetText("("..HIGH_BIDDER..")");
+				end
+				-- Position amount received
+				OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", 0, -18);
+				-- Position buy line
+				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", 0, 9);
+				MoneyFrame_Update("OpenMailSalePriceMoneyFrame", bid);
+				MoneyFrame_Update("OpenMailDepositMoneyFrame", deposit);
+				MoneyFrame_Update("OpenMailHouseCutMoneyFrame", consignment);
+				SetMoneyFrameColor("OpenMailHouseCutMoneyFrame", 1.0, 0, 0);
+				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid+deposit-consignment);
 
-			-- Show these guys if the player was the seller
-			OpenMailInvoiceSalePrice:Show();
-			OpenMailInvoiceDeposit:Show();
-			OpenMailInvoiceHouseCut:Show();
-			OpenMailDepositMoneyFrame:Show();
-			OpenMailHouseCutMoneyFrame:Show();
-			OpenMailSalePriceMoneyFrame:Show();
+				-- Show these guys if the player was the seller
+				OpenMailInvoiceSalePrice:Show();
+				OpenMailInvoiceDeposit:Show();
+				OpenMailInvoiceHouseCut:Show();
+				OpenMailDepositMoneyFrame:Show();
+				OpenMailHouseCutMoneyFrame:Show();
+				OpenMailSalePriceMoneyFrame:Show();
+			end
+			OpenMailInvoiceFrame:Show();
 		end
-		OpenMailInvoiceFrame:Show();
 	else
 		OpenMailInvoiceFrame:Hide();
 	end
