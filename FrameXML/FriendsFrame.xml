@@ -2055,53 +2055,6 @@
 									</Anchor>
 								</Anchors>
 							</Button>
-							<ScrollFrame name="GuildListScrollFrame" inherits="FauxScrollFrameTemplate">
-								<Size>
-									<AbsDimension x="296" y="237"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
-										<Offset>
-											<AbsDimension x="-67" y="-98"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnVerticalScroll>
-										FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_GUILD_HEIGHT, GuildStatus_Update);
-									</OnVerticalScroll>
-								</Scripts>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size>
-												<AbsDimension x="31" y="226"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-													<Offset>
-														<AbsDimension x="-2" y="5"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0" right="0.484375" top="0" bottom="0.8828125"/>
-										</Texture>
-										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size>
-												<AbsDimension x="31" y="106"/>
-											</Size>
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="-2" y="-2"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-										</Texture>
-									</Layer>
-								</Layers>
-							</ScrollFrame>
 						</Frames>
 					</Frame>
 					<Frame name="GuildStatusFrame" hidden="true">
@@ -2293,55 +2246,55 @@
 									</Anchor>
 								</Anchors>
 							</Button>
-							<ScrollFrame name="GuildStatusScrollFrame" inherits="FauxScrollFrameTemplate">
-								<Size>
-									<AbsDimension x="296" y="237"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
-										<Offset>
-											<AbsDimension x="-67" y="-98"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnVerticalScroll>
-										FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_GUILD_HEIGHT, GuildStatus_Update);
-									</OnVerticalScroll>
-								</Scripts>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size>
-												<AbsDimension x="31" y="226"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-													<Offset>
-														<AbsDimension x="-2" y="5"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0" right="0.484375" top="0" bottom="0.8828125"/>
-										</Texture>
-										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size>
-												<AbsDimension x="31" y="106"/>
-											</Size>
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="-2" y="-2"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-										</Texture>
-									</Layer>
-								</Layers>
-							</ScrollFrame>
 						</Frames>
 					</Frame>
+					<ScrollFrame name="GuildListScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="296" y="237"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-67" y="-98"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_GUILD_HEIGHT, GuildStatus_Update);
+							</OnVerticalScroll>
+						</Scripts>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="226"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="0.8828125"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="106"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</ScrollFrame>
 					<Button name="GuildFrameGuildListToggleButton">
 						<Size>
 							<AbsDimension x="32" y="32"/>

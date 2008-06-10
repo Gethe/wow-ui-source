@@ -442,21 +442,27 @@ end
 function HelpFrameGM_UpdateCategories(...)
 	local offset = FauxScrollFrame_GetOffset(HelpFrameGMScrollFrame);
 	local index, button, text;
+	local categoryCount = 1;
+	for i=1, NUM_GM_CATEGORIES_TO_DISPLAY do
+		getglobal("HelpFrameButton"..i):Hide();
+	end
 	for i=1, NUM_GM_CATEGORIES_TO_DISPLAY do
 		-- European version of WoW need to hide the billing category
 		if ( CATEGORY_TO_NOT_DISPLAY and i == CATEGORY_TO_NOT_DISPLAY ) then
-			break;
-		end
-		index = 2 * (offset + i) - 1;
-		button = getglobal("HelpFrameButton"..i);
-		text = getglobal("HelpFrameButton"..i.."Text");
-		if ( index <= arg.n  ) then
-			text:SetText(arg[index+1]);
-			button.key = arg[index];
-			button.ticketType = arg[index];
-			button:Show();
+			
 		else
-			button:Hide();
+			index = 2 * (offset + i) - 1;
+			button = getglobal("HelpFrameButton"..categoryCount);
+			text = getglobal("HelpFrameButton"..categoryCount.."Text");
+			if ( index <= arg.n  ) then
+				text:SetText(arg[index+1]);
+				button.key = arg[index];
+				button.ticketType = arg[index];
+				button:Show();
+			else
+				button:Hide();
+			end
+			categoryCount = categoryCount + 1;
 		end
 	end
 

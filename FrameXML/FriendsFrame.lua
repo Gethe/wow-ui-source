@@ -528,7 +528,7 @@ function GuildStatus_Update()
 		-- Guild specific info
 		local year, month, day, hour;
 		local yearlabel, monthlabel, daylabel, hourlabel;
-		local guildOffset = FauxScrollFrame_GetOffset(GuildStatusScrollFrame);
+		local guildOffset = FauxScrollFrame_GetOffset(GuildListScrollFrame);
 
 		for i=1, GUILDMEMBERS_TO_DISPLAY, 1 do
 			guildIndex = guildOffset + i;
@@ -591,7 +591,7 @@ function GuildStatus_Update()
 		end
 		
 		-- ScrollFrame update
-		FauxScrollFrame_Update(GuildStatusScrollFrame, numGuildMembers, GUILDMEMBERS_TO_DISPLAY, FRIENDS_FRAME_GUILD_HEIGHT );
+		FauxScrollFrame_Update(GuildListScrollFrame, numGuildMembers, GUILDMEMBERS_TO_DISPLAY, FRIENDS_FRAME_GUILD_HEIGHT );
 
 		GuildPlayerStatusFrame:Hide();
 		GuildStatusFrame:Show();

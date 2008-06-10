@@ -275,12 +275,13 @@ function ScrollFrame_OnScrollRangeChanged(scrollrange)
 			getglobal(scrollbar:GetName().."ScrollDownButton"):Show();
 			getglobal(scrollbar:GetName().."ScrollUpButton"):Show();
 		end
-		
+		getglobal(scrollbar:GetName().."ThumbTexture"):Hide();
 	else
 		getglobal(scrollbar:GetName().."ScrollDownButton"):Show();
 		getglobal(scrollbar:GetName().."ScrollUpButton"):Show();
 		getglobal(this:GetName().."ScrollBar"):Show();
 		getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
+		getglobal(scrollbar:GetName().."ThumbTexture"):Show();
 	end
 	
 	-- Hide/show scrollframe borders
