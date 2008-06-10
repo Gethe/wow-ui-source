@@ -3,7 +3,7 @@
 	<Script file="DurabilityFrame.lua"/>
 	<Frame name="DurabilityFrame" parent="UIParent" frameStrata="LOW" hidden="false">
 		<Size>
-			<AbsDimension x="10" y="65"/>
+			<AbsDimension x="60" y="65"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">

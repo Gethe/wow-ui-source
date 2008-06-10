@@ -105,6 +105,7 @@ ChatTypeInfo["BG_SYSTEM_NEUTRAL"]						= { sticky = 0 };
 ChatTypeInfo["BG_SYSTEM_ALLIANCE"]						= { sticky = 0 };
 ChatTypeInfo["BG_SYSTEM_HORDE"]							= { sticky = 0 };
 ChatTypeInfo["COMBAT_FACTION_CHANGE"]					= { sticky = 0 };
+ChatTypeInfo["MONEY"]									= { sticky = 0 };
 
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
@@ -158,6 +159,7 @@ ChatTypeGroup["SKILL"] = {
 };
 ChatTypeGroup["LOOT"] = {
 	"CHAT_MSG_LOOT",
+	"CHAT_MSG_MONEY",
 };
 ChatTypeGroup["COMBAT_ERROR"] = {
 	"CHAT_MSG_COMBAT_ERROR";
@@ -1374,7 +1376,7 @@ function ChatFrame_OnEvent(event)
 			end
 		end
 
-		if ( type == "SYSTEM" or type == "TEXT_EMOTE" or type == "SKILL" or type == "LOOT" ) then
+		if ( type == "SYSTEM" or type == "TEXT_EMOTE" or type == "SKILL" or type == "LOOT" or type == "MONEY" ) then
 			this:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,7) == "COMBAT_" ) then
 			this:AddMessage(arg1, info.r, info.g, info.b, info.id);

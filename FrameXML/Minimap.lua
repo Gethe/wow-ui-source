@@ -126,8 +126,8 @@ end
 
 function Minimap_OnClick()
 	local x, y = GetCursorPosition();
-	x = x / this:GetScale();
-	y = y / this:GetScale();
+	x = x / this:GetEffectiveScale();
+	y = y / this:GetEffectiveScale();
 
 	local cx, cy = this:GetCenter();
 	x = x + CURSOR_OFFSET_X - cx;

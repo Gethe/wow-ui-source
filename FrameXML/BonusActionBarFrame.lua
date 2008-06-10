@@ -21,15 +21,15 @@ function BonusActionBar_OnEvent()
 	if ( event == "UPDATE_BONUS_ACTIONBAR" ) then
 		if ( GetBonusBarOffset() > 0 ) then
 			this.lastBonusBar = GetBonusBarOffset();
-			UnlockPetActionBar();
-			HidePetActionBar();
+			--UnlockPetActionBar();
+			--HidePetActionBar();
 			ShowBonusActionBar();
 		else
 			HideBonusActionBar();
-			if ( PetHasActionBar() ) then
-				ShowPetActionBar();
-				LockPetActionBar();
-			end
+			--if ( PetHasActionBar() ) then
+			--	ShowPetActionBar();
+			--	LockPetActionBar();
+			--end
 		end
 	end
 end

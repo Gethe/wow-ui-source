@@ -1218,8 +1218,10 @@ function FCF_SelectDockFrame(frame)
 end
 
 function FCF_Tab_OnClick(button)
+	local chatFrame = getglobal("ChatFrame"..this:GetID());
 	-- If Rightclick bring up the options menu
 	if ( button == "RightButton" ) then
+		chatFrame:StopMovingOrSizing();
 		ToggleDropDownMenu(1, nil, getglobal(this:GetName().."DropDown"), this:GetName(), 0, 0);
 		return;
 	end
@@ -1228,7 +1230,6 @@ function FCF_Tab_OnClick(button)
 	CloseDropDownMenus();
 
 	-- If frame is docked assume that a click is to select a chat window, not drag it
-	local chatFrame = getglobal("ChatFrame"..this:GetID());
 	SELECTED_CHAT_FRAME = chatFrame;
 	if ( chatFrame.isDocked ) then
 		FCF_SelectDockFrame(chatFrame);

@@ -2451,7 +2451,7 @@
 								ToggleGuildInfoFrame();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(FIXME, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDMEMBER, 1);
+								GameTooltip_AddNewbieTip(GUILD_INFORMATION, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_INFORMATION, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -3488,7 +3488,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(FRIENDS), "TOGGLEFRIENDSTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_FRIENDSTAB);
+						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(FRIENDS), "TOGGLEFRIENDSTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_FRIENDSTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -3524,7 +3524,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(WHO), "TOGGLEWHOTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_WHOTAB);
+						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(WHO), "TOGGLEWHOTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_WHOTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -3549,7 +3549,7 @@
 						FriendsFrame_OnShow();
 					</OnClick>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(GUILD), "TOGGLEGUILDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDTAB);
+						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(GUILD), "TOGGLEGUILDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -3572,7 +3572,7 @@
 						FriendsFrame_Update();
 					</OnEvent>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(RAID), "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB);
+						GameTooltip_AddNewbieTip(MicroButtonTooltipText(TEXT(RAID), "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

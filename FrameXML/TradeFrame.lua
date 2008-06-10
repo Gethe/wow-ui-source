@@ -161,7 +161,7 @@ end
 
 function TradeFrame_UpdateMoney()
 	local copper = MoneyInputFrame_GetCopper(TradePlayerInputMoneyFrame);
-	if ( copper > GetMoney() ) then
+	if ( copper > GetMoney() - GetCursorMoney() ) then
 		copper = GetPlayerTradeMoney();
 		MoneyInputFrame_SetCopper(TradePlayerInputMoneyFrame, copper);
 		--MoneyInputFrame_SetTextColor(TradePlayerInputMoneyFrame, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);

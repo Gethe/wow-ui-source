@@ -223,8 +223,8 @@ function WorldMapButton_OnClick(mouseButton, button)
 			button = this;
 		end
 		local x, y = GetCursorPosition();
-		x = x / button:GetScale();
-		y = y / button:GetScale();
+		x = x / button:GetEffectiveScale();
+		y = y / button:GetEffectiveScale();
 
 		local centerX, centerY = button:GetCenter();
 		local width = button:GetWidth();
@@ -239,8 +239,8 @@ end
 
 function WorldMapButton_OnUpdate(elapsed)
 	local x, y = GetCursorPosition();
-	x = x / this:GetScale();
-	y = y / this:GetScale();
+	x = x / this:GetEffectiveScale();
+	y = y / this:GetEffectiveScale();
 
 	local centerX, centerY = this:GetCenter();
 	local width = this:GetWidth();

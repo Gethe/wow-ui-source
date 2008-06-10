@@ -1343,8 +1343,8 @@ end
 
 function MouseIsOver(frame, topOffset, bottomOffset, leftOffset, rightOffset)
 	local x, y = GetCursorPosition();
-	x = x / frame:GetScale();
-	y = y / frame:GetScale();
+	x = x / frame:GetEffectiveScale();
+	y = y / frame:GetEffectiveScale();
 
 	local left = frame:GetLeft();
 	local right = frame:GetRight();
@@ -1550,7 +1550,12 @@ function UIParent_ManageRightSideFrames()
 	if ( QuestTimerFrame:IsVisible() ) then
 		anchorY = anchorY - QuestTimerFrame:GetHeight();
 	end
-	DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -anchorX-20, anchorY);
+	-- Setup durability offset
+	local durabilityOffset = 0;
+	if ( DurabilityShield:IsShown() or DurabilityOffWeapon:IsShown() or DurabilityRanged:IsShown() ) then
+		durabilityOffset = 20;
+	end
+	DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -anchorX-durabilityOffset, anchorY);
 	if ( DurabilityFrame:IsVisible() ) then
 		anchorY = anchorY - DurabilityFrame:GetHeight();
 	end

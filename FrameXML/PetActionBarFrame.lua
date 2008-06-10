@@ -178,11 +178,14 @@ function ShowPetActionBar()
 		else
 			PETACTIONBAR_XPOS = 36
 		end
+		if ( ChatFrameEditBox:IsShown() ) then
+			ChatFrameEditBox:Raise();
+		end
 	end
 end
 
 function HidePetActionBar()
-	if ( PetActionBarFrame.showgrid == 0 and PetActionBarFrame:IsVisible() and not PetActionBarFrame.locked and not PetActionBarFrame.ctrlPressed ) then
+	if ( PetActionBarFrame.showgrid == 0 and PetActionBarFrame:IsShown() and not PetActionBarFrame.locked and not PetActionBarFrame.ctrlPressed ) then
 		if ( PetActionBarFrame.completed ) then
 			PetActionBarFrame.slideTimer = 0;
 		end
@@ -350,7 +353,7 @@ function PetActionBar_UpdatePosition()
 		SlidingActionBarTexture0:Show();
 		SlidingActionBarTexture1:Show();
 	end
-	if ( not PetActionBarFrame:IsVisible() ) then
+	if ( not PetActionBarFrame:IsShown() ) then
 		return;
 	end
 	PetActionBarFrame:SetPoint("TOPLEFT", "MainMenuBar", "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);

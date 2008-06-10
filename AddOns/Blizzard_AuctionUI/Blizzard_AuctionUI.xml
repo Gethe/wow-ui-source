@@ -1961,6 +1961,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								DropCursorMoney();
 								StartAuction(MoneyInputFrame_GetCopper(StartPrice), MoneyInputFrame_GetCopper(BuyoutPrice), AuctionFrameAuctions.duration);
 							</OnClick>
 						</Scripts>

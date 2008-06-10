@@ -8,6 +8,9 @@ BATTLEFIELD_TIMER_DELAY = 3;
 BATTLEFIELD_MAP_WIDTH = 320;
 BATTLEFIELD_MAP_HEIGHT = 213;
 MAX_BATTLEFIELD_QUEUES = 3;
+CURRENT_BATTLEFIELD_QUEUES = {};
+PREVIOUS_BATTLEFIELD_QUEUES = {};
+
 
 function BattlefieldFrame_OnLoad()
 	this:RegisterEvent("BATTLEFIELDS_SHOW");
@@ -90,12 +93,27 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 	MiniMapBattlefieldFrame.tooltip = nil;
 	MiniMapBattlefieldFrame.waitTime = {};
 	MiniMapBattlefieldFrame.status = nil;
+	
+	-- Copy current queues into previous queues
+	if ( not tooltipOnly ) then
+		PREVIOUS_BATTLEFIELD_QUEUES = {};
+		for index, value in CURRENT_BATTLEFIELD_QUEUES do
+			tinsert(PREVIOUS_BATTLEFIELD_QUEUES, value);
+		end
+		CURRENT_BATTLEFIELD_QUEUES = {};
+	end
+
 	for i=1, MAX_BATTLEFIELD_QUEUES do
 		status, mapName, instanceID = GetBattlefieldStatus(i);
 		if ( instanceID ~= 0 ) then
 			mapName = mapName.." "..instanceID;
 		end
 		tooltip = nil;
+
+		if ( not tooltipOnly and (status ~= "confirm") ) then
+			StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY", i);
+		end
+
 		if ( status ~= "none" ) then
 			numberQueues = numberQueues+1;
 			if ( status == "queued" ) then
@@ -113,9 +131,12 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 				tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime, SecondsToTime(timeInQueue));
 				
 				if ( not tooltipOnly ) then
-					PlaySound("PVPENTERQUEUE");
-					UIFrameFadeIn(MiniMapBattlefieldFrame, CHAT_FRAME_FADE_TIME);
-					BattlegroundShineFadeIn();
+					if ( not IsAlreadyInQueue(mapName) ) then
+						PlaySound("PVPENTERQUEUE");
+						UIFrameFadeIn(MiniMapBattlefieldFrame, CHAT_FRAME_FADE_TIME);
+						BattlegroundShineFadeIn();
+					end
+					tinsert(CURRENT_BATTLEFIELD_QUEUES, mapName);
 				end
 				showRightClickText = 1;
 			elseif ( status == "confirm" ) then
@@ -148,8 +169,6 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 					MiniMapBattlefieldFrame.tooltip = tooltip;
 				end
 			end
-		else
-			StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY", i);
 		end
 	end
 	-- See if should add right click message
@@ -350,3 +369,12 @@ function BattlegroundShineFadeOut()
 	UIFrameFadeOut(BattlegroundShine, 0.5);
 end
 
+function IsAlreadyInQueue(mapName)
+	local inQueue = nil;
+	for index,value in PREVIOUS_BATTLEFIELD_QUEUES do
+		if ( value == mapName ) then
+			inQueue = 1;
+		end
+	end
+	return inQueue;
+end

@@ -1,3 +1,7 @@
+
+-- This is a symbol available for people who need to know the locale (separate from GetLocale())
+LOCALE_enUS = true;
+
 function Localize()
 	-- Put all locale specific string adjustments here
 end
