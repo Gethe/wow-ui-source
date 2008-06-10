@@ -530,6 +530,7 @@ end
 
 function SendMailFrame_CanSend()
 	local checks = 0;
+	local checksRequired = 3;
 	-- If has stationery
 	if ( StationeryPopupFrame.selectedIndex ~= nil ) then
 		checks = checks + 1;
@@ -543,20 +544,20 @@ function SendMailFrame_CanSend()
 		checks = checks + 1;
 	end
 	-- check c.o.d. amount
-	if ( not SendMailCODButton:GetChecked() ) then
-		return;
-	end
-	-- COD must be less than 10000 gold
-	if ( MoneyInputFrame_GetCopper(SendMailMoney) > MAX_COD_AMOUNT*COPPER_PER_GOLD ) then
-		SendMailErrorText:Show();
-		SendMailErrorCoin:Show();
-	else
-		SendMailErrorText:Hide();
-		SendMailErrorCoin:Hide();
-		checks = checks + 1;
+	if ( SendMailCODButton:GetChecked() ) then
+		checksRequired = 4;
+		-- COD must be less than 10000 gold
+		if ( MoneyInputFrame_GetCopper(SendMailMoney) > MAX_COD_AMOUNT*COPPER_PER_GOLD ) then
+			SendMailErrorText:Show();
+			SendMailErrorCoin:Show();
+		else
+			SendMailErrorText:Hide();
+			SendMailErrorCoin:Hide();
+			checks = checks + 1;
+		end
 	end
 	
-	if ( checks == 4 ) then
+	if ( checks == checksRequired ) then
 		SendMailMailButton:Enable();
 	else
 		SendMailMailButton:Disable();

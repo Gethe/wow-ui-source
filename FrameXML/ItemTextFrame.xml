@@ -190,7 +190,7 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<StatusBar name="ItemTextStatusBar">
+			<StatusBar name="ItemTextStatusBar" hidden="true">
 				<Size>
 					<AbsDimension x="250" y="21"/>
 				</Size>
