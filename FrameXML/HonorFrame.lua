@@ -18,29 +18,29 @@ function HonorFrame_Update(updateAll)
 	-- This only gets set on player entering the world
 	if ( updateAll ) then
 		-- Yesterday's values
-		hk, dk, contribution = GetPVPYesterdayStats();
+		hk, contribution = GetPVPYesterdayStats();
 		HonorFrameYesterdayHKValue:SetText(hk);
 		HonorFrameYesterdayContributionValue:SetText(contribution);
 		-- This Week's values
-		hk, contribution = GetPVPThisWeekStats();
-		HonorFrameThisWeekHKValue:SetText(hk);
-		HonorFrameThisWeekContributionValue:SetText(contribution);
+		--hk, contribution = GetPVPThisWeekStats();
+		--HonorFrameThisWeekHKValue:SetText(hk);
+		--HonorFrameThisWeekContributionValue:SetText(contribution);
 		-- Last Week's values
-		hk, dk, contribution, rank = GetPVPLastWeekStats();
-		HonorFrameLastWeekHKValue:SetText(hk);
-		HonorFrameLastWeekContributionValue:SetText(contribution);
-		HonorFrameLastWeekStandingValue:SetText(rank);
+		--hk, dk, contribution, rank = GetPVPLastWeekStats();
+		--HonorFrameLastWeekHKValue:SetText(hk);
+		--HonorFrameLastWeekContributionValue:SetText(contribution);
+		--HonorFrameLastWeekStandingValue:SetText(rank);
 	end
 	
 	-- This session's values
-	hk, dk = GetPVPSessionStats();
+	hk, cp = GetPVPSessionStats();
 	HonorFrameCurrentHKValue:SetText(hk);
-	HonorFrameCurrentDKValue:SetText(dk);
+	--HonorFrameCurrentDKValue:SetText(dk);
 	
 	-- Lifetime stats
-	hk, dk, highestRank = GetPVPLifetimeStats();
+	hk, highestRank = GetPVPLifetimeStats();
 	HonorFrameLifeTimeHKValue:SetText(hk);
-	HonorFrameLifeTimeDKValue:SetText(dk);
+	--HonorFrameLifeTimeDKValue:SetText(dk);
 	rankName, rankNumber = GetPVPRankInfo(highestRank);
 	if ( not rankName ) then
 		rankName = NONE;

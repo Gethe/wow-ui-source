@@ -372,6 +372,12 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
+			<Scripts>
+				<OnClick>
+					SHOW_BATTLEFIELD_MINIMAP = "0";
+					HideUIPanel(this:GetParent());
+				</OnClick>
+			</Scripts>
 		</Button>
 		<Frame name="BattlefieldMinimapParty1" inherits="BattlefieldMinimapUnitTemplate" id="1"/>
 		<Frame name="BattlefieldMinimapParty2" inherits="BattlefieldMinimapUnitTemplate" id="2"/>

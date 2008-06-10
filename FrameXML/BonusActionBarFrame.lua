@@ -8,13 +8,13 @@ function BonusActionBar_OnLoad()
 	this:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 	this:RegisterEvent("ACTIONBAR_SHOWGRID");
 	this:RegisterEvent("ACTIONBAR_HIDEGRID");
-	if ( GetBonusBarOffset() > 0 and CURRENT_ACTIONBAR_PAGE == 1 ) then
-		ShowBonusActionBar();
-	end
 	this:SetFrameLevel(this:GetFrameLevel() + 2);
 	this.mode = "none";
 	this.completed = 1;
 	this.lastBonusBar = 1;
+	if ( GetBonusBarOffset() > 0 and GetActionBarPage() == 1 ) then
+		ShowBonusActionBar();
+	end
 end
 
 function BonusActionBar_OnEvent()

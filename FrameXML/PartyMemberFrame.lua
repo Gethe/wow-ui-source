@@ -32,10 +32,16 @@ function PartyMemberFrame_OnLoad()
 	this:RegisterEvent("UNIT_AURA");
 	this:RegisterEvent("UNIT_PET");
 	this:RegisterEvent("VARIABLES_LOADED");
+
+	local showmenu = function()
+		ToggleDropDownMenu(1, nil, getglobal("PartyMemberFrame"..this:GetID().."DropDown"), this:GetName(), 47, 15);
+	end
+	SecureUnitButton_OnLoad(this, "party"..this:GetID(), showmenu);
 end
 
 function PartyMemberFrame_UpdateMember()
 	if ( HIDE_PARTY_INTERFACE == "1" and GetNumRaidMembers() > 0 ) then
+		this:Hide();
 		return;
 	end
 	local id = this:GetID();
@@ -215,43 +221,6 @@ function PartyMemberFrame_OnUpdate(elapsed)
 	end
 end
 
-function PartyMemberFrame_OnClick(partyFrame)
-	if ( SpellIsTargeting() and arg1 == "RightButton" ) then
-		SpellStopTargeting();
-		return;
-	end
-	if ( not partyFrame ) then
-		partyFrame = this;
-	end
-	local unit = "party"..partyFrame:GetID();
-	if ( arg1 == "LeftButton" ) then
-		if ( SpellIsTargeting() ) then
-			SpellTargetUnit(unit);
-		elseif ( CursorHasItem() ) then
-			DropItemOnUnit(unit);
-		else
-			TargetUnit(unit);
-		end
-	else
-		ToggleDropDownMenu(1, nil, getglobal("PartyMemberFrame"..partyFrame:GetID().."DropDown"), partyFrame:GetName(), 47, 15);
-	end
-end
-
-function PartyMemberPetFrame_OnClick()
-	if ( SpellIsTargeting() and arg1 == "RightButton" ) then
-		SpellStopTargeting();
-		return;
-	end
-	if ( arg1 == "LeftButton" ) then
-		local unit = "partypet"..this:GetParent():GetID();
-		if ( SpellIsTargeting() ) then
-			SpellTargetUnit(unit);
-		else
-			TargetUnit(unit);
-		end
-	end
-end
-
 function PartyMemberFrame_RefreshPetBuffs(id)
 	if ( not id ) then
 		id = this:GetID();
@@ -260,18 +229,18 @@ function PartyMemberFrame_RefreshPetBuffs(id)
 end
 
 function PartyMemberBuffTooltip_Update(isPet)
-	local buff;
+	local name, rank, icon;
 	local numBuffs = 0;
 	local numDebuffs = 0;
 	local index = 1;
 	for i=1, MAX_PARTY_TOOLTIP_BUFFS do
 		if ( isPet ) then
-			buff = UnitBuff("pet", i);		
+			name, rank, icon = UnitBuff("pet", i);		
 		else
-			buff = UnitBuff("party"..this:GetID(), i);
+			name, rank, icon = UnitBuff("party"..this:GetID(), i);
 		end
-		if ( buff ) then
-			getglobal("PartyMemberBuffTooltipBuff"..index.."Icon"):SetTexture(buff);
+		if ( icon ) then
+			getglobal("PartyMemberBuffTooltipBuff"..index.."Icon"):SetTexture(icon);
 			getglobal("PartyMemberBuffTooltipBuff"..index.."Border"):Hide();
 			getglobal("PartyMemberBuffTooltipBuff"..index):Show();
 			index = index + 1;
@@ -296,15 +265,14 @@ function PartyMemberBuffTooltip_Update(isPet)
 	for i=1, MAX_PARTY_TOOLTIP_DEBUFFS do
 		local debuffBorder = getglobal("PartyMemberBuffTooltipDebuff"..index.."Border")
 		local partyDebuff = getglobal("PartyMemberBuffTooltipDebuff"..index.."Icon");
-		buff, debuffStack, debuffType = UnitDebuff("party"..this:GetID(), i);
 		if ( isPet ) then
-			buff, debuffStack, debuffType = UnitDebuff("pet", i);
+			name, rank, icon, debuffStack, debuffType = UnitDebuff("pet", i);
 		else
-			buff, debuffStack, debuffType = UnitDebuff("party"..this:GetID(), i);
+			name, rank, icon, debuffStack, debuffType = UnitDebuff("party"..this:GetID(), i);
 		end
 		
-		if ( buff ) then
-			partyDebuff:SetTexture(buff);
+		if ( icon ) then
+			partyDebuff:SetTexture(icon);
 			if ( debuffType ) then
 				color = DebuffTypeColor[debuffType];
 			else

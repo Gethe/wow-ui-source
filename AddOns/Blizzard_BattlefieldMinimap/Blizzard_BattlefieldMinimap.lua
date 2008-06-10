@@ -18,7 +18,7 @@ function BattlefieldMinimap_Toggle()
 		BattlefieldMinimap:Hide();
 		SHOW_BATTLEFIELD_MINIMAP = "0";
 	else
-		if ( ( MiniMapBattlefieldFrame.status == "active" ) or ( GetNumWorldStateUI() > 0 ) ) then
+		if ( ( ( MiniMapBattlefieldFrame.status == "active" ) or ( GetNumWorldStateUI() > 0 ) ) and ( not IsActiveBattlefieldArena() ) ) then
 			SHOW_BATTLEFIELD_MINIMAP = "1";
 			BattlefieldMinimap:Show();
 		end
@@ -28,6 +28,8 @@ end
 function BattlefieldMinimap_OnLoad()
 	this:RegisterEvent("ADDON_LOADED");
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
+	this:RegisterEvent("ZONE_CHANGED");
+	this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	this:RegisterEvent("PLAYER_LOGOUT");
 	this:RegisterEvent("WORLD_MAP_UPDATE");
 
@@ -55,11 +57,11 @@ function BattlefieldMinimap_OnEvent(event)
 			OpacityFrameSlider:SetValue(BattlefieldMinimapOptions.opacity);
 			BattlefieldMinimap_SetOpacity();
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA") then
 		if ( ( MiniMapBattlefieldFrame.status ~= "active" ) and ( GetNumWorldStateUI() == 0 ) ) then
 			BattlefieldMinimap:Hide();
 		elseif ( BattlefieldMinimap:IsShown() ) then
-			SetMapToCurrentZone();
+			 BattlefieldMinimap_Update();
 		end
 	elseif ( event == "PLAYER_LOGOUT" ) then
 		if ( BattlefieldMinimapTab:IsUserPlaced() ) then
@@ -84,6 +86,11 @@ function BattlefieldMinimap_Update()
 	if ( not mapFileName ) then
 		return;
 	end
+
+	if ( textureHeight > 1000 ) then
+		SetMapToCurrentZone();
+	end
+	
 	for i=1, NUM_WORLDMAP_DETAIL_TILES do
 		getglobal("BattlefieldMinimap"..i):SetTexture("Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i);
 	end
@@ -395,30 +402,23 @@ end
 
 function BattlefieldMinimapDropDown_Initialize()
 	local checked;
-	local info = {};
+	local info = UIDropDownMenu_CreateInfo();
 	-- Show battlefield players
-	if ( BattlefieldMinimapOptions.showPlayers ) then
-		checked = 1;
-	end
 	info.text = SHOW_BATTLEFIELDMINIMAP_PLAYERS;
 	info.func = BattlefieldMinimap_TogglePlayers;
-	info.checked = checked;
+	info.checked = BattlefieldMinimapOptions.showPlayers;
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 	
 	-- Battlefield minimap lock
-	checked = nil;
-	if ( BattlefieldMinimapOptions.locked ) then
-		checked = 1;
-	end
 	info.text = LOCK_BATTLEFIELDMINIMAP;
 	info.func = BattlefieldMinimap_ToggleLock;
-	info.checked = checked;
+	info.checked = BattlefieldMinimapOptions.locked;
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 
 	-- Opacity
-	info = {};
 	info.text = BATTLEFIELDMINIMAP_OPACITY_LABEL;
 	info.func = BattlefieldMinimap_ShowOpacity;
+	info.checked = nil;
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 end
 

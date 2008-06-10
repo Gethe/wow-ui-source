@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_RaidUI.lua"/>
-	<Button name="RaidGroupButtonTemplate" parent="RaidFrame" movable="true" clampedToScreen="true" virtual="true">
+	<Button name="RaidGroupButtonTemplate" parent="RaidFrame" movable="true" clampedToScreen="true" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="156" y="14"/>
 		</Size>
@@ -19,7 +19,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="CENTER">
 					<Size>
 						<AbsDimension x="60" y="8"/>
 					</Size>
@@ -38,67 +38,47 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="5" y="0"/>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentClass" inherits="GameFontNormalSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="50" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button name="$parentClass">
-				<Size>
-					<AbsDimension x="50" y="8"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="110" y="1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						this:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						RaidPulloutButton_OnDragStart(RaidPullout_GenerateClassFrame(this:GetText(), this:GetParent().class));
-					</OnDragStart>
-					<OnDragStop>
-						RaidPulloutStopMoving();
-					</OnDragStop>
-				</Scripts>
-				<ButtonText>
-					<Size>
-						<AbsDimension x="50" y="8"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</ButtonText>
-				<NormalFont inherits="GameFontNormalSmall" justifyH="LEFT"/>
-				<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
-			</Button>
-		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 2);
-				getglobal(this:GetName().."Class"):SetFrameLevel(this:GetFrameLevel() + 2);
-				this:RegisterForDrag("LeftButton");
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				RaidGroupButton_OnLoad();
 			</OnLoad>
-			<OnClick>
-				RaidGroupButton_OnClick(arg1);
-			</OnClick>
 			<OnDragStart>
-				RaidGroupButton_OnDragStart();
+				if ( IsShiftKeyDown() ) then
+					this.keypressed = "SHIFT";
+					RaidPulloutButton_OnDragStart(RaidPullout_GenerateNameFrame(this.name));
+				elseif ( IsControlKeyDown() ) then
+					this.keypressed = "CONTROL";
+					RaidPulloutButton_OnDragStart(RaidPullout_GenerateClassFrame(getglobal(this:GetName().."Class"):GetText(), this.class));
+				else
+					RaidGroupButton_OnDragStart();
+					this.keypressed = nil;
+				end
 			</OnDragStart>
 			<OnDragStop>
-				RaidGroupButton_OnDragStop();
+				if ( this.keypressed ) then
+					RaidPulloutStopMoving();
+				else
+					RaidGroupButton_OnDragStop();
+				end
 			</OnDragStop>
 			<OnEnter>
 				RaidGroupButton_OnEnter();
@@ -265,7 +245,7 @@
 			<AbsDimension x="57" y="25"/>
 		</Size>
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="OVERLAY">
 				<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
 					<Size>
 						<AbsDimension x="64" y="16"/>
@@ -278,6 +258,19 @@
 						</Anchor>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.5"/>
+				</Texture>
+				<Texture name="$parentTargetFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar" hidden="true">
+					<Size>
+						<AbsDimension x="54" y="17"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.84375" top="0.5" bottom="1"/>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontNormalSmall">
 					<Size>
@@ -294,14 +287,14 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<StatusBar name="$parentHealthBar" inherits="TextStatusBar" enableMouse="false">
+			<StatusBar name="$parentHealthBar" drawLayer="BACKGROUND" inherits="TextStatusBar" enableMouse="false">
 				<Size>
-					<AbsDimension x="51" y="4"/>
+					<AbsDimension x="50" y="4"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="3" y="10"/>
+							<AbsDimension x="2" y="10"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -315,9 +308,9 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="$parentManaBar" inherits="TextStatusBar" enableMouse="false">
+			<StatusBar name="$parentManaBar" drawLayer="BACKGROUND" inherits="TextStatusBar" enableMouse="false">
 				<Size>
-					<AbsDimension x="51" y="4"/>
+					<AbsDimension x="50" y="4"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentHealthBar" relativePoint="BOTTOM">
@@ -334,15 +327,52 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Button name="$parentClearButton" setAllPoints="true">
+			<StatusBar name="$parentTarget" drawLayer="BACKGROUND" inherits="SecureFrameTemplate, TextStatusBar" enableMouse="false" hidden="true">
+				<Size>
+					<AbsDimension x="50" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentManaBar" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentName" inherits="GameFontNormalSmall">
+							<Size>
+								<AbsDimension x="50" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTarget" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="2" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEvent>
+						UnitFrameHealthBar_Update(this, arg1);
+					</OnEvent>
+					<OnValueChanged>
+						UnitFrameHealthBar_OnValueChanged(arg1);
+					</OnValueChanged>
+					<OnMouseUp>
+						TargetUnit(this:GetParent().target);
+					</OnMouseUp> 
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="0" b="0"/>
+			</StatusBar>
+			<Button name="$parentClearButton" setAllPoints="true" inherits="SecureUnitButtonTemplate">
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-						this:SetFrameLevel(this:GetFrameLevel() + 1);
+						RaidPulloutButton_OnLoad();
 					</OnLoad>
-					<OnClick>
-						RaidPulloutButton_OnClick();
-					</OnClick>
 					<OnEnter>
 						RaidGroupButton_OnEnter();
 					</OnEnter>
@@ -419,7 +449,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1">
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 				<Anchors>
 					<Anchor point="TOP">
 						<Offset>
@@ -500,7 +530,7 @@
 		<Scripts>
 			<OnClick>
 				if ( UnitCanCooperate("player", "target") ) then
-					InviteByName(UnitName("target"));
+					InviteUnit("target");
 				else
 					StaticPopup_Show("ADD_RAIDMEMBER");
 				end

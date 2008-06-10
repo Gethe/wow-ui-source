@@ -5,6 +5,7 @@ RAID_SUBGROUP_LISTS = {};
 NUM_RAID_PULLOUT_FRAMES = 0;
 RAID_PULLOUT_BUTTON_HEIGHT = 33;
 MOVING_RAID_PULLOUT = nil;
+RAID_PULLOUT_LIST = {};
 
 function RaidGroupFrame_OnLoad()
 	RaidFrame:RegisterEvent("UNIT_LEVEL");
@@ -77,7 +78,7 @@ function RaidGroupFrame_Update()
 	end
 
 	-- Use the class color list to clear out the class list
-	for index, value in RAID_CLASS_COLORS do
+	for index, value in pairs(RAID_CLASS_COLORS) do
 		RAID_SUBGROUP_LISTS[index] = {};
 	end
 
@@ -97,10 +98,8 @@ function RaidGroupFrame_Update()
 				buttonClass = getglobal("RaidGroupButton"..i.."Class");
 				buttonLevel = getglobal("RaidGroupButton"..i.."Level");
 				buttonRank = getglobal("RaidGroupButton"..i.."Rank");
-				button.id = i;
 				
 				button.name = name;
-				button.unit = "raid"..i;
 				button.class = fileName;
 				
 				if ( level == 0 ) then
@@ -118,20 +117,17 @@ function RaidGroupFrame_Update()
 				if ( fileName ) then
 					tinsert(RAID_SUBGROUP_LISTS[fileName], i);
 				end
-				
 				buttonName:SetText(name);
 				if ( class ) then
 					buttonClass:SetText(class);
 				else
 					buttonClass:SetText("");
 				end
-				
 				if ( level ) then
 					buttonLevel:SetText(level);
 				else
 					buttonLevel:SetText("");
 				end
-				
 				if ( online ) then
 					if ( isDead ) then
 						buttonName:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
@@ -232,14 +228,33 @@ function RaidGroupFrame_OnUpdate(elapsed)
 	end
 end
 
+function RaidGroupButton_ShowMenu()
+	HideDropDownMenu(1);
+	if ( this.id and this.name ) then
+		FriendsDropDown.initialize = RaidFrameDropDown_Initialize;
+		FriendsDropDown.displayMode = "MENU";
+		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
+	end
+end
+
+function RaidGroupButton_OnLoad()
+	this:SetFrameLevel(this:GetFrameLevel() + 2);
+	this:RegisterForDrag("LeftButton");
+	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+
+	this.id = this:GetID();
+	this.unit = "raid"..this.id;
+	SecureUnitButton_OnLoad(this, this.unit, RaidGroupButton_ShowMenu);
+end
+
 function RaidGroupButton_OnDragStart()
 	if ( not IsRaidLeader() ) then
 		return;
 	end
 	local cursorX, cursorY = GetCursorPosition();
+	this:StartMoving();
 	this:ClearAllPoints();
 	this:SetPoint("CENTER", nil, "BOTTOMLEFT", cursorX*GetScreenWidthScale(), cursorY*GetScreenHeightScale());
-	this:StartMoving();
 	MOVING_RAID_MEMBER = this;
 	SetRaidRosterSelection(this.id);
 end
@@ -273,29 +288,11 @@ function RaidGroupButton_OnDragStop(raidButton)
 	end
 end
 
-function RaidGroupButton_OnClick(button)
-	if ( button == "LeftButton" ) then
-		local unit = "raid"..this.id;
-		if ( SpellIsTargeting() ) then
-			SpellTargetUnit(unit);
-		elseif ( CursorHasItem() ) then
-			DropItemOnUnit(unit);
-		else
-			TargetUnit(unit);
-		end
-	else
-		HideDropDownMenu(1);
-		if ( this.id and this.name ) then
-			FriendsDropDown.initialize = RaidFrameDropDown_Initialize;
-			FriendsDropDown.displayMode = "MENU";
-			ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
-		end
-	end
-end
-
 function RaidGroupButton_OnEnter()
+	local unit = this:GetAttribute("unit");
+
 	if ( SpellIsTargeting() ) then
-		if ( SpellCanTargetUnit(this.unit) ) then
+		if ( SpellCanTargetUnit(unit) ) then
 			SetCursor("CAST_CURSOR");
 		else
 			SetCursor("CAST_ERROR_CURSOR");
@@ -303,15 +300,23 @@ function RaidGroupButton_OnEnter()
 	end
 
 	GameTooltip_SetDefaultAnchor(GameTooltip, this);
-	
-	if ( GameTooltip:SetUnit(this.unit) ) then
+
+	if ( GameTooltip:SetUnit(unit) ) then
 		this.updateTooltip = TOOLTIP_UPDATE_TIME;
 	else
 		this.updateTooltip = nil;
 	end
 
-	this.r, this.g, this.b = GameTooltip_UnitColor(this.unit);
+	this.r, this.g, this.b = GameTooltip_UnitColor(unit);
 	GameTooltipTextLeft1:SetTextColor(this.r, this.g, this.b);
+
+	if ( MouseIsOver(RaidFrame) ) then
+		GameTooltip:AddLine("\n");
+		GameTooltip:AddLine(TOOLTIP_RAID_SHIFT_TIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GameTooltip:AddLine(TOOLTIP_RAID_CONTROL_TIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GameTooltip:Show();
+	end
+
 end
 
 function RaidFrameDropDown_Initialize()
@@ -334,7 +339,11 @@ end
 ----------------- Pullout Button Functions --------------------
 function RaidPullout_OnEvent()
 	if ( event == "RAID_ROSTER_UPDATE" and this:IsVisible() ) then
-		RaidPullout_Update();
+		if ( this.single ) then
+			RaidPullout_SingleUpdate();
+		else
+			RaidPullout_Update();
+		end
 	end
 end
 
@@ -349,6 +358,8 @@ function RaidPullout_GenerateGroupFrame(groupID)
 	if ( pullOutFrame ) then
 		pullOutFrame.filterID = groupID;
 		pullOutFrame.showBuffs = nil;
+		pullOutFrame.single = nil;
+		pullOutFrame.showTarget = nil;
 		-- Set pullout name
 		getglobal(pullOutFrame:GetName().."Name"):SetText(GROUP.." "..groupID);
 		if ( RaidPullout_Update(pullOutFrame) ) then
@@ -367,7 +378,9 @@ function RaidPullout_GenerateClassFrame(class, fileName)
 	local pullOutFrame = RaidPullout_GetFrame(fileName);
 	if ( pullOutFrame ) then
 		pullOutFrame.filterID = fileName;
+		pullOutFrame.single = nil;
 		pullOutFrame.showBuffs = nil;
+		pullOutFrame.showTarget = nil;
 		-- Set pullout name
 		getglobal(pullOutFrame:GetName().."Name"):SetText(class);
 		if ( RaidPullout_Update(pullOutFrame) ) then
@@ -376,11 +389,156 @@ function RaidPullout_GenerateClassFrame(class, fileName)
 	end
 end
 
+function RaidPullout_GenerateNameFrame(name)
+	-- construct the button listing
+	if ( not name ) then
+		name = this.name;
+	end
+	local id = this:GetID();
+	-- Get a handle on a pullout frame
+	local pullOutFrame = RaidPullout_GetFrame(name);
+	if ( pullOutFrame ) then
+		pullOutFrame.filterID = name;
+		pullOutFrame.id = id;
+		pullOutFrame.single = 1;
+		pullOutFrame.showBuffs = nil;
+		-- Set pullout name
+		getglobal(pullOutFrame:GetName().."Name"):SetText("");
+		if ( RaidPullout_SingleUpdate(pullOutFrame) ) then
+			return pullOutFrame;		
+		end
+	end
+end
+
+function RaidPullout_SingleUpdate(pullOutFrame)
+	if ( not pullOutFrame ) then
+		pullOutFrame = this;
+	end
+	local filterID = pullOutFrame.filterID;
+	local id = pullOutFrame.id;
+	local unit = 	"raid"..id;
+	local target = "raid"..id.."target";
+	local pulloutButton, pulloutButtonName, color;
+	local pulloutHealthBar, pulloutManaBar, pulloutTarget, unitHPMin, unitHPMax;
+	local pulloutClearButton;
+	local name, rank, subgroup, level, class, fileName, zone, online, isDead;
+	local debuff;
+	pulloutButton = getglobal(pullOutFrame:GetName().."Button1");
+	if ( not pulloutButton ) then
+		pulloutButton = CreateFrame("Frame", pullOutFrame:GetName().."Button1", pullOutFrame, "RaidPulloutButtonTemplate");
+	end
+	
+	pulloutButton:SetScript("OnUpdate", RaidPulloutSingle_OnUpdate);
+	pulloutButton:SetPoint("TOP", pullOutFrame, "TOP", 1, -10);
+	
+	if ( pullOutFrame.numPulloutButtons and pullOutFrame.numPulloutButtons > 1 ) then
+		for i=2, pullOutFrame.numPulloutButtons, 1 do
+			getglobal(pullOutFrame:GetName().."Button"..i):Hide();
+		end
+	end
+	pulloutButtonName = getglobal(pulloutButton:GetName().."Name");
+	pulloutHealthBar = getglobal(pulloutButton:GetName().."HealthBar");
+	pulloutManaBar = getglobal(pulloutButton:GetName().."ManaBar");
+	name, rank, subgroup, level, class, fileName, zone, online, isDead = GetRaidRosterInfo(id);
+	
+	-- Hide the pullout if no name
+	if ( not name ) then
+		pullOutFrame:Hide();
+		return nil;
+	end
+	
+	-- follow same coloration rules as the raid interface
+	pulloutButtonName:SetText(name);
+
+	-- Set for tooltip support
+	pulloutClearButton = getglobal(pulloutButton:GetName().."ClearButton");
+	SecureUnitButton_OnLoad(pulloutClearButton, unit, RaidPulloutButton_ShowMenu);
+	pullOutFrame.numPulloutButtons = 1;
+	pulloutButton.raidIndex = id;
+	pulloutButton.manabar = pulloutManaBar;
+	pulloutManaBar.unit = unit;
+	pulloutButton.unit = unit;
+	pulloutButton.target = target;
+
+	if ( online ) then
+		RaidPulloutButton_UpdateDead(pulloutButton, isDead, fileName);
+		-- Setup Health and mana bars
+		UnitFrameHealthBar_Initialize(unit, pulloutHealthBar);
+		UnitFrameHealthBar_Update(pulloutHealthBar, unit);
+		UnitFrameManaBar_Initialize(unit, pulloutManaBar);
+		UnitFrameManaBar_Update(pulloutManaBar, unit);
+	else
+		-- Offline so gray out and maxout healthbar
+		unitHPMin, unitHPMax = pulloutHealthBar:GetMinMaxValues();
+		pulloutHealthBar:SetValue(unitHPMax);
+		pulloutHealthBar:SetStatusBarColor(0.5, 0.5, 0.5);
+		pulloutButtonName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		UnitFrameManaBar_Update(pulloutManaBar, unit);
+	end
+	
+	-- Handle unit's target
+	RaidPullout_UpdateTarget(pullOutFrame:GetName(), pulloutButton:GetName(), target);
+	-- Handle buffs/debuffs
+	RefreshBuffs(pulloutButton, pullOutFrame.showBuffs, unit);
+
+	pulloutButton:RegisterEvent("UNIT_HEALTH");
+	pulloutButton:RegisterEvent("UNIT_AURA");
+	pulloutButton:Show();
+	pullOutFrame:SetHeight(RAID_PULLOUT_BUTTON_HEIGHT + 14);
+	pullOutFrame:Show();
+	return 1;
+end
+
+function RaidPullout_UpdateTarget(pullOutFrame, pullOutButton, unit)
+	pullOutFrame = getglobal(pullOutFrame);
+	local pullOutTarget = getglobal(pullOutButton.."Target");
+	local pullOutTargetName = getglobal(pullOutButton.."TargetName");
+	local pullOutTargetFrame = getglobal(pullOutButton.."TargetFrame");
+	if ( pullOutFrame.showTarget ) then
+		pullOutFrame:SetHeight(57);
+		pullOutTargetFrame:Show();
+		pullOutTarget:Show();
+		if ( UnitExists(unit) ) then
+			pullOutTargetName:SetText(GetUnitName(unit));
+			UnitFrameHealthBar_Initialize(unit, pullOutTarget);
+			UnitFrameHealthBar_Update(pullOutTarget, unit);
+			pullOutTarget:SetStatusBarColor(1.0, 0, 0, 1.0);
+			pullOutTargetName:Show();
+		else
+			pullOutTargetName:SetText("");
+			pullOutTargetName:Hide();
+			local minValue, maxValue = pullOutTarget:GetMinMaxValues();
+			pullOutTarget:SetValue(maxValue);
+			pullOutTarget:SetStatusBarColor(0.5, 0.5, 0.5);
+		end
+	else
+		pullOutTargetFrame:Hide();
+		pullOutTarget:Hide();
+		pullOutFrame:SetHeight(47);
+		pullOutTargetName:Hide();
+	end
+end
+
+function RaidPulloutSingle_OnUpdate()
+	local elapsed = arg1;
+	if ( getglobal(this:GetName().."Target"):IsVisible() ) then
+		if ( not this.timer ) then
+			this.timer = .25;
+		elseif ( this.timer < 0 ) then
+			local parent = this:GetParent();
+			RaidPullout_UpdateTarget(parent:GetName(), this:GetName(), this.unit.."target");
+			this.timer = .25;
+		else
+			this.timer = this.timer - elapsed;
+		end
+	end
+end
+
+
 function RaidPullout_Update(pullOutFrame)
 	if ( not pullOutFrame ) then
 		pullOutFrame = this;
 	end
-
 	local filterID = pullOutFrame.filterID;
 	local numPulloutEntries = 0;
 	if ( RAID_SUBGROUP_LISTS[filterID] ) then
@@ -395,7 +553,9 @@ function RaidPullout_Update(pullOutFrame)
 	end
 
 	-- Fill out the buttons
-	local pulloutButton, pulloutButtonName, color, unit, pulloutHealthBar, pulloutManaBar, unitHPMin, unitHPMax;
+	local pulloutButton, pulloutButtonName, color, unit;
+	local pulloutHealthBar, pulloutManaBar, unitHPMin, unitHPMax;
+	local pulloutClearButton;
 	local name, rank, subgroup, level, class, fileName, zone, online, isDead;
 	local debuff;
 
@@ -426,8 +586,8 @@ function RaidPullout_Update(pullOutFrame)
 			pulloutButton.unit = unit;
 			
 			-- Set for tooltip support
-			getglobal(pulloutButton:GetName().."ClearButton").unit = unit;
-			
+			pulloutClearButton = getglobal(pulloutButton:GetName().."ClearButton");
+			SecureUnitButton_OnLoad(pulloutClearButton, unit, RaidPulloutButton_ShowMenu);
 			pulloutButton.raidIndex = pulloutList[i];
 			pulloutButton.manabar = pulloutManaBar;
 			pulloutManaBar.unit = unit;
@@ -446,6 +606,9 @@ function RaidPullout_Update(pullOutFrame)
 				pulloutButtonName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 				UnitFrameManaBar_Update(pulloutManaBar, unit);
 			end
+			
+			-- Handle unit's target
+			RaidPullout_UpdateTarget(pullOutFrame:GetName(), pulloutButton:GetName(), target);
 			
 			-- Handle buffs/debuffs
 			RefreshBuffs(pulloutButton, pullOutFrame.showBuffs, unit);
@@ -491,24 +654,15 @@ function RaidPulloutButton_UpdateDead(button, isDead, class)
 	end
 end
 
-function RaidPulloutButton_OnClick()
-	if ( arg1 == "LeftButton" ) then
-		-- Select target or cast spell on
-		local unit = this.unit;
-		-- If no unit assume that this is a manabar or healthbar and look at the parent's unit info
-		if ( not unit ) then
-			unit = this:GetParent().unit;
-		end
-		if ( SpellIsTargeting() ) then
-			SpellTargetUnit(unit);
-		elseif ( CursorHasItem() ) then
-			DropItemOnUnit(unit);
-		else
-			TargetUnit(unit);
-		end
-	elseif ( arg1 == "RightButton" ) then
-		ToggleDropDownMenu(1, nil, getglobal(this:GetParent():GetParent():GetName().."DropDown"));
-	end
+function RaidPulloutButton_ShowMenu()
+	ToggleDropDownMenu(1, nil, getglobal(this:GetParent():GetParent():GetName().."DropDown"));
+end
+
+function RaidPulloutButton_OnLoad()
+	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	this:SetFrameLevel(this:GetFrameLevel() + 1);
+
+	this.showmenu = RaidPulloutButton_ShowMenu;
 end
 
 function RaidPulloutButton_OnDragStart(frame)
@@ -518,9 +672,9 @@ function RaidPulloutButton_OnDragStart(frame)
 	end
 	local cursorX, cursorY = GetCursorPosition();
 	frame:SetFrameStrata("DIALOG");
+	frame:StartMoving();
 	frame:ClearAllPoints();
 	frame:SetPoint("TOP", nil, "BOTTOMLEFT", cursorX*GetScreenWidthScale(), cursorY*GetScreenHeightScale());
-	frame:StartMoving();
 	MOVING_RAID_PULLOUT = frame;
 end
 
@@ -565,34 +719,50 @@ function RaidPulloutDropDown_Initialize()
 		return;
 	end
 	local currentPullout = getglobal(UIDROPDOWNMENU_OPEN_MENU):GetParent();
-	local info;
+	local info = UIDropDownMenu_CreateInfo();
 	
+	-- Show target if it is a single frame
+	if ( currentPullout.single ) then
+		info.text = SHOW_TARGET;
+		info.func = function()
+			if ( currentPullout.showTarget == 1 ) then
+				currentPullout.showTarget = nil;
+			else
+				currentPullout.showTarget = 1;
+			end
+			RaidPullout_SingleUpdate(currentPullout);
+		end;
+		info.checked = currentPullout.showTarget;
+		UIDropDownMenu_AddButton(info);
+	end
+
 	-- Show buffs or debuffs they are exclusive for now
-	info = {};
 	info.text = SHOW_BUFFS;
 	info.func = function()
 		currentPullout.showBuffs = 1;
-		RaidPullout_Update(currentPullout);
+		if ( currentPullout.single ) then
+			RaidPullout_SingleUpdate(currentPullout);
+		else
+			RaidPullout_Update(currentPullout);
+		end
 	end;
-	if ( currentPullout.showBuffs ) then
-		info.checked = 1;
-	end
+	info.checked = currentPullout.showBuffs;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = SHOW_DEBUFFS;
 	info.func = function()
 		currentPullout.showBuffs = nil;
-		RaidPullout_Update(currentPullout);
+		if ( currentPullout.single ) then
+			RaidPullout_SingleUpdate(currentPullout);
+		else
+			RaidPullout_Update(currentPullout);
+		end
 	end;
-	if ( not currentPullout.showBuffs ) then
-		info.checked = 1;
-	end
+	info.checked = (not currentPullout.showBuffs);
 	UIDropDownMenu_AddButton(info);
 	
 	-- Hide background option
 	local backdrop = getglobal(currentPullout:GetName().."MenuBackdrop");
-	info = {};
 	info.text = HIDE_PULLOUT_BG;
 	info.func = function ()
 		if ( backdrop:IsVisible() ) then
@@ -601,17 +771,18 @@ function RaidPulloutDropDown_Initialize()
 			backdrop:Show();
 		end
 	end;
-	if ( not backdrop:IsVisible() ) then
-		info.checked = 1;
-	end
+	info.checked = (not backdrop:IsVisible());
 	UIDropDownMenu_AddButton(info);
 
 	-- Close option
-	info = {};
 	info.text = CLOSE;
 	info.func = function()
+		if ( currentPullout.showTarget == 1 ) then
+			currentPullout.showTarget = nil;
+		end
 		currentPullout:Hide();
 	end;
+	info.checked = nil;
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -627,6 +798,10 @@ function ShowReadyCheck()
 				break;
 			end
 		end
+	end
+	if ( not leader ) then
+		leader = "party"..GetPartyLeaderIndex();
+		name = UnitName(leader);
 	end
 	SetPortraitTexture(ReadyCheckPortrait, leader);
 	ReadyCheckFrameText:SetText(format(READY_CHECK_MESSAGE, name));

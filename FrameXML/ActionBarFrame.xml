@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ActionButton.lua"/>
-	<CheckButton name="ActionBarButtonTemplate" inherits="ActionButtonTemplate" virtual="true">
+	<CheckButton name="ActionBarButtonTemplate" inherits="SecureActionButtonTemplate, ActionButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
 				ActionButton_OnLoad();
@@ -9,17 +9,12 @@
 			<OnEvent>
 				ActionButton_OnEvent(event);
 			</OnEvent>
-			<OnClick>
-				if ( IsShiftKeyDown() ) then
+			<PostClick>
+				if ( ActionButton_ShouldPickupAction(self, button) ) then
 					PickupAction(ActionButton_GetPagedID(this));
-				else
-					if ( MacroFrame_SaveMacro ) then
-						MacroFrame_SaveMacro();
-					end
-					UseAction(ActionButton_GetPagedID(this), 1);
 				end
 				ActionButton_UpdateState();
-			</OnClick>
+			</PostClick>
 			<OnDragStart>
 				if ( LOCK_ACTIONBAR ~= "1" ) then
 					PickupAction(ActionButton_GetPagedID(this));
@@ -171,15 +166,6 @@
 			<AbsInset left="6" right="6" top="7" bottom="7"/>
 		</HitRectInsets>
 		<Scripts>
-			<OnLoad>
-				MainMenuBarPageNumber:SetText(CURRENT_ACTIONBAR_PAGE);
-				this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
-			</OnLoad>
-			<OnEvent>
-				if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
-					MainMenuBarPageNumber:SetText(CURRENT_ACTIONBAR_PAGE);
-				end
-			</OnEvent>
 			<OnClick>
 				ActionBar_PageUp();
 				PlaySound("UChatScrollButton");

@@ -97,7 +97,7 @@
 					</OnLeave>
                 </Scripts>
             </Button>
-            <Button name="InspectFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="HONOR">
+            <Button name="InspectFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PVP">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="InspectFrameTab1" relativePoint="RIGHT">
                         <Offset>
@@ -111,7 +111,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetText(HONOR, 1.0,1.0,1.0 );
+						GameTooltip:SetText(PLAYER_V_PLAYER, 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

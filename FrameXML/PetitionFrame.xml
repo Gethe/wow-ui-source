@@ -75,7 +75,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="PetitionFrameCharterTitle" inherits="QuestTitleFont" justifyH="LEFT" text="GUILD_NAME">
+				<FontString name="PetitionFrameCharterTitle" inherits="QuestTitleFont" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="285" y="0"/>
 					</Size>
@@ -99,7 +99,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="PetitionFrameMasterTitle" inherits="QuestTitleFont" justifyH="LEFT" text="GUILD_RANK0_DESC">
+				<FontString name="PetitionFrameMasterTitle" inherits="QuestTitleFont" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="285" y="0"/>
 					</Size>
@@ -362,7 +362,11 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopup_Show("RENAME_GUILD");
+						if ( PetitionFrame.petitionType == "guild" ) then
+							StaticPopup_Show("RENAME_GUILD");
+						elseif ( PetitionFrame.petitionType == "arena" ) then
+							StaticPopup_Show("RENAME_ARENA_TEAM");
+						end
 					</OnClick>
 				</Scripts>
 			</Button>

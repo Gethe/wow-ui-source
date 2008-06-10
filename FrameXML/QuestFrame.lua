@@ -118,8 +118,8 @@ function QuestItem_OnClick()
 			DressUpItemLink(GetQuestItemLink(this.type, this:GetID()));
 		end
 	elseif ( IsShiftKeyDown() ) then
-		if ( ChatFrameEditBox:IsVisible() and this.rewardType ~= "spell") then
-			ChatFrameEditBox:Insert(GetQuestItemLink(this.type, this:GetID()));
+		if ( this.rewardType ~= "spell") then
+			ChatEdit_InsertLink(GetQuestItemLink(this.type, this:GetID()));
 		end
 	end
 end
@@ -130,8 +130,8 @@ function QuestRewardItem_OnClick()
 			DressUpItemLink(GetQuestItemLink(this.type, this:GetID()));
 		end
 	elseif ( IsShiftKeyDown() ) then
-		if ( ChatFrameEditBox:IsVisible() ) then
-			ChatFrameEditBox:Insert(GetQuestItemLink(this.type, this:GetID()));
+		if ( this.rewardType ~= "spell" ) then
+			ChatEdit_InsertLink(GetQuestItemLink(this.type, this:GetID()));
 		end
 	elseif ( this.type == "choice" ) then
 		QuestRewardItemHighlight:SetPoint("TOPLEFT", this, "TOPLEFT", -8, 7);
@@ -360,7 +360,7 @@ function QuestFrameItems_Update(questState)
 		getglobal(questItemName..i):Hide();
 	end
 
-	local questItem, name, texture, isTradeskillSpell, quality, isUsable, numItems = 1;
+	local questItem, name, texture, isTradeskillSpell, isSpellLearned, quality, isUsable, numItems = 1;
 	local rewardsCount = 0;
 	
 	-- Setup choosable rewards
@@ -427,13 +427,15 @@ function QuestFrameItems_Update(questState)
 		end
 
 		if ( isQuestLog == 1 ) then
-			texture, name, isTradeskillSpell = GetQuestLogRewardSpell();
+			texture, name, isTradeskillSpell, isSpellLearned = GetQuestLogRewardSpell();
 		else
-			texture, name, isTradeskillSpell = GetRewardSpell();
+			texture, name, isTradeskillSpell, isSpellLearned = GetRewardSpell();
 		end
 		
 		if ( isTradeskillSpell ) then
 			learnSpellText:SetText(REWARD_TRADESKILL_SPELL);
+		elseif ( not isSpellLearned ) then
+			learnSpellText:SetText(REWARD_AURA);
 		else
 			learnSpellText:SetText(REWARD_SPELL);
 		end

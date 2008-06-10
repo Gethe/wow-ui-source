@@ -7,7 +7,7 @@
 				KeyBindingButton_OnClick(arg1);
 			</OnClick>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp", "Button4Up", "Button5Up");
+				this:RegisterForClicks("AnyUp");
 			</OnLoad>
 		</Scripts>
 		<NormalFont inherits="GameFontHighlightSmall"/>

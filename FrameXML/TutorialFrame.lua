@@ -38,7 +38,7 @@ function TutorialFrame_Update(currentTutorial)
 	-- Go through the queue and reanchor the buttons
 	local button;
 	LAST_TUTORIAL_BUTTON_SHOWN = nil;
-	for index, value in TUTORIALFRAME_QUEUE do
+	for index, value in pairs(TUTORIALFRAME_QUEUE) do
 		button = getglobal(value[2]);
 		if ( LAST_TUTORIAL_BUTTON_SHOWN and LAST_TUTORIAL_BUTTON_SHOWN ~= button ) then
 			button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN, "BOTTOM", 36, 0);

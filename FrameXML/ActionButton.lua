@@ -13,75 +13,49 @@ RANGE_INDICATOR = "●";
 VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 
 function ActionButtonDown(id)
+	local button;
 	if ( BonusActionBarFrame:IsShown() ) then
-		local button = getglobal("BonusActionButton"..id);
-		if ( button:GetButtonState() == "NORMAL" ) then
-			button:SetButtonState("PUSHED");
-		end
-		return;
+		button = getglobal("BonusActionButton"..id);
+	else
+		button = getglobal("ActionButton"..id);
 	end
-	
-	local button = getglobal("ActionButton"..id);
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
 end
 
-function ActionButtonUp(id, onSelf)
+function ActionButtonUp(id)
+	local button;
 	if ( BonusActionBarFrame:IsShown() ) then
-		local button = getglobal("BonusActionButton"..id);
-		if ( button:GetButtonState() == "PUSHED" ) then
-			button:SetButtonState("NORMAL");
-			if ( MacroFrame_SaveMacro ) then
-				MacroFrame_SaveMacro();
-			end
-			UseAction(ActionButton_GetPagedID(button), 0);
-			if ( IsCurrentAction(ActionButton_GetPagedID(button)) ) then
-				button:SetChecked(1);
-			else
-				button:SetChecked(0);
-			end
-		end
-		return;
+		button = getglobal("BonusActionButton"..id);
+	else
+		button = getglobal("ActionButton"..id);
 	end
-
-	local button = getglobal("ActionButton"..id);
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
-		if ( MacroFrame_SaveMacro ) then
-			MacroFrame_SaveMacro();
-		end
-		UseAction(ActionButton_GetPagedID(button), 0, onSelf);
-		if ( IsCurrentAction(ActionButton_GetPagedID(button)) ) then
-			button:SetChecked(1);
-		else
-			button:SetChecked(0);
-		end
+		SecureActionButton_OnClick(button, "LeftButton");
+		ActionButton_UpdateState(button);
 	end
 end
 
 function ActionBar_PageUp()
-	CURRENT_ACTIONBAR_PAGE = CURRENT_ACTIONBAR_PAGE + 1;
 	local nextPage;
-	for i=CURRENT_ACTIONBAR_PAGE, NUM_ACTIONBAR_PAGES do
+	for i=GetActionBarPage() + 1, NUM_ACTIONBAR_PAGES do
 		if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
 			nextPage = i;
 			break;
 		end
 	end
-	
+
 	if ( not nextPage ) then
-		CURRENT_ACTIONBAR_PAGE = 1;
-	else
-		CURRENT_ACTIONBAR_PAGE = nextPage;
+		nextPage = 1;
 	end
-	ChangeActionBarPage();
+	ChangeActionBarPage(nextPage);
 end
 
 function ActionBar_PageDown()
-	CURRENT_ACTIONBAR_PAGE = CURRENT_ACTIONBAR_PAGE - 1;
 	local prevPage;
-	for i=CURRENT_ACTIONBAR_PAGE, 1, -1 do
+	for i=GetActionBarPage() - 1, 1, -1 do
 		if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
 			prevPage = i;
 			break;
@@ -96,8 +70,7 @@ function ActionBar_PageDown()
 			end
 		end
 	end
-	CURRENT_ACTIONBAR_PAGE = prevPage;
-	ChangeActionBarPage();
+	ChangeActionBarPage(prevPage);
 end
 
 function ActionButton_OnLoad()
@@ -105,8 +78,12 @@ function ActionButton_OnLoad()
 	this.flashing = 0;
 	this.flashtime = 0;
 	ActionButton_Update();
+	this:SetAttribute("type", "action");
+	this:SetAttribute("shift-type*", ATTRIBUTE_NOOP);
+	this:SetAttribute("checkselfcast", true);
+	this:SetAttribute("useparent-unit", true);
 	this:RegisterForDrag("LeftButton", "RightButton");
-	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	this:RegisterForClicks("AnyUp");
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	this:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 	this:RegisterEvent("ACTIONBAR_SHOWGRID");
@@ -119,28 +96,29 @@ function ActionButton_OnLoad()
 end
 
 function ActionButton_UpdateHotkeys(actionButtonType)
-	if ( not actionButtonType ) then
-		actionButtonType = "ACTIONBUTTON";
-	end
-	local hotkey = getglobal(this:GetName().."HotKey");
-	local action = actionButtonType..this:GetID();
-	local button = ActionButton_GetPagedID(this);
+    if ( not actionButtonType ) then
+        actionButtonType = "ACTIONBUTTON";
+    end
+    local hotkey = getglobal(this:GetName().."HotKey");
+    local button = ActionButton_GetPagedID(this);
+    local key = GetBindingKey(actionButtonType..this:GetID()) or
+                GetBindingKey("CLICK "..this:GetName()..":LeftButton");
 
-	if ( GetBindingText(GetBindingKey(action), "KEY_", 1) == "" ) then
-		if ( not HasAction(button) ) then
-			hotkey:SetText("");
-		elseif ( ActionHasRange(button) ) then
-			if ( IsActionInRange(button) ) then
-				hotkey:SetText(RANGE_INDICATOR);
-				hotkey:SetTextHeight(8);
-				hotkey:SetPoint("TOPRIGHT", this:GetName(), "TOPRIGHT", -3, 5);
-			else
-				hotkey:SetText("");			
-			end
-		end
-	else
-		hotkey:SetText(GetBindingText(GetBindingKey(action), "KEY_", 1));
-	end
+    if ( GetBindingText(key, "KEY_", 1) == "" ) then
+        if ( not HasAction(button) ) then
+            hotkey:SetText("");
+        elseif ( ActionHasRange(button) ) then
+            if ( IsActionInRange(button) ) then
+                hotkey:SetText(RANGE_INDICATOR);
+                hotkey:SetTextHeight(8);
+                hotkey:SetPoint("TOPRIGHT", this:GetName(), "TOPRIGHT", -3, 5);
+            else
+                hotkey:SetText("");
+            end
+        end
+    else
+        hotkey:SetText(GetBindingText(key, "KEY_", 1));
+    end
 end
 
 function ActionButton_Update()
@@ -189,7 +167,9 @@ function ActionButton_Update()
 		this:RegisterEvent("START_AUTOREPEAT_SPELL");
 		this:RegisterEvent("STOP_AUTOREPEAT_SPELL");
 
-		this:Show();
+		if ( not this:GetAttribute("statehidden") ) then
+			this:Show();
+		end
 		ActionButton_UpdateState();
 		ActionButton_UpdateUsable();
 		ActionButton_UpdateCooldown();
@@ -244,8 +224,10 @@ function ActionButton_ShowGrid(button)
 	end
 	button.showgrid = button.showgrid+1;
 	getglobal(button:GetName().."NormalTexture"):SetVertexColor(1.0, 1.0, 1.0, 0.5);
-	
-	button:Show();
+
+	if ( not button:GetAttribute("statehidden") ) then
+		button:Show();
+	end
 end
 
 function ActionButton_HideGrid(button)	
@@ -258,11 +240,15 @@ function ActionButton_HideGrid(button)
 	end
 end
 
-function ActionButton_UpdateState()
-	if ( IsCurrentAction(ActionButton_GetPagedID(this)) or IsAutoRepeatAction(ActionButton_GetPagedID(this)) ) then
-		this:SetChecked(1);
+function ActionButton_UpdateState(button)
+	if ( not button ) then
+		button = this;
+	end
+	local actionID = ActionButton_GetPagedID(button);
+	if ( IsCurrentAction(actionID) or IsAutoRepeatAction(actionID) ) then
+		button:SetChecked(1);
 	else
-		this:SetChecked(0);
+		button:SetChecked(0);
 	end
 end
 
@@ -284,8 +270,9 @@ end
 
 function ActionButton_UpdateCount()
 	local text = getglobal(this:GetName().."Count");
-	if ( IsConsumableAction(ActionButton_GetPagedID(this)) ) then
-		text:SetText(GetActionCount(ActionButton_GetPagedID(this)));
+	local action = ActionButton_GetPagedID(this);
+	if ( IsConsumableAction(action) or IsStackableAction(action) ) then
+		text:SetText(GetActionCount(action));
 	else
 		text:SetText("");
 	end
@@ -360,6 +347,10 @@ function ActionButton_OnEvent(event)
 			ActionButton_StopFlash();
 		end
 	end
+end
+
+function ActionButton_ShouldPickupAction(self, button)
+	return (IsShiftKeyDown() and not SecureButton_GetModifiedAttribute(self, "type", button));
 end
 
 function ActionButton_SetTooltip()
@@ -444,26 +435,30 @@ function ActionButton_OnUpdate(elapsed)
 end
 
 function ActionButton_GetPagedID(button)
-	if ( button.isBonus and CURRENT_ACTIONBAR_PAGE == 1 ) then
-		local offset = GetBonusBarOffset();
-		if ( offset == 0 and BonusActionBarFrame and BonusActionBarFrame.lastBonusBar ) then
-			offset = BonusActionBarFrame.lastBonusBar;
-		end
-		return (button:GetID() + ((NUM_ACTIONBAR_PAGES + offset - 1) * NUM_ACTIONBAR_BUTTONS));
-	end
-	
-	local parentName = button:GetParent():GetName();
-	if ( parentName == "MultiBarBottomLeft" ) then
-		return (button:GetID() + ((BOTTOMLEFT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
-	elseif ( parentName == "MultiBarBottomRight" ) then
-		return (button:GetID() + ((BOTTOMRIGHT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
-	elseif ( parentName == "MultiBarLeft" ) then
-		return (button:GetID() + ((LEFT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
-	elseif ( parentName == "MultiBarRight" ) then
-		return (button:GetID() + ((RIGHT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
-	else
-		return (button:GetID() + ((CURRENT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS))
-	end
+    if ( button:GetID() > 0 ) then
+        if ( button.isBonus and GetActionBarPage() == 1 ) then
+            local offset = GetBonusBarOffset();
+            if ( offset == 0 and BonusActionBarFrame and BonusActionBarFrame.lastBonusBar ) then
+                offset = BonusActionBarFrame.lastBonusBar;
+            end
+            return (button:GetID() + ((NUM_ACTIONBAR_PAGES + offset - 1) * NUM_ACTIONBAR_BUTTONS));
+        end
+        
+        local parentName = button:GetParent():GetName();
+        if ( parentName == "MultiBarBottomLeft" ) then
+            return (button:GetID() + ((BOTTOMLEFT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
+        elseif ( parentName == "MultiBarBottomRight" ) then
+            return (button:GetID() + ((BOTTOMRIGHT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
+        elseif ( parentName == "MultiBarLeft" ) then
+            return (button:GetID() + ((LEFT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
+        elseif ( parentName == "MultiBarRight" ) then
+            return (button:GetID() + ((RIGHT_ACTIONBAR_PAGE - 1) * NUM_ACTIONBAR_BUTTONS));
+        else
+            return (button:GetID() + ((GetActionBarPage() - 1) * NUM_ACTIONBAR_BUTTONS))
+        end
+    else
+        return SecureButton_GetModifiedAttribute(button, "action", SecureStateChild_GetEffectiveButton(button)) or 1;
+    end
 end
 
 function ActionButton_UpdateFlash()

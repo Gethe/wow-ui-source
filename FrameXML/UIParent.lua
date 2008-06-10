@@ -8,6 +8,9 @@ FLASHFRAMES = {};
 -- Pulsing stuff
 PULSEBUTTONS = {};
 
+-- Shine animation
+SHINES_TO_ANIMATE = {};
+
 -- Needs to be defined here so the manage frames function works properly
 BATTLEFIELD_TAB_OFFSET_Y = 0;
 
@@ -16,7 +19,7 @@ UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0,	whileDead = 
 UIPanelWindows["OptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["SoundOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["UIOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 2 ,	whileDead = 1};
+UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1, hideChildWindows = 1};
 UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["LootFrame"] =			{ area = "left",	pushable = 7 };
@@ -30,9 +33,12 @@ UIPanelWindows["FriendsFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 }
 UIPanelWindows["WorldMapFrame"] =		{ area = "full",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["CinematicFrame"] =		{ area = "full",	pushable = 0 };
 UIPanelWindows["TabardFrame"] =			{ area = "left",	pushable = 0 };
+UIPanelWindows["PVPBannerFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["GuildRegistrarFrame"] =		{ area = "left",	pushable = 0 };
+UIPanelWindows["ArenaRegistrarFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["PetitionFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["HelpFrame"] =			{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["KnowledgeBaseFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["GossipFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["MailFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0 };
@@ -40,6 +46,8 @@ UIPanelWindows["PetStableFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["WorldStateScoreFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
 UIPanelWindows["MinigameFrame"] =		{ area = "left",	pushable = 0 };
+UIPanelWindows["LFGParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["ArenaFrame"] =			{ area = "left",	pushable = 0 };
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
 UIChildWindows = {
@@ -47,6 +55,7 @@ UIChildWindows = {
 	"GuildControlPopupFrame",
 	"GuildMemberDetailFrame",
 	"GuildInfoFrame",
+	"PVPTeamDetails",
 };
 
 UISpecialFrames = {
@@ -82,6 +91,11 @@ function UIParent_OnLoad()
 	this:RegisterEvent("PARTY_INVITE_CANCEL");
 	this:RegisterEvent("GUILD_INVITE_REQUEST");
 	this:RegisterEvent("GUILD_INVITE_CANCEL");
+	this:RegisterEvent("LFG_MATCH_REQUEST");
+	this:RegisterEvent("LFG_MATCH_CANCEL");
+	this:RegisterEvent("LFG_PENDING_REQUEST");
+	this:RegisterEvent("LFG_PENDING_CANCEL");
+	this:RegisterEvent("ARENA_TEAM_INVITE_REQUEST");
 	this:RegisterEvent("PLAYER_CAMPING");
 	this:RegisterEvent("PLAYER_QUITING");
 	this:RegisterEvent("LOGOUT_CANCEL");
@@ -124,7 +138,11 @@ function UIParent_OnLoad()
 	this:RegisterEvent("CONFIRM_PET_UNLEARN");
 	this:RegisterEvent("CONFIRM_BINDER");
 	this:RegisterEvent("CONFIRM_SUMMON");
+	this:RegisterEvent("CANCEL_SUMMON");
+	this:RegisterEvent("GOSSIP_CONFIRM");
+	this:RegisterEvent("GOSSIP_CONFIRM_CANCEL");
 	this:RegisterEvent("GOSSIP_ENTER_CODE");
+	this:RegisterEvent("GOSSIP_CLOSED");
 	this:RegisterEvent("BILLING_NAG_DIALOG");
 	this:RegisterEvent("IGR_BILLING_NAG_DIALOG");
 	this:RegisterEvent("VARIABLES_LOADED");
@@ -147,6 +165,10 @@ function UIParent_OnLoad()
 	this:RegisterEvent("CRAFT_SHOW");
 	this:RegisterEvent("CRAFT_CLOSE");
 
+	-- Events for Item socketing UI
+	this:RegisterEvent("SOCKET_INFO_UPDATE");
+
+	-- Variable to scroll the talent frame
 	TALENT_FRAME_WAS_SHOWN = nil;
 	RegisterForSave("TALENT_FRAME_WAS_SHOWN");
 end
@@ -178,6 +200,9 @@ end
 function MacroFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_MacroUI");
 end
+function MacroFrame_SaveMacro()
+	-- this will be overwritten with the real thing when the addon is loaded
+end
 
 function RaidFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_RaidUI");
@@ -193,6 +218,10 @@ end
 
 function GMSurveyFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GMSurveyUI");
+end
+
+function ItemSocketingFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_ItemSocketingUI");
 end
 
 function ShowMacroFrame()
@@ -301,6 +330,30 @@ function UIParent_OnEvent(event)
 		StaticPopup_Hide("GUILD_INVITE");
 		return;
 	end
+	if ( event == "LFG_MATCH_REQUEST" ) then
+		StaticPopup_Show("LFG_MATCH", arg1);
+		return;
+	end
+	if ( event == "LFG_MATCH_CANCEL" ) then
+		StaticPopup_Hide("LFG_MATCH");
+		return;
+	end
+	if ( event == "LFG_PENDING_REQUEST" ) then
+		StaticPopup_Show("LFG_PENDING");
+		return;
+	end
+	if ( event == "LFG_PENDING_CANCEL" ) then
+		StaticPopup_Hide("LFG_PENDING");
+		return;
+	end
+	if ( event == "ARENA_TEAM_INVITE_REQUEST" ) then
+		StaticPopup_Show("ARENA_TEAM_INVITE", arg1, arg2);
+		return;
+	end
+	if ( event == "ARENA_TEAM_INVITE_CANCEL" ) then
+		StaticPopup_Hide("ARENA_TEAM_INVITE");
+		return;
+	end
 	if ( event == "PLAYER_CAMPING" ) then
 		StaticPopup_Show("CAMP");
 		return;
@@ -355,16 +408,24 @@ function UIParent_OnEvent(event)
 		return;
 	end
 	if ( event == "CURSOR_UPDATE" ) then
-		StaticPopup_Hide("EQUIP_BIND");
-		StaticPopup_Hide("AUTOEQUIP_BIND");
+		if ( not CursorHasItem() ) then
+			StaticPopup_Hide("EQUIP_BIND");
+			StaticPopup_Hide("AUTOEQUIP_BIND");
+		end
 		return;
 	end
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		CloseAllWindows(1);
 		-- Get multi-actionbar states
 		SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		MultiActionBar_Update();
 		-- Update nameplates
 		UpdateNameplates();
+	
+		-- Until PVPFrame is checked in, this is placed here.
+		for i=1, MAX_ARENA_TEAMS do
+			GetArenaTeam(i);
+		end
 		return;
 	end
 	if ( event == "RAID_ROSTER_UPDATE" ) then
@@ -552,12 +613,31 @@ function UIParent_OnEvent(event)
 		StaticPopup_Show("CONFIRM_SUMMON");
 		return;
 	end
+	if ( event == "CANCEL_SUMMON" ) then
+		StaticPopup_Hide("CONFIRM_SUMMON");
+		return;
+	end
 	if ( event == "BILLING_NAG_DIALOG" ) then
 		StaticPopup_Show("BILLING_NAG", arg1);
 		return;
 	end
 	if ( event == "IGR_BILLING_NAG_DIALOG" ) then
 		StaticPopup_Show("IGR_BILLING_NAG");
+		return;
+	end
+	if ( event == "GOSSIP_CONFIRM" ) then
+		if ( arg3 > 0 ) then
+			StaticPopupDialogs["GOSSIP_CONFIRM"].hasMoneyFrame = 1;
+		else
+			StaticPopupDialogs["GOSSIP_CONFIRM"].hasMoneyFrame = nil;
+		end	
+		local dialog = StaticPopup_Show("GOSSIP_CONFIRM", arg2);
+		if ( dialog ) then
+			dialog.data = arg1;
+			if ( arg3 > 0 ) then
+				MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg3);
+			end
+		end
 		return;
 	end
 	if ( event == "GOSSIP_ENTER_CODE" ) then
@@ -567,7 +647,13 @@ function UIParent_OnEvent(event)
 		end
 		return;
 	end
+	if ( event == "GOSSIP_CONFIRM_CANCEL" or event == "GOSSIP_CLOSED" ) then
+		StaticPopup_Hide("GOSSIP_CONFIRM");
+		StaticPopup_Hide("GOSSIP_ENTER_CODE");
+		return;
+	end
 	if ( event == "READY_CHECK" ) then
+		RaidFrame_LoadUI()
 		ShowReadyCheck();
 		return;
 	end
@@ -631,6 +717,13 @@ function UIParent_OnEvent(event)
 		end
 		return;
 	end
+
+	-- Event for item socketing handling
+	if ( event == "SOCKET_INFO_UPDATE" ) then
+		ItemSocketingFrame_LoadUI();
+		ItemSocketingFrame_Update();
+		ShowUIPanel(ItemSocketingFrame);
+	end
 end
 
 local FailedAddOnLoad = {};
@@ -647,6 +740,7 @@ function UIParentLoadAddOn(name)
 end
 
 function ShowUIPanel(frame, force)	
+
 	if ( not frame or frame:IsVisible() ) then
 		return;
 	end
@@ -806,7 +900,7 @@ function SetDoublewideFrame(frame)
 	end
 end
 
-function SetLeftFrame(frame)
+function SetLeftFrame(frame, skipSetPoint)
 	local oldFrame = UIParent.left;
 	UIParent.left = frame;
 
@@ -815,11 +909,12 @@ function SetLeftFrame(frame)
 	end	
 
 	if ( frame ) then
-		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", 0, -104);
+		if ( not skipSetPoint ) then
+			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", 0, -104);
+		end
 		frame:Show();
-		--HidePartyFrame();
-	else
-		--ShowPartyFrame();
+		-- Hide all child windows
+		securecall("CloseChildWindows");
 	end
 end
 
@@ -832,21 +927,13 @@ function SetCenterFrame(frame, skipSetPoint)
 	end
 
 	if ( frame ) then
-		frame:Show();
 		if ( not skipSetPoint ) then
 			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", 384, -104);
 		end
+		frame:Show();
 		-- Hide all child windows
-		local childWindow;
-		for index, value in UIChildWindows do
-			childWindow = getglobal(value);
-			if ( childWindow ) then
-				childWindow:Hide();
-			end
-		end
+		securecall("CloseChildWindows");
 	end
-
-	
 end
 
 function SetFullScreenFrame(frame)
@@ -925,7 +1012,33 @@ function GetDoublewideFrame()
 	return UIParent.doublewide;
 end
 
-function CloseWindows(ignoreCenter)
+-- this function handles possibly tainted values and so 
+-- should always be called from secure code using securecall()
+function CloseChildWindows()
+	local childWindow;
+	for index, value in pairs(UIChildWindows) do
+		childWindow = getglobal(value);
+		if ( childWindow ) then
+			childWindow:Hide();
+		end
+	end
+end
+
+-- this function handles possibly tainted values and so 
+-- should always be called from secure code using securecall()
+function CloseSpecialWindows()
+	local found;
+	for index, value in pairs(UISpecialFrames) do
+		local frame = getglobal(value);
+		if ( frame and frame:IsVisible() ) then
+			frame:Hide();
+			found = 1;
+		end
+	end
+	return found;
+end
+
+function CloseWindows(ignoreCenter, frameToIgnore)
 	-- This function will close all frames that are not the current frame
 	local leftFrame = GetLeftFrame();
 	local centerFrame = GetCenterFrame();
@@ -933,26 +1046,24 @@ function CloseWindows(ignoreCenter)
 	local fullScreenFrame = GetFullScreenFrame();
 	local found = leftFrame or centerFrame or fullScreenFrame;
 
-	HideUIPanel(leftFrame);
+	if ( not frameToIgnore or frameToIgnore ~= leftFrame ) then
+		HideUIPanel(leftFrame);
+	end
+	
 	HideUIPanel(fullScreenFrame);
 	HideUIPanel(doublewideFrame);
-
-	if ( centerFrame ) then
-		local info = UIPanelWindows[centerFrame:GetName()];
-		if ( not info or (info.area ~= "center") or not ignoreCenter ) then
-			HideUIPanel(centerFrame);
-		end	
-	end
-
-	local frame;
-	for index, value in UISpecialFrames do
-		frame = getglobal(value);
-		if ( frame and frame:IsVisible() ) then
-			frame:Hide();
-			found = 1;
+	
+	if ( not frameToIgnore or frameToIgnore ~= centerFrame ) then
+		if ( centerFrame ) then
+			local info = UIPanelWindows[centerFrame:GetName()];
+			if ( not info or (info.area ~= "center") or not ignoreCenter ) then
+				HideUIPanel(centerFrame);
+			end	
 		end
 	end
-
+	
+	found = securecall("CloseSpecialWindows") or found;
+	
 	return found;
 end
 
@@ -981,9 +1092,11 @@ function CloseAllWindows(ignoreCenter)
 	return (bagsVisible or windowsVisible);
 end
 
+-- this function handles possibly tainted values and so 
+-- should always be called from secure code using securecall()
 function CloseMenus()
 	local menusVisible = nil;
-	for index, value in UIMenus do
+	for index, value in pairs(UIMenus) do
 		menu = getglobal(value);
 		if ( menu and menu:IsVisible() ) then
 			menu:Hide();
@@ -1006,13 +1119,13 @@ function SecondsToTime(seconds, noSeconds)
 	local count = 0;
 	local tempTime;
 	seconds = floor(seconds);
-	if ( seconds > 86400  ) then
+	if ( seconds >= 86400  ) then
 		tempTime = floor(seconds / 86400);
 		time = tempTime.." "..GetText("DAYS_ABBR", nil, tempTime).." ";
 		seconds = mod(seconds, 86400);
 		count = count + 1;
 	end
-	if ( seconds > 3600  ) then
+	if ( seconds >= 3600  ) then
 		tempTime = floor(seconds / 3600);
 		time = time..tempTime.." "..GetText("HOURS_ABBR", nil, tempTime).." ";
 		seconds = mod(seconds, 3600);
@@ -1033,15 +1146,15 @@ end
 
 function SecondsToTimeAbbrev(seconds)
 	local tempTime;
-	if ( seconds > 86400  ) then
+	if ( seconds >= 86400  ) then
 		tempTime = ceil(seconds / 86400);
 		return format(DAY_ONELETTER_ABBR, tempTime);
 	end
-	if ( seconds > 3600  ) then
+	if ( seconds >= 3600  ) then
 		tempTime = ceil(seconds / 3600);
 		return format(HOUR_ONELETTER_ABBR, tempTime);
 	end
-	if ( seconds > 60  ) then
+	if ( seconds >= 60  ) then
 		tempTime = ceil(seconds / 60);
 		return format(MINUTE_ONELETTER_ABBR, tempTime);
 	end
@@ -1049,35 +1162,67 @@ function SecondsToTimeAbbrev(seconds)
 end
 
 function BuildListString(...)
-	local string = arg[1];
-	for i=2, arg.n do
-		string = string..", "..arg[i];
+	local text = select(1, ...);
+	if ( not text ) then
+		return nil;
+	end
+	local string = text;
+	for i=2, select("#", ...) do
+		text = select(i, ...);
+		if ( text ) then
+			string = string..", "..text;
+		end
 	end
 	return string;
 end
 
 function BuildColoredListString(...)
-	if ( arg.n == 0 ) then
+	if ( select("#", ...) == 0 ) then
 		return nil;
 	end
 
 	-- Takes input where odd items are the text and even items determine whether the arg should be colored or not
+	local text, normal = select(1, ...);
 	local string;
-	if ( arg[2] ) then
-		string = arg[1];
+	if ( normal ) then
+		string = text;
 	else
-		string = RED_FONT_COLOR_CODE.. arg[1]..FONT_COLOR_CODE_CLOSE;
+		string = RED_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE;
 	end
-	for i=3, arg.n, 2 do
-		if ( arg[i+1] ) then
+	for i=3, select("#", ...), 2 do
+		text, normal = select(i, ...);
+		if ( normal ) then
 			-- If meets the condition
-			string = string..", "..arg[i];
+			string = string..", "..text;
 		else
 			-- If doesn't meet the condition
-			string = string..", "..RED_FONT_COLOR_CODE..arg[i]..FONT_COLOR_CODE_CLOSE;
+			string = string..", "..RED_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE;
 		end
 	end
 
+	return string;
+end
+
+function BuildNewLineListString(...)
+	local text;
+	local index = 1;
+	for i=1, select("#", ...) do
+		text = select(i, ...);
+		index = index + 1;
+		if ( text ) then
+			break;
+		end
+	end
+	if ( not text ) then
+		return nil;
+	end
+	local string = text;
+	for i=index, select("#", ...) do
+		text = select(i, ...);
+		if ( text ) then
+			string = string.."\n"..text;
+		end
+	end
 	return string;
 end
 
@@ -1219,7 +1364,7 @@ function UIFrameFadeUpdate(elapsed)
 end
 
 function UIFrameIsFading(frame)
-	for index, value in FADEFRAMES do
+	for index, value in pairs(FADEFRAMES) do
 		if ( value == frame ) then
 			return 1;
 		end
@@ -1316,7 +1461,7 @@ end
 
 -- Function to see if a frame is already flashing
 function UIFrameIsFlashing(frame)
-	for index, value in FLASHFRAMES do
+	for index, value in pairs(FLASHFRAMES) do
 		if ( value == frame ) then
 			return 1;
 		end
@@ -1342,7 +1487,7 @@ end
 
 -- Update the button pulsing
 function ButtonPulse_OnUpdate(elapsed)
-	for index, button in PULSEBUTTONS do
+	for index, button in pairs(PULSEBUTTONS) do
 		if ( button.pulseTimeLeft > 0 ) then
 			if ( button.pulseDuration < 0 ) then
 				if ( button.pulseOn == 1 ) then
@@ -1366,7 +1511,7 @@ function ButtonPulse_OnUpdate(elapsed)
 end
 
 function ButtonPulse_StopPulse(button)
-	for index, pulseButton in PULSEBUTTONS do
+	for index, pulseButton in pairs(PULSEBUTTONS) do
 		if ( pulseButton == button ) then
 			tDeleteItem(PULSEBUTTONS, button);
 		end
@@ -1383,6 +1528,17 @@ function tDeleteItem(table, item)
 			index = index + 1;
 		end
 	end
+end
+
+function tContains(table, item)
+	local index = 1;
+	while table[index] do
+		if ( item == table[index] ) then
+			return 1;
+		end
+		index = index + 1;
+	end
+	return nil;
 end
 
 function MouseIsOver(frame, topOffset, bottomOffset, leftOffset, rightOffset)
@@ -1462,33 +1618,17 @@ function Model_OnUpdate(elapsedTime, model, rotationsPerSecond)
 end
 
 -- Function that handles the escape key functions
-function ToggleGameMenu(clicked)
-	if ( clicked ) then
-		if ( OptionsFrame:IsVisible() ) then
-			OptionsFrameCancel:Click();
-		end
-		if ( GameMenuFrame:IsVisible() ) then
-			PlaySound("igMainMenuQuit");
-			HideUIPanel(GameMenuFrame);
-		else
-			CloseMenus();
-			CloseAllWindows()
-			PlaySound("igMainMenuOpen");
-			ShowUIPanel(GameMenuFrame);
-		end
-		return;
-	end
-
-	if ( StaticPopup_EscapePressed() ) then
+function ToggleGameMenu()
+	if ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( OptionsFrame:IsVisible() ) then
 		OptionsFrameCancel:Click();
 	elseif ( GameMenuFrame:IsVisible() ) then
 		PlaySound("igMainMenuQuit");
 		HideUIPanel(GameMenuFrame);
-	elseif ( CloseMenus() ) then
+	elseif ( securecall("CloseMenus") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
-	elseif ( CloseAllWindows() ) then
+	elseif ( securecall("CloseAllWindows") ) then
 	elseif ( ClearTarget() ) then
 	else
 		PlaySound("igMainMenuOpen");
@@ -1571,23 +1711,40 @@ UIPARENT_MANAGED_FRAME_POSITIONS["FRAME"] = {
 	var = If this is set use setglobal(varName, value) instead of setpoint
 };
 ]]
-UIPARENT_MANAGED_FRAME_POSITIONS = {};
--- Frames
-UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomLeft"] = {baseY = 17, reputation = 9, maxLevel = -5, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT"};
-UIPARENT_MANAGED_FRAME_POSITIONS["GroupLootFrame1"] = {baseY = 60, bottomEither = 42, pet = 42, reputation = 9};
-UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameParent"] = {baseY = 55, bottomEither = 47, pet = 42, reputation = 9};
-UIPARENT_MANAGED_FRAME_POSITIONS["FramerateLabel"] = {baseY = 64, bottomEither = 42, pet = 42, reputation = 9};
-UIPARENT_MANAGED_FRAME_POSITIONS["CastingBarFrame"] = {baseY = 60, bottomEither = 40, pet = 40, reputation = 9};
-UIPARENT_MANAGED_FRAME_POSITIONS["ChatFrame1"] = {baseY = 85, bottomLeft = 17, pet = 17, reputation = 9, maxLevel = -5, anchorTo = "UIParent", point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
-UIPARENT_MANAGED_FRAME_POSITIONS["ChatFrame2"] = {baseY = 85, bottomRight = 17, rightLeft = -88, rightRight = -43, reputation = 9, maxLevel = -5, anchorTo = "UIParent", point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
-UIPARENT_MANAGED_FRAME_POSITIONS["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = 45, reputation = 9, maxLevel = -5, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+-- some standard offsets
+local actionBarOffset = 45;
+local menuBarTop = 55;
 
--- Vars
-UIPARENT_MANAGED_FRAME_POSITIONS["CONTAINER_OFFSET_X"] = {baseX = 0, rightLeft = 90, rightRight = 45, isVar = "xAxis"};
-UIPARENT_MANAGED_FRAME_POSITIONS["CONTAINER_OFFSET_Y"] = {baseY = 70, bottomEither = 27, bottomRight = 0, reputation = 9, isVar = "yAxis", pet = 23};
-UIPARENT_MANAGED_FRAME_POSITIONS["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 210, bottomRight = 40, reputation = 9, isVar = "yAxis"};
-UIPARENT_MANAGED_FRAME_POSITIONS["PETACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = 43, reputation = 9, maxLevel = -5, isVar = "yAxis"};
+UIPARENT_MANAGED_FRAME_POSITIONS = {
+	["MultiBarBottomLeft"] = {baseY = 17, reputation = 1, maxLevel = 1, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT"};
+	["MultiBarRight"] = {baseY = 98, reputation = 1, anchorTo = "UIParent", point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT"};
+	["GroupLootFrame1"] = {baseY = menuBarTop, bottomEither = actionBarOffset, pet = 1, reputation = 1};
+	["TutorialFrameParent"] = {baseY = menuBarTop, bottomEither = actionBarOffset, pet = 1, reputation = 1};
+	["FramerateLabel"] = {baseY = menuBarTop, bottomEither = actionBarOffset, pet = 1, reputation = 1};
+	["CastingBarFrame"] = {baseY = menuBarTop+40, bottomEither = actionBarOffset, pet = 1, reputation = 1};
+	["ChatFrame1"] = {baseY = menuBarTop+20, bottomLeft = actionBarOffset-20, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
+	["ChatFrame2"] = {baseY = menuBarTop+20, bottomRight = actionBarOffset-20, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
+	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	
+	-- Vars
+	["CONTAINER_OFFSET_X"] = {baseX = 0, rightLeft = 2*actionBarOffset+3, rightRight = actionBarOffset+3, isVar = "xAxis"};
+	["CONTAINER_OFFSET_Y"] = {baseY = menuBarTop, bottomEither = actionBarOffset, reputation = 1, isVar = "yAxis", pet = 1};
+	["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 210, bottomRight = actionBarOffset, reputation = 1, isVar = "yAxis"};
+	["PETACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, isVar = "yAxis"};
+};
 
+-- constant offsets
+for _, data in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
+	for flag, value in pairs(data) do
+		if ( flag == "reputation" ) then
+			data[flag] = value * 9;
+		elseif ( flag == "maxLevel" ) then
+			data[flag] = value * -5;
+		elseif ( flag == "pet" ) then
+			data[flag] = value * 35;
+		end
+	end
+end
 -- Call this function to update the positions of all frames that can appear on the right side of the screen
 function UIParent_ManageFramePositions()
 	-- Frames that affect offsets in y axis
@@ -1596,24 +1753,27 @@ function UIParent_ManageFramePositions()
 	local xOffsetFrames = {};
 	
 	-- Set up flags
+	local hasBottomLeft, hasBottomRight, hasPetBar;
 	if ( SHOW_MULTI_ACTIONBAR_1 or SHOW_MULTI_ACTIONBAR_2 ) then
 		tinsert(yOffsetFrames, "bottomEither");
 	end
 	if ( SHOW_MULTI_ACTIONBAR_2) then
 		tinsert(yOffsetFrames, "bottomRight");
+		hasBottomRight = 1;
 	end
 	if ( SHOW_MULTI_ACTIONBAR_1 ) then
 		tinsert(yOffsetFrames, "bottomLeft");
+		hasBottomLeft = 1;
 	end
-		
 	if ( MultiBarLeft:IsShown() ) then
 		tinsert(xOffsetFrames, "rightLeft");
 	elseif ( MultiBarRight:IsShown() ) then
 		tinsert(xOffsetFrames, "rightRight");
 	end
-
+	
 	if ( ( PetActionBarFrame and PetActionBarFrame:IsShown() ) or ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) ) then
 		tinsert(yOffsetFrames, "pet");
+		hasPetBar = 1;
 	end
 	if ( ReputationWatchBar:IsShown() and MainMenuExpBar:IsShown() ) then
 		tinsert(yOffsetFrames, "reputation");
@@ -1624,7 +1784,7 @@ function UIParent_ManageFramePositions()
 	
 	-- Iterate through frames and set anchors according to the flags set
 	local frame, xOffset, yOffset, anchorTo, point, rpoint;
-	for index, value in UIPARENT_MANAGED_FRAME_POSITIONS do
+	for index, value in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
 		frame = getglobal(index);
 		if ( frame ) then
 			-- Always start with base as the base offset or default to zero if no "none" specified
@@ -1640,26 +1800,24 @@ function UIParent_ManageFramePositions()
 			end
 			
 			-- Iterate through frames that affect y offsets
-			local hasBottomLeft, hasPetBar;
-			for flag, flagValue in yOffsetFrames do
+			local hasBottomEitherFlag;
+			for flag, flagValue in pairs(yOffsetFrames) do
+				if ( flagValue == "bottomEither" and value[flagValue]) then
+					hasBottomEitherFlag = 1;
+				end
 				if ( value[flagValue] ) then
-					if ( flagValue == "bottomLeft" ) then
-						hasBottomLeft = 1;
-					elseif ( flagValue == "pet" ) then
-						hasPetBar = 1;
-					elseif ( flagValue == "bottomRight" ) then
-						hasBottomRight = 1;
-					end
 					yOffset = yOffset + value[flagValue];
 				end
 			end
-
-			if ( hasBottomLeft and hasPetBar ) then
-				yOffset = yOffset + 23;
+			
+			-- don't offset for the pet bar and bottomEither if the player has
+			-- the bottom right bar shown and not the bottom left
+			if ( hasBottomEitherFlag and hasBottomRight and hasPetBar and not hasBottomLeft ) then
+				yOffset = yOffset - (value["pet"] or 0);
 			end
-
+			
 			-- Iterate through frames that affect x offsets
-			for flag, flagValue in xOffsetFrames do
+			for flag, flagValue in pairs(xOffsetFrames) do
 				if ( value[flagValue] ) then
 					xOffset = xOffset + value[flagValue];
 				end
@@ -1893,4 +2051,120 @@ end
 
 function RaiseFrameLevel(frame)
 	frame:SetFrameLevel(frame:GetFrameLevel()+1);
+end
+
+-- Animated shine stuff
+
+function AnimatedShine_Start(shine, r, g, b)
+	if ( not tContains(SHINES_TO_ANIMATE, shine) ) then
+		shine.timer = 0;
+		tinsert(SHINES_TO_ANIMATE, shine);
+	end
+	local shineName = shine:GetName();
+	getglobal(shineName.."Shine1"):Show();
+	getglobal(shineName.."Shine2"):Show();
+	getglobal(shineName.."Shine3"):Show();
+	getglobal(shineName.."Shine4"):Show();
+	if ( r ) then
+		getglobal(shineName.."Shine1"):SetVertexColor(r, g, b);
+		getglobal(shineName.."Shine2"):SetVertexColor(r, g, b);
+		getglobal(shineName.."Shine3"):SetVertexColor(r, g, b);
+		getglobal(shineName.."Shine4"):SetVertexColor(r, g, b);
+	end
+	
+end
+
+function AnimatedShine_Stop(shine)
+	tDeleteItem(SHINES_TO_ANIMATE, shine);
+	local shineName = shine:GetName();
+	getglobal(shineName.."Shine1"):Hide();
+	getglobal(shineName.."Shine2"):Hide();
+	getglobal(shineName.."Shine3"):Hide();
+	getglobal(shineName.."Shine4"):Hide();
+end
+
+function AnimatedShine_OnUpdate(elapsed)
+	local shine1, shine2, shine3, shine4;
+	local speed = 2.5;
+	local distance;
+	for index, value in pairs(SHINES_TO_ANIMATE) do
+		shine1 = getglobal(value:GetName().."Shine1");
+		shine2 = getglobal(value:GetName().."Shine2");
+		shine3 = getglobal(value:GetName().."Shine3");
+		shine4 = getglobal(value:GetName().."Shine4");
+		value.timer = value.timer+elapsed;
+		if ( value.timer > speed*4 ) then
+			value.timer = 0;
+		end
+		parent = getglobal(value:GetName().."Shine");
+		distance = parent:GetWidth();
+		if ( value.timer <= speed  ) then
+			shine1:SetPoint("CENTER", parent, "TOPLEFT", value.timer/speed*distance, 0);
+			shine2:SetPoint("CENTER", parent, "BOTTOMRIGHT", -value.timer/speed*distance, 0);
+			shine3:SetPoint("CENTER", parent, "TOPRIGHT", 0, -value.timer/speed*distance);
+			shine4:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, value.timer/speed*distance);
+		elseif ( value.timer <= speed*2 ) then
+			shine1:SetPoint("CENTER", parent, "TOPRIGHT", 0, -(value.timer-speed)/speed*distance);
+			shine2:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, (value.timer-speed)/speed*distance);
+			shine3:SetPoint("CENTER", parent, "BOTTOMRIGHT", -(value.timer-speed)/speed*distance, 0);
+			shine4:SetPoint("CENTER", parent, "TOPLEFT", (value.timer-speed)/speed*distance, 0);
+		elseif ( value.timer <= speed*3 ) then
+			shine1:SetPoint("CENTER", parent, "BOTTOMRIGHT", -(value.timer-speed*2)/speed*distance, 0);
+			shine2:SetPoint("CENTER", parent, "TOPLEFT", (value.timer-speed*2)/speed*distance, 0);
+			shine3:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, (value.timer-speed*2)/speed*distance);
+			shine4:SetPoint("CENTER", parent, "TOPRIGHT", 0, -(value.timer-speed*2)/speed*distance);
+		else
+			shine1:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, (value.timer-speed*3)/speed*distance);
+			shine2:SetPoint("CENTER", parent, "TOPRIGHT", 0, -(value.timer-speed*3)/speed*distance);
+			shine3:SetPoint("CENTER", parent, "TOPLEFT", (value.timer-speed*3)/speed*distance, 0);
+			shine4:SetPoint("CENTER", parent, "BOTTOMRIGHT", -(value.timer-speed*3)/speed*distance, 0);
+		end		
+	end
+end
+
+function PartyIsFull()
+	if ( (GetNumPartyMembers() < MAX_PARTY_MEMBERS) or (GetNumRaidMembers() > 0 and (GetNumRaidMembers() < MAX_RAID_MEMBERS)) ) then
+		return false;
+	else
+		return true;
+	end
+end
+
+function CanGroupInvite()
+	if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then
+		if ( IsPartyLeader() or IsRaidOfficer() ) then
+			return true;
+		else
+			return false;
+		end
+	else
+		return true;
+	end
+end
+
+function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed)
+	if ( not texture.frame ) then
+		-- initialize everything
+		texture.frame = 1;
+		texture.numColumns = textureWidth/frameWidth;
+		texture.numRows = textureHeight/frameHeight;
+		texture.columnWidth = frameWidth/textureWidth;
+		texture.rowHeight = frameHeight/textureHeight;
+	end
+	local frame = texture.frame;
+	if ( not texture.throttle or texture.throttle > 0.1 ) then
+		texture.throttle = 0;
+		if ( frame > numFrames ) then
+			frame = 1;
+		end
+		local left = mod(frame-1, texture.numColumns)*texture.columnWidth;
+		local right = left + texture.columnWidth;
+		local bottom = ceil(frame/texture.numColumns)*texture.rowHeight;
+		local top = bottom - texture.rowHeight;
+		texture:SetTexCoord(left, right, top, bottom);
+
+		texture.frame = frame + 1;
+	else
+		texture.throttle = texture.throttle + elapsed;
+	end
 end

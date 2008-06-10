@@ -24,7 +24,7 @@ function DurabilityFrame_SetAlerts()
 	DurabilityFrame.enchantTimer = nil;
 	local numAlerts = 0;
 	local texture, color, showDurability;
-	for index, value in INVENTORY_ALERT_STATUS_SLOTS do
+	for index, value in pairs(INVENTORY_ALERT_STATUS_SLOTS) do
 		texture = getglobal("Durability"..value.slot);
 		if ( value.slot == "Shield" ) then
 			if ( OffhandHasWeapon() ) then
@@ -56,7 +56,7 @@ function DurabilityFrame_SetAlerts()
 			end
 		end
 	end
-	for index, value in INVENTORY_ALERT_STATUS_SLOTS do
+	for index, value in pairs(INVENTORY_ALERT_STATUS_SLOTS) do
 		if ( not value.showSeparate ) then
 			if ( showDurability ) then
 				getglobal("Durability"..value.slot):Show();

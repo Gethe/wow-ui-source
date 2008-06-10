@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PetFrame.lua"/>
-	<Button name="PetFrame" frameStrata="LOW" toplevel="true" parent="PlayerFrame">
+	<Button name="PetFrame" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
 		<Size>
 			<AbsDimension x="128" y="53"/>
 		</Size>
@@ -299,9 +299,6 @@
 				UnitFrame_OnLeave();
 				PartyMemberBuffTooltip:Hide();
 			</OnLeave>
-			<OnClick>
-				PetFrame_OnClick(arg1);
-			</OnClick>
 		</Scripts>
 	</Button>
 </Ui>

@@ -721,8 +721,13 @@
 							<OnEditFocusLost>
 								this:HighlightText(0, 0);
 							</OnEditFocusLost>
-							<OnChar>
+							<OnCharComposition>
 								SendMailFrame_SendeeAutocomplete();
+							</OnCharComposition>
+							<OnChar>
+								if ( not this:IsInIMECompositionMode() ) then
+									SendMailFrame_SendeeAutocomplete();
+								end
 							</OnChar>
 							<OnEnterPressed>
 								SendMailSubjectEditBox:SetFocus();
@@ -1538,7 +1543,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString name="OpenMailBodyText" inherits="MailTextFontNormal">
+								<FontString name="OpenMailBodyText" inherits="MailTextFontNormal" nonspacewrap="true">
 									<Size>
 										<AbsDimension x="276" y="0"/>
 									</Size>

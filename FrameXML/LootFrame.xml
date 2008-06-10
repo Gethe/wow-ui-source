@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LootFrame.lua"/>
-	<LootButton name="LootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+	<Button name="LootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\QuestFrame\UI-QuestItemNameFrame">
@@ -51,10 +51,17 @@
 				CursorOnUpdate();
 			</OnUpdate>
 			<OnClick>
-				LootFrameItem_OnClick(arg1);
+				if ( not IsModifierKeyDown() ) then
+					LootButton_OnClick(arg1);
+				end
 			</OnClick>
+			<PostClick>
+				if ( IsModifierKeyDown() ) then
+					LootButton_OnModifiedClick(arg1);
+				end
+			</PostClick>
 		</Scripts>
-	</LootButton>
+	</Button>
 	<Frame name="LootFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="256" y="256"/>
@@ -136,7 +143,7 @@
 				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
-			<LootButton name="LootButton1" inherits="LootButtonTemplate" id="1">
+			<Button name="LootButton1" inherits="LootButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -144,8 +151,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</LootButton>
-			<LootButton name="LootButton2" inherits="LootButtonTemplate" id="2">
+			</Button>
+			<Button name="LootButton2" inherits="LootButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="LootButton1" relativePoint="BOTTOM">
 						<Offset>
@@ -153,8 +160,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</LootButton>
-			<LootButton name="LootButton3" inherits="LootButtonTemplate" id="3">
+			</Button>
+			<Button name="LootButton3" inherits="LootButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="LootButton2" relativePoint="BOTTOM">
 						<Offset>
@@ -162,8 +169,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</LootButton>
-			<LootButton name="LootButton4" inherits="LootButtonTemplate" id="4">
+			</Button>
+			<Button name="LootButton4" inherits="LootButtonTemplate" id="4">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="LootButton3" relativePoint="BOTTOM">
 						<Offset>
@@ -171,7 +178,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</LootButton>
+			</Button>
 			<Button name="LootFrameUpButton">
 				<Size>
 					<AbsDimension x="32" y="32"/>
@@ -289,7 +296,7 @@
 						<AbsDimension x="120" y="120"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">d
+						<Anchor point="TOPLEFT">
 							<Offset>
 								<AbsDimension x="-30" y="15"/>
 							</Offset>
@@ -354,9 +361,7 @@
 						if ( IsControlKeyDown() ) then
 							DressUpItemLink(GetLootRollItemLink(this:GetParent().rollID));
 						elseif ( IsShiftKeyDown() ) then
-							if ( ChatFrameEditBox:IsVisible() ) then
-								ChatFrameEditBox:Insert(GetLootRollItemLink(this:GetParent().rollID));
-							end
+							ChatEdit_InsertLink(GetLootRollItemLink(this:GetParent().rollID));
 						end
 					</OnClick>
 				</Scripts>

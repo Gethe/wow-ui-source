@@ -20,7 +20,7 @@
 			</OnEvent>
 		</Scripts>
 	</CheckButton>
-	<CheckButton name="ShapeshiftButtonTemplate" inherits="ActionButtonTemplate" virtual="true">
+	<CheckButton name="ShapeshiftButtonTemplate" inherits="SecureFrameTemplate, ActionButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="30" y="30"/>
 		</Size>
@@ -29,12 +29,8 @@
 				getglobal(this:GetName().."Cooldown"):SetScale(.83);	
 			</OnLoad>
 			<OnClick>
-				local check = 1;
-				if ( this:GetChecked() ) then
-					check = nil;
-				end
-				this:SetChecked(check);
-				ShapeshiftBar_ChangeForm(this:GetID())
+				this:SetChecked(not this:GetChecked());
+				ShapeshiftBar_ChangeForm(this:GetID());
 			</OnClick>
 			<OnEnter>
 				if ( GetCVar("UberTooltips") == "1" ) then
@@ -48,7 +44,6 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		
 	</CheckButton>
 
 	<Frame name="BonusActionBarFrame" frameStrata="HIGH" parent="MainMenuBar" enableMouse="true" toplevel="true" hidden="true">

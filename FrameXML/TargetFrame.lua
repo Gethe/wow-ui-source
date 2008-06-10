@@ -2,6 +2,8 @@ MAX_COMBO_POINTS = 5;
 MAX_TARGET_DEBUFFS = 16;
 MAX_TARGET_BUFFS = 5;
 CURRENT_TARGETTARGET = nil;
+CURRENT_TARGET_NUM_DEBUFFS = 0;
+TARGET_DEBUFFS_SHOWN_WITH_ToT = false;
 
 UnitReactionColor = {
 	{ r = 1.0, g = 0.0, b = 0.0 },
@@ -20,6 +22,7 @@ function TargetFrame_OnLoad()
 	TargetFrame_Update();
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	this:RegisterEvent("PLAYER_TARGET_CHANGED");
+	this:RegisterEvent("PLAYER_FOCUS_CHANGED");
 	this:RegisterEvent("UNIT_HEALTH");
 	this:RegisterEvent("UNIT_LEVEL");
 	this:RegisterEvent("UNIT_FACTION");
@@ -32,17 +35,29 @@ function TargetFrame_OnLoad()
 	local frameLevel = TargetFrameTextureFrame:GetFrameLevel();
 	TargetFrameHealthBar:SetFrameLevel(frameLevel-1);
 	TargetFrameManaBar:SetFrameLevel(frameLevel-1);
+	TargetFrameSpellBar:SetFrameLevel(frameLevel-1);
+
+	local showmenu = function()
+		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "TargetFrame", 120, 10);
+	end
+	SecureUnitButton_OnLoad(this, "target", showmenu);
 end
 
 function TargetFrame_Update()
-	if ( UnitExists("target") ) then
+	-- This check is here so the frame will hide when the target goes away
+	-- even if some of the functions below are hooked by addons.
+	if ( not UnitExists("target") ) then
+		this:Hide();
+	else
 		this:Show();
+
 		UnitFrame_Update();
 		TargetFrame_CheckLevel();
 		TargetFrame_CheckFaction();
 		TargetFrame_CheckClassification();
 		TargetFrame_CheckDead();
 		TargetFrame_CheckDishonorableKill();
+		TargetFrame_CheckFocus();
 		if ( UnitIsPartyLeader("target") ) then
 			TargetLeaderIcon:Show();
 		else
@@ -50,8 +65,6 @@ function TargetFrame_Update()
 		end
 		TargetDebuffButton_Update();
 		TargetPortrait:SetAlpha(1.0);
-	else
-		this:Hide();
 	end
 end
 
@@ -64,6 +77,8 @@ function TargetFrame_OnEvent(event)
 		TargetFrame_Update();
 		TargetFrame_UpdateRaidTargetIcon();
 		TargetofTarget_Update();
+	elseif ( event == "PLAYER_FOCUS_CHANGED" ) then
+		TargetFrame_Update();	
 	elseif ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == "target" ) then
 			TargetFrame_CheckDead();
@@ -160,7 +175,7 @@ function TargetFrame_CheckFaction()
 			r = UnitReactionColor[4].r;
 			g = UnitReactionColor[4].g;
 			b = UnitReactionColor[4].b;
-		elseif ( UnitIsPVP("target") ) then
+		elseif ( UnitIsPVP("target") and not UnitIsPVPSanctuary("target") and not UnitIsPVPSanctuary("player") ) then
 			-- Players we can assist but are PvP flagged are green
 			r = UnitReactionColor[6].r;
 			g = UnitReactionColor[6].g;
@@ -220,10 +235,8 @@ end
 function TargetFrame_CheckDead()
 	if ( (UnitHealth("target") <= 0) and UnitIsConnected("target") ) then
 		TargetDeadText:Show();
-		--TargetofTargetDeadText:Show();
 	else
 		TargetDeadText:Hide();
-		--TargetofTargetDeadText:Hide();
 	end
 end
 
@@ -238,19 +251,11 @@ function TargetFrame_CheckDishonorableKill()
 	end
 end
 
-function TargetFrame_OnClick(button)
-	if ( SpellIsTargeting() and button == "RightButton" ) then
-		SpellStopTargeting();
-		return;
-	end
-	if ( button == "LeftButton" ) then
-		if ( SpellIsTargeting() ) then
-			SpellTargetUnit("target");
-		elseif ( CursorHasItem() ) then
-			DropItemOnUnit("target");
-		end
+function TargetFrame_CheckFocus()
+	if ( UnitIsUnit("target", "focus") ) then
+		TargetFrameFlash:Show();
 	else
-		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "TargetFrame", 120, 10);
+		TargetFrameFlash:Hide();
 	end
 end
 
@@ -261,16 +266,24 @@ function TargetFrame_OnUpdate()
 end
 
 function TargetDebuffButton_Update()
-	local buff, buffButton;
 	local button;
+	local name, rank, icon, count;
+	local buffCount;
 	local numBuffs = 0;
 
 	for i=1, MAX_TARGET_BUFFS do
-		buff = UnitBuff("target", i);
+		name, rank, icon, count = UnitBuff("target", i);
 		button = getglobal("TargetFrameBuff"..i);
-		if ( buff ) then
-			getglobal("TargetFrameBuff"..i.."Icon"):SetTexture(buff);
+		if ( icon ) then
+			getglobal("TargetFrameBuff"..i.."Icon"):SetTexture(icon);
+			buffCount = getglobal("TargetFrameBuff"..i.."Count");
 			button:Show();
+			if ( count > 1 ) then
+				buffCount:SetText(count);
+				buffCount:Show();
+			else
+				buffCount:Hide();
+			end
 			button.id = i;
 			numBuffs = numBuffs + 1; 
 		else
@@ -278,24 +291,23 @@ function TargetDebuffButton_Update()
 		end
 	end
 
-	local debuff, debuffButton, debuffStack, debuffType, color;
+	local debuffType, color;
 	local debuffCount;
 	local numDebuffs = 0;
 	for i=1, MAX_TARGET_DEBUFFS do
-
 		local debuffBorder = getglobal("TargetFrameDebuff"..i.."Border");
-		debuff, debuffStack, debuffType = UnitDebuff("target", i);
+		name, rank, icon, count, debuffType = UnitDebuff("target", i);
 		button = getglobal("TargetFrameDebuff"..i);
-		if ( debuff ) then
-			getglobal("TargetFrameDebuff"..i.."Icon"):SetTexture(debuff);
+		if ( icon ) then
+			getglobal("TargetFrameDebuff"..i.."Icon"):SetTexture(icon);
 			debuffCount = getglobal("TargetFrameDebuff"..i.."Count");
 			if ( debuffType ) then
 				color = DebuffTypeColor[debuffType];
 			else
 				color = DebuffTypeColor["none"];
 			end
-			if ( debuffStack > 1 ) then
-				debuffCount:SetText(debuffStack);
+			if ( count > 1 ) then
+				debuffCount:SetText(count);
 				debuffCount:Show();
 			else
 				debuffCount:Hide();
@@ -308,37 +320,53 @@ function TargetDebuffButton_Update()
 		end
 		button.id = i;
 	end
+	
+	if ( numDebuffs > CURRENT_TARGET_NUM_DEBUFFS ) then
+		Target_Spellbar_AdjustPosition();
+	end
+	CURRENT_TARGET_NUM_DEBUFFS = numDebuffs;
+
 
 	local debuffFrame, debuffWrap, debuffSize, debuffFrameSize;
-	local targetofTarget = TargetofTargetFrame:IsShown();
+	TARGET_DEBUFFS_SHOWN_WITH_ToT = TargetofTargetFrame:IsShown();
 
+	TargetFrameBuff1:ClearAllPoints();
+	TargetFrameDebuff1:ClearAllPoints();
 	if ( UnitIsFriend("player", "target") ) then
 		TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
-		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrameBuff1", "BOTTOMLEFT", 0, -2);
+		if ( numBuffs > 0 ) then
+			TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrameBuff1", "BOTTOMLEFT", 0, -2);
+		else
+			TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
+		end
 	else
 		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
-		if ( targetofTarget ) then
-			if ( numDebuffs < 5 ) then
+		if ( TARGET_DEBUFFS_SHOWN_WITH_ToT ) then
+			if ( numDebuffs <= 5 ) then
+				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff1", "BOTTOMLEFT", 0, -2);
+			elseif ( numDebuffs > 5 and numDebuffs <= 10  ) then
 				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff6", "BOTTOMLEFT", 0, -2);
-			elseif ( numDebuffs >= 5 and numDebuffs < 10  ) then
-				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff6", "BOTTOMLEFT", 0, -2);
-			elseif (  numDebuffs >= 10 ) then
+			elseif (  numDebuffs > 10 ) then
 				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff11", "BOTTOMLEFT", 0, -2);
 			end
 		else
-			TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff7", "BOTTOMLEFT", 0, -2);
+			if ( numDebuffs <= 6 ) then
+				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff1", "BOTTOMLEFT", 0, -2);
+			else
+				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff7", "BOTTOMLEFT", 0, -2);
+			end
 		end
 	end
 	
 	-- set the wrap point for the rows of de/buffs.
-	if ( targetofTarget ) then
+	if ( TARGET_DEBUFFS_SHOWN_WITH_ToT ) then
 		debuffWrap = 5;
 	else
 		debuffWrap = 6;
 	end
 
 	-- and shrinks the debuffs if they begin to overlap the TargetFrame
-	if ( ( targetofTarget and ( numBuffs == 5 ) ) or ( numDebuffs >= debuffWrap ) ) then
+	if ( ( TARGET_DEBUFFS_SHOWN_WITH_ToT and ( numBuffs == 5 ) ) or ( numDebuffs >= debuffWrap ) ) then
 		debuffSize = 17;
 		debuffFrameSize = 19;
 	else
@@ -435,12 +463,16 @@ end
 function TargetFrameDropDown_Initialize()
 	local menu;
 	local name;
+	local id = nil;
 	if ( UnitIsUnit("target", "player") ) then
 		menu = "SELF";
 	elseif ( UnitIsUnit("target", "pet") ) then
 		menu = "PET";
 	elseif ( UnitIsPlayer("target") ) then
-		if ( UnitInParty("target") ) then
+		id = UnitInRaid("target");
+		if ( id ) then
+			menu = "RAID_PLAYER";
+		elseif ( UnitInParty("target") ) then
 			menu = "PARTY";
 		else
 			menu = "PLAYER";
@@ -450,7 +482,7 @@ function TargetFrameDropDown_Initialize()
 		name = RAID_TARGET_ICON;
 	end
 	if ( menu ) then
-		UnitPopup_ShowMenu(TargetFrameDropDown, menu, "target", name);
+		UnitPopup_ShowMenu(TargetFrameDropDown, menu, "target", name, id);
 	end
 end
 
@@ -491,11 +523,24 @@ function SetRaidTargetIcon(unit, index)
 	end
 end
 
+function TargetofTarget_OnLoad()
+	UnitFrame_Initialize("targettarget", TargetofTargetName, TargetofTargetPortrait, TargetofTargetHealthBar, TargetofTargetHealthBarText, TargetofTargetManaBar, TargetofTargetFrameManaBarText);
+	SetTextStatusBarTextZeroText(TargetofTargetHealthBar, TEXT(DEAD));
+	this:RegisterEvent("UNIT_AURA");
+
+	SecureUnitButton_OnLoad(this, "targettarget");
+end
+
+function TargetofTarget_OnHide()
+	CURRENT_TARGETTARGET = nil;
+end
+
 function TargetofTarget_OnUpdate(elapsed)
 	if ( CURRENT_TARGETTARGET ~= UnitName("targettarget") ) then
 		CURRENT_TARGETTARGET = UnitName("targettarget");
 		SetPortraitTexture(this.portrait, this.unit);
 		this.name:SetText(GetUnitName(this.unit));
+		Target_Spellbar_AdjustPosition();
 	end
 	TargetofTarget_Update();
 end
@@ -535,24 +580,7 @@ function TargetofTarget_Update()
 		TargetofTarget_CheckDead();
 		TargetofTargetPortrait:SetAlpha(1.0);
 		TargetDebuffButton_Update();
-		RefreshBuffs(this, 0, "targettarget");
-	end
-end
-
-
-function TargetofTarget_OnClick(button)
-	if ( SpellIsTargeting() and button == "RightButton" ) then
-		SpellStopTargeting();
-		return;
-	end
-	if ( button == "LeftButton" ) then
-		if ( SpellIsTargeting() ) then
-			SpellTargetUnit("targettarget");
-		elseif ( CursorHasItem() ) then
-			DropItemOnUnit("targettarget");
-		else
-			TargetUnit("targettarget");
-		end
+		RefreshBuffs(TargetofTargetFrame, 0, "targettarget");
 	end
 end
 
@@ -584,4 +612,142 @@ function TargetofTargetHealthCheck()
 	end
 end
 
+
+function SetTargetSpellbarAspect()
+	local frameText = getglobal(TargetFrameSpellBar:GetName().."Text");
+	if ( frameText ) then
+		frameText:SetTextHeight(10);
+		frameText:ClearAllPoints();
+		frameText:SetPoint("TOP", TargetFrameSpellBar, "TOP", 0, 4);
+	end
+
+	local frameBorder = getglobal(TargetFrameSpellBar:GetName().."Border");
+	if ( frameBorder ) then
+		frameBorder:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
+		frameBorder:SetWidth(197);
+		frameBorder:SetHeight(49);
+		frameBorder:ClearAllPoints();
+		frameBorder:SetPoint("TOP", TargetFrameSpellBar, "TOP", 0, 20);
+	end
+
+	local frameFlash = getglobal(TargetFrameSpellBar:GetName().."Flash");
+	if ( frameFlash ) then
+		frameFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
+		frameFlash:SetWidth(197);
+		frameFlash:SetHeight(49);
+		frameFlash:ClearAllPoints();
+		frameFlash:SetPoint("TOP", TargetFrameSpellBar, "TOP", 0, 20);
+	end
+end
+
+function Target_Spellbar_OnLoad()
+	this:RegisterEvent("PLAYER_TARGET_CHANGED");
+	this:RegisterEvent("CVAR_UPDATE");
+	
+	CastingBarFrame_OnLoad("target", false);
+
+	local barIcon = getglobal(this:GetName().."Icon");
+	barIcon:Show();
+
+	SetTargetSpellbarAspect();
+	
+	-- check to see if the castbar should be shown
+	if ( GetCVar( UIOptionsFrameCheckButtons["SHOW_TARGET_CASTBAR"].cvar ) == "0") then
+		this.showCastbar = false;	
+	end
+end
+
+function Target_Spellbar_OnEvent()
+	local newevent = event;
+	local newarg1 = arg1;
+	--	Check for target specific events
+	if ((event == "CVAR_UPDATE") and (arg1 == "SHOW_TARGET_CASTBAR") ) then
+		if ( GetCVar( UIOptionsFrameCheckButtons[arg1].cvar ) == "0") then
+			this.showCastbar = false;
+		else
+			this.showCastbar = true;
+		end
+		
+		if ( not this.showCastbar) then
+			this:Hide();
+		elseif ( this.casting or  this.channeling ) then
+			this:Show();
+		end
+		return;
+	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
+		-- check if the new target is casting a spell
+		local nameChannel  = UnitChannelInfo(this.unit);
+		local nameSpell  = UnitCastingInfo(this.unit);
+		if ( nameChannel ) then
+			newevent = "UNIT_SPELLCAST_CHANNEL_START";
+			newarg1 = "target";
+		elseif ( nameSpell ) then
+			newevent = "UNIT_SPELLCAST_START";
+			newarg1 = "target";
+		else
+			this.casting = nil;
+			this.channeling = nil;
+			this:SetMinMaxValues(0, 0);
+			this:SetValue(0);
+			this:Hide();
+			return;
+		end
+	end
+
+	if ( UnitIsUnit("player", "target") ) then
+		return;
+	end
+	CastingBarFrame_OnEvent(newevent, newarg1);
+end
+
+function Target_Spellbar_AdjustPosition()
+	local numBuffs = 0;
+	for i=1, MAX_TARGET_BUFFS do
+		if ( UnitBuff("target", i) ) then
+			numBuffs = numBuffs + 1;
+		end
+	end
+
+	local numDebuffs = 0;
+	for i=1, MAX_TARGET_DEBUFFS do
+		if ( UnitDebuff("target", i) ) then
+			numDebuffs = numDebuffs + 1;
+		end
+	end
+
+	local numRows = 0;
+
+	if ( TARGET_DEBUFFS_SHOWN_WITH_ToT )  then
+		if ( numDebuffs > 10 ) then
+			numRows = 1;
+		end
+		if ( (numDebuffs > 5) and (numBuffs > 0) ) then
+			numRows = numRows + 1;
+		end
+	else
+		if ( numDebuffs > 6 ) then
+			numRows = 2;
+		elseif ( numDebuffs > 0 ) then
+			numRows = 1;
+		end
+		if ( numBuffs > 0 ) then
+			numRows = numRows + 1;
+		end
+	end
+
+
+	local yPos = 0;
+	if ( TARGET_DEBUFFS_SHOWN_WITH_ToT ) then
+		yPos = (19 * numRows) + 25;
+	else
+		yPos = (19 * numRows) - 5;
+		local classification = UnitClassification("target");
+		if ( (yPos < 17) and ((classification == "worldboss") or (classification == "rareelite") or (classification == "elite") or (classification == "rare")) ) then
+			yPos = 17;
+		end
+	end
+
+	TargetFrameSpellBar:ClearAllPoints();
+	TargetFrameSpellBar:SetPoint("BOTTOM", "TargetFrame", "BOTTOM", -15, -yPos);
+end
 

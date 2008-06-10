@@ -10,6 +10,8 @@ UIOptionsFrameCheckButtons["ASSIST_ATTACK"] =				{ index = 3,  cvar = "assistAtt
 UIOptionsFrameCheckButtons["CLEAR_AFK"] =				{ index = 16, cvar = "autoClearAFK" };
 UIOptionsFrameCheckButtons["BLOCK_TRADES"] =				{ index = 14, cvar = "BlockTrades" };
 UIOptionsFrameCheckButtons["AUTO_SELF_CAST_TEXT"] =			{ index = 61, cvar = "autoSelfCast"};
+UIOptionsFrameCheckButtons["STOP_AUTO_ATTACK"] =			{ index = 72, cvar = "stopAutoAttackOnTargetChange"};
+UIOptionsFrameCheckButtons["AUTO_LOOT_DEFAULT_TEXT"] =		{ index = 73,  uvar = "AUTO_LOOT_DEFAULT" , default = "0"};
 
 -- Display
 UIOptionsFrameCheckButtons["USE_UBERTOOLTIPS"] =			{ index = 12, cvar = "UberTooltips" };
@@ -27,6 +29,8 @@ UIOptionsFrameCheckButtons["SHOW_OWN_NAME"] =				{ index = 67, cvar = "UnitNameO
 UIOptionsFrameCheckButtons["SHOW_PARTY_BACKGROUND_TEXT"] =		{ index = 43, uvar = "SHOW_PARTY_BACKGROUND"};
 UIOptionsFrameCheckButtons["HIDE_OUTDOOR_WORLD_STATE_TEXT"] =		{ index = 62, uvar = "HIDE_OUTDOOR_WORLD_STATE", default = "0"};
 UIOptionsFrameCheckButtons["AUTO_QUEST_WATCH_TEXT"] =			{ index = 66, uvar = "AUTO_QUEST_WATCH", default = "1"};
+UIOptionsFrameCheckButtons["SHOW_TARGET_CASTBAR"] =			{ index = 70, cvar = "ShowTargetCastbar"};
+UIOptionsFrameCheckButtons["SHOW_TARGET_CASTBAR_IN_V_KEY"] =			{ index = 71, cvar = "ShowVKeyCastbar"};
 
 -- Camera Controls
 UIOptionsFrameCheckButtons["FOLLOW_TERRAIN"] =				{ index = 24, cvar = "cameraTerrainTilt"};
@@ -121,6 +125,12 @@ function UIOptionsFrame_Init()
 	RegisterForSave("HIDE_OUTDOOR_WORLD_STATE");
 	AUTO_QUEST_WATCH = 1;
 	RegisterForSave("AUTO_QUEST_WATCH");
+	AUTO_SELF_CAST_KEY = "ALT";
+	RegisterForSave("AUTO_SELF_CAST_KEY");
+	AUTO_LOOT_DEFAULT = "0";
+	RegisterForSave("AUTO_LOOT_DEFAULT");
+	AUTO_LOOT_KEY = "SHIFT";
+	RegisterForSave("AUTO_LOOT_KEY");
 	-- Combat text uvars
 	SHOW_COMBAT_TEXT = "0";
 	RegisterForSave("SHOW_COMBAT_TEXT");
@@ -160,7 +170,7 @@ function UIOptionsFrame_Init()
 	PanelTemplates_SetTab(this, 1);
 
 	-- Position sections
-	BasicOptionsGeneral:SetHeight(95);
+	BasicOptionsGeneral:SetHeight(115);
 	--BasicOptionsGeneral:SetPoint("TOPRIGHT", BasicOptions, "BOTTOMRIGHT", UIOptionsFrame:GetWidth()*-0.5, -104);
 	BasicOptionsDisplay:SetPoint("TOPLEFT", BasicOptionsGeneral, "BOTTOMLEFT", 0, -20);
 	BasicOptionsDisplay:SetPoint("TOPRIGHT", BasicOptionsGeneral, "BOTTOMRIGHT", 0, -20);
@@ -179,7 +189,7 @@ function UIOptionsFrame_Init()
 	-- Variables not displayed in the ui options but they needed a home
 	RegisterForSave("NAMEPLATES_ON");
 	NAMEPLATES_ON = nil;
-	RegisterForSave("NAMEPLATES_ON");
+	RegisterForSave("FRIENDNAMEPLATES_ON");
 	FRIENDNAMEPLATES_ON = nil;
 end
 
@@ -192,7 +202,7 @@ function UIOptionsFrame_OnEvent()
 		return;
 	elseif ( event == "VARIABLES_LOADED" ) then
 		local button, checked;
-		for index, value in UIOptionsFrameCheckButtons do
+		for index, value in pairs(UIOptionsFrameCheckButtons) do
 			checked = nil;
 			if ( value.uvar ) then
 				button = getglobal("UIOptionsFrameCheckButton"..value.index);
@@ -224,21 +234,33 @@ function UIOptionsFrame_OnEvent()
 		if ( SHOW_COMBAT_TEXT == "1" ) then
 			UIParentLoadAddOn("Blizzard_CombatText");
 		end
+		-- Set the auto loot default
+		SetAutoLootDefault(AUTO_LOOT_DEFAULT);
+		-- Set the self cast key
+		SetActionSelfCastKey(AUTO_SELF_CAST_KEY);
+		-- Set the auto loot key
+		SetAutoLootToggleKey(AUTO_LOOT_KEY);
 	end
 end
 
 function UIOptionsFrame_Load()
 	local button, string, checked, mode;
-	for index, value in UIOptionsFrameCheckButtons do
+	for index, value in pairs(UIOptionsFrameCheckButtons) do
 		button = getglobal("UIOptionsFrameCheckButton"..value.index);
 		string = getglobal("UIOptionsFrameCheckButton"..value.index.."Text");
 		checked = nil;
 		button.disabled = nil;
 		if ( value.func ) then
 			checked = value.func();
+		elseif ( value.uvar == "AUTO_LOOT_DEFAULT" ) then
+			value.value = GetAutoLootDefault();
+			checked = value.value;
 		elseif ( index == "SHOW_TUTORIALS" ) then
 			if ( TutorialsEnabled() ) then
 				checked = 1;
+				value.initial = 1;
+			else
+				value.initial = nil;
 			end
 		elseif ( index == "AUTO_JOIN_GUILD_CHANNEL" ) then
 			if ( GetGuildRecruitmentMode() == 1 ) then
@@ -264,7 +286,7 @@ function UIOptionsFrame_Load()
 		string:SetText(TEXT(getglobal(index)));
 		button.tooltipText = getglobal("OPTION_TOOLTIP_"..gsub(index, "_TEXT$", ""));
 	end
-	for index, value in UIOptionsFrameSliders do
+	for index, value in pairs(UIOptionsFrameSliders) do
 		local slider = getglobal("UIOptionsFrameSlider"..index);
 		local string = getglobal("UIOptionsFrameSlider"..index.."Text");
 		local getvalue = getglobal("Get"..value.cvar);
@@ -279,22 +301,40 @@ function UIOptionsFrame_Load()
 		slider.gxRestart = value.gxRestart;
 		slider.restartClient = value.restartClient;
 	end
-	OptionsFrame_EnableDropDown(UIOptionsFrameClickCameraDropDown);
-	OptionsFrame_EnableDropDown(UIOptionsFrameCameraDropDown);
+	UIDropDownMenu_EnableDropDown(UIOptionsFrameClickCameraDropDown);
+	UIDropDownMenu_EnableDropDown(UIOptionsFrameCameraDropDown);
+
+	AUTO_SELF_CAST_KEY = GetActionSelfCastKey();
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameAutoSelfCastKeyDropDown, AUTO_SELF_CAST_KEY);
+	UIDropDownMenu_EnableDropDown(UIOptionsFrameAutoSelfCastKeyDropDown);
+	UIDropDownMenu_SetText( getglobal(AUTO_SELF_CAST_KEY.."_KEY"),UIOptionsFrameAutoSelfCastKeyDropDown);
+
+	AUTO_LOOT_KEY = GetAutoLootToggleKey();
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameAutoLootKeyDropDown, AUTO_LOOT_KEY);
+	UIDropDownMenu_EnableDropDown(UIOptionsFrameAutoLootKeyDropDown);
+	UIDropDownMenu_SetText( getglobal(AUTO_LOOT_KEY.."_KEY"),UIOptionsFrameAutoLootKeyDropDown);
+
+	-- For Locale
+	UIDropDownMenu_EnableDropDown(UIOptionsFrameLocaleDropDown);
+
 	UIOptionsFrame_UpdateDependencies();
 end
 
 function UIOptionsFrame_Save()
 	local mode;
-	for index, value in UIOptionsFrameCheckButtons do
+	for index, value in pairs(UIOptionsFrameCheckButtons) do
 		local button = getglobal("UIOptionsFrameCheckButton"..value.index);
 		if ( button:GetChecked() ) then
 			value.value = "1";
 		else
 			value.value = "0";
 		end
+
 		if ( value.setFunc ) then
 			value.setFunc(value.value);
+		elseif ( value.uvar == "AUTO_LOOT_DEFAULT" ) then
+			setglobal(value.uvar, value.value);
+			SetAutoLootDefault( value.value );
 		elseif ( value.uvar == "SIMPLE_CHAT" ) then
 			setglobal(value.uvar, value.value);
 			if ( value.value == "1" ) then
@@ -345,7 +385,7 @@ function UIOptionsFrame_Save()
 			SetCVar(value.cvar, value.value, index);
 		end
 	end
-	for index, value in UIOptionsFrameSliders do
+	for index, value in pairs(UIOptionsFrameSliders) do
 		local slider = getglobal("UIOptionsFrameSlider"..index);
 		local sliderValue = slider:GetValue()		
 		if ( value.text == AUTO_FOLLOW_SPEED ) then
@@ -367,6 +407,17 @@ function UIOptionsFrame_Save()
 	SetCVar("cameraSmoothTrackingStyle", UIDropDownMenu_GetSelectedValue(UIOptionsFrameClickCameraDropDown));
 	-- Save move camera style
 	SetCVar("cameraSmoothStyle", UIDropDownMenu_GetSelectedValue(UIOptionsFrameCameraDropDown));
+	-- Save auto self cast key
+	AUTO_SELF_CAST_KEY = UIDropDownMenu_GetSelectedValue(UIOptionsFrameAutoSelfCastKeyDropDown);
+	SetActionSelfCastKey(AUTO_SELF_CAST_KEY);
+	-- Save auto loot key
+	AUTO_LOOT_KEY = UIDropDownMenu_GetSelectedValue(UIOptionsFrameAutoLootKeyDropDown);
+	SetAutoLootToggleKey(AUTO_LOOT_KEY);
+	-- For Locale
+	if (UIOptionsFrameLocaleDropDown:IsShown() and (GetCVar("locale") ~= UIDropDownMenu_GetSelectedValue(UIOptionsFrameLocaleDropDown))) then
+		SetCVar("locale", UIDropDownMenu_GetSelectedValue(UIOptionsFrameLocaleDropDown));
+		StaticPopup_Show("CLIENT_RESTART_ALERT");
+	end
 	-- Update combat text
 	if ( SHOW_COMBAT_TEXT == "1" ) then
 		UIParentLoadAddOn("Blizzard_CombatText");
@@ -390,39 +441,136 @@ end
 
 function UIOptionsFrameClickCameraDropDown_Initialize()
 	local selectedValue = UIDropDownMenu_GetSelectedValue(UIOptionsFrameClickCameraDropDown);
-	local info;
+	local info = UIDropDownMenu_CreateInfo();
 
-	info = {};
 	info.text = CAMERA_SMART;
 	info.func = UIOptionsFrameClickCameraDropDown_OnClick;
 	info.value = "1"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = CAMERA_SMART;
 	info.tooltipText = OPTION_TOOLTIP_CLICKCAMERA_SMART;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = CAMERA_LOCKED;
 	info.func = UIOptionsFrameClickCameraDropDown_OnClick;
 	info.value = "2"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = CAMERA_LOCKED;
 	info.tooltipText = OPTION_TOOLTIP_CLICKCAMERA_LOCKED;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = CAMERA_NEVER;
 	info.func = UIOptionsFrameClickCameraDropDown_OnClick;
 	info.value = "0"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = CAMERA_NEVER;
 	info.tooltipText = OPTION_TOOLTIP_CLICKCAMERA_NEVER;
+	UIDropDownMenu_AddButton(info);
+end
+
+function UIOptionsFrameAutoSelfCastKeyDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, UIOptionsFrameAutoSelfCastKeyDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(this, AUTO_SELF_CAST_KEY);
+	UIOptionsFrameAutoSelfCastKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_SELF_CAST_"..UIDropDownMenu_GetSelectedValue(UIOptionsFrameAutoSelfCastKeyDropDown).."_KEY");
+	UIDropDownMenu_SetWidth(90, UIOptionsFrameAutoSelfCastKeyDropDown);
+end
+
+function UIOptionsFrameAutoSelfCastKeyDropDown_OnClick()
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameAutoSelfCastKeyDropDown, this.value);
+	UIOptionsFrameAutoSelfCastKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_SELF_CAST_"..UIDropDownMenu_GetSelectedValue(UIOptionsFrameAutoSelfCastKeyDropDown).."_KEY");
+end
+
+function UIOptionsFrameAutoSelfCastKeyDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(UIOptionsFrameAutoSelfCastKeyDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = ALT_KEY;
+	info.func = UIOptionsFrameAutoSelfCastKeyDropDown_OnClick;
+	info.value = "ALT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = ALT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_SELF_CAST_ALT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CTRL_KEY;
+	info.func = UIOptionsFrameAutoSelfCastKeyDropDown_OnClick;
+	info.value = "CTRL";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CTRL_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_SELF_CAST_CTRL_KEY;
+	UIDropDownMenu_AddButton(info);
+end
+
+function UIOptionsFrameAutoLootKeyDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, UIOptionsFrameAutoLootKeyDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(this, AUTO_LOOT_KEY);
+	UIOptionsFrameAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..UIDropDownMenu_GetSelectedValue(UIOptionsFrameAutoLootKeyDropDown).."_KEY");
+	UIDropDownMenu_SetWidth(90, UIOptionsFrameAutoLootKeyDropDown);
+end
+
+function UIOptionsFrameAutoLootKeyDropDown_OnClick()
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameAutoLootKeyDropDown, this.value);
+	UIOptionsFrameAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..UIDropDownMenu_GetSelectedValue(UIOptionsFrameAutoLootKeyDropDown).."_KEY");
+end
+
+function UIOptionsFrameAutoLootKeyDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(UIOptionsFrameAutoLootKeyDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = ALT_KEY;
+	info.func = UIOptionsFrameAutoLootKeyDropDown_OnClick;
+	info.value = "ALT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = ALT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_LOOT_ALT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CTRL_KEY;
+	info.func = UIOptionsFrameAutoLootKeyDropDown_OnClick;
+	info.value = "CTRL";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CTRL_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_LOOT_CTRL_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = SHIFT_KEY;
+	info.func = UIOptionsFrameAutoLootKeyDropDown_OnClick;
+	info.value = "SHIFT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = SHIFT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_LOOT_SHIFT_KEY;
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -440,64 +588,69 @@ end
 
 function UIOptionsFrameTargetofTargetDropDown_Initialize()
 	local selectedValue = UIDropDownMenu_GetSelectedValue(UIOptionsFrameTargetofTargetDropDown);
-	local info;
+	local info = UIDropDownMenu_CreateInfo();
 
-	info = {};
 	info.text = RAID;
 	info.func = UIOptionsFrameTargetofTargetDropDown_OnClick;
 	info.value = "1"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = RAID;
 	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_RAID;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = PARTY;
 	info.func = UIOptionsFrameTargetofTargetDropDown_OnClick;
 	info.value = "2"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = PARTY;
 	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_PARTY;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = SOLO;
 	info.func = UIOptionsFrameTargetofTargetDropDown_OnClick;
 	info.value = "3"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = PARTY;
 	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_SOLO;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = RAID_AND_PARTY;
 	info.func = UIOptionsFrameTargetofTargetDropDown_OnClick;
 	info.value = "4"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = RAID_AND_PARTY;
 	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_RAID_AND_PARTY;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = ALWAYS;
 	info.func = UIOptionsFrameTargetofTargetDropDown_OnClick;
 	info.value = "5"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = ALWAYS;
 	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_ALWAYS;
 	UIDropDownMenu_AddButton(info);
-
 end
+
 function UIOptionsFrameCameraDropDown_OnLoad()
 	UIDropDownMenu_Initialize(this, UIOptionsFrameCameraDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(this, GetCVar("cameraSmoothStyle"));
@@ -517,40 +670,92 @@ end
 
 function UIOptionsFrameCameraDropDown_Initialize()
 	local selectedValue = UIDropDownMenu_GetSelectedValue(UIOptionsFrameCameraDropDown);
-	local info;
+	local info = UIDropDownMenu_CreateInfo();
 
-	info = {};
 	info.text = CAMERA_SMART;
 	info.func = UIOptionsFrameCameraDropDown_OnClick;
 	info.value = "1"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = CAMERA_SMART;
 	info.tooltipText = OPTION_TOOLTIP_CAMERA_SMART;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = CAMERA_ALWAYS;
 	info.func = UIOptionsFrameCameraDropDown_OnClick;
 	info.value = "2"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = CAMERA_ALWAYS;
 	info.tooltipText = OPTION_TOOLTIP_CAMERA_ALWAYS;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = CAMERA_NEVER;
 	info.func = UIOptionsFrameCameraDropDown_OnClick;
 	info.value = "0"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = CAMERA_NEVER;
 	info.tooltipText = OPTION_TOOLTIP_CAMERA_NEVER;
 	UIDropDownMenu_AddButton(info);
+end
+
+-- For Locale
+function UIOptionsFrameLocaleDropDown_OnLoad()
+	--If there's only one locale available then hide this dropdown
+	local locales = {};
+	locales[1], locales[2], locales[3], locales[4], locales[5], locales[6], locales[7] = GetExistingLocales();
+	local numLocales = 0;
+	for i=1, #locales do
+		if ( locales[i] ) then
+			numLocales = numLocales + 1;
+		end
+	end
+	if ( numLocales <= 1 ) then
+		UIOptionsFrameLocaleDropDown:Hide();
+	else
+		UIDropDownMenu_Initialize(this, UIOptionsFrameLocaleDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(this, GetCVar("locale"));
+		UIOptionsFrameLocaleDropDown.tooltip = OPTION_TOOLTIP_LOCALE;
+		UIDropDownMenu_SetWidth(90, UIOptionsFrameLocaleDropDown);
+	end
+end
+
+function UIOptionsFrameLocaleDropDown_OnClick()
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameLocaleDropDown, this.value);
+end
+
+function UIOptionsFrameLocaleDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(UIOptionsFrameLocaleDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	local locales = {};
+	
+	locales[1], locales[2], locales[3], locales[4], locales[5], locales[6], locales[7] = GetExistingLocales();
+
+	for i = 1, table.getn(locales) do
+		if (locales[i]) then
+			info.text = getglobal(strupper(locales[i]));
+			info.func = UIOptionsFrameLocaleDropDown_OnClick;
+			info.value = locales[i];
+			if ( info.value == selectedValue ) then
+				info.checked = 1;
+			else
+				info.checked = nil;
+			end
+			UIDropDownMenu_AddButton(info);
+		end
+	end
+
 end
 
 function UIOptionsFrameCombatTextDropDown_OnLoad()
@@ -569,36 +774,39 @@ end
 
 function UIOptionsFrameCombatTextDropDown_Initialize()
 	local selectedValue = UIDropDownMenu_GetSelectedValue(UIOptionsFrameCombatTextDropDown);
-	local info;
+	local info = UIDropDownMenu_CreateInfo();
 
-	info = {};
 	info.text = COMBAT_TEXT_SCROLL_UP;
 	info.func = UIOptionsFrameCombatTextDropDown_OnClick;
 	info.value = "1"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = COMBAT_TEXT_SCROLL_UP;
 	info.tooltipText = OPTION_TOOLTIP_SCROLL_UP;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = COMBAT_TEXT_SCROLL_DOWN;
 	info.func = UIOptionsFrameCombatTextDropDown_OnClick;
 	info.value = "2"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = COMBAT_TEXT_SCROLL_DOWN;
 	info.tooltipText = OPTION_TOOLTIP_SCROLL_DOWN;
 	UIDropDownMenu_AddButton(info);
 
-	info = {};
 	info.text = COMBAT_TEXT_SCROLL_ARC;
 	info.func = UIOptionsFrameCombatTextDropDown_OnClick;
 	info.value = "3"
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
+	else
+		info.checked = nil;
 	end
 	info.tooltipTitle = COMBAT_TEXT_SCROLL_ARC;
 	info.tooltipText = OPTION_TOOLTIP_SCROLL_ARC;
@@ -626,7 +834,7 @@ end
 
 function UIOptionsFrame_SetDefaults()
 	local checkButton, slider;
-	for index, value in UIOptionsFrameCheckButtons do
+	for index, value in pairs(UIOptionsFrameCheckButtons) do
 		checkButton = getglobal("UIOptionsFrameCheckButton"..value.index);
 		if ( index == "SHOW_CLOAK" ) then
 			checkButton:SetChecked(1);
@@ -658,7 +866,7 @@ function UIOptionsFrame_SetDefaults()
 	end
 
 	local sliderValue;
-	for index, value in UIOptionsFrameSliders do
+	for index, value in pairs(UIOptionsFrameSliders) do
 		slider = getglobal("UIOptionsFrameSlider"..index);
 		sliderValue = GetCVarDefault(value.cvar);
 		slider:SetValue(sliderValue);
@@ -667,11 +875,24 @@ function UIOptionsFrame_SetDefaults()
 
 	UIDropDownMenu_Initialize(UIOptionsFrameClickCameraDropDown, UIOptionsFrameClickCameraDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(UIOptionsFrameClickCameraDropDown, "1");
-	OptionsFrame_EnableDropDown(UIOptionsFrameClickCameraDropDown);
+	UIDropDownMenu_EnableDropDown(UIOptionsFrameClickCameraDropDown);
+
+	UIDropDownMenu_Initialize(UIOptionsFrameAutoSelfCastKeyDropDown, UIOptionsFrameAutoSelfCastKeyDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameAutoSelfCastKeyDropDown, "ALT");
+	AUTO_SELF_CAST_KEY = "ALT";
+
+	UIDropDownMenu_Initialize(UIOptionsFrameAutoLootKeyDropDown, UIOptionsFrameAutoLootKeyDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameAutoLootKeyDropDown, "SHIFT");
+	AUTO_LOOT_KEY = "SHIFT";
 
 	UIDropDownMenu_Initialize(UIOptionsFrameCameraDropDown, UIOptionsFrameCameraDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(UIOptionsFrameCameraDropDown, "1");
-	OptionsFrame_EnableDropDown(UIOptionsFrameCameraDropDown);
+	UIDropDownMenu_EnableDropDown(UIOptionsFrameCameraDropDown);
+
+	-- For Locale
+	UIDropDownMenu_Initialize(UIOptionsFrameLocaleDropDown, UIOptionsFrameLocaleDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(UIOptionsFrameLocaleDropDown, GetLocale());
+	UIDropDownMenu_EnableDropDown(UIOptionsFrameLocaleDropDown);
 
 	UIDropDownMenu_Initialize(UIOptionsFrameTargetofTargetDropDown, UIOptionsFrameTargetofTargetDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(UIOptionsFrameTargetofTargetDropDown, "5");
@@ -688,16 +909,16 @@ end
 function UIOptionsFrame_UpdateDependencies()
 	-- Dependency for Click to Move Camera dropdown
 	if ( not UIOptionsFrameCheckButton6:GetChecked() ) then
-		OptionsFrame_DisableDropDown(UIOptionsFrameClickCameraDropDown);
+		UIDropDownMenu_DisableDropDown(UIOptionsFrameClickCameraDropDown);
 	else
-		OptionsFrame_EnableDropDown(UIOptionsFrameClickCameraDropDown);
+		UIDropDownMenu_EnableDropDown(UIOptionsFrameClickCameraDropDown);
 	end
 
 	-- Dependency for Target of Target dropdown
 	if ( not UIOptionsFrameCheckButton50:GetChecked() ) then
-		OptionsFrame_DisableDropDown(UIOptionsFrameTargetofTargetDropDown);
+		UIDropDownMenu_DisableDropDown(UIOptionsFrameTargetofTargetDropDown);
 	else
-		OptionsFrame_EnableDropDown(UIOptionsFrameTargetofTargetDropDown);
+		UIDropDownMenu_EnableDropDown(UIOptionsFrameTargetofTargetDropDown);
 	end
 
 	if ( not UIOptionsFrameCheckButton21:GetChecked() ) then
@@ -738,7 +959,7 @@ function UIOptionsFrame_UpdateDependencies()
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton64);
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton65);
 		OptionsFrame_DisableCheckBox(UIOptionsFrameCheckButton69);
-		OptionsFrame_DisableDropDown(UIOptionsFrameCombatTextDropDown);
+		UIDropDownMenu_DisableDropDown(UIOptionsFrameCombatTextDropDown);
 	else
 		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton53);
 		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton54);
@@ -752,7 +973,13 @@ function UIOptionsFrame_UpdateDependencies()
 		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton64);
 		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton65);
 		OptionsFrame_EnableCheckBox(UIOptionsFrameCheckButton69);
-		OptionsFrame_EnableDropDown(UIOptionsFrameCombatTextDropDown);
+		UIDropDownMenu_EnableDropDown(UIOptionsFrameCombatTextDropDown);
+	end
+
+	if ( UIOptionsFrameCheckButton73:GetChecked() ) then
+		UIOptionsFrameAutoLootKeyDropDownLabel:SetText(LOOT_KEY_TEXT);
+	else
+		UIOptionsFrameAutoLootKeyDropDownLabel:SetText(AUTO_LOOT_KEY_TEXT);
 	end
 
 	-- Disable combo point combat text checkbox if not a rogue or druid
@@ -773,8 +1000,24 @@ function UpdateNameplates()
 	end
 	if ( FRIENDNAMEPLATES_ON ) then
 		ShowFriendNameplates();
-		HideFriendNameplates();
 	else
 		HideFriendNameplates();
 	end
+end
+
+function UIOptionsFrameCancel_OnClick()
+	PlaySound("gsTitleOptionExit");
+	HideUIPanel(UIOptionsFrame);
+	-- Set Tutorial to initial value
+	if ( UIOptionsFrameCheckButtons["SHOW_TUTORIALS"].initial == 1 ) then
+		ResetTutorials();
+		TutorialFrameCheckButton:SetChecked(1);
+	else
+		ClearTutorials();
+	end
+	UIOptionsFrameMultiBar_Reset();
+	MultiActionBar_Update();
+	ALWAYS_SHOW_MULTIBARS = STATE_AlwaysShowMultiBars;
+	MultiActionBar_UpdateGridVisibility();
+	UIParent_ManageFramePositions();
 end

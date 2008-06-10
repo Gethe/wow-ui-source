@@ -13,7 +13,6 @@ TradeSkillTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0 };
 UIPanelWindows["TradeSkillFrame"] =	{ area = "left", pushable = 3 };
 
 function TradeSkillFrame_Show()
-	CloseDropDownMenus();
 	TradeSkillSubClassDropDown:Hide();
 	TradeSkillSubClassDropDown:Show();
 	TradeSkillInvSlotDropDown:Hide();
@@ -31,6 +30,9 @@ function TradeSkillFrame_Show()
 	TradeSkillListScrollFrameScrollBar:SetValue(0);
 	SetPortraitTexture(TradeSkillFramePortrait, "player");
 	TradeSkillFrame_Update();
+
+	-- Moved to the bottom to prevent addons which hook it from blocking tradeskills
+	CloseDropDownMenus();
 end
 
 function TradeSkillFrame_Hide()
@@ -317,40 +319,30 @@ function TradeSkillSubClassDropDown_OnLoad()
 	UIDropDownMenu_SetSelectedID(TradeSkillSubClassDropDown, 1);
 end
 
-function TradeSkillSubClassDropDown_OnShow()
-	UIDropDownMenu_Initialize(this, TradeSkillSubClassDropDown_Initialize);
-	if ( GetTradeSkillSubClassFilter(0) ) then
-		UIDropDownMenu_SetSelectedID(TradeSkillSubClassDropDown, 1);
-	end
-end
-
 function TradeSkillSubClassDropDown_Initialize()
 	TradeSkillFilterFrame_LoadSubClasses(GetTradeSkillSubClasses());
 end
 
 function TradeSkillFilterFrame_LoadSubClasses(...)
 	local allChecked = GetTradeSkillSubClassFilter(0);
-	local info = {};
-	if ( arg.n > 1 ) then
-		info.text = TEXT(ALL_SUBCLASSES);
-		info.func = TradeSkillSubClassDropDownButton_OnClick;
-		info.checked = allChecked;
-		UIDropDownMenu_AddButton(info);
-	end
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = TEXT(ALL_SUBCLASSES);
+	info.func = TradeSkillSubClassDropDownButton_OnClick;
+	info.checked = allChecked;
+	UIDropDownMenu_AddButton(info);
 	
 	local checked;
-	for i=1, arg.n, 1 do
-		if ( allChecked and arg.n > 1 ) then
+	for i=1, select("#", ...), 1 do
+		if ( allChecked and select("#", ...) > 1 ) then
 			checked = nil;
 			UIDropDownMenu_SetText(TEXT(ALL_SUBCLASSES), TradeSkillSubClassDropDown);
 		else
 			checked = GetTradeSkillSubClassFilter(i);
 			if ( checked ) then
-				UIDropDownMenu_SetText(arg[i], TradeSkillSubClassDropDown);
+				UIDropDownMenu_SetText(select(i, ...), TradeSkillSubClassDropDown);
 			end
 		end
-		info = {};
-		info.text = arg[i];
+		info.text = select(i, ...);
 		info.func = TradeSkillSubClassDropDownButton_OnClick;
 		info.checked = checked;
 		UIDropDownMenu_AddButton(info);
@@ -363,40 +355,30 @@ function TradeSkillInvSlotDropDown_OnLoad()
 	UIDropDownMenu_SetSelectedID(TradeSkillInvSlotDropDown, 1);
 end
 
-function TradeSkillInvSlotDropDown_OnShow()
-	UIDropDownMenu_Initialize(this, TradeSkillInvSlotDropDown_Initialize);
-	if ( GetTradeSkillInvSlotFilter(0) ) then
-		UIDropDownMenu_SetSelectedID(TradeSkillInvSlotDropDown, 1);
-	end
-end
-
 function TradeSkillInvSlotDropDown_Initialize()
 	TradeSkillFilterFrame_LoadInvSlots(GetTradeSkillInvSlots());
 end
 
 function TradeSkillFilterFrame_LoadInvSlots(...)
 	local allChecked = GetTradeSkillInvSlotFilter(0);
-	local info = {}
-	if ( arg.n > 1 ) then
-		info.text = TEXT(ALL_INVENTORY_SLOTS);
-		info.func = TradeSkillInvSlotDropDownButton_OnClick;
-		info.checked = allChecked;
-		UIDropDownMenu_AddButton(info);
-	end
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = TEXT(ALL_INVENTORY_SLOTS);
+	info.func = TradeSkillInvSlotDropDownButton_OnClick;
+	info.checked = allChecked;
+	UIDropDownMenu_AddButton(info);
 	
 	local checked;
-	for i=1, arg.n, 1 do
-		if ( allChecked and arg.n > 1 ) then
+	for i=1, select("#", ...), 1 do
+		if ( allChecked and select("#", ...) > 1 ) then
 			checked = nil;
 			UIDropDownMenu_SetText(TEXT(ALL_INVENTORY_SLOTS), TradeSkillInvSlotDropDown);
 		else
 			checked = GetTradeSkillInvSlotFilter(i);
 			if ( checked ) then
-				UIDropDownMenu_SetText(arg[i], TradeSkillInvSlotDropDown);
+				UIDropDownMenu_SetText(select(i, ...), TradeSkillInvSlotDropDown);
 			end
 		end
-		info = {};
-		info.text = arg[i];
+		info.text = select(i, ...);
 		info.func = TradeSkillInvSlotDropDownButton_OnClick;
 		info.checked = checked;
 		UIDropDownMenu_AddButton(info);

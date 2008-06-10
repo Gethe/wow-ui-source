@@ -389,7 +389,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								HideUIPanel(HelpFrame);
+								ShowUIPanel(KnowledgeBaseFrame);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1490,7 +1490,7 @@
 						elseif ( StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") or StaticPopup_Visible("HELP_TICKET") ) then
 							StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
 							StaticPopup_Hide("HELP_TICKET");
-						elseif ( not HelpFrame:IsVisible() ) then
+						elseif ( not HelpFrame:IsVisible() and not KnowledgeBaseFrame:IsVisible() ) then
 							StaticPopup_Show("HELP_TICKET");
 						end
 					</OnClick>
@@ -1511,6 +1511,7 @@
 				TicketStatus_OnUpdate(arg1);						
 			</OnUpdate>
 			<OnMouseUp>
+				-- FIXME duplicate code from above. move to functions
 				if ( TicketStatusFrame.hasGMSurvey ) then
 					GMSurveyFrame_LoadUI();
 					ShowUIPanel(GMSurveyFrame);
@@ -1518,7 +1519,7 @@
 				elseif ( StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") or StaticPopup_Visible("HELP_TICKET") ) then
 					StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
 					StaticPopup_Hide("HELP_TICKET");
-				elseif ( not HelpFrame:IsVisible() ) then
+				elseif ( not HelpFrame:IsVisible() and not KnowledgeBaseFrame:IsVisible() ) then
 					StaticPopup_Show("HELP_TICKET");
 				end
 			</OnMouseUp>

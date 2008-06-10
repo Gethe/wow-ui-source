@@ -34,7 +34,7 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
 					<Size>
-						<AbsDimension x="19" y="19"/>
+						<AbsDimension x="17" y="17"/>
 					</Size>
 					<Anchors>
 						<Anchor point="CENTER">
@@ -74,6 +74,17 @@
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" setAllPoints="true"/>
 			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCount" inherits="NumberFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEnter>
@@ -85,7 +96,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="TargetFrame" frameStrata="LOW" toplevel="true" movable="true" parent="UIParent">
+	<Button name="TargetFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
 		<Size>
 			<AbsDimension x="232" y="100"/>
 		</Size>
@@ -101,6 +112,19 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<Texture name="TargetFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash">
+					<Size>
+						<AbsDimension x="242" y="95"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-10" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.05078125" right="1.0" top="0" bottom="0.7578125"/>
+				</Texture>
 				<Texture name="TargetFrameBackground">
 					<Size>
 						<AbsDimension x="119" y="41"/>
@@ -289,6 +313,29 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
+			</StatusBar>
+			<StatusBar name="TargetFrameSpellBar" inherits="CastingBarFrameTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="150" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						Target_Spellbar_AdjustPosition();
+					</OnShow>
+					<OnLoad>
+						Target_Spellbar_OnLoad();
+					</OnLoad>
+					<OnEvent>
+						Target_Spellbar_OnEvent();
+					</OnEvent>
+				</Scripts>
 			</StatusBar>
 			<Button name="TargetFrameDebuff1" inherits="TargetDebuffButtonTemplate" id="1">
 				<Anchors>
@@ -507,12 +554,9 @@
 			<OnLeave>
 				UnitFrame_OnLeave();
 			</OnLeave>
-			<OnClick>
-				TargetFrame_OnClick(arg1);
-			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="TargetofTargetFrame" toplevel="true" parent="TargetFrame" movable="true" enableMouse="true">
+	<Button name="TargetofTargetFrame" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="TargetFrame" hidden="true">
 		<Size>
 			<AbsDimension x="93" y="45"/>
 		</Size>
@@ -662,20 +706,17 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				UnitFrame_Initialize("targettarget", TargetofTargetName, TargetofTargetPortrait, TargetofTargetHealthBar, TargetofTargetHealthBarText, TargetofTargetManaBar, TargetofTargetFrameManaBarText);
-				SetTextStatusBarTextZeroText(TargetofTargetHealthBar, TEXT(DEAD));
-				TargetofTargetFrame.timeleft = 0;
-				this:RegisterEvent("UNIT_AURA");
+				TargetofTarget_OnLoad();
 			</OnLoad>
+			<OnHide>
+				TargetofTarget_OnHide();
+			</OnHide>
 			<OnEvent>
 				UnitFrame_OnEvent(event);
 			</OnEvent>
 			<OnUpdate>
 				TargetofTarget_OnUpdate(arg1);
 			</OnUpdate>
-			<OnClick>
-				TargetofTarget_OnClick(arg1);
-			</OnClick>
 		</Scripts>
 	</Button>
 </Ui>

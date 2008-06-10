@@ -294,4 +294,98 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
+	<Button name="SmallDenominationTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="13"/>
+		</Size>
+		<Scripts>
+			<OnEnter>
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetMerchantCostItem(this.index, this.item);
+			</OnEnter>
+			<OnLeave>
+					GameTooltip:Hide();
+					ResetCursor();
+			</OnLeave>
+		</Scripts>
+		<ButtonText name="$parentText">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="-13" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalTexture name="$parentTexture">
+			<Size>
+				<AbsDimension x="13" y="13"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT"/>
+			</Anchors>
+		</NormalTexture>
+		<NormalFont inherits="NumberFontNormal" justifyH="RIGHT"/>
+		<PushedTextOffset>
+			<AbsDimension x="0" y="0"/>
+		</PushedTextOffset>
+	</Button>
+	<Frame name="SmallAlterateCurrencyFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="13"/>
+		</Size>
+		<Frames>
+			<Button name="$parentPoints" inherits="SmallDenominationTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText(this.pointType);
+					</OnEnter>
+					<OnLeave>
+							GameTooltip:Hide();
+							ResetCursor();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentItem1" inherits="SmallDenominationTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem2" inherits="SmallDenominationTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentItem1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem3" inherits="SmallDenominationTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentItem2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				-- Tool tip for total cost
+			</OnEnter>
+		</Scripts>
+	</Frame>
 </Ui>

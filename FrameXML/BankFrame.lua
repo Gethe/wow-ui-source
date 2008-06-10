@@ -1,7 +1,7 @@
 BANK_CONTAINER = -1;
 NUM_BAG_SLOTS = 4;
-NUM_BANKGENERIC_SLOTS = 24;
-NUM_BANKBAGSLOTS = 6;
+NUM_BANKGENERIC_SLOTS = 28;
+NUM_BANKBAGSLOTS = 7;
 
 function BankFrameBaseButton_OnLoad() 
 	this:RegisterEvent("BANKFRAME_OPENED");
@@ -140,30 +140,35 @@ end
 
 function BankFrameItemButtonGeneric_OnClick(button)
 	if ( button == "LeftButton" ) then
-		if ( IsControlKeyDown() and not this.isBag ) then
+		PickupContainerItem(BANK_CONTAINER, this:GetID());
+	else
+		UseContainerItem(BANK_CONTAINER, this:GetID());
+	end
+end
+
+function BankFrameItemButtonGeneric_OnModifiedClick(button)
+	if ( this.isBag ) then
+		return;
+	end
+	if ( button == "LeftButton" ) then
+		if ( IsControlKeyDown() ) then
 			DressUpItemLink(GetContainerItemLink(BANK_CONTAINER, this:GetID()));
-		elseif ( IsShiftKeyDown() and not this.isBag ) then
-			if ( ChatFrameEditBox:IsVisible() ) then
-				ChatFrameEditBox:Insert(GetContainerItemLink(BANK_CONTAINER, this:GetID()));
-			else
+		elseif ( IsShiftKeyDown() ) then
+			if ( not ChatEdit_InsertLink(GetContainerItemLink(BANK_CONTAINER, this:GetID())) ) then
 				local texture, itemCount, locked = GetContainerItemInfo(BANK_CONTAINER, this:GetID());
 				if ( not locked ) then
 					OpenStackSplitFrame(this.count, this, "BOTTOMLEFT", "TOPLEFT");
 				end
 			end
-		else
-			PickupContainerItem(BANK_CONTAINER, this:GetID());
 		end
 	else
-		if ( IsControlKeyDown() and not this.isBag ) then
+		if ( IsControlKeyDown() ) then
 			return;
-		elseif ( IsShiftKeyDown() and not this.isBag ) then
+		elseif ( IsShiftKeyDown() ) then
 			local texture, itemCount, locked = GetContainerItemInfo(BANK_CONTAINER, this:GetID());
 			if ( not locked ) then
 				OpenStackSplitFrame(this.count, this, "BOTTOMLEFT", "TOPLEFT");
 			end
-		else
-			UseContainerItem(BANK_CONTAINER, this:GetID());
 		end
 	end
 end

@@ -71,7 +71,7 @@
 		<NormalTexture file="Interface\SpellBook\UI-SpellBook-Tab-Unselected"/>
         <HighlightTexture file="Interface\SpellBook\UI-SpellbookPanel-Tab-Highlight" alphaMode="ADD"/>
     </Button>
-	<CheckButton name="SpellButtonTemplate" virtual="true">
+	<CheckButton name="SpellButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="37" y="37"/>
 		</Size>
@@ -160,17 +160,27 @@
 			<OnEvent>
 				SpellButton_OnEvent(event);
 			</OnEvent>
+			<PreClick>
+				this:SetChecked(0);
+			</PreClick>
 			<OnClick>
-				SpellButton_OnClick();
+				if ( not IsModifierKeyDown() ) then
+					SpellButton_OnClick();
+				end
 			</OnClick>
+			<PostClick>
+				if ( IsModifierKeyDown() ) then
+					SpellButton_OnModifiedClick();
+				end
+			</PostClick>
 			<OnShow>
 				SpellButton_UpdateButton();
 			</OnShow>
 			<OnDragStart>
-				SpellButton_OnClick(1);
+				SpellButton_OnDrag();
 			</OnDragStart>
 			<OnReceiveDrag>
-				SpellButton_OnClick(1);
+				SpellButton_OnDrag();
 			</OnReceiveDrag>
 			<OnEnter>
 				SpellButton_OnEnter();

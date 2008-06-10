@@ -1,11 +1,11 @@
 
-INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectHonorFrame" };
+INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame" };
 
 UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0 };
 
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
-	if ( CanInspect(unit) ) then
+	if ( CanInspect(unit, true) ) then
 		NotifyInspect(unit);
 		InspectFrame.unit = unit;
 		ShowUIPanel(InspectFrame);
@@ -29,7 +29,14 @@ function InspectFrame_OnEvent(event)
 		return;
 	end
 	if ( event == "PLAYER_TARGET_CHANGED" or event == "PARTY_MEMBERS_CHANGED" ) then
-		InspectUnit(this.unit);
+		if ( (event == "PLAYER_TARGET_CHANGED" and this.unit == "target") or
+		     (event == "PARTY_MEMBERS_CHANGED" and this.unit ~= "target") ) then
+			if ( CanInspect(this.unit) ) then
+				InspectFrame_UnitChanged();
+			else
+				HideUIPanel(InspectFrame);
+			end
+		end
 		return;
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		if ( arg1 == this.unit ) then
@@ -42,6 +49,14 @@ function InspectFrame_OnEvent(event)
 		end
 		return;
 	end
+end
+
+function InspectFrame_UnitChanged()
+	local unit = this.unit;
+	NotifyInspect(unit);
+	InspectPaperDollFrame_OnShow();
+	SetPortraitTexture(InspectFramePortrait, unit);
+	InspectNameText:SetText(UnitName(unit));
 end
 
 function InspectFrame_OnShow()
@@ -59,7 +74,7 @@ function InspectFrame_OnHide()
 end
 
 function InspectFrame_OnUpdate()
-	if ( not UnitExists("target") ) then
+	if ( not CanInspect(this.unit) ) then
 		HideUIPanel(InspectFrame);
 	end
 end
@@ -83,7 +98,7 @@ function ToggleInspect(tab)
 end
 
 function InspectFrame_ShowSubFrame(frameName)
-	for index, value in INSPECTFRAME_SUBFRAMES do
+	for index, value in pairs(INSPECTFRAME_SUBFRAMES) do
 		if ( value == frameName ) then
 			getglobal(value):Show()
 		else
@@ -96,7 +111,7 @@ function InspectFrameTab_OnClick()
 	if ( this:GetName() == "InspectFrameTab1" ) then
 		ToggleInspect("InspectPaperDollFrame");
 	elseif ( this:GetName() == "InspectFrameTab2" ) then
-		ToggleInspect("InspectHonorFrame");
+		ToggleInspect("InspectPVPFrame");
 	end
 	PlaySound("igCharacterInfoTab");
 end

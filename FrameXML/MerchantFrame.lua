@@ -1,5 +1,6 @@
 MERCHANT_ITEMS_PER_PAGE = 10;
 BUYBACK_ITEMS_PER_PAGE = 12;
+MAX_ITEM_COST = 3;
 
 function MerchantFrame_OnLoad()
 	this:RegisterEvent("MERCHANT_UPDATE");
@@ -69,19 +70,35 @@ function MerchantFrame_UpdateMerchantInfo()
 	
 	MerchantPageText:SetText(format(TEXT(PAGE_NUMBER), MerchantFrame.page));
 	local numMerchantItems = GetMerchantNumItems();
-	local name, texture, price, quantity, numAvailable, isUsable;
+	local name, texture, price, quantity, numAvailable, isUsable, extendedCost;
 	for i=1, MERCHANT_ITEMS_PER_PAGE, 1 do
 		local index = (((MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE) + i);
 		local itemButton = getglobal("MerchantItem"..i.."ItemButton");
 		local merchantButton = getglobal("MerchantItem"..i);
+		local merchantMoney = getglobal("MerchantItem"..i.."MoneyFrame");
+		local merchantAltCurrency = getglobal("MerchantItem"..i.."AltCurrencyFrame");
 		if ( index <= numMerchantItems ) then
-			name, texture, price, quantity, numAvailable, isUsable = GetMerchantItemInfo(index);
+			name, texture, price, quantity, numAvailable, isUsable, extendedCost = GetMerchantItemInfo(index);
 			getglobal("MerchantItem"..i.."Name"):SetText(name);
 			SetItemButtonCount(itemButton, quantity);
 			SetItemButtonStock(itemButton, numAvailable);
 			SetItemButtonTexture(itemButton, texture);
-			getglobal("MerchantItem"..i.."MoneyFrame"):Show();
-			MoneyFrame_Update("MerchantItem"..i.."MoneyFrame", price);
+			if ( extendedCost and not price) then
+				MerchantFrame_UpdateAltCurrency(index, i);
+				merchantAltCurrency:SetPoint("BOTTOMLEFT", "MerchantItem"..i.."NameFrame", "BOTTOMLEFT", -5, 31);
+				merchantMoney:Hide();
+				merchantAltCurrency:Show();
+			elseif ( extendedCost and price) then
+				MerchantFrame_UpdateAltCurrency(index, i);
+				MoneyFrame_Update(merchantMoney:GetName(), price);
+				merchantAltCurrency:SetPoint("LEFT", merchantMoney:GetName(), "RIGHT", -14, 0);
+				merchantAltCurrency:Show();
+			else
+				MoneyFrame_Update(merchantMoney:GetName(), price);
+				merchantAltCurrency:Hide();
+				merchantMoney:Show();
+			end
+
 			itemButton:SetID(index);
 			itemButton:Show();
 			if ( numAvailable == 0 ) then
@@ -115,6 +132,7 @@ function MerchantFrame_UpdateMerchantInfo()
 			SetItemButtonSlotVertexColor(merchantButton,0.4, 0.4, 0.4);
 			getglobal("MerchantItem"..i.."Name"):SetText("");
 			getglobal("MerchantItem"..i.."MoneyFrame"):Hide();
+			getglobal("MerchantItem"..i.."AltCurrencyFrame"):Hide();
 		end
 	end
 
@@ -192,6 +210,60 @@ function MerchantFrame_UpdateMerchantInfo()
 	MerchantItem9:SetPoint("TOPLEFT", "MerchantItem7", "BOTTOMLEFT", 0, -8);
 end
 
+function MerchantFrame_UpdateAltCurrency(index, i)
+	local itemTexture, itemValue, pointsTexture, button;
+	local honorPoints, arenaPoints, itemCount = GetMerchantItemCostInfo(index);
+	local frameName = "MerchantItem"..i.."AltCurrencyFrame";
+	button = getglobal(frameName.."Points");
+	-- update Alt Currency Frame with pointsValues
+	if ( honorPoints and honorPoints ~= 0 ) then
+		local factionGroup = UnitFactionGroup("player");
+		if ( factionGroup ) then
+			pointsTexture = "Interface\\TargetingFrame\\UI-PVP-"..factionGroup;
+		end
+		button.pointType = HONOR_POINTS;
+		AltCurrencyFrame_Update(frameName.."Points", pointsTexture, honorPoints);
+		button:Show();
+	elseif ( arenaPoints and arenaPoints ~= 0 ) then
+		button.pointType = ARENA_POINTS;
+		AltCurrencyFrame_Update(frameName.."Points", "Interface\\PVPFrame\\PVP-ArenaPoints-Icon", arenaPoints);
+		button:Show();
+	else
+		button:Hide();
+	end
+
+	-- update Alt Currency Frame with itemValues
+	if ( itemCount > 0 ) then
+		for i=1, MAX_ITEM_COST, 1 do
+			button = getglobal(frameName.."Item"..i);
+			button.index = index;
+			button.item = i;
+
+			itemTexture, itemValue = GetMerchantItemCostItem(index, i);
+			
+			AltCurrencyFrame_Update(frameName.."Item"..i, itemTexture, itemValue);
+			-- Anchor items based on how many item costs there are.
+
+			if ( i > 1 ) then
+				button:SetPoint("LEFT", frameName.."Item"..i-1, "RIGHT", 4, 0);
+			elseif ( i == 1 and ( arenaPoints and honorPoints == 0 ) ) then
+				button:SetPoint("LEFT", frameName.."Points", "LEFT", 0, 0);	
+			else
+				button:SetPoint("LEFT", frameName.."Points", "RIGHT", 4, 0);
+			end
+			if ( not itemTexture ) then
+				button:Hide();
+			else
+				button:Show();
+			end
+		end
+	else
+		for i=1, MAX_ITEM_COST, 1 do
+			getglobal(frameName.."Item"..i):Hide();
+		end
+	end
+end
+
 function MerchantFrame_UpdateBuybackInfo()
 	MerchantNameText:SetText(MERCHANT_BUYBACK);
 	MerchantFramePortrait:SetTexture("Interface\\MerchantFrame\\UI-BuyBack-Icon");
@@ -216,6 +288,7 @@ function MerchantFrame_UpdateBuybackInfo()
 	for i=1, BUYBACK_ITEMS_PER_PAGE do
 		itemButton = getglobal("MerchantItem"..i.."ItemButton");
 		buybackButton = getglobal("MerchantItem"..i);
+		getglobal("MerchantItem"..i.."AltCurrencyFrame"):Hide();
 		if ( i <= numBuybackItems ) then
 			buybackName, buybackTexture, buybackPrice, buybackQuantity, buybackNumAvailable, buybackIsUsable = GetBuybackItemInfo(i);
 			getglobal("MerchantItem"..i.."Name"):SetText(buybackName);
@@ -295,69 +368,55 @@ function MerchantItemButton_OnLoad()
 	end
 end
 
-function MerchantItemButton_OnClick(button, ignoreModifiers)
+function MerchantItemButton_OnClick(button)
 	if ( MerchantFrame.selectedTab == 1 ) then
 		-- Is merchant frame
 		if ( button == "LeftButton" ) then
-			if ( IsControlKeyDown() and not ignoreModifiers ) then
+			PickupMerchantItem(this:GetID());
+		else
+			BuyMerchantItem(this:GetID());
+		end
+	else
+		-- Is buyback item
+		BuybackItem(this:GetID());
+	end
+end
+
+function MerchantItemButton_OnModifiedClick(button)
+	if ( MerchantFrame.selectedTab == 1 ) then
+		-- Is merchant frame
+		if ( button == "LeftButton" ) then
+			if ( IsControlKeyDown() ) then
 				DressUpItemLink(GetMerchantItemLink(this:GetID()));
-			elseif ( IsShiftKeyDown() and not ignoreModifiers ) then
-				if ( ChatFrameEditBox:IsVisible() ) then
-					ChatFrameEditBox:Insert(GetMerchantItemLink(this:GetID()));
-				else
-					local name, texture, price, quantity, numAvailable, isUsable = GetMerchantItemInfo(this:GetID());
-					if ( not name ) then
-						return;
-					end
-
+			elseif ( IsShiftKeyDown() ) then
+				if ( not ChatEdit_InsertLink(GetMerchantItemLink(this:GetID())) ) then
 					local maxStack = GetMerchantItemMaxStack(this:GetID());
-					if ( maxStack <= 1 ) then
-						MerchantItemButton_OnClick(arg1, 1);
-						return;
+					if ( maxStack > 1 ) then
+						if ( price and (price > 0) ) then
+							local canAfford = floor(GetMoney() / price);
+							if ( canAfford < maxStack ) then
+								maxStack = canAfford;
+							end
+						end
+						OpenStackSplitFrame(maxStack, this, "BOTTOMLEFT", "TOPLEFT");
 					end
-
+				end
+			end
+		else
+			if ( IsControlKeyDown() ) then
+				return;
+			elseif ( IsShiftKeyDown() ) then
+				local maxStack = GetMerchantItemMaxStack(this:GetID());
+				if ( maxStack > 1 ) then
 					if ( price and (price > 0) ) then
 						local canAfford = floor(GetMoney() / price);
 						if ( canAfford < maxStack ) then
 							maxStack = canAfford;
 						end
 					end
-
 					OpenStackSplitFrame(maxStack, this, "BOTTOMLEFT", "TOPLEFT");
 				end
-			else
-				PickupMerchantItem(this:GetID());
-			end
-		else
-			if ( IsControlKeyDown() and not ignoreModifiers ) then
-				return;
-			elseif ( IsShiftKeyDown() and not ignoreModifiers ) then
-				local name, texture, price, quantity, numAvailable, isUsable = GetMerchantItemInfo(this:GetID());
-				if ( not name ) then
-					return;
-				end
-
-				local maxStack = GetMerchantItemMaxStack(this:GetID());
-				if ( maxStack <= 1 ) then
-					MerchantItemButton_OnClick(arg1, 1);
-					return;
-				end
-
-				if ( price and (price > 0) ) then
-					local canAfford = floor(GetMoney() / price);
-					if ( canAfford < maxStack ) then
-						maxStack = canAfford;
-					end
-				end
-
-				OpenStackSplitFrame(maxStack, this, "BOTTOMLEFT", "TOPLEFT");
-			else
-				BuyMerchantItem(this:GetID());
 			end
 		end
-	else
-		-- Is buyback item
-		BuybackItem(this:GetID());
 	end
-	
 end

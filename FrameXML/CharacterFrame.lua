@@ -1,4 +1,4 @@
-CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame", "HonorFrame" };
+CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame", "PVPFrame" };
 
 function ToggleCharacter(tab)
 	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() ) then
@@ -23,7 +23,7 @@ function ToggleCharacter(tab)
 end
 
 function CharacterFrame_ShowSubFrame(frameName)
-	for index, value in CHARACTERFRAME_SUBFRAMES do
+	for index, value in pairs(CHARACTERFRAME_SUBFRAMES) do
 		if ( value == frameName ) then
 			getglobal(value):Show()
 		else
@@ -42,7 +42,7 @@ function CharacterFrameTab_OnClick()
 	elseif ( this:GetName() == "CharacterFrameTab4" ) then
 		ToggleCharacter("SkillFrame");	
 	elseif ( this:GetName() == "CharacterFrameTab5" ) then
-		ToggleCharacter("HonorFrame");	
+		ToggleCharacter("PVPFrame");	
 	end
 	PlaySound("igCharacterInfoTab");
 end

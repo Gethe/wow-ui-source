@@ -1,8 +1,8 @@
-## Interface: 11200
+## Interface: 20000
 ## Title: Blizzard Inspect UI
 ## Secure: 1
 ## LoadOnDemand: 1
 Blizzard_InspectUI.xml
 InspectPaperDollFrame.xml
-InspectHonorFrame.xml
+InspectPVPFrame.xml
 Localization.lua

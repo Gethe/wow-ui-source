@@ -17,8 +17,9 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	button2 = TEXT(CANCEL),
 	OnAccept = function()
 		BuyTrainerService(ClassTrainerFrame.selectedService);
-		ClassTrainerFrame.showSkillDetails = nil;
-		ClassTrainer_SetSelection(ClassTrainerFrame.selectedService);
+		ClassTrainerFrame.showSkillDetails = 1;
+		ClassTrainerFrame.showDialog = nil;		
+		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
 		ClassTrainerFrame_Update();
 	end,
 	OnShow = function()
@@ -72,12 +73,13 @@ function ClassTrainerFrame_OnEvent()
 		return;
 	end
 	if ( event == "TRAINER_UPDATE" ) then
-		if ( GetTrainerSelectionIndex() > 1 ) then
-			if ( GetTrainerSelectionIndex() > GetNumTrainerServices() ) then
+		local selected = GetTrainerSelectionIndex();
+		if ( selected and selected > 1 ) then
+			if ( selected > GetNumTrainerServices() ) then
 				FauxScrollFrame_SetOffset(ClassTrainerListScrollFrame, 0);
 				ClassTrainerListScrollFrameScrollBar:SetValue(0);
 			end
-			ClassTrainer_SetSelection(GetTrainerSelectionIndex());
+			ClassTrainer_SetSelection(selected);
 		else
 			ClassTrainer_SelectFirstLearnableSkill();
 		end
@@ -116,7 +118,8 @@ function ClassTrainerFrame_Update()
 	
 	--ClassTrainerUsedButton:Show();
 	ClassTrainerMoneyFrame:Show();
-	
+
+	local selected = GetTrainerSelectionIndex();
 
 	ClassTrainerSkillHighlightFrame:Hide();
 	-- Fill in the skill buttons
@@ -177,7 +180,7 @@ function ClassTrainerFrame_Update()
 			skillButton:SetID(skillIndex);
 			skillButton:Show();
 			-- Place the highlight and lock the highlight state
-			if ( ClassTrainerFrame.selectedService and GetTrainerSelectionIndex() == skillIndex ) then
+			if ( ClassTrainerFrame.selectedService and selected == skillIndex ) then
 				ClassTrainerSkillHighlightFrame:SetPoint("TOPLEFT", "ClassTrainerSkill"..i, "TOPLEFT", 0, 0);
 				ClassTrainerSkillHighlightFrame:Show();
 				skillButton:LockHighlight();
@@ -207,7 +210,7 @@ function ClassTrainerFrame_Update()
 			end
 		end
 		-- Show details if selected skill is visible
-		if ( ClassTrainerFrame.selectedService and GetTrainerSelectionIndex() == i ) then
+		if ( ClassTrainerFrame.selectedService and selected == i ) then
 			showDetails = 1;
 		end
 	end
@@ -230,11 +233,11 @@ end
 function ClassTrainer_SelectFirstLearnableSkill()
 	if ( GetNumTrainerServices() > 0 ) then
 		ClassTrainerFrame.showSkillDetails = 1;
-		ClassTrainer_SetSelection(2);
+		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
 		FauxScrollFrame_SetOffset(ClassTrainerListScrollFrame, 0)		
 	else
 		ClassTrainerFrame.showSkillDetails = nil;
-		ClassTrainer_SetSelection();
+		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
 	end
 	ClassTrainerListScrollFrameScrollBar:SetValue(0);
 end
@@ -415,7 +418,7 @@ function ClassTrainerTrainButton_OnClick()
 		StaticPopup_Show("CONFIRM_PROFESSION");
 	else
 		BuyTrainerService(ClassTrainerFrame.selectedService);
-		ClassTrainerFrame.showSkillDetails = nil;
+		ClassTrainerFrame.showSkillDetails = 1;
 		ClassTrainer_SetSelection(ClassTrainerFrame.selectedService);
 		ClassTrainerFrame_Update();
 	end
@@ -440,12 +443,14 @@ function ClassTrainerCollapseAllButton_OnClick()
 end
 
 function ClassTrainer_HideSkillDetails()
+	ClassTrainerFrame.showSkillDetails = nil;
 	ClassTrainerSkillName:Hide();
 	ClassTrainerSkillIcon:Hide();
 	ClassTrainerSkillRequirements:Hide();
 	ClassTrainerSkillDescription:Hide();
 	ClassTrainerDetailMoneyFrame:Hide();
 	ClassTrainerCostLabel:Hide();
+	ClassTrainerTrainButton:Disable();
 end
 
 function ClassTrainer_ShowSkillDetails()
@@ -481,42 +486,29 @@ function ClassTrainerFrameFilterDropDown_OnLoad()
 end
 
 function ClassTrainerFrameFilterDropDown_Initialize()
+	local info = UIDropDownMenu_CreateInfo();
+
 	-- Available button
-	local info = {};
-	local checked = nil;
-	if ( GetTrainerServiceTypeFilter("available") ) then
-		checked = 1;
-	end
 	info.text = GREEN_FONT_COLOR_CODE..AVAILABLE..FONT_COLOR_CODE_CLOSE;
 	info.value = "available";
 	info.func = ClassTrainerFrameFilterDropDown_OnClick;
-	info.checked = checked;
+	info.checked = GetTrainerServiceTypeFilter("available");
 	info.keepShownOnClick = 1;
 	UIDropDownMenu_AddButton(info);
 
 	-- Unavailable button
-	info = {};
-	checked = nil;
-	if ( GetTrainerServiceTypeFilter("unavailable") ) then
-		checked = 1;
-	end
 	info.text = RED_FONT_COLOR_CODE..UNAVAILABLE..FONT_COLOR_CODE_CLOSE;
 	info.value = "unavailable";
 	info.func = ClassTrainerFrameFilterDropDown_OnClick;
-	info.checked = checked;
+	info.checked = GetTrainerServiceTypeFilter("unavailable");
 	info.keepShownOnClick = 1;
 	UIDropDownMenu_AddButton(info);
 
 	-- Unavailable button
-	info = {};
-	checked = nil;
-	if ( GetTrainerServiceTypeFilter("used") ) then
-		checked = 1;
-	end
 	info.text = GRAY_FONT_COLOR_CODE..USED..FONT_COLOR_CODE_CLOSE;
 	info.value = "used";
 	info.func = ClassTrainerFrameFilterDropDown_OnClick;
-	info.checked = checked;
+	info.checked = GetTrainerServiceTypeFilter("used");
 	info.keepShownOnClick = 1;
 	UIDropDownMenu_AddButton(info);
 end

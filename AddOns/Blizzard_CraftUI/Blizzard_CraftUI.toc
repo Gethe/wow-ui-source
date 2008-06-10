@@ -1,4 +1,4 @@
-## Interface: 11200
+## Interface: 20000
 ## Title: Blizzard Craft UI
 ## Secure: 1
 ## LoadOnDemand: 1

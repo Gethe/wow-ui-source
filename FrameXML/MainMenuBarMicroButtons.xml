@@ -156,7 +156,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="WorldMapMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="LFGMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SocialsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -166,21 +166,22 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				LoadMicroButtonTextures("World");
-				this.tooltipText = MicroButtonTooltipText(TEXT(WORLDMAP_BUTTON), "TOGGLEWORLDMAP");
+				LoadMicroButtonTextures("LFG");
+				this.tooltipText = MicroButtonTooltipText(TEXT(LFG_BUTTON), "TOGGLELFGPARENT");
+				this.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnLoad>
 			<OnEvent>
-				this.tooltipText = MicroButtonTooltipText(TEXT(WORLDMAP_BUTTON), "TOGGLEWORLDMAP");
-				this.newbieText = NEWBIE_TOOLTIP_WORLDMAP;
+				this.tooltipText = MicroButtonTooltipText(TEXT(LFG_BUTTON), "TOGGLELFGPARENT");
+				this.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnEvent>
 			<OnClick>
-				ToggleWorldMap();
+				ToggleLFGParentFrame();
 			</OnClick>
 		</Scripts>
 	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="WorldMapMicroButton" relativePoint="BOTTOMRIGHT">
+			<Anchor point="BOTTOMLEFT" relativeTo="LFGMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-3" y="0"/>
 				</Offset>
@@ -196,7 +197,18 @@
 				this.tooltipText = MicroButtonTooltipText(TEXT(MAINMENU_BUTTON), "TOGGLEGAMEMENU");
 			</OnEvent>
 			<OnClick>
-				ToggleGameMenu(1);
+				if ( OptionsFrame:IsVisible() ) then
+					OptionsFrameCancel:Click();
+				end
+				if ( GameMenuFrame:IsVisible() ) then
+					PlaySound("igMainMenuQuit");
+					HideUIPanel(GameMenuFrame);
+				else
+					CloseMenus();
+					CloseAllWindows()
+					PlaySound("igMainMenuOpen");
+					ShowUIPanel(GameMenuFrame);
+				end
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -215,7 +227,7 @@
 				this.newbieText = NEWBIE_TOOLTIP_HELP;
 			</OnLoad>
 			<OnClick>
-				ToggleHelpFrame();
+				ToggleKnowledgeBaseFrame();
 			</OnClick>
 		</Scripts>
 	</Button>

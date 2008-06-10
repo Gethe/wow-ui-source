@@ -15,6 +15,11 @@ function PetFrame_OnLoad()
 	this:RegisterEvent("PET_ATTACK_START");
 	this:RegisterEvent("PET_ATTACK_STOP");
 	this:RegisterEvent("UNIT_HAPPINESS");
+
+	local showmenu = function()
+		ToggleDropDownMenu(1, nil, PetFrameDropDown);
+	end
+	SecureUnitButton_OnLoad(this, "pet", showmenu);
 end
 
 function PetFrame_Update()
@@ -34,7 +39,7 @@ function PetFrame_Update()
 		PetAttackModeTexture:Hide();
 
 		PetFrame_SetHappiness();
-		RefreshBuffs(getglobal("PetFrame"), 1, "pet");
+		RefreshBuffs(getglobal("PetFrame"), 0, "pet");
 	else
 		this:Hide();
 	end
@@ -53,7 +58,7 @@ function PetFrame_OnEvent(event)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == "pet" ) then
-			RefreshBuffs(this, 1, "pet");
+			RefreshBuffs(this, 0, "pet");
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
@@ -109,24 +114,6 @@ function PetFrame_OnUpdate(elapsed)
 	--	end
 	--end
 	
-end
-
-function PetFrame_OnClick(button)
-	if ( SpellIsTargeting() and button == "RightButton" ) then
-		SpellStopTargeting();
-		return;
-	end
-	if ( button == "LeftButton" ) then
-		if ( SpellIsTargeting() ) then
-			SpellTargetUnit("pet");
-		elseif ( CursorHasItem() ) then
-			DropItemOnUnit("pet");
-		else
-			TargetUnit("pet");
-		end
-	else
-		ToggleDropDownMenu(1, nil, PetFrameDropDown);
-	end
 end
 
 function PetFrame_SetHappiness()

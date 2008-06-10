@@ -38,7 +38,7 @@ ANISOTROPIC_VALUES = {"1", "2", "4", "8", "16"};
 OPTIONS_FRAME_WIDTH = 495;
 
 function OptionsFrame_Init()
-	--[[for index, value in OptionsFrameCheckButtons do
+	--[[for index, value in pairs(OptionsFrameCheckButtons) do
 		local string = GetCVar(value.cvar);
 		value.value = string;
 	end]]
@@ -57,7 +57,7 @@ end
 function OptionsFrame_Load()
 	local shadersEnabled = GetCVar("pixelShaders");
 	local hasAnisotropic, hasPixelShaders, hasVertexShaders, hasTrilinear, hasTripleBuffering, maxAnisotropy, hasHardwareCursor = GetVideoCaps();
-	for index, value in OptionsFrameCheckButtons do
+	for index, value in pairs(OptionsFrameCheckButtons) do
 		local button = getglobal("OptionsFrameCheckButton"..value.index);
 		local string = getglobal("OptionsFrameCheckButton"..value.index.."Text");
 		local checked;
@@ -103,7 +103,7 @@ function OptionsFrame_Load()
 			string:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		end
 	end
-	for index, value in OptionsFrameSliders do
+	for index, value in pairs(OptionsFrameSliders) do
 		local slider = getglobal("OptionsFrameSlider"..index);
 		local string = getglobal("OptionsFrameSlider"..index.."Text");
 		local thumb = getglobal("OptionsFrameSlider"..index.."Thumb");
@@ -181,7 +181,7 @@ function OptionsFrame_Load()
 end
 
 function OptionsFrame_Save()
-	for index, value in OptionsFrameCheckButtons do
+	for index, value in pairs(OptionsFrameCheckButtons) do
 		local button = getglobal("OptionsFrameCheckButton"..value.index);
 		if ( button:GetChecked() ) then
 			value.value = "1";
@@ -203,7 +203,7 @@ function OptionsFrame_Save()
 			SetCVar("ffx", value.value);
 		end
 	end
-	for index, value in OptionsFrameSliders do
+	for index, value in pairs(OptionsFrameSliders) do
 		local slider = getglobal("OptionsFrameSlider"..index);
 		local setvalue = getglobal("Set"..value.func);
 		local getvalue = getglobal("Get"..value.func);
@@ -212,8 +212,8 @@ function OptionsFrame_Save()
 			local anisotropicValue = ANISOTROPIC_VALUES[slider:GetValue()];
 			if ( GetCVar("anisotropic") ~= anisotropicValue ) then
 				OptionsFrame.ClientRestart = 1;
-				SetCVar("anisotropic", anisotropicValue);
 			end
+			SetCVar("anisotropic", anisotropicValue);
 		elseif ( not setvalue ) then
 			if ( slider:GetValue() ~= GetCVar(value.func) ) then
 				if ( slider.gxRestart ) then
@@ -241,8 +241,8 @@ function OptionsFrame_Save()
 	-- If this value has changed then do a RestartGx
 	if ( GetCVar("gxRefresh") ~= UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown) ) then
 		OptionsFrame.GXRestart = 1;
-		SetCVar("gxRefresh", UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown));
 	end
+	SetCVar("gxRefresh", UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown));
 	if ( OptionsFrame.GXRestart ) then
 		RestartGx();
 	end
@@ -272,12 +272,11 @@ function OptionsFrameResolutionDropDown_Initialize()
 end
 
 function OptionsFrameResolutionDropDown_LoadResolutions(...)
-	local info;
+	local info = UIDropDownMenu_CreateInfo();
 	local resolution, xIndex, width, height;
-	for i=1, arg.n, 1 do
+	for i=1, select("#", ...) do
 		checked = nil;
-		info = {};
-		resolution = arg[i];
+		resolution = (select(i, ...));
 		xIndex = strfind(resolution, "x");
 		width = strsub(resolution, 1, xIndex-1);
 		height = strsub(resolution, xIndex+1, strlen(resolution));
@@ -285,7 +284,7 @@ function OptionsFrameResolutionDropDown_LoadResolutions(...)
 			resolution = resolution.." "..WIDESCREEN_TAG;
 		end
 		info.text = resolution;
-		info.value = arg[i];
+		info.value = resolution;
 		info.func = OptionsFrameResolutionButton_OnClick;
 		info.checked = checked;
 		UIDropDownMenu_AddButton(info);
@@ -307,26 +306,25 @@ function OptionsFrameRefreshDropDown_Initialize()
 end
 
 function OptionsFrame_GetRefreshRates(...)
-	local info = {};
+	local info = UIDropDownMenu_CreateInfo();
 	local checked;
-	if ( arg.n == 1 and arg[1] == 0 ) then
+	if ( select("#", ...) == 1 and select(1, ...) == 0 ) then
 		OptionsFrameRefreshDropDownButton:Disable();
 		OptionsFrameRefreshDropDownLabel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		OptionsFrameRefreshDropDownText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		return;
 	end
-	for i=1, arg.n do
-		info = {};
-		info.text = arg[i]..HERTZ;
+	for i=1, select("#", ...) do
+		info.text = select(i, ...)..HERTZ;
 		info.func = OptionsFrameRefreshDropDown_OnClick;
 		
-		if ( UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown) and tonumber(UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown)) == arg[i] ) then
+		if ( UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown) and tonumber(UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown)) == select(i, ...) ) then
 			checked = 1;
 			UIDropDownMenu_SetText(info.text, OptionsFrameRefreshDropDown);
 		else
 			checked = nil;
 		end
-		info.value = arg[i]
+		info.value = select(i, ...)
 		info.checked = checked;
 		UIDropDownMenu_AddButton(info);
 	end
@@ -349,13 +347,11 @@ end
 
 function OptionsFrame_GetMultisampleFormats(...)
 	local colorBits, depthBits, multiSample;
-	local info, checked;
+	local info = UIDropDownMenu_CreateInfo();
+	local checked;
 	local index = 1;
-	for i=1, arg.n, 3 do
-		colorBits = arg[i];
-		depthBits = arg[i+1];
-		multiSample = arg[i+2];
-		info = {};
+	for i=1, select("#", ...), 3 do
+		colorBits, depthBits, multiSample = select(i, ...);
 		info.text = format(MULTISAMPLING_FORMAT_STRING, colorBits, depthBits, multiSample);
 		info.func = OptionsFrameMultiSampleDropDown_OnClick;
 		
@@ -376,7 +372,7 @@ function OptionsFrameMultiSampleDropDown_OnClick()
 end
 
 function OptionsFrame_UpdateCheckboxes()
-	for index, value in OptionsFrameCheckButtons do
+	for index, value in pairs(OptionsFrameCheckButtons) do
 		if ( value.dependency ) then
 			local button = getglobal("OptionsFrameCheckButton"..value.index);	
 			local dependency = getglobal("OptionsFrameCheckButton"..OptionsFrameCheckButtons[value.dependency].index);
@@ -417,7 +413,7 @@ end
 
 function OptionsFrame_SetDefaults()
 	local checkButton, slider;
-	for index, value in OptionsFrameCheckButtons do
+	for index, value in pairs(OptionsFrameCheckButtons) do
 		checkButton = getglobal("OptionsFrameCheckButton"..value.index);
 		checkButton:SetChecked(GetCVarDefault(value.cvar));
 	end
@@ -425,7 +421,7 @@ function OptionsFrame_SetDefaults()
 	OptionsFrame_UpdateGammaControls();
 	OptionsFrame_UpdateUIScaleControls();
 	local sliderValue;
-	for index, value in OptionsFrameSliders do
+	for index, value in pairs(OptionsFrameSliders) do
 		slider = getglobal("OptionsFrameSlider"..index);
 		if ( value.func == "WorldDetail" ) then
 			sliderValue = GetCVarDefault("smallCull");
@@ -492,18 +488,6 @@ function OptionsFrame_EnableSlider(slider)
 	getglobal(name.."Text"):SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
 	getglobal(name.."Low"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	getglobal(name.."High"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-end
-
-function OptionsFrame_DisableDropDown(dropDown)
-	getglobal(dropDown:GetName().."Label"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	getglobal(dropDown:GetName().."Text"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	getglobal(dropDown:GetName().."Button"):Disable();
-end
-
-function OptionsFrame_EnableDropDown(dropDown)
-	getglobal(dropDown:GetName().."Label"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	getglobal(dropDown:GetName().."Text"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	getglobal(dropDown:GetName().."Button"):Enable();
 end
 
 function PlayClickSound()

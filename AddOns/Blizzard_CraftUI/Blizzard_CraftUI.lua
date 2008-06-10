@@ -99,6 +99,16 @@ end
 function CraftFrame_Update()
 	SetPortraitTexture(CraftFramePortrait, "player");
 	CraftFrameTitleText:SetText(GetCraftName());
+	
+	if ( CraftIsEnchanting() ) then
+		CraftFrameFilterDropDown:Show();
+		CraftFrameIsMakeableText:Show();
+		CraftFrameAvailableFilterCheckButton:Show();
+	else
+		CraftFrameFilterDropDown:Hide();
+		CraftFrameIsMakeableText:Hide();
+		CraftFrameAvailableFilterCheckButton:Hide();
+	end
 
 	local numCrafts = GetNumCrafts();
 	local craftOffset = FauxScrollFrame_GetOffset(CraftListScrollFrame);
@@ -307,8 +317,32 @@ function CraftFrame_SetSelection(id)
 
 	-- General Info
 	CraftName:SetText(craftName);
+
+	-- Set cooldown data
+	if ( GetCraftCooldown(id) ) then
+		CraftCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(GetCraftCooldown(id)));
+	else
+		CraftCooldown:SetText("");
+	end
+	
+	-- Set Recipe Icon
 	CraftIcon:SetNormalTexture(GetCraftIcon(id));
 	
+	-- Set number of items that are generated
+	local minMade,maxMade = GetCraftNumMade(id);
+	if ( maxMade > 1 ) then
+		if ( minMade == maxMade ) then
+			CraftIconCount:SetText(minMade);
+		else
+			CraftIconCount:SetText(minMade.."-"..maxMade);
+		end
+		if ( CraftIconCount:GetWidth() > 39 ) then
+			CraftIconCount:SetText("~"..floor((minMade + maxMade)/2));
+		end
+	else
+		CraftIconCount:SetText("");
+	end
+
 	if ( GetCraftDescription(id) ) then
 		CraftDescription:SetText(GetCraftDescription(id));
 		CraftReagentLabel:SetPoint("TOPLEFT", "CraftDescription", "BOTTOMLEFT", 0, -10);
@@ -316,7 +350,6 @@ function CraftFrame_SetSelection(id)
 		CraftDescription:SetText(" ");
 		CraftReagentLabel:SetPoint("TOPLEFT", "CraftDescription", "TOPLEFT", 0, 0);
 	end
-	
 	
 	-- Reagents
 	local creatable = 1;
@@ -435,4 +468,62 @@ function Craft_UpdateTrainingPoints()
 		CraftFramePointsLabel:Hide();
 		CraftFramePointsText:Hide();
 	end	
+end
+
+function CraftFrameFilterDropDown_OnLoad()
+	UIDropDownMenu_Initialize(this, CraftFrameFilterDropDown_Initialize);
+	UIDropDownMenu_SetWidth(120);
+	UIDropDownMenu_SetSelectedID(CraftFrameFilterDropDown, 1);
+end
+
+function CraftFrameFilterDropDown_OnShow()
+	-- Hack to quickly reset the ShowMakeable filter
+	CraftOnlyShowMakeable(0);
+	CraftFrameAvailableFilterCheckButton:SetChecked(0);
+	UIDropDownMenu_Initialize(this, CraftFrameFilterDropDown_Initialize);
+	if ( GetCraftFilter(0) ) then
+		UIDropDownMenu_SetSelectedID(CraftFrameFilterDropDown, 1);
+	end
+end
+
+function CraftFrameFilterDropDown_Initialize()
+	CraftFrameFilterDropDown_LoadInvSlots(GetCraftSlots());
+end
+
+function CraftFrameFilterDropDown_LoadInvSlots(...)
+	local allChecked = GetCraftFilter(0);
+	local info = UIDropDownMenu_CreateInfo();
+	if ( select("#", ...) > 1 ) then
+		info.text = TEXT(ALL_INVENTORY_SLOTS);
+		info.func = CraftFrameFilterDropDown_OnClick;
+		info.checked = allChecked;
+		UIDropDownMenu_AddButton(info);
+	end
+	
+	local checked;
+	for i=1, select("#", ...), 1 do
+		if ( allChecked and select("#", ...) > 1 ) then
+			checked = nil;
+			UIDropDownMenu_SetText(TEXT(ALL_INVENTORY_SLOTS), CraftFrameFilterDropDown);
+		else
+			checked = GetCraftFilter(i);
+			if ( checked ) then
+				UIDropDownMenu_SetText(getglobal(select(i, ...)), CraftFrameFilterDropDown);
+			end
+		end
+		info.text = getglobal(select(i, ...));
+		info.func = CraftFrameFilterDropDown_OnClick;
+		info.checked = checked;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function CraftFrameFilterDropDown_OnClick()	
+	UIDropDownMenu_SetSelectedID(CraftFrameFilterDropDown, this:GetID());
+	SetCraftFilter(this:GetID());
+end
+
+function CraftFrameAvailableFilterCheckButton_OnClick()
+	local checked = this:GetChecked();
+	CraftOnlyShowMakeable(checked);
 end

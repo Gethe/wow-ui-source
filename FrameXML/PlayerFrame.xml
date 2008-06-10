@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PlayerFrame.lua"/>
-	<Button name="PlayerFrame" frameStrata="BACKGROUND" toplevel="true" movable="true" parent="UIParent">
+	<Button name="PlayerFrame" frameStrata="BACKGROUND" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
 		<Size>
 			<AbsDimension x="232" y="100"/>
 		</Size>
@@ -57,7 +57,7 @@
 								</Texture>
 								<FontString name="PlayerName" inherits="GameFontNormalSmall">
 									<Size>
-										<AbsDimension x="100" y="10"/>
+										<AbsDimension x="100" y="12"/>
 									</Size>
 									<Anchors>
 										<Anchor point="CENTER">
@@ -302,7 +302,7 @@
 						this.textLockable = 1;
 					</OnLoad>
 					<OnMouseUp>
-						PlayerFrame_OnClick(arg1);
+						this:GetParent():Click("LeftButton");
 					</OnMouseUp>
 					<OnEvent>
 						UnitFrameHealthBar_Update(this, arg1);
@@ -329,12 +329,12 @@
 						TextStatusBar_Initialize();
 						this.textLockable = 1;
 					</OnLoad>
+					<OnMouseUp>
+						this:GetParent():Click("LeftButton");
+					</OnMouseUp>
 					<OnEvent>
 						UnitFrameManaBar_Update(this, arg1);
 					</OnEvent>
-					<OnMouseUp>
-						PlayerFrame_OnClick(arg1);
-					</OnMouseUp>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
@@ -437,9 +437,6 @@
 			<OnLeave>
 				UnitFrame_OnLeave();
 			</OnLeave>
-			<OnClick>
-				PlayerFrame_OnClick(arg1);
-			</OnClick>
 			<OnReceiveDrag>
 				PlayerFrame_OnReceiveDrag();
 			</OnReceiveDrag>

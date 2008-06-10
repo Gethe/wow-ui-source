@@ -3,6 +3,19 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["CONFIRM_ACCEPT_SOCKETS"] = {
+	text = TEXT(CONFIRM_ACCEPT_SOCKETS),
+	button1 = TEXT(YES),
+	button2 = TEXT(NO),
+	OnAccept = function()
+		AcceptSockets();
+		PlaySound("JewelcraftingFinalize");
+	end,
+	timeout = 0,
+	showAlert = 1,
+	hideOnEscape = 1,
+};
+
 StaticPopupDialogs["TAKE_GM_SURVEY"] = {
 	text = TEXT(TAKE_GM_SURVEY),
 	button1 = TEXT(YES),
@@ -123,7 +136,7 @@ StaticPopupDialogs["CONFIRM_GUILD_PROMOTE"] = {
 	button1 = TEXT(ACCEPT),
 	button2 = TEXT(CANCEL),
 	OnAccept = function(name)
-		GuildSetLeaderByName(name);
+		GuildSetLeader(name);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -160,23 +173,78 @@ StaticPopupDialogs["RENAME_GUILD"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["RENAME_ARENA_TEAM"] = {
+	text = TEXT(RENAME_ARENA_TEAM_LABEL),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	hasEditBox = 1,
+	maxLetters = 24,
+	OnAccept = function()
+		local text = getglobal(this:GetParent():GetName().."EditBox"):GetText();
+		RenamePetition(text);
+	end,
+	EditBoxOnEnterPressed = function()
+		local text = getglobal(this:GetParent():GetName().."EditBox"):GetText();
+		RenamePetition(text);
+		this:GetParent():Hide();
+	end,
+	OnShow = function()
+		getglobal(this:GetName().."EditBox"):SetFocus();
+	end,
+	OnHide = function()
+		if ( ChatFrameEditBox:IsVisible() ) then
+			ChatFrameEditBox:SetFocus();
+		end
+		getglobal(this:GetName().."EditBox"):SetText("");
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_LEAVE"] = {
+	text = TEXT(CONFIRM_TEAM_LEAVE),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	OnAccept = function()
+		ArenaTeamLeave(PVPTeamDetails.team);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_PROMOTE"] = {
+	text = TEXT(CONFIRM_TEAM_PROMOTE),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	OnAccept = function(team, name)
+		ArenaTeamSetLeaderByName(team, name);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_KICK"] = {
+	text = TEXT(CONFIRM_TEAM_KICK),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	OnAccept = function(team, name)
+		ArenaTeamUninviteByName(team, name);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["HELP_TICKET_QUEUE_DISABLED"] = {
 	text = TEXT(HELP_TICKET_QUEUE_DISABLED),
 	button1 = TEXT(OKAY),
 	showAlert = 1,
 	timeout = 0,
 }
-
-StaticPopupDialogs["CONFIRM_LEAVE_QUEUE"] = {
-	text = TEXT(CONFIRM_LEAVE_QUEUE),
-	button1 = TEXT(ACCEPT),
-	button2 = TEXT(CANCEL),
-	OnAccept = function()
-		CancelMeetingStoneRequest();
-	end,
-	timeout = 0,
-	hideOnEscape = 1
-};
 
 StaticPopupDialogs["CLIENT_RESTART_ALERT"] = {
 	text = TEXT(CLIENT_RESTART_ALERT),
@@ -382,11 +450,18 @@ StaticPopupDialogs["DEATH"] = {
 		if ( text ) then
 			getglobal(this:GetName().."Button2"):SetText(text);
 		end
-		if ( this.timeleft == -1 ) then
+
+		if ( IsActiveBattlefieldArena() ) then
+			getglobal(this:GetName().."Text"):SetText(DEATH_RELEASE_SPECTATOR);
+		elseif ( this.timeleft == -1 ) then
 			getglobal(this:GetName().."Text"):SetText(DEATH_RELEASE_NOTIMER);
 		end
 	end,
 	OnAccept = function()
+		if ( IsActiveBattlefieldArena() ) then
+			local info = ChatTypeInfo["SYSTEM"];
+			DEFAULT_CHAT_FRAME:AddMessage(TEXT(ARENA_SPECTATOR), info.r, info.g, info.b, info.id);
+		end
 		RepopMe();
 	end,
 	OnCancel = function(data, reason)
@@ -561,6 +636,58 @@ StaticPopupDialogs["GUILD_INVITE"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+
+StaticPopupDialogs["LFG_MATCH"] = {
+	text = TEXT(MATCHMAKING_MATCH_S),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(DECLINE),
+	sound = "igPlayerInvite",
+	OnShow = function()
+		StaticPopupDialogs["LFG_MATCH"].inviteAccepted = nil;
+	end,
+	OnAccept = function()
+		AcceptLFGMatch();
+		StaticPopupDialogs["LFG_MATCH"].inviteAccepted = 1;
+	end,
+	OnCancel = function()
+		DeclineLFGMatch();
+	end,
+	OnHide = function()
+		if ( not StaticPopupDialogs["LFG_MATCH"].inviteAccepted ) then
+			DeclineLFGMatch();
+		end
+	end,
+	timeout = 60,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["LFG_PENDING"] = {
+	text = TEXT(MATCHMAKING_PENDING),
+	button1 = TEXT(CANCEL),
+	OnAccept = function()
+		CancelPendingLFG();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["ARENA_TEAM_INVITE"] = {
+	text = TEXT(ARENA_TEAM_INVITATION),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(DECLINE),
+	OnAccept = function()
+		AcceptArenaTeam();
+	end,
+	OnCancel = function()
+		DeclineArenaTeam();
+	end,
+	timeout = 60,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+
 StaticPopupDialogs["CAMP"] = {
 	text = TEXT(CAMP_TIMER),
 	button1 = TEXT(CANCEL),
@@ -603,7 +730,7 @@ StaticPopupDialogs["LOOT_BIND"] = {
 	button1 = TEXT(OKAY),
 	button2 = TEXT(CANCEL),
 	OnAccept = function(slot)
-		LootSlot(slot);
+		ConfirmLootSlot(slot);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -836,15 +963,15 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
-StaticPopupDialogs["ADD_GUILDMEMBER"] = {
-	text = TEXT(ADD_GUILDMEMBER_LABEL),
+StaticPopupDialogs["ADD_TEAMMEMBER"] = {
+	text = TEXT(ADD_TEAMMEMBER_LABEL),
 	button1 = TEXT(ACCEPT),
 	button2 = TEXT(CANCEL),
 	hasEditBox = 1,
 	maxLetters = 12,
 	OnAccept = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
-		GuildInviteByName(editBox:GetText());
+		ArenaTeamInviteByName(PVPTeamDetails.team, editBox:GetText());
 	end,
 	OnShow = function()
 		getglobal(this:GetName().."EditBox"):SetFocus();
@@ -857,7 +984,39 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	end,
 	EditBoxOnEnterPressed = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
-		GuildInviteByName(editBox:GetText());
+		ArenaTeamInviteByName(PVPTeamDetails.team, editBox:GetText());
+		this:GetParent():Hide();
+	end,
+	EditBoxOnEscapePressed = function()
+		this:GetParent():Hide();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["ADD_GUILDMEMBER"] = {
+	text = TEXT(ADD_GUILDMEMBER_LABEL),
+	button1 = TEXT(ACCEPT),
+	button2 = TEXT(CANCEL),
+	hasEditBox = 1,
+	maxLetters = 12,
+	OnAccept = function()
+		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+		GuildInvite(editBox:GetText());
+	end,
+	OnShow = function()
+		getglobal(this:GetName().."EditBox"):SetFocus();
+	end,
+	OnHide = function()
+		if ( ChatFrameEditBox:IsVisible() ) then
+			ChatFrameEditBox:SetFocus();
+		end
+		getglobal(this:GetName().."EditBox"):SetText("");
+	end,
+	EditBoxOnEnterPressed = function()
+		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+		GuildInvite(editBox:GetText());
 		this:GetParent():Hide();
 	end,
 	EditBoxOnEscapePressed = function()
@@ -876,7 +1035,7 @@ StaticPopupDialogs["ADD_RAIDMEMBER"] = {
 	maxLetters = 12,
 	OnAccept = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
-		InviteByName(editBox:GetText());
+		InviteUnit(editBox:GetText());
 	end,
 	OnShow = function()
 		getglobal(this:GetName().."EditBox"):SetFocus();
@@ -889,7 +1048,7 @@ StaticPopupDialogs["ADD_RAIDMEMBER"] = {
 	end,
 	EditBoxOnEnterPressed = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
-		InviteByName(editBox:GetText());
+		InviteUnit(editBox:GetText());
 		this:GetParent():Hide();
 	end,
 	EditBoxOnEscapePressed = function()
@@ -904,7 +1063,7 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	button1 = TEXT(YES),
 	button2 = TEXT(NO),
 	OnAccept = function()
-		GuildUninviteByName(GuildFrame.selectedName);
+		GuildUninvite(GuildFrame.selectedName);
 		GuildMemberDetailFrame:Hide();
 	end,
 	OnShow = function()

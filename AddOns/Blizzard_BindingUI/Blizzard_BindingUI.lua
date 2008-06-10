@@ -44,7 +44,7 @@ StaticPopupDialogs["CONFIRM_LOSE_BINDING_CHANGES"] = {
 };
 
 function KeyBindingFrame_OnLoad()
-	this:RegisterForClicks("MiddleButtonUp", "Button4Up", "Button5Up");
+	this:RegisterForClicks("AnyUp");
 	KeyBindingFrame.selected = nil;
 end
 

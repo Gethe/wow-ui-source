@@ -28,7 +28,7 @@ function PanelTemplates_UpdateTabs(frame)
 	end
 end
 
-function PanelTemplates_TabResize(padding, tab, absoluteSize, maxWidth)
+function PanelTemplates_TabResize(padding, tab, absoluteSize, maxWidth, absoluteTextSize)
 	local tabName;
 	if ( tab ) then
 		tabName = tab:GetName();
@@ -41,7 +41,12 @@ function PanelTemplates_TabResize(padding, tab, absoluteSize, maxWidth)
 	local sideWidths = 2 * getglobal(tabName.."Left"):GetWidth();
 	local tabText = getglobal(tab:GetName().."Text");
 	local width, tabWidth;
-	
+	local textWidth;
+	if ( absoluteTextSize ) then
+		textWidth = absoluteTextSize;
+	else
+		textWidth = tabText:GetWidth();
+	end
 	-- If there's an absolute size specified then use it
 	if ( absoluteSize ) then
 		if ( absoluteSize < sideWidths) then
@@ -55,9 +60,9 @@ function PanelTemplates_TabResize(padding, tab, absoluteSize, maxWidth)
 	else
 		-- Otherwise try to use padding
 		if ( padding ) then
-			width = tabText:GetWidth() + padding;
+			width = textWidth + padding;
 		else
-			width = tabText:GetWidth() + 24;
+			width = textWidth + 24;
 		end
 		-- If greater than the maxWidth then cap it
 		if ( maxWidth and width > maxWidth ) then

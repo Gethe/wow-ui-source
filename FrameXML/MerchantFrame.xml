@@ -52,13 +52,20 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						MerchantItemButton_OnClick(arg1);
+						if ( not IsModifierKeyDown() ) then
+							MerchantItemButton_OnClick(arg1);
+						end
 					</OnClick>
+					<PostClick>
+						if ( IsModifierKeyDown() ) then
+							MerchantItemButton_OnModifiedClick(arg1);
+						end
+					</PostClick>
 					<OnLoad>
 						MerchantItemButton_OnLoad();
 					</OnLoad>
 					<OnDragStart>
-						MerchantItemButton_OnClick("LeftButton", 1);
+						MerchantItemButton_OnClick("LeftButton");
 					</OnDragStart>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
@@ -110,6 +117,15 @@
 						MoneyFrame_SetType("STATIC");
 					</OnLoad>
 				</Scripts>
+			</Frame>
+			<Frame name="$parentAltCurrencyFrame" inherits="SmallAlterateCurrencyFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="2" y="31"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
 			</Frame>
 		</Frames>
 	</Frame>

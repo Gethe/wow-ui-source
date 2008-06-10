@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 11200
+## Interface: 20000
 GlobalStrings.lua
 Fonts.xml
 Localization.xml
@@ -15,6 +15,7 @@ UIMenu.xml
 UIDropDownMenu.xml
 UIPanelTemplates.lua
 UIPanelTemplates.xml
+SecureTemplates.xml
 GameMenuFrame.xml
 OptionsFrame.xml
 SoundOptionsFrame.xml
@@ -27,18 +28,19 @@ StackSplitFrame.xml
 FadingFrame.xml
 ZoneText.xml
 BattlefieldFrame.xml
-Minimap.xml
-GameTime.xml
 TextStatusBar.lua
 TextStatusBar.xml
 MainMenuBar.xml
 MainMenuBarMicroButtons.xml
+Minimap.xml
+GameTime.xml
 Cooldown.xml
 ActionButtonTemplate.xml
 ActionBarFrame.xml
 MultiActionBars.xml
 BuffFrame.xml
 CombatFeedback.xml
+CastingBarFrame.xml
 UnitPopup.xml
 UnitFrame.xml
 PlayerFrame.xml
@@ -66,7 +68,6 @@ ContainerFrame.xml
 LootFrame.xml
 ItemTextFrame.xml
 TaxiFrame.xml
-CastingBarFrame.xml
 BankFrame.xml
 FriendsFrame.xml
 RaidFrame.xml
@@ -81,6 +82,7 @@ TutorialFrame.xml
 GuildRegistrarFrame.xml
 PetitionFrame.xml
 HelpFrame.xml
+KnowledgeBaseFrame.xml
 ColorPickerFrame.xml
 GossipFrame.xml
 MailFrame.xml
@@ -90,3 +92,7 @@ WorldStateFrame.xml
 DressUpFrame.xml
 RaidWarning.xml
 ClassTrainerFrameTemplates.xml
+PVPFrame.xml
+ArenaFrame.xml
+ArenaRegistrarFrame.xml
+LFGFrame.xml

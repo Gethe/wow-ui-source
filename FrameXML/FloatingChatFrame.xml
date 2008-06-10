@@ -697,8 +697,6 @@
 			<OnLoad>
 				ChatFrame_OnLoad();
 				SELECTED_DOCK_FRAME = ChatFrame1;
-				this:RegisterEvent("EXECUTE_CHAT_LINE");
-				this:RegisterEvent("CVAR_UPDATE");
 				this:RegisterEvent("UPDATE_CHAT_WINDOWS");
 				--ChatFrame_DisplayStartupText(this);
 			</OnLoad>

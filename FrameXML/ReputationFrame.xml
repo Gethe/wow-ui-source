@@ -815,7 +815,14 @@
 									PlaySound("igMainMenuOptionCheckBoxOff");
 									SetFactionActive(GetSelectedFaction());
 								end
-							</OnClick>	
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(REPUTATION_MOVE_TO_INACTIVE, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="ReputationDetailMainScreenCheckBox" inherits="OptionsCheckButtonTemplate">
@@ -845,7 +852,14 @@
 									SetWatchedFactionIndex(0);
 								end
 								ReputationWatchBar_Update();
-							</OnClick>	
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(REPUTATION_SHOW_AS_XP, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
 						</Scripts>
 					</CheckButton>
 				</Frames>
@@ -1005,7 +1019,7 @@
 					ReputationWatchBar_Update();
 				elseif( event == "PLAYER_LEVEL_UP" ) then
 					ReputationWatchBar_Update(arg1);
-				elseif( event == "CVAR_UPDATE" and arg1 == "statusBarText" ) then
+				elseif( event == "CVAR_UPDATE" and arg1 == "STATUS_BAR_TEXT" ) then
 					if( arg2 == "1" ) then
 						ShowWatchedReputationBarText("lock");
 					else

@@ -247,7 +247,7 @@ function HelpFrame_SetupGeneralFrame(key)
 	local bulletIndex = 1;
 	local bullet;
 	if ( info.bullets1 ) then
-		for index, value in  info.bullets1 do
+		for index, value in pairs(info.bullets1) do
 			bullet = getglobal("HelpFrameGeneralBullet"..bulletIndex);
 			if ( bullet ) then
 				getglobal("HelpFrameGeneralBullet"..bulletIndex.."Text"):SetText(value);
@@ -269,7 +269,7 @@ function HelpFrame_SetupGeneralFrame(key)
 		HelpFrameBulletTitle2:Hide();
 	end
 	if ( info.bullets2 ) then
-		for index, value in  info.bullets2 do
+		for index, value in pairs(info.bullets2) do
 			bullet = getglobal("HelpFrameGeneralBullet"..bulletIndex);
 			if ( bullet ) then
 				getglobal("HelpFrameGeneralBullet"..bulletIndex.."Text"):SetText(value);
@@ -366,12 +366,10 @@ end
 function HelpFrameOpenTicketDropDown_Initialize()
 	local index = 1;
 	local ticketType = getglobal("TICKET_TYPE"..index);
-	local info;
+	local info = UIDropDownMenu_CreateInfo();
 	while (ticketType) do
-		info = {};
 		info.text = ticketType;
 		info.func = HelpFrameOpenTicketDropDown_OnClick;
-		info.checked = checked;
 		UIDropDownMenu_AddButton(info);
 		index = index + 1;
 		ticketType = getglobal("TICKET_TYPE"..index);
@@ -519,10 +517,10 @@ function HelpFrameGM_UpdateCategories(...)
 		index = 2 * (offset + i) - 1;
 		button = getglobal("HelpFrameButton"..categoryCount);
 		text = getglobal("HelpFrameButton"..categoryCount.."Text");
-		if ( index <= arg.n  ) then
-			text:SetText(arg[index+1]);
-			button.key = arg[index];
-			button.ticketType = arg[index];
+		if ( index <= select("#", ...)  ) then
+			text:SetText(select(index+1, ...));
+			button.key = select(index, ...);
+			button.ticketType = select(index, ...);
 			button:Show();
 		else
 			button:Hide();
@@ -530,7 +528,7 @@ function HelpFrameGM_UpdateCategories(...)
 		categoryCount = categoryCount + 1;
 	end
 
-	FauxScrollFrame_Update(HelpFrameGMScrollFrame, arg.n/2, NUM_GM_CATEGORIES_TO_DISPLAY, 37);
+	FauxScrollFrame_Update(HelpFrameGMScrollFrame, select("#", ...)/2, NUM_GM_CATEGORIES_TO_DISPLAY, 37);
 end
 
 function HelpFrameGeneralButton_OnClick()
@@ -545,7 +543,7 @@ end
 -- This only gets called if the UI is up for the ticket
 function TicketStatus_OnUpdate(elapsed)
 	if ( HelpFrameOpenTicket.hasTicket ) then
-		if( refreshTime ) then
+		if ( refreshTime ) then
 			refreshTime = refreshTime - elapsed;
 
 			if ( refreshTime <= 0 ) then

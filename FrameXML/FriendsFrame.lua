@@ -23,7 +23,7 @@ WHOFRAME_DROPDOWN_LIST = {
 
 FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "IgnoreListFrame", "WhoFrame", "GuildFrame", "RaidFrame" };
 function FriendsFrame_ShowSubFrame(frameName)
-	for index, value in FRIENDSFRAME_SUBFRAMES do
+	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
 		if ( value == frameName ) then
 			getglobal(value):Show()
 		else
@@ -93,9 +93,9 @@ function FriendsFrame_Update()
 			FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
 			FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-IgnoreFrame-BotLeft");
 			FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-IgnoreFrame-BotRight");
-			IgnoreList_Update();
 			FriendsFrameTitleText:SetText(IGNORE_LIST);
 			FriendsFrame_ShowSubFrame("IgnoreListFrame");
+			IgnoreList_Update();
 		end
 	elseif ( FriendsFrame.selectedTab == 2 ) then
 		FriendsFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
@@ -103,18 +103,21 @@ function FriendsFrame_Update()
 		FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotLeft");
 		FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotRight");
 		FriendsFrameTitleText:SetText(WHO_LIST);
-		WhoList_Update();
 		FriendsFrame_ShowSubFrame("WhoFrame");
+		WhoList_Update();
 	elseif ( FriendsFrame.selectedTab == 3 ) then
 		FriendsFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
 		FriendsFrameTopRight:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight");
 		FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\GuildFrame-BotLeft");
 		FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\GuildFrame-BotRight");
-		local guildName;
-		guildName = GetGuildInfo("player");
-		FriendsFrameTitleText:SetText(guildName);
-		FriendsFrame_ShowSubFrame("GuildFrame");
+		local guildName, title, rank = GetGuildInfo("player");
+		if ( guildName ) then
+			FriendsFrameTitleText:SetText(format(TEXT(GUILD_TITLE_TEMPLATE), title, guildName));
+		else 
+			FriendsFrameTitleText:SetText("");
+		end
 		GuildStatus_Update();
+		FriendsFrame_ShowSubFrame("GuildFrame");
 	elseif ( FriendsFrame.selectedTab == 4 ) then
 		FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
 		FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
@@ -134,7 +137,7 @@ function FriendsFrame_OnHide()
 	GuildMemberDetailFrame:Hide();
 	GuildInfoFrame:Hide();
 	RaidInfoFrame:Hide();
-	for index, value in FRIENDSFRAME_SUBFRAMES do
+	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
 		getglobal(value):Hide();
 	end
 end
@@ -611,11 +614,11 @@ function WhoFrameColumn_SetWidth(width, frame)
 end
 
 function WhoFrameDropDown_Initialize()
-	local info;
+	local info = UIDropDownMenu_CreateInfo();
 	for i=1, getn(WHOFRAME_DROPDOWN_LIST), 1 do
-		info = {};
 		info.text = WHOFRAME_DROPDOWN_LIST[i].name;
 		info.func = WhoFrameDropDownButton_OnClick;
+		info.checked = checked;
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -735,7 +738,7 @@ end
 
 function FriendsFrame_GroupInvite()
 	local name = GetFriendInfo(FriendsFrame.selectedFriend);
-	InviteByName(name);
+	InviteUnit(name);
 end
 
 function ToggleFriendsFrame(tab)
@@ -845,15 +848,14 @@ end
 
 function GuildControlPopupFrameDropDown_OnLoad()
 	UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
-	UIDropDownMenu_SetWidth(110);
+	UIDropDownMenu_SetWidth(160);
 	UIDropDownMenu_SetButtonWidth(54);
 	UIDropDownMenu_JustifyText("LEFT", GuildControlPopupFrameDropDown);
 end
 
 function GuildControlPopupFrameDropDown_Initialize()
-	local info;
+	local info = UIDropDownMenu_CreateInfo();
 	for i=1, GuildControlGetNumRanks(), 1 do
-		info = {};
 		info.text = GuildControlGetRankName(i);
 		info.func = GuildControlPopupFrameDropDownButton_OnClick;
 		info.checked = checked;
@@ -873,10 +875,10 @@ end
 
 function GuildControlCheckboxUpdate(...)
 	local checkbox;
-	for i=1, arg.n, 1 do
+	for i=1, select("#", ...), 1 do
 		checkbox = getglobal("GuildControlPopupFrameCheckbox"..i)
 		if ( checkbox ) then
-			checkbox:SetChecked(arg[i]);
+			checkbox:SetChecked(select(i, ...));
 		else
 			message("GuildControlPopupFrameCheckbox"..i.." does not exist!");
 		end

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PetActionBarFrame.lua"/>
-	<Button name="PetActionButtonTemplate" inherits="ActionButtonTemplate" frameStrata="DIALOG" virtual="true">
+	<CheckButton name="PetActionButtonTemplate" inherits="SecureFrameTemplate, ActionButtonTemplate" frameStrata="DIALOG" virtual="true">
 		<Size>
 			<AbsDimension x="30" y="30"/>
 		</Size>
@@ -38,9 +38,19 @@
 			<OnEvent>
 				PetActionButton_OnEvent();
 			</OnEvent>
+			<PreClick>
+				this:SetChecked(0);
+			</PreClick>
 			<OnClick>
-				PetActionButton_OnClick(arg1);
+				if ( not IsModifierKeyDown() ) then
+					PetActionButton_OnClick(arg1);
+				end
 			</OnClick>
+			<PostClick>
+				if ( IsModifierKeyDown() ) then
+					PetActionButton_OnModifiedClick(arg1);
+				end
+			</PostClick>
 			<OnDragStart>
 				PetActionButton_OnDragStart();
 			</OnDragStart>
@@ -66,7 +76,7 @@
 				</Anchor>
 			</Anchors>
 		</NormalTexture>
-	</Button>
+	</CheckButton>
 	<Frame name="PetActionBarFrame" parent="MainMenuBar" enableMouse="true" frameStrata="LOW" hidden="true">
 		<Size>
 			<AbsDimension x="509" y="43"/>

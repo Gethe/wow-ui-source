@@ -83,9 +83,6 @@
 				</Anchors>
 				<Frames>
 					<Frame name="BasicOptionsGeneral" inherits="OptionFrameBoxTemplate">
-						<Size>
-							<AbsDimension x="10" y="150"/>
-						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -110,19 +107,27 @@
 							</Slider>
 							<CheckButton name="UIOptionsFrameCheckButton1" inherits="UIOptionsCheckButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameSlider1" relativePoint="TOPRIGHT">
+									<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameSlider1" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="40" y="5"/>
+											<AbsDimension x="2" y="-18"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 							</CheckButton>
-
+							<CheckButton name="UIOptionsFrameCheckButton14" inherits="UIOptionsCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton1" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
 							<CheckButton name="UIOptionsFrameCheckButton6" inherits="UIOptionsCheckButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameSlider1" relativePoint="BOTTOMLEFT">
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 										<Offset>
-											<AbsDimension x="2" y="-18"/>
+											<AbsDimension x="215" y="-8"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -151,7 +156,7 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
-							<CheckButton name="UIOptionsFrameCheckButton16" inherits="UIOptionsCheckButtonTemplate">
+							<CheckButton name="UIOptionsFrameCheckButton72" inherits="UIOptionsCheckButtonTemplate">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton3" relativePoint="BOTTOM">
 										<Offset>
@@ -160,7 +165,25 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
-							<CheckButton name="UIOptionsFrameCheckButton14" inherits="UIOptionsCheckButtonTemplate">
+							<CheckButton name="UIOptionsFrameCheckButton16" inherits="UIOptionsCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton72" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="UIOptionsFrameCheckButton61" inherits="UIOptionsCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOP">
+										<Offset>
+											<AbsDimension x="95" y="-8"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="UIOptionsFrameCheckButton73" inherits="UIOptionsCheckButtonTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 										<Offset>
@@ -168,21 +191,18 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
-							</CheckButton>
-							<CheckButton name="UIOptionsFrameCheckButton61" inherits="UIOptionsCheckButtonTemplate">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton14" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlayClickSound();
+										UIOptionsFrame_UpdateDependencies();
+									</OnClick>
+								</Scripts>
 							</CheckButton>
 							<Frame name="UIOptionsFrameClickCameraDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCheckButton6">
+									<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCheckButton6" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="153" y="0"/>
+											<AbsDimension x="-13" y="-15"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -212,6 +232,84 @@
 									</OnLeave>
 								</Scripts>
 							</Frame>
+							<Frame name="UIOptionsFrameAutoSelfCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCheckButton61" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="-13" y="-30"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="AUTO_SELF_CAST_KEY_TEXT">
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+													<Offset>
+														<AbsDimension x="16" y="3"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										this:RegisterEvent("VARIABLES_LOADED");
+									</OnLoad>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+										GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+									</OnEnter>
+									<OnEvent>
+										if ( event == "VARIABLES_LOADED" ) then
+											UIOptionsFrameAutoSelfCastKeyDropDown_OnLoad();
+										end
+									</OnEvent>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Frame>
+							<Frame name="UIOptionsFrameAutoLootKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCheckButton73" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="-13" y="-30"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="AUTO_LOOT_KEY_TEXT">
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+													<Offset>
+														<AbsDimension x="16" y="3"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										this:RegisterEvent("VARIABLES_LOADED");
+									</OnLoad>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+										GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+									</OnEnter>
+									<OnEvent>
+										if ( event == "VARIABLES_LOADED" ) then
+											UIOptionsFrameAutoLootKeyDropDown_OnLoad();
+										end
+									</OnEvent>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Frame>
 						</Frames>
 						<Scripts>
 							<OnLoad>
@@ -223,7 +321,7 @@
 					</Frame>
 					<Frame name="BasicOptionsDisplay" inherits="OptionFrameBoxTemplate">
 						<Size>
-							<AbsDimension x="10" y="155"/>
+							<AbsDimension x="10" y="195"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="BasicOptionsGeneral">
@@ -351,6 +449,41 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
+							<!-- For Locale -->
+							<Frame name="UIOptionsFrameLocaleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton23" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="34" y="-18"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="LOCALE_INFORMATION">
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+													<Offset>
+														<AbsDimension x="16" y="3"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										UIOptionsFrameLocaleDropDown_OnLoad();
+									</OnLoad>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+										GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Frame>
 							<CheckButton name="UIOptionsFrameCheckButton20" inherits="UIOptionsCheckButtonTemplate">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton31" relativePoint="BOTTOM">
@@ -407,6 +540,24 @@
 							<CheckButton name="UIOptionsFrameCheckButton5" inherits="UIOptionsCheckButtonTemplate">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton66" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="UIOptionsFrameCheckButton70" inherits="UIOptionsCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton43" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="UIOptionsFrameCheckButton71" inherits="UIOptionsCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton70" relativePoint="BOTTOM">
 										<Offset>
 											<AbsDimension x="0" y="0"/>
 										</Offset>
@@ -585,6 +736,8 @@
 										ResetTutorials();
 										TutorialFrame_HideAllAlerts();
 										TutorialFrameCheckButton:SetChecked(1);
+										--Check the show tutorials option
+										UIOptionsFrameCheckButton28:SetChecked(1);
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -1183,13 +1336,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("gsTitleOptionExit");
-						HideUIPanel(UIOptionsFrame);
-						UIOptionsFrameMultiBar_Reset();
-						MultiActionBar_Update();
-						ALWAYS_SHOW_MULTIBARS = STATE_AlwaysShowMultiBars;
-						MultiActionBar_UpdateGridVisibility();
-						UIParent_ManageFramePositions();
+						UIOptionsFrameCancel_OnClick();
 					</OnClick>
 				</Scripts>
 			</Button>

@@ -250,19 +250,20 @@ function PetActionButton_OnEvent()
 end
 
 function PetActionButton_OnClick(button)
-	this:SetChecked(0);
+	if ( button == "LeftButton" ) then
+		if ( IsPetAttackActive(this:GetID()) ) then
+			PetStopAttack();
+		else
+			CastPetAction(this:GetID());
+		end
+	else
+		TogglePetAutocast(this:GetID());
+	end
+end
+
+function PetActionButton_OnModifiedClick(button)
 	if ( IsShiftKeyDown() ) then
 		PickupPetAction(this:GetID());
-	else
-		if ( button == "LeftButton" ) then
-			if ( IsPetAttackActive(this:GetID()) ) then
-				PetStopAttack();
-			else
-				CastPetAction(this:GetID());
-			end
-		else
-			TogglePetAutocast(this:GetID());
-		end
 	end
 end
 

@@ -72,13 +72,11 @@ function PetPaperDollFrame_Update()
 	PetExpBar_Update();
 	PetPaperDollFrame_SetResistances();
 	PetPaperDollFrame_SetStats();
-	PaperDollFrame_SetDamage("pet", "Pet");
-	PaperDollFrame_SetRangedDamage("pet", "Pet");
-	PaperDollFrame_SetAttackPower("pet", "Pet");
-	PaperDollFrame_SetRangedAttackPower("pet", "Pet");
-	PaperDollFrame_SetArmor("pet", "Pet");
-	PaperDollFrame_SetAttackBothHands("pet", "Pet");
-	PaperDollFrame_SetDefense("pet", "Pet");
+	PaperDollFrame_SetDamage(PetDamageFrame, "Pet");
+	PaperDollFrame_SetArmor(PetArmorFrame, "Pet");
+	PaperDollFrame_SetAttackBothHands(PetAttackFrame, "Pet");
+	PaperDollFrame_SetAttackPower(PetAttackPowerFrame, "Pet");
+	PaperDollFrame_SetDefense(PetDefenseFrame, "Pet");
 
 	if ( canGainXP ) then
 		PetPaperDollPetInfo:Show();
@@ -145,10 +143,10 @@ function PetPaperDollFrame_SetStats()
 		local effectiveStat;
 		local posBuff;
 		local negBuff;
-		label:SetText(TEXT(getglobal("SPELL_STAT"..(i-1).."_NAME"))..":");
+		label:SetText(TEXT(getglobal("SPELL_STAT"..i.."_NAME"))..":");
 		stat, effectiveStat, posBuff, negBuff = UnitStat("pet", i);
 		-- Set the tooltip text
-		local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..getglobal("SPELL_STAT"..(i-1).."_NAME").." ";
+		local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..getglobal("SPELL_STAT"..i.."_NAME").." ";
 
 		if ( ( posBuff == 0 ) and ( negBuff == 0 ) ) then
 			text:SetText(effectiveStat);

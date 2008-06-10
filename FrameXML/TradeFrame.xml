@@ -94,9 +94,7 @@
 						if ( IsControlKeyDown() ) then
 							DressUpItemLink(GetTradeTargetItemLink(this:GetParent():GetID()));
 						elseif ( IsShiftKeyDown() ) then
-							if ( ChatFrameEditBox:IsVisible() ) then
-								ChatFrameEditBox:Insert(GetTradeTargetItemLink(this:GetParent():GetID()));
-							end
+							ChatEdit_InsertLink(GetTradeTargetItemLink(this:GetParent():GetID()));
 						else
 							ClickTargetTradeButton(this:GetParent():GetID());
 						end
@@ -128,9 +126,7 @@
 						if ( IsControlKeyDown() ) then
 							DressUpItemLink(GetTradePlayerItemLink(this:GetParent():GetID()));
 						elseif ( IsShiftKeyDown() ) then
-							if ( ChatFrameEditBox:IsVisible() ) then
-								ChatFrameEditBox:Insert(GetTradePlayerItemLink(this:GetParent():GetID()));
-							end
+							ChatEdit_InsertLink(GetTradePlayerItemLink(this:GetParent():GetID()));
 						else
 							ClickTradeButton(this:GetParent():GetID());
 						end

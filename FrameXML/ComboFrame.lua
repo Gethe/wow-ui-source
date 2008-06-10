@@ -14,13 +14,13 @@ function ComboPointsFrame_OnEvent()
 			UIFrameFadeIn(ComboFrame, COMBOFRAME_FADE_IN);
 		end
 		
+		local fadeInfo = {};
 		for i=1, MAX_COMBO_POINTS do
 			comboPointHighlight = getglobal("ComboPoint"..i.."Highlight");
 			comboPointShine = getglobal("ComboPoint"..i.."Shine");
 			if ( i <= comboPoints ) then
 				if ( i > COMBO_FRAME_LAST_NUM_POINTS ) then
 					-- Fade in the highlight and set a function that triggers when it is done fading
-					fadeInfo = {};
 					fadeInfo.mode = "IN";
 					fadeInfo.timeToFade = COMBOFRAME_HIGHLIGHT_FADE_IN;
 					fadeInfo.finishedFunc = ComboPointShineFadeIn;

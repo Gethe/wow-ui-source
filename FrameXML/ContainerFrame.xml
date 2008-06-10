@@ -14,13 +14,15 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
-				--KeyRing special case code
-				if ( this:GetParent():GetID() == KEYRING_CONTAINER ) then
-					KeyRingItemButton_OnClick(arg1);
-					return;
+				if ( not IsModifierKeyDown() or IsShiftKeyDown() or IsAutoLootKeyDown() ) then
+					ContainerFrameItemButton_OnClick(arg1);
 				end
-				ContainerFrameItemButton_OnClick(arg1);
 			</OnClick>
+			<PostClick>
+				if ( IsModifierKeyDown() ) then
+					ContainerFrameItemButton_OnModifiedClick(arg1);
+				end
+			</PostClick>
 			<OnLoad>
 				ContainerFrameItemButton_OnLoad();
 			</OnLoad>
@@ -38,24 +40,19 @@
 				end
 			</OnHide>
 			<OnDragStart>
-				--KeyRing special case code
-				if ( this:GetParent():GetID() == KEYRING_CONTAINER ) then
-					KeyRingItemButton_OnClick("LeftButton", 1);
-					return;
-				end
-				ContainerFrameItemButton_OnClick("LeftButton", 1);
+				ContainerFrameItemButton_OnClick("LeftButton");
 			</OnDragStart>
 			<OnReceiveDrag>
-				--KeyRing special case code
-				if ( this:GetParent():GetID() == KEYRING_CONTAINER ) then
-					KeyRingItemButton_OnClick("LeftButton", 1);
-					return;
-				end
-				ContainerFrameItemButton_OnClick("LeftButton", 1);
+				ContainerFrameItemButton_OnClick("LeftButton");
 			</OnReceiveDrag>
 			<OnUpdate>
 				ContainerFrameItemButton_OnUpdate(arg1);
 			</OnUpdate>
+			<OnEvent>
+				if ( GameTooltip:IsOwned(this) ) then
+					ContainerFrameItemButton_OnEnter();
+				end
+			</OnEvent>
 		</Scripts>
 	</Button>
 	<Frame name="ContainerFrameTemplate" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
@@ -256,4 +253,5 @@
 	<Frame name="ContainerFrame10" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 	<Frame name="ContainerFrame11" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 	<Frame name="ContainerFrame12" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 </Ui>

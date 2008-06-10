@@ -1,15 +1,14 @@
 QUESTS_DISPLAYED = 6;
-MAX_QUESTS = 20;
+MAX_QUESTS = 25;
 MAX_OBJECTIVES = 10;
 QUESTLOG_QUEST_HEIGHT = 16;
 UPDATE_DELAY = 0.1;
-MAX_QUESTLOG_QUESTS = 20;
+MAX_QUESTLOG_QUESTS = 25;
 MAX_QUESTWATCH_LINES = 30;
 MAX_WATCHABLE_QUESTS = 5;
 MAX_NUM_PARTY_MEMBERS = 4;
-MAX_QUEST_WATCH_TIMER = 300;
+MAX_QUEST_WATCH_TIME = 300;
 QUEST_WATCH_NO_EXPIRE = -1;
-QUEST_WATCH_LIST = { };
 
 QuestDifficultyColor = { };
 QuestDifficultyColor["impossible"] = { r = 1.00, g = 0.10, b = 0.10 };
@@ -61,12 +60,11 @@ function QuestLog_OnEvent(event)
 		if ( QuestLogFrame:IsVisible() ) then
 			QuestLog_UpdateQuestDetails(1);
 		end
-		if ( AUTO_QUEST_WATCH == "1" ) then
-			AutoQuestWatch_CheckDeleted();
-		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
 		if ( AUTO_QUEST_WATCH == "1" ) then
-			AutoQuestWatch_Update(arg1);
+			AddQuestWatch(arg1,MAX_QUEST_WATCH_TIME);
+			QuestLog_Update();
+			QuestWatch_Update();
 		end
 	else
 		QuestLog_Update();
@@ -225,7 +223,7 @@ function QuestLog_Update()
 				questCheck:Hide();
 				if ( IsQuestWatched(questIndex) ) then
 					if ( questNormalText:GetWidth() + 24 < 275 ) then
-						questCheck:SetPoint("LEFT", questLogTitle, "LEFT", QuestLogDummyText:GetWidth()+24, 0);
+						questCheck:SetPoint("LEFT", questNormalText, "LEFT", questNormalText:GetWidth()+24, 0);
 					else
 						questCheck:SetPoint("LEFT", questNormalText, "LEFT", questNormalText:GetWidth(), 0);
 					end
@@ -476,12 +474,10 @@ function QuestLogTitleButton_OnClick(button)
 		end
 		-- Otherwise try to track it or put it into chat
 		if ( ChatFrameEditBox:IsVisible() ) then
-			-- Trim leading whitespace
-			ChatFrameEditBox:Insert(gsub(this:GetText(), " *(.*)", "%1"));
+			ChatFrameEditBox:Insert(strtrim(this:GetText()));
 		else
 			-- Shift-click toggles quest-watch on this quest.
 			if ( IsQuestWatched(questIndex) ) then
-				tremove(QUEST_WATCH_LIST, questIndex);
 				RemoveQuestWatch(questIndex);
 				QuestWatch_Update();
 			else
@@ -495,7 +491,8 @@ function QuestLogTitleButton_OnClick(button)
 					UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
 					return;
 				end
-				AutoQuestWatch_Insert(questIndex, QUEST_WATCH_NO_EXPIRE);
+				AddQuestWatch(questIndex);
+				QuestLog_Update();
 				QuestWatch_Update();
 			end
 		end
@@ -544,9 +541,9 @@ function QuestLogRewardItem_OnClick()
 		if ( this.rewardType ~= "spell" ) then
 			DressUpItemLink(GetQuestLogItemLink(this.type, this:GetID()));
 		end
-	elseif ( IsShiftKeyDown() and this.rewardType ~= "spell" ) then
-		if ( ChatFrameEditBox:IsVisible() ) then
-			ChatFrameEditBox:Insert(GetQuestLogItemLink(this.type, this:GetID()));
+	elseif ( IsShiftKeyDown() ) then
+		if ( this.rewardType ~= "spell" ) then
+			ChatEdit_InsertLink(GetQuestLogItemLink(this.type, this:GetID()));
 		end
 	end
 end
@@ -699,89 +696,4 @@ function GetQuestLogIndexByName(name)
 	return nil;
 end
 
-function AutoQuestWatch_Insert(questIndex, watchTimer)
-
-	if ( IsQuestWatched(questIndex) and watchTimer == QUEST_WATCH_NO_EXPIRE ) then
-		return;
-	end	
-	
-	local lowestTimer = MAX_QUEST_WATCH_TIMER;
-	local lowestIndex;
-	for index, value in QUEST_WATCH_LIST do
-		if ( ( value.timer <= lowestTimer ) and ( value.timer ~= QUEST_WATCH_NO_EXPIRE ) ) then
-			lowestTimer = value.timer;
-			lowestIndex = value.index;
-		end
-	end
-
-	local watch = {};
-
-	watch.index = questIndex;
-	watch.timer = watchTimer;
-
-	if ( getn(QUEST_WATCH_LIST) < MAX_WATCHABLE_QUESTS ) then
-		tinsert(QUEST_WATCH_LIST, watch);
-		AddQuestWatch(questIndex);
-	else
-		if ( lowestIndex ) then
-			tremove(QUEST_WATCH_LIST, lowestIndex);
-			RemoveQuestWatch(lowestIndex);
-			tinsert(QUEST_WATCH_LIST, watch);
-			AddQuestWatch(questIndex);
-		end
-	end
-end
-function AutoQuestWatch_CheckDeleted()
-	local questLogIndex, questLogTitleText, questWatchTitleText, isInQuestLog;
-	local numEntries = GetNumQuestLogEntries();
-	for index, value in QUEST_WATCH_LIST do
-		isInQuestLog = nil;
-		questWatchTitleText = GetQuestLogTitle(value.index);
-		for i=1, numEntries do
-			questLogTitleText = GetQuestLogTitle(i);
-			if ( questWatchTitleText == questLogTitleText ) then
-				isInQuestLog = 1;
-			end
-		end
-		if ( not isInQuestLog ) then
-			tremove(QUEST_WATCH_LIST, index);
-		end
-	end
-end
-
-function AutoQuestWatch_Update(questIndex)
-	-- Check the array for an existing matching entry.  Remove if matched, then add the quest to the watch list.
-	for index, value in QUEST_WATCH_LIST do		
-		if ( value.index == questIndex and value.timer == QUEST_WATCH_NO_EXPIRE ) then
-			return;
-		elseif ( not value.index and QuestIsWatched(questIndex) ) then
-			value.index = questIndex;
-			value.timer = QUEST_WATCH_NO_EXPIRE;
-			tinsert(QUEST_WATCH_LIST, value)
-		elseif ( value.index == questIndex and ( value.timer ~= QUEST_WATCH_NO_EXPIRE ) ) then
-			tremove(QUEST_WATCH_LIST, index);
-			value.index = questIndex;
-			value.timer = MAX_QUEST_WATCH_TIMER;
-			tinsert(QUEST_WATCH_LIST, value);
-			return;
-		end
-	end
-	AutoQuestWatch_Insert(questIndex, MAX_QUEST_WATCH_TIMER);
-end
-
-
-
-function AutoQuestWatch_OnUpdate(elapsed)
-	for index, value in QUEST_WATCH_LIST do
-		if ( value.timer ~= QUEST_WATCH_NO_EXPIRE ) then
-			value.timer = value.timer - elapsed;	
-			if ( value.timer < 0 ) then
-				RemoveQuestWatch(value.index);
-				tremove(QUEST_WATCH_LIST, index);
-				QuestWatch_Update();
-				QuestLog_Update();
-			end
-		end
-	end
-end
 

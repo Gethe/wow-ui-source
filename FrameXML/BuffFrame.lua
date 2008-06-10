@@ -21,7 +21,7 @@ function BuffFrame_OnLoad()
 	BUFF_ALPHA_VALUE = 1;
 
 	for i=1, 24 do
-		getglobal("BuffButton"..(i-1).."Duration"):SetPoint("TOP", "BuffButton"..(i-1), "BOTTOM", 0, 0);
+		getglobal("BuffButton"..i.."Duration"):SetPoint("TOP", "BuffButton"..i, "BOTTOM", 0, 0);
 	end
 end
 
@@ -61,7 +61,7 @@ function BuffButton_Update()
 	this.untilCancelled = untilCancelled;
 	local buffDuration = getglobal(this:GetName().."Duration");
 
-	if ( buffIndex < 0 ) then
+	if ( buffIndex == 0 ) then
 		this:Hide();
 		buffDuration:Hide();
 		return;
@@ -151,11 +151,11 @@ end
 
 function BuffButtons_UpdatePositions()
 	if ( SHOW_BUFF_DURATIONS == "1" ) then
-		BuffButton8:SetPoint("TOP", "TempEnchant1", "BOTTOM", 0, -15);
-		BuffButton16:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPRIGHT", 0, -90);
+		BuffButton9:SetPoint("TOP", "TempEnchant1", "BOTTOM", 0, -15);
+		BuffButton17:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPRIGHT", 0, -90);
 	else
-		BuffButton8:SetPoint("TOP", "TempEnchant1", "BOTTOM", 0, -5);
-		BuffButton16:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPRIGHT", 0, -70);
+		BuffButton9:SetPoint("TOP", "TempEnchant1", "BOTTOM", 0, -5);
+		BuffButton17:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPRIGHT", 0, -70);
 	end
 end
 
@@ -232,6 +232,10 @@ function BuffFrame_Enchant_OnUpdate(elapsed)
 	BuffFrame:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPLEFT", -5, 0);
 end
 
+function BuffFrame_EnchantButton_OnLoad()
+	this:RegisterForClicks("RightButtonUp");
+end
+
 function BuffFrame_EnchantButton_OnUpdate()
 	-- Update duration
 	if ( GameTooltip:IsOwned(this) ) then
@@ -242,6 +246,14 @@ end
 function BuffFrame_EnchantButton_OnEnter()
 	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
 	GameTooltip:SetInventoryItem("player", this:GetID());
+end
+
+function BuffFrame_EnchantButton_OnClick()
+	if ( this:GetID() == 16 ) then
+		CancelItemTempEnchantment(1);
+	elseif ( this:GetID() == 17 ) then
+		CancelItemTempEnchantment(2);
+	end;
 end
 
 function BuffFrame_UpdateDuration(buffButton, timeLeft)
@@ -261,7 +273,7 @@ end
 
 function RefreshBuffs(button, showBuffs, unit)
 	button = button:GetName();
-	local debuff,  debuffType, debuffStack, debuffColor, unitStatus, statusColor;
+	local name, rank, icon, debuffType, debuffStack, debuffColor, unitStatus, statusColor;
 	local debuffTotal = 0;
 	this.hasDispellable = nil;
 
@@ -273,19 +285,22 @@ function RefreshBuffs(button, showBuffs, unit)
 		if ( unit == "party"..i ) then
 			unitStatus = getglobal(button.."Status");
 		end
+		-- Show all buffs and debuffs
 		if ( showBuffs == 1 ) then
-			debuff = UnitBuff(unit, i, SHOW_CASTABLE_BUFFS);
+			name, rank, icon = UnitBuff(unit, i, SHOW_CASTABLE_BUFFS);
 			debuffBorder:Show();
+		-- Show all debuffs
 		elseif ( showBuffs == 0 ) then
-			debuff, debuffStack, debuffType = UnitDebuff(unit, i);
+			name, rank, icon, debuffStack, debuffType = UnitDebuff(unit, i);
 			debuffBorder:Show();
+		-- Show dispellable debuffs (value nil or anything ~= 0 or 1)
 		else
-			debuff, debuffStack, debuffType = UnitDebuff(unit, i, SHOW_DISPELLABLE_DEBUFFS);
+			name, rank, icon, debuffStack, debuffType = UnitDebuff(unit, i, SHOW_DISPELLABLE_DEBUFFS);
 			debuffBorder:Show();
 		end
 		
-		if ( debuff ) then
-			debuffIcon:SetTexture(debuff);
+		if ( icon ) then
+			debuffIcon:SetTexture(icon);
 			if ( debuffType ) then
 				debuffColor = DebuffTypeColor[debuffType];
 				statusColor = DebuffTypeColor[debuffType];
@@ -309,6 +324,4 @@ function RefreshBuffs(button, showBuffs, unit)
 	if ( unitStatus and statusColor ) then
 		unitStatus:SetVertexColor(statusColor.r, statusColor.g, statusColor.b);
 	end
-
 end
-

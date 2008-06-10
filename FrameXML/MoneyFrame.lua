@@ -354,3 +354,22 @@ function SetMoneyFrameColor(frameName, r, g, b)
 	silverButton:SetTextColor(r, g, b);
 	copperButton:SetTextColor(r, g, b);
 end
+
+function AltCurrencyFrame_Update(frameName, texture, cost)
+	local iconWidth;
+	local button = getglobal(frameName);
+	local buttonTexture = getglobal(frameName.."Texture");
+	button:SetText(cost);
+	buttonTexture:SetTexture(texture);
+	if ( button.pointType == HONOR_POINTS ) then
+		iconWidth = 24;
+		buttonTexture:SetPoint("LEFT", getglobal(frameName.."Text"), "RIGHT", -1, -6);
+	else
+		iconWidth = MONEY_ICON_WIDTH_SMALL;
+		buttonTexture:SetPoint("LEFT", getglobal(frameName.."Text"), "RIGHT", 0, 0);
+	end
+	buttonTexture:SetWidth(iconWidth);
+	buttonTexture:SetHeight(iconWidth);
+	button:SetWidth(button:GetTextWidth() + MONEY_ICON_WIDTH_SMALL);
+end
+

@@ -18,28 +18,28 @@ end
 
 function InspectHonorFrame_Update()
 	
-	local sessionHK, sessionDK, yesterdayHK, yesterdayHonor, thisweekHK, thisweekHonor, lastweekHK, lastweekHonor, lastweekStanding, lifetimeHK, lifetimeDK, lifetimeRank = GetInspectHonorData();
+	local todayHK, todayHonor, yesterdayHK, yesterdayHonor, lifetimeHK, lifetimeRank = GetInspectHonorData();
 
 	-- Yesterday's values
 	InspectHonorFrameYesterdayHKValue:SetText(yesterdayHK);
 	InspectHonorFrameYesterdayContributionValue:SetText(yesterdayHonor);
 
 	-- This week's values
-	InspectHonorFrameThisWeekHKValue:SetText(thisweekHK);
-	InspectHonorFrameThisWeekContributionValue:SetText(thisweekHonor);
+	--InspectHonorFrameThisWeekHKValue:SetText(thisweekHK);
+	--InspectHonorFrameThisWeekContributionValue:SetText(thisweekHonor);
 	
 	-- Last Week's values
-	InspectHonorFrameLastWeekHKValue:SetText(lastweekHK);
-	InspectHonorFrameLastWeekContributionValue:SetText(lastweekHonor);
-	InspectHonorFrameLastWeekStandingValue:SetText(lastweekStanding);
+	--InspectHonorFrameLastWeekHKValue:SetText(lastweekHK);
+	--InspectHonorFrameLastWeekContributionValue:SetText(lastweekHonor);
+	--InspectHonorFrameLastWeekStandingValue:SetText(lastweekStanding);
 
 	-- This session's values
-	InspectHonorFrameCurrentHKValue:SetText(sessionHK);
-	InspectHonorFrameCurrentDKValue:SetText(sessionDK);
+	InspectHonorFrameCurrentHKValue:SetText(todayHK);
+	--InspectHonorFrameCurrentDKValue:SetText(sessionDK);
 	
 	-- Lifetime stats
 	InspectHonorFrameLifeTimeHKValue:SetText(lifetimeHK);
-	InspectHonorFrameLifeTimeDKValue:SetText(lifetimeDK);
+	--InspectHonorFrameLifeTimeDKValue:SetText(lifetimeDK);
 	local rankName, rankNumber = GetPVPRankInfo(lifetimeRank);
 	if ( not rankName ) then
 		rankName = NONE;
@@ -72,7 +72,7 @@ function InspectHonorFrame_Update()
 	else
 		InspectHonorFrameProgressBar:SetStatusBarColor(0.63, 0.09, 0.09);
 	end
-	InspectHonorFrameProgressBar:SetValue(GetInspectPVPRankProgress());
+	--InspectHonorFrameProgressBar:SetValue(GetInspectPVPRankProgress());
 
 	-- Recenter rank text
 	InspectHonorFrameCurrentPVPTitle:SetPoint("TOP", "InspectHonorFrame", "TOP", - InspectHonorFrameCurrentPVPRank:GetWidth()/2, -83);

@@ -1,8 +1,8 @@
 
 MAX_TALENT_TABS = 5;
-MAX_NUM_TALENTS = 20;
-MAX_NUM_TALENT_TIERS = 8;
+MAX_NUM_TALENT_TIERS = 10;
 NUM_TALENT_COLUMNS = 4;
+MAX_NUM_TALENTS = 40;
 TALENT_BRANCH_ARRAY = {};
 TALENT_BUTTON_SIZE = 32;
 MAX_NUM_BRANCH_TEXTURES = 30;
@@ -90,6 +90,7 @@ function TalentFrame_OnLoad()
 			TALENT_BRANCH_ARRAY[i][j] = {id=nil, up=0, left=0, right=0, down=0, leftArrow=0, rightArrow=0, topArrow=0};
 		end
 	end
+	TalentFrameScrollFrameScrollBarScrollDownButton:SetScript("OnClick", TalentFrameDownArrow_OnClick);
 end
 
 function TalentFrame_OnShow()
@@ -100,11 +101,18 @@ function TalentFrame_OnShow()
 	UpdateMicroButtons();
 
 	TalentFrame_Update();
+
+	-- Set flag
+	if ( TALENT_FRAME_WAS_SHOWN ~= 1 ) then
+		TALENT_FRAME_WAS_SHOWN = 1;
+		UIFrameFlash(TalentScrollButtonOverlay, 0.5, 0.5, 60);
+	end
 end
 
 function TalentFrame_OnHide()
 	UpdateMicroButtons();
 	PlaySound("TalentScreenClose");
+	UIFrameFlashStop(TalentScrollButtonOverlay);
 end
 
 function TalentFrame_OnEvent()
@@ -124,6 +132,8 @@ function TalentFrameTalent_OnEvent()
 end
 
 function TalentFrame_Update()
+	-- Initialize talent tables if necessary
+	local numTalents = GetNumTalents(PanelTemplates_GetSelectedTab(TalentFrame));
 	-- Setup Tabs
 	local tab, name, iconTexture, pointsSpent, button;
 	local numTabs = GetNumTalentTabs();
@@ -164,7 +174,7 @@ function TalentFrame_Update()
 	TalentFrameBackgroundBottomLeft:SetTexture(base.."BottomLeft");
 	TalentFrameBackgroundBottomRight:SetTexture(base.."BottomRight");
 	
-	local numTalents = GetNumTalents(PanelTemplates_GetSelectedTab(TalentFrame));
+	
 	-- Just a reminder error if there are more talents than available buttons
 	if ( numTalents > MAX_NUM_TALENTS ) then
 		message("Too many talents in talent frame!");
@@ -347,6 +357,7 @@ function TalentFrame_GetBranchTexture()
 	local branchTexture = getglobal("TalentFrameBranch"..TalentFrame.textureIndex);
 	TalentFrame.textureIndex = TalentFrame.textureIndex + 1;
 	if ( not branchTexture ) then
+		--branchTexture = CreateTexture("TalentFrameBranch"..TalentFrame.textureIndex);
 		message("Not enough branch textures");
 	else
 		branchTexture:Show();
@@ -370,11 +381,7 @@ function TalentFrame_GetBranchTextureCount()
 	return TalentFrame.textureIndex;
 end
 
-function TalentFrame_SetPrereqs(...)
-	local buttonTier = arg[1];
-	local buttonColumn = arg[2];
-	local forceDesaturated = arg[3];
-	local tierUnlocked = arg[4];
+function TalentFrame_SetPrereqs(buttonTier, buttonColumn, forceDesaturated, tierUnlocked, ...)
 	local tier, column, isLearnable;
 	local requirementsMet;
 	if ( tierUnlocked and not forceDesaturated ) then
@@ -382,10 +389,8 @@ function TalentFrame_SetPrereqs(...)
 	else
 		requirementsMet = nil;
 	end
-	for i=5, arg.n, 3 do
-		tier = arg[i];
-		column = arg[i+1];
-		isLearnable = arg[i+2];
+	for i=1, select("#", ...), 3 do
+		tier, column, isLearnable = select(i, ...);
 		if ( not isLearnable or forceDesaturated ) then
 			requirementsMet = nil;
 		end
@@ -565,4 +570,11 @@ function TalentFrame_ResetBranches()
 			TALENT_BRANCH_ARRAY[i][j].topArrow = 0;
 		end
 	end
+end
+
+function TalentFrameDownArrow_OnClick()
+	local parent = this:GetParent();
+	parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
+	PlaySound("UChatScrollButton");
+	UIFrameFlashStop(TalentScrollButtonOverlay);
 end

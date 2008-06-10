@@ -6,6 +6,16 @@ ManaBarColor[2] = { r = 1.00, g = 0.50, b = 0.25, prefix = TEXT(FOCUS_POINTS) };
 ManaBarColor[3] = { r = 1.00, g = 1.00, b = 0.00, prefix = TEXT(ENERGY_POINTS) };
 ManaBarColor[4] = { r = 0.00, g = 1.00, b = 1.00, prefix = TEXT(HAPPINESS_POINTS) };
 
+--[[
+	This system uses "update" functions as OnUpdate, and OnEvent handlers.
+	This "Initialize" function registers the events to handle.
+	The "update" function is set as the OnEvent handler (although they do not parse the event),
+	as well as run from the parent's update handler.
+
+	TT: I had to make the spellbar system differ from the norm.
+	I needed a seperate OnUpdate and OnEvent handlers. And needed to parse the event.
+]]--
+
 function UnitFrame_Initialize(unit, name, portrait, healthbar, healthtext, manabar, manatext)
 	this.unit = unit;
 	this.name = name;
@@ -127,9 +137,9 @@ function UnitFrame_UpdateManaType(unitFrame)
 	end
 	-- Update the manabar text if shown in the ui options
 	SetTextStatusBarTextPrefix(unitFrame.manabar, info.prefix);
-	if ( GetCVar("statusBarText") == "1" ) then
+	--if ( GetCVar("statusBarText") == "1" ) then
 		TextStatusBar_UpdateTextString(unitFrame.manabar);
-	end
+	--end
 
 	-- Setup newbie tooltip
 	if ( unitFrame:GetName() == "PlayerFrame" ) then

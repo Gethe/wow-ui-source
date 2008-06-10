@@ -40,6 +40,7 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level)
 				button = getglobal("DropDownList"..i.."Button"..j);
 				button:Hide();
 			end
+			dropDownList:Hide();
 		end
 	end
 	frame:SetHeight(UIDROPDOWNMENU_BUTTON_HEIGHT * 2);
@@ -134,6 +135,17 @@ info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
 info.textHeight = [NUMBER] -- font height for button text
 ]]
+
+local UIDropDownMenu_ButtonInfo = {};
+
+function UIDropDownMenu_CreateInfo()
+	-- Reuse the same table to prevent memory churn
+	local info = UIDropDownMenu_ButtonInfo;
+	for k,v in pairs(info) do
+		info[k] = nil;
+	end
+	return UIDropDownMenu_ButtonInfo;
+end
 
 function UIDropDownMenu_AddButton(info, level)
 	--[[
@@ -763,10 +775,13 @@ function UIDropDownMenu_JustifyText(justification, frame)
 	text:ClearAllPoints();
 	if ( justification == "LEFT" ) then
 		text:SetPoint("LEFT", frame:GetName().."Left", "LEFT", 27, 2);
+		text:SetJustifyH("LEFT");
 	elseif ( justification == "RIGHT" ) then
 		text:SetPoint("RIGHT", frame:GetName().."Right", "RIGHT", -43, 2);
+		text:SetJustifyH("RIGHT");
 	elseif ( justification == "CENTER" ) then
 		text:SetPoint("CENTER", frame:GetName().."Middle", "CENTER", -5, 2);
+		text:SetJustifyH("CENTER");
 	end
 end
 
@@ -828,5 +843,39 @@ function UIDropDownMenu_SetButtonText(level, id, text, r, g, b)
 	if ( r ) then
 		button:SetTextColor(r, g, b);
 		button:SetHighlightTextColor(r, g, b);
+	end
+end
+
+function UIDropDownMenu_DisableDropDown(dropDown)
+	local label = getglobal(dropDown:GetName().."Label");
+	if ( label ) then
+		label:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	end
+	getglobal(dropDown:GetName().."Text"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	getglobal(dropDown:GetName().."Button"):Disable();
+	dropDown.isDisabled = 1;
+end
+
+function UIDropDownMenu_EnableDropDown(dropDown)
+	local label = getglobal(dropDown:GetName().."Label");
+	if ( label ) then
+		label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+	getglobal(dropDown:GetName().."Text"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	getglobal(dropDown:GetName().."Button"):Enable();
+	dropDown.isDisabled = nil;
+end
+
+function UIDropDownMenu_IsEnabled(dropDown)
+	return not dropDown.isDisabled;
+end
+
+function UIDropDownMenu_GetValue(id)
+	--Only works if the dropdown has just been initialized, lame, I know =(
+	local button = getglobal("DropDownList1Button"..id);
+	if ( button ) then
+		return getglobal("DropDownList1Button"..id).value;
+	else
+		return nil;
 	end
 end

@@ -15,16 +15,16 @@ end
 
 function QuestTimerFrame_Update(...)
 	this.updating = 1;
-	for i=1, arg.n, 1 do
-		getglobal("QuestTimer"..i.."Text"):SetText(SecondsToTime(arg[i]));
+	this.numTimers = select("#", ...);
+	for i=1, this.numTimers, 1 do
+		getglobal("QuestTimer"..i.."Text"):SetText(SecondsToTime(select(i, ...)));
 		getglobal("QuestTimer"..i):Show();
 	end
-	for i=arg.n + 1, MAX_QUESTS, 1 do
+	for i=this.numTimers + 1, MAX_QUESTS, 1 do
 		getglobal("QuestTimer"..i):Hide();
 	end
-	this.numTimers = arg.n;
-	if ( arg.n > 0 ) then
-		this:SetHeight(45 + (16 * arg.n));
+	if ( this.numTimers > 0 ) then
+		this:SetHeight(45 + (16 * this.numTimers));
 		this:Show();
 	else
 		this:Hide();

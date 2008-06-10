@@ -5,43 +5,59 @@
 		ZoneFadeInDuration = 0.5;
 		ZoneHoldDuration = 1.0;
 		ZoneFadeOutDuration = 2.0;
+		ZonePVPType = nil;
 
-		function SetZoneText(showPVPInfo)
-			ZoneTextString:SetText(GetZoneText());
-			local pvpType, factionName, isArena = GetZonePVPInfo();
-			if ( pvpType == "friendly" ) then
-				PVPInfoTextString:SetText(format(FACTION_CONTROLLED_TERRITORY, factionName));
-				ZoneTextString:SetTextColor(0.1, 1.0, 0.1);
-				SubZoneTextString:SetTextColor(0.1, 1.0, 0.1);
-				PVPInfoTextString:SetTextColor(0.1, 1.0, 0.1);
-				SubZoneTextString:SetPoint("TOP", "PVPInfoTextString", "BOTTOM", 0, 0);
-			elseif ( pvpType == "hostile" ) then
-				PVPInfoTextString:SetText(format(FACTION_CONTROLLED_TERRITORY, factionName));
+		function SetZoneText(showZone)
+			local pvpType, isSubZonePvP, factionName = GetZonePVPInfo();
+			PVPArenaTextString:SetText("");
+			PVPInfoTextString:SetText("");
+			local pvpTextString = PVPInfoTextString;
+			if ( isSubZonePvP ) then
+				pvpTextString = PVPArenaTextString;
+			end
+
+			if ( pvpType == "sanctuary" ) then
+				pvpTextString:SetText(SANCTUARY_TERRITORY);
+				pvpTextString:SetTextColor(0.41, 0.8, 0.94);
+				ZoneTextString:SetTextColor(0.41, 0.8, 0.94);
+				SubZoneTextString:SetTextColor(0.41, 0.8, 0.94);
+			elseif ( pvpType == "arena" ) then
+				pvpTextString:SetText(FREE_FOR_ALL_TERRITORY);
+				pvpTextString:SetTextColor(1.0, 0.1, 0.1);
 				ZoneTextString:SetTextColor(1.0, 0.1, 0.1);
 				SubZoneTextString:SetTextColor(1.0, 0.1, 0.1);
-				PVPInfoTextString:SetTextColor(1.0, 0.1, 0.1);
-				SubZoneTextString:SetPoint("TOP", "PVPInfoTextString", "BOTTOM", 0, 0);
+			elseif ( pvpType == "friendly" ) then
+				pvpTextString:SetText(format(FACTION_CONTROLLED_TERRITORY, factionName));
+				pvpTextString:SetTextColor(0.1, 1.0, 0.1);
+				ZoneTextString:SetTextColor(0.1, 1.0, 0.1);
+				SubZoneTextString:SetTextColor(0.1, 1.0, 0.1);
+			elseif ( pvpType == "hostile" ) then
+				pvpTextString:SetText(format(FACTION_CONTROLLED_TERRITORY, factionName));
+				pvpTextString:SetTextColor(1.0, 0.1, 0.1);
+				ZoneTextString:SetTextColor(1.0, 0.1, 0.1);
+				SubZoneTextString:SetTextColor(1.0, 0.1, 0.1);
 			elseif ( pvpType == "contested" ) then
-				PVPInfoTextString:SetText(CONTESTED_TERRITORY);
+				pvpTextString:SetText(CONTESTED_TERRITORY);
+				pvpTextString:SetTextColor(1.0, 0.7, 0);
 				ZoneTextString:SetTextColor(1.0, 0.7, 0);
 				SubZoneTextString:SetTextColor(1.0, 0.7, 0);
-				PVPInfoTextString:SetTextColor(1.0, 0.7, 0);
-				SubZoneTextString:SetPoint("TOP", "PVPInfoTextString", "BOTTOM", 0, 0);
 			else
-				PVPInfoTextString:SetText("");
 				ZoneTextString:SetTextColor(1.0, 0.9294, 0.7607);
 				SubZoneTextString:SetTextColor(1.0, 0.9294, 0.7607);
-				SubZoneTextString:SetPoint("TOP", "ZoneTextString", "BOTTOM", 0, 0);
 			end
-			if ( isArena ) then
-				PVPArenaTextString:SetText(FREE_FOR_ALL_TERRITORY);
-				SubZoneTextString:SetTextColor(1.0, 0.1, 0.1);
-			else
-				PVPArenaTextString:SetText("");
-			end
-			if ( not showPVPInfo ) then
+
+			if ( ZonePVPType ~= pvpType ) then
+				ZonePVPType = pvpType;
+--				FadingFrame_Show(ZoneTextFrame);
+			elseif ( not showZone ) then
 				PVPInfoTextString:SetText("");
 				SubZoneTextString:SetPoint("TOP", "ZoneTextString", "BOTTOM", 0, 0);
+			end
+
+			if ( PVPInfoTextString:GetText() == "" ) then
+				SubZoneTextString:SetPoint("TOP", "ZoneTextString", "BOTTOM", 0, 0);
+			else
+				SubZoneTextString:SetPoint("TOP", "PVPInfoTextString", "BOTTOM", 0, 0);
 			end
 		end
 	</Script>
@@ -67,7 +83,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</FontString>
-				<FontString name="PVPInfoTextString" inherits="SubZoneTextFont">
+				<FontString name="PVPInfoTextString" inherits="PVPInfoTextFont">
 					<Size>
 						<AbsDimension x="512" y="0"/>
 					</Size>
@@ -86,21 +102,39 @@
 				this:RegisterEvent("ZONE_CHANGED");
 				this:RegisterEvent("ZONE_CHANGED_INDOORS");
 				this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+				ZoneTextFrame.zoneText = "";
+				ZonePVPType = nil;
 			</OnLoad>
 			<OnEvent>
-				local newText = GetZoneText();
-				if ( event == "ZONE_CHANGED" ) then
-					this.zoneText = newText;
-					return;
+				local showZoneText = false;	
+				local zoneText = GetZoneText();
+				if ( (zoneText ~= ZoneTextFrame.zoneText) or (event == "ZONE_CHANGED_NEW_AREA") ) then
+					ZoneTextFrame.zoneText = zoneText;
+					ZoneTextString:SetText( zoneText );
+					showZoneText = true
+					FadingFrame_Show( this );
 				end
-				if ( newText ~= this.zoneText ) then
-					this.zoneText = newText;
-					if ( event == "ZONE_CHANGED_NEW_AREA" ) then
-						SetZoneText(1);
-					else
-						SetZoneText();
+				
+				local subzoneText = GetSubZoneText();
+				if ( subzoneText == "" and not showZoneText) then
+					subzoneText = zoneText;
+				end
+				SubZoneTextString:SetText( "" );
+
+				if ( subzoneText == zoneText ) then
+					showZoneText = false;
+					if ( not this:IsShown() ) then
+						SubZoneTextString:SetText( subzoneText );
+						SetZoneText( showZoneText );
+						FadingFrame_Show( SubZoneTextFrame );
 					end
-					FadingFrame_Show();
+				else
+					if (this:IsShown()) then
+						showZoneText = true;
+					end
+					SubZoneTextString:SetText( subzoneText );
+					SetZoneText( showZoneText );
+					FadingFrame_Show( SubZoneTextFrame );
 				end
 			</OnEvent>
 			<OnUpdate>
@@ -129,7 +163,7 @@
 						<Anchor point="TOP" relativeTo="ZoneTextString" relativePoint="BOTTOM"/>
 					</Anchors>
 				</FontString>
-				<FontString name="PVPArenaTextString" inherits="SubZoneTextFont">
+				<FontString name="PVPArenaTextString" inherits="PVPInfoTextFont">
 					<Size>
 						<AbsDimension x="512" y="0"/>
 					</Size>
@@ -145,22 +179,10 @@
 				FadingFrame_SetFadeInTime(this, ZoneFadeInDuration);
 				FadingFrame_SetHoldTime(this, ZoneHoldDuration);
 				FadingFrame_SetFadeOutTime(this, ZoneFadeOutDuration);
-				this:RegisterEvent("ZONE_CHANGED");
-				this:RegisterEvent("ZONE_CHANGED_INDOORS");
-				this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 				PVPArenaTextString:SetTextColor(1.0, 0.1, 0.1);
-				SetZoneText(1);
+				SetZoneText(true);
 				SubZoneTextString:SetText(GetSubZoneText());
 			</OnLoad>
-			<OnEvent>
-				local text = SubZoneTextString:GetText();
-				local newText = GetSubZoneText();
-				if(text ~= newText) then
-					SubZoneTextString:SetText(newText);
-					SetZoneText(1);
-					FadingFrame_Show();
-				end
-			</OnEvent>
 			<OnUpdate>
 				FadingFrame_OnUpdate();
 			</OnUpdate>

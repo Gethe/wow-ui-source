@@ -48,7 +48,7 @@
 			["MAGE"] = { r = 0.41, g = 0.8, b = 0.94 },
 			["ROGUE"] = { r = 1.0, g = 0.96, b = 0.41 },
 			["DRUID"] = { r = 1.0, g = 0.49, b = 0.04 },
-			["SHAMAN"] = { r = 0.96, g = 0.55, b = 0.73 },
+			["SHAMAN"] = { r = 0, g = 0.86, b = 0.73 },
 			["WARRIOR"] = { r = 0.78, g = 0.61, b = 0.43 }
 		};
 	</Script>
@@ -253,6 +253,11 @@
 	<Font name="SubZoneTextFont" font="Fonts\FRIZQT__.TTF" outline="THICK" virtual="true">
 		<FontHeight>
 			<AbsValue val="26"/>
+		</FontHeight>
+	</Font>
+	<Font name="PVPInfoTextFont" font="Fonts\FRIZQT__.TTF" outline="THICK" virtual="true">
+		<FontHeight>
+			<AbsValue val="22"/>
 		</FontHeight>
 	</Font>
 	<Font name="ErrorFont" inherits="GameFontNormalLarge" virtual="true"/>

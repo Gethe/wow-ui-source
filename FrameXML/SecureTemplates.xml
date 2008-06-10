@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="SecureTemplates.lua"/>
+	<Script file="SecureStateHeader.lua"/>
+
+	<!-- A base template for secure frames -->
+	<Frame name="SecureFrameTemplate" protected="true" virtual="true"/>
+
+	<!-- A button template for click-cast style action buttons -->
+	<Button name="SecureActionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SecureActionButton_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- A variant of SecureActionButtonTemplate used for unit buttons -->
+	<Button name="SecureUnitButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SecureUnitButton_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- A header template that manages a 'state' which can be used 
+	     with the secure action templates to create a variety of
+	     interactive controls.
+		 See SecureStateHeader.lua for details. -->
+	<Frame name="SecureStateHeaderTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Size x="2" y="2"/>
+		<Scripts>
+			<OnHide>
+				SecureStateHeader_OnHide(self);
+			</OnHide>
+			<OnAttributeChanged>
+				SecureStateHeader_OnAttributeChanged(self, name, value);
+			</OnAttributeChanged>
+		</Scripts>
+	</Frame>
+
+	<!-- Variant of the SecureStateHeaderTemplate which drives state
+	     transitions when stance/shapeshift/actionbar changes occur. -->
+	<Frame name="SecureStateDriverTemplate" inherits="SecureStateHeaderTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				SecureStateDriver_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				SecureStateDriver_OnEvent(self, event, ...);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<!-- Anchor/trigger buttons for a variety of drop down and pop up uses -->
+
+	<!-- Trigger from clicks -->
+	<Button name="SecureAnchorButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SecureStateAnchor_RunChild(self, button, "onclickbutton");
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- Trigger from mouseover -->
+	<Frame name="SecureAnchorEnterTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				if ( motion ) then
+					self:SetAttribute("_entered", true);
+					SecureStateAnchor_RunChild(self, "OnEnter", "onenterbutton");
+				end
+			</OnEnter>
+			<OnLeave>
+				if ( motion and self:GetAttribute("_entered") ) then
+					self:SetAttribute("_entered", nil);
+					SecureStateAnchor_RunChild(self, "OnLeave", "onleavebutton");
+				end
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
+	<!-- Trigger from mouse up and down -->
+	<Frame name="SecureAnchorUpDownTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnMouseDown>
+				SecureStateAnchor_RunChild(self, button, "onmousedownbutton");
+			</OnMouseDown>
+			<OnMouseUp>
+				SecureStateAnchor_RunChild(self, button, "onmouseupbutton");
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+	<!-- A popup radial menu button -->
+	<Button name="SecurePieButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SecurePieButton_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- A frame used for managing party members -->
+	<Frame name="SecurePartyHeaderTemplate" inherits="SecureFrameTemplate" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad>
+				SecurePartyHeader_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				SecurePartyHeader_OnEvent(self, event);
+			</OnEvent>
+			<OnShow>
+				SecurePartyHeader_Update(self);
+			</OnShow>
+			<OnAttributeChanged>
+				SecurePartyHeader_OnAttributeChanged(self, name, value);
+			</OnAttributeChanged>
+		</Scripts>
+	</Frame>
+
+	<!-- A frame used for managing raid members in various ways -->
+	<Frame name="SecureRaidGroupHeaderTemplate" inherits="SecureFrameTemplate" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad>
+				SecureRaidGroupHeader_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				SecureRaidGroupHeader_OnEvent(self, event);
+			</OnEvent>
+			<OnShow>
+				SecureRaidGroupHeader_Update(self);
+			</OnShow>
+			<OnAttributeChanged>
+				SecureRaidGroupHeader_OnAttributeChanged(self, name, value);
+			</OnAttributeChanged>
+		</Scripts>
+	</Frame>
+</Ui>

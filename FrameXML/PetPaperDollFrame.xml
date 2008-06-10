@@ -332,7 +332,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="PetStatFrame1" inherits="AttributeFrameTemplate" id="1">
+					<Frame name="PetStatFrame1" inherits="StatFrameTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -349,7 +349,7 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<Frame name="PetStatFrame2" inherits="AttributeFrameTemplate" id="2">
+					<Frame name="PetStatFrame2" inherits="StatFrameTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PetStatFrame1" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -366,7 +366,7 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<Frame name="PetStatFrame3" inherits="AttributeFrameTemplate" id="3">
+					<Frame name="PetStatFrame3" inherits="StatFrameTemplate" id="3">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PetStatFrame2" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -383,7 +383,7 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<Frame name="PetStatFrame4" inherits="AttributeFrameTemplate" id="4">
+					<Frame name="PetStatFrame4" inherits="StatFrameTemplate" id="4">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PetStatFrame3" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -400,7 +400,7 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<Frame name="PetStatFrame5" inherits="AttributeFrameTemplate" id="5">
+					<Frame name="PetStatFrame5" inherits="StatFrameTemplate" id="5">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PetStatFrame4" relativePoint="BOTTOMLEFT">
 								<Offset>

@@ -11,7 +11,7 @@ FACTION_BAR_COLORS = {
 	[8] = {r = 0, g = 0.6, b = 0.1},
 };
 -- Hard coded =(, will need to change when we up the level cap
-MAX_PLAYER_LEVEL = 60;
+MAX_PLAYER_LEVEL = 70;
 
 function ReputationFrame_OnLoad()
 	this:RegisterEvent("UPDATE_FACTION");

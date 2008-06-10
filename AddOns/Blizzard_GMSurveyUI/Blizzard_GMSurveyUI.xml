@@ -350,12 +350,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Frames>
-					
-				</Frames>
-				<Scripts>
-					
-				</Scripts>
 			</Frame>
 			<ScrollFrame name="GMSurveyScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>

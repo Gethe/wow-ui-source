@@ -63,12 +63,12 @@ end
 function GossipFrameAvailableQuestsUpdate(...)
 	local titleButton;
 	local titleIndex = 1;
-	for i=1, arg.n, 2 do
+	for i=1, select("#", ...), 2 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
 		end
 		titleButton = getglobal("GossipTitleButton" .. GossipFrame.buttonIndex);
-		titleButton:SetText(arg[i]);
+		titleButton:SetText(select(i, ...));
 		GossipResize(titleButton);
 		titleButton:SetID(titleIndex);
 		titleButton.type="Available";
@@ -87,12 +87,12 @@ end
 function GossipFrameActiveQuestsUpdate(...)
 	local titleButton;
 	local titleIndex = 1;
-	for i=1, arg.n, 2 do
+	for i=1, select("#", ...), 2 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
 		end
 		titleButton = getglobal("GossipTitleButton" .. GossipFrame.buttonIndex);
-		titleButton:SetText(arg[i]);
+		titleButton:SetText(select(i, ...));
 		GossipResize(titleButton);
 		titleButton:SetID(titleIndex);
 		titleButton.type="Active";
@@ -111,16 +111,16 @@ end
 function GossipFrameOptionsUpdate(...)
 	local titleButton;
 	local titleIndex = 1;
-	for i=1, arg.n, 2 do
+	for i=1, select("#", ...), 2 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
 		end
 		titleButton = getglobal("GossipTitleButton" .. GossipFrame.buttonIndex);
-		titleButton:SetText(arg[i]);
+		titleButton:SetText(select(i, ...));
 		GossipResize(titleButton);
 		titleButton:SetID(titleIndex);
 		titleButton.type="Gossip";
-		getglobal(titleButton:GetName() .. "GossipIcon"):SetTexture("Interface\\GossipFrame\\" .. arg[i+1] .. "GossipIcon");
+		getglobal(titleButton:GetName() .. "GossipIcon"):SetTexture("Interface\\GossipFrame\\" .. select(i+1, ...) .. "GossipIcon");
 		GossipFrame.buttonIndex = GossipFrame.buttonIndex + 1;
 		titleIndex = titleIndex + 1;
 		titleButton:Show();

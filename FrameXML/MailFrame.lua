@@ -620,9 +620,13 @@ function SendMailFrame_SendeeAutocomplete()
 	if ( numFriends > 0 ) then
 		for i=1, numFriends do
 			name = GetFriendInfo(i);
-			if ( strfind(strupper(name), strupper(text), 1, 1) == 1 ) then
+			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
 				this:SetText(name);
-				this:HighlightText(textlen, -1);
+				if ( this:IsInIMECompositionMode() ) then
+					this:HighlightText(textlen - strlen(arg1), -1);
+				else
+					this:HighlightText(textlen, -1);
+				end
 				return;
 			end
 		end
@@ -633,9 +637,13 @@ function SendMailFrame_SendeeAutocomplete()
 	if ( numFriends > 0 ) then
 		for i=1, numFriends do
 			name = GetGuildRosterInfo(i);
-			if ( strfind(strupper(name), strupper(text), 1, 1) == 1 ) then
+			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
 				this:SetText(name);
-				this:HighlightText(textlen, -1);
+				if ( this:IsInIMECompositionMode() ) then
+					this:HighlightText(textlen - strlen(arg1), -1);
+				else
+					this:HighlightText(textlen, -1);
+				end
 				return;
 			end
 		end

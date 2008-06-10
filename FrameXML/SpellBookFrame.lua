@@ -19,33 +19,7 @@ function ToggleSpellBook(bookType)
 			SpellBookFrame.bookType = bookType;
 			ShowUIPanel(SpellBookFrame);
 		end
-		local currentPage, maxPages = SpellBook_GetCurrentPage();
-		if ( currentPage > maxPages ) then
-			SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = maxPages;
-			currentPage = maxPages;
-			UpdateSpells();
-			if ( currentPage == 1 ) then
-				SpellBookPrevPageButton:Disable();
-			else
-				SpellBookPrevPageButton:Enable();
-			end
-			if ( currentPage == maxPages ) then
-				SpellBookNextPageButton:Disable();
-			else
-				SpellBookNextPageButton:Enable();
-			end
-		end
-		if ( currentPage == 1 ) then
-			SpellBookPrevPageButton:Disable();
-		else
-			SpellBookPrevPageButton:Enable();
-		end
-		if ( currentPage == maxPages ) then
-			SpellBookNextPageButton:Disable();
-		else
-			SpellBookNextPageButton:Enable();
-		end
-		SpellBookPageText:SetText(format(TEXT(PAGE_NUMBER), currentPage));
+		SpellBookFrame_UpdatePages();
 	end
 end
 
@@ -161,6 +135,40 @@ function SpellBookFrame_Update(showing)
 			PlaySound("igAbilityOpen");
 		end
 	end
+	SpellBookFrame_UpdatePages();
+end
+
+function SpellBookFrame_UpdatePages()
+	local currentPage, maxPages = SpellBook_GetCurrentPage();
+	if ( maxPages == 0 ) then
+		return;
+	end
+	if ( currentPage > maxPages ) then
+		SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = maxPages;
+		currentPage = maxPages;
+		UpdateSpells();
+		if ( currentPage == 1 ) then
+			SpellBookPrevPageButton:Disable();
+		else
+			SpellBookPrevPageButton:Enable();
+		end
+		if ( currentPage == maxPages ) then
+			SpellBookNextPageButton:Disable();
+		else
+			SpellBookNextPageButton:Enable();
+		end
+	end
+	if ( currentPage == 1 ) then
+		SpellBookPrevPageButton:Disable();
+	else
+		SpellBookPrevPageButton:Enable();
+	end
+	if ( currentPage == maxPages ) then
+		SpellBookNextPageButton:Disable();
+	else
+		SpellBookNextPageButton:Enable();
+	end
+	SpellBookPageText:SetText(format(TEXT(PAGE_NUMBER), currentPage));
 end
 
 function SpellBookFrame_SetTabType(tabButton, bookType, token)
@@ -214,10 +222,12 @@ function SpellButton_OnLoad()
 	this:RegisterEvent("PET_BAR_UPDATE");
 	this:RegisterForDrag("LeftButton");
 	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	SpellButton_UpdateButton();
 end
 
-function SpellButton_OnEvent(event) 
+function SpellButton_OnEvent(event)
+	if ( not this:IsVisible() ) then
+		return;
+	end
 	if ( event == "SPELLS_CHANGED" or event == "SPELL_UPDATE_COOLDOWN" ) then 
 		SpellButton_UpdateButton();
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
@@ -265,28 +275,42 @@ function SpellButton_OnClick(drag)
 	if ( id > MAX_SPELLS ) then
 		return;
 	end
-	this:SetChecked("false");
-	if ( drag ) then
-		PickupSpell(id, SpellBookFrame.bookType);
-	elseif ( IsShiftKeyDown() ) then
-		if ( MacroFrame and MacroFrame:IsVisible() ) then
-			local spellName, subSpellName = GetSpellName(id, SpellBookFrame.bookType);
-			if ( spellName and not IsSpellPassive(id, SpellBookFrame.bookType) ) then
-				if ( subSpellName and (strlen(subSpellName) > 0) ) then
-					MacroFrame_AddMacroLine(TEXT(SLASH_CAST1).." "..spellName.."("..subSpellName..")");
-				else
-					MacroFrame_AddMacroLine(TEXT(SLASH_CAST1).." "..spellName);
-				end
-			end
-		else
-			PickupSpell(id, SpellBookFrame.bookType );
-		end
-	elseif ( arg1 ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
+	if ( arg1 ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		ToggleSpellAutocast(id, SpellBookFrame.bookType);
 	else
 		CastSpell(id, SpellBookFrame.bookType);
 		SpellButton_UpdateSelection();
 	end
+end
+
+function SpellButton_OnModifiedClick(drag) 
+	local id = SpellBook_GetSpellID(this:GetID());
+	if ( id > MAX_SPELLS ) then
+		return;
+	end
+	if ( IsShiftKeyDown() ) then
+		if ( MacroFrame and MacroFrame:IsVisible() ) then
+			local spellName, subSpellName = GetSpellName(id, SpellBookFrame.bookType);
+			if ( spellName and not IsPassiveSpell(id, SpellBookFrame.bookType) ) then
+				if ( subSpellName and (strlen(subSpellName) > 0) ) then
+					ChatEdit_InsertLink(spellName.."("..subSpellName..")");
+				else
+					ChatEdit_InsertLink(spellName);
+				end
+			end
+		else
+			PickupSpell(id, SpellBookFrame.bookType );
+		end
+	end
+end
+
+function SpellButton_OnDrag() 
+	local id = SpellBook_GetSpellID(this:GetID());
+	if ( id > MAX_SPELLS ) then
+		return;
+	end
+	this:SetChecked(0);
+	PickupSpell(id, SpellBookFrame.bookType);
 end
 
 function SpellButton_UpdateSelection()
@@ -305,9 +329,6 @@ function SpellButton_UpdateSelection()
 end
 
 function SpellButton_UpdateButton()
-	if ( not this:IsVisible() ) then
-		return;
-	end
 	if ( GameTooltip:IsOwned(this) ) then
 		SpellButton_OnEnter();
 	end
@@ -377,7 +398,7 @@ function SpellButton_UpdateButton()
 	end
 
 	local spellName, subSpellName = GetSpellName(id, SpellBookFrame.bookType);
-	local isPassive = IsSpellPassive(id, SpellBookFrame.bookType);
+	local isPassive = IsPassiveSpell(id, SpellBookFrame.bookType);
 	if ( isPassive ) then
 		normalTexture:SetVertexColor(0, 0, 0);
 		highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");

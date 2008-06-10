@@ -322,22 +322,26 @@
 				<Scripts>
 					<OnLoad>
 						SHOW_KEYRING = 0;
-						RegisterForSave("SHOW_KEYRING");
+						RegisterForSavePerCharacter("SHOW_KEYRING");
 						this:RegisterEvent("PLAYER_ENTERING_WORLD");
 						this:RegisterEvent("VARIABLES_LOADED");
 						this:RegisterEvent("BAG_UPDATE");
+						this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+						MainMenuBarPageNumber:SetText(GetActionBarPage());
 					</OnLoad>
 					<OnEvent>
-						if( event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED" or event == "BAG_UPDATE" ) then
-							if( HasKey() ) then
-								if(SHOW_KEYRING ~= 1) then
+						if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
+							MainMenuBarPageNumber:SetText(GetActionBarPage());
+						else
+							if ( SHOW_KEYRING ~= 1 ) then
+								if( HasKey() ) then
 									-- Show Tutorial and flash keyring
 									SetButtonPulse(KeyRingButton, 60, 1);
 									SHOW_KEYRING = 1;
 								end
 							end
+							MainMenuBar_UpdateKeyRing();
 						end
-						MainMenuBar_UpdateKeyRing();
 					</OnEvent>
 				</Scripts>
 			</Frame>

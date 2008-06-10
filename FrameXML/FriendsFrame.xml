@@ -584,10 +584,13 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="FriendsFrameTitleText" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="250" y="16"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="-18"/>
+								<AbsDimension x="3" y="-16"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -655,7 +658,7 @@
 						<Scripts>
 							<OnClick>
 								if ( UnitCanCooperate("player", "target") ) then
-									AddFriend(UnitName("target"));
+									AddFriend("target");
 								else
 									StaticPopup_Show("ADD_FRIEND");
 								end
@@ -680,6 +683,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad>
+								this:SetFrameLevel( this:GetFrameLevel() + 3 );
+							</OnLoad>
 							<OnClick>
 								FriendsFrame_RemoveFriend();
 							</OnClick>
@@ -924,9 +930,12 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad>
+								this:SetFrameLevel( this:GetFrameLevel() + 3 );
+							</OnLoad>
 							<OnClick>
 								if ( UnitCanCooperate("player", "target") ) then
-									AddIgnore(UnitName("target"));
+									AddIgnore("target");
 								else
 									StaticPopup_Show("ADD_IGNORE");
 								end
@@ -951,6 +960,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad>
+								this:SetFrameLevel( this:GetFrameLevel() + 3 );
+							</OnLoad>
 							<OnClick>
 								FriendsFrame_UnIgnore();
 							</OnClick>
@@ -1209,96 +1221,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<!--
-					<Frame name="WhoFrameLFGFrame">
-						<Size>
-							<AbsDimension x="210" y="23"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="-42" y="-38"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="WhoFrameLFGFrameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-									<Size>
-										<AbsDimension x="12" y="28"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPRIGHT"/>
-									</Anchors>
-									<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="WhoFrameLFGFrameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-									<Size>
-										<AbsDimension x="186" y="28"/>
-									</Size>
-									<Anchors>
-										<Anchor point="RIGHT" relativeTo="WhoFrameLFGFrameRight" relativePoint="LEFT"/>
-									</Anchors>
-									<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="WhoFrameLFGFrameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-									<Size>
-										<AbsDimension x="12" y="28"/>
-									</Size>
-									<Anchors>
-										<Anchor point="RIGHT" relativeTo="WhoFrameLFGFrameMiddle" relativePoint="LEFT"/>
-									</Anchors>
-									<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<CheckButton name="WhoFrameLFGButton" virtual="true">
-								<Size>
-									<AbsDimension x="20" y="20"/>
-								</Size>
-								<Anchors>
-									<Anchor point="RIGHT">
-										<Offset>
-											<AbsDimension x="-8" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="WhoFrameLFGButtonText" inherits="GameFontHighlightSmall" text="LFG_LABEL">
-											<Anchors>
-												<Anchor point="RIGHT" relativePoint="LEFT">
-													<Offset>
-														<AbsDimension x="-10" y="1"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad>
-										this:SetChecked(GetLookingForGroup());
-									</OnLoad>
-									<OnClick>
-										if ( this:GetChecked() ) then
-											PlaySound("igMainMenuOptionCheckBoxOff");
-										else
-											PlaySound("igMainMenuOptionCheckBoxOn");
-										end
-										SetLookingForGroup(this:GetChecked());
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-								<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-								<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-								<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-								<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-							</CheckButton>
-						</Frames>
-					</Frame>
-					-->
 					<Button name="WhoFrameColumnHeader1" inherits="WhoFrameColumnHeaderTemplate" text="NAME">
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -1593,7 +1515,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								InviteByName(WhoFrame.selectedName);
+								InviteUnit(WhoFrame.selectedName);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -3263,7 +3185,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								InviteByName(GuildFrame.selectedName);
+								InviteUnit(GuildFrame.selectedName);
 							</OnClick>
 							<OnEnter>
 								GameTooltip_AddNewbieTip(GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GROUPINVITE, 1);
@@ -3290,7 +3212,7 @@
 						</HitRectInsets>
 						<Scripts>
 							<OnClick>
-								GuildPromoteByName(GuildFrame.selectedName);
+								GuildPromote(GuildFrame.selectedName);
 								PlaySound("UChatScrollButton");
 								GuildFramePromoteButton:Disable();
 							</OnClick>
@@ -3322,7 +3244,7 @@
 						</HitRectInsets>
 						<Scripts>
 							<OnClick>
-								GuildDemoteByName(GuildFrame.selectedName);
+								GuildDemote(GuildFrame.selectedName);
 								PlaySound("UChatScrollButton");
 								GuildFrameDemoteButton:Disable();
 							</OnClick>

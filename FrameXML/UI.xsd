@@ -78,6 +78,14 @@
 			<xs:enumeration value="VERTICAL"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="ATTRIBUTETYPE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="nil"/>
+			<xs:enumeration value="boolean"/>
+			<xs:enumeration value="number"/>
+			<xs:enumeration value="string"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:element name="AbsValue">
 		<xs:complexType>
 			<xs:attribute name="val" type="xs:int" use="required"/>
@@ -168,10 +176,23 @@
 		</xs:sequence>
 		<xs:attribute name="orientation" type="ORIENTATION" default="HORIZONTAL"/>
 	</xs:complexType>
+	<xs:complexType name="AttributeType">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="type" type="ATTRIBUTETYPE" use="optional" default="string"/>
+		<xs:attribute name="value" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="AttributesType">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="Attribute" type="AttributeType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="ScriptsType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
 				<xs:element name="OnLoad" type="xs:string"/>
+				<xs:element name="OnAttributeChanged" type="xs:string"/>
 				<xs:element name="OnSizeChanged" type="xs:string"/>
 				<xs:element name="OnEvent" type="xs:string"/>
 				<xs:element name="OnUpdate" type="xs:string"/>
@@ -185,7 +206,9 @@
 				<xs:element name="OnDragStart" type="xs:string"/>
 				<xs:element name="OnDragStop" type="xs:string"/>
 				<xs:element name="OnReceiveDrag" type="xs:string"/>
+				<xs:element name="PreClick" type="xs:string"/>
 				<xs:element name="OnClick" type="xs:string"/>
+				<xs:element name="PostClick" type="xs:string"/>
 				<xs:element name="OnDoubleClick" type="xs:string"/>
 				<xs:element name="OnValueChanged" type="xs:string"/>
 				<xs:element name="OnUpdateModel" type="xs:string"/>
@@ -203,6 +226,7 @@
 				<xs:element name="OnHorizontalScroll" type="xs:string"/>
 				<xs:element name="OnVerticalScroll" type="xs:string"/>
 				<xs:element name="OnScrollRangeChanged" type="xs:string"/>
+				<xs:element name="OnCharComposition" type="xs:string"/>
 				<xs:element name="OnChar" type="xs:string"/>
 				<xs:element name="OnKeyDown" type="xs:string"/>
 				<xs:element name="OnKeyUp" type="xs:string"/>
@@ -376,6 +400,7 @@
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
+						<xs:element name="Attributes" type="AttributesType"/>
 						<xs:element name="Frames">
 							<xs:complexType>
 								<xs:sequence>
@@ -397,6 +422,7 @@
 				<xs:attribute name="enableMouse" type="xs:boolean" default="false"/>
 				<xs:attribute name="enableKeyboard" type="xs:boolean" default="false"/>
 				<xs:attribute name="clampedToScreen" type="xs:boolean" default="false"/>
+				<xs:attribute name="protected" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -689,12 +715,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="TabardModel" type="TabardModelType" substitutionGroup="ui:Frame"/>
-	<xs:complexType name="LootButtonType">
+	<xs:complexType name="UnitButtonType">
 		<xs:complexContent>
 			<xs:extension base="ButtonType"/>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:element name="LootButton" type="LootButtonType" substitutionGroup="ui:Frame"/>
 	<xs:complexType name="TaxiRouteFrameType">
 		<xs:complexContent>
 			<xs:extension base="FrameType"/>

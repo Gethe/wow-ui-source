@@ -28,6 +28,10 @@
 	</Button>
 	<Button name="CraftItemTemplate" inherits="QuestItemTemplate" virtual="true">
 		<Scripts>
+			<OnLoad>
+				this.hasItem = 1;
+				this:SetFrameLevel( this:GetFrameLevel() + 3 );
+			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT");
 				GameTooltip:SetCraftItem(GetCraftSelectionIndex(), this:GetID());
@@ -44,9 +48,7 @@
 				if ( IsControlKeyDown() ) then
 					DressUpItemLink(GetCraftReagentItemLink(GetCraftSelectionIndex(), this:GetID()));
 				elseif ( IsShiftKeyDown() ) then
-					if ( ChatFrameEditBox:IsVisible() ) then
-						ChatFrameEditBox:Insert(GetCraftReagentItemLink(GetCraftSelectionIndex(), this:GetID()));
-					end
+					ChatEdit_InsertLink(GetCraftReagentItemLink(GetCraftSelectionIndex(), this:GetID()));
 				end
 			</OnClick>
 		</Scripts>
@@ -117,7 +119,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeTo="CraftFrame" relativePoint="TOP">
 							<Offset>
-								<AbsDimension x="0" y="-17"/>
+								<AbsDimension x="0" y="-16"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -190,9 +192,59 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="CraftFrameIsMakeableText" inherits="GameFontHighlightSmall" text="CRAFT_IS_MAKEABLE">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="45" y="-76"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="CraftFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-26" y="-64"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CraftFrameFilterDropDown_OnLoad();
+					</OnLoad>
+					<OnShow>
+						CraftFrameFilterDropDown_OnShow();
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<CheckButton name="CraftFrameAvailableFilterCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CraftFrameIsMakeableText" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CraftFrameAvailableFilterCheckButton_OnClick();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+						GameTooltip:SetText(CRAFT_IS_MAKEABLE_TOOLTIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
 			<StatusBar name="CraftRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
 				<Size>
 					<AbsDimension x="268" y="15"/>
@@ -489,6 +541,15 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
+								<FontString name="CraftCooldown" inherits="GameFontRedSmall">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="CraftRequirements" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
 								<Texture name="CraftDetailHeaderLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderLeft">
 									<Size>
 										<AbsDimension x="256" y="64"/>
@@ -548,6 +609,19 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="CraftIconCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="false">
+											<Anchors>
+												<Anchor point="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="-5" y="2"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
 								<Scripts>
 									<OnLoad>
 										this.hasItem = 1;
@@ -556,9 +630,7 @@
 										if ( IsControlKeyDown() ) then
 											DressUpItemLink(GetCraftItemLink(GetCraftSelectionIndex()));
 										elseif ( IsShiftKeyDown() ) then
-											if ( ChatFrameEditBox:IsVisible() ) then
-												ChatFrameEditBox:Insert(GetCraftItemLink(GetCraftSelectionIndex()));
-											end
+											ChatEdit_InsertLink(GetCraftItemLink(GetCraftSelectionIndex()));
 										end
 									</OnClick>
 									<OnEnter>

@@ -204,16 +204,16 @@ function BrowseDropDown_OnLoad()
 end
 
 function BrowseDropDown_Initialize()
-	info = {};
+	local info = UIDropDownMenu_CreateInfo();
 	info.text = ALL;
 	info.value = -1;
 	info.func = BrowseDropDown_OnClick;
 	UIDropDownMenu_AddButton(info);
 	for i=0, getn(ITEM_QUALITY_COLORS)-2  do
-		info = {};
 		info.text = getglobal("ITEM_QUALITY"..i.."_DESC");
 		info.value = i;
 		info.func = BrowseDropDown_OnClick;
+		info.checked = nil;
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -223,8 +223,8 @@ function BrowseDropDown_OnClick()
 end
 
 function AuctionFrameBrowse_InitClasses(...)
-	for i=1, arg.n do
-		CLASS_FILTERS[i] = arg[i];
+	for i=1, select("#", ...) do
+		CLASS_FILTERS[i] = select(i, ...);
 	end
 end
 
@@ -325,22 +325,22 @@ end
 
 function AuctionFrameFilters_UpdateSubClasses(...)
 	local subClass;
-	for i=1, arg.n do
-		subClass = HIGHLIGHT_FONT_COLOR_CODE..arg[i]..FONT_COLOR_CODE_CLOSE; 
+	for i=1, select("#", ...) do
+		subClass = HIGHLIGHT_FONT_COLOR_CODE..select(i, ...)..FONT_COLOR_CODE_CLOSE; 
 		if ( AuctionFrameBrowse.selectedSubclass and AuctionFrameBrowse.selectedSubclass == subClass ) then
-			tinsert(OPEN_FILTER_LIST, {arg[i], "subclass", i, 1});
+			tinsert(OPEN_FILTER_LIST, {select(i, ...), "subclass", i, 1});
 			AuctionFrameFilters_UpdateInvTypes(GetAuctionInvTypes(AuctionFrameBrowse.selectedClassIndex,i));
 		else
-			tinsert(OPEN_FILTER_LIST, {arg[i], "subclass", i, nil});
+			tinsert(OPEN_FILTER_LIST, {select(i, ...), "subclass", i, nil});
 		end
 	end
 end
 
 function AuctionFrameFilters_UpdateInvTypes(...)
 	local invType, isLast;
-	for i=1, arg.n do
-		invType = HIGHLIGHT_FONT_COLOR_CODE..TEXT(getglobal(arg[i]))..FONT_COLOR_CODE_CLOSE; 
-		if ( i == arg.n ) then
+	for i=1, select("#", ...) do
+		invType = HIGHLIGHT_FONT_COLOR_CODE..TEXT(getglobal(select(i, ...)))..FONT_COLOR_CODE_CLOSE; 
+		if ( i == select("#", ...) ) then
 			isLast = 1;
 		end
 		if ( AuctionFrameBrowse.selectedInvtypeIndex and AuctionFrameBrowse.selectedInvtypeIndex == i ) then
@@ -452,14 +452,17 @@ function AuctionFrameBrowse_Update()
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal("BrowseButton"..i.."Highlight");
 			if ( numBatchAuctions < NUM_BROWSE_TO_DISPLAY ) then
+				getglobal(button:GetName().."BuyoutText"):SetPoint("LEFT", getglobal(button:GetName().."BuyoutMoneyFrame"), "RIGHT", -178, 0)
 				button:SetWidth(625);
 				buttonHighlight:SetWidth(589);
 				BrowseCurrentBidSort:SetWidth(207);
 			elseif ( numBatchAuctions == NUM_BROWSE_TO_DISPLAY and totalAuctions <= NUM_BROWSE_TO_DISPLAY ) then
+				getglobal(button:GetName().."BuyoutText"):SetPoint("LEFT", getglobal(button:GetName().."BuyoutMoneyFrame"), "RIGHT", -178, 0)
 				button:SetWidth(625);
 				buttonHighlight:SetWidth(589);
 				BrowseCurrentBidSort:SetWidth(207);
 			else
+				getglobal(button:GetName().."BuyoutText"):SetPoint("LEFT", getglobal(button:GetName().."BuyoutMoneyFrame"), "RIGHT", -153, 0)
 				button:SetWidth(600);
 				buttonHighlight:SetWidth(562);
 				BrowseCurrentBidSort:SetWidth(184);
@@ -824,6 +827,7 @@ function AuctionFrameAuctions_Update()
 	local offset = FauxScrollFrame_GetOffset(AuctionsScrollFrame);
 	local index;
 	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
+	local buttonBuyoutText, buttonBuyoutFrame;
 	local isLastSlotEmpty;
 	local bidAmountMoneyFrame;
 
@@ -851,15 +855,20 @@ function AuctionFrameAuctions_Update()
 			duration = GetAuctionItemTimeLeft("owner", offset + i);
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal("AuctionsButton"..i.."Highlight");
+			buttonBuyoutFrame = getglobal("AuctionsButton"..i.."BuyoutMoneyFrame");
+			buttonBuyoutText = getglobal("AuctionsButton"..i.."BuyoutMoneyFrameText");
 			if ( numBatchAuctions < NUM_AUCTIONS_TO_DISPLAY ) then
+				buttonBuyoutText:SetPoint("LEFT", buttonBuyoutFrame, "RIGHT", -205, 0)
 				auction:SetWidth(599);
 				buttonHighlight:SetWidth(565);
 				AuctionsBidSort:SetWidth(213);
 			elseif ( numBatchAuctions == NUM_AUCTIONS_TO_DISPLAY and totalAuctions <= NUM_AUCTIONS_TO_DISPLAY ) then
+				buttonBuyoutText:SetPoint("LEFT", buttonBuyoutFrame, "RIGHT", -205, 0)
 				auction:SetWidth(599);
 				buttonHighlight:SetWidth(565);
 				AuctionsBidSort:SetWidth(213);
 			else
+				buttonBuyoutText:SetPoint("LEFT", buttonBuyoutFrame, "RIGHT", -182, 0)
 				auction:SetWidth(576);
 				buttonHighlight:SetWidth(543);
 				AuctionsBidSort:SetWidth(193);

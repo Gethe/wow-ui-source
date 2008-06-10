@@ -144,6 +144,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentFactionRight" file="Interface\WorldStateFrame\WorldStateFinalScore-Highlight">
 					<Size>
@@ -161,10 +162,23 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentHonorableKills" inherits="GameFontNormal" text="26">
+				<FontString name="$parentTeam" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="160" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT"  relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="100" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHonorableKills" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="LEFT">
 							<Offset>
@@ -173,7 +187,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentKillingBlows" inherits="GameFontNormal" text="93">
+				<FontString name="$parentKillingBlows" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="LEFT">
 							<Offset>
@@ -182,7 +196,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentDeaths" inherits="GameFontNormal" text="5">
+				<FontString name="$parentDeaths" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="LEFT">
 							<Offset>
@@ -192,6 +206,24 @@
 					</Anchors>
 				</FontString>
 				<FontString name="$parentHonorGained" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentDamage" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHealing" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
@@ -510,7 +542,7 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeftBar" file="Interface\WorldStateFrame\WorldState-CaptureBar">
 					<Size>
-						<AbsDimension x="48" y="9"/>
+						<AbsDimension x="61" y="9"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
@@ -523,7 +555,7 @@
 				</Texture>
 				<Texture name="$parentRightBar" file="Interface\WorldStateFrame\WorldState-CaptureBar">
 					<Size>
-						<AbsDimension x="48" y="9"/>
+						<AbsDimension x="60" y="9"/>
 					</Size>
 					<Anchors>
 						<Anchor point="RIGHT">
@@ -534,16 +566,17 @@
 					</Anchors>
 					<TexCoords left="0.8203125" right="1.0" top="0.171875" bottom="0.3125"/>
 				</Texture>
+			</Layer>
+			<Layer level="BORDER">
 				<Texture name="$parentMiddleBar" file="Interface\WorldStateFrame\WorldState-CaptureBar">
 					<Size>
-						<AbsDimension x="48" y="9"/>
+						<AbsDimension x="25" y="9"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeftBar" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeTo="$parentRightBar" relativePoint="LEFT"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 					<TexCoords left="0.8203125" right="1.0" top="0.34375" bottom="0.484375"/>
-				</Texture>
+				</Texture>				
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\WorldStateFrame\WorldState-CaptureBar">
@@ -555,12 +588,12 @@
 					</Anchors>
 					<TexCoords left="0" right="0.67578125" top="0" bottom="0.40625"/>
 				</Texture>
-				<Texture file="Interface\WorldStateFrame\WorldState-CaptureBar">
+				<Texture name="$parentRightLine" file="Interface\WorldStateFrame\WorldState-CaptureBar">
 					<Size>
 						<AbsDimension x="3" y="8"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeftBar" relativePoint="RIGHT">
+						<Anchor point="LEFT" relativeTo="$parentMiddleBar" relativePoint="RIGHT">
 							<Offset>
 								<AbsDimension x="-1" y="0"/>
 							</Offset>
@@ -568,12 +601,12 @@
 					</Anchors>
 					<TexCoords left="0.74609375" right="0.7578125" top="0" bottom="0.125"/>
 				</Texture>
-				<Texture file="Interface\WorldStateFrame\WorldState-CaptureBar">
+				<Texture name="$parentLeftLine" file="Interface\WorldStateFrame\WorldState-CaptureBar">
 					<Size>
 						<AbsDimension x="3" y="8"/>
 					</Size>
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentRightBar" relativePoint="LEFT">
+						<Anchor point="RIGHT" relativeTo="$parentMiddleBar" relativePoint="LEFT">
 							<Offset>
 								<AbsDimension x="1" y="0"/>
 							</Offset>
@@ -796,6 +829,15 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="WorldStateScoreFrameTeam" inherits="GameFontHighlightSmall" text="TEAM" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="WorldStateScoreFrameName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="80" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 				<FontString name="WorldStateScoreFrameTimerLabel" inherits="GameFontHighlightSmall" text="TIME_TO_PORT">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
@@ -895,12 +937,42 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Frame name="WorldStateScoreFrameDamageDone" inherits="WorldStateScoreColumnTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHK" relativePoint="CENTER">
+						<Offset>
+							<AbsDimension x="58" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WorldStateScoreFrameDamageDoneText:SetText(SCORE_DAMAGE_DONE);
+						this.tooltip = DAMAGE_DONE_TOOLTIP;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="WorldStateScoreFrameHealingDone" inherits="WorldStateScoreColumnTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameDamageDone" relativePoint="CENTER">
+						<Offset>
+							<AbsDimension x="58" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WorldStateScoreFrameHealingDoneText:SetText(SCORE_HEALING_DONE);
+						this.tooltip = DAMAGE_DONE_TOOLTIP;
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Frame name="WorldStateScoreFrameHonorGained" inherits="WorldStateScoreColumnTemplate">
 				<Size>
 					<AbsDimension x="90" y="30"/>
 				</Size>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHK" relativePoint="CENTER">
+					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHealingDone" relativePoint="CENTER">
 						<Offset>
 							<AbsDimension x="58" y="0"/>
 						</Offset>
@@ -920,7 +992,7 @@
 			</Frame>
 			<Frame name="WorldStateScoreColumn1" inherits="WorldStateScoreColumnTemplate">
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHK" relativePoint="RIGHT">
+					<Anchor point="CENTER" relativeTo="WorldStateScoreFrameHealingDone" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="38" y="0"/>
 						</Offset>
@@ -1301,7 +1373,7 @@
 					</OnClick>
 				</Scripts>
             </Button>
-			<Button name="WorldStateScoreFrameLeaveButton" inherits="UIPanelButtonTemplate" text="RETURN_TO_WORLD">
+			<Button name="WorldStateScoreFrameLeaveButton" inherits="UIPanelButtonTemplate" text="LEAVE_BATTLEGROUND">
 				<Size>
 					<AbsDimension x="153" y="21"/>
 				</Size>
@@ -1347,10 +1419,11 @@
 									</Offset>
 								</Anchor>
 							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
 						</Texture>
 						<Texture name="$parentRight" file="Interface\WorldStateFrame\WorldStateFinalScore-Highlight">
 							<Size>
-								<AbsDimension x="20" y="16"/>
+								<AbsDimension x="50" y="16"/>
 							</Size>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
@@ -1364,6 +1437,7 @@
 									</Offset>
 								</Anchor>
 							</Anchors>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
 						</Texture>
 						<FontString name="$parentText" inherits="GameFontHighlight">
 							<Anchors>

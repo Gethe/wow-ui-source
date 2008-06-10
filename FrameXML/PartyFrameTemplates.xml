@@ -42,7 +42,7 @@
 			</OnEnter>
 		</Scripts>
 	</Button>
-	<Button name="PartyMemberPetFrameTemplate" frameStrata="LOW" toplevel="true" virtual="true">
+	<Button name="PartyMemberPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="64" y="26"/>
 		</Size>
@@ -166,10 +166,12 @@
 			<OnLoad>
 				local id = this:GetParent():GetID();
 				local prefix = "PartyMemberFrame"..id.."PetFrame";
-				UnitFrame_Initialize("partypet"..id,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
+				local unit = "partypet"..id;
+				UnitFrame_Initialize(unit,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
 					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"));
 				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), TEXT(DEAD));
 				getglobal(prefix.."Name"):Hide();
+				SecureUnitButton_OnLoad(this, unit);
 			</OnLoad>
 			<OnShow>
 				UnitFrame_Update();
@@ -186,12 +188,9 @@
 			<OnUpdate>
 				UnitFrame_OnUpdate(arg1);
 			</OnUpdate>
-			<OnClick>
-				PartyMemberPetFrame_OnClick();
-			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="PartyMemberFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" virtual="true">
+	<Button name="PartyMemberFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="128" y="53"/>
 		</Size>
@@ -336,6 +335,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnMouseUp>
+						this:GetParent():Click("LeftButton");
+					</OnMouseUp> 
 					<OnEvent>
 						UnitFrameHealthBar_Update(this, arg1);
 					</OnEvent>
@@ -343,9 +345,6 @@
 						UnitFrameHealthBar_OnValueChanged(arg1);
 						PartyMemberHealthCheck();
 					</OnValueChanged>
-					<OnMouseUp>
-						PartyMemberFrame_OnClick(this:GetParent());
-					</OnMouseUp> 
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
@@ -361,12 +360,12 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnMouseUp>
+						this:GetParent():Click("LeftButton");
+					</OnMouseUp> 
 					<OnEvent>
 						UnitFrameManaBar_Update(this, arg1);
 					</OnEvent>
-					<OnMouseUp>
-						PartyMemberFrame_OnClick(this:GetParent());
-					</OnMouseUp> 
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
@@ -436,9 +435,6 @@
 				UnitFrame_OnLeave();
 				PartyMemberBuffTooltip:Hide();
 			</OnLeave>
-			<OnClick>
-				PartyMemberFrame_OnClick();
-			</OnClick>
 			<OnUpdate>
 				PartyMemberFrame_OnUpdate(arg1);
 			</OnUpdate>

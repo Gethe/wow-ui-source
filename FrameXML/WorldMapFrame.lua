@@ -4,6 +4,9 @@ NUM_WORLDMAP_POI_COLUMNS = 8;
 WORLDMAP_POI_TEXTURE_WIDTH = 128;
 NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_FLAGS = 2;
+WORLDMAP_COSMIC_ID = -1;
+WORLDMAP_WORLD_ID = 0;
+WORLDMAP_OUTLAND_ID = 3;
 
 function WorldMapFrame_OnLoad()
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -47,8 +50,19 @@ end
 function WorldMapFrame_Update()
 	local mapFileName, textureHeight = GetMapInfo();
 	if ( not mapFileName ) then
-		-- Temporary Hack
-		mapFileName = "World";
+		if ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
+			mapFileName = "Cosmic";
+			OutlandButton:Show();
+			AzerothButton:Show();
+		else
+			-- Temporary Hack (Temporary meaning 2 yrs, haha)
+			mapFileName = "World";
+			OutlandButton:Hide();
+			AzerothButton:Hide();
+		end
+	else
+		OutlandButton:Hide();
+		AzerothButton:Hide();
 	end
 	for i=1, NUM_WORLDMAP_DETAIL_TILES, 1 do
 		getglobal("WorldMapDetailTile"..i):SetTexture("Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i);
@@ -56,7 +70,7 @@ function WorldMapFrame_Update()
 	--WorldMapHighlight:Hide();
 
 	-- Enable/Disable zoom out button
-	if ( GetCurrentMapContinent() == 0 ) then
+	if ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
 		WorldMapZoomOutButton:Disable();
 	else
 		WorldMapZoomOutButton:Enable();
@@ -211,11 +225,11 @@ function WorldMapContinentsDropDown_Initialize()
 end
 
 function WorldMapFrame_LoadContinents(...)
-	local info;
-	for i=1, arg.n, 1 do
-		info = {};
-		info.text = arg[i];
+	local info = UIDropDownMenu_CreateInfo();
+	for i=1, select("#", ...), 1 do
+		info.text = select(i, ...);
 		info.func = WorldMapContinentButton_OnClick;
+		info.checked = nil;
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -231,11 +245,11 @@ function WorldMapZoneDropDown_Initialize()
 end
 
 function WorldMapFrame_LoadZones(...)
-	local info;
-	for i=1, arg.n, 1 do
-		info = {};
-		info.text = arg[i];
+	local info = UIDropDownMenu_CreateInfo();
+	for i=1, select("#", ...), 1 do
+		info.text = select(i, ...);
 		info.func = WorldMapZoneButton_OnClick;
+		info.checked = nil;
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -251,15 +265,21 @@ function WorldMapZoneButton_OnClick()
 end
 
 function WorldMapZoomOutButton_OnClick()
-	if ( GetCurrentMapZone() ~= 0 ) then
+	if ( GetCurrentMapZone() ~= WORLDMAP_WORLD_ID ) then
 		SetMapZoom(GetCurrentMapContinent());
+	elseif ( GetCurrentMapContinent() == WORLDMAP_WORLD_ID ) then
+		SetMapZoom(WORLDMAP_COSMIC_ID);
+	elseif ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
+		return;
+	elseif ( GetCurrentMapContinent() == WORLDMAP_OUTLAND_ID ) then
+		SetMapZoom(WORLDMAP_COSMIC_ID);
 	else
-		SetMapZoom(0);
+		SetMapZoom(WORLDMAP_WORLD_ID);
 	end
 end
 
 function WorldMap_UpdateZoneDropDownText()
-	if ( GetCurrentMapZone() == 0 ) then
+	if ( (GetCurrentMapContinent() == 0) or (GetCurrentMapContinent() == WORLDMAP_COSMIC_ID) ) then
 		UIDropDownMenu_ClearAll(WorldMapZoneDropDown);
 	else
 		UIDropDownMenu_SetSelectedID(WorldMapZoneDropDown, GetCurrentMapZone());
@@ -267,7 +287,7 @@ function WorldMap_UpdateZoneDropDownText()
 end
 
 function WorldMap_UpdateContinentDropDownText()
-	if ( GetCurrentMapContinent() == 0 ) then
+	if ( (GetCurrentMapContinent() == 0) or (GetCurrentMapContinent() == WORLDMAP_COSMIC_ID) ) then
 		UIDropDownMenu_ClearAll(WorldMapContinentDropDown);
 	else
 		UIDropDownMenu_SetSelectedID(WorldMapContinentDropDown,GetCurrentMapContinent());
@@ -335,6 +355,7 @@ function WorldMapButton_OnUpdate(elapsed)
 	if ( playerX == 0 and playerY == 0 ) then
 		ShowWorldMapArrowFrame(nil);
 		WorldMapPing:Hide();
+		WorldMapPlayer:Hide();
 	else
 		playerX = playerX * WorldMapDetailFrame:GetWidth();
 		playerY = -playerY * WorldMapDetailFrame:GetHeight();
@@ -342,6 +363,7 @@ function WorldMapButton_OnUpdate(elapsed)
 		ShowWorldMapArrowFrame(1);
 
 		-- Position clear button to detect mouseovers
+		WorldMapPlayer:Show();
 		WorldMapPlayer:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
 
 		-- Position player ping if its shown
@@ -452,6 +474,17 @@ function WorldMapButton_OnUpdate(elapsed)
 		WorldMapCorpse:Show();
 	end
 
+	-- Position Death Release marker
+	local deathReleaseX, deathReleaseY = GetDeathReleasePosition();
+	if ((deathReleaseX == 0 and deathReleaseY == 0) or UnitIsGhost("player")) then
+		WorldMapDeathRelease:Hide();
+	else
+		deathReleaseX = deathReleaseX * WorldMapDetailFrame:GetWidth();
+		deathReleaseY = -deathReleaseY * WorldMapDetailFrame:GetHeight();
+		
+		WorldMapDeathRelease:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", deathReleaseX, deathReleaseY);
+		WorldMapDeathRelease:Show();
+	end
 end
 
 function WorldMapUnit_OnEnter()

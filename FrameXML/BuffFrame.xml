@@ -99,6 +99,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
+				BuffFrame_EnchantButton_OnLoad();
 			</OnLoad>
 			<OnEvent>
 			</OnEvent>
@@ -106,6 +107,7 @@
 				BuffFrame_EnchantButton_OnUpdate();
 			</OnUpdate>
 			<OnClick>
+				BuffFrame_EnchantButton_OnClick();
 			</OnClick>
 			<OnEnter>
 				BuffFrame_EnchantButton_OnEnter();
@@ -129,7 +131,6 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="BuffButton0Duration" inherits="BuffButtonDurationTemplate"/>
 				<FontString name="BuffButton1Duration" inherits="BuffButtonDurationTemplate"/>
 				<FontString name="BuffButton2Duration" inherits="BuffButtonDurationTemplate"/>
 				<FontString name="BuffButton3Duration" inherits="BuffButtonDurationTemplate"/>
@@ -153,23 +154,15 @@
 				<FontString name="BuffButton21Duration" inherits="BuffButtonDurationTemplate"/>
 				<FontString name="BuffButton22Duration" inherits="BuffButtonDurationTemplate"/>
 				<FontString name="BuffButton23Duration" inherits="BuffButtonDurationTemplate"/>
+				<FontString name="BuffButton24Duration" inherits="BuffButtonDurationTemplate"/>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="BuffButton0" inherits="BuffButtonHelpful" id="0">
+			<Button name="BuffButton1" inherits="BuffButtonHelpful" id="1">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
 							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="BuffButton1" inherits="BuffButtonHelpful" id="1">
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="BuffButton0" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -230,18 +223,18 @@
 			</Button>
 			<Button name="BuffButton8" inherits="BuffButtonHelpful" id="8">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="BuffButton0" relativePoint="BOTTOM">
+					<Anchor point="RIGHT" relativeTo="BuffButton7" relativePoint="LEFT">
 						<Offset>
-							<AbsDimension x="0" y="-5"/>
+							<AbsDimension x="-5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="BuffButton9" inherits="BuffButtonHelpful" id="9">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="BuffButton8" relativePoint="LEFT">
+					<Anchor point="TOP" relativeTo="BuffButton1" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="-5" y="0"/>
+							<AbsDimension x="0" y="-5"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -300,20 +293,20 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="BuffButton16" inherits="BuffButtonHarmful" id="0">
+			<Button name="BuffButton16" inherits="BuffButtonHelpful" id="16">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="BuffButton8" relativePoint="BOTTOM">
+					<Anchor point="RIGHT" relativeTo="BuffButton15" relativePoint="LEFT">
 						<Offset>
-							<AbsDimension x="0" y="-5"/>
+							<AbsDimension x="-5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="BuffButton17" inherits="BuffButtonHarmful" id="1">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="BuffButton16" relativePoint="LEFT">
+					<Anchor point="TOPRIGHT" relativeTo="BuffButton9" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="-5" y="0"/>
+							<AbsDimension x="0" y="-5"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -366,6 +359,15 @@
 			<Button name="BuffButton23" inherits="BuffButtonHarmful" id="7">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="BuffButton22" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BuffButton24" inherits="BuffButtonHarmful" id="8">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="BuffButton23" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-5" y="0"/>
 						</Offset>

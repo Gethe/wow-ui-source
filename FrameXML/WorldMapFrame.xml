@@ -530,6 +530,21 @@
 					<Frame name="WorldMapFlag1" inherits="WorldMapFlagTemplate" id="1"/>
 					<Frame name="WorldMapFlag2" inherits="WorldMapFlagTemplate" id="2"/>
 					<Frame name="WorldMapCorpse" inherits="WorldMapCorpseTemplate"/>
+					<Frame name="WorldMapDeathRelease" inherits="WorldMapCorpseTemplate">
+						<Scripts>
+							<OnEnter>
+								local x, y = this:GetCenter();
+								local parentX, parentY = this:GetParent():GetCenter();
+								if ( x > parentX ) then
+									WorldMapTooltip:SetOwner(this, "ANCHOR_LEFT");
+								else
+									WorldMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								end
+								WorldMapTooltip:SetText(TEXT(SPIRIT_HEALER_RELEASE_RED));
+								WorldMapTooltip:Show();
+							</OnEnter>
+						</Scripts>
+					</Frame>
 					<Model name="WorldMapPing" file="Interface\MiniMap\Ping\MinimapPing.mdx" scale="0.4" hidden="true">
 						<Size>
 							<AbsDimension x="50" y="50"/>
@@ -576,6 +591,60 @@
 							</Layer>
 						</Layers>
 					</Frame>
+					<Button name="OutlandButton" hidden="true">
+						<Size>
+							<AbsDimension x="320" y="320"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="115" y="-90"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SetMapZoom(3);
+							</OnClick>
+						</Scripts>
+						<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\Cosmic\Cosmic-Outland-Highlight">
+							<Size x="856" y="605"/>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="176" y="-87"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</HighlightTexture>
+					</Button>
+					<Button name="AzerothButton" hidden="true">
+						<Size>
+							<AbsDimension x="366" y="366"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="593" y="-255"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SetMapZoom(0);
+							</OnClick>
+						</Scripts>
+						<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\Cosmic\Cosmic-Azeroth-Highlight">
+							<Size x="898" y="647"/>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-224" y="104"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</HighlightTexture>
+					</Button>
 				</Frames>
 				<Scripts>
 					<OnLoad>

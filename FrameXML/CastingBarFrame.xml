@@ -1,17 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CastingBarFrame.lua"/>
-	<StatusBar name="CastingBarFrame" drawLayer="BORDER" toplevel="true" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="195" y="13"/>
-		</Size>
-		<Anchors>
-			<Anchor point="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="55"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
+	<StatusBar name="CastingBarFrameTemplate" drawLayer="BORDER" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture setAllPoints="true">
@@ -19,7 +9,7 @@
 				</Texture>		
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="CastingBarText" inherits="GameFontHighlight">
+				<FontString name="$parentText" inherits="GameFontHighlight">
 					<Size>
 						<AbsDimension x="185" y="16"/>
 					</Size>
@@ -31,7 +21,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="CastingBarBorder" file="Interface\CastingBar\UI-CastingBar-Border">
+				<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border">
 					<Size>
 						<AbsDimension x="256" y="64"/>
 					</Size>
@@ -43,9 +33,21 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
+				<Texture name="$parentIcon" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="CastingBarSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+				<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
 					<Size>
 						<AbsDimension x="32" y="32"/>
 					</Size>
@@ -53,7 +55,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture name="CastingBarFlash" file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD">
+				<Texture name="$parentFlash" file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD">
 					<Size>
 						<AbsDimension x="256" y="64"/>
 					</Size>
@@ -69,10 +71,10 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				CastingBarFrame_OnLoad();
+				CastingBarFrame_OnLoad("player", true);
 			</OnLoad>
 			<OnEvent>
-				CastingBarFrame_OnEvent();
+				CastingBarFrame_OnEvent(event, arg1);
 			</OnEvent>
 			<OnUpdate>
 				CastingBarFrame_OnUpdate();
@@ -80,5 +82,17 @@
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
+	</StatusBar>
+	<StatusBar name="CastingBarFrame" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">
+		<Size>
+			<AbsDimension x="195" y="13"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="55"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
 	</StatusBar>
 </Ui>

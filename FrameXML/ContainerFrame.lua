@@ -1,4 +1,4 @@
-NUM_CONTAINER_FRAMES = 12;
+NUM_CONTAINER_FRAMES = 13;
 NUM_BAG_FRAMES = 4;
 MAX_CONTAINER_ITEMS = 36;
 NUM_CONTAINER_COLUMNS = 4;
@@ -10,7 +10,7 @@ CONTAINER_SPACING = 0;
 VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = 0;
-CONTAINER_SCALE = 0.90;
+CONTAINER_SCALE = 0.75;
 
 function ContainerFrame_OnLoad()
 	this:RegisterEvent("BAG_UPDATE");
@@ -19,6 +19,7 @@ function ContainerFrame_OnLoad()
 	this:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	this:RegisterEvent("ITEM_LOCK_CHANGED");
 	this:RegisterEvent("UPDATE_INVENTORY_ALERTS");
+	this:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	ContainerFrame1.bagsShown = 0;
 	ContainerFrame1.bags = {};
 end
@@ -39,6 +40,10 @@ function ContainerFrame_OnEvent()
 	elseif ( event == "ITEM_LOCK_CHANGED" or event == "BAG_UPDATE_COOLDOWN" or event == "UPDATE_INVENTORY_ALERTS" ) then
 		if ( this:IsShown() ) then
 			ContainerFrame_Update(this);
+		end
+	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
+		if ( this:IsShown() ) then
+			updateContainerFrameAnchors();
 		end
 	end
 end
@@ -265,12 +270,12 @@ function ContainerFrame_Update(frame)
 		if ( GameTooltip:IsOwned(itemButton) ) then
 			if ( texture ) then
 				local hasCooldown, repairCost = GameTooltip:SetBagItem(itemButton:GetParent():GetID(),itemButton:GetID());
-				--[[if ( hasCooldown ) then
+				if ( hasCooldown ) then
 					itemButton.updateTooltip = TOOLTIP_UPDATE_TIME;
 				else
 					itemButton.updateTooltip = nil;
 				end
-				]]
+				
 				if ( InRepairMode() and (repairCost > 0) ) then
 					GameTooltip:AddLine(TEXT(REPAIR_COST), "", 1, 1, 1);
 					SetTooltipMoney(GameTooltip, repairCost);
@@ -470,26 +475,55 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 end
 
 function updateContainerFrameAnchors()
-	-- Adjust the start anchor for bags depending on the multibars
-	local shrinkFrames, frame;
-	local xOffset = CONTAINER_OFFSET_X;
-	local yOffset = CONTAINER_OFFSET_Y;
-	local screenHeight = GetScreenHeight();
-	local containerScale = CONTAINER_SCALE;
-	local freeScreenHeight = screenHeight - yOffset;
-	local index = 1;
-	local column = 0;
-	local uiScale = 1;
-	if ( GetCVar("useUiScale") == "1" ) then
-		uiScale = GetCVar("uiscale") + 0;
-		if ( uiScale > containerScale ) then
-			containerScale = uiScale * containerScale;
+	local frame, xOffset, yOffset, screenHeight, freeScreenHeight, leftMostPoint, column;
+	local screenWidth = GetScreenWidth();
+	local containerScale = 1;
+	local leftLimit = 0;
+	if ( BankFrame:IsShown() ) then
+		leftLimit = BankFrame:GetRight() - 25;
+	end
+	
+	while ( containerScale > CONTAINER_SCALE ) do
+		screenHeight = GetScreenHeight() / containerScale;
+		-- Adjust the start anchor for bags depending on the multibars
+		xOffset = CONTAINER_OFFSET_X / containerScale; 
+		yOffset = CONTAINER_OFFSET_Y / containerScale; 
+		-- freeScreenHeight determines when to start a new column of bags
+		freeScreenHeight = screenHeight - yOffset;
+		leftMostPoint = screenWidth - xOffset;
+		column = 1;
+		local frameHeight;
+		for index, frameName in ipairs(ContainerFrame1.bags) do
+			frameHeight = getglobal(frameName):GetHeight();
+			if ( freeScreenHeight < frameHeight ) then
+				-- Start a new column
+				column = column + 1;
+				leftMostPoint = screenWidth - ( column * CONTAINER_WIDTH * containerScale ) - xOffset;
+				freeScreenHeight = screenHeight - yOffset;
+			end
+			freeScreenHeight = freeScreenHeight - frameHeight - VISIBLE_CONTAINER_SPACING;
+		end
+		if ( leftMostPoint < leftLimit ) then
+			containerScale = containerScale - 0.01;
+		else
+			break;
 		end
 	end
-	while ContainerFrame1.bags[index] do
-		frame = getglobal(ContainerFrame1.bags[index]);
-		frame:SetScale(1);
-		-- freeScreenHeight determines when to start a new column of bags
+	
+	if ( containerScale < CONTAINER_SCALE ) then
+		containerScale = CONTAINER_SCALE;
+	end
+	
+	screenHeight = GetScreenHeight() / containerScale;
+	-- Adjust the start anchor for bags depending on the multibars
+	xOffset = CONTAINER_OFFSET_X / containerScale;
+	yOffset = CONTAINER_OFFSET_Y / containerScale;
+	-- freeScreenHeight determines when to start a new column of bags
+	freeScreenHeight = screenHeight - yOffset;
+	column = 0;
+	for index, frameName in ipairs(ContainerFrame1.bags) do
+		frame = getglobal(frameName);
+		frame:SetScale(containerScale);
 		if ( index == 1 ) then
 			-- First bag
 			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -xOffset, yOffset );
@@ -502,72 +536,53 @@ function updateContainerFrameAnchors()
 			-- Anchor to the previous bag
 			frame:SetPoint("BOTTOMRIGHT", ContainerFrame1.bags[index - 1], "TOPRIGHT", 0, CONTAINER_SPACING);	
 		end
-		if ( frame:GetLeft() < ( BankFrame:GetRight() - 45 ) ) then 
-			if ( frame:GetTop() > ( BankFrame:GetBottom() + 50 ) ) then
-				shrinkFrames = 1;
-				break;
-			end
-		end
 		freeScreenHeight = freeScreenHeight - frame:GetHeight() - VISIBLE_CONTAINER_SPACING;
-		index = index + 1;
 	end
-	if ( shrinkFrames ) then
-		screenHeight = screenHeight / containerScale;
-		xOffset = xOffset / containerScale; 
-		yOffset = yOffset / containerScale; 
-		freeScreenHeight = screenHeight - yOffset;
-		index = 1;
-		column = 0;
-		while ContainerFrame1.bags[index] do
-			frame = getglobal(ContainerFrame1.bags[index]);
-			frame:SetScale(containerScale);
-			if ( index == 1 ) then
-				-- First bag
-				frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -xOffset, yOffset );
-			elseif ( freeScreenHeight < frame:GetHeight() ) then
-				-- Start a new column
-				column = column + 1;
-				freeScreenHeight = screenHeight - yOffset;
-				frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH) - xOffset, yOffset );
-			else
-				-- Anchor to the previous bag
-				frame:SetPoint("BOTTOMRIGHT", ContainerFrame1.bags[index - 1], "TOPRIGHT", 0, CONTAINER_SPACING);	
-			end
-			freeScreenHeight = freeScreenHeight - frame:GetHeight() - VISIBLE_CONTAINER_SPACING;
-			index = index + 1;
-		end
-	end
-	-- This is used to position the unit tooltip
-	--[[
-	local oldContainerPosition = OPEN_CONTAINER_POSITION;
-	if ( index == 1 ) then
-		DEFAULT_TOOLTIP_POSITION = -13;
-	else
-		DEFAULT_TOOLTIP_POSITION = -((column + 1) * CONTAINER_WIDTH) - xOffset;
-	end
-	if ( DEFAULT_TOOLTIP_POSITION ~= oldContainerPosition and GameTooltip.default and GameTooltip:IsShown() ) then
-		GameTooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", DEFAULT_TOOLTIP_POSITION, 64);
-	end
-	]]
 end
+
 
 function ContainerFrameItemButton_OnLoad()
 	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	this:RegisterForDrag("LeftButton");
+	this:RegisterEvent("CURSOR_UPDATE");
+	this:RegisterEvent("BAG_UPDATE_COOLDOWN");
 
 	this.SplitStack = function(button, split)
 		SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 	end
 end
 
-function ContainerFrameItemButton_OnClick(button, ignoreModifiers)
+function ContainerFrameItemButton_OnClick(button)
 	if ( button == "LeftButton" ) then
-		if ( IsControlKeyDown() and not ignoreModifiers ) then
+		if ( not IsModifierKeyDown() ) then
+			PickupContainerItem(this:GetParent():GetID(), this:GetID());
+			StackSplitFrame:Hide();
+		end
+	else
+		if ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 2 ) then
+			-- Don't sell the item if the buyback tab is selected
+			return;
+		end
+		if ( MerchantFrame:IsShown() and IsShiftKeyDown() ) then
+			this.SplitStack = function(button, split)
+				SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
+				MerchantItemButton_OnClick("LeftButton");
+			end
+			OpenStackSplitFrame(this.count, this, "BOTTOMRIGHT", "TOPRIGHT");
+		else
+			-- Shift-click is used for auto-looting and socketing
+			UseContainerItem(this:GetParent():GetID(), this:GetID());
+			StackSplitFrame:Hide();
+		end
+	end
+end
+
+function ContainerFrameItemButton_OnModifiedClick(button)
+	if ( button == "LeftButton" ) then
+		if ( IsControlKeyDown() ) then
 			DressUpItemLink(GetContainerItemLink(this:GetParent():GetID(), this:GetID()));
-		elseif ( IsShiftKeyDown() and not ignoreModifiers ) then
-			if ( ChatFrameEditBox:IsShown() ) then
-				ChatFrameEditBox:Insert(GetContainerItemLink(this:GetParent():GetID(), this:GetID()));
-			else
+		elseif ( IsShiftKeyDown() ) then
+			if ( not ChatEdit_InsertLink(GetContainerItemLink(this:GetParent():GetID(), this:GetID())) ) then
 				local texture, itemCount, locked = GetContainerItemInfo(this:GetParent():GetID(), this:GetID());
 				if ( not locked ) then
 					this.SplitStack = function(button, split)
@@ -576,25 +591,6 @@ function ContainerFrameItemButton_OnClick(button, ignoreModifiers)
 					OpenStackSplitFrame(this.count, this, "BOTTOMRIGHT", "TOPRIGHT");
 				end
 			end
-		else
-			PickupContainerItem(this:GetParent():GetID(), this:GetID());
-			StackSplitFrame:Hide();
-		end
-	else
-		if ( IsControlKeyDown() and not ignoreModifiers ) then
-			return;
-		elseif ( IsShiftKeyDown() and MerchantFrame:IsShown() and not ignoreModifiers ) then
-			this.SplitStack = function(button, split)
-				SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
-				MerchantItemButton_OnClick("LeftButton");
-			end
-			OpenStackSplitFrame(this.count, this, "BOTTOMRIGHT", "TOPRIGHT");
-		elseif ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 2 ) then
-			-- Don't sell the item if the buyback tab is selected
-			return;
-		else
-			UseContainerItem(this:GetParent():GetID(), this:GetID());
-			StackSplitFrame:Hide();
 		end
 	end
 end
@@ -621,14 +617,12 @@ function ContainerFrameItemButton_OnEnter(button)
 
 	local hasCooldown, repairCost = GameTooltip:SetBagItem(button:GetParent():GetID(),button:GetID());
 	
-	--[[
-	Commented out to make dressup cursor work.
 	if ( hasCooldown ) then
 		button.updateTooltip = TOOLTIP_UPDATE_TIME;
 	else
 		button.updateTooltip = nil;
 	end
-	]]
+
 	if ( InRepairMode() and (repairCost and repairCost > 0) ) then
 		GameTooltip:AddLine(TEXT(REPAIR_COST), "", 1, 1, 1);
 		SetTooltipMoney(GameTooltip, repairCost);
@@ -643,8 +637,6 @@ function ContainerFrameItemButton_OnEnter(button)
 end
 
 function ContainerFrameItemButton_OnUpdate(elapsed)
-	--[[
-	Might hurt performance, but need to always update the cursor now
 	if ( not this.updateTooltip ) then
 		return;
 	end
@@ -653,7 +645,7 @@ function ContainerFrameItemButton_OnUpdate(elapsed)
 	if ( this.updateTooltip > 0 ) then
 		return;
 	end
-	]]
+
 	if ( GameTooltip:IsOwned(this) ) then
 		ContainerFrameItemButton_OnEnter();
 	end
@@ -694,6 +686,7 @@ function OpenAllBags(forceOpen)
 			ToggleBag(8);
 			ToggleBag(9);
 			ToggleBag(10);
+			ToggleBag(11);
 		end
 	end
 
@@ -707,35 +700,6 @@ function CloseAllBags()
 end
 
 --KeyRing functions
-function KeyRingItemButton_OnClick(button)
-	if ( button == "LeftButton" ) then
-		if ( IsControlKeyDown() and not this.isBag ) then
-			DressUpItemLink(GetContainerItemLink(KEYRING_CONTAINER, this:GetID()));
-		elseif ( IsShiftKeyDown() and not this.isBag ) then
-			if ( ChatFrameEditBox:IsVisible() ) then
-				ChatFrameEditBox:Insert(GetContainerItemLink(KEYRING_CONTAINER, this:GetID()));
-			else
-				local texture, itemCount, locked = GetContainerItemInfo(KEYRING_CONTAINER, this:GetID());
-				if ( not locked ) then
-					OpenStackSplitFrame(this.count, this, "BOTTOMLEFT", "TOPLEFT");
-				end
-			end
-		else
-			PickupContainerItem(KEYRING_CONTAINER, this:GetID());
-		end
-	else
-		if ( IsControlKeyDown() and not this.isBag ) then
-			return;
-		elseif ( IsShiftKeyDown() and not this.isBag ) then
-			local texture, itemCount, locked = GetContainerItemInfo(KEYRING_CONTAINER, this:GetID());
-			if ( not locked ) then
-				OpenStackSplitFrame(this.count, this, "BOTTOMLEFT", "TOPLEFT");
-			end
-		else
-			UseContainerItem(KEYRING_CONTAINER, this:GetID());
-		end
-	end
-end
 
 function PutKeyInKeyRing()
 	local texture;
@@ -771,16 +735,22 @@ function ToggleKeyRing()
 end
 
 function GetKeyRingSize()
-	local level = UnitLevel("player");
-	local size;
-	if ( level > 60 ) then
-		size = 16;
-	elseif ( level >= 50 ) then
-		size = 12;
-	elseif ( level >= 40 ) then
-		size = 8;
-	else
-		size = 4;
+	local numKeyringSlots = GetContainerNumSlots(KEYRING_CONTAINER);
+	local maxSlotNumberFilled = 0;
+	for i=1, numKeyringSlots do
+		local texture = GetContainerItemInfo(KEYRING_CONTAINER, i);
+		if ( texture and i > maxSlotNumberFilled) then
+			maxSlotNumberFilled = i;
+		end
 	end
+
+	-- Round to the nearest 4 rows that will hold the keys
+	local modulo = maxSlotNumberFilled % 4;
+	local size = maxSlotNumberFilled + (4 - modulo);
+	if ( modulo == 3 ) then
+		size = size + 4;
+	end
+	size = min(size, numKeyringSlots);
+
 	return size;
 end

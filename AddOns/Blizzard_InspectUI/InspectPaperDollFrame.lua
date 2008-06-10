@@ -105,9 +105,7 @@ function InspectPaperDollItemSlotButton_OnClick(button)
 	if ( IsControlKeyDown() ) then
 		DressUpItemLink(GetInventoryItemLink(InspectFrame.unit, this:GetID()));
 	elseif ( IsShiftKeyDown() ) then
-		if ( ChatFrameEditBox:IsVisible() ) then
-			ChatFrameEditBox:Insert(GetInventoryItemLink(InspectFrame.unit, this:GetID()));
-		end
+		ChatEdit_InsertLink(GetInventoryItemLink(InspectFrame.unit, this:GetID()));
 	end
 end
 

@@ -17,7 +17,7 @@
 	</Slider>
 	<Frame name="SoundOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
 		<Size>
-			<AbsDimension x="400" y="285"/>
+			<AbsDimension x="400" y="295"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -63,7 +63,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="14" y="-44"/>
+							<AbsDimension x="14" y="-33"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -128,6 +128,15 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
+			<CheckButton name="SoundOptionsFrameCheckButton9" inherits="SoundOptionsCheckButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
 			<Slider name="SoundOptionsFrameSlider1" inherits="SoundOptionsSliderTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
@@ -158,6 +167,15 @@
 			<Slider name="SoundOptionsFrameSlider4" inherits="SoundOptionsSliderTemplate" id="4">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="SoundOptionsFrameSlider3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="SoundOptionsFrameSlider5" inherits="SoundOptionsSliderTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SoundOptionsFrameSlider4" relativePoint="BOTTOM">
 						<Offset>
 							<AbsDimension x="0" y="-18"/>
 						</Offset>
@@ -216,6 +234,9 @@
 					<OnClick>
 						PlaySound("gsTitleOptionOK");
 						HideUIPanel(SoundOptionsFrame);
+						if ( SoundOptionsFrame.ClientRestart ) then
+							StaticPopup_Show("CLIENT_RESTART_ALERT");
+						end
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -231,6 +252,7 @@
 				SoundOptionsFrame_Load();
 				Disable_BagButtons();
 				UpdateMicroButtons();
+				SoundOptionsFrame.ClientRestart = nil;
 			</OnShow>
 			<OnKeyDown>
 				local screenshotKey = GetBindingKey("SCREENSHOT");

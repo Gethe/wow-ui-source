@@ -26,9 +26,7 @@
 				if ( IsControlKeyDown() ) then
 					DressUpItemLink(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, this:GetID()));
 				elseif ( IsShiftKeyDown() ) then
-					if ( ChatFrameEditBox:IsVisible() ) then
-						ChatFrameEditBox:Insert(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, this:GetID()));
-					end
+					ChatEdit_InsertLink(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, this:GetID()));
 				end
 			</OnClick>
 		</Scripts>
@@ -304,9 +302,6 @@
 					<OnLoad>
 						TradeSkillInvSlotDropDown_OnLoad();
 					</OnLoad>
-					<OnShow>
-						TradeSkillInvSlotDropDown_OnShow();
-					</OnShow>
 				</Scripts>
 			</Frame>
 			<Frame name="TradeSkillSubClassDropDown" inherits="UIDropDownMenuTemplate" id="1">
@@ -321,9 +316,6 @@
 					<OnLoad>
 						TradeSkillSubClassDropDown_OnLoad();
 					</OnLoad>
-					<OnShow>
-						TradeSkillSubClassDropDown_OnShow();
-					</OnShow>
 				</Scripts>
 			</Frame>
 			
@@ -568,9 +560,7 @@
 										if ( IsControlKeyDown() ) then
 											DressUpItemLink(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
 										elseif ( IsShiftKeyDown() ) then
-											if ( ChatFrameEditBox:IsVisible() ) then
-												ChatFrameEditBox:Insert(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
-											end
+											ChatEdit_InsertLink(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
 										end
 									</OnClick>
 									<OnEnter>

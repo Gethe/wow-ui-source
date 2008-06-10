@@ -388,7 +388,7 @@
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
 			<OnEvent>
-				BattlefieldFrame_OnEvent();
+				BattlefieldFrame_OnEvent(event);
 			</OnEvent>
 			<OnMouseWheel>
 				return;

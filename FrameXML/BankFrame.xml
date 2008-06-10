@@ -33,8 +33,15 @@
 				BankFrameItemButton_OnLoad();
 			</OnLoad>
 			<OnClick>
-				BankFrameItemButtonGeneric_OnClick(arg1);
+				if ( not IsModifierKeyDown() ) then
+					BankFrameItemButtonGeneric_OnClick(arg1);
+				end
 			</OnClick>
+			<PostClick>
+				if ( IsModifierKeyDown() ) then
+					BankFrameItemButtonGeneric_OnModifiedClick(arg1);
+				end
+			</PostClick>
             <OnDragStart>
                 BankFrameItemButtonGeneric_OnClick("LeftButton");
             </OnDragStart>
@@ -55,12 +62,12 @@
 					BankFrameItemButtonBag_OnClick(arg1);
 				end
 			</OnClick>
-	            <OnDragStart>
-	                BankFrameItemButtonBag_OnShiftClick();
-	            </OnDragStart>
-	            <OnReceiveDrag>
-	                BankFrameItemButtonBag_OnClick();
-	            </OnReceiveDrag>
+	        <OnDragStart>
+	            BankFrameItemButtonBag_OnShiftClick();
+	        </OnDragStart>
+	        <OnReceiveDrag>
+	            BankFrameItemButtonBag_OnClick();
+	        </OnReceiveDrag>
 		</Scripts>
 		<Frames>
 			<Frame name="$parentHighlightFrame" setAllPoints="true">
@@ -76,7 +83,7 @@
 
 	<Frame name="BankFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="384" y="512"/>
+			<AbsDimension x="425" y="512"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -116,7 +123,7 @@
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
-								<AbsDimension x="6" y="233"/>
+								<AbsDimension x="-3" y="233"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -125,7 +132,7 @@
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
-								<AbsDimension x="-11" y="195"/>
+								<AbsDimension x="-3" y="200"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -134,7 +141,7 @@
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
-								<AbsDimension x="-11" y="-5"/>
+								<AbsDimension x="-3" y="-2"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -144,9 +151,9 @@
 		<Frames>
 			<Button name="BankCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="BankFrame" relativePoint="TOPRIGHT">
+					<Anchor point="TOPRIGHT" relativeTo="BankFrame" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-46" y="-24"/>
+							<AbsDimension x="-22" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -207,18 +214,18 @@
 			</Button>
 			<Button name="BankFrameItem7" inherits="BankItemButtonGenericTemplate" id="7">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BankFrameItem1" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem6" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="-7"/>
+							<AbsDimension x="12" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="BankFrameItem8" inherits="BankItemButtonGenericTemplate" id="8">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BankFrameItem7" relativePoint="TOPRIGHT">
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem1" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="12" y="0"/>
+							<AbsDimension x="0" y="-7"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -261,9 +268,9 @@
 			</Button>
 			<Button name="BankFrameItem13" inherits="BankItemButtonGenericTemplate" id="13">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BankFrameItem7" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem12" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="-7"/>
+							<AbsDimension x="12" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -279,9 +286,9 @@
 			</Button>
 			<Button name="BankFrameItem15" inherits="BankItemButtonGenericTemplate" id="15">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BankFrameItem14" relativePoint="TOPRIGHT">
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem8" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="12" y="0"/>
+							<AbsDimension x="0" y="-7"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -315,9 +322,9 @@
 			</Button>
 			<Button name="BankFrameItem19" inherits="BankItemButtonGenericTemplate" id="19">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BankFrameItem13" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem18" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="-7"/>
+							<AbsDimension x="12" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -342,9 +349,9 @@
 			</Button>
 			<Button name="BankFrameItem22" inherits="BankItemButtonGenericTemplate" id="22">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BankFrameItem21" relativePoint="TOPRIGHT">
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem15" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="12" y="0"/>
+							<AbsDimension x="0" y="-7"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -367,11 +374,47 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<Button name="BankFrameItem25" inherits="BankItemButtonGenericTemplate" id="25">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem24" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BankFrameItem26" inherits="BankItemButtonGenericTemplate" id="26">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem25" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BankFrameItem27" inherits="BankItemButtonGenericTemplate" id="27">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem26" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BankFrameItem28" inherits="BankItemButtonGenericTemplate" id="28">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem27" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
 
 
 			<Button name="BankFrameBag1" inherits="BankItemButtonBagTemplate" id="5">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BankFrameItem19" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="BankFrameItem22" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-32"/>
 						</Offset>
@@ -423,14 +466,23 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<Button name="BankFrameBag7" inherits="BankItemButtonBagTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BankFrameBag6" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
 			<Frame name="BankFramePurchaseInfo" hidden="false">
 				<Size>
-					<AbsDimension x="300" y="72"/>
+					<AbsDimension x="380" y="72"/>
 				</Size>
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="BankFrame" relativePoint="CENTER">
 						<Offset>
-							<AbsDimension x="-15" y="-105"/>
+							<AbsDimension x="-23" y="-105"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -438,12 +490,12 @@
 					<Layer level="BACKGROUND">
 						<FontString inherits="GameFontHighlight" text="BANKSLOTPURCHASE_LABEL" justifyH="LEFT">
 							<Size>
-								<AbsDimension x="280" y="0"/>
+								<AbsDimension x="380" y="0"/>
 							</Size>
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
-										<AbsDimension x="10" y="20"/>
+										<AbsDimension x="42" y="20"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -455,7 +507,7 @@
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="LEFT">
 									<Offset>
-										<AbsDimension x="30" y="-10"/>
+										<AbsDimension x="45" y="-10"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -470,7 +522,7 @@
 						<Anchors>
 							<Anchor point="RIGHT" relativePoint="RIGHT">
 								<Offset>
-									<AbsDimension x="-20" y="-10"/>
+									<AbsDimension x="-10" y="-10"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -502,7 +554,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-38" y="102"/>
+							<AbsDimension x="-30" y="103"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

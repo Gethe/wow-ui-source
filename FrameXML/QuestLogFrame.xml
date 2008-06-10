@@ -1138,10 +1138,5 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnUpdate>
-				AutoQuestWatch_OnUpdate(arg1);
-			</OnUpdate>
-		</Scripts>
 	</Frame>
 </Ui>

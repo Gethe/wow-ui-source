@@ -28,23 +28,14 @@ function MultiActionButtonDown(bar, id)
 	end
 end
 
-function MultiActionButtonUp(bar, id, onSelf)
+function MultiActionButtonUp(bar, id)
 	local button = getglobal(bar.."Button"..id);
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
-		if ( MacroFrame_SaveMacro ) then
-			MacroFrame_SaveMacro();
-		end
-		UseAction(ActionButton_GetPagedID(button), 0, onSelf);
-		if ( IsCurrentAction(ActionButton_GetPagedID(button)) ) then
-			button:SetChecked(1);
-		else
-			button:SetChecked(0);
-		end
+		SecureActionButton_OnClick(button, "LeftButton");
+		ActionButton_UpdateState(button);
 	end
 end
-
-
 
 function MultiActionBar_Update()
 	if ( SHOW_MULTI_ACTIONBAR_1 ) then

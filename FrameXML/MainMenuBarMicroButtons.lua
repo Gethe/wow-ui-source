@@ -63,13 +63,13 @@ function UpdateMicroButtons()
 		SocialsMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( WorldMapFrame:IsVisible() ) then
-		WorldMapMicroButton:SetButtonState("PUSHED", 1);
+	if ( LFGParentFrame:IsVisible() ) then
+		LFGMicroButton:SetButtonState("PUSHED", 1);
 	else
-		WorldMapMicroButton:SetButtonState("NORMAL");
+		LFGMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( HelpFrame:IsVisible() ) then
+	if ( HelpFrame:IsVisible() or KnowledgeBaseFrame:IsVisible() ) then
 		HelpMicroButton:SetButtonState("PUSHED", 1);
 	else
 		HelpMicroButton:SetButtonState("NORMAL");

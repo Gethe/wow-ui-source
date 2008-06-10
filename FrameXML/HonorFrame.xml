@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="HonorFrame.lua"/>
 	<Include file="HonorFrameTemplates.xml"/>
-	<Frame name="HonorFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true" id="5">
+	<Frame name="HonorFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true">
 		<HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="75"/>
 		</HitRectInsets>

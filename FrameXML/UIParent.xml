@@ -22,6 +22,7 @@
 				BattlefieldFrame_OnUpdate(arg1);
 				RequestBattlefieldPositions();
 				CheckReadyCheckTime();
+				AnimatedShine_OnUpdate(arg1)
 			</OnUpdate>
 			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
 			<OnShow>

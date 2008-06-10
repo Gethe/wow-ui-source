@@ -24,6 +24,11 @@ function PlayerFrame_OnLoad()
 
 	PlayerAttackBackground:SetVertexColor(0.8, 0.1, 0.1);
 	PlayerAttackBackground:SetAlpha(0.4);
+
+	local showmenu = function()
+		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
+	end
+	SecureUnitButton_OnLoad(this, "player", showmenu);
 end
 
 function PlayerFrame_Update()
@@ -55,7 +60,9 @@ end
 function PlayerFrame_UpdatePvPStatus()
 	local factionGroup, factionName = UnitFactionGroup("player");
 	if ( UnitIsPVPFreeForAll("player") ) then
-		PlaySound("igPVPUpdate");
+		if ( not PlayerPVPIcon:IsShown() ) then
+			PlaySound("igPVPUpdate");
+		end
 		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
 		PlayerPVPIcon:Show();
 
@@ -64,7 +71,9 @@ function PlayerFrame_UpdatePvPStatus()
 		PlayerPVPIconHitArea.tooltipText = NEWBIE_TOOLTIP_PVPFFA;
 		PlayerPVPIconHitArea:Show();
 	elseif ( factionGroup and UnitIsPVP("player") ) then
-		PlaySound("igPVPUpdate");
+		if ( not PlayerPVPIcon:IsShown() ) then
+			PlaySound("igPVPUpdate");
+		end
 		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
 		PlayerPVPIcon:Show();
 
@@ -151,25 +160,6 @@ function PlayerFrame_OnUpdate(elapsed)
 		PlayerStatusGlow:SetAlpha(alpha);
 	end
 	CombatFeedback_OnUpdate(elapsed);
-end
-
-function PlayerFrame_OnClick(button)
-	if ( SpellIsTargeting() and button == "RightButton" ) then
-		SpellStopTargeting();
-		return;
-	end
-	if ( button == "LeftButton" ) then
-		if ( SpellIsTargeting() ) then
-			SpellTargetUnit("player");
-		elseif ( CursorHasItem() ) then
-			AutoEquipCursorItem();
-		else
-			TargetUnit("player");
-		end
-	else
-		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
-		return;
-	end
 end
 
 function PlayerFrame_OnReceiveDrag()

@@ -1,0 +1,171 @@
+
+function InspectPVPFrame_OnLoad()
+	InspectPVPFrameLine1:SetAlpha(0.3);
+	InspectPVPHonorKillsLabel:SetVertexColor(0.6, 0.6, 0.6);
+	InspectPVPHonorHonorLabel:SetVertexColor(0.6, 0.6, 0.6);
+	InspectPVPHonorTodayLabel:SetVertexColor(0.6, 0.6, 0.6);
+	InspectPVPHonorYesterdayLabel:SetVertexColor(0.6, 0.6, 0.6);
+	InspectPVPHonorLifetimeLabel:SetVertexColor(0.6, 0.6, 0.6);
+
+	this:RegisterEvent("INSPECT_HONOR_UPDATE");
+end
+
+function InspectPVPFrame_OnEvent()
+	if ( event == "INSPECT_HONOR_UPDATE" ) then
+		InspectPVPFrame_Update();
+	end
+end
+
+function InspectPVPFrame_OnShow()
+	if ( not HasInspectHonorData() ) then
+		RequestInspectHonorData();
+	else
+		InspectPVPFrame_Update();
+	end
+end
+
+function InspectPVPFrame_SetFaction()
+	local factionGroup = UnitFactionGroup("player");
+	if ( factionGroup ) then
+		InspectPVPFrameHonorIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+		InspectPVPFrameHonorIcon:Show();
+	end
+end
+
+function InspectPVPFrame_Update()
+	for i=1, MAX_ARENA_TEAMS do
+		GetInspectArenaTeamData(i);
+	end	
+	InspectPVPFrame_SetFaction();
+	InspectPVPHonor_Update();
+	InspectPVPTeam_Update();
+end
+
+function InspectPVPTeam_Update()
+	-- Display Elements
+	local button, buttonName, highlight, data, standard, emblem, border;
+	-- Data Elements
+	local teamName, teamSize, teamRating, teamPlayed, teamWins, teamLoss, playerPlayed, playerPlayedPct, teamRank;
+	local background = {};
+	local borderColor = {};
+	local emblemColor = {};
+	local ARENA_TEAMS = {};
+	ARENA_TEAMS[1] = {size = 2};
+	ARENA_TEAMS[2] = {size = 3};
+	ARENA_TEAMS[3] = {size = 5};
+
+	-- Sort teams by size
+
+	local buttonIndex = 0;
+	for index, value in pairs(ARENA_TEAMS) do
+		for i=1, MAX_ARENA_TEAMS do
+			teamName, teamSize = GetInspectArenaTeamData(i);
+			if ( value.size == teamSize ) then
+				value.index = i;
+			end
+		end
+	end
+
+	-- fill out data
+	for index, value in pairs(ARENA_TEAMS) do
+		if ( value.index ) then
+			buttonIndex = buttonIndex + 1;
+			-- Pull Values
+			teamName, teamSize, teamRating, teamPlayed, teamWins,  playerPlayed, background.r, background.g, background.b, emblem, emblemColor.r, emblemColor.g, emblemColor.b, border, borderColor.r, borderColor.g, borderColor.b = GetInspectArenaTeamData(value.index);
+			teamLoss = teamPlayed - teamWins;
+			if ( teamPlayed ~= 0 ) then
+				playerPlayedPct =  ( playerPlayed / teamPlayed ) * 100;		
+			else
+				playerPlayedPct =  ( playerPlayed / 1 ) * 100;
+			end
+
+			-- Set button elements to variables 
+			button = getglobal("InspectPVPTeam"..buttonIndex);
+			buttonName = "InspectPVPTeam"..buttonIndex;
+			data = buttonName.."Data";
+			standard = buttonName.."Standard";
+			
+			button:SetID(value.index);
+
+			-- Populate Data
+			getglobal(data.."Name"):SetText(teamName);
+			getglobal(data.."Rating"):SetText(teamRating);
+			getglobal(data.."Games"):SetText(teamPlayed);
+			getglobal(data.."Wins"):SetText(teamWins);
+			getglobal(data.."Loss"):SetText(teamLoss);
+			
+			-- played %
+			if ( playerPlayedPct < 10 ) then
+				getglobal(data.."Played"):SetVertexColor(1, 0, 0);
+			else
+				getglobal(data.."Played"):SetVertexColor(1, 1, 1);
+			end
+			getglobal(data.."Played"):SetText(playerPlayed.." ("..playerPlayedPct.."%)");
+			-- Set TeamSize Banner
+			getglobal(standard.."Banner"):SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize);
+			getglobal(standard.."Banner"):SetVertexColor(background.r, background.g, background.b);
+			getglobal(standard.."Border"):SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
+			getglobal(standard.."Emblem"):SetVertexColor(emblemColor.r, emblemColor.g, emblemColor.b);
+			if ( border ~= -1 ) then
+				getglobal(standard.."Border"):SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize.."-Border-"..border);
+			end
+			if ( emblem ~= -1 ) then
+				getglobal(standard.."Emblem"):SetTexture("Interface\\PVPFrame\\PVP-Banner-Emblem-"..emblem);
+			end
+
+			-- Set visual elements
+			getglobal(data):Show();
+			button:SetAlpha(1);
+			getglobal(buttonName.."Highlight"):SetAlpha(1);
+			getglobal(buttonName.."Highlight"):SetBackdropBorderColor(1.0, 0.82, 0);
+			getglobal(standard):SetAlpha(1);
+			getglobal(standard.."Border"):Show();
+			getglobal(standard.."Emblem"):Show();
+			getglobal(buttonName.."Background"):SetVertexColor(0, 0, 0);
+			getglobal(buttonName.."Background"):SetAlpha(1);
+			getglobal(buttonName.."TeamType"):Hide();
+			
+		end
+	end
+
+	-- show unused teams
+	for index, value in pairs(ARENA_TEAMS) do
+		if ( not value.index ) then
+			-- Set button elements to variables 
+			buttonIndex = buttonIndex + 1;
+			button = getglobal("InspectPVPTeam"..buttonIndex);
+			buttonName = "InspectPVPTeam"..buttonIndex;
+			data = buttonName.."Data";
+
+			-- Set standard type
+			getglobal(buttonName.."StandardBanner"):SetTexture("Interface\\PVPFrame\\PVP-Banner-"..value.size);
+
+			-- Hide or Show items
+			button:SetAlpha(0.4);
+			getglobal(data):Hide();
+			getglobal(buttonName.."Background"):SetVertexColor(0, 0, 0);
+			getglobal(buttonName.."Standard"):SetAlpha(0.1);
+			getglobal(buttonName.."StandardBorder"):Hide();
+			getglobal(buttonName.."StandardEmblem"):Hide();
+			getglobal(buttonName.."TeamType"):SetText("("..value.size.."v"..value.size..")");
+			getglobal(buttonName.."TeamType"):Show();
+		end
+	end
+end
+
+-- PVP Honor Data
+function InspectPVPHonor_Update()
+	local todayHK, todayHonor, yesterdayHK, yesterdayHonor, lifetimeHK, lifetimeRank = GetInspectHonorData();
+	
+	-- Yesterday's values
+	InspectPVPHonorYesterdayKills:SetText(yesterdayHK);
+	InspectPVPHonorYesterdayHonor:SetText(yesterdayHonor);
+	-- Lifetime values
+	InspectPVPHonorLifetimeKills:SetText(lifetimeHK);
+	InspectPVPFrameHonorPoints:SetText(lifetimeRank);
+	InspectPVPFrameArenaPoints:SetText("-")	
+	
+	-- This session's values
+	InspectPVPHonorTodayKills:SetText(todayHK);
+	InspectPVPHonorTodayHonor:SetText(todayHonor);
+end

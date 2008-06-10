@@ -11,16 +11,16 @@ function DressUpItemLink(link)
 	if ( not link ) then
 		return;
 	end
-	local item = gsub(link, ".*item:(%d+).*", "%1", 1);
+	local item = strmatch(link, ".*item:(%d+).*");
 	DressUpItem(item);
 end
 
 function DressUpTexturePath()
-	-- HACK!!!
+	-- HACK
 	local race, fileName = UnitRace("player");
-	if ( fileName == "Gnome" or fileName == "GNOME" ) then
+	if ( strupper(fileName) == "GNOME" ) then
 		fileName = "Dwarf";
-	elseif ( fileName == "Troll" or fileName == "TROLL" ) then
+	elseif ( strupper(fileName) == "TROLL" ) then
 		fileName = "Orc";
 	end
 	if ( not fileName ) then

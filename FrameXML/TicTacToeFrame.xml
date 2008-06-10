@@ -8,7 +8,6 @@
 		<Scripts>
 			<OnClick>
 				MakeMinigameMove(0,this:GetID());
-				debuginfo(this:GetID());
 			</OnClick>
 		</Scripts>
 	</Button>

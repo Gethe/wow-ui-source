@@ -91,7 +91,6 @@ function LootFrame_Update()
 				else
 					countString:Hide();
 				end
-				button:SetSlot(slot);
 				button.slot = slot;
 				button.quality = quality;
 				button:Show();
@@ -142,16 +141,11 @@ end
 
 function LootFrame_OnHide()
 	CloseLoot();
+	-- Close any loot distribution confirmation windows
+	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
 end
 
-function LootFrameItem_OnClick(button)
-	if ( IsControlKeyDown() ) then
-		DressUpItemLink(GetLootSlotLink(this.slot));
-	elseif ( IsShiftKeyDown() ) then
-		if ( ChatFrameEditBox:IsVisible() ) then
-			ChatFrameEditBox:Insert(GetLootSlotLink(this.slot));
-		end
-	end
+function LootButton_OnClick(button)
 	-- Close any loot distribution confirmation windows
 	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
 	
@@ -159,6 +153,16 @@ function LootFrameItem_OnClick(button)
 	LootFrame.selectedSlot = this.slot;
 	LootFrame.selectedQuality = this.quality;
 	LootFrame.selectedItemName = getglobal(this:GetName().."Text"):GetText();
+
+	LootSlot(this.slot);
+end
+
+function LootButton_OnModifiedClick(button)
+	if ( IsControlKeyDown() ) then
+		DressUpItemLink(GetLootSlotLink(this.slot));
+	elseif ( IsShiftKeyDown() ) then
+		ChatEdit_InsertLink(GetLootSlotLink(this.slot));
+	end
 end
 
 function GroupLootDropDown_OnLoad()
@@ -166,7 +170,8 @@ function GroupLootDropDown_OnLoad()
 end
 
 function GroupLootDropDown_Initialize()
-	local candidate, info;
+	local candidate;
+	local info = UIDropDownMenu_CreateInfo();
 	
 	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
 		local lastIndex = UIDROPDOWNMENU_MENU_VALUE + 5 - 1;
@@ -174,7 +179,6 @@ function GroupLootDropDown_Initialize()
 			candidate = GetMasterLootCandidate(i);
 			if ( candidate ) then
 				-- Add candidate button
-				info = {};
 				info.text = candidate;
 				info.textHeight = 12;
 				info.value = i;
@@ -188,18 +192,18 @@ function GroupLootDropDown_Initialize()
 	
 	if ( GetNumRaidMembers() > 0 ) then
 		-- In a raid
-		info = {};
+		info.isTitle = 1;
 		info.text = GIVE_LOOT;
 		info.textHeight = 12;
 		info.notCheckable = 1;
-		info.isTitle = 1;
 		UIDropDownMenu_AddButton(info);
+
 		for i=1, 40, 5 do
 			for j=i, i+4 do
 				candidate = GetMasterLootCandidate(j);
 				if ( candidate ) then
 					-- Add raid group
-					info = {};
+					info.isTitle = nil;
 					info.text = GROUP.." "..ceil(i/5);
 					info.textHeight = 12;
 					info.hasArrow = 1;
@@ -213,12 +217,10 @@ function GroupLootDropDown_Initialize()
 		end
 	else
 		-- In a party
-		
 		for i=1, MAX_PARTY_MEMBERS+1, 1 do
 			candidate = GetMasterLootCandidate(i);
 			if ( candidate ) then
 				-- Add candidate button
-				info = {};
 				info.text = candidate;
 				info.textHeight = 12;
 				info.value = i;

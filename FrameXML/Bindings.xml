@@ -2,11 +2,9 @@
 	<!-- User interface key bindings -->
 	<Binding name="MOVEANDSTEER" runOnUp="true" header="MOVEMENT">
 		if ( keystate == "down" ) then
-			CameraOrSelectOrMoveStart();
-			TurnOrActionStart();
+			MoveAndSteerStart();
 		else
-			CameraOrSelectOrMoveStop();
-			TurnOrActionStop();
+			MoveAndSteerStop();
 		end
 	</Binding>
 	<Binding name="MOVEFORWARD" runOnUp="true">
@@ -51,8 +49,12 @@
 			StrafeRightStop();
 		end
 	</Binding>
-	<Binding name="JUMP">
-		Jump();
+	<Binding name="JUMP" runOnUp="true">
+		if ( keystate == "down" ) then
+			JumpOrAscendStart();
+		else
+			AscendStop();
+		end
 	</Binding>
 	<Binding name="SITORSTAND">
 		SitOrStand();
@@ -202,90 +204,6 @@
 			ActionButtonUp(12);
 		end
 	</Binding>
-	<Binding name="SELFACTIONBUTTON1" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(1);
-		else
-			ActionButtonUp(1, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON2" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(2);
-		else
-			ActionButtonUp(2, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON3" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(3);
-		else
-			ActionButtonUp(3, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON4" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(4);
-		else
-			ActionButtonUp(4, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON5" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(5);
-		else
-			ActionButtonUp(5, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON6" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(6);
-		else
-			ActionButtonUp(6, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON7" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(7);
-		else
-			ActionButtonUp(7, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON8" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(8);
-		else
-			ActionButtonUp(8, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON9" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(9);
-		else
-			ActionButtonUp(9, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON10" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(10);
-		else
-			ActionButtonUp(10, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON11" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(11);
-		else
-			ActionButtonUp(11, 1);
-		end
-	</Binding>
-	<Binding name="SELFACTIONBUTTON12" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(12);
-		else
-			ActionButtonUp(12, 1);
-		end
-	</Binding>
 	
 	<Binding name="SHAPESHIFTBUTTON1">
 		ShapeshiftBar_ChangeForm(1)
@@ -389,40 +307,22 @@
 		end
 	</Binding>
 	<Binding name="ACTIONPAGE1">
-		if ( CURRENT_ACTIONBAR_PAGE ~= 1 ) then
-			CURRENT_ACTIONBAR_PAGE = 1;
-			ChangeActionBarPage();
-		end
+		ChangeActionBarPage(1);
 	</Binding>
 	<Binding name="ACTIONPAGE2">
-		if ( CURRENT_ACTIONBAR_PAGE ~= 2 ) then
-			CURRENT_ACTIONBAR_PAGE = 2;
-			ChangeActionBarPage();
-		end
+		ChangeActionBarPage(2);
 	</Binding>
 	<Binding name="ACTIONPAGE3">
-		if ( CURRENT_ACTIONBAR_PAGE ~= 3 ) then
-			CURRENT_ACTIONBAR_PAGE = 3;
-			ChangeActionBarPage();
-		end
+		ChangeActionBarPage(3);
 	</Binding>
 	<Binding name="ACTIONPAGE4">
-		if ( CURRENT_ACTIONBAR_PAGE ~= 4 ) then
-			CURRENT_ACTIONBAR_PAGE = 4;
-			ChangeActionBarPage();
-		end
+		ChangeActionBarPage(4);
 	</Binding>
 	<Binding name="ACTIONPAGE5">
-		if ( CURRENT_ACTIONBAR_PAGE ~= 5 ) then
-			CURRENT_ACTIONBAR_PAGE = 5;
-			ChangeActionBarPage();
-		end
+		ChangeActionBarPage(5);
 	</Binding>
 	<Binding name="ACTIONPAGE6">
-		if ( CURRENT_ACTIONBAR_PAGE ~= 6 ) then
-			CURRENT_ACTIONBAR_PAGE = 6;
-			ChangeActionBarPage();
-		end
+		ChangeActionBarPage(6);
 	</Binding>
 	<Binding name="PREVIOUSACTIONPAGE">
 		ActionBar_PageDown();
@@ -510,6 +410,9 @@
 	<Binding name="TARGETLASTHOSTILE">
 		TargetLastEnemy();
 	</Binding>
+	<Binding name="TARGETLASTTARGET">
+		TargetLastTarget();
+	</Binding>
 	<Binding name="ASSISTTARGET">
 		AssistUnit("target");
 	</Binding>
@@ -553,7 +456,13 @@
 	</Binding>
 	<Binding name="PETATTACK">
 		PetAttack();
-	</Binding>	
+	</Binding>
+	<Binding name="FOCUSTARGET">
+		FocusUnit("target");
+	</Binding>
+	<Binding name="TARGETFOCUS">
+		TargetUnit("focus");
+	</Binding>
 	<!-- UI Panels -->
 	<Binding name="TOGGLECHARACTER0" header="INTERFACE">
 		ToggleCharacter("PaperDollFrame");
@@ -589,7 +498,7 @@
 		ToggleTalentFrame();
 	</Binding>
 	<Binding name="TOGGLECHARACTER4">
-		ToggleCharacter("HonorFrame");
+		ToggleCharacter("PVPFrame");
 	</Binding>
 	<Binding name="TOGGLECHARACTER3">
 		ToggleCharacter("PetPaperDollFrame");
@@ -626,6 +535,15 @@
 	</Binding>
 	<Binding name="TOGGLERAIDTAB">
 		ToggleFriendsFrame(4);
+	</Binding>
+	<Binding name="TOGGLELFGPARENT">
+		ToggleLFGParentFrame();
+	</Binding>
+	<Binding name="TOGGLELFGTAB">
+		ToggleLFGParentFrame(1);
+	</Binding>
+	<Binding name="TOGGLELFMTAB">
+		ToggleLFGParentFrame(2);
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES">
 		ToggleWorldStateScoreFrame();

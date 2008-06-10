@@ -281,9 +281,7 @@
 						if ( IsControlKeyDown()  ) then
 							DressUpItemLink(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 						elseif ( IsShiftKeyDown() ) then
-							if ( ChatFrameEditBox:IsVisible() ) then
-								ChatFrameEditBox:Insert(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
-							end
+							ChatEdit_InsertLink(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 						else
 							if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
 								DressUpItemLink(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
@@ -398,9 +396,9 @@
 					<AbsDimension x="10" y="11"/>
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentBuyoutMoneyFrame" relativePoint="LEFT">
+					<Anchor point="LEFT" relativeTo="$parentBuyoutMoneyFrame" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-5" y="0"/>
+							<AbsDimension x="-178" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -424,9 +422,7 @@
 				if ( IsControlKeyDown() ) then
 					DressUpItemLink(GetAuctionItemLink("list", this:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 				elseif ( IsShiftKeyDown() ) then
-					if ( ChatFrameEditBox:IsVisible() ) then
-						ChatFrameEditBox:Insert(GetAuctionItemLink("list", this:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
-					end
+					ChatEdit_InsertLink(GetAuctionItemLink("list", this:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 				else
 					if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
 						DressUpItemLink(GetAuctionItemLink("list", this:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
@@ -584,9 +580,7 @@
 						if ( IsControlKeyDown() ) then
 							DressUpItemLink(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 						elseif ( IsShiftKeyDown() ) then
-							if ( ChatFrameEditBox:IsVisible() ) then
-								ChatFrameEditBox:Insert(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
-							end
+							ChatEdit_InsertLink(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 						else
 							if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
 								DressUpItemLink(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
@@ -821,9 +815,7 @@
 						if ( IsControlKeyDown() ) then
 							DressUpItemLink(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
 						elseif ( IsShiftKeyDown() ) then
-							if ( ChatFrameEditBox:IsVisible() ) then
-								ChatFrameEditBox:Insert(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
-							end
+							ChatEdit_InsertLink(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
 						else
 							if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
 								DressUpItemLink(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
@@ -910,11 +902,11 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString inherits="GameFontNormalSmall" text="BUYOUT">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="BUYOUT">
 							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT">
+								<Anchor point="LEFT" relativePoint="RIGHT">
 									<Offset>
-										<AbsDimension x="-10" y="0"/>
+										<AbsDimension x="-205" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -931,7 +923,7 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
-				AuctionsButton_OnClick()
+				AuctionsButton_OnClick();
 			</OnClick>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\HelpFrame\HelpFrameButton-Highlight" alphaMode="ADD">

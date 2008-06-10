@@ -78,8 +78,15 @@ end
 
 function MirrorTimerFrame_OnEvent()
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		this:Hide();
-		this.timer = nil;
+		for index=1, MIRRORTIMER_NUMTIMERS do
+			local timer, value, maxvalue, scale, paused, label = GetMirrorTimerInfo(index);
+			if ( timer ==  "UNKNOWN") then
+				this:Hide();
+				this.timer = nil;
+			else
+				MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
+			end
+		end
 	end
 	if ( not this:IsShown() or (arg1 ~= this.timer) ) then
 		return;
@@ -103,6 +110,6 @@ function MirrorTimerFrame_OnUpdate(frame, elapsed)
 		return;
 	end
 	local statusbar = getglobal(frame:GetName().."StatusBar");
-	frame.value = (frame.value + frame.scale * elapsed);
+	frame.value = GetMirrorTimerProgress(frame.timer)  / 1000;
 	statusbar:SetValue(frame.value);
 end

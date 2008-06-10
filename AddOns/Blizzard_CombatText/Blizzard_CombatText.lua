@@ -13,7 +13,7 @@ COMBAT_TEXT_MAX_OFFSET = 130;
 COMBAT_TEXT_LOW_HEALTH_THRESHOLD = 0.2;
 COMBAT_TEXT_LOW_MANA_THRESHOLD = 0.2;
 COMBAT_TEXT_LOCATIONS = {};
-
+COMBAT_TEXT_X_ADJUSTMENT = 80;
 
 --[[
 List of COMBAT_TEXT_TYPE_INFO attributes
@@ -81,9 +81,15 @@ COMBAT_TEXT_TYPE_INFO["COMBO_POINTS"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_
 function CombatText_OnLoad()
 	CombatText_UpdateDisplayedMessages();
 	CombatText.previousMana = {};
+	CombatText.xDir = 1;
 end
 
 function CombatText_OnEvent(event)
+	if ( not this:IsVisible() ) then
+		CombatText_ClearAnimationList();
+		return;
+	end
+
 	-- Set up the messageType
 	local messageType, message;
 	-- Set the message data
@@ -92,7 +98,7 @@ function CombatText_OnEvent(event)
 	
 	if ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == "player" ) then
-			if ( UnitHealth("player")/UnitHealthMax("player") <= COMBAT_TEXT_LOW_HEALTH_THRESHOLD ) then
+			if ( UnitHealth("player")/UnitHealthMax("player") <= COMBAT_TEXT_LOW_HEALTH_THRESHOLD and not IsFeignDeath() ) then
 				if ( not CombatText.lowHealth ) then
 					messageType = "HEALTH_LOW";
 					CombatText.lowHealth = 1;
@@ -110,7 +116,7 @@ function CombatText_OnEvent(event)
 		local mana = UnitMana("player");
 		local powerType = UnitPowerType("player");
 		if ( arg1 == "player" ) then
-			if ( mana/UnitManaMax("player") <= COMBAT_TEXT_LOW_MANA_THRESHOLD and powerType == 0 ) then
+			if ( mana/UnitManaMax("player") <= COMBAT_TEXT_LOW_MANA_THRESHOLD and powerType == 0 and not IsFeignDeath() ) then
 				if ( not CombatText.lowMana ) then
 					messageType = "MANA_LOW";
 					CombatText.lowMana = 1;
@@ -256,7 +262,7 @@ end
 function CombatText_OnUpdate(elapsed)
 	local lowestMessage = COMBAT_TEXT_LOCATIONS.startY;
 	local alpha, xPos, yPos;
-	for index, value in COMBAT_TEXT_TO_ANIMATE do
+	for index, value in pairs(COMBAT_TEXT_TO_ANIMATE) do
 		if ( value.scrollTime >= COMBAT_TEXT_SCROLLSPEED ) then
 			CombatText_RemoveMessage(value);
 		else
@@ -306,29 +312,42 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 	-- See which direction the message should flow
 	local yDir;
 	local lowestMessage;
+	local useXadjustment = 0;
 	if ( COMBAT_TEXT_LOCATIONS.startY < COMBAT_TEXT_LOCATIONS.endY ) then
 		-- Flowing up
 		lowestMessage = string:GetBottom();
 		-- Find lowest message to anchor to
-		for index, value in COMBAT_TEXT_TO_ANIMATE do
+		for index, value in pairs(COMBAT_TEXT_TO_ANIMATE) do
 			if ( lowestMessage >= value.yPos - 16 - COMBAT_TEXT_SPACING) then
 				lowestMessage = value.yPos - 16 - COMBAT_TEXT_SPACING;
 			end
 		end
 		if ( lowestMessage < (COMBAT_TEXT_LOCATIONS.startY - COMBAT_TEXT_MAX_OFFSET) ) then
-			lowestMessage = string:GetBottom();
+			if ( displayType == "crit" ) then
+				lowestMessage = string:GetBottom();
+			else
+				COMBAT_TEXT_X_ADJUSTMENT = COMBAT_TEXT_X_ADJUSTMENT * -1;
+				useXadjustment = 1;
+				lowestMessage = COMBAT_TEXT_LOCATIONS.startY - COMBAT_TEXT_MAX_OFFSET;
+			end
 		end
 	else
 		-- Flowing down
 		lowestMessage = string:GetTop();
 		-- Find lowest message to anchor to
-		for index, value in COMBAT_TEXT_TO_ANIMATE do
+		for index, value in pairs(COMBAT_TEXT_TO_ANIMATE) do
 			if ( lowestMessage <= value.yPos + 16 + COMBAT_TEXT_SPACING) then
 				lowestMessage = value.yPos + 16 + COMBAT_TEXT_SPACING;
 			end
 		end
 		if ( lowestMessage > (COMBAT_TEXT_LOCATIONS.startY + COMBAT_TEXT_MAX_OFFSET) ) then
-			lowestMessage = string:GetTop();
+			if ( displayType == "crit" ) then
+				lowestMessage = string:GetTop();
+			else
+				COMBAT_TEXT_X_ADJUSTMENT = COMBAT_TEXT_X_ADJUSTMENT * -1;
+				useXadjustment = 1;
+				lowestMessage = COMBAT_TEXT_LOCATIONS.startY + COMBAT_TEXT_MAX_OFFSET;
+			end
 		end
 	end
 
@@ -352,13 +371,16 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 	end
 
 	-- Alternate x direction
-	if ( not CombatText.xDir or CombatText.xDir < 0 ) then
-		CombatText.xDir = 1;
-	else
-		CombatText.xDir = -1;
+	CombatText.xDir = CombatText.xDir * -1;
+	if ( useXadjustment == 1 ) then
+		if ( COMBAT_TEXT_X_ADJUSTMENT > 0 ) then
+			CombatText.xDir = -1;
+		else
+			CombatText.xDir = 1;
+		end
 	end
 	string.xDir = CombatText.xDir;
-	string.startX = COMBAT_TEXT_LOCATIONS.startX + staggerAmount;
+	string.startX = COMBAT_TEXT_LOCATIONS.startX + staggerAmount + (useXadjustment * COMBAT_TEXT_X_ADJUSTMENT);
 	string.startY = lowestMessage;
 	string.yPos = lowestMessage;
 	string:SetPoint("TOP", UIParent, "BOTTOM", string.startX, lowestMessage);
@@ -368,7 +390,7 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 end
 
 function CombatText_RemoveMessage(string)
-	for index, value in COMBAT_TEXT_TO_ANIMATE do
+	for index, value in pairs(COMBAT_TEXT_TO_ANIMATE) do
 		if ( value == string ) then
 			tremove(COMBAT_TEXT_TO_ANIMATE, index);
 			string:SetAlpha(0);
@@ -425,7 +447,7 @@ function CombatText_UpdateDisplayedMessages()
 		CombatText:RegisterEvent("PLAYER_COMBO_POINTS");
 	end
 	-- Update shown messages
-	for index, value in COMBAT_TEXT_TYPE_INFO do
+	for index, value in pairs(COMBAT_TEXT_TYPE_INFO) do
 		if ( value.var ) then
 			if ( getglobal(value.var) == "1" ) then
 				value.show = 1;
@@ -481,7 +503,7 @@ end
 function CombatText_FountainScroll(value)
 	-- Calculate x and y positions
 	local radius = 150;
-	local xPos = value.xDir*(value.startX+radius*cos(90*value.scrollTime/COMBAT_TEXT_SCROLLSPEED))-value.xDir*radius;
+	local xPos = value.startX-value.xDir*(radius*(1-cos(90*value.scrollTime/COMBAT_TEXT_SCROLLSPEED)));
 	local yPos = value.startY+radius*sin(90*value.scrollTime/COMBAT_TEXT_SCROLLSPEED);
 	return xPos, yPos;
 end

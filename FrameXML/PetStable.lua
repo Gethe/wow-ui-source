@@ -37,7 +37,7 @@ function PetStable_Update()
 	
 	-- So warlock pets don't show
 	local hasPetUI, isHunterPet = HasPetUI();
-	if ( UnitExists("pet") and not isHunterPet ) then
+	if ( UnitExists("pet") and hasPetUI and not isHunterPet ) then
 		PetStable_NoPetsAllowed();
 		PetStableCurrentPet:Disable();
 		return;
@@ -120,7 +120,7 @@ function PetStable_Update()
 
 	-- Current pet slot
 	if ( selectedPet == 0 ) then
-		if ( UnitExists("pet") ) then
+		if ( UnitExists("pet") and hasPetUI ) then
 			PetStableCurrentPet:SetChecked(1);
 			local family = UnitCreatureFamily("pet");
 			if ( not family ) then
