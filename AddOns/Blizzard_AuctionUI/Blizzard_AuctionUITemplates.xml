@@ -288,7 +288,7 @@
 								ChatFrameEditBox:Insert(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 							end
 						else
-							if ( SHOW_ON_CHAR == "1" ) then
+							if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
 								DressUpItemLink(GetAuctionItemLink("list", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 							end
 							BrowseButton_OnClick(this:GetParent());
@@ -431,7 +431,7 @@
 						ChatFrameEditBox:Insert(GetAuctionItemLink("list", this:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 					end
 				else
-					if ( SHOW_ON_CHAR == "1" ) then
+					if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
 						DressUpItemLink(GetAuctionItemLink("list", this:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
 					end
 					BrowseButton_OnClick();
@@ -591,7 +591,7 @@
 								ChatFrameEditBox:Insert(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 							end
 						else
-							if ( SHOW_ON_CHAR == "1" ) then
+							if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
 								DressUpItemLink(GetAuctionItemLink("bidder", this:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 							end
 							BidButton_OnClick(this:GetParent());
@@ -828,7 +828,7 @@
 								ChatFrameEditBox:Insert(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
 							end
 						else
-							if ( SHOW_ON_CHAR == "1" ) then
+							if ( AUCTION_DISPLAY_ON_CHARACTER == "1" ) then
 								DressUpItemLink(GetAuctionItemLink("owner", this:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
 							end
 							AuctionsButton_OnClick(this:GetParent());

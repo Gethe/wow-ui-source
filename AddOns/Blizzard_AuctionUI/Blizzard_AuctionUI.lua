@@ -62,6 +62,9 @@ StaticPopupDialogs["CANCEL_AUCTION"] = {
 };
 
 function AuctionFrame_OnLoad()
+	this:RegisterEvent("ADDON_LOADED");
+	AUCTION_DISPLAY_ON_CHARACTER = "0";
+
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(this, 3);
 	PanelTemplates_SetTab(AuctionFrame, 1);
@@ -105,6 +108,15 @@ function AuctionFrame_OnShow()
 	SetPortraitTexture(AuctionPortraitTexture,"npc");
 	BrowseNoResultsText:SetText(BROWSE_SEARCH_TEXT);
 	PlaySound("AuctionWindowOpen");
+end
+
+function AuctionFrame_OnEvent()
+	if ( event == "ADDON_LOADED" ) then
+		if ( arg1 == "Blizzard_AuctionUI" ) then
+			ShowOnPlayerCheckButton:SetChecked(AUCTION_DISPLAY_ON_CHARACTER);
+			this:UnregisterEvent("ADDON_LOADED");
+		end
+	end
 end
 
 function AuctionFrameTab_OnClick(index)

@@ -42,7 +42,12 @@ function BattlefieldMinimap_OnEvent()
 
 			if ( BattlefieldMinimapOptions.position ) then
 				BattlefieldMinimapTab:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", BattlefieldMinimapOptions.position.x, BattlefieldMinimapOptions.position.y);
-				BattlefieldMinimapTab:SetUserPlaced(true);
+				-- If off the screen set to default position
+				if ( ValidateFramePosition(BattlefieldMinimapTab, 0, 1) ) then
+					BattlefieldMinimapTab:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMRIGHT", -225-CONTAINER_OFFSET_X, BATTLEFIELD_TAB_OFFSET_Y);
+				else
+					BattlefieldMinimapTab:SetUserPlaced(true);
+				end
 			else
 				BattlefieldMinimapTab:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMRIGHT", -225-CONTAINER_OFFSET_X, BATTLEFIELD_TAB_OFFSET_Y);
 			end
@@ -425,6 +430,7 @@ function BattlefieldMinimapTab_OnClick(button)
 			BattlefieldMinimapTab:StartMoving();
 		end
 	end
+	ValidateFramePosition(BattlefieldMinimapTab);
 end
 
 function BattlefieldMinimap_ToggleLock()

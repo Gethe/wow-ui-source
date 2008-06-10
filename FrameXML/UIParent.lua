@@ -1475,7 +1475,10 @@ function SetDesaturation(texture, desaturation)
 end
 
 -- Function to reposition frames if they get dragged off screen
-function ValidateFramePosition(frame, offscreenPadding)
+function ValidateFramePosition(frame, offscreenPadding, returnOffscreen)
+	if ( not frame ) then
+		return;
+	end
 	local left = frame:GetLeft();
 	local right = frame:GetRight();
 	local top = frame:GetTop();
@@ -1499,12 +1502,23 @@ function ValidateFramePosition(frame, offscreenPadding)
 		newAnchorX = GetScreenWidth() - frame:GetWidth();
 	end
 	if ( newAnchorX or newAnchorY ) then
-		if ( not newAnchorX ) then
-			newAnchorX = left;
-		elseif ( not newAnchorY ) then
-			newAnchorY = top - GetScreenHeight();
+		if ( returnOffscreen ) then
+			return 1;
+		else
+			if ( not newAnchorX ) then
+				newAnchorX = left;
+			elseif ( not newAnchorY ) then
+				newAnchorY = top - GetScreenHeight();
+			end
+			frame:ClearAllPoints();
+			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", newAnchorX, newAnchorY);
 		end
-		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", newAnchorX, newAnchorY);
+		
+		
+	else
+		if ( returnOffscreen ) then
+			return nil;
+		end
 	end
 end
 
@@ -1658,4 +1672,14 @@ function GetBindingText(name, prefix)
 		localizedName = tempName;
 	end
 	return modKeys..localizedName;
+end
+
+function GetMaterialTextColors(material)
+	local textColor = MATERIAL_TEXT_COLOR_TABLE[material];
+	local titleColor = MATERIAL_TITLETEXT_COLOR_TABLE[material];
+	if ( not(textColor and titleColor) ) then
+		textColor = MATERIAL_TEXT_COLOR_TABLE["Default"];
+		titleColor = MATERIAL_TITLETEXT_COLOR_TABLE["Default"];
+	end
+	return textColor, titleColor;
 end

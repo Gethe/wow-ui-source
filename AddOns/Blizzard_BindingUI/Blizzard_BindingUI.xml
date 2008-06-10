@@ -479,7 +479,7 @@
 						else
 							KeyBindingFrame.which = ACCOUNT_BINDINGS;
 							if ( GetCurrentBindingSet() == CHARACTER_BINDINGS ) then
-								if ( not HAS_CHARACTER_SPECIFIC_BINDINGS ) then
+								if ( not CONFIRMED_DELETING_CHARACTER_SPECIFIC_BINDINGS ) then
 									StaticPopup_Show("CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS");
 									return;
 								end

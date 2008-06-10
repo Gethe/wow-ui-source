@@ -16,8 +16,7 @@ StaticPopupDialogs["CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS"] = {
 		KeyBindingFrameOutputText:SetText("");
 		KeyBindingFrame.selected = nil;
 		HideUIPanel(KeyBindingFrame);
-		RegisterForSave("HAS_CHARACTER_SPECIFIC_BINDINGS");
-		HAS_CHARACTER_SPECIFIC_BINDINGS = 1;
+		CONFIRMED_DELETING_CHARACTER_SPECIFIC_BINDINGS = 1;
 	end,
 	timeout = 0,
 	whileDead = 1,

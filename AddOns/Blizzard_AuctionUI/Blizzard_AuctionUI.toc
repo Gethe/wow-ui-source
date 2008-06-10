@@ -1,6 +1,7 @@
 ## Interface: 10900
 ## Title: Blizzard Auction UI
 ## LoadOnDemand: 1
+## SavedVariables: AUCTION_DISPLAY_ON_CHARACTER
 ..\..\FrameXML\Fonts.xml
 ..\..\FrameXML\UIDropDownMenuTemplates.xml
 ..\..\FrameXML\UIPanelTemplates.xml

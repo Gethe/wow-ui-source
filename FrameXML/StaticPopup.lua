@@ -1001,9 +1001,9 @@ StaticPopupDialogs["XP_LOSS"] = {
 			AcceptXPLoss();
 		end
 	end,
-	OnUpdate = function(elapsed)
+	OnUpdate = function(elapsed, dialog)
 		if ( not CheckSpiritHealerDist() ) then
-			this:Hide();
+			dialog:Hide();
 		end
 	end,
 	timeout = 0,
@@ -1025,9 +1025,9 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS"] = {
 			AcceptXPLoss();
 		end
 	end,
-	OnUpdate = function(elapsed)
+	OnUpdate = function(elapsed, dialog)
 		if ( not CheckSpiritHealerDist() ) then
-			this:Hide();
+			dialog:Hide();
 		end
 	end,
 	timeout = 0,
@@ -1147,9 +1147,9 @@ StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
 	OnAccept = function()
 		ConfirmTalentWipe();
 	end,
-	OnUpdate = function(elapsed)
+	OnUpdate = function(elapsed, dialog)
 		if ( not CheckTalentMasterDist() ) then
-			this:Hide();
+			dialog:Hide();
 		end
 	end,
 	hasMoneyFrame = 1,
@@ -1163,9 +1163,9 @@ StaticPopupDialogs["CONFIRM_PET_UNLEARN"] = {
 	OnAccept = function()
 		ConfirmPetUnlearn();
 	end,
-	OnUpdate = function(elapsed)
+	OnUpdate = function(elapsed, dialog)
 		if ( not CheckPetUntrainerDist() ) then
-			this:Hide();
+			dialog:Hide();
 		end
 	end,
 	hasMoneyFrame = 1,
@@ -1179,9 +1179,9 @@ StaticPopupDialogs["CONFIRM_BINDER"] = {
 	OnAccept = function()
 		ConfirmBinder();
 	end,
-	OnUpdate = function(elapsed)
+	OnUpdate = function(elapsed, dialog)
 		if ( not CheckBinderDist() ) then
-			this:Hide();
+			dialog:Hide();
 		end
 	end,
 	timeout = 0,
@@ -1197,8 +1197,8 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	OnAccept = function()
 		ConfirmSummon();
 	end,
-	OnUpdate = function(elapsed)
-		local button = getglobal(this:GetName().."Button1");
+	OnUpdate = function(elapsed, dialog)
+		local button = getglobal(dialog:GetName().."Button1");
 		if ( UnitAffectingCombat("player") ) then
 			button:Disable();
 		else
@@ -1642,7 +1642,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 
 	local onUpdate = StaticPopupDialogs[dialog.which].OnUpdate;
 	if ( onUpdate ) then
-		onUpdate(elapsed);
+		onUpdate(elapsed, dialog);
 	end
 end
 

@@ -19,7 +19,7 @@ function ItemTextFrame_OnEvent(event)
 		if ( not material ) then
 			material = "Parchment";
 		end
-		local textColor = MATERIAL_TEXT_COLOR_TABLE[material];
+		local textColor = GetMaterialTextColors(material);
 		ItemTextPageText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		return;
 	end

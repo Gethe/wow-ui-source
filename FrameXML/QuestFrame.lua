@@ -573,11 +573,11 @@ function QuestFrame_GetMaterial()
 end
 
 function QuestFrame_SetTitleTextColor(fontString, material)
-	local materialTitleTextColor = MATERIAL_TITLETEXT_COLOR_TABLE[material];
+	local temp, materialTitleTextColor = GetMaterialTextColors(material);
 	fontString:SetTextColor(materialTitleTextColor[1], materialTitleTextColor[2], materialTitleTextColor[3]);
 end
 
 function QuestFrame_SetTextColor(fontString, material)
-	local materialTextColor = MATERIAL_TEXT_COLOR_TABLE[material];
+	local materialTextColor = GetMaterialTextColors(material);
 	fontString:SetTextColor(materialTextColor[1], materialTextColor[2], materialTextColor[3]);
 end
