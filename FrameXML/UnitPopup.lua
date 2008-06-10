@@ -411,8 +411,17 @@ function UnitPopup_HideButtons()
 				UnitPopupShown[index] = 0;
 			end
 		elseif ( strsub(value, 1, 12)  == "RAID_TARGET_" ) then
-			if ( (inParty == 0) or ((isLeader == 0) and (isAssistant == 0)) or (UnitExists("target") and not UnitReaction("player", "target")) ) then
+			if ( (inParty == 0) or ((isLeader == 0) and (isAssistant == 0)) ) then
 				UnitPopupShown[index] = 0;
+			end
+			if ( not (dropdownMenu.which == "SELF") ) then
+				if (UnitExists("target")) then
+					if ( not UnitReaction("player", "target") ) then
+						UnitPopupShown[index] = 0;
+					elseif ( UnitIsPlayer("target") and (not UnitCanCooperate("player", "target") and not UnitIsUnit("target", "player")) ) then
+						UnitPopupShown[index] = 0;
+					end
+				end
 			end
 		end
 	end

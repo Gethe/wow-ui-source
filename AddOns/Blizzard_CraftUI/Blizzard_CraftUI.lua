@@ -174,10 +174,16 @@ function CraftFrame_Update()
 			-- Set button widths if scrollbar is shown or hidden
 			if ( CraftListScrollFrame:IsVisible() ) then
 				craftButton:SetWidth(293);
-				craftButtonText:SetWidth(290);
+				-- HACK to fix a bug with (Rank) rendering in Beast Training --
+				if ( not trainingPointCost ) then
+					craftButtonText:SetWidth(290);
+				end
 			else
 				craftButton:SetWidth(323);
-				craftButtonText:SetWidth(320);
+				-- HACK to fix a bug with (Rank) rendering in Beast Training --
+				if ( not trainingPointCost ) then
+					craftButtonText:SetWidth(320);
+				end
 			end
 			local color = CraftTypeColor[craftType];
 			local subColor = CraftSubTypeColor[craftType];

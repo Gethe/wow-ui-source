@@ -258,6 +258,8 @@ end
 function TargetDebuffButton_Update()
 	local buff, buffButton;
 	local button;
+	local numBuffs = 0;
+
 	for i=1, MAX_TARGET_BUFFS do
 		buff = UnitBuff("target", i);
 		button = getglobal("TargetFrameBuff"..i);
@@ -265,6 +267,7 @@ function TargetDebuffButton_Update()
 			getglobal("TargetFrameBuff"..i.."Icon"):SetTexture(buff);
 			button:Show();
 			button.id = i;
+			numBuffs = numBuffs + 1; 
 		else
 			button:Hide();
 		end
@@ -303,10 +306,13 @@ function TargetDebuffButton_Update()
 
 	-- Position buffs depending on whether the targeted unit is friendly or not
 
+	local limit;
 	if ( UnitIsFriend("player", "target") ) then
+		limit = 5;
 		TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
 		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrameBuff1", "BOTTOMLEFT", 0, -2);
 	else
+		limit = 6; 
 		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
 		 if ( numDebuffs >= 5 ) then
 			TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff7", "BOTTOMLEFT", 0, -2);
@@ -315,11 +321,10 @@ function TargetDebuffButton_Update()
 		end
 	end
 
-
 	-- Shrinks the debuffs if they begin to overlap the TargetFrame
 	local debuffFrame;
 	local debuffWrap;
-	local debuffSize, debuffFrameSize;
+	local debuffSize,debuffFrameSize;
 
 	if ( TargetofTargetFrame:IsShown() ) then
 		debuffWrap = 5;
@@ -327,7 +332,8 @@ function TargetDebuffButton_Update()
 		debuffWrap = 6;
 	end
 
-	if ( numDebuffs >= debuffWrap ) then
+
+	if ( ( numDebuffs >= debuffWrap ) or ( numBuffs >= 5 ) ) then
 		debuffSize = 17;
 		debuffFrameSize = 19;
 	else
@@ -336,13 +342,19 @@ function TargetDebuffButton_Update()
 	end
 
 	-- Make size adjustments for wrapping
-	for i=1, 6 do
-		button = getglobal("TargetFrameDebuff"..i);
-		debuffFrame = getglobal("TargetFrameDebuff"..i.."Border");
+	for i=1, limit do
+		if ( UnitIsFriend("player", "target") ) then
+			button = getglobal("TargetFrameBuff"..i);
+		else
+			button = getglobal("TargetFrameDebuff"..i);
+			debuffFrame = getglobal("TargetFrameDebuff"..i.."Border");
+		end
+		if ( debuffFrame ) then
+			debuffFrame:SetWidth(debuffFrameSize);
+			debuffFrame:SetHeight(debuffFrameSize);
+		end
 		button:SetWidth(debuffSize);
 		button:SetHeight(debuffSize);
-		debuffFrame:SetWidth(debuffFrameSize);
-		debuffFrame:SetHeight(debuffFrameSize);
 	end
 
 	-- Reset anchors for debuff wrapping
@@ -413,7 +425,7 @@ end
 function TargetFrameDropDown_Initialize()
 	local menu;
 	local name;
-	if ( UnitExists("target") and (UnitIsEnemy("target", "player") or (UnitReaction("player", "target") and (UnitReaction("player", "target") >= 4) and not UnitIsPlayer("target"))) ) then
+	if ( UnitExists("target") and UnitReaction("player", "target") and (((UnitReaction("player", "target") >= 4 and not UnitIsPlayer("target")) and not UnitIsUnit("player", "target")) or (UnitReaction("player", "target") < 4  and not UnitIsPlayer("target"))) ) then
 		menu = "RAID_TARGET_ICON";
 		name = RAID_TARGET_ICON;
 	elseif ( UnitIsUnit("target", "player") ) then

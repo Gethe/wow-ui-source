@@ -253,7 +253,6 @@ function PartyMemberFrame_RefreshBuffs()
 	local debuff, debuffButton, debuffStack, debuffType, color, borderColor;
 	local partyStatus = getglobal(this:GetName().."Status");
 	local debuffTotal = 0;
-	this.hasDispellable = nil;
 	for i=1, MAX_PARTY_DEBUFFS do
 		local debuffBorder = getglobal(this:GetName().."Debuff"..i.."Border");
 		local partyDebuff = getglobal(this:GetName().."Debuff"..i.."Icon");
@@ -266,7 +265,6 @@ function PartyMemberFrame_RefreshBuffs()
 				end
 				borderColor = DebuffTypeColor[debuffType];
 				color = DebuffTypeColor[debuffType];
-				this.hasDispellable = 1;
 				debuffTotal = debuffTotal + 1;
 			else
 				borderColor = DebuffTypeColor["none"];
@@ -337,7 +335,6 @@ function PartyMemberBuffTooltip_Update(isPet)
 	index = 1;
 
 	local debuffButton, debuffStack, debuffType, color, countdown;
-	this.hasDispellable = nil;
 	for i=1, MAX_PARTY_TOOLTIP_DEBUFFS do
 		local debuffBorder = getglobal("PartyMemberBuffTooltipDebuff"..index.."Border")
 		local partyDebuff = getglobal("PartyMemberBuffTooltipDebuff"..index.."Icon");
@@ -352,18 +349,16 @@ function PartyMemberBuffTooltip_Update(isPet)
 			partyDebuff:SetTexture(buff);
 			if ( debuffType ) then
 				color = DebuffTypeColor[debuffType];
-				this.hasDispellable = 1;
 			else
 				color = DebuffTypeColor["none"];
 			end
 			debuffBorder:SetVertexColor(color.r, color.g, color.b);
-			if ( this.hasDispellable ) then
-				getglobal("PartyMemberBuffTooltipDebuff"..index):Show();
-				numDebuffs = numDebuffs + 1;
-			end
+			getglobal("PartyMemberBuffTooltipDebuff"..index):Show();
+			numDebuffs = numDebuffs + 1;
 			index = index + 1;
 		end
 	end
+	debuginfo(index, numBuffs, numDebuffs);
 	for i=index, MAX_PARTY_TOOLTIP_DEBUFFS do
 		getglobal("PartyMemberBuffTooltipDebuff"..i):Hide();
 	end

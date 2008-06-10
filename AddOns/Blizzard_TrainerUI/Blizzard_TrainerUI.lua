@@ -204,7 +204,7 @@ function ClassTrainerFrame_Update()
 			end
 		end
 		-- Show details if selected skill is visible
-		if ( GetTrainerSelectionIndex() == i ) then
+		if ( ClassTrainerFrame.selectedService and GetTrainerSelectionIndex() == i ) then
 			showDetails = 1;
 		end
 	end

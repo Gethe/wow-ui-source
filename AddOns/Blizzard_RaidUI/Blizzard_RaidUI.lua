@@ -10,6 +10,7 @@ MOVING_RAID_PULLOUT = nil;
 function RaidGroupFrame_OnLoad()
 	RaidFrame:RegisterEvent("UNIT_LEVEL");
 	RaidFrame:RegisterEvent("UNIT_HEALTH");
+	RaidFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
 	RaidFrame:SetScript("OnHide", RaidGroupFrame_OnHide);
 	RaidFrame:SetScript("OnEvent", RaidGroupFrame_OnEvent);
 	RaidFrame:SetScript("OnUpdate", RaidGroupFrame_OnUpdate);
@@ -36,6 +37,10 @@ function RaidGroupFrame_OnEvent()
 			RaidGroupFrame_UpdateHealth(id);
 		end
 	end
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		RaidFrameReadyCheckButton_Update();
+		RaidFrameAddMemberButton_Update();
+	end
 end
 
 function RaidGroupFrame_Update()
@@ -45,24 +50,15 @@ function RaidGroupFrame_Update()
 		for i=1, NUM_RAID_GROUPS do
 			getglobal("RaidGroup"..i):Hide();
 		end
-		RaidFrameAddMemberButton:Hide();
+		RaidFrameReadyCheckButton:Hide();
 	else
 		for i=1, NUM_RAID_GROUPS do
 			getglobal("RaidGroup"..i):Show();
 		end
-		RaidFrameAddMemberButton:Show();
-		if ( IsRaidLeader() or IsRaidOfficer() ) then
-			RaidFrameAddMemberButton:Enable();
-		else
-			RaidFrameAddMemberButton:Disable();
-		end
-		if ( IsRaidLeader() ) then
-			RaidFrameReadyCheckButton:Show();
-		else
-			RaidFrameReadyCheckButton:Hide();
-		end
 	end
 
+	RaidFrameReadyCheckButton_Update();
+	RaidFrameAddMemberButton_Update();
 	if ( RaidFrameReadyCheckButton:IsShown() ) then
 		RaidFrameRaidInfoButton:SetPoint("LEFT", "RaidFrameReadyCheckButton", "RIGHT", 2, 0);
 	end
@@ -670,4 +666,25 @@ function ReadyCheck_OnUpdate(elapsed)
 		ReadyCheckFrame:Hide();
 	end
 	
+end
+
+function RaidFrameReadyCheckButton_Update()
+	if ( GetNumRaidMembers() > 0 and IsRaidLeader() ) then
+		RaidFrameReadyCheckButton:Show();
+	else
+		RaidFrameReadyCheckButton:Hide();
+	end
+end
+
+function RaidFrameAddMemberButton_Update()
+	if ( GetNumRaidMembers() > 0 ) then
+		RaidFrameAddMemberButton:Show();
+		if ( IsRaidLeader() or IsRaidOfficer() ) then
+			RaidFrameAddMemberButton:Enable();
+		else
+			RaidFrameAddMemberButton:Disable();
+		end
+	else	
+		RaidFrameAddMemberButton:Hide();
+	end
 end
