@@ -3,6 +3,12 @@ CLASS_TRAINER_SKILLS_DISPLAYED = 11;
 CLASS_TRAINER_SKILL_HEIGHT = 16;
 MAX_LEARNABLE_PROFESSIONS = 2;
 
+-- Trainer Filter Default Values
+TRAINER_FILTER_AVAILABLE = 1;
+TRAINER_FILTER_UNAVAILABLE = 1;
+TRAINER_FILTER_USED = 0;
+
+
 UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0 };
 
 StaticPopupDialogs["CONFIRM_PROFESSION"] = {
