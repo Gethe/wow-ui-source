@@ -606,8 +606,8 @@ function ContainerFrameItemButton_OnEnter(button)
 		button = this;
 	end
 
-	local x,y;
-	x,y = button:GetRight();
+	local x;
+	x = button:GetRight();
 	if ( x >= ( GetScreenWidth() / 2 ) ) then
 		GameTooltip:SetOwner(button, "ANCHOR_LEFT");
 	else

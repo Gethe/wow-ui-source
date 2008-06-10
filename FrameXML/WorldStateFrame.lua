@@ -1,9 +1,12 @@
-MAX_ALWAYS_UP_UI_FRAMES = 2;
+NUM_ALWAYS_UP_UI_FRAMES = 0;
+NUM_EXTENDED_UI_FRAMES = 0;
 MAX_WORLDSTATE_SCORE_BUTTONS = 22;
 MAX_NUM_STAT_COLUMNS = 7;
 WORLDSTATESCOREFRAME_BASE_WIDTH = 530;
 WORLDSTATESCOREFRAME_COLUMN_SPACING = 77;
 WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET = -32;
+
+ExtendedUI = {};
 
 -- Always up stuff (i.e. capture the flag indicators)
 function WorldStateAlwaysUpFrame_OnLoad()
@@ -11,6 +14,7 @@ function WorldStateAlwaysUpFrame_OnLoad()
 	this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	SHOW_BATTLEFIELD_MINIMAP = "1";
 	RegisterForSave("SHOW_BATTLEFIELD_MINIMAP");
+	WorldStateAlwaysUpFrame_Update();
 end
 
 function WorldStateAlwaysUpFrame_OnEvent()
@@ -21,40 +25,82 @@ end
 
 function WorldStateAlwaysUpFrame_Update()
 	local numUI = GetNumWorldStateUI();
-	local name, frame, frameText, frameDynamicIcon, frameIcon, frameFlash, flashTexture, frameDynamicButton; 
+	local name, frame, frameText, frameDynamicIcon, frameIcon, frameFlash, flashTexture, frameDynamicButton;
+	local extendedUI, extendedUIState1, extendedUIState2, extendedUIState3, uiInfo; 
 	local text, icon, state, dynamicIcon, tooltip, dynamicTooltip;
-	local inInstance, instanceType;
-	for i=1, MAX_ALWAYS_UP_UI_FRAMES do
-		name = "AlwaysUpFrame"..i;
-		frame = getglobal(name);
-		state, text, icon, dynamicIcon, tooltip, dynamicTooltip = GetWorldStateUIInfo(i);
-		inInstance, instanceType = IsInInstance();
-		if ( state > 0 and (HIDE_OUTDOOR_WORLD_STATE == "0" or instanceType == "pvp")) then
-			frameText = getglobal(name.."Text");
-			frameIcon = getglobal(name.."Icon");
-			frameDynamicIcon = getglobal(name.."DynamicIconButtonIcon");
-			frameFlash = getglobal(name.."Flash");
-			flashTexture = getglobal(name.."FlashTexture");
-			frameDynamicButton = getglobal(name.."DynamicIconButton");
+	local inInstance, instanceType = IsInInstance();
+	local alwaysUpShown = 1;
+	local extendedUIShown = 1;
+	if ( HIDE_OUTDOOR_WORLD_STATE == "0" or instanceType == "pvp" ) then
+		for i=1, numUI do
+			state, text, icon, dynamicIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
+			if ( state > 0 ) then
+				-- Handle always up frames and extended ui's completely differently
+				if ( extendedUI ~= "" ) then
+					-- extendedUI
+					uiInfo = ExtendedUI[extendedUI]
+					name = uiInfo.name..extendedUIShown;
+					if ( extendedUIShown > NUM_EXTENDED_UI_FRAMES ) then
+						frame = uiInfo.create(extendedUIShown);
+						NUM_EXTENDED_UI_FRAMES = extendedUIShown;
+					else
+						frame = getglobal(name);
+					end
+					uiInfo.update(extendedUIShown, extendedUIState1, extendedUIState2, extendedUIState3);
+					frame:Show();
+					extendedUIShown = extendedUIShown + 1;
+				else
+					-- Always Up
+					name = "AlwaysUpFrame"..alwaysUpShown;
+					if ( alwaysUpShown > NUM_ALWAYS_UP_UI_FRAMES ) then
+						frame = CreateFrame("Frame", name, WorldStateAlwaysUpFrame, "WorldStateAlwaysUpTemplate");
+						NUM_ALWAYS_UP_UI_FRAMES = alwaysUpShown;
+					else
+						frame = getglobal(name);
+					end
+					if ( alwaysUpShown == 1 ) then
+						frame:SetPoint("TOP", WorldStateAlwaysUpFrame);
+					else
+						relative = getglobal("AlwaysUpFrame"..(alwaysUpShown - 1));
+						frame:SetPoint("TOP", relative, "BOTTOM");
+					end
+					frameText = getglobal(name.."Text");
+					frameIcon = getglobal(name.."Icon");
+					frameDynamicIcon = getglobal(name.."DynamicIconButtonIcon");
+					frameFlash = getglobal(name.."Flash");
+					flashTexture = getglobal(name.."FlashTexture");
+					frameDynamicButton = getglobal(name.."DynamicIconButton");
 
-			frameText:SetText(text);
-			frameIcon:SetTexture(icon);
-			frameDynamicIcon:SetTexture(dynamicIcon);
-			flashTexture:SetTexture(dynamicIcon.."Flash");
-			frame.tooltip = tooltip;
-			frameDynamicButton.tooltip = dynamicTooltip;
-			if ( state == 2 ) then
-				UIFrameFlash(frameFlash, 0.5, 0.5, -1);
-				frameDynamicButton:Show();
-			else
-				UIFrameFlashStop(frameFlash);
-				frameDynamicButton:Hide();
+					frameText:SetText(text);
+					frameIcon:SetTexture(icon);
+					frameDynamicIcon:SetTexture(dynamicIcon);
+					flashTexture:SetTexture(dynamicIcon.."Flash");
+					frameDynamicButton.tooltip = dynamicTooltip;
+					if ( state == 2 ) then
+						UIFrameFlash(frameFlash, 0.5, 0.5, -1);
+						frameDynamicButton:Show();
+					else
+						UIFrameFlashStop(frameFlash);
+						frameDynamicButton:Hide();
+					end
+					alwaysUpShown = alwaysUpShown + 1;
+				end	
+				frame.tooltip = tooltip;
+				frame:Show();
 			end
-			frame:Show();
-		else
+		end
+	end
+	for i=alwaysUpShown, NUM_ALWAYS_UP_UI_FRAMES do
+		frame = getglobal("AlwaysUpFrame"..i);
+		frame:Hide();
+	end
+	for i=extendedUIShown, NUM_EXTENDED_UI_FRAMES do
+		frame = getglobal("WorldStateCaptureBar"..i);
+		if ( frame ) then
 			frame:Hide();
 		end
 	end
+	UIParent_ManageFramePositions();
 	if ( SHOW_BATTLEFIELD_MINIMAP == "1" ) then
 		if ( numUI > 0 ) then
 			BattlefieldMinimap_LoadUI();
@@ -69,6 +115,51 @@ function WorldStateAlwaysUpFrame_Update()
 		end
 	end
 end
+
+-- UI Specific functions
+function CaptureBar_Create(id)
+	local frame = CreateFrame("Frame", "WorldStateCaptureBar"..id, UIParent, "WorldStateCaptureBarTemplate");
+	return frame;
+end
+
+function CaptureBar_Update(id, value)
+	local position = 25 + 124*(1 - value/100);
+	local bar = getglobal("WorldStateCaptureBar"..id);
+	if ( not bar.oldValue ) then
+		bar.oldValue = position;
+	end
+	if ( position < bar.oldValue ) then
+		getglobal("WorldStateCaptureBar"..id.."IndicatorLeft"):Show();
+		getglobal("WorldStateCaptureBar"..id.."IndicatorRight"):Hide();
+	elseif ( position > bar.oldValue ) then
+		getglobal("WorldStateCaptureBar"..id.."IndicatorLeft"):Hide();
+		getglobal("WorldStateCaptureBar"..id.."IndicatorRight"):Show();
+	else
+		getglobal("WorldStateCaptureBar"..id.."IndicatorLeft"):Hide();
+		getglobal("WorldStateCaptureBar"..id.."IndicatorRight"):Hide();
+	end
+	if ( value > 60  ) then
+		getglobal("WorldStateCaptureBar"..id.."LeftIconHighlight"):Show();
+		getglobal("WorldStateCaptureBar"..id.."RightIconHighlight"):Hide();
+	elseif ( value < 40 ) then
+		getglobal("WorldStateCaptureBar"..id.."LeftIconHighlight"):Hide();
+		getglobal("WorldStateCaptureBar"..id.."RightIconHighlight"):Show();
+	else
+		getglobal("WorldStateCaptureBar"..id.."LeftIconHighlight"):Hide();
+		getglobal("WorldStateCaptureBar"..id.."RightIconHighlight"):Hide();
+	end
+	bar.oldValue = position;
+	getglobal("WorldStateCaptureBar"..id.."Indicator"):SetPoint("CENTER", "WorldStateCaptureBar"..id, "LEFT", position, 0);
+end
+
+
+-- This has to be after all the functions are loaded
+ExtendedUI["CAPTUREPOINT"] = {
+	name = "WorldStateCaptureBar",
+	create = CaptureBar_Create,
+	update = CaptureBar_Update,
+	onHide = CaptureBar_Hide,
+}
 
 -------------- FINAL SCORE FUNCTIONS ---------------
 

@@ -38,6 +38,7 @@ function TradeSkillFrame_Hide()
 end
 
 function TradeSkillFrame_OnLoad()
+	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	this:RegisterEvent("TRADE_SKILL_UPDATE");
 	this:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	this:RegisterEvent("UPDATE_TRADESKILL_RECAST");
@@ -66,6 +67,8 @@ function TradeSkillFrame_OnEvent()
 		end
 	elseif ( event == "UPDATE_TRADESKILL_RECAST" ) then
 		TradeSkillInputBox:SetNumber(GetTradeskillRepeatCount());
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		TradeSkillFrame_Hide();
 	end
 end
 

@@ -5,7 +5,7 @@ UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0 };
 
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
-	if ( UnitExists(unit) and UnitIsPlayer(unit) and UnitCanCooperate("player", unit) ) then
+	if ( CanInspect(unit) ) then
 		NotifyInspect(unit);
 		InspectFrame.unit = unit;
 		ShowUIPanel(InspectFrame);

@@ -93,6 +93,8 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 	local waitTime, timeInQueue;
 	local tooltip;
 	local showRightClickText;
+	BATTLEFIELD_SHUTDOWN_TIMER = 0;
+
 	-- Reset tooltip
 	MiniMapBattlefieldFrame.tooltip = nil;
 	MiniMapBattlefieldFrame.waitTime = {};

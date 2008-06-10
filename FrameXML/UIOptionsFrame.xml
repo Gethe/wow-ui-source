@@ -185,7 +185,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="UIOptionsFrameCheckButton6">
 										<Offset>
-											<AbsDimension x="140" y="0"/>
+											<AbsDimension x="153" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -195,7 +195,7 @@
 											<Anchors>
 												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
 													<Offset>
-														<AbsDimension x="21" y="0"/>
+														<AbsDimension x="16" y="3"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -446,7 +446,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT">
 										<Offset>
-											<AbsDimension x="0" y="-20"/>
+											<AbsDimension x="0" y="-24"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -456,7 +456,7 @@
 											<Anchors>
 												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
 													<Offset>
-														<AbsDimension x="21" y="0"/>
+														<AbsDimension x="16" y="3"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -753,7 +753,7 @@
 					</Frame>
 					<Frame name="AdvancedOptionsChat" inherits="OptionFrameBoxTemplate">
 						<Size>
-							<AbsDimension x="10" y="385"/>
+							<AbsDimension x="10" y="415"/>
 						</Size>
 						<Frames>
 							<CheckButton name="UIOptionsFrameCheckButton7" inherits="UIOptionsCheckButtonTemplate">
@@ -822,6 +822,15 @@
 							<CheckButton name="UIOptionsFrameCheckButton51" inherits="UIOptionsCheckButtonTemplate">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton38" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="UIOptionsFrameCheckButton68" inherits="UIOptionsCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton51" relativePoint="BOTTOM">
 										<Offset>
 											<AbsDimension x="0" y="0"/>
 										</Offset>
@@ -975,7 +984,7 @@
 											<Anchors>
 												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
 													<Offset>
-														<AbsDimension x="21" y="0"/>
+														<AbsDimension x="16" y="3"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -1111,9 +1120,19 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
-							<CheckButton name="UIOptionsFrameCheckButton19" inherits="UIOptionsCheckButtonTemplate">
+							<CheckButton name="UIOptionsFrameCheckButton69" inherits="UIOptionsCheckButtonTemplate">
+								<Size x="20" y="20"/>
 								<Anchors>
 									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton59" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="UIOptionsFrameCheckButton19" inherits="UIOptionsCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="UIOptionsFrameCheckButton69" relativePoint="BOTTOM">
 										<Offset>
 											<AbsDimension x="-6" y="-2"/>
 										</Offset>

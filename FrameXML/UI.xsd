@@ -280,6 +280,8 @@
 				<xs:element name="BackgroundInsets" type="Inset"/>
 				<xs:element name="TileSize" type="Value"/>
 				<xs:element name="EdgeSize" type="Value"/>
+				<xs:element name="Color" type="ColorType"/>
+				<xs:element name="BorderColor" type="ColorType"/>
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="bgFile" type="xs:string"/>

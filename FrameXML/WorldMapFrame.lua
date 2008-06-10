@@ -6,6 +6,7 @@ NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_FLAGS = 2;
 
 function WorldMapFrame_OnLoad()
+	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	this:RegisterEvent("WORLD_MAP_UPDATE");
 	this:RegisterEvent("CLOSE_WORLD_MAP");
 	this:RegisterEvent("WORLD_MAP_NAME_UPDATE");
@@ -28,6 +29,12 @@ function WorldMapFrame_OnLoad()
 end
 
 function WorldMapFrame_OnEvent()
+	-- FIX ME FOR 1.13
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		if ( this:IsVisible() ) then
+			HideUIPanel(WorldMapFrame);
+		end
+	end
 	if ( event == "WORLD_MAP_UPDATE" ) then
 		if ( this:IsVisible() ) then
 			WorldMapFrame_Update();

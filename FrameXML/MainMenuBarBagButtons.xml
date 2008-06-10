@@ -162,6 +162,7 @@
 		<Scripts>
 			<OnLoad>
 				this:SetID(KEYRING_CONTAINER);
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick>
 				if (CursorHasItem()) then

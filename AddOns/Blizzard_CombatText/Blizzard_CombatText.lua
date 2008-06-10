@@ -9,7 +9,7 @@ COMBAT_TEXT_CRIT_SHRINKTIME = 0.2;
 COMBAT_TEXT_TO_ANIMATE = {};
 COMBAT_TEXT_STAGGER_RANGE = 20;
 COMBAT_TEXT_SPACING = 10;
-COMBAT_TEXT_MAX_OFFSET = 100;
+COMBAT_TEXT_MAX_OFFSET = 130;
 COMBAT_TEXT_LOW_HEALTH_THRESHOLD = 0.2;
 COMBAT_TEXT_LOW_MANA_THRESHOLD = 0.2;
 COMBAT_TEXT_LOCATIONS = {};
@@ -28,15 +28,15 @@ COMBAT_TEXT_TYPE_INFO = {};
 COMBAT_TEXT_TYPE_INFO["INTERRUPT"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["DAMAGE_CRIT"] = {r = 1, g = 0.1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["DAMAGE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, show = 1};
-COMBAT_TEXT_TYPE_INFO["MISS"] = {r = 0.5, g = 0.5, b = 0.5, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["MISS"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
 COMBAT_TEXT_TYPE_INFO["BLOCK"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
 COMBAT_TEXT_TYPE_INFO["ABSORB"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
 COMBAT_TEXT_TYPE_INFO["RESIST"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["EVADE"] = {r = 1, g = 1, b = 1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["DODGE"] = {r = 1, g = 1, b = 1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["PARRY"] = {r = 1, g = 1, b = 1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["IMMUNE"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["DEFLECT"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["EVADE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["DODGE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["PARRY"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["IMMUNE"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+COMBAT_TEXT_TYPE_INFO["DEFLECT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
 COMBAT_TEXT_TYPE_INFO["ENCHANTMENT_REMOVED"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["ENCHANTMENT_ADDED"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL"] = {r = 0.1, g = 1, b = 0.1, show = 1};
@@ -65,18 +65,18 @@ COMBAT_TEXT_TYPE_INFO["SPELL_REFLECTED"] = {r = 1, g = 1, b = 1, var = "COMBAT_T
 COMBAT_TEXT_TYPE_INFO["SPELL_MISSED"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
 COMBAT_TEXT_TYPE_INFO["SPELL_ACTIVE"] = {r = 1, g = 0.82, b = 0, var = "COMBAT_TEXT_SHOW_REACTIVES"};
 COMBAT_TEXT_TYPE_INFO["FACTION"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_REPUTATION"};
-COMBAT_TEXT_TYPE_INFO["HEAL_CRIT"] = {r = 1, g = 1, b = 1, show = 1};
+COMBAT_TEXT_TYPE_INFO["HEAL_CRIT"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["DAMAGE_SHIELD"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["SPELL_DISPELLED"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["EXTRA_ATTACKS"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["SPLIT_DAMAGE"] = {r = 1, g = 1, b = 1, show = 1};
-COMBAT_TEXT_TYPE_INFO["HONOR_GAINED"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_REPUTATION"};
+COMBAT_TEXT_TYPE_INFO["HONOR_GAINED"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_HONOR_GAINED"};
 COMBAT_TEXT_TYPE_INFO["HEALTH_LOW"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"};
 COMBAT_TEXT_TYPE_INFO["MANA_LOW"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"};
 COMBAT_TEXT_TYPE_INFO["ENTERING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_COMBAT_STATE"};
 COMBAT_TEXT_TYPE_INFO["LEAVING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_COMBAT_STATE"};
-COMBAT_TEXT_TYPE_INFO["COMBO_POINTS"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_COMBO_POINTS"};
+COMBAT_TEXT_TYPE_INFO["COMBO_POINTS"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_COMBO_POINTS"};
 
 function CombatText_OnLoad()
 	CombatText_UpdateDisplayedMessages();
@@ -172,7 +172,14 @@ function CombatText_OnEvent(event)
 	elseif ( messageType == "AURA_END" or messageType == "AURA_END_HARMFUL" ) then
 		message = format(AURA_END, data);
 	elseif ( messageType == "HEAL" or messageType == "PERIODIC_HEAL") then
-		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" ) then
+		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and messageType == "HEAL" and UnitName("player") ~= data ) then
+			message = "+"..arg3.." ["..data.."]";
+		else
+			message = "+"..arg3;
+		end
+	elseif ( messageType == "HEAL_CRIT" ) then
+		displayType = "crit";
+		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and UnitName("player") ~= data ) then
 			message = "+"..arg3.." ["..data.."]";
 		else
 			message = "+"..arg3;
@@ -218,6 +225,8 @@ function CombatText_OnEvent(event)
 		else
 			message = RESIST;
 		end
+	elseif ( messageType == "HONOR_GAINED" ) then
+		message = format(COMBAT_TEXT_HONOR_GAINED, data);
 	elseif ( messageType == "SPELL_ACTIVE" ) then
 		displayType = "crit";
 		message = "<"..data..">";
@@ -280,7 +289,11 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 	string:SetText(message);
 	string:SetTextColor(r, g, b);
 	string.scrollTime = 0;
-	string.scrollFunction = scrollFunction;
+	if ( displayType == "crit" ) then
+		string.scrollFunction = CombatText_StandardScroll;
+	else
+		string.scrollFunction = scrollFunction;
+	end
 	
 	-- See which direction the message should flow
 	local yDir;

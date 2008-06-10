@@ -22,7 +22,7 @@ function UnitFrame_Initialize(unit, name, portrait, healthbar, healthtext, manab
 end
 
 function UnitFrame_Update()
-	this.name:SetText(UnitName(this.unit));
+	this.name:SetText(GetUnitName(this.unit));
 	SetPortraitTexture(this.portrait, this.unit);
 	UnitFrameHealthBar_Update(this.healthbar, this.unit);
 	UnitFrameManaBar_Update(this.manabar, this.unit);
@@ -31,7 +31,7 @@ end
 function UnitFrame_OnEvent(event)
 	if ( event == "UNIT_NAME_UPDATE" ) then
 		if ( arg1 == this.unit ) then
-			this.name:SetText(UnitName(this.unit));
+			this.name:SetText(GetUnitName(this.unit));
 		end
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		if ( arg1 == this.unit ) then
@@ -221,4 +221,17 @@ function UnitFrameManaBar_Update(statusbar, unit)
 		end
 	end
 	TextStatusBar_OnEvent(cvar, value);
+end
+
+function GetUnitName(unit, showServerName)
+	local name, server = UnitName(unit);
+	if ( server ) then
+		if ( showServerName ) then
+			return name.." - "..server;
+		else
+			return name..FOREIGN_SERVER_LABEL;
+		end
+	else
+		return name;
+	end
 end

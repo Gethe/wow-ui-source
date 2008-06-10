@@ -103,10 +103,11 @@ function UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 	dropdownMenu.which = which;
 	dropdownMenu.unit = unit;
 	if ( unit and not name ) then
-		name = UnitName(unit);
+		name, server = UnitName(unit, true);
 	end
 	dropdownMenu.name = name;
 	dropdownMenu.userData = userData;
+	dropdownMenu.server = server;
 
 	-- Determine which buttons should be shown or hidden
 	UnitPopup_HideButtons();
@@ -534,11 +535,16 @@ function UnitPopup_OnClick()
 	local button = this.value;
 	local unit = dropdownFrame.unit;
 	local name = dropdownFrame.name;
+	local server = dropdownFrame.server;
 
 	if ( button == "TRADE" ) then
 		InitiateTrade(unit);
 	elseif ( button == "WHISPER" ) then
-		ChatFrame_SendTell(name);
+		if(server) then
+			ChatFrame_SendTell(name.."-"..server);
+		else
+			ChatFrame_SendTell(name)
+		end
 	elseif ( button == "INSPECT" ) then
 		InspectUnit(unit);
 	elseif ( button == "TARGET" ) then

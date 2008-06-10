@@ -505,13 +505,17 @@ function TargetofTarget_OnUpdate(elapsed)
 end
 
 function TargetofTarget_Update()
-	if ( UnitExists("target")  and  UnitExists("targettarget")  and ( not UnitIsUnit("player", "target") ) and SHOW_TARGET_OF_TARGET == "1" ) then
+	if ( UnitExists("target")  and  UnitExists("targettarget")  and ( not UnitIsUnit("player", "target") ) and ( UnitHealth("target") > 0 ) and SHOW_TARGET_OF_TARGET == "1" ) then
 		if ( ( SHOW_TARGET_OF_TARGET_STATE == "1")  and ( GetNumRaidMembers() > 0 ) ) then
 			TargetofTargetFrame:Show();
-		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "2")  and ( GetNumPartyMembers() > 0 ) ) then
+		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "2")  and ( GetNumPartyMembers() > 0 ) and ( GetNumRaidMembers() < 1 )) then
 			TargetofTargetFrame:Show();
-		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "3")  and  ( ( GetNumRaidMembers() == 0 ) or  ( GetNumPartyMembers() == 0 ) ) ) then
-			TargetofTargetFrame:Show();
+		elseif (   SHOW_TARGET_OF_TARGET_STATE == "3") then
+			if ( GetNumRaidMembers() == 0 ) then
+				if ( GetNumPartyMembers() == 0 ) then
+					TargetofTargetFrame:Show();
+				end
+			end
 		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "4")  and ( ( GetNumRaidMembers() > 0 ) or  ( GetNumPartyMembers() > 0 ) ) ) then
 			TargetofTargetFrame:Show();
 		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "5") ) then

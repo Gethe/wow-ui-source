@@ -96,7 +96,7 @@ function OptionsFrame_Load()
 		if ( button.disabled ) then
 			OptionsFrame_DisableCheckBox(button);
 		else
-			OptionsFrame_EnableCheckBox(button);
+			OptionsFrame_EnableCheckBox(button, 1, checked);
 		end
 		
 		if ( index == "ENABLE_ALL_SHADERS" and hasPixelShaders ) then

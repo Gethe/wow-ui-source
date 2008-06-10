@@ -1032,26 +1032,20 @@ function SecondsToTime(seconds, noSeconds)
 end
 
 function SecondsToTimeAbbrev(seconds)
-	local time = "";
 	local tempTime;
 	if ( seconds > 86400  ) then
 		tempTime = ceil(seconds / 86400);
-		time = tempTime.." "..DAY_ONELETTER_ABBR;
-		return time;
+		return format(DAY_ONELETTER_ABBR, tempTime);
 	end
 	if ( seconds > 3600  ) then
 		tempTime = ceil(seconds / 3600);
-		time = tempTime.." "..HOUR_ONELETTER_ABBR;
-		return time;
+		return format(HOUR_ONELETTER_ABBR, tempTime);
 	end
 	if ( seconds > 60  ) then
 		tempTime = ceil(seconds / 60);
-		time = tempTime.." "..MINUTE_ONELETTER_ABBR;
-		return time;
+		return format(MINUTE_ONELETTER_ABBR, tempTime);
 	end
-	tempTime = format("%d", seconds);
-	time = tempTime.." "..SECOND_ONELETTER_ABBR;
-	return time;
+	return format(SECOND_ONELETTER_ABBR, seconds);
 end
 
 function BuildListString(...)
@@ -1741,6 +1735,18 @@ function UIParent_ManageFramePositions()
 
 	-- Setup y anchors
 	local anchorY = 0;
+	-- Capture bars
+	if ( NUM_EXTENDED_UI_FRAMES ) then
+		local captureBar;
+		local numCaptureBars = 0;
+		for i=1, NUM_EXTENDED_UI_FRAMES do
+			captureBar = getglobal("WorldStateCaptureBar"..i);
+			if ( captureBar and captureBar:IsShown() ) then
+				anchorY = anchorY - captureBar:GetHeight();
+			end
+		end	
+	end
+	-- Quest timers
 	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	if ( QuestTimerFrame:IsShown() ) then
 		anchorY = anchorY - QuestTimerFrame:GetHeight();

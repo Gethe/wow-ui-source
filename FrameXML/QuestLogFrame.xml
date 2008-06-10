@@ -91,7 +91,7 @@
 		</HighlightTexture>
 		<ButtonText name="$parentNormalText" nonspacewrap="true">
 			<Size>
-				<AbsDimension x="260" y="10"/>
+				<AbsDimension x="0" y="10"/>
 			</Size>
 			<Anchors>
 				<Anchor point="LEFT">

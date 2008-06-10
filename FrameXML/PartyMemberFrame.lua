@@ -202,7 +202,7 @@ function PartyMemberFrame_OnUpdate(elapsed)
 	if ( this.hasDispellable ) then
 		partyStatus:Show();
 		partyStatus:SetAlpha(BUFF_ALPHA_VALUE);
-		if ( this.debuffCountdown ) then
+		if ( this.debuffCountdown and this.debuffCountdown > 0 ) then
 			this.debuffCountdown = this.debuffCountdown - elapsed;
 		else
 			partyStatus:Hide();

@@ -493,6 +493,169 @@
 			</Anchors>
 		</HighlightTexture>
     </Button>
+	<Frame name="WorldStateCaptureBarTemplate" virtual="true" toplevel="true" parent="UIParent" hidden="false">
+		<Size>
+			<AbsDimension x="173" y="26"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="15"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeftBar" file="Interface\WorldStateFrame\WorldState-CaptureBar">
+					<Size>
+						<AbsDimension x="48" y="9"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="26" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.8203125" right="1.0" top="0" bottom="0.140625"/>
+				</Texture>
+				<Texture name="$parentRightBar" file="Interface\WorldStateFrame\WorldState-CaptureBar">
+					<Size>
+						<AbsDimension x="48" y="9"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-26" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.8203125" right="1.0" top="0.171875" bottom="0.3125"/>
+				</Texture>
+				<Texture name="$parentMiddleBar" file="Interface\WorldStateFrame\WorldState-CaptureBar">
+					<Size>
+						<AbsDimension x="48" y="9"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeftBar" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentRightBar" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.8203125" right="1.0" top="0.34375" bottom="0.484375"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\WorldStateFrame\WorldState-CaptureBar">
+					<Size>
+						<AbsDimension x="173" y="26"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+					<TexCoords left="0" right="0.67578125" top="0" bottom="0.40625"/>
+				</Texture>
+				<Texture file="Interface\WorldStateFrame\WorldState-CaptureBar">
+					<Size>
+						<AbsDimension x="3" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeftBar" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.74609375" right="0.7578125" top="0" bottom="0.125"/>
+				</Texture>
+				<Texture file="Interface\WorldStateFrame\WorldState-CaptureBar">
+					<Size>
+						<AbsDimension x="3" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentRightBar" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.74609375" right="0.7578125" top="0" bottom="0.125"/>
+				</Texture>
+				<Texture name="$parentLeftIconHighlight" file="Interface\WorldStateFrame\WorldState-CaptureBar" hidden="true" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="27" y="28"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="-1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.10546875" top="0.4375" bottom="0.875"/>
+				</Texture>
+				<Texture name="$parentRightIconHighlight" file="Interface\WorldStateFrame\WorldState-CaptureBar" hidden="true" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="27" y="28"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.10546875" top="0.4375" bottom="0.875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentIndicator">
+				<Size>
+					<AbsDimension x="5" y="18"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\WorldStateFrame\WorldState-CaptureBar" setAllPoints="true">
+							<Size>
+								<AbsDimension x="5" y="18"/>
+							</Size>
+							<TexCoords left="0.77734375" right="0.796875" top="0" bottom="0.28125"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\WorldStateFrame\WorldState-CaptureBar" hidden="false">
+							<Size>
+								<AbsDimension x="8" y="15"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="1" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.7265625" right="0.76171875" top="0.140625" bottom="0.375"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\WorldStateFrame\WorldState-CaptureBar" hidden="false">
+							<Size>
+								<AbsDimension x="8" y="15"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-1" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.76171875" right="0.7265625" top="0.140625" bottom="0.375"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
 	<Frame name="WorldStateAlwaysUpFrame" toplevel="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="10" y="10"/>
@@ -504,26 +667,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Frames>
-			<Frame name="AlwaysUpFrame1" inherits="WorldStateAlwaysUpTemplate">
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="AlwaysUpFrame2" inherits="WorldStateAlwaysUpTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="AlwaysUpFrame1" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnLoad>
 				WorldStateAlwaysUpFrame_OnLoad();
@@ -531,6 +674,15 @@
 			<OnEvent>
 				WorldStateAlwaysUpFrame_OnEvent();
 			</OnEvent>
+			<OnEnter>
+				if ( this.tooltip ) then
+					GameTooltip:SetOwner(this);
+					GameTooltip:SetText(this.tooltip);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Frame>
 	<!-- Score Frame -->

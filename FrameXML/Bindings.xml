@@ -520,6 +520,8 @@
 		else
 			ShowNameplates();
 			NAMEPLATES_ON = 1;
+			HideFriendNameplates();
+			FRIENDNAMEPLATES_ON = nil;
 		end
 	</Binding>
 	<Binding name="FRIENDNAMEPLATES">
@@ -529,22 +531,21 @@
 		else
 			ShowFriendNameplates();
 			FRIENDNAMEPLATES_ON = 1;
+			HideNameplates();
+			NAMEPLATES_ON = nil;
 		end
 	</Binding>
 	<Binding name="ALLNAMEPLATES">
-		if ( NAMEPLATES_ON ) then
-			HideNameplates();
-			NAMEPLATES_ON = nil;
-		else
+		if ( not (NAMEPLATES_ON and FRIENDNAMEPLATES_ON) ) then
 			ShowNameplates();
 			NAMEPLATES_ON = 1;
-		end
-		if ( FRIENDNAMEPLATES_ON ) then
-			HideFriendNameplates();
-			FRIENDNAMEPLATES_ON = nil;
-		else
 			ShowFriendNameplates();
 			FRIENDNAMEPLATES_ON = 1;
+		else
+			HideNameplates();
+			NAMEPLATES_ON = nil;
+			HideFriendNameplates();
+			FRIENDNAMEPLATES_ON = nil;
 		end
 	</Binding>
 	<Binding name="ATTACKTARGET">

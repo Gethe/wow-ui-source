@@ -2,9 +2,6 @@
 CLASS_TRAINER_SKILLS_DISPLAYED = 11;
 CLASS_TRAINER_SKILL_HEIGHT = 16;
 MAX_LEARNABLE_PROFESSIONS = 2;
-TRAINER_FILTER_AVAILABLE = 1;
-TRAINER_FILTER_UNAVAILABLE = 1;
-TRAINER_FILTER_USED = 0;
 
 UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0 };
 
@@ -54,6 +51,12 @@ function ClassTrainerFrame_Hide()
 end
 
 function ClassTrainerFrame_OnLoad()
+	TRAINER_FILTER_AVAILABLE = 1;
+	RegisterForSave("TRAINER_FILTER_AVAILABLE");
+	TRAINER_FILTER_UNAVAILABLE = 1;
+	RegisterForSave("TRAINER_FILTER_UNAVAILABLE");
+	TRAINER_FILTER_USED = 0;
+	RegisterForSave("TRAINER_FILTER_USED");
 	this:RegisterEvent("TRAINER_UPDATE");
 	this:RegisterEvent("ADDON_LOADED");
 	ClassTrainerDetailScrollFrame.scrollBarHideable = 1;
