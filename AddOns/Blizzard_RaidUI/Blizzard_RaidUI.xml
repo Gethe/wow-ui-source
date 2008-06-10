@@ -771,6 +771,17 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("RAID_ROSTER_UPDATE");
+			</OnLoad>
+			<OnEvent>
+				if ( event == "RAID_ROSTER_UPDATE" ) then
+					if ( GetNumRaidMembers() == 0 ) then
+						ReadyCheckFrame.timer = nil;
+						ReadyCheckFrame:Hide();
+					end
+				end
+			</OnEvent>
 			<OnUpdate>
 				ReadyCheck_OnUpdate(arg1);
 			</OnUpdate>

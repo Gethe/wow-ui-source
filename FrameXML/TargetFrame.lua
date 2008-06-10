@@ -314,8 +314,14 @@ function TargetDebuffButton_Update()
 	else
 		limit = 6; 
 		TargetFrameDebuff1:SetPoint("TOPLEFT", "TargetFrame", "BOTTOMLEFT", 5, 32);
-		 if ( numDebuffs >= 5 ) then
-			TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff7", "BOTTOMLEFT", 0, -2);
+		if ( numDebuffs >= 5 and numDebuffs < 10 ) then
+			if ( TargetofTargetFrame:IsShown() ) then
+				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff6", "BOTTOMLEFT", 0, -2);
+			else
+				TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff7", "BOTTOMLEFT", 0, -2);
+			end
+		elseif ( TargetofTargetFrame:IsShown() and numDebuffs >= 10 ) then
+			TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff11", "BOTTOMLEFT", 0, -2);
 		else
 			TargetFrameBuff1:SetPoint("TOPLEFT", "TargetFrameDebuff1", "BOTTOMLEFT", 0, -2);
 		end
@@ -324,22 +330,26 @@ function TargetDebuffButton_Update()
 	-- Shrinks the debuffs if they begin to overlap the TargetFrame
 	local debuffFrame;
 	local debuffWrap;
-	local debuffSize,debuffFrameSize;
+	local debuffSize, debuffFrameSize;
+
+	debuffSize = 21;
+	debuffFrameSize = 23;
 
 	if ( TargetofTargetFrame:IsShown() ) then
+		if ( ( ( numBuffs > 4 ) and ( numDebuffs > 5 ) ) or ( ( numBuffs < 4 ) and ( numDebuffs > 5 ) ) ) then
+			debuffSize = 17;
+			debuffFrameSize = 19;
+		end
 		debuffWrap = 5;
 	else
 		debuffWrap = 6;
 	end
 
-
-	if ( ( numDebuffs >= debuffWrap ) or ( numBuffs >= 5 ) ) then
+	if ( numDebuffs >= debuffWrap ) then
 		debuffSize = 17;
 		debuffFrameSize = 19;
-	else
-		debuffSize = 21;
-		debuffFrameSize = 23;
 	end
+
 
 	-- Make size adjustments for wrapping
 	for i=1, limit do
@@ -497,6 +507,7 @@ function TargetofTarget_Update()
 	else
 		TargetofTargetFrame:Hide();
 	end
+	TargetDebuffButton_Update();
 end
 
 function TargetofTarget_OnClick(button)

@@ -1116,14 +1116,7 @@ SlashCmdList["PVP"] = function(msg)
 end
 
 SlashCmdList["RAID_INFO"] = function(msg)
-	local info = ChatTypeInfo["SYSTEM"]
 	RequestRaidInfo();
-	if ( not RaidFrame:IsShown() and ( GetNumSavedInstances() > 0 ) ) then
-		ToggleFriendsFrame(4);
-		RaidInfoFrame:Show();
-	elseif ( GetNumSavedInstances() == 0 ) then
-		DEFAULT_CHAT_FRAME:AddMessage(TEXT(NO_RAID_INSTANCES_SAVED), info.r, info.g, info.b, info.id);
-	end
 end
 
 SlashCmdList["READYCHECK"] = function(msg)
@@ -1140,6 +1133,7 @@ function ChatFrame_OnLoad()
 	this:RegisterEvent("UPDATE_CHAT_WINDOWS");
 	this:RegisterEvent("CHAT_MSG_CHANNEL");
 	this:RegisterEvent("ZONE_UNDER_ATTACK");
+	this:RegisterEvent("UPDATE_INSTANCE_INFO");
 	this.tellTimer = GetTime();
 	this.channelList = {};
 	this.zoneChannelList = {};
@@ -1461,6 +1455,15 @@ function ChatFrame_OnEvent(event)
 		local info = ChatTypeInfo["SYSTEM"];
 		this:AddMessage(format(TEXT(ZONE_UNDER_ATTACK), arg1), info.r, info.g, info.b, info.id);
 		return;
+	end
+	if ( event == "UPDATE_INSTANCE_INFO" ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		if ( not RaidFrame:IsShown() and ( GetNumSavedInstances() > 0 ) ) then
+			ToggleFriendsFrame(4);
+			RaidInfoFrame:Show();
+		elseif ( not RaidFrame:IsShown() and GetNumSavedInstances() == 0 and this == DEFAULT_CHAT_FRAME) then
+			this:AddMessage(TEXT(NO_RAID_INSTANCES_SAVED), info.r, info.g, info.b, info.id);
+		end
 	end
 end
 
