@@ -77,7 +77,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="ScriptErrors_Message" inherits="GameFontRedLarge" justifyH="CENTER" justifyV="TOP">
+				<FontString name="ScriptErrors_Message" inherits="GameFontRedLarge" justifyH="CENTER" justifyV="TOP" nonspacewrap="true">
 					<Size>
 						<AbsDimension x="360" y="0"/>
 					</Size>
