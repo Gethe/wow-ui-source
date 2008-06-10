@@ -51,12 +51,6 @@ function ClassTrainerFrame_Hide()
 end
 
 function ClassTrainerFrame_OnLoad()
-	TRAINER_FILTER_AVAILABLE = 1;
-	RegisterForSave("TRAINER_FILTER_AVAILABLE");
-	TRAINER_FILTER_UNAVAILABLE = 1;
-	RegisterForSave("TRAINER_FILTER_UNAVAILABLE");
-	TRAINER_FILTER_USED = 0;
-	RegisterForSave("TRAINER_FILTER_USED");
 	this:RegisterEvent("TRAINER_UPDATE");
 	this:RegisterEvent("ADDON_LOADED");
 	ClassTrainerDetailScrollFrame.scrollBarHideable = 1;
