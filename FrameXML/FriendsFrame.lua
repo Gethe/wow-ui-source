@@ -686,8 +686,8 @@ end
 function FriendsFrameGuildStatusButton_OnClick(button)
 	if ( button == "LeftButton" ) then
 		GuildFrame.previousSelectedGuildMember = GuildFrame.selectedGuildMember;
-		GuildFrame.selectedGuildMember = getglobal("GuildFrameButton"..this:GetID()).guildIndex;
-		GuildFrame.selectedName = getglobal("GuildFrameButton"..this:GetID().."Name"):GetText();
+		GuildFrame.selectedGuildMember = this.guildIndex;
+		GuildFrame.selectedName = getglobal(this:GetName().."Name"):GetText();
 		SetGuildRosterSelection(GuildFrame.selectedGuildMember);
 		-- Toggle guild details frame
 		if ( GuildMemberDetailFrame:IsVisible() and (GuildFrame.previousSelectedGuildMember and (GuildFrame.previousSelectedGuildMember == GuildFrame.selectedGuildMember)) ) then
@@ -701,7 +701,7 @@ function FriendsFrameGuildStatusButton_OnClick(button)
 		end
 		GuildStatus_Update();
 	else
-		local guildIndex = getglobal("GuildFrameButton"..this:GetID()).guildIndex;
+		local guildIndex = this.guildIndex;
 		local name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(guildIndex);
 		FriendsFrame_ShowDropdown(name, online);
 	end

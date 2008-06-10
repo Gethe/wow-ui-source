@@ -1010,13 +1010,15 @@ function AuctionFrameItem_OnEnter(type, index)
 	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 	GameTooltip:SetAuctionItem(type, index);
 	if ( ShoppingTooltip1:SetAuctionCompareItem(type, index, 1) ) then
-		ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_BOTTOMRIGHT");
+		ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_NONE");
+		ShoppingTooltip1:ClearAllPoints();
 		ShoppingTooltip1:SetPoint("TOPLEFT", "GameTooltip", "TOPRIGHT", 0, -10);
 		ShoppingTooltip1:SetAuctionCompareItem(type, index, 1);
 		ShoppingTooltip1:Show();
 	end
 	if ( ShoppingTooltip2:SetAuctionCompareItem(type, index, 2) ) then
-		ShoppingTooltip2:SetOwner(ShoppingTooltip1, "ANCHOR_BOTTOMRIGHT");
+		ShoppingTooltip2:SetOwner(ShoppingTooltip1, "ANCHOR_NONE");
+		ShoppingTooltip2:ClearAllPoints();
 		ShoppingTooltip2:SetPoint("TOPLEFT", "ShoppingTooltip1", "TOPRIGHT", 0, 0);
 		ShoppingTooltip2:SetAuctionCompareItem(type, index, 2);
 		ShoppingTooltip2:Show();

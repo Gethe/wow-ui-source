@@ -3267,6 +3267,17 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Scripts>
+							<OnClick>
+								InviteByName(GuildFrame.selectedName);
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GROUPINVITE, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
 						<NormalText inherits="GameFontNormalSmall"/>
 						<HighlightText inherits="GameFontHighlightSmall"/>
 						<DisabledText inherits="GameFontDisableSmall"/>

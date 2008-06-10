@@ -216,6 +216,10 @@
 				</Size>
 			</Frame>
 		</ScrollChild>
+		<Scripts>
+			<OnScrollRangeChanged>
+			</OnScrollRangeChanged>
+		</Scripts>
 	</ScrollFrame>
 	<EditBox name="InputBoxTemplate" enableMouse="true" virtual="true">
 		<Layers>
