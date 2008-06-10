@@ -61,7 +61,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Score"):SetText(NOT_APPLICABLE);
+						getglobal(this:GetName().."Score"):SetText(GM_SURVEY_NOT_APPLICABLE);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>

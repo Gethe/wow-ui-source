@@ -759,6 +759,19 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	exclusive = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
+	text = TEXT(ABANDON_QUEST_CONFIRM_WITH_ITEMS),
+	button1 = TEXT(YES),
+	button2 = TEXT(NO),
+	OnAccept = function()
+		AbandonQuest();
+		PlaySound("igQuestLogAbandonQuest");
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["ADD_FRIEND"] = {
 	text = TEXT(ADD_FRIEND_LABEL),
 	button1 = TEXT(ACCEPT),

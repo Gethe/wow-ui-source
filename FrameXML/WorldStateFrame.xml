@@ -374,7 +374,9 @@
 					<OnEnter>
 						if ( this.tooltip ) then
 							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetText(this.tooltip);
+							GameTooltip:SetText(this.name);
+							GameTooltip:AddLine(this.tooltip, 1.0, 1.0, 1.0, 1);
+							GameTooltip:Show();
 						end
 					</OnEnter>
 					<OnLeave>

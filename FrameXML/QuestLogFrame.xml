@@ -462,7 +462,14 @@
 				<Scripts>
 					<OnClick>
 						SetAbandonQuest();
-						StaticPopup_Show("ABANDON_QUEST", GetAbandonQuestName());
+						local items = GetAbandonQuestItems();
+						if ( items ) then
+							StaticPopup_Hide("ABANDON_QUEST");
+							StaticPopup_Show("ABANDON_QUEST_WITH_ITEMS", GetAbandonQuestName(), items);
+						else
+							StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
+							StaticPopup_Show("ABANDON_QUEST", GetAbandonQuestName());
+						end
 					</OnClick>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(ABANDON_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ABANDONQUEST, 1);

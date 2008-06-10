@@ -551,7 +551,11 @@ function UnitPopup_OnClick()
 	elseif ( button == "INSPECT" ) then
 		InspectUnit(unit);
 	elseif ( button == "TARGET" ) then
-		TargetByName(name, 1);
+		if ( server ) then
+			TargetByName(name.."-"..server, 1);
+		else
+			TargetByName(name, 1);
+		end
 	elseif ( button == "DUEL" ) then
 		StartDuelUnit(unit);
 	elseif ( button == "INVITE" ) then

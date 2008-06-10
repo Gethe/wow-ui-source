@@ -249,6 +249,11 @@ function OptionsFrame_Save()
 	if ( OptionsFrame.ClientRestart ) then
 		StaticPopup_Show("CLIENT_RESTART_ALERT");
 	end
+
+	-- Update scrolling combat text if it's loaded
+	if ( CombatText_UpdateDisplayedMessages ) then
+		CombatText_UpdateDisplayedMessages();
+	end
 end
 
 function OptionsFrame_Cancel()

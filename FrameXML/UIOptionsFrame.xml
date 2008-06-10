@@ -11,7 +11,7 @@
 	<Frame name="UIOptionsFrame" setAllPoints="true" frameStrata="FULLSCREEN" hidden="true" enableKeyboard="true" enableMouse="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontNormal" text="UIOPTIONS_MENU">
+				<FontString name="UIOptionsFrameTitle" inherits="GameFontNormal" text="UIOPTIONS_MENU">
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>

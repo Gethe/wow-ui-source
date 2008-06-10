@@ -114,8 +114,10 @@ function WorldStateFrame_ToggleMinimap()
 	local numUI = GetNumWorldStateUI();
 	if ( SHOW_BATTLEFIELD_MINIMAP == "1" ) then
 		if ( numUI == 0 ) then
-			if ( BattlefieldMinimap ) then
-				BattlefieldMinimap:Hide();
+			if ( not MiniMapBattlefieldFrame.status == "active" ) then
+				if ( BattlefieldMinimap ) then
+					BattlefieldMinimap:Hide();
+				end
 			end
 		else
 			if ( not BattlefieldMinimap ) then
@@ -150,6 +152,7 @@ function CaptureBar_Update(id, value)
 		getglobal("WorldStateCaptureBar"..id.."IndicatorLeft"):Hide();
 		getglobal("WorldStateCaptureBar"..id.."IndicatorRight"):Hide();
 	end
+	-- Magic numbers the bar is 40 - 20 - 40
 	if ( value > 60  ) then
 		getglobal("WorldStateCaptureBar"..id.."LeftIconHighlight"):Show();
 		getglobal("WorldStateCaptureBar"..id.."RightIconHighlight"):Hide();
@@ -310,6 +313,7 @@ function WorldStateScoreFrame_Update()
 			if ( not class ) then
 				class = "";
 			end
+			nameButton.name = name;
 			nameButton.tooltip = race.." "..class;
 			getglobal("WorldStateScoreButton"..i.."RankButton").tooltip = rankName;
 			buttonKills:SetText(honorableKills);
@@ -342,7 +346,6 @@ function WorldStateScoreFrame_Update()
 					columnButtonIcon:Hide();
 				end
 			end
-			
 			if ( faction ) then
 				if ( faction == 0 ) then
 					buttonFactionLeft:SetTexCoord(0, 1, 0.5, 0.75);

@@ -23,7 +23,7 @@
 		</OnLoad>
 	</Scripts>
 </Frame>
-<Button name="BattlefieldMinimapTab" hidden="true" frameStrata="LOW" parent="UIParent" movable="true" clampedToScreen="true">
+<Button name="BattlefieldMinimapTab" hidden="true" frameStrata="LOW" parent="UIParent" movable="true">
 	<Size>
 		<AbsDimension x="64" y="32"/>
 	</Size>

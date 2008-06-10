@@ -48,7 +48,7 @@ COMBAT_TEXT_TYPE_INFO["SPELL_ABSORBED"] = {r = 0.79, g = 0.3, b = 0.85, var = "C
 COMBAT_TEXT_TYPE_INFO["SPELL_RESISTED"] = {r = 0.79, g = 0.3, b = 0.85, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
 COMBAT_TEXT_TYPE_INFO["PROC_RESISTED"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
 COMBAT_TEXT_TYPE_INFO["DISPEL_FAILED"] = {r = 1, g = 1, b = 1};
-COMBAT_TEXT_TYPE_INFO["SPELL_CAST"] = {r = 1, g = 1, b = 1};
+COMBAT_TEXT_TYPE_INFO["SPELL_CAST"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["SPELL_CAST_START"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["AURA_END"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURA_FADE"};
 COMBAT_TEXT_TYPE_INFO["AURA_END_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURA_FADE"};
@@ -89,6 +89,7 @@ function CombatText_OnEvent(event)
 	-- Set the message data
 	local data = arg2;
 	local displayType;
+	
 	if ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == "player" ) then
 			if ( UnitHealth("player")/UnitHealthMax("player") <= COMBAT_TEXT_LOW_HEALTH_THRESHOLD ) then
@@ -157,7 +158,6 @@ function CombatText_OnEvent(event)
 	end
 
 	local isStaggered = info.isStaggered;
-	
 	if ( messageType == "" ) then
 	
 	elseif ( messageType == "DAMAGE_CRIT" ) then
@@ -165,6 +165,8 @@ function CombatText_OnEvent(event)
 		message = "-"..data;
 	elseif ( messageType == "DAMAGE" or messageType == "SPELL_DAMAGE" ) then
 		message = "-"..data;
+	elseif ( messageType == "SPELL_CAST" ) then
+		message = "<"..data..">";
 	elseif ( messageType == "AURA_START" ) then
 		message = "<"..data..">";
 	elseif ( messageType == "AURA_START_HARMFUL" ) then
@@ -229,6 +231,9 @@ function CombatText_OnEvent(event)
 			message = RESIST;
 		end
 	elseif ( messageType == "HONOR_GAINED" ) then
+		if ( tonumber(data) > 0 ) then
+			data = "+"..data;
+		end
 		message = format(COMBAT_TEXT_HONOR_GAINED, data);
 	elseif ( messageType == "SPELL_ACTIVE" ) then
 		displayType = "crit";
@@ -250,11 +255,6 @@ end
 
 function CombatText_OnUpdate(elapsed)
 	local lowestMessage = COMBAT_TEXT_LOCATIONS.startY;
-	local uiScale = 1;
-	if ( GetCVar("useUiScale") == "1" ) then
-		uiScale = GetCVar("uiscale") + 0;
-		lowestMessage = lowestMessage / uiScale;
-	end
 	local alpha, xPos, yPos;
 	for index, value in COMBAT_TEXT_TO_ANIMATE do
 		if ( value.scrollTime >= COMBAT_TEXT_SCROLLSPEED ) then
@@ -332,8 +332,6 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 		end
 	end
 
-	local uiScale = 1;
-
 	-- Handle crits
 	if ( displayType == "crit" ) then
 		string.endY = COMBAT_TEXT_LOCATIONS.startY;
@@ -343,13 +341,7 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 		string.endY = COMBAT_TEXT_LOCATIONS.startY;
 		string:SetTextHeight(COMBAT_TEXT_HEIGHT);
 	else
-		if ( GetCVar("useUiScale") == "1" ) then
-			uiScale = GetCVar("uiscale") + 0;
-			string.endY = COMBAT_TEXT_LOCATIONS.endY / uiScale;
-		else
-			string.endY = COMBAT_TEXT_LOCATIONS.endY;
-		end
-		
+		string.endY = COMBAT_TEXT_LOCATIONS.endY;
 		string:SetTextHeight(COMBAT_TEXT_HEIGHT);
 	end
 
@@ -442,31 +434,38 @@ function CombatText_UpdateDisplayedMessages()
 			end
 		end
 	end
+	-- Figure in uiscaling
+	local uiScale;
+	if ( GetCVar("useUiScale") == "1" ) then
+		uiScale = tonumber(GetCVar("uiscale"));
+	else
+		uiScale = 1 ;
+	end
 	-- Update scrolldirection
 	if ( COMBAT_TEXT_FLOAT_MODE == "1" ) then
 		COMBAT_TEXT_SCROLL_FUNCTION = CombatText_StandardScroll;
 		COMBAT_TEXT_LOCATIONS = {
 			startX = 0,
-			startY = 384,
+			startY = 384/uiScale,
 			endX = 0,
-			endY = 609
+			endY = 609/uiScale
 		};
 		
 	elseif ( COMBAT_TEXT_FLOAT_MODE == "2" ) then	
 		COMBAT_TEXT_SCROLL_FUNCTION = CombatText_StandardScroll;
 		COMBAT_TEXT_LOCATIONS = {
 			startX = 0,
-			startY = 384,
+			startY = 384/uiScale,
 			endX = 0,
-			endY =  159
+			endY =  159/uiScale
 		};
 	else
 		COMBAT_TEXT_SCROLL_FUNCTION = CombatText_FountainScroll;
 		COMBAT_TEXT_LOCATIONS = {
 			startX = 0,
-			startY = 384,
+			startY = 384/uiScale,
 			endX = 0,
-			endY = 609
+			endY = 609/uiScale
 		};
 	end
 	CombatText_ClearAnimationList();

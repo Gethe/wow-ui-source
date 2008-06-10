@@ -62,6 +62,10 @@ function TaxiFrame_OnEvent(event)
 			button:Hide();
 		end 
 
+		if ( num_nodes > NUM_TAXI_BUTTONS ) then
+			NUM_TAXI_BUTTONS = num_nodes
+		end
+
 		-- All set...
 		ShowUIPanel(this);
 		if ( not this:IsVisible() ) then

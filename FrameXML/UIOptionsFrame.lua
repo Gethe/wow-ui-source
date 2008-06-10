@@ -174,6 +174,7 @@ function UIOptionsFrame_Init()
 	AdvancedOptionsCombatText:SetPoint("TOPLEFT", AdvancedOptionsActionBars, "BOTTOMLEFT", BasicOptions:GetWidth()*0.65, -20);
 	AdvancedOptionsCombatText:SetPoint("TOPRIGHT", AdvancedOptionsActionBars, "BOTTOMRIGHT", 0, -20);
 	AdvancedOptionsCombatText:SetPoint("BOTTOMLEFT", AdvancedOptionsRaid, "BOTTOMRIGHT", 0, 0);
+	UIOptionsFrameTitle:SetPoint("TOP", AdvancedOptions, "TOP", 0, -5);
 
 	-- Variables not displayed in the ui options but they needed a home
 	RegisterForSave("NAMEPLATES_ON");
