@@ -32,7 +32,7 @@ function QuestLogTitleButton_OnLoad()
 end
 
 function QuestLogTitleButton_OnEvent(event)
-	if ( (event == "UNIT_QUEST_LOG_CHANGED" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) and GameTooltip:IsOwned(this) ) then
+	if ( GameTooltip:IsOwned(this) ) then
 		GameTooltip:Hide();
 		QuestLog_UpdatePartyInfoTooltip();
 	end
@@ -41,24 +41,29 @@ end
 function QuestLog_OnLoad()
 	this.selectedButtonID = 2;
 	this:RegisterEvent("QUEST_LOG_UPDATE");
-	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	this:RegisterEvent("UPDATE_FACTION");
 	this:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
+	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	this:RegisterEvent("PARTY_MEMBER_ENABLE");
+	this:RegisterEvent("PARTY_MEMBER_DISABLE");
 end
 
 function QuestLog_OnEvent(event)
-	if ( event == "QUEST_LOG_UPDATE" or event == "UPDATE_FACTION" or event == "UNIT_QUEST_LOG_CHANGED" ) then
+	if ( event == "QUEST_LOG_UPDATE" or event == "UPDATE_FACTION" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") ) then
 		QuestLog_Update();
 		QuestWatch_Update();
 		if ( QuestLogFrame:IsVisible() ) then
 			QuestLog_UpdateQuestDetails(1);
 		end
-	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
-		-- Determine whether the selected quest is pushable or not
-		if ( GetQuestLogPushable() and GetNumPartyMembers() > 0 ) then
-			QuestFramePushQuestButton:Enable();
-		else
-			QuestFramePushQuestButton:Disable();
+	else
+		QuestLog_Update();
+		if ( event == "PARTY_MEMBERS_CHANGED" ) then
+			-- Determine whether the selected quest is pushable or not
+			if ( GetQuestLogPushable() and GetNumPartyMembers() > 0 ) then
+				QuestFramePushQuestButton:Enable();
+			else
+				QuestFramePushQuestButton:Disable();
+			end
 		end
 	end
 end
@@ -112,7 +117,7 @@ function QuestLog_Update()
 	
 	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questHighlightText, questDisabledText, questHighlight, questCheck;
 	local questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete, color;
-	local numPartyMembers, isOnQuest, partyMembersOnQuest, tempWidth, textWidth;
+	local numPartyMembers, partyMembersOnQuest, tempWidth, textWidth;
 	for i=1, QUESTS_DISPLAYED, 1 do
 		questIndex = i + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
 		questLogTitle = getglobal("QuestLogTitle"..i);
@@ -155,8 +160,7 @@ function QuestLog_Update()
 				end
 				partyMembersOnQuest = 0;
 				for j=1, numPartyMembers do
-					isOnQuest = IsUnitOnQuest(questIndex, "party"..j);
-					if ( isOnQuest and isOnQuest == 1 ) then
+					if ( IsUnitOnQuest(questIndex, "party"..j) ) then
 						partyMembersOnQuest = partyMembersOnQuest + 1;
 					end
 				end
@@ -500,16 +504,14 @@ function QuestLog_UpdatePartyInfoTooltip()
 	local questLogTitleText = GetQuestLogTitle(index);
 	GameTooltip:SetText(questLogTitleText);
 
-	local isOnQuest, unitName, partyMemberOnQuest;
+	local partyMemberOnQuest;
 	for i=1, numPartyMembers do
-		isOnQuest = IsUnitOnQuest( index, "party"..i);
-		unitName = UnitName("party"..i);
-		if ( isOnQuest and isOnQuest == 1 ) then
+		if ( IsUnitOnQuest(index, "party"..i) ) then
 			if ( not partyMemberOnQuest ) then
 				GameTooltip:AddLine(HIGHLIGHT_FONT_COLOR_CODE..PARTY_QUEST_STATUS_ON..FONT_COLOR_CODE_CLOSE);
 				partyMemberOnQuest = 1;
 			end
-			GameTooltip:AddLine(LIGHTYELLOW_FONT_COLOR_CODE..unitName..FONT_COLOR_CODE_CLOSE);
+			GameTooltip:AddLine(LIGHTYELLOW_FONT_COLOR_CODE..UnitName("party"..i)..FONT_COLOR_CODE_CLOSE);
 		end
 	end
 	if ( not partyMemberOnQuest ) then

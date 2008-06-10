@@ -168,7 +168,6 @@ function ActionButton_Update()
 		this:RegisterEvent("TRADE_SKILL_CLOSE");
 		this:RegisterEvent("PLAYER_ENTER_COMBAT");
 		this:RegisterEvent("PLAYER_LEAVE_COMBAT");
-		this:RegisterEvent("PLAYER_COMBO_POINTS");
 		this:RegisterEvent("START_AUTOREPEAT_SPELL");
 		this:RegisterEvent("STOP_AUTOREPEAT_SPELL");
 
@@ -191,7 +190,6 @@ function ActionButton_Update()
 		this:UnregisterEvent("TRADE_SKILL_CLOSE");
 		this:UnregisterEvent("PLAYER_ENTER_COMBAT");
 		this:UnregisterEvent("PLAYER_LEAVE_COMBAT");
-		this:UnregisterEvent("PLAYER_COMBO_POINTS");
 		this:UnregisterEvent("START_AUTOREPEAT_SPELL");
 		this:UnregisterEvent("STOP_AUTOREPEAT_SPELL");
 
@@ -334,8 +332,6 @@ function ActionButton_OnEvent(event)
 		if ( IsAttackAction(ActionButton_GetPagedID(this)) ) then
 			ActionButton_StopFlash();
 		end
-	elseif ( event == "PLAYER_COMBO_POINTS" ) then
-		ActionButton_UpdateUsable();
 	elseif ( event == "START_AUTOREPEAT_SPELL" ) then
 		if ( IsAutoRepeatAction(ActionButton_GetPagedID(this)) ) then
 			ActionButton_StartFlash();

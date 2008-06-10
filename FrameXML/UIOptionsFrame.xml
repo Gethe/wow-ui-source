@@ -505,16 +505,18 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
-								<OnLoad>
-									this:RegisterEvent("VARIABLES_LOADED");
-								</OnLoad>
-								<OnEvent>
-									if ( event == "VARIABLES_LOADED" ) then
-										UIOptionsFrameCheckButtons["HIDE_PARTY_INTERFACE_TEXT"].value = HIDE_PARTY_INTERFACE;
-										this:SetChecked(HIDE_PARTY_INTERFACE);
-										RaidOptionsFrame_UpdatePartyFrames();
-									end
-								</OnEvent>
+								<Scripts>
+									<OnLoad>
+										this:RegisterEvent("VARIABLES_LOADED");
+									</OnLoad>
+									<OnEvent>
+										if ( event == "VARIABLES_LOADED" ) then
+											UIOptionsFrameCheckButtons["HIDE_PARTY_INTERFACE_TEXT"].value = HIDE_PARTY_INTERFACE;
+											this:SetChecked(HIDE_PARTY_INTERFACE);
+											RaidOptionsFrame_UpdatePartyFrames();
+										end
+									</OnEvent>
+								</Scripts>
 							</CheckButton>
 							<CheckButton name="UIOptionsFrameCheckButton48" inherits="UIOptionsCheckButtonTemplate">
 								<Anchors>
