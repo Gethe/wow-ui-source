@@ -264,13 +264,6 @@
 		<Size>
 			<AbsDimension x="57" y="25"/>
 		</Size>
-		<Anchors>
-			<Anchor point="TOP">
-				<Offset>
-					<AbsDimension x="1" y="-10"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
@@ -396,11 +389,6 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				if ( this:GetID() ~= 1 ) then
-					this:SetPoint("TOP", this:GetParent():GetName().."Button"..(this:GetID()-1), "BOTTOM", 0, -8);
-				end
-			</OnLoad>
 			<OnEvent>
 				RaidPulloutButton_OnEvent();
 			</OnEvent>
@@ -431,21 +419,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentButton1" inherits="RaidPulloutButtonTemplate" id="1"/>
-			<Frame name="$parentButton2" inherits="RaidPulloutButtonTemplate" id="2"/>
-			<Frame name="$parentButton3" inherits="RaidPulloutButtonTemplate" id="3"/>
-			<Frame name="$parentButton4" inherits="RaidPulloutButtonTemplate" id="4"/>
-			<Frame name="$parentButton5" inherits="RaidPulloutButtonTemplate" id="5"/>
-			<Frame name="$parentButton6" inherits="RaidPulloutButtonTemplate" id="6"/>
-			<Frame name="$parentButton7" inherits="RaidPulloutButtonTemplate" id="7"/>
-			<Frame name="$parentButton8" inherits="RaidPulloutButtonTemplate" id="8"/>
-			<Frame name="$parentButton9" inherits="RaidPulloutButtonTemplate" id="9"/>
-			<Frame name="$parentButton10" inherits="RaidPulloutButtonTemplate" id="10"/>
-			<Frame name="$parentButton11" inherits="RaidPulloutButtonTemplate" id="11"/>
-			<Frame name="$parentButton12" inherits="RaidPulloutButtonTemplate" id="12"/>
-			<Frame name="$parentButton13" inherits="RaidPulloutButtonTemplate" id="13"/>
-			<Frame name="$parentButton14" inherits="RaidPulloutButtonTemplate" id="14"/>
-			<Frame name="$parentButton15" inherits="RaidPulloutButtonTemplate" id="15"/>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOP">
@@ -669,18 +642,6 @@
 	<Button name="RaidGroupButton38" inherits="RaidGroupButtonTemplate" id="38"/>
 	<Button name="RaidGroupButton39" inherits="RaidGroupButtonTemplate" id="39"/>
 	<Button name="RaidGroupButton40" inherits="RaidGroupButtonTemplate" id="40"/>
-	<Button name="RaidPullout1" inherits="RaidPulloutFrameTemplate" id="1"/>
-	<Button name="RaidPullout2" inherits="RaidPulloutFrameTemplate" id="2"/>
-	<Button name="RaidPullout3" inherits="RaidPulloutFrameTemplate" id="3"/>
-	<Button name="RaidPullout4" inherits="RaidPulloutFrameTemplate" id="4"/>
-	<Button name="RaidPullout5" inherits="RaidPulloutFrameTemplate" id="5"/>
-	<Button name="RaidPullout6" inherits="RaidPulloutFrameTemplate" id="6"/>
-	<Button name="RaidPullout7" inherits="RaidPulloutFrameTemplate" id="7"/>
-	<Button name="RaidPullout8" inherits="RaidPulloutFrameTemplate" id="8"/>
-	<Button name="RaidPullout9" inherits="RaidPulloutFrameTemplate" id="9"/>
-	<Button name="RaidPullout10" inherits="RaidPulloutFrameTemplate" id="10"/>
-	<Button name="RaidPullout11" inherits="RaidPulloutFrameTemplate" id="11"/>
-	<Button name="RaidPullout12" inherits="RaidPulloutFrameTemplate" id="12"/>
 	<!-- This must be after all of the raid pullout stuff! -->
 	<Script>
 		RaidGroupFrame_OnLoad();

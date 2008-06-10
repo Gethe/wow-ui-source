@@ -34,7 +34,7 @@ function PetFrame_Update()
 		PetAttackModeTexture:Hide();
 
 		PetFrame_SetHappiness();
-		RefreshBuffs(getglobal("PetFrame"), 0, "pet");
+		RefreshBuffs(getglobal("PetFrame"), 1, "pet");
 	else
 		this:Hide();
 	end

@@ -110,7 +110,7 @@ function CombatText_OnEvent(event)
 		local powerType = UnitPowerType("player");
 		if ( arg1 == "player" ) then
 			if ( mana/UnitManaMax("player") <= COMBAT_TEXT_LOW_MANA_THRESHOLD and powerType == 0 ) then
-				if ( CombatText.lowMana ) then
+				if ( not CombatText.lowMana ) then
 					messageType = "MANA_LOW";
 					CombatText.lowMana = 1;
 				end
@@ -185,7 +185,10 @@ function CombatText_OnEvent(event)
 			message = "+"..arg3;
 		end
 	elseif ( messageType == "MANA" ) then
-		message = "+"..data.." "..MANA;
+		if ( tonumber(data) > 0 ) then
+			data = "+"..data;
+		end
+		message = data.." "..MANA;
 	elseif ( messageType == "RAGE" ) then
 		message = "+"..data.." "..RAGE;
 	elseif ( messageType == "FOCUS" ) then

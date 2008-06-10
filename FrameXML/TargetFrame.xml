@@ -602,11 +602,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnEvent>
-						UnitFrameHealthBar_Update(this, arg1);
-					</OnEvent>
 					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(arg1);
 						TargetofTargetHealthCheck();
 					</OnValueChanged>
 				</Scripts>
@@ -624,11 +620,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnEvent>
-						UnitFrameManaBar_Update(this, arg1);
-					</OnEvent>
-				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>

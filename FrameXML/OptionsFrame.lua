@@ -433,7 +433,7 @@ function OptionsFrame_SetDefaults()
 				sliderValue = 2;
 			end
 		elseif ( value.func == "TerrainMip" ) then
-			sliderValue = 1 - GetCVarDefault("alphaLevel");
+			sliderValue = 1 - GetCVarDefault("shadowLevel");
 		elseif ( value.func == "BaseMip" ) then
 			sliderValue = 1 - GetCVarDefault("baseMip");
 		elseif ( value.func == "Gamma" ) then

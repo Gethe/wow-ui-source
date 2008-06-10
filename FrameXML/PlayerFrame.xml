@@ -107,7 +107,7 @@
 											</Offset>
 										</Anchor>
 									</Anchors>
-									<TexCoords left="0" right="0.74609375" top="0" bottom="0.5234375"/>
+									<TexCoords left="0" right="0.74609375" top="0" bottom="0.53125"/>
 								</Texture>
 								<Texture name="PlayerAttackBackground" file="Interface\TargetingFrame\UI-TargetingFrame-AttackBackground" hidden="true">
 									<Size>
@@ -170,16 +170,16 @@
 								</Texture>
 								<Texture name="PlayerRestIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
 									<Size>
-										<AbsDimension x="32" y="32"/>
+										<AbsDimension x="31" y="33"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOPLEFT">
 											<Offset>
-												<AbsDimension x="37" y="-52"/>
+												<AbsDimension x="37" y="-49"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
-									<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
+									<TexCoords left="0" right="0.5" top="0" bottom="0.421875"/>
 								</Texture>
 								<Texture name="PlayerAttackIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
 									<Size>

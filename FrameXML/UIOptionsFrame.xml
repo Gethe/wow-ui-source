@@ -9,9 +9,6 @@
 		</Size>
 	</CheckButton>
 	<Frame name="UIOptionsFrame" setAllPoints="true" frameStrata="FULLSCREEN" hidden="true" enableKeyboard="true" enableMouse="true">
-		<Size>
-			<AbsDimension x="1024" y="738"/>
-		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString inherits="GameFontNormal" text="UIOPTIONS_MENU">
@@ -1495,6 +1492,7 @@
 				UIOptionsFrame_OnEvent();
 			</OnEvent>
 			<OnShow>
+				SetupFullscreenScale(this);
 				UIOptionsFrame_Load();
 				MultiActionBar_Update();
 				MultiActionBar_ShowAllGrids();

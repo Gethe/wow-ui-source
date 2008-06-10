@@ -62,8 +62,10 @@ function GMSurveyRadioButton_OnClick(owner, id)
 		radioButton = getglobal(owner:GetName().."RadioButton"..i);
 		if ( i == owner.selectedRadioButton ) then
 			radioButton:SetChecked(1);
+			radioButton:Disable();
 		else
 			radioButton:SetChecked(0);
+			radioButton:Enable();
 		end
 	end
 end

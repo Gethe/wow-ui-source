@@ -1,6 +1,7 @@
 MAX_COMBO_POINTS = 5;
 MAX_TARGET_DEBUFFS = 16;
 MAX_TARGET_BUFFS = 5;
+CURRENT_TARGETTARGET = nil;
 
 UnitReactionColor = {
 	{ r = 1.0, g = 0.0, b = 0.0 },
@@ -94,6 +95,7 @@ function TargetFrame_OnEvent(event)
 		end
 	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
 		TargetFrame_CheckFaction();
+		TargetofTarget_Update();
 	elseif ( event == "RAID_TARGET_UPDATE" ) then
 		TargetFrame_UpdateRaidTargetIcon();
 	end
@@ -433,10 +435,7 @@ end
 function TargetFrameDropDown_Initialize()
 	local menu;
 	local name;
-	if ( UnitExists("target") and UnitReaction("player", "target") and (((UnitReaction("player", "target") >= 4 and not UnitIsPlayer("target")) and not UnitIsUnit("player", "target")) or (UnitReaction("player", "target") < 4  and not UnitIsPlayer("target"))) ) then
-		menu = "RAID_TARGET_ICON";
-		name = RAID_TARGET_ICON;
-	elseif ( UnitIsUnit("target", "player") ) then
+	if ( UnitIsUnit("target", "player") ) then
 		menu = "SELF";
 	elseif ( UnitIsUnit("target", "pet") ) then
 		menu = "PET";
@@ -446,7 +445,7 @@ function TargetFrameDropDown_Initialize()
 		else
 			menu = "PLAYER";
 		end
-	elseif ( UnitInParty("target") ) then
+	else
 		menu = "RAID_TARGET_ICON";
 		name = RAID_TARGET_ICON;
 	end
@@ -493,39 +492,53 @@ function SetRaidTargetIcon(unit, index)
 end
 
 function TargetofTarget_OnUpdate(elapsed)
-	TargetofTargetFrame.timeleft = TargetofTargetFrame.timeleft - elapsed;
-	if ( TargetofTargetFrame.timeleft <= 0 ) then
-		UnitFrame_Update();
-		TargetofTarget_Update();
-		TargetofTarget_CheckDead();
-		TargetofTargetPortrait:SetAlpha(1.0);
-		TargetofTargetFrame.timeleft = 0.25;
-		RefreshBuffs(this, 0, "targettarget");
+	if ( CURRENT_TARGETTARGET ~= UnitName("targettarget") ) then
+		CURRENT_TARGETTARGET = UnitName("targettarget");
+		SetPortraitTexture(this.portrait, this.unit);
+		this.name:SetText(GetUnitName(this.unit));
 	end
+	TargetofTarget_Update();
 end
 
 function TargetofTarget_Update()
 	if ( UnitExists("target")  and  UnitExists("targettarget")  and ( not UnitIsUnit("player", "target") ) and ( UnitHealth("target") > 0 ) and SHOW_TARGET_OF_TARGET == "1" ) then
 		if ( ( SHOW_TARGET_OF_TARGET_STATE == "1")  and ( GetNumRaidMembers() > 0 ) ) then
 			TargetofTargetFrame:Show();
-		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "2")  and ( GetNumPartyMembers() > 0 ) and ( GetNumRaidMembers() < 1 )) then
-			TargetofTargetFrame:Show();
-		elseif (   SHOW_TARGET_OF_TARGET_STATE == "3") then
+		elseif ( SHOW_TARGET_OF_TARGET_STATE == "2")  then
+			if ( GetNumPartyMembers() ~= 0 and GetNumRaidMembers() == 0 ) then
+				TargetofTargetFrame:Show();
+			else
+				TargetofTargetFrame:Hide();
+			end
+		elseif ( SHOW_TARGET_OF_TARGET_STATE == "3") then
 			if ( GetNumRaidMembers() == 0 ) then
 				if ( GetNumPartyMembers() == 0 ) then
 					TargetofTargetFrame:Show();
+				else
+					TargetofTargetFrame:Hide();
 				end
 			end
 		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "4")  and ( ( GetNumRaidMembers() > 0 ) or  ( GetNumPartyMembers() > 0 ) ) ) then
 			TargetofTargetFrame:Show();
 		elseif ( ( SHOW_TARGET_OF_TARGET_STATE == "5") ) then
 			TargetofTargetFrame:Show();
+		else
+			TargetofTargetFrame:Hide();
 		end
 	else
 		TargetofTargetFrame:Hide();
 	end
-	TargetDebuffButton_Update();
+
+	if ( TargetofTargetFrame:IsShown() ) then
+		UnitFrameHealthBar_Update(this.healthbar, this.unit);
+		UnitFrameManaBar_Update(this.manabar, this.unit);
+		TargetofTarget_CheckDead();
+		TargetofTargetPortrait:SetAlpha(1.0);
+		TargetDebuffButton_Update();
+		RefreshBuffs(this, 0, "targettarget");
+	end
 end
+
 
 function TargetofTarget_OnClick(button)
 	if ( SpellIsTargeting() and button == "RightButton" ) then
@@ -545,8 +558,10 @@ end
 
 function TargetofTarget_CheckDead()
 	if ( (UnitHealth("targettarget") <= 0) and UnitIsConnected("targettarget") ) then
+		TargetofTargetBackground:SetAlpha(0.9);
 		TargetofTargetDeadText:Show();
 	else
+		TargetofTargetBackground:SetAlpha(1);
 		TargetofTargetDeadText:Hide();
 	end
 end

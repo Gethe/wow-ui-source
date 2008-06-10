@@ -595,6 +595,7 @@
 				WorldMapFrame_OnLoad();
 			</OnLoad>
 			<OnShow>
+				SetupFullscreenScale(this);
 				UpdateMicroButtons();
 				SetMapToCurrentZone();
 				PlaySound("igQuestLogOpen");

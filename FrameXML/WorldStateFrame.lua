@@ -12,7 +12,7 @@ ExtendedUI = {};
 function WorldStateAlwaysUpFrame_OnLoad()
 	this:RegisterEvent("UPDATE_WORLD_STATES");
 	this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	SHOW_BATTLEFIELD_MINIMAP = "1";
+	SHOW_BATTLEFIELD_MINIMAP = "0";
 	RegisterForSave("SHOW_BATTLEFIELD_MINIMAP");
 	WorldStateAlwaysUpFrame_Update();
 end
@@ -102,11 +102,15 @@ function WorldStateAlwaysUpFrame_Update()
 	end
 	UIParent_ManageFramePositions();
 	if ( SHOW_BATTLEFIELD_MINIMAP == "1" ) then
-		if ( numUI > 0 ) then
-			BattlefieldMinimap_LoadUI();
-			if ( BattlefieldMinimap ) then
-				SetMapToCurrentZone();
+		SetMapToCurrentZone();
+		local mapFileName, textureHeight = GetMapInfo();
+		-- textureHeight is a small hack to keep the Worldmap from flashing when the player is in a worldstate subzone.
+		if ( ( numUI ~= 0 ) and ( textureHeight < 1500 ) ) then
+			if ( not BattlefieldMinimap ) then
+				BattlefieldMinimap_LoadUI();
 				BattlefieldMinimap:Show();
+			else
+				BattlefieldMinimap:Show();				
 			end
 		else
 			if ( BattlefieldMinimap ) then

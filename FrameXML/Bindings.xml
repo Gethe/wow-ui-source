@@ -514,7 +514,7 @@
 		AssistUnit("target");
 	</Binding>
 	<Binding name="NAMEPLATES">
-		if ( NAMEPLATES_ON ) then
+		if ( NAMEPLATES_ON and not FRIENDNAMEPLATES_ON) then
 			HideNameplates();
 			NAMEPLATES_ON = nil;
 		else
@@ -525,7 +525,7 @@
 		end
 	</Binding>
 	<Binding name="FRIENDNAMEPLATES">
-		if ( FRIENDNAMEPLATES_ON ) then
+		if ( FRIENDNAMEPLATES_ON and not NAMEPLATES_ON) then
 			HideFriendNameplates();
 			FRIENDNAMEPLATES_ON = nil;
 		else

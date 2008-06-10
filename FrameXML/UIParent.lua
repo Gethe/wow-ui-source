@@ -1605,7 +1605,7 @@ function UIParent_ManageFramePositions()
 	if ( SHOW_MULTI_ACTIONBAR_1 ) then
 		tinsert(yOffsetFrames, "bottomLeft");
 	end
-	if ( SHOW_MULTI_ACTIONBAR_3 ) then
+	if ( MultiBarLeft:IsShown() ) then
 		tinsert(xOffsetFrames, "rightLeft");
 	elseif ( MultiBarRight:IsShown() ) then
 		tinsert(xOffsetFrames, "rightRight");

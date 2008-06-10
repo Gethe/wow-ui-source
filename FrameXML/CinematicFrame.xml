@@ -28,6 +28,9 @@
 			<OnLoad>
 				CinematicFrame_OnLoad();
 			</OnLoad>
+			<OnShow>
+				SetupFullscreenScale(this);
+			</OnShow>
 			<OnEvent>
 				CinematicFrame_OnEvent();
 			</OnEvent>

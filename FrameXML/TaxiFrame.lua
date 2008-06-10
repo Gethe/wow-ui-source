@@ -1,8 +1,8 @@
 
 TAXI_MAP_WIDTH = 316;
 TAXI_MAP_HEIGHT = 352;
-TAXI_BUTTONS = 64;
-MAX_TAXI_ROUTES = 10;
+NUM_TAXI_BUTTONS = 0;
+NUM_TAXI_ROUTES = 0;
 
 TaxiButtonTypes = { };
 TaxiButtonTypes["CURRENT"] = {
@@ -32,15 +32,17 @@ function TaxiFrame_OnEvent(event)
 		SetTaxiMap(TaxiMap);
 
 		-- Show the taxi node map and buttons
-		local last_button = 1;
 		local num_nodes = NumTaxiNodes();
-		if ( num_nodes > TAXI_BUTTONS ) then
-			message("Warning: Not enough taxi node buttons ("..num_nodes..")");
-			num_nodes = TAXI_BUTTONS;
+		if ( num_nodes > NUM_TAXI_BUTTONS ) then
+			local button;
+			for i = NUM_TAXI_BUTTONS+1, num_nodes do
+				button = CreateFrame("Button", "TaxiButton"..i, TaxiRouteMap, "TaxiButtonTemplate");
+				button:SetID(i);
+			end
 		end
 
 		-- Draw nodes
-		for index = last_button, num_nodes, 1 do
+		for index = 1, num_nodes do
 			local type = TaxiNodeGetType(index);
 			local button = getglobal("TaxiButton"..index);
 			if ( type ~= "NONE" ) then
@@ -49,14 +51,13 @@ function TaxiFrame_OnEvent(event)
 				button:SetPoint("CENTER", "TaxiMap", "BOTTOMLEFT", x*TAXI_MAP_WIDTH, y*TAXI_MAP_HEIGHT);
 				button:SetNormalTexture(TaxiButtonTypes[type].file);
 				button:Show();
-				last_button = index+1;
 			else
 				button:Hide();
 			end
 		end
 	
 		-- Hide remaining nodes
-		for index = last_button, TAXI_BUTTONS, 1 do
+		for index = num_nodes+1, NUM_TAXI_BUTTONS, 1 do
 			local button = getglobal("TaxiButton"..index);
 			button:Hide();
 		end 
@@ -91,7 +92,15 @@ function TaxiNodeOnButtonEnter(button)
 		SetTooltipMoney(GameTooltip, TaxiNodeCost(this:GetID()));
 		TaxiNodeSetCurrent(index);
 
-		for i=1, MAX_TAXI_ROUTES do
+		if ( numRoutes > NUM_TAXI_ROUTES ) then
+			for i = NUM_TAXI_ROUTES+1, numRoutes do
+				line = TaxiRouteMap:CreateTexture("TaxiRoute"..i, "BACKGROUND");
+				line:SetTexture("Interface\\TaxiFrame\\UI-Taxi-Line");
+			end
+			NUM_TAXI_ROUTES = numRoutes;
+		end
+
+		for i=1, NUM_TAXI_ROUTES do
 			line = getglobal("TaxiRoute"..i);
 			if ( i <= numRoutes ) then
 				sX = TaxiGetSrcX(index, i)*w;
@@ -118,13 +127,20 @@ function DrawOneHopLines()
 	local sX, sY, dX, dY;
 	local w = TaxiRouteMap:GetWidth();
 	local h = TaxiRouteMap:GetHeight();
+	local numNodes = NumTaxiNodes();
 	local numLines = 0;
 	local numSingleHops = 0;
-	for i=1, NumTaxiNodes() do
+	for i=1, numNodes  do
 		if ( GetNumRoutes(i) == 1 ) then
 			numSingleHops = numSingleHops + 1;
 			numLines = numLines + 1;
-			line = getglobal("TaxiRoute"..numLines);
+			if ( numLines > NUM_TAXI_ROUTES ) then
+				line = TaxiRouteMap:CreateTexture("TaxiRoute"..numLines, "BACKGROUND");
+				line:SetTexture("Interface\\TaxiFrame\\UI-Taxi-Line");
+				NUM_TAXI_ROUTES = numLines;
+			else
+				line = getglobal("TaxiRoute"..numLines);
+			end
 			if ( line ) then
 				sX = TaxiGetSrcX(i, 1)*w;
 				sY = TaxiGetSrcY(i, 1)*h;
@@ -135,7 +151,7 @@ function DrawOneHopLines()
 			end
 		end
 	end
-	for i=numLines+1, MAX_TAXI_ROUTES do
+	for i=numLines+1, NUM_TAXI_ROUTES do
 		getglobal("TaxiRoute"..i):Hide();
 	end
 	if ( numSingleHops == 0 ) then

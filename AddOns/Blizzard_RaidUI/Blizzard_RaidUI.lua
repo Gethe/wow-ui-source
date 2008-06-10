@@ -2,8 +2,7 @@
 MOVING_RAID_MEMBER = nil;
 TARGET_RAID_SLOT = nil;
 RAID_SUBGROUP_LISTS = {};
-MAX_RAID_PULLOUT_BUTTONS = 15;
-MAX_RAID_PULLOUT_FRAMES = 12;
+NUM_RAID_PULLOUT_FRAMES = 0;
 RAID_PULLOUT_BUTTON_HEIGHT = 33;
 MOVING_RAID_PULLOUT = nil;
 
@@ -400,7 +399,21 @@ function RaidPullout_Update(pullOutFrame)
 	local name, rank, subgroup, level, class, fileName, zone, online, isDead;
 	local debuff;
 
-	for i=1, MAX_RAID_PULLOUT_BUTTONS do
+	if ( numPulloutEntries > pullOutFrame.numPulloutButtons ) then
+		local index = pullOutFrame.numPulloutButtons + 1;
+		local relative;
+		for i=index, numPulloutEntries do
+			pulloutButton = CreateFrame("Frame", pullOutFrame:GetName().."Button"..i, pullOutFrame, "RaidPulloutButtonTemplate");
+			if ( i == 1 ) then
+				pulloutButton:SetPoint("TOP", pullOutFrame, "TOP", 1, -10);
+			else
+				relative = getglobal(pullOutFrame:GetName().."Button"..(i-1));
+				pulloutButton:SetPoint("TOP", relative, "BOTTOM", 0, -8);
+			end
+		end
+		pullOutFrame.numPulloutButtons = numPulloutEntries;
+	end
+	for i=1, pullOutFrame.numPulloutButtons do
 		pulloutButton = getglobal(pullOutFrame:GetName().."Button"..i);
 		if ( i <= numPulloutEntries ) then
 			pulloutButtonName = getglobal(pulloutButton:GetName().."Name");
@@ -521,25 +534,24 @@ end
 
 function RaidPullout_GetFrame(filterID)
 	-- Grab an available pullout frame
-	local frame, pulloutFrame;
-	for i=1, MAX_RAID_PULLOUT_FRAMES do
+	local frame;
+	for i=1, NUM_RAID_PULLOUT_FRAMES do
 		frame = getglobal("RaidPullout"..i);
-		if ( not frame:IsVisible() ) then
-			pulloutFrame = frame;
-			break;
-		else
-			-- if frame is visible see if its group id is already taken
-			if ( filterID == frame.filterID ) then
-				return nil;
-			end
+		-- if frame is visible see if its group id is already taken
+		if ( frame:IsVisible() and filterID == frame.filterID ) then
+			return nil;
 		end
 	end
-	if ( pulloutFrame ) then
-		return pulloutFrame;
+	for i=1, NUM_RAID_PULLOUT_FRAMES do
+		frame = getglobal("RaidPullout"..i);
+		if ( not frame:IsVisible() ) then
+			return frame;
+		end
 	end
-	-- FIXME
-	message("You can only pull out 12 groups!");
-	return nil;
+	NUM_RAID_PULLOUT_FRAMES = NUM_RAID_PULLOUT_FRAMES + 1;
+	frame = CreateFrame("Button", "RaidPullout"..NUM_RAID_PULLOUT_FRAMES, UIParent, "RaidPulloutFrameTemplate");
+	frame.numPulloutButtons = 0;
+	return frame;
 end
 
 function RaidPulloutDropDown_OnLoad()

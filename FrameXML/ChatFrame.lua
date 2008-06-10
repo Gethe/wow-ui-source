@@ -982,7 +982,9 @@ SlashCmdList["GUILD_LEAVE"] = function(msg)
 end
 
 SlashCmdList["GUILD_DISBAND"] = function(msg)
-	StaticPopup_Show("CONFIRM_GUILD_DISBAND");
+	if ( IsGuildLeader() ) then
+		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
+	end
 end
 
 SlashCmdList["GUILD_INFO"] = function(msg)
