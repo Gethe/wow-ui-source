@@ -643,7 +643,7 @@ EMOTE169_TOKEN = "PAT";
 EMOTE170_TOKEN = "GOLFCLAP";
 
 function GetSlashCmdTarget(msg)
-	local target = gsub(msg, "(%s*)([^%s]+)(.*)", "%2", 1);
+	local target = gsub(msg, "(%s*)(.*[^%s]+)(%s*)", "%2", 1);
 	if ( target == "" ) then
 		if ( UnitIsPlayer("target") ) then
 			target = "target";

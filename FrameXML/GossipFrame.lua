@@ -1,5 +1,5 @@
 
-NUMGOSSIPBUTTONS = 16;
+NUMGOSSIPBUTTONS = 32;
 
 function GossipFrame_OnLoad()
 	this:RegisterEvent("GOSSIP_SHOW");

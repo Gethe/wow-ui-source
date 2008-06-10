@@ -77,6 +77,7 @@ function RaidInfoFrame_Update()
 	local savedInstances = GetNumSavedInstances();
 	local instanceName, instanceID, instanceReset;
 	if ( savedInstances > 0 ) then
+		--RaidInfoScrollFrameScrollUpButton:SetPoint("BOTTOM", RaidInfoScrollFrame, "TOP", 0, 16);
 		for i=1, MAX_RAID_INFOS do
 			if ( i <=  savedInstances) then
 				instanceName, instanceID, instanceReset = GetSavedInstanceInfo(i);
@@ -88,6 +89,12 @@ function RaidInfoFrame_Update()
 				getglobal("RaidInfoInstance"..i):Hide();
 			end
 			
+		end
+		if ( savedInstances > 5 ) then
+			RaidInfoScrollFrameScrollBar:Show();
+			RaidInfoScrollFrameScrollBar:SetPoint("TOPLEFT", RaidInfoScrollFrame, "TOPRIGHT", 8, -2);
+		else
+			RaidInfoScrollFrameScrollBar:Hide();
 		end
 		RaidInfoScrollFrame:UpdateScrollChildRect();
 	else

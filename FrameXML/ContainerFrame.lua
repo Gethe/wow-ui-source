@@ -475,34 +475,31 @@ function updateContainerFrameAnchors()
 	local xOffset = CONTAINER_OFFSET_X;
 	local yOffset = CONTAINER_OFFSET_Y;
 	local uiScale = 1;
-	local screenWidth = 1024;
-	local screenHeight = 768;
+	local screenHeight = GetScreenHeight();
 	local containerScale = CONTAINER_SCALE;
 	if ( GetCVar("useUiScale") == "1" ) then
 		uiScale = GetCVar("uiscale") + 0;
-		screenWidth = 1024 / uiScale;
-		screenHeight = 768 / uiScale;
-		xOffset = CONTAINER_OFFSET_X / uiScale; 
-		yOffset = CONTAINER_OFFSET_Y / uiScale;
-		containerScale = uiScale * CONTAINER_SCALE;
+		if ( uiScale < containerScale ) then
+			containerScale = uiScale * CONTAINER_SCALE;
+		end		
 	end
 	local freeScreenHeight = screenHeight - yOffset;
 	local index = 1;
 	local column = 0;
 	while ContainerFrame1.bags[index] do
 		frame = getglobal(ContainerFrame1.bags[index]);
-		frame:SetScale(uiScale);
+		frame:SetScale(1);
 		-- freeScreenHeight determines when to start a new column of bags
 		if ( index == 1 ) then
 			-- First bag
 			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -xOffset, yOffset );
-		elseif ( freeScreenHeight < ( frame:GetHeight() * uiScale ) ) then
+		elseif ( freeScreenHeight < frame:GetHeight() ) then
 			-- Start a new column
 			column = column + 1;
 			freeScreenHeight = screenHeight - yOffset;
 			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH) - xOffset, yOffset );
 			if ( BankFrame:IsShown() ) then
-				if ( frame:GetLeft() < ( BankFrame:GetRight() - 30 ) ) then
+				if ( frame:GetLeft() < ( BankFrame:GetRight() - 45 ) ) then
 					shrinkFrames = 1;
 					break;
 				end
@@ -511,12 +508,12 @@ function updateContainerFrameAnchors()
 			-- Anchor to the previous bag
 			frame:SetPoint("BOTTOMRIGHT", ContainerFrame1.bags[index - 1], "TOPRIGHT", 0, CONTAINER_SPACING);	
 		end
-		freeScreenHeight = freeScreenHeight - ( frame:GetHeight() * uiScale ) - VISIBLE_CONTAINER_SPACING;
+		freeScreenHeight = freeScreenHeight - frame:GetHeight() - VISIBLE_CONTAINER_SPACING;
 		index = index + 1;
 	end
 
 	if ( shrinkFrames ) then
-		screenHeight = 768 / containerScale;
+		screenHeight = screenHeight / containerScale;
 		xOffset = xOffset / containerScale; 
 		yOffset = yOffset / containerScale; 
 		freeScreenHeight = screenHeight - yOffset;
@@ -531,7 +528,7 @@ function updateContainerFrameAnchors()
 			elseif ( freeScreenHeight < frame:GetHeight() ) then
 				-- Start a new column
 				column = column + 1;
-				freeScreenHeight = screenHeight - CONTAINER_OFFSET_Y;
+				freeScreenHeight = screenHeight - yOffset;
 				frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -(column * CONTAINER_WIDTH) - xOffset, yOffset );
 			else
 				-- Anchor to the previous bag

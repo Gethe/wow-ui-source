@@ -199,7 +199,7 @@
 					</Button>
 					<ScrollFrame name="RaidInfoScrollFrame" inherits="UIPanelScrollFrameTemplate">
 						<Size>
-							<AbsDimension x="210" y="185"/>
+							<AbsDimension x="210" y="173"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
@@ -212,12 +212,12 @@
 							<Layer level="BACKGROUND">
 								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size>
-										<AbsDimension x="31" y="128"/>
+										<AbsDimension x="30" y="105"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 											<Offset>
-												<AbsDimension x="-2" y="5"/>
+												<AbsDimension x="1" y="16"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -225,12 +225,12 @@
 								</Texture>
 								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size>
-										<AbsDimension x="31" y="106"/>
+										<AbsDimension x="30" y="105"/>
 									</Size>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 											<Offset>
-												<AbsDimension x="-2" y="-2"/>
+												<AbsDimension x="1" y="-2"/>
 											</Offset>
 										</Anchor>
 									</Anchors>

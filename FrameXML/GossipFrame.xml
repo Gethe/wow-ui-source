@@ -337,6 +337,87 @@
 											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton15" relativePoint="BOTTOMLEFT"/>
 										</Anchors>
 									</Button>
+
+									<Button name="GossipTitleButton17" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton16" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton18" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton17" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton19" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton18" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton20" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton19" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton21" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton20" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton22" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton21" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton23" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton24" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton24" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton16" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton25" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton24" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton26" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton25" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton27" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton26" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton28" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton27" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton29" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton28" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton30" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton29" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton31" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton30" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
+									<Button name="GossipTitleButton32" inherits="GossipTitleButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="GossipTitleButton31" relativePoint="BOTTOMLEFT"/>
+										</Anchors>
+									</Button>
 									<Frame name="GossipSpacerFrame">
 										<Size>
 											<AbsDimension x="5" y="15"/>

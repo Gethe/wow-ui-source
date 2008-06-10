@@ -514,7 +514,7 @@ function AuctionFrameBrowse_Update()
 				yourBidText:Hide();
 			end
 			
-			if ( requiredBid > MAXIMUM_BID_PRICE ) then
+			if ( requiredBid >= MAXIMUM_BID_PRICE ) then
 				-- Lie about our buyout price
 				buyoutPrice = requiredBid;
 			end
@@ -554,7 +554,7 @@ function AuctionFrameBrowse_Update()
 				-- Set bid
 				MoneyInputFrame_SetCopper(BrowseBidPrice, requiredBid);
 
-				if ( not highBidder and GetMoney() >= MoneyInputFrame_GetCopper(BrowseBidPrice) and MoneyInputFrame_GetCopper(BrowseBidPrice) <= MAXIMUM_BID_PRICE ) then
+				if ( not highBidder and owner ~= UnitName("player") and GetMoney() >= MoneyInputFrame_GetCopper(BrowseBidPrice) and MoneyInputFrame_GetCopper(BrowseBidPrice) <= MAXIMUM_BID_PRICE ) then
 					BrowseBidButton:Enable();
 				end
 			else
@@ -1038,8 +1038,8 @@ function AuctionsFrameAuctions_ValidateAuction()
 		AuctionsBuyoutErrorText:Show();
 		return;
 	end
-	-- Start price is 0
-	if ( MoneyInputFrame_GetCopper(StartPrice) < 1 ) then
+	-- Start price is 0 or greater than the max allowed
+	if ( MoneyInputFrame_GetCopper(StartPrice) < 1 or MoneyInputFrame_GetCopper(StartPrice) > MAXIMUM_BID_PRICE) then
 		return;
 	end
 	AuctionsCreateAuctionButton:Enable();

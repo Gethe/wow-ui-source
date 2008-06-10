@@ -1,5 +1,7 @@
 MAX_RADIO_BUTTONS = 5;
 MAX_SURVEY_QUESTIONS = 10;
+GMSURVEY_NA_SPACING = 70;
+GMSURVEY_RATING_SPACING = 60;
 
 UIPanelWindows["GMSurveyFrame"] = { area = "center", pushable = 0, whileDead = 1 };
 
@@ -76,4 +78,12 @@ function GMSurveySubmitButton_OnClick()
 	TicketStatusFrame.hasGMSurvey = nil;
 	HideUIPanel(GMSurveyFrame);
 	UIErrorsFrame:AddMessage(GMSURVEY_SUBMITTED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1.0);
+end
+
+-- Only needs to be used if the survey frame is too narrow in foreign languages
+function GMSurveyFrameSetWidth(width)
+	GMSurveyFrame:SetWidth(width);
+	GMSurveyScrollChildFrame:SetWidth(width-100);
+	GMSurveyAdditionalCommentsText:SetWidth(width-100);
+	GMSurveyFrameComment:SetWidth(width-150);
 end

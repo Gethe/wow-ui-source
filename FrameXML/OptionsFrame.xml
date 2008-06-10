@@ -4,7 +4,7 @@
 	<Include file="OptionsFrameTemplates.xml"/>
 	<Frame name="OptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="450" y="645"/>
+			<AbsDimension x="450" y="665"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -429,7 +429,7 @@
 			</Frame>
 			<Frame name="OptionsFramePixelShaders" inherits="OptionFrameBoxTemplate">
 				<Size>
-					<AbsDimension x="212" y="175"/>
+					<AbsDimension x="212" y="195"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="OptionsFrameBrightness" relativePoint="BOTTOMLEFT">
@@ -525,6 +525,15 @@
 							</Anchor>
 						</Anchors>
 					</CheckButton>
+					<CheckButton name="OptionsFrameCheckButton18" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="OptionsFrameCheckButton15" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="-10" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -536,7 +545,7 @@
 			</Frame>
 			<Frame name="OptionsFrameMiscellaneous" inherits="OptionFrameBoxTemplate">
 				<Size>
-					<AbsDimension x="212" y="175"/>
+					<AbsDimension x="212" y="195"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="OptionsFramePixelShaders" relativePoint="TOPRIGHT">

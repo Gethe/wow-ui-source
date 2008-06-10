@@ -32,9 +32,10 @@
 				CinematicFrame_OnEvent();
 			</OnEvent>
 			<OnKeyDown>
+				local screenshotKey = GetBindingKey("SCREENSHOT");
 				if ( arg1 == "ESCAPE" ) then
 					StopCinematic();
-				elseif ( arg1 == strupper(GetBindingKey("SCREENSHOT"))) then
+				elseif ( screenshotKey and (arg1 == screenshotKey) ) then
 					RunBinding("SCREENSHOT");
 				end
 			</OnKeyDown>

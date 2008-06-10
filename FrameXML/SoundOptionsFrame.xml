@@ -233,13 +233,13 @@
 				UpdateMicroButtons();
 			</OnShow>
 			<OnKeyDown>
+				local screenshotKey = GetBindingKey("SCREENSHOT");
 				if ( arg1 == "ESCAPE" ) then
 					PlaySound("gsTitleOptionExit");
 					HideUIPanel(SoundOptionsFrame);
 					SoundOptionsFrame_Cancel();
-				elseif ( arg1 == "PRINTSCREEN" ) then
-					Screenshot();
-					return;
+				elseif ( screenshotKey and (arg1 == screenshotKey) ) then
+					RunBinding("SCREENSHOT");
 				end
 			</OnKeyDown>
 			<OnHide>
