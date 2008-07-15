@@ -1,14 +1,14 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GameTime.lua"/>
-	<Frame name="GameTimeFrame" parent="MinimapCluster">
+	<Button name="GameTimeFrame" parent="Minimap">
 		<Size>
 			<AbsDimension x="50" y="50"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPRIGHT">
 				<Offset>
-					<AbsDimension x="4" y="-19"/>
+					<AbsDimension x="21" y="2"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -22,20 +22,20 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.timeOfDay = 0;
-				this:SetFrameLevel(this:GetFrameLevel() + 2);
-				GameTimeFrame_Update();
+				GameTimeFrame_OnLoad(self);
 			</OnLoad>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
-				GameTimeFrame_UpdateTooltip(GetGameTime());
+				GameTimeFrame_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnUpdate>
-				GameTimeFrame_Update();
+				GameTimeFrame_Update(self);
 			</OnUpdate>
+			<OnClick>
+				GameTimeFrame_OnClick(self, button);
+			</OnClick>
 		</Scripts>
-	</Frame>
+	</Button>
 </Ui>

@@ -488,7 +488,7 @@ function OpenMail_Update()
 				-- Position buy line
 				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoicePurchaser", "BOTTOMLEFT", 125, 0);
 				-- How long they have to wait to get the money
-				OpenMailInvoiceMoneyDelay:SetFormattedText(AUCTION_INVOICE_FUNDS_DELAY, GameTime_Text(etaHour, etaMin));
+				OpenMailInvoiceMoneyDelay:SetFormattedText(AUCTION_INVOICE_FUNDS_DELAY, format(GameTime_GetTimeAndFormat(etaHour, etaMin, true)));
 				-- Not used for a temp sale invoice
 				OpenMailInvoiceSalePrice:Hide();
 				OpenMailInvoiceDeposit:Hide();

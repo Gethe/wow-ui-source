@@ -375,7 +375,13 @@ end
 
 function OptionsFrame_UpdateGammaControls()
 	local value = "0";
-	if ( OptionsFrameCheckButton1:GetChecked() or OptionsFrameCheckButton10:GetChecked() ) then
+	if ( OptionsFrameCheckButton10:GetChecked() ) then
+		OptionsFrameCheckButton1:SetChecked(true);
+		OptionsFrame_DisableCheckBox(OptionsFrameCheckButton1);
+		OptionsFrame_DisableSlider(OptionsFrameSlider2);
+		value = "1";
+	elseif ( OptionsFrameCheckButton1:GetChecked() ) then
+		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton1);
 		OptionsFrame_DisableSlider(OptionsFrameSlider2);
 		value = "1";
 	else

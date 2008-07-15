@@ -327,17 +327,21 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	local name = frame:GetName();
 	local bgTextureTop = getglobal(name.."BackgroundTop");
 	local bgTextureMiddle = getglobal(name.."BackgroundMiddle1");
+	local bgTextureMiddle2 = getglobal(name.."BackgroundMiddle2");
 	local bgTextureBottom = getglobal(name.."BackgroundBottom");
+	local bgTexture1Slot = getglobal(name.."Background1Slot");
 	local columns = NUM_CONTAINER_COLUMNS;
 	local rows = ceil(size / columns);
 	-- if size = 0 then its the backpack
 	if ( id == 0 ) then
+		bgTexture1Slot:Hide();
 		getglobal(name.."MoneyFrame"):Show();
 		-- Set Backpack texture
 		bgTextureTop:SetTexture("Interface\\ContainerFrame\\UI-BackpackBackground");
 		bgTextureTop:SetHeight(256);
 		bgTextureTop:SetTexCoord(0, 1, 0, 1);
-		
+		bgTextureTop:Show();
+
 		-- Hide unused textures
 		for i=1, MAX_BG_TEXTURES do
 			getglobal(name.."BackgroundMiddle"..i):Hide();
@@ -345,131 +349,159 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		bgTextureBottom:Hide();
 		frame:SetHeight(240);
 	else
-		-- Not the backpack
-		-- Set whether or not its a bank bag
-		local bagTextureSuffix = "";
-		if ( id > NUM_BAG_FRAMES ) then
-			bagTextureSuffix = "-Bank";
-		elseif ( id == KEYRING_CONTAINER ) then
-			bagTextureSuffix = "-Keyring";
-		end
-		-- Set textures
-		bgTextureTop:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
-		for i=1, MAX_BG_TEXTURES do
-			getglobal(name.."BackgroundMiddle"..i):SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
-			getglobal(name.."BackgroundMiddle"..i):Hide();
-		end
-		bgTextureBottom:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
-		-- Hide the moneyframe since its not the backpack
-		getglobal(name.."MoneyFrame"):Hide();	
-		
-		local bgTextureCount, height;
-		local rowHeight = 41;
-		-- Subtract one, since the top texture contains one row already
-		local remainingRows = rows-1;
-
-		-- See if the bag needs the texture with two slots at the top
-		local isPlusTwoBag;
-		if ( mod(size,columns) == 2 ) then
-			isPlusTwoBag = 1;
-		end
-
-		-- Bag background display stuff
-		if ( isPlusTwoBag ) then
-			bgTextureTop:SetTexCoord(0, 1, 0.189453125, 0.330078125);
-			bgTextureTop:SetHeight(72);
+		if (size == 1) then
+			-- Halloween gag gift
+			bgTexture1Slot:Show();
+			bgTextureTop:Hide();
+			bgTextureMiddle:Hide();
+			bgTextureMiddle2:Hide();
+			bgTextureBottom:Hide();
 		else
-			if ( rows == 1 ) then
-				-- If only one row chop off the bottom of the texture
-				bgTextureTop:SetTexCoord(0, 1, 0.00390625, 0.16796875);
-				bgTextureTop:SetHeight(86);
-			else
-				bgTextureTop:SetTexCoord(0, 1, 0.00390625, 0.18359375);
-				bgTextureTop:SetHeight(94);
-			end
-		end
-		-- Calculate the number of background textures we're going to need
-		bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
-		
-		local middleBgHeight = 0;
-		-- If one row only special case
-		if ( rows == 1 ) then
-			bgTextureBottom:SetPoint("TOP", bgTextureMiddle:GetName(), "TOP", 0, 0);
-			bgTextureBottom:Show();
-			-- Hide middle bg textures
-			for i=1, MAX_BG_TEXTURES do
-				getglobal(name.."BackgroundMiddle"..i):Hide();
-			end
-		else
-			-- Try to cycle all the middle bg textures
-			local firstRowPixelOffset = 9;
-			local firstRowTexCoordOffset = 0.353515625;
-			for i=1, bgTextureCount do
-				bgTextureMiddle = getglobal(name.."BackgroundMiddle"..i);
-				if ( remainingRows > ROWS_IN_BG_TEXTURE ) then
-					-- If more rows left to draw than can fit in a texture then draw the max possible
-					height = ( ROWS_IN_BG_TEXTURE*rowHeight ) + firstRowTexCoordOffset;
-					bgTextureMiddle:SetHeight(height);
-					bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
-					bgTextureMiddle:Show();
-					remainingRows = remainingRows - ROWS_IN_BG_TEXTURE;
-					middleBgHeight = middleBgHeight + height;
-				else
-					-- If not its a huge bag
-					bgTextureMiddle:Show();
-					height = remainingRows*rowHeight-firstRowPixelOffset;
-					bgTextureMiddle:SetHeight(height);
-					bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
-					middleBgHeight = middleBgHeight + height;
-				end
-			end
-			-- Position bottom texture
-			bgTextureBottom:SetPoint("TOP", bgTextureMiddle:GetName(), "BOTTOM", 0, 0);
-			bgTextureBottom:Show();
-		end
-		-- Set the frame height
-		frame:SetHeight(bgTextureTop:GetHeight()+bgTextureBottom:GetHeight()+middleBgHeight);	
-	end
-	frame:SetWidth(CONTAINER_WIDTH);
-	frame:SetID(id);
-	getglobal(frame:GetName().."PortraitButton"):SetID(id);
-
-	--Special case code for keyrings
-	if ( id == KEYRING_CONTAINER ) then
-		getglobal(frame:GetName().."Name"):SetText(KEYRING);
-		SetPortraitToTexture(frame:GetName().."Portrait", "Interface\\ContainerFrame\\KeyRing-Bag-Icon");
-	else
-		getglobal(frame:GetName().."Name"):SetText(GetBagName(id));
-		SetBagPortraitTexture(getglobal(frame:GetName().."Portrait"), id);
-	end
-
-	local index, itemButton;
-	for i=1, size, 1 do
-		index = size - i + 1;
-		itemButton = getglobal(name.."Item"..i);
-		itemButton:SetID(index);
-		-- Set first button
-		if ( i == 1 ) then
-			-- Anchor the first item differently if its the backpack frame
-			if ( id == 0 ) then
-				itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 30);
-			else
-				itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 9);
+			bgTexture1Slot:Hide();
+			bgTextureTop:Show();
+	
+			-- Not the backpack
+			-- Set whether or not its a bank bag
+			local bagTextureSuffix = "";
+			if ( id > NUM_BAG_FRAMES ) then
+				bagTextureSuffix = "-Bank";
+			elseif ( id == KEYRING_CONTAINER ) then
+				bagTextureSuffix = "-Keyring";
 			end
 			
-		else
-			if ( mod((i-1), columns) == 0 ) then
-				itemButton:SetPoint("BOTTOMRIGHT", name.."Item"..(i - columns), "TOPRIGHT", 0, 4);	
-			else
-				itemButton:SetPoint("BOTTOMRIGHT", name.."Item"..(i - 1), "BOTTOMLEFT", -5, 0);	
+			-- Set textures
+			bgTextureTop:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
+			for i=1, MAX_BG_TEXTURES do
+				getglobal(name.."BackgroundMiddle"..i):SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
+				getglobal(name.."BackgroundMiddle"..i):Hide();
 			end
+			bgTextureBottom:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
+			-- Hide the moneyframe since its not the backpack
+			getglobal(name.."MoneyFrame"):Hide();	
+			
+			local bgTextureCount, height;
+			local rowHeight = 41;
+			-- Subtract one, since the top texture contains one row already
+			local remainingRows = rows-1;
+
+			-- See if the bag needs the texture with two slots at the top
+			local isPlusTwoBag;
+			if ( mod(size,columns) == 2 ) then
+				isPlusTwoBag = 1;
+			end
+
+			-- Bag background display stuff
+			if ( isPlusTwoBag ) then
+				bgTextureTop:SetTexCoord(0, 1, 0.189453125, 0.330078125);
+				bgTextureTop:SetHeight(72);
+			else
+				if ( rows == 1 ) then
+					-- If only one row chop off the bottom of the texture
+					bgTextureTop:SetTexCoord(0, 1, 0.00390625, 0.16796875);
+					bgTextureTop:SetHeight(86);
+				else
+					bgTextureTop:SetTexCoord(0, 1, 0.00390625, 0.18359375);
+					bgTextureTop:SetHeight(94);
+				end
+			end
+			-- Calculate the number of background textures we're going to need
+			bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
+			
+			local middleBgHeight = 0;
+			-- If one row only special case
+			if ( rows == 1 ) then
+				bgTextureBottom:SetPoint("TOP", bgTextureMiddle:GetName(), "TOP", 0, 0);
+				bgTextureBottom:Show();
+				-- Hide middle bg textures
+				for i=1, MAX_BG_TEXTURES do
+					getglobal(name.."BackgroundMiddle"..i):Hide();
+				end
+			else
+				-- Try to cycle all the middle bg textures
+				local firstRowPixelOffset = 9;
+				local firstRowTexCoordOffset = 0.353515625;
+				for i=1, bgTextureCount do
+					bgTextureMiddle = getglobal(name.."BackgroundMiddle"..i);
+					if ( remainingRows > ROWS_IN_BG_TEXTURE ) then
+						-- If more rows left to draw than can fit in a texture then draw the max possible
+						height = ( ROWS_IN_BG_TEXTURE*rowHeight ) + firstRowTexCoordOffset;
+						bgTextureMiddle:SetHeight(height);
+						bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
+						bgTextureMiddle:Show();
+						remainingRows = remainingRows - ROWS_IN_BG_TEXTURE;
+						middleBgHeight = middleBgHeight + height;
+					else
+						-- If not its a huge bag
+						bgTextureMiddle:Show();
+						height = remainingRows*rowHeight-firstRowPixelOffset;
+						bgTextureMiddle:SetHeight(height);
+						bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
+						middleBgHeight = middleBgHeight + height;
+					end
+				end
+				-- Position bottom texture
+				bgTextureBottom:SetPoint("TOP", bgTextureMiddle:GetName(), "BOTTOM", 0, 0);
+				bgTextureBottom:Show();
+			end
+				
+			-- Set the frame height
+			frame:SetHeight(bgTextureTop:GetHeight()+bgTextureBottom:GetHeight()+middleBgHeight);	
 		end
+	end
+
+	if (size == 1) then
+		-- Halloween gag gift
+		frame:SetHeight(70);	
+		frame:SetWidth(99);
+		getglobal(frame:GetName().."Name"):SetText("");
+		SetBagPortraitTexture(getglobal(frame:GetName().."Portrait"), id);
+		local itemButton = getglobal(name.."Item1");
+		itemButton:SetID(1);
+		itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -10, 5);
 		itemButton:Show();
+	else
+		frame:SetWidth(CONTAINER_WIDTH);
+
+		--Special case code for keyrings
+		if ( id == KEYRING_CONTAINER ) then
+			getglobal(frame:GetName().."Name"):SetText(KEYRING);
+			SetPortraitToTexture(frame:GetName().."Portrait", "Interface\\ContainerFrame\\KeyRing-Bag-Icon");
+		else
+			getglobal(frame:GetName().."Name"):SetText(GetBagName(id));
+			SetBagPortraitTexture(getglobal(frame:GetName().."Portrait"), id);
+		end
+
+		local index, itemButton;
+		for i=1, size, 1 do
+			index = size - i + 1;
+			itemButton = getglobal(name.."Item"..i);
+			itemButton:SetID(index);
+			-- Set first button
+			if ( i == 1 ) then
+				-- Anchor the first item differently if its the backpack frame
+				if ( id == 0 ) then
+					itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 30);
+				else
+					itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 9);
+				end
+				
+			else
+				if ( mod((i-1), columns) == 0 ) then
+					itemButton:SetPoint("BOTTOMRIGHT", name.."Item"..(i - columns), "TOPRIGHT", 0, 4);	
+				else
+					itemButton:SetPoint("BOTTOMRIGHT", name.."Item"..(i - 1), "BOTTOMLEFT", -5, 0);	
+				end
+			end
+			itemButton:Show();
+		end
 	end
 	for i=size + 1, MAX_CONTAINER_ITEMS, 1 do
 		getglobal(name.."Item"..i):Hide();
 	end
 	
+	frame:SetID(id);
+	getglobal(frame:GetName().."PortraitButton"):SetID(id);
+
 	-- Add the bag to the baglist
 	ContainerFrame1.bags[ContainerFrame1.bagsShown + 1] = frame:GetName();
 	updateContainerFrameAnchors();

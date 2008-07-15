@@ -1403,10 +1403,10 @@ function AuctionFrameItem_OnEnter(type, index)
 	if ( button and button.itemCount > 1 ) then
 		if ( button.bidAmount > 0 ) then
 			GameTooltip:AddLine("|n");
-			SetTooltipMoney(GameTooltip, ceil(button.bidAmount / button.itemCount), "STATIC", "<"..AUCTION_TOOLTIP_BID_PREFIX, ">");
+			SetTooltipMoney(GameTooltip, ceil(button.bidAmount / button.itemCount), "STATIC", AUCTION_TOOLTIP_BID_PREFIX);
 		end
 		if ( button.buyoutPrice > 0 ) then
-			SetTooltipMoney(GameTooltip, ceil(button.buyoutPrice / button.itemCount), "STATIC", "<"..AUCTION_TOOLTIP_BUYOUT_PREFIX, ">");
+			SetTooltipMoney(GameTooltip, ceil(button.buyoutPrice / button.itemCount), "STATIC", AUCTION_TOOLTIP_BUYOUT_PREFIX);
 		end
 		GameTooltip:Show();
 	end

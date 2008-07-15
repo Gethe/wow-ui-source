@@ -45,6 +45,12 @@ function WorldFrame_OnUpdate(elapsed)
 	if ( ItemTextFrame:IsShown() and not ItemTextFrame:IsVisible() ) then
 		ItemTextFrame_OnUpdate(elapsed);
 	end
+
+	-- Process time manager alarm onUpdates in order to allow the alarm to go off without the clock
+	-- being visible
+	if ( TimeManagerClockButton and not TimeManagerClockButton:IsVisible() and TimeManager_ShouldCheckAlarm() ) then
+		TimeManager_CheckAlarm(elapsed);
+	end
 end
 
 SCREENSHOT_STATUS_FADETIME = 1.5;

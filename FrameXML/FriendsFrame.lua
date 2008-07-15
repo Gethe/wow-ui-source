@@ -198,8 +198,10 @@ function FriendsList_Update()
 	local friendIndex;
 	for i=1, FRIENDS_TO_DISPLAY, 1 do
 		friendIndex = friendOffset + i;
-		name, level, class, area, connected, status, note = GetFriendInfo(friendIndex);
-		nameLocationText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNameLocation");
+		name, level, class, area, connected, status, note, RAF = GetFriendInfo(friendIndex);
+		nameText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextName");
+		LocationText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextLocation");
+		RAFIcon = getglobal("FriendsFrameFriendButton"..i.."ButtonTextLink");
 		infoText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextInfo");
 		noteText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteText");
 		noteHiddenText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteHiddenText");
@@ -208,11 +210,20 @@ function FriendsList_Update()
 			name = UNKNOWN;
 		end
 		if ( connected ) then
-			nameLocationText:SetFormattedText(FRIENDS_LIST_TEMPLATE, name, area, status);
+			nameText:SetText(name);
+			LocationText:SetFormattedText(FRIENDS_LIST_TEMPLATE, area, status);
+			if ( RAF ) then
+				LocationText:SetPoint("LEFT", RAFIcon, "RIGHT", 0, 0);
+				RAFIcon:Show();
+			else
+				LocationText:SetPoint("LEFT", nameText, "RIGHT", 0, 0);
+				RAFIcon:Hide();
+			end
 			infoText:SetFormattedText(FRIENDS_LEVEL_TEMPLATE, level, class);
 			noteIcon:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		else
-			nameLocationText:SetFormattedText(FRIENDS_LIST_OFFLINE_TEMPLATE, name);
+			nameText:SetFormattedText(FRIENDS_LIST_OFFLINE_TEMPLATE, name);
+			LocationText:SetText("");
 			infoText:SetText(UNKNOWN);
 			noteIcon:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		end
@@ -1029,9 +1040,13 @@ function GuildControlPopupFrame_OnHide()
 	GuildControlPopupFrame:UnregisterEvent("GUILD_ROSTER_UPDATE");
 end
 
-function GuildControlPopupframe_Update(loadPendingTabPermissions)
-	-- Update permission flags
-	GuildControlCheckboxUpdate(GuildControlGetRankFlags());
+function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUpdate)
+	-- Skip non-tab specific updates to fix Bug  ID: 110210
+	if ( not skipCheckboxUpdate ) then
+		-- Update permission flags
+		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
+	end
+	
 	local rankID = UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown);
 	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(rankID));
 	if ( GuildControlPopupFrame.previousSelectedRank and GuildControlPopupFrame.previousSelectedRank ~= rankID ) then
@@ -1341,7 +1356,7 @@ end
 
 function GuildBankTabPermissionsTab_OnClick(tab)
 	GuildControlPopupFrameTabPermissions.selectedTab = tab;
-	GuildControlPopupframe_Update(true);
+	GuildControlPopupframe_Update(true, true);
 end
 
 -- Functions to allow canceling

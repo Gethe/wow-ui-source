@@ -635,7 +635,7 @@ function ChatConfigFrame_OnEvent(event)
 		if ( Blizzard_CombatLog_Filter_Version == 4 ) then
 			Blizzard_CombatLog_Filter_Compatibility(4, 4.1);
 			Blizzard_CombatLog_Filter_Version = 4.1;
-		elseif ( COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
+		elseif ( COMBATLOG_FILTER_VERSION and COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
 			CombatConfig_SetCombatFiltersToDefault();
 			Blizzard_CombatLog_Filter_Version = COMBATLOG_FILTER_VERSION;
 		end
@@ -1293,7 +1293,6 @@ function MessageTypeColor_OpenColorPicker(self)
 	OpenColorPicker(info);
 end
 
-
 function GetMessageTypeColor(messageType)
 	local group = ChatTypeGroup[messageType];
 	local type;
@@ -1307,16 +1306,36 @@ function GetMessageTypeColor(messageType)
 	return info.r, info.g, info.b, group;
 end
 
+
+-- the conversion from float to text and the highlight functions below were moved
+-- from the combat log to here in order to cache the highlight colors and cache
+-- the colors as strings
+function Color_FloatTableToText(color)
+	return Color_FloatToText(color.r, color.g, color.b, color.a);
+end
+
+function Color_FloatToText(r,g,b,a)
+	a = min(1, a or 1) * 255;
+	r = min(1, r) * 255;
+	g = min(1, g) * 255;
+	b = min(1, b) * 255;
+	return ("%.2x%.2x%.2x%.2x"):format(floor(a), floor(r), floor(g), floor(b));
+end
+
+function Color_HighlightColorTable(color, highlightColor, multiplier)
+	highlightColor.r = color.r * multiplier;
+	highlightColor.g = color.g * multiplier;
+	highlightColor.b = color.b * multiplier;
+	highlightColor.a = color.a;
+end
+
 function GetChatUnitColor(type)
 	local color = CHATCONFIG_SELECTED_FILTER_COLORS.unitColoring[getglobal(type)];
 	return color.r, color.g, color.b;
 end
 
 function SetChatUnitColor(type, r, g, b)
-	local currentColor = CHATCONFIG_SELECTED_FILTER_COLORS.unitColoring[getglobal(type)];
-	currentColor.r = r;
-	currentColor.g = g;
-	currentColor.b = b;
+	SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.unitColoring[getglobal(type)], r, g, b);
 end
 
 function GetSpellNameColor()
@@ -1325,10 +1344,7 @@ function GetSpellNameColor()
 end
 
 function SetSpellNameColor(r, g, b)
-	local currentColor = CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell;
-	currentColor.r = r;
-	currentColor.g = g;
-	currentColor.b = b;
+	SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell, r, g, b);
 end
 
 -- Convenience functions for pulling and putting rgb values into tables
@@ -1340,7 +1356,16 @@ function SetTableColor(color, r, g, b)
 	color.r = r;
 	color.g = g;
 	color.b = b;
+	color["TEXT"] = Color_FloatTableToText(color);
+
+	-- create and set highlight
+	if ( not color["HIGHLIGHT"] ) then
+		color["HIGHLIGHT"] = {};
+	end
+	Color_HighlightColorTable(color, color["HIGHLIGHT"], COMBATLOG_HIGHLIGHT_MULTIPLIER);
+	color["HIGHLIGHT_TEXT"] = Color_FloatTableToText(color["HIGHLIGHT"]);
 end
+
 
 CHAT_CONFIG_CATEGORIES = {
 	[1] = "ChatConfigChatSettings",

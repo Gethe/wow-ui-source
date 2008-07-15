@@ -33,7 +33,7 @@
 				RaidWarningFrame_OnEvent(self, event, arg1);
 			</OnEvent>
 			<OnUpdate>
-				RaidNotice_OnUpdate(self, arg1);
+				RaidNotice_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>
@@ -64,7 +64,7 @@
 				RaidBossEmoteFrame_OnLoad(self)
 			</OnLoad>
 			<OnUpdate>
-				RaidNotice_OnUpdate(self, arg1);
+				RaidNotice_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

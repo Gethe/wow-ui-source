@@ -39,7 +39,6 @@ UIPanelWindows["GuildRegistrarFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["ArenaRegistrarFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["PetitionFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["HelpFrame"] =			{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["KnowledgeBaseFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["GossipFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["MailFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0 };
@@ -277,6 +276,10 @@ function ItemSocketingFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_ItemSocketingUI");
 end
 
+function TimeManager_LoadUI()
+	UIParentLoadAddOn("Blizzard_TimeManager");
+end
+
 function ShowMacroFrame()
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
@@ -302,6 +305,13 @@ function ToggleBattlefieldMinimap()
 	end
 end
 
+function ToggleTimeManager()
+	TimeManager_LoadUI();
+	if ( TimeManager_Toggle ) then
+		TimeManager_Toggle();
+	end
+end
+
 function InspectUnit(unit)
 	InspectFrame_LoadUI();
 	if ( InspectFrame_Show ) then
@@ -319,6 +329,12 @@ function UIParent_OnEvent(event)
 				BattlefieldMinimap_LoadUI();
 			end
 			BattlefieldMinimap:Show();
+		end
+		if ( not TimeManagerFrame and GetCVar("timeMgrAlarmEnabled") == "1" ) then
+			-- We have to load the time manager here if the alarm is enabled because the alarm can go off
+			-- even if the clock is not shown. WorldFrame_OnUpdate handles alarm checking while the clock
+			-- is hidden.
+			TimeManager_LoadUI();
 		end
 		return;
 	end
@@ -2434,6 +2450,8 @@ function ToggleGameMenu()
 		end
 	elseif ( InterfaceOptionsFrame:IsShown() ) then
 		InterfaceOptionsFrameCancel:Click();
+	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
+		TimeManagerCloseButton:Click();
 	elseif ( securecall("CloseMenus") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then

@@ -227,7 +227,7 @@
 				this.newbieText = NEWBIE_TOOLTIP_HELP;
 			</OnLoad>
 			<OnClick>
-				ToggleKnowledgeBaseFrame();
+				ToggleHelpFrame();
 			</OnClick>
 		</Scripts>
 	</Button>

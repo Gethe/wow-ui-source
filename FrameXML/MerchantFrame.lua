@@ -477,15 +477,25 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 		itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
 	end
 	
+	local maxQuality = 0;
 	for i=1, MAX_ITEM_COST, 1 do
 		itemTexture, itemCount, itemLink = GetMerchantItemCostItem(index, i);
 		if ( itemLink ) then
-			if ( itemsString ) then
-				itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
-			else
-				itemsString = format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
+			local _, _, itemQuality = GetItemInfo(itemLink);
+			maxQuality = math.max(itemQuality, maxQuality);
+			if ( itemQuality >= ITEM_QUALITY_RARE ) then
+				if ( itemsString ) then
+					itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
+				else
+					itemsString = format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
+				end
 			end
 		end
+	end
+	
+	if ( honorPoints == 0 and arenaPoints == 0 and maxQuality <= ITEM_QUALITY_UNCOMMON ) then
+		BuyMerchantItem( itemButton:GetID(), quantity );
+		return;
 	end
 	
 	MerchantFrame.itemIndex = index;

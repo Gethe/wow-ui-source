@@ -511,6 +511,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						OptionsFrame_Cancel();
 						PlaySound("gsTitleOptionExit");
 						HideUIPanel(OptionsFrame);
 					</OnClick>

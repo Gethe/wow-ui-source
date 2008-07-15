@@ -777,13 +777,22 @@ function UIDropDownMenu_OnHide()
 	OPEN_DROPDOWNMENUS[id] = nil;
 end
 
-function UIDropDownMenu_SetWidth(width, frame)
+function UIDropDownMenu_SetWidth(width, frame, padding)
 	if ( not frame ) then
 		frame = this;
 	end
 	getglobal(frame:GetName().."Middle"):SetWidth(width);
-	frame:SetWidth(width + 25 + 25);
-	getglobal(frame:GetName().."Text"):SetWidth(width - 25);
+	local defaultPadding = 25;
+	if ( padding ) then
+		frame:SetWidth(width + padding);
+	else
+		frame:SetWidth(width + defaultPadding + defaultPadding);
+	end
+	if ( padding ) then
+		getglobal(frame:GetName().."Text"):SetWidth(width);
+	else
+		getglobal(frame:GetName().."Text"):SetWidth(width - defaultPadding);
+	end
 	frame.noResize = 1;
 end
 

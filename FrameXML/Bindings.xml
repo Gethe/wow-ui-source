@@ -361,6 +361,18 @@
 	<Binding name="TARGETPREVIOUSFRIEND">
 		TargetNearestFriend(1);	-- 1 (or "true") means reverse!
 	</Binding>
+  <Binding name="TARGETNEARESTENEMYPLAYER">
+    TargetNearestEnemyPlayer();
+  </Binding>
+  <Binding name="TARGETPREVIOUSENEMYPLAYER">
+    TargetNearestEnemyPlayer(1);	-- 1 (or "true") means reverse!
+  </Binding>
+  <Binding name="TARGETNEARESTFRIENDPLAYER">
+    TargetNearestFriendPlayer();
+  </Binding>
+  <Binding name="TARGETPREVIOUSFRIENDPLAYER">
+    TargetNearestFriendPlayer(1);	-- 1 (or "true") means reverse!
+  </Binding>
 	<Binding name="TARGETSELF">
 		if ( UnitIsUnit("player", "target") ) then
 			TargetUnit("pet");

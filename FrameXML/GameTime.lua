@@ -1,12 +1,92 @@
 
-GAMETIME_DAWN = ( 5 * 60) + 30;		-- 5:30 AM
-GAMETIME_DUSK = (21 * 60) +  0;		-- 9:00 PM
+local GAMETIME_DAWN = ( 5 * 60) + 30;		-- 5:30 AM
+local GAMETIME_DUSK = (21 * 60) +  0;		-- 9:00 PM
 
-function GameTimeFrame_Update()
+-- general GameTime functions
+function GameTime_GetTimeAndFormat(hour, minute, wantAMPM)
+	if ( GetCVar("timeMgrUseMilitaryTime") == "1" ) then
+		return TIMEMANAGER_TICKER_24HOUR, hour, minute;
+	else
+		if ( wantAMPM ) then
+			local timeFormat = TIME_TWELVEHOURAM;
+			if ( hour == 0 ) then
+				hour = 12;
+			elseif ( hour == 12 ) then
+				timeFormat = TIME_TWELVEHOURPM;
+			elseif ( hour > 12 ) then
+				timeFormat = TIME_TWELVEHOURPM;
+				hour = hour - 12;
+			end
+			return timeFormat, hour, minute;
+		else
+			if ( hour == 0 ) then
+				hour = 12;
+			elseif ( hour > 12 ) then
+				hour = hour - 12;
+			end
+			return TIMEMANAGER_TICKER_12HOUR, hour, minute;
+		end
+	end
+end
+
+function GameTime_GetLocalTime(wantAMPM)
+	local dateInfo = date("*t");
+	local hour, minute = dateInfo.hour, dateInfo.min;
+	return GameTime_GetTimeAndFormat(hour, minute, wantAMPM);
+end
+
+function GameTime_GetGameTime(wantAMPM)
+	local hour, minute = GetGameTime();
+	return GameTime_GetTimeAndFormat(hour, minute, wantAMPM);
+end
+
+function GameTime_GetTime(showAMPM)
+	if( GetCVar("timeMgrUseLocalTime") == "1" ) then
+		return GameTime_GetLocalTime(showAMPM);
+	else
+		return GameTime_GetGameTime(showAMPM);
+	end
+end
+
+function GameTime_UpdateTooltip()
+	--GameTooltip:SetText(GameTime_Text(hour, minute));
+	-- title
+	GameTooltip:AddLine(TIMEMANAGER_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	-- realm time
+	local realmFormatString, realmHour, realmMinute = GameTime_GetGameTime(true);
+	GameTooltip:AddDoubleLine(
+		TIMEMANAGER_TOOLTIP_REALMTIME,
+		format(realmFormatString, realmHour, realmMinute),
+		NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b,
+		HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	-- local time
+	local localFormatString, localHour, localMinute = GameTime_GetLocalTime(true);
+	GameTooltip:AddDoubleLine(
+		TIMEMANAGER_TOOLTIP_LOCALTIME,
+		format(localFormatString, localHour, localMinute),
+		NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b,
+		HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+end
+
+
+-- GameTimeFrame functions
+
+function GameTimeFrame_OnLoad(self)
+	self:RegisterForClicks("AnyDown");
+	self.timeOfDay = 0;
+	self:SetFrameLevel(self:GetFrameLevel() + 2);
+	GameTimeFrame_Update(self);
+end
+
+function GameTimeFrame_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+end
+
+function GameTimeFrame_Update(self)
 	local hour, minute = GetGameTime();
 	local time = (hour * 60) + minute;
-	if(time ~= this.timeOfDay) then
-		this.timeOfDay = time;
+	if ( time ~= self.timeOfDay ) then
+		self.timeOfDay = time;
 		local minx = 0;
 		local maxx = 50/128;
 		local miny = 0;
@@ -16,78 +96,19 @@ function GameTimeFrame_Update()
 			maxx = maxx + 0.5;
 		end
 		GameTimeTexture:SetTexCoord(minx, maxx, miny, maxy);
-
-		if(GameTooltip:IsOwned(this)) then
-			GameTimeFrame_UpdateTooltip(hour, minute);
+	end
+	if ( GameTooltip:IsOwned(self) ) then
+		GameTooltip:ClearLines();
+		if ( not TimeManagerClockButton or not TimeManagerClockButton:IsVisible() or TimeManager_IsAlarmFiring() ) then
+			GameTime_UpdateTooltip();
+			GameTooltip:AddLine(" ");
 		end
+		GameTooltip:AddLine(TIMEMANAGER_TOOLTIP_TOGGLE_CLOCK_SETTINGS);
+		GameTooltip:Show();
 	end
 end
 
-function GameTimeFrame_UpdateTooltip(hours, minutes)
-	if(TwentyFourHourTime) then
-		GameTooltip:SetText(format(TIME_TWENTYFOURHOURS, hours, minutes));
-	else
-		local pm = 0;
-		if(hours >= 12) then
-			pm = 1;
-		end
-		if(hours > 12) then
-			hours = hours - 12;
-		end
-		if(hours == 0) then
-			hours = 12;
-		end
-		if(pm == 0) then
-			GameTooltip:SetText(format(TIME_TWELVEHOURAM, hours, minutes));
-		else
-			GameTooltip:SetText(format(TIME_TWELVEHOURPM, hours, minutes));
-		end
-	end
-end
-
-function GameTime_GetTime()
-	local hour, minute = GetGameTime();
-
-	if(TwentyFourHourTime) then
-		return format(TIME_TWENTYFOURHOURS, hour, minute);
-	else
-		local pm = 0;
-		if(hour >= 12) then
-			pm = 1;
-		end
-		if(hour > 12) then
-			hour = hour - 12;
-		end
-		if(hour == 0) then
-			hour = 12;
-		end
-		if(pm == 0) then
-			return format(TIME_TWELVEHOURAM, hour, minute);
-		else
-			return format(TIME_TWELVEHOURPM, hour, minute);
-		end
-	end
-end
-
-function GameTime_Text(hour, minute)
-	if(TwentyFourHourTime) then
-		return format(TIME_TWENTYFOURHOURS, hour, minute);
-	else
-		local pm = 0;
-		if(hour >= 12) then
-			pm = 1;
-		end
-		if(hour > 12) then
-			hour = hour - 12;
-		end
-		if(hour == 0) then
-			hour = 12;
-		end
-		if(pm == 0) then
-			return format(TIME_TWELVEHOURAM, hour, minute);
-		else
-			return format(TIME_TWELVEHOURPM, hour, minute);
-		end
-	end
+function GameTimeFrame_OnClick(self, button)
+	ToggleTimeManager();
 end
 

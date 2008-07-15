@@ -9,7 +9,7 @@
 			<Frame name="$parentButtonText" setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
-						<FontString name="$parentNameLocation" inherits="GameFontNormal">
+						<FontString name="$parentName" inherits="GameFontNormal">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -18,9 +18,26 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<Texture name="$parentLink" file="Interface/FriendsFrame/UI-FriendsFrame-Link" hidden="true">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentLocation" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
 						<FontString name="$parentInfo" inherits="GameFontHighlightSmall" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentNameLocation" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>

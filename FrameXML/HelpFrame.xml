@@ -34,7 +34,21 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+	<Button name="HelpFrameCancelButtonTemplate" inherits="GameMenuButtonTemplate" text="CANCEL" virtual="true">
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset x="-53" y="21"/>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self:SetWidth(self:GetTextWidth() + 40);
+			</OnLoad>
+			<OnClick>
+				HelpFrame_PopFrame();
+			</OnClick>
+		</Scripts>
+	</Button>
 	<Frame name="HelpFrameDividerTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="577" y="19"/>
@@ -75,55 +89,6 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Button name="HelpFrameHomeButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="568" y="37"/>
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString name="$parentText" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="22" y="-4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentDescription" inherits="GameFontHighlightSmall">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentText" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<Texture file="Interface\QuestFrame\UI-Quest-BulletPoint">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<HighlightTexture file="Interface\HelpFrame\HelpFrameButton-Highlight" alphaMode="ADD">
-			<TexCoords left="0" right="1.0" top="0" bottom="0.578125"/>
-		</HighlightTexture>
-	</Button>
-	<Button name="GMCategoryButtonTemplate" inherits="HelpFrameHomeButtonTemplate" virtual="true">
-		<Scripts>
-			<OnClick>
-				HelpFrameButton_OnClick();
-			</OnClick>
-		</Scripts>
-	</Button>
 	<Frame name="HelpFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size>
 			<AbsDimension x="640" y="512"/>
@@ -232,11 +197,11 @@
 				</Anchors>
 			</Button>
 			<!-- Individual frames for each tab -->
-			<!-- Home Frame -->
-			<Frame name="HelpFrameHome" setAllPoints="true" hidden="true">
+			<!-- Talk to a GM Frame -->
+			<Frame name="HelpFrameGMTalk" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="HelpFrameHomeTitle" inherits="GameFontNormalLarge" text="PETITION_GAME_MASTER" justifyH="LEFT">
+						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="HELPFRAME_GMTALK_TITLE" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="550" y="0"/>
 							</Size>
@@ -248,108 +213,108 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="HelpFrameHomeText1" inherits="GameFontHighlight" text="HELPFRAME_HOME_TEXT1" justifyH="LEFT">
+						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_GMTALK_TEXT1" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="550" y="0"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameHomeTitle" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="-3"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="HelpFrameHomeIssue1Header" inherits="GameFontNormal" text="HELPFRAME_HOME_ISSUE1_HEADER" justifyH="LEFT">
+						<FontString name="$parentIssue1Header" inherits="GameFontNormal" text="HELPFRAME_GMTALK_ISSUE1_HEADER" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="540" y="0"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameHomeText1" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="10" y="-10"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="HelpFrameHomeIssue1" inherits="GameFontHighlightSmall" text="HELPFRAME_HOME_ISSUE1" justifyH="LEFT">
+						<FontString name="$parentIssue1" inherits="GameFontHighlightSmall" text="HELPFRAME_GMTALK_ISSUE1" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="540" y="0"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameHomeIssue1Header" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentIssue1Header" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="HelpFrameHomeIssue2Header" inherits="GameFontNormal" text="HELPFRAME_HOME_ISSUE2_HEADER" justifyH="LEFT">
+						<FontString name="$parentIssue2Header" inherits="GameFontNormal" text="HELPFRAME_GMTALK_ISSUE2_HEADER" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="540" y="0"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameHomeIssue1" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentIssue1" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="-10"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="HelpFrameHomeIssue2" inherits="GameFontHighlightSmall" text="HELPFRAME_HOME_ISSUE2" justifyH="LEFT">
+						<FontString name="$parentIssue2" inherits="GameFontHighlightSmall" text="HELPFRAME_GMTALK_ISSUE2" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="540" y="0"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameHomeIssue2Header" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentIssue2Header" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="HelpFrameHomeIssue3Header" inherits="GameFontNormal" text="HELPFRAME_HOME_ISSUE3_HEADER" justifyH="LEFT">
+						<FontString name="$parentIssue3Header" inherits="GameFontNormal" text="HELPFRAME_GMTALK_ISSUE3_HEADER" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="540" y="0"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameHomeIssue2" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentIssue2" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="-10"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="HelpFrameHomeIssue3" inherits="GameFontHighlightSmall" text="HELPFRAME_HOME_ISSUE3" justifyH="LEFT">
+						<FontString name="$parentIssue3" inherits="GameFontHighlightSmall" text="HELPFRAME_GMTALK_ISSUE3" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="540" y="0"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameHomeIssue3Header" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentIssue3Header" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="HelpFrameHomePvpPolicyUrl" inherits="GameFontNormal" text="PVP_POLICY_URL">
+						<FontString name="$parentPvpPolicyUrl" inherits="GameFontNormal" text="PVP_POLICY_URL">
 							<Size>
 								<AbsDimension x="550" y="-5"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="HelpFrameHomeIssue3" relativePoint="BOTTOM">
+								<Anchor point="TOP" relativeTo="$parentIssue3" relativePoint="BOTTOM">
 									<Offset>
 										<AbsDimension x="0" y="-10"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="HelpFrameHomeText2" inherits="GameFontHighlight" text="HELPFRAME_HOME_TEXT2" justifyH="LEFT">
+						<FontString name="$parentText2" inherits="GameFontHighlight" text="HELPFRAME_GMTALK_TEXT2" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="550" y="0"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameHomePvpPolicyUrl" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentPvpPolicyUrl" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="-25"/>
 									</Offset>
@@ -359,12 +324,12 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="HelpFrameHomeIssues" inherits="UIPanelButtonTemplate2" text="HELPFRAME_HOME_BUTTON_TEXT">
+					<Button name="$parentOpenTicket" inherits="UIPanelButtonTemplate2" text="HELP_TICKET_OPEN">
 						<Size>
 							<AbsDimension x="250" y="22"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="HelpFrameHomeText2" relativePoint="BOTTOM">
+							<Anchor point="TOP" relativeTo="$parentText2" relativePoint="BOTTOM">
 								<Offset>
 									<AbsDimension x="0" y="-40"/>
 								</Offset>
@@ -372,43 +337,58 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetWidth(getglobal(this:GetName().."Text"):GetWidth()+40);
+								self:SetWidth(self:GetTextWidth()+40);
 							</OnLoad>
 							<OnClick>
-								HelpFrame_ShowFrame("GMHome");
+								HelpFrame_ShowFrame("OpenTicket");
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="HelpFrameHomeCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-53" y="21"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								ShowUIPanel(KnowledgeBaseFrame);
-							</OnClick>
-						</Scripts>
-					</Button>
+					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
 				</Frames>
 				<Scripts>
 					<OnShow>
-						HelpFrame.back = HelpFrameHomeCancel;
+						HelpFrame.needResponse = true;
+						HelpFrame.back = HelpFrameGMTalkCancel;
 					</OnShow>
 				</Scripts>
 			</Frame>
-			<!-- Page a GM Frame -->
-			<Frame name="HelpFrameGM" setAllPoints="true" hidden="true">
+			<!-- Report Issue Frame -->
+			<Frame name="HelpFrameReportIssue" setAllPoints="true" hidden="true">
 				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString inherits="GameFontHighlightSmall" text="HELPFRAME_HOME_TEXT">
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="HELPFRAME_REPORTISSUE_TITLE" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="550" y="0"/>
+							</Size>
 							<Anchors>
-								<Anchor point="TOP">
+								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="0" y="-60"/>
+										<AbsDimension x="25" y="-65"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_REPORTISSUE_TEXT1" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="550" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentBulletTitle1" inherits="GameFontNormal" text="HELPFRAME_REPORTISSUE_BULLET_TITLE1" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="550" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-10"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -416,194 +396,147 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="HelpFrameButton1" inherits="GMCategoryButtonTemplate">
+					<Frame name="$parentBullet1" inherits="HelpFrameBulletPointTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT">
+							<Anchor point="TOPLEFT" relativeTo="$parentBulletTitle1" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="20" y="-80"/>
+									<AbsDimension x="5" y="-5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Button>
-					<Button name="HelpFrameButton2" inherits="GMCategoryButtonTemplate">
+						<Scripts>
+							<OnLoad>
+								HelpFrameReportIssueBullet1Text:SetText(HELPFRAME_REPORTISSUE_BULLET1);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentBullet2" inherits="HelpFrameBulletPointTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameButton1" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="$parentBullet1" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="HelpFrameButton3" inherits="GMCategoryButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameButton2" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="HelpFrameButton4" inherits="GMCategoryButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameButton3" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="HelpFrameButton5" inherits="GMCategoryButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameButton4" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="HelpFrameButton6" inherits="GMCategoryButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameButton5" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="HelpFrameButton7" inherits="GMCategoryButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameButton6" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="HelpFrameButton8" inherits="GMCategoryButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameButton7" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="HelpFrameButton9" inherits="GMCategoryButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameButton8" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="HelpFrameButton10" inherits="GMCategoryButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameButton9" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<ScrollFrame name="HelpFrameGMScrollFrame" inherits="FauxScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="540" y="410"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="-80" y="-54"/>
+									<AbsDimension x="0" y="-5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+								<FontString name="HelpFrameReportIssueText2" inherits="GameFontHighlight" text="HELPFRAME_REPORTISSUE_TEXT2" justifyH="LEFT">
 									<Size>
-										<AbsDimension x="31" y="256"/>
+										<AbsDimension x="550" y="0"/>
 									</Size>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+										<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
 											<Offset>
-												<AbsDimension x="-2" y="5"/>
+												<AbsDimension x="-5" y="-20"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="$parentScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-								<Texture name="$parentScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="60"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentScrollBarTop" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOM" relativeTo="$parentScrollBarBottom" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-								</Texture>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(37, HelpFrameGM_Update);
-							</OnVerticalScroll>
+							<OnLoad>
+								HelpFrameReportIssueBullet2Text:SetText(HELPFRAME_REPORTISSUE_BULLET2);
+							</OnLoad>
 						</Scripts>
-					</ScrollFrame>
-					<Button name="HelpFrameGMCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
+					</Frame>
+					<Button name="$parentOpenTicket" inherits="UIPanelButtonTemplate2" text="HELP_TICKET_OPEN">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
+							<Anchor point="TOP" relativeTo="$parentText2" relativePoint="BOTTOM">
 								<Offset>
-									<AbsDimension x="-53" y="21"/>
+									<AbsDimension x="0" y="-25"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad>
+								self:SetWidth(self:GetTextWidth()+40);
+							</OnLoad>
 							<OnClick>
-								ShowUIPanel(KnowledgeBaseFrame);
+								HelpFrame_ShowFrame("OpenTicket");
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="HelpFrameGMBack" inherits="GameMenuButtonTemplate" text="BACK">
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="HelpFrameGMCancel" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HelpFrame_ShowFrame("Home");
-							</OnClick>
-						</Scripts>
-					</Button>
+					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
 				</Frames>
 				<Scripts>
 					<OnShow>
-						HelpFrameGM_Update();
-						HelpFrame.back = HelpFrameGMBack;
+						HelpFrame.needResponse = false;
+						HelpFrame.back = HelpFrameReportIssueCancel;
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<!-- Stuck Frame -->
+			<Frame name="HelpFrameStuck" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="HELPFRAME_STUCK_TITLE" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="550" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="25" y="-65"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_STUCK_TEXT1" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="550" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentStuck" inherits="UIPanelButtonTemplate2" text="STUCK_BUTTON_TEXT">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentText1" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetWidth(this:GetTextWidth()+40);
+							</OnLoad>
+							<OnClick>
+								Stuck();
+								HideUIPanel(HelpFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentOpenTicket" inherits="UIPanelButtonTemplate2" text="HELP_TICKET_OPEN">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentStuck" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetWidth(this:GetTextWidth()+40);
+							</OnLoad>
+							<OnClick>
+								HelpFrame_ShowFrame("OpenTicket");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						HelpFrame.back = HelpFrameStuckCancel;
 					</OnShow>
 				</Scripts>
 			</Frame>
@@ -707,28 +640,20 @@
 										ScrollingEdit_OnUpdate();
 									</OnUpdate>
 									<OnEscapePressed>
-										this:ClearFocus();
+										self:ClearFocus();
 									</OnEscapePressed>
 									<OnShow>
-										this:SetFocus();
+										self:SetFocus();
 									</OnShow>
 								</Scripts>
 								<FontString inherits="ChatFontNormal"/>
 							</EditBox>
 						</ScrollChild>
 					</ScrollFrame>
-					<Button name="HelpFrameOpenTicketCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-53" y="21"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
+					<Button name="HelpFrameOpenTicketCancel" inherits="HelpFrameCancelButtonTemplate">
 						<Scripts>
 							<OnClick>
-								GetGMTicket();
-								ShowUIPanel(KnowledgeBaseFrame);
+								HelpFrameOpenTicketCancel_OnClick();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -749,23 +674,22 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						this:RegisterEvent("UPDATE_TICKET");
-						this:RegisterEvent("GMSURVEY_DISPLAY");
+						self:RegisterEvent("UPDATE_TICKET");
+						self:RegisterEvent("GMSURVEY_DISPLAY");
 					</OnLoad>
 					<OnEvent>
-						HelpFrameOpenTicket_OnEvent(event);
+						HelpFrameOpenTicket_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnShow>
 						HelpFrame.back = HelpFrameOpenTicketCancel;
-						--HelpFrameOpenTicketDropDown_OnShow();
 					</OnShow>
 				</Scripts>
 			</Frame>
-			<!-- General Frame -->
-			<Frame name="HelpFrameGeneral" setAllPoints="true" hidden="true">
+			<!-- Welcome Frame -->
+			<Frame name="HelpFrameWelcome" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="HelpFrameGeneralTitle" inherits="GameFontNormalLarge" justifyH="LEFT">
+						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="HELPFRAME_WELCOME_TITLE" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="550" y="0"/>
 							</Size>
@@ -777,572 +701,12 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="HelpFrameGeneralTitleText" inherits="GameFontHighlight" justifyH="LEFT">
+						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_WELCOME_TEXT1" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="550" y="0"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralTitle" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="HelpFrameGeneralTitleText2" inherits="GameFontHighlight" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="550" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralTitle" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="HelpFrameBulletTitle1" inherits="GameFontNormal" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="550" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralTitleText" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-10"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="HelpFrameBulletTitle2" inherits="GameFontNormal" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="550" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="HelpFrameEndText" inherits="GameFontHighlightSmall" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="550" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame name="HelpFrameGeneralBullet1" inherits="HelpFrameBulletPointTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameBulletTitle1" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="5" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="HelpFrameGeneralBullet2" inherits="HelpFrameBulletPointTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralBullet1" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="HelpFrameGeneralBullet3" inherits="HelpFrameBulletPointTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralBullet2" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="HelpFrameGeneralBullet4" inherits="HelpFrameBulletPointTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralBullet3" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="HelpFrameGeneralBullet5" inherits="HelpFrameBulletPointTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralBullet4" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="HelpFrameGeneralBullet6" inherits="HelpFrameBulletPointTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralBullet5" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="HelpFrameGeneralBullet7" inherits="HelpFrameBulletPointTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralBullet6" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="HelpFrameGeneralBullet8" inherits="HelpFrameBulletPointTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralBullet7" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="HelpFrameGeneralBullet9" inherits="HelpFrameBulletPointTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralBullet8" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="HelpFrameGeneralBullet10" inherits="HelpFrameBulletPointTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameGeneralBullet9" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Button name="HelpFrameGeneralButton" inherits="UIPanelButtonTemplate2">
-						<Anchors>
-							<Anchor point="TOP">
-								<Offset>
-									<AbsDimension x="0" y="15"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HelpFrameGeneralButton_OnClick();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="HelpFrameGeneralButton2" inherits="UIPanelButtonTemplate2">
-						<Anchors>
-							<Anchor point="TOP">
-								<Offset>
-									<AbsDimension x="0" y="15"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HelpFrameGeneralButton_OnClick();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="HelpFrameGeneralCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-53" y="21"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								ShowUIPanel(KnowledgeBaseFrame);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="HelpFrameGeneralBack" inherits="GameMenuButtonTemplate" text="BACK">
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="HelpFrameGeneralCancel" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HelpFrame_ShowFrame("GMHome");
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnShow>
-						HelpFrame.back = HelpFrameGeneralBack;
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<!-- Guild Frame -->
-			<!-- Harassment Frame -->
-			<Frame name="HelpFrameHarassment" setAllPoints="true" hidden="true">
-<!--
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="HelpFrameHarassmentText" inherits="GameFontHighlight" text="HARASSMENT_TEXT">
-							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="0" y="-60"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
--->
-				<Frames>
-					<Frame name="HelpFrameVerbalHarassment">
-						<Size>
-							<AbsDimension x="564" y="165"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="20" y="-60"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentText" inherits="GameFontNormal" text="VERBAL_HARASSMENT" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="560" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="5" y="-5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentDescription" inherits="GameFontHighlightSmall" text="VERBAL_HARASSMENT_DESCRIPTION" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="560" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentText" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentTipText" inherits="GameFontNormalSmall" text="VERBAL_HARASSMENT_TEXT1" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="560" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-15"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame name="VerbalAbuseTip1" inherits="HelpFrameBulletPointTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentTipText" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="-3" y="-5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(VERBAL_HARASSMENT_TEXT2);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-							<Frame name="VerbalAbuseTip2" inherits="HelpFrameBulletPointTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="VerbalAbuseTip1" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(VERBAL_HARASSMENT_TEXT3);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-							<Frame name="VerbalAbuseTip3" inherits="HelpFrameBulletPointTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="VerbalAbuseTip2" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(VERBAL_HARASSMENT_TEXT4);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-							<Button name="HelpFrameVerbalHarassmentButton" inherits="UIPanelButtonTemplate2" text="REPORT_VERBAL_HARASSMENT">
-								<Size>
-									<AbsDimension x="200" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										HelpFrame_ShowFrame("OpenTicket");
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-					</Frame>
-					<Frame name="HelpFrameHarassmentDivider2" inherits="HelpFrameDividerTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameVerbalHarassment" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="-9" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-					<Frame name="HelpFramePhysicalHarassment">
-						<Size>
-							<AbsDimension x="568" y="220"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpFrameHarassmentDivider2" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="9" y="5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentText" inherits="GameFontNormal" text="PHYSICAL_HARASSMENT" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="564" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="5" y="-5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentDescription" inherits="GameFontHighlightSmall" text="PHYSICAL_HARASSMENT_DESCRIPTION" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="564" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentText" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentTipText" inherits="GameFontNormalSmall" text="PHYSICAL_HARASSMENT_TEXT1" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="564" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-15"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame name="PhysicalAbuseTip1" inherits="HelpFrameBulletPointTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentTipText" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="-3" y="-5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(PHYSICAL_HARASSMENT_TEXT2);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-							<Frame name="PhysicalAbuseTip2" inherits="HelpFrameBulletPointTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="PhysicalAbuseTip1" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(PHYSICAL_HARASSMENT_TEXT3);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-							<Frame name="PhysicalAbuseTip3" inherits="HelpFrameBulletPointTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="PhysicalAbuseTip2" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(PHYSICAL_HARASSMENT_TEXT4);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-							<Frame name="PhysicalAbuseTip4" inherits="HelpFrameBulletPointTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="PhysicalAbuseTip3" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(PHYSICAL_HARASSMENT_TEXT5);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-							<Frame name="PhysicalAbuseTip5" inherits="HelpFrameBulletPointTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="PhysicalAbuseTip4" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(PHYSICAL_HARASSMENT_TEXT6);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-							<Button name="HelpFramePhysicalHarassmentButton" inherits="UIPanelButtonTemplate2" text="REPORT_PHYSICAL_HARASSMENT">
-								<Size>
-									<AbsDimension x="200" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										HelpFrame_ShowFrame("OpenTicket");
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-					</Frame>
-					<Button name="HelpFrameHarassmentCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-53" y="21"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								ShowUIPanel(KnowledgeBaseFrame);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="HelpFrameHarassmentBack" inherits="GameMenuButtonTemplate" text="BACK">
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="HelpFrameHarassmentCancel" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HelpFrame_ShowFrame("GMHome");
-							</OnClick>
-						</Scripts>
-					</Button>
-<!--
-					<Frame name="HelpFrameHarassmentDivider" inherits="HelpFrameDividerTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="12" y="-70"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
--->
-				</Frames>
-				<Scripts>
-					<OnShow>
-						HelpFrame.back = HelpFrameHarassmentBack;
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<!-- Stuck Frame -->
-			<Frame name="HelpFrameStuck" setAllPoints="true" hidden="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="HelpFrameStuckTitle" inherits="GameFontNormalLarge" text="STUCK_OPTION" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="550" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="25" y="-65"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="HelpFrameStuckText1" inherits="GameFontHighlight" text="HELPFRAME_STUCK_TEXT1" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="550" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="HelpFrameStuckTitle" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="-3"/>
 									</Offset>
@@ -1352,9 +716,26 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="HelpFrameStuckStuck" inherits="UIPanelButtonTemplate2" text="STUCK_BUTTON_TEXT">
+					<Button name="$parentGMTalk" inherits="UIPanelButtonTemplate2" text="KBASE_GMTALK">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="HelpFrameStuckText1" relativePoint="BOTTOM">
+							<Anchor point="TOP" relativeTo="$parentText1" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetWidth(this:GetTextWidth()+40);
+							</OnLoad>
+							<OnClick>
+								HelpFrame_ShowFrame("GMTalk");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentReportIssue" inherits="UIPanelButtonTemplate2" text="KBASE_REPORTISSUE">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentGMTalk" relativePoint="BOTTOM">
 								<Offset>
 									<AbsDimension x="0" y="-25"/>
 								</Offset>
@@ -1362,84 +743,57 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetWidth(getglobal(this:GetName().."Text"):GetWidth()+40);
+								this:SetWidth(this:GetTextWidth()+40);
 							</OnLoad>
 							<OnClick>
-								Stuck();
-								HideUIPanel(HelpFrame);
+								HelpFrame_ShowFrame("ReportIssue");
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="HelpFrameStuckCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
+					<Button name="$parentStuck" inherits="UIPanelButtonTemplate2" text="KBASE_CHARSTUCK">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
+							<Anchor point="TOP" relativeTo="$parentReportIssue" relativePoint="BOTTOM">
 								<Offset>
-									<AbsDimension x="-53" y="21"/>
+									<AbsDimension x="0" y="-25"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad>
+								this:SetWidth(this:GetTextWidth()+40);
+							</OnLoad>
 							<OnClick>
-								ShowUIPanel(KnowledgeBaseFrame);
+								HelpFrame_ShowFrame("Stuck");
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="HelpFrameStuckBack" inherits="GameMenuButtonTemplate" text="BACK">
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="HelpFrameStuckCancel" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HelpFrame_ShowFrame("GMHome");
-							</OnClick>
-						</Scripts>
-					</Button>
+					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
 				</Frames>
 				<Scripts>
 					<OnShow>
-						HelpFrame.back = HelpFrameStuckBack;
+						HelpFrame.back = HelpFrameWelcomeCancel;
 					</OnShow>
 				</Scripts>
-			</Frame>
-			<!-- Bug Frame -->
-			<Frame name="HelpFrameBug" setAllPoints="true" hidden="true">
-				<Frames>
-					<Frame name="HelpFrameBugDivider" inherits="HelpFrameDividerTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="12" y="-223"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				HelpFrame_OnLoad();
+				HelpFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				HelpFrame_OnShow();
 			</OnShow>
 			<OnEvent>
-				HelpFrame_OnEvent();
+				HelpFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnHide>
-				PlaySound("igCharacterInfoClose");
-				UpdateMicroButtons();
-				HelpFrame.back = nil;
+				HelpFrame_OnHide(self);
 			</OnHide>
 		</Scripts>
 	</Frame>
 	<Frame name="TicketStatusFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size>
-			<AbsDimension x="208" y="52"/>
+			<AbsDimension x="208" y="75"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPRIGHT">
@@ -1484,7 +838,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="TicketStatusButton">
+			<Button name="TicketStatusFrameButton">
 				<Size>
 					<AbsDimension x="32" y="32"/>
 				</Size>
@@ -1513,45 +867,23 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						if ( TicketStatusFrame.hasGMSurvey ) then
-							GMSurveyFrame_LoadUI();
-							ShowUIPanel(GMSurveyFrame);
-							TicketStatusFrame:Hide();
-						elseif ( StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") or StaticPopup_Visible("HELP_TICKET") ) then
-							StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
-							StaticPopup_Hide("HELP_TICKET");
-						elseif ( not HelpFrame:IsShown() and not KnowledgeBaseFrame:IsShown() ) then
-							StaticPopup_Show("HELP_TICKET");
-						end
+						TicketStatusFrame_OnMouseUp(TicketStatusFrame);
 					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-				this:RegisterEvent("UPDATE_TICKET");
-				this:RegisterEvent("PLAYER_ENTERING_WORLD");
+				TicketStatusFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				TicketStatusFrame_OnEvent();
+				TicketStatusFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				TicketStatus_OnUpdate(arg1);						
+				TicketStatusFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnMouseUp>
-				-- FIXME duplicate code from above. move to functions
-				if ( TicketStatusFrame.hasGMSurvey ) then
-					GMSurveyFrame_LoadUI();
-					ShowUIPanel(GMSurveyFrame);
-					TicketStatusFrame:Hide();
-				elseif ( StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") or StaticPopup_Visible("HELP_TICKET") ) then
-					StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
-					StaticPopup_Hide("HELP_TICKET");
-				elseif ( not HelpFrame:IsShown() and not KnowledgeBaseFrame:IsShown() ) then
-					StaticPopup_Show("HELP_TICKET");
-				end
+				TicketStatusFrame_OnMouseUp(self);
 			</OnMouseUp>
 		</Scripts>
 	</Frame>

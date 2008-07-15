@@ -2,6 +2,13 @@
 -- New constants should be added to this file and other constants
 -- deprecated and moved to this file.
 --
+-- Inventory Constants
+
+ITEM_QUALITY_POOR = 0;
+ITEM_QUALITY_COMMON = 1;
+ITEM_QUALITY_UNCOMMON = 2;
+ITEM_QUALITY_RARE = 3;
+ITEM_QUALITY_EPIC = 4;
 
 --
 -- Combat Log Global Constants and Helper Functions

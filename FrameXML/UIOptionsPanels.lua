@@ -228,7 +228,21 @@ DisplayPanelOptions = {
 	screenEdgeFlash = { text = "SHOW_FULLSCREEN_STATUS_TEXT" },
 	showLootSpam = { text = "SHOW_LOOT_SPAM" },
 	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS" },
+	showClock = { text = "SHOW_CLOCK" },
 }
+
+function InterfaceOptionsDisplayPanelShowClock_SetFunc(value)
+	if ( value == "1" ) then
+		TimeManager_LoadUI();
+		if ( TimeManagerClockButton_Show ) then
+			TimeManagerClockButton_Show();
+		end
+	else
+		if ( TimeManagerClockButton_Hide ) then
+			TimeManagerClockButton_Hide();
+		end
+	end
+end
 
 function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad (self)
 	UIDropDownMenu_Initialize(InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay, InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_Initialize);
@@ -350,11 +364,7 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 			FCF_Set_SimpleChat();
 		end
 
-		for _, control in next, self.controls do
-			if ( control.setFunc ) then
-				control.setFunc(control.value);
-			end
-		end
+		BlizzardOptionsPanel_OnEvent(self, event, ...);
 		self:UnregisterEvent(event);
 	end
 end
@@ -382,11 +392,7 @@ function InterfaceOptionsActionBarsPanel_OnEvent (self, event, ...)
 		MultiActionBar_Update();
 		UIParent_ManageFramePositions();
 
-		for _, control in next, self.controls do
-			if ( control.setFunc ) then
-				control.setFunc(control.value);
-			end
-		end
+		BlizzardOptionsPanel_OnEvent(self, event, ...);
 		self:UnregisterEvent(event);
 	end
 end

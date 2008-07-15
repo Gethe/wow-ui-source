@@ -148,8 +148,11 @@ COMBATLOG_EVENT_LIST = {
 	["SPELL_AURA_APPLIED_DOSE"] = false,
 	["SPELL_AURA_REMOVED"] = false,
 	["SPELL_AURA_REMOVED_DOSE"] = false,
-	["SPELL_AURA_DISPELLED"] = true,
-	["SPELL_AURA_STOLEN"] = true,
+	["SPELL_AURA_BROKEN"] = false,
+	["SPELL_AURA_BROKEN_SPELL"] = false,
+	["SPELL_AURA_REFRESH"] = false,
+	["SPELL_DISPEL"] = true,
+	["SPELL_STOLEN"] = true,
 	["ENCHANT_APPLIED"] = true,
 	["ENCHANT_REMOVED"] = true,
 	["SPELL_PERIODIC_MISSED"] = true,
@@ -432,8 +435,11 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["SPELL_AURA_APPLIED_DOSE"] = true,
 					      ["SPELL_AURA_REMOVED"] = true,
 					      ["SPELL_AURA_REMOVED_DOSE"] = true,
-					      ["SPELL_AURA_DISPELLED"] = true,
-					      ["SPELL_AURA_STOLEN"] = true,
+					      ["SPELL_AURA_BROKEN"] = true,
+						  ["SPELL_AURA_BROKEN_SPELL"] = true,
+						  ["SPELL_AURA_REFRESH"] = true,
+					      ["SPELL_DISPEL"] = true,
+					      ["SPELL_STOLEN"] = true,
 					      ["ENCHANT_APPLIED"] = true,
 					      ["ENCHANT_REMOVED"] = true,
 					      ["SPELL_PERIODIC_MISSED"] = true,
@@ -481,8 +487,8 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      --["SPELL_AURA_APPLIED_DOSE"] = true,
 					      --["SPELL_AURA_REMOVED"] = true,
 					      --["SPELL_AURA_REMOVED_DOSE"] = true,
-					      ["SPELL_AURA_DISPELLED"] = true,
-					      ["SPELL_AURA_STOLEN"] = true,
+					      ["SPELL_DISPEL"] = true,
+					      ["SPELL_STOLEN"] = true,
 					      ["ENCHANT_APPLIED"] = true,
 					      ["ENCHANT_REMOVED"] = true,
 					      --["SPELL_PERIODIC_MISSED"] = true,
@@ -1056,18 +1062,18 @@ do
 			[4] = {
 				text = "Auras";
 				hasArrow = true;
-				checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_REMOVED_DOSE", "SPELL_AURA_DISPELLED", "SPELL_AURA_STOLEN",  "ENCHANT_APPLIED",  "ENCHANT_REMOVED" ); end;
+				checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_AURA_APPLIED", "SPELL_AURA_BROKEN", "SPELL_AURA_REFRESH", "SPELL_AURA_BROKEN_SPELL", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_REMOVED_DOSE", "SPELL_DISPEL", "SPELL_STOLEN",  "ENCHANT_APPLIED",  "ENCHANT_REMOVED" ); end;
 				keepShownOnClick = true;
 				func = function ( arg1, arg2, checked )
-					Blizzard_CombatLog_MenuHelper ( checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_REMOVED_DOSE", "SPELL_AURA_DISPELLED", "SPELL_AURA_STOLEN",  "ENCHANT_APPLIED", "ENCHANT_REMOVED" );
+					Blizzard_CombatLog_MenuHelper ( checked, "SPELL_AURA_APPLIED", "SPELL_AURA_BROKEN", "SPELL_AURA_REFRESH", "SPELL_AURA_BROKEN_SPELL", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_REMOVED_DOSE", "SPELL_DISPEL", "SPELL_STOLEN",  "ENCHANT_APPLIED", "ENCHANT_REMOVED" );
 				end;
 				menuList = {
 					[1] = {
 						text = "Applied";
-						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE"); end;
+						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_AURA_APPLIED", "SPELL_AURA_BROKEN", "SPELL_AURA_REFRESH", "SPELL_AURA_BROKEN_SPELL", "SPELL_AURA_APPLIED_DOSE"); end;
 						keepShownOnClick = true;
 						func = function ( arg1, arg2, checked )
-							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE",  "ENCHANT_APPLIED" );
+							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_AURA_APPLIED", "SPELL_AURA_BROKEN", "SPELL_AURA_REFRESH", "SPELL_AURA_BROKEN_SPELL", "SPELL_AURA_APPLIED_DOSE",  "ENCHANT_APPLIED" );
 						end;
 					};
 					[2] = {
@@ -1080,18 +1086,18 @@ do
 					};
 					[3] = {
 						text = "Dispelled";
-						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_AURA_DISPELLED"); end;
+						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_DISPEL"); end;
 						keepShownOnClick = true;
 						func = function ( arg1, arg2, checked )
-							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_AURA_DISPELLED" );
+							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_DISPEL" );
 						end;
 					};
 					[4] = {
 						text = "Stolen";
-						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_AURA_STOLEN"); end;
+						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_STOLEN"); end;
 						keepShownOnClick = true;
 						func = function ( arg1, arg2, checked )
-							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_AURA_STOLEN" );
+							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_STOLEN" );
 						end;
 					};						
 				};
@@ -2508,7 +2514,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Disable appropriate sections
 			resultEnabled = false;
 			valueEnabled = false;
-		elseif ( event == "SPELL_AURA_DISPELLED" ) then
+		elseif ( event == "SPELL_DISPEL" or event == "SPELL_STOLEN" ) then
 			-- Extra Spell standard, Aura standard
 			extraSpellId, extraSpellName, extraSpellSchool, auraType = select(4, ...);
 
@@ -2524,10 +2530,22 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Disable appropriate sections
 			resultEnabled = false;
 			valueEnabled = false;
-		elseif ( event == "SPELL_AURA_STOLEN" ) then
+		elseif ( event == "SPELL_AURA_BROKEN" or event == "SPELL_AURA_BROKEN_SPELL") then
+			
 			-- Extra Spell standard, Aura standard
-			extraSpellId, extraSpellName, extraSpellSchool, auraType = select(4, ...);
-
+			if(event == "SPELL_AURA_BROKEN") then
+				auraType = select(4, ...);
+			else
+				extraSpellId, extraSpellName, extraSpellSchool, auraType = select(4, ...);
+			end
+			
+			-- Abort if buff/debuff is not set to true
+			if ( hideBuffs and auraType == AURA_TYPE_BUFF ) then
+				return;
+			elseif ( hideDebuffs and auraType == AURA_TYPE_DEBUFF ) then
+				return;
+			end
+			
 			-- Event Type
 			event = event.."_"..auraType;
 
@@ -2536,11 +2554,31 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				extraSpellEnabled = true;
 				combatString = strreplace(combatString, "$value", "$extraSpell");
 			end
+			
+			-- Support for multiple string orders
+			if ( _G["ACTION_"..event.."_MASTER"] ) then
+				local newCombatString = _G[textModeString .. _G["ACTION_"..event.."_MASTER"]];
+				if ( newCombatString ) then
+					combatString = newCombatString;
+				end
+			end
 
+			-- Swap Source with Dest
+			sourceName, destName = destName, sourceName;
+			sourceGUID, destGUID = destGUID, sourceGUID;
+			sourceFlags, destFlags = destFlags, sourceFlags;
+			
 			-- Disable appropriate sections
+			if ( auraType == AURA_TYPE_BUFF ) then
+				sourceEnabled = true;
+				destEnabled = false;
+			else
+				sourceEnabled = false;
+				destEnabled = true;
+			end
 			resultEnabled = false;
 			valueEnabled = false;
-		elseif ( event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED" ) then		-- Aura Events
+		elseif ( event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED" or event == "SPELL_AURA_REFRESH") then		-- Aura Events
 			-- Aura standard
 			auraType = select(4, ...);
 
@@ -3519,7 +3557,6 @@ end
 -- Blizzard_CombatLog gets loaded.
 local oldSetItemRef = SetItemRef;
 function SetItemRef(link, text, button)
-	local printable = gsub(link, "\124", "\124\124");
 
 	if ( strsub(link, 1, 4) == "unit") then
 		local _, guid, name = strsplit(":", link);
@@ -3569,10 +3606,8 @@ function SetItemRef(link, text, button)
 		end
 		return;
 	elseif ( strsub(link, 1, 4) == "item") then
-		local _, itemId = strsplit(":", link);
-
 		if ( IsModifiedClick("CHATLINK") ) then
-			name, link = GetItemInfo(itemId);
+			local name, link = GetItemInfo(text);
 			ChatEdit_InsertLink (link);
 			return;
 		end

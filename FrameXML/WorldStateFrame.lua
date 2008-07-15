@@ -70,7 +70,7 @@ function WorldStateAlwaysUpFrame_OnLoad()
 		if ( chatString ) then
 			chatString = string.gsub(chatString, "%[", "%%[");
 			chatString = string.gsub(chatString, "%]", "%%]");
-			chatString = string.gsub(chatString, "%%s", "([%%w]+)")
+			chatString = string.gsub(chatString, "%%s", "(.-)")
 			tinsert(FILTERED_BG_CHAT_ADD, chatString);
 		end
 	end	
@@ -81,7 +81,7 @@ function WorldStateAlwaysUpFrame_OnLoad()
 		if ( chatString ) then
 			chatString = string.gsub(chatString, "%[", "%%[");
 			chatString = string.gsub(chatString, "%]", "%%]");
-			chatString = string.gsub(chatString, "%%s", "([%%w]+)")
+			chatString = string.gsub(chatString, "%%s", "(.-)")
 			tinsert(FILTERED_BG_CHAT_SUBTRACT, chatString);
 		end
 	end
@@ -323,6 +323,8 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (message)
 		for i, str in next, FILTERED_BG_CHAT_ADD do
 			playerName = string.match(message, str);
 			if ( playerName ) then
+				-- Trim realm names
+				playerName = string.match(playerName, "([%w]+)%-?.*");
 				ADDED_PLAYERS[playerName] = true;
 				return true;
 			end
@@ -331,6 +333,7 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (message)
 		for i, str in next, FILTERED_BG_CHAT_SUBTRACT do
 			playerName = string.match(message, str);
 			if ( playerName ) then
+				playerName = string.match(playerName, "([%w]+)%-?.*");
 				SUBTRACTED_PLAYERS[playerName] = true;
 				return true;
 			end
@@ -339,91 +342,17 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (message)
 	return false;
 end
 
+local matchString = string.gsub(LOOT_ITEM_CREATED_SELF, "%%s%.", ".+")
+
 function WorldStateAlwaysUpFrame_FilterChatMsgLoot (message)
 	if ( GetBattlefieldWinner() ) then
-		-- Suppress loot messages at the end of battlefields and arenas
-		return true;
+		-- Suppress loot messages for other players at the end of battlefields and arenas
+		if ( not string.match(message, matchString) ) then
+			return true;
+		end
 	end
 	
 	return false;
-end
-
-function WorldStateAlwaysUpFrame_DispatchBGChat(self, event, ...)
-	local arg1 = ...
-	local playerName;
-	
-	if ( ( not battlegroundOver ) and WORLDSTATEALWAYSUPFRAME_TIMESINCESTART < WORLDSTATEALWAYSUPFRAME_TIMETORUN ) then
-		for i, str in next, FILTERED_BG_CHAT_ADD do
-			playerName = string.match(arg1, str);
-			if ( playerName ) then
-				SUBTRACTED_PLAYERS[playerName] = nil;
-
-				if ( not ADDED_PLAYERS[playerName] ) then
-					WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL;
-					
-					local subtractedPlayers = false;
-					for i in next, SUBTRACTED_PLAYERS do
-						--Never runs if SUBTRACTED_PLAYERS is empty.
-						subtractedPlayers = true;
-						break;
-					end
-					
-					if ( subtractedPlayers ) then
-						WorldStateAlwaysUpFrame_OnUpdate(self, 0);
-					end
-					
-					WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = ( WORLDSTATEALWAYSUPFRAME_TIMESINCELAST or 0 ) - WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL;
-					ADDED_PLAYERS[playerName] = true;
-					self:SetScript("OnUpdate", WorldStateAlwaysUpFrame_OnUpdate);
-				end
-				return;
-			end
-			
-		end
-		
-		for i, str in next, FILTERED_BG_CHAT_SUBTRACT do
-			playerName = string.match(arg1, str);
-			if ( playerName ) then
-				ADDED_PLAYERS[playerName] = nil;
-				
-				if ( not SUBTRACTED_PLAYERS[playerName] ) then
-					WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL;
-					
-					local addedPlayers = false;
-					for i in next, ADDED_PLAYERS do
-						--This will never run if ADDED_PLAYERS is empty.
-						addedPlayers = true;
-						break;
-					end
-					
-					if ( addedPlayers ) then
-						WorldStateAlwaysUpFrame_OnUpdate(self, 0);
-					end
-					
-					WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = ( WORLDSTATEALWAYSUPFRAME_TIMESINCELAST or 0 ) - WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL;
-					SUBTRACTED_PLAYERS[playerName] = true;
-					self:SetScript("OnUpdate", WorldStateAlwaysUpFrame_OnUpdate);
-				end
-				
-				return;
-			end
-			
-		end		
-	end
-	
-	if ( battlegroundOver ) then
-		for i, str in next, FILTERED_BG_CHAT_END do
-			playerName = string.match(arg1, str);
-			if ( playerName ) then
-				return;
-			end
-		end
-	end
-	
-	local info = ChatTypeInfo["SYSTEM"];
-	for i, chatFrame in next, WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES do
-		chatFrame:AddMessage(arg1, info.r, info.g, info.b, info.id);
-	end
 end
 
 function WorldStateFrame_ToggleBattlefieldMinimap()

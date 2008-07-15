@@ -16,7 +16,7 @@ function LootFrame_OnEvent(event)
 		ShowUIPanel(this);
 		local autoLoot = arg1;
 		if ( not this:IsShown()) then
-			CloseLoot(not autoLoot);	-- The parameter tells code that we were unable to open the UI
+			CloseLoot(autoLoot == 0);	-- The parameter tells code that we were unable to open the UI
 		end
 	end
 
