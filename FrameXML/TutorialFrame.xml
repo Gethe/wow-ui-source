@@ -103,8 +103,8 @@
 				<PushedTexture inherits="DialogButtonPushedTexture"/>
 				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
 				<ButtonText text="OKAY"/>
-				<NormalFont inherits="GameFontNormalSmall"/>
-				<HighlightFont inherits="GameFontHighlightSmall"/>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
 			</Button>
 		</Frames>
 		<Scripts>

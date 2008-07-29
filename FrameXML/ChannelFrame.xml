@@ -96,8 +96,8 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontNormalSmall" justifyH="LEFT"/>
-		<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
+		<NormalFont style="GameFontNormalSmallLeft"/>
+		<HighlightFont style="GameFontHighlightSmallLeft"/>
 	</Button>
 	<Button name="ChannelRosterButtonTemplate" virtual="true">
 		<Size>
@@ -974,9 +974,9 @@
 								ChannelFrameDaughterFrame_Okay();
 							</OnClick>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 					<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 						<Size>
@@ -994,9 +994,9 @@
 								ChannelFrameDaughterFrame_Cancel();
 							</OnClick>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 				</Frames>
 				<Scripts>
@@ -1184,7 +1184,7 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontNormalSmall"/>
+		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentLeft">

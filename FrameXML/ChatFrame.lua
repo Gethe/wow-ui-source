@@ -950,10 +950,24 @@ SecureCmdList["TARGET_NEAREST_ENEMY"] = function(msg)
 	end
 end
 
+SecureCmdList["TARGET_NEAREST_ENEMY_PLAYER"] = function(msg)
+	local action = SecureCmdOptionParse(msg);
+	if ( action ) then
+		TargetNearestEnemyPlayer(action);
+	end
+end
+
 SecureCmdList["TARGET_NEAREST_FRIEND"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
 		TargetNearestFriend(action);
+	end
+end
+
+SecureCmdList["TARGET_NEAREST_FRIEND_PLAYER"] = function(msg)
+	local action = SecureCmdOptionParse(msg);
+	if ( action ) then
+		TargetNearestFriendPlayer(action);
 	end
 end
 
@@ -1170,7 +1184,6 @@ SecureCmdList["STOPMACRO"] = function(msg)
 	end
 end
 
-local ClickButtonCache = {};
 SecureCmdList["CLICK"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action and action ~= "" ) then
@@ -1178,16 +1191,24 @@ SecureCmdList["CLICK"] = function(msg)
 		if ( not name ) then
 			name = action;
 		end
-		if ( not ClickButtonCache[name] ) then
-			ClickButtonCache[name] = securecall("getglobal", name);
-		end
-		local button = ClickButtonCache[name];
-		if ( button and button:IsObjectType("Button") and button:GetName() == name ) then
+		local button = GetClickFrame(name);
+		if ( button and button:IsObjectType("Button") ) then
 			button:Click(mouseButton, down);
 		end
 	end
 end
 
+-- Pre-populate the secure command hash table
+for index, value in pairs(SecureCmdList) do
+	local i = 1;
+	local cmdString = getglobal("SLASH_"..index..i);
+	while ( cmdString ) do
+		cmdString = strupper(cmdString);
+		hash_SecureCmdList[cmdString] = value;	-- add to hash
+		i = i + 1;
+		cmdString = getglobal("SLASH_"..index..i);
+	end
+end
 
 -- Slash commands
 SlashCmdList = { };
@@ -1741,6 +1762,23 @@ end
 SlashCmdList["DISABLE_ADDONS"] = function(msg)
 	DisableAllAddOns();
 	ReloadUI();
+end
+
+SlashCmdList["STOPWATCH"] = function(msg)
+	if ( not IsAddOnLoaded("Blizzard_TimeManager") ) then
+		UIParentLoadAddOn("Blizzard_TimeManager");
+	end
+	if ( Stopwatch_ShowCountdown ) then
+		-- kinda ghetto, but hey, it's simple and it works =)
+		local hour, minute, second = strmatch(msg, "(%d+):(%d+):(%d+)");
+		if ( not hour ) then
+			minute, second = strmatch(msg, "(%d+):(%d+)");
+			if ( not minute ) then
+				second = strmatch(msg, "(%d+)");
+			end
+		end
+		Stopwatch_ShowCountdown(tonumber(hour), tonumber(minute), tonumber(second));
+	end
 end
 
 
@@ -2984,7 +3022,21 @@ function ChatEdit_ParseText(editBox, send)
 
 	command = strupper(command);
 
-	if ( securecall("ChatEdit_HandleChatType", editBox, msg, command, send) ) then
+	-- Check and see if we've got secure commands to run before we look for chat types or slash commands.	
+	-- This hash table is prepopulated, unlike the other ones, since nobody can add secure commands. (See line 1205 or thereabouts)
+	-- We don't want this code to run unless send is 1, but we need ChatEdit_HandleChatType to run when send is 1 as well, which is why we
+	-- didn't just move ChatEdit_HandleChatType inside the send == 0 conditional, which could have also solved the problem with insecure
+	-- code having the ability to affect secure commands.
+	
+	if ( send == 1 and hash_SecureCmdList[command] ) then
+		hash_SecureCmdList[command](strtrim(msg));
+		editBox:AddHistoryLine(text);
+		ChatEdit_OnEscapePressed(editBox);
+		return;
+	end
+
+	-- Handle chat types. No need for a securecall here, since we should be done with anything secure.
+	if ( ChatEdit_HandleChatType(editBox, msg, command, send) ) then
 		return;
 	end
 
@@ -2992,51 +3044,30 @@ function ChatEdit_ParseText(editBox, send)
 		return;
 	end
 
-	-- check the hash tables
-	-- if the code in here changes - change the corresponding code below
-	if ( hash_SecureCmdList[command] ) then
-		hash_SecureCmdList[command](strtrim(msg));
-		editBox:AddHistoryLine(text);
-		ChatEdit_OnEscapePressed(editBox);
-		return;
-	elseif ( hash_SlashCmdList[command] ) then
+	-- Check the hash tables for slash commands and emotes to see if we've run this before. 
+	if ( hash_SlashCmdList[command] ) then
+		-- if the code in here changes - change the corresponding code below
 		hash_SlashCmdList[command](strtrim(msg));
 		editBox:AddHistoryLine(text);
 		ChatEdit_OnEscapePressed(editBox);
 		return;
 	elseif ( hash_EmoteTokenList[command] ) then
+		-- if the code in here changes - change the corresponding code below
 		DoEmote(hash_EmoteTokenList[command], msg);
 		editBox:AddHistoryLine(text);
 		ChatEdit_OnEscapePressed(editBox);
 		return;
 	end
 
-	for index, value in pairs(SecureCmdList) do
-		local i = 1;
-		local cmdString = getglobal("SLASH_"..index..i);
-		while ( cmdString ) do
-			cmdString = strupper(cmdString);
-			if ( cmdString == command ) then
-				hash_SecureCmdList[command] = value;	-- add to hash
-				-- if the code in here changes - change the corresponding code above
-				value(strtrim(msg));
-				editBox:AddHistoryLine(text);
-				ChatEdit_OnEscapePressed(editBox);
-				return;
-			end
-			i = i + 1;
-			cmdString = getglobal("SLASH_"..index..i);
-		end
-	end
-
+	-- If we didn't have the command in the hash tables, look for it the slow way...
 	for index, value in pairs(SlashCmdList) do
 		local i = 1;
 		local cmdString = getglobal("SLASH_"..index..i);
 		while ( cmdString ) do
 			cmdString = strupper(cmdString);
 			if ( cmdString == command ) then
-				hash_SlashCmdList[command] = value;	-- add to hash
 				-- if the code in here changes - change the corresponding code above
+				hash_SlashCmdList[command] = value;	-- add to hash
 				value(strtrim(msg));
 				editBox:AddHistoryLine(text);
 				ChatEdit_OnEscapePressed(editBox);
@@ -3076,6 +3107,8 @@ function ChatEdit_ParseText(editBox, send)
 		local info = ChatTypeInfo["SYSTEM"];
 		editBox.chatFrame:AddMessage(HELP_TEXT_SIMPLE, info.r, info.g, info.b, info.id);
 	end
+	
+	-- Reset the chat type and clear the edit box's contents
 	ChatEdit_OnEscapePressed(editBox);
 	return;
 end

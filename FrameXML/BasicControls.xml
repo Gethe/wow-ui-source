@@ -164,8 +164,8 @@
 				<PushedTexture inherits="DialogButtonPushedTexture"/>
 				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
 				<ButtonText text="OKAY"/>
-				<NormalFont inherits="DialogButtonNormalText"/>
-				<HighlightFont inherits="DialogButtonHighlightText"/>
+				<NormalFont style="DialogButtonNormalText"/>
+				<HighlightFont style="DialogButtonHighlightText"/>
 			</Button>
 		</Frames>
 	</Frame>

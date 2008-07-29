@@ -41,7 +41,7 @@
 						</Anchor>
 					</Anchors>
 				</ButtonText>
-				<NormalFont inherits="NumberFontNormalLarge" justifyH="RIGHT"/>
+				<NormalFont style="NumberFontNormalLargeRight"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -82,7 +82,7 @@
 						</Anchor>
 					</Anchors>
 				</ButtonText>
-				<NormalFont inherits="NumberFontNormalLarge" justifyH="RIGHT"/>
+				<NormalFont style="NumberFontNormalLargeRight"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -123,7 +123,7 @@
 						</Anchor>
 					</Anchors>
 				</ButtonText>
-				<NormalFont inherits="NumberFontNormalLarge" justifyH="RIGHT"/>
+				<NormalFont style="NumberFontNormalLargeRight"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -188,7 +188,7 @@
 						</Anchor>
 					</Anchors>
 				</ButtonText>
-				<NormalFont inherits="NumberFontNormal" justifyH="RIGHT"/>
+				<NormalFont style="NumberFontNormalRight"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -229,7 +229,7 @@
 						</Anchor>
 					</Anchors>
 				</ButtonText>
-				<NormalFont inherits="NumberFontNormal" justifyH="RIGHT"/>
+				<NormalFont style="NumberFontNormalRight"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -270,7 +270,7 @@
 						</Anchor>
 					</Anchors>
 				</ButtonText>
-				<NormalFont inherits="NumberFontNormal" justifyH="RIGHT"/>
+				<NormalFont style="NumberFontNormalRight"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -325,7 +325,7 @@
 				<Anchor point="LEFT"/>
 			</Anchors>
 		</NormalTexture>
-		<NormalFont inherits="NumberFontNormal" justifyH="RIGHT"/>
+		<NormalFont style="NumberFontNormalRight"/>
 		<PushedTextOffset>
 			<AbsDimension x="0" y="0"/>
 		</PushedTextOffset>

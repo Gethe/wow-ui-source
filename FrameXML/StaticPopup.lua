@@ -416,6 +416,21 @@ StaticPopupDialogs["COD_CONFIRMATION"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["COD_CONFIRMATION_AUTO_LOOT"] = {
+	text = COD_CONFIRMATION,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, index)
+		AutoLootMailItem(index);
+	end,
+	OnShow = function(self)
+		MoneyFrame_Update(self.moneyFrame, OpenMailFrame.cod);
+	end,
+	hasMoneyFrame = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["DELETE_MAIL"] = {
 	text = DELETE_MAIL_CONFIRMATION,
 	button1 = ACCEPT,

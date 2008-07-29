@@ -42,8 +42,8 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontNormalSmall" justifyH="LEFT"/>
-		<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
+		<NormalFont style="GameFontNormalSmallLeft"/>
+		<HighlightFont style="GameFontHighlightSmallLeft"/>
 	</Button>
 	<Button name="AuctionSortButtonTemplate" virtual="true">
 		<Layers>
@@ -87,7 +87,7 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontHighlightSmall"/>
+		<NormalFont style="GameFontHighlightSmall"/>
 		<NormalTexture name="$parentArrow" file="Interface\Buttons\UI-SortArrow">
 			<Size>
 				<AbsDimension x="9" y="8"/>

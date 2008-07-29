@@ -226,7 +226,7 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="QuestFont" justifyH="LEFT"/>
+		<NormalFont style="QuestFontLeft"/>
 	</Button>
 	<Frame name="QuestHonorFrameTemplate" virtual="true">
 		<Size x="500" y="20"/>

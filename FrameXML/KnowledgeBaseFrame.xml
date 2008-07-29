@@ -78,13 +78,6 @@
 		<Size>
 			<AbsDimension x="640" y="512"/>
 		</Size>
-		<Anchors>
-			<Anchor point="CENTER">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="0" right="44" top="0" bottom="13"/>
 		</HitRectInsets>

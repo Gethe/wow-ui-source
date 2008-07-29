@@ -172,12 +172,14 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self.name = CONTROLS_LABEL;
-				self.options = ControlsPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-				UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, GetModifiedClick("AUTOLOOTTOGGLE"));
-				UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelAutoLootKeyDropDown);
-			</OnLoad>
+        self.name = CONTROLS_LABEL;
+        self.options = ControlsPanelOptions;
+        BlizzardOptionsPanel_OnLoad(self);
+        UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, GetModifiedClick("AUTOLOOTTOGGLE"));
+        UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelMailAutoLootKeyDropDown, GetModifiedClick("AUTOMAILLOOTTOGGLE"));
+        UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelAutoLootKeyDropDown);
+        UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelMailAutoLootKeyDropDown);
+      </OnLoad>
 			<OnShow>
 				BlizzardOptionsPanel_OnShow(self);
 			</OnShow>
@@ -285,7 +287,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLootAtMouse" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-16"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -300,48 +302,109 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<Frame name="$parentAutoLootKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-13" y="-24"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontHighlight" text="AUTO_LOOT_KEY_TEXT">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="16" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						self:RegisterEvent("PLAYER_ENTERING_WORLD");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad(self);
-					</OnLoad>
-					<OnEnter>
-						if ( not self.isDisabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
-						end
-					</OnEnter>
-					<OnEvent>
-						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...);
-					</OnEvent>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Frame>			
+      <Frame name="$parentAutoLootKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="150" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentLabel" inherits="GameFontHighlight" text="AUTO_LOOT_KEY_TEXT">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="16" y="3"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_DROPDOWN;
+            self:RegisterEvent("PLAYER_ENTERING_WORLD");
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+            InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad(self);
+          </OnLoad>
+          <OnEnter>
+            if ( not self.isDisabled ) then
+            GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+            GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+            end
+          </OnEnter>
+          <OnEvent>
+            InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...);
+          </OnEvent>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Frame>
+      <CheckButton name="$parentAutoLootMail" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "mailAutoLootDefault";
+            self.setFunc = function (value)
+            BlizzardOptionsPanel_UpdateMailAutoLootDropDown(value);
+            end
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <Frame name="$parentMailAutoLootKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentAutoLootMail" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="150" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentLabel" inherits="GameFontHighlight" text="MAIL_AUTO_LOOT_KEY_TEXT">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="16" y="3"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_DROPDOWN;
+            self:RegisterEvent("PLAYER_ENTERING_WORLD");
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+            InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnLoad(self);
+          </OnLoad>
+          <OnEnter>
+            if ( not self.isDisabled ) then
+            GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+            GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+            end
+          </OnEnter>
+          <OnEvent>
+            InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnEvent (self, event, ...);
+          </OnEvent>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Frame>
 		</Frames>
 	</Frame>
 	
@@ -793,6 +856,23 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
+			<CheckButton name="$parentShowTimeManager" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-174" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.type = CONTROLTYPE_CHECKBOX;
+						this.cvar = "showTimeManager";
+						this.setFunc = InterfaceOptionsDisplayPanelShowTimeManager_SetFunc;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 			<!-- World PVP Objectives -->
 			<Frame name="InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
@@ -2799,8 +2879,8 @@
 						end
 					</OnClick>
 				</Scripts>
-				<NormalFont inherits="GameFontNormalSmall"/>
-				<HighlightFont inherits="GameFontHighlightSmall"/>				
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>				
 			</Button>
 		</Frames>
 	</Frame>

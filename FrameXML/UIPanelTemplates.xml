@@ -17,9 +17,9 @@
 	</Texture>
 	<Button name="UIPanelButtonTemplate" virtual="true">
 		<ButtonText name="$parentText"/>
-		<NormalFont inherits="GameFontNormal"/>
-		<HighlightFont inherits="GameFontHighlight"/>
-		<DisabledFont inherits="GameFontDisable"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
 		<NormalTexture inherits="UIPanelButtonUpTexture"/>
 		<PushedTexture inherits="UIPanelButtonDownTexture"/>
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
@@ -74,16 +74,16 @@
 			</OnMouseUp>
 		</Scripts>
 		<ButtonText name="$parentText"/>
-		<NormalFont inherits="GameFontNormal"/>
-		<HighlightFont inherits="GameFontHighlight"/>
-		<DisabledFont inherits="GameFontDisable"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
 	<Button name="UIPanelButtonGrayTemplate" virtual="true">
-		<NormalFont inherits="GameFontHighlight"/>
-		<HighlightFont inherits="GameFontHighlight"/>
-		<DisabledFont inherits="GameFontDisable"/>
+		<NormalFont style="GameFontHighlight"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
 		<NormalTexture inherits="UIPanelButtonDisabledTexture"/>
 		<PushedTexture inherits="UIPanelButtonDisabledDownTexture"/>
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
@@ -540,9 +540,9 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontNormalSmall"/>
-		<HighlightFont inherits="GameFontHighlightSmall"/>
-		<DisabledFont inherits="GameFontHighlightSmall"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Size>
 				<AbsDimension x="5" y="32"/>
@@ -560,9 +560,9 @@
 		<Size>
 			<AbsDimension x="144" y="21"/>
 		</Size>
-		<NormalFont inherits="GameFontHighlight"/>
-		<HighlightFont inherits="GameFontHighlight"/>
-		<DisabledFont inherits="GameFontDisable"/>
+		<NormalFont style="GameFontHighlight"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
 	</Button>
 	<CheckButton name="UIRadioButtonTemplate" virtual="true">
 		<Size>

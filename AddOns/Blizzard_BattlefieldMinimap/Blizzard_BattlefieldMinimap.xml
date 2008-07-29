@@ -135,7 +135,7 @@
 			</Anchor>
 		</Anchors>
 	</ButtonText>
-	<NormalFont inherits="GameFontNormalSmall"/>
+	<NormalFont style="GameFontNormalSmall"/>
 	<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="$parentLeft">

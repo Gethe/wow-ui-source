@@ -119,7 +119,7 @@ function TradeSkillFrame_Update()
 	TradeSkillHighlightFrame:Hide();
 	for i=1, TRADE_SKILLS_DISPLAYED, 1 do
 		local skillIndex = i + skillOffset;
-		local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(skillIndex);
+		local skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(skillIndex);
 		local skillButton = getglobal("TradeSkillSkill"..i);
 		if ( skillIndex <= numTradeSkills ) then	
 			-- Set button widths if scrollbar is shown or hidden
@@ -176,7 +176,7 @@ function TradeSkillFrame_Update()
 	local numHeaders = 0;
 	local notExpanded = 0;
 	for i=1, numTradeSkills, 1 do
-		local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(i);
+		local skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(i);
 		if ( skillName and skillType == "header" ) then
 			numHeaders = numHeaders + 1;
 			if ( not isExpanded ) then
@@ -199,7 +199,7 @@ function TradeSkillFrame_Update()
 end
 
 function TradeSkillFrame_SetSelection(id)
-	local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(id);
+	local skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(id);
 	local creatable = 1;
 	if ( not skillName ) then
 		creatable = nil;

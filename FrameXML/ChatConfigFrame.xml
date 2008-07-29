@@ -25,8 +25,8 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontNormal" justifyH="LEFT"/>
-		<HighlightFont inherits="GameFontHighlight" justifyH="LEFT"/>
+		<NormalFont style="GameFontNormalLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 	</Button>
 	<Button name="ConfigFilterButtonTemplate" inherits="ConfigCategoryButtonTemplate" virtual="true">
@@ -342,7 +342,7 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontNormalSmall"/>
+		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentLeft">

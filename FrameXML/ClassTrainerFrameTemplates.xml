@@ -71,9 +71,9 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontNormal" justifyH="LEFT"/>
-		<HighlightFont inherits="GameFontHighlight" justifyH="LEFT"/>
-		<DisabledFont inherits="GameFontDisable" justifyH="LEFT"/>
+		<NormalFont style="GameFontNormalLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
+		<DisabledFont style="GameFontDisableLeft"/>
 	</Button>
 	<ScrollFrame name="ClassTrainerDetailScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Layers>

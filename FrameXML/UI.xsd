@@ -188,6 +188,9 @@
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="ButtonStyleType">
+		<xs:attribute name="style" type="xs:string" use="required"/>
+	</xs:complexType>
 	<xs:complexType name="ScriptsType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
@@ -442,9 +445,9 @@
 						<xs:element name="DisabledTexture" type="ui:TextureType"/>
 						<xs:element name="HighlightTexture" type="ui:TextureType"/>
 						<xs:element name="ButtonText" type="FontStringType"/>
-						<xs:element name="NormalFont" type="FontType"/>
-						<xs:element name="HighlightFont" type="FontType"/>
-						<xs:element name="DisabledFont" type="FontType"/>
+						<xs:element name="NormalFont" type="ButtonStyleType"/>
+						<xs:element name="HighlightFont" type="ButtonStyleType"/>
+						<xs:element name="DisabledFont" type="ButtonStyleType"/>
 						<xs:element name="NormalColor" type="ColorType"/>
 						<xs:element name="HighlightColor" type="ColorType"/>
 						<xs:element name="DisabledColor" type="ColorType"/>

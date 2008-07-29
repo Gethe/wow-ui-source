@@ -125,7 +125,7 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontHighlight" justifyH="LEFT"/>
+		<NormalFont style="GameFontHighlightLeft"/>
 	</Button>
 	<Frame name="SkillFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true" id="4">
 		<HitRectInsets>

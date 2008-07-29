@@ -95,7 +95,7 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
-				<NormalFont inherits="GameFontHighlightSmall" justifyH="RIGHT"/>
+				<NormalFont style="GameFontHighlightSmallRight"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/> 
 				</PushedTextOffset>
@@ -153,8 +153,13 @@
 						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnClick>
-						InboxFrame_OnClick(this.index);
-					</OnClick>
+            local modifiedClick = (IsModifiedClick("MAILAUTOLOOTTOGGLE") and GetCVar("mailAutoLootDefault") == "0") or (not IsModifiedClick("MAILAUTOLOOTTOGGLE") and GetCVar("mailAutoLootDefault") == "1");
+            if ( modifiedClick ) then
+            InboxFrame_OnModifiedClick(this.index);
+            else
+            InboxFrame_OnClick(this.index);
+            end
+          </OnClick>
 					<OnEnter>
 						InboxFrameItem_OnEnter();
 					</OnEnter>
@@ -1079,9 +1084,9 @@
 								end
 							</OnClick>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 						<NormalTexture inherits="UIPanelButtonUpTexture"/>
 						<PushedTexture inherits="UIPanelButtonDownTexture"/>
 						<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>

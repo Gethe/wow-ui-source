@@ -317,7 +317,7 @@
 						</Anchor>
 					</Anchors>
 				</ButtonText>
-				<NormalFont inherits="GameFontHighlightSmall"/>
+				<NormalFont style="GameFontHighlightSmall"/>
 			</Button>
 			<Button name="WorldMapFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>

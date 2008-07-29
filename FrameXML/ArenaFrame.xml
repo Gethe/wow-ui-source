@@ -42,8 +42,8 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontNormal" justifyH="LEFT"/>
-		<HighlightFont inherits="GameFontHighlight" justifyH="LEFT"/>
+		<NormalFont style="GameFontNormalLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
 	</Button>
 	<Frame name="ArenaFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>

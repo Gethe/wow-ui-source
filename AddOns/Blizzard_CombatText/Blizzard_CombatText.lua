@@ -76,6 +76,12 @@ COMBAT_TEXT_TYPE_INFO["MANA_LOW"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT
 COMBAT_TEXT_TYPE_INFO["ENTERING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_COMBAT_STATE"};
 COMBAT_TEXT_TYPE_INFO["LEAVING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_COMBAT_STATE"};
 COMBAT_TEXT_TYPE_INFO["COMBO_POINTS"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_COMBO_POINTS"};
+COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
+
+COMBAT_TEXT_RUNE = {};
+COMBAT_TEXT_RUNE[1] = COMBAT_TEXT_RUNE_BLOOD;
+COMBAT_TEXT_RUNE[2] = COMBAT_TEXT_RUNE_UNHOLY;
+COMBAT_TEXT_RUNE[3] = COMBAT_TEXT_RUNE_FROST;
 
 function CombatText_OnLoad()
 	CombatText_UpdateDisplayedMessages();
@@ -147,6 +153,8 @@ function CombatText_OnEvent(event)
 		end
 	elseif ( event == "COMBAT_TEXT_UPDATE" ) then
 		messageType = arg1;
+	elseif ( event == "RUNE_POWER_UPDATE" ) then
+		messageType = "RUNE";
 	else
 		messageType = event;
 	end
@@ -258,6 +266,13 @@ function CombatText_OnEvent(event)
 		message = "<"..data..">";
 	elseif ( messageType == "COMBO_POINTS" ) then
 		message = format(COMBAT_TEXT_COMBO_POINTS, data);
+	elseif ( messageType == "RUNE" ) then
+		if ( arg2 == true ) then
+			local runeType = GetRuneType(arg1);
+			message = COMBAT_TEXT_RUNE[runeType];
+		else
+			message = nil;
+		end
 	else 
 		message = getglobal(messageType);
 		if ( not message ) then
@@ -461,6 +476,7 @@ function CombatText_UpdateDisplayedMessages()
 		CombatText:UnregisterEvent("PLAYER_REGEN_DISABLED");
 		CombatText:UnregisterEvent("PLAYER_REGEN_ENABLED");
 		CombatText:UnregisterEvent("PLAYER_COMBO_POINTS");
+		CombatText:UnregisterEvent("RUNE_POWER_UPDATE");
 		return;
 	else
 		CombatText:RegisterEvent("COMBAT_TEXT_UPDATE");
@@ -469,6 +485,7 @@ function CombatText_UpdateDisplayedMessages()
 		CombatText:RegisterEvent("PLAYER_REGEN_DISABLED");
 		CombatText:RegisterEvent("PLAYER_REGEN_ENABLED");
 		CombatText:RegisterEvent("PLAYER_COMBO_POINTS");
+		CombatText:RegisterEvent("RUNE_POWER_UPDATE");
 	end
 	-- Update shown messages
 	for index, value in pairs(COMBAT_TEXT_TYPE_INFO) do

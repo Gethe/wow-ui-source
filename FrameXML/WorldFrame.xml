@@ -22,7 +22,7 @@
 	<WorldFrame name="WorldFrame" movable="true" resizable="true" setAllPoints="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="FramerateLabel" hidden="true" inherits="SystemFont" text="FRAMERATE_LABEL">
+				<FontString name="FramerateLabel" hidden="true" inherits="SystemFont_Shadow_Med1" text="FRAMERATE_LABEL">
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="BOTTOM">
 							<Offset>
@@ -31,7 +31,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="FramerateText" hidden="true" inherits="SystemFont">
+				<FontString name="FramerateText" hidden="true" inherits="SystemFont_Shadow_Med1">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="FramerateLabel" relativePoint="RIGHT"/>
 					</Anchors>
@@ -42,7 +42,7 @@
 			<Frame name="ScreenshotStatus" setAllPoints="true" frameStrata="TOOLTIP" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="ScreenshotStatusText" inherits="SystemFont">
+						<FontString name="ScreenshotStatusText" inherits="SystemFont_Shadow_Med1">
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>

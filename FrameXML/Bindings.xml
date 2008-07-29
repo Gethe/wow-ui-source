@@ -86,6 +86,12 @@
 	<Binding name="TOGGLERUN">
 		ToggleRun();
 	</Binding>
+	<Binding name="PITCHINCREMENT">
+		PitchIncrement();
+	</Binding>
+	<Binding name="PITCHDECREMENT">
+		PitchDecrement();
+	</Binding>
 	<Binding name="FOLLOWTARGET">
 		FollowUnit("target");
 	</Binding>
@@ -361,6 +367,18 @@
 	<Binding name="TARGETPREVIOUSFRIEND">
 		TargetNearestFriend(1);	-- 1 (or "true") means reverse!
 	</Binding>
+  <Binding name="TARGETNEARESTENEMYPLAYER">
+    TargetNearestEnemyPlayer();
+  </Binding>
+  <Binding name="TARGETPREVIOUSENEMYPLAYER">
+    TargetNearestEnemyPlayer(1);	-- 1 (or "true") means reverse!
+  </Binding>
+  <Binding name="TARGETNEARESTFRIENDPLAYER">
+    TargetNearestFriendPlayer();
+  </Binding>
+  <Binding name="TARGETPREVIOUSFRIENDPLAYER">
+    TargetNearestFriendPlayer(1);	-- 1 (or "true") means reverse!
+  </Binding>
 	<Binding name="TARGETSELF">
 		if ( UnitIsUnit("player", "target") ) then
 			TargetUnit("pet");
@@ -1162,6 +1180,7 @@
 	<!-- Modified Click Actions -->
 	<ModifiedClick action="SELFCAST" default="ALT"/>
 	<ModifiedClick action="AUTOLOOTTOGGLE" default="SHIFT"/>
+  <ModifiedClick action="MAILAUTOLOOTTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="STICKYCAMERA" default="CTRL"/>
 	<ModifiedClick action="CHATLINK" default="SHIFT-BUTTON1"/>
 	<ModifiedClick action="DRESSUP" default="CTRL-BUTTON1"/>

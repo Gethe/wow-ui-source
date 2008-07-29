@@ -231,6 +231,22 @@ function InboxFrame_OnClick(index)
 	InboxFrame_Update();
 end
 
+function InboxFrame_OnModifiedClick(index)
+	local _, _, _, _, _, cod = GetInboxHeaderInfo(index);
+	if ( cod and (cod > GetMoney()) ) then
+		StaticPopup_Show("COD_ALERT");
+	elseif(cod > 0) then
+		OpenMailFrame.cod = cod;
+		local dialog = StaticPopup_Show("COD_CONFIRMATION_AUTO_LOOT");
+		if(dialog) then
+			dialog.data = index;
+		end
+	else
+		AutoLootMailItem(index);
+	end
+	this:SetChecked(false);
+end
+
 function InboxFrameItem_OnEnter()
 	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 	if ( this.hasItem ) then

@@ -74,9 +74,9 @@
 						ConvertToRaid();
 					</OnClick>
 				</Scripts>
-				<NormalFont inherits="GameFontNormalSmall"/>
-				<HighlightFont inherits="GameFontHighlightSmall"/>
-				<DisabledFont inherits="GameFontDisableSmall"/>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
 			<Button name="RaidFrameRaidInfoButton" inherits="UIPanelButtonTemplate" text="RAID_INFO">
 				<Size>
@@ -98,9 +98,9 @@
 						end
 					</OnClick>
 				</Scripts>
-				<NormalFont inherits="GameFontNormalSmall"/>
-				<HighlightFont inherits="GameFontHighlightSmall"/>
-				<DisabledFont inherits="GameFontDisableSmall"/>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
 			<Frame name="RaidInfoFrame" enableMouse="true" hidden="true">
 				<Size>

@@ -50,9 +50,9 @@
 				</Anchor>
 			</Anchors> 
 		</ButtonText>
-		<NormalFont inherits="GameFontNormal" justifyH="LEFT"/>
-		<HighlightFont inherits="GameFontHighlight" justifyH="LEFT"/>
-		<DisabledFont inherits="GameFontHighlight" justifyH="LEFT"/>
+		<NormalFont style="GameFontNormalLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
+		<DisabledFont style="GameFontHighlightLeft"/>
 	</Button>
 	<StatusBar name="ReputationBarTemplate" virtual="true" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
 		<Size>

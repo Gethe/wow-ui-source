@@ -22,8 +22,8 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<NormalFont inherits="GameFontDisable"/>
-		<HighlightFont inherits="GameFontHighlight"/>
+		<NormalFont style="GameFontDisable"/>
+		<HighlightFont style="GameFontHighlight"/>
 	</Button>
 	<Frame name="CombatLogQuickButtonFrame_Custom" parent="ChatFrame2" hidden="false">
 		<Size>

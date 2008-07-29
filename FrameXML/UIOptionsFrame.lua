@@ -1,7 +1,7 @@
 -- Note: If you're looking to modify any of the actual interface options, you probably want UIOptionsPanels.lua
 
 local blizzardCategories = {};
-local addOnCategories = {};
+INTERFACEOPTIONS_ADDONCATEGORIES = {};
 
 function InterfaceOptionsFrameCancel_OnClick ()
 	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
@@ -10,7 +10,7 @@ function InterfaceOptionsFrameCancel_OnClick ()
 		securecall("pcall", category.cancel, category);
 	end
 	
-	for _, category in next, addOnCategories do
+	for _, category in next, INTERFACEOPTIONS_ADDONCATEGORIES do
 		securecall("pcall", category.cancel, category);
 	end
 			
@@ -24,7 +24,7 @@ function InterfaceOptionsFrameOkay_OnClick ()
 		securecall("pcall", category.okay, category);
 	end
 	
-	for _, category in next, addOnCategories do
+	for _, category in next, INTERFACEOPTIONS_ADDONCATEGORIES do
 		securecall("pcall", category.okay, category);
 	end
 
@@ -42,7 +42,7 @@ function InterfaceOptionsFrame_SetAllToDefaults ()
 		securecall("pcall", category.default, category);
 	end
 	
-	for _, category in next, addOnCategories do
+	for _, category in next, INTERFACEOPTIONS_ADDONCATEGORIES do
 		securecall("pcall", category.default, category);
 	end
 	
@@ -120,7 +120,7 @@ uvarInfo = {
 	["AUTO_QUEST_WATCH"] = { default = "1", cvar = "autoQuestWatch", event = "AUTO_QUEST_WATCH_TEXT" },
 	["LOOT_UNDER_MOUSE"] = { default = "0", cvar = "lootUnderMouse", event = "LOOT_UNDER_MOUSE_TEXT" },
 	["AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "autoLootDefault", event = "AUTO_LOOT_DEFAULT_TEXT" },
-	
+	["MAIL_AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "mailAutoLootDefault", event = "MAIL_AUTO_LOOT_DEFAULT_TEXT" },
 	["SHOW_COMBAT_TEXT"] = { default = "0", cvar = "enableCombatText", event = "SHOW_COMBAT_TEXT_TEXT" },
 	["COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"] = { default = "0", cvar = "fctLowManaHealth", event = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
 	["COMBAT_TEXT_SHOW_AURAS"] = { default = "0", cvar = "fctAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
@@ -190,7 +190,7 @@ function InterfaceOptionsFrame_OpenToFrame (frame)
 	end
 	
 	if ( not elementToDisplay ) then
-		for i, element in next, addOnCategories do
+		for i, element in next, INTERFACEOPTIONS_ADDONCATEGORIES do
 			if ( element == frame or (frameName and element.name and element.name == frameName) ) then
 				elementToDisplay = element;
 				break;
@@ -326,7 +326,7 @@ function InterfaceAddOnsList_Update ()
 		displayedElements[i] = nil;
 	end
 	
-	for i, element in next, addOnCategories do
+	for i, element in next, INTERFACEOPTIONS_ADDONCATEGORIES do
 		if ( not element.hidden ) then
 			tinsert(displayedElements, element);
 		end
@@ -596,26 +596,46 @@ function InterfaceOptions_AddCategory (frame, addOn)
 		frame.cancel = frame.cancel or function () end;
 		frame.default = frame.default or function () end;
 		
+		local categories = INTERFACEOPTIONS_ADDONCATEGORIES;
+		
+		local name = strlower(frame.name);
 		local parent = frame.parent;
 		if ( parent ) then
-			for i = 1, #addOnCategories do
-				if ( addOnCategories[i].name == parent ) then
-					if ( addOnCategories[i].hasChildren ) then
-						frame.hidden = ( addOnCategories[i].collapsed );
-					else
+			for i = 1, #categories do
+				if ( categories[i].name == parent ) then
+					if ( not categories[i].hasChildren ) then
 						frame.hidden = true;
-						addOnCategories[i].hasChildren = true;
-						addOnCategories[i].collapsed = true;
+						categories[i].hasChildren = true;
+						categories[i].collapsed = true;
+						tinsert(categories, i + 1, frame);
+						InterfaceAddOnsList_Update();
+						return;						
 					end
-					addOnCategories[i].hasChildren = true;
-					tinsert(addOnCategories, i + 1, frame);
+					
+					frame.hidden = ( categories[i].collapsed );
+					
+					local j = i + 1;
+					while ( categories[j] and categories[j].parent == parent ) do
+						-- Skip to the end of the list of children, add this there.
+						j = j + 1;
+					end
+					
+					tinsert(categories, j, frame);
 					InterfaceAddOnsList_Update();
 					return;
 				end
 			end
 		end
 		
-		tinsert(addOnCategories, frame);
+		for i = 1, #categories do
+			if ( ( not categories[i].parent ) and ( name < strlower(categories[i].name) ) ) then
+				tinsert(categories, i, frame);
+				InterfaceAddOnsList_Update();
+				return;
+			end
+		end
+					
+		tinsert(categories, frame);
 		InterfaceAddOnsList_Update();
 	end
 end
@@ -636,7 +656,7 @@ function InterfaceOptions_ToggleSubCategories (button)
 		end
 	end
 
-	for _, category in next, addOnCategories do
+	for _, category in next, INTERFACEOPTIONS_ADDONCATEGORIES do
 		if ( category.parent == element.name ) then
 			if ( collapsed ) then
 				category.hidden = true;

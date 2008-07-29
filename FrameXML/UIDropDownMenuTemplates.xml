@@ -148,9 +148,9 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
-		<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
-		<DisabledFont inherits="GameFontDisableSmall" justifyH="LEFT"/>
+		<NormalFont style="GameFontHighlightSmallLeft"/>
+		<HighlightFont style="GameFontHighlightSmallLeft"/>
+		<DisabledFont style="GameFontDisableSmallLeft"/>
 	</Button>
 	<Button name="UIDropDownListTemplate" hidden="true" frameStrata="DIALOG" enableMouse="true" virtual="true">
 		<Frames>

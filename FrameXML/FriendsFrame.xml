@@ -296,7 +296,7 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontHighlightSmall"/>
+		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parentLeft">
@@ -536,7 +536,7 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontHighlightSmall"/>
+		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parentLeft">
@@ -626,8 +626,8 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontNormalSmall"/>
-		<HighlightFont inherits="GameFontHighlightSmall"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parentBackground">
@@ -2779,7 +2779,7 @@
 								</Anchor>
 							</Anchors>
 						</ButtonText>
-						<NormalFont inherits="GameFontNormalSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
 						<PushedTextOffset>
 							<AbsDimension x="0" y="0"/>
 						</PushedTextOffset>
@@ -2813,9 +2813,9 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildFrameAddMemberButton" inherits="UIPanelButtonTemplate" text="ADDMEMBER">
 						<Size>
@@ -2839,9 +2839,9 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildFrameGuildInformationButton" inherits="UIPanelButtonTemplate" text="GUILD_INFORMATION">
 						<Size>
@@ -2865,9 +2865,9 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildMOTDEditButton">
 						<Anchors>
@@ -3748,9 +3748,9 @@
 								GuildInfoFrame:Hide();
 							</OnClick>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildInfoCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 						<Size>
@@ -3768,9 +3768,9 @@
 								GuildInfoFrame:Hide();
 							</OnClick>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildInfoGuildEventButton" inherits="UIPanelButtonTemplate" text="GUILD_EVENT_LOG">
 						<Size>
@@ -3786,9 +3786,9 @@
 								ToggleGuildEventLog();
 							</OnClick>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 				</Frames>
 				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
@@ -3981,9 +3981,9 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildMemberGroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
 						<Size>
@@ -4007,9 +4007,9 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 					<Button name="GuildFramePromoteButton">
 						<Size>
@@ -4288,9 +4288,9 @@
 								GuildEventLogFrame:Hide();
 							</OnClick>
 						</Scripts>
-						<NormalFont inherits="GameFontNormalSmall"/>
-						<HighlightFont inherits="GameFontHighlightSmall"/>
-						<DisabledFont inherits="GameFontDisableSmall"/>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 				</Frames>
 				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">

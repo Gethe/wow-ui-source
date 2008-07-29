@@ -13,9 +13,15 @@ ControlsPanelOptions = {
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
 	autoLootDefault = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text="AUTO_LOOT_KEY_TEXT", default="NONE" },
+	mailAutoLootDefault = { text = "MAIL_AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetMailAutoLootDefault needs to get run with its value.
+	mailAutoLootKey = { text="MAIL_AUTO_LOOT_KEY_TEXT", default="NONE" },
 }
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad()
+
+end
+
+function InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnLoad()
 
 end
 
@@ -49,8 +55,42 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, 
 	end
 end
 
+function InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+		UIDropDownMenu_Initialize(this, InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(this, GetModifiedClick("MAILAUTOLOOTTOGGLE"));
+		self.defaultValue = "NONE";
+		self.currValue = GetModifiedClick("MAILAUTOLOOTTOGGLE");
+		self.value = this.currValue;
+		InterfaceOptionsControlsPanelMailAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_MAIL_AUTO_LOOT_"..self.value.."_KEY");
+		UIDropDownMenu_SetWidth(90, InterfaceOptionsControlsPanelMailAutoLootKeyDropDown);
+		self.SetValue = 
+			function (self, value) 
+				self.value = value;
+				UIDropDownMenu_SetSelectedValue(self, value);
+				SetModifiedClick("MAILAUTOLOOTTOGGLE", value);
+				SaveBindings(GetCurrentBindingSet());
+				InterfaceOptionsControlsPanelMailAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_MAIL_AUTO_LOOT_"..value.."_KEY");	
+			end;
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		if ( GetCVar("mailAutoLootDefault") == "1" ) then
+			InterfaceOptionsControlsPanelMailAutoLootKeyDropDownLabel:SetText(MAIL_LOOT_KEY_TEXT);
+		else
+			InterfaceOptionsControlsPanelMailAutoLootKeyDropDownLabel:SetText(MAIL_AUTO_LOOT_KEY_TEXT);
+		end
+	end
+end
+
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnClick()
 	InterfaceOptionsControlsPanelAutoLootKeyDropDown:SetValue(this.value);
+end
+
+function InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnClick()
+	InterfaceOptionsControlsPanelMailAutoLootKeyDropDown:SetValue(this.value);
 end
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_Initialize()
@@ -106,6 +146,59 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
+function InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsControlsPanelMailAutoLootKeyDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = ALT_KEY;
+	info.func = InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnClick;
+	info.value = "ALT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = ALT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MAIL_AUTO_LOOT_ALT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CTRL_KEY;
+	info.func = InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnClick;
+	info.value = "CTRL";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CTRL_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MAIL_AUTO_LOOT_CTRL_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = SHIFT_KEY;
+	info.func = InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnClick;
+	info.value = "SHIFT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = SHIFT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MAIL_AUTO_LOOT_SHIFT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = NONE_KEY;
+	info.func = InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnClick;
+	info.value = "NONE";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NONE_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MAIL_AUTO_LOOT_NONE_KEY;
+	UIDropDownMenu_AddButton(info);
+end
+
 function BlizzardOptionsPanel_UpdateAutoLootDropDown (value)
 	if ( not InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel ) then
 		return;
@@ -115,6 +208,18 @@ function BlizzardOptionsPanel_UpdateAutoLootDropDown (value)
 		InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(LOOT_KEY_TEXT);
 	else
 		InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(AUTO_LOOT_KEY_TEXT);
+	end
+end
+
+function BlizzardOptionsPanel_UpdateMailAutoLootDropDown (value)
+	if ( not InterfaceOptionsControlsPanelMailAutoLootKeyDropDownLabel ) then
+		return;
+	end
+	
+	if ( value == "1" ) then
+		InterfaceOptionsControlsPanelMailAutoLootKeyDropDownLabel:SetText(MAIL_LOOT_KEY_TEXT);
+	else
+		InterfaceOptionsControlsPanelMailAutoLootKeyDropDownLabel:SetText(MAIL_AUTO_LOOT_KEY_TEXT);
 	end
 end
 
@@ -228,7 +333,23 @@ DisplayPanelOptions = {
 	screenEdgeFlash = { text = "SHOW_FULLSCREEN_STATUS_TEXT" },
 	showLootSpam = { text = "SHOW_LOOT_SPAM" },
 	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS" },
+	showTimeManager = { text = "SHOW_TIME_MANAGER" },
 }
+
+function InterfaceOptionsDisplayPanelShowTimeManager_SetFunc(value)
+	if ( value == "1" ) then
+		if ( not IsAddOnLoaded("Blizzard_TimeManager") ) then
+			UIParentLoadAddOn("Blizzard_TimeManager");
+		end
+		if ( TimeManager_Show ) then
+			TimeManager_Show();
+		end
+	else
+		if ( TimeManager_Hide ) then
+			TimeManager_Hide();
+		end
+	end
+end
 
 function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad (self)
 	UIDropDownMenu_Initialize(InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay, InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_Initialize);
@@ -378,8 +499,8 @@ function InterfaceOptionsActionBarsPanel_OnEvent (self, event, ...)
 		MultiActionBar_Update();
 		UIParent_ManageFramePositions();
 
-		
 		BlizzardOptionsPanel_OnEvent(self, event, ...);
+		self:UnregisterEvent(event);
 	end
 end
 

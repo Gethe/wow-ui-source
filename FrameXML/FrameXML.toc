@@ -3,7 +3,10 @@
 GlobalStrings.lua
 Constants.lua
 Fonts.xml
+FontStyles.xml
 Localization.xml
+## add new modules below here
+
 BasicControls.xml
 WorldFrame.xml
 UIParent.xml
@@ -113,5 +116,7 @@ RuneFrame.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 UIOptionsPanels.xml
-LocalizationPost.xml
 MovieFrame.xml
+
+## add new modules above here
+LocalizationPost.xml

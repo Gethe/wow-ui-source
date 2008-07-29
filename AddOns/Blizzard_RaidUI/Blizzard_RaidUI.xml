@@ -373,8 +373,8 @@
 						RaidPulloutStopMoving();
 					</OnHide>
 				</Scripts>
-				<NormalFont inherits="GameFontNormalSmall"/>
-				<HighlightFont inherits="GameFontHighlightSmall"/>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
 			</Button>
 			<Button name="$parentSlot1" inherits="RaidGroupSlotTemplate">
 				<Anchors>
@@ -925,9 +925,9 @@
 				end
 			</OnClick>
 		</Scripts>
-		<NormalFont inherits="GameFontNormalSmall"/>
-		<HighlightFont inherits="GameFontHighlightSmall"/>
-		<DisabledFont inherits="GameFontDisableSmall"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
 	<Button name="RaidFrameReadyCheckButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="READY_CHECK">
 		<Size>
@@ -945,9 +945,9 @@
 				DoReadyCheck();
 			</OnClick>
 		</Scripts>
-		<NormalFont inherits="GameFontNormalSmall"/>
-		<HighlightFont inherits="GameFontHighlightSmall"/>
-		<DisabledFont inherits="GameFontDisableSmall"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
 	<Button name="RaidClassButton13"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="13">
 		<Anchors>

@@ -18,6 +18,9 @@ function ToggleMinimap()
 		PlaySound("igMiniMapOpen");
 		Minimap:Show();
 	end
+	if ( TimeManagerClockButton_AdjustPosition ) then
+		TimeManagerClockButton_AdjustPosition();
+	end
 	UpdateUIPanelPositions();
 end
 

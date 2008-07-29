@@ -416,9 +416,9 @@
 						end
 					</OnMouseUp>
 				</Scripts>
-				<NormalFont name="$parentText" inherits="GameFontNormal"/>
-				<DisabledFont inherits="GameFontDisable"/>
-				<HighlightFont inherits="GameFontHighlight"/>
+				<NormalFont style="GameFontNormal"/>
+				<DisabledFont style="GameFontDisable"/>
+				<HighlightFont style="GameFontHighlight"/>
 				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 			</Button>
 			<Button name="ItemSocketingCloseButton" inherits="UIPanelCloseButton">

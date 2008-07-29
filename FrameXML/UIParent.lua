@@ -39,7 +39,6 @@ UIPanelWindows["GuildRegistrarFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["ArenaRegistrarFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["PetitionFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["HelpFrame"] =			{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["KnowledgeBaseFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["GossipFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["MailFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0 };
@@ -2424,6 +2423,8 @@ function ToggleGameMenu()
 		end
 	elseif ( InterfaceOptionsFrame:IsShown() ) then
 		InterfaceOptionsFrameCancel:Click();
+	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
+		TimeManagerCloseButton:Click();
 	elseif ( securecall("CloseMenus") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
