@@ -113,7 +113,7 @@ function SoundOptionsFrame_Cancel()
 		UIDropDownMenu_SetSelectedValue(SoundOptionsOutputDropDown, SoundOptionsOutputDropDown.initialValue);
 		UIDropDownMenu_SetText(SoundOptionsOutputDropDown, SoundOptionsOutputDropDown.initialText);
 		if ( currentIndex ~= SoundOptionsOutputDropDown.initialValue ) then
-			Sound_RestartSoundEngine();
+			AudioOptionsFrame_RestartEngine();
 		end
 		SoundOptionsOutputDropDown.initialValue = nil;
 		SoundOptionsOutputDropDown.initialText = nil;

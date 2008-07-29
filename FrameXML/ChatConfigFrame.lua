@@ -669,11 +669,7 @@ end
 
 function ChatConfigFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		-- This code should be removed after 2.4.2
-		if ( Blizzard_CombatLog_Filter_Version == 4 ) then
-			Blizzard_CombatLog_Filter_Compatibility(4, 4.1);
-			Blizzard_CombatLog_Filter_Version = 4.1;
-		elseif ( COMBATLOG_FILTER_VERSION and COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
+		if ( COMBATLOG_FILTER_VERSION and COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
 			CombatConfig_SetCombatFiltersToDefault();
 			Blizzard_CombatLog_Filter_Version = COMBATLOG_FILTER_VERSION;
 		end
@@ -1010,6 +1006,10 @@ function ChatConfig_UpdateTieredCheckboxes(frame, index)
 end
 
 function CombatConfig_Colorize_Update()
+	if ( not CHATCONFIG_SELECTED_FILTER_SETTINGS ) then
+		return;
+	end
+	
 	CombatConfigColorsColorizeUnitNameCheck:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.unitColoring);
 	
 	-- Spell Names

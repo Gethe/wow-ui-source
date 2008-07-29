@@ -94,7 +94,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Scripts>
 	</Frame>
 
-	<Frame name="MetaCriteriaTemplate" virtual="true">
+	<Button name="MetaCriteriaTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="30" y="30"/>
 		</Size>
@@ -107,7 +107,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="7" y="-7"/>
+								<AbsDimension x="6" y="-6"/>
 							</Offset>
 						</Anchor>
 						<Anchor point="BOTTOMRIGHT">
@@ -171,8 +171,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnClick>
+				if ( self.id ) then
+					AchievementFrame_SelectAchievement(self.id);
+				end
+			</OnClick>
 		</Scripts>
-	</Frame>
+	</Button>
 	
 	<StatusBar name="AchievementProgressBarTemplate" virtual="true">
 		<Size>
@@ -588,11 +593,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<AbsDimension x="60" y="14"/>
 					</Size>
 				</FontString>
-				<FontString name="$parentReward" inherits="GameFontNormalSmall" text="Title Reward: |CFFFFFFFFDefender of the Alliance" justifyv="TOP" hidden="true">
+				<FontString name="$parentReward" inherits="GameFontNormalSmall" justifyv="TOP" hidden="true">
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentRewardBackground" relativePoint="TOP">
 							<Offset>
-								<AbsDimension x="0" y="-3"/>
+								<AbsDimension x="0" y="-4"/>
 							</Offset>
 						</Anchor>
 					</Anchors>		
@@ -611,6 +616,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Size>
 						<AbsDimension x="0" y="0"/>
 					</Size>
+					<Color r="1" g="1" b="1" a="1"/>
 				</FontString>
 				<FontString name="$parentHiddenDescription" inherits="AchievementDescriptionEnabledFont" hidden="true" justifyv="TOP">
 					<Anchors>
@@ -627,19 +633,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<AbsDimension x="0" y="0"/>
 					</Size>
 				</FontString>
-				<Texture name="$parentCheck" file="Interface\AchievementFrame\UI-Achievement-Criteria-Check">
-					<Size>
-						<AbsDimension x="20" y="16"/>
-					</Size>
-					<TexCoords left="0" right="0.65625" top="0" bottom="1"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentDescription" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -904,8 +897,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<NormalFont style="GameFontHighlightLeft"/>
 		<Scripts>
 			<OnLoad>
-				AchievementStatTemplate_OnLoad(self, AchievementFrameStats);
+				AchievementStatButton_OnLoad(self, AchievementFrameStats);
 			</OnLoad>
+			<OnClick>
+				AchievementStatButton_OnClick(self);
+			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" alphaMode="ADD">
 			<TexCoords left="0" right="1" top="0.5546875" bottom="0.7265625"/>
@@ -915,7 +911,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	<Button name="SummaryStatTemplate" inherits="StatTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				AchievementStatTemplate_OnLoad(self, AchievementFrameSummaryStats);
+				AchievementStatButton_OnLoad(self, AchievementFrameSummaryStats);
 			</OnLoad>
 		</Scripts>
 	</Button>
@@ -1768,14 +1764,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								</Texture>
 								<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
 									<Size>
-										<AbsDimension x="239" y="48"/>
+										<AbsDimension x="237" y="48"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
 											<Offset x="0" y="0"/>
 										</Anchor>
 									</Anchors>
-									<TexCoords left="0" right="0.466796875" top="0.79296875" bottom="0.98046875"/>
+									<TexCoords right="0.423828125" left="0.889224609375" bottom="0.75" top="0.56640625"/>
 								</Texture>
 							</Layer>
 							<Layer level="BACKGROUND">
@@ -2056,8 +2052,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						getglobal(self:GetName() .. "LeftDisabled"):SetPoint("TOPLEFT", 0, 0);
 					</OnLoad>
 					<OnClick>
-						PanelTemplates_Tab_OnClick(self, AchievementFrame);
-						AchievementFrameTab_OnClick(self);
+						AchievementFrameTab_OnClick(self:GetID());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -2074,8 +2069,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						getglobal(self:GetName() .. "LeftDisabled"):SetPoint("TOPLEFT", 0, 0);
 					</OnLoad>
 					<OnClick>
-						PanelTemplates_Tab_OnClick(self, AchievementFrame);
-						AchievementFrameTab_OnClick(self);
+						AchievementFrameTab_OnClick(self:GetID());
 					</OnClick>
 				</Scripts>				
 			</Button>			

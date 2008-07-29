@@ -100,7 +100,7 @@ function CombatText_OnEvent(self, event, ...)
 	-- Set the message data
 	local displayType;
 
-	if ( event == "UNIT_ENTER_VEHICLE" ) then
+	if ( event == "UNIT_ENTERED_VEHICLE" ) then
 		local unit, showVehicle = ...;
 		if ( unit == "player" ) then
 			if ( showVehicle ) then
@@ -111,7 +111,7 @@ function CombatText_OnEvent(self, event, ...)
 			CombatTextSetActiveUnit(self.unit);
 		end
 		return;
-	elseif ( event == "UNIT_LEAVE_VEHICLE" ) then
+	elseif ( event == "UNIT_EXITING_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			self.unit = "player";
 			CombatTextSetActiveUnit(self.unit);
@@ -495,8 +495,8 @@ function CombatText_UpdateDisplayedMessages()
 		CombatText:UnregisterEvent("PLAYER_REGEN_ENABLED");
 		CombatText:UnregisterEvent("PLAYER_COMBO_POINTS");
 		CombatText:UnregisterEvent("RUNE_POWER_UPDATE");
-		CombatText:UnregisterEvent("UNIT_ENTER_VEHICLE");
-		CombatText:UnregisterEvent("UNIT_LEAVE_VEHICLE");
+		CombatText:UnregisterEvent("UNIT_ENTERED_VEHICLE");
+		CombatText:UnregisterEvent("UNIT_EXITING_VEHICLE");
 		return;
 	end
 
@@ -516,8 +516,8 @@ function CombatText_UpdateDisplayedMessages()
 	CombatText:RegisterEvent("PLAYER_REGEN_ENABLED");
 	CombatText:RegisterEvent("PLAYER_COMBO_POINTS");
 	CombatText:RegisterEvent("RUNE_POWER_UPDATE");
-	CombatText:RegisterEvent("UNIT_ENTER_VEHICLE");
-	CombatText:RegisterEvent("UNIT_LEAVE_VEHICLE");
+	CombatText:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	CombatText:RegisterEvent("UNIT_EXITING_VEHICLE");
 
 	-- Get scale
 	COMBAT_TEXT_Y_SCALE = WorldFrame:GetHeight() / 768;

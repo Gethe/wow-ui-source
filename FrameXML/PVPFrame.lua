@@ -61,6 +61,13 @@ end
 function PVPFrame_OnShow()
 	PVPFrame_SetFaction();
 	PVPFrame_Update();
+	PVPMicroButton_SetPushed();
+	SetPortraitTexture(PVPFramePortrait, "player");
+end
+
+function PVPFrame_OnHide()
+	PVPTeamDetails:Hide();
+	PVPMicroButton_SetNormal();
 end
 
 function PVPFrame_SetFaction()
@@ -77,10 +84,6 @@ function PVPFrame_Update()
 	end	
 	PVPHonor_Update();
 	PVPTeam_Update();
-end
-
-function PVPFrame_OnHide()
-	PVPTeamDetails:Hide();
 end
 
 function PVPTeam_Update()
@@ -516,4 +519,14 @@ function PVPHonor_Update()
 	PVPHonorTodayKills:SetText(hk);
 	PVPHonorTodayHonor:SetText(cp);
 	PVPHonorTodayHonor:SetHeight(14);
+end
+
+function PVPMicroButton_SetPushed()
+	PVPMicroButtonTexture:SetPoint("TOP", PVPMicroButton, "TOP", 5, -31);
+	PVPMicroButtonTexture:SetAlpha(0.5);
+end
+
+function PVPMicroButton_SetNormal()
+	PVPMicroButtonTexture:SetPoint("TOP", PVPMicroButton, "TOP", 6, -30);
+	PVPMicroButtonTexture:SetAlpha(1.0);
 end

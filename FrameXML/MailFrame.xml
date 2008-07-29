@@ -859,11 +859,11 @@
 								self:HighlightText(0, 0);
 							</OnEditFocusLost>
 							<OnCharComposition>
-								SendMailFrame_SendeeAutocomplete(self);
+								PlayerNameAutocomplete(self);
 							</OnCharComposition>
 							<OnChar>
 								if ( not self:IsInIMECompositionMode() ) then
-									SendMailFrame_SendeeAutocomplete(self);
+									PlayerNameAutocomplete(self);
 								end
 							</OnChar>
 							<OnEnterPressed>

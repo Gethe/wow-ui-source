@@ -36,8 +36,8 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.portrait = portrait;
 	self.healthbar = healthbar;
 	self.manabar = manabar;
-	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext);
-	UnitFrameManaBar_Initialize(unit, manabar, manatext);
+	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
+	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player"));
 	UnitFrame_Update(self);
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
@@ -124,8 +124,8 @@ function UnitFrame_UpdateManaType (unitFrame)
 	local prefix = getglobal(powerToken);
 	local info = PowerBarColor[powerToken];
 	if ( not info ) then
-		-- couldn't find a power token entry...default to indexing by power type
-		info = PowerBarColor[powerType];
+		-- couldn't find a power token entry...default to indexing by power type or just mana if we don't have that either
+		info = PowerBarColor[powerType] or PowerBarColor["MANA"];
 	end
 	unitFrame.manabar:SetStatusBarColor(info.r, info.g, info.b);
 	--Hack for pets
@@ -148,14 +148,18 @@ function UnitFrame_UpdateManaType (unitFrame)
 	end
 end
 
-function UnitFrameHealthBar_Initialize (unit, statusbar, statustext)
+function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpdates)
 	if ( not statusbar ) then
 		return;
 	end
 
 	statusbar.unit = unit;
 	SetTextStatusBarText(statusbar, statustext);
-	statusbar:RegisterEvent("UNIT_HEALTH");
+	if ( GetCVarBool("predictedHealth") and frequentUpdates ) then
+		statusbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
+	else
+		statusbar:RegisterEvent("UNIT_HEALTH");
+	end
 	statusbar:RegisterEvent("UNIT_MAXHEALTH");
 	statusbar:SetScript("OnEvent", UnitFrameHealthBar_OnEvent);
 
@@ -177,35 +181,44 @@ function UnitFrameHealthBar_OnEvent(self, event, ...)
 	end
 end
 
+function UnitFrameHealthBar_OnUpdate(self)
+	if ( not self.disconnected ) then
+		local currValue = UnitHealth(self.unit);
+		if ( currValue ~= self.currValue ) then
+			self:SetValue(currValue);
+			self.currValue = currValue;
+			TextStatusBar_UpdateTextString(self);
+		end
+	end
+end
+
 function UnitFrameHealthBar_Update(statusbar, unit)
 	if ( not statusbar ) then
 		return;
 	end
 	
 	if ( unit == statusbar.unit ) then
-		local currValue = UnitHealth(unit);
 		local maxValue = UnitHealthMax(unit);
-
-		statusbar.showPercentage = nil;
 		
 		-- Safety check to make sure we never get an empty bar.
 		statusbar.forceHideText = false;
 		if ( maxValue == 0 ) then
 			maxValue = 1;
 			statusbar.forceHideText = true;
-		elseif ( maxValue == 100 ) then
-			--This should be displayed as percentage.
-			statusbar.showPercentage = true;
 		end
 
 		statusbar:SetMinMaxValues(0, maxValue);
 
-		if ( not UnitIsConnected(unit) ) then
+		statusbar.disconnected = not UnitIsConnected(unit);
+		if ( statusbar.disconnected ) then
 			statusbar:SetStatusBarColor(0.5, 0.5, 0.5);
 			statusbar:SetValue(maxValue);
+			statusbar.currValue = maxValue;
 		else
+			local currValue = UnitHealth(unit);
 			statusbar:SetStatusBarColor(0.0, 1.0, 0.0);
 			statusbar:SetValue(currValue);
+			statusbar.currValue = currValue;
 		end
 	end
 	TextStatusBar_UpdateTextString(statusbar);
@@ -216,18 +229,22 @@ function UnitFrameHealthBar_OnValueChanged(self, value)
 	HealthBar_OnValueChanged(self, value);
 end
 
-function UnitFrameManaBar_Initialize (unit, statusbar, statustext)
+function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdates)
 	if ( not statusbar ) then
 		return;
 	end
 	statusbar.unit = unit;
 	SetTextStatusBarText(statusbar, statustext);
-	statusbar:RegisterEvent("UNIT_MANA");
-	statusbar:RegisterEvent("UNIT_RAGE");
-	statusbar:RegisterEvent("UNIT_FOCUS");
-	statusbar:RegisterEvent("UNIT_ENERGY");
-	statusbar:RegisterEvent("UNIT_HAPPINESS");
-	statusbar:RegisterEvent("UNIT_RUNIC_POWER");
+	if ( GetCVarBool("predictedPower") and frequentUpdates ) then
+		statusbar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
+	else
+		statusbar:RegisterEvent("UNIT_MANA");
+		statusbar:RegisterEvent("UNIT_RAGE");
+		statusbar:RegisterEvent("UNIT_FOCUS");
+		statusbar:RegisterEvent("UNIT_ENERGY");
+		statusbar:RegisterEvent("UNIT_HAPPINESS");
+		statusbar:RegisterEvent("UNIT_RUNIC_POWER");
+	end
 	statusbar:RegisterEvent("UNIT_MAXMANA");
 	statusbar:RegisterEvent("UNIT_MAXRAGE");
 	statusbar:RegisterEvent("UNIT_MAXFOCUS");
@@ -246,6 +263,17 @@ function UnitFrameManaBar_OnEvent(self, event, ...)
 	end
 end
 
+function UnitFrameManaBar_OnUpdate(self)
+	if ( not self.disconnected ) then
+		local currValue = UnitMana(self.unit);
+		if ( currValue ~= self.currValue ) then
+			self:SetValue(currValue);
+			self.currValue = currValue;
+			TextStatusBar_UpdateTextString(self);
+		end
+	end
+end
+
 function UnitFrameManaBar_Update(statusbar, unit)
 	if ( not statusbar ) then
 		return;
@@ -256,14 +284,15 @@ function UnitFrameManaBar_Update(statusbar, unit)
 
 		statusbar:SetMinMaxValues(0, maxValue);
 
-		-- If disconnected
-
-		if ( not UnitIsConnected(unit) ) then
+		statusbar.disconnected = not UnitIsConnected(unit);
+		if ( statusbar.disconnected ) then
 			statusbar:SetValue(maxValue);
+			statusbar.currValue = maxValue;
 			statusbar:SetStatusBarColor(0.5, 0.5, 0.5);
 		else
 			local currValue = UnitMana(unit);
 			statusbar:SetValue(currValue);
+			statusbar.currValue = currValue;
 			UnitFrame_UpdateManaType(statusbar:GetParent());
 		end
 	end

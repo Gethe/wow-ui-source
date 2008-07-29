@@ -148,7 +148,7 @@
 					</OnLeave>
                 </Scripts>
             </Button>
-			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="PVP">
+			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="TOKENS">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="CharacterFrameTab4" relativePoint="RIGHT">
                         <Offset>
@@ -159,7 +159,7 @@
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
+						GameTooltip:SetText(MicroButtonTooltipText(TOKENS, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

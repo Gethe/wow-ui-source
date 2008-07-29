@@ -416,7 +416,7 @@ function WorldMapButton_OnClick(button, mouseButton)
 	elseif ( mouseButton == "RightButton" ) then
 		WorldMapZoomOutButton_OnClick();
 	elseif ( GetBindingFromClick(mouseButton) ==  "TOGGLEWORLDMAP") then
-		ToggleWorldMap();
+		ToggleFrame(WorldMapFrame);
 	end
 end
 
@@ -695,15 +695,6 @@ function WorldMapFrame_PingPlayerPosition()
 	--PlaySound("MapPing");
 	WorldMapPing.timer = 1;
 end
-
-function ToggleWorldMap()
-	if ( WorldMapFrame:IsShown() ) then
-		HideUIPanel(WorldMapFrame);
-	else
-		ShowUIPanel(WorldMapFrame);
-	end
-end
-
 
 -- UNIT DROPDOWN
 

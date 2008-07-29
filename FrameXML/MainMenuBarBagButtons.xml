@@ -15,6 +15,7 @@
 		</Scripts>
 	</Model>
 	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Size x="30" y="30"/>
 		<Frames>
 			<Model name="$parentItemAnim" inherits="ItemAnimTemplate">
 				<Anchors>
@@ -32,6 +33,8 @@
 				self:RegisterEvent("BAG_UPDATE");
 				self.isBag = 1;
 				self.UpdateTooltip = BagSlotButton_OnEnter;
+				getglobal(self:GetName().."NormalTexture"):SetWidth(50);
+				getglobal(self:GetName().."NormalTexture"):SetHeight(50);
 			</OnLoad>
 			<OnEvent>
 				if ( event == "BAG_UPDATE" ) then
@@ -141,7 +144,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag0Slot" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-5" y="0"/>
+					<AbsDimension x="-4" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -150,7 +153,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag1Slot" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-5" y="0"/>
+					<AbsDimension x="-4" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -159,7 +162,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-5" y="0"/>
+					<AbsDimension x="-4" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -169,7 +172,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag3Slot" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-5" y="0"/>
+					<AbsDimension x="-6" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

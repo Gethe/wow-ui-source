@@ -67,26 +67,30 @@ function BonusActionBar_OnUpdate(self, elapsed)
 	end
 end
 
-function ShowBonusActionBar ()
-	BonusActionBar_SetButtonTransitionState(nil);
-	if ( (BonusActionBarFrame.mode ~= "show" and BonusActionBarFrame.state ~= "top") or (not UIParent:IsShown())) then
-		BonusActionBarFrame:Show();
-		if ( BonusActionBarFrame.completed ) then
-			BonusActionBarFrame.slideTimer = 0;
+function ShowBonusActionBar (override)
+	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or override) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+		BonusActionBar_SetButtonTransitionState(nil);
+		if ( (BonusActionBarFrame.mode ~= "show") or (not UIParent:IsShown())) then
+			BonusActionBarFrame:Show();
+			if ( BonusActionBarFrame.completed ) then
+				BonusActionBarFrame.slideTimer = 0;
+			end
+			BonusActionBarFrame.timeToSlide = BONUSACTIONBAR_SLIDETIME;
+			BonusActionBarFrame.mode = "show";
 		end
-		BonusActionBarFrame.timeToSlide = BONUSACTIONBAR_SLIDETIME;
-		BonusActionBarFrame.mode = "show";
 	end
 end
 
-function HideBonusActionBar ()
-	if ( (BonusActionBarFrame:IsShown()) or (not UIParent:IsShown())) then
-		BonusActionBar_SetButtonTransitionState(1);
-		if ( BonusActionBarFrame.completed ) then
-			BonusActionBarFrame.slideTimer = 0;
+function HideBonusActionBar (override)
+	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or override) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+		if ( (BonusActionBarFrame:IsShown()) or (not UIParent:IsShown())) then
+			BonusActionBar_SetButtonTransitionState(1);
+			if ( BonusActionBarFrame.completed ) then
+				BonusActionBarFrame.slideTimer = 0;
+			end
+			BonusActionBarFrame.timeToSlide = BONUSACTIONBAR_SLIDETIME;
+			BonusActionBarFrame.mode = "hide";
 		end
-		BonusActionBarFrame.timeToSlide = BONUSACTIONBAR_SLIDETIME;
-		BonusActionBarFrame.mode = "hide";
 	end
 	
 end
@@ -113,12 +117,12 @@ function BonusActionBar_SetButtonTransitionState (self, state)
 end
 
 function ShapeshiftBar_OnLoad (self)
-	ShapeshiftBar_Update (self);
+	ShapeshiftBar_Update();
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS");
+	self:RegisterEvent("UPDATE_SHAPESHIFT_USABLE");
+	self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN");
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");	-- Wha?? Still Wha...
-	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-	self:RegisterEvent("SPELL_UPDATE_USABLE");
 	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 end
@@ -135,7 +139,7 @@ function ShapeshiftBar_OnEvent (self, event, ...)
 	else
 		if ( event == "UNIT_AURA" ) then
 			local unit = ...;
-			if ( unit ~= PlayerFrame.unit ) then
+			if ( unit ~= "player" ) then
 				return;
 			end
 		end
@@ -244,18 +248,20 @@ function PossessBar_OnEvent (self, event, ...)
 	end
 end
 
-function PossessBar_Update ()
-	if ( IsPossessBarVisible() ) then
-		PossessBarFrame:Show();
-		ShapeshiftBarFrame:Hide();
-	else
-		PossessBarFrame:Hide();
-		if(GetNumShapeshiftForms() > 0) then
-			ShapeshiftBarFrame:Show();
+function PossessBar_Update (override)
+	if ( (not MainMenuBar.busy and not UnitHasVehicleUI("player")) or override ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+		if ( IsPossessBarVisible() ) then
+			PossessBarFrame:Show();
+			ShapeshiftBarFrame:Hide();
+		else
+			PossessBarFrame:Hide();
+			if(GetNumShapeshiftForms() > 0) then
+				ShapeshiftBarFrame:Show();
+			end
 		end
+		PossessBar_UpdateState();
+		UIParent_ManageFramePositions();
 	end
-	PossessBar_UpdateState();
-	UIParent_ManageFramePositions();
 end
 
 function PossessBar_UpdateState ()

@@ -512,7 +512,7 @@
 						<Size x="10" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="-50"/>
+								<Offset x="0" y="-30"/>
 							</Anchor>
 						</Anchors>
 					</Frame>

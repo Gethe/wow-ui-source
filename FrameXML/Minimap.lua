@@ -325,9 +325,9 @@ function MiniMapTrackingShineFadeIn()
 	fadeInfo.mode = "IN";
 	fadeInfo.timeToFade = 0.5;
 	fadeInfo.finishedFunc = MiniMapTrackingShineFadeOut;
-	UIFrameFade(MiniMapTrackingShine, fadeInfo);
+	UIFrameFade(MiniMapTrackingButtonShine, fadeInfo);
 end
 
 function MiniMapTrackingShineFadeOut()
-	UIFrameFadeOut(MiniMapTrackingShine, 0.5);
+	UIFrameFadeOut(MiniMapTrackingButtonShine, 0.5);
 end

@@ -1,4 +1,5 @@
 REQUIRED_REST_HOURS = 5;
+local PVP_COUNTDOWN_TIME = 300000;
 
 function PlayerFrame_OnLoad(self)
 	self.statusCounter = 0;
@@ -24,8 +25,8 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
-	self:RegisterEvent("UNIT_ENTER_VEHICLE");
-	self:RegisterEvent("UNIT_LEAVE_VEHICLE");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_EXITING_VEHICLE");
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
 
@@ -174,7 +175,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 		ReadyCheck_Finish(PlayerFrameReadyCheck);
 	elseif ( event == "UNIT_RUNIC_POWER" and arg1 == "player" ) then
 		PlayerFrame_SetRunicPower(UnitMana("player"));
-	elseif ( event == "UNIT_ENTER_VEHICLE" ) then
+	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			local showVehicle = arg2;
 			if ( showVehicle ) then
@@ -188,7 +189,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 			end
 			BuffFrame_Update();
 		end
-	elseif ( event == "UNIT_LEAVE_VEHICLE" ) then
+	elseif ( event == "UNIT_EXITING_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
 			PlayerFrame_Update();
@@ -242,6 +243,17 @@ function PlayerFrame_OnUpdate (self, elapsed)
 		end
 		PlayerStatusTexture:SetAlpha(alpha);
 		PlayerStatusGlow:SetAlpha(alpha);
+	end
+	local timeLeft = GetPVPTimer()
+	if ( timeLeft > 0 and timeLeft < PVP_COUNTDOWN_TIME) then
+		if ( not PlayerPVPTimerText:IsShown() ) then
+			PlayerPVPTimerText:Show();
+		end
+		PlayerPVPTimerText:SetFormattedText(SecondsToTimeAbbrev(floor(timeLeft/1000)));
+	else
+		if ( PlayerPVPTimerText:IsShown() ) then
+			PlayerPVPTimerText:Hide();
+		end
 	end
 	CombatFeedback_OnUpdate(self, elapsed);
 end

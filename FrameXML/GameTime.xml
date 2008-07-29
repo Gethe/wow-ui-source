@@ -18,15 +18,20 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="GameTimeTexture" file="Interface\Minimap\UI-TOD-Indicator" hidden="true"/>
-				<Texture name="GameTimeCalendarTexture" file="Interface\Calendar\UI-Calendar-Button">
-					<TexCoords left="0.0" right="0.390625" top="0.0" bottom="0.78125"/>
-				</Texture>
 				<Texture name="GameTimeCalendarInvitesTexture" file="Interface\Calendar\EventNotification" hidden="true">
 					<Size x="35" y="40"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 					<TexCoords left="0.03125" right="0.6484375" top="0.03125" bottom="0.8671875"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="GameTimeCalendarEventAlarmTexture" file="Interface\Calendar\UI-Calendar-Button-Glow" alphaMode="ADD" hidden="true">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -50,5 +55,12 @@
 				GameTimeFrame_OnClick(self);
 			</OnClick>
 		</Scripts>
+		<NormalTexture file="Interface\Calendar\UI-Calendar-Button">
+			<TexCoords left="0.0" right="0.390625" top="0.0" bottom="0.78125"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\Calendar\UI-Calendar-Button">
+			<TexCoords left="0.5" right="0.890625" top="0.0" bottom="0.78125"/>
+		</PushedTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 	</Button>
 </Ui>

@@ -323,8 +323,10 @@ end
 
 local function ACTION_visibility(frame, value)
     if (value) then
+        frame:SetAttribute("statehidden", nil);
         frame:Show();
     else
+        frame:SetAttribute("statehidden", true);
         frame:Hide();
     end
 end

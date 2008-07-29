@@ -2,12 +2,36 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PVPFrame.lua"/>
 	<Include file="PVPFrameTemplates.xml"/>
-	<Frame name="PVPFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true" id="5">
+	<Frame name="PVPFrame" enableMouse="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+ 			<Anchor point="TOPLEFT">
+ 				<Offset>
+ 					<AbsDimension x="0" y="-104"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="75"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<Texture name="PVPFramePortrait">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="9" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+			</Layer>
+			<Layer level="BORDER">
 				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
@@ -57,7 +81,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
+			<Layer level="ARTWORK">
 				<Texture name="$parentBackground" file="Interface\PVPFrame\UI-Character-PVP">
 					<Size>
 						<AbsDimension x="512" y="512"/>
@@ -73,6 +97,15 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                   <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-29" y="-9"/>
+						</Offset>
+					</Anchor>
+                </Anchors>
+            </Button>
 			<Frame name="$parentHonor" hidden="false">
 				<Size x="300" y="20"/>
 				<Anchors>

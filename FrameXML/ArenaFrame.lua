@@ -51,10 +51,6 @@ function ArenaFrame_Update (self)
 	ARENA_TEAMS[2] = {size = 3};
 	ARENA_TEAMS[3] = {size = 5};
 	
-	-- This is a magic number. #ARENA_TEAMS is a slow operation. If the size of ARENA_TEAMS changes, update this.
-	local numArenaTeams = 3;
-	
-	
 	local button, battleType, teamSize;
 	
 	for i=1, MAX_ARENA_BATTLES, 1 do
@@ -62,8 +58,8 @@ function ArenaFrame_Update (self)
 		battleType = ARENA_RATED;
 		teamSize = i;
 		-- if buttons begin a second set of buttons for casual games, change text elements.
-		if ( i > numArenaTeams ) then
-			teamSize = teamSize - numArenaTeams;
+		if ( i > MAX_ARENA_TEAMS ) then
+			teamSize = teamSize - MAX_ARENA_TEAMS;
 			battleType = ARENA_CASUAL;
 		end
 		-- build text string to populate each element.
@@ -76,7 +72,7 @@ function ArenaFrame_Update (self)
 		end
 	end
 
-	if ( ArenaFrame.selection > numArenaTeams ) then
+	if ( ArenaFrame.selection > MAX_ARENA_TEAMS ) then
 		ArenaFrameJoinButton:Enable();
 	else
 		ArenaFrameJoinButton:Disable();

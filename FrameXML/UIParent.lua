@@ -49,6 +49,7 @@ UIPanelWindows["MinigameFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["LFGParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["ArenaFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["ChatConfigFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["PVPFrame"] =			{ area = "left",	pushable = 0,	whileDead = 1 };
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -88,7 +89,6 @@ UIMenus = {
 	"LanguageMenu",
 	"DropDownList1",
 	"DropDownList2",
-	"CalendarContextMenu",
 };
 
 ITEM_QUALITY_COLORS = { };
@@ -208,6 +208,14 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GUILDBANKFRAME_CLOSED");
 
 	RegisterForSave("MISTER_SPARKLE");
+end
+
+function ToggleFrame(frame)
+	if ( frame:IsShown() ) then
+		HideUIPanel(frame);
+	else
+		ShowUIPanel(frame);
+	end
 end
 
 function AuctionFrame_LoadUI()
@@ -1004,7 +1012,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["ChatFrame1"] = {baseY = true, yOffset = 20, bottomLeft = actionBarOffset-20, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 20, bottomRight = actionBarOffset-20, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 24};
 	
 	-- Vars
 	["CONTAINER_OFFSET_X"] = {baseX = 0, rightLeft = 2*actionBarOffset+3, rightRight = actionBarOffset+3, isVar = "xAxis"};
@@ -1542,14 +1550,15 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	
 	-- Set up flags
 	local hasBottomLeft, hasBottomRight, hasPetBar;
-	if ( SHOW_MULTI_ACTIONBAR_1 or SHOW_MULTI_ACTIONBAR_2 ) then
+	
+	if ( MultiBarBottomLeft:IsShown() or MultiBarBottomRight:IsShown() ) then
 		tinsert(yOffsetFrames, "bottomEither");
 	end
-	if ( SHOW_MULTI_ACTIONBAR_2 ) then
+	if ( MultiBarBottomRight:IsShown() ) then
 		tinsert(yOffsetFrames, "bottomRight");
 		hasBottomRight = 1;
 	end
-	if ( SHOW_MULTI_ACTIONBAR_1 ) then
+	if ( MultiBarBottomLeft:IsShown() ) then
 		tinsert(yOffsetFrames, "bottomLeft");
 		hasBottomLeft = 1;
 	end
@@ -2482,6 +2491,7 @@ function ToggleGameMenu()
 	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
 		TimeManagerCloseButton:Click();
 	elseif ( securecall("CloseMenus") ) then
+	elseif ( CloseCalendarMenus and CloseCalendarMenus() ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then
@@ -2870,6 +2880,47 @@ function CopyTable(settings)
 	end
 	return copy;
 end
+
+function PlayerNameAutocomplete(self)
+	local text = self:GetText();
+	local textlen = strlen(text);
+	local numFriends, name;
+
+	-- First check your friends list
+	numFriends = GetNumFriends();
+	if ( numFriends > 0 ) then
+		for i=1, numFriends do
+			name = GetFriendInfo(i);
+			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
+				self:SetText(name);
+				if ( self:IsInIMECompositionMode() ) then
+					self:HighlightText(textlen - strlen(arg1), -1);
+				else
+					self:HighlightText(textlen, -1);
+				end
+				return;
+			end
+		end
+	end
+
+	-- No match, check your guild list
+	numFriends = GetNumGuildMembers(true);	-- true to include offline members
+	if ( numFriends > 0 ) then
+		for i=1, numFriends do
+			name = GetGuildRosterInfo(i);
+			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
+				self:SetText(name);
+				if ( self:IsInIMECompositionMode() ) then
+					self:HighlightText(textlen - strlen(arg1), -1);
+				else
+					self:HighlightText(textlen, -1);
+				end
+				return;
+			end
+		end
+	end
+end
+
 
 
 AUTOCAST_SHINE_R = .95;

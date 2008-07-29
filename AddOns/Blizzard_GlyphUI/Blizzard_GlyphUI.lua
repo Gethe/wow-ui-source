@@ -16,6 +16,8 @@ GLYPH_SLOTS[5] = { left = 0.130859375; right = 0.259765625; top = 0.87109375; bo
 GLYPH_SLOTS[3] = { left = 0.654296875; right = 0.783203125; top = 0.87109375; bottom = 1;}
 GLYPH_SLOTS[2] = { left = 0.5234375; right = 0.65234375; top = 0.87109375; bottom = 1;}
 
+NUM_GLYPH_SLOTS = 6
+
 function GlyphFrameGlyph_OnLoad (self)
 	local name = self:GetName();
 	self.glyph = getglobal(name .. "Glyph");
@@ -138,22 +140,11 @@ function GlyphFrame_PulseGlow ()
 end
 
 function GlyphFrame_OnShow (self)
-	-- for i, slot in next, slotAnimations do
-		-- GlyphFrame_StopSlotAnimation(i);
-	-- end
-	
-	-- for i, slot in next, slotAnimations do
-		-- local enabled, glyphType, glyphSpell = GetGlyphSocketInfo(i)
-		-- if ( glyphSpell ) then
-			-- GlyphFrame_StartCenterPulse();
-			-- GlyphFrame_StartSlotAnimation(i);
-		-- end
-	-- end
+
 end
 
 function GlyphFrame_OnLoad (self)
-	-- self.glow = getglobal(self:GetName() .. "Glow");
-	-- self.sparkleFrame = SparkleFrame:New(self);
+
 end
 
 function GlyphFrame_OnEnter (self)
@@ -164,6 +155,12 @@ end
 
 function GlyphFrame_OnLeave (self)
 
+end
+
+function GlyphFrame_Update ()
+	for i = 1, NUM_GLYPH_SLOTS do
+		GlyphFrameGlyph_UpdateSlot(getglobal("GlyphFrameGlyph" .. i));
+	end
 end
 
 -- slotAnimations = {}

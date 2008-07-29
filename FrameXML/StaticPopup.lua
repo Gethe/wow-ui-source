@@ -6,7 +6,7 @@ StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
 	text = CONFIRM_GLYPH_PLACEMENT,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) PlaceGlyphInSocket(self.data) end,
+	OnAccept = function (self) PlaceGlyphInSocket(self.data) GlyphFrame_Update(); GlyphFrame_PulseGlow(); end,
 	OnCancel = function (self) self.data = nil; end,
 	hideOnEscape = 1,
 	timeout = 0,

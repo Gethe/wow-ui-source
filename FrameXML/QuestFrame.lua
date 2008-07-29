@@ -492,7 +492,13 @@ function QuestFrameItems_Update(questState)
 
 		--Anchor learnSpellText if there were choosable rewards
 		if ( rewardsCount > 0 ) then
-			learnSpellText:SetPoint("TOPLEFT", questItemName..rewardsCount, "BOTTOMLEFT", 3, -5);
+			local rewardPoint;
+			if ( mod(rewardsCount, 2) == 0 ) then
+				rewardPoint = rewardsCount - 1;
+			else
+				rewardPoint = rewardsCount;
+			end
+			learnSpellText:SetPoint("TOPLEFT", questItemName..rewardPoint, "BOTTOMLEFT", 3, -5);
 		else
 			learnSpellText:SetPoint("TOPLEFT", questState.."RewardTitleText", "BOTTOMLEFT", 0, -5);
 		end

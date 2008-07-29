@@ -956,46 +956,6 @@ function SendMailRadioButton_OnClick(index)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
-function SendMailFrame_SendeeAutocomplete(self)
-	local text = self:GetText();
-	local textlen = strlen(text);
-	local numFriends, name;
-
-	-- First check your friends list
-	numFriends = GetNumFriends();
-	if ( numFriends > 0 ) then
-		for i=1, numFriends do
-			name = GetFriendInfo(i);
-			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
-				self:SetText(name);
-				if ( self:IsInIMECompositionMode() ) then
-					self:HighlightText(textlen - strlen(arg1), -1);
-				else
-					self:HighlightText(textlen, -1);
-				end
-				return;
-			end
-		end
-	end
-
-	-- No match, check your guild list
-	numFriends = GetNumGuildMembers(true);	-- true to include offline members
-	if ( numFriends > 0 ) then
-		for i=1, numFriends do
-			name = GetGuildRosterInfo(i);
-			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
-				self:SetText(name);
-				if ( self:IsInIMECompositionMode() ) then
-					self:HighlightText(textlen - strlen(arg1), -1);
-				else
-					self:HighlightText(textlen, -1);
-				end
-				return;
-			end
-		end
-	end
-end
-
 -- Stationery functions
 
 function StationeryPopupFrame_Update()

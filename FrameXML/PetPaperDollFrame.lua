@@ -1,5 +1,6 @@
 NUM_PET_RESISTANCE_TYPES = 5;
 NUM_PET_STATS = 5;
+NUM_COMPANIONS_PER_PAGE = 12;
 
 function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("PET_UI_UPDATE");
@@ -18,13 +19,18 @@ function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_RANGED_ATTACK_POWER");
 	self:RegisterEvent("UNIT_DEFENSE");
 	self:RegisterEvent("UNIT_ATTACK");
+	self:RegisterEvent("COMPANION_UPDATE");
 	PetDamageFrameLabel:SetText(DAMAGE_COLON);
 	PetAttackPowerFrameLabel:SetText(ATTACK_POWER_COLON);
 	PetArmorFrameLabel:SetText(ARMOR_COLON);
 	SetTextStatusBarTextPrefix(PetPaperDollFrameExpBar, XP);
 	PetSpellDamageFrameLabel:SetText(SPELL_BONUS_COLON);
-
-	PetTab_Update();
+	
+	PetPaperDollFrameCompanionFrame.mode = "CRITTER";
+	PetPaperDollFrameCompanionFrame.selectedMount = 0;
+	PetPaperDollFrameCompanionFrame.selectedCompanion = 0;
+	PetPaperDollFrameCompanionFrame.selected = 0;
+	PetPaperDollFrame_SetTab(2);
 end
 
 function PetPaperDollFrame_OnEvent (self, event, ...)
@@ -34,17 +40,106 @@ function PetPaperDollFrame_OnEvent (self, event, ...)
 		if ( PetPaperDollFrame:IsVisible() and not HasPetUI() ) then
 			ToggleCharacter("PetPaperDollFrame");
 		end
-		PetTab_Update();
 		PetPaperDollFrame_Update();
 	elseif ( event == "PET_UI_CLOSE" ) then
 		if ( PetPaperDollFrame:IsShown() and CharacterFrame:IsShown() ) then
 			ToggleCharacter("PetPaperDollFrame");
 		end
-		PetTab_Update();
 	elseif ( event == "UNIT_PET_EXPERIENCE" ) then
 		PetExpBar_Update();
+	elseif ( event == "COMPANION_UPDATE" ) then
+		PetPaperDollFrame_UpdateCompanions();
 	elseif ( arg1 == "pet" ) then
 		PetPaperDollFrame_Update();
+	end
+end
+
+function PetPaperDollFrame_SetTab(id)
+	if ( (id == 1) and HasPetUI() ) then
+		PetPaperDollFramePetFrame:Show();
+		PetPaperDollFrameCompanionFrame:Hide();
+	elseif ( (id == 2) and (GetNumCompanions("CRITTER") > 0) ) then
+		PetPaperDollFramePetFrame:Hide();
+		PetPaperDollFrameCompanionFrame.mode="CRITTER";
+		PetPaperDollFrameCompanionFrame.selected = 1;
+		PetPaperDollFrameCompanionFrame:Show();
+		PetPaperDollFrame_SetCompanionPage(0);
+		PetPaperDollFrame_UpdateCompanions();
+	elseif ( (id == 3) and (GetNumCompanions("MOUNT") > 0) ) then
+		PetPaperDollFramePetFrame:Hide();
+		PetPaperDollFrameCompanionFrame.mode="MOUNT";
+		PetPaperDollFrameCompanionFrame.selected = 1;
+		PetPaperDollFrameCompanionFrame:Show();
+		PetPaperDollFrame_SetCompanionPage(0);
+		PetPaperDollFrame_UpdateCompanions();
+	end
+	
+	for i=1,3 do
+		if i==id then
+			PanelTemplates_SelectTab(getglobal("PetPaperDollFrameTab"..i));
+		else
+			PanelTemplates_DeselectTab(getglobal("PetPaperDollFrameTab"..i));
+		end
+	end
+end
+
+function CompanionButton_OnLoad(self)
+	self:RegisterForDrag("LeftButton");
+end
+
+function CompanionButton_OnDrag(self)
+	local offset = (PetPaperDollFrameCompanionFrame.page or 0)*NUM_COMPANIONS_PER_PAGE;
+	dragged = self:GetID() + offset;
+	PickupCompanion( PetPaperDollFrameCompanionFrame.mode, dragged );
+end
+
+function CompanionButton_OnClick(self)
+	local offset=(PetPaperDollFrameCompanionFrame.page or 0)*NUM_COMPANIONS_PER_PAGE;
+	PetPaperDollFrameCompanionFrame.selected=self:GetID()+offset;
+	PetPaperDollFrame_UpdateCompanions();
+end
+
+function PetPaperDollFrame_SetCompanionPage(num)
+	PetPaperDollFrameCompanionFrame.page = num;
+	num=num+1;
+	local maxpage = ceil(GetNumCompanions(PetPaperDollFrameCompanionFrame.mode)/NUM_COMPANIONS_PER_PAGE);
+	CompanionPageNumber:SetFormattedText(MERCHANT_PAGE_NUMBER,num, maxpage);
+	if ( num==1 ) then
+		CompanionPrevPageButton:Disable();
+	end
+	if ( num==maxpage ) then
+		CompanionNextPageButton:Disable();
+	end
+	PetPaperDollFrame_UpdateCompanions();
+end
+
+function PetPaperDollFrame_UpdateCompanions()
+	local button, iconTexture, id;
+	local creatureID, creatureName, icon, active;
+	local offset=(PetPaperDollFrameCompanionFrame.page or 0)*NUM_COMPANIONS_PER_PAGE;
+	local selected=PetPaperDollFrameCompanionFrame.selected;
+	
+	for i=1,NUM_COMPANIONS_PER_PAGE do
+		button=getglobal("CompanionButton"..i);
+		id = i+(offset or 0)
+		creatureID, creatureName, icon, active = GetCompanionInfo(PetPaperDollFrameCompanionFrame.mode, id);
+		if (creatureID) then
+			button:SetNormalTexture(icon);
+			button:Enable();
+		else
+			button:Disable();
+		end
+		if (id==selected and creatureID) then
+			button:SetChecked(true);
+		else
+			button:SetChecked(false);
+		end
+	end
+	
+	if (selected > 0) then
+		creatureID, creatureName, icon, active = GetCompanionInfo(PetPaperDollFrameCompanionFrame.mode, selected);
+		CompanionSelectedName:SetText(creatureName);
+		CompanionModelFrame:SetCreature(creatureID);
 	end
 end
 
@@ -238,15 +333,4 @@ function PetExpBar_Update()
 	local currXP, nextXP = GetPetExperience();
 	PetPaperDollFrameExpBar:SetMinMaxValues(min(0, currXP), nextXP);
 	PetPaperDollFrameExpBar:SetValue(currXP);
-end
-
-function PetTab_Update()
-	-- If doesn't have a petUI then disable the pet tab and return
-	if ( not HasPetUI() ) then
-		CharacterFrameTab2:Hide();
-		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "LEFT", 0, 0);
-	else
-		CharacterFrameTab2:Show();
-		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "RIGHT", -16, 0);
-	end
 end

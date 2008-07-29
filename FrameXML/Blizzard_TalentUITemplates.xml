@@ -83,6 +83,7 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("CHARACTER_POINTS_CHANGED");
+				self:RegisterEvent("PET_TALENT_POINTS_CHANGED");
 			</OnLoad>
 			<OnEvent>
 				if (self.talentButton_OnEvent) then

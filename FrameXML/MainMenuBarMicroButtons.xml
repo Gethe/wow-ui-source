@@ -47,18 +47,22 @@
 				CharacterMicroButton_OnLoad(self);
 			</OnLoad>
 			<OnClick>
-				ToggleCharacter("PaperDollFrame");
+				if ( self.down ) then
+					self.down = nil;
+					ToggleCharacter("PaperDollFrame");
+					return;
+				end
+				if ( self:GetButtonState() == "NORMAL" ) then
+					CharacterMicroButton_SetPushed();
+					self.down = 1;
+				else
+					CharacterMicroButton_SetNormal();
+					self.down = 1;
+				end
 			</OnClick>
 			<OnEvent>
 				CharacterMicroButton_OnEvent(self, event, ...);
 			</OnEvent>
-			<OnUpdate>
-				if ( self:GetButtonState() == "PUSHED" ) then
-					CharacterMicroButton_SetPushed();
-				else
-					CharacterMicroButton_SetNormal();
-				end
-			</OnUpdate>
 		</Scripts>
 	</Button>
 	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
@@ -177,9 +181,68 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="LFGMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="PVPMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SocialsMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+                <Texture name="$parentTexture">
+                    <Size>
+                        <AbsDimension x="36" y="36"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="6" y="-30"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("UPDATE_BINDINGS");
+				self:RegisterForClicks("LeftButtonDown", "RightButtonDown", "LeftButtonUp", "RightButtonUp");
+				
+				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
+				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
+				self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
+				local factionGroup = UnitFactionGroup("player");
+				if ( factionGroup ) then
+					getglobal(self:GetName().."Texture"):SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+				end
+				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLEPVP");
+				self.newbieText = NEWBIE_TOOLTIP_PVP;
+			</OnLoad>
+			<OnEvent>
+				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLEPVP");
+				self.newbieText = NEWBIE_TOOLTIP_PVP;
+			</OnEvent>
+			<OnClick>
+				if ( self.down ) then
+					self.down = nil;
+					ToggleFrame(PVPFrame);
+					return;
+				end
+				if ( self:GetButtonState() == "NORMAL" ) then
+					PVPMicroButton_SetPushed();
+					self.down = 1;
+				else
+					PVPMicroButton_SetNormal();
+					self.down = 1;
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="LFGMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="PVPMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-3" y="0"/>
 				</Offset>

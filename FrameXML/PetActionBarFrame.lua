@@ -162,19 +162,24 @@ end
 
 function ShowPetActionBar()
 	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and not PetActionBarFrame.locked and not PetActionBarFrame.ctrlPressed ) then
-		PetActionBarFrame:Show();
-		if ( PetActionBarFrame.completed ) then
-			PetActionBarFrame.slideTimer = 0;
-		end
-		PetActionBarFrame.timeToSlide = PETACTIONBAR_SLIDETIME;
-		PetActionBarFrame.mode = "show";
-
-		-- Rare case
 		if ( ShapeshiftBarFrame and GetNumShapeshiftForms() > 0 ) then
 			PETACTIONBAR_XPOS = getglobal("ShapeshiftButton"..GetNumShapeshiftForms()):GetRight() + 20;
 		else
 			PETACTIONBAR_XPOS = 36
 		end
+		if ( MainMenuBar.busy or UnitHasVehicleUI("player") ) then
+			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
+			PetActionBarFrame.state = "top";
+			PetActionBarFrame:Show();
+		else
+			PetActionBarFrame:Show();
+			if ( PetActionBarFrame.completed ) then
+				PetActionBarFrame.slideTimer = 0;
+			end
+			PetActionBarFrame.timeToSlide = PETACTIONBAR_SLIDETIME;
+			PetActionBarFrame.mode = "show";
+		end
+		-- Rare case
 		if ( ChatFrameEditBox:IsShown() ) then
 			ChatFrameEditBox:Raise();
 		end
@@ -184,11 +189,17 @@ end
 
 function HidePetActionBar()
 	if ( PetActionBarFrame.showgrid == 0 and PetActionBarFrame:IsShown() and not PetActionBarFrame.locked and not PetActionBarFrame.ctrlPressed ) then
-		if ( PetActionBarFrame.completed ) then
-			PetActionBarFrame.slideTimer = 0;
+		if ( MainMenuBar.busy or UnitHasVehicleUI("player") ) then
+			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
+			PetActionBarFrame.state = "bottom";
+			PetActionBarFrame:Hide();
+		else
+			if ( PetActionBarFrame.completed ) then
+				PetActionBarFrame.slideTimer = 0;
+			end
+			PetActionBarFrame.timeToSlide = PETACTIONBAR_SLIDETIME;
+			PetActionBarFrame.mode = "hide";
 		end
-		PetActionBarFrame.timeToSlide = PETACTIONBAR_SLIDETIME;
-		PetActionBarFrame.mode = "hide";
 	end
 end
 

@@ -63,7 +63,7 @@
 			
 		</Scripts>
 	</Frame>
-	<Frame name="BarberShopFrame">
+	<Frame name="BarberShopFrame" hidden="true">
 		<Size>
 			<AbsDimension x="200" y="275"/>
 		</Size>
@@ -260,18 +260,17 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				BarberShop_UpdateHairCustomization();
-				BarberShop_UpdateFacialHairCustomization();
+				BarberShop_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				BarberShop_UpdateCost();
-				if ( BarberShopBannerFrame ) then
-					BarberShopBannerFrame:Show();
-				end
+				BarberShop_OnShow(self);
 			</OnShow>
 			<OnHide>
 				BarberShopBannerFrame:Hide();
 			</OnHide>
+			<OnEvent>
+				BarberShop_OnEvent(self, event, ...);
+			</OnEvent>
 		</Scripts>
 	</Frame>
 	<Frame name="BarberShopBannerFrame">

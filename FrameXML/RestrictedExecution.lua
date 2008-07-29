@@ -24,6 +24,7 @@ local pcall = pcall;
 local tostring = tostring;
 local next = next;
 local unpack = unpack;
+local newproxy = newproxy;
 
 ---------------------------------------------------------------------------
 -- RESTRICTED CLOSURES
@@ -144,7 +145,7 @@ local RESTRICTED_META = {
                      local tv = type(v);
                      if ((tv ~= "string") and (tv ~= "number")
                          and (tv ~= "boolean") and (tv ~= "nil")
-                             and ((tv ~= "table")
+                             and ((tv ~= "userdata")
                                   or (not RESTRICTED_TABLES[v]))) then
                          error("Invalid value type '" .. tv .. "'");
                          return;
@@ -156,20 +157,25 @@ local RESTRICTED_META = {
                          return;
                      end
                      real[k] = v;
-                 end,
-
-    __metatable = false,
+                 end
 }
+
 
 -- table = RestrictedTable_create(...)
 --
 -- Create a new, restricted table, populating it from ... if
 -- necessary, similar to the way the normal table constructor
 -- works.
+
+local PROXY_PROTOTYPE = newproxy(true);
+for k, v in pairs(RESTRICTED_META) do
+    getmetatable(PROXY_PROTOTYPE)[k] = v;
+end
+getmetatable(PROXY_PROTOTYPE).__metatable = false
+
 local function RestrictedTable_create(...)
-    local ret = {};
+    local ret = newproxy(PROXY_PROTOTYPE);
     RESTRICTED_TABLES[ret] = {};
-    setmetatable(ret, RESTRICTED_META);
 
     for i = 1, select('#', ...) do
         ret[i] = select(i, ...);
@@ -244,15 +250,16 @@ end
 -- An equivalent to #table that works for both restricted
 -- and normal tables.
 local function RestrictedTable_tablesize(T)
-    if (type(T) ~= "table") then
-        error("Input is not a table");
-        return;
+    local tt = type(T);
+    if (tt == "userdata") then
+        local PT = RESTRICTED_TABLES[T];
+        if (PT) then
+            return #PT;
+        end
+    elseif (tt == "table") then
+        return #T;
     end
-    local PT = RESTRICTED_TABLES[T];
-    if (PT) then
-        return #PT;
-    end
-    return #T;
+    error("input is not a table");
 end
 
 -- Export these functions so that addon code can use them if desired
@@ -311,6 +318,7 @@ local function CreateRestrictedEnvironment(base)
         __index = meta_index,
         __newindex = meta_newindex,
         __metatable = false;
+        __environment = false;
     }
 
     setmetatable(result, meta);
@@ -327,7 +335,7 @@ local function CreateRestrictedEnvironment(base)
                           .. depth);
                     return;
                 end
-                if (ProxyNamespace ~= newProxyNamespace) then
+                if (proxyNamespace ~= newProxyNamespace) then
                     error("Attempted to re-use environment with depth "
                           .. depth);
                     return;
@@ -392,16 +400,16 @@ local RESTRICTED_GLOBAL_FUNCTIONS = {
 local PopulateGlobalFunctions
 function PopulateGlobalFunctions(src, dest)
     for k, v in pairs(src) do
-        local tv = type(v);
-        if (tv == "function") then
-            dest[k] = v;
-        elseif (tv == "table") then
-            local subdest = {};
-            PopulateGlobalFunctions(v, subdest);
-            setmetatable(subdest, NO_SECURE_UPDATE_META);
-            dest[k] = subdest;
-		elseif (tv == "number") then
-			dest[k] = v;
+        if (type(k) == "string") then
+            local tv = type(v);
+            if ((tv == "function") or (tv == "number") or (tv == "string") or (tv == "boolean")) then
+                dest[k] = v;
+            elseif (tv == "table") then
+                local subdest = {};
+                PopulateGlobalFunctions(v, subdest);
+                setmetatable(subdest, NO_SECURE_UPDATE_META);
+                dest[k] = subdest;
+            end
         end
     end
 end
@@ -416,6 +424,16 @@ end
 -- Create the environment
 local FUNCTION_ENVIRONMENT, FUNCTION_ENVIRONMENT_CONTROL =
     CreateRestrictedEnvironment(RESTRICTED_GLOBAL_FUNCTIONS);
+
+-- Protect from injection via the string metatable index
+-- Assume for now that 'string' is relatively clean
+local strmeta = getmetatable("x");
+local newmetaindex = {};
+for k, v in pairs(string) do newmetaindex[k] = v; end
+strmeta.__index = newmetaindex;
+strmeta.__metatable = false;
+strmeta = nil;
+newmetaindex = nil;
 
 ---------------------------------------------------------------------------
 -- CLOSURE FACTORIES

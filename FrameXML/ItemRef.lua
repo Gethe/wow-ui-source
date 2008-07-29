@@ -68,7 +68,8 @@ function SetItemRef(link, text, button)
 			FriendsFrameTab4:Click();
 		elseif ( button == "LeftButton" ) then
 			local chan = strsub(link, 9);
-			if ( GetChannelName(tonumber(chan))~=0 ) then
+			local channum = tonumber(chan)
+			if ( (not channum) or GetChannelName(channum)~=0 ) then
 				--Open chat for channel
 				ChatFrame_OpenChat("/"..chan, DEFAULT_CHAT_FRAME);
 			end

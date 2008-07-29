@@ -1,3 +1,24 @@
+function BarberShop_OnLoad(self)
+	BarberShop_UpdateHairCustomization();
+	BarberShop_UpdateFacialHairCustomization();
+	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
+end
+
+function BarberShop_OnShow(self)
+	BarberShop_UpdateCost();
+	if ( BarberShopBannerFrame ) then
+		BarberShopBannerFrame:Show();
+	end
+	self:ClearAllPoints();
+	self:SetPoint("RIGHT", min(-50, -CONTAINER_OFFSET_X), -50);
+end
+
+function BarberShop_OnEvent(self, event, ...)
+	if(event == "BARBER_SHOP_APPEARANCE_APPLIED") then
+		BarberShop_UpdateCost();
+	end
+end
+
 function BarberShop_UpdateCost()
 	MoneyFrame_Update(BarberShopFrameMoneyFrame:GetName(), GetBarberShopTotalCost());
 end

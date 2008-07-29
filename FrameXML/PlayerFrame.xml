@@ -76,6 +76,15 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
+								<FontString name="PlayerPVPTimerText" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="38" y="-15"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
 								<FontString name="PlayerFrameHealthBarText" inherits="TextStatusBarText">
 									<Anchors>
 										<Anchor point="CENTER">
@@ -151,7 +160,7 @@
 									<Anchors>
 										<Anchor point="TOPLEFT">
 											<Offset>
-												<AbsDimension x="44" y="-10"/>
+												<AbsDimension x="50" y="-10"/>
 											</Offset>
 										</Anchor>
 									</Anchors>

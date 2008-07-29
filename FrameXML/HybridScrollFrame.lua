@@ -83,12 +83,46 @@ function HybridScrollFrameScrollChild_OnLoad (self)
 	self:GetParent().scrollChild = self;
 end
 
+function HybridScrollFrame_ExpandButton (self, offset, height)
+	self.largeButtonTop = offset;
+	self.largeButtonHeight = height
+end
+
+function HybridScrollFrame_CollapseButton (self)
+	self.largeButtonTop = nil;
+	self.largeButtonHeight = nil;
+end
+
 function HybridScrollFrame_SetOffset (self, offset)
 	local buttons = self.buttons
 	local buttonHeight = self.buttonHeight;
-	local element = offset / buttonHeight
-	local overflow = element - math.floor(element);
-
+	local element, overflow;
+	
+	local scrollHeight = 0;
+	
+	local largeButtonTop = self.largeButtonTop
+	if ( largeButtonTop and offset >= largeButtonTop ) then
+		local largeButtonHeight = self.largeButtonHeight;
+		-- Initial offset...
+		element = largeButtonTop / buttonHeight;
+			
+		if ( offset >= (largeButtonTop + largeButtonHeight) ) then
+			element = element + 1;
+			
+			local leftovers = (offset - (largeButtonTop + largeButtonHeight) );
+			
+			element = element + ( leftovers / buttonHeight );
+			overflow = element - math.floor(element);
+			scrollHeight = overflow * buttonHeight;
+		else
+			scrollHeight = math.abs(offset - largeButtonTop);		
+		end
+	else	
+		element = offset / buttonHeight
+		overflow = element - math.floor(element);
+		scrollHeight = overflow * buttonHeight;
+	end
+	
 	if ( math.floor(self.offset or 0) ~= element and self.update ) then
 		self.offset = element;
 		self.update();
@@ -96,15 +130,7 @@ function HybridScrollFrame_SetOffset (self, offset)
 		self.offset = element;
 	end
 	
-	if ( overflow > 0 ) then
-		if ( self.numElements - math.floor(element) < #buttons ) then
-			self:SetVerticalScroll(overflow * buttonHeight);
-		else
-			self:SetVerticalScroll(overflow * max(buttonHeight, buttons[1]:GetHeight()));
-		end			
-	else
-		self:SetVerticalScroll(0);
-	end
+	self:SetVerticalScroll(scrollHeight);
 end
 
 function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, initialOffsetY, initialPoint, initialRelative, offsetX, offsetY, point, relativePoint)

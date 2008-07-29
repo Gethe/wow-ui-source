@@ -519,7 +519,7 @@
 		ToggleTalentFrame();
 	</Binding>
 	<Binding name="TOGGLECHARACTER4">
-		ToggleCharacter("PVPFrame");
+		ToggleTokenFrame();
 	</Binding>
 	<Binding name="TOGGLECHARACTER3">
 		ToggleCharacter("PetPaperDollFrame");
@@ -531,7 +531,7 @@
 		ToggleCharacter("SkillFrame");
 	</Binding>
 	<Binding name="TOGGLEQUESTLOG">
-		ToggleQuestLog();
+		ToggleFrame(QuestLogFrame);
 	</Binding>
 	<Binding name="TOGGLEGAMEMENU">
 		ToggleGameMenu();
@@ -540,7 +540,10 @@
 		ToggleMinimap();
 	</Binding>
 	<Binding name="TOGGLEWORLDMAP">
-		ToggleWorldMap();
+		ToggleFrame(WorldMapFrame);
+	</Binding>
+	<Binding name="TOGGLEPVP">
+		ToggleFrame(PVPFrame);
 	</Binding>
 	<Binding name="TOGGLESOCIAL">
 		ToggleFriendsFrame();
@@ -583,6 +586,9 @@
 	</Binding>
 	<Binding name="TOGGLEACHIEVEMENT">
 		ToggleAchievementFrame();
+	</Binding>
+	<Binding name="TOGGLESTATISTICS">
+		ToggleAchievementFrame(1);
 	</Binding>
 
 	<!-- Misc -->

@@ -121,6 +121,7 @@ end
 
 function GameTimeFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES");
+	self:RegisterEvent("CALENDAR_EVENT_ALARM");
 	self:RegisterForClicks("AnyUp");
 	self.timeOfDay = 0;
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
@@ -143,6 +144,11 @@ function GameTimeFrame_OnEvent(self, event, ...)
 			end
 			self.pendingCalendarInvites = pendingCalendarInvites;
 		end
+	elseif ( event == "CALENDAR_EVENT_ALARM" ) then
+		local title, hour, minute = ...;
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(format(CALENDAR_EVENT_ALARM_MESSAGE, title), info.r, info.g, info.b, info.id);
+		--UIFrameFlash(GameTimeCalendarEventAlarmTexture, 1.0, 1.0, 6);
 	end
 end
 

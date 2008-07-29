@@ -135,32 +135,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<TexCoords left="0" right="1" top="0.609375" bottom="0.796875"/>
 		</HighlightTexture>
 	</Button>
-	<Frame name="TokenFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
-		 <Size>
-            <AbsDimension x="384" y="512"/>
-        </Size>
-        <Anchors>
-            <Anchor point="TOPLEFT">
-                <Offset>
-                    <AbsDimension x="0" y="-104"/>
-                </Offset>
-            </Anchor>
-        </Anchors>
+	<Frame name="TokenFrame" setAllPoints="true" parent="CharacterFrame" enableMouse="true" hidden="true" id="5">
 		<HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="45"/>
 		</HitRectInsets>
         <Layers>
 			<Layer level="ARTWORK">
-            	<FontString name="TokenFrameTitle" inherits="GameFontNormal" text="TOKENS">
-					<Size>
-						<AbsDimension x="300" y="12"/>
-					</Size>
-					<Anchors>
-					<Anchor point="TOP" relativeTo="TokenFrame" relativePoint="TOP">
-						<Offset x="0" y="-18"/>
-					</Anchor>
-				</Anchors>
-				</FontString>
 				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
@@ -209,20 +189,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>
 					</Anchors>
 				</Texture>
-            </Layer>
-			<Layer level="BACKGROUND">
-                <Texture name="TokenFramePortrait" file="Interface\TokenFrame\UI-TokenFrame-Icon">
-                    <Size>
-                        <AbsDimension x="60" y="60"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="7" y="-6"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
             </Layer>
         </Layers>
         <Frames>

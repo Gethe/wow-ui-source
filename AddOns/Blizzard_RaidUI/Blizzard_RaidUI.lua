@@ -741,7 +741,7 @@ function RaidPullout_UpdateTarget(pullOutFrame, pullOutButton, unit, which)
 			-- Init the Healthbars
 			local temp, class = UnitClass(unit);
 			name:SetText(unitName);
-			securecall("UnitFrameHealthBar_Initialize", unit, statusBar);
+			securecall("UnitFrameHealthBar_Initialize", unit, statusBar, true);
 			securecall("UnitFrameHealthBar_Update", statusBar, unit);
 			
 			-- If Unknown, turn the bar grey and fill it
@@ -960,7 +960,7 @@ function RaidPullout_Update(pullOutFrame)
 			pulloutButton.manabar = pulloutManaBar;
 			pulloutManaBar.unit = unit;
 
-			securecall("UnitFrameHealthBar_Initialize", unit, pulloutHealthBar);
+			securecall("UnitFrameHealthBar_Initialize", unit, pulloutHealthBar, true);
 			securecall("UnitFrameManaBar_Initialize", unit, pulloutManaBar);
 			securecall("UnitFrameHealthBar_Update", pulloutHealthBar, unit);
 			securecall("UnitFrameManaBar_Update", pulloutManaBar, unit);

@@ -1,11 +1,6 @@
-CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame", "PVPFrame" };
+CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame", "TokenFrame" };
 
 function ToggleCharacter (tab)
-	-- Needs to be an "IsVisible" check
-	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() ) then
-		return;
-	end
-	
 	local subFrame = getglobal(tab);
 	if ( subFrame ) then
 		PanelTemplates_SetTab(CharacterFrame, subFrame:GetID());
@@ -45,7 +40,7 @@ function CharacterFrameTab_OnClick (self, button)
 	elseif ( name == "CharacterFrameTab4" ) then
 		ToggleCharacter("SkillFrame");	
 	elseif ( name == "CharacterFrameTab5" ) then
-		ToggleCharacter("PVPFrame");	
+		ToggleCharacter("TokenFrame");	
 	end
 	PlaySound("igCharacterInfoTab");
 end

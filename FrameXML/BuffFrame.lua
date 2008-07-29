@@ -193,10 +193,12 @@ function BuffButton_OnUpdate (self, elapsed)
 end
 
 function BuffButton_OnClick (self)
-	if ( PlayerFrame.unit == "player" ) then
-		CancelPlayerBuff(self:GetID());
-	elseif (PlayerFrame.unit == "vehicle" ) then
-		CancelVehicleBuff(self:GetID());
+	if ( self.filter == "HELPFUL" ) then
+		if ( PlayerFrame.unit == "player" ) then
+			CancelPlayerBuff(self:GetID());
+		--elseif (PlayerFrame.unit == "vehicle" ) then
+		--	CancelVehicleBuff(self:GetID());
+		end
 	end
 end
 

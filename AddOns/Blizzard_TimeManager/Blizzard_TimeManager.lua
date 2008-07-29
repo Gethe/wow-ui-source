@@ -520,7 +520,8 @@ function TimeManager_FireAlarm()
 
 	-- do a bunch of crazy stuff to get the player's attention
 	if ( gsub(Settings.alarmMessage, "%s", "") ~= "" ) then
-		DEFAULT_CHAT_FRAME:AddMessage(Settings.alarmMessage);
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(Settings.alarmMessage, info.r, info.g, info.b, info.id);
 		RaidNotice_AddMessage(RaidWarningFrame, Settings.alarmMessage, ChatTypeInfo["RAID_WARNING"]);
 	end
 	PlaySound("AlarmClockWarning2");

@@ -55,6 +55,12 @@ function UpdateMicroButtons()
 		MainMenuMicroButton:SetButtonState("NORMAL");
 	end
 
+	if ( PVPFrame:IsShown() ) then
+		PVPMicroButton:SetButtonState("PUSHED", 1);
+	else
+		PVPMicroButton:SetButtonState("NORMAL");
+	end
+	
 	if ( FriendsFrame:IsShown() ) then
 		SocialsMicroButton:SetButtonState("PUSHED", 1);
 	else
@@ -94,7 +100,7 @@ function CharacterMicroButton_OnLoad(self)
 	self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("UPDATE_BINDINGS");
-	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterForClicks("LeftButtonDown", "RightButtonDown", "LeftButtonUp", "RightButtonUp");
 	self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
 	self.newbieText = NEWBIE_TOOLTIP_CHARACTER;
 end

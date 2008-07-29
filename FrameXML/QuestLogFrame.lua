@@ -18,16 +18,6 @@ QuestDifficultyColor["standard"] = { r = 0.25, g = 0.75, b = 0.25, font = QuestD
 QuestDifficultyColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50, font = QuestDifficulty_Trivial };
 QuestDifficultyColor["header"]	= { r = 0.7, g = 0.7, b = 0.7, font = QuestDifficulty_Header };
 
-
-
-function ToggleQuestLog()
-	if ( QuestLogFrame:IsShown() ) then
-		HideUIPanel(QuestLogFrame);
-	else
-		ShowUIPanel(QuestLogFrame);
-	end
-end
-
 function QuestLogTitleButton_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
@@ -72,7 +62,7 @@ function QuestLog_OnEvent(self, event, ...)
 		QuestLog_Update();
 		if ( event == "PARTY_MEMBERS_CHANGED" ) then
 			-- Determine whether the selected quest is pushable or not
-			if ( GetQuestLogPushable() and GetNumPartyMembers() > 0 ) then
+			if ( GetQuestLogPushable() and ( GetNumPartyMembers() > 0 or GetRealNumRaidMembers() > 1 ) ) then
 				QuestFramePushQuestButton:Enable();
 			else
 				QuestFramePushQuestButton:Disable();
@@ -296,7 +286,7 @@ function QuestLog_Update()
 	-- Determine whether the selected quest is pushable or not
 	if ( numEntries == 0 ) then
 		QuestFramePushQuestButton:Disable();
-	elseif ( GetQuestLogPushable() and GetNumPartyMembers() > 0 ) then
+	elseif ( GetQuestLogPushable() and ( GetNumPartyMembers() > 0 or GetRealNumRaidMembers() > 1 ) ) then
 		QuestFramePushQuestButton:Enable();
 	else
 		QuestFramePushQuestButton:Disable();

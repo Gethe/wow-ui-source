@@ -260,6 +260,11 @@ function TradeSkillFrame_SetSelection(id)
 	-- Reagents
 	
 	local numReagents = GetTradeSkillNumReagents(id);
+	if(numReagents > 0) then
+		TradeSkillReagentLabel:Show();
+	else
+		TradeSkillReagentLabel:Hide();
+	end
 	for i=1, numReagents, 1 do
 		local reagentName, reagentTexture, reagentCount, playerReagentCount = GetTradeSkillReagentInfo(id, i);
 		local reagent = getglobal("TradeSkillReagent"..i)

@@ -42,10 +42,29 @@ RESTRICTED_FUNCTIONS_SCOPE = {
     strsub = strsub;
     strtrim = strtrim;
     strupper = strupper;
-	floor = math.floor;
-	ceil = math.ceil;
-	cos = math.acos;
-	sin = math.asin;
+
+    -- Math functions
+    abs = abs;
+    acos = acos;
+    asin = asin;
+    atan = atan;
+    atan2 = atan2;
+    ceil = ceil;
+    cos = cos;
+    deg = deg;
+    exp = exp;
+    floor = floor;
+    frexp = frexp;
+    ldexp = ldexp;
+    log = log;
+    log10 = log10;
+    max = max;
+    min = min;
+    mod = mod;
+    rad = rad;
+    random = random;
+    sin = sin;
+    tan = tan;
 };
 
 -- Initialize directly available functions so they can be copied into the
