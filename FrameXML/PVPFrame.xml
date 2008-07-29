@@ -199,7 +199,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="$parentKillsLabel" inherits="GameFontDisableSmall" text="KILLS" justifyH="RIGHT">
+						<FontString name="$parentKillsLabel" inherits="GameFontDisableSmall" text="KILLS_PVP" justifyH="RIGHT">
 							<Size>
 								<AbsDimension x="40" y="12"/>
 							</Size>

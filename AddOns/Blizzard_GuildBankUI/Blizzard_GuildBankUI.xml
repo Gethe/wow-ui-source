@@ -1156,6 +1156,12 @@
 											GuildBankInfoSaveButton:Hide();
 										end
 									</OnTextChanged>
+									<OnCursorChanged>
+										ScrollingEdit_OnCursorChanged(arg1, arg2-10, arg3, arg4);
+									</OnCursorChanged>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(GuildBankInfoScrollFrame);
+									</OnUpdate>
 								</Scripts>
 								<FontString inherits="GameFontHighlight"/>
 							</EditBox>

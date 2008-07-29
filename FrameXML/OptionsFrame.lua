@@ -240,6 +240,12 @@ end
 
 function OptionsFrame_Cancel()
 	SetGamma(OptionsFrame.gamma);
+	if ( GetCVar("gxWindow") ~= "1" ) then
+		OptionsFrameCheckButton10:SetChecked(false);
+	end
+	if ( OptionsFrame.desktopGamma == "0" ) then
+		OptionsFrameCheckButton1:SetChecked(false);
+	end
 	SetCVar("desktopGamma", OptionsFrame.desktopGamma);
 end
 

@@ -206,6 +206,7 @@ function FriendsList_Update()
 		noteText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteText");
 		noteHiddenText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteHiddenText");
 		noteIcon = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteIcon")
+		RAFIcon:Hide();
 		if ( not name ) then
 			name = UNKNOWN;
 		end
@@ -213,11 +214,10 @@ function FriendsList_Update()
 			nameText:SetText(name);
 			LocationText:SetFormattedText(FRIENDS_LIST_TEMPLATE, area, status);
 			if ( RAF ) then
-				LocationText:SetPoint("LEFT", RAFIcon, "RIGHT", 0, 0);
 				RAFIcon:Show();
+				LocationText:SetPoint("LEFT", RAFIcon, "RIGHT", 0, 0);
 			else
 				LocationText:SetPoint("LEFT", nameText, "RIGHT", 0, 0);
-				RAFIcon:Hide();
 			end
 			infoText:SetFormattedText(FRIENDS_LEVEL_TEMPLATE, level, class);
 			noteIcon:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);

@@ -26,10 +26,10 @@
 				end
 			</OnClick>
             <OnDragStart>
-				PickupInventoryItem(this:GetID());
+				PaperDollItemSlotButton_OnClick("LeftButton");
 			</OnDragStart>
             <OnReceiveDrag>
-				PickupInventoryItem(this:GetID());
+				PaperDollItemSlotButton_OnClick("LeftButton");
 			</OnReceiveDrag>
             <OnEnter>
 				PaperDollItemSlotButton_OnEnter(self);
@@ -895,10 +895,10 @@
 						PaperDollItemSlotButton_OnClick(arg1);
 					</OnClick>
 					<OnDragStart>
-						PaperDollItemSlotButton_OnClick("LeftButton", 1);
+						PaperDollItemSlotButton_OnClick("LeftButton");
 					</OnDragStart>
 					<OnReceiveDrag>
-						PaperDollItemSlotButton_OnClick("LeftButton", 1);
+						PaperDollItemSlotButton_OnClick("LeftButton");
 					</OnReceiveDrag>
 					<OnEnter>
 						PaperDollItemSlotButton_OnEnter(self);

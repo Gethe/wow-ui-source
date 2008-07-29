@@ -258,8 +258,9 @@ function PartyMemberFrame_OnEvent(event)
 	if ( event =="UNIT_AURA" ) then
 		if ( arg1 == unit ) then
 			RefreshBuffs(this, 0, unit);
-			if ( PartyMemberBuffTooltip:IsShown() ) then
-				PartyMemberBuffTooltip_Update();
+			if ( PartyMemberBuffTooltip:IsShown() and
+			     this:GetID() == PartyMemberBuffTooltip:GetID() ) then
+				PartyMemberBuffTooltip_Update(this:GetID());
 			end
 		else
 			if ( arg1 == unitPet ) then
@@ -332,11 +333,14 @@ function PartyMemberFrame_RefreshPetBuffs(id)
 	RefreshBuffs(getglobal("PartyMemberFrame"..id.."PetFrame"), 0, "partypet"..id)
 end
 
-function PartyMemberBuffTooltip_Update(isPet)
+function PartyMemberBuffTooltip_Update(id, isPet)
 	local name, rank, icon;
 	local numBuffs = 0;
 	local numDebuffs = 0;
 	local index = 1;
+	
+	PartyMemberBuffTooltip:SetID(id);
+	
 	for i=1, MAX_PARTY_TOOLTIP_BUFFS do
 		if ( isPet ) then
 			name, rank, icon = UnitBuff("pet", i);		

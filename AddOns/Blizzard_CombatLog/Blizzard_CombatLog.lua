@@ -747,6 +747,7 @@ function Blizzard_CombatLog_RefilterUpdate()
 	while (valid and total < COMBATLOG_LIMIT_PER_FRAME) do 
 		-- Log to the window
 		local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
+		-- NOTE: be sure to pass in nil for the color id or the color id may override the r, g, b values for this message
 		COMBATLOG:AddMessage( text, r, g, b, nil, true );
 
 		-- count can be 
@@ -3342,7 +3343,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	-- Debug line for hyperlinks
 	-- combatString = gsub( combatString, "\124", "\124\124");
 
-	return combatString, lineColor.r, lineColor.g, lineColor.b, 1;
+	-- NOTE: be sure to pass back nil for the color id or the color id may override the r, g, b values for this message line
+	return combatString, lineColor.r, lineColor.g, lineColor.b;
 end
 _G.CombatLog_OnEvent = CombatLog_OnEvent
 

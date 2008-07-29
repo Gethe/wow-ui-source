@@ -77,12 +77,9 @@
 				local checked = self:GetChecked();
 				if ( self.func ) then
 					self.func(checked);
-					if ( checked ) then
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						return;
-					end
-					PlaySound("igMainMenuOptionCheckBoxOff");
 				end
+				
+				ChatConfigFrame_PlayCheckboxSound(checked);
 			</OnClick>
 			<OnEnter>
 				if (self.tooltip) then
@@ -976,12 +973,14 @@
 												this.tooltip = HIGHLIGHT_KILL_COMBATLOG_TOOLTIP;
 											</OnLoad>
 											<OnClick>
-												if ( this:GetChecked() ) then
+												local checked = self:GetChecked()
+												if ( checked ) then
 													CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting = true;
 												else
 													CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting = false;
 												end
 												CombatConfig_Colorize_Update();
+												ChatConfigFrame_PlayCheckboxSound(checked);
 											</OnClick>
 										</Scripts>
 									</CheckButton>
@@ -1000,12 +999,14 @@
 												this.tooltip = HIGHLIGHT_ABILITY_COMBATLOG_TOOLTIP;
 											</OnLoad>
 											<OnClick>
-												if ( this:GetChecked() ) then
+												local checked = self:GetChecked()
+												if ( checked ) then
 													CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting = true;
 												else
 													CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting = false;
 												end
 												CombatConfig_Colorize_Update();
+												ChatConfigFrame_PlayCheckboxSound(checked);
 											</OnClick>
 										</Scripts>
 									</CheckButton>
@@ -1024,12 +1025,14 @@
 												this.tooltip = HIGHLIGHT_DAMAGE_COMBATLOG_TOOLTIP;
 											</OnLoad>
 											<OnClick>
-												if ( this:GetChecked() ) then
+												local checked = self:GetChecked()
+												if ( checked ) then
 													CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting = true;
 												else
 													CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting = false;
 												end
 												CombatConfig_Colorize_Update();
+												ChatConfigFrame_PlayCheckboxSound(checked);
 											</OnClick>
 										</Scripts>
 									</CheckButton>
@@ -1048,12 +1051,14 @@
 												this.tooltip = HIGHLIGHT_SCHOOL_COMBATLOG_TOOLTIP;
 											</OnLoad>
 											<OnClick>
-												if ( this:GetChecked() ) then
+												local checked = self:GetChecked()
+												if ( checked ) then
 													CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting = true;
 												else
 													CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting = false;
 												end
 												CombatConfig_Colorize_Update();
+												ChatConfigFrame_PlayCheckboxSound(checked);											
 											</OnClick>
 										</Scripts>
 									</CheckButton>
@@ -1116,7 +1121,8 @@
 														this.tooltip = UNIT_NAMES_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														if (this:GetChecked()) then
+														local checked = self:GetChecked()
+														if ( checked ) then
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.unitColoring = true;
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.sourceColoring = true;
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.destColoring = true;
@@ -1125,6 +1131,8 @@
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.sourceColoring = false;
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.destColoring = false;
 														end
+														CombatConfig_Colorize_Update();
+														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1168,12 +1176,14 @@
 														this.tooltip = SPELL_NAMES_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														if ( this:GetChecked() ) then
+														local checked = self:GetChecked()
+														if ( checked ) then
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityColoring = true;
 														else
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityColoring = false;
 														end
 														CombatConfig_Colorize_Update();
+														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1189,12 +1199,14 @@
 														this.tooltip = SPELL_COLOR_BY_SCHOOL_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														if ( this:GetChecked() ) then
+														local checked = self:GetChecked()
+														if ( checked ) then
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.abilitySchoolColoring = true;
 														else
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.abilitySchoolColoring = false;
 														end
 														CombatConfig_Colorize_Update();
+														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1273,12 +1285,14 @@
 														this.tooltip = SPELL_DAMAGE_NUMBER_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														if ( this:GetChecked() ) then
+														local checked = self:GetChecked()
+														if ( checked ) then
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring = true;
 														else
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring = false;
 														end
 														CombatConfig_Colorize_Update();
+														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1294,12 +1308,14 @@
 														this.tooltip = SPELL_COLOR_BY_SCHOOL_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														if ( this:GetChecked() ) then
+														local checked = self:GetChecked()
+														if ( checked ) then
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountSchoolColoring = true;
 														else
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountSchoolColoring = false;
 														end
 														CombatConfig_Colorize_Update();
+														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1378,12 +1394,14 @@
 														this.tooltip = SPELL_DAMAGE_SCHOOL_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														if ( this:GetChecked() ) then
+														local checked = self:GetChecked()
+														if ( checked ) then
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameColoring = true;
 														else
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameColoring = false;
 														end
 														CombatConfig_Colorize_Update();
+														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1427,12 +1445,14 @@
 														this.tooltip = ENTIRE_LINE_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
-														if ( this:GetChecked() ) then
+														local checked = self:GetChecked()
+														if ( checked ) then
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColoring = true;
 														else
 															CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColoring = false;
 														end
 														CombatConfig_Colorize_Update();
+														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1448,8 +1468,10 @@
 														this.tooltip = BY_SOURCE_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
+														local checked = self:GetChecked();
 														CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColorPriority = 1;
 														CombatConfig_Colorize_Update();
+														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1465,8 +1487,10 @@
 														this.tooltip = BY_TARGET_COMBATLOG_TOOLTIP;
 													</OnLoad>
 													<OnClick>
+														local checked = self:GetChecked();
 														CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColorPriority = 2;
 														CombatConfig_Colorize_Update();
+														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
 												</Scripts>
 											</CheckButton>
@@ -1540,12 +1564,14 @@
 										this.tooltip = TIMESTAMP_COMBATLOG_TOOLTIP;
 									</OnLoad>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										local checked = self:GetChecked()
+										if ( checked ) then
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.timestamp = true;
 										else
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.timestamp = false;
 										end
 										CombatConfig_Formatting_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1564,12 +1590,14 @@
 										this.tooltip = SHOW_BRACES_COMBATLOG_TOOLTIP;
 									</OnLoad>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										local checked = self:GetChecked()
+										if ( checked ) then
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.braces = true;
 										else
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.braces = false;
 										end
 										CombatConfig_Formatting_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1585,7 +1613,8 @@
 										this.tooltip = UNIT_NAMES_SHOW_BRACES_COMBATLOG_TOOLTIP;
 									</OnLoad>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										local checked = self:GetChecked()
+										if ( checked ) then
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.unitBraces = true;
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.sourceBraces = true;
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.destBraces = true;
@@ -1595,6 +1624,7 @@
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.destBraces = false;
 										end
 										CombatConfig_Formatting_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1610,12 +1640,14 @@
 										this.tooltip = SPELL_NAMES_SHOW_BRACES_COMBATLOG_TOOLTIP;
 									</OnLoad>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										local checked = self:GetChecked()
+										if ( checked ) then
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.spellBraces = true;
 										else
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.spellBraces = false;
 										end
 										CombatConfig_Formatting_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1631,12 +1663,14 @@
 										this.tooltip = ITEM_NAMES_SHOW_BRACES_COMBATLOG_TOOLTIP;
 									</OnLoad>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										local checked = self:GetChecked()
+										if ( checked ) then
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.itemBraces = true;
 										else
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.itemBraces = false;
 										end
 										CombatConfig_Formatting_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1652,12 +1686,14 @@
 										this.tooltip = FULL_TEXT_COMBATLOG_TOOLTIP;
 									</OnLoad>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										local checked = self:GetChecked()
+										if ( checked ) then
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.fullText = true;
 										else
 											CHATCONFIG_SELECTED_FILTER_SETTINGS.fullText = false;
 										end
 										CombatConfig_Formatting_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1741,13 +1777,15 @@
 										this.tooltip = QUICK_BUTTON_COMBATLOG_TOOLTIP;
 									</OnLoad>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										local checked = self:GetChecked()
+										if ( checked ) then
 											CHATCONFIG_SELECTED_FILTER.hasQuickButton = true;
 										else
 											CHATCONFIG_SELECTED_FILTER.hasQuickButton = false;
 										end
 										Blizzard_CombatLog_Update_QuickButtons();
 										CombatConfig_Settings_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1762,12 +1800,14 @@
 										getglobal(this:GetName().."Text"):SetText(SOLO);
 									</OnLoad>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										local checked = self:GetChecked()
+										if ( checked ) then
 											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.solo = true;
 										else
 											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.solo = false;
 										end
 										Blizzard_CombatLog_Update_QuickButtons();
+										ChatConfigFrame_PlayCheckboxSound(checked);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1782,12 +1822,14 @@
 										getglobal(this:GetName().."Text"):SetText(PARTY);
 									</OnLoad>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										local checked = self:GetChecked()
+										if ( checked ) then
 											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.party = true;
 										else
 											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.party = false;
 										end
 										Blizzard_CombatLog_Update_QuickButtons();
+										ChatConfigFrame_PlayCheckboxSound(checked);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -1802,12 +1844,14 @@
 										getglobal(this:GetName().."Text"):SetText(RAID);
 									</OnLoad>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										local checked = self:GetChecked()
+										if ( checked ) then
 											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.raid = true;
 										else
 											CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.raid = false;
 										end
 										Blizzard_CombatLog_Update_QuickButtons();
+										ChatConfigFrame_PlayCheckboxSound(checked);
 									</OnClick>
 								</Scripts>
 							</CheckButton>

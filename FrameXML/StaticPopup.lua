@@ -961,6 +961,9 @@ StaticPopupDialogs["LEVEL_GRANT_PROPOSED"] = {
 	OnCancel = function()
 		DeclineLevelGrant();
 	end,
+	OnHide = function()
+		DeclineLevelGrant();
+	end,
 	timeout = 60,
 	whileDead = 1,
 	hideOnEscape = 1

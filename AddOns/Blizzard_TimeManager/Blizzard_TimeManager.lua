@@ -8,6 +8,7 @@ local max = _G.max;
 local floor = _G.floor;
 local mod = _G.mod;
 local tonumber = _G.tonumber;
+local gsub = _G.gsub;
 local GetCVar = _G.GetCVar;
 local SetCVar = _G.SetCVar;
 local GetGameTime = _G.GetGameTime;
@@ -15,6 +16,7 @@ local GetGameTime = _G.GetGameTime;
 -- private data
 local SEC_TO_MINUTE_FACTOR = 1/60;
 local SEC_TO_HOUR_FACTOR = SEC_TO_MINUTE_FACTOR*SEC_TO_MINUTE_FACTOR;
+MAX_TIMER_SEC = 99*3600 + 59*60 + 59;	-- 99:59:59
 
 local WARNING_SOUND_TRIGGER_OFFSET = -2 * SEC_TO_MINUTE_FACTOR;	-- play warning sound 2 sec before alarm sound
 
@@ -341,7 +343,7 @@ function TimeManager_UpdateAlarmTime()
 end
 
 function TimeManager_UpdateTimeTicker()
-	TimeManagerFrameTicker:SetFormattedText(GameTime_GetTime(false));
+	TimeManagerFrameTicker:SetText(GameTime_GetTime(false));
 end
 
 function TimeManagerAlarmMessageEditBox_OnEnterPressed(self)
@@ -397,27 +399,18 @@ function TimeManager_ToggleTimeFormat()
 	local alarmHour = Settings.alarmHour;
 	if ( Settings.militaryTime ) then
 		_TimeManager_Setting_SetBool(CVAR_USE_MILITARY_TIME, "militaryTime", false);
+		Settings.alarmAM = alarmHour < 12;
 		if ( alarmHour > 12 ) then
 			Settings.alarmHour = alarmHour - 12;
-			Settings.alarmAM = false;
-		elseif ( alarmHour == 12 ) then
-			Settings.alarmAM = false;
 		elseif ( alarmHour == 0 ) then
 			Settings.alarmHour = 12;
-			Settings.alarmAM = true;
-		else
-			Settings.alarmAM = true;
 		end
 	else
 		_TimeManager_Setting_SetBool(CVAR_USE_MILITARY_TIME, "militaryTime", true);
-		if ( Settings.alarmAM ) then
-			if ( alarmHour == 12 ) then
-				Settings.alarmHour = 0;
-			end
-		else
-			if ( alarmHour ~= 12 ) then
-				Settings.alarmHour = alarmHour + 12;
-			end
+		if ( Settings.alarmAM and alarmHour == 12 ) then
+			Settings.alarmHour = 0;
+		elseif ( not Settings.alarmAM and alarmHour < 12 ) then
+			Settings.alarmHour = alarmHour + 12;
 		end
 	end
 	_TimeManager_Setting_SetTime();
@@ -462,7 +455,7 @@ function TimeManagerClockButton_OnLoad(self)
 end
 
 function TimeManagerClockButton_Update()
-	TimeManagerClockTicker:SetFormattedText(GameTime_GetTime(false));
+	TimeManagerClockTicker:SetText(GameTime_GetTime(false));
 end
 
 function TimeManagerClockButton_OnEnter(self)
@@ -552,8 +545,10 @@ function TimeManager_FireAlarm()
 	TimeManagerClockButton.checkAlarm = false;
 
 	-- do a bunch of crazy stuff to get the player's attention
-	DEFAULT_CHAT_FRAME:AddMessage(Settings.alarmMessage);
-	RaidNotice_AddMessage(RaidWarningFrame, Settings.alarmMessage, ChatTypeInfo["RAID_WARNING"]);
+	if ( gsub(Settings.alarmMessage, "%s", "") ~= "" ) then
+		DEFAULT_CHAT_FRAME:AddMessage(Settings.alarmMessage);
+		RaidNotice_AddMessage(RaidWarningFrame, Settings.alarmMessage, ChatTypeInfo["RAID_WARNING"]);
+	end
 	PlaySound("AlarmClockWarning2");
 	UIFrameFlash(TimeManagerAlarmFiredTexture, 0.5, 0.5, -1);
 	-- show the clock if necessary, but record its current state so it can return to that state after
@@ -579,8 +574,10 @@ function TimeManagerClockButton_UpdateTooltip()
 	GameTooltip:ClearLines();
 
 	if ( TimeManagerClockButton.alarmFiring ) then
-		GameTooltip:AddLine(Settings.alarmMessage, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		GameTooltip:AddLine(" ");
+	if ( gsub(Settings.alarmMessage, "%s", "") ~= "" ) then
+			GameTooltip:AddLine(Settings.alarmMessage, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			GameTooltip:AddLine(" ");
+		end
 		GameTooltip:AddLine(TIMEMANAGER_ALARM_TOOLTIP_TURN_OFF);
 	else
 		GameTime_UpdateTooltip();
@@ -603,7 +600,7 @@ end
 function Stopwatch_ShowCountdown(hour, minute, second)
 	local sec = 0;
 	if ( hour ) then
-		sec = hour * 60 * 60;
+		sec = hour * 3600;
 	end
 	if ( minute ) then
 		sec = sec + minute * 60;
@@ -615,7 +612,13 @@ function Stopwatch_ShowCountdown(hour, minute, second)
 		Stopwatch_Toggle();
 		return;
 	end
-	StopwatchTicker.timer = sec;
+	if ( sec > MAX_TIMER_SEC ) then
+		StopwatchTicker.timer = MAX_TIMER_SEC;
+	elseif ( sec < 0 ) then
+		StopwatchTicker.timer = 0;
+	else
+		StopwatchTicker.timer = sec;
+	end
 	StopwatchTicker_Update();
 	StopwatchTicker.reverse = sec > 0;
 	StopwatchFrame:Show();

@@ -78,7 +78,12 @@ function BattlefieldFrame_OnUpdate(elapsed)
 				local info = ChatTypeInfo["SYSTEM"];
 				local string;
 				if ( GetBattlefieldWinner() ) then
-					string = format(INSTANCE_COMPLETE_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
+					local isArena = IsActiveBattlefieldArena();
+					if ( isArena ) then
+						string = format(ARENA_COMPLETE_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
+					else
+						string = format(BATTLEGROUND_COMPLETE_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
+					end
 				else
 					string = format(INSTANCE_SHUTDOWN_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
 				end

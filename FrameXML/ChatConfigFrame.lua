@@ -334,8 +334,8 @@ COMBAT_CONFIG_MESSAGESOURCES_TO = {
 COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 	[1] = {
 		text = MELEE,
-		checked = function () return HasMessageTypeGroup("COMBAT_CONFIG_MESSAGETYPES_LEFT", 1) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, "CombatConfigMessageTypesLeft", 1) end;
+		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_LEFT, 1) end;
+		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 1) end;
 		tooltip = MELEE_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
@@ -356,8 +356,8 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 	},
 	[2] = {
 		text = RANGED,
-		checked = function () return HasMessageTypeGroup("COMBAT_CONFIG_MESSAGETYPES_LEFT", 2) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, "CombatConfigMessageTypesLeft", 2) end;
+		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_LEFT, 2) end;
+		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 2) end;
 		tooltip = RANGED_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
@@ -378,8 +378,8 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 	},
 	[3] = {
 		text = AURAS,
-		checked = function () return HasMessageTypeGroup("COMBAT_CONFIG_MESSAGETYPES_LEFT", 3) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, "CombatConfigMessageTypesLeft", 3) end;
+		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_LEFT, 3) end;
+		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 3) end;
 		tooltip = AURAS_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
@@ -436,8 +436,8 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 	},
 	[4] = {
 		text = PERIODIC,
-		checked = function () return HasMessageTypeGroup("COMBAT_CONFIG_MESSAGETYPES_LEFT", 4) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, "CombatConfigMessageTypesLeft", 4) end;
+		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_LEFT, 4) end;
+		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 4) end;
 		tooltip = SPELL_PERIODIC_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
@@ -475,8 +475,8 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 	[1] = {
 		text = SPELLS,
-		checked = function () return HasMessageTypeGroup("COMBAT_CONFIG_MESSAGETYPES_RIGHT", 1) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, "CombatConfigMessageTypesRight", 1) end;
+		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_RIGHT, 1) end;
+		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesRight, 1) end;
 		tooltip = SPELLS_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
@@ -539,8 +539,8 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 	},
 	[2] = {
 		text = SPELL_CASTING,
-		checked = function () return HasMessageTypeGroup("COMBAT_CONFIG_MESSAGETYPES_RIGHT", 2) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, "CombatConfigMessageTypesRight", 2) end;
+		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_RIGHT, 2) end;
+		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesRight, 2) end;
 		tooltip = SPELL_CASTING_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
@@ -853,15 +853,15 @@ function ChatConfig_UpdateCheckboxes(frame)
 			end
 			if ( type(value.disabled) == "function" ) then
 				if( value.disabled() ) then
-					checkBox:Disable();
+					OptionsFrame_DisableCheckBox(checkBox);
 				else
-					checkBox:Enable();
+					OptionsFrame_EnableCheckBox(checkBox, nil, nil, 1);
 				end
 			else
 				if ( value.disabled ) then
-					checkBox:Disable();
+					OptionsFrame_DisableCheckBox(checkBox);
 				else
-					checkBox:Enable();
+					OptionsFrame_EnableCheckBox(checkBox, nil, nil, 1);
 				end
 			end
 			colorSwatch = getglobal(baseName.."ColorSwatch");
@@ -900,67 +900,72 @@ function ChatConfig_UpdateSwatches(frame)
 	end
 end
 
-function ChatConfig_UpdateTieredCheckboxes(frame)
+function ChatConfig_UpdateTieredCheckboxFrame(frame)
 	-- List of message types in current chat frame
 	if ( not FCF_GetCurrentChatFrame() ) then
 		return;
 	end
-	local checkBoxTable = frame.checkBoxTable;
-	local checkBoxNameString = frame:GetName().."CheckBox";
-	local checkBoxName, checkBox, baseName, subCheckBox, checked;
-	for index, value in ipairs(checkBoxTable) do
-		baseName = checkBoxNameString..index;
-		checkBox = getglobal(baseName);
-		if ( checkBox ) then
-			checked = value.checked;
-			if ( type(checked) == "function" ) then
-				checkBox:SetChecked(checked());
-				--Set checked so we can use it later
-				checked = checked();
+	for i=1, #frame.checkBoxTable do
+		ChatConfig_UpdateTieredCheckboxes(frame, i);
+	end
+end
+
+function ChatConfig_UpdateTieredCheckboxes(frame, index)
+	local group = frame.checkBoxTable[index];
+	local groupChecked;
+	local baseName = frame:GetName().."CheckBox"..index;
+	local checkBox = getglobal(baseName);
+	if ( checkBox ) then
+		groupChecked = group.checked;
+		if ( type(groupChecked) == "function" ) then
+			local checked = groupChecked();
+			checkBox:SetChecked(checked);
+			--Set checked so we can use it later
+			groupChecked = checked;
+		else
+			checkBox:SetChecked(groupChecked);	
+		end
+		if ( type(group.disabled) == "function" ) then
+			if( group.disabled() ) then
+				checkBox:Disable();
 			else
-				checkBox:SetChecked(checked);	
+				checkBox:Enable();
 			end
-			if ( type(value.disabled) == "function" ) then
-				if( value.disabled() ) then
-					checkBox:Disable();
-				else
-					checkBox:Enable();
-				end
+		else
+			if ( group.disabled ) then
+				checkBox:Disable();
 			else
-				if ( value.disabled ) then
-					checkBox:Disable();
-				else
-					checkBox:Enable();
-				end
+				checkBox:Enable();
 			end
 		end
-		if ( value.subTypes ) then
-			for k, v in ipairs(value.subTypes) do
-				subCheckBox = getglobal(baseName.."_"..k);
-				if ( type(v.checked) == "function" ) then
-					subCheckBox:SetChecked(v.checked());
+	end
+	local subCheckBox;
+	if ( group.subTypes ) then
+		for k, v in ipairs(group.subTypes) do
+			subCheckBox = getglobal(baseName.."_"..k);
+			if ( type(v.checked) == "function" ) then
+				subCheckBox:SetChecked(v.checked());
+			else
+				subCheckBox:SetChecked(v.checked);	
+			end
+			if ( type(v.disabled) == "function" ) then
+				if( v.disabled() ) then
+					subCheckBox:Disable();
 				else
-					subCheckBox:SetChecked(v.checked);	
+					subCheckBox:Enable();
 				end
-				if ( type(v.disabled) == "function" ) then
-					if( v.disabled() ) then
-						subCheckBox:Disable();
-					else
-						subCheckBox:Enable();
-					end
+			else
+				if ( v.disabled ) then
+					subCheckBox:Disable();
 				else
-					if ( v.disabled ) then
-						subCheckBox:Disable();
-					else
-						subCheckBox:Enable();
-					end
+					subCheckBox:Enable();
 				end
-				
-				if ( checked ) then
-					OptionsFrame_EnableCheckBox(subCheckBox, nil, nil, 1);
-				else
-					OptionsFrame_DisableCheckBox(subCheckBox);
-				end
+			end
+			
+			if ( groupChecked ) then
+				OptionsFrame_EnableCheckBox(subCheckBox, nil, nil, 1);
+			else
+				OptionsFrame_DisableCheckBox(subCheckBox);
 			end
 		end
 	end
@@ -1124,7 +1129,7 @@ end
 
 -- Create  parent is checked or unchecked if all children are unchecked
 function ToggleMessageTypeGroup(checked, frame, index)
-	local subTypes = getglobal(frame).checkBoxTable[index].subTypes;
+	local subTypes = frame.checkBoxTable[index].subTypes;
 	local eventList = CHATCONFIG_SELECTED_FILTER_FILTERS[1].eventList;
 	if ( subTypes ) then
 		local state;
@@ -1184,7 +1189,7 @@ function ToggleMessageTypeGroup(checked, frame, index)
 			end
 		end
 	end
-	ChatConfig_UpdateTieredCheckboxes(getglobal(frame));
+	ChatConfig_UpdateTieredCheckboxes(frame, index);
 end
 
 function ToggleMessageType(checked, ...)
@@ -1222,18 +1227,22 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 	spellColorSwatch = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell, ColorPickerFrame:GetColorRGB());
 			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
+			CombatConfig_Colorize_Update();
 		end;
 	spellColorCancel = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell, ColorPicker_GetPreviousValues());
 			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
+			CombatConfig_Colorize_Update();
 		end;
 	damageColorSwatch = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage, ColorPickerFrame:GetColorRGB());
 			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
+			CombatConfig_Colorize_Update();
 		end;
 	damageColorCancel = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage, ColorPicker_GetPreviousValues());
 			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
+			CombatConfig_Colorize_Update();
 		end;
 	messageTypeColorSwatch = function() 
 			local messageTypes = ColorPickerFrame.extraInfo;
@@ -1245,10 +1254,12 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 				ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetColorRGB());
 			end
 			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
+			CombatConfig_Colorize_Update();
 		end;
 	messageTypeColorCancel = function() 
 			ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPicker_GetPreviousValues());
 			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
+			CombatConfig_Colorize_Update();
 		end;
 }
 
@@ -1306,29 +1317,6 @@ function GetMessageTypeColor(messageType)
 	return info.r, info.g, info.b, group;
 end
 
-
--- the conversion from float to text and the highlight functions below were moved
--- from the combat log to here in order to cache the highlight colors and cache
--- the colors as strings
-function Color_FloatTableToText(color)
-	return Color_FloatToText(color.r, color.g, color.b, color.a);
-end
-
-function Color_FloatToText(r,g,b,a)
-	a = min(1, a or 1) * 255;
-	r = min(1, r) * 255;
-	g = min(1, g) * 255;
-	b = min(1, b) * 255;
-	return ("%.2x%.2x%.2x%.2x"):format(floor(a), floor(r), floor(g), floor(b));
-end
-
-function Color_HighlightColorTable(color, highlightColor, multiplier)
-	highlightColor.r = color.r * multiplier;
-	highlightColor.g = color.g * multiplier;
-	highlightColor.b = color.b * multiplier;
-	highlightColor.a = color.a;
-end
-
 function GetChatUnitColor(type)
 	local color = CHATCONFIG_SELECTED_FILTER_COLORS.unitColoring[getglobal(type)];
 	return color.r, color.g, color.b;
@@ -1356,14 +1344,6 @@ function SetTableColor(color, r, g, b)
 	color.r = r;
 	color.g = g;
 	color.b = b;
-	color["TEXT"] = Color_FloatTableToText(color);
-
-	-- create and set highlight
-	if ( not color["HIGHLIGHT"] ) then
-		color["HIGHLIGHT"] = {};
-	end
-	Color_HighlightColorTable(color, color["HIGHLIGHT"], COMBATLOG_HIGHLIGHT_MULTIPLIER);
-	color["HIGHLIGHT_TEXT"] = Color_FloatTableToText(color["HIGHLIGHT"]);
 end
 
 
@@ -1527,9 +1507,9 @@ function ChatConfig_UpdateCombatSettings()
 	ChatConfig_UpdateCheckboxes(CombatConfigMessageSourcesDoneBy);
 	ChatConfig_UpdateCheckboxes(CombatConfigMessageSourcesDoneTo);
 	
-	ChatConfig_UpdateTieredCheckboxes(CombatConfigMessageTypesLeft);
-	ChatConfig_UpdateTieredCheckboxes(CombatConfigMessageTypesRight);
-	ChatConfig_UpdateTieredCheckboxes(CombatConfigMessageTypesMisc);
+	ChatConfig_UpdateTieredCheckboxFrame(CombatConfigMessageTypesLeft);
+	ChatConfig_UpdateTieredCheckboxFrame(CombatConfigMessageTypesRight);
+	ChatConfig_UpdateTieredCheckboxFrame(CombatConfigMessageTypesMisc);
 
 	ChatConfig_UpdateSwatches(CombatConfigColorsUnitColors);
 	CombatConfig_Colorize_Update();
@@ -1597,7 +1577,7 @@ function IsMessageDoneTo(filter)
 end
 
 function HasMessageTypeGroup(checkBoxList, index)
-	local subTypes = getglobal(checkBoxList)[index].subTypes;
+	local subTypes = checkBoxList[index].subTypes;
 	if ( subTypes ) then
 		local state;
 		local numChecked = 0;
@@ -1784,4 +1764,12 @@ function CanCreateFilters()
 		return false;
 	end
 	return true;
+end
+
+function ChatConfigFrame_PlayCheckboxSound (checked)
+	if ( checked ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
+	end
 end

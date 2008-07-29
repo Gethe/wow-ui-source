@@ -159,7 +159,7 @@ function InboxFrame_Update()
 			end
 			-- Format expiration time
 			if ( daysLeft >= 1 ) then
-				daysLeft = GREEN_FONT_COLOR_CODE..floor(daysLeft).." "..DAYS_ABBR.." "..FONT_COLOR_CODE_CLOSE;
+				daysLeft = GREEN_FONT_COLOR_CODE..format(DAYS_ABBR, floor(daysLeft)).." "..FONT_COLOR_CODE_CLOSE;
 			else
 				daysLeft = RED_FONT_COLOR_CODE..SecondsToTime(floor(daysLeft * 24 * 60 * 60))..FONT_COLOR_CODE_CLOSE;
 			end
@@ -488,7 +488,7 @@ function OpenMail_Update()
 				-- Position buy line
 				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoicePurchaser", "BOTTOMLEFT", 125, 0);
 				-- How long they have to wait to get the money
-				OpenMailInvoiceMoneyDelay:SetFormattedText(AUCTION_INVOICE_FUNDS_DELAY, format(GameTime_GetTimeAndFormat(etaHour, etaMin, true)));
+				OpenMailInvoiceMoneyDelay:SetFormattedText(AUCTION_INVOICE_FUNDS_DELAY, GameTime_GetFormattedTime(etaHour, etaMin, true));
 				-- Not used for a temp sale invoice
 				OpenMailInvoiceSalePrice:Hide();
 				OpenMailInvoiceDeposit:Hide();

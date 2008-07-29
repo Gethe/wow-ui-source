@@ -392,6 +392,12 @@
 									scrollBar:SetValue(max);
 								end
 							</OnTextChanged>
+							<OnCursorChanged>
+								ScrollingEdit_OnCursorChanged(arg1, arg2, arg3, arg4);
+							</OnCursorChanged>
+							<OnUpdate>
+								ScrollingEdit_OnUpdate(MacroFrameScrollFrame);
+							</OnUpdate>
 							<OnEscapePressed>
 								this:ClearFocus();
 							</OnEscapePressed>

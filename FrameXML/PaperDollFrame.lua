@@ -1143,7 +1143,12 @@ end
 
 function PaperDollItemSlotButton_OnClick(button)
 	if ( button == "LeftButton" ) then
-		PickupInventoryItem(this:GetID());
+		local type = GetCursorInfo();
+		if ( type == "merchant" and MerchantFrame.extendedCost ) then
+			MerchantFrame_ConfirmExtendedItemCost(MerchantFrame.extendedCost);
+		else
+			PickupInventoryItem(this:GetID());
+		end
 	else
 		UseInventoryItem(this:GetID());
 	end

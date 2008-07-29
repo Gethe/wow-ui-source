@@ -545,6 +545,9 @@ function UIParent_OnEvent(event)
 		end
 
 		VoiceChat_Toggle();
+		
+		-- Fix for Bug 124392
+		StaticPopup_Hide("LEVEL_GRANT_PROPOSED");
 		return;
 	end
 	if ( event == "RAID_ROSTER_UPDATE" ) then
@@ -1886,9 +1889,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 	if ( seconds >= 86400  ) then
 		tempTime = floor(seconds / 86400);
 		if ( notAbbreviated ) then
-			time = tempTime.." "..DAYS;
+			time = format(D_DAYS,tempTime);
 		else
-			time = tempTime.." "..DAYS_ABBR;
+			time = format(DAYS_ABBR,tempTime);
 		end
 		seconds = mod(seconds, 86400);
 		count = count + 1;
@@ -1899,9 +1902,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		end
 		tempTime = floor(seconds / 3600);
 		if ( notAbbreviated ) then
-			time = time..tempTime.." "..HOURS;
+			time = time..format(D_HOURS, tempTime);
 		else
-			time = time..tempTime.." "..HOURS_ABBR;
+			time = time..format(HOURS_ABBR, tempTime);
 		end
 		seconds = mod(seconds, 3600);
 		count = count + 1;
@@ -1912,9 +1915,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		end
 		tempTime = floor(seconds / 60);
 		if ( notAbbreviated ) then
-			time = time..tempTime.." "..MINUTES;
+			time = time..format(D_MINUTES, tempTime);
 		else
-			time = time..tempTime.." "..MINUTES_ABBR;
+			time = time..format(MINUTES_ABBR, tempTime);
 		end
 		seconds = mod(seconds, 60);
 		count = count + 1;
@@ -1925,9 +1928,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		end
 		seconds = format("%d", seconds);
 		if ( notAbbreviated ) then
-			time = time..seconds.." "..SECONDS;
+			time = time..format(D_SECONDS, seconds);
 		else
-			time = time..seconds.." "..SECONDS_ABBR;
+			time = time..format(SECONDS_ABBR, seconds);
 		end
 	end
 	return time;

@@ -206,9 +206,6 @@ function HelpFrameOpenTicket_OnEvent(self, event, ...)
 			if ( statusText ) then
 				TicketStatusTime:Show();
 				TicketStatusTime:SetText(statusText);
-				-- setting the height here has problems when the user resizes the window because
-				-- the text height might change in that case...
-				--TicketStatusFrame:SetHeight(TicketStatusTitleText:GetHeight() + TicketStatusTime:GetHeight() + 20);
 			end
 
 			HelpFrameOpenTicket.hasTicket = 1;
@@ -259,8 +256,6 @@ end
 -- TicketStatusFrame
 
 function TicketStatusFrame_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	self:RegisterEvent("UPDATE_TICKET");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end

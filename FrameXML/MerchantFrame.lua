@@ -483,12 +483,10 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 		if ( itemLink ) then
 			local _, _, itemQuality = GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
-			if ( itemQuality >= ITEM_QUALITY_RARE ) then
-				if ( itemsString ) then
-					itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
-				else
-					itemsString = format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
-				end
+			if ( itemsString ) then
+				itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
+			else
+				itemsString = format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
 			end
 		end
 	end

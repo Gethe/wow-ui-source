@@ -9,7 +9,7 @@
 			<Frame name="$parentButtonText" setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
-						<FontString name="$parentName" inherits="GameFontNormal">
+						<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -26,22 +26,19 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<FontString name="$parentLocation" inherits="GameFontNormal">
+						<FontString name="$parentLocation" inherits="GameFontNormal" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT"/>
+								<Anchor point="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="0"/>
+										<AbsDimension x="10" y="-3"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentInfo" inherits="GameFontHighlightSmall" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentNoteHiddenText" inherits="GameFontNormalSmall" justifyH="LEFT" hidden="true">
@@ -64,7 +61,7 @@
 					<Button name="$parentNote">
 						<Size x="7" y="8"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="$parentNameLocation" relativePoint="LEFT">
+							<Anchor point="RIGHT" relativeTo="$parentName" relativePoint="LEFT">
 								<Offset x="0" y="0"/>
 							</Anchor>
 						</Anchors>
@@ -3701,6 +3698,12 @@
 													scrollBar:SetValue(max);
 												end
 											</OnTextChanged>
+											<OnCursorChanged>
+												ScrollingEdit_OnCursorChanged(arg1, arg2-10, arg3, arg4);
+											</OnCursorChanged>
+											<OnUpdate>
+												ScrollingEdit_OnUpdate(GuildInfoFrameScrollFrame);
+											</OnUpdate>
 										</Scripts>
 										<FontString inherits="GameFontHighlight"/>
 									</EditBox>
