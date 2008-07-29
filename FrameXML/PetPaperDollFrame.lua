@@ -209,7 +209,7 @@ function PetPaperDollFrame_SetStats()
 end
 
 function PetPaperDollFrame_SetSpellBonusDamage()
-	local unitClass = UnitClass("player");
+	local temp, unitClass = UnitClass("player");
 	unitClass = strupper(unitClass);
 	local spellDamageBonus = 0;
 	if( unitClass == "WARLOCK" ) then

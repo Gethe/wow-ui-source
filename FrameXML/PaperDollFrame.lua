@@ -1575,7 +1575,7 @@ function UpdatePaperdollStats(prefix, index)
 end
 
 function ComputePetBonus(stat, value)
-	local unitClass = UnitClass("player");
+	local temp, unitClass = UnitClass("player");
 	unitClass = strupper(unitClass);
 	if( unitClass == "WARLOCK" ) then
 		if( WARLOCK_PET_BONUS[stat] ) then

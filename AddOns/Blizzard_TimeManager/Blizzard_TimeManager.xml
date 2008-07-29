@@ -518,6 +518,12 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(nil, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPWATCH_RESETBUTTON, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 					<OnClick>
 						StopwatchResetButton_OnClick();
 					</OnClick>
@@ -533,6 +539,12 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(nil, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPWATCH_PLAYPAUSEBUTTON, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 					<OnClick>
 						StopwatchPlayPauseButton_OnClick(self);
 					</OnClick>
