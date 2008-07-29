@@ -52,7 +52,7 @@ function SetItemRef(link, text, button)
 				elseif ( HelpFrameOpenTicketText:IsVisible() ) then
 					HelpFrameOpenTicketText:Insert(name);
 				else
-					SendWho("n-"..name);					
+					SendWho(WHO_TAG_NAME..name);					
 				end
 				
 			elseif ( button == "RightButton" ) then

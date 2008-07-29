@@ -58,6 +58,113 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Button name="$parentSummonButton" inherits="ActionButtonTemplate">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="LEFT">
+								<Offset x="12" y="1"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentIcon"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture name="$parentFlash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
+								<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
+									<Size>
+										<AbsDimension x="32" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="-2" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
+									<Size>
+										<AbsDimension x="32" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM">
+											<Offset>
+												<AbsDimension x="0" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate">
+								<Size x="28" y="28"/>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+											<AbsDimension x="0" y="-1"/>
+										</Offset>
+									</Anchor>
+								</Anchors> 
+							</Cooldown>
+						</Frames>
+						<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+							<Size>
+								<AbsDimension x="40" y="40"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</NormalTexture>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+						<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+						<Scripts>
+							<OnLoad>
+								getglobal(self:GetName().."Icon"):SetTexture("Interface\\Icons\\Spell_Shadow_Teleport");
+								self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+							</OnLoad>
+							<OnEvent>
+								FriendsFrame_SummonButton_OnEvent(self, event, ...);
+							</OnEvent>
+							<OnShow>
+								FriendsFrame_SummonButton_OnShow(self)
+							</OnShow>
+							<OnClick>
+								FriendsFrame_ClickSummonButton(self)
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, 1);
+								if ( self.duration ) then
+									GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, 1);
+								end
+								if ( SHOW_NEWBIE_TIPS == "1" ) then
+									GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+								end
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>					
 					<Button name="$parentNote">
 						<Size x="7" y="8"/>
 						<Anchors>

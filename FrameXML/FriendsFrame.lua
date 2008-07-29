@@ -37,6 +37,44 @@ function FriendsFrame_ShowSubFrame(frameName)
 	end 
 end
 
+function FriendsFrame_SummonButton_OnEvent (self, event, ...)
+	if ( event == "SPELL_UPDATE_COOLDOWN" ) then
+		FriendsFrame_SummonButton_OnShow(self);
+	end
+end
+
+function FriendsFrame_SummonButton_OnShow (self)
+	local start, duration = GetSummonFriendCooldown();
+	
+	if ( duration > 0 ) then
+		self.duration = duration;
+		self.start = start;
+	else
+		self.duration = nil;
+		self.start = nil;
+	end
+	
+	local enable = CanSummonFriend(GetFriendInfo(self:GetID()));
+	
+	local icon = getglobal(self:GetName().."Icon");
+	local normalTexture = getglobal(self:GetName().."NormalTexture");
+	if ( enable ) then
+		icon:SetVertexColor(1.0, 1.0, 1.0);
+		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
+	else
+		icon:SetVertexColor(0.4, 0.4, 0.4);
+		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
+	end
+	CooldownFrame_SetTimer(getglobal(self:GetName().."Cooldown"), start, duration, ((enable and 0) or 1));
+end
+
+function FriendsFrame_ClickSummonButton (self)
+	local name = GetFriendInfo(self:GetID());
+	if ( CanSummonFriend(name) ) then
+		SummonFriend(name);
+	end
+end
+
 function FriendsFrame_ShowDropdown(name, connected, lineID)
 	HideDropDownMenu(1);
 	if ( connected ) then
@@ -58,6 +96,7 @@ function FriendsFrame_OnLoad()
 	PanelTemplates_UpdateTabs(this);
 	this:RegisterEvent("FRIENDLIST_SHOW");
 	this:RegisterEvent("FRIENDLIST_UPDATE");
+	this:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	this:RegisterEvent("IGNORELIST_UPDATE");
 	this:RegisterEvent("MUTELIST_UPDATE");
 	this:RegisterEvent("WHO_LIST_UPDATE");
@@ -82,6 +121,7 @@ end
 function FriendsFrame_OnShow()
 	VoiceChat_Toggle();
 	FriendsFrame.showMutedList = nil;
+	FriendsList_Update();
 	FriendsFrame_Update();
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoTab");
@@ -171,7 +211,7 @@ function FriendsList_Update()
 	local numFriends = GetNumFriends();
 	local nameLocationText, infoText, noteText, noteHiddenText;
 	local name, level, class, area, connected, status, note;
-	local friendButton;
+	local friendButton, RAFIcon, noteFrame, summonButton, RAF;
 
 	FriendsFrame.selectedFriend = GetSelectedFriend();
 	if ( numFriends > 0 ) then
@@ -203,9 +243,19 @@ function FriendsList_Update()
 		LocationText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextLocation");
 		RAFIcon = getglobal("FriendsFrameFriendButton"..i.."ButtonTextLink");
 		infoText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextInfo");
+		noteFrame = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNote");
 		noteText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteText");
 		noteHiddenText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteHiddenText");
-		noteIcon = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteIcon")
+		noteIcon = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteIcon");
+		summonButton = getglobal("FriendsFrameFriendButton" .. i .. "ButtonTextSummonButton");
+		friendButton = getglobal("FriendsFrameFriendButton"..i);
+		nameText:ClearAllPoints();
+		nameText:SetPoint("TOPLEFT", 10, -3);
+		noteFrame:SetPoint("RIGHT", nameText, "LEFT", 0, 0);
+		friendButton:SetID(friendIndex);
+		summonButton:SetID(friendIndex);
+		
+		summonButton:Hide();
 		RAFIcon:Hide();
 		if ( not name ) then
 			name = UNKNOWN;
@@ -214,10 +264,10 @@ function FriendsList_Update()
 			nameText:SetText(name);
 			LocationText:SetFormattedText(FRIENDS_LIST_TEMPLATE, area, status);
 			if ( RAF ) then
-				RAFIcon:Show();
-				LocationText:SetPoint("LEFT", RAFIcon, "RIGHT", 0, 0);
-			else
-				LocationText:SetPoint("LEFT", nameText, "RIGHT", 0, 0);
+				summonButton:Show();
+				noteFrame:SetPoint("RIGHT", nameText, "LEFT", -28, 0);
+				nameText:ClearAllPoints();
+				nameText:SetPoint("TOPLEFT", 38, -3);			
 			end
 			infoText:SetFormattedText(FRIENDS_LEVEL_TEMPLATE, level, class);
 			noteIcon:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
@@ -227,9 +277,6 @@ function FriendsList_Update()
 			infoText:SetText(UNKNOWN);
 			noteIcon:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		end
-
-		friendButton = getglobal("FriendsFrameFriendButton"..i);
-		friendButton:SetID(friendIndex);
 
 		if ( note ) then
 			if ( connected ) then
@@ -774,7 +821,7 @@ function FriendsFrame_OnEvent()
 	if ( event == "FRIENDLIST_SHOW" ) then
 		FriendsList_Update();
 		FriendsFrame_Update();
-	elseif ( event == "FRIENDLIST_UPDATE" ) then
+	elseif ( event == "FRIENDLIST_UPDATE" or event == "PARTY_MEMBERS_CHANGED") then
 		FriendsList_Update();
 	elseif ( event == "IGNORELIST_UPDATE" ) then
 		IgnoreList_Update();

@@ -1972,6 +1972,9 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	OnAccept = function()
 		ConfirmSummon();
 	end,
+	OnCancel = function()
+		CancelSummon();
+	end,
 	OnUpdate = function(elapsed, dialog)
 		local button = getglobal(dialog:GetName().."Button1");
 		if ( UnitAffectingCombat("player") ) then
