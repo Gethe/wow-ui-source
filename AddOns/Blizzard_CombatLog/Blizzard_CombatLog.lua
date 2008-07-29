@@ -1891,19 +1891,23 @@ local SCHOOL_STRINGS = {
 	STRING_SCHOOL_ARCANE
 }
 
+local SchoolStringTable = {
+	[SCHOOL_MASK_PHYSICAL]					= STRING_SCHOOL_PHYSICAL,
+	[SCHOOL_MASK_HOLY]						= STRING_SCHOOL_HOLY,
+	[SCHOOL_MASK_FIRE]						= STRING_SCHOOL_FIRE,
+	[SCHOOL_MASK_NATURE]					= STRING_SCHOOL_NATURE,
+	[SCHOOL_MASK_FROST]						= STRING_SCHOOL_FROST,
+	[SCHOOL_MASK_SHADOW]					= STRING_SCHOOL_SHADOW,
+	[SCHOOL_MASK_ARCANE]					= STRING_SCHOOL_ARCANE,
+	[SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST]	= STRING_SCHOOL_FROSTFIRE,
+};
+
 local function CombatLog_String_SchoolString(school)
 	if ( not school or school == SCHOOL_MASK_NONE ) then
 		return STRING_SCHOOL_UNKNOWN;
 	end
 
-	local schoolString
-	local mask = 1;
-	for i = 1, 7 do
-		if bit_band(school, mask) == mask then
-			schoolString = schoolString and (schoolString .. "+" .. SCHOOL_STRINGS[i]) or SCHOOL_STRINGS[i]
-		end
-		mask = mask * 2;
-	end
+	local schoolString = SchoolStringTable[school];
 	return schoolString or STRING_SCHOOL_UNKNOWN
 end
 _G.CombatLog_String_SchoolString = CombatLog_String_SchoolString

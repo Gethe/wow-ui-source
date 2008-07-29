@@ -546,8 +546,7 @@ StaticPopupDialogs["CHANNEL_INVITE"] = {
 	EditBoxOnEnterPressed = function(self, data)
 		local parent = self:GetParent();
 		local editBox = parent.editBox;
-		editBox:GetText();
-		ChannelInvite(data, name);
+		ChannelInvite(data, editBox:GetText());
 		editBox:SetText("");
 		parent:Hide();
 	end,
@@ -683,8 +682,8 @@ StaticPopupDialogs["PETRENAMECONFIRM"] = {
 	text = PET_RENAME_CONFIRMATION,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		PetRename(self:GetParent().data);
+	OnAccept = function(self, data)
+		PetRename(data);
 	end,
 	OnUpdate = function(self, elapsed)
 		if ( not UnitExists("pet") ) then

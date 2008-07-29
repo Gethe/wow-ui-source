@@ -1497,6 +1497,9 @@ function PlayerTitleDropDown_Initialize()
 end
 
 function PlayerTitleDropDown_OnClick (self)
+	-- FIXME - Remove this once UIDropDownMenu is converted from this -> self.
+	self = self or this;
+	-- END FIXME
 	UIDropDownMenu_SetSelectedValue(PlayerTitleDropDown, self.value);
 	SetCurrentTitle(self.value);
 end

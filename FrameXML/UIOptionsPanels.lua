@@ -350,11 +350,7 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 			FCF_Set_SimpleChat();
 		end
 
-		for _, control in next, self.controls do
-			if ( control.setFunc ) then
-				control.setFunc(control.value);
-			end
-		end
+		BlizzardOptionsPanel_OnEvent(self, event, ...);
 		self:UnregisterEvent(event);
 	end
 end
@@ -382,31 +378,8 @@ function InterfaceOptionsActionBarsPanel_OnEvent (self, event, ...)
 		MultiActionBar_Update();
 		UIParent_ManageFramePositions();
 
-		--This is straight out of BlizzardOptionsPanel_OnEvent and needs to mirror what it does for PLAYER_ENTERING_WORLD.
-		for i, control in next, self.controls do
-			if ( control.cvar ) then
-				if ( control.type == CONTROLTYPE_CHECKBOX ) then			
-					value = GetCVar(control.cvar);
-					control.currValue = value;
-					control.value = value;
-					if ( control.uvar ) then
-						setglobal(control.uvar, value);
-					end
-					
-					control.GetValue = function(self) return GetCVar(self.cvar); end
-					control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
-				elseif ( control.type == CONTROLTYPE_SLIDER ) then
-					control.currValue = GetCVar(control.cvar);
-				end
-			end
-		end
 		
-		for _, control in next, self.controls do
-			if ( control.setFunc ) then
-				control.setFunc(control.value);
-			end
-		end
-		self:UnregisterEvent(event);
+		BlizzardOptionsPanel_OnEvent(self, event, ...);
 	end
 end
 
@@ -1038,16 +1011,14 @@ function BlizzardOptionsPanel_SetupDependentControl (dependency, control)
 		return;
 	end
 	
-	control = control or this;
+	assert(control);
 	
 	dependency.dependentControls = dependency.dependentControls or {};
 	tinsert(dependency.dependentControls, control);
 	
 	if ( control.type ~= CONTROLTYPE_DROPDOWN ) then
-		control.oldDisable = control.Disable;
-		control.oldEnable = control.Enable;
-		control.Disable = function (self) self:oldDisable() getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
-		control.Enable = function (self) self:oldEnable() getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;
+		control.Disable = function (self) getmetatable(self).__index.Disable(self) getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
+		control.Enable = function (self) getmetatable(self).__index.Enable(self) getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;
 	else
 		control.Disable = function (self) UIDropDownMenu_DisableDropDown(self) end;
 		control.Enable = function (self) UIDropDownMenu_EnableDropDown(self) end;

@@ -433,7 +433,7 @@ function ActionButton_OnUpdate (self, elapsed)
 	end
 	
 	-- Handle range indicator
-	local rangeTime = self.rangeTimer;
+	local rangeTimer = self.rangeTimer;
 	if ( rangeTimer ) then
 		rangeTimer = rangeTimer - elapsed;
 
