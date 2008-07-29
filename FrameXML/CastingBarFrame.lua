@@ -48,20 +48,15 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		return;
 	end
 	
-	if ( not self.GetName ) then
-		error(self);
-	end
-	
 	local selfName = self:GetName();
-
 	local barSpark = getglobal(selfName.."Spark");
 	local barText = getglobal(selfName.."Text");
 	local barFlash = getglobal(selfName.."Flash");
 	local barIcon = getglobal(selfName.."Icon");
 
 	if ( event == "UNIT_SPELLCAST_START" ) then
-		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill = UnitCastingInfo(unit);
-		if ( not name or (not this.showTradeSkills and isTradeSkill)) then
+		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID = UnitCastingInfo(unit);
+		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			self:Hide();
 			return;
 		end
@@ -70,12 +65,10 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		if ( barSpark ) then
 			barSpark:Show();
 		end
-		self.startTime = startTime / 1000;
-		self.maxValue = endTime / 1000;
-
-		-- startTime to maxValue		no endTime
-		self:SetMinMaxValues(self.startTime, self.maxValue);
-		self:SetValue(self.startTime);
+		self.value = (GetTime() - (startTime / 1000));
+		self.maxValue = (endTime - startTime) / 1000;
+		self:SetMinMaxValues(0, self.maxValue);
+		self:SetValue(self.value);
 		if ( barText ) then
 			barText:SetText(text);
 		end
@@ -85,6 +78,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		self:SetAlpha(1.0);
 		self.holdTime = 0;
 		self.casting = 1;
+		self.castID = castID;
 		self.channeling = nil;
 		self.fadeOut = nil;
 		if ( self.showCastbar ) then
@@ -95,7 +89,8 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		if ( not self:IsVisible() ) then
 			self:Hide();
 		end
-		if ( self.casting or self.channeling ) then
+		if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(4, ...) == self.castID) or
+		     (self.channeling and event == "UNIT_SPELLCAST_CHANNEL_STOP") ) then
 			if ( barSpark ) then
 				barSpark:Hide();
 			end
@@ -115,7 +110,8 @@ function CastingBarFrame_OnEvent (self, event, ...)
 			self.holdTime = 0;
 		end
 	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
-		if ( self:IsShown() and not self.channeling and not self.fadeOut ) then
+		if ( self:IsShown() and
+		     (self.casting and select(4, ...) == self.castID) and not self.fadeOut ) then
 			self:SetValue(self.maxValue);
 			self:SetStatusBarColor(1.0, 0.0, 0.0);
 			if ( barSpark ) then
@@ -141,9 +137,9 @@ function CastingBarFrame_OnEvent (self, event, ...)
 				self:Hide();
 				return;
 			end
-			self.startTime = startTime / 1000;
-			self.maxValue = endTime / 1000;
-			self:SetMinMaxValues(this.startTime, this.maxValue);
+			self.value = (GetTime() - (startTime / 1000));
+			self.maxValue = (endTime - startTime) / 1000;
+			self:SetMinMaxValues(0, self.maxValue);
 			if ( not self.casting ) then
 				self:SetStatusBarColor(1.0, 0.7, 0.0);
 				if ( barSpark ) then
@@ -168,14 +164,10 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		end
 
 		self:SetStatusBarColor(0.0, 1.0, 0.0);
-		self.startTime = startTime / 1000;
-		self.endTime = endTime / 1000;
-		self.duration = self.endTime - self.startTime;
-		self.maxValue = self.startTime;
-
-		-- startTime to endTime		no maxValue
-		self:SetMinMaxValues(self.startTime, self.endTime);
-		self:SetValue(self.endTime);
+		self.value = ((endTime / 1000) - GetTime());
+		self.maxValue = (endTime - startTime) / 1000;
+		self:SetMinMaxValues(0, self.maxValue);
+		self:SetValue(self.value);
 		if ( barText ) then
 			barText:SetText(text);
 		end
@@ -201,10 +193,10 @@ function CastingBarFrame_OnEvent (self, event, ...)
 				self:Hide();
 				return;
 			end
-			self.startTime = startTime / 1000;
-			self.endTime = endTime / 1000;
-			self.maxValue = self.startTime;
-			self:SetMinMaxValues(self.startTime, self.endTime);
+			self.value = ((endTime / 1000) - GetTime());
+			self.maxValue = (endTime - startTime) / 1000;
+			self:SetMinMaxValues(0, self.maxValue);
+			self:SetValue(self.value);
 		end
 	end
 end
@@ -214,37 +206,27 @@ function CastingBarFrame_OnUpdate (self, elapsed)
 	local barFlash = getglobal(self:GetName().."Flash");
 
 	if ( self.casting ) then
-		local status = GetTime();
-		if ( status > self.maxValue ) then
-			status = self.maxValue;
-		end
-		if ( status == self.maxValue ) then
+		self.value = self.value + elapsed;
+		if ( self.value >= self.maxValue ) then
 			self:SetValue(self.maxValue);
 			CastingBarFrame_FinishSpell(self, barSpark, barFlash);
 			return;
 		end
-		self:SetValue(status);
+		self:SetValue(self.value);
 		if ( barFlash ) then
 			barFlash:Hide();
 		end
-		local sparkPosition = ((status - self.startTime) / (self.maxValue - self.startTime)) * self:GetWidth();
-		if ( sparkPosition < 0 ) then
-			sparkPosition = 0;
-		end
 		if ( barSpark ) then
+			local sparkPosition = (self.value / self.maxValue) * self:GetWidth();
 			barSpark:SetPoint("CENTER", self, "LEFT", sparkPosition, 2);
 		end
 	elseif ( self.channeling ) then
-		local time = GetTime();
-		if ( time > self.endTime ) then
-			time = self.endTime;
-		end
-		if ( time == self.endTime ) then
+		self.value = self.value - elapsed;
+		if ( self.value <= 0 ) then
 			CastingBarFrame_FinishSpell(self, barSpark, barFlash);
 			return;
 		end
-		local barValue = self.startTime + (self.endTime - time);
-		self:SetValue( barValue );
+		self:SetValue(self.value);
 		if ( barFlash ) then
 			barFlash:Hide();
 		end

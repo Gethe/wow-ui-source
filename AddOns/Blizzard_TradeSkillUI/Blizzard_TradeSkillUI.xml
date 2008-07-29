@@ -5,9 +5,9 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetTradeSkillRecipeLink(this:GetID()));
+					HandleModifiedItemClick(GetTradeSkillRecipeLink(self:GetID()));
 				else
-					TradeSkillSkillButton_OnClick(arg1);
+					TradeSkillSkillButton_OnClick(self, button);
 				end
 			</OnClick>
 		</Scripts>
@@ -15,19 +15,19 @@
 	<Button name="TradeSkillItemTemplate" inherits="QuestItemTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT");
-				GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill, this:GetID());
-				CursorUpdate();
+				GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
+				GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill, self:GetID());
+				CursorUpdate(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 				ResetCursor();
 			</OnLeave>
 			<OnUpdate>
-				CursorOnUpdate();
+				CursorOnUpdate(self);
 			</OnUpdate>
 			<OnClick>
-				HandleModifiedItemClick(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, this:GetID()));
+				HandleModifiedItemClick(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -77,7 +77,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\TradeSkillFrame\UI-TradeSkill-BotLeft">
+				<Texture name="TradeSkillFrameBottomLeftTexture" file="Interface\TradeSkillFrame\UI-TradeSkill-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -85,7 +85,7 @@
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
+				<Texture name="TradeSkillFrameBottomRightTexture" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -133,6 +133,41 @@
 			</Layer>
 		</Layers>
 		<Frames>
+            <Button name="TradeSkillLinkButton">
+				<Size>
+					<AbsDimension x="32" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TradeSkillFrameTitleText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\TradeSkillFrame\UI-TradeSkill-LinkButton">
+					<TexCoords left="0" right="1.0" top="0" bottom="0.5"/>
+				</NormalTexture>
+				<HighlightTexture file="Interface\TradeSkillFrame\UI-TradeSkill-LinkButton" alphaMode="ADD">
+					<TexCoords left="0" right="1.0" top="0.5" bottom="1.0"/>
+				</HighlightTexture>
+				<Scripts>
+					<OnClick>
+						local link=GetTradeSkillListLink();
+						if (not ChatEdit_InsertLink(link) ) then
+							ChatFrameEditBox:Show();
+							ChatEdit_InsertLink(link);
+						end
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self,"ANCHOR_TOPLEFT");
+						GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
 			<CheckButton name="TradeSkillFrameAvailableFilterCheckButton" inherits="UICheckButtonTemplate">
 				<Size>
 					<AbsDimension x="24" y="24"/>
@@ -149,10 +184,10 @@
 						TradeSkillFrameAvailableFilterCheckButtonText:SetText(CRAFT_IS_MAKEABLE);
 					</OnLoad>
 					<OnClick>
-						TradeSkillOnlyShowMakeable(this:GetChecked());
+						TradeSkillOnlyShowMakeable(self:GetChecked());
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						GameTooltip:SetText(CRAFT_IS_MAKEABLE_TOOLTIP, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
@@ -163,7 +198,7 @@
 					<AbsInset left="0" right="-75" top="0" bottom="0"/>
 				</HitRectInsets>
 			</CheckButton>
-			<StatusBar name="TradeSkillRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
+			<StatusBar name="TradeSkillRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0" enableMouse="false">
 				<Size>
 					<AbsDimension x="265" y="14"/>
 				</Size>
@@ -185,6 +220,18 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<Texture name="$parentBorder" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size>
+								<AbsDimension x="274" y="27"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground">
@@ -192,24 +239,9 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Button name="$parentBorder">
-						<Size>
-							<AbsDimension x="274" y="27"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT">
-								<Offset>
-									<AbsDimension x="-5" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<NormalTexture name="$parentNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder" />
-					</Button>			
-				</Frames>
 				<Scripts>
 					<OnLoad>
-						this:RegisterEvent("SKILL_LINES_CHANGED");
+						self:RegisterEvent("SKILL_LINES_CHANGED");
 					</OnLoad>
 					<OnEvent>
 						if ( event == "SKILL_LINES_CHANGED" ) then
@@ -267,27 +299,27 @@
 				</Layers>
 				<Scripts>
 					<OnShow>
-						this:SetText(SEARCH);
+						self:SetText(SEARCH);
 					</OnShow>
 					<OnEnterPressed>
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEscapePressed>
 					<OnTextChanged>
-						TradeSkillFilter_OnTextChanged();
+						TradeSkillFilter_OnTextChanged(self);
 					</OnTextChanged>
 					<OnEditFocusLost>
-						this:HighlightText(0, 0);
-						if ( this:GetText() == "" ) then
-							this:SetText(SEARCH);
+						self:HighlightText(0, 0);
+						if ( self:GetText() == "" ) then
+							self:SetText(SEARCH);
 						end
 					</OnEditFocusLost>
 					<OnEditFocusGained>
-						this:HighlightText();
-						if ( this:GetText() == SEARCH ) then
-							this:SetText("");
+						self:HighlightText();
+						if ( self:GetText() == SEARCH ) then
+							self:SetText("");
 						end
 					</OnEditFocusGained>
 				</Scripts>
@@ -350,10 +382,10 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName()):SetText(ALL);
+								getglobal(self:GetName()):SetText(ALL);
 							</OnLoad>
 							<OnClick>
-								TradeSkillCollapseAllButton_OnClick();
+								TradeSkillCollapseAllButton_OnClick(self);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -369,7 +401,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TradeSkillInvSlotDropDown_OnLoad();
+						TradeSkillInvSlotDropDown_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -383,7 +415,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TradeSkillSubClassDropDown_OnLoad();
+						TradeSkillSubClassDropDown_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -486,7 +518,7 @@
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(TRADE_SKILL_HEIGHT, TradeSkillFrame_Update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, TRADE_SKILL_HEIGHT, TradeSkillFrame_Update);
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>
@@ -585,11 +617,23 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
-								<FontString name="TradeSkillReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
+								<FontString name="TradeSkillDescription" inherits="GameFontHighlightSmall" justifyH="LEFT">
+									<Size>
+										<AbsDimension x="290" y="0"/>
+									</Size>
 									<Anchors>
 										<Anchor point="TOPLEFT">
 											<Offset>
-												<AbsDimension x="8" y="-47"/>
+												<AbsDimension x="5" y="-50"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="TradeSkillReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="TradeSkillDescription" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-10"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -623,23 +667,23 @@
 								</Layers>
 								<Scripts>
 									<OnLoad>
-										this.hasItem = 1;
+										self.hasItem = 1;
 									</OnLoad>
 									<OnClick>
 										HandleModifiedItemClick(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
 									</OnClick>
 									<OnEnter>
-										TradeSkillItem_OnEnter();
+										TradeSkillItem_OnEnter(self);
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();
 										ResetCursor();
 									</OnLeave>
 									<OnUpdate>
-										if ( GameTooltip:IsOwned(this) ) then
-											TradeSkillItem_OnEnter();
+										if ( GameTooltip:IsOwned(self) ) then
+											TradeSkillItem_OnEnter(self);
 										end
-										CursorOnUpdate();
+										CursorOnUpdate(self);
 									</OnUpdate>
 								</Scripts>
 							</Button>
@@ -886,21 +930,21 @@
 				</Layers>
 				<Scripts>
 					<OnEnterPressed>
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEscapePressed>
 					<OnTextChanged>
-						if ( this:GetText() == "0" ) then
-							this:SetText("1");
+						if ( self:GetText() == "0" ) then
+							self:SetText("1");
 						end
 					</OnTextChanged> 
 					<OnEditFocusLost>
-						this:HighlightText(0, 0);
+						self:HighlightText(0, 0);
 					</OnEditFocusLost>
 					<OnEditFocusGained>
-						this:HighlightText();
+						self:HighlightText();
 					</OnEditFocusGained>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
@@ -939,13 +983,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				TradeSkillFrame_OnLoad();
+				TradeSkillFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				TradeSkillFrame_OnEvent();
+				TradeSkillFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				TradeSkillInputBox:SetNumber(1);
+				TradeSkillInputBox:SetNumber(1);                
 				PlaySound("igCharacterInfoOpen");
 			</OnShow>
 			<OnHide>

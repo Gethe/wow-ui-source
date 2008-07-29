@@ -10,13 +10,13 @@
 		</Anchors>
 		<Scripts>
             <OnEnter>
-				TaxiNodeOnButtonEnter(this);
+				TaxiNodeOnButtonEnter(self);
             </OnEnter>
             <OnLeave>
 				GameTooltip:Hide();
             </OnLeave>
  			<OnClick>
-				TakeTaxiNode(this:GetID());
+				TakeTaxiNode(self:GetID());
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\TaxiFrame\UI-Taxi-Icon-Highlight">
@@ -154,10 +154,10 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				TaxiFrame_OnLoad();
+				TaxiFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				TaxiFrame_OnEvent(event);
+				TaxiFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
 				PlaySound("igMainMenuOpen");

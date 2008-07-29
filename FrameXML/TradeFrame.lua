@@ -1,24 +1,25 @@
 MAX_TRADE_ITEMS = 7;
 MAX_TRADABLE_ITEMS = 6;
 
-function TradeFrame_OnLoad()
-	this:RegisterEvent("TRADE_CLOSED");
-	this:RegisterEvent("TRADE_SHOW");
-	this:RegisterEvent("TRADE_UPDATE");
-	this:RegisterEvent("TRADE_TARGET_ITEM_CHANGED");
-	this:RegisterEvent("TRADE_PLAYER_ITEM_CHANGED");
-	this:RegisterEvent("TRADE_ACCEPT_UPDATE");
+function TradeFrame_OnLoad(self)
+	self:RegisterEvent("TRADE_CLOSED");
+	self:RegisterEvent("TRADE_SHOW");
+	self:RegisterEvent("TRADE_UPDATE");
+	self:RegisterEvent("TRADE_TARGET_ITEM_CHANGED");
+	self:RegisterEvent("TRADE_PLAYER_ITEM_CHANGED");
+	self:RegisterEvent("TRADE_ACCEPT_UPDATE");
 end
 
-function TradeFrame_OnShow()
-	TradeFrame.acceptState = 0;
+function TradeFrame_OnShow(self)
+	self.acceptState = 0;
 	TradeFrame_UpdateMoney();
 end
 
-function TradeFrame_OnEvent()
+function TradeFrame_OnEvent(self, event, ...)
+	local arg1, arg2 = ...;
 	if ( event == "TRADE_SHOW" or event == "TRADE_UPDATE" ) then
-		ShowUIPanel(this, 1);
-		if ( not this:IsShown() ) then
+		ShowUIPanel(self, 1);
+		if ( not self:IsShown() ) then
 			CloseTrade();
 			return;
 		end
@@ -26,7 +27,7 @@ function TradeFrame_OnEvent()
 		TradeFrameTradeButton:Enable();
 		TradeFrame_Update();
 	elseif ( event == "TRADE_CLOSED" ) then
-		HideUIPanel(this);
+		HideUIPanel(self);
 	elseif ( event == "TRADE_TARGET_ITEM_CHANGED" ) then
 		TradeFrame_UpdateTargetItem(arg1);
 	elseif ( event == "TRADE_PLAYER_ITEM_CHANGED" ) then

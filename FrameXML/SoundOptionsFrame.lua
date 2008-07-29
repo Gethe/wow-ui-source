@@ -32,7 +32,7 @@ SoundOptionsFrameSliders = {
 	{ index = 6, text = SOUND_QUALITY, cvar = "Sound_OutputQuality", minValue = 0, maxValue = 2, valueStep = 1, initialValue = 1, tooltipText = OPTION_TOOLTIP_SOUND_QUALITY},
 };
 
-function SoundOptionsFrame_Init()
+function SoundOptionsFrame_Init(self)
 	for index, value in pairs(SoundOptionsFrameCheckButtons) do
 		local string = GetCVar(value.cvar);
 		if ( string and (string ~= "0") ) then
@@ -45,8 +45,8 @@ function SoundOptionsFrame_Init()
 			SoundOptionsFrameCheckButton11:Hide();
 		end
 	end
-	this:RegisterEvent("CVAR_UPDATE");
-	this:RegisterEvent("SOUND_DEVICE_UPDATE");
+	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("SOUND_DEVICE_UPDATE");
 end
 
 function SoundOptionsFrame_OnEvent(self, event, ...)
@@ -111,7 +111,7 @@ function SoundOptionsFrame_Cancel()
 		SetCVar("Sound_OutputDriverIndex", SoundOptionsOutputDropDown.initialValue);
 		SetCVar("Sound_OutputDriverName", SoundOptionsOutputDropDown.initialText);
 		UIDropDownMenu_SetSelectedValue(SoundOptionsOutputDropDown, SoundOptionsOutputDropDown.initialValue);
-		UIDropDownMenu_SetText(SoundOptionsOutputDropDown.initialText, SoundOptionsOutputDropDown);
+		UIDropDownMenu_SetText(SoundOptionsOutputDropDown, SoundOptionsOutputDropDown.initialText);
 		if ( currentIndex ~= SoundOptionsOutputDropDown.initialValue ) then
 			Sound_RestartSoundEngine();
 		end
@@ -120,14 +120,14 @@ function SoundOptionsFrame_Cancel()
 	end
 end
 
-function SoundOptionsCheckButton_OnClick()
+function SoundOptionsCheckButton_OnClick(self)
 	for index, value in pairs(SoundOptionsFrameCheckButtons) do
-		if ( value.index == this:GetID() ) then
+		if ( value.index == self:GetID() ) then
 			if ( index == "ENABLE_ALL_SOUND" ) then
-				SoundOptionsFrame_ToggleSound("CLICK");
+				SoundOptionsFrame_ToggleSound(self, "CLICK");
 			else
-				SetCVar(value.cvar, this:GetChecked());
-				value.value = this:GetChecked();
+				SetCVar(value.cvar, self:GetChecked());
+				value.value = self:GetChecked();
 			end
 			if ( value.cvar == "Sound_EnableHardware" ) then
 				if ( value.initialValue ~= value.value ) then
@@ -152,7 +152,7 @@ function SoundOptionsCheckButton_OnClick()
 			end
 		end
 	end
-	if ( this:GetChecked() ) then
+	if ( self:GetChecked() ) then
 		PlaySound("igMainMenuOptionCheckBoxOff");
 	else
 		PlaySound("igMainMenuOptionCheckBoxOn");
@@ -160,15 +160,14 @@ function SoundOptionsCheckButton_OnClick()
 	SoundOptionsFrame_UpdateDependencies();
 end
 
-function SoundOptionsSlider_OnValueChanged()
-	local valueText = getglobal(this:GetName().."Value");
+function SoundOptionsSlider_OnValueChanged(self, value)
+	local valueText = getglobal(self:GetName().."Value");
 	-- need to scale the value down to between 0 and 1
 	if ( valueText ) then
-		local val = this:GetValue();
-		local low, high = this:GetMinMaxValues();
+		local low, high = self:GetMinMaxValues();
 		local suffix = nil;
 		if ( high > 1 ) then
-			if ( val >= 3 ) then
+			if ( value >= 3 ) then
 				valueText:SetText(HIGH);
 			else
 				valueText:SetText(LOW);
@@ -176,33 +175,32 @@ function SoundOptionsSlider_OnValueChanged()
 
 		else
 			suffix = "%";
-			val = ceil(val * 100); 
-			valueText:SetText(tostring(val)..suffix);
+			valueText:SetText(tostring(ceil(value * 100))..suffix);
 		end
 	end
 
-	for index, value in pairs(SoundOptionsFrameSliders) do
-		if ( value.index == this:GetID() ) then
-			if ( value.cvar == "Sound_NumChannels" ) then
-				local cvarValue = GetCVar(value.cvar);
-				if ( tonumber(cvarValue) == tonumber(SoundChannelNumChannels[tostring(this:GetValue())]) ) then
+	for index, slider in pairs(SoundOptionsFrameSliders) do
+		if ( slider.index == self:GetID() ) then
+			if ( slider.cvar == "Sound_NumChannels" ) then
+				local cvarValue = GetCVar(slider.cvar);
+				if ( tonumber(cvarValue) == tonumber(SoundChannelNumChannels[tostring(value)]) ) then
 					--Nothing changed
 				else
-					SetCVar(value.cvar, tonumber(SoundChannelNumChannels[tostring(this:GetValue())]) );
+					SetCVar(slider.cvar, tonumber(SoundChannelNumChannels[tostring(value)]) );
 					AudioOptionsFrame.SoundRestart = 1;
 				end
-			elseif ( value.cvar == "Sound_OutputQuality" ) then
-				local cvarValue = GetCVar(value.cvar);
-				if ( tonumber(cvarValue) == this:GetValue() ) then
+			elseif ( slider.cvar == "Sound_OutputQuality" ) then
+				local cvarValue = GetCVar(slider.cvar);
+				if ( tonumber(cvarValue) == value ) then
 					--Nothing changed
 				else
-					SetCVar(value.cvar, this:GetValue());
+					SetCVar(slider.cvar, value);
 					AudioOptionsFrame.SoundRestart = 1;
 				end
 			else
-				SetCVar(value.cvar, this:GetValue());
+				SetCVar(slider.cvar, value);
 			end
-			value.previousValue = this:GetValue();
+			slider.previousValue = value;
 		end
 	end
 end
@@ -217,11 +215,11 @@ function SoundOptionsFrame_ToggleMusic()
 	SoundOptionsFrame_Load();
 end
 
-function SoundOptionsFrame_ToggleSound(isClicked)
+function SoundOptionsFrame_ToggleSound(self, isClicked)
 	local checked;
 	-- Need different behavior if a button is clicked or if sound is toggled by hotkey
 	if ( isClicked ) then
-		if ( this:GetChecked() ) then
+		if ( self:GetChecked() ) then
 			SetCVar("Sound_EnableSFX", 1);
 		else
 			SetCVar("Sound_EnableSFX", 0);
@@ -328,7 +326,7 @@ function SoundOptionsFrame_RefreshSoundDevices()
 			deviceName = Sound_GameSystem_GetOutputDriverNameByIndex(index);
 			if ( deviceName == currentDevice ) then
 				UIDropDownMenu_SetSelectedValue(SoundOptionsOutputDropDown, index);
-				UIDropDownMenu_SetText(deviceName, SoundOptionsOutputDropDown);
+				UIDropDownMenu_SetText(SoundOptionsOutputDropDown, deviceName);
 				if ( currentValue == initialValue ) then
 					SoundOptionsOutputDropDown.initialValue = index;
 				end
@@ -339,7 +337,7 @@ function SoundOptionsFrame_RefreshSoundDevices()
 		
 		if ( not found ) then
 			UIDropDownMenu_SetSelectedValue(SoundOptionsOutputDropDown, 0);
-			UIDropDownMenu_SetText(Sound_GameSystem_GetOutputDriverNameByIndex(0), SoundOptionsOutputDropDown);
+			UIDropDownMenu_SetText(SoundOptionsOutputDropDown, Sound_GameSystem_GetOutputDriverNameByIndex(0));
 			SoundOptionsOutputDropDown.initialValue = 0;
 		end
 	end
@@ -348,7 +346,7 @@ end
 -- Output Device DropDown
 function SoundOptionsOutputDropDown_Load()
 	UIDropDownMenu_Initialize(SoundOptionsOutputDropDown, SoundOptionsOutputDropDown_Initialize);
-	UIDropDownMenu_SetWidth(140, SoundOptionsOutputDropDown);
+	UIDropDownMenu_SetWidth(SoundOptionsOutputDropDown, 140);
 
 	local selectedDriverIndex = GetCVar("Sound_OutputDriverIndex");
 	SoundOptionsOutputDropDown.initialValue = selectedDriverIndex;
@@ -359,12 +357,12 @@ function SoundOptionsOutputDropDown_Load()
 
 	UIDropDownMenu_SetSelectedValue(SoundOptionsOutputDropDown, deviceName, 1);
 	SoundOptionsOutputDropDown.tooltip = OPTION_RESTART_REQUIREMENT;
-	UIDropDownMenu_SetText(deviceName, SoundOptionsOutputDropDown);
+	UIDropDownMenu_SetText(SoundOptionsOutputDropDown, deviceName);
 end
 
-function SoundOptionsOutputDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(SoundOptionsOutputDropDown, this.value);
-	SetCVar("Sound_OutputDriverIndex", this.value);
+function SoundOptionsOutputDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(SoundOptionsOutputDropDown, self.value);
+	SetCVar("Sound_OutputDriverIndex", self.value);
 	AudioOptionsFrame_RestartEngine();
 end
 

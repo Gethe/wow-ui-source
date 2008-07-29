@@ -17,11 +17,11 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("START_MINIGAME");
-				this:RegisterEvent("MINIGAME_UPDATE");
+				self:RegisterEvent("START_MINIGAME");
+				self:RegisterEvent("MINIGAME_UPDATE");
 			</OnLoad>
 			<OnEvent>
-				MinigameFrame_OnEvent(event);
+				MinigameFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Frame>

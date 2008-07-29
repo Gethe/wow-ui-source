@@ -138,6 +138,7 @@ COMBATLOG_EVENT_LIST = {
 	["SPELL_DRAIN"] = true,
 	["SPELL_LEECH"] = true,
 	["SPELL_SUMMON"] = true,
+	["SPELL_RESURRECT"] = true,
 	["SPELL_CREATE"] = true,
 	["SPELL_INSTAKILL"] = true,
 	["SPELL_INTERRUPT"] = true,
@@ -167,7 +168,9 @@ COMBATLOG_EVENT_LIST = {
 	["DAMAGE_SPLIT"] = false,
 	["PARTY_KILL"] = true,
 	["UNIT_DIED"] = true,
-	["UNIT_DESTROYED"] = true
+	["UNIT_DESTROYED"] = true,
+	["SPELL_BUILDING_DAMAGE"] = true,
+	["SPELL_BUILDING_HEAL"] = true,
 };
 
 COMBATLOG_FLAG_LIST = {
@@ -178,6 +181,15 @@ COMBATLOG_FLAG_LIST = {
 	[COMBATLOG_FILTER_HOSTILE_PLAYERS] = true,
 	[COMBATLOG_FILTER_NEUTRAL_UNITS] = true,
 	[COMBATLOG_FILTER_UNKNOWN_UNITS] = true,
+};
+
+EVENT_TEMPLATE_FORMATS = {
+	["SPELL_AURA_APPLIED_BUFF"] = TEXT_MODE_A_STRING_2,
+	["SPELL_AURA_APPLIED"] = TEXT_MODE_A_STRING_2,
+	["SPELL_AURA_REFRESH_BUFF"] = TEXT_MODE_A_STRING_2,
+	["SPELL_AURA_REFRESH"] = TEXT_MODE_A_STRING_2,
+	["SPELL_CAST_START"] = TEXT_MODE_A_STRING_2,
+	["SPELL_CAST_SUCCESS"] = TEXT_MODE_A_STRING_2
 };
 
 -- 
@@ -748,6 +760,7 @@ function Blizzard_CombatLog_RefilterUpdate()
 	while (valid and total < COMBATLOG_LIMIT_PER_FRAME) do 
 		-- Log to the window
 		local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
+		-- NOTE: be sure to pass in nil for the color id or the color id may override the r, g, b values for this message
 		COMBATLOG:AddMessage( text, r, g, b, nil, true );
 
 		-- count can be 
@@ -872,10 +885,12 @@ do
 			spellMenu2[2].text = string.format(BLIZZARD_COMBAT_LOG_MENU_SPELL_HIDE, eventType);
 			-- Copy the table references over
 			spellMenu[2] = spellMenu2[2];
-			spellMenu[3] = spellMenu2[3];
-			-- These 2 calls update the menus in their respective do-end blocks
-			spellMenu[4] = Blizzard_CombatLog_FormattingMenu(Blizzard_CombatLog_Filters.currentFilter);
-			spellMenu[5] = Blizzard_CombatLog_MessageTypesMenu(Blizzard_CombatLog_Filters.currentFilter);
+			if ( DEBUG ) then
+				spellMenu[3] = spellMenu2[3];
+				-- These 2 calls update the menus in their respective do-end blocks
+				spellMenu[4] = Blizzard_CombatLog_FormattingMenu(Blizzard_CombatLog_Filters.currentFilter);
+				spellMenu[5] = Blizzard_CombatLog_MessageTypesMenu(Blizzard_CombatLog_Filters.currentFilter);
+			end
 		else
 			-- Remove the table references, they are still stored in their various closures
 			spellMenu[2] = nil;
@@ -901,7 +916,7 @@ do
 				hasArrow = true;
 				checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SWING_DAMAGE", "SWING_MISSED"); end;
 				keepShownOnClick = true;
-				func = function ( arg1, arg2, checked )
+				func = function ( self, arg1, arg2, checked )
 					Blizzard_CombatLog_MenuHelper ( checked, "SWING_DAMAGE", "SWING_MISSED" );
 				end;
 				menuList = {
@@ -909,7 +924,7 @@ do
 						text = "Damage";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SWING_DAMAGE");end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SWING_DAMAGE" );
 						end;
 					};
@@ -917,7 +932,7 @@ do
 						text = "Failure";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SWING_MISSED"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SWING_MISSED" );
 						end;
 					};
@@ -928,7 +943,7 @@ do
 				hasArrow = true;
 				checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "RANGE_DAMAGE", "RANGE_MISSED"); end;
 				keepShownOnClick = true;
-				func = function ( arg1, arg2, checked )
+				func = function ( self, arg1, arg2, checked )
 					Blizzard_CombatLog_MenuHelper ( checked, "RANGED_DAMAGE", "RANGED_MISSED" );
 				end;
 				menuList = {
@@ -936,7 +951,7 @@ do
 						text = "Damage";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "RANGE_DAMAGE"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "RANGE_DAMAGE" );
 						end;
 					};
@@ -944,7 +959,7 @@ do
 						text = "Failure";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "RANGE_MISSED"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "RANGE_MISSED" );
 						end;
 					};
@@ -955,7 +970,7 @@ do
 				hasArrow = true;
 				checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_DAMAGE", "SPELL_MISSED", "SPELL_HEAL", "SPELL_ENERGIZE", "SPELL_DRAIN", "SPELL_LEECH", "SPELL_INTERRUPT", "SPELL_EXTRA_ATTACKS",  "SPELL_CAST_START", "SPELL_CAST_SUCCESS", "SPELL_CAST_FAILED", "SPELL_INSTAKILL", "SPELL_DURABILITY_DAMAGE" ); end;
 				keepShownOnClick = true;
-				func = function ( arg1, arg2, checked )
+				func = function ( self, arg1, arg2, checked )
 					Blizzard_CombatLog_MenuHelper ( checked, "SPELL_DAMAGE", "SPELL_MISSED", "SPELL_HEAL", "SPELL_ENERGIZE", "SPELL_DRAIN", "SPELL_LEECH", "SPELL_INTERRUPT", "SPELL_EXTRA_ATTACKS",  "SPELL_CAST_START", "SPELL_CAST_SUCCESS", "SPELL_CAST_FAILED", "SPELL_INSTAKILL", "SPELL_DURABILITY_DAMAGE" );
 				end;
 				menuList = {
@@ -963,7 +978,7 @@ do
 						text = "Damage";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_DAMAGE"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_DAMAGE" );
 						end;
 					};
@@ -971,7 +986,7 @@ do
 						text = "Failure";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_MISSED"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_MISSED" );
 						end;
 					};
@@ -979,7 +994,7 @@ do
 						text = "Heals";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_HEAL"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_HEAL" );
 						end;
 					};
@@ -987,7 +1002,7 @@ do
 						text = "Power Gains";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_ENERGIZE"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_ENERGIZE" );
 						end;
 					};
@@ -995,7 +1010,7 @@ do
 						text = "Drains";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_DRAIN", "SPELL_LEECH"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_DRAIN", "SPELL_LEECH" );
 						end;
 					};
@@ -1003,7 +1018,7 @@ do
 						text = "Interrupts";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_INTERRUPT"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_INTERRUPT" );
 						end;
 					};
@@ -1011,7 +1026,7 @@ do
 						text = "Extra Attacks";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_EXTRA_ATTACKS"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_EXTRA_ATTACKS" );
 						end;
 					};
@@ -1020,7 +1035,7 @@ do
 						hasArrow = true;
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_CAST_START", "SPELL_CAST_SUCCESS", "SPELL_CAST_FAILED"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_CAST_START", "SPELL_CAST_SUCCESS", "SPELL_CAST_FAILED");
 						end;
 						menuList = {
@@ -1028,7 +1043,7 @@ do
 								text = "Start";
 								checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_CAST_START"); end;
 								keepShownOnClick = true;
-								func = function ( arg1, arg2, checked )
+								func = function ( self, arg1, arg2, checked )
 									Blizzard_CombatLog_MenuHelper ( checked, "SPELL_CAST_START" );
 								end;
 							};
@@ -1036,7 +1051,7 @@ do
 								text = "Success";
 								checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_CAST_SUCCESS"); end;
 								keepShownOnClick = true;
-								func = function ( arg1, arg2, checked )
+								func = function ( self, arg1, arg2, checked )
 									Blizzard_CombatLog_MenuHelper ( checked, "SPELL_CAST_SUCCESS" );
 								end;
 							};
@@ -1044,7 +1059,7 @@ do
 								text = "Failed";
 								checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_CAST_FAILED"); end;
 								keepShownOnClick = true;
-								func = function ( arg1, arg2, checked )
+								func = function ( self, arg1, arg2, checked )
 									Blizzard_CombatLog_MenuHelper ( checked, "SPELL_CAST_FAILED" );
 								end;
 							};
@@ -1054,7 +1069,7 @@ do
 						text = "Special";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_INSTAKILL", "SPELL_DURABILITY_DAMAGE"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_INSTAKILL", "SPELL_DURABILITY_DAMAGE" );
 						end;
 					};
@@ -1065,7 +1080,7 @@ do
 				hasArrow = true;
 				checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_AURA_APPLIED", "SPELL_AURA_BROKEN", "SPELL_AURA_REFRESH", "SPELL_AURA_BROKEN_SPELL", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_REMOVED_DOSE", "SPELL_DISPEL", "SPELL_STOLEN",  "ENCHANT_APPLIED",  "ENCHANT_REMOVED" ); end;
 				keepShownOnClick = true;
-				func = function ( arg1, arg2, checked )
+				func = function ( self, arg1, arg2, checked )
 					Blizzard_CombatLog_MenuHelper ( checked, "SPELL_AURA_APPLIED", "SPELL_AURA_BROKEN", "SPELL_AURA_REFRESH", "SPELL_AURA_BROKEN_SPELL", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_REMOVED_DOSE", "SPELL_DISPEL", "SPELL_STOLEN",  "ENCHANT_APPLIED", "ENCHANT_REMOVED" );
 				end;
 				menuList = {
@@ -1073,7 +1088,7 @@ do
 						text = "Applied";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_AURA_APPLIED", "SPELL_AURA_BROKEN", "SPELL_AURA_REFRESH", "SPELL_AURA_BROKEN_SPELL", "SPELL_AURA_APPLIED_DOSE"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_AURA_APPLIED", "SPELL_AURA_BROKEN", "SPELL_AURA_REFRESH", "SPELL_AURA_BROKEN_SPELL", "SPELL_AURA_APPLIED_DOSE",  "ENCHANT_APPLIED" );
 						end;
 					};
@@ -1081,7 +1096,7 @@ do
 						text = "Removed";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_AURA_REMOVED", "SPELL_AURA_REMOVED_DOSE",  "ENCHANT_REMOVED" ); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_AURA_REMOVED", "SPELL_AURA_REMOVED_DOSE" );
 						end;
 					};
@@ -1089,7 +1104,7 @@ do
 						text = "Dispelled";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_DISPEL"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_DISPEL" );
 						end;
 					};
@@ -1097,7 +1112,7 @@ do
 						text = "Stolen";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_STOLEN"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_STOLEN" );
 						end;
 					};						
@@ -1108,7 +1123,7 @@ do
 				hasArrow = true;
 				checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_PERIODIC_DAMAGE", "SPELL_PERIODIC_MISSED", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_HEAL", "SPELL_PERIODIC_LEECH" ); end;
 				keepShownOnClick = true;
-				func = function ( arg1, arg2, checked )
+				func = function ( self, arg1, arg2, checked )
 					Blizzard_CombatLog_MenuHelper ( checked, "SPELL_PERIODIC_DAMAGE", "SPELL_PERIODIC_MISSED", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_HEAL", "SPELL_PERIODIC_LEECH" );
 				end;
 				menuList = {
@@ -1116,7 +1131,7 @@ do
 						text = "Damage";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_PERIODIC_DAMAGE"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_PERIODIC_DAMAGE" );
 						end;
 					};
@@ -1124,7 +1139,7 @@ do
 						text = "Failure";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_PERIODIC_MISSED" ); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_PERIODIC_MISSED" );
 						end;
 					};
@@ -1132,7 +1147,7 @@ do
 						text = "Heals";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_PERIODIC_HEAL"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_PERIODIC_HEAL" );
 						end;
 					};
@@ -1140,7 +1155,7 @@ do
 						text = "Other";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_LEECH"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_LEECH" );
 						end;
 					};						
@@ -1151,7 +1166,7 @@ do
 				hasArrow = true;
 				checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "PARTY_KILL", "UNIT_DIED", "UNIT_DESTROYED", "DAMAGE_SPLIT", "ENVIRONMENTAL_DAMAGE" ); end;
 				keepShownOnClick = true;
-				func = function ( arg1, arg2, checked )
+				func = function ( self, arg1, arg2, checked )
 					Blizzard_CombatLog_MenuHelper ( checked, "PARTY_KILL", "UNIT_DIED", "UNIT_DESTROYED", "DAMAGE_SPLIT", "ENVIRONMENTAL_DAMAGE"  );
 				end;
 				menuList = {
@@ -1159,7 +1174,7 @@ do
 						text = "Kills";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "PARTY_KILL"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "PARTY_KILL" );
 						end;
 					};
@@ -1167,7 +1182,7 @@ do
 						text = "Deaths";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "UNIT_DIED", "UNIT_DESTROYED"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "UNIT_DIED", "UNIT_DESTROYED" );
 						end;
 					};
@@ -1175,7 +1190,7 @@ do
 						text = "Damage Split";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "DAMAGE_SPLIT"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "DAMAGE_SPLIT" );
 						end;
 					};
@@ -1183,7 +1198,7 @@ do
 						text = "Environmental Damage";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "ENVIRONMENTAL_DAMAGE"); end;
 						keepShownOnClick = true;
-						func = function ( arg1, arg2, checked )
+						func = function ( self, arg1, arg2, checked )
 							Blizzard_CombatLog_MenuHelper ( checked, "ENVIRONMENTAL_DAMAGE" );
 						end;
 					};	
@@ -1211,7 +1226,7 @@ do
 			{
 				text = "Full Text";
 				checked = function() return filter.fullText; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.fullText = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1220,7 +1235,7 @@ do
 			{
 				text = "Timestamp";
 				checked = function() return filter.timestamp; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.timestamp = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1229,7 +1244,7 @@ do
 			{
 				text = "Unit Name Coloring";
 				checked = function() return filter.unitColoring; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.unitColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1238,7 +1253,7 @@ do
 			{
 				text = "Line Coloring";
 				checked = function() return  filter.lineColoring; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.lineColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1247,7 +1262,7 @@ do
 			{
 				text = "Line Highlighting";
 				checked = function() return  filter.lineHighlighting; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.lineHighlighting = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1256,7 +1271,7 @@ do
 			{
 				text = "Ability Coloring";
 				checked = function() return filter.abilityColoring; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.abilityColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1266,7 +1281,7 @@ do
 				text = "Ability-by-School Coloring";
 				checked = function() return filter.abilitySchoolColoring; end;
 				--disabled = not filter.abilityColoring;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.abilitySchoolColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1275,7 +1290,7 @@ do
 			{
 				text = "Ability-by-Actor Coloring";
 				checked = function() return filter.abilityActorColoring; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.abilityActorColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1284,7 +1299,7 @@ do
 			{
 				text = "Ability Highlighting";
 				checked = function() return filter.abilityHighlighting; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.abilityHighlighting = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1293,7 +1308,7 @@ do
 			{
 				text = "Action Coloring";
 				checked = function() return filter.actionColoring; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.actionColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1302,7 +1317,7 @@ do
 			{
 				text = "Action-by-School Coloring";
 				checked = function() return filter.actionSchoolColoring; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.actionSchoolColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1312,7 +1327,7 @@ do
 				text = "Action-by-Actor Coloring";
 				checked = function() return filter.actionActorColoring; end;
 				--disabled = not filter.abilityColoring;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.actionActorColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1322,7 +1337,7 @@ do
 				text = "Action Highlighting";
 				checked = function() return filter.actionHighlighting; end;
 				--disabled = not filter.abilityColoring;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.actionHighlighting = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1331,7 +1346,7 @@ do
 			{
 				text = "Damage Coloring";
 				checked = function() return filter.amountColoring; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.amountColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1341,7 +1356,7 @@ do
 				text = "Damage-by-School Coloring";
 				checked = function() return filter.amountSchoolColoring; end;
 				--disabled = not filter.amountColoring;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.amountSchoolColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1351,7 +1366,7 @@ do
 				text = "Damage-by-Actor Coloring";
 				checked = function() return filter.amountActorColoring; end;
 				--disabled = not filter.amountColoring;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.amountActorColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1360,7 +1375,7 @@ do
 			{
 				text = "Damage Highlighting";
 				checked = function() return filter.amountHighlighting; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.amountHighlighting = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1369,7 +1384,7 @@ do
 			{
 				text = "Color School Names";
 				checked = function() return filter.schoolNameColoring; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.schoolNameColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1378,7 +1393,7 @@ do
 			{
 				text = "School Name Highlighting";
 				checked = function() return filter.schoolNameHighlighting; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.schoolNameHighlighting = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1387,7 +1402,7 @@ do
 			{
 				text = "White Swing Rule";
 				checked = function() return filter.noMeleeSwingColoring; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.noMeleeSwingColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1396,7 +1411,7 @@ do
 			{
 				text = "Misses Colored Rule";
 				checked = function() return filter.missColoring; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.missColoring = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1405,7 +1420,7 @@ do
 			{
 				text = "Braces";
 				checked = function() return filter.braces; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.braces = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1414,7 +1429,7 @@ do
 			{
 				text = "Refiltering";
 				checked = function() return filter.showHistory; end;
-				func = function(arg1, arg2, checked)
+				func = function(self, arg1, arg2, checked)
 					filter.showHistory = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
@@ -1870,19 +1885,19 @@ local function CombatLog_String_PowerType(powerType)
 	if ( not powerType ) then
 		return "";
 	elseif ( powerType == SPELL_POWER_MANA ) then
-		return STRING_POWER_MANA;
+		return MANA;
 	elseif ( powerType == SPELL_POWER_RAGE ) then
-		return STRING_POWER_RAGE;
+		return RAGE;
 	elseif ( powerType == SPELL_POWER_ENERGY ) then
-		return STRING_POWER_ENERGY;
+		return ENERGY;
 	elseif ( powerType == SPELL_POWER_FOCUS ) then
-		return STRING_POWER_FOCUS;
+		return FOCUS;
 	elseif ( powerType == SPELL_POWER_HAPPINESS ) then
-		return STRING_POWER_HAPPINESS;
+		return HAPPINESS;
 	elseif ( powerType == SPELL_POWER_RUNES ) then
-		return STRING_POWER_RUNES;
+		return RUNES;
 	elseif ( powerType == SPELL_POWER_RUNIC_POWER ) then
-		return STRING_POWER_RUNIC_POWER;
+		return RUNIC_POWER;
 	end
 end
 _G.CombatLog_String_PowerType = CombatLog_String_PowerType
@@ -1898,14 +1913,42 @@ local SCHOOL_STRINGS = {
 }
 
 local SchoolStringTable = {
-	[SCHOOL_MASK_PHYSICAL]					= STRING_SCHOOL_PHYSICAL,
-	[SCHOOL_MASK_HOLY]						= STRING_SCHOOL_HOLY,
-	[SCHOOL_MASK_FIRE]						= STRING_SCHOOL_FIRE,
-	[SCHOOL_MASK_NATURE]					= STRING_SCHOOL_NATURE,
-	[SCHOOL_MASK_FROST]						= STRING_SCHOOL_FROST,
-	[SCHOOL_MASK_SHADOW]					= STRING_SCHOOL_SHADOW,
-	[SCHOOL_MASK_ARCANE]					= STRING_SCHOOL_ARCANE,
-	[SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST]	= STRING_SCHOOL_FROSTFIRE,
+	-- Single Schools
+	[SCHOOL_MASK_PHYSICAL]						= STRING_SCHOOL_PHYSICAL,
+	[SCHOOL_MASK_HOLY]							= STRING_SCHOOL_HOLY,
+	[SCHOOL_MASK_FIRE]							= STRING_SCHOOL_FIRE,
+	[SCHOOL_MASK_NATURE]						= STRING_SCHOOL_NATURE,
+	[SCHOOL_MASK_FROST]							= STRING_SCHOOL_FROST,
+	[SCHOOL_MASK_SHADOW]						= STRING_SCHOOL_SHADOW,
+	[SCHOOL_MASK_ARCANE]						= STRING_SCHOOL_ARCANE,
+	-- Physical and a Magical
+	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_FIRE]	= STRING_SCHOOL_FLAMESTRIKE,
+	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_FROST]	= STRING_SCHOOL_FROSTSTRIKE,
+	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_ARCANE]	= STRING_SCHOOL_SPELLSTRIKE,
+	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_NATURE]	= STRING_SCHOOL_STORMSTRIKE,
+	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_SHADOW]	= STRING_SCHOOL_SHADOWSTRIKE,
+	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_HOLY]	= STRING_SCHOOL_HOLYSTRIKE,
+	-- Two Magical Schools
+	[SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST]		= STRING_SCHOOL_FROSTFIRE,
+	[SCHOOL_MASK_FIRE + SCHOOL_MASK_ARCANE]		= STRING_SCHOOL_SPELLFIRE,
+	[SCHOOL_MASK_FIRE + SCHOOL_MASK_NATURE]		= STRING_SCHOOL_FIRESTORM,
+	[SCHOOL_MASK_FIRE + SCHOOL_MASK_SHADOW]		= STRING_SCHOOL_SHADOWFLAME,
+	[SCHOOL_MASK_FIRE + SCHOOL_MASK_HOLY]		= STRING_SCHOOL_HOLYFIRE,
+	[SCHOOL_MASK_FROST + SCHOOL_MASK_ARCANE]	= STRING_SCHOOL_SPELLFROST,
+	[SCHOOL_MASK_FROST + SCHOOL_MASK_NATURE]	= STRING_SCHOOL_FROSTSTORM,
+	[SCHOOL_MASK_FROST + SCHOOL_MASK_SHADOW]	= STRING_SCHOOL_SHADOWFROST,
+	[SCHOOL_MASK_FROST + SCHOOL_MASK_HOLY]		= STRING_SCHOOL_HOLYFROST,
+	[SCHOOL_MASK_ARCANE + SCHOOL_MASK_NATURE]	= STRING_SCHOOL_SPELLSTORM,
+	[SCHOOL_MASK_ARCANE + SCHOOL_MASK_SHADOW]	= STRING_SCHOOL_SPELLSHADOW,
+	[SCHOOL_MASK_ARCANE + SCHOOL_MASK_HOLY]		= STRING_SCHOOL_DIVINE,
+	[SCHOOL_MASK_NATURE + SCHOOL_MASK_SHADOW]	= STRING_SCHOOL_SHADOWSTORM,
+	[SCHOOL_MASK_NATURE + SCHOOL_MASK_HOLY]		= STRING_SCHOOL_HOLYSTORM,
+	[SCHOOL_MASK_SHADOW + SCHOOL_MASK_HOLY]		= STRING_SCHOOL_SHADOWLIGHT,
+	-- Three or more schools
+	[SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST + SCHOOL_MASK_NATURE]																						= STRING_SCHOOL_ELEMENTAL,
+	[SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST + SCHOOL_MASK_ARCANE + SCHOOL_MASK_NATURE + SCHOOL_MASK_SHADOW]											= STRING_SCHOOL_CHROMATIC,
+	[SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST + SCHOOL_MASK_ARCANE + SCHOOL_MASK_NATURE + SCHOOL_MASK_SHADOW + SCHOOL_MASK_HOLY]						= STRING_SCHOOL_MAGIC,
+	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST + SCHOOL_MASK_ARCANE + SCHOOL_MASK_NATURE + SCHOOL_MASK_SHADOW + SCHOOL_MASK_HOLY]	= STRING_SCHOOL_CHAOS,
 };
 
 local function CombatLog_String_SchoolString(school)
@@ -1923,42 +1966,56 @@ local function CombatLog_String_DamageResultString( resisted, blocked, absorbed,
 	-- Result String formatting
 	local useOverhealing = overhealing and overhealing > 0;
 	if ( resisted or blocked or absorbed or critical or glancing or crushing or useOverhealing ) then
-		resultStr = "";
+		resultStr = nil;
 
 		local tMode = "TEXT_MODE_"..textMode;
-		local result  = _G[tMode.."_STRING_RESULT"];
-		local rFormat = _G[tMode.."_STRING_RESULT_FORMAT"];
-		local subStr
-		if ( resisted or blocked or absorbed or useOverhealing ) then
-			subStr = strreplace(result, "$resultString", rFormat)
-		end
 		if ( resisted ) then
-			resultStr = strreplace(resultStr..subStr, "$resultAmount", resisted);
-			resultStr = strreplace(resultStr, "$resultType", _G[tMode.."_STRING_RESULT_RESISTED"]);
+			resultStr = format(TEXT_MODE_A_STRING_RESULT_RESIST, resisted);
 		end
 		if ( blocked ) then
-			resultStr = strreplace(resultStr..subStr, "$resultAmount", blocked);
-			resultStr = strreplace(resultStr, "$resultType", _G[tMode.."_STRING_RESULT_BLOCKED"]);
+			if ( resultStr ) then
+				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_BLOCK, blocked);
+			else
+				resultStr = format(TEXT_MODE_A_STRING_RESULT_BLOCK, blocked);
+			end
 		end
 		if ( absorbed ) then
-			resultStr = strreplace(resultStr..subStr, "$resultAmount", absorbed);
-			resultStr = strreplace(resultStr, "$resultType", _G[tMode.."_STRING_RESULT_ABSORBED"]);
+			if ( resultStr ) then
+				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_ABSORB, absorbed);
+			else
+				resultStr = format(TEXT_MODE_A_STRING_RESULT_ABSORB, absorbed);
+			end
 		end
 		if ( glancing ) then
-			resultStr = strreplace(resultStr..result, "$resultString", _G[tMode.."_STRING_RESULT_GLANCING"]);
+			if ( resultStr ) then
+				resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_GLANCING;
+			else
+				resultStr = TEXT_MODE_A_STRING_RESULT_GLANCING;
+			end
 		end
 		if ( crushing ) then
-			resultStr = strreplace(resultStr..result, "$resultString", _G[tMode.."_STRING_RESULT_CRUSHING"]);
+			if ( resultStr ) then
+				resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_CRUSHING;
+			else
+				resultStr = TEXT_MODE_A_STRING_RESULT_CRUSHING;
+			end
 		end
 		if ( useOverhealing ) then
-			resultStr = strreplace(resultStr..subStr, "$resultAmount", overhealing);
-			resultStr = strreplace(resultStr, "$resultType", _G[tMode.."_STRING_RESULT_OVERHEALING"]);
+			if ( resultStr ) then
+				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_OVERHEALING, overhealing);
+			else
+				resultStr = format(TEXT_MODE_A_STRING_RESULT_OVERHEALING, overhealing);
+			end
 		end
 		if ( critical ) then
+			local critString = TEXT_MODE_A_STRING_RESULT_CRITICAL;
 			if ( spellId ) then
-				resultStr = strreplace(resultStr..result, "$resultString", _G[tMode.."_STRING_RESULT_CRITICAL_SPELL"]);
+				critString = TEXT_MODE_A_STRING_RESULT_CRITICAL_SPELL;
+			end
+			if ( resultStr ) then
+				resultStr = resultStr.." "..critString;
 			else
-				resultStr = strreplace(resultStr..result, "$resultString", _G[tMode.."_STRING_RESULT_CRITICAL"]);
+				resultStr = critString;
 			end
 		end
 	end
@@ -1978,7 +2035,7 @@ local function CombatLog_String_GetIcon ( unitFlags, direction )
 		return "";
 	end
 
-	local iconString = TEXT_MODE_A_STRING_TOKEN_ICON;
+	local iconString = "";
 	local icon = nil;
 	local iconBit = 0;
 	
@@ -2014,17 +2071,10 @@ local function CombatLog_String_GetIcon ( unitFlags, direction )
 		-- Insert a hyperlink for that icon
 
 		if ( direction == "source" ) then
-			iconString = strreplace ( iconString, "$icon", TEXT_MODE_A_STRING_SOURCE_ICON);
+			iconString = format(TEXT_MODE_A_STRING_SOURCE_ICON, iconBit, icon);
 		else 
-			iconString = strreplace ( iconString, "$icon", TEXT_MODE_A_STRING_DEST_ICON );
+			iconString = format(TEXT_MODE_A_STRING_DEST_ICON, iconBit, icon);
 		end
-
-		iconString = strreplace ( iconString, "$iconTexture", icon);
-		iconString = strreplace ( iconString, "$iconBit", iconBit);
-
-	-- Otherwise remove the token
-	else
-		iconString = "";
 	end
 
 	return iconString;
@@ -2149,21 +2199,15 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	local powerTypeEnabled = true;
 	local itemEnabled = false;
 	local extraSpellEnabled = false;
+	local valueIsItem = false;
 
 	-- Get the initial string
-	local combatString = "Combat Error!";
 	local schoolString;
 	local resultStr;
-	
-	--- Get the general string order
-	combatString = _G["TEXT_MODE_"..textMode.."_STRING_1"];
 
-	-- Support for multiple string orders
-	if ( _G["ACTION_"..event.."_MASTER"] ) then
-		local newCombatString = _G["TEXT_MODE_"..textMode.."_STRING_".. _G["ACTION_"..event.."_MASTER"]];
-		if ( newCombatString ) then
-			combatString = newCombatString;
-		end
+	local formatString = TEXT_MODE_A_STRING_1;
+	if ( EVENT_TEMPLATE_FORMATS[event] ) then
+		formatString = EVENT_TEMPLATE_FORMATS[event];
 	end
 
 	-- Replacements to do: 
@@ -2203,7 +2247,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	end
 
 	local subVal = strsub(event, 1, 5)
-	local textModeString = "TEXT_MODE_"..textMode.."_STRING_"
 
 	-- Swings
 	if ( subVal == "SWING" ) then
@@ -2231,25 +2274,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 
 		-- Result String
 		if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
-			resultStr = strreplace(_G[textModeString.."RESULT"], "$resultString", _G[textModeString.."RESULT_FORMAT"])
-			resultStr = strreplace(resultStr, "$resultAmount", amountMissed);
-
-			if( missType == "RESIST" ) then
-				resultStr = strreplace(resultStr, "$resultType", _G[textModeString.."RESULT_RESISTED"]);
-			elseif( missType == "BLOCK" ) then
-				resultStr = strreplace(resultStr, "$resultType", _G[textModeString.."RESULT_BLOCKED"]);
-			elseif( missType == "ABSORB" ) then
-				resultStr = strreplace(resultStr, "$resultType", _G[textModeString.."RESULT_ABSORBED"]);
-			else
-				resultStr = strreplace(resultStr, "$resultType", "");
-			end
+			resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
 		else
-			resultStr = strreplace(_G[textModeString.."RESULT"], "$resultString", _G["ACTION_"..event.."_"..missType]);
+			resultStr = _G["ACTION_SWING_MISSED_"..missType];
 		end
 
 		-- Miss Type
-		if ( settings.fullText ) then
-			event = event.."_"..missType;
+		if ( settings.fullText and missType ) then
+			event = format("%s_%s", event, missType);
 		end
 
 		-- Disable appropriate sections
@@ -2260,7 +2292,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	elseif ( subVal == "SPELL" ) then	-- Spell standard arguments
 		spellId, spellName, spellSchool = ...;
 
-		if ( event == "SPELL_DAMAGE" ) then
+		if ( event == "SPELL_DAMAGE" or event == "SPELL_BUILDING_DAMAGE") then
 			-- Damage standard
 			amount, school, resisted, blocked, absorbed, critical, glancing, crushing = select(4, ...);
 
@@ -2275,39 +2307,21 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			missType,  amountMissed = select(4, ...);
 
 			-- Result String
-			if( missType == "ABSORB" or missType == "BLOCK" or missType == "RESIST" ) then
-				resultStr = "";
-
-				local tMode = "TEXT_MODE_"..textMode
-				local result  = _G[tMode.."_STRING_RESULT"]
-				local rFormat = _G[tMode.."_STRING_RESULT_FORMAT"]
-				local subStr
-
-				subStr = strreplace(result, "$resultString", rFormat)
-				resultStr = strreplace(resultStr..subStr, "$resultAmount", amountMissed);
-
-				if( missType == "RESIST" ) then
-					resultStr = strreplace(resultStr, "$resultType", _G[tMode.."_STRING_RESULT_RESISTED"]);
-				end
-				if( missType == "BLOCK" ) then
-					resultStr = strreplace(resultStr,"$resultType", _G[tMode.."_STRING_RESULT_BLOCKED"]);
-				end
-				if( missType == "ABSORB" ) then
-					resultStr = strreplace(resultStr,"$resultType", _G[tMode.."_STRING_RESULT_ABSORBED"]);
-				end
+			if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
+				resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
 			else
-				resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
+				resultStr = _G["ACTION_SWING_MISSED_"..missType];
 			end
 
 			-- Miss Event
-			if ( settings.fullText ) then
-				event = event.."_"..missType;
+			if ( settings.fullText and missType ) then
+				event = format("%s_%s", event, missType);
 			end
 
 			-- Disable appropriate sections
 			valueEnabled = false;
 			resultEnabled = true;
-		elseif ( event == "SPELL_HEAL" ) then 
+		elseif ( event == "SPELL_HEAL" or event == "SPELL_BUILDING_HEAL") then 
 			-- Did the heal crit?
 			amount, overhealing, critical = select(4, ...);
 			
@@ -2348,11 +2362,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				missType = select(4, ...);
 				
 				-- Result String
-				resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
+				resultStr = _G["ACTION_SPELL_PERIODIC_MISSED_"..missType];
 
 				-- Miss Event
-				if ( settings.fullText ) then
-					event = event.."_"..missType;
+				if ( settings.fullText and missType ) then
+					event = format("%s_%s", event, missType);
 				end
 
 				-- Disable appropriate sections
@@ -2411,7 +2425,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				valueType = 2;
 
 				-- Result String
-				resultStr = strreplace(_G[textModeString .. "RESULT"], "$resultString", _G["ACTION_"..event.."_RESULT"]); 
+				resultStr = _G["ACTION_SPELL_PERIODIC_LEECH_RESULT"]; --"($extraAmount $powerType Gained)"
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2460,7 +2474,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			missType = select(4, ...);
 
 			-- Result String
-			resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", missType);
+			resultStr = format("(%s)", missType);
+			--resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", missType);
 
 			-- Disable appropriate sections
 			valueEnabled = false;
@@ -2490,10 +2505,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			valueType = 2;
 
 			-- Result String
-			resultStr = _G[textModeString .. "RESULT"];
-			if ( resultStr ) then
-				resultStr = strreplace(resultStr, "$resultString", _G["ACTION_"..event.."_RESULT"]); 
-			end
+			resultStr = _G["ACTION_SPELL_LEECH_RESULT"];
 
 			-- Disable appropriate sections
 			if ( not resultStr ) then
@@ -2508,7 +2520,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Replace the value token with a spell token
 			if ( extraSpellId ) then
 				extraSpellEnabled = true;
-				combatString = strreplace(combatString, "$value", "$extraSpell");
 			end
 
 			-- Disable appropriate sections
@@ -2526,6 +2537,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			valueTypeEnabled = false;
 			schoolEnabled = false;
 		elseif ( event == "SPELL_SUMMON" ) then
+			-- Disable appropriate sections
+			resultEnabled = false;
+			valueEnabled = false;
+			schoolEnabled = false;
+		elseif ( event == "SPELL_RESURRECT" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
 			valueEnabled = false;
@@ -2557,7 +2573,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Replace the value token with a spell token
 			if ( extraSpellId ) then
 				extraSpellEnabled = true;
-				combatString = strreplace(combatString, "$value", "$extraSpell");
 			end
 
 			-- Disable appropriate sections
@@ -2568,12 +2583,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			extraSpellId, extraSpellName, extraSpellSchool, auraType = select(4, ...);
 
 			-- Event Type
-			event = event.."_"..auraType;
+			event = format("%s_%s", event, auraType);
 
 			-- Replace the value token with a spell token
 			if ( extraSpellId ) then
 				extraSpellEnabled = true;
-				combatString = strreplace(combatString, "$value", "$extraSpell");
 			end
 
 			-- Disable appropriate sections
@@ -2596,20 +2610,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			end
 			
 			-- Event Type
-			event = event.."_"..auraType;
+			event = format("%s_%s", event, auraType);
 
 			-- Replace the value token with a spell token
 			if ( extraSpellId ) then
 				extraSpellEnabled = true;
-				combatString = strreplace(combatString, "$value", "$extraSpell");
-			end
-			
-			-- Support for multiple string orders
-			if ( _G["ACTION_"..event.."_MASTER"] ) then
-				local newCombatString = _G[textModeString .. _G["ACTION_"..event.."_MASTER"]];
-				if ( newCombatString ) then
-					combatString = newCombatString;
-				end
 			end
 
 			-- Swap Source with Dest
@@ -2637,17 +2642,13 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			elseif ( hideDebuffs and auraType == AURA_TYPE_DEBUFF ) then
 				return;
 			end
+			
+			if ( auraType == AURA_TYPE_DEBUFF ) then
+				formatString = TEXT_MODE_A_STRING_1;
+			end
 
 			-- Event Type
-			event = event.."_"..auraType;
-
-			-- Support for multiple string orders
-			if ( _G["ACTION_"..event.."_MASTER"] ) then
-				local newCombatString = _G[textModeString .. _G["ACTION_"..event.."_MASTER"]];
-				if ( newCombatString ) then
-					combatString = newCombatString;
-				end
-			end
+			event = format("%s_%s", event, auraType);
 
 			-- Swap Source with Dest
 			sourceName = destName;
@@ -2676,15 +2677,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			end
 
 			-- Event Type
-			event = event.."_"..auraType;
-
-			-- Support for multiple string orders
-			if ( _G["ACTION_"..event.."_MASTER"] ) then
-				local newCombatString = _G[textModeString .. _G["ACTION_"..event.."_MASTER"]];
-				if ( newCombatString ) then
-					combatString = newCombatString;
-				end
-			end
+			event = format("%s_%s", event, auraType);
 
 			-- Swap Source with Dest
 			sourceName = destName;
@@ -2722,11 +2715,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			missType = select(4, ...);
 
 			-- Result String
-			resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
+			resultStr = _G["ACTION_RANGE_MISSED_"..missType];
 			
 			-- Miss Type
-			if ( settings.fullText ) then
-				event = event.."_"..missType;
+			if ( settings.fullText and missType ) then
+				event = format("%s_%s", event, missType);
 			end
 
 			-- Disable appropriate sections
@@ -2749,11 +2742,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		spellId, spellName, spellSchool, missType = ...;
 
 		-- Result String
-		resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", _G["ACTION_"..event.."_"..missType]);
+		resultStr = _G["ACTION_DAMAGE_SHIELD_MISSED_"..missType];
 
 		-- Miss Event
-		if ( settings.fullText ) then
-			event = event.."_"..missType;
+		if ( settings.fullText and missType ) then
+			event = format("%s_%s", event, missType);
 		end
 
 		-- Disable appropriate sections
@@ -2771,10 +2764,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		spellName, itemId, itemName = ...;
 		nameIsNotSpell = true;
 
-		-- Replace the value token with an item token
-		combatString = strreplace(combatString, "$value", "$item");
-
 		-- Disable appropriate sections
+		valueIsItem = true;
 		itemEnabled = true;
 		resultEnabled = false;
 	elseif ( event == "ENCHANT_REMOVED" ) then
@@ -2782,10 +2773,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		spellName, itemId, itemName = ...;
 		nameIsNotSpell = true;
 
-		-- Replace the value token with an item token
-		combatString = strreplace(combatString, "$value", "$item");
-
 		-- Disable appropriate sections
+		valueIsItem = true;
 		itemEnabled = true;
 		resultEnabled = false;
 		sourceEnabled = false;
@@ -2807,7 +2796,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		environmentalType, amount, school, resisted, blocked, absorbed, critical, glancing, crushing = ...
 
 		-- Miss Event
-		spellName = _G["ACTION_"..event.."_"..environmentalType];
+		spellName = _G["ACTION_ENVIRONMENTAL_DAMAGE_"..environmentalType];
 		spellSchool = school;
 		nameIsNotSpell = true;
 
@@ -2815,8 +2804,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId );
 
 		-- Environmental Event
-		if ( settings.fullText ) then
-			event = event.."_"..environmentalType;
+		if ( settings.fullText and environmentalType ) then
+			event = "ENVIRONMENTAL_DAMAGE_"..environmentalType;
 		end
 
 		if ( not resultStr ) then
@@ -2836,30 +2825,24 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 
 	-- Throw away all of the assembled strings and just grab a premade one
 	if ( settings.fullText ) then
-		local combatStringEvent = "ACTION_"..event.."_FULL_TEXT";
+		local formatStringEvent = format("ACTION_%s_FULL_TEXT", event);
 
 		-- Get the base string
-		if ( _G[combatStringEvent] ) then
-			combatString = _G[combatStringEvent];
+		if ( _G[formatStringEvent] ) then
+			formatString = _G[formatStringEvent];
 		end
 
 		-- Set any special cases
 		if ( not sourceEnabled ) then
-			combatStringEvent = combatStringEvent.."_NO_SOURCE";
-			sourceEnabled = false;
+			formatStringEvent = formatStringEvent.."_NO_SOURCE";
 		end
 		if ( not destEnabled ) then
-			combatStringEvent = combatStringEvent.."_NO_DEST";
-			destEnabled = false;
+			formatStringEvent = formatStringEvent.."_NO_DEST";
 		end
 
 		-- Get the special cased string
-		if ( _G[combatStringEvent] ) then
-			combatString = _G[combatStringEvent];
-		end
-		-- Reapply the timestamp
-		if (timestampEnabled) then
-			combatString = _G[textModeString .. "TIMESTAMP"].." "..combatString;
+		if ( _G[formatStringEvent] ) then
+			formatString = _G[formatStringEvent];
 		end
 
 		sourceEnabled = true;
@@ -2868,104 +2851,18 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		valueEnabled = true;
 	end
 
-	-- Remove Timestamp
-	if ( not timestampEnabled ) then 
-		combatString = strreplace(combatString,"$timestamp","");
-	else
-		combatString = strreplace(combatString,"$timestamp", _G[textModeString .. "TIMESTAMP"]);
-	end
-
-	-- Remove Source
-	if ( not sourceEnabled ) then 
-		combatString = strreplace(combatString,"$source","");
-	else
-		combatString = strreplace(combatString,"$source", _G[textModeString .. "SOURCE"]);
-		combatString = strreplace(combatString,"$sourceString", _G[textModeString .. "SOURCE_UNIT"]);
-	end
-
-	-- Remove Dest
-	if ( not destEnabled ) then 
-		combatString = strreplace(combatString,"$dest","");
-	else
-		combatString = strreplace(combatString,"$dest", _G[textModeString .. "DEST"]);
-		combatString = strreplace(combatString,"$destString", _G[textModeString .. "DEST_UNIT"]);
-	end
-
-	-- Remove Spell
-	if ( not spellEnabled ) then
-		combatString = strreplace(combatString,"$spell","");
-	else
-		if ( nameIsNotSpell ) then
-			combatString = strreplace(combatString,"$spell", strreplace(_G[textModeString .. "ACTION"], "$action", "$spellName"));
-			--combatString = strreplace(combatString,"$spell","$spellName");
-		else
-			combatString = strreplace(combatString,"$spell", _G[textModeString .. "SPELL"]);
---			combatString = strreplace(combatString,"$spell",GetSpellLink(spellId));
-		end
-	end
-
-	-- Remove Extra Spell
-	if ( not extraSpellEnabled ) then
-		combatString = strreplace(combatString,"$extraSpell","");
-	else
-		if ( extraNameIsNotSpell ) then
-			combatString = strreplace(combatString,"$extraSpell","$extraSpellName");
-		else
-			combatString = strreplace(combatString,"$extraSpell", _G[textModeString .. "SPELL_EXTRA"]);
-		end
-	end
-
-	-- Remove Action
-	if ( not actionEnabled ) then 
-		combatString = strreplace(combatString,"$action","");
-	else
-		combatString = strreplace(combatString,"$action", _G[textModeString .. "ACTION"]);
-	end
-
-	-- Remove Value
-	if ( not itemEnabled ) then 
-		combatString = strreplace(combatString,"$item","");
-	else
-		combatString = strreplace(combatString,"$item", _G[textModeString .. "ITEM"]);
-	end
-
-	-- Remove Value
-	if ( not valueEnabled ) then 
-		combatString = strreplace(combatString,"$value","");
-	else
-		combatString = strreplace(combatString,"$value", _G[textModeString .. "VALUE"]);
-	end
-
-	-- Remove type
-	if ( not valueTypeEnabled ) then 
-		combatString = strreplace(combatString,"$amountType","");
-	else
-		-- School Type
-		if ( valueType == 1 ) then 
-			combatString = strreplace(combatString,"$amountType", _G[textModeString .. "VALUE_SCHOOL"]);
-		-- Power Type
-		elseif ( valueType == 2 ) then
-			combatString = strreplace(combatString,"$amountType", _G[textModeString .. "VALUE_TYPE"]);
-		end
-	end
-
-	-- Remove Result
-	if ( not resultEnabled ) then 
-		combatString = strreplace(combatString,"$result","");
-	end
-
 	-- Actor name construction.
 	--
-	local sourceNameStr, destNameStr;
-	local sourceIcon, destIcon;
+	local sourceNameStr = "";
+	local destNameStr = "";
+	local sourceIcon = "";
+	local destIcon = "";
 	local spellNameStr = spellName;
 	local extraSpellNameStr = extraSpellName;
 	local itemNameStr = itemName;
-	local actionStr = event;
+	local actionEvent = "ACTION_"..event;
+	local actionStr = _G[actionEvent];
 	local timestampStr = timestamp;
-
-	-- Get the action string
-	actionStr = _G["ACTION_"..actionStr];
 
 	-- If this ever succeeds, the event string is missing. 
 	--
@@ -2986,7 +2883,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				destNameStr = UNIT_YOU_DEST;
 		end
 		-- Apply the possessive form to the source
-		if ( sourceName and spellName and _G["ACTION_"..event.."_POSSESSIVE"] == "1" ) then
+		if ( sourceName and spellName and _G[actionEvent.."_POSSESSIVE"] == "1" ) then
 			if ( sourceName and CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE) ) then
 				sourceNameStr = UNIT_YOU_SOURCE_POSSESSIVE;
 			end
@@ -3001,15 +2898,13 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	-- If its full text mode
 	else
 		-- Apply the possessive form to the source
-		if ( sourceName and spellName and _G["ACTION_"..event.."_POSSESSIVE"] == "1" ) then
-			sourceNameStr = strreplace ( TEXT_MODE_A_STRING_POSSESSIVE, "$nameString", sourceNameStr );
-			sourceNameStr = strreplace ( sourceNameStr, "$possessive", TEXT_MODE_A_STRING_POSSESSIVE_STRING );
+		if ( sourceName and spellName and _G[actionEvent.."_POSSESSIVE"] == "1" ) then
+			sourceNameStr = format(TEXT_MODE_A_STRING_POSSESSIVE, sourceNameStr);
 		end
 
 		-- Apply the possessive form to the dest if the dest has a spell
 		if ( ( extraSpellName or itemName ) and destName ) then
-			destNameStr = strreplace ( TEXT_MODE_A_STRING_POSSESSIVE, "$nameString", destNameStr );
-			destNameStr = strreplace ( destNameStr, "$possessive", TEXT_MODE_A_STRING_POSSESSIVE_STRING );
+			destNameStr = format(TEXT_MODE_A_STRING_POSSESSIVE, destNameStr);
 		end
 	end
 
@@ -3093,7 +2988,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		end
 		if ( amountColor ) then
 			amountColor = CombatLog_Color_FloatToText(amountColor);
-			amount = "|c"..amountColor..amount.."|r";
+			amount = format("|c%s%s|r", amountColor, amount);
 		end
 
 		schoolString = CombatLog_String_SchoolString(school);
@@ -3123,7 +3018,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		end	
 		if ( schoolNameColor ) then
 			schoolNameColor = CombatLog_Color_FloatToText(schoolNameColor);
-			schoolString = "|c"..schoolNameColor..schoolString.."|r";
+			schoolString = format("|c%s%s|r", schoolNameColor, schoolString);
 		end
 
 	end
@@ -3133,19 +3028,13 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		powerTypeString =  CombatLog_String_PowerType(powerType);
 	end
 
-	-- Compile the arguments into the combat string
-	if ( resultStr ) then
-		-- Replace the action
-		combatString = strreplace(combatString, "$result", resultStr);
-	end
-
 	-- Color source names
 	if ( settings.unitColoring ) then 
 		if ( sourceName and settings.sourceColoring ) then
-			sourceNameStr = "|c"..sourceColor..sourceNameStr.."|r";
+			sourceNameStr = format("|c%s%s|r", sourceColor, sourceNameStr);
 		end
 		if ( destName and settings.destColoring ) then
-			destNameStr = "|c"..destColor..destNameStr.."|r";
+			destNameStr = format("|c%s%s|r", destColor, destNameStr);
 		end
 	end
 
@@ -3200,7 +3089,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 
 		if ( actionColor ) then
 			actionColor = CombatLog_Color_FloatToText(actionColor);				
-			actionStr = "|c"..actionColor..actionStr.."|r";
+			actionStr = format("|c%s%s|r", actionColor, actionStr);
 		end
 		
 	end
@@ -3232,7 +3121,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		end
 		if ( abilityColor ) then
 			abilityColor = CombatLog_Color_FloatToText(abilityColor);
-			spellNameStr = "|c"..abilityColor..spellName.."|r";
+			spellNameStr = format("|c%s%s|r", abilityColor, spellName);
 		end
 	end
 
@@ -3264,7 +3153,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		end			
 		if ( abilityColor ) then
 			abilityColor = CombatLog_Color_FloatToText(abilityColor);
-			extraSpellNameStr = "|c"..abilityColor..extraSpellName.."|r";
+			extraSpellNameStr = format("|c%s%s|r", abilityColor, extraSpellName);
 		end
 	end
 
@@ -3280,118 +3169,105 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		-- Unit specific braces
 		if ( settings.unitBraces ) then
 			if ( sourceName and settings.sourceBraces ) then
-				sourceNameStr = strreplace(_G[textModeString .. "BRACE_UNIT"], "$unitName", sourceNameStr);
-				sourceNameStr = strreplace(sourceNameStr, "$braceColor", braceColor);
+				sourceNameStr = format(TEXT_MODE_A_STRING_BRACE_UNIT, braceColor, sourceNameStr, braceColor);
 			end
 	
 			if ( destName and settings.destBraces ) then
-				destNameStr = strreplace(_G[textModeString .. "BRACE_UNIT"], "$unitName", destNameStr);
-				destNameStr = strreplace(destNameStr, "$braceColor", braceColor);
+				destNameStr = format(TEXT_MODE_A_STRING_BRACE_UNIT, braceColor, destNameStr, braceColor);
 			end
 		end
 
 		-- Spell name braces
 		if ( spellName and settings.spellBraces ) then 
-			spellNameStr = strreplace(_G[textModeString .. "BRACE_SPELL"], "$spellName", spellNameStr);
-			spellNameStr = strreplace(spellNameStr, "$braceColor", braceColor);
+			spellNameStr = format(TEXT_MODE_A_STRING_BRACE_SPELL, braceColor, spellNameStr, braceColor);
 		end
 		if ( extraSpellName and settings.spellBraces ) then 
-			extraSpellNameStr = strreplace(_G[textModeString .. "BRACE_SPELL"], "$spellName", extraSpellNameStr);
-			extraSpellNameStr = strreplace(extraSpellNameStr, "$braceColor", braceColor); 
+			extraSpellNameStr = format(TEXT_MODE_A_STRING_BRACE_SPELL, braceColor, extraSpellNameStr, braceColor);
 		end
 
 		-- Build item braces
 		if ( itemName and settings.itemBraces ) then
-			itemNameStr = strreplace(_G[textModeString .. "BRACE_ITEM"], "$itemName", itemNameStr);
-			itemNameStr = strreplace(itemNameStr, "$braceColor", braceColor);
+			itemNameStr = format(TEXT_MODE_A_STRING_BRACE_ITEM, braceColor, itemNameStr, braceColor);
 		end
 	end
 
-	-- Dest Icons
-	if ( sourceIcon ) then
-		combatString = strreplace(combatString, "$sourceIcon", sourceIcon);
-	end
-	if ( destIcon ) then
-		combatString = strreplace(combatString, "$destIcon", destIcon);
+	local sourceString = "";
+	local spellString = "";
+	local actionString = "";
+	local destString = "";
+	local valueString = "";
+	local resultString = "";
+
+	if ( sourceEnabled and sourceName ) then
+		sourceString = format(TEXT_MODE_A_STRING_SOURCE_UNIT, sourceIcon, sourceGUID, sourceName, sourceNameStr);
 	end
 
-
-	-- Unit Names
-	if ( sourceName ) then
-		combatString = strreplace(combatString, "$sourceNameString", sourceNameStr);
-		combatString = strreplace(combatString, "$sourceName", sourceName);
-		combatString = strreplace(combatString, "$sourceGUID", sourceGUID);
-	end
-	if ( destName ) then 
-		combatString = strreplace(combatString, "$destNameString", destNameStr);
-		combatString = strreplace(combatString, "$destName", destName);
-		combatString = strreplace(combatString, "$destGUID", destGUID);
-	end
-
-	if ( amount ) then
-		-- Replace the amount
-		combatString = strreplace(combatString, "$amount", amount );
-	end
-	if ( extraAmount ) then
-		-- Replace the extra amount
-		combatString = strreplace(combatString, "$extraAmount", extraAmount );
-	end
-
-	-- Spell Stuff
 	if ( spellName ) then
-		combatString = strreplace(combatString, "$spellName", spellNameStr);
-	end
-	if ( spellId ) then
-		combatString = strreplace(combatString, "$spellId", spellId);
-	end
-	if ( extraSpellName ) then
-		combatString = strreplace(combatString, "$extraSpellName", extraSpellNameStr);
-	end
-	if ( extraSpellId ) then
-		combatString = strreplace(combatString, "$extraSpellId", extraSpellId);
+		if ( nameIsNotSpell ) then
+			spellString = format(TEXT_MODE_A_STRING_ACTION, originalEvent, spellNameStr);
+		else
+			spellString = format(TEXT_MODE_A_STRING_SPELL, spellId, originalEvent, spellNameStr, spellId);
+		end
 	end
 
-	if ( itemName ) then
-		-- Replace the spell information
-		combatString = strreplace(combatString, "$itemName", itemNameStr);
-	end
-	if ( itemId ) then
-		combatString = strreplace(combatString, "$itemId", itemId);
+	if ( actionString ) then
+		actionString = format(TEXT_MODE_A_STRING_ACTION, originalEvent, actionStr);
 	end
 
-	if ( schoolString ) then
-		-- Replace the school name
-		combatString = strreplace(combatString, "$school", schoolString );
+	if ( destEnabled and destName ) then
+		destString = format(TEXT_MODE_A_STRING_DEST_UNIT, destIcon, destGUID, destName, destNameStr);
 	end
 
-	if ( powerTypeString ) then
-		-- Replace the power type name
-		combatString = strreplace(combatString, "$powerType", powerTypeString );
+	if ( valueEnabled ) then
+		if ( extraSpellEnabled and extraSpellNameStr ) then
+			if ( extraNameIsNotSpell ) then
+				valueString = extraSpellNameStr;
+			else
+				valueString = format(TEXT_MODE_A_STRING_SPELL_EXTRA, extraSpellId, originalEvent, extraSpellNameStr, spellId);
+			end
+		elseif ( valueIsItem and itemNameStr ) then
+			valueString = format(TEXT_MODE_A_STRING_ITEM, itemId, itemNameStr);
+		elseif ( amount ) then
+			if ( valueTypeEnabled ) then 
+				if ( valueType == 1 and schoolString ) then 
+					valueString = format(TEXT_MODE_A_STRING_VALUE_SCHOOL, amount, schoolString);
+				elseif ( valueType == 2 and powerTypeString ) then
+					valueString = format(TEXT_MODE_A_STRING_VALUE_TYPE, amount, powerTypeString);
+				end
+			end
+			if ( valueString == "" ) then
+				valueString = amount;
+			end
+		end
 	end
 
-	if ( actionStr ) then
-		-- Replace the action
-		combatString = strreplace(combatString, "$action", actionStr);
+	if ( resultEnabled and resultStr ) then
+		resultString = resultStr;
 	end
 
-	if ( timestamp ) then
+	if ( not schoolString ) then
+		schoolString = "";
+	end
+	if ( not powerTypeString ) then
+		powerTypeString = "";
+	end
+	if ( not amount ) then
+		amount = "";
+	end
+
+	local finalString = format(formatString, sourceString, spellString, actionString, destString, valueString, resultString, schoolString, powerTypeString, amount, extraAmount);
+	
+	finalString = gsub(finalString, " [ ]+", " " ); -- extra white spaces
+	finalString = gsub(finalString, " ([.,])", "%1" ); -- spaces before periods or comma
+	finalString = gsub(finalString, "^([ .,]+)", "" ); -- spaces, period or comma at the beginning of a line
+
+	if ( timestampEnabled and timestamp ) then
 		-- Replace the timestamp
-		combatString = strreplace(combatString, "$time", date(settings.timestampFormat, timestamp));
+		finalString = format(TEXT_MODE_A_STRING_TIMESTAMP, date(settings.timestampFormat, timestamp), finalString);
 	end
 
-	-- Replace the event
-	combatString = strreplace(combatString, "$eventType", originalEvent);
-
-	-- Clean up formatting
-	combatString = gsub(combatString, " [ ]+", " " ); -- extra white spaces
-	combatString = gsub(combatString, " ([.,])", "%1" ); -- spaces before periods or comma
-	combatString = gsub(combatString, "^([ .,]+)", "" ); -- spaces, period or comma at the beginning of a line
-	--combatString = gsub(combatString, "([%(])[ ]+", "%1" ); whitespace after Parenthesis 
-
-	-- Debug line for hyperlinks
-	-- combatString = gsub( combatString, "\124", "\124\124");
-
-	return combatString, lineColor.r, lineColor.g, lineColor.b, 1;
+	-- NOTE: be sure to pass back nil for the color id or the color id may override the r, g, b values for this message line
+	return finalString, lineColor.r, lineColor.g, lineColor.b;
 end
 _G.CombatLog_OnEvent = CombatLog_OnEvent
 
@@ -3491,7 +3367,8 @@ _G[COMBATLOG:GetName().."Tab"]:SetScript("OnDragStart",
 --
 
 -- On Event
-function Blizzard_CombatLog_QuickButtonFrame_OnEvent(event)
+function Blizzard_CombatLog_QuickButtonFrame_OnEvent(self, event, ...)
+	local arg1 = ...;
 	if ( event == "ADDON_LOADED" ) then
 		if ( arg1 == "Blizzard_CombatLog" ) then
 			Blizzard_CombatLog_Filters = _G.Blizzard_CombatLog_Filters or Blizzard_CombatLog_Filters
@@ -3506,7 +3383,7 @@ function Blizzard_CombatLog_QuickButtonFrame_OnEvent(event)
 			Blizzard_CombatLog_Update_QuickButtons();
 			--Hide the quick button frame if chatframe1 is selected and the combat log is docked
 			if ( COMBATLOG.isDocked and SELECTED_CHAT_FRAME == ChatFrame1 ) then
-				this:Hide();
+				self:Hide();
 			end
 		end
 	end
@@ -3548,8 +3425,8 @@ end
 
 -- On Load
 local hooksSet = false
-function Blizzard_CombatLog_QuickButtonFrame_OnLoad()
-	this:RegisterEvent("ADDON_LOADED");
+function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
+	self:RegisterEvent("ADDON_LOADED");
 	
 	-- We're using the _Custom suffix to get around the show/hide bug in FloatingChatFrame.lua.
 	-- Once the fading is removed from FloatingChatFrame.lua these can do back to the non-custom values, and the dummy frame creation should be removed.
@@ -3566,16 +3443,16 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad()
 
 	-- Hook the frame's hide/show events so we can hide/show the quick buttons as appropriate.
 	local show, hide = COMBATLOG:GetScript("OnShow"), COMBATLOG:GetScript("OnHide")
-	COMBATLOG:SetScript("OnShow", function()
+	COMBATLOG:SetScript("OnShow", function(self)
 		CombatLogQuickButtonFrame_Custom:Show()
 		--Blizzard_CombatLog_AdjustCombatLogHeight()
-		return show and show()
+		return show and show(self)
 	end)
 
-	COMBATLOG:SetScript("OnHide", function()
+	COMBATLOG:SetScript("OnHide", function(self)
 		CombatLogQuickButtonFrame_Custom:Hide()
 		-- Blizzard_CombatLog_AdjustCombatLogHeight()
-		return hide and hide()
+		return hide and hide(self)
 	end)	
 end
 
@@ -3606,7 +3483,6 @@ end
 -- Blizzard_CombatLog gets loaded.
 local oldSetItemRef = SetItemRef;
 function SetItemRef(link, text, button)
-	local printable = gsub(link, "\124", "\124\124");
 
 	if ( strsub(link, 1, 4) == "unit") then
 		local _, guid, name = strsplit(":", link);
@@ -3656,10 +3532,8 @@ function SetItemRef(link, text, button)
 		end
 		return;
 	elseif ( strsub(link, 1, 4) == "item") then
-		local _, itemId = strsplit(":", link);
-
 		if ( IsModifiedClick("CHATLINK") ) then
-			name, link = GetItemInfo(itemId);
+			local name, link = GetItemInfo(text);
 			ChatEdit_InsertLink (link);
 			return;
 		end
@@ -3672,9 +3546,9 @@ function Blizzard_CombatLog_Update_QuickButtons()
 	local buttonName, button, textWidth;
 	local buttonIndex = 1;
 	-- subtract the width of the dropdown button
-	local maxWidth = COMBATLOG:GetWidth()-31;
+	local maxWidth = (COMBATLOG:GetRight()-COMBATLOG:GetLeft())-31;	--Hacky hacky because GetWidth goes crazy when it is docked
 	local totalWidth = 0;
-	local padding = 10;
+	local padding = 13;
 	local showMoreQuickButtons = true;
 	for index, filter in ipairs(_G.Blizzard_CombatLog_Filters.filters) do
 		buttonName = baseName.."Button"..buttonIndex;

@@ -18,26 +18,26 @@ SEND_MAIL_TAB_LIST[3] = "SendMailBodyEditBox";
 SEND_MAIL_TAB_LIST[4] = "SendMailMoneyGold";
 SEND_MAIL_TAB_LIST[5] = "SendMailMoneyCopper";
 
-function MailFrame_Onload()
+function MailFrame_OnLoad(self)
 	-- Init pagenum
 	InboxFrame.pageNum = 1;
 	-- Tab Handling code
-	PanelTemplates_SetNumTabs(this, 2);
-	PanelTemplates_SetTab(this, 1);
+	PanelTemplates_SetNumTabs(self, 2);
+	PanelTemplates_SetTab(self, 1);
 	-- Register for events
-	this:RegisterEvent("MAIL_SHOW");
-	this:RegisterEvent("MAIL_INBOX_UPDATE");
-	this:RegisterEvent("MAIL_CLOSED");
-	this:RegisterEvent("MAIL_SEND_INFO_UPDATE");
-	this:RegisterEvent("MAIL_SEND_SUCCESS");
-	this:RegisterEvent("MAIL_FAILED");
-	this:RegisterEvent("CLOSE_INBOX_ITEM");
+	self:RegisterEvent("MAIL_SHOW");
+	self:RegisterEvent("MAIL_INBOX_UPDATE");
+	self:RegisterEvent("MAIL_CLOSED");
+	self:RegisterEvent("MAIL_SEND_INFO_UPDATE");
+	self:RegisterEvent("MAIL_SEND_SUCCESS");
+	self:RegisterEvent("MAIL_FAILED");
+	self:RegisterEvent("CLOSE_INBOX_ITEM");
 	-- Set previous and next fields
 	MoneyInputFrame_SetPreviousFocus(SendMailMoney, SendMailBodyEditBox);
 	MoneyInputFrame_SetNextFocus(SendMailMoney, SendMailNameEditBox);
 end
 
-function MailFrame_OnEvent()
+function MailFrame_OnEvent(self, event, ...)
 	if ( event == "MAIL_SHOW" ) then
 		ShowUIPanel(MailFrame);
 		if ( not MailFrame:IsShown() ) then
@@ -52,7 +52,7 @@ function MailFrame_OnEvent()
 
 		OpenBackpack();
 		SendMailFrame_Update();
-		MailFrameTab_OnClick(1);
+		MailFrameTab_OnClick(nil, 1);
 		CheckInbox();
 	elseif ( event == "MAIL_INBOX_UPDATE" ) then
 		InboxFrame_Update();
@@ -64,7 +64,7 @@ function MailFrame_OnEvent()
 		PlaySound("igAbiliityPageTurn");
 		-- If open mail frame is open then switch the mail frame back to the inbox
 		if ( SendMailFrame.sendMode == "reply" ) then
-			MailFrameTab_OnClick(1);
+			MailFrameTab_OnClick(nil, 1);
 		end
 	elseif ( event == "MAIL_FAILED" ) then
 		SendMailMailButton:Enable();
@@ -75,12 +75,12 @@ function MailFrame_OnEvent()
 	end
 end
 
-function MailFrameTab_OnClick(tab)
-	if ( not tab ) then
-		tab = this:GetID();
+function MailFrameTab_OnClick(self, tabID)
+	if ( not tabID ) then
+		tabID = self:GetID();
 	end
-	PanelTemplates_SetTab(MailFrame, tab);
-	if ( tab == 1 ) then
+	PanelTemplates_SetTab(MailFrame, tabID);
+	if ( tabID == 1 ) then
 		-- Inbox tab clicked
 		InboxFrame:Show();
 		SendMailFrame:Hide();
@@ -159,7 +159,7 @@ function InboxFrame_Update()
 			end
 			-- Format expiration time
 			if ( daysLeft >= 1 ) then
-				daysLeft = GREEN_FONT_COLOR_CODE..floor(daysLeft).." "..DAYS_ABBR.." "..FONT_COLOR_CODE_CLOSE;
+				daysLeft = GREEN_FONT_COLOR_CODE..format(DAYS_ABBR, floor(daysLeft)).." "..FONT_COLOR_CODE_CLOSE;
 			else
 				daysLeft = RED_FONT_COLOR_CODE..SecondsToTime(floor(daysLeft * 24 * 60 * 60))..FONT_COLOR_CODE_CLOSE;
 			end
@@ -216,8 +216,8 @@ function InboxFrame_Update()
 	end
 end
 
-function InboxFrame_OnClick(index)
-	if ( this:GetChecked() ) then
+function InboxFrame_OnClick(self, index)
+	if ( self:GetChecked() ) then
 		InboxFrame.openMailID = index;
 		OpenMailFrame.updateButtonPositions = true;
 		OpenMail_Update();
@@ -231,48 +231,42 @@ function InboxFrame_OnClick(index)
 	InboxFrame_Update();
 end
 
-function InboxFrame_OnModifiedClick(index)
+function InboxFrame_OnModifiedClick(self, index)
 	local _, _, _, _, _, cod = GetInboxHeaderInfo(index);
-	if ( cod and (cod > GetMoney()) ) then
-		StaticPopup_Show("COD_ALERT");
-	elseif(cod > 0) then
-		OpenMailFrame.cod = cod;
-		local dialog = StaticPopup_Show("COD_CONFIRMATION_AUTO_LOOT");
-		if(dialog) then
-			dialog.data = index;
-		end
+	if ( cod > 0 ) then
+		InboxFrame_OnClick(self, index);
 	else
 		AutoLootMailItem(index);
 	end
-	this:SetChecked(false);
+	self:SetChecked(false);
 end
 
-function InboxFrameItem_OnEnter()
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-	if ( this.hasItem ) then
-		if ( this.itemCount == 1) then
-			GameTooltip:SetInboxItem(this.index);
+function InboxFrameItem_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( self.hasItem ) then
+		if ( self.itemCount == 1) then
+			GameTooltip:SetInboxItem(self.index);
 		else
-			GameTooltip:AddLine(MAIL_MULTIPLE_ITEMS.." ("..this.itemCount..")");
+			GameTooltip:AddLine(MAIL_MULTIPLE_ITEMS.." ("..self.itemCount..")");
 		end
 	end
-	if (this.money) then
-		if ( this.hasItem ) then
+	if (self.money) then
+		if ( self.hasItem ) then
 			GameTooltip:AddLine(" ");
 		end
 		GameTooltip:AddLine(ENCLOSED_MONEY, "", 1, 1, 1);
-		SetTooltipMoney(GameTooltip, this.money);
-		SetMoneyFrameColor("GameTooltipMoneyFrame1", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	elseif (this.cod) then
-		if ( this.hasItem ) then
+		SetTooltipMoney(GameTooltip, self.money);
+		SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
+	elseif (self.cod) then
+		if ( self.hasItem ) then
 			GameTooltip:AddLine(" ");
 		end
 		GameTooltip:AddLine(COD_AMOUNT, "", 1, 1, 1);
-		SetTooltipMoney(GameTooltip, this.cod);
-		if ( this.cod > GetMoney() ) then
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		SetTooltipMoney(GameTooltip, self.cod);
+		if ( self.cod > GetMoney() ) then
+			SetMoneyFrameColor("GameTooltipMoneyFrame1", "red");
 		else
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
 		end
 	end
 	GameTooltip:Show();
@@ -474,7 +468,7 @@ function OpenMail_Update()
 				MoneyFrame_Update("OpenMailSalePriceMoneyFrame", bid);
 				MoneyFrame_Update("OpenMailDepositMoneyFrame", deposit);
 				MoneyFrame_Update("OpenMailHouseCutMoneyFrame", consignment);
-				SetMoneyFrameColor("OpenMailHouseCutMoneyFrame", 1.0, 0, 0);
+				SetMoneyFrameColor("OpenMailHouseCutMoneyFrame", "red");
 				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid+deposit-consignment);
 
 				-- Show these guys if the player was the seller
@@ -504,7 +498,7 @@ function OpenMail_Update()
 				-- Position buy line
 				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoicePurchaser", "BOTTOMLEFT", 125, 0);
 				-- How long they have to wait to get the money
-				OpenMailInvoiceMoneyDelay:SetFormattedText(AUCTION_INVOICE_FUNDS_DELAY, GameTime_Text(etaHour, etaMin));
+				OpenMailInvoiceMoneyDelay:SetFormattedText(AUCTION_INVOICE_FUNDS_DELAY, GameTime_GetFormattedTime(etaHour, etaMin, true));
 				-- Not used for a temp sale invoice
 				OpenMailInvoiceSalePrice:Hide();
 				OpenMailInvoiceDeposit:Hide();
@@ -671,7 +665,7 @@ function OpenMail_GetItemCounts(letterIsTakeable, textCreated, money)
 end
 
 function OpenMail_Reply()
-	MailFrameTab_OnClick(2);
+	MailFrameTab_OnClick(nil, 2);
 	SendMailNameEditBox:SetText(OpenMailSender:GetText())
 	local subject = OpenMailSubject:GetText();
 	local prefix = MAIL_REPLY_PREFIX.." ";
@@ -712,22 +706,22 @@ function OpenMail_ReportSpam()
 	OpenMailReportSpamButton:Disable();
 end
 
-function OpenMailAttachment_OnEnter(index)
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+function OpenMailAttachment_OnEnter(self, index)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetInboxItem(InboxFrame.openMailID, index);
 
 	if ( OpenMailFrame.cod ) then
 		SetTooltipMoney(GameTooltip, OpenMailFrame.cod);
 		if ( OpenMailFrame.cod > GetMoney() ) then
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			SetMoneyFrameColor("GameTooltipMoneyFrame1", "red");
 		else
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
 		end
 	end
 	GameTooltip:Show();
 end
 
-function OpenMailAttachment_OnClick(index)
+function OpenMailAttachment_OnClick(self, index)
 	if ( OpenMailFrame.cod and (OpenMailFrame.cod > GetMoney()) ) then
 		StaticPopup_Show("COD_ALERT");
 	elseif ( OpenMailFrame.cod ) then
@@ -743,8 +737,8 @@ end
 
 -- SendMail functions
 
-function SendMailMailButton_OnClick()
-	this:Disable();
+function SendMailMailButton_OnClick(self)
+	self:Disable();
 	local copper = MoneyInputFrame_GetCopper(SendMailMoney);
 	SetSendMailCOD(0);
 	SetSendMailMoney(0);
@@ -826,9 +820,9 @@ function SendMailFrame_Update()
 	
 	-- Color the postage text
 	if ( GetSendMailPrice() > GetMoney() ) then
-		SetMoneyFrameColor("SendMailCostMoneyFrame", RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		SetMoneyFrameColor("SendMailCostMoneyFrame", "red");
 	else
-		SetMoneyFrameColor("SendMailCostMoneyFrame", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		SetMoneyFrameColor("SendMailCostMoneyFrame", "white");
 	end
 
 	-- Determine how many rows of attachments to show
@@ -907,7 +901,7 @@ function SendMailFrame_Reset()
 	SendMailBodyEditBox:SetText("");
 	StationeryPopupFrame.selectedIndex = nil;
 	SendMailFrame_Update();
-	StationeryPopupButton_OnClick(1);
+	StationeryPopupButton_OnClick(nil, 1);
 	MoneyInputFrame_ResetMoney(SendMailMoney);
 	SendMailRadioButton_OnClick(1);
 	SendMailFrame.maxRowsShown = 0;
@@ -962,8 +956,8 @@ function SendMailRadioButton_OnClick(index)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
-function SendMailFrame_SendeeAutocomplete()
-	local text = this:GetText();
+function SendMailFrame_SendeeAutocomplete(self)
+	local text = self:GetText();
 	local textlen = strlen(text);
 	local numFriends, name;
 
@@ -973,11 +967,11 @@ function SendMailFrame_SendeeAutocomplete()
 		for i=1, numFriends do
 			name = GetFriendInfo(i);
 			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
-				this:SetText(name);
-				if ( this:IsInIMECompositionMode() ) then
-					this:HighlightText(textlen - strlen(arg1), -1);
+				self:SetText(name);
+				if ( self:IsInIMECompositionMode() ) then
+					self:HighlightText(textlen - strlen(arg1), -1);
 				else
-					this:HighlightText(textlen, -1);
+					self:HighlightText(textlen, -1);
 				end
 				return;
 			end
@@ -990,11 +984,11 @@ function SendMailFrame_SendeeAutocomplete()
 		for i=1, numFriends do
 			name = GetGuildRosterInfo(i);
 			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
-				this:SetText(name);
-				if ( this:IsInIMECompositionMode() ) then
-					this:HighlightText(textlen - strlen(arg1), -1);
+				self:SetText(name);
+				if ( self:IsInIMECompositionMode() ) then
+					self:HighlightText(textlen - strlen(arg1), -1);
 				else
-					this:HighlightText(textlen, -1);
+					self:HighlightText(textlen, -1);
 				end
 				return;
 			end
@@ -1019,10 +1013,10 @@ function StationeryPopupFrame_Update()
 				-- If player can't afford
 				if ( cost > GetMoney() ) then
 					button:Disable();
-					SetMoneyFrameColor("StationeryPopupButton"..i.."MoneyFrame", RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+					SetMoneyFrameColor("StationeryPopupButton"..i.."MoneyFrame", "red");
 				else
 					button:Enable();
-					SetMoneyFrameColor("StationeryPopupButton"..i.."MoneyFrame", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					SetMoneyFrameColor("StationeryPopupButton"..i.."MoneyFrame", "white");
 				end
 			else
 				-- Is a stationery in player's inventory or is free
@@ -1050,9 +1044,9 @@ function StationeryPopupFrame_Update()
 	FauxScrollFrame_Update(StationeryPopupScrollFrame, numStationeries , STATIONERYITEMS_TO_DISPLAY, STATIONERY_ICON_ROW_HEIGHT );
 end
 
-function StationeryPopupButton_OnClick(index)
+function StationeryPopupButton_OnClick(self, index)
 	if ( not index ) then
-		index = this.index;
+		index = self.index;
 	end
 	SelectStationery(index);
 	StationeryPopupFrame.selectedIndex = index;
@@ -1078,16 +1072,17 @@ function SendMailMoneyButton_OnClick()
 	end
 end
 
-function SendMailAttachmentButton_OnClick(arg1, index)
-	ClickSendMailItemButton(index, arg1 == "RightButton");
+function SendMailAttachmentButton_OnClick(self, button)
+	ClickSendMailItemButton(self:GetID(), arg1 == "RightButton");
 end
 
 function SendMailAttachmentButton_OnDropAny()
 	ClickSendMailItemButton();
 end
 
-function SendMailAttachment_OnEnter(index)
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+function SendMailAttachment_OnEnter(self)
+	local index = self:GetID();
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( GetSendMailItem(index) ) then
 		GameTooltip:SetSendMailItem(index);
 	else

@@ -11,18 +11,18 @@ function MacroFrame_Show()
 	ShowUIPanel(MacroFrame);
 end
 
-function MacroFrame_OnLoad()
+function MacroFrame_OnLoad(self)
 	MacroFrame_SetAccountMacros();
 	PanelTemplates_SetNumTabs(MacroFrame, 2);
 	PanelTemplates_SetTab(MacroFrame, 1);
 end
 
-function MacroFrame_OnShow()
+function MacroFrame_OnShow(self)
 	MacroFrame_Update();
 	PlaySound("igCharacterInfoOpen");
 end
 
-function MacroFrame_OnHide()
+function MacroFrame_OnHide(self)
 	MacroPopupFrame:Hide();
 	MacroFrame_SaveMacro();
 	--SaveMacros();
@@ -133,9 +133,9 @@ function MacroFrame_AddMacroLine(line)
 	end
 end
 
-function MacroButton_OnClick()
+function MacroButton_OnClick(self, button)
 	MacroFrame_SaveMacro();
-	MacroFrame_SelectMacro(MacroFrame.macroBase + this:GetID());
+	MacroFrame_SelectMacro(MacroFrame.macroBase + self:GetID());
 	MacroFrame_Update();
 	MacroPopupFrame:Hide();
 	MacroFrameText:ClearFocus();
@@ -145,13 +145,13 @@ function MacroFrame_SelectMacro(id)
 	MacroFrame.selectedMacro = id;
 end
 
-function MacroNewButton_OnClick()
+function MacroNewButton_OnClick(self, button)
 	MacroFrame_SaveMacro();
 	MacroPopupFrame.mode = "new";
 	MacroPopupFrame:Show();
 end
 
-function MacroEditButton_OnClick()
+function MacroEditButton_OnClick(self, button)
 	MacroFrame_SaveMacro();
 	MacroPopupFrame.mode = "edit";
 	MacroPopupFrame:Show();
@@ -176,8 +176,8 @@ function MacroFrame_ShowDetails()
 	MacroFrameSelectedMacroButton:Show();
 end
 
-function MacroPopupFrame_OnShow()
-	if ( this.mode == "new" ) then
+function MacroPopupFrame_OnShow(self)
+	if ( self.mode == "new" ) then
 		MacroFrameText:Hide();
 		MacroFrameSelectedMacroButtonIcon:SetTexture("");
 		MacroPopupFrame.selectedIcon = nil;
@@ -185,7 +185,7 @@ function MacroPopupFrame_OnShow()
 	MacroPopupEditBox:SetFocus();
 
 	PlaySound("igCharacterInfoOpen");
-	MacroPopupFrame_Update();
+	MacroPopupFrame_Update(self);
 	MacroPopupOkayButton_Update();
 
 	-- Disable Buttons
@@ -196,8 +196,8 @@ function MacroPopupFrame_OnShow()
 	MacroFrameTab2:Disable();
 end
 
-function MacroPopupFrame_OnHide()
-	if ( this.mode == "new" ) then
+function MacroPopupFrame_OnHide(self)
+	if ( self.mode == "new" ) then
 		MacroFrameText:Show();
 		MacroFrameText:SetFocus();
 	end
@@ -219,16 +219,17 @@ function MacroPopupFrame_OnHide()
 	PanelTemplates_UpdateTabs(MacroFrame);
 end
 
-function MacroPopupFrame_Update()
+function MacroPopupFrame_Update(self)
+	self = self or MacroPopupFrame;
 	local numMacroIcons = GetNumMacroIcons();
 	local macroPopupIcon, macroPopupButton;
 	local macroPopupOffset = FauxScrollFrame_GetOffset(MacroPopupScrollFrame);
 	local index;
 	
 	-- Determine whether we're creating a new macro or editing an existing one
-	if ( this.mode == "new" ) then
+	if ( self.mode == "new" ) then
 		MacroPopupEditBox:SetText("");
-	elseif ( this.mode == "edit" ) then
+	elseif ( self.mode == "edit" ) then
 		local name, texture, body = GetMacroInfo(MacroFrame.selectedMacro);
 		MacroPopupEditBox:SetText(name);
 	end
@@ -277,16 +278,16 @@ function MacroPopupOkayButton_Update()
 	end
 end
 
-function MacroPopupButton_OnClick()
-	MacroPopupFrame.selectedIcon = this:GetID() + (FauxScrollFrame_GetOffset(MacroPopupScrollFrame) * NUM_ICONS_PER_ROW);
+function MacroPopupButton_OnClick(self, button)
+	MacroPopupFrame.selectedIcon = self:GetID() + (FauxScrollFrame_GetOffset(MacroPopupScrollFrame) * NUM_ICONS_PER_ROW);
 	-- Clear out selected texture
 	MacroPopupFrame.selectedIconTexture = nil;
 	MacroFrameSelectedMacroButtonIcon:SetTexture(GetMacroIconInfo(MacroPopupFrame.selectedIcon));
 	MacroPopupOkayButton_Update();
-	MacroPopupFrame_Update();
+	MacroPopupFrame_Update(MacroPopupFrame);
 end
 
-function MacroPopupOkayButton_OnClick()
+function MacroPopupOkayButton_OnClick(self, button)
 	local index = 1
 	if ( MacroPopupFrame.mode == "new" ) then
 		index = CreateMacro(MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon, nil, (MacroFrame.macroBase > 0));

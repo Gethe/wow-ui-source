@@ -1,13 +1,13 @@
-function ItemTextFrame_OnLoad()
-	this:RegisterEvent("ITEM_TEXT_BEGIN");
-	this:RegisterEvent("ITEM_TEXT_TRANSLATION");
-	this:RegisterEvent("ITEM_TEXT_READY");
-	this:RegisterEvent("ITEM_TEXT_CLOSED");
+function ItemTextFrame_OnLoad(self)
+	self:RegisterEvent("ITEM_TEXT_BEGIN");
+	self:RegisterEvent("ITEM_TEXT_TRANSLATION");
+	self:RegisterEvent("ITEM_TEXT_READY");
+	self:RegisterEvent("ITEM_TEXT_CLOSED");
 	ItemTextScrollFrame.scrollBarHideable = 1;
 	ItemTextScrollFrameScrollBar:Hide();
 end
 
-function ItemTextFrame_OnEvent(event)
+function ItemTextFrame_OnEvent(self, event, ...)
 	if ( event == "ITEM_TEXT_BEGIN" ) then
 		ItemTextTitleText:SetText(ItemTextGetItem());
 		ItemTextScrollFrame:Hide();
@@ -22,20 +22,19 @@ function ItemTextFrame_OnEvent(event)
 		local textColor = GetMaterialTextColors(material);
 		ItemTextPageText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		return;
-	end
-	if ( event == "ITEM_TEXT_TRANSLATION" ) then
+	elseif ( event == "ITEM_TEXT_TRANSLATION" ) then
+		local arg1 = ...;
 		ItemTextPrevPageButton:Hide();
 		ItemTextNextPageButton:Hide();
-		this.translationElapsed = 0;
+		self.translationElapsed = 0;
 		ItemTextStatusBar:SetMinMaxValues(0, arg1);
 		ItemTextStatusBar:Show();
-		ShowUIPanel(this);
-		if ( not this:IsShown() ) then
+		ShowUIPanel(self);
+		if ( not self:IsShown() ) then
 			CloseItemText();
 		end
 		return;
-	end
-	if ( event == "ITEM_TEXT_READY" ) then
+	elseif ( event == "ITEM_TEXT_READY" ) then
 		local creator = ItemTextGetCreator();
 		if ( creator ) then
 			creator = "\n\n"..ITEM_TEXT_FROM.."\n"..creator.."\n\n\n";
@@ -82,22 +81,21 @@ function ItemTextFrame_OnEvent(event)
 			end
 		end	
 		ItemTextStatusBar:Hide();
-		ShowUIPanel(this);
-		if ( not this:IsShown() ) then
+		ShowUIPanel(self);
+		if ( not self:IsShown() ) then
 			CloseItemText();
 		end
 		return;
-	end
-	if ( event == "ITEM_TEXT_CLOSED" ) then
-		HideUIPanel(this);
+	elseif ( event == "ITEM_TEXT_CLOSED" ) then
+		HideUIPanel(self);
 		return;
 	end
 end
 
-function ItemTextFrame_OnUpdate(elapsed)
+function ItemTextFrame_OnUpdate(self, elapsed)
 	if ( ItemTextStatusBar:IsShown() ) then
-		elapsed = this.translationElapsed + elapsed;
+		elapsed = self.translationElapsed + elapsed;
 		ItemTextStatusBar:SetValue(elapsed);
-		this.translationElapsed = elapsed;
+		self.translationElapsed = elapsed;
 	end
 end

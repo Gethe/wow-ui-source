@@ -10,12 +10,12 @@
 		</Size>
 		<Scripts>
 			<OnClick>
-				Blizzard_CombatLog_QuickButton_OnClick(this:GetID());
+				Blizzard_CombatLog_QuickButton_OnClick(self:GetID());
 			</OnClick>
 			<OnEnter>
-				if (this.tooltip) then
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip_AddNewbieTip(this.tooltip, 1.0, 1.0, 1.0, nil, 1);
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip_AddNewbieTip(self, self.tooltip, 1.0, 1.0, 1.0, nil, 1);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -79,15 +79,15 @@
 				</HitRectInsets>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnClick>
 						EasyMenu(Blizzard_CombatLog_CreateFilterMenu(), CombatLogDropDown, "cursor", nil, nil, "MENU");
 						PlaySound("UChatScrollButton");
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip_AddNewbieTip(ADDITIONAL_FILTERS, 1.0, 1.0, 1.0);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip_AddNewbieTip(self, ADDITIONAL_FILTERS, 1.0, 1.0, 1.0);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -100,11 +100,14 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnShow>
+				Blizzard_CombatLog_Update_QuickButtons();
+			</OnShow>
 			<OnLoad>
-				 Blizzard_CombatLog_QuickButtonFrame_OnLoad();
+				 Blizzard_CombatLog_QuickButtonFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				Blizzard_CombatLog_QuickButtonFrame_OnEvent(event)
+				Blizzard_CombatLog_QuickButtonFrame_OnEvent(self, event, ...)
 			</OnEvent>
 		</Scripts>
 	</Frame>

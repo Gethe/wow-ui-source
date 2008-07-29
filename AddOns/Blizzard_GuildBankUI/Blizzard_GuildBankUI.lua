@@ -215,7 +215,7 @@ function GuildBankFrame_Update()
 
 		-- Update the tab items		
 		local button, index, column;
-		local texture, count, locked;
+		local texture, itemCount, locked;
 		for i=1, MAX_GUILDBANK_SLOTS_PER_TAB do
 			index = mod(i, NUM_SLOTS_PER_GUILDBANK_GROUP);
 			if ( index == 0 ) then
@@ -224,12 +224,10 @@ function GuildBankFrame_Update()
 			column = ceil((i-0.5)/NUM_SLOTS_PER_GUILDBANK_GROUP);
 			button = getglobal("GuildBankColumn"..column.."Button"..index);
 			button:SetID(i);
-			texture, count, locked = GetGuildBankItemInfo(tab, i);
+			texture, itemCount, locked = GetGuildBankItemInfo(tab, i);
 			SetItemButtonTexture(button, texture);
-			SetItemButtonCount(button, count);
+			SetItemButtonCount(button, itemCount);
 			SetItemButtonDesaturated(button, locked, 0.5, 0.5, 0.5);
-			button.count = count;
-			button.locked = locked;
 		end
 		MoneyFrame_Update("GuildBankMoneyFrame", GetGuildBankMoney());
 		if ( CanWithdrawGuildBankMoney() ) then
@@ -310,10 +308,10 @@ function GuildBankFrame_UpdateTabBuyingInfo()
 		GuildBankTab_OnClick(GuildBankTab1, "LeftButton", 1);
 	else
 		if( GetMoney() >= tabCost or (GetMoney() + GetGuildBankMoney()) >= tabCost ) then
-			SetMoneyFrameColor("GuildBankFrameTabCostMoneyFrame", 1.0, 1.0, 1.0);
+			SetMoneyFrameColor("GuildBankFrameTabCostMoneyFrame", "white");
 			GuildBankFramePurchaseButton:Enable();
 		else
-			SetMoneyFrameColor("GuildBankFrameTabCostMoneyFrame", 1.0, 0.1, 0.1);
+			SetMoneyFrameColor("GuildBankFrameTabCostMoneyFrame", "red");
 			GuildBankFramePurchaseButton:Disable();
 		end
 		GuildBankTab_OnClick(getglobal("GuildBankTab" .. numTabs+1), "LeftButton", numTabs+1);
@@ -691,8 +689,10 @@ function GuildBankFrame_UpdateTabard()
 end
 
 function GuildBankFrame_UpdateTabInfo(tab)
-	if ( GetGuildBankText(tab) ) then
-		GuildBankTabInfoEditBox:SetText(GetGuildBankText(tab));
+	local text = GetGuildBankText(tab);
+	if ( text ) then
+		GuildBankTabInfoEditBox.text = text;
+		GuildBankTabInfoEditBox:SetText(text);
 	else
 		GuildBankTabInfoEditBox:SetText("");
 	end

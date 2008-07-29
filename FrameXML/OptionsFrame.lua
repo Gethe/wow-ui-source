@@ -43,16 +43,17 @@ ANISOTROPIC_VALUES[16] = "5";
 
 OPTIONS_FRAME_WIDTH = 495;
 
-function OptionsFrame_Init()
+function OptionsFrame_OnLoad(self)
 	--[[for index, value in pairs(OptionsFrameCheckButtons) do
 		local string = GetCVar(value.cvar);
 		value.value = string;
 	end]]
-	this:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("CVAR_UPDATE");
 end
 
-function OptionsFrame_OnEvent()
+function OptionsFrame_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
+		local arg1, arg2 = ...;
 		local info = OptionsFrameCheckButtons[arg1];
 		if ( info ) then
 			info.value = arg2;
@@ -240,13 +241,19 @@ end
 
 function OptionsFrame_Cancel()
 	SetGamma(OptionsFrame.gamma);
+	if ( GetCVar("gxWindow") ~= "1" ) then
+		OptionsFrameCheckButton10:SetChecked(false);
+	end
+	if ( OptionsFrame.desktopGamma == "0" ) then
+		OptionsFrameCheckButton1:SetChecked(false);
+	end
 	SetCVar("desktopGamma", OptionsFrame.desktopGamma);
 end
 
-function OptionsFrameResolutionDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, OptionsFrameResolutionDropDown_Initialize);
-	UIDropDownMenu_SetSelectedID(this, GetCurrentResolution(), 1);
-	UIDropDownMenu_SetWidth(90, OptionsFrameResolutionDropDown);
+function OptionsFrameResolutionDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, OptionsFrameResolutionDropDown_Initialize);
+	UIDropDownMenu_SetSelectedID(self, GetCurrentResolution(), 1);
+	UIDropDownMenu_SetWidth(self, 90);
 end
 
 function OptionsFrameResolutionDropDown_Initialize()
@@ -272,14 +279,14 @@ function OptionsFrameResolutionDropDown_LoadResolutions(...)
 	end
 end
 
-function OptionsFrameResolutionButton_OnClick()
-	UIDropDownMenu_SetSelectedID(OptionsFrameResolutionDropDown, this:GetID(), 1);
+function OptionsFrameResolutionButton_OnClick(self)
+	UIDropDownMenu_SetSelectedID(OptionsFrameResolutionDropDown, self:GetID(), 1);
 end
 
-function OptionsFrameRefreshDropDown_OnLoad()
-	UIDropDownMenu_SetSelectedValue(this, GetCVar("gxRefresh"));
-	UIDropDownMenu_Initialize(this, OptionsFrameRefreshDropDown_Initialize);
-	UIDropDownMenu_SetWidth(90, OptionsFrameRefreshDropDown);
+function OptionsFrameRefreshDropDown_OnLoad(self)
+	UIDropDownMenu_SetSelectedValue(self, GetCVar("gxRefresh"));
+	UIDropDownMenu_Initialize(self, OptionsFrameRefreshDropDown_Initialize);
+	UIDropDownMenu_SetWidth(self, 90);
 end
 
 function OptionsFrameRefreshDropDown_Initialize()
@@ -301,7 +308,7 @@ function OptionsFrame_GetRefreshRates(...)
 		
 		if ( UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown) and tonumber(UIDropDownMenu_GetSelectedValue(OptionsFrameRefreshDropDown)) == select(i, ...) ) then
 			checked = 1;
-			UIDropDownMenu_SetText(info.text, OptionsFrameRefreshDropDown);
+			UIDropDownMenu_SetText(OptionsFrameRefreshDropDown, info.text);
 		else
 			checked = nil;
 		end
@@ -311,15 +318,15 @@ function OptionsFrame_GetRefreshRates(...)
 	end
 end
 
-function OptionsFrameRefreshDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(OptionsFrameRefreshDropDown, this.value);
+function OptionsFrameRefreshDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(OptionsFrameRefreshDropDown, self.value);
 end
 
-function OptionsFrameMultiSampleDropDown_OnLoad()
-	UIDropDownMenu_SetSelectedID(this, GetCurrentMultisampleFormat());
-	UIDropDownMenu_Initialize(this, OptionsFrameMultiSampleDropDown_Initialize);
-	UIDropDownMenu_SetWidth(140, OptionsFrameMultiSampleDropDown);
-	UIDropDownMenu_SetAnchor(-5, 23, nil, "TOPRIGHT", "OptionsFrameMultiSampleDropDownRight", "BOTTOMRIGHT");
+function OptionsFrameMultiSampleDropDown_OnLoad(self)
+	UIDropDownMenu_SetSelectedID(self, GetCurrentMultisampleFormat());
+	UIDropDownMenu_Initialize(self, OptionsFrameMultiSampleDropDown_Initialize);
+	UIDropDownMenu_SetWidth(self, 140);
+	UIDropDownMenu_SetAnchor(self, -5, 23, "TOPRIGHT", "OptionsFrameMultiSampleDropDownRight", "BOTTOMRIGHT");
 end
 
 function OptionsFrameMultiSampleDropDown_Initialize()
@@ -338,7 +345,7 @@ function OptionsFrame_GetMultisampleFormats(...)
 		
 		if ( index == UIDropDownMenu_GetSelectedID(OptionsFrameMultiSampleDropDown) ) then
 			checked = 1;
-			UIDropDownMenu_SetText(info.text, OptionsFrameMultiSampleDropDown);
+			UIDropDownMenu_SetText(OptionsFrameMultiSampleDropDown, info.text);
 		else
 			checked = nil;
 		end
@@ -348,8 +355,8 @@ function OptionsFrame_GetMultisampleFormats(...)
 	end
 end
 
-function OptionsFrameMultiSampleDropDown_OnClick()
-	UIDropDownMenu_SetSelectedID(OptionsFrameMultiSampleDropDown, this:GetID());
+function OptionsFrameMultiSampleDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedID(OptionsFrameMultiSampleDropDown, self:GetID());
 end
 
 function OptionsFrame_UpdateCheckboxes()
@@ -375,7 +382,13 @@ end
 
 function OptionsFrame_UpdateGammaControls()
 	local value = "0";
-	if ( OptionsFrameCheckButton1:GetChecked() or OptionsFrameCheckButton10:GetChecked() ) then
+	if ( OptionsFrameCheckButton10:GetChecked() ) then
+		OptionsFrameCheckButton1:SetChecked(true);
+		OptionsFrame_DisableCheckBox(OptionsFrameCheckButton1);
+		OptionsFrame_DisableSlider(OptionsFrameSlider2);
+		value = "1";
+	elseif ( OptionsFrameCheckButton1:GetChecked() ) then
+		OptionsFrame_EnableCheckBox(OptionsFrameCheckButton1);
 		OptionsFrame_DisableSlider(OptionsFrameSlider2);
 		value = "1";
 	else
@@ -476,12 +489,4 @@ function OptionsFrame_EnableSlider(slider)
 	getglobal(name.."Text"):SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
 	getglobal(name.."Low"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	getglobal(name.."High"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-end
-
-function PlayClickSound()
-	if ( this:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
-	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
-	end
 end

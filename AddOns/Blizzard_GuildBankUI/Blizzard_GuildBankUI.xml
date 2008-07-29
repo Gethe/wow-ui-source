@@ -13,8 +13,9 @@
 					return;
 				end
 				if ( IsModifiedClick("SPLITSTACK") ) then
-					if ( not self.locked ) then
-						OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
+					local texture, count, locked = GetGuildBankItemInfo(GetCurrentGuildBankTab(), self:GetID());
+					if ( not locked ) then
+						OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT");
 					end
 					return;
 				end
@@ -26,11 +27,11 @@
 					DropCursorMoney();
 					ClearCursor();
 				else
-				  if ( button == "RightButton" ) then
-					AutoStoreGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
-				  else
-							  PickupGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
-				  end
+					if ( button == "RightButton" ) then
+						AutoStoreGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
+					else
+						PickupGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
+					end
 				end
 			</OnClick>
 			<OnLoad>
@@ -1066,7 +1067,7 @@
 						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(GUILDBANK_TRANSACTION_HEIGHT, GuildBankLogScroll)
+								FauxScrollFrame_OnVerticalScroll(self, offset, GUILDBANK_TRANSACTION_HEIGHT, GuildBankLogScroll)
 							</OnVerticalScroll>
 						</Scripts>
 					</ScrollFrame>
@@ -1096,8 +1097,9 @@
 								self:SetWidth(getglobal(self:GetName().."Text"):GetWidth()+40);
 							</OnLoad>
 							<OnClick>
-								if ( GuildBankTabInfoEditBox:GetText() ) then
+								if ( GuildBankTabInfoEditBox:GetText() ~= GuildBankTabInfoEditBox.text ) then
 									SetGuildBankText(GetCurrentGuildBankTab(), GuildBankTabInfoEditBox:GetText());
+									GuildBankTabInfoEditBox:ClearFocus();
 								end
 							</OnClick>
 						</Scripts>
@@ -1143,7 +1145,7 @@
 										local min;
 										local max;
 										min, max = scrollBar:GetMinMaxValues();
-										if ( max > 0 and (this.max ~= max) ) then
+										if ( max > 0 and (self.max ~= max) ) then
 											self.max = max;
 											scrollBar:SetValue(max);
 										end
@@ -1156,6 +1158,12 @@
 											GuildBankInfoSaveButton:Hide();
 										end
 									</OnTextChanged>
+									<OnCursorChanged>
+										ScrollingEdit_OnCursorChanged(self, x, y-10, w, h);
+									</OnCursorChanged>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(GuildBankInfoScrollFrame);
+									</OnUpdate>
 								</Scripts>
 								<FontString inherits="GameFontHighlight"/>
 							</EditBox>
@@ -1324,7 +1332,7 @@
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(GUILDBANK_ICON_ROW_HEIGHT, GuildBankPopupFrame_Update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, GUILDBANK_ICON_ROW_HEIGHT, GuildBankPopupFrame_Update);
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>

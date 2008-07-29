@@ -7,7 +7,7 @@ function PetFrame_OnLoad (self)
 	self.attackModeSign = -1;
 	--this.flashState = 1;
 	--this.flashTimer = 0;
-	CombatFeedback_Initialize(PetHitIndicator, 30);
+	CombatFeedback_Initialize(self, PetHitIndicator, 30);
 	PetFrame_Update(self);
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("UNIT_COMBAT");
@@ -16,14 +16,17 @@ function PetFrame_OnLoad (self)
 	self:RegisterEvent("PET_ATTACK_STOP");
 	self:RegisterEvent("UNIT_HAPPINESS");
 	self:RegisterEvent("PET_UI_UPDATE");
+	self:RegisterEvent("PET_RENAMEABLE");
+	self:RegisterEvent("UNIT_ENTER_VEHICLE");
+	self:RegisterEvent("UNIT_LEAVE_VEHICLE");
 	local showmenu = function()
-		ToggleDropDownMenu(1, nil, PetFrameDropDown);
+		ToggleDropDownMenu(1, nil, PetFrameDropDown, "PetFrame", 44, 8);
 	end
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
 end
 
 function PetFrame_Update (self)
-	if ( UnitIsVisible("pet") ) then
+	if ( UnitIsVisible(self.unit) ) then
 		if ( self:IsShown() ) then
 			UnitFrame_Update(self);
 		else
@@ -31,7 +34,7 @@ function PetFrame_Update (self)
 		end
 		--this.flashState = 1;
 		--this.flashTimer = PET_FLASH_ON_TIME;
-		if ( UnitManaMax("pet") == 0 ) then
+		if ( UnitPowerMax(self.unit) == 0 ) then
 			PetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-SmallTargetingFrame-NoMana");
 			PetFrameManaBarText:Hide();
 		else
@@ -40,7 +43,7 @@ function PetFrame_Update (self)
 		PetAttackModeTexture:Hide();
 
 		PetFrame_SetHappiness(self);
-		RefreshBuffs(self, 0, "pet");
+		RefreshBuffs(self, 0, self.unit);
 	else
 		self:Hide();
 	end
@@ -51,14 +54,23 @@ function PetFrame_OnEvent (self, event, ...)
 
 	local arg1, arg2, arg3, arg4, arg5 = ...;
 	if ( (event == "UNIT_PET" and arg1 == "player" ) or event == "PET_UI_UPDATE" ) then
+		local unit = "pet";
+		if ( UnitInVehicle("player") ) then
+			if ( UnitHasVehicleUI("player") ) then
+				unit = "player";
+			else
+				unit = "";
+			end
+		end
+		UnitFrame_SetUnit(self, unit, PetFrameHealthBar, PetFrameManaBar);
 		PetFrame_Update(self);
 	elseif ( event == "UNIT_COMBAT" ) then
-		if ( arg1 == "pet" ) then
-			CombatFeedback_OnCombatEvent(arg2, arg3, arg4, arg5);
+		if ( arg1 == self.unit ) then
+			CombatFeedback_OnCombatEvent(self, arg2, arg3, arg4, arg5);
 		end
 	elseif ( event == "UNIT_AURA" ) then
-		if ( arg1 == "pet" ) then
-			RefreshBuffs(self, 0, "pet");
+		if ( arg1 == self.unit ) then
+			RefreshBuffs(self, 0, self.unit);
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
@@ -67,6 +79,24 @@ function PetFrame_OnEvent (self, event, ...)
 		PetAttackModeTexture:Hide();
 	elseif ( event == "UNIT_HAPPINESS" ) then
 		PetFrame_SetHappiness(self);
+	elseif ( event == "PET_RENAMEABLE" ) then
+		StaticPopup_Show("RENAME_PET");
+	elseif ( event == "UNIT_ENTER_VEHICLE" ) then
+		if ( arg1 == "player" ) then
+			local showVehicle = arg2;
+			if ( showVehicle ) then
+				UnitFrame_SetUnit(self, "player", PetFrameHealthBar, PetFrameManaBar);
+				PetFrame_Update(self);
+			else
+				UnitFrame_SetUnit(self, "", PetFrameHealthBar, PetFrameManaBar);
+				PetFrame_Update(self);
+			end
+		end
+	elseif ( event == "UNIT_LEAVE_VEHICLE" ) then
+		if ( arg1 == "player" ) then
+			UnitFrame_SetUnit(self, "pet", PetFrameHealthBar, PetFrameManaBar);
+			PetFrame_Update(self);
+		end
 	end
 end
 
@@ -117,7 +147,7 @@ function PetFrame_OnUpdate (self, elapsed)
 end
 
 function PetFrame_SetHappiness ()
-	local happiness, damagePercentage, loyaltyRate = GetPetHappiness();
+	local happiness, damagePercentage = GetPetHappiness();
 	local hasPetUI, isHunterPet = HasPetUI();
 	if ( not happiness or not isHunterPet ) then
 		PetFrameHappiness:Hide();
@@ -133,13 +163,6 @@ function PetFrame_SetHappiness ()
 	end
 	PetFrameHappiness.tooltip = getglobal("PET_HAPPINESS"..happiness);
 	PetFrameHappiness.tooltipDamage = format(PET_DAMAGE_PERCENTAGE, damagePercentage);
-	if ( loyaltyRate < 0 ) then
-		PetFrameHappiness.tooltipLoyalty = getglobal("LOSING_LOYALTY");
-	elseif ( loyaltyRate > 0 ) then
-		PetFrameHappiness.tooltipLoyalty = getglobal("GAINING_LOYALTY");
-	else
-		PetFrameHappiness.tooltipLoyalty = nil;
-	end
 end
 
 function PetFrameDropDown_OnLoad (self)
@@ -147,8 +170,12 @@ function PetFrameDropDown_OnLoad (self)
 end
 
 function PetFrameDropDown_Initialize ()
-	if ( UnitExists("pet") ) then
-		UnitPopup_ShowMenu(PetFrameDropDown, "PET", "pet");
+	if ( UnitExists(PetFrame.unit) ) then
+		if ( PetFrame.unit == "player" ) then
+			UnitPopup_ShowMenu(PetFrameDropDown, "SELF", "player");
+		else
+			UnitPopup_ShowMenu(PetFrameDropDown, "PET", "pet");
+		end
 	end
 end
 

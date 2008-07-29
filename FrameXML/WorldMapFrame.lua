@@ -11,14 +11,17 @@ WORLDMAP_OUTLAND_ID = 3;
 BAD_BOY_UNITS = {};
 BAD_BOY_COUNT = 0;
 
-function WorldMapFrame_OnLoad()
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("WORLD_MAP_UPDATE");
-	this:RegisterEvent("CLOSE_WORLD_MAP");
-	this:RegisterEvent("WORLD_MAP_NAME_UPDATE");
-	this:RegisterEvent("VARIABLES_LOADED");
-	this.poiHighlight = nil;
-	this.areaName = nil;
+MAP_VEHICLES = {};
+MAP_VEHICLES_COUNT = 0;
+
+function WorldMapFrame_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("WORLD_MAP_UPDATE");
+	self:RegisterEvent("CLOSE_WORLD_MAP");
+	self:RegisterEvent("WORLD_MAP_NAME_UPDATE");
+	self:RegisterEvent("VARIABLES_LOADED");
+	self.poiHighlight = nil;
+	self.areaName = nil;
 	CreateWorldMapArrowFrame(WorldMapFrame);
 	InitWorldMapPing(WorldMapFrame);
 	WorldMapFrame_Update();
@@ -38,7 +41,7 @@ function WorldMapFrame_OnLoad()
 
 	-- setup the zone minimap button
 	UIDropDownMenu_Initialize(WorldMapZoneMinimapDropDown, WorldMapZoneMinimapDropDown_Initialize);
-	UIDropDownMenu_SetWidth(150, WorldMapZoneMinimapDropDown);
+	UIDropDownMenu_SetWidth(WorldMapZoneMinimapDropDown, 150);
 	WorldMapZoneMinimapDropDown_Update();
 
 	-- PlayerArrowEffectFrame is created in code: CWorldMap::CreatePlayerArrowFrame()
@@ -46,20 +49,19 @@ function WorldMapFrame_OnLoad()
 	PlayerArrowEffectFrame:SetAlpha(0.65);
 end
 
-function WorldMapFrame_OnEvent()
-	-- FIX ME FOR 1.13
+function WorldMapFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		if ( this:IsShown() ) then
+		if ( self:IsShown() ) then
 			HideUIPanel(WorldMapFrame);
 		end
 	elseif ( event == "WORLD_MAP_UPDATE" ) then
-		if ( this:IsShown() ) then
+		if ( self:IsShown() ) then
 			WorldMapFrame_Update();
 			WorldMapContinentsDropDown_Update();
 			WorldMapZoneDropDown_Update();
 		end
 	elseif ( event == "CLOSE_WORLD_MAP" ) then
-		HideUIPanel(this);
+		HideUIPanel(self);
 	elseif ( event == "VARIABLES_LOADED" ) then
 		WorldMapZoneMinimapDropDown_Update();
 	end
@@ -96,7 +98,7 @@ function WorldMapFrame_Update()
 	--WorldMapHighlight:Hide();
 
 	-- Enable/Disable zoom out button
-	if ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
+	if ( (GetCurrentMapContinent() == WORLDMAP_COSMIC_ID) and (GetCurrentMapDungeonLevel() <= 0) ) then
 		WorldMapZoomOutButton:Disable();
 	else
 		WorldMapZoomOutButton:Enable();
@@ -117,7 +119,7 @@ function WorldMapFrame_Update()
 	for i=1, NUM_WORLDMAP_POIS do
 		worldMapPOI = getglobal("WorldMapFramePOI"..i);
 		if ( i <= numPOIs ) then
-			name, description, textureIndex, x, y = GetMapLandmarkInfo(i);
+			name, description, textureIndex, x, y, mapLinkID = GetMapLandmarkInfo(i);
 			x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
 			getglobal(worldMapPOI:GetName().."Texture"):SetTexCoord(x1, x2, y1, y2);
 			x = x * WorldMapButton:GetWidth();
@@ -125,6 +127,7 @@ function WorldMapFrame_Update()
 			worldMapPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
 			worldMapPOI.name = name;
 			worldMapPOI.description = description;
+			worldMapPOI.mapLinkID = mapLinkID;
 			worldMapPOI:Show();
 		else
 			worldMapPOI:Hide();
@@ -196,13 +199,13 @@ function WorldMapFrame_Update()
 	end
 end
 
-function WorldMapPOI_OnEnter()
+function WorldMapPOI_OnEnter(self)
 	WorldMapFrame.poiHighlight = 1;
-	if ( this.description and strlen(this.description) > 0 ) then
-		WorldMapFrameAreaLabel:SetText(this.name);
-		WorldMapFrameAreaDescription:SetText(this.description);
+	if ( self.description and strlen(self.description) > 0 ) then
+		WorldMapFrameAreaLabel:SetText(self.name);
+		WorldMapFrameAreaDescription:SetText(self.description);
 	else
-		WorldMapFrameAreaLabel:SetText(this.name);
+		WorldMapFrameAreaLabel:SetText(self.name);
 		WorldMapFrameAreaDescription:SetText("");
 	end
 end
@@ -213,8 +216,12 @@ function WorldMapPOI_OnLeave()
 	WorldMapFrameAreaDescription:SetText("");
 end
 
-function WorldMapPOI_OnClick()
-	WorldMapButton_OnClick(arg1, WorldMapButton);
+function WorldMapPOI_OnClick(self, button)
+	if ( self.mapLinkID ) then
+		ClickLandmark(self.mapLinkID);
+	else
+		WorldMapButton_OnClick(WorldMapButton, button);
+	end
 end
 
 function WorldMap_CreatePOI(index)
@@ -246,7 +253,7 @@ end
 
 function WorldMapContinentsDropDown_Update()
 	UIDropDownMenu_Initialize(WorldMapContinentDropDown, WorldMapContinentsDropDown_Initialize);
-	UIDropDownMenu_SetWidth(130, WorldMapContinentDropDown);
+	UIDropDownMenu_SetWidth(WorldMapContinentDropDown, 130);
 
 	if ( (GetCurrentMapContinent() == 0) or (GetCurrentMapContinent() == WORLDMAP_COSMIC_ID) ) then
 		UIDropDownMenu_ClearAll(WorldMapContinentDropDown);
@@ -271,7 +278,7 @@ end
 
 function WorldMapZoneDropDown_Update()
 	UIDropDownMenu_Initialize(WorldMapZoneDropDown, WorldMapZoneDropDown_Initialize);
-	UIDropDownMenu_SetWidth(130, WorldMapZoneDropDown);
+	UIDropDownMenu_SetWidth(WorldMapZoneDropDown, 130);
 
 	if ( (GetCurrentMapContinent() == 0) or (GetCurrentMapContinent() == WORLDMAP_COSMIC_ID) ) then
 		UIDropDownMenu_ClearAll(WorldMapZoneDropDown);
@@ -303,7 +310,7 @@ function WorldMapZoneMinimapDropDown_Initialize()
 	info.func = WorldMapZoneMinimapDropDown_OnClick;
 	if ( value == info.value ) then
 		info.checked = 1;
-		UIDropDownMenu_SetText(info.text, WorldMapZoneMinimapDropDown);
+		UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown, info.text);
 	else
 		info.checked = nil;
 	end
@@ -314,7 +321,7 @@ function WorldMapZoneMinimapDropDown_Initialize()
 	info.func = WorldMapZoneMinimapDropDown_OnClick;
 	if ( value == info.value ) then
 		info.checked = 1;
-		UIDropDownMenu_SetText(info.text, WorldMapZoneMinimapDropDown);
+		UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown, info.text);
 	else
 		info.checked = nil;
 	end
@@ -325,16 +332,16 @@ function WorldMapZoneMinimapDropDown_Initialize()
 	info.func = WorldMapZoneMinimapDropDown_OnClick;
 	if ( value == info.value ) then
 		info.checked = 1;
-		UIDropDownMenu_SetText(info.text, WorldMapZoneMinimapDropDown);
+		UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown, info.text);
 	else
 		info.checked = nil;
 	end
 	UIDropDownMenu_AddButton(info);
 end
 
-function WorldMapZoneMinimapDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, this.value);
-	SetCVar("showBattlefieldMinimap", this.value);
+function WorldMapZoneMinimapDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, self.value);
+	SetCVar("showBattlefieldMinimap", self.value);
 
 	if ( WorldStateFrame_CanShowBattlefieldMinimap() ) then
 		if ( not BattlefieldMinimap ) then
@@ -364,17 +371,17 @@ end
 
 function WorldMapZoneMinimapDropDown_Update()
 	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, GetCVar("showBattlefieldMinimap"));
-	UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown_GetText(GetCVar("showBattlefieldMinimap")), WorldMapZoneMinimapDropDown);
+	UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown, WorldMapZoneMinimapDropDown_GetText(GetCVar("showBattlefieldMinimap")));
 end
 
-function WorldMapContinentButton_OnClick()
-	UIDropDownMenu_SetSelectedID(WorldMapContinentDropDown, this:GetID());
-	SetMapZoom(this:GetID());
+function WorldMapContinentButton_OnClick(self)
+	UIDropDownMenu_SetSelectedID(WorldMapContinentDropDown, self:GetID());
+	SetMapZoom(self:GetID());
 end
 
-function WorldMapZoneButton_OnClick()
-	UIDropDownMenu_SetSelectedID(WorldMapZoneDropDown, this:GetID());
-	SetMapZoom(GetCurrentMapContinent(), this:GetID());
+function WorldMapZoneButton_OnClick(self)
+	UIDropDownMenu_SetSelectedID(WorldMapZoneDropDown, self:GetID());
+	SetMapZoom(GetCurrentMapContinent(), self:GetID());
 end
 
 function WorldMapZoomOutButton_OnClick()
@@ -382,6 +389,8 @@ function WorldMapZoomOutButton_OnClick()
 		SetMapZoom(GetCurrentMapContinent());
 	elseif ( GetCurrentMapContinent() == WORLDMAP_WORLD_ID ) then
 		SetMapZoom(WORLDMAP_COSMIC_ID);
+	elseif ( GetCurrentMapDungeonLevel() > 0 ) then
+		ZoomOut();
 	elseif ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
 		return;
 	elseif ( GetCurrentMapContinent() == WORLDMAP_OUTLAND_ID ) then
@@ -391,12 +400,9 @@ function WorldMapZoomOutButton_OnClick()
 	end
 end
 
-function WorldMapButton_OnClick(mouseButton, button)
+function WorldMapButton_OnClick(button, mouseButton)
 	CloseDropDownMenus();
 	if ( mouseButton == "LeftButton" ) then
-		if ( not button ) then
-			button = this;
-		end
 		local x, y = GetCursorPosition();
 		x = x / button:GetEffectiveScale();
 		y = y / button:GetEffectiveScale();
@@ -414,14 +420,14 @@ function WorldMapButton_OnClick(mouseButton, button)
 	end
 end
 
-function WorldMapButton_OnUpdate(elapsed)
+function WorldMapButton_OnUpdate(self, elapsed)
 	local x, y = GetCursorPosition();
-	x = x / this:GetEffectiveScale();
-	y = y / this:GetEffectiveScale();
+	x = x / self:GetEffectiveScale();
+	y = y / self:GetEffectiveScale();
 
-	local centerX, centerY = this:GetCenter();
-	local width = this:GetWidth();
-	local height = this:GetHeight();
+	local centerX, centerY = self:GetCenter();
+	local width = self:GetWidth();
+	local height = self:GetHeight();
 	local adjustedY = (centerY + (height/2) - y ) / height;
 	local adjustedX = (x - (centerX - (width/2))) / width;
 	local name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY = UpdateMapHighlight( adjustedX, adjustedY );
@@ -586,6 +592,29 @@ function WorldMapButton_OnUpdate(elapsed)
 		WorldMapDeathRelease:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", deathReleaseX, deathReleaseY);
 		WorldMapDeathRelease:Show();
 	end
+	
+	-- position vehicles
+	local numVehicles = GetNumBattlefieldVehicles();
+	local index = 0;
+	for i=1, numVehicles do
+		if (i > MAP_VEHICLES_COUNT) then
+			MAP_VEHICLES[i] = CreateFrame("FRAME", "WorldMapVehicle"..i, WorldMapButton, "WorldMapFlagTemplate");
+			MAP_VEHICLES[i].texture = getglobal("WorldMapVehicle"..i.."Texture");
+			MAP_VEHICLES_COUNT = MAP_VEHICLES_COUNT + 1;
+		end
+		local vehicleX, vehicleY, texture, orientation = GetBattlefieldVehicleInfo(i);
+		vehicleX = vehicleX * WorldMapDetailFrame:GetWidth();
+		vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight();
+		MAP_VEHICLES[i].texture:SetTexture( texture );
+		MAP_VEHICLES[i]:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);
+		MAP_VEHICLES[i]:Show();
+		index = i;	-- save for later
+	end
+	if (index < MAP_VEHICLES_COUNT) then
+		for i=index+1, MAP_VEHICLES_COUNT do
+			MAP_VEHICLES[i]:Hide();
+		end
+	end	
 end
 
 function MapUnit_IsInactive(unit)
@@ -599,14 +628,14 @@ function MapUnit_IsInactive(unit)
 	return false;
 end
 
-function WorldMapUnit_OnEnter()
+function WorldMapUnit_OnEnter(self)
 	-- Adjust the tooltip based on which side the unit button is on
-	local x, y = this:GetCenter();
-	local parentX, parentY = this:GetParent():GetCenter();
+	local x, y = self:GetCenter();
+	local parentX, parentY = self:GetParent():GetCenter();
 	if ( x > parentX ) then
-		WorldMapTooltip:SetOwner(this, "ANCHOR_LEFT");
+		WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
 	else
-		WorldMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 	
 	-- See which POI's are in the same region and include their names in the tooltip
@@ -686,7 +715,7 @@ function MapUnitDropDown_ReportAll_OnClick()
 	end
 end
 
-function MapGroupDropDown_OnClick(unit)
+function MapGroupDropDown_OnClick(self, unit)
 	ReportPlayerIsPVPAFK(unit);
 end
 
@@ -755,7 +784,7 @@ function MapUnit_OnMouseUp( mouseButton, RaidUnitPrefix, PartyUnitPrefix)
 
 		if ( BAD_BOY_COUNT > 0 ) then
 			UIDropDownMenu_Initialize( MapGroupDropDown, MapGroupDropDown_Initialize, "MENU");
-			ToggleDropDownMenu(1, nil, MapGroupDropDown, this:GetName(), 0, -5);
+			ToggleDropDownMenu(1, nil, MapGroupDropDown, self:GetName(), 0, -5);
 		end
 	end
 end

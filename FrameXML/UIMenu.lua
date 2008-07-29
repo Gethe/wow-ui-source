@@ -7,10 +7,10 @@ UIMENU_BORDER_WIDTH = 12;
 UIMENU_NUMBUTTONS = 32;
 UIMENU_TIMEOUT = 2.0;
 
-function UIMenu_Initialize()
-	this.numButtons = 0;
-	this.subMenu = "";
-	local name = this:GetName();
+function UIMenu_Initialize(self)
+	self.numButtons = 0;
+	self.subMenu = "";
+	local name = self:GetName();
 	for i = 1, UIMENU_NUMBUTTONS, 1 do
 		local button = getglobal(name.."Button"..i);
 		button:SetWidth(UIMENU_BUTTON_WIDTH);
@@ -21,30 +21,31 @@ function UIMenu_Initialize()
 		shortcutString:Hide();
 	end
 
-	this:SetWidth(UIMENU_BUTTON_WIDTH + (UIMENU_BORDER_WIDTH * 2));
-	this:SetHeight(UIMENU_BORDER_HEIGHT * 2);
+	self:SetWidth(UIMENU_BUTTON_WIDTH + (UIMENU_BORDER_WIDTH * 2));
+	self:SetHeight(UIMENU_BORDER_HEIGHT * 2);
 end
 
-function UIMenu_OnShow()
-	this.timeleft = UIMENU_TIMEOUT;
-	this.counting = 1;
+function UIMenu_OnShow(self)
+	self.timeleft = UIMENU_TIMEOUT;
+	self.counting = 0;
 end
 
-function UIMenu_AddButton(text, shortcut, func, nested)
-	local id = this.numButtons + 1;
+function UIMenu_AddButton(self, text, shortcut, func, nested, value)
+	local id = self.numButtons + 1;
 	if ( id > UIMENU_NUMBUTTONS ) then
-		message("Too many buttons in UIMenu: "..this:GetName());
+		message("Too many buttons in UIMenu: "..self:GetName());
 		return;
 	end
 
-	this.numButtons = id;
+	self.numButtons = id;
 
-	local button = getglobal(this:GetName().."Button"..id);
+	local button = getglobal(self:GetName().."Button"..id);
 	if ( text ) then
 		button:SetText(text);
 	end
 	button.func = func;
 	button.nested = nested;
+	button.value = value;
 	button:Show();
 
 	if ( shortcut ) then
@@ -53,37 +54,40 @@ function UIMenu_AddButton(text, shortcut, func, nested)
 		shortcutString:Show();
 	end
 
-	this:SetHeight((id * UIMENU_BUTTON_HEIGHT) + (UIMENU_BORDER_HEIGHT * 2));
+	self:SetHeight((id * UIMENU_BUTTON_HEIGHT) + (UIMENU_BORDER_HEIGHT * 2));
 end
 
-function UIMenu_OnUpdate(elapsed)
-	if ( this.counting == 1 ) then
-		local timeleft = this.timeleft - elapsed;
+function UIMenu_OnUpdate(self, elapsed)
+	if ( self.counting == 1 ) then
+		local timeleft = self.timeleft - elapsed;
 		if ( timeleft <= 0 ) then
-			this:Hide();
+			self:Hide();
 			return;
 		end
-		this.timeleft = timeleft;
+		self.timeleft = timeleft;
 	end
 end
 
-function UIMenuButton_OnLoad()
-	this:SetPoint("TOP", this:GetParent(), "TOP", 0, -((this:GetID() - 1) * UIMENU_BUTTON_HEIGHT) - UIMENU_BORDER_HEIGHT);
+function UIMenuButton_OnLoad(self)
+	self:SetPoint("TOP", self:GetParent(), "TOP", 0, -((self:GetID() - 1) * UIMENU_BUTTON_HEIGHT) - UIMENU_BORDER_HEIGHT);
 end
 
-function UIMenuButton_OnClick()
-	local func = this.func;
+function UIMenuButton_OnClick(self)
+	local func = self.func;
 	if ( func ) then
-		func();
+		func(self);
 	end
 
-	this:GetParent():Hide();
+	self:GetParent():Hide();
 	PlaySound("UChatScrollButton");
 end
 
 function UIMenu_StartCounting(menu)
 	menu.counting = 1;
 
+	if ( menu.onlyAutoHideSelf ) then
+		return;
+	end
 	local parentName = menu.parentMenu;
 	if ( parentName ) then
 		UIMenu_StartCounting(getglobal(parentName));
@@ -100,59 +104,83 @@ function UIMenu_StopCounting(menu)
 	end
 end
 
-function UIMenuButton_OnEnter()
-	local nested = this.nested;
+function UIMenuButton_OnEnter(self)
+	local nested = self.nested;
 	if ( nested ) then
 		local menu = getglobal(nested);
 		if ( not menu:IsShown() ) then
-			local oldMenu = getglobal(this:GetParent().subMenu);
+			local oldMenu = getglobal(self:GetParent().subMenu);
 			if ( oldMenu ) then
 				oldMenu:Hide();
 			end
 
-			this:GetParent().subMenu = nested;
-			menu:SetPoint("BOTTOMLEFT", this, "BOTTOMRIGHT", 10, -12);
+			self:GetParent().subMenu = nested;
+			menu:ClearAllPoints();
+			menu:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 10, -12);
 			menu:Show();
+			if ( menu:GetRight() and menu:GetRight() > GetScreenWidth() ) then
+				-- flip the menu's anchor if it is running off the screen
+				menu:ClearAllPoints();
+				menu:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", -10, -12);
+			end
 		end
 
 		UIMenu_StopCounting(menu);
 	else
-		UIMenu_StopCounting(this:GetParent());
+		UIMenu_StopCounting(self:GetParent());
 	end
 end
 
-function UIMenuButton_OnLeave()
-	UIMenu_StartCounting(this:GetParent());
+function UIMenuButton_OnLeave(self)
+	UIMenu_StartCounting(self:GetParent());
 	
-	local nested = this.nested;
+	local nested = self.nested;
 	if ( nested ) then
 		UIMenu_StartCounting(getglobal(nested));
 	end
 end
 
 function UIMenu_AutoSize(frame)
-	if ( not frame ) then
-		frame = this;
+	if ( UIMenu_GetNumButtons(frame) == 0 ) then
+		return;
 	end
-	local button, shortcutText;
+	local button, buttonName, shortcutText;
 	local name = frame:GetName();
 	local width;
 	local maxWidth = 0;
 	for i=1, UIMENU_NUMBUTTONS do
-		width = getglobal(name.."Button"..i):GetTextWidth();
-		shortcutText = getglobal(name.."Button"..i.."ShortcutText");
-		if ( shortcutText:GetText() ~= "" ) then
-			width = width + getglobal(name.."Button"..i.."ShortcutText"):GetWidth();
-		end
-		-- Add padding
-		width = width + 20;
-		if ( width > maxWidth ) then
-			maxWidth = width;
+		buttonName = name.."Button"..i
+		button = getglobal(buttonName);
+		if ( button:IsShown() ) then
+			width = button:GetTextWidth();
+			shortcutText = getglobal(buttonName.."ShortcutText");
+			if ( shortcutText:GetText() ~= "" ) then
+				width = width + shortcutText:GetWidth();
+			end
+			-- Add padding
+			width = width + 20;
+			if ( width > maxWidth ) then
+				maxWidth = width;
+			end
 		end
 	end
 	for i=1, UIMENU_NUMBUTTONS do
-		button = getglobal(name.."Button"..i);
-		button:SetWidth(maxWidth);
+		getglobal(name.."Button"..i):SetWidth(maxWidth);
 	end
 	frame:SetWidth(maxWidth + (UIMENU_BORDER_WIDTH * 2));
+end
+
+function UIMenu_FinishInitializing(frame)
+	if ( UIMenu_GetNumButtons(frame) == 0 ) then
+		frame:Hide();
+	else
+		UIMenu_AutoSize(frame);
+	end
+end
+
+function UIMenu_GetNumButtons(frame)
+	if ( not frame.numButtons ) then
+		return 0;
+	end
+	return frame.numButtons;
 end

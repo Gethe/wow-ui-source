@@ -4,16 +4,16 @@
 	<ScrollingMessageFrame name="ChatFrameTemplate" frameStrata="BACKGROUND" toplevel="true" displayDuration="120.0" maxLines="128" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad>
-				ChatFrame_OnLoad();
+				ChatFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				ChatFrame_OnEvent(event);
+				ChatFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				ChatFrame_OnUpdate(arg1);
+				ChatFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnHyperlinkClick>
-				ChatFrame_OnHyperlinkShow(arg1, arg2, arg3);
+				ChatFrame_OnHyperlinkShow(self, link, text, button);
 			</OnHyperlinkClick>
 		</Scripts>
 		<FontString inherits="ChatFontNormal" justifyH="LEFT" indented="true"/>
@@ -83,7 +83,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						this:GetParent():ToggleInputLanguage();
+						self:GetParent():ToggleInputLanguage();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
@@ -92,34 +92,34 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ChatEdit_OnLoad();
+				ChatEdit_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				ChatEdit_OnShow();
+				ChatEdit_OnShow(self);
 			</OnShow>
 			<OnUpdate>
-				ChatEdit_OnUpdate(arg1);
+				ChatEdit_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnEnterPressed>
-				ChatEdit_OnEnterPressed();
+				ChatEdit_OnEnterPressed(self);
 			</OnEnterPressed>
 			<OnEscapePressed>
-				ChatEdit_OnEscapePressed(this);
+				ChatEdit_OnEscapePressed(self);
 			</OnEscapePressed>
 			<OnSpacePressed>
-				ChatEdit_OnSpacePressed();
+				ChatEdit_OnSpacePressed(self);
 			</OnSpacePressed>
 			<OnTabPressed>
-				ChatEdit_OnTabPressed();
+				ChatEdit_OnTabPressed(self);
 			</OnTabPressed>
 			<OnTextChanged>
-				ChatEdit_OnTextChanged();
+				ChatEdit_OnTextChanged(self);
 			</OnTextChanged>
 			<OnTextSet>
-				ChatEdit_OnTextSet();
+				ChatEdit_OnTextSet(self);
 			</OnTextSet>
 			<OnInputLanguageChanged>
-				ChatEdit_OnInputLanguageChanged();
+				ChatEdit_OnInputLanguageChanged(self);
 			</OnInputLanguageChanged>
 		</Scripts>
 		<FontString inherits="ChatFontNormal" bytes="256"/>

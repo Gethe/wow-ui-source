@@ -27,24 +27,24 @@ function ShowReadyCheck(initiator, timeLeft)
 	end
 end
 
-function ReadyCheckFrame_OnUpdate(elapsed)
-	if ( not ReadyCheckFrame.timer ) then
+function ReadyCheckFrame_OnUpdate(self, elapsed)
+	if ( not self.timer ) then
 		return;
 	end
 
-	ReadyCheckFrame.timer = ReadyCheckFrame.timer - elapsed;
-	if ( ReadyCheckFrame.timer < 0 ) then
+	self.timer = self.timer - elapsed;
+	if ( self.timer < 0 ) then
 		-- Timed out
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(READY_CHECK_YOU_WERE_AFK, info.r, info.g, info.b, info.id);
-		ReadyCheckFrame.timer = nil;
-		ReadyCheckFrame:Hide();
+		self.timer = nil;
+		self:Hide();
 	end
 
 	if ( GetReadyCheckTimeLeft() == 0 ) then
 		-- most likely the raid leadership changed, which resets the ready check
-		ReadyCheckFrame.timer = nil;
-		ReadyCheckFrame:Hide();
+		self.timer = nil;
+		self:Hide();
 		return;
 	end
 end

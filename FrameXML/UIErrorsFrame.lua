@@ -1,16 +1,17 @@
 
-function UIErrorsFrame_OnLoad()
-	this:RegisterEvent("SYSMSG");
-	this:RegisterEvent("UI_INFO_MESSAGE");
-	this:RegisterEvent("UI_ERROR_MESSAGE");
+function UIErrorsFrame_OnLoad(self)
+	self:RegisterEvent("SYSMSG");
+	self:RegisterEvent("UI_INFO_MESSAGE");
+	self:RegisterEvent("UI_ERROR_MESSAGE");
 end
 
-function UIErrorsFrame_OnEvent(event, message)
+function UIErrorsFrame_OnEvent(self, event, ...)
+	local arg1, arg2, arg3, arg4 = ...
 	if ( event == "SYSMSG" ) then
-		this:AddMessage(message, arg2, arg3, arg4, 1.0);
+		self:AddMessage(arg1, arg2, arg3, arg4, 1.0);
 	elseif ( event == "UI_INFO_MESSAGE" ) then
-		this:AddMessage(message, 1.0, 1.0, 0.0, 1.0);
+		self:AddMessage(arg1, 1.0, 1.0, 0.0, 1.0);
 	elseif ( event == "UI_ERROR_MESSAGE" ) then
-		this:AddMessage(message, 1.0, 0.1, 0.1, 1.0);
+		self:AddMessage(arg1, 1.0, 0.1, 0.1, 1.0);
 	end
 end

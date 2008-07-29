@@ -58,7 +58,7 @@
                 </Layers>
                 <Scripts>
                      <OnLoad>
-                        this:SetFrameLevel(this:GetFrameLevel() + 1);
+                        self:SetFrameLevel(self:GetFrameLevel() + 1);
                     </OnLoad>
                 </Scripts>
             </Frame>
@@ -72,7 +72,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        this:SetFrameLevel(this:GetFrameLevel() + 1);
+                        self:SetFrameLevel(self:GetFrameLevel() + 1);
                     </OnLoad>
                 </Scripts>
             </Button>
@@ -86,10 +86,10 @@
                 </Anchors>
                 <Scripts>
 					<OnClick>
-						InspectFrameTab_OnClick();
+						InspectFrameTab_OnClick(self, button);
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(CHARACTER_INFO, 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
@@ -107,10 +107,10 @@
                 </Anchors>
                 <Scripts>
 					<OnClick>
-						InspectFrameTab_OnClick();
+						InspectFrameTab_OnClick(self, button);
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(PLAYER_V_PLAYER, 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
@@ -128,10 +128,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						InspectFrameTab_OnClick();
+						InspectFrameTab_OnClick(self, button);
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(TALENTS, 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
@@ -142,20 +142,20 @@
 		</Frames>
         <Scripts>
 			<OnLoad>
-				InspectFrame_OnLoad();
+				InspectFrame_OnLoad(self);
 			</OnLoad>
             <OnEvent>
-                InspectFrame_OnEvent(event);
+                InspectFrame_OnEvent(self, event, ...);
             </OnEvent>
             <OnShow>
-                InspectFrame_OnShow();
+                InspectFrame_OnShow(self);
             </OnShow>
 			<OnHide>
-				InspectFrame_OnHide();
+				InspectFrame_OnHide(self);
 			</OnHide>
-		        <OnUpdate>
-			          InspectFrame_OnUpdate();
-		        </OnUpdate>
+			<OnUpdate>
+				InspectFrame_OnUpdate(self, elapsed);
+			</OnUpdate>
         </Scripts>
     </Frame>
 </Ui>

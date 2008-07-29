@@ -1,0 +1,126 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ 
+                        ..\..\..\FrameXML\UI.xsd">
+
+	<Script file="RestrictedEnvironment.lua"/>
+	<Script file="RestrictedExecution.lua"/>
+	<Script file="RestrictedFrames.lua"/>
+	<Script file="SecureHandlers.lua"/>
+
+  <Frame name="SecureHandlerBaseTemplate" inherits="SecureFrameTemplate"
+         virtual="true">
+    <Size x="2" y="2"/>
+    <Scripts>
+      <OnAttributeChanged>
+        SecureHandler_OnAttributeChanged(self, name, value);
+      </OnAttributeChanged>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerStateTemplate" inherits="SecureFrameTemplate"
+         virtual="true">
+    <Size x="2" y="2"/>
+    <Scripts>
+      <OnAttributeChanged>
+        SecureHandler_StateOnAttributeChanged(self, name, value);
+      </OnAttributeChanged>
+    </Scripts>
+  </Frame>
+
+  <Button name="SecureHandlerClickTemplate"
+          inherits="SecureHandlerBaseTemplate"
+          virtual="true">
+    <Scripts>
+      <OnClick>
+        SecureHandler_OnClick(self, button, down);
+      </OnClick>
+    </Scripts>
+  </Button>
+
+  <Frame name="SecureHandlerShowHideTemplate" 
+         inherits="SecureHandlerBaseTemplate" virtual="true">
+    <Scripts>
+      <OnShow>
+        SecureHandler_OnSimpleEvent(self, "_onshow");
+      </OnShow>
+      <OnHide>
+        SecureHandler_OnSimpleEvent(self, "_onhide");
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerEnterLeaveTemplate" 
+         inherits="SecureHandlerBaseTemplate" virtual="true">
+    <Scripts>
+      <OnEnter>
+        if ( motion ) then
+            self:SetAttribute("_entered", true);
+            SecureHandler_OnSimpleEvent(self, "_onenter");
+        end
+      </OnEnter>
+      <OnLeave>
+        if ( motion and self:GetAttribute("_entered") ) then
+            self:SetAttribute("_entered", nil);
+            SecureHandler_OnSimpleEvent(self, "_onleave");
+        end
+      </OnLeave>
+    </Scripts>
+  </Frame>
+
+  <Button name="SecureHandlerChildClickTemplate"
+          inherits="SecureFrameTemplate"
+          virtual="true">
+    <Scripts>
+      <OnClick>
+        SecureHandlerChild_ChildAction(self, "button,down",
+                                       "_childonclick", "_onchildonclick",
+                                       button, down);
+      </OnClick>
+    </Scripts>
+  </Button>
+
+  <Button name="SecureHandlerChildPreClickTemplate"
+          inherits="SecureFrameTemplate"
+          virtual="true">
+    <Scripts>
+      <PreClick>
+        SecureHandlerChild_ChildAction(self, "button,down",
+                                       "_childpreclick", "_onchildpreclick",
+                                       button, down);
+      </PreClick>
+    </Scripts>
+  </Button>
+
+  <Button name="SecureHandlerChildPostClickTemplate"
+          inherits="SecureFrameTemplate"
+          virtual="true">
+    <Scripts>
+      <PostClick>
+        SecureHandlerChild_ChildAction(self, "button,down",
+                                       "_childpostclick", "_onchildpostclick",
+                                       button, down);
+      </PostClick>
+    </Scripts>
+  </Button>
+
+  <Frame name="SecureHandlerEnterLeaveTemplate" 
+         inherits="SecureFrameTemplate" virtual="true">
+    <Scripts>
+      <OnEnter>
+        if ( motion ) then
+            self:SetAttribute("_entered", true);
+            SecureHandlerChild_ChildAction(self, "",
+                                           "_childenter", "_onchildenter");
+        end
+      </OnEnter>
+      <OnLeave>
+        if ( motion and self:GetAttribute("_entered") ) then
+            self:SetAttribute("_entered", nil);
+            SecureHandlerChild_ChildAction(self, "",
+                                           "_childleave", "_onchildleave");
+        end
+      </OnLeave>
+    </Scripts>
+  </Frame>
+</Ui>

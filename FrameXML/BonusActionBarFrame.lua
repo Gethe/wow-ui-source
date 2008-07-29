@@ -4,12 +4,13 @@ BONUSACTIONBAR_XPOS = 4;
 NUM_BONUS_ACTION_SLOTS = 12;
 NUM_SHAPESHIFT_SLOTS = 10;
 NUM_POSSESS_SLOTS = 2;
+POSSESS_CANCEL_SLOT = 2;
 
 function BonusActionBar_OnLoad (self)
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 	self:RegisterEvent("ACTIONBAR_SHOWGRID");
 	self:RegisterEvent("ACTIONBAR_HIDEGRID");
-	self:SetFrameLevel(this:GetFrameLevel() + 2);
+	self:SetFrameLevel(self:GetFrameLevel() + 2);
 	self.mode = "none";
 	self.completed = 1;
 	self.lastBonusBar = 1;
@@ -68,7 +69,7 @@ end
 
 function ShowBonusActionBar ()
 	BonusActionBar_SetButtonTransitionState(nil);
-	if ( BonusActionBarFrame.mode ~= "show" and BonusActionBarFrame.state ~= "top") then
+	if ( (BonusActionBarFrame.mode ~= "show" and BonusActionBarFrame.state ~= "top") or (not UIParent:IsShown())) then
 		BonusActionBarFrame:Show();
 		if ( BonusActionBarFrame.completed ) then
 			BonusActionBarFrame.slideTimer = 0;
@@ -79,7 +80,7 @@ function ShowBonusActionBar ()
 end
 
 function HideBonusActionBar ()
-	if ( BonusActionBarFrame:IsShown() ) then
+	if ( (BonusActionBarFrame:IsShown()) or (not UIParent:IsShown())) then
 		BonusActionBar_SetButtonTransitionState(1);
 		if ( BonusActionBarFrame.completed ) then
 			BonusActionBarFrame.slideTimer = 0;
@@ -118,7 +119,7 @@ function ShapeshiftBar_OnLoad (self)
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");	-- Wha?? Still Wha...
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("SPELL_UPDATE_USABLE");
-	self:RegisterEvent("PLAYER_AURAS_CHANGED");
+	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 end
 
@@ -132,6 +133,12 @@ function ShapeshiftBar_OnEvent (self, event, ...)
 			HideBonusActionBar();
 		end
 	else
+		if ( event == "UNIT_AURA" ) then
+			local unit = ...;
+			if ( unit ~= PlayerFrame.unit ) then
+				return;
+			end
+		end
 		ShapeshiftBar_UpdateState();
 	end
 end
@@ -216,7 +223,7 @@ function PossessBar_OnLoad (self)
 	PossessBar_Update();
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
-	self:RegisterEvent("PLAYER_AURAS_CHANGED");
+	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 end
 
@@ -229,8 +236,11 @@ function PossessBar_OnEvent (self, event, ...)
 		else
 			HideBonusActionBar();
 		end
-	else
-		PossessBar_UpdateState();
+	elseif ( event == "UNIT_AURA" ) then
+		local unit = ...;
+		if ( unit == "player" ) then
+			PossessBar_UpdateState();
+		end
 	end
 end
 
@@ -250,47 +260,59 @@ end
 
 function PossessBar_UpdateState ()
 	local texture, name;
-	local button, icon, cooldown;
+	local button, background, icon, cooldown;
 
 	for i=1, NUM_POSSESS_SLOTS do
 		-- Possess Icon
 		button = getglobal("PossessButton"..i);
+		background = getglobal("PossessBackground"..i);
 		icon = getglobal("PossessButton"..i.."Icon");
-		texture, name = GetPossessInfo(i);
+		texture, name, enabled = GetPossessInfo(i);
 		icon:SetTexture(texture);
-		
+
 		--Cooldown stuffs
 		cooldown = getglobal("PossessButton"..i.."Cooldown");
 		cooldown:Hide();
-		
-		button:SetChecked(0);
+
+		button:SetChecked(nil);
 		icon:SetVertexColor(1.0, 1.0, 1.0);
 
-		button:Show();
+		if ( enabled ) then
+			button:Show();
+			background:Show();
+		else
+			button:Hide();
+			background:Hide();
+		end
 	end
 end
 
-function PossessBar_Clicked (id)
-	local button = getglobal("PossessButton"..id);
-	button:SetChecked(0);
-	
-	if (id == 2) then
-		local texture, name = GetPossessInfo(1);
-		CancelPlayerBuff(name);
+function PossessButton_OnClick (self)
+	self:SetChecked(nil);
+
+	local id = self:GetID();
+	if ( id == POSSESS_CANCEL_SLOT ) then
+		if ( UnitControllingVehicle("player") and CanExitVehicle() ) then
+			VehicleExit();
+		else
+			local texture, name = GetPossessInfo(id);
+			CancelPlayerBuff(name);
+		end
 	end
 end
 
-function PossessBar_OnEnter (self, id)
-	local button = getglobal("PossessButton"..id);
+function PossessButton_OnEnter (self)
+	local id = self:GetID();
+
 	if ( GetCVar("UberTooltips") == "1" ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-    end
-    
-    if ( id == 2 ) then
+	end
+
+	if ( id == POSSESS_CANCEL_SLOT ) then
 		GameTooltip:SetText(CANCEL);
-    else
-		GameTooltip:SetPossession(self:GetID());
+	else
+		GameTooltip:SetPossession(id);
 	end
 end

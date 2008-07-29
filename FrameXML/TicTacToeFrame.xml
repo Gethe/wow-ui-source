@@ -7,7 +7,7 @@
 		</Size>
 		<Scripts>
 			<OnClick>
-				MakeMinigameMove(0,this:GetID());
+				MakeMinigameMove(0,self:GetID());
 			</OnClick>
 		</Scripts>
 	</Button>

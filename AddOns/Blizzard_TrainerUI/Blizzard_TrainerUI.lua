@@ -55,13 +55,13 @@ function ClassTrainerFrame_Hide()
 	HideUIPanel(ClassTrainerFrame);
 end
 
-function ClassTrainerFrame_OnLoad()
-	this:RegisterEvent("TRAINER_UPDATE");
+function ClassTrainerFrame_OnLoad(self)
+	self:RegisterEvent("TRAINER_UPDATE");
 	ClassTrainerDetailScrollFrame.scrollBarHideable = 1;
 end
 
-function ClassTrainerFrame_OnEvent()
-	if ( not this:IsShown() ) then
+function ClassTrainerFrame_OnEvent(self, event, ...)
+	if ( not self:IsShown() ) then
 		return;
 	end
 	if ( event == "TRAINER_UPDATE" ) then
@@ -126,7 +126,7 @@ function ClassTrainerFrame_Update()
 			-- Type stuff
 			if ( serviceType == "header" ) then
 				skillButton:SetText(serviceName);
-				skillButton:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				skillButton:SetNormalFontObject(GameFontNormalLeft);
 				skillSubText:Hide();
 				if ( isExpanded ) then
 					skillButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
@@ -149,14 +149,14 @@ function ClassTrainerFrame_Update()
 				-- Cost Stuff
 				moneyCost, cpCost1, cpCost2 = GetTrainerServiceCost(skillIndex);
 				if ( serviceType == "available" ) then
-					skillButton:SetTextColor(0, 1.0, 0);
+					skillButton:SetNormalFontObject(GameFontNormalLeftGreen);
 					ClassTrainer_SetSubTextColor(skillButton, 0, 0.6, 0);
 					skillButton.r = 0;
 				elseif ( serviceType == "used" ) then
-					skillButton:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					skillButton:SetNormalFontObject(GameFontNormalLeftGrey);
 					ClassTrainer_SetSubTextColor(skillButton, 0.5, 0.5, 0.5);
 				else
-					skillButton:SetTextColor(0.9, 0, 0);
+					skillButton:SetNormalFontObject(GameFontNormalLeftRed);
 					ClassTrainer_SetSubTextColor(skillButton, 0.6, 0, 0);
 				end		
 			end
@@ -282,18 +282,10 @@ function ClassTrainer_SetSelection(id)
 	local separator = "";
 	if ( reqLevel > 1 ) then
 		separator = ", ";
-		if ( isPetLearnSpell ) then
-			if ( UnitLevel("pet") >= reqLevel ) then
-				requirements = requirements..format(TRAINER_PET_LEVEL, reqLevel);
-			else
-				requirements = requirements..format(TRAINER_PET_LEVEL_RED, reqLevel);
-			end
+		if ( UnitLevel("player") >= reqLevel ) then
+			requirements = requirements..format(TRAINER_REQ_LEVEL, reqLevel);
 		else
-			if ( UnitLevel("player") >= reqLevel ) then
-				requirements = requirements..format(TRAINER_REQ_LEVEL, reqLevel);
-			else
-				requirements = requirements..format(TRAINER_REQ_LEVEL_RED, reqLevel);
-			end
+			requirements = requirements..format(TRAINER_REQ_LEVEL_RED, reqLevel);
 		end
 	end
 	-- Skill Requirements
@@ -348,9 +340,9 @@ function ClassTrainer_SetSelection(id)
 		ClassTrainerCostLabel:Show();
 		ClassTrainerSkillDescription:SetPoint("TOPLEFT", "ClassTrainerCostLabel", "BOTTOMLEFT", 0, -10);
 		if ( GetMoney() >= moneyCost ) then
-			SetMoneyFrameColor("ClassTrainerDetailMoneyFrame", 1.0, 1.0, 1.0);
+			SetMoneyFrameColor("ClassTrainerDetailMoneyFrame", "white");
 		else
-			SetMoneyFrameColor("ClassTrainerDetailMoneyFrame", 1.0, 0.1, 0.1);
+			SetMoneyFrameColor("ClassTrainerDetailMoneyFrame", "red");
 			unavailable = 1;
 		end
 	end
@@ -382,16 +374,16 @@ function ClassTrainer_SetSelection(id)
 	end
 end
 
-function ClassTrainerSkillButton_OnClick(button)
+function ClassTrainerSkillButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		ClassTrainerFrame.selectedService = this:GetID();
+		ClassTrainerFrame.selectedService = self:GetID();
 		ClassTrainerFrame.showSkillDetails = 1;
-		ClassTrainer_SetSelection(this:GetID());
+		ClassTrainer_SetSelection(self:GetID());
 		ClassTrainerFrame_Update();
 	end
 end
 
-function ClassTrainerTrainButton_OnClick()
+function ClassTrainerTrainButton_OnClick(self, button)
 	if ( IsTradeskillTrainer() and ClassTrainerFrame.showDialog) then
 		StaticPopup_Show("CONFIRM_PROFESSION");
 	else
@@ -409,12 +401,12 @@ function ClassTrainer_SetSubTextColor(button, r, g, b)
 	getglobal(button:GetName().."SubText"):SetTextColor(r, g, b);
 end
 
-function ClassTrainerCollapseAllButton_OnClick()
-	if (this.collapsed) then
-		this.collapsed = nil;
+function ClassTrainerCollapseAllButton_OnClick(self)
+	if (self.collapsed) then
+		self.collapsed = nil;
 		ExpandTrainerSkillLine(0);
 	else
-		this.collapsed = 1;
+		self.collapsed = 1;
 		ClassTrainerListScrollFrameScrollBar:SetValue(0);
 		CollapseTrainerSkillLine(0);
 	end
@@ -457,10 +449,10 @@ function ClassTrainer_SetToClassTrainer()
 end
 
 -- Dropdown functions
-function ClassTrainerFrameFilterDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, ClassTrainerFrameFilterDropDown_Initialize);
-	UIDropDownMenu_SetText(FILTER, this);
-	UIDropDownMenu_SetWidth(130, ClassTrainerFrameFilterDropDown);
+function ClassTrainerFrameFilterDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, ClassTrainerFrameFilterDropDown_Initialize);
+	UIDropDownMenu_SetText(self, FILTER);
+	UIDropDownMenu_SetWidth(self, 130);
 end
 
 function ClassTrainerFrameFilterDropDown_Initialize()
@@ -491,11 +483,11 @@ function ClassTrainerFrameFilterDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function ClassTrainerFrameFilterDropDown_OnClick()	
+function ClassTrainerFrameFilterDropDown_OnClick(self)	
 	ClassTrainerListScrollFrameScrollBar:SetValue(0);
-	if ( UIDropDownMenuButton_GetChecked() ) then
-		SetTrainerServiceTypeFilter(this.value, 1);
+	if ( UIDropDownMenuButton_GetChecked(self) ) then
+		SetTrainerServiceTypeFilter(self.value, 1);
 	else
-		SetTrainerServiceTypeFilter(this.value, 0);
+		SetTrainerServiceTypeFilter(self.value, 0);
 	end
 end

@@ -4,8 +4,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	<Button name="LFMFrameColumnHeaderTemplate" inherits="WhoFrameColumnHeaderTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				if ( this.sortType ) then
-					SortLFG(this.sortType);
+				if ( self.sortType ) then
+					SortLFG(self.sortType);
 				end
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
@@ -55,7 +55,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</FontString>
 				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="100" y="8"/>
+						<AbsDimension x="65" y="8"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
@@ -81,14 +81,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick>
-				LFMButton_OnClick(arg1);
+				LFMButton_OnClick(self, button);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 			<OnEnter>
-				LFMButton_OnEnter();
+				LFMButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -302,10 +302,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								UIDropDownMenu_SetWidth(100, LFMFrameTypeDropDown);
-								UIDropDownMenu_Initialize(this, LFMFrameTypeDropDown_Initialize);
-								UIDropDownMenu_SetSelectedID(LFMFrameTypeDropDown, 1);
-								UIDropDownMenu_JustifyText("LEFT", this);
+								UIDropDownMenu_SetWidth(self, 100);
+								UIDropDownMenu_Initialize(self, LFMFrameTypeDropDown_Initialize);
+								UIDropDownMenu_SetSelectedID(self, 1);
+								UIDropDownMenu_JustifyText(self, "LEFT");
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -319,9 +319,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								UIDropDownMenu_SetWidth(184, this);
-								UIDropDownMenu_Initialize(this, LFMFrameNameDropDown_Initialize);
-								UIDropDownMenu_JustifyText("LEFT", this);
+								UIDropDownMenu_SetWidth(self, 184);
+								UIDropDownMenu_Initialize(self, LFMFrameNameDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -386,7 +386,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 										</Anchors>
 										<Scripts>
 											<OnEnter>
-												GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 												if( RealPartyIsFull() or (((GetRealNumPartyMembers() > 0) and not IsRealPartyLeader()) or ((GetRealNumRaidMembers() > 0) and not IsRealRaidLeader())) ) then
 													GameTooltip:SetText(AUTO_ADD_DISABLED_GROUPED_TOOLTIP, nil, nil, nil, nil, 1);
 												else
@@ -401,26 +401,26 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								</Frames>
 								<Scripts>
 									<OnLoad>
-										OptionsCheckButton_SetText(AUTO_ADD_MEMBERS);
-										this:RegisterEvent("VARIABLES_LOADED");
+										OptionsCheckButton_SetText(self, AUTO_ADD_MEMBERS);
+										self:RegisterEvent("VARIABLES_LOADED");
 									</OnLoad>
 									<OnEvent>
-										this:SetChecked(GetCVarBool("lfgAutoFill"));
-										LFMFrame_UpdateAutoAdd(this:GetChecked());
+										self:SetChecked(GetCVarBool("lfgAutoFill"));
+										LFMFrame_UpdateAutoAdd(self:GetChecked());
 									</OnEvent>
 									<OnClick>
 										-- Included here to prevent the comment from being overridden
 										LFGFrame_SetLFGComment();
 
-										if ( this:GetChecked() ) then
+										if ( self:GetChecked() ) then
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										else
 											PlaySound("igMainMenuOptionCheckBoxOff");
 										end
-										LFMFrame_UpdateAutoAdd(this:GetChecked());
+										LFMFrame_UpdateAutoAdd(self:GetChecked());
 									</OnClick>
 									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetText(AUTO_ADD_TOOLTIP, nil, nil, nil, nil, 1);
 									</OnEnter>
 									<OnLeave>
@@ -431,7 +431,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								this:SetWidth(AutoAddMembersCheckButtonText:GetWidth()+35);
+								self:SetWidth(AutoAddMembersCheckButtonText:GetWidth()+35);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -454,8 +454,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(101);
-								this.sortType = "name";
+								WhoFrameColumn_SetWidth(self, 101);
+								self.sortType = "name";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -469,8 +469,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(93);
-								this.sortType = "zone";
+								WhoFrameColumn_SetWidth(self, 93);
+								self.sortType = "zone";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -484,8 +484,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(29);
-								this.sortType = "level";
+								WhoFrameColumn_SetWidth(self, 29);
+								self.sortType = "level";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -499,8 +499,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(75);
-								this.sortType = "class";
+								WhoFrameColumn_SetWidth(self, 75);
+								self.sortType = "class";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -643,7 +643,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(16, LFMFrame_Update);
+								FauxScrollFrame_OnVerticalScroll(self, offset, LFM_BUTTONHEIGHT, LFMFrame_Update);
 							</OnVerticalScroll>
 						</Scripts>
 						<Layers>
@@ -734,16 +734,16 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						LFMFrame_OnLoad();
+						LFMFrame_OnLoad(self);
 					</OnLoad>
 					<OnEvent>
-						LFMFrame_OnEvent(event)
+						LFMFrame_OnEvent(self, event, ...)
 					</OnEvent>
 					<OnShow>
 						LFMFrame_OnShow()
 					</OnShow>
 					<OnUpdate>
-						LFMFrame_OnUpdate(arg1);
+						LFMFrame_OnUpdate(self, elapsed);
 					</OnUpdate>
 				</Scripts>
 			</Frame>
@@ -947,7 +947,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 										</Anchors>
 										<Scripts>
 											<OnEnter>
-												GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 												GameTooltip:SetText(AUTO_JOIN_TOOLTIP, nil, nil, nil, nil, 1);
 											</OnEnter>
 											<OnLeave>
@@ -958,18 +958,18 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								</Frames>
 								<Scripts>
 									<OnLoad>
-										OptionsCheckButton_SetText(AUTO_JOIN);
-										this:RegisterEvent("VARIABLES_LOADED");
+										OptionsCheckButton_SetText(self, AUTO_JOIN);
+										self:RegisterEvent("VARIABLES_LOADED");
 									</OnLoad>
 									<OnEvent>
-										this:SetChecked(GetCVarBool("lfgAutoJoin"));
+										self:SetChecked(GetCVarBool("lfgAutoJoin"));
 										LFGFrame_UpdateAutoJoin();
 									</OnEvent>
 									<OnClick>
 										-- Included here to prevent the comment from being overridden
 										LFGFrame_SetLFGComment();
 
-										if ( this:GetChecked() ) then
+										if ( self:GetChecked() ) then
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										else
 											PlaySound("igMainMenuOptionCheckBoxOff");
@@ -977,7 +977,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 										LFGFrame_Update();
 									</OnClick>
 									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetText(AUTO_JOIN_TOOLTIP, nil, nil, nil, nil, 1);
 									</OnEnter>
 									<OnLeave>
@@ -988,7 +988,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								this:SetWidth(AutoJoinCheckButtonText:GetWidth()+35);
+								self:SetWidth(AutoJoinCheckButtonText:GetWidth()+35);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -1011,9 +1011,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								UIDropDownMenu_SetWidth(205, this)
-								UIDropDownMenu_Initialize(this, LFGFrameTypeDropDown_Initialize);
-								UIDropDownMenu_JustifyText("LEFT", LFGFrameTypeDropDown);
+								UIDropDownMenu_SetWidth(self, 205)
+								UIDropDownMenu_Initialize(self, LFGFrameTypeDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -1027,9 +1027,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								UIDropDownMenu_SetWidth(205, this);
-								UIDropDownMenu_Initialize(this, LFGFrameNameDropDown1_Initialize);
-								UIDropDownMenu_JustifyText("LEFT", this);
+								UIDropDownMenu_SetWidth(self, 205);
+								UIDropDownMenu_Initialize(self, LFGFrameNameDropDown1_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -1043,9 +1043,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								UIDropDownMenu_SetWidth(205, this)
-								UIDropDownMenu_Initialize(this, LFGFrameTypeDropDown_Initialize);
-								UIDropDownMenu_JustifyText("LEFT", this);
+								UIDropDownMenu_SetWidth(self, 205)
+								UIDropDownMenu_Initialize(self, LFGFrameTypeDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -1059,9 +1059,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								UIDropDownMenu_SetWidth(205, this);
-								UIDropDownMenu_Initialize(this, LFGFrameNameDropDown2_Initialize);
-								UIDropDownMenu_JustifyText("LEFT", this);
+								UIDropDownMenu_SetWidth(self, 205);
+								UIDropDownMenu_Initialize(self, LFGFrameNameDropDown2_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -1075,9 +1075,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								UIDropDownMenu_SetWidth(205, this)
-								UIDropDownMenu_Initialize(this, LFGFrameTypeDropDown_Initialize);
-								UIDropDownMenu_JustifyText("LEFT", this);
+								UIDropDownMenu_SetWidth(self, 205)
+								UIDropDownMenu_Initialize(self, LFGFrameTypeDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -1091,9 +1091,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								UIDropDownMenu_SetWidth(205, this);
-								UIDropDownMenu_Initialize(this, LFGFrameNameDropDown3_Initialize);
-								UIDropDownMenu_JustifyText("LEFT", this);
+								UIDropDownMenu_SetWidth(self, 205);
+								UIDropDownMenu_Initialize(self, LFGFrameNameDropDown3_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -1134,10 +1134,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						LFGFrame_OnLoad();
+						LFGFrame_OnLoad(self);
 					</OnLoad>
 					<OnEvent>
-						LFGFrame_OnEvent(event);
+						LFGFrame_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnShow>
 						LFGFrame_OnShow();
@@ -1146,7 +1146,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						LFGFrame_OnHide();
 					</OnHide>
 					<OnUpdate>
-						LFGFrame_OnUpdate(arg1);
+						LFGFrame_OnUpdate(self, elapsed);
 					</OnUpdate>
 				</Scripts>
 			</Frame>
@@ -1174,7 +1174,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						LFGParentFrameTab1_OnClick();
 					</OnClick>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(LFG_TITLE, "TOGGLELFGTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFGTAB, 1);
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFG_TITLE, "TOGGLELFGTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFGTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -1196,7 +1196,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<OnEnter>
 						local _, _, _, _, _, _, _, _, _, _, _, lfmStatus = GetLookingForGroup();
 						if ( (GetRealNumPartyMembers() > 0) or (GetRealNumRaidMembers() > 0) or lfmStatus ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 							if (lfmStatus) then
 								GameTooltip:SetText(LFG_DISABLED_LFM_TOOLTIP, nil, nil, nil, nil, 1);
 							else
@@ -1222,7 +1222,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						LFGParentFrameTab2_OnClick();
 					</OnClick>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(LFM_TITLE, "TOGGLELFMTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFMTAB, 1);
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFM_TITLE, "TOGGLELFMTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFMTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -1255,26 +1255,26 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetText(CLICK_TO_ENTER_COMMENT);
-						this:SetCursorPosition(1);
+						self:SetText(CLICK_TO_ENTER_COMMENT);
+						self:SetCursorPosition(1);
 					</OnLoad>
 					<OnUpdate>
-						LFGComment_OnUpdate(arg1);
+						LFGComment_OnUpdate(self, elapsed);
 					</OnUpdate>
 					<OnEditFocusGained>
-						if ( this:GetText() == CLICK_TO_ENTER_COMMENT ) then
-							this:SetText("");
+						if ( self:GetText() == CLICK_TO_ENTER_COMMENT ) then
+							self:SetText("");
 						end
 					</OnEditFocusGained>
 					<OnTextChanged>
-						LFGComment.sendTimer = 0;
+						self.sendTimer = 0;
 					</OnTextChanged> 
 					<OnEnterPressed>
 						LFGFrame_SetLFGComment();
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEscapePressed> 
 				</Scripts>
 				<FontString inherits="ChatFontNormal" bytes="64"/>
@@ -1282,10 +1282,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				LFGParentFrame_OnLoad();
+				LFGParentFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				LFGParentFrame_OnEvent(event);
+				LFGParentFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
 				UpdateMicroButtons();

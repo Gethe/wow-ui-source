@@ -179,7 +179,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff("pet", self:GetID());
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
@@ -194,7 +194,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff("pet", self:GetID());
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
@@ -209,7 +209,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff("pet", self:GetID());
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
@@ -224,7 +224,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff("pet", self:GetID());
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
@@ -256,9 +256,6 @@
 							GameTooltip:SetText(self.tooltip);
 							if ( self.tooltipDamage ) then
 								GameTooltip:AddLine(self.tooltipDamage, "", 1, 1, 1);
-							end
-							if ( self.tooltipLoyalty ) then
-								GameTooltip:AddLine(self.tooltipLoyalty, "", 1, 1, 1);
 							end
 							GameTooltip:Show();
 						end
@@ -293,7 +290,7 @@
 			<OnEnter>
 				UnitFrame_OnEnter(self);
 				PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 60, -35);
-				PartyMemberBuffTooltip_Update(self, true);
+				PartyMemberBuffTooltip_Update(self);
 			</OnEnter>
 			<OnLeave>
 				UnitFrame_OnLeave(self);

@@ -36,16 +36,16 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				GameTooltip_OnLoad();
-				this:SetPadding(16);
-				this:RegisterForDrag("LeftButton");
+				GameTooltip_OnLoad(self);
+				self:SetPadding(16);
+				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnDragStart>
-				this:StartMoving();
+				self:StartMoving();
 			</OnDragStart>
 			<OnDragStop>
-				this:StopMovingOrSizing();
-				ValidateFramePosition(this);
+				self:StopMovingOrSizing();
+				ValidateFramePosition(self);
 			</OnDragStop> 
 		</Scripts>
 	</GameTooltip>

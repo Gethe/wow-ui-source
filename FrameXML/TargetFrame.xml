@@ -17,7 +17,11 @@
 				else
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				end
-				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), GetCVarBool("showDispelDebuffs"));
+				local filter;
+				if ( GetCVarBool("showDispelDebuffs") ) then
+					filter = "RAID";
+				end
+				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), filter);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

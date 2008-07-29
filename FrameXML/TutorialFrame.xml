@@ -96,7 +96,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>
 				<NormalTexture inherits="DialogButtonNormalTexture"/>
@@ -109,13 +109,14 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("TUTORIAL_TRIGGER");
-				this:RegisterEvent("CINEMATIC_STOP");
+				self:RegisterEvent("TUTORIAL_TRIGGER");
+				self:RegisterEvent("CINEMATIC_STOP");
 			</OnLoad>
 			<OnHide>
 				TutorialFrame_OnHide();
 			</OnHide>
 			<OnEvent>
+				local arg1 = ...;
 				if ( event == "TUTORIAL_TRIGGER" ) then
 					TutorialFrame_NewTutorial(arg1);
 				elseif ( event == "CINEMATIC_STOP" ) then
@@ -137,21 +138,21 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_LEFT");
-				GameTooltip:SetText(this.tooltip);
+				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+				GameTooltip:SetText(self.tooltip);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
 				TutorialFrame:Show();
-				this:ClearAllPoints();
-				this:Hide();
-				TutorialFrame_Update(this.id);
-				this.id = nil;
+				self:ClearAllPoints();
+				self:Hide();
+				TutorialFrame_Update(self.id);
+				self.id = nil;
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\TutorialFrame\TutorialFrameAlert">

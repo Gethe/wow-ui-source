@@ -1,46 +1,46 @@
-function QuestTimerFrame_OnLoad()
-	this:RegisterEvent("QUEST_LOG_UPDATE");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this.numTimers = 0;
-	this.updating = nil;
+function QuestTimerFrame_OnLoad(self)
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self.numTimers = 0;
+	self.updating = nil;
 end
 
-function QuestTimerFrame_OnEvent()
+function QuestTimerFrame_OnEvent(self, event, ...)
 	if ( event == "QUEST_LOG_UPDATE" or event == "PLAYER_ENTERING_WORLD" ) then
-		if ( not this.updating ) then
-			QuestTimerFrame_Update(GetQuestTimers());
+		if ( not self.updating ) then
+			QuestTimerFrame_Update(self, GetQuestTimers());
 		end
 	end
 end
 
-function QuestTimerFrame_Update(...)
-	this.updating = 1;
-	this.numTimers = select("#", ...);
-	for i=1, this.numTimers, 1 do
+function QuestTimerFrame_Update(self, ...)
+	self.updating = 1;
+	self.numTimers = select("#", ...);
+	for i=1, self.numTimers, 1 do
 		getglobal("QuestTimer"..i.."Text"):SetText(SecondsToTime(select(i, ...)));
 		getglobal("QuestTimer"..i):Show();
 	end
-	for i=this.numTimers + 1, MAX_QUESTS, 1 do
+	for i=self.numTimers + 1, MAX_QUESTS, 1 do
 		getglobal("QuestTimer"..i):Hide();
 	end
-	if ( this.numTimers > 0 ) then
-		this:SetHeight(45 + (16 * this.numTimers));
-		this:Show();
+	if ( self.numTimers > 0 ) then
+		self:SetHeight(45 + (16 * self.numTimers));
+		self:Show();
 	else
-		this:Hide();
+		self:Hide();
 	end
-	this.updating = nil;
+	self.updating = nil;
 end
 
-function QuestTimerFrame_OnUpdate()
-	if ( this.numTimers > 0 ) then
-		QuestTimerFrame_Update(GetQuestTimers());
+function QuestTimerFrame_OnUpdate(self, elapsed)
+	if ( self.numTimers > 0 ) then
+		QuestTimerFrame_Update(self, GetQuestTimers());
 	end
 end
 
-function QuestTimerButton_OnClick()
+function QuestTimerButton_OnClick(self, button)
 	ShowUIPanel(QuestLogFrame);
-	QuestLog_SetSelection(GetQuestIndexForTimer(this:GetID()));
+	QuestLog_SetSelection(GetQuestIndexForTimer(self:GetID()));
 	QuestLog_Update();
 end
 

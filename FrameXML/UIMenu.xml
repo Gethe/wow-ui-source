@@ -7,16 +7,16 @@
 		</Size>
 		<Scripts>
 			<OnLoad>
-				UIMenuButton_OnLoad();
+				UIMenuButton_OnLoad(self);
 			</OnLoad>
 			<OnClick>
-				UIMenuButton_OnClick();
+				UIMenuButton_OnClick(self, button);
 			</OnClick>
 			<OnEnter>
-				UIMenuButton_OnEnter();
+				UIMenuButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				UIMenuButton_OnLeave();
+				UIMenuButton_OnLeave(self);
 			</OnLeave>
 		</Scripts>
 		<Layers>
@@ -80,13 +80,13 @@
 		</Frames>
 		<Scripts>
 			<OnUpdate>
-				UIMenu_OnUpdate(arg1);
+				UIMenu_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnShow>
-				UIMenu_OnShow();
+				UIMenu_OnShow(self);
 				PlaySound("UChatScrollButton");
-				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 			</OnShow>
 		</Scripts>
 	</Frame>

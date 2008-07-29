@@ -26,13 +26,13 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton");
+				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnEnter>
-				if (this.tooltip) then
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip:SetText(this.tooltip);
-					GameTooltip:AddLine(this.tooltipSubtext, "", 1.0, 1.0, 1.0);
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltip);
+					GameTooltip:AddLine(self.tooltipSubtext, "", 1.0, 1.0, 1.0);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -40,15 +40,15 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				if ( ClickStablePet(this:GetID()) ) then
+				if ( ClickStablePet(self:GetID()) ) then
 					PetStable_Update();
 				end
 			</OnClick>
 			<OnDragStart>
-				PickupStablePet(this:GetID());
+				PickupStablePet(self:GetID());
 			</OnDragStart>
 			<OnReceiveDrag>
-				if ( ClickStablePet(this:GetID()) ) then
+				if ( ClickStablePet(self:GetID()) ) then
 					PetStable_Update();
 				end
 			</OnReceiveDrag>
@@ -149,15 +149,6 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="PetStableLoyaltyText" inherits="GameFontNormalSmall" text="Loyalty: Mans Best Friend">
-                    <Anchors>
-                        <Anchor point="TOP" relativeTo="PetStableLevelText" relativePoint="BOTTOM">
-                            <Offset>
-                                <AbsDimension x="0" y="-1"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </FontString>
 				<FontString name="PetStableSlotText" inherits="GameFontHighlightSmall" text="STABLE_SLOT_TEXT">
 					<Anchors>
 						<Anchor point="BOTTOM">
@@ -216,7 +207,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
 								Model_RotateLeft(PetStableModel);
@@ -235,7 +226,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
 								Model_RotateRight(PetStableModel);
@@ -268,8 +259,8 @@
 						</Layers>
 						<Scripts>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-								GameTooltip:SetText(this.tooltip);
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltip);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -389,7 +380,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PetStable_OnLoad();
+				PetStable_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
@@ -399,7 +390,7 @@
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
 			<OnEvent>
-				PetStable_OnEvent();
+				PetStable_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Frame>

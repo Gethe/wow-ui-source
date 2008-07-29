@@ -108,26 +108,26 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						FCFOptionsDropDown_OnLoad();
+						FCFOptionsDropDown_OnLoad(self);
 					</OnLoad>
 					<OnShow>
-						FCFOptionsDropDown_OnLoad();
+						FCFOptionsDropDown_OnLoad(self);
 					</OnShow>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
-				this:RegisterForDrag("LeftButton");
-				getglobal(this:GetName().."DockRegionHighlight"):SetPoint("LEFT", this:GetName().."Right", "RIGHT", -16 , -3);
+				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
+				self:RegisterForDrag("LeftButton");
+				getglobal(self:GetName().."DockRegionHighlight"):SetPoint("LEFT", self:GetName().."Right", "RIGHT", -16 , -3);
 			</OnLoad>
 			<OnClick>
-				FCF_Tab_OnClick(arg1);
+				FCF_Tab_OnClick(self, button);
 				PlaySound("UChatScrollButton");
 			</OnClick>
 			<OnEnter>
-				GameTooltip_AddNewbieTip(CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
+				GameTooltip_AddNewbieTip(self, CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -135,11 +135,11 @@
 			<OnDragStart>
 				-- mschweitzer NOTE: part of a fix for bug 93334. if a tab is fading out, its frame shouldn't be draggable
 				-- because we can potentially get into a state where the tab disappears while we drag
-				if ( UIFrameIsFading(this) ) then
+				if ( UIFrameIsFading(self) ) then
 					return;
 				end
 
-				local chatFrame = getglobal("ChatFrame"..this:GetID());
+				local chatFrame = getglobal("ChatFrame"..self:GetID());
 				if ( chatFrame == DEFAULT_CHAT_FRAME ) then
 					if (chatFrame.isLocked) then
 						return;
@@ -160,11 +160,12 @@
 					FCF_SetTabPosition(chatFrame, 0);
 					chatFrame:StartMoving();
 					MOVING_CHATFRAME = chatFrame;
+					Blizzard_CombatLog_Update_QuickButtons();
 				end
 				SELECTED_CHAT_FRAME = chatFrame;
 			</OnDragStart>
 			<OnDragStop>
-				local chatFrame = getglobal("ChatFrame"..this:GetID());
+				local chatFrame = getglobal("ChatFrame"..self:GetID());
 				FCF_StopDragging(chatFrame);
 			</OnDragStop>
 		</Scripts>
@@ -274,13 +275,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()-1);
+						self:SetFrameLevel(self:GetFrameLevel()-1);
 					</OnLoad>
 					<OnMouseDown>
-						FCF_Resize("TOPLEFT");
+						FCF_Resize(self, "TOPLEFT");
 					</OnMouseDown>
 					<OnMouseUp>
-						FCF_StopResize();
+						FCF_StopResize(self);
 					</OnMouseUp> 
 				</Scripts>
 			</Button>
@@ -310,13 +311,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()-1);
+						self:SetFrameLevel(self:GetFrameLevel()-1);
 					</OnLoad>
 					<OnMouseDown>
-						FCF_Resize("TOPRIGHT");
+						FCF_Resize(self, "TOPRIGHT");
 					</OnMouseDown>
 					<OnMouseUp>
-						FCF_StopResize();
+						FCF_StopResize(self);
 					</OnMouseUp> 
 				</Scripts>
 			</Button>
@@ -346,13 +347,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()-1);
+						self:SetFrameLevel(self:GetFrameLevel()-1);
 					</OnLoad>
 					<OnMouseDown>
-						FCF_Resize("BOTTOMLEFT");
+						FCF_Resize(self, "BOTTOMLEFT");
 					</OnMouseDown>
 					<OnMouseUp>
-						FCF_StopResize();
+						FCF_StopResize(self);
 					</OnMouseUp> 
 				</Scripts>
 			</Button>
@@ -382,13 +383,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()-1);
+						self:SetFrameLevel(self:GetFrameLevel()-1);
 					</OnLoad>
 					<OnMouseDown>
-						FCF_Resize("BOTTOMRIGHT");
+						FCF_Resize(self, "BOTTOMRIGHT");
 					</OnMouseDown>
 					<OnMouseUp>
-						FCF_StopResize();
+						FCF_StopResize(self);
 					</OnMouseUp> 
 				</Scripts>
 			</Button>
@@ -424,13 +425,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()-1);
+						self:SetFrameLevel(self:GetFrameLevel()-1);
 					</OnLoad>
 					<OnMouseDown>
-						FCF_Resize("TOP");
+						FCF_Resize(self, "TOP");
 					</OnMouseDown>
 					<OnMouseUp>
-						FCF_StopResize();
+						FCF_StopResize(self);
 					</OnMouseUp> 
 				</Scripts>
 			</Button>
@@ -466,13 +467,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()-1);
+						self:SetFrameLevel(self:GetFrameLevel()-1);
 					</OnLoad>
 					<OnMouseDown>
-						FCF_Resize("BOTTOM");
+						FCF_Resize(self, "BOTTOM");
 					</OnMouseDown>
 					<OnMouseUp>
-						FCF_StopResize();
+						FCF_StopResize(self);
 					</OnMouseUp> 
 				</Scripts>
 			</Button>
@@ -508,13 +509,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()-1);
+						self:SetFrameLevel(self:GetFrameLevel()-1);
 					</OnLoad>
 					<OnMouseDown>
-						FCF_Resize("LEFT");
+						FCF_Resize(self, "LEFT");
 					</OnMouseDown>
 					<OnMouseUp>
-						FCF_StopResize();
+						FCF_StopResize(self);
 					</OnMouseUp> 
 				</Scripts>
 			</Button>
@@ -550,13 +551,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()-1);
+						self:SetFrameLevel(self:GetFrameLevel()-1);
 					</OnLoad>
 					<OnMouseDown>
-						FCF_Resize("RIGHT");
+						FCF_Resize(self, "RIGHT");
 					</OnMouseDown>
 					<OnMouseUp>
-						FCF_StopResize();
+						FCF_StopResize(self);
 					</OnMouseUp> 
 				</Scripts>
 			</Button>
@@ -579,7 +580,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igChatBottom");
-						this:GetParent():ScrollToBottom();
+						self:GetParent():ScrollToBottom();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
@@ -600,16 +601,16 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						MessageFrameScrollButton_OnLoad();
+						MessageFrameScrollButton_OnLoad(self);
 					</OnLoad>
 					<OnUpdate>
-						MessageFrameScrollButton_OnUpdate(arg1);
+						MessageFrameScrollButton_OnUpdate(self, elapsed);
 					</OnUpdate>
 					<OnClick>
-						if ( this:GetButtonState() == "PUSHED" ) then
-							this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+						if ( self:GetButtonState() == "PUSHED" ) then
+							self.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
 						else
-							this:GetParent():ScrollDown();
+							self:GetParent():ScrollDown();
 						end
 						PlaySound("igChatScrollDown");
 					</OnClick>
@@ -628,16 +629,16 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						MessageFrameScrollButton_OnLoad();
+						MessageFrameScrollButton_OnLoad(self);
 					</OnLoad>
 					<OnUpdate>
-						MessageFrameScrollButton_OnUpdate(arg1);
+						MessageFrameScrollButton_OnUpdate(self, elapsed);
 					</OnUpdate>
 					<OnClick>
-						if ( this:GetButtonState() == "PUSHED" ) then
-							this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+						if ( self:GetButtonState() == "PUSHED" ) then
+							self.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
 						else
-							this:GetParent():ScrollUp();
+							self:GetParent():ScrollUp();
 						end
 						PlaySound("igChatScrollUp");
 					</OnClick>
@@ -650,36 +651,36 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ChatFrame_OnLoad();
-				FloatingChatFrame_OnLoad();
+				ChatFrame_OnLoad(self);
+				FloatingChatFrame_OnLoad(self);
 			</OnLoad>
 			<OnUpdate>
 				-- mschweitzer NOTE: per bug 93334, if the tab is not visible then the chat frame should not be allowed to drag
-				if ( this == MOVING_CHATFRAME ) then
-					local chatTab = getglobal("ChatFrame"..this:GetID().."Tab");
+				if ( self == MOVING_CHATFRAME ) then
+					local chatTab = getglobal("ChatFrame"..self:GetID().."Tab");
 					if ( not chatTab:IsShown() ) then
-						FCF_StopDragging(this);
+						FCF_StopDragging(self);
 					end
 				end
-				ChatFrame_OnUpdate(arg1);
+				ChatFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnShow>
-				getglobal(this:GetName().."BottomButton"):Show();
-				getglobal(this:GetName().."DownButton"):Show();
-				getglobal(this:GetName().."UpButton"):Show();
-				SetChatWindowShown(this:GetID(), 1);
+				getglobal(self:GetName().."BottomButton"):Show();
+				getglobal(self:GetName().."DownButton"):Show();
+				getglobal(self:GetName().."UpButton"):Show();
+				SetChatWindowShown(self:GetID(), 1);
 			</OnShow>
 			<OnHide>
-				if (not this:IsShown() ) then
-					getglobal(this:GetName().."BottomButton"):Hide();
-					getglobal(this:GetName().."DownButton"):Hide();
-					getglobal(this:GetName().."UpButton"):Hide();
-					SetChatWindowShown(this:GetID(), nil);
+				if (not self:IsShown() ) then
+					getglobal(self:GetName().."BottomButton"):Hide();
+					getglobal(self:GetName().."DownButton"):Hide();
+					getglobal(self:GetName().."UpButton"):Hide();
+					SetChatWindowShown(self:GetID(), nil);
 				end
 			</OnHide>
 			<OnEvent>
-				ChatFrame_OnEvent(event);
-				FloatingChatFrame_OnEvent(event);
+				ChatFrame_OnEvent(self, event, ...);
+				FloatingChatFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</ScrollingMessageFrame>
@@ -698,15 +699,15 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				ChatFrame_OnLoad();
+				ChatFrame_OnLoad(self);
 				SELECTED_DOCK_FRAME = ChatFrame1;
-				this:RegisterEvent("UPDATE_CHAT_WINDOWS");
-				this:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS");
+				self:RegisterEvent("UPDATE_CHAT_WINDOWS");
+				self:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS");
 				--ChatFrame_DisplayStartupText(this);
 			</OnLoad>
 			<OnEvent>
-				ChatFrame_OnEvent(event);
-				FloatingChatFrame_OnEvent(event);
+				ChatFrame_OnEvent(self, event, ...);
+				FloatingChatFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</ScrollingMessageFrame>
@@ -740,9 +741,9 @@
 			<OnLoad>
 				DEFAULT_CHAT_FRAME = ChatFrame1;
 				SELECTED_CHAT_FRAME = ChatFrame1;
-				this.chatFrame = DEFAULT_CHAT_FRAME;
-				DEFAULT_CHAT_FRAME.editBox = this;
-				ChatEdit_OnLoad();
+				self.chatFrame = DEFAULT_CHAT_FRAME;
+				DEFAULT_CHAT_FRAME.editBox = self;
+				ChatEdit_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</EditBox>
@@ -760,7 +761,7 @@
 				ChatFrame_OpenMenu();
 			</OnClick>
 			<OnEnter>
-				GameTooltip_AddNewbieTip(CHAT_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATMENU, 1);
+				GameTooltip_AddNewbieTip(self, CHAT_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATMENU, 1);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -777,37 +778,37 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this.chatFrame = DEFAULT_CHAT_FRAME;
-				ChatMenu_OnLoad();
+				self.chatFrame = DEFAULT_CHAT_FRAME;
+				ChatMenu_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				ChatMenu_OnShow();
-				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				ChatMenu_OnShow(self);
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 			</OnShow>
 		</Scripts>
 	</Frame>
 	<Frame name="EmoteMenu" inherits="UIMenuTemplate" hidden="true" parent="ChatMenu">
 		<Scripts>
 			<OnLoad>
-				EmoteMenu_OnLoad();
+				EmoteMenu_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Frame>
 	<Frame name="LanguageMenu" inherits="UIMenuTemplate" hidden="true" parent="ChatMenu">
 		<Scripts>
 			<OnLoad>
-				LanguageMenu_OnLoad();
+				LanguageMenu_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				LanguageMenu_OnEvent(event);
+				LanguageMenu_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Frame>
 	<Frame name="VoiceMacroMenu" inherits="UIMenuTemplate" hidden="true" parent="ChatMenu">
 		<Scripts>
 			<OnLoad>
-				VoiceMacroMenu_OnLoad();
+				VoiceMacroMenu_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Frame>	

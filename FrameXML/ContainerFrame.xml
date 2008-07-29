@@ -16,20 +16,20 @@
 			<OnClick>
 				local modifiedClick = IsModifiedClick();
 				-- If we can loot the item and autoloot toggle is active, then do a normal click
-				if ( arg1 ~= "LeftButton" and modifiedClick and IsModifiedClick("AUTOLOOTTOGGLE") ) then
-					local _, _, _, _, _, lootable = GetContainerItemInfo(this:GetParent():GetID(), this:GetID());
+				if ( button ~= "LeftButton" and modifiedClick and IsModifiedClick("AUTOLOOTTOGGLE") ) then
+					local _, _, _, _, _, lootable = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
 					if ( lootable ) then
 						modifiedClick = false;
 					end
 				end
 				if ( modifiedClick ) then
-					ContainerFrameItemButton_OnModifiedClick(arg1);
+					ContainerFrameItemButton_OnModifiedClick(self, button);
 				else
-					ContainerFrameItemButton_OnClick(arg1);
+					ContainerFrameItemButton_OnClick(self, button);
 				end
 			</OnClick>
 			<OnLoad>
-				ContainerFrameItemButton_OnLoad();
+				ContainerFrameItemButton_OnLoad(self);
 			</OnLoad>
 			<OnEnter>
 				ContainerFrameItemButton_OnEnter(self);
@@ -39,15 +39,15 @@
 				ResetCursor();
 			</OnLeave>
 			<OnHide>
-				if ( this.hasStackSplit and (this.hasStackSplit == 1) ) then
+				if ( self.hasStackSplit and (self.hasStackSplit == 1) ) then
 					StackSplitFrame:Hide();
 				end
 			</OnHide>
 			<OnDragStart>
-				ContainerFrameItemButton_OnClick("LeftButton");
+				ContainerFrameItemButton_OnClick(self, "LeftButton");
 			</OnDragStart>
 			<OnReceiveDrag>
-				ContainerFrameItemButton_OnClick("LeftButton");
+				ContainerFrameItemButton_OnClick(self, "LeftButton");
 			</OnReceiveDrag>
 		</Scripts>
 	</Button>
@@ -197,19 +197,19 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_LEFT");
-						if ( this:GetID() == 0 ) then
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						if ( self:GetID() == 0 ) then
 							GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
 							if (GetBindingKey("TOGGLEBACKPACK")) then
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
 							end
-						elseif ( this:GetID() == KEYRING_CONTAINER ) then
+						elseif ( self:GetID() == KEYRING_CONTAINER ) then
 							GameTooltip:SetText(KEYRING, 1.0, 1.0, 1.0);
 							if (GetBindingKey("TOGGLEKEYRING")) then
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEKEYRING")..")"..FONT_COLOR_CODE_CLOSE)
 							end
-						elseif ( GameTooltip:SetInventoryItem("player", ContainerIDToInventoryID(this:GetID())) ) then
-							local binding = GetBindingKey("TOGGLEBAG"..(4 - this:GetID() + 1));
+						elseif ( GameTooltip:SetInventoryItem("player", ContainerIDToInventoryID(self:GetID())) ) then
+							local binding = GetBindingKey("TOGGLEBAG"..(4 - self:GetID() + 1));
 							if ( binding ) then
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
 							end
@@ -230,7 +230,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ToggleBag(this:GetParent():GetID());
+						ToggleBag(self:GetParent():GetID());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -240,13 +240,13 @@
 				ContainerFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnLoad>
-				ContainerFrame_OnLoad();
+				ContainerFrame_OnLoad(self);
 			</OnLoad>
 			<OnHide>
-				ContainerFrame_OnHide();
+				ContainerFrame_OnHide(self);
 			</OnHide>
 			<OnShow>
-				ContainerFrame_OnShow();
+				ContainerFrame_OnShow(self);
 			</OnShow>
 		</Scripts>
 	</Frame>

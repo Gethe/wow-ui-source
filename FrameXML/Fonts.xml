@@ -1,6 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<!-- This Fonts.xml is loaded before FontStyles.xml Set up Font objects to be localized in Fonts.xml not FontStyles.xml -->
+	<Script>
+		STANDARD_TEXT_FONT = "Fonts\\FRIZQT__.TTF";
+		UNIT_NAME_FONT = "Fonts\\FRIZQT__.TTF";
+		DAMAGE_TEXT_FONT = "Fonts\\FRIZQT__.TTF";
+		NAMEPLATE_FONT = "Fonts\\FRIZQT__.TTF";
+	</Script>
 
 	<Font name="SystemFont_Tiny" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<FontHeight>
@@ -28,6 +34,17 @@
 			<AbsValue val="10"/>
 		</FontHeight>
 	</Font>
+	<Font name="SystemFont_InverseShadow_Small" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r=".4" g=".4" b=".4" a=".75"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>	
 	<Font name="SystemFont_Med1" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<FontHeight>
 			<AbsValue val="12"/>
@@ -50,6 +67,17 @@
 		</FontHeight>
 	</Font>
 	<Font name="SystemFont_Med3" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+	<Font name="SystemFont_Shadow_Med3" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
 		<FontHeight>
 			<AbsValue val="14"/>
 		</FontHeight>

@@ -179,9 +179,9 @@
 							self:SetPoint("TOP", GameMenuButtonRatings, "BOTTOM", 0, -1);
 						end;
 						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") ) then
-							this:Enable();
+							self:Enable();
 						else
-							this:Disable();
+							self:Disable();
 						end
 					</OnShow>
 					<OnClick>
@@ -202,9 +202,9 @@
 				<Scripts>
 					<OnShow>
 						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") ) then
-							this:Enable();
+							self:Enable();
 						else
-							this:Disable();
+							self:Disable();
 						end
 					</OnShow>
 					<OnClick>

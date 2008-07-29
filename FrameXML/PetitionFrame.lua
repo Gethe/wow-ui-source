@@ -1,5 +1,5 @@
 
-function PetitionFrame_Update()
+function PetitionFrame_Update(self)
 	if ( CanSignPetition() ) then
 		PetitionFrameSignButton:Enable();
 	else
@@ -44,8 +44,8 @@ function PetitionFrame_Update()
 	end
 	local memberText;
 	local numNames = GetNumPetitionNames();
-	if ( this.minSignatures ) then
-		for i=1, this.minSignatures, 1 do
+	if ( self.minSignatures ) then
+		for i=1, self.minSignatures, 1 do
 			memberText = getglobal("PetitionFrameMemberName"..i);
 			memberText:Hide();
 		end
@@ -62,8 +62,8 @@ function PetitionFrame_Update()
 		end
 		memberText:Show();
 	end
-	this.minSignatures = minSignatures;
-	this.petitionType = petitionType;
+	self.minSignatures = minSignatures;
+	self.petitionType = petitionType;
 	if ( numNames >= maxSignatures ) then
 		PetitionFrameRequestButton:Disable();
 	else

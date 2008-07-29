@@ -2,6 +2,8 @@ MAX_TALENT_TABS = 5;
 MAX_NUM_TALENT_TIERS = 15;
 NUM_TALENT_COLUMNS = 4;
 MAX_NUM_TALENTS = 40;
+PLAYER_TALENTS_PER_TIER = 5;
+PET_TALENTS_PER_TIER = 3;
 
 TALENT_BUTTON_SIZE = 32;
 MAX_NUM_BRANCH_TEXTURES = 30;
@@ -92,7 +94,7 @@ function TalentFrame_Update(TalentFrame)
 
 	-- Setup Frame
 	local base;
-	local name, texture, points, fileName = GetTalentTabInfo(TalentFrame.currentSelectedTab, TalentFrame.inspect);
+	local name, texture, points, fileName = GetTalentTabInfo(TalentFrame.currentSelectedTab, TalentFrame.inspect, TalentFrame.pet);
 	if ( name ) then
 		base = "Interface\\TalentFrame\\"..fileName.."-";
 	else
@@ -105,7 +107,7 @@ function TalentFrame_Update(TalentFrame)
 	getglobal(TalentFrame:GetName().."BackgroundBottomLeft"):SetTexture(base.."BottomLeft");
 	getglobal(TalentFrame:GetName().."BackgroundBottomRight"):SetTexture(base.."BottomRight");
 	
-	local numTalents = GetNumTalents(TalentFrame.currentSelectedTab, TalentFrame.inspect);
+	local numTalents = GetNumTalents(TalentFrame.currentSelectedTab, TalentFrame.inspect, TalentFrame.pet);
 	-- Just a reminder error if there are more talents than available buttons
 	if ( numTalents > MAX_NUM_TALENTS ) then
 		message("Too many talents in talent frame!");
@@ -118,53 +120,56 @@ function TalentFrame_Update(TalentFrame)
 		local button = getglobal(TalentFrame:GetName().."Talent"..i);
 		if ( i <= numTalents ) then
 			-- Set the button info
-			name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(TalentFrame.currentSelectedTab, i, TalentFrame.inspect);
-			getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetText(rank);
-			SetTalentButtonLocation(button, tier, column);
-			TalentFrame.TALENT_BRANCH_ARRAY[tier][column].id = button:GetID();
+			name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(TalentFrame.currentSelectedTab, i, TalentFrame.inspect, TalentFrame.pet);
+			if ( name ) then
+				getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetText(rank);
+				SetTalentButtonLocation(button, tier, column);
+				TalentFrame.TALENT_BRANCH_ARRAY[tier][column].id = button:GetID();
 			
-			-- If player has no talent points then show only talents with points in them
-			if ( (TalentFrame.talentPoints <= 0 and rank == 0)  ) then
-				forceDesaturated = 1;
-			else
-				forceDesaturated = nil;
-			end
+				-- If player has no talent points then show only talents with points in them
+				if ( (TalentFrame.talentPoints <= 0 and rank == 0)  ) then
+					forceDesaturated = 1;
+				else
+					forceDesaturated = nil;
+				end
 
-			-- If the player has spent at least 5 talent points in the previous tier
-			if ( ( (tier - 1) * 5 <= TalentFrame.pointsSpent ) ) then
-				tierUnlocked = 1;
-			else
-				tierUnlocked = nil;
-			end
-			SetItemButtonTexture(button, iconTexture);
-	
-			-- Talent must meet prereqs or the player must have no points to spend
-			if ( TalentFrame_SetPrereqs(TalentFrame, tier, column, forceDesaturated, tierUnlocked, GetTalentPrereqs(TalentFrame.currentSelectedTab, i, TalentFrame.inspect)) and meetsPrereq ) then
-				SetItemButtonDesaturated(button, nil);
-				
-				if ( rank < maxRank ) then
-					-- Rank is green if not maxed out
-					getglobal(TalentFrame:GetName().."Talent"..i.."Slot"):SetVertexColor(0.1, 1.0, 0.1);
-					getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+				-- If the player has spent at least 5 talent points in the previous tier as a player, or 3 talent points as a pet
+				if ( ( (tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= TalentFrame.pointsSpent ) ) then
+					tierUnlocked = 1;
 				else
-					getglobal(TalentFrame:GetName().."Talent"..i.."Slot"):SetVertexColor(1.0, 0.82, 0);
-					getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					tierUnlocked = nil;
 				end
-				getglobal(TalentFrame:GetName().."Talent"..i.."RankBorder"):Show();
-				getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):Show();
-			else
-				SetItemButtonDesaturated(button, 1, 0.65, 0.65, 0.65);
-				getglobal(TalentFrame:GetName().."Talent"..i.."Slot"):SetVertexColor(0.5, 0.5, 0.5);
-				if ( rank == 0 ) then
-					getglobal(TalentFrame:GetName().."Talent"..i.."RankBorder"):Hide();
-					getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):Hide();
+				SetItemButtonTexture(button, iconTexture);
+
+				-- Talent must meet prereqs or the player must have no points to spend
+				if ( TalentFrame_SetPrereqs(TalentFrame, tier, column, forceDesaturated, tierUnlocked, GetTalentPrereqs(TalentFrame.currentSelectedTab, i, TalentFrame.inspect, TalentFrame.pet)) and meetsPrereq ) then
+					SetItemButtonDesaturated(button, nil);
+					
+					if ( rank < maxRank ) then
+						-- Rank is green if not maxed out
+						getglobal(TalentFrame:GetName().."Talent"..i.."Slot"):SetVertexColor(0.1, 1.0, 0.1);
+						getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+					else
+						getglobal(TalentFrame:GetName().."Talent"..i.."Slot"):SetVertexColor(1.0, 0.82, 0);
+						getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					end
+					getglobal(TalentFrame:GetName().."Talent"..i.."RankBorder"):Show();
+					getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):Show();
 				else
-					getglobal(TalentFrame:GetName().."Talent"..i.."RankBorder"):SetVertexColor(0.5, 0.5, 0.5);
-					getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					SetItemButtonDesaturated(button, 1, 0.65, 0.65, 0.65);
+					getglobal(TalentFrame:GetName().."Talent"..i.."Slot"):SetVertexColor(0.5, 0.5, 0.5);
+					if ( rank == 0 ) then
+						getglobal(TalentFrame:GetName().."Talent"..i.."RankBorder"):Hide();
+						getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):Hide();
+					else
+						getglobal(TalentFrame:GetName().."Talent"..i.."RankBorder"):SetVertexColor(0.5, 0.5, 0.5);
+						getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					end
 				end
+				button:Show();
+			else
+				button:Hide();
 			end
-			
-			button:Show();
 		else	
 			button:Hide();
 		end
@@ -374,7 +379,7 @@ function TalentFrame_DrawLines(buttonTier, buttonColumn, tier, column, requireme
 			for i=left + 1, right - 1 do
 				if ( TalentFrame.TALENT_BRANCH_ARRAY[tier][i].id ) then
 					-- If there's an id, there's a blocker
-					message("there's a blocker");
+					message("there's a blocker "..tier.." "..i);
 					return;
 				end
 			end
@@ -466,7 +471,12 @@ end
 -- Helper functions
 
 function TalentFrame_UpdateTalentPoints(TalentFrame)
-	local cp1, cp2 = UnitCharacterPoints(TalentFrame.unit);
+	local cp1
+	if ( TalentFrame.pet ) then
+		cp1 = GetPetTalentPoints();
+	else
+		cp1 = UnitCharacterPoints(TalentFrame.unit);
+	end
 	getglobal(TalentFrame:GetName().."TalentPointsText"):SetText(cp1);
 	TalentFrame.talentPoints = cp1;
 	TalentFrame_ResetBranches(TalentFrame);

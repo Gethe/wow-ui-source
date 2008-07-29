@@ -122,13 +122,13 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize();
-						this:RegisterEvent("PLAYER_ENTERING_WORLD");
-						this:RegisterEvent("PLAYER_XP_UPDATE");
-						this.textLockable = 1;
-						this.cvar = "xpBarText";
-						this.cvarLabel = "XP_BAR_TEXT";
-						this.alwaysPrefix = true;
+						TextStatusBar_Initialize(self);
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						self:RegisterEvent("PLAYER_XP_UPDATE");
+						self.textLockable = 1;
+						self.cvar = "xpBarText";
+						self.cvarLabel = "XP_BAR_TEXT";
+						self.alwaysPrefix = true;
 					</OnLoad>
 					<OnEvent>
 						if ( event == "CVAR_UPDATE" ) then
@@ -139,29 +139,29 @@
 					</OnEvent>
 					<OnShow>
 						if ( GetCVar("xpBarText") == "1" ) then
-							TextStatusBar_UpdateTextString();
+							TextStatusBar_UpdateTextString(self);
 						end
 					</OnShow>					
 					<OnEnter>
-						TextStatusBar_UpdateTextString();
-						ShowTextStatusBarText(this);
+						TextStatusBar_UpdateTextString(self);
+						ShowTextStatusBarText(self);
 						ExhaustionTick.timer = 1;
-						GameTooltip_AddNewbieTip(XPBAR_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
+						GameTooltip_AddNewbieTip(self, XPBAR_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
 						GameTooltip.canAddRestStateLine = 1;
 					</OnEnter>
 					<OnLeave>
-						HideTextStatusBarText(this);
+						HideTextStatusBarText(self);
 						GameTooltip:Hide();
 						ExhaustionTick.timer = nil;
 					</OnLeave>
 					<OnUpdate>
-						ExhaustionTick_OnUpdate(arg1);
+						ExhaustionTick_OnUpdate(ExhaustionTick, elapsed);
 					</OnUpdate>
 					<OnValueChanged>
-						if (not this:IsShown()) then
+						if (not self:IsShown()) then
 							return;
 						end
-						TextStatusBar_OnValueChanged();
+						TextStatusBar_OnValueChanged(self);
 					</OnValueChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -330,91 +330,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterEvent("PLAYER_ENTERING_WORLD");
-						this:RegisterEvent("VARIABLES_LOADED");
-						this:RegisterEvent("BAG_UPDATE");
-						this:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
-						MainMenuBarPageNumber:SetText(GetActionBarPage());
+						MainMenuBar_OnLoad(self);
 					</OnLoad>
 					<OnEvent>
-						if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
-							MainMenuBarPageNumber:SetText(GetActionBarPage());
-						else
-							if ( not GetCVarBool("showKeyring") ) then
-								if ( HasKey() ) then
-									-- Show Tutorial and flash keyring
-									SetButtonPulse(KeyRingButton, 60, 1);
-									SetCVar("showKeyring", 1);
-								end
-							end
-							MainMenuBar_UpdateKeyRing();
-						end
+						MainMenuBar_OnEvent(self, event, ...);
 					</OnEvent>
 				</Scripts>
 			</Frame>
-			<Frame name="MainMenuBarPerformanceBarFrame" frameStrata="LOW">
-				<Size>
-					<AbsDimension x="16" y="64"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-227" y="-10"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
-							<Size>
-								<AbsDimension x="20" y="66"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						PERFORMANCEBAR_LOW_LATENCY = 300;
-						PERFORMANCEBAR_MEDIUM_LATENCY = 600;
-						PERFORMANCEBAR_UPDATE_INTERVAL = 10;
-						this.hover = nil;
-						this.updateInterval = 0;
-					</OnLoad>
-					<OnUpdate>
-						if (this.updateInterval > 0) then
-							this.updateInterval = this.updateInterval - arg1;
-						else
-							this.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
-							local bandwidthIn, bandwidthOut, latency = GetNetStats();
-							if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
-								MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);									
-							elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
-								MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
-							else
-								MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
-							end
-							if (this.hover) then
-								MainMenuBarPerformanceBarFrame_OnEnter();
-							end
-						end
-					</OnUpdate>
-				</Scripts>
-			</Frame>
-			<Button name="MainMenuBarPerformanceBarFrameButton" parent="MainMenuBarPerformanceBarFrame" setAllPoints="true" frameStrata="HIGH">
-				<Scripts>
-					<OnEnter>
-						MainMenuBarPerformanceBarFrame.hover = 1;
-						MainMenuBarPerformanceBarFrame_OnEnter();
-					</OnEnter>
-					<OnLeave>
-						MainMenuBarPerformanceBarFrame.hover = nil;
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -435,13 +357,13 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				ExhaustionTick_OnLoad();
+				ExhaustionTick_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				ExhaustionTick_Update();	
+				ExhaustionTick_OnEvent(self, event, ...);	
 			</OnEvent>
 			<OnEnter>
-				ExhaustionToolTipText();
+				ExhaustionToolTipText(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

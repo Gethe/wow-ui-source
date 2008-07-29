@@ -1,8 +1,8 @@
-function InspectHonorFrame_OnLoad()
-	this:RegisterEvent("INSPECT_HONOR_UPDATE");
+function InspectHonorFrame_OnLoad(self)
+	self:RegisterEvent("INSPECT_HONOR_UPDATE");
 end
 
-function InspectHonorFrame_OnEvent()
+function InspectHonorFrame_OnEvent(self, event, ...)
 	if ( event == "INSPECT_HONOR_UPDATE" ) then
 		InspectHonorFrame_Update();
 	end

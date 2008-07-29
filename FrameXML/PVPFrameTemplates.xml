@@ -96,7 +96,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				PVPStandard_OnLoad();
+				PVPStandard_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -196,22 +196,22 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:SetAlpha(0.4);
+				self:SetAlpha(0.4);
 			</OnLoad>
 			<OnEnter>
-				PVPTeam_OnEnter();
+				PVPTeam_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				PVPTeam_OnLeave();
+				PVPTeam_OnLeave(self);
 			</OnLeave>
 			<OnClick>
-				PVPTeam_OnClick(this:GetID());
+				PVPTeam_OnClick(self, self:GetID());
 			</OnClick>
 			<OnMouseDown>
-				PVPTeam_OnMouseDown();
+				PVPTeam_OnMouseDown(self);
 			</OnMouseDown>
 			<OnMouseUp>
-				PVPTeam_OnMouseUp();
+				PVPTeam_OnMouseUp(self);
 			</OnMouseUp>
 		</Scripts>
 	</Button>
@@ -400,7 +400,9 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="$parentText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
+						<FontString name="$parentText" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size x="70" y="14"/>
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -418,14 +420,14 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						this:GetParent():LockHighlight();
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						if ( this.tooltip ) then
-							GameTooltip:SetText(this.tooltip);
+						self:GetParent():LockHighlight();
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						if ( self.tooltip ) then
+							GameTooltip:SetText(self.tooltip);
 						end
 					</OnEnter>
 					<OnLeave>
-						this:GetParent():UnlockHighlight();
+						self:GetParent():UnlockHighlight();
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
@@ -482,10 +484,10 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick>
-				PVPTeamDetailsButton_OnClick(arg1);
+				PVPTeamDetailsButton_OnClick(self, button);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 		</Scripts>
@@ -539,8 +541,8 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				if ( this.sortType ) then
-					SortArenaTeamRoster(this.sortType);
+				if ( self.sortType ) then
+					SortArenaTeamRoster(self.sortType);
 				end
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>

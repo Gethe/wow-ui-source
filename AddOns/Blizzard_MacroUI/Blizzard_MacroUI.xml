@@ -4,20 +4,20 @@
 	<CheckButton name="MacroButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton");
+				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnClick>
-				MacroButton_OnClick();
+				MacroButton_OnClick(self, button);
 			</OnClick>
 			<OnDragStart>
-				PickupMacro(MacroFrame.macroBase + this:GetID());
+				PickupMacro(MacroFrame.macroBase + self:GetID());
 			</OnDragStart>
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="MacroPopupButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				MacroPopupButton_OnClick();	
+				MacroPopupButton_OnClick(self, button);	
 			</OnClick>
 		</Scripts>
 	</CheckButton>
@@ -139,7 +139,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="TOPRIGHT">
 							<Offset>
-								<AbsDimension x="-4" y="-15"/>
+								<AbsDimension x="-4" y="-10"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -175,7 +175,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						this:SetChecked(nil);
+						self:SetChecked(nil);
 						PickupMacro(MacroFrame.selectedMacro);
 					</OnClick>
 				</Scripts>
@@ -355,7 +355,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						MacroEditButton_OnClick();
+						MacroEditButton_OnClick(self, button);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -383,17 +383,23 @@
 								end
 								MacroFrameCharLimitText:SetFormattedText(MACROFRAME_CHAR_LIMIT, MacroFrameText:GetNumLetters());
 
-								local scrollBar = getglobal(this:GetParent():GetName().."ScrollBar")
+								local scrollBar = getglobal(self:GetParent():GetName().."ScrollBar")
 								local min;
 								local max;
 								min, max = scrollBar:GetMinMaxValues();
-								if ( max > 0 and (this.max ~= max) ) then
-									this.max = max;
+								if ( max > 0 and (self.max ~= max) ) then
+									self.max = max;
 									scrollBar:SetValue(max);
 								end
 							</OnTextChanged>
+							<OnCursorChanged>
+								ScrollingEdit_OnCursorChanged(self, x, y, w, h);
+							</OnCursorChanged>
+							<OnUpdate>
+								ScrollingEdit_OnUpdate(MacroFrameScrollFrame);
+							</OnUpdate>
 							<OnEscapePressed>
-								this:ClearFocus();
+								self:ClearFocus();
 							</OnEscapePressed>
 						</Scripts>
 						<FontString inherits="GameFontHighlightSmall"/>
@@ -437,8 +443,8 @@
 				</Backdrop>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -452,11 +458,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						PanelTemplates_TabResize(-15);
-						getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+						PanelTemplates_TabResize(self, -15);
+						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
 					</OnLoad>
 					<OnClick>
-						PanelTemplates_SetTab(MacroFrame, this:GetID());
+						PanelTemplates_SetTab(MacroFrame, self:GetID());
 						MacroFrame_SaveMacro();
 						MacroFrame_SetAccountMacros();
 						MacroFrame_Update();
@@ -473,12 +479,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetFormattedText(CHARACTER_SPECIFIC_MACROS, UnitName("player"));
-						getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
-						PanelTemplates_TabResize(-15, nil, nil, 150);
+						self:SetFormattedText(CHARACTER_SPECIFIC_MACROS, UnitName("player"));
+						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+						PanelTemplates_TabResize(self, -15, nil, 150);
 					</OnLoad>
 					<OnClick>
-						PanelTemplates_SetTab(MacroFrame, this:GetID());
+						PanelTemplates_SetTab(MacroFrame, self:GetID());
 						MacroFrame_SaveMacro();
 						MacroFrame_SetCharacterMacros();
 						MacroFrame_Update();
@@ -518,7 +524,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						MacroNewButton_OnClick();
+						MacroNewButton_OnClick(self, button);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -535,7 +541,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -551,14 +557,14 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				MacroFrame_OnLoad();
+				MacroFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				MacroFrame_OnShow();
+				MacroFrame_OnShow(self);
 				UpdateMicroButtons();
 			</OnShow>
 			<OnHide>
-				MacroFrame_OnHide();
+				MacroFrame_OnHide(self);
 				UpdateMicroButtons();
 			</OnHide>
 			<OnMouseWheel>
@@ -693,14 +699,14 @@
 				<Scripts>
 					<OnTextChanged>
 						MacroPopupOkayButton_Update();
-						MacroFrameSelectedMacroName:SetText(this:GetText());
+						MacroFrameSelectedMacroName:SetText(self:GetText());
 					</OnTextChanged>
 					<OnEscapePressed>
 						MacroPopupFrame_CancelEdit();
 					</OnEscapePressed>
 					<OnEnterPressed>
 						if ( MacroPopupOkayButton:IsEnabled() ~= 0 ) then
-							MacroPopupOkayButton_OnClick();
+							MacroPopupOkayButton_OnClick(MacroPopupOkayButton);
 						end
 					</OnEnterPressed>
 				</Scripts>
@@ -719,7 +725,7 @@
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(MACRO_ICON_ROW_HEIGHT, MacroPopupFrame_Update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, MACRO_ICON_ROW_HEIGHT, MacroPopupFrame_Update);
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>
@@ -942,10 +948,10 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				MacroPopupFrame_OnShow();
+				MacroPopupFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
-				MacroPopupFrame_OnHide();
+				MacroPopupFrame_OnHide(self);
 			</OnHide>
 			<OnMouseWheel>
 				return;

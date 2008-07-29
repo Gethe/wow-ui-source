@@ -52,7 +52,7 @@ function SetItemRef(link, text, button)
 				elseif ( HelpFrameOpenTicketText:IsVisible() ) then
 					HelpFrameOpenTicketText:Insert(name);
 				else
-					SendWho("n-"..name);					
+					SendWho(WHO_TAG_NAME..name);					
 				end
 				
 			elseif ( button == "RightButton" ) then
@@ -62,8 +62,20 @@ function SetItemRef(link, text, button)
 			end
 		end
 		return;
-	end
-
+	elseif ( strsub(link, 1, 7) == "channel" ) then
+		if ( IsModifiedClick("CHATLINK") ) then
+			FriendsFrame:Show();
+			FriendsFrameTab4:Click();
+		elseif ( button == "LeftButton" ) then
+			local chan = strsub(link, 9);
+			if ( GetChannelName(tonumber(chan))~=0 ) then
+				--Open chat for channel
+				ChatFrame_OpenChat("/"..chan, DEFAULT_CHAT_FRAME);
+			end
+		end
+		return;
+    end
+    
 	if ( IsModifiedClick() ) then
 		HandleModifiedItemClick(text);
 	else

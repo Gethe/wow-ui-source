@@ -1,6 +1,6 @@
 
-function BagSlotButton_UpdateChecked()
-	local translatedID = this:GetID() - CharacterBag0Slot:GetID() + 1;
+function BagSlotButton_UpdateChecked(self)
+	local translatedID = self:GetID() - CharacterBag0Slot:GetID() + 1;
 	local isVisible = 0;
 	local frame;
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
@@ -10,34 +10,34 @@ function BagSlotButton_UpdateChecked()
 			break;
 		end
 	end
-	this:SetChecked(isVisible);
+	self:SetChecked(isVisible);
 end
 
-function BagSlotButton_OnClick()
-	local id = this:GetID();
+function BagSlotButton_OnClick(self)
+	local id = self:GetID();
 	local translatedID = id - CharacterBag0Slot:GetID() + 1;
 	local hadItem = PutItemInBag(id);
 	if ( not hadItem ) then
 		ToggleBag(translatedID);
 	end
-	BagSlotButton_UpdateChecked();
+	BagSlotButton_UpdateChecked(self);
 end
 
-function BagSlotButton_OnModifiedClick()
+function BagSlotButton_OnModifiedClick(self)
 	if ( IsModifiedClick("OPENALLBAGS") ) then
-		if ( GetInventoryItemTexture("player", this:GetID()) ) then
+		if ( GetInventoryItemTexture("player", self:GetID()) ) then
 			OpenAllBags();
 		end
 	end
-	BagSlotButton_UpdateChecked();
+	BagSlotButton_UpdateChecked(self);
 end
 
-function BagSlotButton_OnDrag()
-	PickupBagFromSlot(this:GetID());
-	BagSlotButton_UpdateChecked();
+function BagSlotButton_OnDrag(self)
+	PickupBagFromSlot(self:GetID());
+	BagSlotButton_UpdateChecked(self);
 end
 
-function BackpackButton_UpdateChecked()
+function BackpackButton_UpdateChecked(self)
 	local isVisible = 0;
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local frame = getglobal("ContainerFrame"..i);
@@ -46,35 +46,35 @@ function BackpackButton_UpdateChecked()
 			break;
 		end
 	end
-	this:SetChecked(isVisible);
+	self:SetChecked(isVisible);
 end
 
-function BackpackButton_OnClick()
+function BackpackButton_OnClick(self)
 	if ( not PutItemInBackpack() ) then
 		ToggleBackpack();
 	end
-	BackpackButton_UpdateChecked();
+	BackpackButton_UpdateChecked(self);
 end
 
-function BackpackButton_OnModifiedClick()
+function BackpackButton_OnModifiedClick(self)
 	if ( IsModifiedClick("OPENALLBAGS") ) then
 		OpenAllBags();
 	end
-	BackpackButton_UpdateChecked();
+	BackpackButton_UpdateChecked(self);
 end
 
-function ItemAnim_OnLoad()
-	this:RegisterEvent("ITEM_PUSH");
+function ItemAnim_OnLoad(self)
+	self:RegisterEvent("ITEM_PUSH");
 end
 
-function ItemAnim_OnEvent(event)
+function ItemAnim_OnEvent(self, event, ...)
 	if ( event == "ITEM_PUSH" ) then
-		local id = this:GetParent():GetID();
+		local id = self:GetParent():GetID();
 		if ( id == arg1 ) then
-			this:ReplaceIconTexture(arg2);
-			this:SetSequence(0);
-			this:SetSequenceTime(0, 0);
-			this:Show();
+			self:ReplaceIconTexture(arg2);
+			self:SetSequence(0);
+			self:SetSequenceTime(0, 0);
+			self:Show();
 		end
 	end
 end
@@ -91,8 +91,8 @@ function BagSlotButton_OnEnter(self)
 	end
 end
 
-function ItemAnim_OnAnimFinished()
-	this:Hide();
+function ItemAnim_OnAnimFinished(self)
+	self:Hide();
 end
 
 function Disable_BagButtons()

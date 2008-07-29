@@ -419,7 +419,7 @@
 						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(BROWSE_FILTER_HEIGHT, AuctionFrameFilters_Update);
+								FauxScrollFrame_OnVerticalScroll(self, offset, BROWSE_FILTER_HEIGHT, AuctionFrameFilters_Update);
 							</OnVerticalScroll>
 						</Scripts>
 					</ScrollFrame>
@@ -466,7 +466,7 @@
 						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(AUCTIONS_BUTTON_HEIGHT, AuctionFrameBrowse_Update);
+								FauxScrollFrame_OnVerticalScroll(self, offset, AUCTIONS_BUTTON_HEIGHT, AuctionFrameBrowse_Update);
 							</OnVerticalScroll>
 						</Scripts>
 					</ScrollFrame>
@@ -1159,7 +1159,7 @@
 						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(AUCTIONS_BUTTON_HEIGHT, AuctionFrameBid_Update)
+								FauxScrollFrame_OnVerticalScroll(self, offset, AUCTIONS_BUTTON_HEIGHT, AuctionFrameBid_Update)
 							</OnVerticalScroll>
 						</Scripts>
 					</ScrollFrame>
@@ -1526,7 +1526,7 @@
 						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(AUCTIONS_BUTTON_HEIGHT, AuctionFrameAuctions_Update);
+								FauxScrollFrame_OnVerticalScroll(self, offset, AUCTIONS_BUTTON_HEIGHT, AuctionFrameAuctions_Update);
 							</OnVerticalScroll>
 						</Scripts>
 					</ScrollFrame>
@@ -1693,7 +1693,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								MoneyInputFrame_SetOnvalueChangedFunc(self, AuctionsFrameAuctions_ValidateAuction);
+								MoneyInputFrame_SetOnValueChangedFunc(self, AuctionsFrameAuctions_ValidateAuction);
 								StartPriceGold:SetMaxLetters(6);
 							</OnLoad>
 						</Scripts>
@@ -1759,7 +1759,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								MoneyInputFrame_SetOnvalueChangedFunc(self, AuctionsFrameAuctions_ValidateAuction);
+								MoneyInputFrame_SetOnValueChangedFunc(self, AuctionsFrameAuctions_ValidateAuction);
 							</OnLoad>
 						</Scripts>
 					</Frame>

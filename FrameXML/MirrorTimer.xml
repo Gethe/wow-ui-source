@@ -59,7 +59,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel() - 1)
+						self:SetFrameLevel(self:GetFrameLevel() - 1)
 					</OnLoad>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -67,13 +67,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				MirrorTimerFrame_OnLoad();
+				MirrorTimerFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				MirrorTimerFrame_OnEvent();
+				MirrorTimerFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				MirrorTimerFrame_OnUpdate(this, arg1);
+				MirrorTimerFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

@@ -35,13 +35,13 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				ZoneText_OnLoad();
+				ZoneText_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				ZoneText_OnEvent();
+				ZoneText_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				FadingFrame_OnUpdate();
+				FadingFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>
@@ -78,10 +78,10 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				SubZoneText_OnLoad();
+				SubZoneText_OnLoad(self);
 			</OnLoad>
 			<OnUpdate>
-				FadingFrame_OnUpdate();
+				FadingFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>
@@ -104,13 +104,13 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				AutoFollowStatus_OnLoad();
+				AutoFollowStatus_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				AutoFollowStatus_OnEvent(event);
+				AutoFollowStatus_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				AutoFollowStatus_OnUpdate(arg1);
+				AutoFollowStatus_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

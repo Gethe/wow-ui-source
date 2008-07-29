@@ -36,6 +36,44 @@ function FriendsFrame_ShowSubFrame(frameName)
 	end 
 end
 
+function FriendsFrame_SummonButton_OnEvent (self, event, ...)
+	if ( event == "SPELL_UPDATE_COOLDOWN" ) then
+		FriendsFrame_SummonButton_OnShow(self);
+	end
+end
+
+function FriendsFrame_SummonButton_OnShow (self)
+	local start, duration = GetSummonFriendCooldown();
+	
+	if ( duration > 0 ) then
+		self.duration = duration;
+		self.start = start;
+	else
+		self.duration = nil;
+		self.start = nil;
+	end
+	
+	local enable = CanSummonFriend(GetFriendInfo(self:GetID()));
+	
+	local icon = getglobal(self:GetName().."Icon");
+	local normalTexture = getglobal(self:GetName().."NormalTexture");
+	if ( enable ) then
+		icon:SetVertexColor(1.0, 1.0, 1.0);
+		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
+	else
+		icon:SetVertexColor(0.4, 0.4, 0.4);
+		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
+	end
+	CooldownFrame_SetTimer(getglobal(self:GetName().."Cooldown"), start, duration, ((enable and 0) or 1));
+end
+
+function FriendsFrame_ClickSummonButton (self)
+	local name = GetFriendInfo(self:GetID());
+	if ( CanSummonFriend(name) ) then
+		SummonFriend(name);
+	end
+end
+
 function FriendsFrame_ShowDropdown(name, connected, lineID)
 	HideDropDownMenu(1);
 	if ( connected ) then
@@ -51,25 +89,26 @@ function FriendsFrameDropDown_Initialize()
 	UnitPopup_ShowMenu(getglobal(UIDROPDOWNMENU_OPEN_MENU), "FRIEND", nil, FriendsDropDown.name);
 end
 
-function FriendsFrame_OnLoad()
-	PanelTemplates_SetNumTabs(this, 5);
-	FriendsFrame.selectedTab = 1;
-	PanelTemplates_UpdateTabs(this);
-	this:RegisterEvent("FRIENDLIST_SHOW");
-	this:RegisterEvent("FRIENDLIST_UPDATE");
-	this:RegisterEvent("IGNORELIST_UPDATE");
-	this:RegisterEvent("MUTELIST_UPDATE");
-	this:RegisterEvent("WHO_LIST_UPDATE");
-	this:RegisterEvent("GUILD_ROSTER_UPDATE");
-	this:RegisterEvent("PLAYER_GUILD_UPDATE");
-	this:RegisterEvent("GUILD_MOTD");
-	this:RegisterEvent("VOICE_CHAT_ENABLED_UPDATE");
-	FriendsFrame.playersInBotRank = 0;
-	FriendsFrame.playerStatusFrame = 1;
-	FriendsFrame.selectedFriend = 1;
-	FriendsFrame.selectedIgnore = 1;
-	FriendsFrame.guildStatus = 0;
-	FriendsFrame.showFriendsList = 1;
+function FriendsFrame_OnLoad(self)
+	PanelTemplates_SetNumTabs(self, 5);
+	self.selectedTab = 1;
+	PanelTemplates_UpdateTabs(self);
+	self:RegisterEvent("FRIENDLIST_SHOW");
+	self:RegisterEvent("FRIENDLIST_UPDATE");
+	self:RegisterEvent("IGNORELIST_UPDATE");
+	self:RegisterEvent("MUTELIST_UPDATE");
+	self:RegisterEvent("WHO_LIST_UPDATE");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+	self:RegisterEvent("GUILD_MOTD");
+	self:RegisterEvent("VOICE_CHAT_ENABLED_UPDATE");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self.playersInBotRank = 0;
+	self.playerStatusFrame = 1;
+	self.selectedFriend = 1;
+	self.selectedIgnore = 1;
+	self.guildStatus = 0;
+	self.showFriendsList = 1;
 	GuildFrame.notesToggle = 1;
 	GuildFrame.selectedGuildMember = 0;
 	SetGuildRosterSelection(0);
@@ -81,6 +120,7 @@ end
 function FriendsFrame_OnShow()
 	VoiceChat_Toggle();
 	FriendsFrame.showMutedList = nil;
+	FriendsList_Update();
 	FriendsFrame_Update();
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoTab");
@@ -170,7 +210,7 @@ function FriendsList_Update()
 	local numFriends = GetNumFriends();
 	local nameLocationText, infoText, noteText, noteHiddenText;
 	local name, level, class, area, connected, status, note;
-	local friendButton;
+	local friendButton, RAFIcon, noteFrame, summonButton, RAF;
 
 	FriendsFrame.selectedFriend = GetSelectedFriend();
 	if ( numFriends > 0 ) then
@@ -197,27 +237,45 @@ function FriendsList_Update()
 	local friendIndex;
 	for i=1, FRIENDS_TO_DISPLAY, 1 do
 		friendIndex = friendOffset + i;
-		name, level, class, area, connected, status, note = GetFriendInfo(friendIndex);
-		nameLocationText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNameLocation");
+		name, level, class, area, connected, status, note, RAF = GetFriendInfo(friendIndex);
+		nameText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextName");
+		LocationText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextLocation");
+		RAFIcon = getglobal("FriendsFrameFriendButton"..i.."ButtonTextLink");
 		infoText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextInfo");
+		noteFrame = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNote");
 		noteText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteText");
 		noteHiddenText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteHiddenText");
-		noteIcon = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteIcon")
+		noteIcon = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteIcon");
+		summonButton = getglobal("FriendsFrameFriendButton" .. i .. "ButtonTextSummonButton");
+		friendButton = getglobal("FriendsFrameFriendButton"..i);
+		nameText:ClearAllPoints();
+		nameText:SetPoint("TOPLEFT", 10, -3);
+		noteFrame:SetPoint("RIGHT", nameText, "LEFT", 0, 0);
+		friendButton:SetID(friendIndex);
+		summonButton:SetID(friendIndex);
+		
+		summonButton:Hide();
+		RAFIcon:Hide();
 		if ( not name ) then
 			name = UNKNOWN;
 		end
 		if ( connected ) then
-			nameLocationText:SetFormattedText(FRIENDS_LIST_TEMPLATE, name, area, status);
+			nameText:SetText(name);
+			LocationText:SetFormattedText(FRIENDS_LIST_TEMPLATE, area, status);
+			if ( RAF ) then
+				summonButton:Show();
+				noteFrame:SetPoint("RIGHT", nameText, "LEFT", -28, 0);
+				nameText:ClearAllPoints();
+				nameText:SetPoint("TOPLEFT", 38, -3);			
+			end
 			infoText:SetFormattedText(FRIENDS_LEVEL_TEMPLATE, level, class);
 			noteIcon:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		else
-			nameLocationText:SetFormattedText(FRIENDS_LIST_OFFLINE_TEMPLATE, name);
+			nameText:SetFormattedText(FRIENDS_LIST_OFFLINE_TEMPLATE, name);
+			LocationText:SetText("");
 			infoText:SetText(UNKNOWN);
 			noteIcon:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		end
-
-		friendButton = getglobal("FriendsFrameFriendButton"..i);
-		friendButton:SetID(friendIndex);
 
 		if ( note ) then
 			if ( connected ) then
@@ -410,11 +468,11 @@ function WhoList_Update()
 
 	-- If need scrollbar resize columns
 	if ( showScrollBar ) then
-		WhoFrameColumn_SetWidth(105, WhoFrameColumnHeader2);
-		UIDropDownMenu_SetWidth(80, WhoFrameDropDown);
+		WhoFrameColumn_SetWidth(WhoFrameColumnHeader2, 105);
+		UIDropDownMenu_SetWidth(WhoFrameDropDown, 80);
 	else
-		WhoFrameColumn_SetWidth(120, WhoFrameColumnHeader2);
-		UIDropDownMenu_SetWidth(95, WhoFrameDropDown);
+		WhoFrameColumn_SetWidth(WhoFrameColumnHeader2, 120);
+		UIDropDownMenu_SetWidth(WhoFrameDropDown, 95);
 	end
 
 	-- ScrollFrame update
@@ -638,10 +696,10 @@ function GuildStatus_Update()
 		GuildFrameGuildListToggleButton:SetText(PLAYER_STATUS);
 		-- If need scrollbar resize column headers
 		if ( showScrollBar ) then
-			WhoFrameColumn_SetWidth(105, GuildFrameColumnHeader2);
+			WhoFrameColumn_SetWidth(GuildFrameColumnHeader2, 105);
 			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 284, -67);
 		else
-			WhoFrameColumn_SetWidth(120, GuildFrameColumnHeader2);
+			WhoFrameColumn_SetWidth(GuildFrameColumnHeader2, 120);
 			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 307, -67);
 		end
 		-- ScrollFrame update
@@ -714,10 +772,10 @@ function GuildStatus_Update()
 		GuildFrameGuildListToggleButton:SetText(GUILD_STATUS);
 		-- If need scrollbar resize columns
 		if ( showScrollBar ) then
-			WhoFrameColumn_SetWidth(75, GuildFrameGuildStatusColumnHeader3);
+			WhoFrameColumn_SetWidth(GuildFrameGuildStatusColumnHeader3, 75);
 			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 284, -67);
 		else
-			WhoFrameColumn_SetWidth(90, GuildFrameGuildStatusColumnHeader3);
+			WhoFrameColumn_SetWidth(GuildFrameGuildStatusColumnHeader3, 90);
 			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 307, -67);
 		end
 		
@@ -729,10 +787,8 @@ function GuildStatus_Update()
 	end
 end
 
-function WhoFrameColumn_SetWidth(width, frame)
-	if ( not frame ) then
-		frame = this;
-	end
+function WhoFrameColumn_SetWidth(frame, width)
+	assert(frame)
 	frame:SetWidth(width);
 	getglobal(frame:GetName().."Middle"):SetWidth(width - 9);
 end
@@ -747,23 +803,23 @@ function WhoFrameDropDown_Initialize()
 	end
 end
 
-function WhoFrameDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, WhoFrameDropDown_Initialize);
-	UIDropDownMenu_SetWidth(80);
-	UIDropDownMenu_SetButtonWidth(24);
-	UIDropDownMenu_JustifyText("LEFT", WhoFrameDropDown)
+function WhoFrameDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, WhoFrameDropDown_Initialize);
+	UIDropDownMenu_SetWidth(self, 80);
+	UIDropDownMenu_SetButtonWidth(self, 24);
+	UIDropDownMenu_JustifyText(WhoFrameDropDown, "LEFT")
 end
 
-function WhoFrameDropDownButton_OnClick()
-	UIDropDownMenu_SetSelectedID(WhoFrameDropDown, this:GetID());
+function WhoFrameDropDownButton_OnClick(self)
+	UIDropDownMenu_SetSelectedID(WhoFrameDropDown, self:GetID());
 	WhoList_Update();
 end
 
-function FriendsFrame_OnEvent()
+function FriendsFrame_OnEvent(self, event, ...)
 	if ( event == "FRIENDLIST_SHOW" ) then
 		FriendsList_Update();
 		FriendsFrame_Update();
-	elseif ( event == "FRIENDLIST_UPDATE" ) then
+	elseif ( event == "FRIENDLIST_UPDATE" or event == "PARTY_MEMBERS_CHANGED") then
 		FriendsList_Update();
 	elseif ( event == "IGNORELIST_UPDATE" ) then
 		IgnoreList_Update();
@@ -774,6 +830,7 @@ function FriendsFrame_OnEvent()
 		FriendsFrame_Update();
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
 		if ( GuildFrame:IsShown() ) then
+			local arg1 = ...;
 			if ( arg1 ) then
 				GuildRoster();
 			end
@@ -786,49 +843,49 @@ function FriendsFrame_OnEvent()
 			InGuildCheck();
 		end
 	elseif ( event == "GUILD_MOTD") then
-		CURRENT_GUILD_MOTD = arg1;
+		CURRENT_GUILD_MOTD = ...;
 		GuildFrameNotesText:SetText(CURRENT_GUILD_MOTD);
 	elseif ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
 		VoiceChat_Toggle();
 	end
 end
 
-function FriendsFrameFriendButton_OnClick(button)
+function FriendsFrameFriendButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		SetSelectedFriend(this:GetID());
+		SetSelectedFriend(self:GetID());
 		FriendsList_Update();
 	else
-		local name, level, class, area, connected = GetFriendInfo(this:GetID());
+		local name, level, class, area, connected = GetFriendInfo(self:GetID());
 		FriendsFrame_ShowDropdown(name, connected);
 	end
 end
 
-function FriendsFrameIgnoreButton_OnClick()
-	SetSelectedIgnore(this:GetID());
+function FriendsFrameIgnoreButton_OnClick(self)
+	SetSelectedIgnore(self:GetID());
 	IgnoreList_Update();
 end
 
-function FriendsFrameMuteButton_OnClick()
-	SetSelectedMute(this:GetID());
+function FriendsFrameMuteButton_OnClick(self)
+	SetSelectedMute(self:GetID());
 	MutedList_Update();
 end
 
-function FriendsFrameWhoButton_OnClick(button)
+function FriendsFrameWhoButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		WhoFrame.selectedWho = getglobal("WhoFrameButton"..this:GetID()).whoIndex;
-		WhoFrame.selectedName = getglobal("WhoFrameButton"..this:GetID().."Name"):GetText();
+		WhoFrame.selectedWho = getglobal("WhoFrameButton"..self:GetID()).whoIndex;
+		WhoFrame.selectedName = getglobal("WhoFrameButton"..self:GetID().."Name"):GetText();
 		WhoList_Update();
 	else
-		local name = getglobal("WhoFrameButton"..this:GetID().."Name"):GetText();
+		local name = getglobal("WhoFrameButton"..self:GetID().."Name"):GetText();
 		FriendsFrame_ShowDropdown(name, 1);
 	end
 end
 
-function FriendsFrameGuildStatusButton_OnClick(button)
+function FriendsFrameGuildStatusButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		GuildFrame.previousSelectedGuildMember = GuildFrame.selectedGuildMember;
-		GuildFrame.selectedGuildMember = this.guildIndex;
-		GuildFrame.selectedName = getglobal(this:GetName().."Name"):GetText();
+		GuildFrame.selectedGuildMember = self.guildIndex;
+		GuildFrame.selectedName = getglobal(self:GetName().."Name"):GetText();
 		SetGuildRosterSelection(GuildFrame.selectedGuildMember);
 		-- Toggle guild details frame
 		if ( GuildMemberDetailFrame:IsShown() and (GuildFrame.previousSelectedGuildMember and (GuildFrame.previousSelectedGuildMember == GuildFrame.selectedGuildMember)) ) then
@@ -840,7 +897,7 @@ function FriendsFrameGuildStatusButton_OnClick(button)
 		end
 		GuildStatus_Update();
 	else
-		local guildIndex = this.guildIndex;
+		local guildIndex = self.guildIndex;
 		local name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(guildIndex);
 		FriendsFrame_ShowDropdown(name, online);
 	end
@@ -904,9 +961,9 @@ function ToggleFriendsFrame(tab)
 	end
 end
 
-function WhoFrameEditBox_OnEnterPressed()
-	SendWho(WhoFrameEditBox:GetText());
-	WhoFrameEditBox:ClearFocus();
+function WhoFrameEditBox_OnEnterPressed(self)
+	SendWho(self:GetText());
+	self:ClearFocus();
 end
 
 function ToggleFriendsPanel()
@@ -981,7 +1038,7 @@ function GuildControlPopupFrame_Initialize()
 	end
 	GuildControlSetRank(1);
 	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, 1);
-	UIDropDownMenu_SetText(GuildControlGetRankName(1), GuildControlPopupFrameDropDown);
+	UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, GuildControlGetRankName(1));
 	-- Select tab 1
 	GuildBankTabPermissionsTab_OnClick(1);
 
@@ -1012,7 +1069,7 @@ function GuildControlPopupFrame_OnEvent (self, event, ...)
 		rank = GuildControlGetRankName(i);
 		if ( GuildControlPopupFrame.rank and rank == GuildControlPopupFrame.rank ) then
 			UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, i);
-			UIDropDownMenu_SetText(rank, GuildControlPopupFrameDropDown);
+			UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, rank);
 		end
 	end
 	
@@ -1029,9 +1086,13 @@ function GuildControlPopupFrame_OnHide()
 	GuildControlPopupFrame:UnregisterEvent("GUILD_ROSTER_UPDATE");
 end
 
-function GuildControlPopupframe_Update(loadPendingTabPermissions)
-	-- Update permission flags
-	GuildControlCheckboxUpdate(GuildControlGetRankFlags());
+function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUpdate)
+	-- Skip non-tab specific updates to fix Bug  ID: 110210
+	if ( not skipCheckboxUpdate ) then
+		-- Update permission flags
+		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
+	end
+	
 	local rankID = UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown);
 	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(rankID));
 	if ( GuildControlPopupFrame.previousSelectedRank and GuildControlPopupFrame.previousSelectedRank ~= rankID ) then
@@ -1163,10 +1224,8 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions)
 			end
 			if ( IsGuildLeader() and rankID == 1 ) then
 				tab:Disable();
-				tab:SetDisabledTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 			else
 				tab:Enable();
-				tab:SetDisabledTextColor(nil, nil, nil);
 			end
 		else
 			tab:Hide();
@@ -1198,16 +1257,16 @@ function GuildControlPopupAcceptButton_OnClick()
 	GuildControlSaveRank(GuildControlPopupFrameEditBox:GetText());
 	GuildStatus_Update();
 	GuildControlPopupAcceptButton:Disable();
-	UIDropDownMenu_SetText(GuildControlPopupFrameEditBox:GetText(), GuildControlPopupFrameDropDown);
+	UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, GuildControlPopupFrameEditBox:GetText());
 	GuildControlPopupFrame:Hide();
 	ClearPendingGuildBankPermissions();
 end
 
-function GuildControlPopupFrameDropDown_OnLoad()
+function GuildControlPopupFrameDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
-	UIDropDownMenu_SetWidth(160);
-	UIDropDownMenu_SetButtonWidth(54);
-	UIDropDownMenu_JustifyText("LEFT", GuildControlPopupFrameDropDown);
+	UIDropDownMenu_SetWidth(self, 160);
+	UIDropDownMenu_SetButtonWidth(self, 54);
+	UIDropDownMenu_JustifyText(GuildControlPopupFrameDropDown, "LEFT");
 end
 
 function GuildControlPopupFrameDropDown_Initialize()
@@ -1220,15 +1279,15 @@ function GuildControlPopupFrameDropDown_Initialize()
 	end
 end
 
-function GuildControlPopupFrameDropDownButton_OnClick()
-	local rank = this:GetID();
+function GuildControlPopupFrameDropDownButton_OnClick(self)
+	local rank = self:GetID();
 	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, rank);	
 	GuildControlSetRank(rank);
 	GuildControlPopupFrame.rank = GuildControlGetRankName(rank);
 	GuildControlPopupFrame.goldChanged = nil;
 	GuildControlPopupframe_Update();
-	GuildControlPopupFrameAddRankButton_OnUpdate();
-	GuildControlPopupFrameRemoveRankButton_OnUpdate();
+	GuildControlPopupFrameAddRankButton_OnUpdate(GuildControlPopupFrameAddRankButton);
+	GuildControlPopupFrameRemoveRankButton_OnUpdate(GuildControlPopupFrameRemoveRankButton);
 	GuildControlPopupAcceptButton:Disable();
 end
 
@@ -1245,11 +1304,11 @@ function GuildControlCheckboxUpdate(...)
 	end
 end
 
-function GuildControlPopupFrameAddRankButton_OnUpdate()
+function GuildControlPopupFrameAddRankButton_OnUpdate(self)
 	if ( GuildControlGetNumRanks() >= 10 ) then
-		GuildControlPopupFrameAddRankButton:Disable();
+		self:Disable();
 	else
-		GuildControlPopupFrameAddRankButton:Enable();
+		self:Enable();
 	end
 end
 
@@ -1267,16 +1326,17 @@ function GuildControlPopupFrameRemoveRankButton_OnClick()
 	--GuildControlPopupFrame.update = 1;
 end
 
-function GuildControlPopupFrameRemoveRankButton_OnUpdate()
-	if ( (UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown) == GuildControlGetNumRanks()) and (GuildControlGetNumRanks() > 5) ) then
-		GuildControlPopupFrameRemoveRankButton:Show();
+function GuildControlPopupFrameRemoveRankButton_OnUpdate(self)
+	local numRanks = GuildControlGetNumRanks()
+	if ( (UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown) == numRanks) and (numRanks > 5) ) then
+		self:Show();
 		if ( FriendsFrame.playersInBotRank > 0 ) then
-			GuildControlPopupFrameRemoveRankButton:Disable();
+			self:Disable();
 		else
-			GuildControlPopupFrameRemoveRankButton:Enable();
+			self:Enable();
 		end
 	else
-		GuildControlPopupFrameRemoveRankButton:Hide();
+		self:Hide();
 	end
 end
 
@@ -1341,7 +1401,7 @@ end
 
 function GuildBankTabPermissionsTab_OnClick(tab)
 	GuildControlPopupFrameTabPermissions.selectedTab = tab;
-	GuildControlPopupframe_Update(true);
+	GuildControlPopupframe_Update(true, true);
 end
 
 -- Functions to allow canceling

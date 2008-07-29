@@ -1,7 +1,7 @@
 
-function TextStatusBar_Initialize()
-	this:RegisterEvent("CVAR_UPDATE");
-	this.lockShow = 0;
+function TextStatusBar_Initialize(self)
+	self:RegisterEvent("CVAR_UPDATE");
+	self.lockShow = 0;
 end
 
 function SetTextStatusBarText(bar, text)
@@ -30,9 +30,6 @@ function TextStatusBar_OnEvent(self, event, ...)
 end
 
 function TextStatusBar_UpdateTextString(textStatusBar)
-	if ( not textStatusBar ) then
-		textStatusBar = this;
-	end
 	local textString = textStatusBar.TextString;
 	if(textString) then
 		local value = textStatusBar:GetValue();
@@ -81,8 +78,8 @@ function TextStatusBar_UpdateTextString(textStatusBar)
 	end
 end
 
-function TextStatusBar_OnValueChanged()
-	TextStatusBar_UpdateTextString();
+function TextStatusBar_OnValueChanged(self)
+	TextStatusBar_UpdateTextString(self);
 end
 
 function SetTextStatusBarTextPrefix(bar, prefix)
@@ -117,7 +114,7 @@ function HideTextStatusBarText(bar)
 		if ( bar.lockShow > 0 ) then
 			bar.lockShow = bar.lockShow - 1;
 		end
-		if ( bar.lockShow > 0 or this.isZero == 1) then
+		if ( bar.lockShow > 0 or bar.isZero == 1) then
 			bar.TextString:Show();
 		elseif ( (bar.cvar and GetCVar(bar.cvar) == "1" and bar.textLockable) or bar.forceShow ) then
 			bar.TextString:Show();

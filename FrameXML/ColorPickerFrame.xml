@@ -67,7 +67,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 						if ( ColorPickerFrame.cancelFunc ) then
 							ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);
 						end
@@ -85,7 +85,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 						ColorPickerFrame.func();
 						if ( ColorPickerFrame.opacityFunc ) then
 							ColorPickerFrame.opacityFunc();
@@ -159,24 +159,24 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				if ( this.hasOpacity ) then
+				if ( self.hasOpacity ) then
 					OpacitySliderFrame:Show();
-					OpacitySliderFrame:SetValue(this.opacity);
-					this:SetWidth(365);
+					OpacitySliderFrame:SetValue(self.opacity);
+					self:SetWidth(365);
 				else
 					OpacitySliderFrame:Hide();
-					this:SetWidth(305);
+					self:SetWidth(305);
 				end
 			</OnShow>
 			<OnColorSelect>
-				ColorSwatch:SetTexture(arg1, arg2, arg3);
-				if ( this.func ) then
-					this.func();
+				ColorSwatch:SetTexture(r, g, b);
+				if ( self.func ) then
+					self.func();
 				end
 			</OnColorSelect>
 			<OnKeyDown>
-				if (arg1 == "ESCAPE") then
-					HideUIPanel(this);
+				if (key == "ESCAPE") then
+					HideUIPanel(self);
 					if ( ColorPickerFrame.cancelFunc ) then
 						ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);
 					end
@@ -312,8 +312,8 @@
 			<Button name="OpacityFrameCloseButton" parent="UIParent" setAllPoints="true" hidden="true">
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()-1);
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+						self:SetFrameLevel(self:GetFrameLevel()-1);
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
 					</OnLoad>
 					<OnClick>
 						OpacityFrame:Hide();

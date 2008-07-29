@@ -4,7 +4,7 @@
 	<CheckButton name="SendMailRadioButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				SendMailRadioButton_OnClick(this:GetID());
+				SendMailRadioButton_OnClick(self:GetID());
 			</OnClick>
 		</Scripts>
 	</CheckButton>
@@ -85,11 +85,11 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						if ( not this.tooltip ) then
+						if ( not self.tooltip ) then
 							return;
 						end
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetText(this.tooltip);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(self.tooltip);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -150,27 +150,27 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnClick>
-            local modifiedClick = (IsModifiedClick("MAILAUTOLOOTTOGGLE") and GetCVar("mailAutoLootDefault") == "0") or (not IsModifiedClick("MAILAUTOLOOTTOGGLE") and GetCVar("mailAutoLootDefault") == "1");
-            if ( modifiedClick ) then
-            InboxFrame_OnModifiedClick(this.index);
-            else
-            InboxFrame_OnClick(this.index);
-            end
-          </OnClick>
+						local modifiedClick = (IsModifiedClick("MAILAUTOLOOTTOGGLE") and GetCVar("mailAutoLootDefault") == "0") or (not IsModifiedClick("MAILAUTOLOOTTOGGLE") and GetCVar("mailAutoLootDefault") == "1");
+						if ( modifiedClick ) then
+							InboxFrame_OnModifiedClick(self, self.index);
+						else
+							InboxFrame_OnClick(self, self.index);
+						end
+					</OnClick>
 					<OnEnter>
-						InboxFrameItem_OnEnter();
+						InboxFrameItem_OnEnter(self);
 					</OnEnter>
 					<OnUpdate>
-						if ( GameTooltip:IsOwned(this) ) then
-							InboxFrameItem_OnEnter();
+						if ( GameTooltip:IsOwned(self) ) then
+							InboxFrameItem_OnEnter(self);
 						end
 					</OnUpdate>
 					<OnLeave>
 						GameTooltip:Hide();
-						SetMoneyFrameColor("GameTooltipMoneyFrame1", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
 					</OnLeave>
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
@@ -241,7 +241,7 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
-				StationeryPopupButton_OnClick();
+				StationeryPopupButton_OnClick(self);
 			</OnClick>
 		</Scripts>
 		<NormalTexture name="$parentIcon">
@@ -293,24 +293,24 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				SendMailAttachmentButton_OnClick(arg1, this:GetID());
+				SendMailAttachmentButton_OnClick(self, button);
 			</OnClick>
 			<OnDragStart>
-				SendMailAttachmentButton_OnClick("LeftButton", this:GetID());
+				SendMailAttachmentButton_OnClick(self, "LeftButton");
 			</OnDragStart>
 			<OnReceiveDrag>
-				SendMailAttachmentButton_OnClick("LeftButton", this:GetID());
+				SendMailAttachmentButton_OnClick(self, "LeftButton");
 			</OnReceiveDrag>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				this:RegisterForDrag("LeftButton");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnEnter>
-				SendMailAttachment_OnEnter(this:GetID());
+				SendMailAttachment_OnEnter(self);
 			</OnEnter>
 			<OnUpdate>
-				if ( GameTooltip:IsOwned(this) ) then
-					SendMailAttachment_OnEnter(this:GetID());
+				if ( GameTooltip:IsOwned(self) ) then
+					SendMailAttachment_OnEnter(self);
 				end
 			</OnUpdate>
 			<OnLeave>
@@ -322,34 +322,34 @@
 	<Button name="OpenMailAttachment" inherits="ItemButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("MAIL_INBOX_UPDATE");
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterEvent("MAIL_INBOX_UPDATE");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEvent>
 				--GameTooltip:Hide();
-				if ( GameTooltip:IsOwned(this) ) then
-					GameTooltip:SetInboxItem(InboxFrame.openMailID, this:GetID());
+				if ( GameTooltip:IsOwned(self) ) then
+					GameTooltip:SetInboxItem(InboxFrame.openMailID, self:GetID());
 					GameTooltip:Show();
 				end
 			</OnEvent>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetInboxItemLink(InboxFrame.openMailID, this:GetID()));
+					HandleModifiedItemClick(GetInboxItemLink(InboxFrame.openMailID, self:GetID()));
 				else
-					OpenMailAttachment_OnClick(this:GetID());
+					OpenMailAttachment_OnClick(self, self:GetID());
 				end
 			</OnClick>
 			<OnEnter>
-				OpenMailAttachment_OnEnter(this:GetID());
+				OpenMailAttachment_OnEnter(self, self:GetID());
 			</OnEnter>
 			<OnUpdate>
-				if ( GameTooltip:IsOwned(this) ) then
-					OpenMailAttachment_OnEnter(this:GetID());
+				if ( GameTooltip:IsOwned(self) ) then
+					OpenMailAttachment_OnEnter(self, self:GetID());
 				end
 			</OnUpdate>
 			<OnLeave>
 				GameTooltip:Hide();
-				SetMoneyFrameColor("GameTooltipMoneyFrame1", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
@@ -541,7 +541,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								this:Disable();
+								self:Disable();
 							</OnLoad>
 							<OnClick>
 								InboxPrevPage();
@@ -574,7 +574,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								this:Disable();
+								self:Disable();
 							</OnLoad>
 							<OnClick>
 								InboxNextPage();
@@ -770,16 +770,16 @@
 												ScrollingEdit_OnTextChanged(SendMailScrollFrame);
 											</OnTextChanged>
 											<OnCursorChanged>
-												ScrollingEdit_OnCursorChanged(arg1, arg2-10, arg3, arg4);
+												ScrollingEdit_OnCursorChanged(self, x, y-10, w, h);
 											</OnCursorChanged>
 											<OnUpdate>
-												ScrollingEdit_OnUpdate(SendMailScrollFrame);
+												ScrollingEdit_OnUpdate(self, elapsed, SendMailScrollFrame);
 											</OnUpdate>
 											<OnTabPressed>
-												EditBox_HandleTabbing(SEND_MAIL_TAB_LIST);
+												EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
 											</OnTabPressed>
 											<OnEscapePressed>
-												this:ClearFocus();
+												self:ClearFocus();
 											</OnEscapePressed>
 										</Scripts>
 										<FontString inherits="MailTextFontNormal"/>
@@ -853,17 +853,17 @@
 						</Layers>
 						<Scripts>
 							<OnTabPressed>
-								EditBox_HandleTabbing(SEND_MAIL_TAB_LIST);
+								EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
 							</OnTabPressed>
 							<OnEditFocusLost>
-								this:HighlightText(0, 0);
+								self:HighlightText(0, 0);
 							</OnEditFocusLost>
 							<OnCharComposition>
-								SendMailFrame_SendeeAutocomplete();
+								SendMailFrame_SendeeAutocomplete(self);
 							</OnCharComposition>
 							<OnChar>
-								if ( not this:IsInIMECompositionMode() ) then
-									SendMailFrame_SendeeAutocomplete();
+								if ( not self:IsInIMECompositionMode() ) then
+									SendMailFrame_SendeeAutocomplete(self);
 								end
 							</OnChar>
 							<OnEnterPressed>
@@ -964,7 +964,7 @@
 						</Layers>
 						<Scripts>
 							<OnTabPressed>
-								EditBox_HandleTabbing(SEND_MAIL_TAB_LIST);
+								EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
 							</OnTabPressed>
 							<OnEnterPressed>
 								SendMailBodyEditBox:SetFocus();
@@ -1029,7 +1029,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										MoneyInputFrame_SetOnvalueChangedFunc(this, SendMailFrame_CanSend);
+										MoneyInputFrame_SetOnValueChangedFunc(self, SendMailFrame_CanSend);
 									</OnLoad>
 								</Scripts>
 							</Frame>
@@ -1043,7 +1043,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(SEND_MONEY);
+										getglobal(self:GetName().."Text"):SetText(SEND_MONEY);
 									</OnLoad>
 								</Scripts>
 							</CheckButton>
@@ -1057,7 +1057,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(COD);
+										getglobal(self:GetName().."Text"):SetText(COD);
 									</OnLoad>
 								</Scripts>
 							</CheckButton>
@@ -1132,7 +1132,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								SendMailMailButton_OnClick();
+								SendMailMailButton_OnClick(self, button);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1141,11 +1141,11 @@
 					<OnLoad>
 						SendMailErrorText:SetFormattedText(MAIL_COD_ERROR, MAX_COD_AMOUNT);
 						SendMailErrorText:SetPoint("BOTTOMLEFT", "SendMailMoneyText", "TOPLEFT", 0, 2);
-						SendMailRadioButton_OnClick(1);
+						SendMailRadioButton_OnClick(self, 1);
 					</OnLoad>
 					<OnShow>
 						StationeryPopupFrame_Update();
-						StationeryPopupButton_OnClick(1);
+						StationeryPopupButton_OnClick(self, 1);
 						SendMailNameEditBox:SetFocus();
 					</OnShow>
 					<OnMouseUp>
@@ -1165,7 +1165,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel() + 1);
+						self:SetFrameLevel(self:GetFrameLevel() + 1);
 					</OnLoad>
 					<OnClick>
 						HideUIPanel(MailFrame);
@@ -1182,7 +1182,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						MailFrameTab_OnClick();
+						MailFrameTab_OnClick(self, 1);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1196,17 +1196,17 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						MailFrameTab_OnClick();
+						MailFrameTab_OnClick(self, 2);
 					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				MailFrame_Onload();
+				MailFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				MailFrame_OnEvent();
+				MailFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnHide>
 				CloseMail();
@@ -1312,7 +1312,7 @@
 				</Layers>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(STATIONERY_ICON_ROW_HEIGHT, StationeryPopupFrame_Update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, STATIONERY_ICON_ROW_HEIGHT, StationeryPopupFrame_Update);
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>
@@ -1374,8 +1374,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1392,7 +1391,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1864,7 +1863,7 @@
 			<Button name="OpenMailLetterButton" inherits="ItemButtonTemplate">
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnClick>
 						OpenMailFrame.updateButtonPositions = false;
@@ -1872,7 +1871,7 @@
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MAIL_LETTER_TOOLTIP);
 					</OnEnter>
 					<OnLeave>
@@ -1900,14 +1899,14 @@
 			<Button name="OpenMailMoneyButton" inherits="ItemButtonTemplate">
 				<Scripts>
 					<OnLoad>
-						this:RegisterEvent("MAIL_INBOX_UPDATE");
-						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self:RegisterEvent("MAIL_INBOX_UPDATE");
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnEvent>
 						--GameTooltip:Hide();
-						if ( GameTooltip:IsOwned(this) ) then
+						if ( GameTooltip:IsOwned(self) ) then
 							if ( OpenMailFrame.money ) then
-								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								SetTooltipMoney(GameTooltip, OpenMailFrame.money);
 								GameTooltip:Show();
 							end
@@ -1919,7 +1918,7 @@
 					</OnClick>
 					<OnEnter>
 						if ( OpenMailFrame.money ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 							SetTooltipMoney(GameTooltip, OpenMailFrame.money);
 							GameTooltip:Show();
 						end
@@ -1943,7 +1942,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>

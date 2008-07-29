@@ -70,6 +70,11 @@ UnitPopupButtons["RAID_REMOVE"] = { text = REMOVE, dist = 0 };
 
 UnitPopupButtons["PVP_REPORT_AFK"] = { text = PVP_REPORT_AFK, dist = 0 };
 
+UnitPopupButtons["RAF_SUMMON"] = { text = RAF_SUMMON, dist = 0 };
+UnitPopupButtons["RAF_GRANT_LEVEL"] = { text = RAF_GRANT_LEVEL, dist = 0 };
+
+UnitPopupButtons["VEHICLE_LEAVE"] = { text = VEHICLE_LEAVE, dist = 0 };
+
 -- Voice Chat Related
 UnitPopupButtons["MUTE"] = { text = MUTE, dist = 0 };
 UnitPopupButtons["UNMUTE"] = { text = UNMUTE, dist = 0 };
@@ -104,14 +109,15 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 UnitPopupMenus = { };
 UnitPopupMenus["SELF"] = { "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "DUNGEON_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "LEAVE", "CANCEL" };
 UnitPopupMenus["PET"] = { "PET_PAPERDOLL", "PET_RENAME", "PET_ABANDON", "PET_DISMISS", "CANCEL" };
-UnitPopupMenus["PARTY"] = { "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "LOOT_PROMOTE", "UNINVITE", "INSPECT", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "PVP_REPORT_AFK", "CANCEL" };
-UnitPopupMenus["PLAYER"] = { "WHISPER", "INSPECT", "INVITE", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "CANCEL" };
-UnitPopupMenus["RAID_PLAYER"] = { "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "CANCEL" };
+UnitPopupMenus["PARTY"] = { "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "LOOT_PROMOTE", "UNINVITE", "INSPECT", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
+UnitPopupMenus["PLAYER"] = { "WHISPER", "INSPECT", "INVITE", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
+UnitPopupMenus["RAID_PLAYER"] = { "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
 UnitPopupMenus["RAID"] = { "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "RAID_LEADER", "RAID_PROMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "RAID_DEMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "CANCEL" };
-UnitPopupMenus["FRIEND"] = { "WHISPER", "INVITE", "TARGET", "IGNORE", "REPORT_SPAM", "GUILD_PROMOTE", "GUILD_LEAVE", "PVP_REPORT_AFK", "CANCEL" };
+UnitPopupMenus["FRIEND"] = { "WHISPER", "INVITE", "TARGET", "IGNORE", "REPORT_SPAM", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
 UnitPopupMenus["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_KICK", "TEAM_LEAVE", "CANCEL" };
 UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
 UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_SILENCE", "CHAT_UNSILENCE", "CHAT_PROMOTE", "CHAT_DEMOTE", "CHAT_OWNER", "CANCEL"  };
+UnitPopupMenus["VEHICLE"] = { "VEHICLE_LEAVE", "CANCEL" };
 
 -- Second level menus
 UnitPopupMenus["PVP_FLAG"] = { "PVP_ENABLE", "PVP_DISABLE"};
@@ -212,13 +218,9 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 			-- Set the text color
 			color = UnitPopupButtons[value].color;
 			if ( color ) then
-				info.textR = color.r;
-				info.textG = color.g;
-				info.textB = color.b;
+				info.colorCode = string.format("|cFF%02x%02x%02x", color.r*255, color.g*255, color.b*255);
 			else
-				info.textR = nil;
-				info.textG = nil;
-				info.textB = nil;
+				info.colorCode = nil;
 			end
 			-- Icons
 			info.icon = UnitPopupButtons[value].icon;
@@ -320,19 +322,16 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 			-- Text color
 			if ( value == "LOOT_THRESHOLD" ) then
 				-- Set the text color
-				color = ITEM_QUALITY_COLORS[GetLootThreshold()];
+				info.colorCode = ITEM_QUALITY_COLORS[GetLootThreshold()].hex;
 			else
 				color = UnitPopupButtons[value].color;
+				if ( color ) then
+					info.colorCode = string.format("%02x%02x%02x",  color.r*255,  color.g*255,  color.b*255);
+				else
+					info.colorCode = nil;
+				end
 			end
-			if ( color ) then
-				info.textR = color.r;
-				info.textG = color.g;
-				info.textB = color.b;
-			else
-				info.textR = nil;
-				info.textG = nil;
-				info.textB = nil;
-			end
+
 			-- Icons
 			info.icon = UnitPopupButtons[value].icon;
 			info.tCoordLeft = UnitPopupButtons[value].tCoordLeft;
@@ -640,6 +639,14 @@ function UnitPopup_HideButtons ()
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			end
+		elseif ( value == "RAF_SUMMON" ) then
+			if( not IsReferAFriendLinked(dropdownMenu.unit) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "RAF_GRANT_LEVEL" ) then
+			if( not IsReferAFriendLinked(dropdownMenu.unit) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
 		elseif ( value == "PET_PAPERDOLL" ) then
 			if( not PetCanBeAbandoned() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -653,7 +660,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PET_DISMISS" ) then
-			if( PetCanBeAbandoned() ) then
+			if( PetCanBeAbandoned() or not PetCanBeDismissed() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( strsub(value, 1, 12)  == "RAID_TARGET_" ) then
@@ -816,6 +823,10 @@ function UnitPopup_HideButtons ()
 			if ( not dropdownMenu.active or dropdownMenu.group) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
+		elseif ( value == "VEHICLE_LEAVE" ) then
+			if ( not CanExitVehicle() ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
 		end
 	end
 end
@@ -938,6 +949,14 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 							enable = 0;			
 						end
+					elseif ( value == "RAF_SUMMON" ) then
+						if( not CanSummonFriend(dropdownFrame.unit) ) then
+							enable = 0;
+						end
+					elseif ( value == "RAF_GRANT_LEVEL" ) then
+						if( not CanGrantLevel(dropdownFrame.unit) ) then
+							enable = 0;
+						end
 					end
 
 					if ( level > 1 ) then
@@ -958,8 +977,6 @@ function UnitPopup_OnUpdate (elapsed)
 end
 
 function UnitPopup_OnClick (self)
-	--Ick. Kill the Lua error for now.
-	self = self or this;
 	local dropdownFrame = getglobal(UIDROPDOWNMENU_INIT_MENU);
 	local button = self.value;
 	local unit = dropdownFrame.unit;
@@ -1111,11 +1128,14 @@ function UnitPopup_OnClick (self)
 		UninviteUnit(name);
 	elseif ( button == "PVP_REPORT_AFK" ) then
 		ReportPlayerIsPVPAFK(name);
+	elseif ( button == "RAF_SUMMON" ) then
+		SummonFriend(unit)
+	elseif ( button == "RAF_GRANT_LEVEL" ) then
+		GrantLevel(unit);
 	elseif ( button == "ITEM_QUALITY2_DESC" or button == "ITEM_QUALITY3_DESC" or button == "ITEM_QUALITY4_DESC" ) then
 		local id = self:GetID()+1;
 		SetLootThreshold(id);
-		local color = ITEM_QUALITY_COLORS[id];
-		UIDropDownMenu_SetButtonText(1, 4, UnitPopupButtons[button].text, color.r, color.g, color.b);
+		UIDropDownMenu_SetButtonText(1, 4, UnitPopupButtons[button].text, ITEM_QUALITY_COLORS[id].hex);
 	elseif ( strsub(button, 1, 12) == "RAID_TARGET_" and button ~= "RAID_TARGET_ICON" ) then
 		local raidTargetIndex = strsub(button, 13);
 		if ( raidTargetIndex == "NONE" ) then
@@ -1136,6 +1156,8 @@ function UnitPopup_OnClick (self)
 		ChannelKick(dropdownFrame.channelName, fullname);
 	elseif ( button == "CHAT_BAN" ) then
 		ChannelBan(dropdownFrame.channelName, fullname);
+	elseif ( button == "VEHICLE_LEAVE" ) then
+		VehicleExit();
 	end
 	PlaySound("UChatScrollButton");
 end

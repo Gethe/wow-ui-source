@@ -49,17 +49,17 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						MessageFrameScrollButton_OnLoad();
+						MessageFrameScrollButton_OnLoad(self);
 					</OnLoad>
 					<OnUpdate>
-						MessageFrameScrollButton_OnUpdate(arg1);
+						MessageFrameScrollButton_OnUpdate(self, elapsed);
 					</OnUpdate>
 					<OnClick>
-						if ( this:GetButtonState() == "PUSHED" ) then
-							this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+						if ( self:GetButtonState() == "PUSHED" ) then
+							self.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
 						else
 							PlaySound("igChatScrollDown");
-							CombatLogDownButton_OnClick(arg1);
+							CombatLogDownButton_OnClick(self, button);
 						end
 					</OnClick>
 				</Scripts>
@@ -77,17 +77,17 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						MessageFrameScrollButton_OnLoad()					
+						MessageFrameScrollButton_OnLoad(self)					
 					</OnLoad>
 					<OnUpdate>
-						MessageFrameScrollButton_OnUpdate(arg1);
+						MessageFrameScrollButton_OnUpdate(self, elapsed);
 					</OnUpdate>
 					<OnClick>
-						if ( this:GetButtonState() == "PUSHED" ) then
-							this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+						if ( self:GetButtonState() == "PUSHED" ) then
+							self.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
 						else
 							PlaySound("igChatScrollUp");
-							CombatLogUpButton_OnClick(arg1);
+							CombatLogUpButton_OnClick(self, button);
 						end
 					</OnClick>
 				</Scripts>

@@ -8,6 +8,7 @@ local max = _G.max;
 local floor = _G.floor;
 local mod = _G.mod;
 local tonumber = _G.tonumber;
+local gsub = _G.gsub;
 local GetCVar = _G.GetCVar;
 local SetCVar = _G.SetCVar;
 local GetGameTime = _G.GetGameTime;
@@ -15,6 +16,9 @@ local GetGameTime = _G.GetGameTime;
 -- private data
 local SEC_TO_MINUTE_FACTOR = 1/60;
 local SEC_TO_HOUR_FACTOR = SEC_TO_MINUTE_FACTOR*SEC_TO_MINUTE_FACTOR;
+MAX_TIMER_SEC = 99*3600 + 59*60 + 59;	-- 99:59:59
+
+local WARNING_SOUND_TRIGGER_OFFSET = -2 * SEC_TO_MINUTE_FACTOR;	-- play warning sound 2 sec before alarm sound
 
 local Settings = {
 	militaryTime = false;
@@ -34,63 +38,17 @@ local CVAR_ALARM_MESSAGE = "timeMgrAlarmMessage";
 local CVAR_ALARM_ENABLED = "timeMgrAlarmEnabled";
 
 
-local function _TimeManager_GetTimeAndFormat(hour, minute, wantAMPM)
-	if ( Settings.militaryTime ) then
-		return TIMEMANAGER_TICKER_24HOUR, hour, minute;
+local function _TimeManager_GetCurrentMinutes(localTime)
+	local currTime;
+	if ( localTime ) then
+		local dateInfo = date("*t");
+		local hour, minute = dateInfo.hour, dateInfo.min;
+		currTime = minute + hour*60;
 	else
-		if ( wantAMPM ) then
-			local timeFormat = TIME_TWELVEHOURAM;
-			if ( hour == 0 ) then
-				hour = 12;
-			elseif ( hour == 12 ) then
-				timeFormat = TIME_TWELVEHOURPM;
-			elseif ( hour > 12 ) then
-				timeFormat = TIME_TWELVEHOURPM;
-				hour = hour - 12;
-			end
-			return timeFormat, hour, minute;
-		else
-			if ( hour == 0 ) then
-				hour = 12;
-			elseif ( hour == 12 ) then
-				timeFormat = TIME_TWELVEHOURPM;
-			elseif ( hour > 12 ) then
-				hour = hour - 12;
-			end
-			return TIMEMANAGER_TICKER_12HOUR, hour, minute;
-		end
+		local hour, minute = GetGameTime();
+		currTime = minute + hour*60;
 	end
-end
-
-local function _TimeManager_GetLocalTime(wantAMPM)
-	local dateInfo = date("*t");
-	local hour, minute = dateInfo.hour, dateInfo.min;
-	return _TimeManager_GetTimeAndFormat(hour, minute, wantAMPM);
-end
-
-local function _TimeManager_GetGameTime(wantAMPM)
-	local hour, minute = GetGameTime();
-	return _TimeManager_GetTimeAndFormat(hour, minute, wantAMPM);
-end
-
-local function _TimeManager_ComputeMinutes(hour, minute, militaryTime, am)
-	local minutes;
-	if ( militaryTime ) then
-		minutes = minute + hour*60;
-	else
-		local h = hour;
-		if ( am ) then
-			if ( h == 12 ) then
-				h = 0;
-			end
-		else
-			if ( h ~= 12 ) then
-				h = h + 12;
-			end
-		end
-		minutes = minute + h*60;
-	end
-	return minutes;
+	return currTime;
 end
 
 -- CVar helpers
@@ -109,20 +67,19 @@ local function _TimeManager_Setting_Set(cvar, field, value)
 end
 
 local function _TimeManager_Setting_SetTime()
-	local alarmTime = _TimeManager_ComputeMinutes(Settings.alarmHour, Settings.alarmMinute, Settings.militaryTime, Settings.alarmAM);
+	local alarmTime = GameTime_ComputeMinutes(Settings.alarmHour, Settings.alarmMinute, Settings.militaryTime, Settings.alarmAM);
 	SetCVar(CVAR_ALARM_TIME, alarmTime);
 end
 
 
 -- TimeManagerFrame
 
-function TimeManager_Show()
-	TimeManagerClockButton:Show();
-end
-
-function TimeManager_Hide()
-	TimeManagerFrame:Hide();
-	TimeManagerClockButton:Hide();
+function TimeManager_Toggle()
+	if ( TimeManagerFrame:IsShown() ) then
+		TimeManagerFrame:Hide();
+	else
+		TimeManagerFrame:Show();
+	end
 end
 
 function TimeManagerFrame_OnLoad(self)
@@ -151,10 +108,10 @@ function TimeManagerFrame_OnLoad(self)
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 
 	UIDropDownMenu_Initialize(TimeManagerAlarmHourDropDown, TimeManagerAlarmHourDropDown_Initialize);
-	UIDropDownMenu_SetWidth(30, TimeManagerAlarmHourDropDown, 40);
+	UIDropDownMenu_SetWidth(TimeManagerAlarmHourDropDown, 30, 40);
 
 	UIDropDownMenu_Initialize(TimeManagerAlarmMinuteDropDown, TimeManagerAlarmMinuteDropDown_Initialize);
-	UIDropDownMenu_SetWidth(30, TimeManagerAlarmMinuteDropDown, 40);
+	UIDropDownMenu_SetWidth(TimeManagerAlarmMinuteDropDown, 30, 40);
 
 	UIDropDownMenu_Initialize(TimeManagerAlarmAMPMDropDown, TimeManagerAlarmAMPMDropDown_Initialize);
 	-- some languages have ridonculously long am/pm strings (i'm looking at you French) so we may have to
@@ -168,11 +125,11 @@ function TimeManagerFrame_OnLoad(self)
 	end
 	maxAMPMWidth = ceil(maxAMPMWidth);
 	if ( maxAMPMWidth > 40 ) then
-		UIDropDownMenu_SetWidth(maxAMPMWidth + 20, TimeManagerAlarmAMPMDropDown, 40);
+		UIDropDownMenu_SetWidth(TimeManagerAlarmAMPMDropDown, maxAMPMWidth + 20, 40);
 		TimeManagerAlarmAMPMDropDown:SetScript("OnShow", TimeManagerAlarmAMPMDropDown_OnShow);
 		TimeManagerAlarmAMPMDropDown:SetScript("OnHide", TimeManagerAlarmAMPMDropDown_OnHide);
 	else
-		UIDropDownMenu_SetWidth(40, TimeManagerAlarmAMPMDropDown, 40);
+		UIDropDownMenu_SetWidth(TimeManagerAlarmAMPMDropDown, 40, 40);
 	end
 
 	TimeManager_Update();
@@ -201,7 +158,7 @@ function TimeManagerStopwatchCheck_OnClick(self)
 	if ( self:GetChecked() ) then
 		PlaySound("igMainMenuOptionCheckBoxOn");
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound("igMainMenuQuit");
 	end
 end
 
@@ -230,7 +187,7 @@ function TimeManagerAlarmHourDropDown_Initialize()
 		info.func = TimeManagerAlarmHourDropDown_OnClick;
 		if ( hour == alarmHour ) then
 			info.checked = 1;
-			UIDropDownMenu_SetText(info.text, TimeManagerAlarmHourDropDown);
+			UIDropDownMenu_SetText(TimeManagerAlarmHourDropDown, info.text);
 		else
 			info.checked = nil;
 		end
@@ -248,7 +205,7 @@ function TimeManagerAlarmMinuteDropDown_Initialize()
 		info.func = TimeManagerAlarmMinuteDropDown_OnClick;
 		if ( minute == alarmMinute ) then
 			info.checked = 1;
-			UIDropDownMenu_SetText(info.text, TimeManagerAlarmMinuteDropDown);
+			UIDropDownMenu_SetText(TimeManagerAlarmMinuteDropDown, info.text);
 		else
 			info.checked = nil;
 		end
@@ -266,7 +223,7 @@ function TimeManagerAlarmAMPMDropDown_Initialize()
 	info.func = TimeManagerAlarmAMPMDropDown_OnClick;
 	if ( not pm ) then
 		info.checked = 1;
-		UIDropDownMenu_SetText(info.text, TimeManagerAlarmAMPMDropDown);
+		UIDropDownMenu_SetText(TimeManagerAlarmAMPMDropDown, info.text);
 	else
 		info.checked = nil;
 	end
@@ -277,42 +234,44 @@ function TimeManagerAlarmAMPMDropDown_Initialize()
 	info.func = TimeManagerAlarmAMPMDropDown_OnClick;
 	if ( pm ) then
 		info.checked = 1;
-		UIDropDownMenu_SetText(info.text, TimeManagerAlarmAMPMDropDown);
+		UIDropDownMenu_SetText(TimeManagerAlarmAMPMDropDown, info.text);
 	else
 		info.checked = nil;
 	end
 	UIDropDownMenu_AddButton(info);
 end
 
-function TimeManagerAlarmHourDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmHourDropDown, this.value);
-	if ( Settings.alarmHour ~= this.value ) then
-		TimeManagerClockButton.checkAlarm = true;
+function TimeManagerAlarmHourDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmHourDropDown, self.value);
+	local oldValue = Settings.alarmHour;
+	Settings.alarmHour = self.value;
+	if ( Settings.alarmHour ~= oldValue ) then
+		TimeManager_StartCheckingAlarm();
 	end
-	Settings.alarmHour = this.value;
 	_TimeManager_Setting_SetTime();
 end
 
 function TimeManagerAlarmMinuteDropDown_OnClick()
 	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmMinuteDropDown, this.value);
-	if ( Settings.alarmMinute ~= this.value ) then
-		TimeManagerClockButton.checkAlarm = true;
-	end
+	local oldValue = Settings.alarmMinute;
 	Settings.alarmMinute = this.value;
+	if ( Settings.alarmMinute ~= oldValue ) then
+		TimeManager_StartCheckingAlarm();
+	end
 	_TimeManager_Setting_SetTime();
 end
 
-function TimeManagerAlarmAMPMDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmAMPMDropDown, this.value);
-	if ( this.value == 1 ) then
+function TimeManagerAlarmAMPMDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmAMPMDropDown, self.value);
+	if ( self.value == 1 ) then
 		if ( not Settings.alarmAM ) then
-			TimeManagerClockButton.checkAlarm = true;
 			Settings.alarmAM = true;
+			TimeManager_StartCheckingAlarm();
 		end
 	else
 		if ( Settings.alarmAM ) then
-			TimeManagerClockButton.checkAlarm = true;
 			Settings.alarmAM = false;
+			TimeManager_StartCheckingAlarm();
 		end
 	end
 	_TimeManager_Setting_SetTime();
@@ -346,29 +305,25 @@ end
 function TimeManager_UpdateAlarmTime()
 	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmHourDropDown, Settings.alarmHour);
 	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmMinuteDropDown, Settings.alarmMinute);
-	UIDropDownMenu_SetText(format(TIMEMANAGER_MINUTE, Settings.alarmMinute), TimeManagerAlarmMinuteDropDown);
+	UIDropDownMenu_SetText(TimeManagerAlarmMinuteDropDown, format(TIMEMANAGER_MINUTE, Settings.alarmMinute));
 	if ( Settings.militaryTime ) then
 		TimeManagerAlarmAMPMDropDown:Hide();
-		UIDropDownMenu_SetText(format(TIMEMANAGER_24HOUR, Settings.alarmHour), TimeManagerAlarmHourDropDown);
+		UIDropDownMenu_SetText(TimeManagerAlarmHourDropDown, format(TIMEMANAGER_24HOUR, Settings.alarmHour));
 	else
 		TimeManagerAlarmAMPMDropDown:Show();
-		UIDropDownMenu_SetText(Settings.alarmHour, TimeManagerAlarmHourDropDown);
+		UIDropDownMenu_SetText(TimeManagerAlarmHourDropDown, Settings.alarmHour);
 		if ( Settings.alarmAM ) then
 			UIDropDownMenu_SetSelectedValue(TimeManagerAlarmAMPMDropDown, 1);
-			UIDropDownMenu_SetText(TIMEMANAGER_AM, TimeManagerAlarmAMPMDropDown);
+			UIDropDownMenu_SetText(TimeManagerAlarmAMPMDropDown, TIMEMANAGER_AM);
 		else
 			UIDropDownMenu_SetSelectedValue(TimeManagerAlarmAMPMDropDown, 0);
-			UIDropDownMenu_SetText(TIMEMANAGER_PM, TimeManagerAlarmAMPMDropDown);
+			UIDropDownMenu_SetText(TimeManagerAlarmAMPMDropDown, TIMEMANAGER_PM);
 		end
 	end
 end
 
 function TimeManager_UpdateTimeTicker()
-	if ( Settings.localTime ) then
-		TimeManagerFrameTicker:SetFormattedText(_TimeManager_GetLocalTime());
-	else
-		TimeManagerFrameTicker:SetFormattedText(_TimeManager_GetGameTime());
-	end
+	TimeManagerFrameTicker:SetText(GameTime_GetTime(false));
 end
 
 function TimeManagerAlarmMessageEditBox_OnEnterPressed(self)
@@ -376,7 +331,6 @@ function TimeManagerAlarmMessageEditBox_OnEnterPressed(self)
 end
 
 function TimeManagerAlarmMessageEditBox_OnEscapePressed(self)
-	TimeManagerAlarmMessageEditBox:SetText(Settings.alarmMessage);
 	self:ClearFocus();
 end
 
@@ -387,12 +341,12 @@ end
 function TimeManagerAlarmEnabledButton_Update()
 	if ( Settings.alarmEnabled ) then
 		TimeManagerAlarmEnabledButton:SetText(TIMEMANAGER_ALARM_ENABLED);
-		TimeManagerAlarmEnabledButton:SetTextFontObject("GameFontNormal");
+		TimeManagerAlarmEnabledButton:SetNormalFontObject(GameFontNormal);
 		TimeManagerAlarmEnabledButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 		TimeManagerAlarmEnabledButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down");
 	else
 		TimeManagerAlarmEnabledButton:SetText(TIMEMANAGER_ALARM_DISABLED);
-		TimeManagerAlarmEnabledButton:SetTextFontObject("GameFontHighlight");
+		TimeManagerAlarmEnabledButton:SetNormalFontObject(GameFontHighlight);
 		TimeManagerAlarmEnabledButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
 		TimeManagerAlarmEnabledButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Disabled-Down");
 	end
@@ -402,7 +356,7 @@ function TimeManagerAlarmEnabledButton_OnClick(self)
 	_TimeManager_Setting_SetBool(CVAR_ALARM_ENABLED, "alarmEnabled", not Settings.alarmEnabled);
 	if ( Settings.alarmEnabled ) then
 		PlaySound("igMainMenuOptionCheckBoxOn");
-		TimeManagerClockButton.checkAlarm = true;
+		TimeManager_StartCheckingAlarm();
 	else
 		PlaySound("igMainMenuOptionCheckBoxOff");
 		if ( TimeManagerClockButton.alarmFiring ) then
@@ -414,34 +368,21 @@ end
 
 function TimeManagerMilitaryTimeCheck_OnClick(self)
 	TimeManager_ToggleTimeFormat();
+	if ( self:GetChecked() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
+	end
 end
 
 function TimeManager_ToggleTimeFormat()
 	local alarmHour = Settings.alarmHour;
 	if ( Settings.militaryTime ) then
 		_TimeManager_Setting_SetBool(CVAR_USE_MILITARY_TIME, "militaryTime", false);
-		if ( alarmHour > 12 ) then
-			Settings.alarmHour = alarmHour - 12;
-			Settings.alarmAM = false;
-		elseif ( alarmHour == 12 ) then
-			Settings.alarmAM = false;
-		elseif ( alarmHour == 0 ) then
-			Settings.alarmHour = 12;
-			Settings.alarmAM = true;
-		else
-			Settings.alarmAM = true;
-		end
+		Settings.alarmHour, Settings.alarmAM = GameTime_ComputeStandardTime(Settings.alarmHour);
 	else
 		_TimeManager_Setting_SetBool(CVAR_USE_MILITARY_TIME, "militaryTime", true);
-		if ( Settings.alarmAM ) then
-			if ( alarmHour == 12 ) then
-				Settings.alarmHour = 0;
-			end
-		else
-			if ( alarmHour ~= 12 ) then
-				Settings.alarmHour = alarmHour + 12;
-			end
-		end
+		Settings.alarmHour = GameTime_ComputeStandardTime(Settings.alarmHour, Settings.alarmAM);
 	end
 	_TimeManager_Setting_SetTime();
 	TimeManager_UpdateAlarmTime();
@@ -451,7 +392,13 @@ end
 
 function TimeManagerLocalTimeCheck_OnClick(self)
 	TimeManager_ToggleLocalTime();
-	TimeManagerClockButton.checkAlarm = true;
+	-- since we're changing which time type we're checking, we need to check the alarm now
+	TimeManager_StartCheckingAlarm();
+	if ( self:GetChecked() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
+	end
 end
 
 function TimeManager_ToggleLocalTime()
@@ -470,28 +417,21 @@ function TimeManagerClockButton_Hide()
 	TimeManagerClockButton:Hide();
 end
 
-function TimeManager_Toggle()
-	if ( TimeManagerFrame:IsShown() ) then
-		TimeManagerFrame:Hide();
-	else
-		TimeManagerFrame:Show();
+function TimeManagerClockButton_OnLoad(self)
+	self:SetFrameLevel(self:GetFrameLevel() + 2);
+	TimeManagerClockButton_Update();
+	if ( Settings.alarmEnabled ) then
+		TimeManager_StartCheckingAlarm();
 	end
+	self:RegisterForClicks("AnyUp");
 end
 
 function TimeManagerClockButton_Update()
-	if ( Settings.localTime ) then
-		TimeManagerClockTicker:SetFormattedText(_TimeManager_GetLocalTime());
-	else
-		TimeManagerClockTicker:SetFormattedText(_TimeManager_GetGameTime());
-	end
+	TimeManagerClockTicker:SetText(GameTime_GetTime(false));
 end
 
 function TimeManagerClockButton_OnEnter(self)
-	if ( Minimap:IsShown() ) then
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	else
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	end
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	TimeManagerClockButton:SetScript("OnUpdate", TimeManagerClockButton_OnUpdateWithTooltip);
 end
 
@@ -512,7 +452,7 @@ end
 function TimeManagerClockButton_OnUpdate(self, elapsed)
 	TimeManagerClockButton_Update();
 	if ( self.checkAlarm and Settings.alarmEnabled ) then
-		TimeManager_CheckAlarm(self, elapsed);
+		TimeManager_CheckAlarm(elapsed);
 	end
 end
 
@@ -521,75 +461,106 @@ function TimeManagerClockButton_OnUpdateWithTooltip(self, elapsed)
 	TimeManagerClockButton_UpdateTooltip();
 end
 
-function TimeManager_CheckAlarm()
-	local currTime;
-	if ( Settings.localTime ) then
-		local dateInfo = date("*t");
-		local hour, minute = dateInfo.hour, dateInfo.min;
-		currTime = minute + hour*60;
-	else
-		local hour, minute = GetGameTime();
-		currTime = minute + hour*60;
+function TimeManager_ShouldCheckAlarm()
+	return TimeManagerClockButton.checkAlarm and Settings.alarmEnabled;
+end
+
+function TimeManager_StartCheckingAlarm()
+	TimeManagerClockButton.checkAlarm = true;
+
+	-- set the time to play the warning sound
+	local alarmTime = GameTime_ComputeMinutes(Settings.alarmHour, Settings.alarmMinute, Settings.militaryTime, Settings.alarmAM);
+	local warningTime = alarmTime + WARNING_SOUND_TRIGGER_OFFSET;
+	-- max minutes per day = 24*60 = 1440
+	if ( warningTime < 0 ) then
+		warningTime = warningTime + 1440;
+	elseif ( warningTime > 1440 ) then
+		warningTime = warningTime - 1440;
 	end
+	TimeManagerClockButton.warningTime = warningTime;
+	TimeManagerClockButton.checkAlarmWarning = true;
+	-- since game time isn't available in seconds, we have to keep track of the previous minute
+	-- in order to play our alarm warning sound at the right time
+	TimeManagerClockButton.currentMinute = _TimeManager_GetCurrentMinutes(Settings.localTime);
+	TimeManagerClockButton.currentMinuteCounter = 0;
+end
 
-	local alarmTime = _TimeManager_ComputeMinutes(Settings.alarmHour, Settings.alarmMinute, Settings.militaryTime, Settings.alarmAM);
+function TimeManager_CheckAlarm(elapsed)
+	local currTime = _TimeManager_GetCurrentMinutes(Settings.localTime);
+	local alarmTime = GameTime_ComputeMinutes(Settings.alarmHour, Settings.alarmMinute, Settings.militaryTime, Settings.alarmAM);
 
+	-- check for the warning sound
+	local clockButton = TimeManagerClockButton;
+	if ( clockButton.checkAlarmWarning ) then
+		if ( clockButton.currentMinute ~= currTime ) then
+			clockButton.currentMinute = currTime;
+			clockButton.currentMinuteCounter = 0;
+		end
+		local secOffset = floor(clockButton.currentMinuteCounter) * SEC_TO_MINUTE_FACTOR;
+		if ( (currTime + secOffset) == clockButton.warningTime ) then
+			TimeManager_FireAlarmWarning();
+		end
+		clockButton.currentMinuteCounter = clockButton.currentMinuteCounter + elapsed;
+	end
+	-- check for the alarm sound
 	if ( currTime == alarmTime ) then
 		TimeManager_FireAlarm();
-		TimeManagerClockButton.checkAlarm = false;
 	end
+end
+
+function TimeManager_FireAlarmWarning()
+	TimeManagerClockButton.checkAlarmWarning = false;
+
+	PlaySound("AlarmClockWarning1");
 end
 
 function TimeManager_FireAlarm()
 	TimeManagerClockButton.alarmFiring = true;
+	TimeManagerClockButton.checkAlarm = false;
 
-	DEFAULT_CHAT_FRAME:AddMessage(Settings.alarmMessage);
-	PlaySound("PVPTHROUGHQUEUE");
+	-- do a bunch of crazy stuff to get the player's attention
+	if ( gsub(Settings.alarmMessage, "%s", "") ~= "" ) then
+		DEFAULT_CHAT_FRAME:AddMessage(Settings.alarmMessage);
+		RaidNotice_AddMessage(RaidWarningFrame, Settings.alarmMessage, ChatTypeInfo["RAID_WARNING"]);
+	end
+	PlaySound("AlarmClockWarning2");
 	UIFrameFlash(TimeManagerAlarmFiredTexture, 0.5, 0.5, -1);
+	-- show the clock if necessary, but record its current state so it can return to that state after
+	-- the player turns the alarm off
+	TimeManagerClockButton.prevShown = TimeManagerClockButton:IsShown();
+	TimeManagerClockButton:Show();
 end
 
 function TimeManager_TurnOffAlarm()
 	UIFrameFlashStop(TimeManagerAlarmFiredTexture);
+	if ( not TimeManagerClockButton.prevShown ) then
+		TimeManagerClockButton:Hide();
+	end
 
 	TimeManagerClockButton.alarmFiring = false;
+end
+
+function TimeManager_IsAlarmFiring()
+	return TimeManagerClockButton.alarmFiring;
 end
 
 function TimeManagerClockButton_UpdateTooltip()
 	GameTooltip:ClearLines();
 
 	if ( TimeManagerClockButton.alarmFiring ) then
-		GameTooltip:AddLine(Settings.alarmMessage, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		GameTooltip:AddLine(" ");
+		if ( gsub(Settings.alarmMessage, "%s", "") ~= "" ) then
+			GameTooltip:AddLine(Settings.alarmMessage, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+			GameTooltip:AddLine(" ");
+		end
 		GameTooltip:AddLine(TIMEMANAGER_ALARM_TOOLTIP_TURN_OFF);
 	else
-		-- title
-		GameTooltip:AddLine(TIMEMANAGER_CLOCK_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		-- realm time
-		local realmFormatString, realmHour, realmMinute = _TimeManager_GetGameTime(true);
-		GameTooltip:AddDoubleLine(
-			TIMEMANAGER_CLOCK_TOOLTIP_REALMTIME,
-			format(realmFormatString, realmHour, realmMinute),
-			NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b,
-			HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		-- local time (only shown if there is a 10 min delta between realm time and local time)
-		local localFormatString, localHour, localMinute = _TimeManager_GetLocalTime(true);
-		GameTooltip:AddDoubleLine(
-			TIMEMANAGER_CLOCK_TOOLTIP_LOCALTIME,
-			format(localFormatString, localHour, localMinute),
-			NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b,
-			HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		GameTime_UpdateTooltip();
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(GAMETIME_TOOLTIP_TOGGLE_CLOCK);
 	end
 
 	-- readjust tooltip size
 	GameTooltip:Show();
-end
-
-function TimeManagerClockButton_AdjustPosition()
-	if ( Minimap:IsShown() ) then
-		TimeManagerClockButton:SetPoint("CENTER", MinimapCluster, "CENTER", 8, -72);
-	else
-		TimeManagerClockButton:SetPoint("CENTER", MinimapCluster, "CENTER", 75, 20);
-	end
 end
 
 -- StopwatchFrame
@@ -605,7 +576,7 @@ end
 function Stopwatch_ShowCountdown(hour, minute, second)
 	local sec = 0;
 	if ( hour ) then
-		sec = hour * 60 * 60;
+		sec = hour * 3600;
 	end
 	if ( minute ) then
 		sec = sec + minute * 60;
@@ -617,13 +588,25 @@ function Stopwatch_ShowCountdown(hour, minute, second)
 		Stopwatch_Toggle();
 		return;
 	end
-	StopwatchTicker.timer = sec;
+	if ( sec > MAX_TIMER_SEC ) then
+		StopwatchTicker.timer = MAX_TIMER_SEC;
+	elseif ( sec < 0 ) then
+		StopwatchTicker.timer = 0;
+	else
+		StopwatchTicker.timer = sec;
+	end
 	StopwatchTicker_Update();
 	StopwatchTicker.reverse = sec > 0;
 	StopwatchFrame:Show();
 end
 
+function Stopwatch_FinishCountdown()
+	Stopwatch_Clear();
+	PlaySound("AlarmClockWarning3");
+end
+
 function StopwatchCloseButton_OnClick()
+	PlaySound("igMainMenuQuit");
 	StopwatchFrame:Hide();
 end
 
@@ -710,7 +693,7 @@ function StopwatchTicker_OnUpdate(self, elapsed)
 	if ( self.reverse ) then
 		self.timer = self.timer - elapsed;
 		if ( self.timer <= 0 ) then
-			Stopwatch_Clear();
+			Stopwatch_FinishCountdown();
 			return;
 		end
 	else
@@ -756,13 +739,16 @@ end
 
 function StopwatchResetButton_OnClick()
 	Stopwatch_Clear();
+	PlaySound("igMainMenuOptionCheckBoxOff");
 end
 
 function StopwatchPlayPauseButton_OnClick(self)
 	if ( self.playing ) then
 		Stopwatch_Pause();
+		PlaySound("igMainMenuOptionCheckBoxOff");
 	else
 		Stopwatch_Play();
+		PlaySound("igMainMenuOptionCheckBoxOn");
 	end
 end
 

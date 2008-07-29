@@ -1,6 +1,0 @@
-## Interface: 30000
-## Title: Blizzard Craft UI
-## Secure: 1
-## LoadOnDemand: 1
-Blizzard_CraftUI.xml
-Localization.lua

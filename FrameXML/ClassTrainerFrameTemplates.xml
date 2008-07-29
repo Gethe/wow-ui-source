@@ -11,16 +11,16 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
 			</OnLoad>
 			<OnClick>
-				ClassTrainerSkillButton_OnClick(arg1);
+				ClassTrainerSkillButton_OnClick(self, button);
 			</OnClick>
 			<OnEnter>
-				getglobal(this:GetName().."SubText"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				getglobal(self:GetName().."SubText"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			</OnEnter>
 			<OnLeave>
-				getglobal(this:GetName().."SubText"):SetTextColor(this.r, this.g, this.b);
+				getglobal(self:GetName().."SubText"):SetTextColor(self.r, self.g, self.b);
 			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
@@ -108,8 +108,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				ScrollFrame_OnLoad();
-				this.scrollBarHideable = 1;
+				ScrollFrame_OnLoad(self);
+				self.scrollBarHideable = 1;
 			</OnLoad>
 		</Scripts>
 	</ScrollFrame>

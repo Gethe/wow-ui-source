@@ -1,29 +1,29 @@
 
-function InspectPaperDollFrame_OnLoad()
-	this:RegisterEvent("UNIT_MODEL_CHANGED");
-	this:RegisterEvent("UNIT_LEVEL");
+function InspectPaperDollFrame_OnLoad(self)
+	self:RegisterEvent("UNIT_MODEL_CHANGED");
+	self:RegisterEvent("UNIT_LEVEL");
 end
 
-function InspectModelFrame_OnUpdate(elapsedTime)
+function InspectModelFrame_OnUpdate(self, elapsedTime)
 	if ( InspectModelRotateLeftButton:GetButtonState() == "PUSHED" ) then
-		this.rotation = this.rotation + (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
-		if ( this.rotation < 0 ) then
-			this.rotation = this.rotation + (2 * PI);
+		self.rotation = self.rotation + (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
+		if ( self.rotation < 0 ) then
+			self.rotation = self.rotation + (2 * PI);
 		end
-		InspectModelFrame:SetRotation(this.rotation);
+		InspectModelFrame:SetRotation(self.rotation);
 	end
 	if ( InspectModelRotateRightButton:GetButtonState() == "PUSHED" ) then
-		this.rotation = this.rotation - (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
-		if ( this.rotation > (2 * PI) ) then
-			this.rotation = this.rotation - (2 * PI);
+		self.rotation = self.rotation - (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
+		if ( self.rotation > (2 * PI) ) then
+			self.rotation = self.rotation - (2 * PI);
 		end
-		InspectModelFrame:SetRotation(this.rotation);
+		InspectModelFrame:SetRotation(self.rotation);
 	end
 end
 
-function InspectModelFrame_OnLoad()
-	this.rotation = 0.61;
-	InspectModelFrame:SetRotation(this.rotation);
+function InspectModelFrame_OnLoad(self)
+	self.rotation = 0.61;
+	InspectModelFrame:SetRotation(self.rotation);
 end
 
 function InspectModelRotateLeftButton_OnClick()
@@ -38,7 +38,7 @@ function InspectModelRotateRightButton_OnClick()
 	PlaySound("igInventoryRotateCharacter");
 end
 
-function InspectPaperDollFrame_OnEvent(event, unit)
+function InspectPaperDollFrame_OnEvent(self, event, unit)
 	if ( unit and unit == InspectFrame.unit ) then
 		if ( event == "UNIT_MODEL_CHANGED" ) then
 			InspectModelFrame:RefreshUnit();
@@ -83,39 +83,40 @@ function InspectPaperDollFrame_OnShow()
 	InspectPaperDollItemSlotButton_Update(InspectRangedSlot);
 end
 
-function InspectPaperDollItemSlotButton_OnLoad()
-	this:RegisterEvent("UNIT_INVENTORY_CHANGED");
-	local slotName = this:GetName();
+function InspectPaperDollItemSlotButton_OnLoad(self)
+	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
+	local slotName = self:GetName();
 	local id;
 	local textureName;
 	local checkRelic;
 	id, textureName, checkRelic = GetInventorySlotInfo(strsub(slotName,8));
-	this:SetID(id);
+	self:SetID(id);
 	local texture = getglobal(slotName.."IconTexture");
 	texture:SetTexture(textureName);
-	this.backgroundTextureName = textureName;
-	this.checkRelic = checkRelic;
+	self.backgroundTextureName = textureName;
+	self.checkRelic = checkRelic;
 end
 
-function InspectPaperDollItemSlotButton_OnEvent(event)
+function InspectPaperDollItemSlotButton_OnEvent(self, event, ...)
 	if ( event == "UNIT_INVENTORY_CHANGED" ) then
+		local arg1 = ...;
 		if ( arg1 == InspectFrame.unit ) then
-			InspectPaperDollItemSlotButton_Update(this);
+			InspectPaperDollItemSlotButton_Update(self);
 		end
 		return;
 	end
 end
 
-function InspectPaperDollItemSlotButton_OnEnter()
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-	if ( not GameTooltip:SetInventoryItem(InspectFrame.unit, this:GetID()) ) then
-		local text = getglobal(strupper(strsub(this:GetName(), 8)));
-		if ( this.checkRelic and UnitHasRelicSlot(InspectFrame.unit) ) then
+function InspectPaperDollItemSlotButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( not GameTooltip:SetInventoryItem(InspectFrame.unit, self:GetID()) ) then
+		local text = getglobal(strupper(strsub(self:GetName(), 8)));
+		if ( self.checkRelic and UnitHasRelicSlot(InspectFrame.unit) ) then
 			text = getglobal("RELICSLOT");
 		end
 		GameTooltip:SetText(text);
 	end
-	CursorUpdate();
+	CursorUpdate(self);
 end
 
 function InspectPaperDollItemSlotButton_Update(button)

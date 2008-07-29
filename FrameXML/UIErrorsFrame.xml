@@ -14,10 +14,10 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				UIErrorsFrame_OnLoad();
+				UIErrorsFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				UIErrorsFrame_OnEvent(event, arg1);
+				UIErrorsFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 		<FontString inherits="ErrorFont" justifyH="CENTER"/>

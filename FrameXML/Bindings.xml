@@ -86,12 +86,6 @@
 	<Binding name="TOGGLERUN">
 		ToggleRun();
 	</Binding>
-	<Binding name="PITCHINCREMENT">
-		PitchIncrement();
-	</Binding>
-	<Binding name="PITCHDECREMENT">
-		PitchDecrement();
-	</Binding>
 	<Binding name="FOLLOWTARGET">
 		FollowUnit("target");
 	</Binding>
@@ -518,6 +512,9 @@
 	<Binding name="TOGGLEPETBOOK">
 		ToggleSpellBook(BOOKTYPE_PET);
 	</Binding>
+	<Binding name="TOGGLEINSCRIPTION">
+		ToggleSpellBook(INSCRIPTION);
+	</Binding>
 	<Binding name="TOGGLETALENTS">
 		ToggleTalentFrame();
 	</Binding>
@@ -584,8 +581,21 @@
 	<Binding name="TOGGLECHANNELPULLOUT">
 		ChannelPullout_ToggleDisplay();
 	</Binding>
+	<Binding name="TOGGLEACHIEVEMENT">
+		ToggleAchievementFrame();
+	</Binding>
+
 	<!-- Misc -->
-	<Binding name="MINIMAPZOOMIN" header="MISC">
+	<Binding name="STOPCASTING" header="MISC">
+		SpellStopCasting();
+	</Binding>
+	<Binding name="STOPATTACK">
+		StopAttack();
+	</Binding>
+	<Binding name="DISMOUNT">
+		Dismount();
+	</Binding>
+	<Binding name="MINIMAPZOOMIN">
 		Minimap_ZoomIn();
 	</Binding>
 	<Binding name="MINIMAPZOOMOUT">
@@ -1127,6 +1137,42 @@
 	<Binding name="RAIDTARGETNONE">
 		SetRaidTarget("target", 0);
 	</Binding>
+	<!-- Vehicle bindings -->
+	<Binding name="VEHICLEEXIT" header="VEHICLE">
+		VehicleExit();
+	</Binding>
+	<Binding name="VEHICLEPREVSEAT">
+		VehiclePrevSeat();
+	</Binding>
+	<Binding name="VEHICLENEXTSEAT">
+		VehicleNextSeat();
+	</Binding>
+	<Binding name="VEHICLEAIMUP" runOnUp="true">
+		if ( keystate == "down" ) then
+		VehicleAimUpStart();
+		else
+		VehicleAimUpStop();
+		end
+	</Binding>
+	<Binding name="VEHICLEAIMDOWN" runOnUp="true">
+		if ( keystate == "down" ) then
+		VehicleAimDownStart();
+		else
+		VehicleAimDownStop();
+		end
+	</Binding>
+	<Binding name="VEHICLEAIMINCREMENT">
+		VehicleAimIncrement(0.1);
+	</Binding>
+	<Binding name="VEHICLEAIMDECREMENT">
+		VehicleAimDecrement(0.1);
+	</Binding>
+	<Binding name="VEHICLECAMERAZOOMIN">
+		VehicleCameraZoomIn(1.0);
+	</Binding>
+	<Binding name="VEHICLECAMERAZOOMOUT">
+		VehicleCameraZoomOut(1.0);
+	</Binding>
 
 <!-- Hidden bindings -->
 	<Binding name="TURNORACTION" runOnUp="true" hidden="true">
@@ -1180,7 +1226,7 @@
 	<!-- Modified Click Actions -->
 	<ModifiedClick action="SELFCAST" default="ALT"/>
 	<ModifiedClick action="AUTOLOOTTOGGLE" default="SHIFT"/>
-  <ModifiedClick action="MAILAUTOLOOTTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="MAILAUTOLOOTTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="STICKYCAMERA" default="CTRL"/>
 	<ModifiedClick action="CHATLINK" default="SHIFT-BUTTON1"/>
 	<ModifiedClick action="DRESSUP" default="CTRL-BUTTON1"/>
@@ -1190,4 +1236,5 @@
 	<ModifiedClick action="COMPAREITEMS" default="SHIFT"/>
 	<ModifiedClick action="OPENALLBAGS" default="SHIFT"/>
 	<ModifiedClick action="QUESTWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="TOKENWATCHTOGGLE" default="SHIFT"/>
 </Bindings>

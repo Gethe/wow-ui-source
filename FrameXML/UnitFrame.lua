@@ -1,12 +1,24 @@
 
-ManaBarColor = {};
-ManaBarColor[0] = { r = 0.00, g = 0.00, b = 1.00, prefix = MANA };
-ManaBarColor[1] = { r = 1.00, g = 0.00, b = 0.00, prefix = RAGE_POINTS };
-ManaBarColor[2] = { r = 1.00, g = 0.50, b = 0.25, prefix = FOCUS_POINTS };
-ManaBarColor[3] = { r = 1.00, g = 1.00, b = 0.00, prefix = ENERGY_POINTS };
-ManaBarColor[4] = { r = 0.00, g = 1.00, b = 1.00, prefix = HAPPINESS_POINTS };
-ManaBarColor[5] = { r = 0.50, g = 0.50, b = 0.50, prefix = RUNE_POINTS };
-ManaBarColor[6] = { r = 1.00, g = 1.00, b = 1.00, prefix = RUNIC_POWER_POINTS };
+PowerBarColor = {};
+PowerBarColor["MANA"] = { r = 0.00, g = 0.00, b = 1.00 };
+PowerBarColor["RAGE"] = { r = 1.00, g = 0.00, b = 0.00 };
+PowerBarColor["FOCUS"] = { r = 1.00, g = 0.50, b = 0.25 };
+PowerBarColor["ENERGY"] = { r = 1.00, g = 1.00, b = 0.00 };
+PowerBarColor["HAPPINESS"] = { r = 0.00, g = 1.00, b = 1.00 };
+PowerBarColor["RUNES"] = { r = 0.50, g = 0.50, b = 0.50 };
+PowerBarColor["RUNIC_POWER"] = { r = 0.00, g = 0.82, b = 1.00 };
+-- vehicle colors
+PowerBarColor["AMMOSLOT"] = { r = 0.80, g = 0.60, b = 0.00 };
+PowerBarColor["FUEL"] = { r = 0.0, g = 0.55, b = 0.5 };
+
+-- these are mostly needed for a fallback case, in case the code tries to index a power token above is missing from the table
+PowerBarColor[0] = PowerBarColor["MANA"];
+PowerBarColor[1] = PowerBarColor["RAGE"];
+PowerBarColor[2] = PowerBarColor["FOCUS"];
+PowerBarColor[3] = PowerBarColor["ENERGY"];
+PowerBarColor[4] = PowerBarColor["HAPPINESS"];
+PowerBarColor[5] = PowerBarColor["RUNES"];
+PowerBarColor[6] = PowerBarColor["RUNIC_POWER"];
 
 --[[
 	This system uses "update" functions as OnUpdate, and OnEvent handlers.
@@ -31,6 +43,14 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
+end
+
+function UnitFrame_SetUnit (self, unit, healthbar, manabar)
+	self.unit = unit;
+	healthbar.unit = unit;
+	manabar.unit = unit;
+	self:SetAttribute("unit", unit);
+	UnitFrame_Update(self);
 end
 
 function UnitFrame_Update (self)
@@ -60,22 +80,15 @@ function UnitFrame_OnEvent(self, event, ...)
 end
 
 function UnitFrame_OnEnter (self)
-	if ( SpellIsTargeting() ) then
-		if ( SpellCanTargetUnit(self.unit) ) then
-			SetCursor("CAST_CURSOR");
-		else
-			SetCursor("CAST_ERROR_CURSOR");
-		end
-	end
-
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	-- If showing newbie tips then only show the explanation
-	if ( SHOW_NEWBIE_TIPS == "1" and self:GetName() ~= "PartyMemberFrame1" and self:GetName() ~= "PartyMemberFrame2" and self:GetName() ~= "PartyMemberFrame3" and self:GetName() ~= "PartyMemberFrame4") then
-		if ( self:GetName() == "PlayerFrame" ) then
-			GameTooltip_AddNewbieTip(PARTY_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PARTYOPTIONS);
+	if ( SHOW_NEWBIE_TIPS == "1" ) then
+		if ( self == PlayerFrame ) then
+			GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			GameTooltip_AddNewbieTip(self, PARTY_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PARTYOPTIONS);
 			return;
-		elseif ( UnitPlayerControlled("target") and not UnitIsUnit("target", "player") and not UnitIsUnit("target", "pet") ) then
-			GameTooltip_AddNewbieTip(PLAYER_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PLAYEROPTIONS);
+		elseif ( self == TargetFrame and UnitPlayerControlled("target") and not UnitIsUnit("target", "player") and not UnitIsUnit("target", "pet") ) then
+			GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			GameTooltip_AddNewbieTip(self, PLAYER_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PLAYEROPTIONS);
 			return;
 		end
 	end
@@ -83,9 +96,6 @@ function UnitFrame_OnEnter (self)
 end
 
 function UnitFrame_OnLeave ()
-	if ( SpellIsTargeting() ) then
-		SetCursor("CAST_ERROR_CURSOR");
-	end
 	if ( SHOW_NEWBIE_TIPS == "1" ) then
 		GameTooltip:Hide();
 	else
@@ -110,22 +120,28 @@ function UnitFrame_UpdateManaType (unitFrame)
 	if ( not unitFrame.manabar ) then
 		return;
 	end
-	local info = ManaBarColor[UnitPowerType(unitFrame.unit)];
+	local powerType, powerToken = UnitPowerType(unitFrame.unit);
+	local prefix = getglobal(powerToken);
+	local info = PowerBarColor[powerToken];
+	if ( not info ) then
+		-- couldn't find a power token entry...default to indexing by power type
+		info = PowerBarColor[powerType];
+	end
 	unitFrame.manabar:SetStatusBarColor(info.r, info.g, info.b);
 	--Hack for pets
-	if ( unitFrame.unit == "pet" and info.prefix ~= HAPPINESS_POINTS ) then
+	if ( unitFrame.unit == "pet" and powerToken ~= "HAPPINESS" ) then
 		return;
 	end
 	-- Update the manabar text
 	if ( not unitFrame.noTextPrefix ) then
-		SetTextStatusBarTextPrefix(unitFrame.manabar, info.prefix);
+		SetTextStatusBarTextPrefix(unitFrame.manabar, prefix);
 	end
 	TextStatusBar_UpdateTextString(unitFrame.manabar);
 
 	-- Setup newbie tooltip
 	if ( unitFrame:GetName() == "PlayerFrame" ) then
-		unitFrame.manabar.tooltipTitle = info.prefix;
-		unitFrame.manabar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR"..UnitPowerType(unitFrame.unit));
+		unitFrame.manabar.tooltipTitle = prefix;
+		unitFrame.manabar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR_"..powerType);
 	else
 		unitFrame.manabar.tooltipTitle = nil;
 		unitFrame.manabar.tooltipText = nil;

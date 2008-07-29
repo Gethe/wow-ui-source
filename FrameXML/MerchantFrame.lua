@@ -2,32 +2,32 @@ MERCHANT_ITEMS_PER_PAGE = 10;
 BUYBACK_ITEMS_PER_PAGE = 12;
 MAX_ITEM_COST = 3;
 
-function MerchantFrame_OnLoad()
-	this:RegisterEvent("MERCHANT_UPDATE");
-	this:RegisterEvent("MERCHANT_CLOSED");
-	this:RegisterEvent("MERCHANT_SHOW");
-	this:RegisterEvent("GUILDBANK_UPDATE_MONEY");
-	this:RegisterForDrag("LeftButton");
-	this.page = 1;
+function MerchantFrame_OnLoad(self)
+	self:RegisterEvent("MERCHANT_UPDATE");
+	self:RegisterEvent("MERCHANT_CLOSED");
+	self:RegisterEvent("MERCHANT_SHOW");
+	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
+	self:RegisterForDrag("LeftButton");
+	self.page = 1;
 	-- Tab Handling code
-	PanelTemplates_SetNumTabs(this, 2);
-	PanelTemplates_SetTab(this, 1);
+	PanelTemplates_SetNumTabs(self, 2);
+	PanelTemplates_SetTab(self, 1);
 end
 
-function MerchantFrame_OnEvent()
+function MerchantFrame_OnEvent(self, event, ...)
 	if ( event == "MERCHANT_UPDATE" ) then
-		if ( MerchantFrame:IsVisible() ) then
+		if ( self:IsVisible() ) then
 			MerchantFrame_Update();
 		end
 	elseif ( event == "MERCHANT_CLOSED" ) then
-		HideUIPanel(this);
+		HideUIPanel(self);
 	elseif ( event == "MERCHANT_SHOW" ) then
-		ShowUIPanel(this);
-		if ( not this:IsShown() ) then
+		ShowUIPanel(self);
+		if ( not self:IsShown() ) then
 			CloseMerchant();
 			return;
 		end
-		this.page = 1;
+		self.page = 1;
 		MerchantFrame_Update();
 	elseif ( event == "PLAYER_MONEY" or event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
 		MerchantFrame_UpdateCanRepairAll();
@@ -362,22 +362,22 @@ function MerchantNextPageButton_OnClick()
 	MerchantFrame_Update();
 end
 
-function MerchantItemBuybackButton_OnLoad()
-	this:RegisterForClicks("LeftButtonUp","RightButtonUp");
-	this:RegisterForDrag("LeftButton");
+function MerchantItemBuybackButton_OnLoad(self)
+	self:RegisterForClicks("LeftButtonUp","RightButtonUp");
+	self:RegisterForDrag("LeftButton");
 	
-	this.SplitStack = function(button, split)
+	self.SplitStack = function(button, split)
 		if ( split > 0 ) then
 			BuyMerchantItem(button:GetID(), split);
 		end
 	end
 end
 
-function MerchantItemButton_OnLoad()
-	this:RegisterForClicks("LeftButtonUp","RightButtonUp");
-	this:RegisterForDrag("LeftButton");
+function MerchantItemButton_OnLoad(self)
+	self:RegisterForClicks("LeftButtonUp","RightButtonUp");
+	self:RegisterForDrag("LeftButton");
 	
-	this.SplitStack = function(button, split)
+	self.SplitStack = function(button, split)
 		if ( button.extendedCost ) then
 			MerchantFrame_ConfirmExtendedItemCost(button, split)
 		elseif ( split > 0 ) then
@@ -385,40 +385,40 @@ function MerchantItemButton_OnLoad()
 		end
 	end
 	
-	this.UpdateTooltip = MerchantItemButton_OnEnter;
+	self.UpdateTooltip = MerchantItemButton_OnEnter;
 end
 
-function MerchantItemButton_OnClick(button)
+function MerchantItemButton_OnClick(self, button)
 	MerchantFrame.extendedCost = nil;
 	
 	if ( MerchantFrame.selectedTab == 1 ) then
 		-- Is merchant frame
 		if ( button == "LeftButton" ) then
-			PickupMerchantItem(this:GetID());
-			if ( this.extendedCost ) then
-				MerchantFrame.extendedCost = this;
+			PickupMerchantItem(self:GetID());
+			if ( self.extendedCost ) then
+				MerchantFrame.extendedCost = self;
 			end
 		else
-			if ( this.extendedCost ) then
-				MerchantFrame_ConfirmExtendedItemCost(this);
+			if ( self.extendedCost ) then
+				MerchantFrame_ConfirmExtendedItemCost(self);
 			else
-				BuyMerchantItem(this:GetID());
+				BuyMerchantItem(self:GetID());
 			end
 		end
 	else
 		-- Is buyback item
-		BuybackItem(this:GetID());
+		BuybackItem(self:GetID());
 	end
 end
 
-function MerchantItemButton_OnModifiedClick(button)
+function MerchantItemButton_OnModifiedClick(self, button)
 	if ( MerchantFrame.selectedTab == 1 ) then
 		-- Is merchant frame
-		if ( HandleModifiedItemClick(GetMerchantItemLink(this:GetID())) ) then
+		if ( HandleModifiedItemClick(GetMerchantItemLink(self:GetID())) ) then
 			return;
 		end
 		if ( IsModifiedClick("SPLITSTACK") ) then
-			local maxStack = GetMerchantItemMaxStack(this:GetID());
+			local maxStack = GetMerchantItemMaxStack(self:GetID());
 			if ( maxStack > 1 ) then
 				if ( price and (price > 0) ) then
 					local canAfford = floor(GetMoney() / price);
@@ -426,12 +426,12 @@ function MerchantItemButton_OnModifiedClick(button)
 						maxStack = canAfford;
 					end
 				end
-				OpenStackSplitFrame(maxStack, this, "BOTTOMLEFT", "TOPLEFT");
+				OpenStackSplitFrame(maxStack, self, "BOTTOMLEFT", "TOPLEFT");
 			end
 			return;
 		end
 	else
-		HandleModifiedItemClick(GetBuybackItemLink(this:GetID()));
+		HandleModifiedItemClick(GetBuybackItemLink(self:GetID()));
 	end
 end
 
@@ -477,15 +477,23 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 		itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
 	end
 	
+	local maxQuality = 0;
 	for i=1, MAX_ITEM_COST, 1 do
 		itemTexture, itemCount, itemLink = GetMerchantItemCostItem(index, i);
 		if ( itemLink ) then
+			local _, _, itemQuality = GetItemInfo(itemLink);
+			maxQuality = math.max(itemQuality, maxQuality);
 			if ( itemsString ) then
 				itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
 			else
 				itemsString = format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
 			end
 		end
+	end
+	
+	if ( honorPoints == 0 and arenaPoints == 0 and maxQuality <= ITEM_QUALITY_UNCOMMON ) then
+		BuyMerchantItem( itemButton:GetID(), quantity );
+		return;
 	end
 	
 	MerchantFrame.itemIndex = index;

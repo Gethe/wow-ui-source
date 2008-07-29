@@ -1,5 +1,5 @@
 
-function InspectPVPFrame_OnLoad()
+function InspectPVPFrame_OnLoad(self)
 	InspectPVPFrameLine1:SetAlpha(0.3);
 	InspectPVPHonorKillsLabel:SetVertexColor(0.6, 0.6, 0.6);
 	InspectPVPHonorHonorLabel:SetVertexColor(0.6, 0.6, 0.6);
@@ -7,10 +7,10 @@ function InspectPVPFrame_OnLoad()
 	InspectPVPHonorYesterdayLabel:SetVertexColor(0.6, 0.6, 0.6);
 	InspectPVPHonorLifetimeLabel:SetVertexColor(0.6, 0.6, 0.6);
 
-	this:RegisterEvent("INSPECT_HONOR_UPDATE");
+	self:RegisterEvent("INSPECT_HONOR_UPDATE");
 end
 
-function InspectPVPFrame_OnEvent()
+function InspectPVPFrame_OnEvent(self, event, ...)
 	if ( event == "INSPECT_HONOR_UPDATE" ) then
 		InspectPVPFrame_Update();
 	end

@@ -243,7 +243,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()+1);
+						self:SetFrameLevel(self:GetFrameLevel()+1);
 					</OnLoad>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
@@ -334,13 +334,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ItemTextFrame_OnLoad();
+				ItemTextFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				ItemTextFrame_OnEvent(event);
+				ItemTextFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				ItemTextFrame_OnUpdate(arg1);
+				ItemTextFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnShow>
 				PlaySound("igMainMenuOpen");

@@ -44,12 +44,12 @@ function GMSurveyFrame_Update()
 	end
 end
 
-function GMSurveyRadioButton_OnClick(owner, id)
+function GMSurveyRadioButton_OnClick(self, owner, id)
 	if ( not owner ) then
-		owner = this:GetParent();
+		owner = self:GetParent();
 	end
 	if ( not id ) then
-		id = this:GetID();
+		id = self:GetID();
 	end
 	if ( id == owner.selectedRadioButton ) then
 		return;

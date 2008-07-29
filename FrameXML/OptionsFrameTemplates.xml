@@ -1,10 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script>
-		function OptionsCheckButton_SetText(text, button)
-			if ( not button ) then
-				button = this;
-			end
+		function OptionsCheckButton_SetText(button, text)
 			getglobal(button:GetName().."Text"):SetText(text);
 		end
 	</Script>
@@ -35,8 +32,8 @@
 		</Backdrop>
 		<Scripts>
 			<OnLoad>
-				this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-				this:SetBackdropColor(0.5, 0.5, 0.5);
+				self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+				self:SetBackdropColor(0.5, 0.5, 0.5);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -51,19 +48,19 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnClick>
-				if ( this:GetChecked() ) then
+				if ( self:GetChecked() ) then
 					PlaySound("igMainMenuOptionCheckBoxOn");
 				else
 					PlaySound("igMainMenuOptionCheckBoxOff");
 				end
 			</OnClick>
 			<OnEnter>
-				if ( this.tooltipText ) then
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				if ( self.tooltipText ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 				end
-				if ( this.tooltipRequirement ) then
-					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+				if ( self.tooltipRequirement ) then
+					GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -119,12 +116,12 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				if ( this.tooltipText ) then
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				if ( self.tooltipText ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 				end
-				if ( this.tooltipRequirement ) then
-					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+				if ( self.tooltipRequirement ) then
+					GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
 					GameTooltip:Show();
 				end
 			</OnEnter>

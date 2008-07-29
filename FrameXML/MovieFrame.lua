@@ -1,89 +1,87 @@
 
 MOVIE_CAPTION_FADE_TIME = 1.0;
 
-function MovieFrame_OnLoad()
-	this:RegisterEvent("PLAY_MOVIE");
+function MovieFrame_OnLoad(self)
+	self:RegisterEvent("PLAY_MOVIE");
 end
 
 function MovieFrame_OnEvent(self, event, ...)
 	if ( event == "PLAY_MOVIE" ) then
 		local name, volume = ...;
 		if ( name ) then
-			MovieFrame_PlayMovie(name, volume);
+			MovieFrame_PlayMovie(self, name, volume);
 		end
 	end
 end
 
-function MovieFrame_PlayMovie(name, volume)
-	if ( GetMovieResolution() < 1024 ) then
-		name = name.."_800";
-	else
-		name = name.."_1024";
-	end
+function MovieFrame_PlayMovie(self, name, volume)
 	volume = volume or 150;
-	this:Show();
-	this:StartMovie(name, volume);
+	self:Show();
+	if (not self:StartMovie(name, volume) ) then
+		self:Hide();
+		GameMovieFinished();
+	end
 end
 
-function MovieFrame_OnShow()
+function MovieFrame_OnShow(self)
 	WorldFrame:Hide();
-	this.uiParentShown = UIParent:IsShown();
+	self.uiParentShown = UIParent:IsShown();
 	UIParent:Hide();
-	this:EnableSubtitles(GetMovieSubtitles());
+	self:EnableSubtitles(GetMovieSubtitles());
 end
 
-function MovieFrame_OnHide()
+function MovieFrame_OnHide(self)
 	MovieFrameSubtitleString:Hide();
-	this:StopMovie();
+	self:StopMovie();
 	WorldFrame:Show();
-	if ( this.uiParentShown ) then
+	if ( self.uiParentShown ) then
 		UIParent:Show();
 	end
 end
 
-function MovieFrame_OnUpdate(elapsed)
-	if ( MovieFrameSubtitleString:IsShown() and this.fadingAlpha ) then
-		this.fadingAlpha = this.fadingAlpha + ((elapsed / this.fadeSpeed) * this.fadeDirection);
-		if ( this.fadingAlpha > 1.0 ) then
+function MovieFrame_OnUpdate(self, elapsed)
+	if ( MovieFrameSubtitleString:IsShown() and self.fadingAlpha ) then
+		self.fadingAlpha = self.fadingAlpha + ((elapsed / self.fadeSpeed) * self.fadeDirection);
+		if ( self.fadingAlpha > 1.0 ) then
 			MovieFrameSubtitleString:SetAlpha(1.0);
-			this.fadingAlpha = nil;
-		elseif ( this.fadingAlpha < 0.0 ) then
+			self.fadingAlpha = nil;
+		elseif ( self.fadingAlpha < 0.0 ) then
 			MovieFrameSubtitleString:Hide();
-			this.fadingAlpha = nil;
+			self.fadingAlpha = nil;
 		else
-			MovieFrameSubtitleString:SetAlpha(this.fadingAlpha);
+			MovieFrameSubtitleString:SetAlpha(self.fadingAlpha);
 		end
 	end
 end
 
-function MovieFrame_OnKeyUp()
-	if ( arg1 == "ESCAPE" ) then
-		this:Hide();
-	elseif ( arg1 == "SPACE" or arg1 == "ENTER" ) then
-		this:StopMovie();
+function MovieFrame_OnKeyUp(self, key)
+	if ( key == "ESCAPE" ) then
+		self:Hide();
+	elseif ( key == "SPACE" or key == "ENTER" ) then
+		self:StopMovie();
 	end
 end
 
-function MovieFrame_OnMovieFinished()
+function MovieFrame_OnMovieFinished(self)
 	GameMovieFinished();
-	if ( this:IsShown() ) then
-		this:Hide();
+	if ( self:IsShown() ) then
+		self:Hide();
 	end
 end
 
-function MovieFrame_OnMovieShowSubtitle(text)
+function MovieFrame_OnMovieShowSubtitle(self, text)
 	MovieFrameSubtitleString:SetText(text);
 	MovieFrameSubtitleString:Show();
-	this.fadingAlpha = 0.0;
-	this.fadeDirection = 1.0;
-	this.fadeSpeed = MOVIE_CAPTION_FADE_TIME;
-	MovieFrameSubtitleString:SetAlpha(this.fadingAlpha);
+	self.fadingAlpha = 0.0;
+	self.fadeDirection = 1.0;
+	self.fadeSpeed = MOVIE_CAPTION_FADE_TIME;
+	MovieFrameSubtitleString:SetAlpha(self.fadingAlpha);
 end
 
-function MovieFrame_OnMovieHideSubtitle()
-	this.fadingAlpha = 1.0;
-	this.fadeDirection = -1.0;
-	this.fadeSpeed = MOVIE_CAPTION_FADE_TIME / 2;
-	MovieFrameSubtitleString:SetAlpha(this.fadingAlpha);
+function MovieFrame_OnMovieHideSubtitle(self)
+	self.fadingAlpha = 1.0;
+	self.fadeDirection = -1.0;
+	self.fadeSpeed = MOVIE_CAPTION_FADE_TIME / 2;
+	MovieFrameSubtitleString:SetAlpha(self.fadingAlpha);
 end
 

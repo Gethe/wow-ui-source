@@ -272,9 +272,9 @@ function KnowledgeBaseFrame_ShowErrorFrame()
 	KnowledgeBaseErrorFrame:Show();
 end
 
-function KnowledgeBaseFrameCategoryDropDown_OnLoad()
-	UIDropDownMenu_SetWidth(120, KnowledgeBaseFrameCategoryDropDown);
-	UIDropDownMenu_SetText(CATEGORY, KnowledgeBaseFrameCategoryDropDown);
+function KnowledgeBaseFrameCategoryDropDown_OnLoad(self)
+	UIDropDownMenu_SetWidth(self, 120);
+	UIDropDownMenu_SetText(self, CATEGORY);
 end
 
 function KnowledgeBaseFrameCategoryDropDown_Initialize()
@@ -300,9 +300,9 @@ function KnowledgeBaseFrameCategoryDropDown_AddInfo(id, caption)
 	UIDropDownMenu_AddButton(info);
 end
 
-function KnowledgeBaseFrameCategoryButton_OnClick()
+function KnowledgeBaseFrameCategoryButton_OnClick(self)
 	local oldSelectedCategoryId = UIDropDownMenu_GetSelectedID(KnowledgeBaseFrameCategoryDropDown);
-	local selectedCategoryId = this:GetID();
+	local selectedCategoryId = self:GetID();
 	
 	if ( selectedCategoryId == oldSelectedCategoryId) then
 		return;
@@ -312,14 +312,14 @@ function KnowledgeBaseFrameCategoryButton_OnClick()
 
 	UIDropDownMenu_SetSelectedID(KnowledgeBaseFrameSubCategoryDropDown, 0);
 	UIDropDownMenu_ClearAll(KnowledgeBaseFrameSubCategoryDropDown);
-	UIDropDownMenu_SetText(SUBCATEGORY, KnowledgeBaseFrameSubCategoryDropDown);
+	UIDropDownMenu_SetText(KnowledgeBaseFrameSubCategoryDropDown, SUBCATEGORY);
 
 	UpdateSubCategoryEnabledState();
 end
 
-function KnowledgeBaseFrameSubCategoryDropDown_OnLoad()
-	UIDropDownMenu_SetWidth(120, KnowledgeBaseFrameSubCategoryDropDown);
-	UIDropDownMenu_SetText(SUBCATEGORY, KnowledgeBaseFrameSubCategoryDropDown);
+function KnowledgeBaseFrameSubCategoryDropDown_OnLoad(self)
+	UIDropDownMenu_SetWidth(self, 120);
+	UIDropDownMenu_SetText(self, SUBCATEGORY);
 end
 
 function UpdateSubCategoryEnabledState()
@@ -368,8 +368,8 @@ function KnowledgeBaseFrameSubCategoryDropDown_AddInfo(id, caption)
 	UIDropDownMenu_AddButton(info);
 end
 
-function KnowledgeBaseFrameSubCategoryButton_OnClick()
-	UIDropDownMenu_SetSelectedID(KnowledgeBaseFrameSubCategoryDropDown, this:GetID());
+function KnowledgeBaseFrameSubCategoryButton_OnClick(self)
+	UIDropDownMenu_SetSelectedID(KnowledgeBaseFrameSubCategoryDropDown, self:GetID());
 end
 
 function KnowledgeBaseArticleListFrame_HideArticleList()
@@ -483,14 +483,14 @@ function KnowledgeBaseErrorFrame_SetErrorMessage(message)
 	KnowledgeBaseErrorFrameText:SetText(message);
 end
 
-function KnowledgeBaseArticleListItem_OnClick()
+function KnowledgeBaseArticleListItem_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	local searchText = KnowledgeBaseFrameEditBox:GetText();
 	local searchType = 2;
 	if (searchText == KBASE_DEFAULT_SEARCH_TEXT or searchText == "") then
 		searchType = 1;
 	end
-	KBArticle_BeginLoading(this.articleId, searchType);
+	KBArticle_BeginLoading(self.articleId, searchType);
 end
 
 function KnowledgeBaseArticleListItem_OnEnter(self)
@@ -532,16 +532,15 @@ function KnowledgeBaseArticleListItem_OnLeave(self)
 	GameTooltip:Hide();
 end
 
-function KnowledgeBaseServerMessageTextFrame_OnEnter()
-	this.tooltipDelay = KBASE_TOOLTIP_DELAY;
+function KnowledgeBaseServerMessageTextFrame_OnEnter(self)
+	self.tooltipDelay = KBASE_TOOLTIP_DELAY;
 end
 
-function KnowledgeBaseServerMessageTextFrame_OnUpdate(self, ...)
+function KnowledgeBaseServerMessageTextFrame_OnUpdate(self, elapsed)
 	if ( not self.tooltipDelay ) then
 		return;
 	end
 
-	local elapsed = ...;
 	self.tooltipDelay = self.tooltipDelay - elapsed;
 	if ( self.tooltipDelay > 0 ) then
 		return;
@@ -554,22 +553,21 @@ function KnowledgeBaseServerMessageTextFrame_OnUpdate(self, ...)
 	GameTooltip:Show();
 end
 
-function KnowledgeBaseServerMessageTextFrame_OnLeave()
-	this.tooltipDelay = nil;
+function KnowledgeBaseServerMessageTextFrame_OnLeave(self)
+	self.tooltipDelay = nil;
 	GameTooltip:SetMinimumWidth(0, 0);
 	GameTooltip:Hide();
 end
 
-function KnowledgeBaseMotdTextFrame_OnEnter()
-	this.tooltipDelay = KBASE_TOOLTIP_DELAY;
+function KnowledgeBaseMotdTextFrame_OnEnter(self)
+	self.tooltipDelay = KBASE_TOOLTIP_DELAY;
 end
 
-function KnowledgeBaseMotdTextFrame_OnUpdate(self, ...)
+function KnowledgeBaseMotdTextFrame_OnUpdate(self, elapsed)
 	if ( not self.tooltipDelay ) then
 		return;
 	end
 
-	local elapsed = ...;
 	self.tooltipDelay = self.tooltipDelay - elapsed;
 	if ( self.tooltipDelay > 0 ) then
 		return;
@@ -582,24 +580,19 @@ function KnowledgeBaseMotdTextFrame_OnUpdate(self, ...)
 	GameTooltip:Show();
 end
 
-function KnowledgeBaseMotdTextFrame_OnLeave()
-	this.tooltipDelay = nil;
+function KnowledgeBaseMotdTextFrame_OnLeave(self)
+	self.tooltipDelay = nil;
 	GameTooltip:SetMinimumWidth(0, 0);
 	GameTooltip:Hide();
 end
 
-function SearchButton_OnUpdate(self, ...)
-	if ( KBASE_ENABLE_SEARCH == 0 ) then
+function SearchButton_OnUpdate(self, elapsed)
+	if ( KBASE_ENABLE_SEARCH == 0 or ( not self.enableDelay ) ) then
 		return;
 	end
 
-	if ( not self.enableDelay ) then
-		return;
-	end
-
-	local elapsed = ...;
 	self.enableDelay = self.enableDelay - elapsed;
-	if ( this.enableDelay > 0 ) then
+	if ( self.enableDelay > 0 ) then
 		return;
 	end
 

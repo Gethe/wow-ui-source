@@ -68,15 +68,15 @@
         </Layers>
 		<Scripts>
 			<OnLoad>
-				self:SetFrameLevel(this:GetFrameLevel() + 4);
+				self:SetFrameLevel(self:GetFrameLevel() + 4);
 			</OnLoad>
 			<OnClick>
-				PanelTemplates_Tab_OnClick(CharacterFrame);
+				PanelTemplates_Tab_OnClick(self, CharacterFrame);
 				CharacterFrameTab_OnClick(self, button);
 			</OnClick>
 			<OnShow>
-				PanelTemplates_TabResize(0);
-				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 30);
+				PanelTemplates_TabResize(self, 0);
+				getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 30);
 			</OnShow>
 		</Scripts>
 		<ButtonText name="$parentText">

@@ -3,14 +3,14 @@
 	<Script file="MainMenuBarMicroButtons.lua"/>
 	<Button name="MainMenuBarMicroButton" virtual="true">
 		<Size>
-			<AbsDimension x="29" y="58"/>
+			<AbsDimension x="28" y="58"/>
 		</Size>
 		<HitRectInsets>
 			<AbsInset left="0" right="0" top="18" bottom="0"/>
 		</HitRectInsets>
 		<Scripts>
 			<OnEnter>
-				GameTooltip_AddNewbieTip(this.tooltipText, 1.0, 1.0, 1.0, this.newbieText);
+				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -44,16 +44,16 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				CharacterMicroButton_OnLoad();
+				CharacterMicroButton_OnLoad(self);
 			</OnLoad>
 			<OnClick>
 				ToggleCharacter("PaperDollFrame");
 			</OnClick>
 			<OnEvent>
-				CharacterMicroButton_OnEvent();
+				CharacterMicroButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				if ( this:GetButtonState() == "PUSHED" ) then
+				if ( self:GetButtonState() == "PUSHED" ) then
 					CharacterMicroButton_SetPushed();
 				else
 					CharacterMicroButton_SetNormal();
@@ -71,18 +71,18 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				LoadMicroButtonTextures("Spellbook");
+				LoadMicroButtonTextures(self, "Spellbook");
 			</OnLoad>
 			<OnClick>
 				ToggleSpellBook(BOOKTYPE_SPELL);
 			</OnClick>
 			<OnEnter>
 				if (PlayerHasSpells()) then
-					this.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
+					self.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
 				else
-					this.tooltipText = MicroButtonTooltipText(ABILITYBOOK_BUTTON, "TOGGLEABILITYBOOK");
+					self.tooltipText = MicroButtonTooltipText(ABILITYBOOK_BUTTON, "TOGGLEABILITYBOOK");
 				end
-				GameTooltip_AddNewbieTip(this.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SPELLBOOK);
+				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SPELLBOOK);
 			</OnEnter>
 		</Scripts>
 	</Button>
@@ -96,23 +96,23 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				LoadMicroButtonTextures("Talents");
-				this.tooltipText = MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
-				this.newbieText = NEWBIE_TOOLTIP_TALENTS;
-				this:RegisterEvent("PLAYER_LEVEL_UP");
-				this:RegisterEvent("UPDATE_BINDINGS");
-				this:RegisterEvent("UNIT_LEVEL");
-				this:RegisterEvent("PLAYER_ENTERING_WORLD");
+				LoadMicroButtonTextures(self, "Talents");
+				self.tooltipText = MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
+				self.newbieText = NEWBIE_TOOLTIP_TALENTS;
+				self:RegisterEvent("PLAYER_LEVEL_UP");
+				self:RegisterEvent("UPDATE_BINDINGS");
+				self:RegisterEvent("UNIT_LEVEL");
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			</OnLoad>
 			<OnClick>
 				ToggleTalentFrame();
 			</OnClick>
 			<OnEvent>
-				TalentMicroButton_OnEvent();
+				TalentMicroButton_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Button>
-	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -122,12 +122,33 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				LoadMicroButtonTextures("Quest");
-				this.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
-				this.newbieText = NEWBIE_TOOLTIP_QUESTLOG;
+				LoadMicroButtonTextures(self, "Achievement");
+			</OnLoad>
+			<OnClick>
+				ToggleAchievementFrame();
+			</OnClick>
+			<OnEnter>
+				self.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
+				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ACHIEVEMENT);
+			</OnEnter>
+		</Scripts>
+	</Button>
+	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="AchievementMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "Quest");
+				self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
+				self.newbieText = NEWBIE_TOOLTIP_QUESTLOG;
 			</OnLoad>
 			<OnEvent>
-				this.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
+				self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
 			</OnEvent>
 			<OnClick>
 				ToggleQuestLog();
@@ -144,12 +165,12 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				LoadMicroButtonTextures("Socials");
-				this.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
-				this.newbieText = NEWBIE_TOOLTIP_SOCIAL;
+				LoadMicroButtonTextures(self, "Socials");
+				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
+				self.newbieText = NEWBIE_TOOLTIP_SOCIAL;
 			</OnLoad>
 			<OnEvent>
-				this.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
+				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
 			</OnEvent>
 			<OnClick>
 				ToggleFriendsFrame();
@@ -166,13 +187,13 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				LoadMicroButtonTextures("LFG");
-				this.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
-				this.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+				LoadMicroButtonTextures(self, "LFG");
+				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnLoad>
 			<OnEvent>
-				this.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
-				this.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnEvent>
 			<OnClick>
 				ToggleLFGParentFrame();
@@ -187,14 +208,55 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
+					<Size>
+						<AbsDimension x="16" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="MainMenuMicroButton" relativePoint="TOPLEFT">
+							<Offset x="10" y="-34"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="-2" y="16"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad>
-				LoadMicroButtonTextures("MainMenu");
-				this.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
-				this.newbieText = NEWBIE_TOOLTIP_MAINMENU;
+				LoadMicroButtonTextures(self, "MainMenu");
+				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
+				self.newbieText = NEWBIE_TOOLTIP_MAINMENU;
+
+				PERFORMANCEBAR_LOW_LATENCY = 300;
+				PERFORMANCEBAR_MEDIUM_LATENCY = 600;
+				PERFORMANCEBAR_UPDATE_INTERVAL = 10;
+				self.hover = nil;
+				self.updateInterval = 0;
 			</OnLoad>
+			<OnUpdate>
+				if (self.updateInterval > 0) then
+					self.updateInterval = self.updateInterval - elapsed;
+				else
+					self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+					local bandwidthIn, bandwidthOut, latency = GetNetStats();
+					if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);									
+					elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+						MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
+					else
+						MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
+					end
+					if (self.hover) then
+						MainMenuBarPerformanceBarFrame_OnEnter(self);
+					end
+				end
+			</OnUpdate>
 			<OnEvent>
-				this.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
+				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
 			</OnEvent>
 			<OnClick>
 				if ( OptionsFrame:IsShown() ) then
@@ -210,6 +272,14 @@
 					ShowUIPanel(GameMenuFrame);
 				end
 			</OnClick>
+			<OnEnter>
+				self.hover = 1;
+				self.updateInterval = 0;
+			</OnEnter>
+			<OnLeave>
+				self.hover = nil;
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame" hidden="false">
@@ -222,9 +292,9 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				LoadMicroButtonTextures("Help");
-				this.tooltipText = HELP_BUTTON;
-				this.newbieText = NEWBIE_TOOLTIP_HELP;
+				LoadMicroButtonTextures(self, "Help");
+				self.tooltipText = HELP_BUTTON;
+				self.newbieText = NEWBIE_TOOLTIP_HELP;
 			</OnLoad>
 			<OnClick>
 				ToggleHelpFrame();

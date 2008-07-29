@@ -17,7 +17,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				GMSurveyRadioButton_OnClick();
+				GMSurveyRadioButton_OnClick(self);
 			</OnClick>
 		</Scripts>
 	</CheckButton>
@@ -61,7 +61,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Score"):SetText(GM_SURVEY_NOT_APPLICABLE);
+						getglobal(self:GetName().."Score"):SetText(GM_SURVEY_NOT_APPLICABLE);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -75,7 +75,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Score"):SetText(GMSURVEYRATING1);
+						getglobal(self:GetName().."Score"):SetText(GMSURVEYRATING1);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -89,7 +89,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Score"):SetText(GMSURVEYRATING2);
+						getglobal(self:GetName().."Score"):SetText(GMSURVEYRATING2);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -103,7 +103,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Score"):SetText(GMSURVEYRATING3);
+						getglobal(self:GetName().."Score"):SetText(GMSURVEYRATING3);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -117,7 +117,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Score"):SetText(GMSURVEYRATING4);
+						getglobal(self:GetName().."Score"):SetText(GMSURVEYRATING4);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -131,23 +131,23 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Score"):SetText(GMSURVEYRATING5);
+						getglobal(self:GetName().."Score"):SetText(GMSURVEYRATING5);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:SetBackdropBorderColor(0.5,0.5,0.5);
-				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-				getglobal(this:GetName().."RadioButton1"):SetPoint("LEFT", this:GetName().."RadioButton0", "RIGHT", GMSURVEY_NA_SPACING, 0);
-				getglobal(this:GetName().."RadioButton2"):SetPoint("LEFT", this:GetName().."RadioButton1", "RIGHT", GMSURVEY_RATING_SPACING, 0);
-				getglobal(this:GetName().."RadioButton3"):SetPoint("LEFT", this:GetName().."RadioButton2", "RIGHT", GMSURVEY_RATING_SPACING, 0);
-				getglobal(this:GetName().."RadioButton4"):SetPoint("LEFT", this:GetName().."RadioButton3", "RIGHT", GMSURVEY_RATING_SPACING, 0);
-				getglobal(this:GetName().."RadioButton5"):SetPoint("LEFT", this:GetName().."RadioButton4", "RIGHT", GMSURVEY_RATING_SPACING, 0);
+				self:SetBackdropBorderColor(0.5,0.5,0.5);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				getglobal(self:GetName().."RadioButton1"):SetPoint("LEFT", self:GetName().."RadioButton0", "RIGHT", GMSURVEY_NA_SPACING, 0);
+				getglobal(self:GetName().."RadioButton2"):SetPoint("LEFT", self:GetName().."RadioButton1", "RIGHT", GMSURVEY_RATING_SPACING, 0);
+				getglobal(self:GetName().."RadioButton3"):SetPoint("LEFT", self:GetName().."RadioButton2", "RIGHT", GMSURVEY_RATING_SPACING, 0);
+				getglobal(self:GetName().."RadioButton4"):SetPoint("LEFT", self:GetName().."RadioButton3", "RIGHT", GMSURVEY_RATING_SPACING, 0);
+				getglobal(self:GetName().."RadioButton5"):SetPoint("LEFT", self:GetName().."RadioButton4", "RIGHT", GMSURVEY_RATING_SPACING, 0);
 			</OnLoad>
 			<OnShow>
-				GMSurveyRadioButton_OnClick(this, 0);
+				GMSurveyRadioButton_OnClick(self, 0);
 			</OnShow>
 		</Scripts>
 	</Frame>
@@ -418,11 +418,11 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						ScrollFrame_OnLoad();
-						this.scrollBarHideable = 1;
+						ScrollFrame_OnLoad(self);
+						self.scrollBarHideable = 1;
 					</OnLoad>
 					<OnScrollRangeChanged>
-						ScrollFrame_OnScrollRangeChanged(arg2);
+						ScrollFrame_OnScrollRangeChanged(self, yrange);
 						GMSurveyFrame_Update();
 					</OnScrollRangeChanged>
 				</Scripts>
@@ -633,15 +633,15 @@
 												</Size>
 												<Scripts>
 													<OnEscapePressed>
-														this:ClearFocus();
+														self:ClearFocus();
 													</OnEscapePressed>
 													<OnTextChanged>
-														local scrollBar = getglobal(this:GetParent():GetName().."ScrollBar")
+														local scrollBar = getglobal(self:GetParent():GetName().."ScrollBar")
 														local min;
 														local max;
 														min, max = scrollBar:GetMinMaxValues();
-														if ( max > 0 and (this.max ~= max) ) then
-															this.max = max;
+														if ( max > 0 and (self.max ~= max) ) then
+															self.max = max;
 															scrollBar:SetValue(max);
 														end
 													</OnTextChanged>
@@ -656,8 +656,8 @@
 								</Frames>
 								<Scripts>
 									<OnLoad>
-										this:SetBackdropBorderColor(0.5,0.5,0.5);
-										this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+										self:SetBackdropBorderColor(0.5,0.5,0.5);
+										self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 									</OnLoad>
 								</Scripts>
 							</Frame>
@@ -710,7 +710,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						GMSurveySubmitButton_OnClick();
+						GMSurveySubmitButton_OnClick(self);
 					</OnClick>
 				</Scripts>
 			</Button>

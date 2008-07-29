@@ -49,7 +49,7 @@ AuctionSort["owner_bid"] = {
 AuctionSort["owner_quality"] = {
 	{ column = "bid",		reverse = false	},
 	{ column = "quantity",	reverse = true	},
-	{ column = "buyout",	reverse = false	},
+	{ column = "minbidbuyout",	reverse = false	},
 	{ column = "name",		reverse = false	},
 	{ column = "level",		reverse = true	},
 	{ column = "quality",	reverse = false	},
@@ -69,14 +69,14 @@ AuctionSort["owner_duration"] = {
 AuctionSort["bidder_quality"] = {
 	{ column =  "bid",		reverse = false	},
 	{ column =  "quantity",	reverse = true	},
-	{ column =  "buyout",	reverse = false	},
+	{ column =  "minbidbuyout",	reverse = false	},
 	{ column =  "name",		reverse = false	},
 	{ column =  "level",	reverse = true	},
 	{ column =  "quality",	reverse = false	},
 };
 
 AuctionSort["bidder_level"] = {
-	{ column =  "buyout",	reverse = true	},
+	{ column =  "minbidbuyout",	reverse = true	},
 	{ column =  "status",	reverse = true	},
 	{ column =  "bid",		reverse = true	},
 	{ column =  "duration",	reverse = true	},
@@ -102,7 +102,7 @@ AuctionSort["bidder_status"] = {
 	{ column =  "name",		reverse = false	},
 	{ column =  "level",	reverse = true	},
 	{ column =  "quality",	reverse = false	},
-	{ column =  "buyout",	reverse = false	},
+	{ column =  "minbidbuyout",	reverse = false	},
 	{ column =  "bid",		reverse = false	},
 	{ column =  "duration", reverse = false	},
 	{ column =  "status",	reverse = false	},
@@ -113,7 +113,7 @@ AuctionSort["bidder_bid"] = {
 	{ column =  "name",		reverse = false	},
 	{ column =  "level",	reverse = true	},
 	{ column =  "quality",	reverse = false	},
-	{ column =  "buyout",	reverse = false	},
+	{ column =  "minbidbuyout",	reverse = false	},
 	{ column =  "status",	reverse = false	},
 	{ column =  "duration",	reverse = false	},
 	{ column =  "bid",		reverse = false	},
@@ -124,7 +124,7 @@ AuctionSort["bidder_duration"] = {
 	{ column =  "name",		reverse = false	},
 	{ column =  "level",	reverse = true	},
 	{ column =  "quality",	reverse = false	},
-	{ column =  "buyout",	reverse = false	},
+	{ column =  "minbidbuyout",	reverse = false	},
 	{ column =  "status",	reverse = false	},
 	{ column =  "bid",		reverse = false	},
 	{ column =  "duration",	reverse = false	},
@@ -135,7 +135,7 @@ AuctionSort["list_level"] = {
 	{ column = "duration",	reverse = true	},
 	{ column = "bid",		reverse = true	},
 	{ column = "quantity",	reverse = false	},
-	{ column = "buyout",	reverse = true	},
+	{ column = "minbidbuyout",	reverse = true	},
 	{ column = "name",		reverse = true	},
 	{ column = "quality",	reverse = true	},
 	{ column = "level",		reverse = false	},
@@ -143,7 +143,7 @@ AuctionSort["list_level"] = {
 AuctionSort["list_duration"] = {
 	{ column = "bid",		reverse = false	},
 	{ column = "quantity",	reverse = true	},
-	{ column = "buyout",	reverse = false	},
+	{ column = "minbidbuyout",	reverse = false	},
 	{ column = "name",		reverse = false	},
 	{ column = "level",		reverse = true	},
 	{ column = "quality",	reverse = false	},
@@ -153,7 +153,7 @@ AuctionSort["list_seller"] = {
 	{ column = "duration",	reverse = false	},
 	{ column = "bid",		reverse = false },
 	{ column = "quantity",	reverse = true	},
-	{ column = "buyout",	reverse = false	},
+	{ column = "minbidbuyout",	reverse = false	},
 	{ column = "name",		reverse = false	},
 	{ column = "level",		reverse = true	},
 	{ column = "quality",	reverse = false	},
@@ -172,7 +172,7 @@ AuctionSort["list_quality"] = {
 	{ column = "duration",	reverse = false	},
 	{ column = "bid",		reverse = false	},
 	{ column = "quantity",	reverse = true	},
-	{ column = "buyout",	reverse = false	},
+	{ column = "minbidbuyout",	reverse = false	},
 	{ column = "name",		reverse = false	},
 	{ column = "level",		reverse = true	},
 	{ column = "quality",	reverse = false	},
@@ -1345,12 +1345,12 @@ end
 
 --[[
 function AuctionFrame_UpdateTimeLeft(elapsed, type)
-	if ( not this.updateCounter ) then
-		this.updateCounter = 0;
+	if ( not self.updateCounter ) then
+		self.updateCounter = 0;
 	end
-	if ( this.updateCounter > AUCTION_TIMER_UPDATE_DELAY ) then
-		this.updateCounter = 0;	
-		local index = this:GetID();
+	if ( self.updateCounter > AUCTION_TIMER_UPDATE_DELAY ) then
+		self.updateCounter = 0;	
+		local index = self:GetID();
 		if ( type == "list" ) then
 			index = index + FauxScrollFrame_GetOffset(BrowseScrollFrame);
 		elseif ( type == "bidder" ) then
@@ -1358,9 +1358,9 @@ function AuctionFrame_UpdateTimeLeft(elapsed, type)
 		elseif ( type == "owner" ) then
 			index = index + FauxScrollFrame_GetOffset(AuctionsScrollFrame);
 		end
-		getglobal(this:GetName().."ClosingTime"):SetText(SecondsToTime(GetAuctionItemTimeLeft(type, index)));
+		getglobal(self:GetName().."ClosingTime"):SetText(SecondsToTime(GetAuctionItemTimeLeft(type, index)));
 	else
-		this.updateCounter = this.updateCounter + elapsed;
+		self.updateCounter = self.updateCounter + elapsed;
 	end
 end
 ]]

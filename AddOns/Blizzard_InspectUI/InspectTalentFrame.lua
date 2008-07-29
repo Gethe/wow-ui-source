@@ -1,7 +1,7 @@
 local tabInfo = {};
 
-function InspectTalentFrameSpentPoints_OnEnter()
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+function InspectTalentFrameSpentPoints_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:AddLine(TALENT_POINTS, 1, 1, 1);
 	for _, entry in ipairs(tabInfo) do
 		GameTooltip:AddDoubleLine(entry[1], entry[3], nil, nil, nil, 1, 1, 1);
@@ -10,19 +10,19 @@ function InspectTalentFrameSpentPoints_OnEnter()
 	GameTooltip:Show();
 end
 
-function InspectTalentFrameTalent_OnClick()
+function InspectTalentFrameTalent_OnClick(self)
 --	LearnTalent(InspectTalentFrame.currentSelectedTab, this:GetID());
 end
 
-function InspectTalentFrameTalent_OnEvent()
-	if ( GameTooltip:IsOwned(this) ) then
-		GameTooltip:SetTalent(InspectTalentFrame.currentSelectedTab, this:GetID(), InspectTalentFrame.inspect);
+function InspectTalentFrameTalent_OnEvent(self, event, ...)
+	if ( GameTooltip:IsOwned(self) ) then
+		GameTooltip:SetTalent(InspectTalentFrame.currentSelectedTab, self:GetID(), InspectTalentFrame.inspect);
 	end
 end
 
-function InspectTalentFrameTalent_OnEnter()
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-	GameTooltip:SetTalent(InspectTalentFrame.currentSelectedTab, this:GetID(), InspectTalentFrame.inspect);
+function InspectTalentFrameTalent_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetTalent(InspectTalentFrame.currentSelectedTab, self:GetID(), InspectTalentFrame.inspect);
 end
 
 function InspectTalentFrame_SetupTabs()
@@ -42,7 +42,7 @@ function InspectTalentFrame_SetupTabs()
 					InspectTalentFrame.pointsSpent = tabInfo[i][3];
 				end
 				tab:SetText(tabInfo[i][1]);
-				PanelTemplates_TabResize(-10, tab);
+				PanelTemplates_TabResize(tab, -10);
 				tab:Show();
 			else
 				tab:Hide();
@@ -62,9 +62,9 @@ function InspectTalentFrame_Refresh()
 	TalentFrame_Update(InspectTalentFrame);
 end
 
-function InspectTalentFrame_OnLoad()
-	this.updateFunction = InspectTalentFrame_Update;
-	this.inspect = true;
+function InspectTalentFrame_OnLoad(self)
+	self.updateFunction = InspectTalentFrame_Update;
+	self.inspect = true;
 
 	TalentFrame_Load(InspectTalentFrame);
 
@@ -76,10 +76,10 @@ function InspectTalentFrame_OnLoad()
 			button.talentButton_OnEnter = InspectTalentFrameTalent_OnEnter;
 		end
 	end
-	PanelTemplates_SetNumTabs(this, 3);
+	PanelTemplates_SetNumTabs(self, 3);
 	InspectTalentFrame.selectedTab = 1;
-	PanelTemplates_UpdateTabs(this);
-	InspectTalentFrame:SetScript("OnEvent", function(...) InspectTalentFrame_OnEvent(...) end);
+	PanelTemplates_UpdateTabs(self);
+	InspectTalentFrame:SetScript("OnEvent", InspectTalentFrame_OnEvent);
 end
 
 function  InspectTalentFrame_OnShow()
@@ -97,8 +97,8 @@ function InspectTalentFrame_OnEvent(self, event, ...)
 	end
 end
 
-function InspectTalentFrameDownArrow_OnClick()
-	local parent = this:GetParent();
+function InspectTalentFrameDownArrow_OnClick(self)
+	local parent = self:GetParent();
 	parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
 	PlaySound("UChatScrollButton");
 	UIFrameFlashStop(InspectTalentFrameScrollButtonOverlay);

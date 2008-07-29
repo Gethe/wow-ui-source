@@ -98,7 +98,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("RAID_ROSTER_UPDATE");
+				self:RegisterEvent("RAID_ROSTER_UPDATE");
 			</OnLoad>
 			<OnEvent>
 				if ( event == "RAID_ROSTER_UPDATE" ) then
@@ -109,7 +109,7 @@
 				end
 			</OnEvent>
 			<OnUpdate>
-				ReadyCheckFrame_OnUpdate(arg1);
+				ReadyCheckFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

@@ -26,18 +26,18 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				CinematicFrame_OnLoad();
+				CinematicFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				SetupFullscreenScale(this);
+				SetupFullscreenScale(self);
 			</OnShow>
 			<OnEvent>
-				CinematicFrame_OnEvent();
+				CinematicFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnKeyDown>
-				if ( arg1 == "ESCAPE" ) then
+				if ( key == "ESCAPE" ) then
 					StopCinematic();
-				elseif ( GetBindingFromClick(arg1) == "SCREENSHOT" ) then
+				elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
 					RunBinding("SCREENSHOT");
 				end
 			</OnKeyDown>

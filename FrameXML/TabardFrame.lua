@@ -1,10 +1,10 @@
 
-function TabardFrame_OnLoad()
-	this:RegisterEvent("OPEN_TABARD_FRAME");
-	this:RegisterEvent("CLOSE_TABARD_FRAME");
-	this:RegisterEvent("TABARD_CANSAVE_CHANGED");
-	this:RegisterEvent("TABARD_SAVE_PENDING");
-	this:RegisterEvent("UNIT_MODEL_CHANGED");
+function TabardFrame_OnLoad(self)
+	self:RegisterEvent("OPEN_TABARD_FRAME");
+	self:RegisterEvent("CLOSE_TABARD_FRAME");
+	self:RegisterEvent("TABARD_CANSAVE_CHANGED");
+	self:RegisterEvent("TABARD_SAVE_PENDING");
+	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	TabardFrameCostFrame:SetBackdropBorderColor(0.4, 0.4, 0.4);
 	TabardFrameCostFrame:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	MoneyFrame_Update("TabardFrameCostMoneyFrame",GetTabardCreationCost());
@@ -16,12 +16,13 @@ function TabardFrame_OnLoad()
 	TabardFrameEmblemBottomLeft:SetAlpha(backgroundAlpha);
 end
 
-function TabardCharacterModelFrame_OnLoad()
-	this.rotation = 0;
-	TabardModel:SetRotation(this.rotation);
+function TabardCharacterModelFrame_OnLoad(self)
+	self.rotation = 0;
+	TabardModel:SetRotation(self.rotation);
 end
 
-function TabardFrame_OnEvent(event, unit)
+function TabardFrame_OnEvent(self, event, ...)
+	local unit = ...;
 	if ( event == "OPEN_TABARD_FRAME" ) then
 		TabardModel:SetUnit("player");
 		SetPortraitTexture(TabardFramePortrait,"npc");
@@ -56,20 +57,20 @@ function TabardCharacterModelRotateRightButton_OnClick()
 	PlaySound("igInventoryRotateCharacter");
 end
 
-function TabardCharacterModelFrame_OnUpdate(elapsedTime)
+function TabardCharacterModelFrame_OnUpdate(self, elapsedTime)
 	if ( TabardCharacterModelRotateRightButton:GetButtonState() == "PUSHED" ) then
-		this.rotation = this.rotation + (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
-		if ( this.rotation < 0 ) then
-			this.rotation = this.rotation + (2 * PI);
+		self.rotation = self.rotation + (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
+		if ( self.rotation < 0 ) then
+			self.rotation = self.rotation + (2 * PI);
 		end
-		this:SetRotation(this.rotation);
+		self:SetRotation(self.rotation);
 	end
 	if ( TabardCharacterModelRotateLeftButton:GetButtonState() == "PUSHED" ) then
-		this.rotation = this.rotation - (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
-		if ( this.rotation > (2 * PI) ) then
-			this.rotation = this.rotation - (2 * PI);
+		self.rotation = self.rotation - (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
+		if ( self.rotation > (2 * PI) ) then
+			self.rotation = self.rotation - (2 * PI);
 		end
-		this:SetRotation(this.rotation);
+		self:SetRotation(self.rotation);
 	end
 end
 

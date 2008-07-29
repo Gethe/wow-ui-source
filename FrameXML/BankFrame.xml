@@ -15,9 +15,9 @@
 			</OnLeave>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					BankFrameItemButtonGeneric_OnModifiedClick(self, arg1);
+					BankFrameItemButtonGeneric_OnModifiedClick(self, button);
 				else
-					BankFrameItemButtonGeneric_OnClick(self, arg1);
+					BankFrameItemButtonGeneric_OnClick(self, button);
 				end
 			</OnClick>
             <OnDragStart>
@@ -44,7 +44,7 @@
 				if ( IsModifiedClick("PICKUPACTION") ) then
 					BankFrameItemButtonBag_Pickup(self);
 				else
-					BankFrameItemButtonBag_OnClick(self, arg1);
+					BankFrameItemButtonBag_OnClick(self, button);
 				end
 			</OnClick>
 	        <OnDragStart>

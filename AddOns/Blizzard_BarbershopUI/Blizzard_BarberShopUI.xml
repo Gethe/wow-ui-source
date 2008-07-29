@@ -1,0 +1,321 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="BarberShopSelectorTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="175" y="32"/>
+		</Size>								
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentCategory" inherits="GameFontNormal" text="Hair Style">
+					<Size>
+						<AbsDimension x="100" y="14"/>
+					</Size>								
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentPrev" virtual="true">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentCategory" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SetNextBarberShopStyle(self:GetParent():GetID(), 1);
+						BarberShop_Update(self);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentNext" virtual="true">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentCategory" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SetNextBarberShopStyle(self:GetParent():GetID());
+						BarberShop_Update(self);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			
+		</Scripts>
+	</Frame>
+	<Frame name="BarberShopFrame">
+		<Size>
+			<AbsDimension x="200" y="275"/>
+		</Size>
+		<Anchors>
+			<Anchor point="RIGHT">
+				<Offset>
+					<AbsDimension x="-50" y="-50"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBGTopLeft" file="Interface\Barbershop\UI-Barbershop">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<Size>
+						<AbsDimension x="90" y="118"/>
+					</Size>
+					<TexCoords left="0.736328125" right=".912109375" top="0.078125" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBGTopRight" file="Interface\Barbershop\UI-Barbershop">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<Size>
+						<AbsDimension x="90" y="118"/>
+					</Size>
+					<TexCoords left=".912109375" right="0.736328125" top="0.078125" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBGBottomLeft" file="Interface\Barbershop\UI-Barbershop">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<Size>
+						<AbsDimension x="90" y="118"/>
+					</Size>
+					<TexCoords left="0.736328125" right=".912109375" bottom="0.078125" top="1"/>
+				</Texture>
+				<Texture name="$parentBGBottomRight" file="Interface\Barbershop\UI-Barbershop">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<Size>
+						<AbsDimension x="90" y="118"/>
+					</Size>
+					<TexCoords left=".912109375" right="0.736328125" bottom="0.078125" top="1"/>
+				</Texture>				
+				<Texture name="$parentBGLeft" file="Interface\Barbershop\UI-Barbershop">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBGTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBGBottomLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.7363278125" right=".912109375" top="0.58125" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBGRight" file="Interface\Barbershop\UI-Barbershop">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBGTopRight" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBGBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left=".912109375" right="0.736328125" top="0.58125" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBGTop" file="Interface\Barbershop\UI-Barbershop">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBGTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBGTopRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.9" right="1" top="0.078125" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBGBottom" file="Interface\Barbershop\UI-Barbershop">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBGBottomLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBGBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.9" right="1" bottom="0.078125" top="1"/>
+				</Texture>
+				<Texture name="$parentBGMiddle" file="Interface\Barbershop\UI-Barbershop">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBGTopLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBGBottomRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left=".912109375" right="1" top=".5" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentSelector1" inherits="BarberShopSelectorTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="0" y="-55"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName().."Category"):SetText("Hair Style");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSelector2" inherits="BarberShopSelectorTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelector1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName().."Category"):SetText("Hair Color");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSelector3" inherits="BarberShopSelectorTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelector2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName().."Category"):SetText("Facial Style");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentSelector3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="7" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\MoneyFrame\UI-MoneyFrame-Border">
+							<Size>
+								<AbsDimension x="128" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-8" y="-6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="80" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentSelector3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="-2" y="-48"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ApplyBarberShopStyle();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="COINPICKUP_CANCEL">
+				<Size>
+					<AbsDimension x="80" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentOkayButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CancelBarberShop();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				BarberShop_UpdateHairCustomization();
+				BarberShop_UpdateFacialHairCustomization();
+			</OnLoad>
+			<OnShow>
+				BarberShop_UpdateCost();
+				if ( BarberShopBannerFrame ) then
+					BarberShopBannerFrame:Show();
+				end
+			</OnShow>
+			<OnHide>
+				BarberShopBannerFrame:Hide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="BarberShopBannerFrame">
+		<Size>
+			<AbsDimension x="425" y="128"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBGTexture" file="Interface\Barbershop\UI-Barbershop">
+					<Size>
+						<AbsDimension x="425" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0" right=".7326328125" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCaption" inherits="GameFontNormalLarge" text="BARBERSHOP">
+					<Size>
+						<AbsDimension x="350" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="-12" y="-24"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self.caption = getglobal(self:GetName() .. "Caption");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

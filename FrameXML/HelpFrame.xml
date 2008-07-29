@@ -507,7 +507,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetWidth(this:GetTextWidth()+40);
+								self:SetWidth(self:GetTextWidth()+40);
 							</OnLoad>
 							<OnClick>
 								Stuck();
@@ -525,7 +525,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetWidth(this:GetTextWidth()+40);
+								self:SetWidth(self:GetTextWidth()+40);
 							</OnLoad>
 							<OnClick>
 								HelpFrame_ShowFrame("OpenTicket");
@@ -536,6 +536,7 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
+						HelpFrame.needResponse = true;
 						HelpFrame.back = HelpFrameStuckCancel;
 					</OnShow>
 				</Scripts>
@@ -631,13 +632,13 @@
 								</Size>
 								<Scripts>
 									<OnTextChanged>
-										ScrollingEdit_OnTextChanged();
+										ScrollingEdit_OnTextChanged(self);
 									</OnTextChanged>
 									<OnCursorChanged>
-										ScrollingEdit_OnCursorChanged(arg1, arg2, arg3, arg4);
+										ScrollingEdit_OnCursorChanged(self, x, y, w, h);
 									</OnCursorChanged>
 									<OnUpdate>
-										ScrollingEdit_OnUpdate();
+										ScrollingEdit_OnUpdate(self, elapsed);
 									</OnUpdate>
 									<OnEscapePressed>
 										self:ClearFocus();
@@ -726,7 +727,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetWidth(this:GetTextWidth()+40);
+								self:SetWidth(self:GetTextWidth()+40);
 							</OnLoad>
 							<OnClick>
 								HelpFrame_ShowFrame("GMTalk");
@@ -743,7 +744,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetWidth(this:GetTextWidth()+40);
+								self:SetWidth(self:GetTextWidth()+40);
 							</OnLoad>
 							<OnClick>
 								HelpFrame_ShowFrame("ReportIssue");
@@ -760,7 +761,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetWidth(this:GetTextWidth()+40);
+								self:SetWidth(self:GetTextWidth()+40);
 							</OnLoad>
 							<OnClick>
 								HelpFrame_ShowFrame("Stuck");
@@ -791,7 +792,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="TicketStatusFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+	<Frame name="TicketStatusFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>
 			<AbsDimension x="208" y="75"/>
 		</Size>
@@ -802,42 +803,65 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="TicketStatusTitleText" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="168" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-8"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="TicketStatusTime" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size x="168" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<!-- this frame helps us size a backdrop frame according to the size of the title and text
+			and prevents the backdrop frame from drawing on top of the text-->
+			<Frame setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="TicketStatusTitleText" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size x="168" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-8"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="TicketStatusTime" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Size x="168" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame enableMouse="true">
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText">
+						<Offset x="-8" y="8"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TicketStatusTime">
+						<Offset x="30" y="-8"/>		<!-- width added to accomodate the status button -->
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+					</OnLoad>
+					<OnMouseUp>
+						TicketStatusFrame_OnMouseUp(TicketStatusFrame);
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
 			<Button name="TicketStatusFrameButton">
 				<Size>
 					<AbsDimension x="32" y="32"/>
@@ -882,9 +906,6 @@
 			<OnUpdate>
 				TicketStatusFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
-			<OnMouseUp>
-				TicketStatusFrame_OnMouseUp(self);
-			</OnMouseUp>
 		</Scripts>
 	</Frame>
 </Ui>

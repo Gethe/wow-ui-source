@@ -69,11 +69,11 @@
         </Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 4);
+				self:SetFrameLevel(self:GetFrameLevel() + 4);
 			</OnLoad>
 			<OnShow>
-				PanelTemplates_TabResize(0);
-				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 30);
+				PanelTemplates_TabResize(self, 0);
+				getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 30);
 			</OnShow>
 		</Scripts>
 		<ButtonText name="$parentText">
@@ -229,14 +229,14 @@
 				</Backdrop>				
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(.6, .6, .6, .6);
-						ScrollFrame_OnLoad();
+						self:SetBackdropBorderColor(.6, .6, .6, .6);
+						ScrollFrame_OnLoad(self);
 					</OnLoad>
 					<OnMouseWheel>
-						ScrollFrameTemplate_OnMouseWheel(arg1);
+						ScrollFrameTemplate_OnMouseWheel(self, delta);
 					</OnMouseWheel>					
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(18, self:GetParent().update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, INTERFACEOPTIONSLIST_BUTTONHEIGHT, self:GetParent().update);
 					</OnVerticalScroll>
 				</Scripts>
 				<Frames>
@@ -255,7 +255,7 @@
 						</Anchors>
 						<Scripts>
 							<OnValueChanged>
-								this:GetParent():SetVerticalScroll(arg1);
+								self:GetParent():SetVerticalScroll(value);
 							</OnValueChanged>
 						</Scripts>
 					</Slider>
@@ -265,7 +265,7 @@
 		</Frames>
 		<Scripts>
 			<OnMouseWheel>
-				ScrollFrameTemplate_OnMouseWheel(arg1, self.scrollBar);
+				ScrollFrameTemplate_OnMouseWheel(self, delta, self.scrollBar);
 			</OnMouseWheel>
 		</Scripts>
 	</Frame>
@@ -300,8 +300,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:GetParent().toggle = this;
-						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self:GetParent().toggle = self;
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnClick>
 						InterfaceOptions_ToggleSubCategories(self);
@@ -501,7 +501,7 @@
 				</Backdrop>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(.6, .6, .6, 1);
+						self:SetBackdropBorderColor(.6, .6, .6, 1);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -515,7 +515,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PanelTemplates_Tab_OnClick(InterfaceOptionsFrame);
+						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
 						PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
 						InterfaceOptionsFrame_TabOnClick();
 					</OnClick>
@@ -548,7 +548,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PanelTemplates_Tab_OnClick(InterfaceOptionsFrame);
+						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
 						PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
 						InterfaceOptionsFrame_TabOnClick();
 					</OnClick>

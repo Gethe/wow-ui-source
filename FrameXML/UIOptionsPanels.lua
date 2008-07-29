@@ -13,33 +13,28 @@ ControlsPanelOptions = {
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
 	autoLootDefault = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text="AUTO_LOOT_KEY_TEXT", default="NONE" },
-	mailAutoLootDefault = { text = "MAIL_AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetMailAutoLootDefault needs to get run with its value.
-	mailAutoLootKey = { text="MAIL_AUTO_LOOT_KEY_TEXT", default="NONE" },
 }
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad()
 
 end
 
-function InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnLoad()
-
-end
-
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
-		UIDropDownMenu_Initialize(this, InterfaceOptionsControlsPanelAutoLootKeyDropDown_Initialize);
-		UIDropDownMenu_SetSelectedValue(this, GetModifiedClick("AUTOLOOTTOGGLE"));
+		UIDropDownMenu_Initialize(self, InterfaceOptionsControlsPanelAutoLootKeyDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, GetModifiedClick("AUTOLOOTTOGGLE"));
 		self.defaultValue = "NONE";
 		self.currValue = GetModifiedClick("AUTOLOOTTOGGLE");
-		self.value = this.currValue;
+		self.value = self.currValue;
 		InterfaceOptionsControlsPanelAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..self.value.."_KEY");
-		UIDropDownMenu_SetWidth(90, InterfaceOptionsControlsPanelAutoLootKeyDropDown);
+		UIDropDownMenu_SetWidth(self, 90);
 		self.SetValue = 
 			function (self, value) 
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("AUTOLOOTTOGGLE", value);
+				SetModifiedClick("MAILAUTOLOOTTOGGLE", value);
 				SaveBindings(GetCurrentBindingSet());
 				InterfaceOptionsControlsPanelAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..value.."_KEY");	
 			end;
@@ -55,42 +50,8 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, 
 	end
 end
 
-function InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnEvent (self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
-		UIDropDownMenu_Initialize(this, InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_Initialize);
-		UIDropDownMenu_SetSelectedValue(this, GetModifiedClick("MAILAUTOLOOTTOGGLE"));
-		self.defaultValue = "NONE";
-		self.currValue = GetModifiedClick("MAILAUTOLOOTTOGGLE");
-		self.value = this.currValue;
-		InterfaceOptionsControlsPanelMailAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_MAIL_AUTO_LOOT_"..self.value.."_KEY");
-		UIDropDownMenu_SetWidth(90, InterfaceOptionsControlsPanelMailAutoLootKeyDropDown);
-		self.SetValue = 
-			function (self, value) 
-				self.value = value;
-				UIDropDownMenu_SetSelectedValue(self, value);
-				SetModifiedClick("MAILAUTOLOOTTOGGLE", value);
-				SaveBindings(GetCurrentBindingSet());
-				InterfaceOptionsControlsPanelMailAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_MAIL_AUTO_LOOT_"..value.."_KEY");	
-			end;
-		self.GetValue =
-			function (self)
-				return UIDropDownMenu_GetSelectedValue(self);
-			end
-		if ( GetCVar("mailAutoLootDefault") == "1" ) then
-			InterfaceOptionsControlsPanelMailAutoLootKeyDropDownLabel:SetText(MAIL_LOOT_KEY_TEXT);
-		else
-			InterfaceOptionsControlsPanelMailAutoLootKeyDropDownLabel:SetText(MAIL_AUTO_LOOT_KEY_TEXT);
-		end
-	end
-end
-
-function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnClick()
-	InterfaceOptionsControlsPanelAutoLootKeyDropDown:SetValue(this.value);
-end
-
-function InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnClick()
-	InterfaceOptionsControlsPanelMailAutoLootKeyDropDown:SetValue(this.value);
+function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnClick(self)
+	InterfaceOptionsControlsPanelAutoLootKeyDropDown:SetValue(self.value);
 end
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_Initialize()
@@ -146,80 +107,15 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsControlsPanelMailAutoLootKeyDropDown);
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = ALT_KEY;
-	info.func = InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnClick;
-	info.value = "ALT";
-	if ( info.value == selectedValue ) then
-		info.checked = 1;
-	else
-		info.checked = nil;
-	end
-	info.tooltipTitle = ALT_KEY;
-	info.tooltipText = OPTION_TOOLTIP_MAIL_AUTO_LOOT_ALT_KEY;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = CTRL_KEY;
-	info.func = InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnClick;
-	info.value = "CTRL";
-	if ( info.value == selectedValue ) then
-		info.checked = 1;
-	else
-		info.checked = nil;
-	end
-	info.tooltipTitle = CTRL_KEY;
-	info.tooltipText = OPTION_TOOLTIP_MAIL_AUTO_LOOT_CTRL_KEY;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = SHIFT_KEY;
-	info.func = InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnClick;
-	info.value = "SHIFT";
-	if ( info.value == selectedValue ) then
-		info.checked = 1;
-	else
-		info.checked = nil;
-	end
-	info.tooltipTitle = SHIFT_KEY;
-	info.tooltipText = OPTION_TOOLTIP_MAIL_AUTO_LOOT_SHIFT_KEY;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = NONE_KEY;
-	info.func = InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnClick;
-	info.value = "NONE";
-	if ( info.value == selectedValue ) then
-		info.checked = 1;
-	else
-		info.checked = nil;
-	end
-	info.tooltipTitle = NONE_KEY;
-	info.tooltipText = OPTION_TOOLTIP_MAIL_AUTO_LOOT_NONE_KEY;
-	UIDropDownMenu_AddButton(info);
-end
-
 function BlizzardOptionsPanel_UpdateAutoLootDropDown (value)
 	if ( not InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel ) then
 		return;
 	end
-	
+	SetCVar("mailAutoLootDefault", value);
 	if ( value == "1" ) then
 		InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(LOOT_KEY_TEXT);
 	else
 		InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(AUTO_LOOT_KEY_TEXT);
-	end
-end
-
-function BlizzardOptionsPanel_UpdateMailAutoLootDropDown (value)
-	if ( not InterfaceOptionsControlsPanelMailAutoLootKeyDropDownLabel ) then
-		return;
-	end
-	
-	if ( value == "1" ) then
-		InterfaceOptionsControlsPanelMailAutoLootKeyDropDownLabel:SetText(MAIL_LOOT_KEY_TEXT);
-	else
-		InterfaceOptionsControlsPanelMailAutoLootKeyDropDownLabel:SetText(MAIL_AUTO_LOOT_KEY_TEXT);
 	end
 end
 
@@ -235,33 +131,33 @@ CombatPanelOptions = {
 	showVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY" },
 }
 
-function InterfaceOptionsCombatPanelTOTDropDown_OnLoad()
-	this.defaultValue = "5";
-	this.value = GetCVar("targetOfTargetMode");
-	this.currValue = this.value;
-	setglobal(this.uvar, this.value);
-	UIDropDownMenu_Initialize(this, InterfaceOptionsCombatPanelTOTDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(this, this.value);
-	InterfaceOptionsCombatPanelTOTDropDown.tooltip = getglobal("OPTION_TOOLTIP_TARGETOFTARGET" .. this.value);
-	UIDropDownMenu_SetWidth(110, InterfaceOptionsCombatPanelTOTDropDown);	
-	this.SetValue = function (self, value)
+function InterfaceOptionsCombatPanelTOTDropDown_OnLoad(self)
+	self.defaultValue = "5";
+	self.value = GetCVar("targetOfTargetMode");
+	self.currValue = self.value;
+	setglobal(self.uvar, self.value);
+	UIDropDownMenu_Initialize(self, InterfaceOptionsCombatPanelTOTDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, self.value);
+	InterfaceOptionsCombatPanelTOTDropDown.tooltip = getglobal("OPTION_TOOLTIP_TARGETOFTARGET" .. self.value);
+	UIDropDownMenu_SetWidth(self, 110);	
+	self.SetValue = function (self, value)
 		self.value = value;
 		SetCVar("targetOfTargetMode", value);
 		setglobal(self.uvar, value);
 		UIDropDownMenu_SetSelectedValue(self, value);
 		self.tooltip = getglobal("OPTION_TOOLTIP_TARGETOFTARGET" .. value);
 	end
-	this.GetValue = function (self)
+	self.GetValue = function (self)
 		return UIDropDownMenu_GetSelectedValue(self);
 	end
 end
 
-function InterfaceOptionsCombatPanelTOTDropDown_OnClick()
-	InterfaceOptionsCombatPanelTOTDropDown:SetValue(this.value);
+function InterfaceOptionsCombatPanelTOTDropDown_OnClick(self)
+	InterfaceOptionsCombatPanelTOTDropDown:SetValue(self.value);
 end
 
-function InterfaceOptionsCombatPanelTOTDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsCombatPanelTOTDropDown);
+function InterfaceOptionsCombatPanelTOTDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
 
 	info.text = RAID;
@@ -333,27 +229,25 @@ DisplayPanelOptions = {
 	screenEdgeFlash = { text = "SHOW_FULLSCREEN_STATUS_TEXT" },
 	showLootSpam = { text = "SHOW_LOOT_SPAM" },
 	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS" },
-	showTimeManager = { text = "SHOW_TIME_MANAGER" },
+	showClock = { text = "SHOW_CLOCK" },
 }
 
-function InterfaceOptionsDisplayPanelShowTimeManager_SetFunc(value)
+function InterfaceOptionsDisplayPanelShowClock_SetFunc(value)
 	if ( value == "1" ) then
-		if ( not IsAddOnLoaded("Blizzard_TimeManager") ) then
-			UIParentLoadAddOn("Blizzard_TimeManager");
-		end
-		if ( TimeManager_Show ) then
-			TimeManager_Show();
+		TimeManager_LoadUI();
+		if ( TimeManagerClockButton_Show ) then
+			TimeManagerClockButton_Show();
 		end
 	else
-		if ( TimeManager_Hide ) then
-			TimeManager_Hide();
+		if ( TimeManagerClockButton_Hide ) then
+			TimeManagerClockButton_Hide();
 		end
 	end
 end
 
 function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad (self)
 	UIDropDownMenu_Initialize(InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay, InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_Initialize);
-	UIDropDownMenu_SetWidth(90, self);
+	UIDropDownMenu_SetWidth(self, 90);
 	local value = GetCVar("displayWorldPVPObjectives");
 	self.defaultValue = "1";
 	self.value = value;
@@ -377,8 +271,8 @@ function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad (self)
 	BlizzardOptionsPanel_RegisterControl(self, InterfaceOptionsDisplayPanel);
 end
 
-function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnClick()
-	InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay:SetValue(this.value);
+function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnClick(self)
+	InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay:SetValue(self.value);
 end
 
 function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_Initialize()
@@ -567,7 +461,8 @@ FCTPanelOptions = {
 	fctFriendlyHealers = { text = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES_TEXT" },
 	fctComboPoints = { text = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT" },
 	fctLowManaHealth = { text = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
-	fctEnergyGains = { text = "COMBAT_TEXT_SHOW_MANA_TEXT" },
+	fctEnergyGains = { text = "COMBAT_TEXT_SHOW_ENERGIZE_TEXT" },
+	fctPeriodicEnergyGains = { text = "COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE_TEXT" },
 	fctHonorGains = { text = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
 	fctAuras = { text = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
 	CombatDamage = { text = "SHOW_DAMAGE_TEXT" },
@@ -598,7 +493,7 @@ function InterfaceOptionsCombatTextPanelFCTDropDown_OnLoad (self)
 	self.currValue = value;
 	UIDropDownMenu_SetSelectedValue(self, value);
 	InterfaceOptionsCombatTextPanelFCTDropDown.tooltip = OPTION_TOOLTIP_COMBAT_TEXT_MODE;
-	UIDropDownMenu_SetWidth(110, InterfaceOptionsCombatTextPanelFCTDropDown);
+	UIDropDownMenu_SetWidth(self, 110);
 	self.SetValue = 
 		function (self, value) 
 			self.value = value;
@@ -619,12 +514,12 @@ function InterfaceOptionsCombatTextPanelFCTDropDown_OnLoad (self)
 		end
 end
 
-function InterfaceOptionsCombatTextPanelFCTDropDown_OnClick()
-	InterfaceOptionsCombatTextPanelFCTDropDown:SetValue(this.value);
+function InterfaceOptionsCombatTextPanelFCTDropDown_OnClick(self)
+	InterfaceOptionsCombatTextPanelFCTDropDown:SetValue(self.value);
 end
 
-function InterfaceOptionsCombatTextPanelFCTDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsCombatTextPanelFCTDropDown);
+function InterfaceOptionsCombatTextPanelFCTDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
 
 	info.text = COMBAT_TEXT_SCROLL_UP;
@@ -715,7 +610,7 @@ function InterfaceOptionsCameraPanelStyleDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, InterfaceOptionsCameraPanelStyleDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, GetCVar("cameraSmoothStyle"));
 	InterfaceOptionsCameraPanelStyleDropDown.tooltip = getglobal("OPTION_TOOLTIP_CAMERA"..UIDropDownMenu_GetSelectedID(InterfaceOptionsCameraPanelStyleDropDown));
-	UIDropDownMenu_SetWidth(144, InterfaceOptionsCameraPanelStyleDropDown);
+	UIDropDownMenu_SetWidth(self, 144);
 	self.defaultValue = "1";
 	self.value = GetCVar("cameraSmoothStyle");
 	self.currValue = self.value;
@@ -747,12 +642,12 @@ function InterfaceOptionsCameraPanelStyleDropDown_OnLoad(self)
 		end
 end
 
-function InterfaceOptionsCameraPanelStyleDropDown_OnClick()
-	InterfaceOptionsCameraPanelStyleDropDown:SetValue(this.value);
+function InterfaceOptionsCameraPanelStyleDropDown_OnClick(self)
+	InterfaceOptionsCameraPanelStyleDropDown:SetValue(self.value);
 end
 
-function InterfaceOptionsCameraPanelStyleDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsCameraPanelStyleDropDown);
+function InterfaceOptionsCameraPanelStyleDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
 
 	info.text = CAMERA_SMART;
@@ -801,38 +696,38 @@ MousePanelOptions = {
 	cameraYawMoveSpeed = { text = "MOUSE_LOOK_SPEED", minValue = 90, maxValue = 270, valueStep = 10 },
 }
 
-function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(this, GetCVar("cameraSmoothTrackingStyle"));
-	InterfaceOptionsMousePanelClickMoveStyleDropDown.tooltip = getglobal("OPTION_TOOLTIP_CLICK_CAMERA"..UIDropDownMenu_GetSelectedID(InterfaceOptionsMousePanelClickMoveStyleDropDown));
-	UIDropDownMenu_SetWidth(140, InterfaceOptionsMousePanelClickMoveStyleDropDown);
-	this.defaultValue = "1";
-	this.value = GetCVar("cameraSmoothTrackingStyle");
-	this.currValue = this.value;
-	this.SetValue = 
+function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, GetCVar("cameraSmoothTrackingStyle"));
+	self.tooltip = getglobal("OPTION_TOOLTIP_CLICK_CAMERA"..UIDropDownMenu_GetSelectedID(self));
+	UIDropDownMenu_SetWidth(self, 140);
+	self.defaultValue = "1";
+	self.value = GetCVar("cameraSmoothTrackingStyle");
+	self.currValue = self.value;
+	self.SetValue = 
 		function (self, value)
 			UIDropDownMenu_SetSelectedValue(self, value);
 			SetCVar("cameraSmoothTrackingStyle", value, self.event);
 			self.value = value;
 			if ( tostring(value) == "0" ) then
 				--For the purposes of tooltips and dropdown lists, "0" in the CVar cameraSmoothTrackingStyle is "3".
-				InterfaceOptionsMousePanelClickMoveStyleDropDown.tooltip = OPTION_TOOLTIP_CLICK_CAMERA3;
+				self.tooltip = OPTION_TOOLTIP_CLICK_CAMERA3;
 			else
-				InterfaceOptionsMousePanelClickMoveStyleDropDown.tooltip = getglobal("OPTION_TOOLTIP_CLICK_CAMERA" .. tostring(value));
+				self.tooltip = getglobal("OPTION_TOOLTIP_CLICK_CAMERA" .. tostring(value));
 			end
 		end
-	this.GetValue =
+	self.GetValue =
 		function (self)
 			return UIDropDownMenu_GetSelectedValue(self);
 		end
 end
 
-function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnClick()
-	InterfaceOptionsMousePanelClickMoveStyleDropDown:SetValue(this.value);
+function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnClick(self)
+	InterfaceOptionsMousePanelClickMoveStyleDropDown:SetValue(self.value);
 end
 
-function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsMousePanelClickMoveStyleDropDown);
+function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
 
 	info.text = CAMERA_SMART;
@@ -907,37 +802,37 @@ function InterfaceOptionsLanguagesPanel_OnLoad (panel)
 	BlizzardOptionsPanel_OnLoad(panel);
 end
 
-function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad ()
-	UIDropDownMenu_Initialize(this, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(this, GetCVar("locale"));
+function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
+	UIDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, GetCVar("locale"));
 	InterfaceOptionsLanguagesPanelLocaleDropDown.tooltip = OPTION_TOOLTIP_LOCALE;
-	UIDropDownMenu_SetWidth(120, InterfaceOptionsLanguagesPanelLocaleDropDown);
+	UIDropDownMenu_SetWidth(self, 120);
 	
-	this.defaultValue = GetCVar("locale");
-	this.value = GetCVar("locale");
-	this.origValue = this.value;
-	this.currValue = this.value;
-	this.SetValue = 
+	self.defaultValue = GetCVar("locale");
+	self.value = GetCVar("locale");
+	self.origValue = self.value;
+	self.currValue = self.value;
+	self.SetValue = 
 		function (self, value)
 			UIDropDownMenu_SetSelectedValue(self, value);
 			SetCVar("locale", value, self.event);
 			self.value = value;
-			if ( this.origValue ~= value ) then
+			if ( self.origValue ~= value ) then
 				StaticPopup_Show("CLIENT_RESTART_ALERT");
 			end
 		end
-	this.GetValue =
+	self.GetValue =
 		function (self)
 			return UIDropDownMenu_GetSelectedValue(self);
 		end
 end
 
-function InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick ()
-	InterfaceOptionsLanguagesPanelLocaleDropDown:SetValue(this.value);
+function InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick (self)
+	InterfaceOptionsLanguagesPanelLocaleDropDown:SetValue(self.value);
 end
 
-function InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize ()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsLanguagesPanelLocaleDropDown);
+function InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize (self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
 
 	InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper(info, selectedValue, GetExistingLocales());
@@ -982,6 +877,7 @@ function BlizzardOptionsPanel_OnEvent (self, event, ...)
 					control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
 				elseif ( control.type == CONTROLTYPE_SLIDER ) then
 					control.currValue = GetCVar(control.cvar);
+					control:SetValue(control.currValue);
 				end
 			end
 			if ( control.setFunc ) then
@@ -1022,7 +918,6 @@ function BlizzardOptionsPanel_OnLoad (frame)
 					OptionsFrame_EnableSlider(control);
 					control:SetMinMaxValues(entry.minValue, entry.maxValue);
 					control:SetValueStep(entry.valueStep);
-					control:SetValue(GetCVar(control.cvar));
 				end
 			end
 		end

@@ -239,7 +239,6 @@
 								TimeManagerAlarmMessageEditBox_OnEditFocusLost(self);
 							</OnEditFocusLost>
 						</Scripts>
-						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
 				</Frames>
 			</Frame>
@@ -265,7 +264,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						OptionsCheckButton_SetText(TIMEMANAGER_24HOURMODE, self);
+						OptionsCheckButton_SetText(self, TIMEMANAGER_24HOURMODE);
 						TimeManagerMilitaryTimeCheckText:ClearAllPoints();
 						TimeManagerMilitaryTimeCheckText:SetPoint("RIGHT", self, "RIGHT", -self:GetWidth(), 0);
 						TimeManagerMilitaryTimeCheckText:SetFontObject(GameFontHighlightSmall);
@@ -284,7 +283,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						OptionsCheckButton_SetText(TIMEMANAGER_LOCALTIME, self);
+						OptionsCheckButton_SetText(self, TIMEMANAGER_LOCALTIME);
 						TimeManagerLocalTimeCheckText:ClearAllPoints();
 						TimeManagerLocalTimeCheckText:SetPoint("RIGHT", self, "RIGHT", -self:GetWidth(), 0);
 						TimeManagerLocalTimeCheckText:SetFontObject(GameFontHighlightSmall);
@@ -311,29 +310,23 @@
 		</Scripts>
 	</Frame>
 	<!-- Minimap button to access the TimeManagerButton -->
-	<Button name="TimeManagerClockButton" parent="MinimapCluster">
-		<Size x="46" y="24"/>
-		<!--
-		<HitRectInsets>
-			<AbsInset left="8" right="8" top="18" bottom="18"/>
-		</HitRectInsets>
-		-->
+	<Button name="TimeManagerClockButton" parent="Minimap" hidden="true">
+		<Size x="51" y="24"/>
 		<Anchors>
 			<Anchor point="CENTER">
-				<Offset>
-					<AbsDimension x="8" y="-72"/>
-				</Offset>
+				<Offset x="0" y="-68"/>
 			</Anchor>
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture file="Interface\TimeManager\ClockBorder">
-					<Size x="64" y="32"/>
+				<Texture file="Interface\TimeManager\ClockBackground">
+					<Size x="51" y="24"/>
 					<Anchors>
 						<Anchor point="CENTER">
-							<Offset x="6" y="-1"/>
+							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
+					<TexCoords left="0.015625" right="0.8125" top="0.015625" bottom="0.390625"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -344,20 +337,20 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="TimeManagerAlarmFiredTexture" file="Interface\TimeManager\ClockGlow" alphaMode="ADD" hidden="true">
-					<Size x="64" y="64"/>
+				<Texture name="TimeManagerAlarmFiredTexture" file="Interface\TimeManager\ClockBackground" alphaMode="ADD" hidden="true">
+					<Size x="51" y="24"/>
 					<Anchors>
 						<Anchor point="CENTER">
-							<Offset x="0" y="-1"/>
+							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
+					<TexCoords left="0.015625" right="0.8125" top="0.51625" bottom="0.890625"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:SetFrameLevel(self:GetFrameLevel() + 2);
-				TimeManagerClockButton_Update();
+				TimeManagerClockButton_OnLoad(self);
 			</OnLoad>
 			<OnEnter>
 				TimeManagerClockButton_OnEnter(self);
@@ -366,7 +359,7 @@
 				TimeManagerClockButton_OnLeave(self);
 			</OnLeave>
 			<OnUpdate>
-				TimeManagerClockButton_OnUpdate(self);
+				TimeManagerClockButton_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnClick>
 				TimeManagerClockButton_OnClick(self);
@@ -525,6 +518,12 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(nil, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPWATCH_RESETBUTTON, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 					<OnClick>
 						StopwatchResetButton_OnClick();
 					</OnClick>
@@ -540,6 +539,12 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(nil, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPWATCH_PLAYPAUSEBUTTON, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 					<OnClick>
 						StopwatchPlayPauseButton_OnClick(self);
 					</OnClick>

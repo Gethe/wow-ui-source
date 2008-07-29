@@ -43,8 +43,8 @@ StaticPopupDialogs["CONFIRM_LOSE_BINDING_CHANGES"] = {
 	showAlert = 1,
 };
 
-function KeyBindingFrame_OnLoad()
-	this:RegisterForClicks("AnyUp");
+function KeyBindingFrame_OnLoad(self)
+	self:RegisterForClicks("AnyUp");
 	KeyBindingFrame.selected = nil;
 end
 
@@ -137,33 +137,33 @@ function KeyBindingFrame_Update()
 	KeyBindingFrame_UpdateUnbindKey();
 end
 
-function KeyBindingFrame_OnKeyDown(button)
-	if ( GetBindingByKey(arg1) == "SCREENSHOT" ) then
+function KeyBindingFrame_OnKeyDown(self, keyOrButton)
+	if ( GetBindingByKey(keyOrButton) == "SCREENSHOT" ) then
 		RunBinding("SCREENSHOT");
 		return;
 	end
 
 	-- Convert the mouse button names
-	if ( button == "LeftButton" ) then
-		button = "BUTTON1";
-	elseif ( button == "RightButton" ) then
-		button = "BUTTON2";
-	elseif ( button == "MiddleButton" ) then
-		button = "BUTTON3";
-	elseif ( button == "Button4" ) then
-		button = "BUTTON4"
-	elseif ( button == "Button5" ) then
-		button = "BUTTON5"
+	if ( keyOrButton == "LeftButton" ) then
+		keyOrButton = "BUTTON1";
+	elseif ( keyOrButton == "RightButton" ) then
+		keyOrButton = "BUTTON2";
+	elseif ( keyOrButton == "MiddleButton" ) then
+		keyOrButton = "BUTTON3";
+	elseif ( keyOrButton == "Button4" ) then
+		keyOrButton = "BUTTON4"
+	elseif ( keyOrButton == "Button5" ) then
+		keyOrButton = "BUTTON5"
 	end
 	if ( KeyBindingFrame.selected ) then
-		local keyPressed = arg1;
-		if ( button ) then
-			if ( button == "BUTTON1" or button == "BUTTON2" ) then
+		local keyPressed = keyOrButton;
+		if ( keyOrButton ) then
+			if ( keyOrButton == "BUTTON1" or keyOrButton == "BUTTON2" ) then
 				return;
 			end
-			keyPressed = button;
+			keyPressed = keyOrButton;
 		else
-			keyPressed = arg1;
+			keyPressed = keyOrButton;
 		end
 		if ( keyPressed == "UNKNOWN" ) then
 			return;
@@ -218,44 +218,42 @@ function KeyBindingFrame_OnKeyDown(button)
 		KeyBindingFrame.selected = nil;
 		KeyBindingFrame.buttonPressed:UnlockHighlight();
 		KeyBindingFrame.bindingsChanged = 1;
-	else
-		if ( arg1 == "ESCAPE" ) then
+	elseif ( keyOrButton == "ESCAPE" ) then
 			LoadBindings(GetCurrentBindingSet());
 			KeyBindingFrameOutputText:SetText("");
 			KeyBindingFrame.selected = nil;
-			HideUIPanel(this);
-		end
+			HideUIPanel(self);
 	end
 	KeyBindingFrame_UpdateUnbindKey();
 end
 
-function KeyBindingButton_OnClick(button)
+function KeyBindingButton_OnClick(self, button)
 	if ( KeyBindingFrame.selected ) then
 		-- Code to be able to deselect or select another key to bind
 		if ( button == "LeftButton" or button == "RightButton" ) then
 			-- Deselect button if it was the pressed previously pressed
-			if (KeyBindingFrame.buttonPressed == this) then
+			if (KeyBindingFrame.buttonPressed == self) then
 				KeyBindingFrame.selected = nil;
 				KeyBindingFrameOutputText:SetText("");
 			else
 				-- Select a different button
-				KeyBindingFrame.buttonPressed = this;
-				KeyBindingFrame.selected = this.commandName;
-				KeyBindingFrame.keyID = this:GetID();
-				KeyBindingFrameOutputText:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingText(this.commandName, "BINDING_NAME_"));
+				KeyBindingFrame.buttonPressed = self;
+				KeyBindingFrame.selected = self.commandName;
+				KeyBindingFrame.keyID = self:GetID();
+				KeyBindingFrameOutputText:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingText(self.commandName, "BINDING_NAME_"));
 			end
 			KeyBindingFrame_Update();
 			return;
 		end
-		KeyBindingFrame_OnKeyDown(button);
+		KeyBindingFrame_OnKeyDown(self, button);
 	else
 		if (KeyBindingFrame.buttonPressed) then
 			KeyBindingFrame.buttonPressed:UnlockHighlight();
 		end
-		KeyBindingFrame.buttonPressed = this;
-		KeyBindingFrame.selected = this.commandName;
-		KeyBindingFrame.keyID = this:GetID();
-		KeyBindingFrameOutputText:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingText(this.commandName, "BINDING_NAME_"));
+		KeyBindingFrame.buttonPressed = self;
+		KeyBindingFrame.selected = self.commandName;
+		KeyBindingFrame.keyID = self:GetID();
+		KeyBindingFrameOutputText:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingText(self.commandName, "BINDING_NAME_"));
 		KeyBindingFrame_Update();
 	end
 	KeyBindingFrame_UpdateUnbindKey();

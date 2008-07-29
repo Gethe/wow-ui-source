@@ -16,7 +16,15 @@
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
 	<Button name="UIPanelButtonTemplate" virtual="true">
-		<ButtonText name="$parentText"/>
+		<ButtonText name="$parentText">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
@@ -63,14 +71,14 @@
 		</Layers>
 		<Scripts>
 			<OnMouseDown>
-				getglobal(this:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-				getglobal(this:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-				getglobal(this:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+				getglobal(self:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+				getglobal(self:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+				getglobal(self:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
 			</OnMouseDown>
 			<OnMouseUp>
-				getglobal(this:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				getglobal(this:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				getglobal(this:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				getglobal(self:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				getglobal(self:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				getglobal(self:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 			</OnMouseUp>
 		</Scripts>
 		<ButtonText name="$parentText"/>
@@ -95,7 +103,7 @@
 		</Size>
 		<Scripts>
 			<OnClick>
-				HideUIPanel(this:GetParent());
+				HideUIPanel(self:GetParent());
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
@@ -134,7 +142,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent();
+						local parent = self:GetParent();
 						parent:SetValue(parent:GetValue() - (parent:GetHeight() / 2));
 						PlaySound("UChatScrollButton");
 					</OnClick>
@@ -146,7 +154,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent();
+						local parent = self:GetParent();
 						parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
 						PlaySound("UChatScrollButton");
 					</OnClick>
@@ -155,7 +163,7 @@
 		</Frames>
 		<Scripts>
 			<OnValueChanged>
-				this:GetParent():SetVerticalScroll(arg1);
+				self:GetParent():SetVerticalScroll(value);
 			</OnValueChanged>
 		</Scripts>
 		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
@@ -176,7 +184,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent();
+						local parent = self:GetParent();
 						parent:SetValue(parent:GetValue() - (parent:GetHeight() / 2));
 						PlaySound("UChatScrollButton");
 					</OnClick>
@@ -188,7 +196,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent();
+						local parent = self:GetParent();
 						parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
 						PlaySound("UChatScrollButton");
 					</OnClick>
@@ -219,14 +227,14 @@
 				</Backdrop>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
 					</OnLoad>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnValueChanged>
-				this:GetParent():SetVerticalScroll(arg1);
+				self:GetParent():SetVerticalScroll(value);
 			</OnValueChanged>
 		</Scripts>
 		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
@@ -255,19 +263,19 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ScrollFrame_OnLoad();
+				ScrollFrame_OnLoad(self);
 			</OnLoad>
 			<OnScrollRangeChanged>
-				ScrollFrame_OnScrollRangeChanged(arg2);
+				ScrollFrame_OnScrollRangeChanged(self, yrange);
 			</OnScrollRangeChanged>
 			<!--  The code to disable the ScrollDownButton is pretty hacked, but it works -->
 			<OnVerticalScroll>
-				local scrollbar = getglobal(this:GetName().."ScrollBar");
-				scrollbar:SetValue(arg1);
+				local scrollbar = getglobal(self:GetName().."ScrollBar");
+				scrollbar:SetValue(offset);
 				local min;
 				local max;
 				min, max = scrollbar:GetMinMaxValues();
-				if ( arg1 == 0 ) then
+				if ( offset == 0 ) then
 					getglobal(scrollbar:GetName().."ScrollUpButton"):Disable();
 				else
 					getglobal(scrollbar:GetName().."ScrollUpButton"):Enable();
@@ -279,7 +287,7 @@
 				end
 			</OnVerticalScroll>
 			<OnMouseWheel>
-				ScrollFrameTemplate_OnMouseWheel(arg1);
+				ScrollFrameTemplate_OnMouseWheel(self, delta);
 			</OnMouseWheel>
 		</Scripts>
 	</ScrollFrame>
@@ -308,9 +316,9 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				ScrollFrame_OnLoad();
-				getglobal(this:GetName().."Top"):SetPoint("TOPLEFT", getglobal(this:GetName().."ScrollBar".."ScrollUpButton"), "TOPLEFT", -8, 5);
-				getglobal(this:GetName().."Bottom"):SetPoint("BOTTOMLEFT", getglobal(this:GetName().."ScrollBar".."ScrollDownButton"), "BOTTOMLEFT", -8, -2);
+				ScrollFrame_OnLoad(self);
+				getglobal(self:GetName().."Top"):SetPoint("TOPLEFT", getglobal(self:GetName().."ScrollBar".."ScrollUpButton"), "TOPLEFT", -8, 5);
+				getglobal(self:GetName().."Bottom"):SetPoint("BOTTOMLEFT", getglobal(self:GetName().."ScrollBar".."ScrollDownButton"), "BOTTOMLEFT", -8, -2);
 			</OnLoad>
 		</Scripts>
 	</ScrollFrame>
@@ -346,17 +354,17 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ScrollFrame_OnLoad();
+				ScrollFrame_OnLoad(self);
 			</OnLoad>
 			<OnScrollRangeChanged>
 			</OnScrollRangeChanged>
 			<OnVerticalScroll>
-				local scrollbar = getglobal(this:GetName().."ScrollBar");
-				scrollbar:SetValue(arg1);
+				local scrollbar = getglobal(self:GetName().."ScrollBar");
+				scrollbar:SetValue(offset);
 				local min;
 				local max;
 				min, max = scrollbar:GetMinMaxValues();
-				if ( arg1 == 0 ) then
+				if ( offset == 0 ) then
 					getglobal(scrollbar:GetName().."ScrollUpButton"):Disable();
 				else
 					getglobal(scrollbar:GetName().."ScrollUpButton"):Enable();
@@ -368,7 +376,7 @@
 				end
 			</OnVerticalScroll>
 			<OnMouseWheel>
-				ScrollFrameTemplate_OnMouseWheel(arg1);
+				ScrollFrameTemplate_OnMouseWheel(self, delta);
 			</OnMouseWheel>
 		</Scripts>
 		<ScrollChild>
@@ -422,13 +430,13 @@
 		</Layers>
 		<Scripts>
 			<OnEscapePressed>
-				this:ClearFocus();
+				self:ClearFocus();
 			</OnEscapePressed>
 			<OnEditFocusLost>
-				this:HighlightText(0, 0);
+				self:HighlightText(0, 0);
 			</OnEditFocusLost>
 			<OnEditFocusGained>
-				this:HighlightText();
+				self:HighlightText();
 			</OnEditFocusGained>
 		</Scripts>
 		<FontString inherits="ChatFontNormal"/>
@@ -524,8 +532,8 @@
         </Layers>
 		<Scripts>
 			<OnLoad>
-				PanelTemplates_TabResize(0);
-				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+				PanelTemplates_TabResize(self, 0);
+				getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
 			</OnLoad>
 		</Scripts>
 		<ButtonText name="$parentText">
@@ -542,7 +550,7 @@
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Size>
 				<AbsDimension x="5" y="32"/>
@@ -652,4 +660,233 @@
 			</Layer>
 		</Layers>
 	</Frame>
+	<Frame name="AutoCastShineTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="28" y="28"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parent1" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="13" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent2" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent3" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="7" y="7"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent4" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="4" y="4"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent5" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="13" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent6" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent7" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="7" y="7"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent8" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="4" y="4"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent9" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="13" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent10" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent11" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="7" y="7"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent12" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="4" y="4"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent13" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="13" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent14" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent15" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="7" y="7"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture name="$parent16" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="4" y="4"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>					
+			</Layer>
+		</Layers>				
+		<Scripts>
+			<OnLoad>
+				AutoCastShine_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>		
 </Ui>

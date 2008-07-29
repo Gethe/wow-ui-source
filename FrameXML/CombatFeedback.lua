@@ -27,14 +27,14 @@ CombatFeedbackText["DEFLECT"]	= DEFLECT;
 CombatFeedbackText["ABSORB"]	= ABSORB;
 CombatFeedbackText["REFLECT"]	= REFLECT;
 
-function CombatFeedback_Initialize(feedbackText, fontHeight)
-	this.feedbackText = feedbackText;
-	this.feedbackFontHeight = fontHeight;
+function CombatFeedback_Initialize(self, feedbackText, fontHeight)
+	self.feedbackText = feedbackText;
+	self.feedbackFontHeight = fontHeight;
 end
 
-function CombatFeedback_OnCombatEvent(event, flags, amount, type)
-	local feedbackText = this.feedbackText;
-	local fontHeight = this.feedbackFontHeight;
+function CombatFeedback_OnCombatEvent(self, event, flags, amount, type)
+	local feedbackText = self.feedbackText;
+	local fontHeight = self.feedbackFontHeight;
 	local text = "";
 	local r = 1.0;
 	local g = 1.0;
@@ -91,7 +91,7 @@ function CombatFeedback_OnCombatEvent(event, flags, amount, type)
 		text = CombatFeedbackText[event];
 	end
 
-	this.feedbackStartTime = GetTime();
+	self.feedbackStartTime = GetTime();
 
 	feedbackText:SetTextHeight(fontHeight);
 	feedbackText:SetText(text);
@@ -100,10 +100,10 @@ function CombatFeedback_OnCombatEvent(event, flags, amount, type)
 	feedbackText:Show();
 end
 
-function CombatFeedback_OnUpdate(elapsed)
-	local feedbackText = this.feedbackText;
+function CombatFeedback_OnUpdate(self, elapsed)
+	local feedbackText = self.feedbackText;
 	if ( feedbackText:IsVisible() ) then
-		local elapsedTime = GetTime() - this.feedbackStartTime;
+		local elapsedTime = GetTime() - self.feedbackStartTime;
 		local fadeInTime = COMBATFEEDBACK_FADEINTIME;
 		if ( elapsedTime < fadeInTime ) then
 			local alpha = (elapsedTime / fadeInTime);
@@ -243,5 +243,10 @@ end
 function LowHealthFrame_UIFrameFlashRemoveFrame(frame)
 	frame:SetScript("OnUpdate", nil);
 	frame:Hide();
-	tDeleteItem(LOWHEALTHFRAME_FLASHFRAMES, frame);
+	
+	for i, flashFrame in next, LOWHEALTHFRAME_FLASHFRAMES do
+		if ( frame == flashFrame ) then
+			tremove(LOWHEALTHFRAME_FLASHFRAMES, i);
+		end
+	end
 end

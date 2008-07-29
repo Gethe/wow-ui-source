@@ -1,7 +1,7 @@
 
-function CinematicFrame_OnLoad()
-	this:RegisterEvent("CINEMATIC_START");
-	this:RegisterEvent("CINEMATIC_STOP");
+function CinematicFrame_OnLoad(self)
+	self:RegisterEvent("CINEMATIC_START");
+	self:RegisterEvent("CINEMATIC_STOP");
 
 	local width = GetScreenWidth();
 	local height = GetScreenHeight();
@@ -23,13 +23,10 @@ function CinematicFrame_OnLoad()
 
 end
 
-function CinematicFrame_OnEvent()
+function CinematicFrame_OnEvent(self, event, ...)
 	if ( event == "CINEMATIC_START" ) then
-		ShowUIPanel(this, 1);
-		return;
-	end
-	if ( event == "CINEMATIC_STOP" ) then
-		HideUIPanel(this);
-		return;
+		ShowUIPanel(self, 1);
+	elseif ( event == "CINEMATIC_STOP" ) then
+		HideUIPanel(self);
 	end
 end

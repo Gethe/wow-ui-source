@@ -1,11 +1,11 @@
-function LoadMicroButtonTextures(name)
-	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	this:RegisterEvent("UPDATE_BINDINGS");
+function LoadMicroButtonTextures(self, name)
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterEvent("UPDATE_BINDINGS");
 	local prefix = "Interface\\Buttons\\UI-MicroButton-";
-	this:SetNormalTexture(prefix..name.."-Up");
-	this:SetPushedTexture(prefix..name.."-Down");
-	this:SetDisabledTexture(prefix..name.."-Disabled");
-	this:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
+	self:SetNormalTexture(prefix..name.."-Up");
+	self:SetPushedTexture(prefix..name.."-Down");
+	self:SetDisabledTexture(prefix..name.."-Disabled");
+	self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
 end
 
 function MicroButtonTooltipText(text, action)
@@ -73,6 +73,12 @@ function UpdateMicroButtons()
 		HelpMicroButton:SetButtonState("NORMAL");
 	end
 	
+	if ( AchievementFrame:IsShown() ) then
+		AchievementMicroButton:SetButtonState("PUSHED", 1);
+	else
+		AchievementMicroButton:SetButtonState("NORMAL");
+	end
+
 	-- Keyring microbutton
 	if ( IsBagOpen(KEYRING_CONTAINER) ) then
 		KeyRingButton:SetButtonState("PUSHED", 1);
@@ -81,26 +87,27 @@ function UpdateMicroButtons()
 	end
 end
 
-function CharacterMicroButton_OnLoad()
+function CharacterMicroButton_OnLoad(self)
 	SetPortraitTexture(MicroButtonPortrait, "player");
-	this:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
-	this:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
-	this:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
-	this:RegisterEvent("UNIT_PORTRAIT_UPDATE");
-	this:RegisterEvent("UPDATE_BINDINGS");
-	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	this.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
-	this.newbieText = NEWBIE_TOOLTIP_CHARACTER;
+	self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
+	self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
+	self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
+	self.newbieText = NEWBIE_TOOLTIP_CHARACTER;
 end
 
-function CharacterMicroButton_OnEvent()
+function CharacterMicroButton_OnEvent(self, event, ...)
 	if ( event == "UNIT_PORTRAIT_UPDATE" ) then
-		if ( arg1 == "player" ) then
-			SetPortraitTexture(MicroButtonPortrait, arg1);
+		local unit = ...;
+		if ( unit == "player" ) then
+			SetPortraitTexture(MicroButtonPortrait, unit);
 		end
 		return;
 	elseif ( event == "UPDATE_BINDINGS" ) then
-		this.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
+		self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
 	end
 end
 
@@ -115,25 +122,25 @@ function CharacterMicroButton_SetNormal()
 end
 
 --Talent button specific functions
-function TalentMicroButton_OnEvent()
+function TalentMicroButton_OnEvent(self, event, ...)
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		UpdateTalentButton();
 		if ( not CharacterFrame:IsShown() ) then
-			SetButtonPulse(this, 60, 1);
+			SetButtonPulse(self, 60, 1);
 		end
 	elseif ( event == "UNIT_LEVEL" or event == "PLAYER_ENTERING_WORLD" ) then
 		UpdateTalentButton();
 	elseif ( event == "UPDATE_BINDINGS" ) then
-		this.tooltipText =  MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
+		self.tooltipText =  MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
 	end
 end
 
 function UpdateTalentButton()
 	if ( UnitLevel("player") < 10 ) then
 		TalentMicroButton:Hide();
-		QuestLogMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMLEFT", 0, 0);
+		AchievementMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMLEFT", 0, 0);
 	else	
 		TalentMicroButton:Show();
-		QuestLogMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMRIGHT", -2, 0);
+		AchievementMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMRIGHT", -2, 0);
 	end
 end

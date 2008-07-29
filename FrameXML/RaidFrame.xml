@@ -256,19 +256,19 @@
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								ScrollFrame_OnLoad();
+								ScrollFrame_OnLoad(self);
 							</OnLoad>
 							<OnScrollRangeChanged>
-								ScrollFrame_OnScrollRangeChanged(arg2);
+								ScrollFrame_OnScrollRangeChanged(self, yrange);
 							</OnScrollRangeChanged>
 							<!--  The code to disable the ScrollDownButton is pretty hacked, but it works -->
 							<OnVerticalScroll>
-								local scrollbar = getglobal(this:GetName().."ScrollBar");
-								scrollbar:SetValue(arg1);
+								local scrollbar = getglobal(self:GetName().."ScrollBar");
+								scrollbar:SetValue(offset);
 								local min;
 								local max;
 								min, max = scrollbar:GetMinMaxValues();
-								if ( arg1 == 0 ) then
+								if ( offset == 0 ) then
 									getglobal(scrollbar:GetName().."ScrollUpButton"):Disable();
 								else
 									getglobal(scrollbar:GetName().."ScrollUpButton"):Enable();
@@ -280,7 +280,7 @@
 								end
 							</OnVerticalScroll>
 							<OnMouseWheel>
-								ScrollFrameTemplate_OnMouseWheel(arg1);
+								ScrollFrameTemplate_OnMouseWheel(self, delta);
 							</OnMouseWheel>
 						</Scripts>
 						<ScrollChild>
@@ -317,14 +317,14 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				RaidFrame_OnLoad();
+				RaidFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				RaidFrame_Update();
 				RequestRaidInfo();
 			</OnShow>
 			<OnEvent>
-				RaidFrame_OnEvent();
+				RaidFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 		<HitRectInsets>

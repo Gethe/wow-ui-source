@@ -3,26 +3,26 @@
 	<StatusBar name="TextStatusBar" virtual="true">
 		<Scripts>
 			<OnLoad>
-				TextStatusBar_Initialize();
+				TextStatusBar_Initialize(self);
 			</OnLoad>
 			<OnEvent>
 				TextStatusBar_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnEnter>
-				TextStatusBar_UpdateTextString();
-				ShowTextStatusBarText(this);
-				if ( this.tooltipTitle ) then
-					GameTooltip_AddNewbieTip(this.tooltipTitle, 1.0, 1.0, 1.0, this.tooltipText, 1);
-				elseif ( this:GetParent() == TargetFrame ) then
+				TextStatusBar_UpdateTextString(self);
+				ShowTextStatusBarText(self);
+				if ( self.tooltipTitle ) then
+					GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+				elseif ( self:GetParent() == TargetFrame ) then
 					UnitFrame_UpdateTooltip(TargetFrame);
 				end
 			</OnEnter>
 			<OnLeave>
-				HideTextStatusBarText(this);
+				HideTextStatusBarText(self);
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnValueChanged>
-				TextStatusBar_OnValueChanged();
+				TextStatusBar_OnValueChanged(self, value);
 			</OnValueChanged>
 		</Scripts>
 	</StatusBar>

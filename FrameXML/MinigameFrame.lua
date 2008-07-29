@@ -1,10 +1,10 @@
-function MinigameFrame_OnEvent(event)
+function MinigameFrame_OnEvent(self, event, ...)
 	local gameType = GetMinigameType();
 	if ( not gameType ) then
 		return;
 	end
 	if ( event == "START_MINIGAME" ) then
-		ShowUIPanel(this);
+		ShowUIPanel(self);
 		getglobal(gameType.."Frame"):Show();
 	elseif ( event == "MINIGAME_UPDATE" ) then
 		local updateFunc = getglobal(gameType.."_Update");

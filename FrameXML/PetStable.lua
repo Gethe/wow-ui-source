@@ -1,18 +1,19 @@
 NUM_PET_STABLE_SLOTS = 2;
 
-function PetStable_OnLoad()
-	this:RegisterEvent("PET_STABLE_SHOW");
-	this:RegisterEvent("PET_STABLE_UPDATE");
-	this:RegisterEvent("PET_STABLE_UPDATE_PAPERDOLL");
-	this:RegisterEvent("PET_STABLE_CLOSED");
-	this:RegisterEvent("UNIT_PET");
-	this:RegisterEvent("UNIT_NAME_UPDATE");
+function PetStable_OnLoad(self)
+	self:RegisterEvent("PET_STABLE_SHOW");
+	self:RegisterEvent("PET_STABLE_UPDATE");
+	self:RegisterEvent("PET_STABLE_UPDATE_PAPERDOLL");
+	self:RegisterEvent("PET_STABLE_CLOSED");
+	self:RegisterEvent("UNIT_PET");
+	self:RegisterEvent("UNIT_NAME_UPDATE");
 end
 
-function PetStable_OnEvent()
+function PetStable_OnEvent(self, event, ...)
+	local arg1 = ...;
 	if ( event == "PET_STABLE_SHOW" ) then
-		ShowUIPanel(this);
-		if ( not this:IsShown() ) then
+		ShowUIPanel(self);
+		if ( not self:IsShown() ) then
 			ClosePetStables();
 			return;
 		end
@@ -30,7 +31,7 @@ function PetStable_OnEvent()
 		end
 		SetPetStablePaperdoll(PetStableModel);
 	elseif ( event == "PET_STABLE_CLOSED" ) then
-		HideUIPanel(this);
+		HideUIPanel(self);
 	end
 end
 
@@ -74,11 +75,11 @@ function PetStable_Update()
 	
 	local button;
 	local background
-	local icon, name, level, family, loyalty;
+	local icon, name, level, family;
 	for i=1, NUM_PET_STABLE_SLOTS do
 		button = getglobal("PetStableStabledPet"..i);
 		background = getglobal("PetStableStabledPet"..i.."Background");
-		icon, name, level, family, loyalty = GetStablePetInfo(i);
+		icon, name, level, family = GetStablePetInfo(i);
 		SetItemButtonTexture(button, icon);
 		if ( i <= GetNumStableSlots() ) then
 			background:SetVertexColor(1.0,1.0,1.0);
@@ -94,7 +95,6 @@ function PetStable_Update()
 				if ( icon ) then
 					button:SetChecked(1);
 					PetStableLevelText:SetText(name.." "..format(UNIT_LEVEL_TEMPLATE,level).." "..family);
-					PetStableLoyaltyText:SetText(loyalty);
 					SetPetStablePaperdoll(PetStableModel);
 					PetStablePetInfo.tooltip = format(PET_DIET_TEMPLATE, BuildListString(GetStablePetFoodTypes(i)));
 					if ( not PetStableModel:IsShown() ) then
@@ -103,7 +103,6 @@ function PetStable_Update()
 				else
 					button:SetChecked(nil);
 					PetStableLevelText:SetText("");
-					PetStableLoyaltyText:SetText("");
 					PetStableModel:Hide();
 				end
 				
@@ -131,7 +130,6 @@ function PetStable_Update()
 				family = "";
 			end
 			PetStableLevelText:SetText(UnitName("pet").." "..format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..family);
-			PetStableLoyaltyText:SetText(GetPetLoyalty());
 			SetPetStablePaperdoll(PetStableModel);
 			if ( not PetStableModel:IsShown() ) then
 				PetStableModel:Show();
@@ -142,9 +140,8 @@ function PetStable_Update()
 		elseif ( GetStablePetInfo(0) ) then
 			-- If pet doesn't exist it might be dismissed, so check stable slot 0 for current pet info
 			PetStableCurrentPet:SetChecked(1);
-			icon, name, level, family, loyalty = GetStablePetInfo(0);
+			icon, name, level, family = GetStablePetInfo(0);
 			PetStableLevelText:SetText(name.." "..format(UNIT_LEVEL_TEMPLATE,level).." "..family);
-			PetStableLoyaltyText:SetText(loyalty);
 			SetPetStablePaperdoll(PetStableModel);
 			if ( not PetStableModel:IsShown() ) then
 				PetStableModel:Show();
@@ -155,7 +152,6 @@ function PetStable_Update()
 		else
 			PetStableCurrentPet:SetChecked(nil);
 			PetStableLevelText:SetText("");
-			PetStableLoyaltyText:SetText("");
 			PetStableModel:Hide();
 		end
 	else
@@ -167,7 +163,7 @@ function PetStable_Update()
 		PetStableCurrentPet.tooltip = UnitName("pet");
 		PetStableCurrentPet.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..UnitCreatureFamily("pet");
 	elseif ( GetStablePetInfo(0) ) then
-		icon, name, level, family, loyalty = GetStablePetInfo(0);
+		icon, name, level, family = GetStablePetInfo(0);
 		SetItemButtonTexture(PetStableCurrentPet, icon);
 		PetStableCurrentPet.tooltip = name;
 		PetStableCurrentPet.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE,level).." "..family;
@@ -189,7 +185,6 @@ function PetStable_Update()
  		-- no pet
  		PetStableModel:Hide();
  		PetStableLevelText:SetText("");
- 		PetStableLoyaltyText:SetText("");
  	end
 	
 	-- Enable, disable, or hide purchase button
@@ -203,12 +198,12 @@ function PetStable_Update()
 		PetStablePurchaseButton:Enable();
 		PetStableCostLabel:Show();
 		PetStableCostMoneyFrame:Show();
-		SetMoneyFrameColor("PetStableCostMoneyFrame", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		SetMoneyFrameColor("PetStableCostMoneyFrame", "white");
 	else
 		PetStablePurchaseButton:Disable();
 		PetStableCostLabel:Show();
 		PetStableCostMoneyFrame:Show();
-		SetMoneyFrameColor("PetStableCostMoneyFrame", RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		SetMoneyFrameColor("PetStableCostMoneyFrame", "red");
 	end
 end
 
@@ -222,7 +217,6 @@ function PetStable_NoPetsAllowed()
 	
 	PetStableCurrentPet:SetChecked(nil);
 	PetStableLevelText:SetText("");
-	PetStableLoyaltyText:SetText("");
 	PetStableModel:Hide();
 	SetItemButtonTexture(PetStableCurrentPet, "");
 	PetStableCurrentPet.tooltip = EMPTY_STABLE_SLOT;

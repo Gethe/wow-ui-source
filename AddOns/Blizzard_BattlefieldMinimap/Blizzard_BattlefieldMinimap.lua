@@ -13,6 +13,10 @@ BattlefieldMinimapDefaults = {
 	showPlayers = true,
 };
 
+BG_VEHICLES = {};
+BG_VEHICLES_COUNT = 0;
+
+
 function BattlefieldMinimap_Toggle()
 	if ( BattlefieldMinimap:IsShown() ) then
 		SetCVar("showBattlefieldMinimap", "0");
@@ -32,14 +36,14 @@ function BattlefieldMinimap_Toggle()
 	end
 end
 
-function BattlefieldMinimap_OnLoad()
-	this:RegisterEvent("ADDON_LOADED");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("ZONE_CHANGED");
-	this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	this:RegisterEvent("PLAYER_LOGOUT");
-	this:RegisterEvent("WORLD_MAP_UPDATE");
-	this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+function BattlefieldMinimap_OnLoad (self)
+	self:RegisterEvent("ADDON_LOADED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:RegisterEvent("PLAYER_LOGOUT");
+	self:RegisterEvent("WORLD_MAP_UPDATE");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 
 	CreateMiniWorldMapArrowFrame(BattlefieldMinimap);
 
@@ -49,8 +53,9 @@ function BattlefieldMinimap_OnLoad()
 	PlayerMiniArrowEffectFrame:SetAlpha(0.65);
 end
 
-function BattlefieldMinimap_OnEvent(event)
+function BattlefieldMinimap_OnEvent(self, event, ...)
 	if ( event == "ADDON_LOADED" ) then
+		local arg1 = ...;
 		if ( arg1 == "Blizzard_BattlefieldMinimap" ) then
 			if ( not BattlefieldMinimapOptions ) then
 				BattlefieldMinimapOptions = BattlefieldMinimapDefaults;
@@ -213,7 +218,7 @@ function BattlefieldMinimap_CreatePOI(index)
 	texture:SetTexture("Interface\\Minimap\\POIIcons");
 end
 
-function BattlefieldMinimap_OnUpdate(elapsed)
+function BattlefieldMinimap_OnUpdate(self, elapsed)
 	-- Throttle updates
 	if ( BattlefieldMinimap.updateTimer < 0 ) then
 		BattlefieldMinimap.updateTimer = BATTLEFIELD_MINIMAP_UPDATE_RATE;
@@ -276,6 +281,8 @@ function BattlefieldMinimap_OnUpdate(elapsed)
 		for i=1, MAX_RAID_MEMBERS do
 			getglobal("BattlefieldMinimapRaid"..i):Hide();
 		end
+		wipe(BG_VEHICLES);
+		BG_VEHICLES_COUNT = 0;
 	else
 		--Position groupmates
 		local partyX, partyY, partyMemberFrame;
@@ -348,6 +355,29 @@ function BattlefieldMinimap_OnUpdate(elapsed)
 				flagFrame:Hide();
 			end
 		end
+		
+		-- position vehicles
+		local numVehicles = GetNumBattlefieldVehicles();
+		local index = 0;
+		for i=1, numVehicles do
+			if (i > BG_VEHICLES_COUNT) then
+				BG_VEHICLES[i] = CreateFrame("FRAME", "WorldMapVehicle"..i, WorldMapButton, "WorldMapFlagTemplate");
+				BG_VEHICLES[i].texture = getglobal("WorldMapVehicle"..i.."Texture");
+				BG_VEHICLES_COUNT = BG_VEHICLES_COUNT + 1;
+			end
+			local vehicleX, vehicleY, texture, orientation = GetBattlefieldVehicleInfo(i);
+			vehicleX = vehicleX * WorldMapDetailFrame:GetWidth();
+			vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight();
+			BG_VEHICLES[i].texture:SetTexture( texture );
+			BG_VEHICLES[i]:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);
+			BG_VEHICLES[i]:Show();
+			index = i;	-- save for later
+		end
+		if (index < BG_VEHICLES_COUNT) then
+			for i=index+1, BG_VEHICLES_COUNT do
+				BG_VEHICLES[i]:Hide();
+			end
+		end	
 	end
 
 	-- Fadein tab if mouse is over
@@ -439,10 +469,10 @@ function BattlefieldMinimapDropDown_Initialize()
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 end
 
-function BattlefieldMinimapTab_OnClick(button)
+function BattlefieldMinimapTab_OnClick(self, button)
 	-- If Rightclick bring up the options menu
 	if ( button == "RightButton" ) then
-		ToggleDropDownMenu(1, nil, BattlefieldMinimapTabDropDown, this:GetName(), 0, 0);
+		ToggleDropDownMenu(1, nil, BattlefieldMinimapTabDropDown, self:GetName(), 0, 0);
 		return;
 	end
 
@@ -450,7 +480,7 @@ function BattlefieldMinimapTab_OnClick(button)
 	CloseDropDownMenus();
 
 	-- If frame is not locked then allow the frame to be dragged or dropped
-	if ( this:GetButtonState() == "PUSHED" ) then
+	if ( self:GetButtonState() == "PUSHED" ) then
 		BattlefieldMinimapTab:StopMovingOrSizing();
 	else
 		-- If locked don't allow any movement
@@ -471,14 +501,14 @@ function BattlefieldMinimap_TogglePlayers()
 	BattlefieldMinimapOptions.showPlayers = not BattlefieldMinimapOptions.showPlayers;
 end
 
-function BattlefieldMinimapUnit_OnEnter()
+function BattlefieldMinimapUnit_OnEnter(self)
 	-- Adjust the tooltip based on which side the unit button is on
-	local x, y = this:GetCenter();
-	local parentX, parentY = this:GetParent():GetCenter();
+	local x, y = self:GetCenter();
+	local parentX, parentY = self:GetParent():GetCenter();
 	if ( x > parentX ) then
-		GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	else
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 	
 	-- See which POI's are in the same region and include their names in the tooltip

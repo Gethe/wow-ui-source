@@ -33,7 +33,7 @@ function BankFrameItemButton_OnEnter (self)
 			GameTooltip:SetText(self.tooltipText);
 		end
 	end
-	CursorUpdate();
+	CursorUpdate(self);
 end
 
 function BankFrameItemButton_Update (button)
@@ -108,9 +108,9 @@ function UpdateBagSlotStatus ()
 	local cost = GetBankSlotCost(numSlots);
 	BankFrame.nextSlotCost = cost;
 	if( GetMoney() >= cost ) then
-		SetMoneyFrameColor("BankFrameDetailMoneyFrame", 1.0, 1.0, 1.0);
+		SetMoneyFrameColor("BankFrameDetailMoneyFrame", "white");
 	else
-		SetMoneyFrameColor("BankFrameDetailMoneyFrame", 1.0, 0.1, 0.1)
+		SetMoneyFrameColor("BankFrameDetailMoneyFrame", "red")
 	end
 	MoneyFrame_Update("BankFrameDetailMoneyFrame", cost);
 

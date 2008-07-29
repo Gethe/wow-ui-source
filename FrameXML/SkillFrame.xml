@@ -226,12 +226,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						local text = getglobal(this:GetName().."Text");
+						local text = getglobal(self:GetName().."Text");
 						text:SetText("Show Known Skills Only");
 						text:SetTextColor(1.0, 1.0, 1.0);
 					</OnLoad>
 					<OnShow>
-						SkillSortButton_OnShow(this, "available");
+						SkillSortButton_OnShow(self, "available");
 					</OnShow>
 					<OnClick>
 						SkillSortButton_OnClick("available")
@@ -330,7 +330,7 @@
 				<Scripts>
 					<OnClick>
 						AcceptSkillUps();
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 						HideUIPanel(CharacterFrame);
 					</OnClick>
 				</Scripts>
@@ -506,7 +506,7 @@
 				</Layers>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(SKILLFRAME_SKILL_HEIGHT, SkillFrame_UpdateSkills)
+						FauxScrollFrame_OnVerticalScroll(self, offset, SKILLFRAME_SKILL_HEIGHT, SkillFrame_UpdateSkills)
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>

@@ -118,35 +118,35 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton");
-				this:RegisterEvent("SOCKET_INFO_UPDATE");
+				self:RegisterForDrag("LeftButton");
+				self:RegisterEvent("SOCKET_INFO_UPDATE");
 			</OnLoad>
 			<OnEvent>
-				ItemSocketingSocketButton_OnEvent(event);
+				ItemSocketingSocketButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					local link = GetNewSocketLink(this:GetID()) or
-								 GetExistingSocketLink(this:GetID());
+					local link = GetNewSocketLink(self:GetID()) or
+								 GetExistingSocketLink(self:GetID());
 					HandleModifiedItemClick(link);
 				else
 					StaticPopup_Hide("DELETE_ITEM");
 					StaticPopup_Hide("DELETE_GOOD_ITEM");
-					ClickSocketButton(this:GetID());
+					ClickSocketButton(self:GetID());
 				end
 			</OnClick>
 			<OnReceiveDrag>
 				StaticPopup_Hide("DELETE_ITEM");
 				StaticPopup_Hide("DELETE_GOOD_ITEM");
-				ClickSocketButton(this:GetID());
+				ClickSocketButton(self:GetID());
 			</OnReceiveDrag>
 			<OnDragStart>
 				StaticPopup_Hide("DELETE_ITEM");
 				StaticPopup_Hide("DELETE_GOOD_ITEM");
-				ClickSocketButton(this:GetID());
+				ClickSocketButton(self:GetID());
 			</OnDragStart>
 			<OnEnter>
-				ItemSocketingSocketButton_OnEnter();
+				ItemSocketingSocketButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -245,13 +245,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this.scrollBarHideable = 1;
-						ScrollFrame_OnLoad();
-						ScrollFrame_OnScrollRangeChanged(0);
+						self.scrollBarHideable = 1;
+						ScrollFrame_OnLoad(self);
+						ScrollFrame_OnScrollRangeChanged(self, 0);
 					</OnLoad>
 					<OnScrollRangeChanged>
-						ScrollFrame_OnScrollRangeChanged(arg2);
-						ItemSocketingSocketButton_OnScrollRangeChanged();
+						ScrollFrame_OnScrollRangeChanged(self, yrange);
+						ItemSocketingSocketButton_OnScrollRangeChanged(self);
 					</OnScrollRangeChanged>
 				</Scripts>
 				<ScrollChild>
@@ -263,7 +263,7 @@
 							<GameTooltip name="ItemSocketingDescription" inherits="GameTooltipTemplate" setAllPoints="true" hidden="false">
 								<Scripts>
 									<OnLoad>
-										this:SetBackdrop(nil);
+										self:SetBackdrop(nil);
 									</OnLoad>
 								</Scripts>
 							</GameTooltip>							
@@ -402,17 +402,17 @@
 						end
 					</OnClick>
 					<OnMouseDown>
-						if ( not this.disabled ) then
-							getglobal(this:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-							getglobal(this:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-							getglobal(this:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+						if ( not self.disabled ) then
+							getglobal(self:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+							getglobal(self:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+							getglobal(self:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
 						end
 					</OnMouseDown>
 					<OnMouseUp>
-						if ( not this.disabled ) then
-							getglobal(this:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-							getglobal(this:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-							getglobal(this:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+						if ( not self.disabled ) then
+							getglobal(self:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+							getglobal(self:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+							getglobal(self:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 						end
 					</OnMouseUp>
 				</Scripts>
@@ -433,13 +433,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ItemSocketingFrame_OnLoad();
+				ItemSocketingFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
 			</OnShow>
 			<OnEvent>
-				ItemSocketingFrame_OnEvent(event);
+				ItemSocketingFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnHide>
 				PlaySound("igCharacterInfoClose");

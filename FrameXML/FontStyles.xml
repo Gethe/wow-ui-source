@@ -1,10 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script>
-		STANDARD_TEXT_FONT = "Fonts\\FRIZQT__.TTF";
-		UNIT_NAME_FONT = "Fonts\\FRIZQT__.TTF";
-		DAMAGE_TEXT_FONT = "Fonts\\FRIZQT__.TTF";
-		NAMEPLATE_FONT = "Fonts\\FRIZQT__.TTF";
 		NORMAL_FONT_COLOR_CODE = "|cffffd200";
 		HIGHLIGHT_FONT_COLOR_CODE = "|cffffffff";
 		RED_FONT_COLOR_CODE = "|cffff2020";
@@ -62,8 +58,27 @@
 	<Font name="GameFontHighlight" inherits="GameFontNormal" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	<Font name="GameFontNormalLeftGreen" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.0" g="1.0" b="0.0"/>
+	</Font>
+	<Font name="GameFontNormalLeftYellow" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="1.0" g="1.0" b="0.0"/>
+	</Font>
+	<Font name="GameFontNormalLeftOrange" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="1.0" g="0.5" b="0.25"/>
+	</Font>
+	<Font name="GameFontNormalLeftLightGreen" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.25" g=".75" b="0.25"/>
+	</Font>
+	<Font name="GameFontNormalLeftGrey" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+	<Font name="GameFontNormalLeftRed" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.9" g="0.0" b="0.0"/>
+	</Font>
 	<Font name="GameFontHighlightLeft" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontHighlightCenter" inherits="GameFontHighlight" justifyH="CENTER" virtual="true"/>
+	<Font name="GameFontHighlightRight" inherits="GameFontHighlight" justifyH="RIGHT" virtual="true"/>
 	<Font name="GameFontDisable" inherits="GameFontNormal" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
@@ -83,6 +98,9 @@
 	<Font name="GameFontBlack" inherits="SystemFont_Med1" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
+	<Font name="GameFontWhiteSmall" inherits="GameFontBlackSmall" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>	
 	<Font name="GameFontWhite" inherits="GameFontBlack" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
@@ -109,6 +127,9 @@
 		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
 	<Font name="GameFontHighlightSmallOutline" inherits="GameFontHighlightSmall"  virtual="true"/>
+	<Font name="GameFontHighlightMedium" inherits="SystemFont_Shadow_Med3" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
 	<Font name="GameFontNormalLarge" inherits="SystemFont_Shadow_Large" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
@@ -136,6 +157,12 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	<Font name="NumberFontNormalRight" inherits="NumberFontNormal" justifyH="RIGHT" virtual="true"/>
+	<Font name="NumberFontNormalRightRed" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="1.0" g="0.1" b="0.1"/>
+	</Font>
+	<Font name="NumberFontNormalRightYellow" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 	<Font name="NumberFontNormalYellow" inherits="NumberFontNormal" virtual="true" >
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
@@ -149,6 +176,15 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	<Font name="NumberFontNormalLargeRight" inherits="NumberFontNormalLarge" justifyH="RIGHT" virtual="true"/>
+	<Font name="NumberFontNormalLargeRightRed" inherits="NumberFontNormalLargeRight" virtual="true" >
+		<Color r="1.0" g="0.1" b="0.1"/>
+	</Font>
+	<Font name="NumberFontNormalLargeRightYellow" inherits="NumberFontNormalLargeRight" virtual="true" >
+		<Color r="1.0" g="0.82" b="0.0"/>
+	</Font>
+	<Font name="NumberFontNormalLargeYellow" inherits="NumberFontNormalLarge" virtual="true">
+		<Color r="1.0" g="0.82" b="0.0"/>
+	</Font>
 	<Font name="NumberFontNormalHuge" inherits="NumberFont_Outline_Huge" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
@@ -172,6 +208,25 @@
 	</Font>
 	<Font name="QuestFontHighlight" inherits="SystemFont_Med3" virtual="true">
 		<Color r="0" g="0" b="0"/>
+	</Font>
+	
+	<Font name="QuestDifficulty_Impossible" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="1.0" g="0.1" b="0.1"/>
+	</Font>
+	<Font name="QuestDifficulty_Verydifficult" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="1.0" g="0.5" b="0.25"/>
+	</Font>
+	<Font name="QuestDifficulty_Difficult" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="1.0" g="1.0" b="0.0"/>
+	</Font>
+	<Font name="QuestDifficulty_Standard" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.25" g="0.75" b="0.25"/>
+	</Font>
+	<Font name="QuestDifficulty_Trivial" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+	<Font name="QuestDifficulty_Header" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.7" g="0.7" b="0.7"/>
 	</Font>
 	
 	<Font name="ItemTextFontNormal" inherits="QuestFont_Large" justifyH="LEFT" virtual="true">
@@ -232,7 +287,10 @@
 	<Font name="AchievementPointsFont" inherits="AchievementPoints" justifyH="CENTER" virtual="true">
 		<Color r="1" g="1" b="1"/>
 	</Font>	
-	<Font name="AchievementDescriptionFont" inherits="SystemFont_Small" justifyH="CENTER" justifyV="TOP" virtual="true">
+	<Font name="AchievementDescriptionDisabledFont" inherits="SystemFont_Shadow_Small" justifyH="CENTER" justifyV="TOP" virtual="true">
+		<Color r="1" g="1" b="1"/>
+	</Font>
+	<Font name="AchievementDescriptionEnabledFont" inherits="SystemFont_Small" justifyH="CENTER" justifyV="TOP" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
 	<Font name="AchievementDateFont" inherits="SystemFont_Small" justifyH="RIGHT" virtual="true">

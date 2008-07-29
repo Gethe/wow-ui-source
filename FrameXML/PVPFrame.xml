@@ -116,7 +116,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_SetDefaultAnchor(GameTooltip, this);
+						GameTooltip_SetDefaultAnchor(GameTooltip, self);
 						GameTooltip:SetText(HONOR_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1);
 						GameTooltip:Show();
@@ -172,7 +172,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_SetDefaultAnchor(GameTooltip, this);
+						GameTooltip_SetDefaultAnchor(GameTooltip, self);
 						GameTooltip:SetText(ARENA_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(TOOLTIP_ARENA_POINTS, nil, nil, nil, 1);
 						GameTooltip:Show();
@@ -199,7 +199,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="$parentKillsLabel" inherits="GameFontDisableSmall" text="KILLS" justifyH="RIGHT">
+						<FontString name="$parentKillsLabel" inherits="GameFontDisableSmall" text="KILLS_PVP" justifyH="RIGHT">
 							<Size>
 								<AbsDimension x="40" y="12"/>
 							</Size>
@@ -254,6 +254,18 @@
 										<AbsDimension x="0" y="-10"/>
 									</Offset>
 								</Anchor>
+							</Anchors>
+						</FontString>
+                        <FontString name="$parentTodayHonor" inherits="GameFontHighlightSmall">
+                            <Size>
+                                <AbsDimension x="50" y="14"/>
+                            </Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTodayKills" relativePoint="BOTTOM">
+                                    <Offset>
+										<AbsDimension x="0" y="-5"/>
+									</Offset>
+                                </Anchor>
 							</Anchors>
 						</FontString>
 						<!-- Today End -->
@@ -325,37 +337,6 @@
 						<!-- Lifetime End -->
 					</Layer>
 				</Layers>
-			</Frame>
-			<Frame name="PVPHonorTodayHonorFrame">
-				<Size>
-					<AbsDimension x="30" y="14"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="-57" y="-108"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="PVPHonorTodayHonor" inherits="GameFontHighlightSmall">
-							<Anchors>
-								<Anchor point="LEFT"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetText(HONOR_ESTIMATED_TOOLTIP, nil, nil, nil, nil, 1);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
 			</Frame>
 		<!-- Arena Teams -->
 			<Frame name="PVPTeam1Standard" inherits="PVPTeamStandardTemplate">
@@ -510,7 +491,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PVPFrame_OnLoad();
+				PVPFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				PVPFrame_OnShow();
@@ -519,7 +500,7 @@
 				PVPFrame_OnHide();
 			</OnHide>
 			<OnEvent>
-				PVPFrame_OnEvent(event, ...);
+				PVPFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Frame>
@@ -708,8 +689,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						WhoFrameColumn_SetWidth(96);
-						this.sortType = "name";
+						WhoFrameColumn_SetWidth(self, 96);
+						self.sortType = "name";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -723,8 +704,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						WhoFrameColumn_SetWidth(62);
-						this.sortType = "class";
+						WhoFrameColumn_SetWidth(self, 62);
+						self.sortType = "class";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -738,8 +719,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						WhoFrameColumn_SetWidth(55);
-						this.sortType = "played";
+						WhoFrameColumn_SetWidth(self, 55);
+						self.sortType = "played";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -753,8 +734,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						WhoFrameColumn_SetWidth(75);							
-						this.sortType = "won";
+						WhoFrameColumn_SetWidth(self, 75);							
+						self:GetFontString():SetWidth(75);	--Deal with a problem of size in Russian client
+						self.sortType = "won";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -768,8 +750,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						WhoFrameColumn_SetWidth(55);
-						this.sortType = "rating";
+						WhoFrameColumn_SetWidth(self, 55);
+						self.sortType = "rating";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -879,7 +861,7 @@
 						StaticPopup_Show("ADD_TEAMMEMBER");
 					</OnClick>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(ADDMEMBER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDTEAMMEMBER, 1);
+						GameTooltip_AddNewbieTip(self, ADDMEMBER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDTEAMMEMBER, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

@@ -47,13 +47,13 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				CombatText_OnLoad();
+				CombatText_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				CombatText_OnEvent(event);
+				CombatText_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				CombatText_OnUpdate(arg1);
+				CombatText_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

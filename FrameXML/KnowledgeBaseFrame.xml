@@ -59,7 +59,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				KnowledgeBaseArticleListItem_OnClick();
+				KnowledgeBaseArticleListItem_OnClick(self);
 			</OnClick>
 			<OnEnter>
 				KnowledgeBaseArticleListItem_OnEnter(self);
@@ -272,7 +272,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						KnowledgeBaseFrameCategoryDropDown_OnLoad();
+						KnowledgeBaseFrameCategoryDropDown_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -286,7 +286,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						KnowledgeBaseFrameSubCategoryDropDown_OnLoad();
+						KnowledgeBaseFrameSubCategoryDropDown_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>

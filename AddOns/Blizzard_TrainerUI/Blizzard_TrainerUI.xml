@@ -172,10 +172,10 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								ClassTrainerExpandTabMiddle:SetWidth(this:GetTextWidth() + 24);
+								ClassTrainerExpandTabMiddle:SetWidth(self:GetTextWidth() + 24);
 							</OnLoad>
 							<OnClick>
-								ClassTrainerCollapseAllButton_OnClick();
+								ClassTrainerCollapseAllButton_OnClick(self);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -191,10 +191,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						ClassTrainerFrameFilterDropDown_OnLoad();
+						ClassTrainerFrameFilterDropDown_OnLoad(self);
 					</OnLoad>
 					<OnShow>
-						ClassTrainerFrameFilterDropDown_OnLoad();
+						ClassTrainerFrameFilterDropDown_OnLoad(self);
 					</OnShow>
 				</Scripts>
 			</Frame>
@@ -323,7 +323,7 @@
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(CLASS_TRAINER_SKILL_HEIGHT, ClassTrainerFrame_Update)
+						FauxScrollFrame_OnVerticalScroll(self, offset, CLASS_TRAINER_SKILL_HEIGHT, ClassTrainerFrame_Update)
 					</OnVerticalScroll>
 					<OnScrollRangeChanged>
 						-- HACK!!
@@ -450,7 +450,7 @@
 								</Layers>
 								<Scripts>
 									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetTrainerService(ClassTrainerFrame.selectedService);
 										GameTooltip:Show();
 									</OnEnter>
@@ -494,7 +494,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ClassTrainerTrainButton_OnClick();
+						ClassTrainerTrainButton_OnClick(self, button);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -511,7 +511,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -527,7 +527,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ClassTrainerFrame_OnLoad();
+				ClassTrainerFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
@@ -541,7 +541,7 @@
 				end
 			</OnHide>
 			<OnEvent>
-				ClassTrainerFrame_OnEvent();
+				ClassTrainerFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnMouseWheel>
 				return;			

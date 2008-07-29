@@ -1,14 +1,14 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GameTime.lua"/>
-	<Frame name="GameTimeFrame" parent="MinimapCluster">
+	<Button name="GameTimeFrame" parent="Minimap">
 		<Size>
 			<AbsDimension x="50" y="50"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPRIGHT">
 				<Offset>
-					<AbsDimension x="4" y="-19"/>
+					<AbsDimension x="21" y="2"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -17,25 +17,38 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="GameTimeTexture" file="Interface\Minimap\UI-TOD-Indicator"/>
+				<Texture name="GameTimeTexture" file="Interface\Minimap\UI-TOD-Indicator" hidden="true"/>
+				<Texture name="GameTimeCalendarTexture" file="Interface\Calendar\UI-Calendar-Button">
+					<TexCoords left="0.0" right="0.390625" top="0.0" bottom="0.78125"/>
+				</Texture>
+				<Texture name="GameTimeCalendarInvitesTexture" file="Interface\Calendar\EventNotification" hidden="true">
+					<Size x="35" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.03125" right="0.6484375" top="0.03125" bottom="0.8671875"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.timeOfDay = 0;
-				this:SetFrameLevel(this:GetFrameLevel() + 2);
-				GameTimeFrame_Update();
+				GameTimeFrame_OnLoad(self);
 			</OnLoad>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
-				GameTimeFrame_UpdateTooltip(GetGameTime());
+				GameTimeFrame_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnEvent>
+				GameTimeFrame_OnEvent(self, event, ...);
+			</OnEvent>
 			<OnUpdate>
-				GameTimeFrame_Update();
+				GameTimeFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
+			<OnClick>
+				GameTimeFrame_OnClick(self);
+			</OnClick>
 		</Scripts>
-	</Frame>
+	</Button>
 </Ui>

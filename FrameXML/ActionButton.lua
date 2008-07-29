@@ -166,10 +166,7 @@ function ActionButton_Update (self)
 			self:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
 			self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 			self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
-			self:RegisterEvent("PLAYER_AURAS_CHANGED");
 			self:RegisterEvent("PLAYER_TARGET_CHANGED");
-			self:RegisterEvent("CRAFT_SHOW");
-			self:RegisterEvent("CRAFT_CLOSE");
 			self:RegisterEvent("TRADE_SKILL_SHOW");
 			self:RegisterEvent("TRADE_SKILL_CLOSE");
 			self:RegisterEvent("PLAYER_ENTER_COMBAT");
@@ -192,10 +189,7 @@ function ActionButton_Update (self)
 			self:UnregisterEvent("ACTIONBAR_UPDATE_USABLE");
 			self:UnregisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 			self:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
-			self:UnregisterEvent("PLAYER_AURAS_CHANGED");
 			self:UnregisterEvent("PLAYER_TARGET_CHANGED");
-			self:UnregisterEvent("CRAFT_SHOW");
-			self:UnregisterEvent("CRAFT_CLOSE");
 			self:UnregisterEvent("TRADE_SKILL_SHOW");
 			self:UnregisterEvent("TRADE_SKILL_CLOSE");
 			self:UnregisterEvent("PLAYER_ENTER_COMBAT");
@@ -370,7 +364,7 @@ function ActionButton_OnEvent (self, event, ...)
 		ActionButton_UpdateUsable(self);
 	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
 		ActionButton_UpdateCooldown(self);
-	elseif ( event == "CRAFT_SHOW" or event == "CRAFT_CLOSE" or event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" ) then
+	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" ) then
 		ActionButton_UpdateState(self);
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
 		if ( IsAttackAction(self.action) ) then

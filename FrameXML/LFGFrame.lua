@@ -1,5 +1,6 @@
 MAX_LFGS_FROM_SERVER = 50;
 LFGS_TO_DISPLAY = 14;
+LFM_BUTTONHEIGHT = 16
 NUM_LFG_CRITERIA = 3;
 LFG_SET_COMMENT_THROTTLE = 0.5;
 LFM_REFRESH_UPDATE_THROTTLE = 0.5;
@@ -10,17 +11,17 @@ LFG_DISABLED_DROPDOWN_NAMES[2] = {};
 LFG_DISABLED_DROPDOWN_NAMES[3] = {};
 
 ----------------------------- LFG Parent Functions -----------------------------
-function LFGParentFrame_OnLoad()
-	PanelTemplates_SetNumTabs(this, 2);
+function LFGParentFrame_OnLoad(self)
+	PanelTemplates_SetNumTabs(self, 2);
 	LFGParentFrame.selectedTab = 1;
-	PanelTemplates_UpdateTabs(this);
-	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	this:RegisterEvent("UPDATE_LFG_LIST");
-	this:RegisterEvent("MEETINGSTONE_CHANGED");
+	PanelTemplates_UpdateTabs(self);
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("UPDATE_LFG_LIST");
+	self:RegisterEvent("MEETINGSTONE_CHANGED");
 end
 
-function LFGParentFrame_OnEvent(event)
-	if ( LFGParentFrame:IsShown() ) then
+function LFGParentFrame_OnEvent(self, event, ...)
+	if ( self:IsShown() ) then
 		LFGParentFrame_UpdateTabs();
 	end
 	if ( event == "PARTY_MEMBERS_CHANGED" and (not UnitInBattleground("player")) ) then
@@ -105,14 +106,14 @@ function LFGParentFrame_UpdateTabs()
 	end
 end
 
-function LFGComment_OnUpdate(elapsed)
+function LFGComment_OnUpdate(self, elapsed)
 	--Send the comment into the system after the throttle time has passed, if something has changed in the editbox
-	if ( LFGComment.sendTimer ) then
-		if ( LFGComment.sendTimer >= LFG_SET_COMMENT_THROTTLE ) then
+	if ( self.sendTimer ) then
+		if ( self.sendTimer >= LFG_SET_COMMENT_THROTTLE ) then
 			LFGFrame_SetLFGComment();
-			LFGComment.sendTimer = nil;
+			self.sendTimer = nil;
 		else
-			LFGComment.sendTimer = LFGComment.sendTimer + elapsed;
+			self.sendTimer = self.sendTimer + elapsed;
 		end
 	end
 end
@@ -137,16 +138,16 @@ function LFMFrame_OnShow()
 	LFGComment:Show();
 end
 
-function LFMFrame_OnLoad()
-	this:RegisterEvent("UPDATE_LFG_TYPES");
+function LFMFrame_OnLoad(self)
+	self:RegisterEvent("UPDATE_LFG_TYPES");
 	-- Event for entire list
-	this:RegisterEvent("UPDATE_LFG_LIST");
-	this:RegisterEvent("MEETINGSTONE_CHANGED");
-	this:RegisterEvent("PARTY_LEADER_CHANGED");
-	this:RegisterEvent("PLAYER_LEVEL_UP");
+	self:RegisterEvent("UPDATE_LFG_LIST");
+	self:RegisterEvent("MEETINGSTONE_CHANGED");
+	self:RegisterEvent("PARTY_LEADER_CHANGED");
+	self:RegisterEvent("PLAYER_LEVEL_UP");
 end
 
-function LFMFrame_OnEvent(event)
+function LFMFrame_OnEvent(self, event, ...)
 	if ( event == "UPDATE_LFG_LIST" or event == "UPDATE_LFG_TYPES" or event == "MEETINGSTONE_CHANGED" ) then
 		LFMFrame_Update();
 	elseif ( event == "PARTY_LEADER_CHANGED" and (not UnitInBattleground("player"))) then
@@ -255,9 +256,9 @@ function LFMFrame_Update()
 
 	-- If need scrollbar resize columns
 	if ( showScrollBar ) then
-		WhoFrameColumn_SetWidth(105, LFMFrameColumnHeader2);
+		WhoFrameColumn_SetWidth(LFMFrameColumnHeader2, 105);
 	else
-		WhoFrameColumn_SetWidth(120, LFMFrameColumnHeader2);
+		WhoFrameColumn_SetWidth(LFMFrameColumnHeader2, 120);
 	end
 
 	-- ScrollFrame update
@@ -310,7 +311,7 @@ function LFMFrame_Update()
 	LFGFrame.loaded = 1;
 end
 
-function LFMFrame_OnUpdate(elapsed)
+function LFMFrame_OnUpdate(self, elapsed)
 	--Enable or disable the refresh button based on CanSendLFGQuery
 	if ( LFMFrameSearchButton.refreshTimer >= LFM_REFRESH_UPDATE_THROTTLE ) then
 		if ( CanSendLFGQuery(UIDropDownMenu_GetSelectedID(LFMFrameTypeDropDown), UIDropDownMenu_GetSelectedID(LFMFrameNameDropDown)) and UIDropDownMenu_GetSelectedID(LFMFrameNameDropDown) ) then
@@ -348,24 +349,24 @@ function LFMFrame_UpdateAutoAdd(autoaddStatus, setCheckbox)
 	SetCVar("lfgAutoFill", autoaddStatus);
 end
 
-function LFMButton_OnClick(button)
+function LFMButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		LFMFrame.selectedLFM = getglobal("LFMFrameButton"..this:GetID()).lfgIndex;
-		LFGFrame.selectedName = getglobal("LFMFrameButton"..this:GetID().."Name"):GetText();
+		LFMFrame.selectedLFM = getglobal("LFMFrameButton"..self:GetID()).lfgIndex;
+		LFGFrame.selectedName = getglobal("LFMFrameButton"..self:GetID().."Name"):GetText();
 		LFMFrame_Update();
 	end
 end
 
-function LFMButton_OnEnter()
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT", 27, -37);
-	if ( this.isLFM ) then
+function LFMButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 27, -37);
+	if ( self.isLFM ) then
 		GameTooltip:SetText(LFM_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	else
 		GameTooltip:SetText(LFG_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	end
 	
-	GameTooltip:AddLine(this.nameLine);
-	local numPartyMembers = this.partyMembers;
+	GameTooltip:AddLine(self.nameLine);
+	local numPartyMembers = self.partyMembers;
 	if ( numPartyMembers > 0 ) then
 		GameTooltip:AddTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
 		-- Only show party members if there are 10 or less
@@ -378,7 +379,7 @@ function LFMButton_OnEnter()
 			local lfmName = UIDropDownMenu_GetSelectedID(LFMFrameNameDropDown);
 			local name, level, class;
 			for i=1, numPartyMembers do
-				name, level, class = GetLFGPartyResults(lfmType, lfmName, this.lfgIndex, i);
+				name, level, class = GetLFGPartyResults(lfmType, lfmName, self.lfgIndex, i);
 				if ( name ) then
 					if ( level == "" ) then
 						level = "??";
@@ -390,9 +391,9 @@ function LFMButton_OnEnter()
 			end
 		end
 	end
-	GameTooltip:AddLine("\n"..this.criteria, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	if ( this.comment and this.comment ~= "" ) then
-		GameTooltip:AddLine("\n"..this.comment, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+	GameTooltip:AddLine("\n"..self.criteria, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	if ( self.comment and self.comment ~= "" ) then
+		GameTooltip:AddLine("\n"..self.comment, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
 	end
 	GameTooltip:Show();
 	
@@ -413,8 +414,8 @@ function Dropdown_GetLFMTypes(...)
 	end
 end
 
-function LFMTypeButton_OnClick()
-	SetLFMTypeCriteria(this:GetID());
+function LFMTypeButton_OnClick(self)
+	SetLFMTypeCriteria(self:GetID());
 	LFGParentFrame_UpdateTabs();
 end
 
@@ -450,8 +451,8 @@ function Dropdown_GetLFMTypeNames(...)
 	end
 end
 
-function LFMNameButton_OnClick()
-	UIDropDownMenu_SetSelectedID(LFMFrameNameDropDown, this:GetID());
+function LFMNameButton_OnClick(self)
+	UIDropDownMenu_SetSelectedID(LFMFrameNameDropDown, self:GetID());
 	if ( not RealPartyIsFull() ) then
 		SetLookingForMore(UIDropDownMenu_GetSelectedID(LFMFrameTypeDropDown), UIDropDownMenu_GetSelectedID(LFMFrameNameDropDown));
 	end
@@ -500,15 +501,15 @@ function LFMFrame_EnableAutoAdd()
 end
 
 ----------------------------- LFG Functions -----------------------------
-function LFGFrame_OnLoad()
-	LFGFrame.firstTimeShown = 1;
-	this:RegisterEvent("LFG_UPDATE");
-	this:RegisterEvent("MEETINGSTONE_CHANGED");
-	this:RegisterEvent("PLAYER_LEVEL_UP");
-	LFGFrame.refreshTimer = 0;
+function LFGFrame_OnLoad(self)
+	self.firstTimeShown = 1;
+	self:RegisterEvent("LFG_UPDATE");
+	self:RegisterEvent("MEETINGSTONE_CHANGED");
+	self:RegisterEvent("PLAYER_LEVEL_UP");
+	self.refreshTimer = 0;
 end
 
-function LFGFrame_OnEvent(event)
+function LFGFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_UPDATE" or event == "MEETINGSTONE_CHANGED" ) then
 		LFGFrame_Update();
 		LFGFrame_UpdateDropDowns();
@@ -536,7 +537,7 @@ function LFGFrame_OnHide()
 	LFGComment.sendTimer = nil;
 end
 
-function LFGFrame_OnUpdate(elapsed)
+function LFGFrame_OnUpdate(self, elapsed)
 	--Upate the state of autojoin
 	--If your party is full you can't autojoin
 	if ( LFGFrame.refreshTimer >= LFG_REFRESH_UPDATE_THROTTLE ) then
@@ -682,8 +683,8 @@ function Dropdown_GetLFGTypes(...)
 	end
 end
 
-function LFGTypeButton_OnClick()
-	SetLFGTypeCriteria(getglobal(this.owner), this:GetID());
+function LFGTypeButton_OnClick(self)
+	SetLFGTypeCriteria(getglobal(self.owner), self:GetID());
 	LFGFrame_UpdateDropDowns();
 end
 
@@ -754,8 +755,8 @@ function Dropdown_GetLFGTypeNames(...)
 	end
 end
 
-function LFGNameButton_OnClick()
-	SetLFGNameCriteria(getglobal(this.owner), this:GetID(), this.value);
+function LFGNameButton_OnClick(self)
+	SetLFGNameCriteria(getglobal(self.owner), self:GetID(), self.value);
 	LFGFrame_UpdateDropDowns();
 end
 

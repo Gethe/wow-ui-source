@@ -172,14 +172,12 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-        self.name = CONTROLS_LABEL;
-        self.options = ControlsPanelOptions;
-        BlizzardOptionsPanel_OnLoad(self);
-        UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, GetModifiedClick("AUTOLOOTTOGGLE"));
-        UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelMailAutoLootKeyDropDown, GetModifiedClick("AUTOMAILLOOTTOGGLE"));
-        UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelAutoLootKeyDropDown);
-        UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelMailAutoLootKeyDropDown);
-      </OnLoad>
+				self.name = CONTROLS_LABEL;
+				self.options = ControlsPanelOptions;
+				BlizzardOptionsPanel_OnLoad(self);
+				UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, GetModifiedClick("AUTOLOOTTOGGLE"));
+				UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelAutoLootKeyDropDown);
+			</OnLoad>
 			<OnShow>
 				BlizzardOptionsPanel_OnShow(self);
 			</OnShow>
@@ -287,7 +285,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLootAtMouse" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-16"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -295,116 +293,53 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "autoLootDefault";
-						self.setFunc = function (value)
-							BlizzardOptionsPanel_UpdateAutoLootDropDown(value);
-						end
+						self.setFunc = BlizzardOptionsPanel_UpdateAutoLootDropDown;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-      <Frame name="$parentAutoLootKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="TOPRIGHT">
-            <Offset>
-              <AbsDimension x="150" y="0"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-        <Layers>
-          <Layer level="BACKGROUND">
-            <FontString name="$parentLabel" inherits="GameFontHighlight" text="AUTO_LOOT_KEY_TEXT">
-              <Anchors>
-                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-                  <Offset>
-                    <AbsDimension x="16" y="3"/>
-                  </Offset>
-                </Anchor>
-              </Anchors>
-            </FontString>
-          </Layer>
-        </Layers>
-        <Scripts>
-          <OnLoad>
-            self.type = CONTROLTYPE_DROPDOWN;
-            self:RegisterEvent("PLAYER_ENTERING_WORLD");
-            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-            InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad(self);
-          </OnLoad>
-          <OnEnter>
-            if ( not self.isDisabled ) then
-            GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-            GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
-            end
-          </OnEnter>
-          <OnEvent>
-            InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...);
-          </OnEvent>
-          <OnLeave>
-            GameTooltip:Hide();
-          </OnLeave>
-        </Scripts>
-      </Frame>
-      <CheckButton name="$parentAutoLootMail" inherits="InterfaceOptionsCheckButtonTemplate">
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="0" y="-20"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-        <Scripts>
-          <OnLoad>
-            self.type = CONTROLTYPE_CHECKBOX;
-            self.cvar = "mailAutoLootDefault";
-            self.setFunc = function (value)
-            BlizzardOptionsPanel_UpdateMailAutoLootDropDown(value);
-            end
-            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-          </OnLoad>
-        </Scripts>
-      </CheckButton>
-      <Frame name="$parentMailAutoLootKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentAutoLootMail" relativePoint="TOPRIGHT">
-            <Offset>
-              <AbsDimension x="150" y="0"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-        <Layers>
-          <Layer level="BACKGROUND">
-            <FontString name="$parentLabel" inherits="GameFontHighlight" text="MAIL_AUTO_LOOT_KEY_TEXT">
-              <Anchors>
-                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-                  <Offset>
-                    <AbsDimension x="16" y="3"/>
-                  </Offset>
-                </Anchor>
-              </Anchors>
-            </FontString>
-          </Layer>
-        </Layers>
-        <Scripts>
-          <OnLoad>
-            self.type = CONTROLTYPE_DROPDOWN;
-            self:RegisterEvent("PLAYER_ENTERING_WORLD");
-            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-            InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnLoad(self);
-          </OnLoad>
-          <OnEnter>
-            if ( not self.isDisabled ) then
-            GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-            GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
-            end
-          </OnEnter>
-          <OnEvent>
-            InterfaceOptionsControlsPanelMailAutoLootKeyDropDown_OnEvent (self, event, ...);
-          </OnEvent>
-          <OnLeave>
-            GameTooltip:Hide();
-          </OnLeave>
-        </Scripts>
-      </Frame>
+			<Frame name="$parentAutoLootKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-13" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlight" text="AUTO_LOOT_KEY_TEXT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						if ( not self.isDisabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						end
+					</OnEnter>
+					<OnEvent>
+						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...);
+					</OnEvent>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
 		</Frames>
 	</Frame>
 	
@@ -573,7 +508,7 @@
 					</OnEnter>
 					<OnEvent>
 						if ( event == "VARIABLES_LOADED" ) then
-							InterfaceOptionsCombatPanelTOTDropDown_OnLoad();
+							InterfaceOptionsCombatPanelTOTDropDown_OnLoad(self);
 						end
 					</OnEvent>
 					<OnLeave>
@@ -724,6 +659,7 @@
 						self:SetValue(value);
 					</OnClick>
 					<OnEvent>
+						local arg1 = ...;
 						if ( arg1 == "player" ) then
 							self:SetChecked(ShowingCloak());
 							self.value = ((ShowingCloak() and "1") or "0");
@@ -766,6 +702,7 @@
 						self:SetValue(value);	
 					</OnClick>
 					<OnEvent>
+						local arg1 = ...;
 						if ( arg1 == "player" ) then
 							self:SetChecked(ShowingHelm());
 							self.value = ((ShowingHelm() and "1") or "0");
@@ -856,7 +793,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<CheckButton name="$parentShowTimeManager" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowClock" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
 						<Offset>
@@ -866,9 +803,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.type = CONTROLTYPE_CHECKBOX;
-						this.cvar = "showTimeManager";
-						this.setFunc = InterfaceOptionsDisplayPanelShowTimeManager_SetFunc;
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showClock";
+						self.setFunc = InterfaceOptionsDisplayPanelShowClock_SetFunc;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1167,6 +1104,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showChatIcons";
+						self.setFunc = function (value) CHAT_SHOW_ICONS = value; end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1785,7 +1723,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentEnableFCT" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="155" y="-139"/>
+							<AbsDimension x="155" y="-159"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1988,16 +1926,33 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "fctEnergyGains";
-						self.uvar = "COMBAT_TEXT_SHOW_MANA";
+						self.uvar = "COMBAT_TEXT_SHOW_ENERGIZE";
 						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
-			<CheckButton name="$parentHonorGains" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+			</CheckButton>
+			<CheckButton name="$parentPeriodicEnergyGains" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentEnergyGains" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctPeriodicEnergyGains";
+						self.uvar = "COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE";
+						self.setFunc = BlizzardOptionsPanel_UpdateCombatText;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentHonorGains" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPeriodicEnergyGains" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="4"/>
 					</Anchor>
 				</Anchors>

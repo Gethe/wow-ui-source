@@ -1,3 +1,4 @@
+
 NUM_FACTIONS_DISPLAYED = 15;
 REPUTATIONFRAME_FACTIONHEIGHT = 26;
 FACTION_BAR_COLORS = {
@@ -17,30 +18,105 @@ MAX_PLAYER_LEVEL_TABLE[1] = 70;
 MAX_PLAYER_LEVEL_TABLE[2] = 80;
 MAX_PLAYER_LEVEL = 0;
 
-function ReputationFrame_OnLoad()
-	this:RegisterEvent("UPDATE_FACTION");
+function ReputationFrame_OnLoad(self)
+	self:RegisterEvent("UPDATE_FACTION");
 	-- Initialize max player level
 	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetAccountExpansionLevel()];
+	--[[for i=1, NUM_FACTIONS_DISPLAYED, 1 do
+		getglobal("ReputationBar"..i.."FactionStanding"):SetPoint("CENTER",getglobal("ReputationBar"..i.."ReputationBar"));
+	end
+	--]]
 end
 
 function ReputationFrame_OnShow()
 	ReputationFrame_Update();
 end
 
-function ReputationFrame_OnEvent(event)
+function ReputationFrame_OnEvent(self, event, ...)
 	if ( event == "UPDATE_FACTION" ) then
-		if ( this:IsVisible() ) then
+		if ( self:IsVisible() ) then
 			ReputationFrame_Update();
 		end
 	end
 end
 
+function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a binary table of type isHeader, isChild
+	local factionRowName = factionRow:GetName()
+	local factionBar = getglobal(factionRowName.."ReputationBar");
+	local factionTitle = getglobal(factionRowName.."FactionName");
+	local factionButton = getglobal(factionRowName.."ExpandOrCollapseButton");
+	local factionStanding = getglobal(factionRowName.."ReputationBarFactionStanding");
+	local factionBackground = getglobal(factionRowName.."Background");
+	local factionLeftTexture = getglobal(factionRowName.."ReputationBarLeftTexture");
+	local factionRightTexture = getglobal(factionRowName.."ReputationBarRightTexture");
+	
+	if ( rowType == 0 ) then --Not header, not child
+		factionRow:SetWidth(295);
+		factionButton:Hide();
+		factionTitle:SetPoint("LEFT", factionRow, "LEFT", 10, 0);
+		factionTitle:SetFontObject(GameFontHighlightSmall);
+		factionTitle:SetWidth(160);
+		factionBackground:Show();
+		factionLeftTexture:SetHeight(20);
+		factionRightTexture:SetHeight(20);
+		factionLeftTexture:SetTexCoord(0.691, 1.0, 0.0, 0.3125);
+		factionRightTexture:SetTexCoord(0.0, 0.238, 0.344, 0.656);
+	elseif ( rowType == 1 ) then --Child, not header
+		factionRow:SetWidth(278);
+		factionButton:Hide()
+		factionTitle:SetPoint("LEFT", factionRow, "LEFT", 10, 0);
+		factionTitle:SetFontObject(GameFontHighlightSmall);
+		factionTitle:SetWidth(150);
+		factionBackground:Show();
+		factionLeftTexture:SetHeight(20);
+		factionRightTexture:SetHeight(20);
+		factionLeftTexture:SetTexCoord(0.691, 1.0, 0.0, 0.3125);
+		factionRightTexture:SetTexCoord(0.0, 0.238, 0.344, 0.656);
+	elseif ( rowType == 2 ) then	--Header, not child
+		factionRow:SetWidth(295);
+		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);
+		factionButton:Show();
+		factionTitle:SetPoint("LEFT",factionButton,"RIGHT",10,0);
+		factionTitle:SetFontObject(GameFontNormalLeft);
+		factionTitle:SetWidth(145);
+		factionBackground:Hide()	
+		factionLeftTexture:SetHeight(15);
+		factionRightTexture:SetHeight(15);
+		factionLeftTexture:SetTexCoord(0.691, 1.0, 0.047, 0.281);
+		factionRightTexture:SetTexCoord(0.0, 0.238, 0.3906, 0.625);
+	elseif ( rowType == 3 ) then --Header and child
+		factionRow:SetWidth(278);
+		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);	--Change this
+		factionButton:Show();
+		factionTitle:SetPoint("LEFT" ,factionButton, "RIGHT", 10, 0);
+		factionTitle:SetFontObject(GameFontNormalLeft);
+		factionTitle:SetWidth(135);
+		factionBackground:Hide()
+		factionLeftTexture:SetHeight(15);
+		factionRightTexture:SetHeight(15);
+		factionLeftTexture:SetTexCoord(0.691, 1.0, 0.047, 0.281);
+		factionRightTexture:SetTexCoord(0.0, 0.238, 0.3906, 0.625);
+	end
+	
+	if ( (hasRep) or (rowType == 0) or (rowType == 1)) then
+		factionStanding:Show();
+		factionBar:Show();
+	else
+		factionStanding:Hide();
+		factionBar:Hide();
+	end
+end
 function ReputationFrame_Update()
 	local numFactions = GetNumFactions();
-	local factionIndex, factionName, factionCheck, factionStanding, factionBar, factionHeader, color, tooltipStanding;
-	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, isWatched;
+	local factionIndex, factionRow, factionTitle, factionStanding, factionBar, factionButton, factionTexture, color, tooltipStanding;
+	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, isWatched, isChild;
 	local atWarIndicator, rightBarTexture;
 
+	local previousBigTexture = ReputationFrameTopTreeTexture;	--In case we have a line going off the panel to the top
+	previousBigTexture:ClearAllPoints()	--We do this so that it is possible to set the bottom part of the frame again easily.
+	previousBigTexture:SetPoint("TOP", ReputationFrame, "TOPLEFT", 36, -75);
+	previousBigTexture:Hide()
+	
 	-- Update scroll frame
 	if ( not FauxScrollFrame_Update(ReputationListScrollFrame, numFactions, NUM_FACTIONS_DISPLAYED, REPUTATIONFRAME_FACTIONHEIGHT ) ) then
 		ReputationListScrollFrameScrollBar:SetValue(0);
@@ -48,117 +124,150 @@ function ReputationFrame_Update()
 	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame);
 
 	local gender = UnitSex("player");
+	
+	local i;
 	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
 		factionIndex = factionOffset + i;
-		factionBar = getglobal("ReputationBar"..i);
-		factionHeader = getglobal("ReputationHeader"..i);
-		factionCheck = getglobal("ReputationBar"..i.."Check");
+		factionRow = getglobal("ReputationBar"..i);
+		factionBar = getglobal("ReputationBar"..i.."ReputationBar");
+		factionTitle = getglobal("ReputationBar"..i.."FactionName");
+		factionButton = getglobal("ReputationBar"..i.."ExpandOrCollapseButton");
+		factionTexture = getglobal("ReputationBar"..i.."TreeTexture");
+		factionStanding = getglobal("ReputationBar"..i.."ReputationBarFactionStanding")
 		if ( factionIndex <= numFactions ) then
-			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, isWatched = GetFactionInfo(factionIndex);
-			if ( isHeader ) then
-				factionHeader:SetText(name);
-				if ( isCollapsed ) then
-					factionHeader:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
-				else
-					factionHeader:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up"); 
-				end
-				factionHeader.index = factionIndex;
-				factionHeader.isCollapsed = isCollapsed;
-				factionBar:Hide();
-				factionHeader:Show();
-				factionCheck:Hide();
+			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild = GetFactionInfo(factionIndex);
+			factionTitle:SetText(name);
+			if ( isCollapsed ) then
+				factionButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
 			else
-				factionStanding = GetText("FACTION_STANDING_LABEL"..standingID, gender);
-				factionName = getglobal("ReputationBar"..i.."FactionName");
-				factionName:SetText(name);
-				getglobal("ReputationBar"..i.."FactionStanding"):SetText(factionStanding);
-				
-				atWarIndicator = getglobal("ReputationBar"..i.."AtWarCheck");
-				rightBarTexture = getglobal("ReputationBar"..i.."ReputationBarRight");
-				
-				if ( atWarWith ) then
-					atWarIndicator:Show();
-				else
-					atWarIndicator:Hide();
-				end
+				factionButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up"); 
+			end
+			factionRow.index = factionIndex;
+			factionRow.isCollapsed = isCollapsed;
+			local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+			factionStanding:SetText(factionStandingtext);
 
-				-- Normalize values
-				barMax = barMax - barMin;
-				barValue = barValue - barMin;
-				barMin = 0;
-				
-				factionBar.id = factionIndex;
-				factionBar.standingText = factionStanding;
-				factionBar.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
-				factionBar:SetMinMaxValues(0, barMax);
-				factionBar:SetValue(barValue);
-				color = FACTION_BAR_COLORS[standingID];
-				factionBar:SetStatusBarColor(color.r, color.g, color.b);
-				factionBar:SetID(factionIndex);
-				factionBar:Show();
-				factionHeader:Hide();
+			--Normalize Values
+			barMax = barMax - barMin;
+			barValue = barValue - barMin;
+			barMin = 0;
+			
+			factionRow.standingText = factionStandingtext;
+			factionRow.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
+			factionBar:SetMinMaxValues(0, barMax);
+			factionBar:SetValue(barValue);
+			local color = FACTION_BAR_COLORS[standingID];
+			factionBar:SetStatusBarColor(color.r, color.g, color.b);
+			
+			if ( (isHeader) and not (isChild) ) then
+				factionTexture:SetTexCoord(0.29296, 0.3125, 0.359375, 0.5);
+				factionTexture:ClearAllPoints()
+				factionTexture:SetPoint("TOP", factionButton, "CENTER", 0, 0);
+				factionTexture:SetWidth(5);
+				factionTexture:SetHeight(12);
+				factionTexture:Hide()
+				previousBigTexture = factionTexture;
+			elseif ( isHeader and isChild and previousBigTexture) then
+				factionTexture:SetTexCoord(0.3125, 0.36328, 0.421875, 0.46875);
+				factionTexture:ClearAllPoints()
+				factionTexture:SetPoint("RIGHT", factionButton, "CENTER", 0, 0)
+				factionTexture:SetWidth(17);
+				factionTexture:SetHeight(5);
+				previousBigTexture:SetPoint("BOTTOMLEFT", factionTexture, "TOPLEFT", 2, -1);
+				previousBigTexture:Show();
+				factionTexture:Show();
+			else
+				factionTexture:Hide();
+			end
+			ReputationFrame_SetRowType(factionRow, ((isChild and 1 or 0) + (isHeader and 2 or 0)), hasRep);
+			
+			
+			factionRow:Show();
 
-				-- Show a checkmark if this faction is being watched
-				if ( isWatched ) then
-					factionCheck:Show();
-					factionName:SetWidth(100);
-					factionCheck:SetPoint("LEFT", factionName, "LEFT", factionName:GetStringWidth(), 0);
-				else
-					factionCheck:Hide();
-					factionName:SetWidth(110);
-				end
-				
-				-- Update details if this is the selected faction
-				if ( factionIndex == GetSelectedFaction() ) then
-					if ( ReputationDetailFrame:IsShown() ) then
-						ReputationDetailFactionName:SetText(name);
-						ReputationDetailFactionDescription:SetText(description);
-						if ( atWarWith ) then
-							ReputationDetailAtWarCheckBox:SetChecked(1);
-						else
-							ReputationDetailAtWarCheckBox:SetChecked(nil);
-						end
-						if ( canToggleAtWar ) then
-							ReputationDetailAtWarCheckBox:Enable();
-							ReputationDetailAtWarCheckBoxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-						else
-							ReputationDetailAtWarCheckBox:Disable();
-							ReputationDetailAtWarCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-
-						end
-						if ( IsFactionInactive(factionIndex) ) then
-							ReputationDetailInactiveCheckBox:SetChecked(1);
-						else
-							ReputationDetailInactiveCheckBox:SetChecked(nil);
-						end
-						if ( isWatched ) then
-							ReputationDetailMainScreenCheckBox:SetChecked(1);
-						else
-							ReputationDetailMainScreenCheckBox:SetChecked(nil);
-						end
+			--[[how a checkmark if this faction is being watched
+			if ( isWatched ) then
+				factionCheck:Show();
+				factionName:SetWidth(100);
+				factionCheck:SetPoint("LEFT", factionName, "LEFT", factionName:GetStringWidth(), 0);
+			else
+				factionCheck:Hide();
+				factionName:SetWidth(110);
+			end
+			--]]
+			-- Update details if this is the selected faction
+			if ( atWarWith ) then
+				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight"):Show();
+			else
+				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight"):Hide();
+			end
+			if ( factionIndex == GetSelectedFaction() ) then
+				if ( ReputationDetailFrame:IsShown() ) then
+					ReputationDetailFactionName:SetText(name);
+					ReputationDetailFactionDescription:SetText(description);
+					if ( atWarWith ) then
+						ReputationDetailAtWarCheckBox:SetChecked(1);
+					else
+						ReputationDetailAtWarCheckBox:SetChecked(nil);
 					end
-					getglobal("ReputationBar"..i.."Highlight1"):Show();
-					getglobal("ReputationBar"..i.."Highlight2"):Show();
-				else
-					getglobal("ReputationBar"..i.."Highlight1"):Hide();
-					getglobal("ReputationBar"..i.."Highlight2"):Hide();
+					if ( canToggleAtWar ) then
+						ReputationDetailAtWarCheckBox:Enable();
+						ReputationDetailAtWarCheckBoxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+					else
+						ReputationDetailAtWarCheckBox:Disable();
+						ReputationDetailAtWarCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+
+					end
+					if ( IsFactionInactive(factionIndex) ) then
+						ReputationDetailInactiveCheckBox:SetChecked(1);
+					else
+						ReputationDetailInactiveCheckBox:SetChecked(nil);
+					end
+					if ( isWatched ) then
+						ReputationDetailMainScreenCheckBox:SetChecked(1);
+					else
+						ReputationDetailMainScreenCheckBox:SetChecked(nil);
+					end
+					getglobal("ReputationBar"..i.."ReputationBarHighlight1"):Show();
+					getglobal("ReputationBar"..i.."ReputationBarHighlight2"):Show();
 				end
+			else
+				getglobal("ReputationBar"..i.."ReputationBarHighlight1"):Hide();
+				getglobal("ReputationBar"..i.."ReputationBarHighlight2"):Hide();
 			end
 		else
-			factionHeader:Hide();
-			factionBar:Hide();
+			factionRow:Hide();
 		end
 	end
 	if ( GetSelectedFaction() == 0 ) then
 		ReputationDetailFrame:Hide();
 	end
+	
+	local i = NUM_
+	for i = (NUM_FACTIONS_DISPLAYED + factionOffset + 1), numFactions, 1 do
+		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, isWatched, isChild, hasRep = GetFactionInfo(i);
+		if not name then break; end
+		if ( isHeader and isChild ) then
+			local _,button = previousBigTexture:GetPoint("TOP")
+			previousBigTexture:ClearAllPoints();
+			if ( button ~= ReputationFrame ) then
+				previousBigTexture:SetPoint("TOP", button, "CENTER", 5, 0);
+				previousBigTexture:SetHeight((NUM_FACTIONS_DISPLAYED-previousBigTexture:GetParent():GetID() + 1)*23 -7);
+				previousBigTexture:Show()
+			else
+			
+			end
+			break;
+		elseif ( (isHeader) and ( not isChild )) then
+			break;
+		end
+	end
 end
 
-function ReputationBar_OnClick()
-	if ( ReputationDetailFrame:IsShown() and (GetSelectedFaction() == this.id) ) then
+function ReputationBar_OnClick(self)
+	if ( ReputationDetailFrame:IsShown() and (GetSelectedFaction() == self.index) ) then
 		ReputationDetailFrame:Hide();
 	else
-		SetSelectedFaction(this.id);
+		SetSelectedFaction(self.index);
 		ReputationDetailFrame:Show();
 		ReputationFrame_Update();
 	end

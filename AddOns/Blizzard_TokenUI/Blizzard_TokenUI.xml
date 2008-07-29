@@ -1,0 +1,610 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Button name="TokenButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="295" y="17"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentStripe" setAllPoints="true">
+					<Color a=".08" r="1" g="1" b="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString name="$parentCount" inherits="GameFontHighlightRight" text="100">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset x="32" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentIcon">
+					<Size>
+						<AbsDimension x="15" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentCount" relativePoint="RIGHT">
+							<Offset x="2" y="-1"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontHighlightLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT">
+							<Offset x="11" y="1"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="-3" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentCategoryRight" file="Interface\TokenFrame\UI-TokenFrame-CategoryButton">
+					<Size>
+						<AbsDimension x="37" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.14453125" top="0.296875" bottom="0.578125"/>
+				</Texture>
+				<Texture name="$parentCategoryLeft" file="Interface\TokenFrame\UI-TokenFrame-CategoryButton">
+					<Size>
+						<AbsDimension x="256" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+						<Anchor point="RIGHT" relativeTo="$parentCategoryRight" relativePoint="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.28125"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentExpandIcon" file="Interface\Buttons\UI-PlusMinus-Buttons">
+					<Size>
+						<AbsDimension x="7" y="7"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="-8" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentIcon">
+						<Offset x="0" y="0"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetCurrencyToken(self:GetParent().index);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				TokenButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				TokenButton_OnClick(self);
+			</OnClick>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightTexture name="$parentHighlight" file="Interface\TokenFrame\UI-TokenFrame-CategoryButton" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset x="3" y="-2"/>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset x="-3" y="2"/>
+				</Anchor>
+			</Anchors>
+			<TexCoords left="0" right="1" top="0.609375" bottom="0.796875"/>
+		</HighlightTexture>
+	</Button>
+	<Frame name="TokenFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		 <Size>
+            <AbsDimension x="384" y="512"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="0" y="-104"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+        <Layers>
+			<Layer level="ARTWORK">
+            	<FontString name="TokenFrameTitle" inherits="GameFontNormal" text="TOKENS">
+					<Size>
+						<AbsDimension x="300" y="12"/>
+					</Size>
+					<Anchors>
+					<Anchor point="TOP" relativeTo="TokenFrame" relativePoint="TOP">
+						<Offset x="0" y="-18"/>
+					</Anchor>
+				</Anchors>
+				</FontString>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\TalentFrame\UI-TalentFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\TalentFrame\UI-TalentFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+            </Layer>
+			<Layer level="BACKGROUND">
+                <Texture name="TokenFramePortrait" file="Interface\TokenFrame\UI-TokenFrame-Icon">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="$parentHonorFrame">
+            	<Size>
+            		<AbsDimension x="232" y="20"/>
+            	</Size>
+            	<Anchors>
+            		<Anchor point="TOPLEFT">
+            			<Offset x="90" y="-46"/>
+            		</Anchor>
+            	</Anchors>
+            	<Layers>
+            		<Layer level="BACKGROUND">
+						<Texture name="$parentHonorLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentHonorRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentHonorMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="248" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentHonorLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentHonorRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+            		</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentHonorLabel" inherits="GameFontNormalSmall" text="PVP_LABEL_HONOR">
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset x="5" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentHonor" inherits="GameFontHighlightSmall" text="99999">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentHonorLabel" relativePoint="RIGHT">
+									<Offset x="8" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentHonorIcon">
+							<Size>
+								<AbsDimension x="28" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentHonor" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="4" y="-6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentArenaIcon" file="Interface\PVPFrame\PVP-ArenaPoints-Icon">
+							<Size>
+								<AbsDimension x="17" y="15"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="-5" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentArena" inherits="GameFontHighlightSmall" text="99999">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentArenaIcon" relativePoint="LEFT">
+									<Offset x="-4" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentArenaLabel" inherits="GameFontNormalSmall" text="PVP_LABEL_ARENA">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentArena" relativePoint="LEFT">
+									<Offset x="-4" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+            	</Layers>
+            </Frame>
+			<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
+				<Size x="299" y="330"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="26" y="-77"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="-12"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="11"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TokenFrame" relativePoint="BOTTOMRIGHT">
+						<Offset x="-115" y="84"/>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-421"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="CharacterFrame" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-44" y="-25"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				TokenFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				TokenFrame_Update();
+			</OnShow>
+			<OnHide>
+				TokenFramePopup:Hide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="TokenFramePopup" parent="TokenFrame" hidden="true">
+		<Size>
+			<AbsDimension x="205" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="TokenFrame" relativePoint="TOPRIGHT">
+				<Offset x="-33" y="-28"/>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="TOKEN_OPTIONS">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TokenFramePopup" relativePoint="TOPLEFT">
+							<Offset x="25" y="-17"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-6" y="-7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentInactiveCheckBox" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="26" y="26"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TokenFramePopup" relativePoint="TOPLEFT">
+						<Offset x="32" y="-32"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						OptionsCheckButton_SetText(self, UNUSED);
+						getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							SetCurrencyUnused(TokenFrame.selectedID, 1);
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+							SetCurrencyUnused(TokenFrame.selectedID, 0);
+						end
+						TokenFrame_Update();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(TOKEN_MOVE_TO_UNUSED, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentBackpackCheckBox" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="26" y="26"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TokenFramePopupInactiveCheckBox" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						OptionsCheckButton_SetText(self, SHOW_ON_BACKPACK);
+						getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							SetCurrencyBackpack(TokenFrame.selectedID, 1);
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+							SetCurrencyBackpack(TokenFrame.selectedID, 0);
+						end
+						TokenFrame_Update();
+						BackpackTokenFrame_Update();
+						ManageBackpackTokenFrame();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(TOKEN_SHOW_ON_BACKPACK, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+	</Frame>
+	<Frame name="BackpackTokenTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="12"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentCount" inherits="GameFontHighlightSmall">
+					<Size x="30" y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIcon">
+							<Offset x="2" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				local name = self:GetName();
+				self.icon = getglobal(name.."Icon");
+				self.count = getglobal(name.."Count");
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetCurrencyToken(self.index);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="BackpackTokenFrame" parent="UIParent">
+		<Size>
+			<AbsDimension x="183" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\ContainerFrame\UI-Backpack-TokenFrame">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentToken1" inherits="BackpackTokenTemplate">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset x="13" y="1"/>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentToken2" inherits="BackpackTokenTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentToken1" relativePoint="RIGHT">
+						<Offset x="2" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentToken3" inherits="BackpackTokenTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentToken2" relativePoint="RIGHT">
+						<Offset x="2" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentToken4" inherits="BackpackTokenTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentToken3" relativePoint="RIGHT">
+						<Offset x="2" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

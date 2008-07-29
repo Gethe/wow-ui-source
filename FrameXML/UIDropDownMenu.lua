@@ -19,10 +19,7 @@ UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = nil;
 OPEN_DROPDOWNMENUS = {};
 
 function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menuList)
-	if ( not frame ) then
-		frame = this;
-	end
-
+	assert(frame);
 	frame.menuList = menuList;
 
 	if ( frame:GetName() ~= UIDROPDOWNMENU_OPEN_MENU ) then
@@ -72,15 +69,15 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 end
 
 -- If dropdown is visible then see if its timer has expired, if so hide the frame
-function UIDropDownMenu_OnUpdate(elapsed)
-	if ( not this.showTimer or not this.isCounting ) then
+function UIDropDownMenu_OnUpdate(self, elapsed)
+	if ( not self.showTimer or not self.isCounting ) then
 		return;
-	elseif ( this.showTimer < 0 ) then
-		this:Hide();
-		this.showTimer = nil;
-		this.isCounting = nil;
+	elseif ( self.showTimer < 0 ) then
+		self:Hide();
+		self.showTimer = nil;
+		self.isCounting = nil;
 	else
-		this.showTimer = this.showTimer - elapsed;
+		self.showTimer = self.showTimer - elapsed;
 	end
 end
 
@@ -117,9 +114,7 @@ info.hasColorSwatch = [nil, true]  --  Show color swatch or not, for color selec
 info.r = [1 - 255]  --  Red color value of the color swatch
 info.g = [1 - 255]  --  Green color value of the color swatch
 info.b = [1 - 255]  --  Blue color value of the color swatch
-info.textR = [1 - 255]  --  Red color value of the button text
-info.textG = [1 - 255]  --  Green color value of the button text
-info.textB = [1 - 255]  --  Blue color value of the button text
+info.colorCode = [STRING] -- "|cAARRGGBB" embedded hex value of the button text color. Only used when button is enabled
 info.swatchFunc = [function()]  --  Function called by the color picker on color change
 info.hasOpacity = [nil, 1]  --  Show the opacity slider on the colorpicker frame
 info.opacity = [0.0 - 1.0]  --  Percentatge of the opacity, 1.0 is fully shown, 0 is transparent
@@ -134,7 +129,7 @@ info.tooltipText = [nil, STRING] -- Text of the tooltip shown on mouseover
 info.justifyH = [nil, "CENTER"] -- Justify button text
 info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
-info.textHeight = [NUMBER] -- font height for button text
+info.fontObject = [FONT] -- font object replacement for Normal and Highlight
 info.menuTable = [TABLE] -- This contains an array of info tables to be displayed as a child menu
 ]]
 
@@ -176,7 +171,6 @@ function UIDropDownMenu_CreateFrames(level, index)
 		newList:SetID(UIDROPDOWNMENU_MAXLEVELS);
 		newList:SetWidth(180)
 		newList:SetHeight(10)
-		newList:SetScript("OnHide", UIDropDownMenu_OnHide);
 		for i=UIDROPDOWNMENU_MINBUTTONS+1, UIDROPDOWNMENU_MAXBUTTONS do
 			local newButton = CreateFrame("Button", "DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Button"..i, newList, "UIDropDownMenuButtonTemplate");
 			newButton:SetID(i);
@@ -221,17 +215,36 @@ function UIDropDownMenu_AddButton(info, level)
 	local invisibleButton = getglobal(button:GetName().."InvisibleButton");
 	
 	-- Default settings
-	button:SetDisabledTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	button:SetDisabledFontObject(GameFontDisableSmallLeft);
 	invisibleButton:Hide();
 	button:Enable();
 	
+	-- If not clickable then disable the button and set it white
+	if ( info.notClickable ) then
+		info.disabled = 1;
+		button:SetDisabledFontObject(GameFontHighlightSmallLeft);
+	end
+
+	-- Set the text color and disable it if its a title
+	if ( info.isTitle ) then
+		info.disabled = 1;
+		button:SetDisabledFontObject(GameFontNormalSmallLeft);
+	end
+	
+	-- Disable the button if disabled and turn off the color code
+	if ( info.disabled ) then
+		button:Disable();
+		invisibleButton:Show();
+		info.colorCode = nil;
+	end
+
 	-- Configure button
 	if ( info.text ) then
-		button:SetText(info.text);
-		if ( info.textHeight ) then
-			button:SetFont(STANDARD_TEXT_FONT, info.textHeight);
+		-- look for inline color code this is only if the button is enabled
+		if ( info.colorCode ) then
+			button:SetText(info.colorCode..info.text.."|r");
 		else
-			button:SetFont(STANDARD_TEXT_FONT, UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT);
+			button:SetText(info.text);
 		end
 		-- Determine the width of the button
 		width = normalText:GetWidth() + 40;
@@ -260,13 +273,13 @@ function UIDropDownMenu_AddButton(info, level)
 		if ( width > listFrame.maxWidth ) then
 			listFrame.maxWidth = width;
 		end
-		-- If a textR is set then set the vertex color of the button text
-		if ( info.textR ) then
-			button:SetTextColor(info.textR, info.textG, info.textB);
-			button:SetHighlightTextColor(info.textR, info.textG, info.textB);
+		-- Check to see if there is a replacement font
+		if ( info.fontObject ) then
+			button:SetNormalFontObject(info.fontObject);
+			button:SetHighlightFontObject(info.fontObject);
 		else
-			button:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			button:SetHighlightTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			button:SetNormalFontObject(GameFontHighlightSmallLeft);
+			button:SetHighlightFontObject(GameFontHighlightSmallLeft);
 		end
 	else
 		button:SetText("");
@@ -384,24 +397,6 @@ function UIDropDownMenu_AddButton(info, level)
 		colorSwatch:Hide();
 	end
 
-	-- If not clickable then disable the button and set it white
-	if ( info.notClickable ) then
-		info.disabled = 1;
-		button:SetDisabledTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	end
-
-	-- Set the text color and disable it if its a title
-	if ( info.isTitle ) then
-		info.disabled = 1;
-		button:SetDisabledTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	end
-	
-	-- Disable the button if disabled
-	if ( info.disabled ) then
-		button:Disable();
-		invisibleButton:Show();
-	end
-
 	-- Set the height of the listframe
 	listFrame:SetHeight((index * UIDROPDOWNMENU_BUTTON_HEIGHT) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2));
 
@@ -411,9 +406,7 @@ end
 function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	local button, checked, checkImage, normalText, width;
 	local maxWidth = 0;
-	if ( not frame ) then
-		frame = this;
-	end
+	assert(frame);
 	if ( not dropdownLevel ) then
 		dropdownLevel = UIDROPDOWNMENU_MENU_LEVEL;
 	end
@@ -441,9 +434,9 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 		checkImage = getglobal("DropDownList"..dropdownLevel.."Button"..i.."Check");
 		if ( checked ) then
 			if ( useValue ) then
-				UIDropDownMenu_SetText(button.value, frame);
+				UIDropDownMenu_SetText(frame, button.value);
 			else
-				UIDropDownMenu_SetText(button:GetText(), frame);
+				UIDropDownMenu_SetText(frame, button:GetText());
 			end
 			button:LockHighlight();
 			checkImage:Show();
@@ -528,31 +521,31 @@ function UIDropDownMenu_GetSelectedValue(frame)
 	return frame.selectedValue;
 end
 
-function UIDropDownMenuButton_OnClick()
-	local checked = this.checked;
+function UIDropDownMenuButton_OnClick(self)
+	local checked = self.checked;
 	if ( type (checked) == "function" ) then
 		checked = checked();
 	end
 
-	if ( this.keepShownOnClick ) then
+	if ( self.keepShownOnClick ) then
 		if ( checked ) then
-			getglobal(this:GetName().."Check"):Hide();
+			getglobal(self:GetName().."Check"):Hide();
 			checked = false;
 		else
-			getglobal(this:GetName().."Check"):Show();
+			getglobal(self:GetName().."Check"):Show();
 			checked = true;
 		end
 	else
-		this:GetParent():Hide();
+		self:GetParent():Hide();
 	end
 
-	if ( type (this.checked) ~= "function" ) then 
-		this.checked = checked;
+	if ( type (self.checked) ~= "function" ) then 
+		self.checked = checked;
 	end
 
-	local func = this.func;
+	local func = self.func;
 	if ( func ) then
-		func(this.arg1, this.arg2, checked);
+		func(self, self.arg1, self.arg2, checked);
 	else
 		return;
 	end
@@ -565,7 +558,7 @@ function HideDropDownMenu(level)
 	listFrame:Hide();
 end
 
-function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList)
+function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList, button)
 	if ( not level ) then
 		level = 1;
 	end
@@ -577,7 +570,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	local tempFrame;
 	local point, relativePoint, relativeTo;
 	if ( not dropDownFrame ) then
-		tempFrame = this:GetParent();
+		tempFrame = button:GetParent();
 	else
 		tempFrame = dropDownFrame;
 	end
@@ -610,9 +603,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		-- Display stuff
 		-- Level specific stuff
 		if ( level == 1 ) then
-			if ( not dropDownFrame ) then
-				dropDownFrame = this:GetParent();
-			end
+			assert(dropDownFrame);
 			UIDROPDOWNMENU_OPEN_MENU = dropDownFrame:GetName();
 			listFrame:ClearAllPoints();
 			-- If there's no specified anchorName then use left side of the dropdown menu
@@ -669,10 +660,10 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			end
 			listFrame:ClearAllPoints();
 			-- If this is a dropdown button, not the arrow anchor it to itself
-			if ( strsub(this:GetParent():GetName(), 0,12) == "DropDownList" and strlen(this:GetParent():GetName()) == 13 ) then
-				anchorFrame = this:GetName();
+			if ( strsub(button:GetParent():GetName(), 0,12) == "DropDownList" and strlen(button:GetParent():GetName()) == 13 ) then
+				anchorFrame = button:GetName();
 			else
-				anchorFrame = this:GetParent():GetName();
+				anchorFrame = button:GetParent():GetName();
 			end
 			point = "TOPLEFT";
 			relativePoint = "TOPRIGHT";
@@ -771,16 +762,13 @@ function CloseDropDownMenus(level)
 	end
 end
 
-function UIDropDownMenu_OnHide()
-	local id = this:GetID()
+function UIDropDownMenu_OnHide(self)
+	local id = self:GetID()
 	CloseDropDownMenus(id+1);
 	OPEN_DROPDOWNMENUS[id] = nil;
 end
 
-function UIDropDownMenu_SetWidth(width, frame, padding)
-	if ( not frame ) then
-		frame = this;
-	end
+function UIDropDownMenu_SetWidth(frame, width, padding)
 	getglobal(frame:GetName().."Middle"):SetWidth(width);
 	local defaultPadding = 25;
 	if ( padding ) then
@@ -796,11 +784,7 @@ function UIDropDownMenu_SetWidth(width, frame, padding)
 	frame.noResize = 1;
 end
 
-function UIDropDownMenu_SetButtonWidth(width, frame)
-	if ( not frame ) then
-		frame = this;
-	end
-	
+function UIDropDownMenu_SetButtonWidth(frame, width)
 	if ( width == "TEXT" ) then
 		width = getglobal(frame:GetName().."Text"):GetWidth();
 	end
@@ -810,18 +794,13 @@ function UIDropDownMenu_SetButtonWidth(width, frame)
 end
 
 
-function UIDropDownMenu_SetText(text, frame)
-	if ( not frame ) then
-		frame = this;
-	end
+function UIDropDownMenu_SetText(frame, text)
 	local filterText = getglobal(frame:GetName().."Text");
 	filterText:SetText(text);
 end
 
 function UIDropDownMenu_GetText(frame)
-	if ( not frame ) then
-		frame = this;
-	end
+	assert(frame);
 	local filterText = getglobal(frame:GetName().."Text");
 	return filterText:GetText();
 end
@@ -831,7 +810,7 @@ function UIDropDownMenu_ClearAll(frame)
 	frame.selectedID = nil;
 	frame.selectedName = nil;
 	frame.selectedValue = nil;
-	UIDropDownMenu_SetText("", frame);
+	UIDropDownMenu_SetText(frame, "");
 
 	local button, checkImage;
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
@@ -843,10 +822,7 @@ function UIDropDownMenu_ClearAll(frame)
 	end
 end
 
-function UIDropDownMenu_JustifyText(justification, frame)
-	if ( not frame ) then
-		frame = this;
-	end
+function UIDropDownMenu_JustifyText(frame, justification)
 	local text = getglobal(frame:GetName().."Text");
 	text:ClearAllPoints();
 	if ( justification == "LEFT" ) then
@@ -861,10 +837,7 @@ function UIDropDownMenu_JustifyText(justification, frame)
 	end
 end
 
-function UIDropDownMenu_SetAnchor(xOffset, yOffset, dropdown, point, relativeTo, relativePoint)
-	if ( not dropdown ) then
-		dropdown = this;
-	end
+function UIDropDownMenu_SetAnchor(dropdown, xOffset, yOffset, point, relativeTo, relativePoint)
 	dropdown.xOffset = xOffset;
 	dropdown.yOffset = yOffset;
 	dropdown.point = point;
@@ -875,24 +848,26 @@ end
 function UIDropDownMenu_GetCurrentDropDown()
 	if ( UIDROPDOWNMENU_OPEN_MENU ) then
 		return getglobal(UIDROPDOWNMENU_OPEN_MENU);
+	elseif ( UIDROPDOWNMENU_INIT_MENU ) then
+		return getglobal(UIDROPDOWNMENU_INIT_MENU);
 	end
 	
-	-- If no dropdown then use this
-	return this;
+	-- If no dropdown then use this? NOOO~!
+	assert(false);
 end
 
-function UIDropDownMenuButton_GetChecked()
-	return getglobal(this:GetName().."Check"):IsShown();
+function UIDropDownMenuButton_GetChecked(self)
+	return getglobal(self:GetName().."Check"):IsShown();
 end
 
-function UIDropDownMenuButton_GetName()
-	return getglobal(this:GetName().."NormalText"):GetText();
+function UIDropDownMenuButton_GetName(self)
+	return getglobal(self:GetName().."NormalText"):GetText();
 end
 
-function UIDropDownMenuButton_OpenColorPicker(button)
+function UIDropDownMenuButton_OpenColorPicker(self, button)
 	CloseMenus();
 	if ( not button ) then
-		button = this;
+		button = self;
 	end
 	UIDROPDOWNMENU_MENU_VALUE = button.value;
 	OpenColorPicker(button);
@@ -906,12 +881,12 @@ function UIDropDownMenu_EnableButton(level, id)
 	getglobal("DropDownList"..level.."Button"..id):Enable();
 end
 
-function UIDropDownMenu_SetButtonText(level, id, text, r, g, b)
+function UIDropDownMenu_SetButtonText(level, id, text, colorCode)
 	local button = getglobal("DropDownList"..level.."Button"..id);
-	button:SetText(text);
-	if ( r ) then
-		button:SetTextColor(r, g, b);
-		button:SetHighlightTextColor(r, g, b);
+	if ( colorCode) then
+		button:SetText(colorCode..text.."|r");
+	else
+		button:SetText(text);
 	end
 end
 

@@ -13,12 +13,12 @@
 		<Scripts>
 			<!-- Register here for any events you want to monitor globally -->
 			<OnLoad>
-				UIParent_OnLoad();
-				this.firstTimeLoaded = 1;
+				UIParent_OnLoad(self);
+				self.firstTimeLoaded = 1;
 			</OnLoad>
 			<!-- Respond here to any events you want to monitor globally -->
 			<OnEvent>
-				UIParent_OnEvent(event);
+				UIParent_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
 				UIFrameFadeUpdate(elapsed);
@@ -30,12 +30,13 @@
 				RequestBattlefieldPositions(elapsed);
 				CheckReadyCheckTime(elapsed);
 				AnimatedShine_OnUpdate(elapsed);
+				AutoCastShine_OnUpdate(nil, elapsed);
 			</OnUpdate>
 			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
 			<OnShow>
-				if ( this.firstTimeLoaded ~= 1 ) then
+				if ( self.firstTimeLoaded ~= 1 ) then
 					CloseAllWindows();
-					this.firstTimeLoaded = nil;
+					self.firstTimeLoaded = nil;
 				end
 			</OnShow>
 			<OnAttributeChanged>

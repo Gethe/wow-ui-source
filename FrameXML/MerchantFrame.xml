@@ -53,16 +53,16 @@
 				<Scripts>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							MerchantItemButton_OnModifiedClick(arg1);
+							MerchantItemButton_OnModifiedClick(self, button);
 						else
-							MerchantItemButton_OnClick(arg1);
+							MerchantItemButton_OnClick(self, button);
 						end
 					</OnClick>
 					<OnLoad>
-						MerchantItemButton_OnLoad();
+						MerchantItemButton_OnLoad(self);
 					</OnLoad>
 					<OnDragStart>
-						MerchantItemButton_OnClick("LeftButton");
+						MerchantItemButton_OnClick(self, "LeftButton");
 					</OnDragStart>
 					<OnEnter>
 						MerchantItemButton_OnEnter(self)
@@ -73,7 +73,7 @@
 						MerchantFrame.itemHover = nil;
 					</OnLeave>
 					<OnHide>
-						if ( this.hasStackSplit == 1 ) then
+						if ( self.hasStackSplit == 1 ) then
 							StackSplitFrame:Hide();
 						end
 					</OnHide>
@@ -390,7 +390,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						local repairAllCost, canRepair = GetRepairAllCost();
 						if ( canRepair and (repairAllCost > 0) ) then
 							GameTooltip:SetText(REPAIR_ALL_ITEMS);
@@ -448,7 +448,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(REPAIR_AN_ITEM);
 					</OnEnter>
 					<OnLeave>
@@ -488,7 +488,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						local repairAllCost, canRepair = GetRepairAllCost();
 						if ( canRepair and (repairAllCost > 0) ) then
 							GameTooltip:SetText(REPAIR_ALL_ITEMS);
@@ -597,12 +597,12 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								MerchantItemBuybackButton_OnLoad();
-								this:RegisterEvent("MERCHANT_UPDATE");
+								MerchantItemBuybackButton_OnLoad(self);
+								self:RegisterEvent("MERCHANT_UPDATE");
 							</OnLoad>
 							<OnEvent>
 								if ( event == "MERCHANT_UPDATE" ) then
-									if ( GameTooltip:IsOwned(this) ) then
+									if ( GameTooltip:IsOwned(self) ) then
 										GameTooltip:SetBuybackItem(GetNumBuybackItems());
 										GameTooltip:Show();
 									end
@@ -612,9 +612,9 @@
 								BuybackItem(GetNumBuybackItems());
 							</OnClick>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetBuybackItem(GetNumBuybackItems());
-								ShowMerchantSellCursor(this:GetID());
+								ShowMerchantSellCursor(self:GetID());
 							</OnEnter>
 							<OnLeave>  
 								GameTooltip:Hide();
@@ -755,14 +755,14 @@
                 </Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
-						PanelTemplates_SetTab(MerchantFrame, this:GetID());
+						PanelTemplates_SetTab(MerchantFrame, self:GetID());
 						MerchantFrame_Update();
 					</OnClick>
                 </Scripts>
@@ -777,14 +777,14 @@
                 </Anchors>
                 <Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
-						PanelTemplates_SetTab(MerchantFrame, this:GetID());
+						PanelTemplates_SetTab(MerchantFrame, self:GetID());
 						MerchantFrame_Update();
 					</OnClick>
                 </Scripts>
@@ -796,14 +796,14 @@
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
 			<OnLoad>
-				MerchantFrame_OnLoad();
+				MerchantFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				MerchantFrame_OnShow();
 				PlaySound("igCharacterInfoOpen");
 			</OnShow>
 			<OnEvent>
-				MerchantFrame_OnEvent();
+				MerchantFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
 				if ( MerchantFrame.itemHover ) then
@@ -825,7 +825,7 @@
 				PickupMerchantItem(0);
 			</OnMouseUp>
 			<OnReceiveDrag>
-				MerchantItemButton_OnClick("LeftButton");
+				MerchantItemButton_OnClick(self, "LeftButton");
 			</OnReceiveDrag>
 		</Scripts>
 	</Frame>

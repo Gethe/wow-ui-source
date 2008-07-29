@@ -20,7 +20,11 @@ UIDropDownMenu.xml
 UIPanelTemplates.lua
 UIPanelTemplates.xml
 SecureTemplates.xml
+SecureHandlerTemplates.xml
 ItemButtonTemplate.xml
+SparkleFrame.xml
+HybridScrollFrame.lua
+HybridScrollFrame.xml
 AudioOptionsFrame.xml
 GameMenuFrame.xml
 OptionsFrame.xml

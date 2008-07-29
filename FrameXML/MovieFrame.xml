@@ -20,31 +20,31 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				MovieFrame_OnLoad();
+				MovieFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				MovieFrame_OnShow();
+				MovieFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
-				MovieFrame_OnHide();
+				MovieFrame_OnHide(self);
 			</OnHide>
 			<OnEvent>
 				MovieFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				MovieFrame_OnUpdate(arg1);
+				MovieFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnKeyUp>
-				MovieFrame_OnKeyUp();
+				MovieFrame_OnKeyUp(self, key);
 			</OnKeyUp>
 			<OnMovieFinished>
-				MovieFrame_OnMovieFinished();
+				MovieFrame_OnMovieFinished(self);
 			</OnMovieFinished>
 			<OnMovieShowSubtitle>
-				MovieFrame_OnMovieShowSubtitle(arg1);
+				MovieFrame_OnMovieShowSubtitle(self, text);
 			</OnMovieShowSubtitle>
 			<OnMovieHideSubtitle>
-				MovieFrame_OnMovieHideSubtitle();
+				MovieFrame_OnMovieHideSubtitle(self);
 			</OnMovieHideSubtitle>
 		</Scripts>
 	</MovieFrame>

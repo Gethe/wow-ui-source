@@ -170,9 +170,9 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() - 1);
-				this:RegisterEvent("UPDATE_INVENTORY_ALERTS");
-				this:RegisterEvent("PLAYER_ENTERING_WORLD");
+				self:SetFrameLevel(self:GetFrameLevel() - 1);
+				self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			</OnLoad>
 			<OnEvent>
 				DurabilityFrame_SetAlerts();

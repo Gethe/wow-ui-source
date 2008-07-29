@@ -4,13 +4,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	<Script file="Blizzard_VehicleUI.lua"/>
 	<Frame name="VehicleSlider1" movable="true" hidden="true">
 		<Size>
-			<AbsDimension x="100" y="384"/>
+			<AbsDimension x="60" y="144"/>
 		</Size>
 		<Anchors>
-			<Anchor point="LEFT">
-				<Offset>
-					<AbsDimension x="128"/>
-				</Offset>
+			<Anchor point="TOPLEFT">
+				<Offset x="125" y="-120"/>
 			</Anchor>
 		</Anchors>
 		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" title="true" frameStrata="BACKGROUND">
@@ -24,6 +22,17 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<AbsValue val="16"/>
 			</EdgeSize>
 		</Backdrop>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="Power">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-6"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Slider name="$parentSlider" orientation="VERTICAL">
 				<Size>
@@ -32,12 +41,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="40" y="-32"/>
+							<AbsDimension x="14" y="-36"/>
 						</Offset>
 					</Anchor>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="40" y="32"/>
+							<AbsDimension x="14" y="28"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -81,59 +90,45 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentLabel" inherits="GameFontNormalLarge" nonSpaceWrap="true" text="P o w e r" spacing="8">
-							<Size>
-								<AbsDimension x="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="-8" y="-8"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="-8" y="8"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>	
-						this.cvar = "VehiclePower"
-						this:SetMinMaxValues(SLIDER1_MIN, SLIDER1_MAX);
-						this.oGetValue = this.GetValue;
-						this.GetValue = function (self) return SLIDER1_MAX - self:oGetValue() end
-						this:RegisterEvent("ADDON_LOADED")
-						this:SetScript("OnEvent", function (...) VehicleSlider1_OnEvent(...) end);
+						self.cvar = "VehiclePower"
+						self:SetMinMaxValues(SLIDER1_MIN, SLIDER1_MAX);
+						self.oGetValue = self.GetValue;
+						self.GetValue = function (self) return SLIDER1_MAX - self:oGetValue() end
+						self:RegisterEvent("ADDON_LOADED")
+						self:SetScript("OnEvent", VehicleSlider1_OnEvent);
 					</OnLoad>
 					<OnValueChanged>
 						VehicleSlider1SliderText:ClearAllPoints()
-						VehicleSlider1SliderText:SetPoint("LEFT", VehicleSlider1SliderThumb, "RIGHT", 0, 2);
-						VehicleSlider1SliderText:SetText(math.round(this:GetValue()));
-						VehicleSlider_UpdateCVar(this);
+						VehicleSlider1SliderText:SetPoint("LEFT", VehicleSlider1SliderThumb, "RIGHT", -8, 2);
+						VehicleSlider1SliderText:SetText(math.round(self:GetValue()));
+						VehicleSlider_UpdateCVar(self);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
 		</Frames>
 		<Scripts>
 			<OnMouseDown>
-				this:StartMoving();
+				self:StartMoving();
 			</OnMouseDown>
 			<OnMouseUp>
-				this:StopMovingOrSizing();
+				self:StopMovingOrSizing();
 			</OnMouseUp>
 			<OnLoad>
-				this:RegisterEvent("VEHICLE_POWER_SHOW");
+				self:RegisterEvent("VEHICLE_POWER_SHOW");
 			</OnLoad>
 			<OnEvent>
+			---[[
+				local arg1 = ...;
 				if ( arg1 ) then
-					this:Show();
+					self:Show();
 				else
-					this:Hide();
+					self:Hide();
 				end
+			--]]
 			</OnEvent>			
 		</Scripts>		
 	</Frame>
@@ -237,32 +232,138 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Layers>
 				<Scripts>
 					<OnLoad>	
-						this.cvar = "VehicleAngle";
-						this:SetMinMaxValues(SLIDER2_MIN, SLIDER2_MAX);
-						this.oGetValue = this.GetValue;
-						this.GetValue = function (self) return SLIDER2_MAX - self:oGetValue() end
-						this:RegisterEvent("ADDON_LOADED")
-						this:RegisterEvent("VEHICLE_ANGLE_UPDATE");
-						this:SetScript("OnEvent", function (...) VehicleSlider2_OnEvent(...) end);
+						self.cvar = "VehicleAngle";
+						self:SetMinMaxValues(SLIDER2_MIN, SLIDER2_MAX);
+						self.oGetValue = self.GetValue;
+						self.GetValue = function (self) return SLIDER2_MAX - self:oGetValue() end
+						self:RegisterEvent("ADDON_LOADED")
+						self:RegisterEvent("VEHICLE_ANGLE_UPDATE");
+						self:SetScript("OnEvent", VehicleSlider2_OnEvent);
 					</OnLoad>
 				</Scripts>				
 			</Slider>
 		</Frames>
 		<Scripts>
 			<OnMouseDown>
-				this:StartMoving();
+				self:StartMoving();
 			</OnMouseDown>
 			<OnMouseUp>
-				this:StopMovingOrSizing();
+				self:StopMovingOrSizing();
 			</OnMouseUp>
 			<OnLoad>
-				this:RegisterEvent("VEHICLE_ANGLE_SHOW");
+				self:RegisterEvent("VEHICLE_ANGLE_SHOW");
 			</OnLoad>
 			<OnEvent>
+			--[[
+				local arg1 = ...;
 				if ( arg1 ) then
-					this:Show();
+					self:Show();
 				else
-					this:Hide();
+					self:Hide();
+				end
+			--]]
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	<Frame name="VehiclePitchFrame" movable="true" hidden="true">
+		<Size x="48" y="87"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="VehicleSlider1" relativePoint="TOPRIGHT">
+				<Offset x="4" y="0"/>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" title="true" frameStrata="BACKGROUND">
+			<BackgroundInsets>
+				<AbsInset left="4" right="3" top="4" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="Pitch">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-6"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentUpButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="0" y="-18"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("AnyDown");
+					</OnLoad>
+					<OnClick>
+						PlaySound("igChatScrollUp");
+					</OnClick>
+					<OnMouseUp>
+						PitchUpStop();
+					</OnMouseUp>
+					<OnMouseDown>
+						PitchUpStart();
+					</OnMouseDown>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentDownButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset x="0" y="8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("AnyDown");
+					</OnLoad>
+					<OnClick>
+						PlaySound("igChatScrollDown");
+					</OnClick>
+					<OnMouseUp>
+						PitchDownStop();
+					</OnMouseUp>
+					<OnMouseDown>
+						PitchDownStart();
+					</OnMouseDown>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				self:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:StopMovingOrSizing();
+			</OnMouseUp>
+			<OnLoad>
+				self:RegisterEvent("VEHICLE_ANGLE_SHOW");
+			</OnLoad>
+			<OnEvent>
+				local arg1 = ...;
+				if ( arg1 ) then
+					self:Show();
+				else
+					self:Hide();
 				end
 			</OnEvent>
 		</Scripts>

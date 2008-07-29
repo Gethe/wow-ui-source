@@ -67,26 +67,26 @@
 				</Layers>
 				<Scripts>
 					<OnTabPressed>
-						if ( IsShiftKeyDown() and this:GetParent().previousFocus ) then
-							this:GetParent().previousFocus:SetFocus();
+						if ( IsShiftKeyDown() and self:GetParent().previousFocus ) then
+							self:GetParent().previousFocus:SetFocus();
 						else
-							getglobal(this:GetParent():GetName().."Silver"):SetFocus();
+							getglobal(self:GetParent():GetName().."Silver"):SetFocus();
 						end
 					</OnTabPressed>
 					<OnEnterPressed>
-						getglobal(this:GetParent():GetName().."Silver"):SetFocus();
+						getglobal(self:GetParent():GetName().."Silver"):SetFocus();
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEscapePressed>
 					<OnTextChanged>
-						MoneyInputFrame_OnTextChanged(this:GetParent());
+						MoneyInputFrame_OnTextChanged(self, self:GetParent());
 					</OnTextChanged> 
 					<OnEditFocusLost>
-						this:HighlightText(0, 0);
+						self:HighlightText(0, 0);
 					</OnEditFocusLost>
 					<OnEditFocusGained>
-						this:HighlightText();
+						self:HighlightText();
 					</OnEditFocusGained>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
@@ -158,25 +158,25 @@
 				<Scripts>
 					<OnTabPressed>
 						if ( IsShiftKeyDown() ) then
-							getglobal(this:GetParent():GetName().."Gold"):SetFocus();
+							getglobal(self:GetParent():GetName().."Gold"):SetFocus();
 						else
-							getglobal(this:GetParent():GetName().."Copper"):SetFocus();
+							getglobal(self:GetParent():GetName().."Copper"):SetFocus();
 						end
 					</OnTabPressed>
 					<OnEnterPressed>
-						getglobal(this:GetParent():GetName().."Copper"):SetFocus();
+						getglobal(self:GetParent():GetName().."Copper"):SetFocus();
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEscapePressed>
 					<OnTextChanged>
-						MoneyInputFrame_OnTextChanged(this:GetParent());
+						MoneyInputFrame_OnTextChanged(self, self:GetParent());
 					</OnTextChanged>
 					<OnEditFocusLost>
-						this:HighlightText(0, 0);
+						self:HighlightText(0, 0);
 					</OnEditFocusLost>
 					<OnEditFocusGained>
-						this:HighlightText();
+						self:HighlightText();
 					</OnEditFocusGained>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
@@ -248,33 +248,33 @@
 				<Scripts>
 					<OnTabPressed>
 						if ( IsShiftKeyDown() ) then
-							getglobal(this:GetParent():GetName().."Silver"):SetFocus();
+							getglobal(self:GetParent():GetName().."Silver"):SetFocus();
 						else
-							if ( this:GetParent().nextFocus ) then
-								this:GetParent().nextFocus:SetFocus();
+							if ( self:GetParent().nextFocus ) then
+								self:GetParent().nextFocus:SetFocus();
 							else
-								this:ClearFocus();
+								self:ClearFocus();
 							end
 						end
 					</OnTabPressed>
 					<OnEnterPressed>
-						if ( this:GetParent().nextFocus ) then
-							this:GetParent().nextFocus:SetFocus();
+						if ( self:GetParent().nextFocus ) then
+							self:GetParent().nextFocus:SetFocus();
 						else
-							this:ClearFocus();
+							self:ClearFocus();
 						end
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEscapePressed>
 					<OnTextChanged>
-						MoneyInputFrame_OnTextChanged(this:GetParent());
+						MoneyInputFrame_OnTextChanged(self, self:GetParent());
 					</OnTextChanged>
 					<OnEditFocusLost>
-						this:HighlightText(0, 0);
+						self:HighlightText(0, 0);
 					</OnEditFocusLost>
 					<OnEditFocusGained>
-						this:HighlightText();
+						self:HighlightText();
 					</OnEditFocusGained>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>

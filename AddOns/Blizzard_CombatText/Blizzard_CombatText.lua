@@ -53,10 +53,8 @@ COMBAT_TEXT_TYPE_INFO["SPELL_RESIST"] = {r = 0.79, g = 0.3, b = 0.85, var = "COM
 COMBAT_TEXT_TYPE_INFO["SPELL_BLOCK"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
 COMBAT_TEXT_TYPE_INFO["SPELL_ABSORB"] = {r = 0.79, g = 0.3, b = 0.85, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL"] = {r = 0.1, g = 1, b = 0.1, show = 1};
-COMBAT_TEXT_TYPE_INFO["MANA"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
-COMBAT_TEXT_TYPE_INFO["RAGE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
-COMBAT_TEXT_TYPE_INFO["FOCUS"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
-COMBAT_TEXT_TYPE_INFO["ENERGY"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
+COMBAT_TEXT_TYPE_INFO["ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_ENERGIZE"};
+COMBAT_TEXT_TYPE_INFO["PERIODIC_ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE"};
 COMBAT_TEXT_TYPE_INFO["SPELL_CAST"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["SPELL_AURA_END"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
 COMBAT_TEXT_TYPE_INFO["SPELL_AURA_END_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
@@ -76,34 +74,52 @@ COMBAT_TEXT_TYPE_INFO["MANA_LOW"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT
 COMBAT_TEXT_TYPE_INFO["ENTERING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_COMBAT_STATE"};
 COMBAT_TEXT_TYPE_INFO["LEAVING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_COMBAT_STATE"};
 COMBAT_TEXT_TYPE_INFO["COMBO_POINTS"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_COMBO_POINTS"};
-COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
+COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_ENERGIZE"};
 
 COMBAT_TEXT_RUNE = {};
 COMBAT_TEXT_RUNE[1] = COMBAT_TEXT_RUNE_BLOOD;
 COMBAT_TEXT_RUNE[2] = COMBAT_TEXT_RUNE_UNHOLY;
 COMBAT_TEXT_RUNE[3] = COMBAT_TEXT_RUNE_FROST;
 
-function CombatText_OnLoad()
+function CombatText_OnLoad(self)
 	CombatText_UpdateDisplayedMessages();
 	CombatText.previousMana = {};
 	CombatText.xDir = 1;
 end
 
-function CombatText_OnEvent(event)
-	if ( not this:IsVisible() ) then
+function CombatText_OnEvent(self, event, ...)
+	if ( not self:IsVisible() ) then
 		CombatText_ClearAnimationList();
 		return;
 	end
+	
+	local arg1, data, arg3 = ...;
 
 	-- Set up the messageType
 	local messageType, message;
 	-- Set the message data
-	local data = arg2;
 	local displayType;
-	
-	if ( event == "UNIT_HEALTH" ) then
+
+	if ( event == "UNIT_ENTER_VEHICLE" ) then
+		local unit, showVehicle = ...;
+		if ( unit == "player" ) then
+			if ( showVehicle ) then
+				self.unit = "vehicle";
+			else
+				self.unit = "player";
+			end
+			CombatTextSetActiveUnit(self.unit);
+		end
+		return;
+	elseif ( event == "UNIT_LEAVE_VEHICLE" ) then
 		if ( arg1 == "player" ) then
-			if ( UnitHealth("player")/UnitHealthMax("player") <= COMBAT_TEXT_LOW_HEALTH_THRESHOLD ) then
+			self.unit = "player";
+			CombatTextSetActiveUnit(self.unit);
+		end
+		return;
+	elseif ( event == "UNIT_HEALTH" ) then
+		if ( arg1 == self.unit ) then
+			if ( UnitHealth(self.unit)/UnitHealthMax(self.unit) <= COMBAT_TEXT_LOW_HEALTH_THRESHOLD ) then
 				if ( not CombatText.lowHealth ) then
 					messageType = "HEALTH_LOW";
 					CombatText.lowHealth = 1;
@@ -118,10 +134,10 @@ function CombatText_OnEvent(event)
 			return;
 		end
 	elseif ( event == "UNIT_MANA" ) then
-		local mana = UnitMana("player");
-		local powerType = UnitPowerType("player");
-		if ( arg1 == "player" ) then
-			if ( mana/UnitManaMax("player") <= COMBAT_TEXT_LOW_MANA_THRESHOLD and powerType == 0 ) then
+		local power = UnitPower(self.unit);
+		local powerType, powerToken = UnitPowerType(self.unit);
+		if ( arg1 == self.unit ) then
+			if ( powerToken == "MANA" and power/UnitPowerMax(self.unit) <= COMBAT_TEXT_LOW_MANA_THRESHOLD ) then
 				if ( not CombatText.lowMana ) then
 					messageType = "MANA_LOW";
 					CombatText.lowMana = 1;
@@ -187,35 +203,30 @@ function CombatText_OnEvent(event)
 	elseif ( messageType == "SPELL_AURA_END" or messageType == "SPELL_AURA_END_HARMFUL" ) then
 		message = format(AURA_END, data);
 	elseif ( messageType == "HEAL" or messageType == "PERIODIC_HEAL") then
-		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and messageType == "HEAL" and UnitName("player") ~= data ) then
+		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and messageType == "HEAL" and UnitName(self.unit) ~= data ) then
 			message = "+"..arg3.." ["..data.."]";
 		else
 			message = "+"..arg3;
 		end
 	elseif ( messageType == "HEAL_CRIT" ) then
 		displayType = "crit";
-		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and UnitName("player") ~= data ) then
+		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and UnitName(self.unit) ~= data ) then
 			message = "+"..arg3.." ["..data.."]";
 		else
 			message = "+"..arg3;
 		end
-	elseif ( messageType == "MANA" ) then
+	elseif ( messageType == "ENERGIZE" or messageType == "PERIODIC_ENERGIZE") then
 		if ( tonumber(data) > 0 ) then
 			data = "+"..data;
 		end
-		message = data.." "..MANA;
-	elseif ( messageType == "RAGE" ) then
-		if ( tonumber(data) > 0 ) then
-			data = "+"..data;
+		if( arg3 == "MANA"
+			or arg3 == "RAGE"
+			or arg3 == "FOCUS"
+			or arg3 == "ENERGY"
+			or arg3 == "RUNIC_POWER") then
+			message = data.." ".._G[arg3];
+			info = PowerBarColor[arg3];
 		end
-		message = data.." "..RAGE;
-	elseif ( messageType == "FOCUS" ) then
-		message = "+"..data.." "..FOCUS;
-	elseif ( messageType == "ENERGY" ) then
-		if ( tonumber(data) > 0 ) then
-			data = "+"..data;
-		end
-		message = data.." "..ENERGY;
 	elseif ( messageType == "FACTION" ) then
 		if ( tonumber(arg3) > 0 ) then
 			arg3 = "+"..arg3;
@@ -245,7 +256,7 @@ function CombatText_OnEvent(event)
 	elseif ( messageType == "ABSORB" or messageType == "SPELL_ABSORBED" ) then
 		if ( arg3 ) then
 			-- Partial block
-			message = arg2.." "..format(ABSORB_TRAILER, arg3);
+			message = data.." "..format(ABSORB_TRAILER, arg3);
 		else
 			message = ABSORB;
 		end
@@ -270,6 +281,20 @@ function CombatText_OnEvent(event)
 		if ( arg2 == true ) then
 			local runeType = GetRuneType(arg1);
 			message = COMBAT_TEXT_RUNE[runeType];
+			-- Alex Brazie had me use these values. Feel free to correct them
+			if( runeType == 1 ) then 
+				info.r = .75;
+				info.g = 0;
+				info.b = 0;
+			elseif( runeType == 2 ) then
+				info.r = .75;
+				info.g = 1;
+				info.b = 0;
+			elseif (runeType == 3 ) then
+				info.r = 0;
+				info.g = 1;
+				info.b = 1;
+			end
 		else
 			message = nil;
 		end
@@ -286,7 +311,7 @@ function CombatText_OnEvent(event)
 	end	
 end
 
-function CombatText_OnUpdate(elapsed)
+function CombatText_OnUpdate(self, elapsed)
 	local lowestMessage = COMBAT_TEXT_LOCATIONS.startY;
 	local alpha, xPos, yPos;
 	for index, value in pairs(COMBAT_TEXT_TO_ANIMATE) do
@@ -461,13 +486,6 @@ function CombatText_ClearAnimationList()
 end
 
 function CombatText_UpdateDisplayedMessages()
-	-- Get scale
-	COMBAT_TEXT_Y_SCALE = WorldFrame:GetHeight() / 768;
-	COMBAT_TEXT_X_SCALE = WorldFrame:GetWidth() / 1024;
-	COMBAT_TEXT_SPACING = 10 * COMBAT_TEXT_Y_SCALE;
-	COMBAT_TEXT_MAX_OFFSET = 130 * COMBAT_TEXT_Y_SCALE;
-	COMBAT_TEXT_X_ADJUSTMENT = 80 * COMBAT_TEXT_X_SCALE;
-
 	-- Unregister events if combat text is disabled
 	if ( SHOW_COMBAT_TEXT == "0" ) then
 		CombatText:UnregisterEvent("COMBAT_TEXT_UPDATE");
@@ -477,16 +495,37 @@ function CombatText_UpdateDisplayedMessages()
 		CombatText:UnregisterEvent("PLAYER_REGEN_ENABLED");
 		CombatText:UnregisterEvent("PLAYER_COMBO_POINTS");
 		CombatText:UnregisterEvent("RUNE_POWER_UPDATE");
+		CombatText:UnregisterEvent("UNIT_ENTER_VEHICLE");
+		CombatText:UnregisterEvent("UNIT_LEAVE_VEHICLE");
 		return;
-	else
-		CombatText:RegisterEvent("COMBAT_TEXT_UPDATE");
-		CombatText:RegisterEvent("UNIT_HEALTH");
-		CombatText:RegisterEvent("UNIT_MANA");
-		CombatText:RegisterEvent("PLAYER_REGEN_DISABLED");
-		CombatText:RegisterEvent("PLAYER_REGEN_ENABLED");
-		CombatText:RegisterEvent("PLAYER_COMBO_POINTS");
-		CombatText:RegisterEvent("RUNE_POWER_UPDATE");
 	end
+
+	-- set the unit to track
+	if ( UnitHasVehicleUI("player") ) then
+		CombatText.unit = "vehicle";
+	else
+		CombatText.unit = "player";
+	end
+	CombatTextSetActiveUnit(CombatText.unit);
+
+	-- register events
+	CombatText:RegisterEvent("COMBAT_TEXT_UPDATE");
+	CombatText:RegisterEvent("UNIT_HEALTH");
+	CombatText:RegisterEvent("UNIT_MANA");
+	CombatText:RegisterEvent("PLAYER_REGEN_DISABLED");
+	CombatText:RegisterEvent("PLAYER_REGEN_ENABLED");
+	CombatText:RegisterEvent("PLAYER_COMBO_POINTS");
+	CombatText:RegisterEvent("RUNE_POWER_UPDATE");
+	CombatText:RegisterEvent("UNIT_ENTER_VEHICLE");
+	CombatText:RegisterEvent("UNIT_LEAVE_VEHICLE");
+
+	-- Get scale
+	COMBAT_TEXT_Y_SCALE = WorldFrame:GetHeight() / 768;
+	COMBAT_TEXT_X_SCALE = WorldFrame:GetWidth() / 1024;
+	COMBAT_TEXT_SPACING = 10 * COMBAT_TEXT_Y_SCALE;
+	COMBAT_TEXT_MAX_OFFSET = 130 * COMBAT_TEXT_Y_SCALE;
+	COMBAT_TEXT_X_ADJUSTMENT = 80 * COMBAT_TEXT_X_SCALE;
+
 	-- Update shown messages
 	for index, value in pairs(COMBAT_TEXT_TYPE_INFO) do
 		if ( value.var ) then

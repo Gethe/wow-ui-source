@@ -13,7 +13,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
 			</OnLoad>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -49,31 +49,31 @@
 				</Anchors>
 				<Scripts>
 					<OnUpdate>
-						VoiceChat_OnUpdate(arg1);
+						VoiceChat_OnUpdate(self, elapsed);
 					</OnUpdate>
 					<OnClick>
-						SetActiveVoiceChannel(this:GetParent():GetID());
+						SetActiveVoiceChannel(self:GetParent():GetID());
 					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				this:RegisterForDrag("LeftButton");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnClick>
-				ChannelList_OnClick();
+				ChannelList_OnClick(self, button);
 			</OnClick>
 			<OnDragStart>
-				ChannelListButton_OnDragStart(this);
+				ChannelListButton_OnDragStart(self);
 			</OnDragStart>
 			<OnDragStop>
-				ChannelListButton_OnDragStop(this);
+				ChannelListButton_OnDragStop(self);
 			</OnDragStop>
 			<OnEnter>
-				if ( this.voiceEnabled ) then
-					GameTooltip_AddNewbieTip(DISPLAY_CHANNEL_PULLOUT, 1.0, 1.0, 1.0, string.format(NEWBIE_TOOLTIP_DISPLAY_CHANNEL_PULLOUT, (this.name or UNKNOWN)), 1);
+				if ( self.voiceEnabled ) then
+					GameTooltip_AddNewbieTip(self, DISPLAY_CHANNEL_PULLOUT, 1.0, 1.0, 1.0, string.format(NEWBIE_TOOLTIP_DISPLAY_CHANNEL_PULLOUT, (self.name or UNKNOWN)), 1);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -130,11 +130,11 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						local rank = this:GetParent().rank;
-						local voice = this:GetParent().voice;
+						local rank = self:GetParent().rank;
+						local voice = self:GetParent().voice;
 						-- Sets the Leader/Assistant Tooltip
 						if ( rank ) then
-							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 							if ( rank == 2 ) then
 								GameTooltip:SetText(RAID_LEADER, nil, nil, nil, nil, 1);
 							elseif ( rank == 1 ) then
@@ -162,22 +162,22 @@
 				</Anchors>
 				<Scripts>
 					<OnUpdate>
-						VoiceChat_OnUpdate(arg1);
+						VoiceChat_OnUpdate(self, elapsed);
 					</OnUpdate>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				if ( ChannelRosterScrollFrameScrollBar:IsShown() ) then
-					this:SetWidth(115);
+					self:SetWidth(115);
 				else
-					this:SetWidth(135);
+					self:SetWidth(135);
 				end
 			</OnLoad>
 			<OnClick>
-				ChannelRoster_OnClick();
+				ChannelRoster_OnClick(self, button);
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
@@ -268,23 +268,23 @@
 						</HitRectInsets>
 						<Scripts>
 							<OnLoad>
-								local text = getglobal(this:GetName().."Text");
+								local text = getglobal(self:GetName().."Text");
 								text:SetText(VOICE_CHAT_PARTY_RAID);
-								text:SetPoint("LEFT", this, "RIGHT", 2, 1);
-								this:SetChecked(GetCVar("autojoinPartyVoice"))
+								text:SetPoint("LEFT", self, "RIGHT", 2, 1);
+								self:SetChecked(GetCVar("autojoinPartyVoice"))
 							</OnLoad>
 							<OnEnter>
-								GameTooltip:SetOwner(this:GetParent(), "ANCHOR_RIGHT", -20);
+								GameTooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT", -20);
 								GameTooltip:SetText(AUTO_JOIN_VOICE);
-								GameTooltip_AddNewbieTip(AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
+								GameTooltip_AddNewbieTip(self, AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
 								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
 							</OnLeave>
 							<OnClick>
-								SetCVar("autojoinPartyVoice", this:GetChecked())
-								if ( this:GetChecked() ) then
+								SetCVar("autojoinPartyVoice", self:GetChecked())
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOff");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOn");
@@ -304,23 +304,23 @@
 						</HitRectInsets>
 						<Scripts>
 							<OnLoad>
-								local text = getglobal(this:GetName().."Text");
+								local text = getglobal(self:GetName().."Text");
 								text:SetText(VOICE_CHAT_BATTLEGROUND);
-								text:SetPoint("LEFT", this, "RIGHT", 2, 1);
-								this:SetChecked(GetCVar("autojoinBGVoice"))
+								text:SetPoint("LEFT", self, "RIGHT", 2, 1);
+								self:SetChecked(GetCVar("autojoinBGVoice"))
 							</OnLoad>
 							<OnEnter>
-								GameTooltip:SetOwner(this:GetParent(), "ANCHOR_RIGHT", -20);
+								GameTooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT", -20);
 								GameTooltip:SetText(AUTO_JOIN_VOICE);
-								GameTooltip_AddNewbieTip(AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
+								GameTooltip_AddNewbieTip(self, AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
 								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
 							</OnLeave>
 							<OnClick>
-								SetCVar("autojoinBGVoice", this:GetChecked())
-								if ( this:GetChecked() ) then
+								SetCVar("autojoinBGVoice", self:GetChecked())
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOff");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOn");
@@ -331,9 +331,9 @@
 				</Frames>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT", -20);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20);
 						GameTooltip:SetText(AUTO_JOIN_VOICE);
-						GameTooltip_AddNewbieTip(AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
+						GameTooltip_AddNewbieTip(self, AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -354,7 +354,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ChannelFrame_New_OnClick();
+						ChannelFrame_New_OnClick(self, button);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -632,7 +632,7 @@
 						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(CHANNEL_ROSTER_HEIGHT, ChannelRoster_Update)
+								FauxScrollFrame_OnVerticalScroll(self, offset, CHANNEL_ROSTER_HEIGHT, ChannelRoster_Update)
 							</OnVerticalScroll>
 						</Scripts>
 					</ScrollFrame>
@@ -880,17 +880,17 @@
 						</Layers>
 						<Scripts>
 							<OnEnterPressed>
-								if ( this:GetText() ) then
-									ChannelFrameDaughterFrame_Okay();
+								if ( self:GetText() ) then
+									ChannelFrameDaughterFrame_Okay(self);
 								else
-									ChannelFrameDaughterFrame_Cancel();
+									ChannelFrameDaughterFrame_Cancel(self);
 								end
 							</OnEnterPressed>
 							<OnEscapePressed>
-									ChannelFrameDaughterFrame_Cancel();
+									ChannelFrameDaughterFrame_Cancel(self);
 							</OnEscapePressed>
 							<OnTabPressed>
-								EditBox_HandleTabbing(CHAT_CHANNEL_TABBING);
+								EditBox_HandleTabbing(self, CHAT_CHANNEL_TABBING);
 							</OnTabPressed>
 						</Scripts>
 					</EditBox>
@@ -924,10 +924,10 @@
 								ChannelFrameDaughterFrame_Okay();
 							</OnEnterPressed>
 							<OnEscapePressed>
-								ChannelFrameDaughterFrame_Cancel();
+								ChannelFrameDaughterFrame_Cancel(self);
 							</OnEscapePressed>
 							<OnTabPressed>
-								EditBox_HandleTabbing(CHAT_CHANNEL_TABBING);
+								EditBox_HandleTabbing(self, CHAT_CHANNEL_TABBING);
 							</OnTabPressed>
 						</Scripts>
 					</EditBox>
@@ -945,9 +945,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								local text = getglobal(this:GetName().."Text");
+								local text = getglobal(self:GetName().."Text");
 								text:SetText(ENABLE_VOICECHAT);
-								text:SetPoint("LEFT", this, "RIGHT", 2, 2);
+								text:SetPoint("LEFT", self, "RIGHT", 2, 2);
 							</OnLoad>
 						</Scripts>
 					</CheckButton> -->
@@ -991,7 +991,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								ChannelFrameDaughterFrame_Cancel();
+								ChannelFrameDaughterFrame_Cancel(self);
 							</OnClick>
 						</Scripts>
 						<NormalFont style="GameFontNormalSmall"/>
@@ -1009,16 +1009,16 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ChannelFrame_OnLoad();
+				ChannelFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				ChannelFrame_Update();
+				ChannelFrame_Update(self);
 			</OnShow>
 			<OnEvent>
 				ChannelFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				 ChannelFrame_OnUpdate();
+				 ChannelFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnHide>
 				if ( ChannelFrameDaughterFrame:IsShown() ) then
@@ -1060,16 +1060,16 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.speaker = getglobal(this:GetName() .. "Speaker");
-				this.name = getglobal(this:GetName() .. "Name");
-				this.name:SetPoint("TOPLEFT", "$parentSpeaker", "TOPRIGHT", 8, -1);
-				this:EnableMouseWheel();
-				this:RegisterEvent("VOICE_PLATE_START");
-				this:RegisterEvent("VOICE_PLATE_STOP");
-				this:SetScript("OnEvent", function(...) ChannelPulloutRosterButton_OnEvent(...) end);
+				self.speaker = getglobal(self:GetName() .. "Speaker");
+				self.name = getglobal(self:GetName() .. "Name");
+				self.name:SetPoint("TOPLEFT", "$parentSpeaker", "TOPRIGHT", 8, -1);
+				self:EnableMouseWheel();
+				self:RegisterEvent("VOICE_PLATE_START");
+				self:RegisterEvent("VOICE_PLATE_STOP");
+				self:SetScript("OnEvent", ChannelPulloutRosterButton_OnEvent);
 			</OnLoad>
 			<OnMouseWheel>
-				ChannelPulloutRoster_Scroll(this:GetParent(), -arg1);
+				ChannelPulloutRoster_Scroll(self:GetParent(), -delta);
 			</OnMouseWheel>
 		</Scripts>
 	</Button>
@@ -1152,21 +1152,21 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
-				this:RegisterForDrag("LeftButton");
-				this:SetAlpha(0);
-				UIDropDownMenu_Initialize(getglobal(this:GetName().."DropDown"), ChannelPulloutTabDropDown_Initialize, "MENU");
+				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
+				self:RegisterForDrag("LeftButton");
+				self:SetAlpha(0);
+				UIDropDownMenu_Initialize(getglobal(self:GetName().."DropDown"), ChannelPulloutTabDropDown_Initialize, "MENU");
 			</OnLoad>
 			<OnShow>
-				PanelTemplates_TabResize(0);
+				PanelTemplates_TabResize(self, 0);
 			</OnShow>
 			<OnClick>
 				ChannelPulloutTab_ReanchorLeft();
-				ChannelPulloutTab_OnClick(this, arg1);
+				ChannelPulloutTab_OnClick(self, button);
 				PlaySound("UChatScrollButton");
 			</OnClick>
 			<OnEnter>
-				GameTooltip_AddNewbieTip(CHANNELPULLOUT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHANNELPULLOUT_OPTIONS, 1);
+				GameTooltip_AddNewbieTip(self, CHANNELPULLOUT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHANNELPULLOUT_OPTIONS, 1);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -1213,10 +1213,10 @@
 		</Anchors>
 		<Scripts>
 			<OnUpdate>
-				ChannelPullout_OnUpdate(arg1);
+				ChannelPullout_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnLoad>
-				ChannelPullout_OnLoad();
+				ChannelPullout_OnLoad(self);
 			</OnLoad>
 		</Scripts>		
 		<Frames>
@@ -1234,8 +1234,8 @@
 				</Backdrop>	
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.5, 0.5, 0.5, 0.5);
-						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.5);
+						self:SetBackdropBorderColor(0.5, 0.5, 0.5, 0.5);
+						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.5);
 					</OnLoad>					
 				</Scripts>
 			</Frame>
@@ -1275,16 +1275,16 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						ChannelPulloutRoster_OnLoad(this);
-						this:EnableMouseWheel();
-						this.downArrow = getglobal(this:GetParent():GetName() .. "DownArrow");
-						this.upArrow = getglobal(this:GetParent():GetName() .. "UpArrow");						
+						ChannelPulloutRoster_OnLoad(self);
+						self:EnableMouseWheel();
+						self.downArrow = getglobal(self:GetParent():GetName() .. "DownArrow");
+						self.upArrow = getglobal(self:GetParent():GetName() .. "UpArrow");						
 					</OnLoad>
 					<OnShow>
-						ChannelPulloutRoster_Update();
+						ChannelPulloutRoster_Update(self);
 					</OnShow>
 					<OnMouseWheel>
-						ChannelPulloutRoster_Scroll(this, -arg1);
+						ChannelPulloutRoster_Scroll(self, -delta);
 					</OnMouseWheel>					
 				</Scripts>
 				<Frames>
@@ -1314,7 +1314,7 @@
 								</Anchors>		
 								<Scripts>
 									<OnClick>
-										ChannelPulloutRoster_Scroll(this:GetParent():GetParent(), -1);
+										ChannelPulloutRoster_Scroll(self:GetParent():GetParent(), -1);
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
@@ -1331,7 +1331,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										ChannelPulloutRoster_Scroll(this:GetParent():GetParent(), 1);
+										ChannelPulloutRoster_Scroll(self:GetParent():GetParent(), 1);
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>

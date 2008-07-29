@@ -9,7 +9,7 @@
 			<Frame name="$parentButtonText" setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
-						<FontString name="$parentNameLocation" inherits="GameFontNormal">
+						<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -18,13 +18,27 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentInfo" inherits="GameFontHighlightSmall" justifyH="LEFT">
+						<Texture name="$parentLink" file="Interface/FriendsFrame/UI-FriendsFrame-Link" hidden="true">
+							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentNameLocation" relativePoint="BOTTOMLEFT">
+								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentLocation" inherits="GameFontNormal" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT"/>
+								<Anchor point="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="0"/>
+										<AbsDimension x="10" y="-3"/>
 									</Offset>
 								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentInfo" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentNoteHiddenText" inherits="GameFontNormalSmall" justifyH="LEFT" hidden="true">
@@ -44,10 +58,117 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Button name="$parentSummonButton" inherits="ActionButtonTemplate">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="LEFT">
+								<Offset x="12" y="1"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentIcon"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture name="$parentFlash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
+								<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
+									<Size>
+										<AbsDimension x="32" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="-2" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
+									<Size>
+										<AbsDimension x="32" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM">
+											<Offset>
+												<AbsDimension x="0" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate">
+								<Size x="28" y="28"/>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+											<AbsDimension x="0" y="-1"/>
+										</Offset>
+									</Anchor>
+								</Anchors> 
+							</Cooldown>
+						</Frames>
+						<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+							<Size>
+								<AbsDimension x="40" y="40"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</NormalTexture>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+						<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+						<Scripts>
+							<OnLoad>
+								getglobal(self:GetName().."Icon"):SetTexture("Interface\\Icons\\Spell_Shadow_Teleport");
+								self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+							</OnLoad>
+							<OnEvent>
+								FriendsFrame_SummonButton_OnEvent(self, event, ...);
+							</OnEvent>
+							<OnShow>
+								FriendsFrame_SummonButton_OnShow(self)
+							</OnShow>
+							<OnClick>
+								FriendsFrame_ClickSummonButton(self)
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, 1);
+								if ( self.duration ) then
+									GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, 1);
+								end
+								if ( SHOW_NEWBIE_TIPS == "1" ) then
+									GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+								end
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>					
 					<Button name="$parentNote">
 						<Size x="7" y="8"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="$parentNameLocation" relativePoint="LEFT">
+							<Anchor point="RIGHT" relativeTo="$parentName" relativePoint="LEFT">
 								<Offset x="0" y="0"/>
 							</Anchor>
 						</Anchors>
@@ -63,10 +184,10 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 							</OnLoad>
 							<OnClick>
-								FriendsFrame.NotesID = this:GetParent():GetParent():GetID();
+								FriendsFrame.NotesID = self:GetParent():GetParent():GetID();
 								local dialog = StaticPopup_Show("SET_FRIENDNOTE", GetFriendInfo(FriendsFrame.NotesID));
 								PlaySound("igCharacterInfoClose");
 							</OnClick>
@@ -85,10 +206,10 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick>
-				FriendsFrameFriendButton_OnClick(arg1);
+				FriendsFrameFriendButton_OnClick(self, button);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 		</Scripts>
@@ -117,7 +238,7 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
-				FriendsFrameIgnoreButton_OnClick();
+				FriendsFrameIgnoreButton_OnClick(self);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 		</Scripts>
@@ -146,7 +267,7 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
-				FriendsFrameMuteButton_OnClick();
+				FriendsFrameMuteButton_OnClick(self);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 		</Scripts>
@@ -224,10 +345,10 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick>
-				FriendsFrameWhoButton_OnClick(arg1);
+				FriendsFrameWhoButton_OnClick(self, button);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 		</Scripts>
@@ -281,8 +402,8 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				if ( this.sortType ) then
-					SortWho(this.sortType);
+				if ( self.sortType ) then
+					SortWho(self.sortType);
 				end
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
@@ -382,13 +503,13 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick>
-				FriendsFrameGuildStatusButton_OnClick(arg1);
+				FriendsFrameGuildStatusButton_OnClick(self, button);
 			</OnClick>
 			<OnEnter>
-				GameTooltip_AddNewbieTip(GUILD_MEMBER_OPTIONS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_MEMBER_OPTIONS, 1);
+				GameTooltip_AddNewbieTip(self, GUILD_MEMBER_OPTIONS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_MEMBER_OPTIONS, 1);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -465,10 +586,10 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick>
-				FriendsFrameGuildStatusButton_OnClick(arg1);
+				FriendsFrameGuildStatusButton_OnClick(self, button);
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
@@ -521,8 +642,8 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				if ( this.sortType ) then
-					SortGuildRoster(this.sortType);
+				if ( self.sortType ) then
+					SortGuildRoster(self.sortType);
 				end
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
@@ -571,12 +692,12 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				if ( this:GetChecked() ) then
+				if ( self:GetChecked() ) then
 					PlaySound("igMainMenuOptionCheckBoxOff");
 				else
 					PlaySound("igMainMenuOptionCheckBoxOn");
 				end
-				GuildControlSetRankFlag(this:GetID(), this:GetChecked());
+				GuildControlSetRankFlag(self:GetID(), self:GetChecked());
 				GuildControlPopupAcceptButton:Enable();
 			</OnClick>
 		</Scripts>
@@ -602,12 +723,12 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				GuildBankTabPermissionsTab_OnClick(this:GetID());
+				GuildBankTabPermissionsTab_OnClick(self:GetID());
 			</OnClick>
 			<OnEnter>
-				if(this.tooltip) then
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip:SetText(this.tooltip);
+				if(self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -628,6 +749,7 @@
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parentBackground">
@@ -646,7 +768,7 @@
 	<Button name="FriendsFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				PanelTemplates_Tab_OnClick(FriendsFrame);
+				PanelTemplates_Tab_OnClick(self, FriendsFrame);
 				FriendsFrame_OnShow();
 				GuildControlPopupFrame:Hide();
 				GuildMemberDetailFrame:Hide();
@@ -772,9 +894,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								PanelTemplates_SelectTab(this);
-								PanelTemplates_TabResize(0);
-								getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+								PanelTemplates_SelectTab(self);
+								PanelTemplates_TabResize(self, 0);
+								getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -788,7 +910,7 @@
 						</Anchors>
 						<Scripts>
 							<OnShow>
-								PanelTemplates_DeselectTab(this);
+								PanelTemplates_DeselectTab(self);
 							</OnShow>
 							<OnClick>
 								FriendsFrame.showFriendsList = nil;
@@ -807,7 +929,7 @@
 						</Anchors>
 						<Scripts>
 							<OnShow>
-								PanelTemplates_DeselectTab(this);
+								PanelTemplates_DeselectTab(self);
 							</OnShow>
 							<OnClick>
 								FriendsFrame.showFriendsList = nil;
@@ -836,7 +958,7 @@
 								end
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(ADD_FRIEND, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDFRIEND, 1);
+								GameTooltip_AddNewbieTip(self, ADD_FRIEND, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDFRIEND, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -856,13 +978,13 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel( this:GetFrameLevel() + 3 );
+								self:SetFrameLevel( self:GetFrameLevel() + 3 );
 							</OnLoad>
 							<OnClick>
 								FriendsFrame_RemoveFriend();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(REMOVE_FRIEND, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_REMOVEFRIEND, 1);
+								GameTooltip_AddNewbieTip(self, REMOVE_FRIEND, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_REMOVEFRIEND, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -885,7 +1007,7 @@
 								FriendsFrame_SendMessage();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(SEND_MESSAGE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SENDMESSAGE, 1);
+								GameTooltip_AddNewbieTip(self, SEND_MESSAGE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SENDMESSAGE, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -908,7 +1030,7 @@
 								FriendsFrame_GroupInvite();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GROUPINVITE, 1);
+								GameTooltip_AddNewbieTip(self, GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GROUPINVITE, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -1048,7 +1170,7 @@
 						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_FRIEND_HEIGHT, FriendsList_Update)
+								FauxScrollFrame_OnVerticalScroll(self, offset, FRIENDS_FRAME_FRIEND_HEIGHT, FriendsList_Update)
 							</OnVerticalScroll>
 						</Scripts>
 					</ScrollFrame>
@@ -1066,7 +1188,7 @@
 						</Anchors>
 						<Scripts>
 							<OnShow>
-								PanelTemplates_DeselectTab(this);
+								PanelTemplates_DeselectTab(self);
 							</OnShow>
 							<OnClick>
 								FriendsFrame.showFriendsList = 1;
@@ -1085,9 +1207,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								PanelTemplates_SelectTab(this);
-								PanelTemplates_TabResize(0);
-								getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+								PanelTemplates_SelectTab(self);
+								PanelTemplates_TabResize(self, 0);
+								getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -1101,7 +1223,7 @@
 						</Anchors>
 						<Scripts>
 							<OnShow>
-								PanelTemplates_DeselectTab(this);
+								PanelTemplates_DeselectTab(self);
 							</OnShow>
 							<OnClick>
 								FriendsFrame.showFriendsList = nil;
@@ -1123,7 +1245,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel( this:GetFrameLevel() + 3 );
+								self:SetFrameLevel( self:GetFrameLevel() + 3 );
 							</OnLoad>
 							<OnClick>
 								if ( UnitCanCooperate("player", "target") ) then
@@ -1133,7 +1255,7 @@
 								end
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(IGNORE_PLAYER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_IGNOREPLAYER, 1);
+								GameTooltip_AddNewbieTip(self, IGNORE_PLAYER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_IGNOREPLAYER, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -1153,13 +1275,13 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel( this:GetFrameLevel() + 3 );
+								self:SetFrameLevel( self:GetFrameLevel() + 3 );
 							</OnLoad>
 							<OnClick>
 								FriendsFrame_UnIgnore();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(STOP_IGNORE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPIGNORE, 1);
+								GameTooltip_AddNewbieTip(self, STOP_IGNORE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPIGNORE, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -1389,7 +1511,7 @@
 						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_IGNORE_HEIGHT, IgnoreList_Update);
+								FauxScrollFrame_OnVerticalScroll(self, offset, FRIENDS_FRAME_IGNORE_HEIGHT, IgnoreList_Update);
 							</OnVerticalScroll>
 						</Scripts>
 					</ScrollFrame>
@@ -1407,7 +1529,7 @@
 						</Anchors>
 						<Scripts>
 							<OnShow>
-								PanelTemplates_DeselectTab(this);
+								PanelTemplates_DeselectTab(self);
 							</OnShow>
 							<OnClick>
 								FriendsFrame.showMutedList = nil;
@@ -1426,7 +1548,7 @@
 						</Anchors>
 						<Scripts>
 							<OnShow>
-								PanelTemplates_DeselectTab(this);
+								PanelTemplates_DeselectTab(self);
 							</OnShow>
 							<OnClick>
 								FriendsFrame.showMutedList = nil;
@@ -1445,9 +1567,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								PanelTemplates_SelectTab(this);
-								PanelTemplates_TabResize(0);
-								getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+								PanelTemplates_SelectTab(self);
+								PanelTemplates_TabResize(self, 0);
+								getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -1464,7 +1586,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel( this:GetFrameLevel() + 3 );
+								self:SetFrameLevel( self:GetFrameLevel() + 3 );
 							</OnLoad>
 							<OnClick>
 								if ( UnitCanCooperate("player", "target") ) then
@@ -1474,7 +1596,7 @@
 								end
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(MUTE_PLAYER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_MUTEPLAYER, 1);
+								GameTooltip_AddNewbieTip(self, MUTE_PLAYER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_MUTEPLAYER, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -1494,13 +1616,13 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel( this:GetFrameLevel() + 3 );
+								self:SetFrameLevel( self:GetFrameLevel() + 3 );
 							</OnLoad>
 							<OnClick>
 								FriendsFrame_UnMute();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(UNMUTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_UNMUTE, 1);
+								GameTooltip_AddNewbieTip(self, UNMUTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_UNMUTE, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -1730,7 +1852,7 @@
 						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_IGNORE_HEIGHT, MutedList_Update);
+								FauxScrollFrame_OnVerticalScroll(self, offset, FRIENDS_FRAME_IGNORE_HEIGHT, MutedList_Update);
 							</OnVerticalScroll>
 						</Scripts>
 					</ScrollFrame>
@@ -1764,8 +1886,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(83);
-								this.sortType = "name";
+								WhoFrameColumn_SetWidth(self, 83);
+								self.sortType = "name";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -1806,15 +1928,12 @@
 								</Layers>
 								<Scripts>
 									<OnLoad>
-										WhoFrameDropDown_OnLoad();
+										WhoFrameDropDown_OnLoad(self);
 									</OnLoad>
 									<OnShow>
-										UIDropDownMenu_Initialize(WhoFrameDropDown, WhoFrameDropDown_Initialize);
-										UIDropDownMenu_SetSelectedID(WhoFrameDropDown, 1);
+										UIDropDownMenu_Initialize(self, WhoFrameDropDown_Initialize);
+										UIDropDownMenu_SetSelectedID(self, 1);
 									</OnShow>
-									<OnEvent>
-										WhoFrameDropDown_OnEvent()
-									</OnEvent>
 									<OnEnter>
 										WhoFrameDropDownHighlightTexture:Show();
 									</OnEnter>
@@ -1822,8 +1941,8 @@
 										WhoFrameDropDownHighlightTexture:Hide();
 									</OnLeave>
 									<OnMouseUp>
-										if ( WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)].sortType ) then
-											SortWho(WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)].sortType);
+										if ( WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType ) then
+											SortWho(WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType);
 										end
 									</OnMouseUp>
 								</Scripts>
@@ -1831,7 +1950,7 @@
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(105);
+								WhoFrameColumn_SetWidth(self, 105);
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -1845,8 +1964,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(32);
-								this.sortType = "level";
+								WhoFrameColumn_SetWidth(self, 32);
+								self.sortType = "level";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -1860,8 +1979,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(92);
-								this.sortType = "class";
+								WhoFrameColumn_SetWidth(self, 92);
+								self.sortType = "class";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -1877,7 +1996,7 @@
 						<Scripts>
 							<OnLoad>
 								WhoFrameColumn_SetWidth(53);
-								this.sortType = "group";
+								self.sortType = "group";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -2082,7 +2201,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								WhoFrameEditBox_OnEnterPressed();
+								WhoFrameEditBox_OnEnterPressed(WhoFrameEditBox);
 								WhoFrame.selectedWho = nil;
 							</OnClick>
 						</Scripts>
@@ -2100,13 +2219,13 @@
 						</Anchors>
 						<Scripts>
 							<OnShow>
-								this:ClearFocus();
+								self:ClearFocus();
 							</OnShow>
 							<OnEnterPressed>
-								WhoFrameEditBox_OnEnterPressed();
+								WhoFrameEditBox_OnEnterPressed(self);
 							</OnEnterPressed>
 							<OnEscapePressed>
-								this:ClearFocus();
+								self:ClearFocus();
 							</OnEscapePressed>
 						</Scripts>
 						<FontString inherits="ChatFontNormal" bytes="256"/>
@@ -2124,7 +2243,7 @@
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_WHO_HEIGHT, WhoList_Update);
+								FauxScrollFrame_OnVerticalScroll(self, offset, FRIENDS_FRAME_WHO_HEIGHT, WhoList_Update);
 							</OnVerticalScroll>
 						</Scripts>
 						<Layers>
@@ -2294,21 +2413,21 @@
 								</Layers>
 								<Scripts>
 									<OnLoad>
-										this:RegisterEvent("VARIABLES_LOADED");
+										self:RegisterEvent("VARIABLES_LOADED");
 									</OnLoad>
 									<OnEvent>
 										if ( event == "VARIABLES_LOADED" ) then
-											this:SetChecked(GetGuildRosterShowOffline());
+											self:SetChecked(GetGuildRosterShowOffline());
 										end
 									</OnEvent>
 									<OnClick>
 										SetGuildRosterSelection(0);
-										if ( this:GetChecked() ) then
+										if ( self:GetChecked() ) then
 											PlaySound("igMainMenuOptionCheckBoxOff");
 										else
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										end
-										SetGuildRosterShowOffline(this:GetChecked());
+										SetGuildRosterShowOffline(self:GetChecked());
 										GuildStatus_Update();
 									</OnClick>
 								</Scripts>
@@ -2342,8 +2461,8 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(83);
-										this.sortType = "name";
+										WhoFrameColumn_SetWidth(self, 83);
+										self.sortType = "name";
 									</OnLoad>
 								</Scripts>
 							</Button>
@@ -2357,8 +2476,8 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(105);
-										this.sortType = "zone";
+										WhoFrameColumn_SetWidth(self, 105);
+										self.sortType = "zone";
 									</OnLoad>
 								</Scripts>
 							</Button>
@@ -2372,8 +2491,8 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(32);
-										this.sortType = "level";
+										WhoFrameColumn_SetWidth(self, 32);
+										self.sortType = "level";
 									</OnLoad>
 								</Scripts>
 							</Button>
@@ -2387,8 +2506,8 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(92);
-										this.sortType = "class";
+										WhoFrameColumn_SetWidth(self, 92);
+										self.sortType = "class";
 									</OnLoad>
 								</Scripts>
 							</Button>
@@ -2533,8 +2652,8 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(83);
-										this.sortType = "name";
+										WhoFrameColumn_SetWidth(self, 83);
+										self.sortType = "name";
 									</OnLoad>
 								</Scripts>
 							</Button>
@@ -2548,8 +2667,8 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(75);
-										this.sortType = "rank";
+										WhoFrameColumn_SetWidth(self, 75);
+										self.sortType = "rank";
 									</OnLoad>
 								</Scripts>
 							</Button>
@@ -2563,8 +2682,8 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(75);
-										this.sortType = "note";
+										WhoFrameColumn_SetWidth(self, 75);
+										self.sortType = "note";
 									</OnLoad>
 								</Scripts>
 							</Button>
@@ -2578,8 +2697,8 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(75);
-										this.sortType = "online";
+										WhoFrameColumn_SetWidth(self, 75);
+										self.sortType = "online";
 									</OnLoad>
 								</Scripts>
 							</Button>
@@ -2715,7 +2834,7 @@
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(FRIENDS_FRAME_GUILD_HEIGHT, GuildStatus_Update);
+								FauxScrollFrame_OnVerticalScroll(self, offset, FRIENDS_FRAME_GUILD_HEIGHT, GuildStatus_Update);
 							</OnVerticalScroll>
 						</Scripts>
 						<Layers>
@@ -2807,7 +2926,7 @@
 								end
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(GUILDCONTROL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDCONTROL, 1);
+								GameTooltip_AddNewbieTip(self, GUILDCONTROL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDCONTROL, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -2833,7 +2952,7 @@
 								StaticPopup_Show("ADD_GUILDMEMBER");
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(ADDMEMBER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDMEMBER, 1);
+								GameTooltip_AddNewbieTip(self, ADDMEMBER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDMEMBER, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -2859,7 +2978,7 @@
 								ToggleGuildInfoFrame();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(GUILD_INFORMATION, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_INFORMATION, 1);
+								GameTooltip_AddNewbieTip(self, GUILD_INFORMATION, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_INFORMATION, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -3015,7 +3134,7 @@
 								</HitRectInsets>
 								<Scripts>
 									<OnLoad>
-										GuildControlPopupFrameDropDown_OnLoad();
+										GuildControlPopupFrameDropDown_OnLoad(self);
 									</OnLoad>
 								</Scripts>
 							</Frame>
@@ -3032,13 +3151,13 @@
 								</Anchors>
 								<Scripts>
 									<OnUpdate>
-										GuildControlPopupFrameAddRankButton_OnUpdate();
+										GuildControlPopupFrameAddRankButton_OnUpdate(self);
 									</OnUpdate>
 									<OnClick>
 										StaticPopup_Show("ADD_GUILDRANK");
 									</OnClick>
 									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetText(GUILDADDRANK_BUTTON_TOOLTIP);
 									</OnEnter>
 									<OnLeave>
@@ -3063,13 +3182,13 @@
 								</Anchors>
 								<Scripts>
 									<OnUpdate>
-										GuildControlPopupFrameRemoveRankButton_OnUpdate();
+										GuildControlPopupFrameRemoveRankButton_OnUpdate(self);
 									</OnUpdate>
 									<OnClick>
 										GuildControlPopupFrameRemoveRankButton_OnClick();
 									</OnClick>
 									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetText(GUILDREMOVERANK_BUTTON_TOOLTIP);
 									</OnEnter>
 									<OnLeave>
@@ -3186,7 +3305,7 @@
 										</Frames>
 										<Scripts>
 											<OnTextChanged>
-												if ( this:GetText() ~= UNLIMITED ) then
+												if ( self:GetText() ~= UNLIMITED ) then
 													GuildControlPopupAcceptButton:Enable();
 													GuildControlPopupFrame.goldChanged = 1;
 												end
@@ -3195,11 +3314,11 @@
 												GuildControlPopupAcceptButton:Enable();
 											</OnEditFocusGained>
 											<OnEnterPressed>
-												this:ClearFocus();
+												self:ClearFocus();
 												GuildControlPopupAcceptButton:Enable();
 											</OnEnterPressed>
 											<OnEscapePressed>
-												this:ClearFocus();
+												self:ClearFocus();
 											</OnEscapePressed>
 										</Scripts>
 									</EditBox>
@@ -3276,17 +3395,17 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										if ( self:GetChecked() ) then
 											PlaySound("igMainMenuOptionCheckBoxOff");
 										else
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										end
-										GuildControlSetRankFlag(this:GetID(), this:GetChecked());
+										GuildControlSetRankFlag(self:GetID(), self:GetChecked());
 										GuildControlPopupAcceptButton:Enable();
 										WithdrawGoldEditBox_Update();
 									</OnClick>
 									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetText(GUILDCONTROL_OPTION16_TOOLTIP, nil, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 									</OnEnter>
 									<OnLeave>
@@ -3302,17 +3421,17 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										if ( this:GetChecked() ) then
+										if ( self:GetChecked() ) then
 											PlaySound("igMainMenuOptionCheckBoxOff");
 										else
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										end
-										GuildControlSetRankFlag(this:GetID(), this:GetChecked());
+										GuildControlSetRankFlag(self:GetID(), self:GetChecked());
 										GuildControlPopupAcceptButton:Enable();
 										WithdrawGoldEditBox_Update();
 									</OnClick>
 									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetText(GUILDCONTROL_OPTION15_TOOLTIP, nil, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 									</OnEnter>
 									<OnLeave>
@@ -3334,7 +3453,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								this:GetParent():Hide();
+								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -3384,11 +3503,11 @@
 								GuildControlPopupAcceptButton:Enable();
 							</OnEditFocusGained>
 							<OnEnterPressed>
-								this:ClearFocus();
+								self:ClearFocus();
 								GuildControlPopupAcceptButton:Enable();
 							</OnEnterPressed>
 							<OnEscapePressed>
-								this:ClearFocus();
+								self:ClearFocus();
 							</OnEscapePressed>
 						</Scripts>
 					</EditBox>
@@ -3432,7 +3551,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, this:GetID(), this:GetChecked());
+										SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
 										GuildControlPopupAcceptButton:Enable();
 										GuildControlPopup_UpdateDepositCheckBox();
 									</OnClick>
@@ -3446,7 +3565,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, this:GetID(), this:GetChecked());
+										SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
 										GuildControlPopupAcceptButton:Enable();
 									</OnClick>
 								</Scripts>
@@ -3459,7 +3578,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, this:GetID(), this:GetChecked());
+										SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
 										GuildControlPopupAcceptButton:Enable();
 									</OnClick>
 								</Scripts>
@@ -3504,17 +3623,17 @@
 												GuildControlPopupAcceptButton:Enable();
 											</OnEditFocusGained>
 											<OnTextChanged>
-												local amount = this:GetText();
+												local amount = self:GetText();
 												if(amount and amount ~= "" and amount ~= UNLIMITED) then
 													SetPendingGuildBankTabWithdraw(GuildControlPopupFrameTabPermissions.selectedTab, amount);
 												end
 											</OnTextChanged> 
 											<OnEnterPressed>
-												this:ClearFocus();
+												self:ClearFocus();
 												GuildControlPopupAcceptButton:Enable();
 											</OnEnterPressed>
 											<OnEscapePressed>
-												this:ClearFocus();
+												self:ClearFocus();
 											</OnEscapePressed>
 										</Scripts>
 									</EditBox>
@@ -3565,8 +3684,8 @@
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-								this:SetBackdropColor(0.15, 0.15, 0.15);
+								self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+								self:SetBackdropColor(0.15, 0.15, 0.15);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -3677,18 +3796,24 @@
 										</Size>
 										<Scripts>
 											<OnEscapePressed>
-												this:ClearFocus();
+												self:ClearFocus();
 											</OnEscapePressed>
 											<OnTextChanged>
-												local scrollBar = getglobal(this:GetParent():GetName().."ScrollBar")
+												local scrollBar = getglobal(self:GetParent():GetName().."ScrollBar")
 												local min;
 												local max;
 												min, max = scrollBar:GetMinMaxValues();
-												if ( max > 0 and (this.max ~= max) ) then
-													this.max = max;
+												if ( max > 0 and (self.max ~= max) ) then
+													self.max = max;
 													scrollBar:SetValue(max);
 												end
 											</OnTextChanged>
+											<OnCursorChanged>
+												ScrollingEdit_OnCursorChanged(self, x, y, w, h);
+											</OnCursorChanged>
+											<OnUpdate>
+												ScrollingEdit_OnUpdate(GuildInfoFrameScrollFrame);
+											</OnUpdate>
 										</Scripts>
 										<FontString inherits="GameFontHighlight"/>
 									</EditBox>
@@ -3697,8 +3822,8 @@
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 							</OnLoad>
 							<OnShow>
 								local guildInfoText = GetGuildInfoText();
@@ -3975,7 +4100,7 @@
 								StaticPopup_Show("REMOVE_GUILDMEMBER");
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(REMOVE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
+								GameTooltip_AddNewbieTip(self, REMOVE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -4001,7 +4126,7 @@
 								InviteUnit(GuildFrame.selectedName);
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GROUPINVITE, 1);
+								GameTooltip_AddNewbieTip(self, GROUP_INVITE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GROUPINVITE, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -4030,7 +4155,7 @@
 								GuildFramePromoteButton:Disable();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(PROMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PROMOTE, 1);
+								GameTooltip_AddNewbieTip(self, PROMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PROMOTE, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -4062,7 +4187,7 @@
 								GuildFrameDemoteButton:Disable();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(DEMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_DEMOTE, 1);
+								GameTooltip_AddNewbieTip(self, DEMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_DEMOTE, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -4113,8 +4238,8 @@
 						</Backdrop>
 						<Scripts>
 							<OnLoad>
-								this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-								this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+								self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
 							</OnLoad>
 							<OnMouseUp>
 								StaticPopup_Show("SET_GUILDPLAYERNOTE");
@@ -4161,8 +4286,8 @@
 						</Backdrop>
 						<Scripts>
 							<OnLoad>
-								this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-								this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+								self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
 							</OnLoad>
 							<OnMouseUp>
 								StaticPopup_Show("SET_GUILDOFFICERNOTE");
@@ -4253,15 +4378,15 @@
 								</Anchors>
 								<Scripts>
 									<OnVerticalScroll>
-										FauxScrollFrame_OnVerticalScroll(GUILDEVENT_TRANSACTION_HEIGHT, GuildEventLogScroll)
+										FauxScrollFrame_OnVerticalScroll(self, offset, GUILDEVENT_TRANSACTION_HEIGHT, GuildEventLogScroll)
 									</OnVerticalScroll>
 								</Scripts>
 							</ScrollFrame>
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -4306,7 +4431,7 @@
 				</Backdrop>
 				<Scripts>
 					<OnLoad>
-						this:RegisterEvent("GUILD_EVENT_LOG_UPDATE");
+						self:RegisterEvent("GUILD_EVENT_LOG_UPDATE");
 					</OnLoad>
 					<OnEvent>
 						if ( event == "GUILD_EVENT_LOG_UPDATE" ) then
@@ -4329,7 +4454,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(FRIENDS, "TOGGLEFRIENDSTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_FRIENDSTAB, 1);
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(FRIENDS, "TOGGLEFRIENDSTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_FRIENDSTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -4365,7 +4490,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(WHO, "TOGGLEWHOTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_WHOTAB, 1);
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(WHO, "TOGGLEWHOTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_WHOTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -4386,11 +4511,11 @@
 						FriendsFrame_Update();
 					</OnLoad>
 					<OnClick>
-						PanelTemplates_Tab_OnClick(FriendsFrame);
+						PanelTemplates_Tab_OnClick(self, FriendsFrame);
 						FriendsFrame_OnShow();
 					</OnClick>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDTAB, 1);
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -4413,7 +4538,7 @@
 						FriendsFrame_Update();
 					</OnEvent>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(CHAT_CHANNELS, "TOGGLECHANNELTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHANNELTAB, 1);
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(CHAT_CHANNELS, "TOGGLECHANNELTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHANNELTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -4436,7 +4561,7 @@
 						FriendsFrame_Update();
 					</OnEvent>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MicroButtonTooltipText(RAID, "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB, 1);
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(RAID, "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -4446,7 +4571,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				FriendsFrame_OnLoad();
+				FriendsFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				FriendsFrame_OnShow();
@@ -4455,7 +4580,7 @@
 				FriendsFrame_OnHide();
 			</OnHide>
 			<OnEvent>
-				FriendsFrame_OnEvent();
+				FriendsFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnMouseWheel>
 				return;

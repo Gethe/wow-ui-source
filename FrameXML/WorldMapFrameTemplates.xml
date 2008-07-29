@@ -14,18 +14,18 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 1);
-				this.unit = "party"..this:GetID();
-				getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				self.unit = "party"..self:GetID();
+				getglobal(self:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
 			</OnLoad>
 			<OnEnter>
-				WorldMapUnit_OnEnter();
+				WorldMapUnit_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				WorldMapTooltip:Hide();
 			</OnLeave>
 			<OnMouseUp>
-				MapUnit_OnMouseUp(arg1, "WorldMapRaid", "WorldMapParty");
+				MapUnit_OnMouseUp(button, "WorldMapRaid", "WorldMapParty");
 			</OnMouseUp>
 			<OnUpdate>
 				MapUnit_OnUpdate(self);
@@ -35,8 +35,8 @@
 	<Frame name="WorldMapRaidUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 1);
-				getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				getglobal(self:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -54,7 +54,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 2);
+				self:SetFrameLevel(self:GetFrameLevel() + 2);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -74,15 +74,15 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
 			</OnLoad>
 			<OnEnter>
-				local x, y = this:GetCenter();
-				local parentX, parentY = this:GetParent():GetCenter();
+				local x, y = self:GetCenter();
+				local parentX, parentY = self:GetParent():GetCenter();
 				if ( x > parentX ) then
-					WorldMapTooltip:SetOwner(this, "ANCHOR_LEFT");
+					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
 				else
-					WorldMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				end
 				WorldMapTooltip:SetText(CORPSE_RED);
 				WorldMapTooltip:Show();

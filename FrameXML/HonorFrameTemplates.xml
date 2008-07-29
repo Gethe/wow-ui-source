@@ -6,9 +6,9 @@
 		</Size>
 		<Scripts>
 			<OnEnter>
-				GameTooltip_SetDefaultAnchor(GameTooltip, this)
-				GameTooltip:SetText(this.title, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				GameTooltip:AddLine(this.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				GameTooltip_SetDefaultAnchor(GameTooltip, self)
+				GameTooltip:SetText(self.title, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
@@ -37,8 +37,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.title = HONORABLE_KILLS;
-				this.tooltip = NEWBIE_TOOLTIP_HONORABLE_KILLS;
+				self.title = HONORABLE_KILLS;
+				self.tooltip = NEWBIE_TOOLTIP_HONORABLE_KILLS;
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -63,8 +63,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.title = DISHONORABLE_KILLS;
-				this.tooltip = NEWBIE_TOOLTIP_DISHONORABLE_KILLS;
+				self.title = DISHONORABLE_KILLS;
+				self.tooltip = NEWBIE_TOOLTIP_DISHONORABLE_KILLS;
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -89,8 +89,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.title = HONOR_CONTRIBUTION_POINTS;
-				this.tooltip = NEWBIE_TOOLTIP_HONOR_CONTRIBUTION_POINTS;
+				self.title = HONOR_CONTRIBUTION_POINTS;
+				self.tooltip = NEWBIE_TOOLTIP_HONOR_CONTRIBUTION_POINTS;
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -115,8 +115,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.title = HONOR_STANDING;
-				this.tooltip = NEWBIE_TOOLTIP_HONOR_STANDING;
+				self.title = HONOR_STANDING;
+				self.tooltip = NEWBIE_TOOLTIP_HONOR_STANDING;
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -141,8 +141,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this.title = RANK;
-				this.tooltip = NEWBIE_TOOLTIP_RANK;
+				self.title = RANK;
+				self.tooltip = NEWBIE_TOOLTIP_RANK;
 			</OnLoad>
 		</Scripts>
 	</Frame>

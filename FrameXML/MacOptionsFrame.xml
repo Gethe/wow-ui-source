@@ -82,15 +82,15 @@
 						<Scripts>
 							<OnLoad>
 								if(IsMacClient()) then
-									MacOptionsFrameResolutionDropDown_OnLoad();
+									MacOptionsFrameResolutionDropDown_OnLoad(self);
 								end
 							</OnLoad>
 							<OnShow>
-								MacOptionsFrameResolutionDropDown_OnLoad();
+								MacOptionsFrameResolutionDropDown_OnLoad(self);
 							</OnShow>
 							<OnEnter>
 								if(UIDropDownMenu_IsEnabled(MacOptionsFrameResolutionDropDown)) then
-									GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 									GameTooltip:SetText(MOVIE_RECORDING_RESOLUTION_TOOLTIP, nil, nil, nil, nil, 1);
 								end
 							</OnEnter>
@@ -125,15 +125,15 @@
 						<Scripts>
 							<OnLoad>
 								if(IsMacClient()) then
-									MacOptionsFrameFramerateDropDown_OnLoad();
+									MacOptionsFrameFramerateDropDown_OnLoad(self);
 								end
 							</OnLoad>
 							<OnShow>
-								MacOptionsFrameFramerateDropDown_OnLoad();
+								MacOptionsFrameFramerateDropDown_OnLoad(self);
 							</OnShow>
 							<OnEnter>
 								if(UIDropDownMenu_IsEnabled(MacOptionsFrameFramerateDropDown)) then
-									GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 									GameTooltip:SetText(MOVIE_RECORDING_FRAMERATE_TOOLTIP, nil, nil, nil, nil, 1);
 								end
 							</OnEnter>
@@ -168,15 +168,15 @@
 						<Scripts>
 							<OnLoad>
 								if(IsMacClient()) then
-									MacOptionsFrameCodecDropDown_OnLoad();
+									MacOptionsFrameCodecDropDown_OnLoad(self);
 								end
 							</OnLoad>
 							<OnShow>
-								MacOptionsFrameCodecDropDown_OnLoad();
+								MacOptionsFrameCodecDropDown_OnLoad(self);
 							</OnShow>
 							<OnEnter>
 								if(UIDropDownMenu_IsEnabled(MacOptionsFrameCodecDropDown)) then
-									GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 									GameTooltip:SetText(MOVIE_RECORDING_CODEC_TOOLTIP, nil, nil, nil, nil, 1);
 								end
 							</OnEnter>
@@ -198,7 +198,7 @@
 						<Scripts>
 							<OnLoad>
 								MacOptionsFrameQualitySliderText:SetText(QUALITY);
-								this.tooltipText = MOVIE_RECORDING_QUALITY_TOOLTIP;
+								self.tooltipText = MOVIE_RECORDING_QUALITY_TOOLTIP;
 							</OnLoad>
 						</Scripts>
 					</Slider>
@@ -213,7 +213,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 									MacOptionsFrame_EnableCheckBox(MacOptionsFrameCheckButton3);
 								else
@@ -233,7 +233,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
@@ -251,7 +251,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
@@ -270,7 +270,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 									if( MovieRecording_IsRecording() ) then
 										MiniMapRecordingButton:Show();
@@ -292,7 +292,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
@@ -310,7 +310,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
@@ -328,7 +328,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 								GameTooltip:SetText(MOVIE_RECORDING_COMPRESS_TOOLTIP, nil, nil, nil, nil, 1);
 							</OnEnter>
 							<OnLeave>
@@ -353,7 +353,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 								GameTooltip:SetText(MOVIE_RECORDING_TIME_TOOLTIP, nil, nil, nil, nil, 1);
 							</OnEnter>
 							<OnLeave>
@@ -374,7 +374,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 								GameTooltip:SetText(MOVIE_RECORDING_DATA_RATE_TOOLTIP, nil, nil, nil, nil, 1);
 							</OnEnter>
 							<OnLeave>
@@ -425,9 +425,9 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(this:GetName().."Title"):SetText(BINDING_HEADER_MOVIE_RECORDING_SECTION);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(BINDING_HEADER_MOVIE_RECORDING_SECTION);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -447,9 +447,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(this:GetName().."Title"):SetText(BINDING_HEADER_ITUNES_REMOTE);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(BINDING_HEADER_ITUNES_REMOTE);
 					</OnLoad>
 				</Scripts>
 				<Frames>
@@ -555,11 +555,11 @@
 		<Scripts>
 			<OnLoad>
 				if(IsMacClient()) then
-					MacOptionsFrame_Init();
+					MacOptionsFrame_OnLoad(self);
 				end
 			</OnLoad>
 			<OnEvent>
-				MacOptionsFrame_OnEvent();
+				MacOptionsFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
 				MacOptionsFrame_Load();
@@ -573,11 +573,11 @@
 				ShowUIPanel(GameMenuFrame);
 			</OnHide>
 			<OnKeyDown>
-				if ( arg1 == "ESCAPE" ) then
+				if ( key == "ESCAPE" ) then
 					PlaySound("gsTitleOptionExit");
 					HideUIPanel(MacOptionsFrame);
 					MacOptionsFrame_Cancel();
-				elseif ( GetBindingFromClick(arg1) == "SCREENSHOT" ) then
+				elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
 					RunBinding("SCREENSHOT");
 				end
 			</OnKeyDown>
@@ -698,16 +698,15 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("MOVIE_UNCOMPRESSED_MOVIE");
+				self:RegisterEvent("MOVIE_UNCOMPRESSED_MOVIE");
 			</OnLoad>
 			<OnEvent>
-				if ( event == "MOVIE_UNCOMPRESSED_MOVIE" ) then
-					MacOptionsCompressFrameFileName:SetText(arg1);
-					HideUIPanel(MacOptionsFrame);
-					HideUIPanel(GameMenuFrame);
-					MacOptionsCompressFrame_OnShow();
-					this:Show();
-				end
+				local arg1 = ...;
+				MacOptionsCompressFrameFileName:SetText(arg1);
+				HideUIPanel(MacOptionsFrame);
+				HideUIPanel(GameMenuFrame);
+				MacOptionsCompressFrame_OnShow();
+				self:Show();
 			</OnEvent>
 			<OnHide>
 				MovieRecording_SearchUncompressedMovie(false);

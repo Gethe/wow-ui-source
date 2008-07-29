@@ -59,16 +59,16 @@
 				<Scripts>
 					<OnClick>
 						CloseMenus();
-						UIDropDownMenuButton_OpenColorPicker(this:GetParent());
+						UIDropDownMenuButton_OpenColorPicker(self:GetParent());
 					</OnClick>
 					<OnEnter>
-						CloseDropDownMenus(this:GetParent():GetParent():GetID() + 1);
-						getglobal(this:GetName().."SwatchBg"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-						UIDropDownMenu_StopCounting(this:GetParent():GetParent());
+						CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
+						getglobal(self:GetName().."SwatchBg"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
 					</OnEnter>
 					<OnLeave>
-						getglobal(this:GetName().."SwatchBg"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-						UIDropDownMenu_StartCounting(this:GetParent():GetParent());
+						getglobal(self:GetName().."SwatchBg"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						UIDropDownMenu_StartCounting(self:GetParent():GetParent());
 					</OnLeave>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
@@ -86,14 +86,14 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ToggleDropDownMenu(this:GetParent():GetParent():GetID() + 1, this:GetParent().value, nil, nil, nil, nil, this:GetParent().menuList);
+						ToggleDropDownMenu(self:GetParent():GetParent():GetID() + 1, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
 					</OnClick>
 					<OnEnter>
-						ToggleDropDownMenu(this:GetParent():GetParent():GetID() + 1, this:GetParent().value, nil, nil, nil, nil, this:GetParent().menuList);
-						UIDropDownMenu_StopCounting(this:GetParent():GetParent());
+						ToggleDropDownMenu(self:GetParent():GetParent():GetID() + 1, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
 					</OnEnter>
 					<OnLeave>
-						UIDropDownMenu_StartCounting(this:GetParent():GetParent());
+						UIDropDownMenu_StartCounting(self:GetParent():GetParent());
 					</OnLeave>
 				</Scripts>
 				<NormalTexture file="Interface\ChatFrame\ChatFrameExpandArrow"/>
@@ -110,34 +110,34 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						UIDropDownMenu_StopCounting(this:GetParent():GetParent());
-						CloseDropDownMenus(this:GetParent():GetParent():GetID() + 1);
+						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
+						CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
 					</OnEnter>
 					<OnLeave>
-						UIDropDownMenu_StartCounting(this:GetParent():GetParent());
+						UIDropDownMenu_StartCounting(self:GetParent():GetParent());
 					</OnLeave>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnClick>
-				UIDropDownMenuButton_OnClick();
+				UIDropDownMenuButton_OnClick(self, button);
 			</OnClick>
 			<OnEnter>
-				if ( this.hasArrow ) then
-					ToggleDropDownMenu(this:GetParent():GetID() + 1, this.value, nil, nil, nil, nil, this.menuList);
+				if ( self.hasArrow ) then
+					ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
 				else
-					CloseDropDownMenus(this:GetParent():GetID() + 1);
+					CloseDropDownMenus(self:GetParent():GetID() + 1);
 				end
-				getglobal(this:GetName().."Highlight"):Show();
-				UIDropDownMenu_StopCounting(this:GetParent());
-				if ( this.tooltipTitle ) then
-					GameTooltip_AddNewbieTip(this.tooltipTitle, 1.0, 1.0, 1.0, this.tooltipText, 1);
+				getglobal(self:GetName().."Highlight"):Show();
+				UIDropDownMenu_StopCounting(self:GetParent());
+				if ( self.tooltipTitle ) then
+					GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 				end
 			</OnEnter>
 			<OnLeave>
-				getglobal(this:GetName().."Highlight"):Hide();
-				UIDropDownMenu_StartCounting(this:GetParent());
+				getglobal(self:GetName().."Highlight"):Hide();
+				UIDropDownMenu_StartCounting(self:GetParent());
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
@@ -181,8 +181,8 @@
 				</Backdrop>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -197,31 +197,34 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
-				this:Hide();
+				self:Hide();
 			</OnClick>
 			<OnEnter>
-				UIDropDownMenu_StopCounting(this);
+				UIDropDownMenu_StopCounting(self);
 			</OnEnter>
 			<OnLeave>
-				UIDropDownMenu_StartCounting(this);
+				UIDropDownMenu_StartCounting(self);
 			</OnLeave>
 			<OnUpdate>
-				UIDropDownMenu_OnUpdate(arg1);
+				UIDropDownMenu_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnShow>
 				for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-					if (not this.noResize) then
-						getglobal(this:GetName().."Button"..i):SetWidth(this.maxWidth);
+					if (not self.noResize) then
+						getglobal(self:GetName().."Button"..i):SetWidth(self.maxWidth);
 					end
 				end
-				if (not this.noResize) then
-					this:SetWidth(this.maxWidth+25);
+				if (not self.noResize) then
+					self:SetWidth(self.maxWidth+25);
 				end
-				this.showTime = nil;
-				if ( this:GetID() > 1 ) then
-					this.parent = getglobal("DropDownList"..(this:GetID() - 1));
+				self.showTime = nil;
+				if ( self:GetID() > 1 ) then
+					self.parent = getglobal("DropDownList"..(self:GetID() - 1));
 				end
 			</OnShow>
+			<OnHide>
+				UIDropDownMenu_OnHide(self);
+			</OnHide>
 		</Scripts>
 	</Button>
 	<Frame name="UIDropDownMenuTemplate" virtual="true">
@@ -289,7 +292,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ToggleDropDownMenu();
+						ToggleDropDownMenu(nil, nil, self:GetParent());
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>

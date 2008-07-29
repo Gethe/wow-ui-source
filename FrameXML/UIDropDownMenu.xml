@@ -11,19 +11,11 @@
 				local fontName, fontHeight, fontFlags = getglobal("DropDownList1Button1NormalText"):GetFont();
 				UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = fontHeight;
 			</OnLoad>
-			<OnHide>
-				UIDropDownMenu_OnHide();
-			</OnHide>
 		</Scripts>
 	</Button>
 	<Button name="DropDownList2" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" hidden="true" id="2">
 		<Size>
 			<AbsDimension x="180" y="10"/>
 		</Size>
-		<Scripts>
-			<OnHide>
-				UIDropDownMenu_OnHide();
-			</OnHide>
-		</Scripts>
 	</Button>
 </Ui>

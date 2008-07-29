@@ -72,11 +72,11 @@
 				self:SetFrameLevel(self:GetFrameLevel() + 4);
 			</OnLoad>
 			<OnClick>
-				PanelTemplates_Tab_OnClick(AudioOptionsFrame);
+				PanelTemplates_Tab_OnClick(self, AudioOptionsFrame);
 				AudioOptionsFrameTab_OnClick(self);
 			</OnClick>
 			<OnShow>
-				PanelTemplates_TabResize(0);
+				PanelTemplates_TabResize(self, 0);
 				getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 30);
 			</OnShow>
 		</Scripts>
@@ -293,12 +293,12 @@
 				UpdateMicroButtons();
 			</OnShow>
 			<OnKeyDown>
-				if ( arg1 == "ESCAPE" ) then
+				if ( key == "ESCAPE" ) then
 					PlaySound("gsTitleOptionExit");
 					HideUIPanel(AudioOptionsFrame);
 					SoundOptionsFrame_Cancel();
 					VoiceOptionsFrame_Cancel();
-				elseif ( GetBindingFromClick(arg1) == "SCREENSHOT" ) then
+				elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
 					RunBinding("SCREENSHOT");
 				end
 			</OnKeyDown>

@@ -1,5 +1,5 @@
 MAX_ARENA_BATTLES = 6;
-
+NO_ARENA_SEASON = 0;
 function ArenaFrame_OnLoad (self)
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
 	self:RegisterEvent("BATTLEFIELDS_CLOSED");
@@ -11,11 +11,18 @@ function ArenaFrame_OnEvent (self, event, ...)
 	if ( IsBattlefieldArena() ) then
 		if ( event == "BATTLEFIELDS_SHOW" ) then
 			ShowUIPanel(ArenaFrame);
-			if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
+			if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() and GetCurrentArenaSeason()~=NO_ARENA_SEASON) then
 				ArenaFrame.selection = 1;
 			else
 				ArenaFrame.selection = 4;
 			end
+            
+            if ( GetCurrentArenaSeason()==NO_ARENA_SEASON ) then
+                ArenaFrameZoneDescription:SetText(ARENA_MASTER_NO_SEASON_TEXT);
+            else
+                ArenaFrameZoneDescription:SetText(ARENA_MASTER_TEXT)
+            end
+            
 			if ( not ArenaFrame:IsShown() ) then
 				CloseBattlefield();
 				return;
@@ -76,7 +83,7 @@ function ArenaFrame_Update (self)
 	end
 
 	if ( CanJoinBattlefieldAsGroup() ) then
-		if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
+		if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() and GetCurrentArenaSeason()~=NO_ARENA_SEASON) then
 			-- If this is true then can join as a group
 			ArenaFrameGroupJoinButton:Enable();
 		else

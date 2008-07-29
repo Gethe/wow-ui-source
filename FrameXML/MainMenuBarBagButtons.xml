@@ -4,13 +4,13 @@
 	<Model name="ItemAnimTemplate" file="Interface\ItemAnimations\ForcedBackpackItem.mdx" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad>
-				ItemAnim_OnLoad();
+				ItemAnim_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				ItemAnim_OnEvent(event);
+				ItemAnim_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnAnimFinished>
-				ItemAnim_OnAnimFinished();
+				ItemAnim_OnAnimFinished(self);
 			</OnAnimFinished>
 		</Scripts>
 	</Model>

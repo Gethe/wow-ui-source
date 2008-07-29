@@ -270,14 +270,14 @@ end
 
 function TargetDebuffButton_Update (self)
 	local button;
-	local name, rank, icon, count, duration, timeLeft;
+	local name, rank, icon, count, debuffType, duration, timeLeft;
 	local buffCount;
 	local numBuffs = 0;
 	local largeBuffList = {};
 	local playerIsTarget = UnitIsUnit("player", "target");
 	local cooldown, startCooldownTime;
 	for i=1, MAX_TARGET_BUFFS do
-		name, rank, icon, count, duration, timeLeft = UnitBuff("target", i);
+		name, rank, icon, count, debuffType, duration, timeLeft = UnitBuff("target", i);
 		button = getglobal("TargetFrameBuff"..i);
 		if ( not button ) then
 			if ( not icon ) then
@@ -562,6 +562,10 @@ function TargetFrameDropDown_Initialize (self)
 	local id = nil;
 	if ( UnitIsUnit("target", "player") ) then
 		menu = "SELF";
+	elseif ( UnitIsUnit("target", "vehicle") ) then
+		-- NOTE: vehicle check must come before pet check for accuracy's sake because
+		-- a vehicle may also be considered your pet
+		menu = "VEHICLE";
 	elseif ( UnitIsUnit("target", "pet") ) then
 		menu = "PET";
 	elseif ( UnitIsPlayer("target") ) then
@@ -728,6 +732,8 @@ function Target_Spellbar_OnLoad (self)
 
 	SetTargetSpellbarAspect();
 	
+	--The target casting bar has less room for text than most, so shorten it
+	getglobal(self:GetName().."Text"):SetWidth(150)
 	-- check to see if the castbar should be shown
 	if ( GetCVar("showTargetCastbar") == "0") then
 		self.showCastbar = false;	

@@ -3,7 +3,7 @@ REQUIRED_REST_HOURS = 5;
 function PlayerFrame_OnLoad(self)
 	self.statusCounter = 0;
 	self.statusSign = -1;
-	CombatFeedback_Initialize(PlayerHitIndicator, 30);
+	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
 	PlayerFrame_Update();
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("UNIT_COMBAT");
@@ -24,6 +24,8 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
+	self:RegisterEvent("UNIT_ENTER_VEHICLE");
+	self:RegisterEvent("UNIT_LEAVE_VEHICLE");
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
 
@@ -38,7 +40,7 @@ end
 
 function PlayerFrame_Update ()
 	if ( UnitExists("player") ) then
-		PlayerLevelText:SetText(UnitLevel("player"));
+		PlayerLevelText:SetText(UnitLevel(PlayerFrame.unit));
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdatePvPStatus();
 		PlayerFrame_UpdateStatus();
@@ -99,18 +101,22 @@ function PlayerFrame_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5 = ...;
 	if ( event == "UNIT_LEVEL" ) then
 		if ( arg1 == "player" ) then
-			PlayerLevelText:SetText(UnitLevel("player"));
+			PlayerLevelText:SetText(UnitLevel(self.unit));
 		end
 	elseif ( event == "UNIT_COMBAT" ) then
-		if ( arg1 == "player" ) then
-			CombatFeedback_OnCombatEvent(arg2, arg3, arg4, arg5);
+		if ( arg1 == self.unit ) then
+			CombatFeedback_OnCombatEvent(self, arg2, arg3, arg4, arg5);
 		end
 	elseif ( event == "UNIT_FACTION" ) then
 		if ( arg1 == "player" ) then
 			PlayerFrame_UpdatePvPStatus();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		UnitFrame_Update(self);
+		if ( UnitHasVehicleUI("player") ) then
+			UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
+		else
+			UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
+		end
 		self.inCombat = nil;
 		self.onHateList = nil;
 		PlayerFrame_Update();
@@ -168,6 +174,26 @@ function PlayerFrame_OnEvent(self, event, ...)
 		ReadyCheck_Finish(PlayerFrameReadyCheck);
 	elseif ( event == "UNIT_RUNIC_POWER" and arg1 == "player" ) then
 		PlayerFrame_SetRunicPower(UnitMana("player"));
+	elseif ( event == "UNIT_ENTER_VEHICLE" ) then
+		if ( arg1 == "player" ) then
+			local showVehicle = arg2;
+			if ( showVehicle ) then
+				UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
+				PlayerFrame_Update();
+				BuffFrame_Update();
+			else
+				UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
+				PlayerFrame_Update();
+				BuffFrame_Update();
+			end
+			BuffFrame_Update();
+		end
+	elseif ( event == "UNIT_LEAVE_VEHICLE" ) then
+		if ( arg1 == "player" ) then
+			UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
+			PlayerFrame_Update();
+			BuffFrame_Update();
+		end
 	end
 end
 
@@ -207,7 +233,7 @@ function PlayerFrame_OnUpdate (self, elapsed)
 			self.statusSign = sign;
 		end
 		counter = mod(counter, 0.5);
-		this.statusCounter = counter;
+		self.statusCounter = counter;
 
 		if ( sign == 1 ) then
 			alpha = (55  + (counter * 400)) / 255;
@@ -285,7 +311,11 @@ function PlayerFrameDropDown_OnLoad (self)
 end
 
 function PlayerFrameDropDown_Initialize ()
-	UnitPopup_ShowMenu(PlayerFrameDropDown, "SELF", "player");
+	if ( PlayerFrame.unit == "vehicle" ) then
+		UnitPopup_ShowMenu(PlayerFrameDropDown, "VEHICLE", "vehicle");
+	else
+		UnitPopup_ShowMenu(PlayerFrameDropDown, "SELF", "player");
+	end
 end
 
 function PlayerFrame_UpdatePlaytime()
@@ -374,7 +404,7 @@ CustomClassLayouts = {
 local layoutUpdated = false;
 
 function PlayerFrame_UpdateLayout ()
-	if ( layoutUpdated ) then
+	if ( true ) then
 		return;
 	end
 	layoutUpdated = true;

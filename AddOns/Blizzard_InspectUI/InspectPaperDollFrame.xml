@@ -4,22 +4,22 @@
     <Button name="InspectPaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
         <Scripts>
             <OnLoad>
-                InspectPaperDollItemSlotButton_OnLoad();
+                InspectPaperDollItemSlotButton_OnLoad(self);
             </OnLoad>
             <OnEvent>
-                InspectPaperDollItemSlotButton_OnEvent(event);
+                InspectPaperDollItemSlotButton_OnEvent(self, event, ...);
             </OnEvent>
             <OnClick>
-				HandleModifiedItemClick(GetInventoryItemLink(InspectFrame.unit, this:GetID()));
+				HandleModifiedItemClick(GetInventoryItemLink(InspectFrame.unit, self:GetID()));
 			</OnClick>
 			<OnUpdate>
-				CursorOnUpdate();
-				if ( GameTooltip:IsOwned(this) ) then
-					InspectPaperDollItemSlotButton_OnEnter();
+				CursorOnUpdate(self);
+				if ( GameTooltip:IsOwned(self) ) then
+					InspectPaperDollItemSlotButton_OnEnter(self);
 				end
 			</OnUpdate>
             <OnEnter>
-				InspectPaperDollItemSlotButton_OnEnter()
+				InspectPaperDollItemSlotButton_OnEnter(self)
 			</OnEnter>
             <OnLeave>
                 GameTooltip:Hide();
@@ -129,14 +129,14 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        InspectModelFrame_OnLoad();
-						this:RegisterEvent("DISPLAY_SIZE_CHANGED");
+                        InspectModelFrame_OnLoad(self);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
                     </OnLoad>
 					<OnEvent>
-						this:RefreshUnit();
+						self:RefreshUnit();
 					</OnEvent>
                     <OnUpdate>
-                        InspectModelFrame_OnUpdate(arg1);
+                        InspectModelFrame_OnUpdate(self, elapsed);
                     </OnUpdate>
                 </Scripts>
 				<Frames>
@@ -149,7 +149,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
 								InspectModelRotateLeftButton_OnClick();
@@ -168,7 +168,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
 								InspectModelRotateRightButton_OnClick();
@@ -354,10 +354,10 @@
         </Frames>
         <Scripts>
             <OnLoad>
-                InspectPaperDollFrame_OnLoad();
+                InspectPaperDollFrame_OnLoad(self);
             </OnLoad>
             <OnEvent>
-                InspectPaperDollFrame_OnEvent(event, arg1);
+                InspectPaperDollFrame_OnEvent(self, event, ...);
             </OnEvent>
             <OnShow>
                 InspectPaperDollFrame_OnShow();

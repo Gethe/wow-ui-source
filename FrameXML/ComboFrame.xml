@@ -112,14 +112,14 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("PLAYER_TARGET_CHANGED");
-				this:RegisterEvent("PLAYER_COMBO_POINTS");
+				self:RegisterEvent("PLAYER_TARGET_CHANGED");
+				self:RegisterEvent("PLAYER_COMBO_POINTS");
 				-- init alpha
 				ComboPoint1Highlight:SetAlpha(0);
 				ComboPoint1Shine:SetAlpha(0);
 			</OnLoad>
 			<OnEvent>
-				ComboPointsFrame_OnEvent(event);
+				ComboPointsFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Frame>

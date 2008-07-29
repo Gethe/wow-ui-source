@@ -280,7 +280,7 @@
 				</Layers>
 				<Scripts>
                      <OnLoad>
-                        this:SetFrameLevel(this:GetFrameLevel() + 2);
+                        self:SetFrameLevel(self:GetFrameLevel() + 2);
                     </OnLoad>
                 </Scripts>
 			</Frame>
@@ -373,8 +373,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("PETITION_SHOW");
-				this:RegisterEvent("PETITION_CLOSED");
+				self:RegisterEvent("PETITION_SHOW");
+				self:RegisterEvent("PETITION_CLOSED");
 			</OnLoad>
 			<OnEvent>
 				if (event == "PETITION_SHOW") then
@@ -384,7 +384,7 @@
 						return;
 					end
 
-					PetitionFrame_Update();
+					PetitionFrame_Update(self);
 				elseif (event == "PETITION_CLOSED") then
 					HideUIPanel(PetitionFrame);
 				end

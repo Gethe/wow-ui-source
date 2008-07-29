@@ -4,28 +4,28 @@
 	<CheckButton name="SoundOptionsCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				SoundOptionsCheckButton_OnClick();
+				SoundOptionsCheckButton_OnClick(self);
 			</OnClick>
 		</Scripts>
 	</CheckButton>
 	<Slider name="SoundOptionsSliderTemplate" inherits="AudioOptionsSliderTemplate" virtual="true">
 		<Scripts>
 			<OnValueChanged>
-				SoundOptionsSlider_OnValueChanged();
+				SoundOptionsSlider_OnValueChanged(self, value);
 			</OnValueChanged>
 		</Scripts>
 	</Slider>
 	<Slider name="SoundOptionsLowHighSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
 		<Scripts>
 			<OnValueChanged>
-				SoundOptionsSlider_OnValueChanged();
+				SoundOptionsSlider_OnValueChanged(self, value);
 			</OnValueChanged>
 		</Scripts>
 	</Slider>
 	<Slider name="SoundOptionsVolumeSliderTemplate" inherits="AudioOptionsVolumeSliderTemplate" virtual="true">
 		<Scripts>
 			<OnValueChanged>
-				SoundOptionsSlider_OnValueChanged();
+				SoundOptionsSlider_OnValueChanged(self, value);
 			</OnValueChanged> 
 		</Scripts>
 	</Slider>
@@ -73,9 +73,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
-						getglobal(this:GetName().."Title"):SetText(PLAYBACK);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
+						getglobal(self:GetName().."Title"):SetText(PLAYBACK);
 					</OnLoad>
 				</Scripts>
 				<Frames>
@@ -130,17 +130,12 @@
 							</Anchor>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="SoundOptionsFrameCheckButton8" inherits="SoundOptionsCheckButtonTemplate" id="8">
+					<CheckButton name="SoundOptionsFrameCheckButton8" inherits="SoundOptionsCheckButtonTemplate" id="8" hidden="true">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton7" relativePoint="BOTTOM">
 								<Offset x="0" y="0"/>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								this:Hide();
-							</OnLoad>
-						</Scripts>
 					</CheckButton>
 					<CheckButton name="SoundOptionsFrameCheckButton9" inherits="SoundOptionsCheckButtonTemplate" id="9">
 						<Anchors>
@@ -157,12 +152,12 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								if ( this.tooltipText ) then
-									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-									GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+								if ( self.tooltipText ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 								end
-								if ( this.tooltipRequirement ) then
-									GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+								if ( self.tooltipRequirement ) then
+									GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
 									GameTooltip:Show();
 								end
 							</OnEnter>
@@ -186,9 +181,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
-						getglobal(this:GetName().."Title"):SetText(HARDWARE);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
+						getglobal(self:GetName().."Title"):SetText(HARDWARE);
 					</OnLoad>
 				</Scripts>
 				<Frames>
@@ -215,11 +210,11 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								SoundOptionsOutputDropDown_Load();
+								SoundOptionsOutputDropDown_Load(self);
 							</OnLoad>
 							<OnEnter>
-								if ( UIDropDownMenu_IsEnabled(this) ) then
-									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								if ( UIDropDownMenu_IsEnabled(self) ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 									GameTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, 1);
 									GameTooltip:Show();
 								end
@@ -244,12 +239,12 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								if ( this.tooltipText ) then
-									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-									GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+								if ( self.tooltipText ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 								end
-								if ( this.tooltipRequirement ) then
-									GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+								if ( self.tooltipRequirement ) then
+									GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
 									GameTooltip:Show();
 								end
 							</OnEnter>
@@ -266,9 +261,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
-						getglobal(this:GetName().."Title"):SetText(VOLUME);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
+						getglobal(self:GetName().."Title"):SetText(VOLUME);
 					</OnLoad>
 				</Scripts>
 				<Layers>
@@ -388,7 +383,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				SoundOptionsFrame_Init();
+				SoundOptionsFrame_Init(self);
 			</OnLoad>
 			<OnEvent>
 				SoundOptionsFrame_OnEvent(self, event, ...);

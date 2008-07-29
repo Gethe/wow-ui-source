@@ -69,39 +69,41 @@ function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
 end
 
 
-function MirrorTimerFrame_OnLoad()
-	this:RegisterEvent("MIRROR_TIMER_PAUSE");
-	this:RegisterEvent("MIRROR_TIMER_STOP");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this.timer = nil;
+function MirrorTimerFrame_OnLoad(self)
+	self:RegisterEvent("MIRROR_TIMER_PAUSE");
+	self:RegisterEvent("MIRROR_TIMER_STOP");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self.timer = nil;
 end
 
-function MirrorTimerFrame_OnEvent()
+function MirrorTimerFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		for index=1, MIRRORTIMER_NUMTIMERS do
 			local timer, value, maxvalue, scale, paused, label = GetMirrorTimerInfo(index);
 			if ( timer ==  "UNKNOWN") then
-				this:Hide();
-				this.timer = nil;
+				self:Hide();
+				self.timer = nil;
 			else
 				MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
 			end
 		end
 	end
-	if ( not this:IsShown() or (arg1 ~= this.timer) ) then
+	
+	local arg1 = ...;
+	if ( not self:IsShown() or (arg1 ~= self.timer) ) then
 		return;
 	end
+	
 	if ( event == "MIRROR_TIMER_PAUSE" ) then
 		if ( arg1 > 0 ) then
-			this.paused = 1;
+			self.paused = 1;
 		else
-			this.paused = nil;
+			self.paused = nil;
 		end
 		return;
-	end
-	if ( event == "MIRROR_TIMER_STOP" ) then
-		this:Hide();
-		this.timer = nil;
+	elseif ( event == "MIRROR_TIMER_STOP" ) then
+		self:Hide();
+		self.timer = nil;
 	end
 end
 

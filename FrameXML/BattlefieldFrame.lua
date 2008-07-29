@@ -50,7 +50,7 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 	end
 end
 
-function BattlefieldFrame_OnUpdate(self, elapsed)
+function BattlefieldFrame_OnUpdate(elapsed)
 	if ( BATTLEFIELD_SHUTDOWN_TIMER == 0 ) then
 		return;
 	end
@@ -78,7 +78,12 @@ function BattlefieldFrame_OnUpdate(self, elapsed)
 				local info = ChatTypeInfo["SYSTEM"];
 				local string;
 				if ( GetBattlefieldWinner() ) then
-					string = format(INSTANCE_COMPLETE_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
+					local isArena = IsActiveBattlefieldArena();
+					if ( isArena ) then
+						string = format(ARENA_COMPLETE_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
+					else
+						string = format(BATTLEGROUND_COMPLETE_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
+					end
 				else
 					string = format(INSTANCE_SHUTDOWN_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
 				end
@@ -387,7 +392,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 				if ( teamSize == 0 ) then
 					info = UIDropDownMenu_CreateInfo();
 					info.text = CHANGE_INSTANCE;
-					info.func = ShowBattlefieldList;
+					info.func = function(self, ...) ShowBattlefieldList(...) end;
 					info.arg1 = i;
 					info.notCheckable = 1;
 					UIDropDownMenu_AddButton(info);
@@ -395,7 +400,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 
 				info = UIDropDownMenu_CreateInfo();
 				info.text = LEAVE_QUEUE;
-				info.func = AcceptBattlefieldPort;
+				info.func = function (self, ...) AcceptBattlefieldPort(...) end;
 				info.arg1 = i;
 				info.notCheckable = 1;
 				UIDropDownMenu_AddButton(info);
@@ -404,7 +409,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 
 				info = UIDropDownMenu_CreateInfo();
 				info.text = ENTER_BATTLE;
-				info.func = AcceptBattlefieldPort;
+				info.func = function (self, ...) AcceptBattlefieldPort(...) end;
 				info.arg1 = i;
 				info.arg2 = 1;
 				info.notCheckable = 1;
@@ -413,7 +418,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 				if ( teamSize == 0 ) then
 					info = UIDropDownMenu_CreateInfo();
 					info.text = LEAVE_QUEUE;
-					info.func = AcceptBattlefieldPort;
+					info.func = function (self, ...) AcceptBattlefieldPort(...) end;
 					info.arg1 = i;
 					info.notCheckable = 1;
 					UIDropDownMenu_AddButton(info);
@@ -439,7 +444,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 			else
 				info.text = LEAVE_BATTLEGROUND;				
 			end
-			info.func = LeaveBattlefield;
+			info.func = function (self, ...) LeaveBattlefield(...) end;
 			info.notCheckable = 1;
 			UIDropDownMenu_AddButton(info);
 

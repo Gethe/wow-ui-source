@@ -240,7 +240,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+								GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();

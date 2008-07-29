@@ -10,9 +10,9 @@ GEM_TYPE_INFO["Socket"] = {w=57, h=52, left=0.171875, right=0.3984375, top=0.402
 
 ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH = 240;
 
-function ItemSocketingFrame_OnLoad()
-	this:RegisterEvent("SOCKET_INFO_UPDATE");
-	this:RegisterEvent("SOCKET_INFO_CLOSE");
+function ItemSocketingFrame_OnLoad(self)
+	self:RegisterEvent("SOCKET_INFO_UPDATE");
+	self:RegisterEvent("SOCKET_INFO_CLOSE");
 	ItemSocketingScrollFrameScrollBarScrollUpButton:SetPoint("BOTTOM", ItemSocketingScrollFrameScrollBar, "TOP", 0, 1);
 	ItemSocketingScrollFrameScrollBarScrollDownButton:SetPoint("TOP", ItemSocketingScrollFrameScrollBar, "BOTTOM", 0, -3);
 	ItemSocketingScrollFrameTop:SetPoint("TOP", ItemSocketingScrollFrameScrollBarScrollUpButton, "TOP", -2, 3);
@@ -21,7 +21,7 @@ function ItemSocketingFrame_OnLoad()
 	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH, 1);
 end
 
-function ItemSocketingFrame_OnEvent(event)
+function ItemSocketingFrame_OnEvent(self, event, ...)
 	if ( event == "SOCKET_INFO_UPDATE" ) then
 		ItemSocketingFrame_Update();
 		ItemSocketingFrame_LoadUI();
@@ -172,29 +172,29 @@ function ItemSocketingSocketButton_OnScrollRangeChanged()
 	ItemSocketingDescription:SetSocketedItem();
 end
 
-function ItemSocketingSocketButton_OnEnter()
-	local newSocket = GetNewSocketInfo(this:GetID());
-	local existingSocket = GetExistingSocketInfo(this:GetID());
+function ItemSocketingSocketButton_OnEnter(self)
+	local newSocket = GetNewSocketInfo(self:GetID());
+	local existingSocket = GetExistingSocketInfo(self:GetID());
 	
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( newSocket ) then
-		GameTooltip:SetSocketGem(this:GetID());
+		GameTooltip:SetSocketGem(self:GetID());
 	else
-		GameTooltip:SetExistingSocketGem(this:GetID());
+		GameTooltip:SetExistingSocketGem(self:GetID());
 	end
 	if ( newSocket and existingSocket ) then
 		ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_NONE");
 		ShoppingTooltip1:ClearAllPoints();
 		ShoppingTooltip1:SetPoint("TOPLEFT", "GameTooltip", "TOPRIGHT", 0, -10);
-		ShoppingTooltip1:SetExistingSocketGem(this:GetID(), 1);
+		ShoppingTooltip1:SetExistingSocketGem(self:GetID(), 1);
 		ShoppingTooltip1:Show();
 	end
 end
 
-function ItemSocketingSocketButton_OnEvent(event)
+function ItemSocketingSocketButton_OnEvent(self, event, ...)
 	if ( event == "SOCKET_INFO_UPDATE" ) then
-		if ( GameTooltip:IsOwned(this) ) then
-			ItemSocketingSocketButton_OnEnter();
+		if ( GameTooltip:IsOwned(self) ) then
+			ItemSocketingSocketButton_OnEnter(self);
 		end
 	end
 end

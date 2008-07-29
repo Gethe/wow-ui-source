@@ -8,12 +8,13 @@ MacOptionsFrameCheckButtons["MOVIE_RECORDING_ENABLE_COMPRESSION"] = { index = 6,
 MacOptionsFrameCheckButtons["ITUNES_SHOW_FEEDBACK"] = { index = 7, cvar = "iTunesRemoteFeedback", tooltipText = ITUNES_SHOW_FEEDBACK_TOOLTIP};
 MacOptionsFrameCheckButtons["ITUNES_SHOW_ALL_TRACK_CHANGES"] = { index = 8, cvar = "iTunesTrackDisplay", tooltipText = ITUNES_SHOW_ALL_TRACK_CHANGES_TOOLTIP};
 
-function MacOptionsFrame_Init()
-	this:RegisterEvent("CVAR_UPDATE");
+function MacOptionsFrame_OnLoad(self)
+	self:RegisterEvent("CVAR_UPDATE");
 end
 
-function MacOptionsFrame_OnEvent()
+function MacOptionsFrame_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
+		local arg1, arg2 = ...
 		local info = MacOptionsFrameCheckButtons[arg1];
 		if ( info ) then
 			info.value = arg2;
@@ -98,15 +99,15 @@ function MacOptionsFrame_Cancel()
 	HideUIPanel(MacOptionsFrame);
 end
 
-function MacOptionsFrameResolutionDropDown_OnLoad()
+function MacOptionsFrameResolutionDropDown_OnLoad(self)
 	local ratio, width;
 	
-	UIDropDownMenu_Initialize(this, MacOptionsFrameResolutionDropDown_Initialize);
+	UIDropDownMenu_Initialize(self, MacOptionsFrameResolutionDropDown_Initialize);
 	
 	ratio = MovieRecording_GetAspectRatio();
 	width = min(GetCVar("MovieRecordingWidth"), MovieRecording_GetViewportWidth());
-	UIDropDownMenu_SetSelectedValue(this, width.."x"..floor(width*ratio), 1);
-	UIDropDownMenu_SetWidth(110, MacOptionsFrameResolutionDropDown);
+	UIDropDownMenu_SetSelectedValue(self, width.."x"..floor(width*ratio), 1);
+	UIDropDownMenu_SetWidth(MacOptionsFrameResolutionDropDown, 110);
 end
 
 function MacOptionsFrameResolutionDropDown_Initialize()
@@ -165,15 +166,15 @@ function MacOptionsFrameResolutionDropDown_Initialize()
 	end
 end
 
-function MacOptionsFrameResolutionButton_OnClick()
-	UIDropDownMenu_SetSelectedValue(MacOptionsFrameResolutionDropDown, this.value);
+function MacOptionsFrameResolutionButton_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(MacOptionsFrameResolutionDropDown, self.value);
 	MacOptionsFrame_UpdateTime();
 end
 
-function MacOptionsFrameFramerateDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, MacOptionsFrameFramerateDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(this, GetCVar("MovieRecordingFramerate"));
-	UIDropDownMenu_SetWidth(110, MacOptionsFrameFramerateDropDown);
+function MacOptionsFrameFramerateDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, MacOptionsFrameFramerateDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, GetCVar("MovieRecordingFramerate"));
+	UIDropDownMenu_SetWidth(self, 110);
 end
 
 function MacOptionsFrameFramerateDropDown_Initialize()
@@ -206,15 +207,15 @@ function MacOptionsFrameFramerateDropDown_Initialize()
 	end
 end
 
-function MacOptionsFrameCodecDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(MacOptionsFrameCodecDropDown, this.value);
+function MacOptionsFrameCodecDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(MacOptionsFrameCodecDropDown, self.value);
 	MacOptionsFrame_UpdateTime();
 end
 
-function MacOptionsFrameCodecDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, MacOptionsFrameCodecDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(this, tonumber(GetCVar("MovieRecordingCompression")));
-	UIDropDownMenu_SetWidth(110, MacOptionsFrameCodecDropDown);
+function MacOptionsFrameCodecDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, MacOptionsFrameCodecDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, tonumber(GetCVar("MovieRecordingCompression")));
+	UIDropDownMenu_SetWidth(self, 110);
 end
 
 function MacOptionsFrameCodecDropDown_Initialize()
@@ -247,8 +248,8 @@ function MacOptionsFrameCodecDropDown_Initialize()
 	end
 end
 
-function MacOptionsFrameFramerateDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(MacOptionsFrameFramerateDropDown, this.value);
+function MacOptionsFrameFramerateDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(MacOptionsFrameFramerateDropDown, self.value);
 	MacOptionsFrame_UpdateTime();
 end
 
@@ -289,14 +290,6 @@ function MacOptionsFrame_EnableCheckBox(checkBox, setChecked, checked, isWhite)
 		getglobal(checkBox:GetName().."Text"):SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 	
-end
-
-function PlayClickSound()
-	if ( this:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
-	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
-	end
 end
 
 function MacOptionsFrame_UpdateTime()
@@ -347,4 +340,3 @@ function MacOptionsCompressFrame_OnShow()
 	MacOptionsCompressFrame:SetWidth(frameWidth + 40);
 	MacOptionsCompressFrameFileName:SetWidth(frameWidth);
 end
-

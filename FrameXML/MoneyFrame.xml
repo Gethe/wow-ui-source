@@ -18,7 +18,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent();
+						local parent = self:GetParent();
 						OpenCoinPickupFrame(1, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
 						parent.hasPickup = 1;
 					</OnClick>
@@ -59,7 +59,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent();
+						local parent = self:GetParent();
 						OpenCoinPickupFrame(COPPER_PER_SILVER, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
 						parent.hasPickup = 1;
 					</OnClick>
@@ -100,7 +100,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent();
+						local parent = self:GetParent();
 						OpenCoinPickupFrame(COPPER_PER_GOLD, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
 						parent.hasPickup = 1;
 					</OnClick>
@@ -140,9 +140,9 @@
 				MoneyFrame_UpdateMoney(self);
 			</OnShow>
 			<OnHide>
-				if ( this.hasPickup == 1 ) then
+				if ( self.hasPickup == 1 ) then
 					CoinPickupFrame:Hide();
-					this.hasPickup = 0;
+					self.hasPickup = 0;
 				end
 			</OnHide>
 		</Scripts>
@@ -165,7 +165,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent();
+						local parent = self:GetParent();
 						OpenCoinPickupFrame(1, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
 						parent.hasPickup = 1;
 					</OnClick>
@@ -206,7 +206,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent();
+						local parent = self:GetParent();
 						OpenCoinPickupFrame(COPPER_PER_SILVER, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
 						parent.hasPickup = 1;
 					</OnClick>
@@ -247,7 +247,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent();
+						local parent = self:GetParent();
 						OpenCoinPickupFrame(COPPER_PER_GOLD, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
 						parent.hasPickup = 1;
 					</OnClick>
@@ -287,9 +287,9 @@
 				MoneyFrame_UpdateMoney(self);
 			</OnShow>
 			<OnHide>
-				if ( this.hasPickup == 1 ) then
+				if ( self.hasPickup == 1 ) then
 					CoinPickupFrame:Hide();
-					this.hasPickup = 0;
+					self.hasPickup = 0;
 				end
 			</OnHide>
 		</Scripts>
@@ -300,8 +300,8 @@
 		</Size>
 		<Scripts>
 			<OnEnter>
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-					GameTooltip:SetMerchantCostItem(this.index, this.item);
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetMerchantCostItem(self.index, self.item);
 			</OnEnter>
 			<OnLeave>
 					GameTooltip:Hide();
@@ -345,8 +345,8 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetText(this.pointType);
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.pointType);
 					</OnEnter>
 					<OnLeave>
 							GameTooltip:Hide();

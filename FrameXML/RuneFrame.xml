@@ -6,35 +6,58 @@
       <AbsDimension x="18" y="18"/>
     </Size>
     <Frames>
-      <Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate">
-        <Size x="18" y="18"/>
-        <Anchors>
-          <Anchor point="CENTER">
-            <Offset>
-              <AbsDimension x="0" y="-1"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-      </Cooldown>
+		<Cooldown name="$parentCooldown">
+			<Size x="15" y="15"/>
+			<Anchors>
+			  <Anchor point="CENTER">
+				<Offset>
+				  <AbsDimension x="0" y="-1"/>
+				</Offset>
+			  </Anchor>
+			</Anchors>
+		</Cooldown>
+		<Frame name="$parentBorder">
+			<Size x="28" y="28"/>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset x="0" y="0"/>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture name="$parentTexture" file="Interface\CharacterFrame\TotemBorder">
+						<Color r=".6" g=".6" b=".6" a="1"/>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					self:SetFrameLevel(self:GetFrameLevel() + 1);
+				</OnLoad>
+			</Scripts>
+		</Frame>
     </Frames>
     <Layers>
-		<Layer level="BORDER">
-			<Texture name="$parentRune" file="">
-				<Size>
-					<AbsDimension x="18" y="18"/>
-				</Size>
+		<Layer level="BACKGROUND">
+			<Texture name="$parentBG">
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
+					<Anchor point="CENTER"/>
 				</Anchors>
+				<Color r="0" g="0" b="0" a=".4"/>
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK">
-			<Texture name="$parentFill" file="Interface\CharacterFrame\DeathKnight-BloodRune">
+			<Texture name="$parentRune" file="Interface\CharacterFrame\DeathKnight-BloodRune">
 				<Size>
-					<AbsDimension x="18" y="18"/>
+					<AbsDimension x="16" y="16"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 			</Texture>
 		</Layer>
@@ -53,7 +76,7 @@
     <Anchors>
       <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
         <Offset>
-          <AbsDimension x="63" y="47"/>
+          <AbsDimension x="52" y="34"/>
         </Offset>
       </Anchor>
     </Anchors>
@@ -78,7 +101,7 @@
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual1" relativePoint="RIGHT">
         <Offset>
-          <AbsDimension x="0" y="0"/>
+          <AbsDimension x="4" y="0"/>
         </Offset>
       </Anchor>
     </Anchors>
@@ -88,7 +111,7 @@
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual2" relativePoint="RIGHT">
         <Offset>
-          <AbsDimension x="0" y="0"/>
+          <AbsDimension x="4" y="0"/>
         </Offset>
       </Anchor>
     </Anchors>
@@ -98,7 +121,7 @@
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual3" relativePoint="RIGHT">
         <Offset>
-          <AbsDimension x="0" y="0"/>
+          <AbsDimension x="4" y="0"/>
         </Offset>
       </Anchor>
     </Anchors>
@@ -108,7 +131,7 @@
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual4" relativePoint="RIGHT">
         <Offset>
-          <AbsDimension x="0" y="0"/>
+          <AbsDimension x="4" y="0"/>
         </Offset>
       </Anchor>
     </Anchors>
@@ -118,7 +141,7 @@
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual5" relativePoint="RIGHT">
         <Offset>
-          <AbsDimension x="0" y="0"/>
+          <AbsDimension x="4" y="0"/>
         </Offset>
       </Anchor>
     </Anchors>

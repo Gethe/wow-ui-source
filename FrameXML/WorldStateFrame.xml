@@ -56,9 +56,9 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						if ( this.tooltip ) then
-							GameTooltip:SetOwner(this, ANCHOR_BOTTOMLEFT);
-							GameTooltip:SetText(this.tooltip);
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, ANCHOR_BOTTOMLEFT);
+							GameTooltip:SetText(self.tooltip);
 						end
 					</OnEnter>
 					<OnLeave>
@@ -93,9 +93,9 @@
 		</Frames>
 		<Scripts>
 			<OnEnter>
-				if ( this.tooltip ) then
-					GameTooltip:SetOwner(this, ANCHOR_BOTTOMLEFT);
-					GameTooltip:SetText(this.tooltip);
+				if ( self.tooltip ) then
+					GameTooltip:SetOwner(self, ANCHOR_BOTTOMLEFT);
+					GameTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -118,13 +118,13 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-				GameTooltip:AddLine(this.tooltip, 1.0, 1.0, 1.0, 1);
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnClick>
-				if ( this.sortType ) then
-					SortBattlefieldScoreData(this.sortType);
+				if ( self.sortType ) then
+					SortBattlefieldScoreData(self.sortType);
 				end
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
@@ -378,9 +378,9 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						if ( this.tooltip ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetText(this.tooltip);
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip);
 						end
 					</OnEnter>
 					<OnLeave>
@@ -410,10 +410,10 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						if ( this.tooltip ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetText(this.name);
-							GameTooltip:AddLine(this.tooltip, 1.0, 1.0, 1.0, 1);
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.name);
+							GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
 							GameTooltip:Show();
 						end
 					</OnEnter>
@@ -421,7 +421,7 @@
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnMouseUp>
-						ScorePlayer_OnMouseUp(arg1);
+						ScorePlayer_OnMouseUp(self, button);
 					</OnMouseUp>
 				</Scripts>
 			</Frame>
@@ -499,14 +499,14 @@
         </Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 4);
+				self:SetFrameLevel(self:GetFrameLevel() + 4);
 			</OnLoad>
 			<OnShow>
-				PanelTemplates_TabResize(0);
-				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 30);
+				PanelTemplates_TabResize(self, 0);
+				getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 30);
 			</OnShow>
 			<OnClick>
-				WorldStateScoreFrameTab_OnClick();
+				WorldStateScoreFrameTab_OnClick(self);
 			</OnClick>
 		</Scripts>
 		<ButtonText name="$parentText">
@@ -713,15 +713,15 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				WorldStateAlwaysUpFrame_OnLoad();
+				WorldStateAlwaysUpFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
 				WorldStateAlwaysUpFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnEnter>
-				if ( this.tooltip ) then
-					GameTooltip:SetOwner(this);
-					GameTooltip:SetText(this.tooltip);
+				if ( self.tooltip ) then
+					GameTooltip:SetOwner(self);
+					GameTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -912,7 +912,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this.sortType = "class";
+						self.sortType = "class";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -930,7 +930,7 @@
 						WorldStateScoreFrameNameText:SetPoint("LEFT", "WorldStateScoreFrameName", "LEFT", 20, 0);
 						WorldStateScoreFrameNameText:SetJustifyH("LEFT");
 						WorldStateScoreFrameNameText:SetText(NAME);
-						this.sortType = "name";
+						self.sortType = "name";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -948,7 +948,7 @@
 						WorldStateScoreFrameTeamText:SetPoint("LEFT", "WorldStateScoreFrameTeam", "LEFT", 0, 0);
 						WorldStateScoreFrameTeamText:SetText(TEAM);
 						WorldStateScoreFrameTeamText:SetJustifyH("LEFT");
-						this.sortType = "team";
+						self.sortType = "team";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -961,8 +961,8 @@
 				<Scripts>
 					<OnLoad>
 						WorldStateScoreFrameKBText:SetText(SCORE_KILLING_BLOWS);
-						this.tooltip = KILLING_BLOW_TOOLTIP;
-						this.sortType = "kills";
+						self.tooltip = KILLING_BLOW_TOOLTIP;
+						self.sortType = "kills";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -975,8 +975,8 @@
 				<Scripts>
 					<OnLoad>
 						WorldStateScoreFrameDeathsText:SetText(DEATHS);
-						this.tooltip = DEATHS_TOOLTIP;
-						this.sortType = "deaths";
+						self.tooltip = DEATHS_TOOLTIP;
+						self.sortType = "deaths";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -989,8 +989,8 @@
 				<Scripts>
 					<OnLoad>
 						WorldStateScoreFrameHKText:SetText(SCORE_HONORABLE_KILLS);
-						this.tooltip = HONORABLE_KILLS_TOOLTIP;
-						this.sortType = "hk";
+						self.tooltip = HONORABLE_KILLS_TOOLTIP;
+						self.sortType = "hk";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1003,8 +1003,8 @@
 				<Scripts>
 					<OnLoad>
 						WorldStateScoreFrameDamageDoneText:SetText(SCORE_DAMAGE_DONE);
-						this.tooltip = DAMAGE_DONE_TOOLTIP;
-						this.sortType = "damage";
+						self.tooltip = DAMAGE_DONE_TOOLTIP;
+						self.sortType = "damage";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1017,8 +1017,8 @@
 				<Scripts>
 					<OnLoad>
 						WorldStateScoreFrameHealingDoneText:SetText(SCORE_HEALING_DONE);
-						this.tooltip = HEALING_DONE_TOOLTIP;
-						this.sortType = "healing";
+						self.tooltip = HEALING_DONE_TOOLTIP;
+						self.sortType = "healing";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1031,12 +1031,12 @@
 				<Scripts>
 					<OnLoad>
 						WorldStateScoreFrameHonorGainedText:SetText(SCORE_HONOR_GAINED);
-						this.tooltip = HONOR_GAINED_TOOLTIP;
-						this.sortType = "cp";
+						self.tooltip = HONOR_GAINED_TOOLTIP;
+						self.sortType = "cp";
 					</OnLoad>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_LEFT");
-						GameTooltip:AddLine(this.tooltip, 1.0, 1.0, 1.0, 1);
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
 						GameTooltip:Show();
 					</OnEnter>
 				</Scripts>
@@ -1049,7 +1049,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.sortType = "stat1";
+						self.sortType = "stat1";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1061,7 +1061,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.sortType = "stat2";
+						self.sortType = "stat2";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1073,7 +1073,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.sortType = "stat3";
+						self.sortType = "stat3";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1085,7 +1085,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.sortType = "stat4";
+						self.sortType = "stat4";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1097,7 +1097,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.sortType = "stat5";
+						self.sortType = "stat5";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1109,7 +1109,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.sortType = "stat6";
+						self.sortType = "stat6";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1121,7 +1121,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.sortType = "stat7";
+						self.sortType = "stat7";
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -1394,7 +1394,7 @@
 				</Layers>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(SKILLFRAME_SKILL_HEIGHT, WorldStateScoreFrame_Update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, SKILLFRAME_SKILL_HEIGHT, WorldStateScoreFrame_Update);
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>
@@ -1417,7 +1417,7 @@
                 </Anchors>
 				<Scripts>
 					<OnClick>
-						WorldStateScoreFrameTab_OnClick();
+						WorldStateScoreFrameTab_OnClick(self);
 					</OnClick>
 				</Scripts>
             </Button>
@@ -1431,7 +1431,7 @@
                 </Anchors>
 				<Scripts>
 					<OnClick>
-						WorldStateScoreFrameTab_OnClick();
+						WorldStateScoreFrameTab_OnClick(self);
 					</OnClick>
 				</Scripts>
             </Button>
@@ -1445,7 +1445,7 @@
                 </Anchors>
 				<Scripts>
 					<OnClick>
-						WorldStateScoreFrameTab_OnClick();
+						WorldStateScoreFrameTab_OnClick(self);
 					</OnClick>
 				</Scripts>
             </Button>
@@ -1533,7 +1533,7 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnLoad>
-				WorldStateScoreFrame_OnLoad();
+				WorldStateScoreFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
 				if	( event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES") then

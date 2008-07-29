@@ -452,17 +452,37 @@ function RefreshMoneyFrame(frameName, money, small, collapse, showSmallerCoins)
 	]]
 end
 
-function SetMoneyFrameColor(frameName, r, g, b)
-	if ( not getglobal(frameName) ) then
+function SetMoneyFrameColor(frameName, color)
+	local moneyFrame = getglobal(frameName);
+	if ( not moneyFrame ) then
 		return;
 	end
+	local fontObject;
+	if ( moneyFrame.small ) then
+		if ( color == "yellow" ) then
+			fontObject = NumberFontNormalRightYellow;
+		elseif ( color == "red" ) then
+			fontObject = NumberFontNormalRightRed;
+		else
+			fontObject = NumberFontNormalRight;
+		end
+	else
+		if ( color == "yellow"  ) then
+			fontObject = NumberFontNormalLargeRightYellow;
+		elseif ( color == "red" ) then
+			fontObject = NumberFontNormalLargeRightRed;
+		else
+			fontObject = NumberFontNormalLargeRight;
+		end
+	end
+	
 	local goldButton = getglobal(frameName.."GoldButton");
 	local silverButton = getglobal(frameName.."SilverButton");
 	local copperButton = getglobal(frameName.."CopperButton");
 
-	goldButton:SetTextColor(r, g, b);
-	silverButton:SetTextColor(r, g, b);
-	copperButton:SetTextColor(r, g, b);
+	goldButton:SetNormalFontObject(fontObject);
+	silverButton:SetNormalFontObject(fontObject);
+	copperButton:SetNormalFontObject(fontObject);
 end
 
 function AltCurrencyFrame_Update(frameName, texture, cost)

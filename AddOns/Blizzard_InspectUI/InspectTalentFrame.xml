@@ -144,7 +144,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						InspectTalentFrameSpentPoints_OnEnter();
+						InspectTalentFrameSpentPoints_OnEnter(self);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -161,7 +161,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PanelTemplates_Tab_OnClick(InspectTalentFrame);
+						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update();
 						TalentFrame_Update(InspectTalentFrame);
 					</OnClick>
@@ -173,7 +173,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PanelTemplates_Tab_OnClick(InspectTalentFrame);
+						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update();
 						TalentFrame_Update(InspectTalentFrame);
 					</OnClick>
@@ -185,7 +185,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PanelTemplates_Tab_OnClick(InspectTalentFrame);
+						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update();
 						TalentFrame_Update(InspectTalentFrame);
 					</OnClick>
@@ -408,7 +408,7 @@
 				InspectTalentFrame_OnHide();
 			</OnHide>
 			<OnLoad>
-				InspectTalentFrame_OnLoad();
+				InspectTalentFrame_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Frame>

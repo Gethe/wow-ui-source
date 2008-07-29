@@ -96,7 +96,7 @@
 				</Layers>
 				<Scripts>
                      <OnLoad>
-                        this:SetFrameLevel(this:GetFrameLevel() + 2);
+                        self:SetFrameLevel(self:GetFrameLevel() + 2);
                     </OnLoad>
                 </Scripts>
 			</Frame>
@@ -315,7 +315,7 @@
 						</Layers>
 						<Scripts>
 							<OnEnterPressed>
-								BuyGuildCharter(this:GetText());
+								BuyGuildCharter(self:GetText());
 								HideUIPanel(GuildRegistrarFrame);
 								ChatFrameEditBox:SetFocus();
 							</OnEnterPressed>
@@ -330,8 +330,8 @@
  		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("GUILD_REGISTRAR_SHOW");
-				this:RegisterEvent("GUILD_REGISTRAR_CLOSED");
+				self:RegisterEvent("GUILD_REGISTRAR_SHOW");
+				self:RegisterEvent("GUILD_REGISTRAR_CLOSED");
 			</OnLoad>
 			<OnEvent>
 				if ( event == "GUILD_REGISTRAR_SHOW" ) then

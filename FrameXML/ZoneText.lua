@@ -58,27 +58,27 @@ function SetZoneText(showZone)
 	end
 end
 
-function ZoneText_OnLoad()
-	FadingFrame_OnLoad();
-	FadingFrame_SetFadeInTime(ZoneTextFrame, ZoneFadeInDuration);
-	FadingFrame_SetHoldTime(ZoneTextFrame, ZoneHoldDuration);
-	FadingFrame_SetFadeOutTime(ZoneTextFrame, ZoneFadeOutDuration);
-	ZoneTextFrame:RegisterEvent("ZONE_CHANGED");
-	ZoneTextFrame:RegisterEvent("ZONE_CHANGED_INDOORS");
-	ZoneTextFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	ZoneTextFrame.zoneText = "";
+function ZoneText_OnLoad(self)
+	FadingFrame_OnLoad(self);
+	FadingFrame_SetFadeInTime(self, ZoneFadeInDuration);
+	FadingFrame_SetHoldTime(self, ZoneHoldDuration);
+	FadingFrame_SetFadeOutTime(self, ZoneFadeOutDuration);
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_INDOORS");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self.zoneText = "";
 	ZonePVPType = nil;
 end
 
-function ZoneText_OnEvent()
+function ZoneText_OnEvent(self, event, ...)
 	local showZoneText = false;	
 	local zoneText = GetZoneText();
-	if ( (zoneText ~= ZoneTextFrame.zoneText) or (event == "ZONE_CHANGED_NEW_AREA") ) then
-		ZoneTextFrame.zoneText = zoneText;
+	if ( (zoneText ~= self.zoneText) or (event == "ZONE_CHANGED_NEW_AREA") ) then
+		self.zoneText = zoneText;
 		ZoneTextString:SetText( zoneText );
 		showZoneText = true;
 		SetZoneText( showZoneText );
-		FadingFrame_Show( ZoneTextFrame );
+		FadingFrame_Show( self );
 	end
 	
 	local subzoneText = GetSubZoneText();
@@ -89,13 +89,13 @@ function ZoneText_OnEvent()
 
 	if ( subzoneText == zoneText ) then
 		showZoneText = false;
-		if ( not ZoneTextFrame:IsShown() ) then
+		if ( not self:IsShown() ) then
 			SubZoneTextString:SetText( subzoneText );
 			SetZoneText( showZoneText );
 			FadingFrame_Show( SubZoneTextFrame );
 		end
 	else
-		if (ZoneTextFrame:IsShown()) then
+		if (self:IsShown()) then
 			showZoneText = true;
 		end
 		SubZoneTextString:SetText( subzoneText );
@@ -104,11 +104,11 @@ function ZoneText_OnEvent()
 	end
 end
 
-function SubZoneText_OnLoad()
-	FadingFrame_OnLoad();
-	FadingFrame_SetFadeInTime(SubZoneTextFrame, ZoneFadeInDuration);
-	FadingFrame_SetHoldTime(SubZoneTextFrame, ZoneHoldDuration);
-	FadingFrame_SetFadeOutTime(SubZoneTextFrame, ZoneFadeOutDuration);
+function SubZoneText_OnLoad(self)
+	FadingFrame_OnLoad(self);
+	FadingFrame_SetFadeInTime(self, ZoneFadeInDuration);
+	FadingFrame_SetHoldTime(self, ZoneHoldDuration);
+	FadingFrame_SetFadeOutTime(self, ZoneFadeOutDuration);
 	PVPArenaTextString:SetTextColor(1.0, 0.1, 0.1);
 	SetZoneText(true);
 	SubZoneTextString:SetText(GetSubZoneText());
@@ -116,38 +116,39 @@ end
 
 AUTOFOLLOW_STATUS_FADETIME = 4.0;
 
-function AutoFollowStatus_OnLoad()
-	this:RegisterEvent("AUTOFOLLOW_BEGIN");
-	this:RegisterEvent("AUTOFOLLOW_END");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
+function AutoFollowStatus_OnLoad(self)
+	self:RegisterEvent("AUTOFOLLOW_BEGIN");
+	self:RegisterEvent("AUTOFOLLOW_END");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
-function AutoFollowStatus_OnEvent(event)
+function AutoFollowStatus_OnEvent(self, event, ...)
 	if ( event == "AUTOFOLLOW_BEGIN" ) then
-		this.unit = arg1;
-		this.fadeTime = nil;
-		this:SetAlpha(1.0);
-		AutoFollowStatusText:SetFormattedText(AUTOFOLLOWSTART,this.unit);
-		this:Show();
+		local arg1 = ...;
+		self.unit = arg1;
+		self.fadeTime = nil;
+		self:SetAlpha(1.0);
+		AutoFollowStatusText:SetFormattedText(AUTOFOLLOWSTART,self.unit);
+		self:Show();
 	end
 	if ( event == "AUTOFOLLOW_END" ) then
-		this.fadeTime = AUTOFOLLOW_STATUS_FADETIME;
-		AutoFollowStatusText:SetFormattedText(AUTOFOLLOWSTOP,this.unit);
-		this:Show();
+		self.fadeTime = AUTOFOLLOW_STATUS_FADETIME;
+		AutoFollowStatusText:SetFormattedText(AUTOFOLLOWSTOP,self.unit);
+		self:Show();
 	end
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		this:Hide();
+		self:Hide();
 	end
 end
 
-function AutoFollowStatus_OnUpdate(elapsed)
-	if( this.fadeTime ) then
-		if( elapsed >= this.fadeTime ) then
-			this:Hide();
+function AutoFollowStatus_OnUpdate(self, elapsed)
+	if( self.fadeTime ) then
+		if( elapsed >= self.fadeTime ) then
+			self:Hide();
 		else
-			this.fadeTime = this.fadeTime - elapsed;
-			local alpha = this.fadeTime / AUTOFOLLOW_STATUS_FADETIME;
-			this:SetAlpha(alpha);
+			self.fadeTime = self.fadeTime - elapsed;
+			local alpha = self.fadeTime / AUTOFOLLOW_STATUS_FADETIME;
+			self:SetAlpha(alpha);
 		end
 	end
 end

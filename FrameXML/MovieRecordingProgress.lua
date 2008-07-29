@@ -1,6 +1,6 @@
-function MovieRecordingProgress_OnUpdate()
+function MovieRecordingProgress_OnUpdate(self, elapsed)
 	if(not MovieRecording_IsCompressing()) then
-		this:Hide();
+		self:Hide();
 	else
 		local recovering, progress = MovieRecording_GetProgress();
 		MovieProgressBar:SetValue(progress);

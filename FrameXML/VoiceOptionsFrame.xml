@@ -4,28 +4,28 @@
 	<CheckButton name="VoiceOptionsCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				VoiceOptionsFrameCheckButton_OnClick();
+				VoiceOptionsFrameCheckButton_OnClick(self, button);
 			</OnClick>
 		</Scripts>
 	</CheckButton>
 	<Slider name="VoiceOptionsSliderTemplate" inherits="AudioOptionsSliderTemplate" virtual="true">
 		<Scripts>
 			<OnValueChanged>
-				VoiceOptionsFrameSlider_OnValueChanged();
+				VoiceOptionsFrameSlider_OnValueChanged(self, value);
 			</OnValueChanged> 
 		</Scripts>
 	</Slider>
 	<Slider name="VoiceOptionsVolumeSliderTemplate" inherits="AudioOptionsVolumeSliderTemplate" virtual="true">
 		<Scripts>
 			<OnValueChanged>
-				VoiceOptionsFrameSlider_OnValueChanged();
+				VoiceOptionsFrameSlider_OnValueChanged(self, value);
 			</OnValueChanged> 
 		</Scripts>
 	</Slider>
 	<Slider name="VoiceOptionsLowHighSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
 		<Scripts>
 			<OnValueChanged>
-				VoiceOptionsFrameSlider_OnValueChanged();
+				VoiceOptionsFrameSlider_OnValueChanged(self, value);
 			</OnValueChanged>
 		</Scripts>
 	</Slider>
@@ -60,7 +60,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						VoiceOptionsFrameCheckButton_OnClick();
+						VoiceOptionsFrameCheckButton_OnClick(self, button);
 						VoiceOptionsFrame_Update();
 					</OnClick>
 				</Scripts>
@@ -88,7 +88,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(VOICECHAT_DISABLED_TEXT, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
@@ -109,9 +109,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
-						getglobal(this:GetName().."Title"):SetText(VOICE_TALKING);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
+						getglobal(self:GetName().."Title"):SetText(VOICE_TALKING);
 					</OnLoad>
 				</Scripts>
 				<Frames>
@@ -125,7 +125,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								VoiceOptionsFrameCheckButton_OnClick();
+								VoiceOptionsFrameCheckButton_OnClick(self, button);
 								VoiceOptionsFrame_UpdateMicrophoneControls();
 							</OnClick>
 						</Scripts>
@@ -140,11 +140,11 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VoiceOptionsFrameInputDeviceDropDown_Load();
+								VoiceOptionsFrameInputDeviceDropDown_OnLoad(self);
 							</OnLoad>
 							<OnEnter>
-								if ( UIDropDownMenu_IsEnabled(this) ) then
-									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								if ( UIDropDownMenu_IsEnabled(self) ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 									GameTooltip:SetText(OPTION_TOOLTIP_VOICE_INPUT, nil, nil, nil, nil, 1);
 									GameTooltip:Show();
 								end
@@ -212,24 +212,24 @@
 										RecordLoopbackSoundButtonTexture:SetVertexColor(1, 0, 0);													
 									</OnLoad>
 									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetText(VOICE_MIC_TEST_RECORD, nil, nil, nil, nil, 1);
-										getglobal(this:GetName().."Texture"):SetVertexColor(1, 1, 1);
+										getglobal(self:GetName().."Texture"):SetVertexColor(1, 1, 1);
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();
 									</OnLeave>
 									<OnClick>
-										getglobal(this:GetName().."Texture"):SetVertexColor(0.5, 0.5, 0.5);								
+										getglobal(self:GetName().."Texture"):SetVertexColor(0.5, 0.5, 0.5);								
 										PlaySound("gsTitleOptionExit");
 										VoiceChat_RecordLoopbackSound(5);
-										this.clicked = 1;
+										self.clicked = 1;
 									</OnClick>
 									<OnUpdate>
-										UpdateRecordLoopbackButton();
+										RecordLoopbackSoundButton_OnUpdate(self, elapsed);
 									</OnUpdate>
 									<OnLeave>
-										getglobal(this:GetName().."Texture"):SetVertexColor(1, 0, 0);
+										getglobal(self:GetName().."Texture"):SetVertexColor(1, 0, 0);
 										GameTooltip:Hide();
 									</OnLeave>
 								</Scripts>
@@ -259,12 +259,12 @@
 								</Layers>
 								<Scripts>
 									<OnLoad>
-										getglobal(this:GetName().."Texture"):SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
+										getglobal(self:GetName().."Texture"):SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
 									</OnLoad>
 									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetText(VOICE_MIC_TEST_PLAY, nil, nil, nil, nil, 1);
-										getglobal(this:GetName().."Texture"):SetVertexColor(1, 1, 1);
+										getglobal(self:GetName().."Texture"):SetVertexColor(1, 1, 1);
 									</OnEnter>
 									<OnClick>
 										PlaySound("gsTitleOptionExit");
@@ -272,7 +272,7 @@
 										VoiceChat_PlayLoopbackSound();
 									</OnClick>
 									<OnLeave>
-										getglobal(this:GetName().."Texture"):SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
+										getglobal(self:GetName().."Texture"):SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
 										GameTooltip:Hide();
 									</OnLeave>
 								</Scripts>
@@ -286,8 +286,8 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-										this:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
+										self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+										self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
 									</OnLoad>
 								</Scripts>
 								<Frames>
@@ -303,10 +303,10 @@
 										</Anchors>
 										<Scripts>
 											<OnLoad>
-												LoopbackVUMeter_Init();
+												LoopbackVUMeter_OnLoad(self);
 											</OnLoad>
 											<OnUpdate>
-												LoopbackVUMeter_Update();
+												LoopbackVUMeter_OnUpdate(self, elapsed);
 											</OnUpdate>
 										</Scripts>
 										<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -331,8 +331,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
 					</OnLoad>
 				</Scripts>
 				<Frames>
@@ -359,12 +359,12 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								VoiceOptionsFrameTypeDropDown_Load();
+								VoiceOptionsFrameTypeDropDown_OnLoad(self);
 							</OnLoad>
 							<OnEnter>
-								if ( UIDropDownMenu_IsEnabled(this) and this.tooltip ) then
-									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-									GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+								if ( UIDropDownMenu_IsEnabled(self) and self.tooltip ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 								end
 							</OnEnter>
 							<OnLeave>
@@ -432,23 +432,23 @@
 								</Layers>
 								<Scripts>
 									<OnShow>
-										VoiceChatOptionsFrameBindingButton_OnShow();
-										VoiceChatOptionsFrameBindingButton_SetTooltip();
+										VoiceChatOptionsFrameBindingButton_OnShow(self);
+										VoiceChatOptionsFrameBindingButton_SetTooltip(self);
 									</OnShow>
 									<OnClick>
-										VoiceChatOptionsFrameBindingButton_OnClick(arg1);
+										VoiceChatOptionsFrameBindingButton_OnClick(self, button);
 									</OnClick>
 									<OnKeyUp>
-										VoiceChatOptionsFrameBindingButton_OnKeyUp(arg1);
+										VoiceChatOptionsFrameBindingButton_OnKeyUp(self, key);
 									</OnKeyUp>
 									<OnKeyDown>
-										VoiceChatOptionsFrameBindingButton_OnKeyDown(arg1);
+										VoiceChatOptionsFrameBindingButton_OnKeyDown(self, key);
 									</OnKeyDown>
 									<OnLoad>
-										this:RegisterForClicks("AnyUp");
+										self:RegisterForClicks("AnyUp");
 									</OnLoad>
 									<OnEnter>
-										VoiceChatOptionsFrameBindingButton_OnEnter();
+										VoiceChatOptionsFrameBindingButton_OnEnter(self);
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();
@@ -499,9 +499,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
-						getglobal(this:GetName().."Title"):SetText(VOICE_LISTENING);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
+						getglobal(self:GetName().."Title"):SetText(VOICE_LISTENING);
 					</OnLoad>
 				</Scripts>
 				<Frames>
@@ -524,11 +524,11 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								VoiceOptionsFrameOutputDeviceDropDown_Load();
+								VoiceOptionsFrameOutputDeviceDropDown_OnLoad(self);
 							</OnLoad>
 							<OnEnter>
-								if ( UIDropDownMenu_IsEnabled(this) ) then
-									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								if ( UIDropDownMenu_IsEnabled(self) ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 									GameTooltip:SetText(OPTION_TOOLTIP_VOICE_OUTPUT, nil, nil, nil, nil, 1);
 									GameTooltip:Show();
 								end
@@ -692,10 +692,10 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-			   VoiceOptionsFrame_Init();
+			   VoiceOptionsFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				VoiceOptionsFrame_OnShow();
+				VoiceOptionsFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
 				VoiceChatTalkers:SetAlpha(0);
@@ -705,7 +705,7 @@
 				VoiceOptionsFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				VoiceOptionsFrame_OnUpdate(arg1);
+				VoiceOptionsFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

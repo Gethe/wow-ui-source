@@ -2,6 +2,7 @@
 
 local blizzardCategories = {};
 INTERFACEOPTIONS_ADDONCATEGORIES = {};
+INTERFACEOPTIONSLIST_BUTTONHEIGHT = 18;
 
 function InterfaceOptionsFrameCancel_OnClick ()
 	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
@@ -132,7 +133,8 @@ uvarInfo = {
 	["COMBAT_TEXT_SHOW_REACTIVES"] = { default = "0", cvar = "fctReactives", event = "COMBAT_TEXT_SHOW_REACTIVES_TEXT" },
 	["COMBAT_TEXT_SHOW_FRIENDLY_NAMES"] = { default = "0", cvar = "fctFriendlyHealers", event = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES_TEXT" },
 	["COMBAT_TEXT_SHOW_COMBO_POINTS"] = { default = "0", cvar = "fctComboPoints", event = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT" },
-	["COMBAT_TEXT_SHOW_MANA"] = { default = "0", cvar = "fctEnergyGains", event = "COMBAT_TEXT_SHOW_MANA_TEXT" },
+	["COMBAT_TEXT_SHOW_ENERGIZE"] = { default = "0", cvar = "fctEnergyGains", event = "COMBAT_TEXT_SHOW_ENERGIZE_TEXT" },
+	["COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE"] = { default = "0", cvar = "fctPeriodicEnergyGains", event = "COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE_TEXT" },
 	["COMBAT_TEXT_FLOAT_MODE"] = { default = "1", cvar = "combatTextFloatMode", event = "COMBAT_TEXT_FLOAT_MODE" },
 	["COMBAT_TEXT_SHOW_HONOR_GAINED"] = { default = "0", cvar = "fctHonorGains", event = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
 	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", },
@@ -409,12 +411,12 @@ function InterfaceOptionsList_DisplayButton (button, element)
 	button.element = element;
 	
 	if (element.parent) then
-		button:SetTextFontObject("GameFontHighlightSmall");
-		button:SetHighlightFontObject("GameFontHighlightSmall");
+		button:SetNormalFontObject(GameFontHighlightSmall);
+		button:SetHighlightFontObject(GameFontHighlightSmall);
 		button.text:SetPoint("LEFT", 16, 2);
 	else
-		button:SetTextFontObject("GameFontNormal");
-		button:SetHighlightFontObject("GameFontHighlight");
+		button:SetNormalFontObject(GameFontNormal);
+		button:SetHighlightFontObject(GameFontHighlight);
 		button.text:SetPoint("LEFT", 8, 2);
 	end
 	button.text:SetText(element.name);

@@ -162,7 +162,7 @@
 			</Anchors>
 			<Scripts>
 				<OnClick>
-					HideUIPanel(this:GetParent());
+					HideUIPanel(self:GetParent());
 				</OnClick>
 			</Scripts>
 		</Button>

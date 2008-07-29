@@ -248,6 +248,7 @@
 				<xs:element name="OnTooltipSetItem" type="xs:string"/>
 				<xs:element name="OnTooltipSetSpell" type="xs:string"/>
 				<xs:element name="OnTooltipSetQuest" type="xs:string"/>
+        <xs:element name="OnTooltipSetAchievement" type="xs:string"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>

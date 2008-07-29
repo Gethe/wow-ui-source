@@ -14,7 +14,7 @@ function ToggleCombatLog()
 	GameTooltip_SetPoint(GameTooltip);
 end
 
-function CombatLogUpButton_OnClick(button)
+function CombatLogUpButton_OnClick(self, button)
 	if ( button == "RightButton" ) then
 		ChatFrame2.buttonPressed = "RIGHT";
 		ChatFrame2:PageUp();
@@ -24,7 +24,7 @@ function CombatLogUpButton_OnClick(button)
 	end
 end
 
-function CombatLogDownButton_OnClick(button)
+function CombatLogDownButton_OnClick(self, button)
 	if ( button == "RightButton" ) then
 		ChatFrame2.buttonPressed = "RIGHT";
 		ChatFrame2:PageDown();

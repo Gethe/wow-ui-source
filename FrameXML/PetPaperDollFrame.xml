@@ -76,33 +76,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="PetLoyaltyText" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="PetLevelText" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="PetTrainingPointText" inherits="GameFontHighlightSmall">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-135" y="86"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="PetTrainingPointLabel" inherits="GameFontNormalSmall" text="TRAINING_POINTS">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="PetTrainingPointText" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="-5" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>

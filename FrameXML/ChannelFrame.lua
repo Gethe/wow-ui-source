@@ -10,18 +10,18 @@ CHAT_CHANNEL_TABBING = {};
 CHAT_CHANNEL_TABBING[1] = "ChannelFrameDaughterFrameChannelPassword";
 CHAT_CHANNEL_TABBING[2] = "ChannelFrameDaughterFrameChannelName";
 
-function ChannelFrame_OnLoad()
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	this:RegisterEvent("PARTY_LEADER_CHANGED");
-	this:RegisterEvent("RAID_ROSTER_UPDATE");
-	this:RegisterEvent("CHANNEL_UI_UPDATE");
-	this:RegisterEvent("MUTELIST_UPDATE");
-	this:RegisterEvent("IGNORELIST_UPDATE");
-	this:RegisterEvent("CHANNEL_FLAGS_UPDATED");
-	this:RegisterEvent("CHANNEL_VOICE_UPDATE");
-	this:RegisterEvent("CHANNEL_COUNT_UPDATE");
-	this:RegisterEvent("CHANNEL_ROSTER_UPDATE");
+function ChannelFrame_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("PARTY_LEADER_CHANGED");
+	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("CHANNEL_UI_UPDATE");
+	self:RegisterEvent("MUTELIST_UPDATE");
+	self:RegisterEvent("IGNORELIST_UPDATE");
+	self:RegisterEvent("CHANNEL_FLAGS_UPDATED");
+	self:RegisterEvent("CHANNEL_VOICE_UPDATE");
+	self:RegisterEvent("CHANNEL_COUNT_UPDATE");
+	self:RegisterEvent("CHANNEL_ROSTER_UPDATE");
 	FauxScrollFrame_SetOffset(ChannelRosterScrollFrame, 0);
 	ChannelFrame_Update();
 end
@@ -56,7 +56,7 @@ function ChannelFrame_Update()
 	--ChannelFrame_UpdateJoin();
 end
 
-function ChannelFrame_OnUpdate()
+function ChannelFrame_OnUpdate(self, elapsed)
 	if ( not ChannelFrame.updating ) then
 		return;
 	else
@@ -136,8 +136,8 @@ function ChannelFrameDaughterFrame_Okay()
 	ChannelFrameDaughterFrame:Hide();
 end
 
-function ChannelFrameDaughterFrame_Cancel()
-	this:GetParent():Hide();
+function ChannelFrameDaughterFrame_Cancel(self)
+	self:GetParent():Hide();
 end
 
 function ChannelFrameDaughterFrame_OnHide()
@@ -335,24 +335,24 @@ function ChannelList_UpdateVoice(id, enabled, active)
 	end
 end
 
-function ChannelList_OnClick()
-	local id = this:GetID();
+function ChannelList_OnClick(self, button)
+	local id = self:GetID();
 
 	PlaySound("igMainMenuOptionCheckBoxOn");
 
 	ChannelListDropDown.clicked = nil;
 
-	if ( arg1 == "LeftButton" ) then
+	if ( button == "LeftButton" ) then
 		HideDropDownMenu(1);
-		if ( this.header ) then
-			if ( this.collapsed ) then
+		if ( self.header ) then
+			if ( self.collapsed ) then
 				ExpandChannelHeader(id);
 			else
 				CollapseChannelHeader(id);
 			end
 		else
 			ChannelList_UpdateHighlight(id);
-			if ( this.active ) then
+			if ( self.active ) then
 				ChannelFrame.updating = id;
 				SetSelectedDisplayChannel(id);
 				ChannelRoster_Update(id);
@@ -360,14 +360,14 @@ function ChannelList_OnClick()
 				ChannelRoster_Update(0);
 			end
 		end
-	elseif ( arg1 == "RightButton" ) then
-		if ( this.channel ) then
+	elseif ( button == "RightButton" ) then
+		if ( self.channel ) then
 			FauxScrollFrame_SetOffset(ChannelRosterScrollFrame, 0);
-			if ( this.global ) then
+			if ( self.global ) then
 				ChannelList_UpdateHighlight(id);
 				ChannelList_ShowDropdown(id);			
 			end
-			if ( this.active ) then
+			if ( self.active ) then
 				ChannelFrame.updating = id;
 				GetNumChannelMembers(id);
 				ChannelList_UpdateHighlight(id);
@@ -393,6 +393,10 @@ function ChannelList_UpdateHighlight(id)
 	end
 end
 
+local function ChannelListDropDown_StripSelf (self, func1, arg1)
+	func1(arg1);
+end
+
 --[ DropDown Functions ]--
 function ChannelListDropDown_Initialize()
 	local count = 0;
@@ -403,8 +407,9 @@ function ChannelListDropDown_Initialize()
 				info = UIDropDownMenu_CreateInfo();
 				info.text = CHAT_VOICE_ON;
 				info.notCheckable = 1;
-				info.func = DisplayChannelVoiceOn;
-				info.arg1 = ChannelListDropDown.id;
+				info.func = ChannelListDropDown_StripSelf
+				info.arg1 = DisplayChannelVoiceOn;
+				info.arg2 = ChannelListDropDown.id;
 				UIDropDownMenu_AddButton(info);
 				count = count + 1;
 			end
@@ -413,8 +418,9 @@ function ChannelListDropDown_Initialize()
 				info = UIDropDownMenu_CreateInfo();
 				info.text = CHAT_VOICE;
 				info.notCheckable = 1;
-				info.func = SetActiveVoiceChannel;
-				info.arg1 = ChannelListDropDown.id;
+				info.func = ChannelListDropDown_StripSelf				
+				info.arg1 = SetActiveVoiceChannel;
+				info.arg2 = ChannelListDropDown.id;
 				UIDropDownMenu_AddButton(info);
 				count = count + 1;
 
@@ -436,8 +442,9 @@ function ChannelListDropDown_Initialize()
 			info = UIDropDownMenu_CreateInfo();
 			info.text = CHAT_PASSWORD;
 			info.notCheckable = 1;
-			info.func = ChannelListDropDown_SetPassword;
-			info.arg1 = ChannelListDropDown.channelName;
+			info.func = ChannelListDropDown_StripSelf			
+			info.arg1 = ChannelListDropDown_SetPassword;
+			info.arg2 = ChannelListDropDown.channelName;
 			UIDropDownMenu_AddButton(info);
 			count = count + 1;
 		end
@@ -447,8 +454,9 @@ function ChannelListDropDown_Initialize()
 			info = UIDropDownMenu_CreateInfo();
 			info.text = PARTY_INVITE;
 			info.notCheckable = 1;
-			info.func = ChannelListDropDown_Invite;
-			info.arg1 = ChannelListDropDown.channelName;
+			info.func = ChannelListDropDown_StripSelf
+			info.arg1 = ChannelListDropDown_Invite;
+			info.arg2 = ChannelListDropDown.channelName;
 			UIDropDownMenu_AddButton(info);
 			count = count + 1;
 		end
@@ -459,8 +467,9 @@ function ChannelListDropDown_Initialize()
 		info = UIDropDownMenu_CreateInfo();
 		info.text = CHAT_JOIN;
 		info.notCheckable = 1;
-		info.func = JoinPermanentChannel;
-		info.arg1 = ChannelListDropDown.channelName;
+		info.func = ChannelListDropDown_StripSelf
+		info.arg1 = JoinPermanentChannel;
+		info.arg2 = ChannelListDropDown.channelName;
 		UIDropDownMenu_AddButton(info);
 		count = count + 1;
 	end
@@ -470,8 +479,9 @@ function ChannelListDropDown_Initialize()
 		info = UIDropDownMenu_CreateInfo();
 		info.text = CHAT_LEAVE;
 		info.notCheckable = 1;
-		info.func = LeaveChannelByName;
-		info.arg1 = ChannelListDropDown.channelName;
+		info.func = ChannelListDropDown_StripSelf
+		info.arg1 = LeaveChannelByName;
+		info.arg2 = ChannelListDropDown.channelName;
 		UIDropDownMenu_AddButton(info);
 		count = count + 1;
 	end
@@ -486,8 +496,8 @@ function ChannelListDropDown_Initialize()
 
 end
 
-function ChannelListDropDown_HideDropDown()
-	this:GetParent():Hide();
+function ChannelListDropDown_HideDropDown(self)
+	self:GetParent():Hide();
 end
 
 function ChannelListDropDown_SetPassword(name)
@@ -667,9 +677,9 @@ function ChannelRoster_UpdateVoice(id, enabled, active, muted)
 	end
 end
 
-function ChannelRoster_OnClick()
-	if ( arg1 == "RightButton" ) then
-		ChannelRosterFrame_ShowDropdown(this:GetID());
+function ChannelRoster_OnClick(self, button)
+	if ( button == "RightButton" ) then
+		ChannelRosterFrame_ShowDropdown(self:GetID());
 	end
 end
 
@@ -729,73 +739,74 @@ CHANNELPULLOUT_ROSTERPARENT_YPADDING = 14;
 CHANNELPULLOUT_FADEFRAMES = { "ChannelPulloutBackground", "ChannelPulloutCloseButton", "ChannelPulloutRosterScroll" };
 local rosterFrame;
 
-function ChannelPullout_OnLoad ()
-	ChannelPullout:RegisterEvent("VARIABLES_LOADED");
-	ChannelPullout:SetScript("OnEvent", ChannelPullout_OnEvent);
+function ChannelPullout_OnLoad (self)
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:SetScript("OnEvent", ChannelPullout_OnEvent);
 	RegisterForSave("CHANNELPULLOUT_OPTIONS");
 end
 
-function ChannelPullout_OnEvent ()
+function ChannelPullout_OnEvent (self)
 	if ( CHANNELPULLOUT_OPTIONS.display ) then
-		ChannelPullout:Show();
+		self:Show();
 	end
 end
 
-function ChannelPullout_OnUpdate (elapsed)
-	if ( MouseIsOver(ChannelPullout, 45, -10, -5, 5) ) then
+function ChannelPullout_OnUpdate (self, elapsed)
+	local ChannelPulloutTab = ChannelPulloutTab;
+	if ( MouseIsOver(self, 45, -10, -5, 5) ) then
 		local xPos, yPos = GetCursorPosition();
 		-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
-		if ( ChannelPullout.hover ) then
-			if ( (ChannelPullout.oldX == xPos and ChannelPullout.oldy == yPos) ) then
-				ChannelPullout.hoverTime = ChannelPullout.hoverTime + elapsed;
+		if ( self.hover ) then
+			if ( (self.oldX == xPos and self.oldy == yPos) ) then
+				self.hoverTime = self.hoverTime + elapsed;
 			else
-				ChannelPullout.hoverTime = 0;
-				ChannelPullout.oldX = xPos;
-				ChannelPullout.oldy = yPos;
+				self.hoverTime = 0;
+				self.oldX = xPos;
+				self.oldy = yPos;
 			end
-			if ( ChannelPullout.hoverTime > CHANNELPULLOUT_TAB_SHOW_DELAY or ChannelPulloutTab.dragging ) then
+			if ( self.hoverTime > CHANNELPULLOUT_TAB_SHOW_DELAY or ChannelPulloutTab.dragging ) then
 				-- If the tab's alpha is less than the current default, then fade it in 
-				if ( not ChannelPullout.hasBeenFaded and (ChannelPulloutTab.oldAlpha and ChannelPulloutTab.oldAlpha < DEFAULT_CHANNELPULLOUT_TAB_ALPHA) ) then
+				if ( not self.hasBeenFaded and (ChannelPulloutTab.oldAlpha and ChannelPulloutTab.oldAlpha < DEFAULT_CHANNELPULLOUT_TAB_ALPHA) ) then
 					UIFrameFadeIn(ChannelPulloutTab, CHANNELPULLOUT_TAB_FADE_TIME, ChannelPulloutTab.oldAlpha, DEFAULT_CHANNELPULLOUT_TAB_ALPHA);
 					local frame;
 					for _, name in next, CHANNELPULLOUT_FADEFRAMES do
 						frame = getglobal(name);
 						if ( frame:IsShown() ) then
-							UIFrameFadeIn(frame, CHANNELPULLOUT_TAB_FADE_TIME, ChannelPullout.oldAlpha, DEFAULT_CHANNELPULLOUT_ALPHA);
+							UIFrameFadeIn(frame, CHANNELPULLOUT_TAB_FADE_TIME, self.oldAlpha, DEFAULT_CHANNELPULLOUT_ALPHA);
 						end
 					end
 					-- Set the fact that the chatFrame has been faded so we don't try to fade it again
-					ChannelPullout.hasBeenFaded = 1;
+					self.hasBeenFaded = 1;
 				end
 			end
 		else
 			-- Start hovering counter
-			ChannelPullout.hover = 1;
-			ChannelPullout.hoverTime = 0;
-			ChannelPullout.hasBeenFaded = nil;
+			self.hover = 1;
+			self.hoverTime = 0;
+			self.hasBeenFaded = nil;
 			CURSOR_OLD_X, CURSOR_OLD_Y = GetCursorPosition();
 			-- Remember the oldAlpha so we can return to it later
 			if ( not ChannelPulloutTab.oldAlpha ) then
 				ChannelPulloutTab.oldAlpha = ChannelPulloutTab:GetAlpha();
 			end
 			
-			ChannelPullout.oldAlpha = ChannelPulloutBackground:GetAlpha();
+			self.oldAlpha = ChannelPulloutBackground:GetAlpha();
 		end
 	else
 		-- If the tab's alpha was less than the current default, then fade it back out to the oldAlpha
-		if ( ChannelPullout.hasBeenFaded and ChannelPulloutTab.oldAlpha and ChannelPulloutTab.oldAlpha < DEFAULT_CHANNELPULLOUT_TAB_ALPHA ) then
+		if ( self.hasBeenFaded and ChannelPulloutTab.oldAlpha and ChannelPulloutTab.oldAlpha < DEFAULT_CHANNELPULLOUT_TAB_ALPHA ) then
 			UIFrameFadeOut(ChannelPulloutTab, CHANNELPULLOUT_TAB_FADE_TIME, DEFAULT_CHANNELPULLOUT_TAB_ALPHA, ChannelPulloutTab.oldAlpha);
 			local frame;
 			for _, name in next, CHANNELPULLOUT_FADEFRAMES do
 				frame = getglobal(name)
 				if ( frame:IsShown() ) then
-					UIFrameFadeOut(frame, CHANNELPULLOUT_TAB_FADE_TIME, DEFAULT_CHANNELPULLOUT_ALPHA, ChannelPullout.oldAlpha);
+					UIFrameFadeOut(frame, CHANNELPULLOUT_TAB_FADE_TIME, DEFAULT_CHANNELPULLOUT_ALPHA, self.oldAlpha);
 				end
 			end
-			ChannelPullout.hover = nil;
-			ChannelPullout.hasBeenFaded = nil;
+			self.hover = nil;
+			self.hasBeenFaded = nil;
 		end
-		ChannelPullout.hoverTime = 0;
+		self.hoverTime = 0;
 	end	
 end
 
@@ -839,15 +850,15 @@ function ChannelPulloutTab_OnClick (tab, button)
 
 	CloseDropDownMenus();
 	
-	if ( this:GetButtonState() == "PUSHED" ) then
-		ChannelPulloutTab:StopMovingOrSizing();
+	if ( tab:GetButtonState() == "PUSHED" ) then
+		tab:StopMovingOrSizing();
 	elseif ( CHANNELPULLOUT_OPTIONS.locked ) then
 		return;
 	else
-		ChannelPulloutTab:StartMoving();
+		tab:StartMoving();
 	end
 	
-	ValidateFramePosition(ChannelPulloutTab);
+	ValidateFramePosition(tab);
 end
 
 function ChannelPulloutTab_ReanchorLeft ()
@@ -864,7 +875,7 @@ end
 function ChannelPulloutTab_UpdateText (text)
 	ChannelPulloutTab_ReanchorLeft();
 	ChannelPulloutTabText:SetText(text or CHANNEL_ROSTER);
-	PanelTemplates_TabResize(0, ChannelPulloutTab);
+	PanelTemplates_TabResize(ChannelPulloutTab, 0);
 end
 
 function ChannelPulloutTabDropDown_Initialize ()
@@ -895,8 +906,8 @@ function ChannelPulloutTabDropDown_Initialize ()
 	for i = 1, GetNumVoiceSessions() do
 		name = GetVoiceSessionInfo(i);
 		info.text = name;
-		info.func = function ()
-				CHANNELPULLOUT_OPTIONS.name = this.value;
+		info.func = function (self)
+				CHANNELPULLOUT_OPTIONS.name = self.value;
 				CHANNELPULLOUT_OPTIONS.displayActive = nil;
 				ChannelPulloutRoster_OnEvent(rosterFrame);
 			end
@@ -913,7 +924,7 @@ function ChannelPulloutTabDropDown_Initialize ()
 	info = UIDropDownMenu_CreateInfo();
 	
 	info.text = LOCK_CHANNELPULLOUT_LABEL;
-	info.func = ( function() CHANNELPULLOUT_OPTIONS.locked = not CHANNELPULLOUT_OPTIONS.locked end );
+	info.func = function() CHANNELPULLOUT_OPTIONS.locked = not CHANNELPULLOUT_OPTIONS.locked end;
 	info.checked = CHANNELPULLOUT_OPTIONS.locked
 	UIDropDownMenu_AddButton(info, 1);
 	
@@ -923,25 +934,24 @@ function ChannelPulloutTabDropDown_Initialize ()
 	UIDropDownMenu_AddButton(info, 1);
 end
 
-function ChannelPulloutRoster_OnLoad ()
-	this:RegisterEvent("VARIABLES_LOADED")
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("VOICE_SESSIONS_UPDATE");
-	this:RegisterEvent("CHANNEL_ROSTER_UPDATE");
-	this:RegisterEvent("VOICE_CHANNEL_STATUS_UPDATE");
-	this:SetScript("OnEvent", ChannelPulloutRoster_OnEvent);
-	this.members = {};
-	this.scroll = getglobal(this:GetName() .. "Scroll");
-	if ( this.scroll ) then
-		this.upBtn = getglobal(this.scroll:GetName() .. "UpBtn");
-		this.downBtn = getglobal(this.scroll:GetName() .. "DownBtn");
-		this.topBtn = getglobal(this.scroll:GetName() .. "TopBtn");
-		this.bottomBtn = getglobal(this.scroll:GetName() .. "BottomBtn");
+function ChannelPulloutRoster_OnLoad (self)
+	self:RegisterEvent("VARIABLES_LOADED")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("VOICE_SESSIONS_UPDATE");
+	self:RegisterEvent("CHANNEL_ROSTER_UPDATE");
+	self:RegisterEvent("VOICE_CHANNEL_STATUS_UPDATE");
+	self:SetScript("OnEvent", ChannelPulloutRoster_OnEvent);
+	self.members = {};
+	self.scroll = getglobal(self:GetName() .. "Scroll");
+	if ( self.scroll ) then
+		self.upBtn = getglobal(self.scroll:GetName() .. "UpBtn");
+		self.downBtn = getglobal(self.scroll:GetName() .. "DownBtn");
+		self.topBtn = getglobal(self.scroll:GetName() .. "TopBtn");
+		self.bottomBtn = getglobal(self.scroll:GetName() .. "BottomBtn");
 	end
 end
 
-function ChannelPulloutRoster_OnEvent (roster, event, ...)
-	rosterFrame = roster or this;
+function ChannelPulloutRoster_OnEvent (rosterFrame, event, ...)
 	ChannelPulloutRoster_GetSessionInfo(rosterFrame)
 	ChannelPulloutRoster_Populate(rosterFrame, "ChannelPulloutRosterButtonTemplate", #rosterFrame.members)
 	ChannelPulloutRoster_Update(rosterFrame);

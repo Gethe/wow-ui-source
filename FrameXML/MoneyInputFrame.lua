@@ -59,7 +59,7 @@ function MoneyInputFrame_SetCopper(moneyFrame, money)
 	end
 end
 
-function MoneyInputFrame_OnTextChanged(moneyFrame)
+function MoneyInputFrame_OnTextChanged(self, moneyFrame)
 	if ( moneyFrame.expectChanges ) then
 		if ( moneyFrame.expectChanges > 1 ) then
 			moneyFrame.expectChanges = moneyFrame.expectChanges - 1;
@@ -67,8 +67,8 @@ function MoneyInputFrame_OnTextChanged(moneyFrame)
 		end
 		moneyFrame.expectChanges = nil;
 	end
-	if ( this:GetParent().onvalueChangedFunc ) then
-		this:GetParent().onvalueChangedFunc();
+	if ( self:GetParent().onValueChangedFunc ) then
+		self:GetParent().onValueChangedFunc();
 	end
 end
 
@@ -90,6 +90,6 @@ function MoneyInputFrame_SetNextFocus(moneyFrame, focus)
 	moneyFrame.nextFocus = focus;
 end
 
-function MoneyInputFrame_SetOnvalueChangedFunc(moneyFrame, func)
-	moneyFrame.onvalueChangedFunc = func;
+function MoneyInputFrame_SetOnValueChangedFunc(moneyFrame, func)
+	moneyFrame.onValueChangedFunc = func;
 end

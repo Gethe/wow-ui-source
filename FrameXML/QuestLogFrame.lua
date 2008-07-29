@@ -11,12 +11,12 @@ MAX_QUEST_WATCH_TIME = 300;
 QUEST_WATCH_NO_EXPIRE = -1;
 
 QuestDifficultyColor = { };
-QuestDifficultyColor["impossible"] = { r = 1.00, g = 0.10, b = 0.10 };
-QuestDifficultyColor["verydifficult"] = { r = 1.00, g = 0.50, b = 0.25 };
-QuestDifficultyColor["difficult"] = { r = 1.00, g = 1.00, b = 0.00 };
-QuestDifficultyColor["standard"] = { r = 0.25, g = 0.75, b = 0.25 };
-QuestDifficultyColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50 };
-QuestDifficultyColor["header"]	= { r = 0.7, g = 0.7, b = 0.7 };
+QuestDifficultyColor["impossible"] = { r = 1.00, g = 0.10, b = 0.10, font = QuestDifficulty_Impossible };
+QuestDifficultyColor["verydifficult"] = { r = 1.00, g = 0.50, b = 0.25, font = QuestDifficulty_Verydifficult };
+QuestDifficultyColor["difficult"] = { r = 1.00, g = 1.00, b = 0.00, font = QuestDifficulty_Difficult };
+QuestDifficultyColor["standard"] = { r = 0.25, g = 0.75, b = 0.25, font = QuestDifficulty_Standard };
+QuestDifficultyColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50, font = QuestDifficulty_Trivial };
+QuestDifficultyColor["header"]	= { r = 0.7, g = 0.7, b = 0.7, font = QuestDifficulty_Header };
 
 
 
@@ -28,33 +28,34 @@ function ToggleQuestLog()
 	end
 end
 
-function QuestLogTitleButton_OnLoad()
-	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	this:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
-	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	this:RegisterEvent("PARTY_MEMBER_ENABLE");
-	this:RegisterEvent("PARTY_MEMBER_DISABLE");
+function QuestLogTitleButton_OnLoad(self)
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("PARTY_MEMBER_ENABLE");
+	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 end
 
-function QuestLogTitleButton_OnEvent(event)
-	if ( GameTooltip:IsOwned(this) ) then
+function QuestLogTitleButton_OnEvent(self, event, ...)
+	if ( GameTooltip:IsOwned(self) ) then
 		GameTooltip:Hide();
-		QuestLog_UpdatePartyInfoTooltip();
+		QuestLog_UpdatePartyInfoTooltip(self);
 	end
 end
 
-function QuestLog_OnLoad()
-	this.selectedButtonID = 2;
-	this:RegisterEvent("QUEST_LOG_UPDATE");
-	this:RegisterEvent("QUEST_WATCH_UPDATE");
-	this:RegisterEvent("UPDATE_FACTION");
-	this:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
-	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	this:RegisterEvent("PARTY_MEMBER_ENABLE");
-	this:RegisterEvent("PARTY_MEMBER_DISABLE");
+function QuestLog_OnLoad(self)
+	self.selectedButtonID = 2;
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("QUEST_WATCH_UPDATE");
+	self:RegisterEvent("UPDATE_FACTION");
+	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("PARTY_MEMBER_ENABLE");
+	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 end
 
-function QuestLog_OnEvent(event)
+function QuestLog_OnEvent(self, event, ...)
+	local arg1 = ...;
 	if ( event == "QUEST_LOG_UPDATE" or event == "UPDATE_FACTION" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") ) then
 		QuestLog_Update();
 		QuestWatch_Update();
@@ -93,12 +94,12 @@ function QuestLog_OnHide()
 	PlaySound("igQuestLogClose");
 end
 
-function QuestLog_OnUpdate(elapsed)
-	if ( QuestLogFrame.hasTimer ) then
-		QuestLogFrame.timePassed = QuestLogFrame.timePassed + elapsed;
-		if ( QuestLogFrame.timePassed > UPDATE_DELAY ) then
+function QuestLog_OnUpdate(self, elapsed)
+	if ( self.hasTimer ) then
+		self.timePassed = self.timePassed + elapsed;
+		if ( self.timePassed > UPDATE_DELAY ) then
 			QuestLogTimerText:SetText(TIME_REMAINING.." "..SecondsToTime(GetQuestLogTimeLeft()));
-			QuestLogFrame.timePassed = 0;		
+			self.timePassed = 0;		
 		end
 	end
 end
@@ -246,7 +247,7 @@ function QuestLog_Update()
 				color = GetDifficultyColor(level);
 			end
 			questTitleTag:SetTextColor(color.r, color.g, color.b);
-			questLogTitle:SetTextColor(color.r, color.g, color.b);
+			questLogTitle:SetNormalFontObject(color.font);
 			questNumGroupMates:SetTextColor(color.r, color.g, color.b);
 			questLogTitle.r = color.r;
 			questLogTitle.g = color.g;
@@ -407,10 +408,10 @@ function QuestLog_UpdateQuestDetails(doNotScroll)
 		if ( GetQuestLogRequiredMoney() > GetMoney() ) then
 			-- Not enough money
 			QuestLogRequiredMoneyText:SetTextColor(0, 0, 0);
-			SetMoneyFrameColor("QuestLogRequiredMoneyFrame", 1.0, 0.1, 0.1);
+			SetMoneyFrameColor("QuestLogRequiredMoneyFrame", "red");
 		else
 			QuestLogRequiredMoneyText:SetTextColor(0.2, 0.2, 0.2);
-			SetMoneyFrameColor("QuestLogRequiredMoneyFrame", 1.0, 1.0, 1.0);
+			SetMoneyFrameColor("QuestLogRequiredMoneyFrame", "white");
 		end
 		QuestLogRequiredMoneyText:Show();
 		QuestLogRequiredMoneyFrame:Show();
@@ -458,9 +459,10 @@ function QuestLog_UpdateQuestDetails(doNotScroll)
 	local numChoices = GetNumQuestLogChoices();
 	local money = GetQuestLogRewardMoney();
 	local honor = GetQuestLogRewardHonor();
+	local talents = GetQuestLogRewardTalents();
 	local playerTitle = GetQuestLogRewardTitle();
 
-	if ( playerTitle or (numRewards + numChoices + money + honor) > 0 ) then
+	if ( playerTitle or (numRewards + numChoices + money + honor + talents) > 0 ) then
 		QuestLogRewardTitleText:Show();
 		QuestFrame_SetAsLastShown(QuestLogRewardTitleText);
 	else
@@ -481,12 +483,12 @@ function QuestFrame_SetAsLastShown(frame, spacerFrame)
 	spacerFrame:SetPoint("TOP", frame, "BOTTOM", 0, 0);
 end
 
-function QuestLogTitleButton_OnClick(button)
-	local questName = this:GetText();
-	local questIndex = this:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
+function QuestLogTitleButton_OnClick(self, button)
+	local questName = self:GetText();
+	local questIndex = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
 	if ( IsModifiedClick() ) then
 		-- If header then return
-		if ( this.isHeader ) then
+		if ( self.isHeader ) then
 			return;
 		end
 		-- Otherwise try to track it or put it into chat
@@ -520,21 +522,21 @@ function QuestLogTitleButton_OnClick(button)
 	QuestLog_Update();
 end
 
-function QuestLogTitleButton_OnEnter()
+function QuestLogTitleButton_OnEnter(self)
 	-- Set highlight
-	getglobal(this:GetName().."Tag"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	getglobal(self:GetName().."Tag"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 
 	-- Set group info tooltip
-	QuestLog_UpdatePartyInfoTooltip();
+	QuestLog_UpdatePartyInfoTooltip(self);
 end
 
-function QuestLog_UpdatePartyInfoTooltip()
-	local index = this:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
+function QuestLog_UpdatePartyInfoTooltip(self)
+	local index = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
 	local numPartyMembers = GetNumPartyMembers();
-	if ( numPartyMembers == 0 or this.isHeader ) then
+	if ( numPartyMembers == 0 or self.isHeader ) then
 		return;
 	end
-	GameTooltip_SetDefaultAnchor(GameTooltip, this);
+	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	
 	local questLogTitleText = GetQuestLogTitle(index);
 	GameTooltip:SetText(questLogTitleText);
@@ -555,12 +557,12 @@ function QuestLog_UpdatePartyInfoTooltip()
 	GameTooltip:Show();
 end
 
-function QuestLogCollapseAllButton_OnClick()
-	if (this.collapsed) then
-		this.collapsed = nil;
+function QuestLogCollapseAllButton_OnClick(self)
+	if (self.collapsed) then
+		self.collapsed = nil;
 		ExpandQuestHeader(0);
 	else
-		this.collapsed = 1;
+		self.collapsed = 1;
 		QuestLogListScrollFrameScrollBar:SetValue(0);
 		CollapseQuestHeader(0);
 	end

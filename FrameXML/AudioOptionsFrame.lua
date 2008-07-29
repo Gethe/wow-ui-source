@@ -55,9 +55,9 @@ function AudioOptionsFrame_EnableSlider (slider)
 	end
 end
 
-function AudioOptionsFrame_Load (self)
-	SoundOptionsFrame_Load(self);
-	VoiceOptionsFrame_Load(self);
+function AudioOptionsFrame_Load ()
+	SoundOptionsFrame_Load();
+	VoiceOptionsFrame_Load();
 end
 
 function AudioOptionsFrame_RestartEngine()

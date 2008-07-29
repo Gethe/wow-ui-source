@@ -65,13 +65,13 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								OptionsFrameResolutionDropDown_OnLoad();
+								OptionsFrameResolutionDropDown_OnLoad(self);
 							</OnLoad>
 							<OnShow>
-								OptionsFrameResolutionDropDown_OnLoad();
+								OptionsFrameResolutionDropDown_OnLoad(self);
 							</OnShow>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 								GameTooltip:SetText(OPTION_TOOLTIP_USE_RESOLUTION, nil, nil, nil, nil, 1);
 							</OnEnter>
 							<OnLeave>
@@ -98,13 +98,13 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								OptionsFrameRefreshDropDown_OnLoad();
+								OptionsFrameRefreshDropDown_OnLoad(self);
 							</OnLoad>
 							<OnShow>
-								OptionsFrameRefreshDropDown_OnLoad();
+								OptionsFrameRefreshDropDown_OnLoad(self);
 							</OnShow>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 								GameTooltip:SetText(OPTION_TOOLTIP_USE_REFRESH, nil, nil, nil, nil, 1);
 							</OnEnter>
 							<OnLeave>
@@ -131,13 +131,13 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								OptionsFrameMultiSampleDropDown_OnLoad();
+								OptionsFrameMultiSampleDropDown_OnLoad(self);
 							</OnLoad>
 							<OnShow>
-								OptionsFrameMultiSampleDropDown_OnLoad();
+								OptionsFrameMultiSampleDropDown_OnLoad(self);
 							</OnShow>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 								GameTooltip:SetText(OPTION_TOOLTIP_MULTISAMPLING, nil, nil, nil, nil, 1);
 							</OnEnter>
 							<OnLeave>
@@ -153,7 +153,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
@@ -178,7 +178,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
@@ -194,7 +194,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
@@ -228,7 +228,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
@@ -245,18 +245,18 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName().."High"):SetText(1.0);
-								getglobal(this:GetName().."Low"):SetText(0.64);
-								getglobal(this:GetName().."Text"):Hide();
+								getglobal(self:GetName().."High"):SetText(1.0);
+								getglobal(self:GetName().."Low"):SetText(0.64);
+								getglobal(self:GetName().."Text"):Hide();
 							</OnLoad>
 						</Scripts>
 					</Slider>
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(this:GetName().."Title"):SetText(DISPLAY);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(DISPLAY);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -289,14 +289,14 @@
 						<Scripts>
 							<OnShow>
 								if ( GetCVar("desktopGamma") == "1" ) then
-									this:SetChecked(1);
+									self:SetChecked(1);
 								else
-									this:SetChecked(nil);
+									self:SetChecked(nil);
 								end
 								OptionsFrame_UpdateGammaControls();
 							</OnShow>
 							<OnClick>
-								if ( this:GetChecked() ) then
+								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
@@ -313,16 +313,16 @@
 						</Anchors>
 						<Scripts>
 							<OnValueChanged>
-								SetGamma(arg1);
+								SetGamma(value);
 							</OnValueChanged>
 						</Scripts>
 					</Slider>
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(this:GetName().."Title"):SetText(OPTIONS_BRIGHTNESS);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(OPTIONS_BRIGHTNESS);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -343,8 +343,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName().."High"):SetText(FAR);
-								getglobal(this:GetName().."Low"):SetText(NEAR);
+								getglobal(self:GetName().."High"):SetText(FAR);
+								getglobal(self:GetName().."Low"):SetText(NEAR);
 							</OnLoad>
 						</Scripts>
 					</Slider>
@@ -371,8 +371,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName().."High"):SetText(FAR);
-								getglobal(this:GetName().."Low"):SetText(NEAR);
+								getglobal(self:GetName().."High"):SetText(FAR);
+								getglobal(self:GetName().."Low"):SetText(NEAR);
 							</OnLoad>
 						</Scripts>
 					</Slider>
@@ -391,8 +391,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(this:GetName().."High"):SetText(FAR);
-								getglobal(this:GetName().."Low"):SetText(NEAR);
+								getglobal(self:GetName().."High"):SetText(FAR);
+								getglobal(self:GetName().."Low"):SetText(NEAR);
 							</OnLoad>
 						</Scripts>
 					</Slider>
@@ -421,9 +421,9 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(this:GetName().."Title"):SetText(WORLD_APPEARANCE);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(WORLD_APPEARANCE);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -459,9 +459,9 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(this:GetName().."Title"):SetText(PIXEL_SHADERS);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(PIXEL_SHADERS);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -497,9 +497,9 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						this:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(this:GetName().."Title"):SetText(MISCELLANEOUS);
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(MISCELLANEOUS);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -511,6 +511,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						OptionsFrame_Cancel();
 						PlaySound("gsTitleOptionExit");
 						HideUIPanel(OptionsFrame);
 					</OnClick>
@@ -550,10 +551,10 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				OptionsFrame_Init();
+				OptionsFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				OptionsFrame_OnEvent();
+				OptionsFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
 				OptionsFrame_Load();

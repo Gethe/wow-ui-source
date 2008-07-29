@@ -130,11 +130,11 @@
 				UpdateMicroButtons();
 			</OnHide>
 			<OnKeyDown>
-				if ( arg1 == "ESCAPE" ) then
+				if ( key == "ESCAPE" ) then
 					PlaySound("gsTitleOptionExit");
 					HideUIPanel(RatingMenuFrame);
 					MacOptionsFrame_Cancel();
-				elseif ( GetBindingFromClick(arg1) == "SCREENSHOT" ) then
+				elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
 					RunBinding("SCREENSHOT");
 				end
 			</OnKeyDown>

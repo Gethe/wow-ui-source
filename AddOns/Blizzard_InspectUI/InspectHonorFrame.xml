@@ -303,7 +303,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(RANK, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(NEWBIE_TOOLTIP_RANK, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 						GameTooltip:Show();
@@ -328,10 +328,10 @@
 					<Frame name="InspectHonorFrameProgressButton" enableMouse="true" setAllPoints="true">
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel() - 1);
+								self:SetFrameLevel(self:GetFrameLevel() - 1);
 							</OnLoad>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(RANK_POSITION, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 								GameTooltip:AddLine(NEWBIE_TOOLTIP_RANK_POSITION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 								GameTooltip:Show();
@@ -344,7 +344,7 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel() - 1);
+						self:SetFrameLevel(self:GetFrameLevel() - 1);
 					</OnLoad>
 				</Scripts>
 				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
@@ -352,13 +352,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				InspectHonorFrame_OnLoad();
+				InspectHonorFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				InspectHonorFrame_OnShow();
 			</OnShow>
 			<OnEvent>
-				InspectHonorFrame_OnEvent(event);
+				InspectHonorFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Frame>

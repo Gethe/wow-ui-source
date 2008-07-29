@@ -5,13 +5,13 @@ COMBOFRAME_SHINE_FADE_IN = 0.3;
 COMBOFRAME_SHINE_FADE_OUT = 0.4;
 COMBO_FRAME_LAST_NUM_POINTS = 0;
 
-function ComboPointsFrame_OnEvent()
+function ComboPointsFrame_OnEvent(self, event, ...)
 	local comboPoints = GetComboPoints();
 	local comboPoint, comboPointHighlight, comboPointShine;
 	if ( comboPoints > 0 ) then
-		if ( not ComboFrame:IsShown() ) then
-			ComboFrame:Show();
-			UIFrameFadeIn(ComboFrame, COMBOFRAME_FADE_IN);
+		if ( not self:IsShown() ) then
+			self:Show();
+			UIFrameFadeIn(self, COMBOFRAME_FADE_IN);
 		end
 		
 		local fadeInfo = {};
@@ -35,7 +35,7 @@ function ComboPointsFrame_OnEvent()
 	else
 		ComboPoint1Highlight:SetAlpha(0);
 		ComboPoint1Shine:SetAlpha(0);
-		ComboFrame:Hide();
+		self:Hide();
 	end
 	COMBO_FRAME_LAST_NUM_POINTS = comboPoints;
 end
@@ -46,11 +46,11 @@ function ComboPointShineFadeIn(frame)
 	fadeInfo.mode = "IN";
 	fadeInfo.timeToFade = COMBOFRAME_SHINE_FADE_IN;
 	fadeInfo.finishedFunc = ComboPointShineFadeOut;
-	fadeInfo.finishedArg1 = frame:GetName();
+	fadeInfo.finishedArg1 = frame;
 	UIFrameFade(frame, fadeInfo);
 end
 
 --hack since a frame can't have a reference to itself in it
-function ComboPointShineFadeOut(frameName)
-	UIFrameFadeOut(getglobal(frameName), COMBOFRAME_SHINE_FADE_OUT);
+function ComboPointShineFadeOut(frame)
+	UIFrameFadeOut(frame, COMBOFRAME_SHINE_FADE_OUT);
 end

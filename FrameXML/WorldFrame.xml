@@ -42,7 +42,7 @@
 			<Frame name="ScreenshotStatus" setAllPoints="true" frameStrata="TOOLTIP" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="ScreenshotStatusText" inherits="SystemFont_Shadow_Med1">
+						<FontString name="ScreenshotStatusText" inherits="GameFontNormalLarge">
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
@@ -55,20 +55,20 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						ScreenshotStatus_OnLoad();
+						ScreenshotStatus_OnLoad(self);
 					</OnLoad>
 					<OnEvent>
-						ScreenshotStatus_OnEvent(event);
+						ScreenshotStatus_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnUpdate>
-						ScreenshotStatus_OnUpdate(arg1);
+						ScreenshotStatus_OnUpdate(self, elapsed);
 					</OnUpdate>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnUpdate>
-				WorldFrame_OnUpdate(arg1);
+				WorldFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</WorldFrame>

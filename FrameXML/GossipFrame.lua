@@ -1,12 +1,12 @@
 
 NUMGOSSIPBUTTONS = 32;
 
-function GossipFrame_OnLoad()
-	this:RegisterEvent("GOSSIP_SHOW");
-	this:RegisterEvent("GOSSIP_CLOSED");
+function GossipFrame_OnLoad(self)
+	self:RegisterEvent("GOSSIP_SHOW");
+	self:RegisterEvent("GOSSIP_CLOSED");
 end
 
-function GossipFrame_OnEvent()
+function GossipFrame_OnEvent(self, event, ...)
 	if ( event == "GOSSIP_SHOW" ) then
 		-- if there is only a non-gossip option, then go to it directly
 		if ( (GetNumGossipAvailableQuests() == 0) and (GetNumGossipActiveQuests() == 0) and (GetNumGossipOptions() == 1) ) then
@@ -18,15 +18,15 @@ function GossipFrame_OnEvent()
 		end
 
 		if ( not GossipFrame:IsShown() ) then
-			ShowUIPanel(GossipFrame);
-			if ( not GossipFrame:IsShown() ) then
+			ShowUIPanel(self);
+			if ( not self:IsShown() ) then
 				CloseGossip();
 				return;
 			end
 		end
 		GossipFrameUpdate();
 	elseif ( event == "GOSSIP_CLOSED" ) then
-		HideUIPanel(GossipFrame);
+		HideUIPanel(self);
 	end
 end
 
@@ -58,13 +58,13 @@ function GossipFrameUpdate()
 	GossipGreetingScrollFrame:SetVerticalScroll(0);
 end
 
-function GossipTitleButton_OnClick()
-	if ( this.type == "Available" ) then
-		SelectGossipAvailableQuest(this:GetID());
-	elseif ( this.type == "Active" ) then
-		SelectGossipActiveQuest(this:GetID());
+function GossipTitleButton_OnClick(self, button)
+	if ( self.type == "Available" ) then
+		SelectGossipAvailableQuest(self:GetID());
+	elseif ( self.type == "Active" ) then
+		SelectGossipActiveQuest(self:GetID());
 	else
-		SelectGossipOption(this:GetID());
+		SelectGossipOption(self:GetID());
 	end
 end
 

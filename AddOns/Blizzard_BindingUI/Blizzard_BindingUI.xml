@@ -4,10 +4,10 @@
 	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
 		<Scripts>
 			<OnClick>
-				KeyBindingButton_OnClick(arg1);
+				KeyBindingButton_OnClick(self, button);
 			</OnClick>
 			<OnLoad>
-				this:RegisterForClicks("AnyUp");
+				self:RegisterForClicks("AnyUp");
 			</OnLoad>
 		</Scripts>
 		<NormalFont style="GameFontHighlightSmall"/>
@@ -372,17 +372,17 @@
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(KEY_BINDING_HEIGHT, KeyBindingFrame_Update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, KEY_BINDING_HEIGHT, KeyBindingFrame_Update);
 					</OnVerticalScroll>
 					<OnMouseWheel>
 						if ( KeyBindingFrame.selected ) then
-							if ( arg1 > 0 ) then
-								KeyBindingFrame_OnKeyDown("MOUSEWHEELUP");
+							if ( delta > 0 ) then
+								KeyBindingFrame_OnKeyDown(self, "MOUSEWHEELUP");
 							else
-								KeyBindingFrame_OnKeyDown("MOUSEWHEELDOWN");
+								KeyBindingFrame_OnKeyDown(self, "MOUSEWHEELDOWN");
 							end
 						else
-							ScrollFrameTemplate_OnMouseWheel(arg1);
+							ScrollFrameTemplate_OnMouseWheel(self, delta);
 						end
 					</OnMouseWheel>
 				</Scripts>
@@ -413,7 +413,7 @@
 						end
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(CHARACTER_SPECIFIC_KEYBINDING_TOOLTIP, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
@@ -537,16 +537,16 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
-				KeyBindingFrame_OnKeyDown(arg1);
+				KeyBindingFrame_OnKeyDown(self, button);
 			</OnClick>
 			<OnKeyDown>
-				KeyBindingFrame_OnKeyDown();
+				KeyBindingFrame_OnKeyDown(self, key);
 			</OnKeyDown> 
 			<OnLoad>
-				KeyBindingFrame_OnLoad();
+				KeyBindingFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				KeyBindingFrame_OnShow();
+				KeyBindingFrame_OnShow(self);
 				Disable_BagButtons();
 				UpdateMicroButtons();
 			</OnShow>

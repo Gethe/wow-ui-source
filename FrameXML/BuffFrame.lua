@@ -23,12 +23,15 @@ function BuffFrame_OnLoad (self)
 	BuffFrame.BuffFrameFlashTime = 0;
 	BuffFrame.BuffFrameFlashState = 1;
 	BuffFrame.BuffAlphaValue = 1;
-	self:RegisterEvent("PLAYER_AURAS_CHANGED");
+	self:RegisterEvent("UNIT_AURA");
 end
 
 function BuffFrame_OnEvent (self, event, ...)
-	if ( event == "PLAYER_AURAS_CHANGED" ) then
-		BuffFrame_Update();
+	local unit = ...;
+	if ( event == "UNIT_AURA" ) then
+		if ( unit == PlayerFrame.unit ) then
+			BuffFrame_Update();
+		end
 	end
 end
 
@@ -50,15 +53,13 @@ function BuffFrame_Update()
 end
 
 function BuffButton_Update(buttonName, index, filter)
-	-- Valid tokens for "filter" include: HELPFUL, HARMFUL, CANCELABLE, NOT_CANCELABLE
-	local icon, color, debuffType, debuffSlot, buffCount, count;
-	
-	local buffIndex, untilCancelled = GetPlayerBuff(index, filter);
+	local name, rank, texture, count, debuffType, duration, timeLeft, untilCanceled = UnitAura(PlayerFrame.unit, index, filter);
+
 	local buffName = buttonName..index;
 	local buff = getglobal(buffName);
 	local buffDuration = getglobal(buffName.."Duration");
-	
-	if ( buffIndex == 0 ) then
+
+	if ( not name ) then
 		-- No buff so hide it if it exists
 		if ( buff ) then
 			buff:Hide();
@@ -73,29 +74,39 @@ function BuffButton_Update(buttonName, index, filter)
 			else
 				buff = CreateFrame("Button", buffName, BuffFrame, "BuffButtonHarmful");
 			end
-			
+
 			buffDuration = getglobal(buffName.."Duration");
 		end
 		-- Anchor Buff
 		BuffButton_UpdateAnchors(buttonName, index, filter);
 		-- Setup Buff
-		buff:SetID(buffIndex);
-		buff.untilCancelled = untilCancelled;
+		buff:SetID(index);
+		buff.filter = filter;
 		buff:SetAlpha(1.0);
 		buff:Show();
-		if ( SHOW_BUFF_DURATIONS == "1" ) then
+
+		if ( SHOW_BUFF_DURATIONS == "1" and not untilCanceled and timeLeft ) then
 			buffDuration:Show();
+			if ( not buff.timeLeft ) then
+				buff.timeLeft = ceil(timeLeft);
+				buff:SetScript("OnUpdate", BuffButton_OnUpdate);
+			else
+				buff.timeLeft = ceil(timeLeft);
+			end
 		else
 			buffDuration:Hide();
+			if ( buff.timeLeft ) then
+				buff:SetScript("OnUpdate", nil);
+			end
+			buff.timeLeft = nil;
 		end
-		
-		-- Set Texture
-		icon = getglobal(buffName.."Icon");
-		icon:SetTexture(GetPlayerBuffTexture(buffIndex));
 
-		-- Set the number of applications of an aura if its a debuff
-		buffCount = getglobal(buffName.."Count");
-		count = GetPlayerBuffApplications(buffIndex);
+		-- Set Texture
+		local icon = getglobal(buffName.."Icon");
+		icon:SetTexture(texture);
+
+		-- Set the number of applications of an aura
+		local buffCount = getglobal(buffName.."Count");
 		if ( count > 1 ) then
 			buffCount:SetText(count);
 			buffCount:Show();
@@ -105,26 +116,21 @@ function BuffButton_Update(buttonName, index, filter)
 
 		-- Set color of debuff border based on dispel class.
 		if ( filter == "HARMFUL" ) then
-			debuffType = GetPlayerBuffDispelType(buffIndex);
-			debuffSlot = getglobal(buffName.."Border");
-			if ( debuffType ) then
-				color = DebuffTypeColor[debuffType];
-			else
-				color = DebuffTypeColor["none"];
-			end
-
+			local debuffSlot = getglobal(buffName.."Border");
 			if ( debuffSlot ) then
+				local color;
+				if ( debuffType ) then
+					color = DebuffTypeColor[debuffType];
+				else
+					color = DebuffTypeColor["none"];
+				end
 				debuffSlot:SetVertexColor(color.r, color.g, color.b);
 			end
-			
-			if ( not debuffType ) then
-				debuffType = "none";
-			end
 		end
-		
+
 		-- Refresh tooltip
 		if ( GameTooltip:IsOwned(buff) ) then
-			GameTooltip:SetPlayerBuff(buffIndex);
+			GameTooltip:SetUnitAura(PlayerFrame.unit, index, filter);
 		end
 	end
 	return 1;
@@ -163,38 +169,35 @@ function BuffFrame_OnUpdate (self, elapsed)
 end
 
 function BuffButton_OnLoad (self)
-	-- Valid tokens for "buffFilter" include: HELPFUL, HARMFUL, CANCELABLE, NOT_CANCELABLE
 	self:RegisterForClicks("RightButtonUp");
 end
 
 function BuffButton_OnUpdate (self, elapsed)
-	local buffDuration = getglobal(self:GetName().."Duration");
-	if ( self.untilCancelled == 1 ) then
-		buffDuration:Hide();
-		return;
-	end
-
-	local buffIndex = self:GetID();
-	local timeLeft = GetPlayerBuffTimeLeft(buffIndex);
-	if ( timeLeft < BUFF_WARNING_TIME ) then
+	local index = self:GetID();
+	if ( self.timeLeft < BUFF_WARNING_TIME ) then
 		self:SetAlpha(BuffFrame.BuffAlphaValue);
 	else
 		self:SetAlpha(1.0);
 	end
 
 	-- Update duration
-	BuffFrame_UpdateDuration(self, timeLeft);
+	BuffFrame_UpdateDuration(self, self.timeLeft);
+	self.timeLeft = max(self.timeLeft - elapsed, 0);
 
 	if ( BuffFrame.BuffFrameUpdateTime > 0 ) then
 		return;
 	end
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetPlayerBuff(buffIndex);
+		GameTooltip:SetUnitAura(PlayerFrame.unit, index, self.filter);
 	end
 end
 
 function BuffButton_OnClick (self)
-	CancelPlayerBuff(self:GetID());
+	if ( PlayerFrame.unit == "player" ) then
+		CancelPlayerBuff(self:GetID());
+	elseif (PlayerFrame.unit == "vehicle" ) then
+		CancelVehicleBuff(self:GetID());
+	end
 end
 
 function BuffButtons_UpdatePositions()
@@ -368,7 +371,11 @@ function RefreshBuffs(button, showBuffs, unit)
 		end
 		-- Show all buffs and debuffs
 		if ( showBuffs == 1 ) then
-			name, rank, icon = UnitBuff(unit, i, GetCVarBool("showCastableBuffs"));
+			local filter;
+			if ( GetCVarBool("showCastableBuffs") ) then
+				filter = "RAID";
+			end
+			name, rank, icon = UnitBuff(unit, i, filter);
 			debuffBorder:Show();
 		-- Show all debuffs
 		elseif ( showBuffs == 0 ) then
@@ -376,7 +383,11 @@ function RefreshBuffs(button, showBuffs, unit)
 			debuffBorder:Show();
 		-- Show dispellable debuffs (value nil or anything ~= 0 or 1)
 		else
-			name, rank, icon, debuffStack, debuffType = UnitDebuff(unit, i, GetCVarBool("showDispelDebuffs"));
+			local filter;
+			if ( GetCVarBool("showDispelDebuffs") ) then
+				filter = "RAID";
+			end
+			name, rank, icon, debuffStack, debuffType = UnitDebuff(unit, i, filter);
 			debuffBorder:Show();
 		end
 		

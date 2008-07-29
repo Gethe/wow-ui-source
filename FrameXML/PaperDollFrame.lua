@@ -32,7 +32,7 @@ CR_WEAPON_SKILL_RANGED = 23;
 CR_EXPERTISE = 24;
 
 ATTACK_POWER_MAGIC_NUMBER = 14;
-BLOCK_PER_STRENGTH = 0.05;
+BLOCK_PER_STRENGTH = 0.5;
 HEALTH_PER_STAMINA = 10;
 ARMOR_PER_AGILITY = 2;
 MANA_PER_INTELLECT = 15;
@@ -225,7 +225,7 @@ function PaperDollFrame_SetStat(statFrame, statIndex)
 		local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
 		statFrame.tooltip2 = format(statFrame.tooltip2, attackPower);
 		if ( unitClass == "WARRIOR" or unitClass == "SHAMAN" or unitClass == "PALADIN" ) then
-			statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format( STAT_BLOCK_TOOLTIP, effectiveStat*BLOCK_PER_STRENGTH );
+			statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format( STAT_BLOCK_TOOLTIP, max(0, effectiveStat*BLOCK_PER_STRENGTH-10) );
 		end
 	elseif ( statIndex == 3 ) then
 		local baseStam = min(20, effectiveStat);
@@ -1041,11 +1041,11 @@ function PaperDollFrame_OnShow (self)
 		PlayerTitleDropDown:Hide();		
 	end
 	if ( GetCurrentTitle() == 0 ) then
-		UIDropDownMenu_SetText(PAPERDOLL_SELECT_TITLE, PlayerTitleDropDown);	
+		UIDropDownMenu_SetText(PlayerTitleDropDown, PAPERDOLL_SELECT_TITLE);	
 	elseif ( GetCurrentTitle() == -1 ) then
-		UIDropDownMenu_SetText(NONE, PlayerTitleDropDown);	
+		UIDropDownMenu_SetText(PlayerTitleDropDown, NONE);	
 	else
-		UIDropDownMenu_SetText(GetTitleName(GetCurrentTitle()), PlayerTitleDropDown);	
+		UIDropDownMenu_SetText(PlayerTitleDropDown, GetTitleName(GetCurrentTitle()));	
 	end
 	
 end
@@ -1141,7 +1141,12 @@ end
 
 function PaperDollItemSlotButton_OnClick (self, button)
 	if ( button == "LeftButton" ) then
-		PickupInventoryItem(self:GetID());
+		local type = GetCursorInfo();
+		if ( type == "merchant" and MerchantFrame.extendedCost ) then
+			MerchantFrame_ConfirmExtendedItemCost(MerchantFrame.extendedCost);
+		else
+			PickupInventoryItem(self:GetID());
+		end
 	else
 		UseInventoryItem(self:GetID());
 	end
@@ -1221,7 +1226,7 @@ function PaperDollItemSlotButton_OnEnter (self)
 		SetTooltipMoney(GameTooltip, repairCost);
 		GameTooltip:Show();
 	else
-		CursorUpdate();
+		CursorUpdate(self);
 	end
 end
 
@@ -1380,8 +1385,8 @@ end
 function PlayerStatFrameLeftDropDown_OnLoad (self)
 	UIDropDownMenu_Initialize(self, PlayerStatFrameLeftDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, GetCVar("playerStatLeftDropdown"));
-	UIDropDownMenu_SetWidth(99, self);
-	UIDropDownMenu_JustifyText("LEFT", self);
+	UIDropDownMenu_SetWidth(self, 99);
+	UIDropDownMenu_JustifyText(self, "LEFT");
 end
 
 function PlayerStatFrameLeftDropDown_Initialize (self)
@@ -1404,8 +1409,6 @@ function PlayerStatFrameLeftDropDown_Initialize (self)
 end
 
 function PlayerStatFrameLeftDropDown_OnClick (self)
-	-- Workaround for this to self conversion not being finished.
-	self = self or this;
 	UIDropDownMenu_SetSelectedValue(getglobal(self.owner), self.value);
 	SetCVar("playerStatLeftDropdown", self.value);
 	UpdatePaperdollStats("PlayerStatFrameLeft", self.value);
@@ -1414,8 +1417,8 @@ end
 function PlayerStatFrameRightDropDown_OnLoad (self)
 	UIDropDownMenu_Initialize(self, PlayerStatFrameRightDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, GetCVar("playerStatRightDropdown"));
-	UIDropDownMenu_SetWidth(99, self);
-	UIDropDownMenu_JustifyText("LEFT", self);
+	UIDropDownMenu_SetWidth(self, 99);
+	UIDropDownMenu_JustifyText(self, "LEFT");
 end
 
 function PlayerStatFrameRightDropDown_Initialize (self)
@@ -1438,8 +1441,6 @@ function PlayerStatFrameRightDropDown_Initialize (self)
 end
 
 function PlayerStatFrameRightDropDown_OnClick (self)
-	-- Workaround for this to self conversion not being finished.
-	self = self or this;
 	UIDropDownMenu_SetSelectedValue(getglobal(self.owner), self.value);
 	SetCVar("playerStatRightDropdown", self.value);
 	UpdatePaperdollStats("PlayerStatFrameRight", self.value);
@@ -1449,8 +1450,8 @@ end
 function PlayerTitleDropDown_OnLoad (self)
 	UIDropDownMenu_Initialize(self, PlayerTitleDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, GetCurrentTitle());
-	UIDropDownMenu_SetWidth(160, self);
-	UIDropDownMenu_JustifyText("LEFT", self);
+	UIDropDownMenu_SetWidth(self, 160);
+	UIDropDownMenu_JustifyText(self, "LEFT");
 	PlayerTitleDropDownLeft:SetHeight(50);
 	PlayerTitleDropDownMiddle:SetHeight(50);
 	PlayerTitleDropDownRight:SetHeight(50);
@@ -1497,9 +1498,6 @@ function PlayerTitleDropDown_Initialize()
 end
 
 function PlayerTitleDropDown_OnClick (self)
-	-- FIXME - Remove this once UIDropDownMenu is converted from this -> self.
-	self = self or this;
-	-- END FIXME
 	UIDropDownMenu_SetSelectedValue(PlayerTitleDropDown, self.value);
 	SetCurrentTitle(self.value);
 end
@@ -1575,7 +1573,7 @@ function UpdatePaperdollStats(prefix, index)
 end
 
 function ComputePetBonus(stat, value)
-	local unitClass = UnitClass("player");
+	local temp, unitClass = UnitClass("player");
 	unitClass = strupper(unitClass);
 	if( unitClass == "WARLOCK" ) then
 		if( WARLOCK_PET_BONUS[stat] ) then

@@ -1,10 +1,10 @@
-function HonorFrame_OnLoad()
-	this:RegisterEvent("PLAYER_PVP_KILLS_CHANGED");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
+function HonorFrame_OnLoad(self)
+	self:RegisterEvent("PLAYER_PVP_KILLS_CHANGED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
 end
 
-function HonorFrame_OnEvent()
+function HonorFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_PVP_KILLS_CHANGED" or event == "PLAYER_PVP_RANK_CHANGED") then
 		HonorFrame_Update();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then

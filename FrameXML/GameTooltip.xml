@@ -6,22 +6,23 @@
 	<GameTooltip name="GameTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
 		<Scripts>
 			<OnLoad>
-				GameTooltip_OnLoad();
+				GameTooltip_OnLoad(self);
 			</OnLoad>
 			<OnTooltipSetUnit>
-				if ( this:IsUnit("mouseover") ) then
-					getglobal(this:GetName().."TextLeft1"):SetTextColor(GameTooltip_UnitColor("mouseover"));
+				if ( self:IsUnit("mouseover") ) then
+					getglobal(self:GetName().."TextLeft1"):SetTextColor(GameTooltip_UnitColor("mouseover"));
 				end
 			</OnTooltipSetUnit>
 			<OnTooltipSetItem>
 				if ( IsModifiedClick("COMPAREITEMS") ) then
-					GameTooltip_ShowCompareItem();
+					GameTooltip_ShowCompareItem(1);
 				end
 			</OnTooltipSetItem>
 			<OnHide>
-				GameTooltip_OnHide();
+				GameTooltip_OnHide(self);
 				ShoppingTooltip1:Hide();
 				ShoppingTooltip2:Hide();
+				ShoppingTooltip3:Hide();
 			</OnHide>
 			<OnUpdate>
 				GameTooltip_OnUpdate(self, elapsed);
@@ -30,6 +31,7 @@
 	</GameTooltip>
 	<GameTooltip name="ShoppingTooltip1" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<GameTooltip name="ShoppingTooltip2" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="ShoppingTooltip3" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<Frame name="SmallTextTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="10" y="32"/>
@@ -63,11 +65,11 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 			</OnLoad>
 			<OnShow>
-				this:SetWidth(SmallTextTooltipText:GetWidth() + 20);
+				self:SetWidth(SmallTextTooltipText:GetWidth() + 20);
 			</OnShow>
 		</Scripts>
 	</Frame>

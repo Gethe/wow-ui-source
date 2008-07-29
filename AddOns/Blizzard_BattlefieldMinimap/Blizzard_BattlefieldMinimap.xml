@@ -7,22 +7,22 @@
 	</Size>
 	<Scripts>
 		<OnEnter>
-			BattlefieldMinimapUnit_OnEnter();
+			BattlefieldMinimapUnit_OnEnter(self);
 		</OnEnter>
 		<OnLeave>
 			GameTooltip:Hide();
 		</OnLeave>
 		<OnMouseUp>
-			MapUnit_OnMouseUp(arg1, "BattlefieldMinimapRaid", "BattlefieldMinimapParty");
+			MapUnit_OnMouseUp(button, "BattlefieldMinimapRaid", "BattlefieldMinimapParty");
 		</OnMouseUp>
 	</Scripts>
 </Frame>
 <Frame name="BattlefieldMinimapRaidUnitTemplate" inherits="BattlefieldMinimapUnitTemplate" virtual="true">
 	<Scripts>
 		<OnLoad>
-			this:SetFrameLevel(this:GetFrameLevel() + 1);
-			this.unit = "raid"..this:GetID();
-			getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+			self:SetFrameLevel(self:GetFrameLevel() + 1);
+			self.unit = "raid"..self:GetID();
+			getglobal(self:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
 		</OnLoad>
 	</Scripts>
 </Frame>
@@ -96,19 +96,19 @@
 	</Frames>
 	<Scripts>
 		<OnLoad>
-			this:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
-			this:RegisterForDrag("LeftButton");
+			self:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
+			self:RegisterForDrag("LeftButton");
 			BattlefieldMinimapTab:SetAlpha(0);
 		</OnLoad>
 		<OnShow>
-			PanelTemplates_TabResize(0);
+			PanelTemplates_TabResize(self, 0);
 		</OnShow>
 		<OnClick>
-			BattlefieldMinimapTab_OnClick(arg1);
+			BattlefieldMinimapTab_OnClick(self, button);
 			PlaySound("UChatScrollButton");
 		</OnClick>
 		<OnEnter>
-			GameTooltip_AddNewbieTip(BATTLEFIELDMINIMAP_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_BATTLEFIELDMINIMAP_OPTIONS, 1);
+			GameTooltip_AddNewbieTip(self, BATTLEFIELDMINIMAP_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_BATTLEFIELDMINIMAP_OPTIONS, 1);
 		</OnEnter>
 		<OnLeave>
 			GameTooltip:Hide();
@@ -381,7 +381,7 @@
 			<Scripts>
 				<OnClick>
 					SetCVar("showBattlefieldMinimap", "0");
-					HideUIPanel(this:GetParent());
+					HideUIPanel(self:GetParent());
 					WorldMapZoneMinimapDropDown_Update();
 				</OnClick>
 			</Scripts>
@@ -447,7 +447,7 @@
 	</Frames>
 	<Scripts>
 		<OnLoad>
-			BattlefieldMinimap_OnLoad();
+			BattlefieldMinimap_OnLoad(self);
 		</OnLoad>
 		<OnShow>
 			SetMapToCurrentZone();
@@ -459,10 +459,10 @@
 			BattlefieldMinimapTab:Hide();
 		</OnHide>
 		<OnEvent>
-			BattlefieldMinimap_OnEvent(event);
+			BattlefieldMinimap_OnEvent(self, event, ...);
 		</OnEvent>
 		<OnUpdate>
-			BattlefieldMinimap_OnUpdate(arg1);
+			BattlefieldMinimap_OnUpdate(self, elapsed);
 		</OnUpdate>
 	</Scripts>
 </Frame>

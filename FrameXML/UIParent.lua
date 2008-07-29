@@ -87,7 +87,8 @@ UIMenus = {
 	"EmoteMenu",
 	"LanguageMenu",
 	"DropDownList1",
-	"DropDownList2"
+	"DropDownList2",
+	"CalendarContextMenu",
 };
 
 ITEM_QUALITY_COLORS = { };
@@ -99,112 +100,112 @@ for i = -1, 6 do
 	ITEM_QUALITY_COLORS[i].hex = GetItemQualityColor(i);
 end
 
-function UIParent_OnLoad()
-	this:RegisterEvent("PLAYER_LOGIN");
-	this:RegisterEvent("PLAYER_DEAD");
-	this:RegisterEvent("PLAYER_ALIVE");
-	this:RegisterEvent("PLAYER_UNGHOST");
-	this:RegisterEvent("RESURRECT_REQUEST");
-	this:RegisterEvent("PLAYER_SKINNED");
-	this:RegisterEvent("TRADE_REQUEST");
-	this:RegisterEvent("CHANNEL_INVITE_REQUEST");
-	this:RegisterEvent("CHANNEL_PASSWORD_REQUEST");
-	this:RegisterEvent("PARTY_INVITE_REQUEST");
-	this:RegisterEvent("PARTY_INVITE_CANCEL");
-	this:RegisterEvent("GUILD_INVITE_REQUEST");
-	this:RegisterEvent("GUILD_INVITE_CANCEL");
-	this:RegisterEvent("LFG_MATCH_REQUEST");
-	this:RegisterEvent("LFG_MATCH_CANCEL");
-	this:RegisterEvent("LFG_PENDING_REQUEST");
-	this:RegisterEvent("LFG_PENDING_CANCEL");
-	this:RegisterEvent("ARENA_TEAM_INVITE_REQUEST");
-	this:RegisterEvent("PLAYER_CAMPING");
-	this:RegisterEvent("PLAYER_QUITING");
-	this:RegisterEvent("LOGOUT_CANCEL");
-	this:RegisterEvent("LOOT_BIND_CONFIRM");
-	this:RegisterEvent("EQUIP_BIND_CONFIRM");
-	this:RegisterEvent("AUTOEQUIP_BIND_CONFIRM");
-	this:RegisterEvent("USE_BIND_CONFIRM");
-	this:RegisterEvent("DELETE_ITEM_CONFIRM");
-	this:RegisterEvent("QUEST_ACCEPT_CONFIRM");
-	this:RegisterEvent("QUEST_LOG_UPDATE");
-	this:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
-	this:RegisterEvent("CURSOR_UPDATE");
-	this:RegisterEvent("LOCALPLAYER_PET_RENAMED");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("MIRROR_TIMER_START");
-	this:RegisterEvent("DUEL_REQUESTED");
-	this:RegisterEvent("DUEL_OUTOFBOUNDS");
-	this:RegisterEvent("DUEL_INBOUNDS");
-	this:RegisterEvent("DUEL_FINISHED");
-	this:RegisterEvent("TRADE_REQUEST_CANCEL");
-	this:RegisterEvent("CONFIRM_XP_LOSS");
-	this:RegisterEvent("CORPSE_IN_RANGE");
-	this:RegisterEvent("CORPSE_IN_INSTANCE");
-	this:RegisterEvent("CORPSE_OUT_OF_RANGE");
-	this:RegisterEvent("AREA_SPIRIT_HEALER_IN_RANGE");
-	this:RegisterEvent("AREA_SPIRIT_HEALER_OUT_OF_RANGE");
-	this:RegisterEvent("BIND_ENCHANT");
-	this:RegisterEvent("REPLACE_ENCHANT");
-	this:RegisterEvent("TRADE_REPLACE_ENCHANT");
-	this:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
-	this:RegisterEvent("MACRO_ACTION_BLOCKED");
-	this:RegisterEvent("ADDON_ACTION_BLOCKED");
-	this:RegisterEvent("MACRO_ACTION_FORBIDDEN");
-	this:RegisterEvent("ADDON_ACTION_FORBIDDEN");
-	this:RegisterEvent("PLAYER_CONTROL_LOST");
-	this:RegisterEvent("PLAYER_CONTROL_GAINED");
-	this:RegisterEvent("START_LOOT_ROLL");
-	this:RegisterEvent("CONFIRM_LOOT_ROLL");
-	this:RegisterEvent("INSTANCE_BOOT_START");
-	this:RegisterEvent("INSTANCE_BOOT_STOP");
-	this:RegisterEvent("CONFIRM_TALENT_WIPE");
-	this:RegisterEvent("CONFIRM_PET_UNLEARN");
-	this:RegisterEvent("CONFIRM_BINDER");
-	this:RegisterEvent("CONFIRM_SUMMON");
-	this:RegisterEvent("CANCEL_SUMMON");
-	this:RegisterEvent("GOSSIP_CONFIRM");
-	this:RegisterEvent("GOSSIP_CONFIRM_CANCEL");
-	this:RegisterEvent("GOSSIP_ENTER_CODE");
-	this:RegisterEvent("GOSSIP_CLOSED");
-	this:RegisterEvent("BILLING_NAG_DIALOG");
-	this:RegisterEvent("IGR_BILLING_NAG_DIALOG");
-	this:RegisterEvent("VARIABLES_LOADED");
-	this:RegisterEvent("RAID_ROSTER_UPDATE");
-	this:RegisterEvent("READY_CHECK");
-	this:RegisterEvent("RAID_INSTANCE_WELCOME");
-	this:RegisterEvent("LEVEL_GRANT_PROPOSED");
+function UIParent_OnLoad(self)
+	self:RegisterEvent("PLAYER_LOGIN");
+	self:RegisterEvent("PLAYER_DEAD");
+	self:RegisterEvent("PLAYER_ALIVE");
+	self:RegisterEvent("PLAYER_UNGHOST");
+	self:RegisterEvent("RESURRECT_REQUEST");
+	self:RegisterEvent("PLAYER_SKINNED");
+	self:RegisterEvent("TRADE_REQUEST");
+	self:RegisterEvent("CHANNEL_INVITE_REQUEST");
+	self:RegisterEvent("CHANNEL_PASSWORD_REQUEST");
+	self:RegisterEvent("PARTY_INVITE_REQUEST");
+	self:RegisterEvent("PARTY_INVITE_CANCEL");
+	self:RegisterEvent("GUILD_INVITE_REQUEST");
+	self:RegisterEvent("GUILD_INVITE_CANCEL");
+	self:RegisterEvent("LFG_MATCH_REQUEST");
+	self:RegisterEvent("LFG_MATCH_CANCEL");
+	self:RegisterEvent("LFG_PENDING_REQUEST");
+	self:RegisterEvent("LFG_PENDING_CANCEL");
+	self:RegisterEvent("ARENA_TEAM_INVITE_REQUEST");
+	self:RegisterEvent("PLAYER_CAMPING");
+	self:RegisterEvent("PLAYER_QUITING");
+	self:RegisterEvent("LOGOUT_CANCEL");
+	self:RegisterEvent("LOOT_BIND_CONFIRM");
+	self:RegisterEvent("EQUIP_BIND_CONFIRM");
+	self:RegisterEvent("AUTOEQUIP_BIND_CONFIRM");
+	self:RegisterEvent("USE_BIND_CONFIRM");
+	self:RegisterEvent("DELETE_ITEM_CONFIRM");
+	self:RegisterEvent("QUEST_ACCEPT_CONFIRM");
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
+	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("LOCALPLAYER_PET_RENAMED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("MIRROR_TIMER_START");
+	self:RegisterEvent("DUEL_REQUESTED");
+	self:RegisterEvent("DUEL_OUTOFBOUNDS");
+	self:RegisterEvent("DUEL_INBOUNDS");
+	self:RegisterEvent("DUEL_FINISHED");
+	self:RegisterEvent("TRADE_REQUEST_CANCEL");
+	self:RegisterEvent("CONFIRM_XP_LOSS");
+	self:RegisterEvent("CORPSE_IN_RANGE");
+	self:RegisterEvent("CORPSE_IN_INSTANCE");
+	self:RegisterEvent("CORPSE_OUT_OF_RANGE");
+	self:RegisterEvent("AREA_SPIRIT_HEALER_IN_RANGE");
+	self:RegisterEvent("AREA_SPIRIT_HEALER_OUT_OF_RANGE");
+	self:RegisterEvent("BIND_ENCHANT");
+	self:RegisterEvent("REPLACE_ENCHANT");
+	self:RegisterEvent("TRADE_REPLACE_ENCHANT");
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+	self:RegisterEvent("MACRO_ACTION_BLOCKED");
+	self:RegisterEvent("ADDON_ACTION_BLOCKED");
+	self:RegisterEvent("MACRO_ACTION_FORBIDDEN");
+	self:RegisterEvent("ADDON_ACTION_FORBIDDEN");
+	self:RegisterEvent("PLAYER_CONTROL_LOST");
+	self:RegisterEvent("PLAYER_CONTROL_GAINED");
+	self:RegisterEvent("START_LOOT_ROLL");
+	self:RegisterEvent("CONFIRM_LOOT_ROLL");
+	self:RegisterEvent("INSTANCE_BOOT_START");
+	self:RegisterEvent("INSTANCE_BOOT_STOP");
+	self:RegisterEvent("CONFIRM_TALENT_WIPE");
+	self:RegisterEvent("CONFIRM_PET_UNLEARN");
+	self:RegisterEvent("CONFIRM_BINDER");
+	self:RegisterEvent("CONFIRM_SUMMON");
+	self:RegisterEvent("CANCEL_SUMMON");
+	self:RegisterEvent("GOSSIP_CONFIRM");
+	self:RegisterEvent("GOSSIP_CONFIRM_CANCEL");
+	self:RegisterEvent("GOSSIP_ENTER_CODE");
+	self:RegisterEvent("GOSSIP_CLOSED");
+	self:RegisterEvent("BILLING_NAG_DIALOG");
+	self:RegisterEvent("IGR_BILLING_NAG_DIALOG");
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("READY_CHECK");
+	self:RegisterEvent("RAID_INSTANCE_WELCOME");
+	self:RegisterEvent("LEVEL_GRANT_PROPOSED");
 
 	-- Events for auction UI handling
-	this:RegisterEvent("AUCTION_HOUSE_SHOW");
-	this:RegisterEvent("AUCTION_HOUSE_CLOSED");
+	self:RegisterEvent("AUCTION_HOUSE_SHOW");
+	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
 
 	-- Events for trainer UI handling
-	this:RegisterEvent("TRAINER_SHOW");
-	this:RegisterEvent("TRAINER_CLOSED");
+	self:RegisterEvent("TRAINER_SHOW");
+	self:RegisterEvent("TRAINER_CLOSED");
 
 	-- Events for trade skill UI handling
-	this:RegisterEvent("TRADE_SKILL_SHOW");
-	this:RegisterEvent("TRADE_SKILL_CLOSE");
-
-	-- Events for craft UI handling
-	this:RegisterEvent("CRAFT_SHOW");
-	this:RegisterEvent("CRAFT_CLOSE");
+	self:RegisterEvent("TRADE_SKILL_SHOW");
+	self:RegisterEvent("TRADE_SKILL_CLOSE");
 
 	-- Events for Item socketing UI
-	this:RegisterEvent("SOCKET_INFO_UPDATE");
+	self:RegisterEvent("SOCKET_INFO_UPDATE");
 
 	-- Events for taxi benchmarking
-	this:RegisterEvent("ENABLE_TAXI_BENCHMARK");
-	this:RegisterEvent("DISABLE_TAXI_BENCHMARK");
+	self:RegisterEvent("ENABLE_TAXI_BENCHMARK");
+	self:RegisterEvent("DISABLE_TAXI_BENCHMARK");
 
 	-- Push to talk
-	this:RegisterEvent("VOICE_PUSH_TO_TALK_START");
-	this:RegisterEvent("VOICE_PUSH_TO_TALK_STOP");
+	self:RegisterEvent("VOICE_PUSH_TO_TALK_START");
+	self:RegisterEvent("VOICE_PUSH_TO_TALK_STOP");
+
+	-- Events for BarberShop Handling
+	this:RegisterEvent("BARBER_SHOP_OPEN");
+	this:RegisterEvent("BARBER_SHOP_CLOSE");
 
 	-- Events for Guild bank UI
-	this:RegisterEvent("GUILDBANKFRAME_OPENED");
-	this:RegisterEvent("GUILDBANKFRAME_CLOSED");
+	self:RegisterEvent("GUILDBANKFRAME_OPENED");
+	self:RegisterEvent("GUILDBANKFRAME_CLOSED");
 
 	RegisterForSave("MISTER_SPARKLE");
 end
@@ -223,10 +224,6 @@ end
 
 function CombatLog_LoadUI()
 	UIParentLoadAddOn("Blizzard_CombatLog");
-end
-
-function CraftFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_CraftUI");
 end
 
 function GuildBankFrame_LoadUI()
@@ -268,6 +265,30 @@ function ItemSocketingFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_ItemSocketingUI");
 end
 
+function BarberShopFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_BarberShopUI");
+end
+
+function AchievementFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_AchievementUI");
+end
+
+function TimeManager_LoadUI()
+	UIParentLoadAddOn("Blizzard_TimeManager");
+end
+
+function TokenFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_TokenUI");
+end
+
+function GlyphFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_GlyphUI");
+end
+
+function Calendar_LoadUI()
+	UIParentLoadAddOn("Blizzard_Calendar");
+end
+
 function ShowMacroFrame()
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
@@ -296,6 +317,20 @@ function ToggleBattlefieldMinimap()
 	end
 end
 
+function ToggleTimeManager()
+	TimeManager_LoadUI();
+	if ( TimeManager_Toggle ) then
+		TimeManager_Toggle();
+	end
+end
+
+function ToggleCalendar()
+	Calendar_LoadUI();
+	if ( Calendar_Toggle ) then
+		Calendar_Toggle();
+	end
+end
+
 function InspectUnit(unit)
 	InspectFrame_LoadUI();
 	if ( InspectFrame_Show ) then
@@ -303,7 +338,8 @@ function InspectUnit(unit)
 	end
 end
 
-function UIParent_OnEvent(event)
+function UIParent_OnEvent(self, event, ...)
+	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "VARIABLES_LOADED" ) then
 		LocalizeFrames();
 		if ( WorldStateFrame_CanShowBattlefieldMinimap() ) then
@@ -311,6 +347,12 @@ function UIParent_OnEvent(event)
 				BattlefieldMinimap_LoadUI();
 			end
 			BattlefieldMinimap:Show();
+		end
+		if ( not TimeManagerFrame and GetCVar("timeMgrAlarmEnabled") == "1" ) then
+			-- We have to load the time manager here if the alarm is enabled because the alarm can go off
+			-- even if the clock is not shown. WorldFrame_OnUpdate handles alarm checking while the clock
+			-- is hidden.
+			TimeManager_LoadUI();
 		end
 		return;
 	end
@@ -518,6 +560,9 @@ function UIParent_OnEvent(event)
 		end
 
 		VoiceChat_Toggle();
+		
+		-- Fix for Bug 124392
+		StaticPopup_Hide("LEVEL_GRANT_PROPOSED");
 		return;
 	end
 	if ( event == "RAID_ROSTER_UPDATE" ) then
@@ -797,26 +842,26 @@ function UIParent_OnEvent(event)
 		return;
 	end
 
-	-- Events for craft UI handling
-	if ( event == "CRAFT_SHOW" ) then
-		CraftFrame_LoadUI();
-		if ( CraftFrame_Show ) then
-			CraftFrame_Show();
-		end
-		return;
-	end
-	if ( event == "CRAFT_CLOSE" ) then
-		if ( CraftFrame_Hide ) then
-			CraftFrame_Hide();
-		end
-		return;
-	end
-
 	-- Event for item socketing handling
 	if ( event == "SOCKET_INFO_UPDATE" ) then
 		ItemSocketingFrame_LoadUI();
 		ItemSocketingFrame_Update();
 		ShowUIPanel(ItemSocketingFrame);
+		return;
+	end
+
+	-- Event for BarberShop handling
+	if ( event == "BARBER_SHOP_OPEN" ) then
+		BarberShopFrame_LoadUI();
+		if ( BarberShopFrame ) then
+			ShowUIPanel(BarberShopFrame);
+		end
+		return;
+	end
+	if ( event == "BARBER_SHOP_CLOSE" ) then
+		if ( BarberShopFrame:IsVisible() ) then
+			BarberShopFrame:Hide();
+		end
 		return;
 	end
 	
@@ -838,6 +883,19 @@ function UIParent_OnEvent(event)
 		return;
 	end
 
+	-- Event for barbershop handling
+	if ( event == "BARBER_SHOP_OPEN" ) then
+		BarberShopFrame_LoadUI();
+		if ( BarberShopFrame ) then
+			ShowUIPanel(BarberShopFrame);
+		end
+	elseif ( event == "BARBER_SHOP_CLOSE" ) then
+		BarberShopFrame_LoadUI();
+		if ( BarberShopFrame ) then
+			HideUIPanel(BarberShopFrame);
+		end
+	end
+	
 	-- Display instance reset info
 	if ( event == "RAID_INSTANCE_WELCOME" ) then
 		local message = format(RAID_INSTANCE_WELCOME, arg1, SecondsToTime(arg2, nil, 1));
@@ -926,12 +984,10 @@ local menuBarTop = 55;
 function UpdateMenuBarTop ()
 	--Determines the optimal magic number based on resolution and action bar status.
 	menuBarTop = 55;
-	if ( not MultiBarBottomRight:IsShown() ) then
-		local width, height = string.match((({GetScreenResolutions()})[GetCurrentResolution()] or ""), "(%d+).-(%d+)");
-		if ( tonumber(width) / tonumber(height ) > 4/3 ) then
-			--Widescreen resolution
-			menuBarTop = 75;
-		end
+	local width, height = string.match((({GetScreenResolutions()})[GetCurrentResolution()] or ""), "(%d+).-(%d+)");
+	if ( tonumber(width) / tonumber(height ) > 4/3 ) then
+		--Widescreen resolution
+		menuBarTop = 75;
 	end
 end
 
@@ -1859,9 +1915,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 	if ( seconds >= 86400  ) then
 		tempTime = floor(seconds / 86400);
 		if ( notAbbreviated ) then
-			time = tempTime.." "..DAYS;
+			time = format(D_DAYS,tempTime);
 		else
-			time = tempTime.." "..DAYS_ABBR;
+			time = format(DAYS_ABBR,tempTime);
 		end
 		seconds = mod(seconds, 86400);
 		count = count + 1;
@@ -1872,9 +1928,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		end
 		tempTime = floor(seconds / 3600);
 		if ( notAbbreviated ) then
-			time = time..tempTime.." "..HOURS;
+			time = time..format(D_HOURS, tempTime);
 		else
-			time = time..tempTime.." "..HOURS_ABBR;
+			time = time..format(HOURS_ABBR, tempTime);
 		end
 		seconds = mod(seconds, 3600);
 		count = count + 1;
@@ -1885,9 +1941,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		end
 		tempTime = floor(seconds / 60);
 		if ( notAbbreviated ) then
-			time = time..tempTime.." "..MINUTES;
+			time = time..format(D_MINUTES, tempTime);
 		else
-			time = time..tempTime.." "..MINUTES_ABBR;
+			time = time..format(MINUTES_ABBR, tempTime);
 		end
 		seconds = mod(seconds, 60);
 		count = count + 1;
@@ -1898,9 +1954,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		end
 		seconds = format("%d", seconds);
 		if ( notAbbreviated ) then
-			time = time..seconds.." "..SECONDS;
+			time = time..format(D_SECONDS, seconds);
 		else
-			time = time..seconds.." "..SECONDS_ABBR;
+			time = time..format(SECONDS_ABBR, seconds);
 		end
 	end
 	return time;
@@ -2519,17 +2575,17 @@ function ShowInspectCursor()
 end
 
 -- Helper function to show the inspect cursor if the ctrl key is down
-function CursorUpdate()
-	if ( IsModifiedClick("DRESSUP") and this.hasItem ) then
+function CursorUpdate(self)
+	if ( IsModifiedClick("DRESSUP") and self.hasItem ) then
 		ShowInspectCursor();
 	else
 		ResetCursor();
 	end
 end
 
-function CursorOnUpdate()
-	if ( GameTooltip:IsOwned(this) ) then
-		CursorUpdate();
+function CursorOnUpdate(self)
+	if ( GameTooltip:IsOwned(self) ) then
+		CursorUpdate(self);
 	end
 end
 
@@ -2796,7 +2852,8 @@ function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, fram
 end
 
 function UnitHasMana(unit)
-	if ( UnitPowerType(unit) == 0 and UnitManaMax(unit) > 0 ) then
+	local powerType, powerToken = UnitPowerType(unit);
+	if ( powerToken == "MANA" and UnitPowerMax(unit) > 0 ) then
 		return 1;
 	end
 	return nil;
@@ -2812,4 +2869,99 @@ function CopyTable(settings)
 		end
 	end
 	return copy;
+end
+
+
+AUTOCAST_SHINE_R = .95;
+AUTOCAST_SHINE_G = .95;
+AUTOCAST_SHINE_B = .32;
+
+AUTOCAST_SHINE_SPEEDS = { 2, 4, 6, 8 };
+AUTOCAST_SHINE_TIMERS = { 0, 0, 0, 0 };
+-- Animated shine stuff
+
+local AUTOCAST_SHINES = {};
+
+
+function AutoCastShine_OnLoad(self)
+	self.sparkles = {};
+	
+	local name = self:GetName();
+	
+	for i = 1, 16 do
+		tinsert(self.sparkles, _G[name .. i]);
+	end
+end
+
+function AutoCastShine_AutoCastStart(button, r, g, b)
+	if ( AUTOCAST_SHINES[button] ) then
+		return;
+	end
+	
+	AUTOCAST_SHINES[button] = true;
+	
+	if ( not r ) then
+		r, g, b = AUTOCAST_SHINE_R, AUTOCAST_SHINE_G, AUTOCAST_SHINE_B;
+	end
+	
+	for _, sparkle in next, button.sparkles do
+		sparkle:Show();
+		sparkle:SetVertexColor(r, g, b);
+	end
+end
+
+function AutoCastShine_AutoCastStop(button)
+	AUTOCAST_SHINES[button] = nil;
+	
+	for _, sparkle in next, button.sparkles do
+		sparkle:Hide();
+	end
+end
+
+function AutoCastShine_OnUpdate(self, elapsed)	
+	for i in next, AUTOCAST_SHINE_TIMERS do
+		AUTOCAST_SHINE_TIMERS[i] = AUTOCAST_SHINE_TIMERS[i] + elapsed;
+		if ( AUTOCAST_SHINE_TIMERS[i] > AUTOCAST_SHINE_SPEEDS[i]*4 ) then
+			AUTOCAST_SHINE_TIMERS[i] = 0;
+		end
+	end
+	
+	for button in next, AUTOCAST_SHINES do
+		self = button;
+		local parent, distance = self, self:GetWidth();
+		
+		-- This is local to this function to save a lookup. If you need to use it elsewhere, might wanna make it global and use a local reference.
+		local AUTOCAST_SHINE_SPACING = 6;	
+			
+		for i = 1, 4 do
+			local timer = AUTOCAST_SHINE_TIMERS[i];
+			local speed = AUTOCAST_SHINE_SPEEDS[i];
+			
+			if ( timer <= speed ) then
+				local basePosition = timer/speed*distance;
+				self.sparkles[0+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
+				self.sparkles[4+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
+				self.sparkles[8+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
+				self.sparkles[12+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
+			elseif ( timer <= speed*2 ) then
+				local basePosition = (timer-speed)/speed*distance;
+				self.sparkles[0+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
+				self.sparkles[4+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
+				self.sparkles[8+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
+				self.sparkles[12+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);	
+			elseif ( timer <= speed*3 ) then
+				local basePosition = (timer-speed*2)/speed*distance;
+				self.sparkles[0+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
+				self.sparkles[4+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
+				self.sparkles[8+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
+				self.sparkles[12+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);	
+			else
+				local basePosition = (timer-speed*3)/speed*distance;
+				self.sparkles[0+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
+				self.sparkles[4+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
+				self.sparkles[8+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
+				self.sparkles[12+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
+			end
+		end	
+	end
 end

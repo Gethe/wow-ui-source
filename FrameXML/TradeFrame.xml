@@ -88,30 +88,30 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel() + 2);
+						self:SetFrameLevel(self:GetFrameLevel() + 2);
 					</OnLoad>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							HandleModifiedItemClick(GetTradeTargetItemLink(this:GetParent():GetID()));
+							HandleModifiedItemClick(GetTradeTargetItemLink(self:GetParent():GetID()));
 						else
-							ClickTargetTradeButton(this:GetParent():GetID());
+							ClickTargetTradeButton(self:GetParent():GetID());
 						end
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetTradeTargetItem(this:GetParent():GetID());
-						CursorUpdate();
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
+						CursorUpdate(self);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 						ResetCursor();
 					</OnLeave>
 					<OnUpdate>
-						if ( GameTooltip:IsOwned(this) ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetTradeTargetItem(this:GetParent():GetID());
+						if ( GameTooltip:IsOwned(self) ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
 						end
-						CursorOnUpdate();
+						CursorOnUpdate(self);
 					</OnUpdate>
 				</Scripts>
 			</Button>
@@ -126,37 +126,37 @@
 				<Scripts>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							HandleModifiedItemClick(GetTradePlayerItemLink(this:GetParent():GetID()));
+							HandleModifiedItemClick(GetTradePlayerItemLink(self:GetParent():GetID()));
 						else
-							ClickTradeButton(this:GetParent():GetID(), arg1 == "RightButton");
+							ClickTradeButton(self:GetParent():GetID(), button == "RightButton");
 						end
 					</OnClick>
 					<OnDragStart>
-						ClickTradeButton(this:GetParent():GetID());
+						ClickTradeButton(self:GetParent():GetID());
 					</OnDragStart>
 					<OnReceiveDrag>
-						ClickTradeButton(this:GetParent():GetID());
+						ClickTradeButton(self:GetParent():GetID());
 					</OnReceiveDrag>
 					<OnLoad>
-						this:RegisterForDrag("LeftButton");
-						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-						this:SetFrameLevel(this:GetFrameLevel() + 2);
+						self:RegisterForDrag("LeftButton");
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self:SetFrameLevel(self:GetFrameLevel() + 2);
 					</OnLoad>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetTradePlayerItem(this:GetParent():GetID());
-						CursorUpdate();
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
+						CursorUpdate(self);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 						ResetCursor();
 					</OnLeave>
 					<OnUpdate>
-						if ( GameTooltip:IsOwned(this) ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetTradePlayerItem(this:GetParent():GetID());
+						if ( GameTooltip:IsOwned(self) ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
 						end
-						CursorOnUpdate();
+						CursorOnUpdate(self);
 					</OnUpdate>
 				</Scripts>
 			</Button>
@@ -488,11 +488,11 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						if ( this.hasItem ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetTradePlayerItem(this:GetParent():GetID());
+						if ( self.hasItem ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
 						else
-							GameTooltip_AddNewbieTip(ENCHANT_SLOT, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ENCHANTSLOT, 1);
+							GameTooltip_AddNewbieTip(self, ENCHANT_SLOT, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ENCHANTSLOT, 1);
 						end
 					</OnEnter>
 					<OnLeave>
@@ -561,13 +561,13 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						MoneyInputFrame_SetMode(this, "compact");
-						MoneyInputFrame_SetOnvalueChangedFunc(this, TradeFrame_UpdateMoney);
-						this:RegisterEvent("PLAYER_TRADE_MONEY");
+						MoneyInputFrame_SetMode(self, "compact");
+						MoneyInputFrame_SetOnValueChangedFunc(self, TradeFrame_UpdateMoney);
+						self:RegisterEvent("PLAYER_TRADE_MONEY");
 					</OnLoad>
 					<OnEvent>
 						if ( event == "PLAYER_TRADE_MONEY" ) then
-							MoneyInputFrame_SetCopper(TradePlayerInputMoneyFrame, GetPlayerTradeMoney());
+							MoneyInputFrame_SetCopper(self, GetPlayerTradeMoney());
 						end
 					</OnEvent>
 				</Scripts>
@@ -590,10 +590,10 @@
 		</Frames>
 		<Scripts>
 			<OnEvent>
-				TradeFrame_OnEvent();
+				TradeFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				TradeFrame_OnShow();
+				TradeFrame_OnShow(self);
 				PlaySound("igCharacterInfoOpen");
 			</OnShow>
 			<OnHide>
@@ -601,7 +601,7 @@
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
 			<OnLoad>
-				TradeFrame_OnLoad();
+				TradeFrame_OnLoad(self);
 			</OnLoad>
 			<OnMouseUp>
 				TradeFrame_OnMouseUp();

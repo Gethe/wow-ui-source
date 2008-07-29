@@ -11,14 +11,15 @@ VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = 0;
 CONTAINER_SCALE = 0.75;
+BACKPACK_HEIGHT = 240;
 
 BACKPACK_CONTAINER = 0;
 BANK_CONTAINER = -1;
 KEYRING_CONTAINER = -2;
 
-function ContainerFrame_OnLoad()
-	this:RegisterEvent("BAG_OPEN");
-	this:RegisterEvent("BAG_CLOSED");
+function ContainerFrame_OnLoad(self)
+	self:RegisterEvent("BAG_OPEN");
+	self:RegisterEvent("BAG_CLOSED");
 	ContainerFrame1.bagsShown = 0;
 	ContainerFrame1.bags = {};
 end
@@ -35,7 +36,7 @@ function ContainerFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "BAG_UPDATE" ) then
 		if ( self:GetID() == arg1 ) then
- 			ContainerFrame_Update(this);
+ 			ContainerFrame_Update(self);
 		end
 	elseif ( event == "ITEM_LOCK_CHANGED" ) then
 		local bag, slot = arg1, arg2;
@@ -81,35 +82,44 @@ function ToggleBackpack()
 			if ( frame:IsShown() ) then
 				frame:Hide();
 			end
+			-- Hide the token bar if closing the backpack
+			if ( BackpackTokenFrame ) then
+				BackpackTokenFrame:Hide();
+			end
 		end
 	else
 		ToggleBag(0);
+		-- If there are tokens watched then show the bar
+		if ( ManageBackpackTokenFrame ) then
+			BackpackTokenFrame_Update();
+			ManageBackpackTokenFrame(frame);
+		end
 	end
 end
 
-function ContainerFrame_OnHide()
-	this:UnregisterEvent("BAG_UPDATE");
-	this:UnregisterEvent("ITEM_LOCK_CHANGED");
-	this:UnregisterEvent("BAG_UPDATE_COOLDOWN");
-	this:UnregisterEvent("DISPLAY_SIZE_CHANGED");
+function ContainerFrame_OnHide(self)
+	self:UnregisterEvent("BAG_UPDATE");
+	self:UnregisterEvent("ITEM_LOCK_CHANGED");
+	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
+	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 
-	if ( this:GetID() == 0 ) then
+	if ( self:GetID() == 0 ) then
 		MainMenuBarBackpackButton:SetChecked(0);
 	else
-		local bagButton = getglobal("CharacterBag"..(this:GetID() - 1).."Slot");
+		local bagButton = getglobal("CharacterBag"..(self:GetID() - 1).."Slot");
 		if ( bagButton ) then
 			bagButton:SetChecked(0);
 		else
 			-- If its a bank bag then update its highlight
 			
-			UpdateBagButtonHighlight(this:GetID()); 
+			UpdateBagButtonHighlight(self:GetID()); 
 		end
 	end
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown - 1;
 	-- Remove the closed bag from the list and collapse the rest of the entries
 	local index = 1;
 	while ContainerFrame1.bags[index] do
-		if ( ContainerFrame1.bags[index] == this:GetName() ) then
+		if ( ContainerFrame1.bags[index] == self:GetName() ) then
 			local tempIndex = index;
 			while ContainerFrame1.bags[tempIndex] do
 				if ( ContainerFrame1.bags[tempIndex + 1] ) then
@@ -124,7 +134,7 @@ function ContainerFrame_OnHide()
 	end
 	updateContainerFrameAnchors();
 
-	if ( this:GetID() == KEYRING_CONTAINER ) then
+	if ( self:GetID() == KEYRING_CONTAINER ) then
 		UpdateMicroButtons();
 		PlaySound("KeyRingClose");
 	else
@@ -132,30 +142,30 @@ function ContainerFrame_OnHide()
 	end
 end
 
-function ContainerFrame_OnShow()
-	this:RegisterEvent("BAG_UPDATE");
-	this:RegisterEvent("ITEM_LOCK_CHANGED");
-	this:RegisterEvent("BAG_UPDATE_COOLDOWN");
-	this:RegisterEvent("DISPLAY_SIZE_CHANGED");
+function ContainerFrame_OnShow(self)
+	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("ITEM_LOCK_CHANGED");
+	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 
-	if ( this:GetID() == 0 ) then
+	if ( self:GetID() == 0 ) then
 		MainMenuBarBackpackButton:SetChecked(1);
-	elseif ( this:GetID() <= NUM_BAG_SLOTS ) then 
-		local button = getglobal("CharacterBag"..(this:GetID() - 1).."Slot");
+	elseif ( self:GetID() <= NUM_BAG_SLOTS ) then 
+		local button = getglobal("CharacterBag"..(self:GetID() - 1).."Slot");
 		if ( button ) then
 			button:SetChecked(1);
 		end
 	else
-		UpdateBagButtonHighlight(this:GetID());
+		UpdateBagButtonHighlight(self:GetID());
 	end
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown + 1;
-	if ( this:GetID() == KEYRING_CONTAINER ) then
+	if ( self:GetID() == KEYRING_CONTAINER ) then
 		UpdateMicroButtons();
 		PlaySound("KeyRingOpen");
 	else
 		PlaySound("igBackPackOpen");
 	end
- 	ContainerFrame_Update(this);
+ 	ContainerFrame_Update(self);
 end
 
 function OpenBag(id)
@@ -253,6 +263,7 @@ function ContainerFrame_Update(frame)
 	local name = frame:GetName();
 	local itemButton;
 	local texture, itemCount, locked, quality, readable;
+	local tooltipOwner = GameTooltip:GetOwner();
 	for i=1, frame.size, 1 do
 		itemButton = getglobal(name.."Item"..i);
 		
@@ -265,11 +276,14 @@ function ContainerFrame_Update(frame)
 		if ( texture ) then
 			ContainerFrame_UpdateCooldown(id, itemButton);
 			itemButton.hasItem = 1;
-			itemButton.locked = locked;
-			itemButton.readable = readable;
 		else
 			getglobal(name.."Item"..i.."Cooldown"):Hide();
 			itemButton.hasItem = nil;
+		end
+		itemButton.readable = readable;
+		
+		if ( itemButton == tooltipOwner ) then
+			itemButton.UpdateTooltip(itemButton);
 		end
 	end
 end
@@ -285,8 +299,6 @@ function ContainerFrame_UpdateLocked(frame)
 		texture, itemCount, locked, quality, readable = GetContainerItemInfo(id, itemButton:GetID());
 
 		SetItemButtonDesaturated(itemButton, locked, 0.5, 0.5, 0.5);
-
-		itemButton.locked = locked;
 	end
 end
 
@@ -296,8 +308,6 @@ function ContainerFrame_UpdateLockedItem(frame, slot)
 	local texture, itemCount, locked, quality, readable = GetContainerItemInfo(frame:GetID(), itemButton:GetID());
 
 	SetItemButtonDesaturated(itemButton, locked, 0.5, 0.5, 0.5);
-
-	itemButton.locked = locked;
 end
 
 function ContainerFrame_UpdateCooldowns(frame)
@@ -347,7 +357,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			getglobal(name.."BackgroundMiddle"..i):Hide();
 		end
 		bgTextureBottom:Hide();
-		frame:SetHeight(240);
+		frame:SetHeight(BACKPACK_HEIGHT);
 	else
 		if (size == 1) then
 			-- Halloween gag gift
@@ -442,10 +452,10 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 				-- Position bottom texture
 				bgTextureBottom:SetPoint("TOP", bgTextureMiddle:GetName(), "BOTTOM", 0, 0);
 				bgTextureBottom:Show();
-				
-				-- Set the frame height
-				frame:SetHeight(bgTextureTop:GetHeight()+bgTextureBottom:GetHeight()+middleBgHeight);	
 			end
+				
+			-- Set the frame height
+			frame:SetHeight(bgTextureTop:GetHeight()+bgTextureBottom:GetHeight()+middleBgHeight);	
 		end
 	end
 
@@ -480,7 +490,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			if ( i == 1 ) then
 				-- Anchor the first item differently if its the backpack frame
 				if ( id == 0 ) then
-					itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 30);
+					itemButton:SetPoint("BOTTOMRIGHT", bgTextureTop, "BOTTOMRIGHT", -12, 48);
 				else
 					itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 9);
 				end
@@ -575,22 +585,22 @@ function updateContainerFrameAnchors()
 end
 
 
-function ContainerFrameItemButton_OnLoad()
-	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	this:RegisterForDrag("LeftButton");
+function ContainerFrameItemButton_OnLoad(self)
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterForDrag("LeftButton");
 
-	this.SplitStack = function(button, split)
+	self.SplitStack = function(button, split)
 		SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 	end
-	this.UpdateTooltip = ContainerFrameItemButton_OnEnter;
+	self.UpdateTooltip = ContainerFrameItemButton_OnEnter;
 end
 
-function ContainerFrameItemButton_OnClick(button)
+function ContainerFrameItemButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		local type, money = GetCursorInfo();
 		if ( SpellCanTargetItem() ) then
 			-- Target the spell with the selected item
-			UseContainerItem(this:GetParent():GetID(), this:GetID());
+			UseContainerItem(self:GetParent():GetID(), self:GetID());
 		elseif ( type == "guildbankmoney" ) then
 			WithdrawGuildBankMoney(money);
 			ClearCursor();
@@ -601,10 +611,10 @@ function ContainerFrameItemButton_OnClick(button)
 			if ( MerchantFrame.extendedCost ) then
 				MerchantFrame_ConfirmExtendedItemCost(MerchantFrame.extendedCost);
 			else
-				PickupContainerItem(this:GetParent():GetID(), this:GetID());
+				PickupContainerItem(self:GetParent():GetID(), self:GetID());
 			end
 		else			
-			PickupContainerItem(this:GetParent():GetID(), this:GetID());
+			PickupContainerItem(self:GetParent():GetID(), self:GetID());
 		end
 		StackSplitFrame:Hide();
 	else
@@ -612,32 +622,32 @@ function ContainerFrameItemButton_OnClick(button)
 			-- Don't sell the item if the buyback tab is selected
 			return;
 		end
-		UseContainerItem(this:GetParent():GetID(), this:GetID());
+		UseContainerItem(self:GetParent():GetID(), self:GetID());
 		StackSplitFrame:Hide();
 	end
 end
 
-function ContainerFrameItemButton_OnModifiedClick(button)
-	if ( HandleModifiedItemClick(GetContainerItemLink(this:GetParent():GetID(), this:GetID())) ) then
+function ContainerFrameItemButton_OnModifiedClick(self, button)
+	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
 		return;
 	end
 	if ( IsModifiedClick("SOCKETITEM") ) then
-		SocketContainerItem(this:GetParent():GetID(), this:GetID());
+		SocketContainerItem(self:GetParent():GetID(), self:GetID());
 	end
 	if ( IsModifiedClick("SPLITSTACK") ) then
-		local texture, itemCount, locked = GetContainerItemInfo(this:GetParent():GetID(), this:GetID());
+		local texture, itemCount, locked = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
 		if ( not locked ) then
 			if ( button ~= "LeftButton" and MerchantFrame:IsShown() and MerchantFrame.selectedTab ~= 2 ) then
-				this.SplitStack = function(button, split)
+				self.SplitStack = function(button, split)
 					SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 					MerchantItemButton_OnClick("LeftButton");
 				end
 			else
-				this.SplitStack = function(button, split)
+				self.SplitStack = function(button, split)
 					SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 				end
 			end
-			OpenStackSplitFrame(this.count, this, "BOTTOMRIGHT", "TOPRIGHT");
+			OpenStackSplitFrame(itemCount, self, "BOTTOMRIGHT", "TOPRIGHT");
 		end
 		return;
 	end
@@ -655,7 +665,7 @@ function ContainerFrameItemButton_OnEnter(self)
 	-- Keyring specific code
 	if ( self:GetParent():GetID() == KEYRING_CONTAINER ) then
 		GameTooltip:SetInventoryItem("player", KeyRingButtonIDToInvSlotID(self:GetID()));
-		CursorUpdate();
+		CursorUpdate(self);
 		return;
 	end
 
@@ -665,7 +675,7 @@ function ContainerFrameItemButton_OnEnter(self)
 		GameTooltip:AddLine(REPAIR_COST, "", 1, 1, 1);
 		SetTooltipMoney(GameTooltip, repairCost);
 		GameTooltip:Show();
-	elseif ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 1 and not self.locked ) then
+	elseif ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 1 ) then
 		showSell = 1;
 	end
 
@@ -791,4 +801,13 @@ function GetKeyRingSize()
 	size = min(size, numKeyringSlots);
 
 	return size;
+end
+
+function GetBackpackFrame()
+	local index = IsBagOpen(0);
+	if ( index ) then
+		return getglobal("ContainerFrame"..index);
+	else
+		return nil;
+	end
 end

@@ -2,6 +2,17 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
+	text = CONFIRM_GLYPH_PLACEMENT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self) PlaceGlyphInSocket(self.data) end,
+	OnCancel = function (self) self.data = nil; end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+}
+
 StaticPopupDialogs["CONFIRM_RESET_SETTINGS"] = { 
 	text = CONFIRM_RESET_SETTINGS,
 	button1 = ALL_SETTINGS,
@@ -59,6 +70,27 @@ StaticPopupDialogs["CONFIRM_COMPLETE_EXPENSIVE_QUEST"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 	hasMoneyFrame = 1,
+};
+StaticPopupDialogs["CONFIRM_ACCEPT_PVP_QUEST"] = {
+	text = CONFIRM_ACCEPT_PVP_QUEST,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function()
+		AcceptQuest();
+	end,
+	OnCancel = function() 
+		DeclineQuest();
+		PlaySound("igQuestCancel");
+	end,
+	OnShow = function()
+		QuestFrameAcceptButton:Disable();
+		QuestFrameDeclineButton:Disable();
+	end,
+	OnHide = function()
+		QuestFrameDeclineButton:Enable();
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
 };
 StaticPopupDialogs["USE_GUILDBANK_REPAIR"] = {
 	text = USE_GUILDBANK_REPAIR,
@@ -981,6 +1013,9 @@ StaticPopupDialogs["LEVEL_GRANT_PROPOSED"] = {
 	OnCancel = function(self)
 		DeclineLevelGrant();
 	end,
+	OnHide = function()
+		DeclineLevelGrant();
+	end,
 	timeout = 60,
 	whileDead = 1,
 	hideOnEscape = 1
@@ -1220,6 +1255,7 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 	maxLetters = 32,
 	OnShow = function(self)
 		self.button1:Disable();
+		self.button2:Enable();
 		self.editBox:SetFocus();
 	end,
 	OnHide = function(self)
@@ -1239,7 +1275,7 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 		if ( strupper(parent.editBox:GetText()) ==  DELETE_ITEM_CONFIRM_STRING ) then
 			parent.button1:Enable();
 		else
-			parent.button2:Disable();
+			parent.button1:Disable();
 		end
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -1842,27 +1878,7 @@ StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1
 };
---[[ The old version of the dialog... the new one auto-accepts for you.
-StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
-	text = AREA_SPIRIT_HEAL,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnShow = function()
-		this.timeleft = GetAreaSpiritHealerTime();
-	end,
-	OnAccept = function()
-		AcceptAreaSpiritHeal();
-		getglobal(this:GetParent():GetName().."Button1"):Hide();
-		getglobal(this:GetParent():GetName().."Button2"):Hide();
-		return 1;
-	end,
-	timeout = 0,
-	whileDead = 1,
-	interruptCinematic = 1,
-	notClosableByLogout = 1,
-	hideOnEscape = 1
-};
-]]
+
 StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 	text = AREA_SPIRIT_HEAL,
 	button1 = CANCEL,
@@ -1983,6 +1999,9 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	end,
 	OnAccept = function(self)
 		ConfirmSummon();
+	end,
+	OnCancel = function()
+		CancelSummon();
 	end,
 	OnUpdate = function(self, elapsed)
 		if ( UnitAffectingCombat("player") ) then
@@ -2660,14 +2679,14 @@ function StaticPopup_EditBoxOnEnterPressed(self)
 end
 
 function StaticPopup_EditBoxOnEscapePressed(self)
-	local EditBoxOnEscapePressed = StaticPopupDialogs[this:GetParent().which].EditBoxOnEscapePressed;
+	local EditBoxOnEscapePressed = StaticPopupDialogs[self:GetParent().which].EditBoxOnEscapePressed;
 	if ( EditBoxOnEscapePressed ) then
 		EditBoxOnEscapePressed(self, self:GetParent().data);
 	end
 end
 
 function StaticPopup_EditBoxOnTextChanged(self)
-	local EditBoxOnTextChanged = StaticPopupDialogs[this:GetParent().which].EditBoxOnTextChanged;
+	local EditBoxOnTextChanged = StaticPopupDialogs[self:GetParent().which].EditBoxOnTextChanged;
 	if ( EditBoxOnTextChanged ) then
 		EditBoxOnTextChanged(self, self:GetParent().data);
 	end

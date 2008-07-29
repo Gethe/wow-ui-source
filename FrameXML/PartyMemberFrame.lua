@@ -260,7 +260,8 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 	if ( event =="UNIT_AURA" ) then
 		if ( arg1 == unit ) then
 			RefreshBuffs(self, 0, unit);
-			if ( PartyMemberBuffTooltip:IsShown() ) then
+			if ( PartyMemberBuffTooltip:IsShown() and
+				self:GetID() == PartyMemberBuffTooltip:GetID() ) then
 				PartyMemberBuffTooltip_Update(self);
 			end
 		else
@@ -334,17 +335,16 @@ function PartyMemberFrame_RefreshPetBuffs (self, id)
 	RefreshBuffs(getglobal("PartyMemberFrame"..id.."PetFrame"), 0, "partypet"..id)
 end
 
-function PartyMemberBuffTooltip_Update (self, isPet)
+function PartyMemberBuffTooltip_Update (self)
 	local name, rank, icon;
 	local numBuffs = 0;
 	local numDebuffs = 0;
 	local index = 1;
+	
+	PartyMemberBuffTooltip:SetID(self:GetID());
+	
 	for i=1, MAX_PARTY_TOOLTIP_BUFFS do
-		if ( isPet ) then
-			name, rank, icon = UnitBuff("pet", i);		
-		else
-			name, rank, icon = UnitBuff("party"..self:GetID(), i);
-		end
+		name, rank, icon = UnitBuff(self.unit, i);
 		if ( icon ) then
 			getglobal("PartyMemberBuffTooltipBuff"..index.."Icon"):SetTexture(icon);
 			getglobal("PartyMemberBuffTooltipBuff"..index.."Border"):Hide();
@@ -371,12 +371,7 @@ function PartyMemberBuffTooltip_Update (self, isPet)
 	for i=1, MAX_PARTY_TOOLTIP_DEBUFFS do
 		local debuffBorder = getglobal("PartyMemberBuffTooltipDebuff"..index.."Border")
 		local partyDebuff = getglobal("PartyMemberBuffTooltipDebuff"..index.."Icon");
-		if ( isPet ) then
-			name, rank, icon, debuffStack, debuffType = UnitDebuff("pet", i);
-		else
-			name, rank, icon, debuffStack, debuffType = UnitDebuff("party"..self:GetID(), i);
-		end
-		
+		name, rank, icon, debuffStack, debuffType = UnitDebuff(self.unit, i);		
 		if ( icon ) then
 			partyDebuff:SetTexture(icon);
 			if ( debuffType ) then

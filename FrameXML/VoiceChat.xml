@@ -45,19 +45,19 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this.text = getglobal(this:GetName() .. "Text");
-				this.button = getglobal(this:GetName() .. "SecureButton");
+				self.text = getglobal(self:GetName() .. "Text");
+				self.button = getglobal(self:GetName() .. "SecureButton");
 			</OnLoad>
 			<OnEnter>
-				this:SetAlpha(1.0);
+				self:SetAlpha(1.0);
 			</OnEnter>
 			<OnLeave>
-				if ( not this.show ) then
-					this:SetAlpha(0);
+				if ( not self.show ) then
+					self:SetAlpha(0);
 				end
 			</OnLeave>
 			<OnEvent>
-				VoiceChatButton_OnEvent()
+				VoiceChatButton_OnEvent(self, event, ...)
 			</OnEvent>
 		</Scripts>
 		<Layers>
@@ -103,24 +103,24 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnLoad>
-				this:SetBackdropBorderColor(0.5, 0.5, 0.5, 0.5);
-				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.5);
-				VoiceChatTalkers_OnLoad(this);
+				self:SetBackdropBorderColor(0.5, 0.5, 0.5, 0.5);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.5);
+				VoiceChatTalkers_OnLoad(self);
 			</OnLoad>
 			<OnEnter>
-				this:SetAlpha(1.0);
+				self:SetAlpha(1.0);
 			</OnEnter>
 			<OnLeave>
-				if ( #VOICECHAT_TALKERS > 0 or MouseIsOver(this) ) then
+				if ( #VOICECHAT_TALKERS > 0 or MouseIsOver(self) ) then
 					return;
 				end
 				
-				if ( not this.show ) then
-					this:SetAlpha(0);
+				if ( not self.show ) then
+					self:SetAlpha(0);
 				end
 			</OnLeave>
 			<OnDragStart>
-				MOVING_FRAME = this;
+				MOVING_FRAME = self;
 				self:SetFrameStrata("DIALOG");
 				self:StartMoving();
 				self.moving = true;
@@ -134,10 +134,10 @@
 				MOVING_FRAME = nil;
 			</OnDragStop>
 			<OnEvent>
-				VoiceChatTalkers_OnEvent();
+				VoiceChatTalkers_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				VoiceChatTalkers_Update();
+				VoiceChatTalkers_Update(self);
 			</OnShow>
 		</Scripts>
 		<Frames>
@@ -253,18 +253,18 @@
 			<Frame name="MiniMapVoiceChatDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
 				<Scripts>
 					<OnLoad>
-						MiniMapVoiceChatDropDown_OnLoad();
+						MiniMapVoiceChatDropDown_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				this:SetFrameLevel(this:GetFrameLevel()+1);
-				this:RegisterEvent("VOICE_SESSIONS_UPDATE");
-				this:RegisterEvent("PLAYER_ENTERING_WORLD");
-				this:RegisterEvent("VOICE_SELF_MUTE");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:SetFrameLevel(self:GetFrameLevel()+1);
+				self:RegisterEvent("VOICE_SESSIONS_UPDATE");
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
+				self:RegisterEvent("VOICE_SELF_MUTE");
 			</OnLoad>
 			<OnShow>
 				MiniMapVoiceChatFrameBackground:SetAlpha(0.6);
@@ -277,10 +277,10 @@
 				SetSelfMuteState();
 			</OnEvent>
 			<OnClick>
-				if ( arg1 == "LeftButton" ) then
+				if ( button == "LeftButton" ) then
 					ToggleFriendsFrame(4);
-				elseif ( arg1 == "RightButton" ) then
-					if ( this.count and this.count > 0 ) then
+				elseif ( button == "RightButton" ) then
+					if ( self.count and self.count > 0 ) then
 						ToggleDropDownMenu(1, nil, MiniMapVoiceChatDropDown, "MiniMapVoiceChatFrame", 0, -5);
 					else
 						ToggleFriendsFrame(4);
@@ -292,16 +292,16 @@
 				if ( (GetCVar("VoiceChatSelfMute") == "1") and (GetCVar("VoiceChatMode") == "1")) then
 					text = VOICE_CHAT.." "..SELFMUTED;
 				end
-				GameTooltip_AddNewbieTip(text, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_VOICE_CHAT_SELECTOR);
+				GameTooltip_AddNewbieTip(self, text, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_VOICE_CHAT_SELECTOR);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnMouseUp>
-				MinimapButton_OnMouseUp();
+				MinimapButton_OnMouseUp(self);
 			</OnMouseUp> 
 			<OnMouseDown>
-				MinimapButton_OnMouseDown();
+				MinimapButton_OnMouseDown(self);
 			</OnMouseDown>
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>

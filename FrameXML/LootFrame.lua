@@ -2,34 +2,35 @@ LOOTFRAME_NUMBUTTONS = 4;
 NUM_GROUP_LOOT_FRAMES = 4;
 MASTER_LOOT_THREHOLD = 4;
 
-function LootFrame_OnLoad()
-	this:RegisterEvent("LOOT_OPENED");
-	this:RegisterEvent("LOOT_SLOT_CLEARED");
-	this:RegisterEvent("LOOT_CLOSED");
-	this:RegisterEvent("OPEN_MASTER_LOOT_LIST");
-	this:RegisterEvent("UPDATE_MASTER_LOOT_LIST");
+function LootFrame_OnLoad(self)
+	self:RegisterEvent("LOOT_OPENED");
+	self:RegisterEvent("LOOT_SLOT_CLEARED");
+	self:RegisterEvent("LOOT_CLOSED");
+	self:RegisterEvent("OPEN_MASTER_LOOT_LIST");
+	self:RegisterEvent("UPDATE_MASTER_LOOT_LIST");
 end
 
-function LootFrame_OnEvent(event)
+function LootFrame_OnEvent(self, event, ...)
 	if ( event == "LOOT_OPENED" ) then
-		this.page = 1;
-		ShowUIPanel(this);
-		local autoLoot = arg1;
-		if ( not this:IsShown()) then
+		local autoLoot = ...;
+		
+		self.page = 1;
+		ShowUIPanel(self);
+		if ( not self:IsShown()) then
 			CloseLoot(autoLoot == 0);	-- The parameter tells code that we were unable to open the UI
 		end
-	end
-
-	if ( event == "LOOT_SLOT_CLEARED" ) then
-		if ( not this:IsShown() ) then
+	elseif ( event == "LOOT_SLOT_CLEARED" ) then
+		local arg1 = ...;
+		
+		if ( not self:IsShown() ) then
 			return;
 		end
 
 		local numLootToShow = LOOTFRAME_NUMBUTTONS;
-		if ( this.numLootItems > LOOTFRAME_NUMBUTTONS ) then
+		if ( self.numLootItems > LOOTFRAME_NUMBUTTONS ) then
 			numLootToShow = numLootToShow - 1;
 		end
-		local slot = arg1 - ((this.page - 1) * numLootToShow);
+		local slot = arg1 - ((self.page - 1) * numLootToShow);
 		if ( (slot > 0) and (slot < (numLootToShow + 1)) ) then
 			local button = getglobal("LootButton"..slot);
 			if ( button ) then
@@ -50,17 +51,14 @@ function LootFrame_OnEvent(event)
 			LootFrame_PageDown();
 		end
 		return;
-	end
-	if ( event == "LOOT_CLOSED" ) then
+	elseif ( event == "LOOT_CLOSED" ) then
 		StaticPopup_Hide("LOOT_BIND");
-		HideUIPanel(this);
+		HideUIPanel(self);
 		return;
-	end
-	if ( event == "OPEN_MASTER_LOOT_LIST" ) then
+	elseif ( event == "OPEN_MASTER_LOOT_LIST" ) then
 		ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedLootButton, 0, 0);
 		return;
-	end
-	if ( event == "UPDATE_MASTER_LOOT_LIST" ) then
+	elseif ( event == "UPDATE_MASTER_LOOT_LIST" ) then
 		UIDropDownMenu_Refresh(GroupLootDropDown);
 	end
 end
@@ -137,19 +135,19 @@ function LootFrame_PageUp()
 	LootFrame_Update();
 end
 
-function LootFrame_OnShow()
-	this.numLootItems = GetNumLootItems();
+function LootFrame_OnShow(self)
+	self.numLootItems = GetNumLootItems();
 	
 	if ( GetCVar("lootUnderMouse") == "1" ) then
 		-- position loot window under mouse cursor		
 		local x, y = GetCursorPosition();
-		x = x / this:GetEffectiveScale();
-		y = y / this:GetEffectiveScale();
+		x = x / self:GetEffectiveScale();
+		y = y / self:GetEffectiveScale();
 
 		local posX = x - 175;
 		local posY = y + 25;
 		
-		if (this.numLootItems > 0) then
+		if (self.numLootItems > 0) then
 			posX = x - 40;
 			posY = y + 55;
 			posY = posY + 40;
@@ -159,15 +157,15 @@ function LootFrame_OnShow()
 			posY = 350;
 		end
 
-		this:ClearAllPoints();
-		this:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", posX, posY);
-		this:GetCenter();
-		this:Raise();
+		self:ClearAllPoints();
+		self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", posX, posY);
+		self:GetCenter();
+		self:Raise();
 	end
 	
 	LootFrame_Update();
 	LootFramePortraitOverlay:SetTexture("Interface\\TargetingFrame\\TargetDead");
-	if( this.numLootItems == 0 ) then
+	if( self.numLootItems == 0 ) then
 		PlaySound("LOOTWINDOWOPENEMPTY");
 	elseif( IsFishingLoot() ) then
 		PlaySound("FISHING REEL IN");
@@ -181,29 +179,29 @@ function LootFrame_OnHide()
 	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
 end
 
-function LootButton_OnClick(button)
+function LootButton_OnClick(self, button)
 	-- Close any loot distribution confirmation windows
 	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
 	
-	LootFrame.selectedLootButton = this:GetName();
-	LootFrame.selectedSlot = this.slot;
-	LootFrame.selectedQuality = this.quality;
-	LootFrame.selectedItemName = getglobal(this:GetName().."Text"):GetText();
+	LootFrame.selectedLootButton = self:GetName();
+	LootFrame.selectedSlot = self.slot;
+	LootFrame.selectedQuality = self.quality;
+	LootFrame.selectedItemName = getglobal(self:GetName().."Text"):GetText();
 
-	LootSlot(this.slot);
+	LootSlot(self.slot);
 end
 
-function LootItem_OnEnter()
-	local slot = ((LOOTFRAME_NUMBUTTONS - 1) * (LootFrame.page - 1)) + this:GetID();
+function LootItem_OnEnter(self)
+	local slot = ((LOOTFRAME_NUMBUTTONS - 1) * (LootFrame.page - 1)) + self:GetID();
 	if ( LootSlotIsItem(slot) ) then
-		GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetLootItem(slot);
-		CursorUpdate();
+		CursorUpdate(self);
 	end
 end
 
-function GroupLootDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, GroupLootDropDown_Initialize, "MENU");
+function GroupLootDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, GroupLootDropDown_Initialize, "MENU");
 end
 
 function GroupLootDropDown_Initialize()
@@ -217,7 +215,7 @@ function GroupLootDropDown_Initialize()
 			if ( candidate ) then
 				-- Add candidate button
 				info.text = candidate;
-				info.textHeight = 12;
+				info.fontObject = GameFontNormalLeft;
 				info.value = i;
 				info.notCheckable = 1;
 				info.func = GroupLootDropDown_GiveLoot;
@@ -231,7 +229,7 @@ function GroupLootDropDown_Initialize()
 		-- In a raid
 		info.isTitle = 1;
 		info.text = GIVE_LOOT;
-		info.textHeight = 12;
+		info.fontObject = GameFontNormalLeft;
 		info.notCheckable = 1;
 		UIDropDownMenu_AddButton(info);
 
@@ -242,7 +240,7 @@ function GroupLootDropDown_Initialize()
 					-- Add raid group
 					info.isTitle = nil;
 					info.text = GROUP.." "..ceil(i/5);
-					info.textHeight = 12;
+					info.fontObject = GameFontNormalLeft;
 					info.hasArrow = 1;
 					info.notCheckable = 1;
 					info.value = j;
@@ -259,7 +257,7 @@ function GroupLootDropDown_Initialize()
 			if ( candidate ) then
 				-- Add candidate button
 				info.text = candidate;
-				info.textHeight = 12;
+				info.fontObject = GameFontNormalLeft;
 				info.value = i;
 				info.notCheckable = 1;
 				info.value = i;
@@ -270,14 +268,14 @@ function GroupLootDropDown_Initialize()
 	end
 end
 
-function GroupLootDropDown_GiveLoot()
+function GroupLootDropDown_GiveLoot(self)
 	if ( LootFrame.selectedQuality >= MASTER_LOOT_THREHOLD ) then
-		local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName..FONT_COLOR_CODE_CLOSE, this:GetText());
+		local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName..FONT_COLOR_CODE_CLOSE, self:GetText());
 		if ( dialog ) then
-			dialog.data = this.value;
+			dialog.data = self.value;
 		end
 	else
-		GiveMasterLoot(LootFrame.selectedSlot, this.value);
+		GiveMasterLoot(LootFrame.selectedSlot, self.value);
 	end
 	CloseDropDownMenus();
 end
@@ -296,39 +294,41 @@ function GroupLootFrame_OpenNewFrame(id, rollTime)
 	end
 end
 
-function GroupLootFrame_OnShow()
-	local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(this.rollID);
+function GroupLootFrame_OnShow(self)
+	local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(self.rollID);
 	
 	if ( bindOnPickUp ) then
-		this:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border", tile = true, tileSize = 32, edgeSize = 32, insets = { left = 11, right = 12, top = 12, bottom = 11 } } );
-		getglobal(this:GetName().."Corner"):SetTexture("Interface\\DialogFrame\\UI-DialogBox-Gold-Corner");
-		getglobal(this:GetName().."Decoration"):Show();
+		self:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border", tile = true, tileSize = 32, edgeSize = 32, insets = { left = 11, right = 12, top = 12, bottom = 11 } } );
+		getglobal(self:GetName().."Corner"):SetTexture("Interface\\DialogFrame\\UI-DialogBox-Gold-Corner");
+		getglobal(self:GetName().."Decoration"):Show();
 	else 
-		this:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", tile = true, tileSize = 32, edgeSize = 32, insets = { left = 11, right = 12, top = 12, bottom = 11 } } );
-		getglobal(this:GetName().."Corner"):SetTexture("Interface\\DialogFrame\\UI-DialogBox-Corner");
-		getglobal(this:GetName().."Decoration"):Hide();
+		self:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", tile = true, tileSize = 32, edgeSize = 32, insets = { left = 11, right = 12, top = 12, bottom = 11 } } );
+		getglobal(self:GetName().."Corner"):SetTexture("Interface\\DialogFrame\\UI-DialogBox-Corner");
+		getglobal(self:GetName().."Decoration"):Hide();
 	end
 	
-	getglobal("GroupLootFrame"..this:GetID().."IconFrameIcon"):SetTexture(texture);
-	getglobal("GroupLootFrame"..this:GetID().."Name"):SetText(name);
+	local id = self:GetID();
+	getglobal("GroupLootFrame"..id.."IconFrameIcon"):SetTexture(texture);
+	getglobal("GroupLootFrame"..id.."Name"):SetText(name);
 	local color = ITEM_QUALITY_COLORS[quality];
-	getglobal("GroupLootFrame"..this:GetID().."Name"):SetVertexColor(color.r, color.g, color.b);
+	getglobal("GroupLootFrame"..id.."Name"):SetVertexColor(color.r, color.g, color.b);
 end
 
-function GroupLootFrame_OnEvent()
+function GroupLootFrame_OnEvent(self, event, ...)
 	if ( event == "CANCEL_LOOT_ROLL" ) then
-		if ( arg1 == this.rollID ) then
-			this:Hide();
-			StaticPopup_Hide("CONFIRM_LOOT_ROLL", this.rollID);
+		local arg1 = ...;
+		if ( arg1 == self.rollID ) then
+			self:Hide();
+			StaticPopup_Hide("CONFIRM_LOOT_ROLL", self.rollID);
 		end
 	end
 end
 
-function GroupLootFrame_OnUpdate()
-	local left = GetLootRollTimeLeft(this:GetParent().rollID);
-	local min, max = this:GetMinMaxValues();
+function GroupLootFrame_OnUpdate(self, elapsed)
+	local left = GetLootRollTimeLeft(self:GetParent().rollID);
+	local min, max = self:GetMinMaxValues();
 	if ( (left < min) or (left > max) ) then
 		left = min;
 	end
-	this:SetValue(left);
+	self:SetValue(left);
 end

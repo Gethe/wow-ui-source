@@ -12,42 +12,51 @@ function PlayerTalentFrame_Toggle()
 end
 
 
-function PlayerTalentFrameTalent_OnClick()
+function PlayerTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local link = GetTalentLink(PanelTemplates_GetSelectedTab(PlayerTalentFrame), this:GetID());
+		local link = GetTalentLink(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.pet);
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end
 	else
-		LearnTalent(PanelTemplates_GetSelectedTab(PlayerTalentFrame), this:GetID());
+		LearnTalent(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(), PlayerTalentFrame.pet);
 	end
 end
 
-function PlayerTalentFrameTalent_OnEvent()
-	if ( GameTooltip:IsOwned(this) ) then
-		GameTooltip:SetTalent(PlayerTalentFrame.currentSelectedTab, this:GetID(), PlayerTalentFrame.inspect);
+function PlayerTalentFrameTalent_OnEvent(self, event, ...)
+	if ( GameTooltip:IsOwned(self) ) then
+		GameTooltip:SetTalent(PlayerTalentFrame.currentSelectedTab, self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.pet);
 	end
 end
 
-function PlayerTalentFrameTalent_OnEnter()
-	GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-	GameTooltip:SetTalent(PlayerTalentFrame.currentSelectedTab, this:GetID(), PlayerTalentFrame.inspect);
+function PlayerTalentFrameTalent_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetTalent(PlayerTalentFrame.currentSelectedTab, self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.pet);
 end
 
 function PlayerTalentFrame_Update()
 	-- Setup Tabs
-	local numTabs = GetNumTalentTabs(PlayerTalentFrame.inspect);
+	local hasUI, isHunterPet = HasPetUI();
+	if ( isHunterPet ) then
+		PlayerTalentFrameType1:Show()
+		PlayerTalentFrameType2:Show()
+	else
+		PlayerTalentFrameType1:Hide()
+		PlayerTalentFrameType2:Hide()
+	end
+		
+	local numTabs = GetNumTalentTabs(PlayerTalentFrame.inspect, PlayerTalentFrame.pet);
 	for i=1, MAX_TALENT_TABS do
 		tab = getglobal("PlayerTalentFrameTab"..i);
 		if ( i <= numTabs ) then
-			local name, iconTexture, pointsSpent = GetTalentTabInfo(i, PlayerTalentFrame.inspect);
+			local name, iconTexture, pointsSpent = GetTalentTabInfo(i, PlayerTalentFrame.inspect, PlayerTalentFrame.pet);
 			if ( i == PanelTemplates_GetSelectedTab(PlayerTalentFrame) ) then
 				-- If tab is the selected tab set the points spent info
 				getglobal("PlayerTalentFrameSpentPoints"):SetText(format(MASTERY_POINTS_SPENT, name).." "..HIGHLIGHT_FONT_COLOR_CODE..pointsSpent..FONT_COLOR_CODE_CLOSE);
 				PlayerTalentFrame.pointsSpent = pointsSpent;
 			end
 			tab:SetText(name);
-			PanelTemplates_TabResize(10, tab);
+			PanelTemplates_TabResize(tab, 10);
 			tab:Show();
 		else
 			tab:Hide();
@@ -63,15 +72,18 @@ function PlayerTalentFrame_Update()
 end
 
 
-function PlayerTalentFrame_OnLoad()
+function PlayerTalentFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(PlayerTalentFrame, 3);
 	PanelTemplates_SetTab(PlayerTalentFrame, 1);
-	this:RegisterEvent("CHARACTER_POINTS_CHANGED");
-	this:RegisterEvent("SPELLS_CHANGED");
-	this:RegisterEvent("UNIT_PORTRAIT_UPDATE");
-	this.unit = "player";
-	this.inspect = false;
-	this.updateFunction = PlayerTalentFrame_Update;
+	self:RegisterEvent("CHARACTER_POINTS_CHANGED");
+	self:RegisterEvent("PET_TALENT_POINTS_CHANGED");
+	self:RegisterEvent("SPELLS_CHANGED");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("UNIT_PET");
+	self.unit = "player";
+	self.inspect = false;
+	self.pet = false;
+	self.updateFunction = PlayerTalentFrame_Update;
 
 	TalentFrame_Load(PlayerTalentFrame);
 
@@ -83,6 +95,18 @@ function PlayerTalentFrame_OnLoad()
 			button.talentButton_OnEnter = PlayerTalentFrameTalent_OnEnter;
 		end
 	end
+	
+	PlayerTalentFrameType1.tooltip = PLAYER;
+	PlayerTalentFrameType2.tooltip = PET;
+	--PlayerTalentFrameType1:SetNormalTexture("Interface\\Icons\\Ability_Hunter_BeastWithin");
+	--PlayerTalentFrameType2:SetNormalTexture("Interface\\Icons\\Ability_Druid_FerociousBite");
+	SetPortraitTexture(PlayerTalentFrameType1:GetNormalTexture(),"player");
+	SetPortraitTexture(PlayerTalentFrameType2:GetNormalTexture(),"pet");
+	PlayerTalentFrameType1:SetChecked(true);
+	
+	PlayerTalentFrame.playertab = 1;
+	
+	
 end
 
 function  PlayerTalentFrame_OnShow()
@@ -111,29 +135,60 @@ function  PlayerTalentFrame_OnHide()
 	UIFrameFlashStop(PlayerTalentFrameScrollButtonOverlay);
 end
 
-function PlayerTalentFrame_OnEvent()
-	if ( (event == "CHARACTER_POINTS_CHANGED") or (event == "SPELLS_CHANGED") ) then
+function PlayerTalentFrame_OnEvent(self, event, ...)
+	if ( (event == "CHARACTER_POINTS_CHANGED") or (event == "SPELLS_CHANGED") or (event == "PET_TALENT_POINTS_CHANGED")) then
 		TalentFrame_Update(PlayerTalentFrame);
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		local arg1 = ...;
 		if ( arg1 == "player" ) then
 			SetPortraitTexture(PlayerTalentFramePortrait, "player");
+			SetPortraitTexture(PlayerTalentFrameType1:GetNormalTexture(),"player");
+		elseif ( arg1 == "pet" ) then
+			SetPortraitTexture(PlayerTalentFrameType2:GetNormalTexture(),"pet");
+		end
+	elseif ( event == "UNIT_PET" ) then
+		local arg1 = ...;
+		if ( arg1 == "player" ) then
+			PlayerTalentFrameType_OnClick(PlayerTalentFrameType1);
+			PlayerTalentFrame_Update();
+			TalentFrame_Update(self);
 		end
 	end
 end
 
-function PlayerTalentFrameDownArrow_OnClick()
-	local parent = this:GetParent();
+function PlayerTalentFrameDownArrow_OnClick(self, button)
+	local parent = self:GetParent();
 	parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
 	PlaySound("UChatScrollButton");
 	UIFrameFlashStop(PlayerTalentFrameScrollButtonOverlay);
 end
 
 
-function TalentFrameTab_OnClick()
-	PanelTemplates_SetTab(PlayerTalentFrame, this:GetID());
+function TalentFrameTab_OnClick(self)
+	PanelTemplates_SetTab(PlayerTalentFrame, self:GetID());
 	TalentFrame_Update(PlayerTalentFrame);
 	for i=1, MAX_TALENT_TABS do
 		SetButtonPulse(getglobal("PlayerTalentFrameTab"..i), 0, 0);
 	end
 	PlaySound("igCharacterInfoTab");
+end
+
+function PlayerTalentFrameType_OnClick(self)
+	local name=self:GetName()
+	PlayerTalentFrameType1:SetChecked(false)
+	PlayerTalentFrameType2:SetChecked(false)
+	self:SetChecked(1)
+	if ( name == "PlayerTalentFrameType1" ) then
+		PlayerTalentFrame.pet = false;
+		PlayerTalentFrame.unit = "player";
+		PanelTemplates_SetTab(PlayerTalentFrame,PlayerTalentFrame.playertab)
+	elseif ( name == "PlayerTalentFrameType2" ) then
+		PlayerTalentFrame.pet = true;
+		PlayerTalentFrame.unit = "pet";
+		PlayerTalentFrame.playertab = PanelTemplates_GetSelectedTab(PlayerTalentFrame)
+		PanelTemplates_SetTab(PlayerTalentFrame, 1)
+	end
+	
+	PlayerTalentFrame_Update()
+	TalentFrame_Update(self:GetParent())
 end

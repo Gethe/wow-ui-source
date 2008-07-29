@@ -16,15 +16,15 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(this);
-				GameTooltip:SetText(GetQuestLogTitle(GetQuestIndexForTimer(this:GetID())), 1.0, 1.0, 1.0);
+				GameTooltip:SetOwner(self);
+				GameTooltip:SetText(GetQuestLogTitle(GetQuestIndexForTimer(self:GetID())), 1.0, 1.0, 1.0);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				QuestTimerButton_OnClick();
+				QuestTimerButton_OnClick(self, button);
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -304,13 +304,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				QuestTimerFrame_OnLoad();
+				QuestTimerFrame_OnLoad(self);
 			</OnLoad>
 			<OnUpdate>
-				QuestTimerFrame_OnUpdate();
+				QuestTimerFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnEvent>
-				QuestTimerFrame_OnEvent();
+				QuestTimerFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
 				QuestTimerFrame_OnShow();

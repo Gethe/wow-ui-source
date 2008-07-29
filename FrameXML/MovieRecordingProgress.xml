@@ -94,7 +94,7 @@
 						MacOptionsCancelFrame:Show();
 					</OnClick>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(MOVIE_RECORDING_COMPRESSING_CANCEL_NEWBIE_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, MOVIE_RECORDING_COMPRESSING_CANCEL_TOOLTIP, 1);
+						GameTooltip_AddNewbieTip(self, MOVIE_RECORDING_COMPRESSING_CANCEL_NEWBIE_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, MOVIE_RECORDING_COMPRESSING_CANCEL_TOOLTIP, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -107,22 +107,22 @@
 		</Frames>
 		<Scripts>
 			<OnEnter>
-				GameTooltip_AddNewbieTip(MovieRecording_GetMovieFullPath());
+				GameTooltip_AddNewbieTip(self, MovieRecording_GetMovieFullPath());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnLoad>
-				this:RegisterEvent("MOVIE_COMPRESSING_PROGRESS");
+				self:RegisterEvent("MOVIE_COMPRESSING_PROGRESS");
 			</OnLoad>
 			<OnEvent>
 				if ( event == "MOVIE_COMPRESSING_PROGRESS" ) then
-					MovieRecordingProgress_OnUpdate();
-					this:Show();
+					MovieRecordingProgress_OnUpdate(self, elapsed);
+					self:Show();
 				end
 			</OnEvent>
 			<OnUpdate>
-				MovieRecordingProgress_OnUpdate();
+				MovieRecordingProgress_OnUpdate(self, elapsed);
 			</OnUpdate>
 			
 		</Scripts>

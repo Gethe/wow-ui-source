@@ -14,49 +14,51 @@ function InspectFrame_Show(unit)
 	end
 end
 
-function InspectFrame_OnLoad()
-	this:RegisterEvent("PLAYER_TARGET_CHANGED");
-	this:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	this:RegisterEvent("UNIT_NAME_UPDATE");
-	this:RegisterEvent("UNIT_PORTRAIT_UPDATE");
-	this.unit = nil;
+function InspectFrame_OnLoad(self)
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("UNIT_NAME_UPDATE");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self.unit = nil;
 
 	-- Tab Handling code
-	PanelTemplates_SetNumTabs(this, 3);
-	PanelTemplates_SetTab(this, 1);
+	PanelTemplates_SetNumTabs(self, 3);
+	PanelTemplates_SetTab(self, 1);
 end
 
-function InspectFrame_OnEvent(event)
-	if ( not this:IsShown() ) then
+function InspectFrame_OnEvent(self, event, ...)
+	if ( not self:IsShown() ) then
 		return;
 	end
 	if ( event == "PLAYER_TARGET_CHANGED" or event == "PARTY_MEMBERS_CHANGED" ) then
-		if ( (event == "PLAYER_TARGET_CHANGED" and this.unit == "target") or
-		     (event == "PARTY_MEMBERS_CHANGED" and this.unit ~= "target") ) then
-			if ( CanInspect(this.unit) ) then
-				InspectFrame_UnitChanged();
+		if ( (event == "PLAYER_TARGET_CHANGED" and self.unit == "target") or
+		     (event == "PARTY_MEMBERS_CHANGED" and self.unit ~= "target") ) then
+			if ( CanInspect(self.unit) ) then
+				InspectFrame_UnitChanged(self);
 			else
 				HideUIPanel(InspectFrame);
 			end
 		end
 		return;
 	elseif ( event == "UNIT_NAME_UPDATE" ) then
-		if ( arg1 == this.unit ) then
+		local arg1 = ...;
+		if ( arg1 == self.unit ) then
 			InspectNameText:SetText(UnitName(arg1));
 		end
 		return;
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
-		if ( arg1 == this.unit ) then
+		local arg1 = ...;
+		if ( arg1 == self.unit ) then
 			SetPortraitTexture(InspectFramePortrait, arg1);
 		end
 		return;
 	end
 end
 
-function InspectFrame_UnitChanged()
-	local unit = this.unit;
+function InspectFrame_UnitChanged(self)
+	local unit = self.unit;
 	NotifyInspect(unit);
-	InspectPaperDollFrame_OnShow();
+	InspectPaperDollFrame_OnShow(self);
 	SetPortraitTexture(InspectFramePortrait, unit);
 	InspectNameText:SetText(UnitName(unit));
 	InspectFrame_UpdateTalentTab();
@@ -65,25 +67,25 @@ function InspectFrame_UnitChanged()
 	end
 end
 
-function InspectFrame_OnShow()
-	if ( not this.unit ) then
+function InspectFrame_OnShow(self)
+	if ( not self.unit ) then
 		return;
 	end
 	PlaySound("igCharacterInfoOpen");	
-	SetPortraitTexture(InspectFramePortrait, this.unit);
-	InspectNameText:SetText(UnitName(this.unit));
+	SetPortraitTexture(InspectFramePortrait, self.unit);
+	InspectNameText:SetText(UnitName(self.unit));
 end
 
-function InspectFrame_OnHide()
-	this.unit = nil;
+function InspectFrame_OnHide(self)
+	self.unit = nil;
 	PlaySound("igCharacterInfoClose");
 
 	-- Clear the player being inspected
 	ClearInspectPlayer();
 end
 
-function InspectFrame_OnUpdate()
-	if ( not UnitIsVisible(this.unit) ) then
+function InspectFrame_OnUpdate(self)
+	if ( not UnitIsVisible(self.unit) ) then
 		HideUIPanel(InspectFrame);
 	end
 end		
@@ -101,9 +103,9 @@ function InspectSwitchTabs(newID)
 	end
 end
 
-function InspectFrameTab_OnClick()
+function InspectFrameTab_OnClick(self)
 	PlaySound("igCharacterInfoTab");
-	InspectSwitchTabs(this:GetID());
+	InspectSwitchTabs(self:GetID());
 end
 
 function InspectFrame_UpdateTalentTab()

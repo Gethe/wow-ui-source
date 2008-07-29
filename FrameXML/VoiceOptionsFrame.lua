@@ -31,9 +31,9 @@ VoiceOptionsFrameMicrophoneList = {
 PUSH_TO_TALK_BUTTON = "";
 PUSH_TO_TALK_MODIFIER = "";
 
-function VoiceOptionsFrame_Init()
-	this:RegisterEvent("CVAR_UPDATE");
-	this:RegisterEvent("SOUND_DEVICE_UPDATE");
+function VoiceOptionsFrame_OnLoad(self)
+	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("SOUND_DEVICE_UPDATE");
 end
 
 function VoiceOptionsFrame_OnEvent(self, event, ...)
@@ -54,13 +54,13 @@ function VoiceOptionsFrame_OnEvent(self, event, ...)
 	end
 end
 
-function VoiceOptionsFrame_OnShow()
+function VoiceOptionsFrame_OnShow(self)
 	AudioOptionsFrame_Load();
 	VoiceOptionsFrame_Update();
 	VoiceOptionsFrameType_Update();
 end
 
-function VoiceOptionsFrame_OnUpdate(elapsed)
+function VoiceOptionsFrame_OnUpdate(self, elapsed)
 	local fade = VoiceOptionsFrameBindingOutput.fade;
 	if ( fade ) then
 		if ( fade < 0 ) then
@@ -204,19 +204,19 @@ function VoiceOptionsFrame_Load()
 	VoiceOptionsFrameType1KeyBindingButtonText:SetWidth(135);
 	VoiceOptionsFrameType1KeyBindingButtonText:SetHeight(13);
 
-	VoiceOptionsFrameTypeDropDown_Load();
-	VoiceOptionsFrameOutputDeviceDropDown_Load();
-	VoiceOptionsFrameInputDeviceDropDown_Load();
+	VoiceOptionsFrameTypeDropDown_OnLoad(VoiceOptionsFrameTypeDropDown);
+	VoiceOptionsFrameOutputDeviceDropDown_OnLoad(VoiceOptionsFrameOutputDeviceDropDown);
+	VoiceOptionsFrameInputDeviceDropDown_OnLoad(VoiceOptionsFrameInputDeviceDropDown);
 end
 
-function VoiceOptionsFrameCheckButton_OnClick()
-	if ( this:GetChecked() ) then
+function VoiceOptionsFrameCheckButton_OnClick(self)
+	if ( self:GetChecked() ) then
 		checked = "1";
 	else
 		checked = "0";
 	end
 	for index, value in pairs(VoiceOptionsFrameCheckButtons) do
-		if ( value.index == this:GetID() ) then
+		if ( value.index == self:GetID() ) then
 			if ( value.cvar ) then
 				SetCVar(value.cvar, checked);
 			else
@@ -224,32 +224,31 @@ function VoiceOptionsFrameCheckButton_OnClick()
 			end
 		end
 	end
-	if ( this:GetChecked() ) then
+	if ( self:GetChecked() ) then
 		PlaySound("igMainMenuOptionCheckBoxOff");
 	else
 		PlaySound("igMainMenuOptionCheckBoxOn");
 	end
 end
 
-function VoiceOptionsFrameSlider_OnValueChanged()
-	local valueText = getglobal(this:GetName().."Value");
+function VoiceOptionsFrameSlider_OnValueChanged(self, value)
+	local valueText = getglobal(self:GetName().."Value");
 	-- need to scale the value down to between 0 and 1
-	local val;
 	local valueCVar;
 	
-	for index, value in pairs(VoiceOptionsFrameSliders) do
-		if ( value.index == this:GetID() ) then
-			if ( value.cvar == "VoiceActivationSensitivity" ) then
-				valueCVar = 1 - this:GetValue();
+	for index, slider in pairs(VoiceOptionsFrameSliders) do
+		if ( slider.index == self:GetID() ) then
+			if ( slider.cvar == "VoiceActivationSensitivity" ) then
+				valueCVar = 1 - value;
 			else
-				valueCVar = this:GetValue();
+				valueCVar = value;
 			end
 			if ( valueText ) then
-				val = ceil(valueCVar * 100); 
-				valueText:SetText(tostring(val).."%");
+				value = ceil(valueCVar * 100); 
+				valueText:SetText(tostring(value).."%");
 			end
-			SetCVar(value.cvar, valueCVar);
-			value.previousValue = valueCVar;
+			SetCVar(slider.cvar, valueCVar);
+			slider.previousValue = valueCVar;
 		end
 	end
 end
@@ -271,7 +270,7 @@ function VoiceOptionsFrame_Cancel()
 
 	SetCVar("VoiceChatMode", VoiceOptionsFrameTypeDropDown.initialValue);
 	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameTypeDropDown, VoiceOptionsFrameTypeDropDown.initialValue);
-	UIDropDownMenu_SetText(VoiceOptionsFrameTypeDropDown.initialText, VoiceOptionsFrameTypeDropDown);
+	UIDropDownMenu_SetText(VoiceOptionsFrameTypeDropDown, VoiceOptionsFrameTypeDropDown.initialText);
 
 	if ( VoiceOptionsFrameInputDeviceDropDown.initialValue ) then
 		SetCVar("Sound_VoiceChatInputDriverIndex", VoiceOptionsFrameInputDeviceDropDown.initialValue);
@@ -279,7 +278,7 @@ function VoiceOptionsFrame_Cancel()
 			VoiceSelectCaptureDevice(VoiceEnumerateCaptureDevices(VoiceOptionsFrameInputDeviceDropDown.initialValue));
 		end
 		UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameInputDeviceDropDown, VoiceOptionsFrameInputDeviceDropDown.initialValue, 1);
-		UIDropDownMenu_SetText(VoiceOptionsFrameInputDeviceDropDown.initialText, VoiceOptionsFrameInputDeviceDropDown);
+		UIDropDownMenu_SetText(VoiceOptionsFrameInputDeviceDropDown, VoiceOptionsFrameInputDeviceDropDown.initialText);
 		VoiceOptionsFrameInputDeviceDropDown.initialValue = nil;
 	end
 
@@ -289,7 +288,7 @@ function VoiceOptionsFrame_Cancel()
 			VoiceSelectOutputDevice(VoiceEnumerateOutputDevices(VoiceOptionsFrameOutputDeviceDropDown.initialValue));
 		end
 		UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameOutputDeviceDropDown, VoiceOptionsFrameOutputDeviceDropDown.initialValue, 1);
-		UIDropDownMenu_SetText(VoiceOptionsFrameOutputDeviceDropDown.initialText, VoiceOptionsFrameOutputDeviceDropDown);
+		UIDropDownMenu_SetText(VoiceOptionsFrameOutputDeviceDropDown, VoiceOptionsFrameOutputDeviceDropDown.initialText);
 		VoiceOptionsFrameOutputDeviceDropDown.initialValue = nil;
 	end
 end
@@ -300,26 +299,26 @@ function VoiceOptionsFrame_Okay()
 end
 
 
-function VoiceChatOptionsFrameBindingButton_OnShow()
+function VoiceChatOptionsFrameBindingButton_OnShow(self)
 	PUSH_TO_TALK_BUTTON = GetCVar("PushToTalkButton");
 	local bindingText = GetBindingText(PUSH_TO_TALK_BUTTON, "KEY_");
 	VoiceOptionsFrameType1KeyBindingButtonHiddenText:SetText(bindingText);
-	this:SetText(bindingText);
+	self:SetText(bindingText);
 end
 
-function VoiceChatOptionsFrameBindingButton_OnClick(button)
+function VoiceChatOptionsFrameBindingButton_OnClick(self, button)
 	if ( button == "UNKNOWN" ) then
 		return;
 	end
 	if ( not IsShiftKeyDown() and not IsControlKeyDown() and not IsAltKeyDown() ) then
 		if ( button == "LeftButton" or button == "RightButton" ) then
-			if ( this.buttonPressed ) then
-				this:UnlockHighlight();
-				this.buttonPressed = nil;
+			if ( self.buttonPressed ) then
+				self:UnlockHighlight();
+				self.buttonPressed = nil;
 				VoiceOptionsFrameBindingOutputText:SetText("");
 			else
-				this:LockHighlight();
-				this.buttonPressed = 1;
+				self:LockHighlight();
+				self.buttonPressed = 1;
 				VoiceOptionsFrameBindingOutputText:SetText(CAN_BIND_PTT);
 			end
 			VoiceOptionsFrameBindingOutput:SetAlpha(1.0)
@@ -331,15 +330,15 @@ function VoiceChatOptionsFrameBindingButton_OnClick(button)
 		end
 	end
 
-	if ( this.buttonPressed ) then
+	if ( self.buttonPressed ) then
 		if ( PUSH_TO_TALK_BUTTON ~= "" ) then
 			VoiceOptionsFrameBindingOutputText:SetText(ERROR_CANNOT_BIND);
 			VoiceOptionsFrameBindingOutput:SetAlpha(1.0);
 			VoiceOptionsFrameBindingOutput.fade = 6;
 			VoiceOptionsFrameBindingOutputText:SetVertexColor(1, 1, 1);
 			VoiceOptionsFrameBindingOutputText:SetText("");
-			this:UnlockHighlight();
-			this.buttonPressed = nil;
+			self:UnlockHighlight();
+			self.buttonPressed = nil;
 			return;
 		end
 
@@ -348,22 +347,22 @@ function VoiceChatOptionsFrameBindingButton_OnClick(button)
 		else
 			PUSH_TO_TALK_BUTTON = PUSH_TO_TALK_MODIFIER.."-"..button;
 		end
-		VoiceChatOptionsFrameBindingButton_BindButton();
+		VoiceChatOptionsFrameBindingButton_BindButton(self);
 	end
 end
 
-function VoiceChatOptionsFrameBindingButton_BindButton()
+function VoiceChatOptionsFrameBindingButton_BindButton(self)
 	if ( PUSH_TO_TALK_BUTTON == "" and PUSH_TO_TALK_MODIFIER ~= "" ) then
 		PUSH_TO_TALK_BUTTON = PUSH_TO_TALK_MODIFIER;
 	end
 	if ( PUSH_TO_TALK_BUTTON ~= "" ) then
 		SetCVar("PushToTalkButton", PUSH_TO_TALK_BUTTON);
 		local bindingText = GetBindingText(PUSH_TO_TALK_BUTTON, "KEY_");
-		this:SetText(bindingText);
+		self:SetText(bindingText);
 		VoiceOptionsFrameType1KeyBindingButtonHiddenText:SetText(bindingText);
 
-		this:UnlockHighlight();
-		this.buttonPressed = nil;
+		self:UnlockHighlight();
+		self.buttonPressed = nil;
 
 		local currentbinding = GetBindingByKey(PUSH_TO_TALK_BUTTON);
 		if ( currentbinding ) then
@@ -374,20 +373,20 @@ function VoiceChatOptionsFrameBindingButton_BindButton()
 		VoiceOptionsFrameBindingOutput:SetAlpha(1.0);
 		VoiceOptionsFrameBindingOutput.fade = VOICE_OPTIONS_BINDING_FADE;
 	end
-	VoiceChatOptionsFrameBindingButton_SetTooltip();
-	if ( GameTooltip:GetOwner() == this ) then
-		VoiceChatOptionsFrameBindingButton_OnEnter();
+	VoiceChatOptionsFrameBindingButton_SetTooltip(self);
+	if ( GameTooltip:GetOwner() == self ) then
+		VoiceChatOptionsFrameBindingButton_OnEnter(self);
 	end
 end
 
-function VoiceChatOptionsFrameBindingButton_OnKeyUp(button)
-	if ( this.buttonPressed ) then
-		VoiceChatOptionsFrameBindingButton_BindButton();
+function VoiceChatOptionsFrameBindingButton_OnKeyUp(self, button)
+	if ( self.buttonPressed ) then
+		VoiceChatOptionsFrameBindingButton_BindButton(self);
 	end
 end
 
-function VoiceChatOptionsFrameBindingButton_OnKeyDown(button)
-	if ( not this.buttonPressed and button == "ESCAPE" ) then
+function VoiceChatOptionsFrameBindingButton_OnKeyDown(self, button)
+	if ( not self.buttonPressed and button == "ESCAPE" ) then
 		PlaySound("gsTitleOptionExit");
 		VoiceOptionsFrame_Cancel();
 		SoundOptionsFrame_Cancel();
@@ -395,11 +394,11 @@ function VoiceChatOptionsFrameBindingButton_OnKeyDown(button)
 		VoiceOptionsFrameBindingOutput.fade = nil;
 		HideUIPanel(AudioOptionsFrame);
 	else
-		if ( GetBindingFromClick(arg1) == "SCREENSHOT" ) then
+		if ( GetBindingFromClick(button) == "SCREENSHOT" ) then
 			RunBinding("SCREENSHOT");
 			return;
 		end
-		if ( this.buttonPressed ) then
+		if ( self.buttonPressed ) then
 			if ( button == "UNKNOWN" ) then
 				return;
 			end
@@ -415,8 +414,8 @@ function VoiceChatOptionsFrameBindingButton_OnKeyDown(button)
 				VoiceOptionsFrameBindingOutputText:SetText(ERROR_CANNOT_BIND);
 				VoiceOptionsFrameBindingOutput:SetAlpha(1.0);
 				VoiceOptionsFrameBindingOutput.fade = 6;
-				this:UnlockHighlight();
-				this.buttonPressed = nil;
+				self:UnlockHighlight();
+				self.buttonPressed = nil;
 				return;
 			end
 
@@ -429,47 +428,47 @@ function VoiceChatOptionsFrameBindingButton_OnKeyDown(button)
 	end
 end
 
-function VoiceChatOptionsFrameBindingButton_SetTooltip()
+function VoiceChatOptionsFrameBindingButton_SetTooltip(self)
 	local textWidth = VoiceOptionsFrameType1KeyBindingButtonHiddenText:GetWidth();	
 	if ( textWidth > 135) then
-		this.tooltip = VoiceOptionsFrameType1KeyBindingButtonHiddenText:GetText();
+		self.tooltip = VoiceOptionsFrameType1KeyBindingButtonHiddenText:GetText();
 	else
-		this.tooltip = nil;
+		self.tooltip = nil;
 	end
 end
 
-function VoiceChatOptionsFrameBindingButton_OnEnter()
-	if ( this.tooltip ) then
-		GameTooltip:SetOwner(this);
-		GameTooltip:SetText(this.tooltip);
+function VoiceChatOptionsFrameBindingButton_OnEnter(self)
+	if ( self.tooltip ) then
+		GameTooltip:SetOwner(self);
+		GameTooltip:SetText(self.tooltip);
 		GameTooltip:Show();
 	end
 end
 
 -- Voice Chat Type DropDown
-function VoiceOptionsFrameTypeDropDown_Load()
-	UIDropDownMenu_Initialize(VoiceOptionsFrameTypeDropDown, VoiceOptionsFrameTypeDropDown_Initialize);
+function VoiceOptionsFrameTypeDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, VoiceOptionsFrameTypeDropDown_Initialize);
 
 	local voiceChatMode = GetCVar("VoiceChatMode");
-	VoiceOptionsFrameTypeDropDown.initialValue = voiceChatMode;
-	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameTypeDropDown, voiceChatMode);
+	self.initialValue = voiceChatMode;
+	UIDropDownMenu_SetSelectedValue(self, voiceChatMode);
 
-	VoiceOptionsFrameTypeDropDown.initialText = UIDropDownMenu_GetText(VoiceOptionsFrameTypeDropDown);
+	self.initialText = UIDropDownMenu_GetText(self);
 
-	VoiceOptionsFrameTypeDropDown.tooltip = getglobal("OPTION_TOOLTIP_VOICE_TYPE"..(voiceChatMode+1));
-	UIDropDownMenu_SetWidth(140, VoiceOptionsFrameTypeDropDown);
+	self.tooltip = getglobal("OPTION_TOOLTIP_VOICE_TYPE"..(voiceChatMode+1));
+	UIDropDownMenu_SetWidth(self, 140);
 end
 
-function VoiceOptionsFrameTypeDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameTypeDropDown, this.value);
-	VoiceOptionsFrameTypeDropDown.tooltip = getglobal("OPTION_TOOLTIP_VOICE_TYPE"..(this.value+1));
-	SetCVar("VoiceChatMode", this.value);
+function VoiceOptionsFrameTypeDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameTypeDropDown, self.value);
+	VoiceOptionsFrameTypeDropDown.tooltip = getglobal("OPTION_TOOLTIP_VOICE_TYPE"..(self.value+1));
+	SetCVar("VoiceChatMode", self.value);
 	VoiceOptionsFrameType_Update();
 	SetSelfMuteState();
 end
 
-function VoiceOptionsFrameTypeDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(VoiceOptionsFrameTypeDropDown);
+function VoiceOptionsFrameTypeDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
 
 	info.text = PUSH_TO_TALK;
@@ -497,11 +496,6 @@ function VoiceOptionsFrameTypeDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function out(text)
-	 DEFAULT_CHAT_FRAME:AddMessage(text)
-	 UIErrorsFrame:AddMessage(text, 1.0, 1.0, 0, 1, 10) 
-end
-
 --Run on SOUND_DEVICE_UPDATE
 function VoiceOptionsFrame_RefreshSoundDevices ()
 	VoiceOptionsFrame_Update();
@@ -524,7 +518,7 @@ function VoiceOptionsFrame_RefreshSoundDevices ()
 			deviceName = VoiceEnumerateCaptureDevices(index);
 			if ( deviceName == currentDevice ) then
 				UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameInputDeviceDropDown, index);
-				UIDropDownMenu_SetText(deviceName, VoiceOptionsFrameInputDeviceDropDown);
+				UIDropDownMenu_SetText(VoiceOptionsFrameInputDeviceDropDown, deviceName);
 				if ( currentValue == initialValue ) then
 					VoiceOptionsFrameInputDeviceDropDown.initialValue = index;
 				end
@@ -536,7 +530,7 @@ function VoiceOptionsFrame_RefreshSoundDevices ()
 		--Default to system default!
 		if ( not found ) then
 			UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameInputDeviceDropDown, 0);
-			UIDropDownMenu_SetText(VoiceEnumerateCaptureDevices(0), VoiceOptionsFrameInputDeviceDropDown);
+			UIDropDownMenu_SetText(VoiceOptionsFrameInputDeviceDropDown, VoiceEnumerateCaptureDevices(0));
 			VoiceOptionsFrameInputDeviceDropDown.initialValue = 0;
 			VoiceOptionsFrame_SetInputDevice(0);
 		end
@@ -555,7 +549,7 @@ function VoiceOptionsFrame_RefreshSoundDevices ()
 			deviceName = Sound_ChatSystem_GetOutputDriverNameByIndex(index);
 			if ( deviceName == currentDevice ) then
 				UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameOutputDeviceDropDown, index);
-				UIDropDownMenu_SetText(deviceName, VoiceOptionsFrameOutputDeviceDropDown);
+				UIDropDownMenu_SetText(VoiceOptionsFrameOutputDeviceDropDown, deviceName);
 				if ( currentValue == initialValue ) then
 					VoiceOptionsFrameOutputDeviceDropDown.initialValue = index;
 				end
@@ -567,7 +561,7 @@ function VoiceOptionsFrame_RefreshSoundDevices ()
 		
 		if ( not found ) then
 			UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameOutputDeviceDropDown, 0);
-			UIDropDownMenu_SetText(VoiceEnumerateOutputDevices(0), VoiceOptionsFrameOutputDeviceDropDown);
+			UIDropDownMenu_SetText(VoiceOptionsFrameOutputDeviceDropDown, VoiceEnumerateOutputDevices(0));
 			VoiceOptionsFrameOutputDeviceDropDown.initialValue = 0;
 			VoiceOptionsFrame_SetOutputDevice(0);
 		end
@@ -575,24 +569,24 @@ function VoiceOptionsFrame_RefreshSoundDevices ()
 end
 
 -- Input Device DropDown
-function VoiceOptionsFrameInputDeviceDropDown_Load()
-	UIDropDownMenu_Initialize(VoiceOptionsFrameInputDeviceDropDown, VoiceOptionsFrameInputDeviceDropDown_Initialize);
-	UIDropDownMenu_SetWidth(140, VoiceOptionsFrameInputDeviceDropDown);
+function VoiceOptionsFrameInputDeviceDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, VoiceOptionsFrameInputDeviceDropDown_Initialize);
+	UIDropDownMenu_SetWidth(self, 140);
 
 	local selectedInputDriverIndex = GetCVar("Sound_VoiceChatInputDriverIndex");
-	VoiceOptionsFrameInputDeviceDropDown.initialValue = selectedInputDriverIndex;
+	self.initialValue = selectedInputDriverIndex;
 	local deviceName = VoiceEnumerateCaptureDevices(selectedInputDriverIndex);
-	VoiceOptionsFrameInputDeviceDropDown.initialText = deviceName;
-	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameInputDeviceDropDown, deviceName, 1);
-	UIDropDownMenu_SetText(deviceName, VoiceOptionsFrameInputDeviceDropDown);
+	self.initialText = deviceName;
+	UIDropDownMenu_SetSelectedValue(self, deviceName, 1);
+	UIDropDownMenu_SetText(self, deviceName);
 end
 
-function VoiceOptionsFrameInputDeviceDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameInputDeviceDropDown, this.value);
-	VoiceOptionsFrame_SetInputDevice(this.value);
+function VoiceOptionsFrameInputDeviceDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameInputDeviceDropDown, self.value);
+	VoiceOptionsFrame_SetInputDevice(self.value);
 end
 
-function VoiceOptionsFrameInputDeviceDropDown_Initialize()
+function VoiceOptionsFrameInputDeviceDropDown_Initialize(self)
 	local selectedInputDriverIndex = GetCVar("Sound_VoiceChatInputDriverIndex");
 	local num = Sound_ChatSystem_GetNumInputDrivers();
 	local info = UIDropDownMenu_CreateInfo();
@@ -609,25 +603,25 @@ function VoiceOptionsFrameInputDeviceDropDown_Initialize()
 		UIDropDownMenu_AddButton(info);
 	end
 	
-	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameInputDeviceDropDown, tonumber(selectedInputDriverIndex));
+	UIDropDownMenu_SetSelectedValue(self, tonumber(selectedInputDriverIndex));
 end
 
 -- Output Device DropDown
-function VoiceOptionsFrameOutputDeviceDropDown_Load()
+function VoiceOptionsFrameOutputDeviceDropDown_OnLoad(self)
 	--local selectedValue = VoiceEnumerateOutputDevices(VoiceGetCurrentOutputDevice());
 	local selectedOutputDriverIndex = GetCVar("Sound_VoiceChatOutputDriverIndex");
-	VoiceOptionsFrameOutputDeviceDropDown.initialValue = selectedOutputDriverIndex;
+	self.initialValue = selectedOutputDriverIndex;
 	local deviceName = VoiceEnumerateOutputDevices(selectedOutputDriverIndex);
-	VoiceOptionsFrameOutputDeviceDropDown.initialText = deviceName;
-	UIDropDownMenu_Initialize(VoiceOptionsFrameOutputDeviceDropDown, VoiceOptionsFrameOutputDeviceDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameOutputDeviceDropDown, deviceName, 1);
-	UIDropDownMenu_SetText(deviceName, VoiceOptionsFrameOutputDeviceDropDown);
-	UIDropDownMenu_SetWidth(140, VoiceOptionsFrameOutputDeviceDropDown);
+	self.initialText = deviceName;
+	UIDropDownMenu_Initialize(self, VoiceOptionsFrameOutputDeviceDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, deviceName, 1);
+	UIDropDownMenu_SetText(self, deviceName);
+	UIDropDownMenu_SetWidth(self, 140);
 end
 
-function VoiceOptionsFrameOutputDeviceDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameOutputDeviceDropDown, this.value);
-	VoiceOptionsFrame_SetOutputDevice(this.value);
+function VoiceOptionsFrameOutputDeviceDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(VoiceOptionsFrameOutputDeviceDropDown, self.value);
+	VoiceOptionsFrame_SetOutputDevice(self.value);
 end
 
 function VoiceOptionsFrameOutputDeviceDropDown_Initialize()
@@ -662,8 +656,8 @@ end
 -- Record Loopback functions
 --
 --==============================
-function UpdateRecordLoopbackButton()
-	if ( this.clicked ) then
+function RecordLoopbackSoundButton_OnUpdate(self)
+	if ( self.clicked ) then
 		if (GetCVar("EnableVoiceChat") == "0" or GetCVar("EnableMicrophone") == "0") then
 			RecordLoopbackSoundButton:Disable();
 			RecordLoopbackSoundButtonTexture:SetVertexColor(0.5, 0.5, 0.5);								
@@ -672,7 +666,7 @@ function UpdateRecordLoopbackButton()
 			if ( isRecording == 0 ) then
 				RecordLoopbackSoundButton:Enable();
 				RecordLoopbackSoundButtonTexture:SetVertexColor(1, 0, 0);	
-				this.clicked = nil;
+				self.clicked = nil;
 			else
 				RecordLoopbackSoundButton:Disable();
 				RecordLoopbackSoundButtonTexture:SetVertexColor(0.5, 0.5, 0.5);								
@@ -687,20 +681,20 @@ end
 --
 --==============================
 
-function LoopbackVUMeter_Init()
-    LoopbackVUMeter:SetMinMaxValues(0, 100);
-	LoopbackVUMeter:SetValue(0);
+function LoopbackVUMeter_OnLoad(self)
+    self:SetMinMaxValues(0, 100);
+	self:SetValue(0);
 end
 
 
-function LoopbackVUMeter_Update()
+function LoopbackVUMeter_OnUpdate(self, elapsed)
     local isRecording = VoiceChat_IsRecordingLoopbackSound();
     local isPlaying = VoiceChat_IsPlayingLoopbackSound();
     if ( isRecording == 0 and isPlaying == 0 ) then
-        LoopbackVUMeter:SetValue(0);
+        self:SetValue(0);
     else
         local volume = VoiceChat_GetCurrentMicrophoneSignalLevel();
-        LoopbackVUMeter:SetValue(volume);
+        self:SetValue(volume);
     end
 end
 

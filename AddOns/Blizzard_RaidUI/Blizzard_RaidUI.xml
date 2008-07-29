@@ -52,16 +52,16 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				RaidClassButton_OnLoad();
+				RaidClassButton_OnLoad(self);
 			</OnLoad>
 			<OnDragStart>
-				RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(this.fileName, this.class));
+				RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.fileName, self.class));
 			</OnDragStart>
 			<OnDragStop>
 				RaidPulloutStopMoving();
 			</OnDragStop>
 			<OnEnter>
-				RaidClassButton_OnEnter();
+				RaidClassButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -92,8 +92,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 1);
-				RaidGroupButton_OnLoad(this:GetParent());
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				RaidGroupButton_OnLoad(self:GetParent());
 			</OnLoad>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -166,11 +166,11 @@
 				</Layers>-->
 				<Scripts>
 					<OnEnter>
-						local rank = this:GetParent().rank;
-						local voice = this:GetParent().voice;
+						local rank = self:GetParent().rank;
+						local voice = self:GetParent().voice;
 						-- Sets the Leader/Assistant Tooltip
 						if ( rank ) then
-							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 							if ( rank == 2 ) then
 								GameTooltip:SetText(RAID_LEADER, nil, nil, nil, nil, 1);
 							elseif ( rank == 1 ) then
@@ -196,10 +196,10 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						local role = this:GetParent().role;
+						local role = self:GetParent().role;
 						-- Sets the Main Tank/Assist Tooltip
 						if ( role ) then
-							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 							if ( role == "MAINTANK" ) then
 								GameTooltip:SetText(MAIN_TANK, nil, nil, nil, nil, 1);
 							elseif ( role == "MAINASSIST" ) then
@@ -225,8 +225,8 @@
 				<Scripts>
 					<OnEnter>
 						-- Sets the Master Looter Tooltip
-						if ( this:GetParent().loot ) then
-							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+						if ( self:GetParent().loot ) then
+							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 							GameTooltip:SetText(MASTER_LOOTER, nil, nil, nil, nil, 1);
 						else
 							GameTooltip:Hide();
@@ -245,19 +245,19 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel() + 2);
+						self:SetFrameLevel(self:GetFrameLevel() + 2);
 					</OnLoad>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 1);
-				RaidGroupButton_OnLoad(this);
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				RaidGroupButton_OnLoad(self);
 			</OnLoad>
 			<OnClick>
 				if ( button == "RightButton" ) then
-					RaidGroupButton_ShowMenu();
+					RaidGroupButton_ShowMenu(self);
 				else
 					SecureUnitButton_OnClick(self, button);
 				end
@@ -265,29 +265,29 @@
 			<OnDragStart>
 				if ( IsRaidLeader() or IsRaidOfficer() ) then
 					if ( IsShiftKeyDown() ) then
-						this.keypressed = "1";
-						RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(this.name, nil));
+						self.keypressed = "1";
+						RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.name, nil));
 					else
-						RaidGroupButton_OnDragStart(this);
-						this.keypressed = nil;
+						RaidGroupButton_OnDragStart(self);
+						self.keypressed = nil;
 					end
 				else
-					RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(this.name, nil));
+					RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.name, nil));
 				end
 			</OnDragStart>
 			<OnDragStop>
 				if ( IsRaidLeader() or IsRaidOfficer() ) then
-					if ( this.keypressed ) then
+					if ( self.keypressed ) then
 						RaidPulloutStopMoving();
 					else
-						RaidGroupButton_OnDragStop(this);
+						RaidGroupButton_OnDragStop(self);
 					end
 				else
 					RaidPulloutStopMoving();
 				end
 			</OnDragStop>
 			<OnEnter>
-				RaidGroupButton_OnEnter(this);
+				RaidGroupButton_OnEnter(self);
 				if ( MouseIsOver(RaidFrame) ) then
 					GameTooltip:AddLine("\n");
 					if ( IsRaidLeader() or IsRaidOfficer() ) then
@@ -361,10 +361,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForDrag("LeftButton");
+						self:RegisterForDrag("LeftButton");
 					</OnLoad>
 					<OnDragStart>
-						RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(this:GetParent():GetID()));
+						RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self:GetParent():GetID()));
 					</OnDragStart>
 					<OnDragStop>
 						RaidPulloutStopMoving();
@@ -424,7 +424,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				getglobal(this:GetName().."Label"):SetText(GROUP.." "..this:GetID());
+				getglobal(self:GetName().."Label"):SetText(GROUP.." "..self:GetID());
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -434,21 +434,31 @@
 		</Size>
 		<Scripts>
 			<OnLoad>
-				getglobal(this:GetName().."Border"):SetWidth(13);
-				getglobal(this:GetName().."Border"):SetHeight(13);
+				getglobal(self:GetName().."Border"):SetWidth(13);
+				getglobal(self:GetName().."Border"):SetHeight(13);
 			</OnLoad>
 			<OnEnter>
-				if ( this:GetCenter() > GetScreenWidth()/2 ) then
-					GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				if ( self:GetCenter() > GetScreenWidth()/2 ) then
+					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 				else
-					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				end
 
-				if ( this:GetParent():GetParent().showBuffs ) then
-					GameTooltip:SetUnitBuff(this:GetParent().unit, this:GetID(), GetCVarBool("showCastableBuffs"));
+				local filter;
+				if ( self:GetParent():GetParent().showBuffs ) then
+					if ( GetCVarBool("showCastableBuffs") ) then
+						filter = "HELPFUL|RAID";
+					else
+						filter = "HELPFUL";
+					end
 				else
-					GameTooltip:SetUnitDebuff(this:GetParent().unit, this:GetID(), GetCVarBool("showDispelDebuffs"));
+					if ( GetCVarBool("showDispelDebuffs") ) then
+						filter = "HARMFUL|RAID";
+					else
+						filter = "HARMFUL";
+					end
 				end
+				GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), filter);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -509,8 +519,8 @@
 				</Layers>
 				<Scripts>
 					<OnValueChanged>
-						if ( UnitIsConnected(this.unit) ) then
-							UnitFrameHealthBar_OnValueChanged(arg1);
+						if ( UnitIsConnected(self.unit) ) then
+							UnitFrameHealthBar_OnValueChanged(self, value);
 						end
 					</OnValueChanged>
 				</Scripts>
@@ -591,13 +601,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()+2);
+						self:SetFrameLevel(self:GetFrameLevel()+2);
 					</OnLoad>
 					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(arg1);
+						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 					<OnMouseUp>
-						TargetUnit(this:GetParent().unit.."target");
+						TargetUnit(self:GetParent().unit.."target");
 					</OnMouseUp> 
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -639,13 +649,13 @@
 				</Backdrop>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel()-1);
-						this:SetBackdropBorderColor(0.5, 0.5, 0.5);
-						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-						this:SetAlpha(0.7);
+						self:SetFrameLevel(self:GetFrameLevel()-1);
+						self:SetBackdropBorderColor(0.5, 0.5, 0.5);
+						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+						self:SetAlpha(0.7);
 					</OnLoad>
 					<OnMouseUp>
-						TargetUnit(this:GetParent().unit.."targettarget");
+						TargetUnit(self:GetParent().unit.."targettarget");
 					</OnMouseUp> 
 				</Scripts>
 			</Frame>
@@ -694,17 +704,17 @@
 						</Layers>
 						<Scripts>
 							<OnMouseUp>
-								TargetUnit(this:GetParent():GetParent().unit.."targettarget");
+								TargetUnit(self:GetParent():GetParent().unit.."targettarget");
 							</OnMouseUp> 
 						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
 					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(arg1);
+						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 					<OnMouseUp>
-						TargetUnit(this:GetParent().unit.."targettarget");
+						TargetUnit(self:GetParent().unit.."targettarget");
 					</OnMouseUp> 
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -712,10 +722,10 @@
 			<Button name="$parentClearButton" setAllPoints="true" inherits="SecureUnitButtonTemplate">
 				<Scripts>
 					<OnLoad>
-						RaidPulloutButton_OnLoad();
+						RaidPulloutButton_OnLoad(self);
 					</OnLoad>
 					<OnEnter>
-						RaidGroupButton_OnEnter(this:GetParent());
+						RaidGroupButton_OnEnter(self:GetParent());
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -735,7 +745,7 @@
 				</Anchors>
 				<Scripts>
 					<OnUpdate>
-						VoiceChat_OnUpdate(arg1);
+						VoiceChat_OnUpdate(self, elapsed);
 					</OnUpdate>
 				</Scripts>
 			</Button>
@@ -752,7 +762,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this:SetFrameLevel(this:GetFrameLevel() + 2);
+						self:SetFrameLevel(self:GetFrameLevel() + 2);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -795,14 +805,14 @@
 		</Frames>
 		<Scripts>
 			<OnEvent>
-				RaidPulloutButton_OnEvent();
+				RaidPulloutButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnLoad>
-				this.healthBar = getglobal(this:GetName().."HealthBar");
-				this.manaBar = getglobal(this:GetName().."ManaBar");
-				this.nameLabel = getglobal(this:GetName().."Name");
-				this.clearButton = getglobal(this:GetName().."ClearButton");
-				this.speaker = getglobal(this:GetName().."Speaker");
+				self.healthBar = getglobal(self:GetName().."HealthBar");
+				self.manaBar = getglobal(self:GetName().."ManaBar");
+				self.nameLabel = getglobal(self:GetName().."Name");
+				self.clearButton = getglobal(self:GetName().."ClearButton");
+				self.speaker = getglobal(self:GetName().."Speaker");
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -841,7 +851,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						RaidPulloutDropDown_OnLoad();
+						RaidPulloutDropDown_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -859,9 +869,9 @@
 				</Backdrop>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropBorderColor(0.5, 0.5, 0.5);
-						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-						this:SetAlpha(0.7);
+						self:SetBackdropBorderColor(0.5, 0.5, 0.5);
+						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+						self:SetAlpha(0.7);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -871,35 +881,35 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("RAID_ROSTER_UPDATE");
-				this:RegisterEvent("UNIT_PET");
-				this:RegisterEvent("UNIT_NAME_UPDATE");
-				this:RegisterEvent("READY_CHECK");
-				this:RegisterEvent("READY_CHECK_CONFIRM");
-				this:RegisterEvent("READY_CHECK_FINISHED");
-				this:RegisterForDrag("LeftButton");
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				this.label = getglobal(this:GetName() .. "Name");
-				this.buttons = {};
+				self:RegisterEvent("RAID_ROSTER_UPDATE");
+				self:RegisterEvent("UNIT_PET");
+				self:RegisterEvent("UNIT_NAME_UPDATE");
+				self:RegisterEvent("READY_CHECK");
+				self:RegisterEvent("READY_CHECK_CONFIRM");
+				self:RegisterEvent("READY_CHECK_FINISHED");
+				self:RegisterForDrag("LeftButton");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self.label = getglobal(self:GetName() .. "Name");
+				self.buttons = {};
 			</OnLoad>
 			<OnEvent>
-				RaidPullout_OnEvent();
+				RaidPullout_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnDragStart>
-				this:SetFrameStrata("DIALOG");
-				this:StartMoving();
+				self:SetFrameStrata("DIALOG");
+				self:StartMoving();
 			</OnDragStart>
 			<OnDragStop>
-				RaidPulloutStopMoving(this);
+				RaidPulloutStopMoving(self);
 			</OnDragStop>
 			<OnClick>
-				if (arg1 == "RightButton") then
-					ToggleDropDownMenu(1, nil, getglobal(this:GetName().."DropDown"));
+				if (button == "RightButton") then
+					ToggleDropDownMenu(1, nil, getglobal(self:GetName().."DropDown"));
 				end
 			</OnClick>
 			<OnMouseUp>
-				this:StopMovingOrSizing();
-				this:SetFrameStrata("BACKGROUND");
+				self:StopMovingOrSizing();
+				self:SetFrameStrata("BACKGROUND");
 			</OnMouseUp> 
 			<OnHide>
 			</OnHide>
@@ -1180,6 +1190,6 @@
 	<Button name="RaidGroupButton40" inherits="RaidGroupButtonTemplate" id="40"/>
 	<!-- This must be after all of the raid pullout stuff! -->
 	<Script>
-		RaidGroupFrame_OnLoad();
+		RaidGroupFrame_OnLoad(self);
 	</Script>
 </Ui>

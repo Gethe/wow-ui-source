@@ -32,27 +32,27 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				this.hasItem = 1;
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self.hasItem = 1;
 			</OnLoad>
 			<OnEnter>
-				LootItem_OnEnter();
+				LootItem_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 				ResetCursor();
             </OnLeave>
 			<OnUpdate>
-				if ( GameTooltip:IsOwned(this) ) then
-					LootItem_OnEnter();
+				if ( GameTooltip:IsOwned(self) ) then
+					LootItem_OnEnter(self);
 				end
-				CursorOnUpdate();
+				CursorOnUpdate(self);
 			</OnUpdate>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetLootSlotLink(this.slot));
+					HandleModifiedItemClick(GetLootSlotLink(self.slot));
 				else
-					LootButton_OnClick(arg1);
+					LootButton_OnClick(self, button);
 				end
 			</OnClick>
 		</Scripts>
@@ -220,13 +220,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				LootFrame_OnLoad();
+				LootFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				LootFrame_OnEvent(event);
+				LootFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				LootFrame_OnShow();
+				LootFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
 				LootFrame_OnHide();
@@ -239,7 +239,7 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				GroupLootDropDown_OnLoad();
+				GroupLootDropDown_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -339,26 +339,26 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this.hasItem = 1;
+						self.hasItem = 1;
 					</OnLoad>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-						GameTooltip:SetLootRollItem(this:GetParent().rollID);
-						CursorUpdate();
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetLootRollItem(self:GetParent().rollID);
+						CursorUpdate(self);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 						ResetCursor();
 					</OnLeave>
 					<OnUpdate>
-						if ( GameTooltip:IsOwned(this) ) then
-							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
-							GameTooltip:SetLootRollItem(this:GetParent().rollID);
+						if ( GameTooltip:IsOwned(self) ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetLootRollItem(self:GetParent().rollID);
 						end
-						CursorOnUpdate();
+						CursorOnUpdate(self);
 					</OnUpdate>
 					<OnClick>
-						HandleModifiedItemClick(GetLootRollItemLink(this:GetParent().rollID));
+						HandleModifiedItemClick(GetLootRollItemLink(self:GetParent().rollID));
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -372,10 +372,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						RollOnLoot(this:GetParent().rollID, 0);
+						RollOnLoot(self:GetParent().rollID, 0);
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(PASS);
 					</OnEnter>
 					<OnLeave>
@@ -396,10 +396,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						RollOnLoot(this:GetParent().rollID, 1);
+						RollOnLoot(self:GetParent().rollID, 1);
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(NEED);
 					</OnEnter>
 					<OnLeave>
@@ -423,10 +423,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						RollOnLoot(this:GetParent().rollID, 2);
+						RollOnLoot(self:GetParent().rollID, 2);
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(GREED);
 					</OnEnter>
 					<OnLeave>
@@ -466,7 +466,7 @@
 				</Layers>
 				<Scripts>
 					<OnUpdate>
-						GroupLootFrame_OnUpdate();
+						GroupLootFrame_OnUpdate(self, elapsed);
 					</OnUpdate>
 				</Scripts>
 				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
@@ -486,13 +486,13 @@
 		</Backdrop>
 		<Scripts>
 			<OnLoad>
-				this:RegisterEvent("CANCEL_LOOT_ROLL");
+				self:RegisterEvent("CANCEL_LOOT_ROLL");
 			</OnLoad>
 			<OnShow>
-				GroupLootFrame_OnShow();
+				GroupLootFrame_OnShow(self);
 			</OnShow>
 			<OnEvent>
-				GroupLootFrame_OnEvent();
+				GroupLootFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Frame>

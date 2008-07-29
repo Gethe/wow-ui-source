@@ -369,7 +369,7 @@
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self);
 						MoneyFrame_SetType(self, "AUCTION");
-						SetMoneyFrameColor(self:GetName(), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+						SetMoneyFrameColor(self:GetName(), "yellow")
 					</OnLoad>
 				</Scripts>
 			</Frame>

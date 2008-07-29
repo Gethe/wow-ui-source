@@ -120,7 +120,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_SetDefaultAnchor(GameTooltip, this);
+						GameTooltip_SetDefaultAnchor(GameTooltip, self);
 						GameTooltip:SetText(HONOR_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1);
 						GameTooltip:Show();
@@ -177,7 +177,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GameTooltip_SetDefaultAnchor(GameTooltip, this);
+						GameTooltip_SetDefaultAnchor(GameTooltip, self);
 						GameTooltip:SetText(ARENA_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(TOOLTIP_ARENA_POINTS, nil, nil, nil, 1);
 						GameTooltip:Show();
@@ -476,13 +476,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				InspectPVPFrame_OnLoad();
+				InspectPVPFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				InspectPVPFrame_OnShow();
 			</OnShow>
 			<OnEvent>
-				InspectPVPFrame_OnEvent(arg1);
+				InspectPVPFrame_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Frame>

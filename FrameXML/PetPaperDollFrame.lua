@@ -18,7 +18,6 @@ function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_RANGED_ATTACK_POWER");
 	self:RegisterEvent("UNIT_DEFENSE");
 	self:RegisterEvent("UNIT_ATTACK");
-	self:RegisterEvent("UNIT_PET_TRAINING_POINTS");
 	PetDamageFrameLabel:SetText(DAMAGE_COLON);
 	PetAttackPowerFrameLabel:SetText(ATTACK_POWER_COLON);
 	PetArmorFrameLabel:SetText(ARMOR_COLON);
@@ -70,7 +69,6 @@ function PetPaperDollFrame_Update()
 	if ( UnitCreatureFamily("pet") ) then
 		PetLevelText:SetText(format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..UnitCreatureFamily("pet"));
 	end
-	PetLoyaltyText:SetText(GetPetLoyalty());
 	PetExpBar_Update();
 	PetPaperDollFrame_SetResistances();
 	PetPaperDollFrame_SetStats();
@@ -81,14 +79,8 @@ function PetPaperDollFrame_Update()
 
 	if ( canGainXP ) then
 		PetPaperDollPetInfo:Show();
-		local totalPoints, spent = GetPetTrainingPoints();
-		PetTrainingPointText:SetText(totalPoints - spent);
-		PetTrainingPointText:Show();
-		PetTrainingPointLabel:Show();
 	else
 		PetPaperDollPetInfo:Hide();
-		PetTrainingPointText:Hide();
-		PetTrainingPointLabel:Hide();
 	end
 end
 
@@ -210,7 +202,7 @@ function PetPaperDollFrame_SetStats()
 end
 
 function PetPaperDollFrame_SetSpellBonusDamage()
-	local unitClass = UnitClass("player");
+	local temp, unitClass = UnitClass("player");
 	unitClass = strupper(unitClass);
 	local spellDamageBonus = 0;
 	if( unitClass == "WARLOCK" ) then

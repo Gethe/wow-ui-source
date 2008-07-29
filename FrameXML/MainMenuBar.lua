@@ -5,15 +5,55 @@ function MainMenuExpBar_Update()
 	MainMenuExpBar:SetValue(currXP);
 end
 
-function ExhaustionTick_OnLoad()
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("PLAYER_XP_UPDATE");
-	this:RegisterEvent("UPDATE_EXHAUSTION");
-	this:RegisterEvent("PLAYER_LEVEL_UP");
-	this:RegisterEvent("PLAYER_UPDATE_RESTING");
+function MainMenuBar_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+	self:RegisterEvent("KNOWN_CURRENCY_TYPES_UPDATE");
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:RegisterEvent("ADDON_LOADED");
+	MainMenuBarPageNumber:SetText(GetActionBarPage());
 end
 
-function ExhaustionTick_Update()
+function MainMenuBar_OnEvent(self, event, ...)
+	local arg1, arg2 = ...;
+	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
+		MainMenuBarPageNumber:SetText(GetActionBarPage());
+	elseif ( event == "KNOWN_CURRENCY_TYPES_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" ) then
+		if ( not GetCVarBool("showTokenFrame") ) then
+			-- Show Tutorial and show the token frame button somehow
+			--FIX ME!!!! when we know how to access the token frame
+			SetCVar("showTokenFrame", 1);
+		end
+		TokenFrame_LoadUI();
+		TokenFrame_Update();
+		BackpackTokenFrame_Update();
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		MainMenuBar_UpdateKeyRing();
+		if ( GetCVarBool("showTokenFrame") ) then
+			TokenFrame_LoadUI();
+		end
+	elseif ( event == "BAG_UPDATE" ) then
+		if ( not GetCVarBool("showKeyring") ) then
+			if ( HasKey() ) then
+				-- Show Tutorial and flash keyring
+				SetButtonPulse(KeyRingButton, 60, 1);
+				SetCVar("showKeyring", 1);
+			end
+			MainMenuBar_UpdateKeyRing();
+		end
+	end
+end
+
+function ExhaustionTick_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_XP_UPDATE");
+	self:RegisterEvent("UPDATE_EXHAUSTION");
+	self:RegisterEvent("PLAYER_LEVEL_UP");
+	self:RegisterEvent("PLAYER_UPDATE_RESTING");
+end
+
+function ExhaustionTick_OnEvent(self, event, ...)
 	if ((event == "PLAYER_ENTERING_WORLD") or (event == "PLAYER_XP_UPDATE") or (event == "UPDATE_EXHAUSTION") or (event == "PLAYER_LEVEL_UP")) then
 		local playerCurrXP = UnitXP("player");
 		local playerMaxXP = UnitXPMax("player");
@@ -158,13 +198,13 @@ function ExhaustionToolTipText()
 ]]
 end
 
-function ExhaustionTick_OnUpdate(elapsed)
-	if ( ExhaustionTick.timer ) then
-		if ( ExhaustionTick.timer < 0 ) then
+function ExhaustionTick_OnUpdate(self, elapsed)
+	if ( self.timer ) then
+		if ( self.timer < 0 ) then
 			ExhaustionToolTipText();
-			ExhaustionTick.timer = nil;
+			self.timer = nil;
 		else
-			ExhaustionTick.timer = ExhaustionTick.timer - elapsed;
+			self.timer = self.timer - elapsed;
 		end
 	end
 end
@@ -177,7 +217,6 @@ function MainMenuBar_UpdateKeyRing()
 		MainMenuBarTexture3:SetTexCoord(0, 1, 0.1640625, 0.5);
 		MainMenuBarTexture2:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-KeyRing");
 		MainMenuBarTexture2:SetTexCoord(0, 1, 0.6640625, 1);
-		MainMenuBarPerformanceBarFrame:SetPoint("BOTTOMRIGHT", MainMenuBar, "BOTTOMRIGHT", -235, -10);
 		KeyRingButton:Show();
 	end
 end
@@ -190,16 +229,19 @@ for i=1, NUM_ADDONS_TO_DISPLAY do
 	topAddOns[i] = { value = 0, name = "" };
 end
 
-function MainMenuBarPerformanceBarFrame_OnEnter()
+function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	local string = "";
 	local i=0; j=0; k=0;
 
-	GameTooltip_SetDefaultAnchor(GameTooltip, this);
+	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	
+	GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
 
 	-- latency
 	local bandwidthIn, bandwidthOut, latency = GetNetStats();
 	string = format(MAINMENUBAR_LATENCY_LABEL, latency);
-	GameTooltip:SetText(string, 1.0, 1.0, 1.0);
+	GameTooltip:AddLine("\n");
+	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
 	if ( SHOW_NEWBIE_TIPS == "1" ) then
 		GameTooltip:AddLine(NEWBIE_TOOLTIP_LATENCY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 	end

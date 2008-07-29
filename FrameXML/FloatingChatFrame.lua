@@ -23,18 +23,18 @@ CHAT_FRAME_TEXTURES = {
 	"ResizeRightTexture"
 }
 
-function FloatingChatFrame_OnLoad()
-	FCF_SetTabPosition(this, 0);
-	FloatingChatFrame_Update(this:GetID());
+function FloatingChatFrame_OnLoad(self)
+	FCF_SetTabPosition(self, 0);
+	FloatingChatFrame_Update(self:GetID());
 	if ( ChatFrameEditBox ) then
-		this.editBox = ChatFrameEditBox;
+		self.editBox = ChatFrameEditBox;
 	end
 end
 
-function FloatingChatFrame_OnEvent(event)
+function FloatingChatFrame_OnEvent(self, event, ...)
 	if ( (event == "UPDATE_CHAT_WINDOWS") or (event == "UPDATE_FLOATING_CHAT_WINDOWS") ) then
-		FloatingChatFrame_Update(this:GetID(), 1);
-		this.isInitialized = 1;
+		FloatingChatFrame_Update(self:GetID(), 1);
+		self.isInitialized = 1;
 	end
 end
 
@@ -77,13 +77,13 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 end
 
 -- Channel Dropdown
-function FCFOptionsDropDown_OnLoad()
-	UIDropDownMenu_Initialize(this, FCFOptionsDropDown_Initialize, "MENU");
-	UIDropDownMenu_SetButtonWidth(50);
-	UIDropDownMenu_SetWidth(50);
+function FCFOptionsDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, FCFOptionsDropDown_Initialize, "MENU");
+	UIDropDownMenu_SetButtonWidth(self, 50);
+	UIDropDownMenu_SetWidth(self, 50);
 end
 
-function FCFOptionsDropDown_Initialize()
+function FCFOptionsDropDown_Initialize(dropDown)
 	-- Window preferences
 	local name, fontSize, r, g, b, a, shown = GetChatWindowInfo(FCF_GetCurrentChatFrameID());
 	local info;
@@ -114,7 +114,7 @@ function FCFOptionsDropDown_Initialize()
 	end
 	-- Window options
 	info = UIDropDownMenu_CreateInfo();
-	if ( FCF_GetCurrentChatFrame() and FCF_GetCurrentChatFrame().isLocked ) then
+	if ( FCF_GetCurrentChatFrame(dropDown) and FCF_GetCurrentChatFrame().isLocked ) then
 		info.text = UNLOCK_WINDOW;
 	else
 		info.text = LOCK_WINDOW;
@@ -148,11 +148,11 @@ function FCFOptionsDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 
 	-- Close current chat window
-	if ( shown and (FCF_GetCurrentChatFrame() ~= DEFAULT_CHAT_FRAME) ) then
+	if ( shown and (FCF_GetCurrentChatFrame(dropDown) ~= DEFAULT_CHAT_FRAME) ) then
 		info = UIDropDownMenu_CreateInfo();
 		info.text = CLOSE_CHAT_WINDOW;
 		info.func = FCF_Close;
-		info.arg1 = FCF_GetCurrentChatFrame();
+		info.arg1 = FCF_GetCurrentChatFrame(dropDown);
 		info.notCheckable = 1;
 		UIDropDownMenu_AddButton(info);
 	end
@@ -390,19 +390,19 @@ function FCF_LoadChatSubTypes(chatGroup)
 	end
 end
 
-function FCFMessageTypeDropDown_OnClick()
+function FCFMessageTypeDropDown_OnClick(self)
 	if ( UIDropDownMenuButton_GetChecked() ) then
-		ChatFrame_RemoveMessageGroup(FCF_GetCurrentChatFrame(), this.value);
+		ChatFrame_RemoveMessageGroup(FCF_GetCurrentChatFrame(), self.value);
 	else
-		ChatFrame_AddMessageGroup(FCF_GetCurrentChatFrame(), this.value);
+		ChatFrame_AddMessageGroup(FCF_GetCurrentChatFrame(), self.value);
 	end
 end
 
-function FCF_Resize(anchorPoint)
+function FCF_Resize(self, anchorPoint)
 	if ( FCF_Get_ChatLocked() ) then
 		return;
 	end
-	local chatFrame = this:GetParent();
+	local chatFrame = self:GetParent();
 	if ( chatFrame.isLocked) then
 		return;
 	end
@@ -410,15 +410,15 @@ function FCF_Resize(anchorPoint)
 		return;
 	end
 	chatFrame.resizing = 1;
-	this:GetParent():StartSizing(anchorPoint);
+	self:GetParent():StartSizing(anchorPoint);
 end
 
-function FCF_StopResize()
-	this:GetParent():StopMovingOrSizing();
-	if ( this:GetParent() == DEFAULT_CHAT_FRAME ) then
+function FCF_StopResize(self)
+	self:GetParent():StopMovingOrSizing();
+	if ( self:GetParent() == DEFAULT_CHAT_FRAME ) then
 		FCF_DockUpdate();
 	end
-	this:GetParent().resizing = nil;
+	self:GetParent().resizing = nil;
 end
 
 function FCF_OpenNewWindow(name)
@@ -511,7 +511,7 @@ function FCF_SetWindowName(frame, name, doNotSave)
 	frame.name = name;
 	local tab = getglobal(frame:GetName().."Tab");
 	tab:SetText(name);
-	PanelTemplates_TabResize(10, tab);
+	PanelTemplates_TabResize(tab, 10);
 	-- Save this off so we know how big the tab should always be, even if it gets shrunken on the dock.
 	tab.textWidth = getglobal(tab:GetName().."Text"):GetWidth();
 	if ( not doNotSave ) then
@@ -545,13 +545,13 @@ function FCF_GetCurrentChatFrameID()
 	return UIDropDownMenu_GetCurrentDropDown():GetParent():GetID();
 end
 
-function FCF_GetCurrentChatFrame()
+function FCF_GetCurrentChatFrame(child)
 	if ( not UIDropDownMenu_GetCurrentDropDown():GetParent() ) then
 		return;
 	end
 	local currentChatFrame = getglobal("ChatFrame"..UIDropDownMenu_GetCurrentDropDown():GetParent():GetID());
-	if ( not currentChatFrame ) then
-		currentChatFrame = getglobal("ChatFrame"..this:GetParent():GetID());
+	if ( not currentChatFrame and child ) then
+		currentChatFrame = getglobal("ChatFrame"..child:GetParent():GetID());
 	end
 	return currentChatFrame;
 end
@@ -572,12 +572,12 @@ function FCF_SetChatWindowOpacity()
 	FCF_SetWindowAlpha(FCF_GetCurrentChatFrame(), alpha);
 end
 
-function FCF_SetChatWindowFontSize(chatFrame, fontSize)
+function FCF_SetChatWindowFontSize(self, chatFrame, fontSize)
 	if ( not chatFrame ) then
 		chatFrame = FCF_GetCurrentChatFrame();
 	end
 	if ( not fontSize ) then
-		fontSize = this.value;
+		fontSize = self.value;
 	end
 	local fontFile, unused, fontFlags = chatFrame:GetFont();
 	chatFrame:SetFont(fontFile, fontSize, fontFlags);
@@ -937,7 +937,7 @@ function FCF_DockUpdate()
 		-- We need to use this as an absolute measure of the text's width is altered when the chat dock gets too small
 		-- If the text is shrunken the original width is lost, unless we save it and use it in the following manner
 		-- This is a fix for Bug ID: 71180
-		PanelTemplates_TabResize(5, chatTab, nil, nil, chatTab.textWidth);
+		PanelTemplates_TabResize(chatTab, 5, nil, nil, chatTab.textWidth);
 		if ( value == SELECTED_DOCK_FRAME ) then
 			value:Show();
 			if ( chatTab:IsShown() ) then
@@ -993,7 +993,7 @@ function FCF_DockUpdate()
 				avgWidth = totalWidth / numDockedFrames;
 			else
 				-- Set the tab to the average width
-				PanelTemplates_TabResize(0, chatTab, avgWidth);
+				PanelTemplates_TabResize(chatTab, 0, avgWidth);
 			end
 		end
 
@@ -1042,6 +1042,10 @@ function FCF_DockFrame(frame, index, selected)
 	
 	-- Lock frame
 	FCF_SetLocked(frame, 1);
+	
+	if ( frame == COMBATLOG ) then
+		Blizzard_CombatLog_Update_QuickButtons();
+	end
 end
 
 function FCF_UnDockFrame(frame)
@@ -1086,12 +1090,12 @@ function FCF_SelectDockFrame(frame)
 	FCF_DockUpdate();
 end
 
-function FCF_Tab_OnClick(button)
-	local chatFrame = getglobal("ChatFrame"..this:GetID());
+function FCF_Tab_OnClick(self, button)
+	local chatFrame = getglobal("ChatFrame"..self:GetID());
 	-- If Rightclick bring up the options menu
 	if ( button == "RightButton" ) then
 		chatFrame:StopMovingOrSizing();
-		ToggleDropDownMenu(1, nil, getglobal(this:GetName().."DropDown"), this:GetName(), 0, 0);
+		ToggleDropDownMenu(1, nil, getglobal(self:GetName().."DropDown"), self:GetName(), 0, 0);
 		return;
 	end
 
@@ -1105,7 +1109,7 @@ function FCF_Tab_OnClick(button)
 		return;
 	end
 	-- If frame is not docked then allow the frame to be dragged or dropped
-	if ( this:GetButtonState() == "PUSHED" ) then
+	if ( self:GetButtonState() == "PUSHED" ) then
 		chatFrame:StopMovingOrSizing();
 		local activeDockRegion = FCF_GetActiveDockRegion();
 		if ( activeDockRegion ) then
@@ -1155,7 +1159,10 @@ function FCF_SaveDock()
 	end
 end
 
-function FCF_Close(frame)
+function FCF_Close(frame, fallback)
+    if ( fallback ) then
+        frame=fallback
+    end
 	if ( not frame ) then
 		frame = FCF_GetCurrentChatFrame();
 	end
@@ -1212,9 +1219,9 @@ function FCF_ValidateChatFramePosition(chatFrame)
 end
 
 -- Tab flashing functions
-function FCF_FlashTab()
-	local tabFlash = getglobal(this:GetName().."TabFlash");
-	if ( not this.isDocked or (this == SELECTED_DOCK_FRAME) or UIFrameIsFlashing(tabFlash) ) then
+function FCF_FlashTab(self)
+	local tabFlash = getglobal(self:GetName().."TabFlash");
+	if ( not self.isDocked or (self == SELECTED_DOCK_FRAME) or UIFrameIsFlashing(tabFlash) ) then
 		return;
 	end
 	tabFlash:Show();
@@ -1268,7 +1275,7 @@ function FCF_Set_SimpleChat()
 	ChatFrame1Tab:Hide();
 	FCF_SetButtonSide(ChatFrame1, "left")
 	FCF_SetLocked(ChatFrame1, 1);
-	FCF_SetChatWindowFontSize(ChatFrame1, 14);
+	FCF_SetChatWindowFontSize(nil, ChatFrame1, 14);
 	FCF_SetWindowName(ChatFrame1, GENERAL);
 	FCF_SetWindowAlpha(ChatFrame1, 0);
 
@@ -1279,7 +1286,7 @@ function FCF_Set_SimpleChat()
 	FCF_SetTabPosition(ChatFrame2, 0);
 	ChatFrame2Tab:Hide();
 	FCF_SetLocked(ChatFrame2, 1);
-	FCF_SetChatWindowFontSize(ChatFrame2, 14);
+	FCF_SetChatWindowFontSize(nil, ChatFrame2, 14);
 	FCF_SetWindowName(ChatFrame2, COMBAT_LOG);
 	FCF_SetWindowAlpha(ChatFrame2, 0);
 	ChatFrame2:Show();
@@ -1351,7 +1358,7 @@ function FCF_ResetChatWindows()
 	ChatFrame1:SetHeight(120);
 	ChatFrame1.isInitialized = 0;
 	FCF_SetButtonSide(ChatFrame1, "left")
-	FCF_SetChatWindowFontSize(ChatFrame1, 14);
+	FCF_SetChatWindowFontSize(nil, ChatFrame1, 14);
 	FCF_SetWindowName(ChatFrame1, GENERAL);
 	FCF_SetWindowColor(ChatFrame1, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 	FCF_SetWindowAlpha(ChatFrame1, DEFAULT_CHATFRAME_ALPHA);
@@ -1365,7 +1372,7 @@ function FCF_ResetChatWindows()
 	DEFAULT_CHAT_FRAME.editBox = ChatFrameEditBox;
 	DEFAULT_CHAT_FRAME.chatframe = DEFAULT_CHAT_FRAME;
 
-	FCF_SetChatWindowFontSize(ChatFrame2, 14);
+	FCF_SetChatWindowFontSize(nil, ChatFrame2, 14);
 	FCF_SetWindowName(ChatFrame2, COMBAT_LOG);
 	FCF_SetWindowColor(ChatFrame2, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 	FCF_SetWindowAlpha(ChatFrame2, DEFAULT_CHATFRAME_ALPHA);
@@ -1379,7 +1386,7 @@ function FCF_ResetChatWindows()
 		FCF_SetTabPosition(chatFrame, 0);
 		FCF_Close(chatFrame);
 		FCF_UnDockFrame(chatFrame);
-		FCF_SetChatWindowFontSize(chatFrame, 14);
+		FCF_SetChatWindowFontSize(nil, chatFrame, 14);
 		FCF_SetWindowName(chatFrame, "");
 		FCF_SetWindowColor(chatFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 		FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);

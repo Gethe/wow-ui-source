@@ -16,12 +16,12 @@ TaxiButtonTypes["DISTANT"] = {
 }
 
 
-function TaxiFrame_OnLoad()
-	this:RegisterEvent("TAXIMAP_OPENED");
-	this:RegisterEvent("TAXIMAP_CLOSED");
+function TaxiFrame_OnLoad(self)
+	self:RegisterEvent("TAXIMAP_OPENED");
+	self:RegisterEvent("TAXIMAP_CLOSED");
 end
 
-function TaxiFrame_OnEvent(event)
+function TaxiFrame_OnEvent(self, event, ...)
 	if ( event == "TAXIMAP_OPENED" ) then
 		-- Show the merchant we're dealing with
 		TaxiMerchant:SetText(UnitName("npc"));
@@ -67,14 +67,14 @@ function TaxiFrame_OnEvent(event)
 		end
 
 		-- All set...
-		ShowUIPanel(this);
-		if ( not this:IsShown() ) then
+		ShowUIPanel(self);
+		if ( not self:IsShown() ) then
 			CloseTaxiMap();
 		end
 		return;
 	end
 	if ( event == "TAXIMAP_CLOSED" ) then
-		HideUIPanel(this);
+		HideUIPanel(self);
 		return;
 	end
 end
@@ -93,7 +93,7 @@ function TaxiNodeOnButtonEnter(button)
 	
 	local type = TaxiNodeGetType(index);
 	if ( type == "REACHABLE" ) then
-		SetTooltipMoney(GameTooltip, TaxiNodeCost(this:GetID()));
+		SetTooltipMoney(GameTooltip, TaxiNodeCost(button:GetID()));
 		TaxiNodeSetCurrent(index);
 
 		if ( numRoutes > NUM_TAXI_ROUTES ) then
