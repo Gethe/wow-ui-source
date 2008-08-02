@@ -79,6 +79,8 @@ function GameTooltip_OnLoad(self)
 	self.updateTooltip = TOOLTIP_UPDATE_TIME;
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+	self.statusBar2 = getglobal(self:GetName().."StatusBar2");
+	self.statusBar2Text = getglobal(self:GetName().."StatusBar2Text");
 end
 
 function SetTooltipMoney(frame, money, type, prefixText, suffixText)
@@ -131,11 +133,26 @@ function GameTooltip_ClearMoney(self)
 	self.shownMoneyFrames = nil;
 end
 
+function GameTooltip_ClearStatusBars(self)
+	if ( not self.shownStatusBars ) then
+		return;
+	end
+	local statusBar;
+	for i=1, self.shownStatusBars do
+		statusBar = getglobal(self:GetName().."StatusBar"..i);
+		if ( statusBar ) then
+			statusBar:Hide();
+		end
+	end
+	self.shownStatusBars = 0;
+end
+
 function GameTooltip_OnHide(self)
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	self.default = nil;
 	GameTooltip_ClearMoney(self);
+	GameTooltip_ClearStatusBars(self);
 end
 
 function GameTooltip_OnUpdate(self, elapsed)
@@ -277,4 +294,34 @@ function GameTooltip_ShowCompareItem(shift)
 			ShoppingTooltip2:Show();
 		end
 	end
+end
+
+function GameTooltip_ShowStatusBar(self, min, max, value, text)
+	self:AddLine(" ", 1.0, 1.0, 1.0);
+	local numLines = self:NumLines();
+	if ( not self.numStatusBars ) then
+		self.numStatusBars = 0;
+	end
+	if ( not self.shownStatusBars ) then
+		self.shownStatusBars = 0;
+	end
+	local index = self.shownStatusBars+1;
+	local name = self:GetName().."StatusBar"..index;
+	local statusBar = getglobal(name);
+	if ( not statusBar ) then
+		self.numStatusBars = self.numStatusBars+1;
+		statusBar = CreateFrame("StatusBar", name, self, "TooltipStatusBarTemplate");
+	end
+	if ( not text ) then
+		text = "";
+	end
+	getglobal(name.."Text"):SetText(text);
+	statusBar:SetMinMaxValues(min, max);
+	statusBar:SetValue(value);
+	statusBar:Show();
+	statusBar:SetPoint("LEFT", self:GetName().."TextLeft"..numLines, "LEFT", 0, -2);
+	statusBar:SetPoint("RIGHT", self, "RIGHT", -9, 0);
+	statusBar:Show();
+	self.shownStatusBars = index;
+	self:SetMinimumWidth(140);
 end

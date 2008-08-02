@@ -207,6 +207,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GUILDBANKFRAME_OPENED");
 	self:RegisterEvent("GUILDBANKFRAME_CLOSED");
 
+	-- Events for Achievements!
+	self:RegisterEvent("ACHIEVEMENT_EARNED");
+	
 	RegisterForSave("MISTER_SPARKLE");
 end
 
@@ -302,6 +305,16 @@ function ShowMacroFrame()
 	if ( MacroFrame_Show ) then
 		MacroFrame_Show();
 	end
+end
+
+function InspectAchievements (unit)
+	AchievementFrame_LoadUI();
+	AchievementFrame_DisplayComparison(unit);
+end
+
+function ToggleAchievementFrame(stats)
+	AchievementFrame_LoadUI();
+	AchievementFrame_ToggleAchievementFrame(stats);
 end
 
 function ToggleTalentFrame()
@@ -904,6 +917,14 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	end
 	
+	-- Events for achievement handling
+	if ( event == "ACHIEVEMENT_EARNED" ) then
+		if ( not AchievementFrame ) then
+			AchievementFrame_LoadUI();
+		end
+		self:UnregisterEvent(event);
+	end
+	
 	-- Display instance reset info
 	if ( event == "RAID_INSTANCE_WELCOME" ) then
 		local message = format(RAID_INSTANCE_WELCOME, arg1, SecondsToTime(arg2, nil, 1));
@@ -1012,7 +1033,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["ChatFrame1"] = {baseY = true, yOffset = 20, bottomLeft = actionBarOffset-20, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 20, bottomRight = actionBarOffset-20, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 24};
+	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 22};
 	
 	-- Vars
 	["CONTAINER_OFFSET_X"] = {baseX = 0, rightLeft = 2*actionBarOffset+3, rightRight = actionBarOffset+3, isVar = "xAxis"};
@@ -2495,7 +2516,7 @@ function ToggleGameMenu()
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then
-	elseif ( ClearTarget() ) then
+	elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
 	else
 		PlaySound("igMainMenuOpen");
 		ShowUIPanel(GameMenuFrame);

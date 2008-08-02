@@ -305,19 +305,22 @@ function ScrollFrame_OnScrollRangeChanged(self, scrollrange)
 	end
 end
 
-function ScrollingEdit_OnTextChanged(scrollFrame)
-	-- This doesn't do anything?
+function ScrollingEdit_OnTextChanged(self, scrollFrame)
+	-- force an update when the text changes
+	self.handleCursorChange = true;
+	ScrollingEdit_OnUpdate(self, 0, scrollFrame);
 end
 
 function ScrollingEdit_OnCursorChanged(self, x, y, w, h)
 	self.cursorOffset = y;
 	self.cursorHeight = h;
+	self.handleCursorChange = true;
 end
 
 --Declaring local variables in OnUpdate code makes the GC cry.
 local height, range, scroll, size, cursorOffset;
 function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
-	if ( self.cursorOffset ) then
+	if ( self.handleCursorChange ) then
 		if ( not scrollFrame ) then
 			scrollFrame = self:GetParent();
 		end
@@ -348,7 +351,7 @@ function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
 			scrollFrame:SetVerticalScroll(scroll);
 		end
 		
-		self.cursorOffset = nil;
+		self.handleCursorChange = false;
 	end
 end
 

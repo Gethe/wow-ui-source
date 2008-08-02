@@ -66,15 +66,6 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
-								<FontString name="PetName" inherits="GameFontNormalSmall">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="50" y="33"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
 								<FontString name="PetHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
 									<Anchors>
 										<Anchor point="CENTER" relativePoint="TOPLEFT">
@@ -104,6 +95,15 @@
 								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
+								<FontString name="PetName" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="52" y="33"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
 								<Texture name="PetAttackModeTexture" file="Interface\TargetingFrame\UI-Player-AttackStatus" alphaMode="ADD" hidden="true">
 									<Size>
 										<AbsDimension x="76" y="64"/>
@@ -116,6 +116,19 @@
 										</Anchor>
 									</Anchors>
 									<TexCoords left="0.703125" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="PetFrameThreatIndicator" file="Interface\Minimap\ObjectIcons" hidden="true">
+									<Size>
+										<AbsDimension x="14" y="14"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="PetPortrait">
+											<Offset>
+												<AbsDimension x="21" y="-3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.75" right="0.875" top="0.5" bottom="1.0"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -270,7 +283,8 @@
 			<OnLoad>
 				UnitFrame_Initialize(self, "pet", PetName, PetPortrait,
 									 PetFrameHealthBar, PetFrameHealthBarText, 
-									 PetFrameManaBar, PetFrameManaBarText);
+									 PetFrameManaBar, PetFrameManaBarText,
+				                     PetFrameThreatIndicator);
 				PetFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>

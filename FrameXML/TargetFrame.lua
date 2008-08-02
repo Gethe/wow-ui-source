@@ -625,7 +625,10 @@ function SetRaidTargetIcon (unit, index)
 end
 
 function TargetofTarget_OnLoad (self)
-	UnitFrame_Initialize(self, "targettarget", TargetofTargetName, TargetofTargetPortrait, TargetofTargetHealthBar, TargetofTargetHealthBarText, TargetofTargetManaBar, TargetofTargetFrameManaBarText);
+	UnitFrame_Initialize(self, "targettarget", TargetofTargetName, TargetofTargetPortrait,
+		TargetofTargetHealthBar, TargetofTargetHealthBarText,
+		TargetofTargetManaBar, TargetofTargetFrameManaBarText,
+		TargetofTargetThreatIndicator, "player");
 	SetTextStatusBarTextZeroText(TargetofTargetHealthBar, DEAD);
 	self:RegisterEvent("UNIT_AURA");
 

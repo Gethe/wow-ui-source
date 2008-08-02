@@ -332,7 +332,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(self:GetParent());
+						HideUIPanel(self:GetParent():GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>

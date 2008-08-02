@@ -2003,6 +2003,9 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	OnCancel = function()
 		CancelSummon();
 	end,
+	OnHide = function()
+		CancelSummon();
+	end,
 	OnUpdate = function(self, elapsed)
 		if ( UnitAffectingCombat("player") ) then
 			self.button1:Disable();

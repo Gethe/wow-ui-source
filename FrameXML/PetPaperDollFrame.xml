@@ -5,7 +5,7 @@
 		<Size>
 			<AbsDimension x="37" y="37"/>
 		</Size>
-		<DisabledTexture file="Interface\PetPaperDollFrame\UI-PetFrame-Slots-Companions">
+		<DisabledTexture file="Interface\PetPaperDollFrame\UI-PetFrame-Slots-Mounts">
 			<TexCoords left="0.203125" right="0.765625" top="0.203125" bottom="0.7625625"/>
 		</DisabledTexture>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
@@ -23,6 +23,9 @@
 			<OnReceiveDrag>
 				CompanionButton_OnDrag(self);
 			</OnReceiveDrag>
+			<OnEnter>
+				CompanionButton_OnEnter(self)
+			</OnEnter>
 		</Scripts>
 	</CheckButton>
 
@@ -117,7 +120,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="23" y="105"/>
+									<AbsDimension x="23" y="103"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -128,7 +131,11 @@
 										<AbsDimension x="160" y="13"/>
 									</Size>
 									<Anchors>
-										<Anchor point="TOPLEFT"/>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="2"/>
+											</Offset>
+										</Anchor>
 									</Anchors>
 									<TexCoords left="0.203125" right="0.8046875" top="0.2890625" bottom="0.33984375"/>
 								</Texture>
@@ -661,12 +668,12 @@
 				<Frames>
 					<PlayerModel name="CompanionModelFrame">
 						<Size>
-							<AbsDimension x="318" y="170"/>
+							<AbsDimension x="288" y="160"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="25" y="-78"/>
+									<AbsDimension x="39" y="-90"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -690,7 +697,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="PetPaperDollFrame">
 										<Offset>
-											<AbsDimension x="23" y="-76"/>
+											<AbsDimension x="35" y="-88"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -740,7 +747,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								CallCompanion(PetPaperDollFrameCompanionFrame.mode,PetPaperDollFrameCompanionFrame.selected)
+								CallCompanion(PetPaperDollFrameCompanionFrame.mode,PetPaperDollFrame_FindCompanionIndex())
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -865,7 +872,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PetPaperDollFrame_SetCompanionPage(PetPaperDollFrameCompanionFrame.page - 1);
+								PetPaperDollFrame_SetCompanionPage((PetPaperDollFrameCompanionFrame.mode=="MOUNT" and PetPaperDollFrameCompanionFrame.pageMount or PetPaperDollFrameCompanionFrame.pageCritter) - 1);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -886,7 +893,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PetPaperDollFrame_SetCompanionPage((PetPaperDollFrameCompanionFrame.page or 0)+ 1);
+								PetPaperDollFrame_SetCompanionPage(((PetPaperDollFrameCompanionFrame.mode=="MOUNT" and PetPaperDollFrameCompanionFrame.pageMount or PetPaperDollFrameCompanionFrame.pageCritter) or 0)+ 1);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
@@ -895,6 +902,11 @@
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnShow>
+						PetPaperDollFrame_UpdateCompanionPreview();
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Button name="PetPaperDollFrameTab1" inherits="TabButtonTemplate" frameStrata="HIGH" text="PET" id="1">
 				<Anchors>
@@ -906,7 +918,6 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						PanelTemplates_SelectTab(self);
 						PanelTemplates_TabResize(self, 0);
 						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
 					</OnLoad>
@@ -924,9 +935,6 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnShow>
-						PanelTemplates_DeselectTab(self);
-					</OnShow>
 					<OnClick>
 						PanelTemplates_SelectTab(self);
 						PetPaperDollFrame_SetTab(2);
@@ -942,9 +950,6 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnShow>
-						PanelTemplates_DeselectTab(self);
-					</OnShow>
 					<OnClick>
 						PanelTemplates_SelectTab(self);
 						PetPaperDollFrame_SetTab(3);

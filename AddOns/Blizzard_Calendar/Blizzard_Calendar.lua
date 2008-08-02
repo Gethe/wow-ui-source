@@ -74,53 +74,6 @@ StaticPopupDialogs["CALENDAR_DELETE_EVENT"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 };
-StaticPopupDialogs["CALENDAR_SET_DESCRIPTION"] = {
-	text = CALENDAR_SET_DESCRIPTION_LABEL,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	maxLetters = 256,
-	hasWideEditBox = 1,
-	OnAccept = function(self)
-		local text = self.wideEditBox:GetText();
-		CalendarEventSetDescription(text);
-		CalendarCreateEventDescription:SetText(text);
-	end,
-	OnShow = function(self)
-		local text = CalendarCreateEventDescription:GetText();
-		if ( text ~= CALENDAR_EVENT_DESCRIPTION ) then
-			if ( text ) then
-				self.wideEditBox:SetText(text);
-			else
-				self.wideEditBox:SetText("");
-			end
-		end
-		self.wideEditBox:HighlightText();
-		self.wideEditBox:SetFocus();
-		CalendarFrame_SetModal(self);
-	end,
-	OnHide = function(self)
-		if ( ChatFrameEditBox:IsShown() ) then
-			ChatFrameEditBox:SetFocus();
-		end
-		self.wideEditBox:SetText("");
-		CalendarFrame_SetModal(nil);
-	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		local text = parent.wideEditBox:GetText();
-		CalendarCreateEventDescription:SetText(text);
-		CalendarEventSetDescription(text);
-		parent:Hide();
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
 StaticPopupDialogs["CALENDAR_ERROR"] = {
 	text = CALENDAR_ERROR,
 	button1 = OKAY,
@@ -139,14 +92,15 @@ StaticPopupDialogs["CALENDAR_ERROR"] = {
 -- make the Calendar part of the UIParent menuing system
 tinsert(UIMenus, "CalendarContextMenu");
 UIPanelWindows["CalendarFrame"] = { area = "doublewide", pushable = 0, width = 840,	whileDead = 1, yOffset = 20 };
--- this table will attempt to close the first open menu in the list...ORDER IS IMPORTANT!
+
 local CalendarMenus = {
 	"CalendarEventPickerFrame",
-	"CalendarDungeonPickerFrame",
+	"CalendarTexturePickerFrame",
 	"CalendarMassInviteFrame",
 	"CalendarCreateEventFrame",
 	"CalendarViewEventFrame",
 };
+-- this function will attempt to close the first open menu in the CalendarMenus table...ORDER IS IMPORTANT!
 function CloseCalendarMenus()
 	for _, menuName in next, CalendarMenus do
 		local menu = getglobal(menuName);
@@ -186,8 +140,8 @@ local CALENDAR_INVITESTATUS_OUT			= 5;
 local CALENDAR_INVITESTATUS_STANDBY		= 6;
 
 -- DayButton constants
-local CALENDAR_DAYBUTTON_NORMALIZED_TEX_WIDTH	= 91 / 256;
-local CALENDAR_DAYBUTTON_NORMALIZED_TEX_HEIGHT	= 91 / 256;
+local CALENDAR_DAYBUTTON_NORMALIZED_TEX_WIDTH	= 91 / 256 - 0.001; -- fudge factor to prevent texture seams
+local CALENDAR_DAYBUTTON_NORMALIZED_TEX_HEIGHT	= 91 / 256 - 0.001; -- fudge factor to prevent texture seams
 local CALENDAR_DAYBUTTON_MAX_VISIBLE_EVENTS		= 4;
 local CALENDAR_DAYBUTTON_MAX_VISIBLE_BIGEVENTS	= 2;
 local CALENDAR_DAYBUTTON_MAX_TOOLTIP_EVENTS		= 30;
@@ -225,7 +179,7 @@ local CALENDAR_CREATEEVENTFRAME_DEFAULT_REPEAT_OPTION	= 1;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_HOUR			= 12;		-- default is standard (not military) time
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_MINUTE			= 0;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_AM				= true;
-local CALENDAR_CREATEEVENTFRAME_DEFAULT_AUTOAPPROVE		= 1;
+local CALENDAR_CREATEEVENTFRAME_DEFAULT_AUTOAPPROVE		= nil;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_LOCK			= nil;
 
 -- ViewEventFrame constants
@@ -562,6 +516,7 @@ local CALENDAR_CALENDARTYPE_NAMEFORMAT = {
 	["HOLIDAY"] = {
 		["START"]			= CALENDAR_EVENTNAME_FORMAT_START,
 		["END"]				= CALENDAR_EVENTNAME_FORMAT_END,
+		[""]				= "%s",
 	},
 	["RAID_LOCKOUT"] = {
 --		["START"]			= "%s",
@@ -578,7 +533,7 @@ local CALENDAR_CALENDARTYPE_TEXTURE_PATHS = {
 --	["PLAYER"]				= "",
 --	["GUILD"]				= "",
 --	["SYSTEM"]				= "",
-	["HOLIDAY"]				= "",
+	["HOLIDAY"]				= "Interface\\Calendar\\Holidays\\",
 --	["RAID_LOCKOUT"]		= "",
 --	["ARENA"]				= "",
 };
@@ -611,9 +566,9 @@ local CALENDAR_CALENDARTYPE_TCOORDS = {
 	},
 	["HOLIDAY"] = {
 		left	= 0.0,
-		right	= 1.0,
+		right	= 0.7109375,
 		top		= 0.0,
-		bottom	= 1.0,
+		bottom	= 0.7109375,
 	},
 	["RAID_LOCKOUT"] = {
 		left	= 0.0,
@@ -632,16 +587,28 @@ local CALENDAR_CALENDARTYPE_TCOORDS = {
 -- local data
 local CalendarDayButtons = { };
 
+local CalendarEventTextureCache = { };
 
--- debugging
-local function _Calendar_Debug_ErrorHandler(message)
-	ChatFrame1:AddMessage("------ERROR------");
-	ChatFrame1:AddMessage(message);
-	ChatFrame1:AddMessage("--Stack Trace--");
-	ChatFrame1:AddMessage(debugstack(2));
-	ChatFrame1:AddMessage(" ");
+local CalendarClassData = { };
+do
+	for i, class in ipairs(CLASS_SORT_ORDER) do
+		CalendarClassData[class] = {
+			name = nil,
+			tcoords = CLASS_ICON_TCOORDS[class],
+			counts = {
+				[CALENDAR_INVITESTATUS_INVITED]		= 0,
+				[CALENDAR_INVITESTATUS_ACCEPTED]	= 0,
+				[CALENDAR_INVITESTATUS_DECLINED]	= 0,
+				[CALENDAR_INVITESTATUS_CONFIRMED]	= 0,
+				[CALENDAR_INVITESTATUS_OUT]			= 0,
+				[CALENDAR_INVITESTATUS_STANDBY]		= 0,
+			},
+		};
+	end
 end
 
+
+-- debugging
 local function _Calendar_Debug_GetFlagString(darkFlags)
 	local str = "";
 	if ( bit_band(darkFlags, DARKFLAG_PREVMONTH) ~= 0 ) then
@@ -687,7 +654,7 @@ local function safeselect(index, ...)
 	end
 end
 
-local function _Calendar_GetWeekdayIndex(dayButtonIndex)
+local function _CalendarFrame_GetWeekdayIndex(dayButtonIndex)
 	return mod(dayButtonIndex - 1, 7) + 1;
 end
 
@@ -699,7 +666,7 @@ end
 
 local function _CalendarFrame_GetFullDateFromDay(dayButton)
 	local month, year = CalendarGetMonth(dayButton.monthOffset);
-	local weekday = _Calendar_GetWeekdayIndex(dayButton:GetID());
+	local weekday = _CalendarFrame_GetWeekdayIndex(dayButton:GetID());
 	local day = dayButton.day;
 	return _CalendarFrame_GetFullDate(weekday, month, day, year);
 end
@@ -727,12 +694,79 @@ local function _CalendarFrame_CanInviteeRSVP(inviteStatus)
 		inviteStatus == CALENDAR_INVITESTATUS_DECLINED;
 end
 
-local function _CalendarFrame_GetEventTextureNameAndPath(textureIndex, eventType)
-	if ( not textureIndex or not eventType ) then
-		return;
+function _CalendarFrame_CacheEventTextures(eventType)
+	if ( eventType ~= CalendarEventTextureCache.eventType ) then
+		CalendarEventTextureCache.eventType = eventType
+		if ( eventType ) then
+			return _CalendarFrame_CacheEventTextures_Internal(CalendarEventGetTextures(eventType));
+		end
 	end
-	local index = textureIndex*2 - 1;
-	return safeselect(index, CalendarEventGetTextures(eventType));
+	return true;
+end
+
+function _CalendarFrame_CacheEventTextures_Internal(...)
+	local numTextures = select("#", ...) / 3;
+	if ( numTextures <= 0 ) then
+		CalendarEventTextureCache.eventType = nil;
+		return false;
+	end
+
+	while ( #CalendarEventTextureCache > numTextures ) do
+		tremove(CalendarEventTextureCache);
+	end
+
+	local param = 1;
+	local cacheIndex = 1;
+	for textureIndex = 1, numTextures do
+		if ( not CalendarEventTextureCache[cacheIndex] ) then
+			CalendarEventTextureCache[cacheIndex] = { };
+		end
+
+		-- insert texture
+		CalendarEventTextureCache[cacheIndex].textureIndex = textureIndex;
+		CalendarEventTextureCache[cacheIndex].title = select(param, ...);
+		param = param + 1;
+		CalendarEventTextureCache[cacheIndex].texture = select(param, ...);
+		param = param + 1;
+		CalendarEventTextureCache[cacheIndex].expansionLevel = select(param, ...);
+		param = param + 1;
+
+		-- insert headers between expansion levels
+		local entry = CalendarEventTextureCache[cacheIndex];
+		local prevEntry = CalendarEventTextureCache[cacheIndex - 1];
+		if ( not prevEntry or (prevEntry and prevEntry.expansionLevel ~= entry.expansionLevel) ) then
+			-- insert empty entry...
+			if ( prevEntry ) then
+				--...only if we had a previous entry
+				CalendarEventTextureCache[cacheIndex] = { };
+				cacheIndex = cacheIndex + 1;
+			end
+			-- insert header
+			CalendarEventTextureCache[cacheIndex] = {
+				title = getglobal("EXPANSION_NAME"..entry.expansionLevel),
+				expansionLevel = entry.expansionLevel,
+			};
+			cacheIndex = cacheIndex + 1;
+			-- make the current entry the next entry
+			CalendarEventTextureCache[cacheIndex] = entry;
+		end
+
+		cacheIndex = cacheIndex + 1;
+	end
+	return true;
+end
+
+local function _CalendarFrame_GetEventTexture(index, eventType)
+	if ( not _CalendarFrame_CacheEventTextures(eventType) ) then
+		return nil;
+	end
+	for cacheIndex = 1, #CalendarEventTextureCache do
+		local entry = CalendarEventTextureCache[cacheIndex];
+		if ( entry.textureIndex and index == entry.textureIndex ) then
+			return entry;
+		end
+	end
+	return nil;
 end
 
 local function _CalendarFrame_GetTextureFile(textureName, calendarType, eventType)
@@ -761,6 +795,25 @@ local function _CalendarFrame_GetTextureFile(textureName, calendarType, eventTyp
 	return texture, tcoords;
 end
 
+local function _CalendarFrame_ResetClassData()
+	for _, classData in next, CalendarClassData do
+		for i in next, classData.counts do
+			classData.counts[i] = 0;
+		end
+	end
+end
+
+function _CalendarFrame_UpdateClassData()
+	_CalendarFrame_ResetClassData();
+
+	for i = 1, CalendarEventGetNumInvites() do
+		local _, _, className, classFilename, inviteStatus = CalendarEventGetInvite(i);
+		CalendarClassData[classFilename].counts[inviteStatus] = CalendarClassData[classFilename].counts[inviteStatus] + 1;
+		-- MFS HACK: doing this because we don't have class names in global strings
+		CalendarClassData[classFilename].name = className;
+	end
+end
+
 
 -- CalendarFrame
 
@@ -781,26 +834,31 @@ function Calendar_Show()
 end
 
 function CalendarFrame_ShowEventFrame(frame)
+	local soundName;
 	if ( frame == CalendarFrame.eventFrame ) then
-		if ( frame ) then
-			if ( not frame:IsShown() ) then
-				frame:Show();
-				CalendarEventFrameBlocker:Show();
-			end
+		if ( frame and not frame:IsShown() ) then
+			frame:Show();
+			CalendarEventFrameBlocker:Show();
 			if ( frame.update ) then
 				frame.update();
 			end
+			soundName = "igMainMenuOptionCheckBoxOn";
 		end
 	else
 		if ( CalendarFrame.eventFrame ) then
 			CalendarFrame.eventFrame:Hide();
 			CalendarEventFrameBlocker:Hide();
+			soundName = "igMainMenuQuit";
 		end
 		CalendarFrame.eventFrame = frame;
 		if ( frame ) then
 			frame:Show();
 			CalendarEventFrameBlocker:Show();
+			soundName = "igMainMenuOptionCheckBoxOn";
 		end
+	end
+	if ( soundName ) then
+		PlaySound(soundName);
 	end
 end
 
@@ -833,8 +891,6 @@ function CalendarFrame_OnLoad(self)
 
 	-- initialize modal dialog handling
 	self.modalFrame = nil;
-
-	--seterrorhandler(_Calendar_Debug_ErrorHandler);
 end
 
 function CalendarFrame_OnEvent(self, event, ...)
@@ -850,6 +906,7 @@ function CalendarFrame_OnEvent(self, event, ...)
 			CalendarCreateEventFrame_Update();
 		else
 			CalendarFrame_ShowEventFrame(CalendarViewEventFrame);
+			CalendarViewEventFrame_Update();
 		end
 	elseif ( event == "CALENDAR_UPDATE_ERROR" ) then
 		local message = ...;
@@ -861,6 +918,8 @@ function CalendarFrame_OnShow(self)
 	local weekday, month, day, year = CalendarGetDate();
 	CalendarSetAbsMonth(month, year);
 	CalendarFrame_Update();
+
+	PlaySound("igCharacterInfoOpen");
 end
 
 function CalendarFrame_OnHide(self)
@@ -869,11 +928,12 @@ function CalendarFrame_OnHide(self)
 	CalendarFrame_HideEventFrame();
 	CalendarDayEventButton_Click();
 	CalendarEventPickerFrame_Hide();
-	CalendarDungeonPickerFrame_Hide();
+	CalendarTexturePickerFrame_Hide();
 	CalendarContextMenu_Reset();
-	StaticPopup_Hide("CALENDAR_SET_DESCRIPTION");
 	StaticPopup_Hide("CALENDAR_DELETE_EVENT");
 	StaticPopup_Hide("CALENDAR_ERROR");
+
+	PlaySound("igCharacterInfoClose");
 end
 
 function CalendarFrame_InitDay(buttonIndex)
@@ -906,15 +966,13 @@ function CalendarFrame_InitDay(buttonIndex)
 
 	-- create event buttons
 	local eventButton;
-	for i = 1, CALENDAR_DAYBUTTON_MAX_VISIBLE_EVENTS do
+	-- anchor first event button to the parent...
+	eventButton = CreateFrame("Button", buttonName.."EventButton1", button, "CalendarDayEventButtonTemplate");
+	eventButton:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", CALENDAR_DAYEVENTBUTTON_XOFFSET, -CALENDAR_DAYEVENTBUTTON_YOFFSET);
+	for i = 2, CALENDAR_DAYBUTTON_MAX_VISIBLE_EVENTS do
+		-- ...anchor the rest to the previous event button
 		eventButton = CreateFrame("Button", buttonName.."EventButton"..i, button, "CalendarDayEventButtonTemplate");
-		if ( i == 1 ) then
-			-- anchor first event button to the parent...
-			eventButton:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", CALENDAR_DAYEVENTBUTTON_XOFFSET, -CALENDAR_DAYEVENTBUTTON_YOFFSET);
-		else
-			-- ...anchor the rest to the previous event button
-			eventButton:SetPoint("BOTTOMLEFT", buttonName.."EventButton"..(i-1), "TOPLEFT", 0, CALENDAR_DAYEVENTBUTTON_YOFFSET);
-		end
+		eventButton:SetPoint("BOTTOMLEFT", buttonName.."EventButton"..(i-1), "TOPLEFT", 0, CALENDAR_DAYEVENTBUTTON_YOFFSET);
 		eventButton:Hide();
 	end
 end
@@ -931,14 +989,16 @@ function CalendarFrame_Update()
 	CalendarFrame.viewedMonth = month;
 	CalendarFrame.viewedYear = year;
 
+	-- set title
+	CalendarFrame_UpdateTitle();
+	-- if we hit a min or max month, disable a prev/next month button
+	CalendarFrame_UpdateMonthOffsetButtons();
+
 	-- init textures to be hidden
 	CalendarTodayTexture:Hide();
 	CalendarDayButtonSelectedTexture:Hide();
 	CalendarWeekdaySelectedTexture:Hide();
 	CalendarLastDayDarkTexture:Hide();
-
-	-- set title
-	CalendarFrame_UpdateTitle();
 
 	local buttonIndex = 1;
 	local darkTexIndex = 1;
@@ -1003,7 +1063,7 @@ function CalendarFrame_Update()
 		darkTopFlags = DARKFLAG_NEXTMONTH;
 		darkBottomFlags = DARKFLAG_NEXTMONTH;
 		-- left darkness
-		dayOfWeek = _Calendar_GetWeekdayIndex(buttonIndex);
+		dayOfWeek = _CalendarFrame_GetWeekdayIndex(buttonIndex);
 		if ( dayOfWeek == 1 or day == 1 ) then
 			darkTopFlags = darkTopFlags + DARKFLAG_SIDE_LEFT;
 			darkBottomFlags = darkBottomFlags + DARKFLAG_SIDE_LEFT;
@@ -1090,16 +1150,17 @@ function CalendarFrame_UpdateDayEvents(monthOffset, index, day)
 
 	local numEvents = CalendarGetNumDayEvents(monthOffset, day);
 
+	-- get day info
+	local pendingInviteIndex, calendarType, eventType, dayTexture,
+		overlayCalendarType, overlayEventType, overlayTexture = CalendarGetDay(monthOffset, day);
+
 	-- turn date background on if there is an event on this day
 	local dateBackground = getglobal(dayButtonName.."DateFrameBackground");
-	if ( numEvents > 0 ) then
+	if ( numEvents > 0 or overlayTexture ~= "" ) then
 		dateBackground:Show();
 	else
 		dateBackground:Hide();
 	end
-
-	-- get day info
-	local pendingInviteIndex, calendarType, eventType, dayTexture = CalendarGetDay(monthOffset, day);
 
 	-- set day texture
 	local eventTex = getglobal(dayButtonName.."EventTexture");
@@ -1111,6 +1172,18 @@ function CalendarFrame_UpdateDayEvents(monthOffset, index, day)
 		eventTex:Show();
 	else
 		eventTex:Hide();
+	end
+	-- set overlay texture
+	eventTex = getglobal(dayButtonName.."OverlayFrameTexture");
+	eventTex:SetTexture("");
+	texture, tcoords = _CalendarFrame_GetTextureFile(overlayTexture, overlayCalendarType, overlayEventType);
+	if ( texture ) then
+		debugprint("CalendarFrame_UpdateDayEvents:"..texture);
+		eventTex:SetTexture(texture);
+		eventTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
+		eventTex:GetParent():Show();
+	else
+		eventTex:GetParent():Hide();
 	end
 
 	-- turn pending invite on if we have one on this day
@@ -1126,7 +1199,8 @@ function CalendarFrame_UpdateDayEvents(monthOffset, index, day)
 	local moreEventsButton = getglobal(dayButtonName.."MoreEventsButton");
 	local buttonHeight, textWidth;
 	local text1RelPoint, text2Point, text2JustifyH;
-	if ( numEvents <= CALENDAR_DAYBUTTON_MAX_VISIBLE_BIGEVENTS ) then
+	local showingBigEvents = numEvents <= CALENDAR_DAYBUTTON_MAX_VISIBLE_BIGEVENTS;
+	if ( showingBigEvents ) then
 		moreEventsButton:Hide();
 		buttonHeight = CALENDAR_DAYEVENTBUTTON_BIGHEIGHT;
 		text1RelPoint = nil;
@@ -1199,7 +1273,7 @@ function CalendarFrame_UpdateDayEvents(monthOffset, index, day)
 				--eventButtonBackground:Hide();
 				--eventButton:SetBackdrop(nil);
 			else
-				eventButtonText2:SetText(GameTime_GetFormattedTime(hour, minute, false));
+				eventButtonText2:SetText(GameTime_GetFormattedTime(hour, minute, showingBigEvents));
 				eventButtonText2:ClearAllPoints();
 				eventButtonText2:SetPoint(text2Point, eventButton, text2Point);
 				eventButtonText2:SetJustifyH(text2JustifyH);
@@ -1269,7 +1343,7 @@ function CalendarFrame_SetSelectedDay(dayButton)
 	CalendarFrame.selectedDayButton = dayButton;
 
 	-- highlight the weekday label at this point too
-	local weekdayBackground = getglobal("CalendarWeekday".._Calendar_GetWeekdayIndex(dayButton:GetID()).."Background");
+	local weekdayBackground = getglobal("CalendarWeekday".._CalendarFrame_GetWeekdayIndex(dayButton:GetID()).."Background");
 	CalendarWeekdaySelectedTexture:ClearAllPoints();
 	CalendarWeekdaySelectedTexture:SetPoint("CENTER", weekdayBackground, "CENTER");
 	CalendarWeekdaySelectedTexture:Show();
@@ -1310,26 +1384,46 @@ function CalendarFrame_OpenEvent(dayButton, eventIndex)
 	end
 end
 
-function CalendarPrevMonthButton_OnClick()
-	CalendarSetMonth(-1);
+function CalendarFrame_OffsetMonth(offset)
+	CalendarSetMonth(offset);
 	CalendarContextMenu_Hide();
 	StaticPopup_Hide("CALENDAR_DELETE_EVENT");
 	CalendarEventPickerFrame_Hide();
-	CalendarDungeonPickerFrame_Hide();
+	CalendarTexturePickerFrame_Hide();
 	CalendarDayEventButton_Click();
 	CalendarFrame_HideEventFrame();
 	CalendarFrame_Update();
 end
 
+function CalendarFrame_UpdateMonthOffsetButtons()
+	if ( CalendarFrame.modalFrame ) then
+		CalendarPrevMonthButton:Disable();
+		CalendarNextMonthButton:Disable();
+		return;
+	end
+
+	local testWeekday, testMonth, testDay, testYear = CalendarGetMinDate();
+	CalendarPrevMonthButton:Enable();
+	if ( CalendarFrame.viewedYear <= testYear ) then
+		if ( CalendarFrame.viewedMonth <= testMonth ) then
+			CalendarPrevMonthButton:Disable();
+		end
+	end
+	testWeekday, testMonth, testDay, testYear = CalendarGetMaxDate();
+	CalendarNextMonthButton:Enable();
+	if ( CalendarFrame.viewedYear >= testYear ) then
+		if ( CalendarFrame.viewedMonth >= testMonth ) then
+			CalendarNextMonthButton:Disable();
+		end
+	end
+end
+
+function CalendarPrevMonthButton_OnClick()
+	CalendarFrame_OffsetMonth(-1);
+end
+
 function CalendarNextMonthButton_OnClick()
-	CalendarSetMonth(1);
-	CalendarContextMenu_Hide();
-	StaticPopup_Hide("CALENDAR_DELETE_EVENT");
-	CalendarEventPickerFrame_Hide();
-	CalendarDungeonPickerFrame_Hide();
-	CalendarFrame_HideEventFrame();
-	CalendarDayEventButton_Click();
-	CalendarFrame_Update();
+	CalendarFrame_OffsetMonth(1);
 end
 
 
@@ -1342,27 +1436,31 @@ function CalendarFrame_SetModal(frame)
 		if ( frame ) then
 			CalendarModalDummy:SetParent(frame);
 			CalendarModalDummy:SetFrameLevel(frame:GetFrameLevel() - 1);
-			CalendarModalDummy:Show();
+			CalendarModalDummy_Show();
+			PlaySound("igMainMenuOptionCheckBoxOn");
 		else
 			CalendarModalDummy:SetParent(CalendarFrame);
 			--CalendarModalDummy:SetFrameLevel(CalendarFrame:GetFrameLevel());
-			CalendarModalDummy:Hide();
+			CalendarModalDummy_Hide();
+			PlaySound("igMainMenuQuit");
 		end
 	end
 end
 
-function CalendarModalDummy_OnShow(self)
+function CalendarModalDummy_Show(self)
 	CalendarFrameModalOverlay:Show();
-	CalendarPrevMonthButton:Disable();
-	CalendarNextMonthButton:Disable();
 	CalendarEventFrameBlocker:Show();
+	CalendarFrame_UpdateMonthOffsetButtons();
+	CalendarClassButtonContainer_Update();
+	CalendarModalDummy:Show();
 end
 
-function CalendarModalDummy_OnHide(self)
+function CalendarModalDummy_Hide(self)
 	CalendarFrameModalOverlay:Hide();
 	CalendarEventFrameBlocker:Hide();
-	CalendarPrevMonthButton:Enable();
-	CalendarNextMonthButton:Enable();
+	CalendarFrame_UpdateMonthOffsetButtons();
+	CalendarClassButtonContainer_Update();
+	CalendarModalDummy:Hide();
 end
 
 function CalendarEventFrameBlocker_OnShow(self)
@@ -1563,9 +1661,9 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 	local monthOffset = dayButton.monthOffset;
 	local month, year = CalendarGetMonth(monthOffset);
 
-	local canCreateEvent = _CalendarFrame_IsTodayOrLater(month, day, year);
+	local isTodayOrLater = _CalendarFrame_IsTodayOrLater(month, day, year);
 
-	local showDay = canCreateEvent and bit_band(flags, CALENDAR_CONTEXTMENU_FLAG_SHOWDAY) ~= 0;
+	local showDay = isTodayOrLater and bit_band(flags, CALENDAR_CONTEXTMENU_FLAG_SHOWDAY) ~= 0;
 	local showEvent = eventButton and bit_band(flags, CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT) ~= 0;
 
 	local needSpacer = false;
@@ -1573,17 +1671,20 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 		-- add guild selections if the player has a guild
 		UIMenu_AddButton(menu, CALENDAR_CREATE_EVENT, nil, CalendarDayContextMenu_CreateEvent);
 		if ( CanEditGuildEvent() ) then
-			--UIMenu_AddButton(menu, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
-			--UIMenu_AddButton(menu, CALENDAR_CREATE_GUILDWIDE_EVENT, nil, CalendarDayContextMenu_CreateGuildWideEvent);
+--			UIMenu_AddButton(menu, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
+--			UIMenu_AddButton(menu, CALENDAR_CREATE_GUILDWIDE_EVENT, nil, CalendarDayContextMenu_CreateGuildWideEvent);
 			UIMenu_AddButton(menu, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
 			needSpacer = true;
 		end
+--[[
 		-- add arena team selection if the player has an arena team
 		if ( IsInArenaTeam() ) then
 			--UIMenu_AddButton(menu, CALENDAR_CREATE_ARENATEAM_EVENT, nil, nil, "CalendarArenaTeamContextMenu");
 			needSpacer = true;
 		end
+--]]
 	end
+
 	if ( showEvent ) then
 		local eventIndex = eventButton.eventIndex;
 		local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus = CalendarGetDayEvent(monthOffset, day, eventIndex);
@@ -1626,8 +1727,10 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 				UIMenu_AddButton(menu, REPORT_SPAM, nil, CalendarDayContextMenu_ReportSpam);
 				needSpacer = true;
 			end
+
+			local isGuildWide = CalendarContextEventIsGuildWide(monthOffset, day, eventIndex);
 			local inviteStatus = CalendarContextInviteStatus(monthOffset, day, eventIndex);
-			if ( canCreateEvent and _CalendarFrame_CanInviteeRSVP(inviteStatus) ) then
+			if ( isTodayOrLater and not isGuildWide and _CalendarFrame_CanInviteeRSVP(inviteStatus) ) then
 				-- spacer
 				if ( needSpacer ) then
 					UIMenu_AddButton(menu, "");
@@ -1642,7 +1745,7 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 				end
 				needSpacer = false;
 			end
-			if ( modStatus ~= "CREATOR" and not CalendarContextEventIsGuildWide(monthOffset, day, eventIndex) ) then
+			if ( modStatus ~= "CREATOR" and not isGuildWide ) then
 				-- spacer
 				if ( needSpacer ) then
 					UIMenu_AddButton(menu, "");
@@ -1651,7 +1754,7 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 				UIMenu_AddButton(menu, CALENDAR_REMOVE_INVITATION, nil, CalendarDayContextMenu_RemoveInvite);
 			end
 		end
-	elseif ( canCreateEvent and CalendarContextEventClipboard() ) then
+	elseif ( isTodayOrLater and CalendarContextEventClipboard() ) then
 		-- add paste if we have a clipboard
 		if ( needSpacer ) then
 			UIMenu_AddButton(menu, "");
@@ -1663,7 +1766,7 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 	if ( UIMenu_GetNumButtons(menu) == 0 and
 		 bit_band(flags, CALENDAR_CONTEXTMENU_FLAG_SHOWDAY) ~= 0 and
 		 bit_band(flags, CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT) == 0 ) then
-		if ( not canCreateEvent ) then
+		if ( not isTodayOrLater ) then
 			StaticPopup_Show("CALENDAR_ERROR", format(CALENDAR_ERROR_CREATEDATE_BEFORE_TODAY, _CalendarFrame_GetFullDate(CalendarGetDate())));
 		end
 	end
@@ -1672,13 +1775,14 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 end
 
 function CalendarDayContextMenu_CreateEvent()
-	CalendarNewEvent();
 	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 	CalendarDayButton_Click(CalendarContextMenu.dayButton)
 	CalendarCreateEventFrame.mode = "create";
 	CalendarCreateEventFrame.dayButton = CalendarContextMenu.dayButton;
 	CalendarFrame_ShowEventFrame(CalendarCreateEventFrame);
-	-- TEMP: this is done because this option doesn't generate a "CALENDAR_UPDATE_INVITE_LIST" event
+
+	CalendarNewEvent();
+	-- NOTE: this is done because this option doesn't generate a "CALENDAR_UPDATE_INVITE_LIST" event
 	CalendarCreateEventFrame_Update();
 end
 
@@ -1688,11 +1792,12 @@ function CalendarDayContextMenu_CreateGuildEvent()
 end
 
 function CalendarDayContextMenu_CreateGuildAnnouncement()
-	CalendarNewGuildWideEvent();
 	CalendarDayButton_Click(CalendarContextMenu.dayButton)
 	CalendarCreateEventFrame.mode = "create";
 	CalendarCreateEventFrame.dayButton = CalendarContextMenu.dayButton;
 	CalendarFrame_ShowEventFrame(CalendarCreateEventFrame);
+
+	CalendarNewGuildWideEvent();
 	-- TEMP: this is done because this option doesn't generate a "CALENDAR_UPDATE_INVITE_LIST" event
 	CalendarCreateEventFrame_Update();
 end
@@ -2068,6 +2173,7 @@ function CalendarDayEventButton_Click(button, openEvent)
 		CalendarFrame.selectedEventYear = year;
 		CalendarFrame_SetSelectedEvent(button);
 	end
+
 	if ( CalendarEventPickerFrame:IsShown() ) then
 		CalendarEventPickerScrollFrame_Update();
 	end
@@ -2086,6 +2192,11 @@ end
 
 function CalendarViewHolidayFrame_OnShow(self)
 	CalendarViewHolidayFrame_Update();
+	--PlaySound("igMainMenuOptionCheckBoxOn");
+end
+
+function CalendarViewHolidayFrame_OnHide(self)
+	--PlaySound("igMainMenuQuit");
 end
 
 function CalendarViewHolidayFrame_Update()
@@ -2160,11 +2271,13 @@ end
 
 function CalendarViewEventFrame_OnShow(self)
 	CalendarViewEventFrame_Update();
+	--PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function CalendarViewEventFrame_OnHide(self)
 	CalendarContextMenu_Hide(CalendarViewEventInviteContextMenu_Initialize);
 	--CalendarDayEventButton_Click();
+	--PlaySound("igMainMenuQuit");
 end
 
 function CalendarViewEventFrame_OnUpdate(self, elapsed)
@@ -2185,6 +2298,7 @@ function CalendarViewEventFrame_Update()
 	if ( not title ) then
 		-- event was probably deleted
 		CalendarFrame_HideEventFrame(CalendarViewEventFrame);
+		CalendarClassButtonContainer_Hide();
 		return;
 	end
 	-- reset the flash timer to reinforce the visual feedback that the player is switching between events
@@ -2195,21 +2309,21 @@ function CalendarViewEventFrame_Update()
 	CalendarViewEventIcon:SetTexture("");
 	local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 	CalendarViewEventIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
-	if ( textureIndex > 0 ) then
-		-- set the dungeon name since we have one
-		local dungeonName, dungeonTexture = _CalendarFrame_GetEventTextureNameAndPath(textureIndex, eventType);
-		CalendarViewEventDungeonName:SetText(dungeonName);
-		CalendarViewEventDungeonName:Show();
-		-- set the point of the next element to the dungeon name since we are showing it now
-		CalendarViewEventDateLabel:SetPoint("TOPLEFT", CalendarViewEventDungeonName, "BOTTOMLEFT");
-		-- set the dungeon texture
-		if ( dungeonTexture ~= "" ) then
-			CalendarViewEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..dungeonTexture);
+	local eventTex = _CalendarFrame_GetEventTexture(textureIndex, eventType);
+	if ( eventTex ) then
+		-- set the eventTex name since we have one
+		CalendarViewEventTextureName:SetText(eventTex.title);
+		CalendarViewEventTextureName:Show();
+		-- set the point of the next element to the eventTex name since we are showing it now
+		CalendarViewEventDateLabel:SetPoint("TOPLEFT", CalendarViewEventTextureName, "BOTTOMLEFT");
+		-- set the eventTex texture
+		if ( eventTex.texture ~= "" ) then
+			CalendarViewEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..eventTex.texture);
 		else
 			CalendarViewEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 		end
 	else
-		CalendarViewEventDungeonName:Hide();
+		CalendarViewEventTextureName:Hide();
 		CalendarViewEventDateLabel:SetPoint("TOPLEFT", CalendarViewEventTypeName, "BOTTOMLEFT");
 		CalendarViewEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 	end
@@ -2219,13 +2333,14 @@ function CalendarViewEventFrame_Update()
 	CalendarViewEventTimeLabel:SetText(GameTime_GetFormattedTime(hour, minute, true));
 	-- set the description
 	CalendarViewEventDescription:SetText(description);
+	CalendarViewEventDescriptionScrollFrame:SetVerticalScroll(0);
 	-- change the look based on the locked status
 	if ( locked ) then
 		-- set the event title
 		CalendarViewEventTitle:SetFormattedText(CALENDAR_VIEW_EVENTTITLE_LOCKED, title);
 		SetTextureDesaturated(CalendarViewEventIcon, true);
 		CalendarViewEventTypeName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		--CalendarViewEventDungeonName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		CalendarViewEventTextureName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		--CalendarViewEventDateLabel:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		--CalendarViewEventTimeLabel:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		CalendarViewEventDescription:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
@@ -2234,7 +2349,7 @@ function CalendarViewEventFrame_Update()
 		CalendarViewEventTitle:SetText(title);
 		SetTextureDesaturated(CalendarViewEventIcon, false);
 		CalendarViewEventTypeName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		--CalendarViewEventDungeonName:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		CalendarViewEventTextureName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		--CalendarViewEventDateLabel:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
 		--CalendarViewEventTimeLabel:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		CalendarViewEventDescription:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
@@ -2242,11 +2357,12 @@ function CalendarViewEventFrame_Update()
 	if ( CalendarEventIsGuildWide() ) then
 		CalendarViewEventFrameTitle:SetText(CALENDAR_VIEW_ANNOUNCEMENT);
 		-- guild wide events don't have invite lists, auto approval, or event locks
-		CalendarViewEventInviteListFrame:Hide();
-		CalendarViewEventFrame:SetHeight(CalendarViewEventFrame.defaultHeight - CalendarViewEventInviteListFrame:GetHeight());
+		CalendarViewEventInviteListSection:Hide();
+		CalendarViewEventFrame:SetHeight(CalendarViewEventFrame.defaultHeight - CalendarViewEventInviteListSection:GetHeight());
+		CalendarClassButtonContainer_Hide();
 	else
 		CalendarViewEventFrameTitle:SetText(CALENDAR_VIEW_EVENT);
-		CalendarViewEventInviteListFrame:Show();
+		CalendarViewEventInviteListSection:Show();
 		CalendarViewEventFrame:SetHeight(CalendarViewEventFrame.defaultHeight);
 		if ( locked ) then
 			-- event locked...you cannot respond to the event
@@ -2262,6 +2378,7 @@ function CalendarViewEventFrame_Update()
 
 		CalendarViewEventInviteListScrollFrame_Update();
 	end
+	CalendarEventFrameBlocker_Update();
 end
 
 function CalendarViewEventAvailableButton_OnUpdate(self)
@@ -2379,6 +2496,7 @@ function CalendarViewEventInviteListScrollFrame_Update()
 				-- MFS NOTE: uncomment this line to show the context menu for your own invite
 				--CalendarViewEventFrame.myInviteIndex = inviteIndex;
 			end
+
 			button:Show();
 		else
 			button.inviteIndex = nil;
@@ -2386,12 +2504,8 @@ function CalendarViewEventInviteListScrollFrame_Update()
 		end
 		displayedHeight = displayedHeight + button:GetHeight();
 	end
-
+	CalendarClassButtonContainer_Show(CalendarViewEventFrame);
 	HybridScrollFrame_Update(CalendarViewEventInviteListScrollFrame, numInvites, totalHeight, displayedHeight);
-end
-
-function CalendarViewEventInviteListButton_OnLoad(self)
-	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
 function CalendarViewEventInviteListButton_OnClick(self, button)
@@ -2413,6 +2527,8 @@ function CalendarViewEventInviteListButton_OnClick(self, button)
 			end
 		end
 	end
+
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function CalendarViewEventInviteContextMenu_Initialize(menu)
@@ -2499,12 +2615,14 @@ end
 
 function CalendarCreateEventFrame_OnShow(self)
 	--CalendarCreateEventFrame_Update();
+	--PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function CalendarCreateEventFrame_OnHide(self)
 	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 	CalendarMassInviteFrame:Hide();
 	--CalendarDayEventButton_Click();
+	--PlaySound("igMainMenuQuit");
 end
 
 function CalendarCreateEventFrame_Update()
@@ -2525,7 +2643,7 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventTitleEdit:SetFocus();
 		CalendarEventSetTitle("");
 		-- reset event description
-		CalendarCreateEventDescription:SetText(CALENDAR_CREATEEVENTFRAME_DEFAULT_DESCRIPTION);
+		CalendarCreateEventDescriptionEdit:SetText(CALENDAR_CREATEEVENTFRAME_DEFAULT_DESCRIPTION);
 		CalendarEventSetDescription("");
 		-- reset event time
 		CalendarCreateEventFrame.militaryTime = GetCVarBool("timeMgrMilitaryTime");
@@ -2540,7 +2658,7 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEvent_SetEventTime();
 		-- reset event type
 		CalendarCreateEventFrame.selectedEventType = CALENDAR_CREATEEVENTFRAME_DEFAULT_TYPE;
-		CalendarCreateEventFrame.selectedDungeonIndex = nil;
+		CalendarCreateEventFrame.selectedTextureIndex = nil;
 		CalendarCreateEvent_UpdateEventType();
 		CalendarEventSetType(CalendarCreateEventFrame.selectedEventType);
 		-- reset repeat option
@@ -2550,9 +2668,10 @@ function CalendarCreateEventFrame_Update()
 		if ( CalendarEventIsGuildWide() ) then
 			CalendarCreateEventFrameTitle:SetText(CALENDAR_CREATE_ANNOUNCEMENT);
 			-- guild wide events don't have invites
-			CalendarCreateEventInviteListFrame:Hide();
+			CalendarCreateEventInviteListSection:Hide();
 			CalendarCreateEventMassInviteButton:Hide();
-			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight - CalendarCreateEventInviteListFrame:GetHeight());
+			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight - CalendarCreateEventInviteListSection:GetHeight());
+			CalendarClassButtonContainer_Hide();
 		else
 			CalendarCreateEventFrameTitle:SetText(CALENDAR_CREATE_EVENT);
 			-- reset auto-approve
@@ -2565,10 +2684,11 @@ function CalendarCreateEventFrame_Update()
 			CalendarCreateEventInviteListScrollFrame_Update();
 			-- update mass invite button
 			CalendarCreateEventMassInviteButton_Update();
-			CalendarCreateEventInviteListFrame:Show();
+			CalendarCreateEventInviteListSection:Show();
 			CalendarCreateEventMassInviteButton:Show();
 			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight);
 		end
+		CalendarEventFrameBlocker_Update();
 	elseif ( CalendarCreateEventFrame.mode == "edit" ) then
 		local title, description, eventType, repeatOption, maxSize, textureIndex,
 			weekday, month, day, year, hour, minute,
@@ -2576,6 +2696,7 @@ function CalendarCreateEventFrame_Update()
 			locked, autoApprove = CalendarGetEventInfo();
 		if ( not title ) then
 			CalendarFrame_HideEventFrame(CalendarCreateEventFrame);
+			CalendarClassButtonContainer_Hide();
 			return;
 		end
 
@@ -2587,7 +2708,10 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventTitleEdit:SetCursorPosition(0);
 		CalendarCreateEventTitleEdit:ClearFocus();
 		-- update description
-		CalendarCreateEventDescription:SetText(description);
+		CalendarCreateEventDescriptionEdit:SetText(description);
+		CalendarCreateEventDescriptionEdit:SetCursorPosition(0);
+		CalendarCreateEventDescriptionEdit:ClearFocus();
+		CalendarCreateEventDescriptionScrollFrame:SetVerticalScroll(0);
 		-- update date
 		CalendarCreateEventDateLabel:SetFormattedText(CALENDAR_EVENT_FULLDATE, CALENDAR_WEEKDAY_NAMES[weekday], CALENDAR_MONTH_NAMES[month], day, year, month);
 		-- update time
@@ -2607,9 +2731,9 @@ function CalendarCreateEventFrame_Update()
 		-- update type
 		CalendarCreateEventFrame.selectedEventType = eventType;
 		if ( textureIndex > 0 ) then
-			CalendarCreateEventFrame.selectedDungeonIndex = textureIndex;
+			CalendarCreateEventFrame.selectedTextureIndex = textureIndex;
 		else
-			CalendarCreateEventFrame.selectedDungeonIndex = nil;
+			CalendarCreateEventFrame.selectedTextureIndex = nil;
 		end
 		CalendarCreateEvent_UpdateEventType();
 		-- update repeat option
@@ -2618,8 +2742,9 @@ function CalendarCreateEventFrame_Update()
 		if ( CalendarEventIsGuildWide() ) then
 			CalendarCreateEventFrameTitle:SetText(CALENDAR_EDIT_ANNOUNCEMENT);
 			-- guild wide events don't have invites
-			CalendarCreateEventInviteListFrame:Hide();
-			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight - CalendarCreateEventInviteListFrame:GetHeight());
+			CalendarCreateEventInviteListSection:Hide();
+			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight - CalendarCreateEventInviteListSection:GetHeight());
+			CalendarClassButtonContainer_Hide();
 		else
 			CalendarCreateEventFrameTitle:SetText(CALENDAR_EDIT_EVENT);
 			-- update auto approve
@@ -2630,21 +2755,27 @@ function CalendarCreateEventFrame_Update()
 			CalendarCreateEventInviteListScrollFrame_Update();
 			-- update mass invite button
 			CalendarCreateEventMassInviteButton_Update();
-			CalendarCreateEventInviteListFrame:Show();
+			CalendarCreateEventInviteListSection:Show();
 			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight);
 		end
 		-- we're not able to mass invite after an event is created...
 		CalendarCreateEventMassInviteButton:Hide();
+
+		CalendarEventFrameBlocker_Update();
 	end
 end
 
-function CalendarCreateEventDungeon_Update()
-	if ( CalendarCreateEventFrame.selectedDungeonIndex ) then
-		local name = _CalendarFrame_GetEventTextureNameAndPath(CalendarCreateEventFrame.selectedDungeonIndex, CalendarCreateEventFrame.selectedEventType);
-		CalendarCreateEventDungeonName:SetText(name);
-		CalendarCreateEventDungeonName:Show();
+function CalendarCreateEventTexture_Update()
+	if ( CalendarCreateEventFrame.selectedTextureIndex ) then
+		local eventTex = _CalendarFrame_GetEventTexture(CalendarCreateEventFrame.selectedTextureIndex, CalendarCreateEventFrame.selectedEventType);
+		if ( eventTex ) then
+			CalendarCreateEventTextureName:SetText(eventTex.title);
+			CalendarCreateEventTextureName:Show();
+		else
+			CalendarCreateEventTextureName:Hide();
+		end
 	else
-		CalendarCreateEventDungeonName:Hide();
+		CalendarCreateEventTextureName:Hide();
 	end
 end
 
@@ -2670,21 +2801,21 @@ end
 function CalendarCreateEventTypeDropDown_OnClick(self)
 	local id = self:GetID();
 	if ( id == CALENDAR_EVENTTYPE_DUNGEON or id == CALENDAR_EVENTTYPE_RAID ) then
-		CalendarDungeonPickerFrame_Show(id);
+		CalendarTexturePickerFrame_Show(id);
 	else
 		UIDropDownMenu_SetSelectedID(CalendarCreateEventTypeDropDown, id);
 		CalendarCreateEventFrame.selectedEventType = id;
 		CalendarEventSetType(id);
-		-- clear the dungeon selection for non-dungeon types
-		CalendarCreateEventFrame.selectedDungeonIndex = nil;
-		CalendarCreateEventDungeon_Update();
+		-- NOTE: clear the texture selection for non-dungeon types since those don't have texture selections
+		CalendarCreateEventFrame.selectedTextureIndex = nil;
+		CalendarCreateEventTexture_Update();
 	end
 end
 
 function CalendarCreateEvent_UpdateEventType()
 	UIDropDownMenu_Initialize(CalendarCreateEventTypeDropDown, CalendarCreateEventTypeDropDown_Initialize);
 	UIDropDownMenu_SetSelectedID(CalendarCreateEventTypeDropDown, CalendarCreateEventFrame.selectedEventType);
-	CalendarCreateEventDungeon_Update();
+	CalendarCreateEventTexture_Update();
 end
 
 function CalendarCreateEventRepeatOptionDropDown_Initialize()
@@ -2874,6 +3005,11 @@ end
 
 function CalendarCreateEventAutoApproveCheck_OnClick(self)
 	CalendarCreateEvent_SetAutoApprove();
+	if ( self:GetChecked() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
+	end
 end
 
 function CalendarCreateEvent_SetAutoApprove()
@@ -2892,6 +3028,11 @@ end
 
 function CalendarCreateEventLockEventCheck_OnClick(self)
 	CalendarCreateEvent_SetLockEvent();
+	if ( self:GetChecked() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
+	end
 end
 
 function CalendarCreateEvent_SetLockEvent()
@@ -2958,6 +3099,12 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 			else
 				button:UnlockHighlight();
 			end
+
+			-- update class counts
+			CalendarClassData[classFilename].counts[inviteStatus] = CalendarClassData[classFilename].counts[inviteStatus] + 1;
+			-- MFS HACK: doing this because we don't have class names in global strings
+			CalendarClassData[classFilename].name = className;
+
 			button:Show();
 		else
 			button.inviteIndex = nil;
@@ -2966,11 +3113,8 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 		displayedHeight = displayedHeight + button:GetHeight();
 	end
 
+	CalendarClassButtonContainer_Show(CalendarCreateEventFrame);
 	HybridScrollFrame_Update(CalendarCreateEventInviteListScrollFrame, numInvites, totalHeight, displayedHeight);
-end
-
-function CalendarCreateEventInviteListButton_OnLoad(self)
-	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
 function CalendarCreateEventInviteListButton_OnClick(self, button)
@@ -2992,6 +3136,8 @@ function CalendarCreateEventInviteListButton_OnClick(self, button)
 			CalendarContextMenu_Toggle(self, CalendarCreateEventInviteContextMenu_Initialize, "cursor", 3, -3, inviteIndex);
 		end
 	end
+
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function CalendarCreateEventInviteContextMenu_Initialize(menu, inviteIndex)
@@ -3077,6 +3223,19 @@ function CalendarInviteStatusContextMenu_SetStatusOption(self)
 	CalendarEventSetStatus(CalendarCreateEventFrame.selectedInviteIndex, self.value);
 	-- hide parent
 	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
+end
+
+function CalendarCreateEventInviteButton_OnClick(self)
+	local text = self:GetText();
+	if ( text == "" or text == CALENDAR_PLAYER_NAME ) then
+		self:ClearFocus();
+	else
+		CalendarEventInvite(CalendarCreateEventInviteEdit:GetText());
+		CalendarCreateEventInviteEdit:SetText("");
+		CalendarCreateEventInviteEdit:ClearFocus();
+	end
+
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function CalendarCreateEventMassInviteButton_OnClick()
@@ -3236,7 +3395,7 @@ end
 
 function CalendarEventPickerFrame_Show(dayButton)
 	CalendarEventPickerFrame.dayButton = dayButton;
-	if ( _Calendar_GetWeekdayIndex(dayButton:GetID()) > 3 ) then
+	if ( _CalendarFrame_GetWeekdayIndex(dayButton:GetID()) > 3 ) then
 		CalendarEventPickerFrame:SetPoint("TOPRIGHT", dayButton, "TOPLEFT");
 	else
 		CalendarEventPickerFrame:SetPoint("TOPLEFT", dayButton, "TOPRIGHT");
@@ -3424,6 +3583,8 @@ function CalendarEventPickerButton_OnClick(self, button)
 			CalendarContextMenu_Toggle(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton, self);
 		end
 	end
+
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function CalendarEventPickerButton_Click(button)
@@ -3465,154 +3626,270 @@ function CalendarEventPickerButton_Click(button)
 end
 
 
--- CalendarDungeonPickerFrame
+-- CalendarTexturePickerFrame
 
-local CalendarDungeonPickerListCache = { };
-
-function CalendarDungeonPickerFrame_OnLoad(self)
-	self.selectedDungeonIndex = nil;
-	CalendarDungeonPickerScrollFrame.update = CalendarDungeonPickerScrollFrame_Update;
-	HybridScrollFrame_CreateButtons(CalendarDungeonPickerScrollFrame, "CalendarDungeonPickerButtonTemplate");
+function CalendarTexturePickerFrame_OnLoad(self)
+	self.selectedTextureIndex = nil;
+	CalendarTexturePickerScrollFrame.update = CalendarTexturePickerScrollFrame_Update;
+	HybridScrollFrame_CreateButtons(CalendarTexturePickerScrollFrame, "CalendarTexturePickerButtonTemplate");
 end
 
-function CalendarDungeonPickerFrame_Show(eventType)
+function CalendarTexturePickerFrame_Show(eventType)
 	if ( not eventType ) then
 		return;
 	end
-	if ( eventType ~= CalendarDungeonPickerFrame.eventType) then
-		if ( not CalendarDungeonPickerFrame_CacheList(CalendarEventGetTextures(eventType)) ) then
+	if ( eventType ~= CalendarTexturePickerFrame.eventType) then
+		if ( not _CalendarFrame_CacheEventTextures(eventType) ) then
 			return;
 		end
-		CalendarDungeonPickerFrame.dungeonIndex = CalendarCreateEventFrame.selectedDungeonIndex;
-		CalendarDungeonPickerFrame.eventType = eventType;
-	end
-	CalendarDungeonPickerFrame:Show();
-	CalendarDungeonPickerScrollFrame_Update();
-end
-
-function CalendarDungeonPickerFrame_Hide()
-	CalendarDungeonPickerFrame.eventType = nil;
-	CalendarDungeonPickerFrame.dungeonIndex = nil;
-	CalendarDungeonPickerFrame:Hide();
-end
-
-function CalendarDungeonPickerFrame_Toggle(eventType)
-	if ( CalendarDungeonPickerFrame:IsShown() ) then
-		CalendarDungeonPickerFrame_Hide();
+		-- new event type...reset the selected texture
+		CalendarTexturePickerFrame.textureIndex = nil;
+		CalendarTexturePickerFrame.eventType = eventType;
 	else
-		CalendarDungeonPickerFrame_Show(eventType);
+		CalendarTexturePickerFrame.textureIndex = CalendarCreateEventFrame.selectedTextureIndex;
+	end
+	CalendarTexturePickerFrame:Show();
+	CalendarTexturePickerScrollFrame_Update();
+end
+
+function CalendarTexturePickerFrame_Hide()
+	CalendarTexturePickerFrame.eventType = nil;
+	CalendarTexturePickerFrame.textureIndex = nil;
+	CalendarTexturePickerFrame:Hide();
+end
+
+function CalendarTexturePickerFrame_Toggle(eventType)
+	if ( CalendarTexturePickerFrame:IsShown() ) then
+		CalendarTexturePickerFrame_Hide();
+	else
+		CalendarTexturePickerFrame_Show(eventType);
 	end
 end
 
-function CalendarDungeonPickerFrame_CacheList(...)
-	local numDungeons = select("#", ...) / 2;
-	if ( numDungeons <= 0 ) then
-		return false;
-	end
-
-	while ( #CalendarDungeonPickerListCache > numDungeons ) do
-		tremove(CalendarDungeonPickerListCache);
-	end
-
-	local index = 1;
-	local i = 1;
-	while ( index <= numDungeons ) do
-		if ( not CalendarDungeonPickerListCache[index] ) then
-			CalendarDungeonPickerListCache[index] = { };
-		end
-
-		CalendarDungeonPickerListCache[index].title = select(i, ...);
-		i = i + 1;
-		CalendarDungeonPickerListCache[index].texture = select(i, ...);
-		i = i + 1;
-
-		index = index + 1;
-	end
-	return true;
-end
-
-function CalendarDungeonPickerScrollFrame_Update()
-	if ( not CalendarDungeonPickerFrame.eventType ) then
-		CalendarDungeonPickerFrame_Hide();
+function CalendarTexturePickerScrollFrame_Update()
+	if ( not CalendarTexturePickerFrame.eventType ) then
+		CalendarTexturePickerFrame_Hide();
 		return;
 	end
 
-	local buttons = CalendarDungeonPickerScrollFrame.buttons;
+	local buttons = CalendarTexturePickerScrollFrame.buttons;
 	local numButtons = #buttons;
-	local numDungeons = #CalendarDungeonPickerListCache;
-	local totalHeight = numDungeons * buttons[1]:GetHeight();
+	local numTextures = #CalendarEventTextureCache;
+	local totalHeight = numTextures * buttons[1]:GetHeight();
 
 	local button, buttonName, buttonIcon, buttonTitle;
-	local dungeon;
+	local eventTex, textureIndex;
+	local selectedTextureIndex = CalendarTexturePickerFrame.textureIndex;
+	local eventType = CalendarTexturePickerFrame.eventType;
 	local displayedHeight = 0;
-	local selectedDungeonIndex = CalendarDungeonPickerFrame.dungeonIndex;
-	local eventType = CalendarDungeonPickerFrame.eventType;
-	local offset = HybridScrollFrame_GetOffset(CalendarDungeonPickerScrollFrame);
-	local dungeonIndex = 0;
+	local offset = HybridScrollFrame_GetOffset(CalendarTexturePickerScrollFrame);
 	for i = 1, numButtons do
 		button = buttons[i];
 		buttonName = button:GetName();
-		dungeonIndex = i + offset;
-		dungeon = CalendarDungeonPickerListCache[dungeonIndex];
-		if ( dungeon ) then
+		textureIndex = i + offset;
+		eventTex = CalendarEventTextureCache[textureIndex];
+		if ( eventTex ) then
 			buttonIcon = getglobal(buttonName.."Icon");
 			buttonTitle = getglobal(buttonName.."Title");
-			-- record the dungeonIndex in the button
-			button.dungeonIndex = dungeonIndex;
-			-- set the dungeon name
-			buttonTitle:SetText(dungeon.title);
-			-- set the dungeon icon
-			buttonIcon:SetTexture("");
-			local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
-			buttonIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
-			if ( dungeon.texture and dungeon.texture ~= "" ) then
-				buttonIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..dungeon.texture);
+
+			if ( eventTex.textureIndex ) then
+				-- this is a texture
+
+				-- record the textureIndex in the button
+				button.textureIndex = eventTex.textureIndex;
+				-- set the selected dungeon
+				if ( selectedTextureIndex and button.textureIndex == selectedTextureIndex ) then
+					button:LockHighlight();
+					CalendarTexturePickerFrame.selectedTexture = button;
+				else
+					button:UnlockHighlight();
+				end
+
+				-- set the eventTex title
+				buttonTitle:SetText(eventTex.title);
+				buttonTitle:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				buttonTitle:ClearAllPoints();
+				buttonTitle:SetPoint("LEFT", buttonIcon, "RIGHT");
+				buttonTitle:Show();
+				-- set the eventTex icon
+				buttonIcon:SetTexture("");
+				local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
+				buttonIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
+				if ( eventTex.texture ~= "" ) then
+					buttonIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..eventTex.texture);
+				else
+					buttonIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
+				end
+				buttonIcon:Show();
+				-- make this button selectable
+				button:Enable();
+			elseif ( eventTex.expansionLevel and eventTex.expansionLevel >= 0 ) then
+				-- this is a header
+
+				-- record the textureIndex in the button
+				button.textureIndex = eventTex.textureIndex;
+
+				-- set the header title
+				buttonTitle:SetText(eventTex.title);
+				buttonTitle:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				buttonTitle:ClearAllPoints();
+				buttonTitle:SetPoint("LEFT", buttonIcon, "LEFT");
+				buttonTitle:Show();
+				-- hide the icon
+				buttonIcon:Hide();
+				-- make this button unselectable
+				button:Disable();
 			else
-				buttonIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
+				-- this is a blank space
+				buttonTitle:Hide();
+				buttonIcon:Hide();
+				button:Disable();
 			end
-			-- set the selected dungeon
-			if ( selectedDungeonIndex and dungeonIndex == selectedDungeonIndex ) then
-				button:LockHighlight();
-				CalendarDungeonPickerFrame.selectedDungeon = button;
-			else
-				button:UnlockHighlight();
-			end
+
 			button:Show();
-			dungeonIndex = dungeonIndex + 1;
 		else
-			button.dungeonIndex = nil;
+			button.textureIndex = nil;
 			button:Hide();
 		end
 		displayedHeight = displayedHeight + button:GetHeight();
 	end
-	HybridScrollFrame_Update(CalendarDungeonPickerScrollFrame, numDungeons, totalHeight, displayedHeight);
+	HybridScrollFrame_Update(CalendarTexturePickerScrollFrame, numTextures, totalHeight, displayedHeight);
 end
 
-function CalendarDungeonPickerAcceptButton_OnClick(self)
-	CalendarCreateEventFrame.selectedDungeonIndex = CalendarDungeonPickerFrame.dungeonIndex;
-	if ( CalendarCreateEventFrame.selectedDungeonIndex ) then
-		-- now that we've selected a dungeon, we can set the create event data
-		local eventType = CalendarDungeonPickerFrame.eventType;
+function CalendarTexturePickerAcceptButton_OnClick(self)
+	CalendarCreateEventFrame.selectedTextureIndex = CalendarTexturePickerFrame.textureIndex;
+	if ( CalendarCreateEventFrame.selectedTextureIndex ) then
+		-- now that we've selected a texture, we can set the create event data
+		local eventType = CalendarTexturePickerFrame.eventType;
 		CalendarEventSetType(eventType);
-		CalendarEventSetTextureID(CalendarCreateEventFrame.selectedDungeonIndex);
+		CalendarEventSetTextureID(CalendarCreateEventFrame.selectedTextureIndex);
 		-- update the create event frame using our selection
 		UIDropDownMenu_SetSelectedID(CalendarCreateEventTypeDropDown, eventType);
 		CalendarCreateEventFrame.selectedEventType = eventType;
-		CalendarCreateEventDungeon_Update();
-		CalendarDungeonPickerFrame:Hide();
+		CalendarCreateEventTexture_Update();
+		CalendarTexturePickerFrame:Hide();
 	end
 end
 
-function CalendarDungeonPickerButton_OnLoad(self)
+function CalendarTexturePickerButton_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
-function CalendarDungeonPickerButton_OnClick(self, button)
-	if ( CalendarDungeonPickerFrame.selectedDungeon ) then
-		CalendarDungeonPickerFrame.selectedDungeon:UnlockHighlight();
+function CalendarTexturePickerButton_OnClick(self, button)
+	if ( CalendarTexturePickerFrame.selectedTexture ) then
+		CalendarTexturePickerFrame.selectedTexture:UnlockHighlight();
 	end
-	CalendarDungeonPickerFrame.selectedDungeon = self;
-	CalendarDungeonPickerFrame.dungeonIndex = self.dungeonIndex;
+	CalendarTexturePickerFrame.selectedTexture = self;
+	CalendarTexturePickerFrame.textureIndex = self.textureIndex;
 	self:LockHighlight();
+
+	PlaySound("igMainMenuOptionCheckBoxOn");
+end
+
+
+-- Calendar Class Buttons
+
+function CalendarClassButtonContainer_Show(parent)
+	if ( CalendarClassButtonContainer:GetParent() ~= parent ) then
+		CalendarClassButtonContainer:SetParent(parent);
+		CalendarClassButtonContainer:ClearAllPoints();
+		CalendarClassButtonContainer:SetPoint("TOPLEFT", parent, "TOPRIGHT", -2, -30);
+	end
+	CalendarClassButtonContainer:Show();
+	_CalendarFrame_UpdateClassData();
+	CalendarClassButtonContainer_Update();
+end
+
+function CalendarClassButtonContainer_Hide()
+	CalendarClassButtonContainer:SetParent(nil);
+	CalendarClassButtonContainer:Hide();
+end
+
+function CalendarClassButtonContainer_Update()
+	if ( not CalendarClassButtonContainer:IsShown() ) then
+		return;
+	end
+
+	local button, buttonName, buttonIcon, buttonCount;
+	local classData, count;
+	local totalCount = 0;
+	for i, class in ipairs(CLASS_SORT_ORDER) do
+		button = getglobal("CalendarClassButton"..i);
+		buttonName = button:GetName();
+		buttonCount = getglobal(buttonName.."Count");
+		buttonIcon = button:GetNormalTexture();
+		-- set the count
+		classData = CalendarClassData[class];
+		count = classData.counts[CALENDAR_INVITESTATUS_ACCEPTED] + classData.counts[CALENDAR_INVITESTATUS_CONFIRMED];
+		buttonCount:SetText(count);
+		if ( count > 0 ) then
+			buttonCount:Show();
+			if ( CalendarFrame.modalFrame ) then
+				SetTextureDesaturated(buttonIcon, true);
+				button:Disable();
+			else
+				SetTextureDesaturated(buttonIcon, false);
+				button:Enable();
+			end
+		else
+			buttonCount:Hide();
+			SetTextureDesaturated(buttonIcon, true);
+			button:Disable();
+		end
+		-- adjust the total
+		totalCount = totalCount + count;
+	end
+	CalendarClassButtonTotalsCount:SetText(totalCount);
+	if ( CalendarFrame.modalFrame ) then
+		CalendarClassButtonTotals:Disable();
+		CalendarClassButtonTotalsCount:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	else
+		CalendarClassButtonTotals:Enable();
+		CalendarClassButtonTotalsCount:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+	end
+end
+
+function CalendarClassButtonContainer_OnLoad(self)
+	local button, buttonName, buttonIcon;
+	local classData, tcoords;
+
+	for i, class in ipairs(CLASS_SORT_ORDER) do
+		-- create button
+		button = CreateFrame("Button", "CalendarClassButton"..i, self, "CalendarClassButtonTemplate");
+		if ( i == 1 ) then
+			button:SetPoint("TOPLEFT", self, "TOPLEFT");
+		else
+			button:SetPoint("TOPLEFT", "CalendarClassButton"..(i-1), "BOTTOMLEFT", 0, -12);
+		end
+		-- get class data
+		classData = CalendarClassData[class];
+		-- set texture
+		buttonIcon = button:GetNormalTexture();
+		buttonIcon:SetDrawLayer("BORDER");
+		tcoords = classData.tcoords;
+		buttonIcon:SetTexCoord(tcoords[1], tcoords[2], tcoords[3], tcoords[4]);
+		-- set class
+		button.class = class;
+	end
+	CalendarClassButtonTotals:SetPoint("TOPLEFT", "CalendarClassButton"..MAX_CLASSES, "BOTTOMLEFT", 0, -12);
+end
+
+function CalendarClassButton_OnLoad(self)
+	self:Disable();
+end
+
+function CalendarClassButton_OnEnter(self)
+	-- TODO: set detailed counts info
+	local classData = CalendarClassData[self.class];
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(classData.name, nil, nil, nil, nil, 1);
+	GameTooltip:Show();
+end
+
+function CalendarClassButtonTotals_OnEnter(self)
+	-- TODO: set detailed counts info
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(CALENDAR_TOOLTIP_INVITE_TOTALS, nil, nil, nil, nil, 1);
+	GameTooltip:Show();
 end
 

@@ -2,6 +2,9 @@
 ..\FrameXML\UI.xsd">
     <Script file="BankFrame.lua"/>
 	<Button name="BankItemButtonGenericTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				BankFrameItemButton_OnLoad(self);
@@ -29,6 +32,9 @@
 		</Scripts>
 	</Button>
 	<Button name="BankItemButtonBagTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				BankFrameBagButton_OnLoad(self);

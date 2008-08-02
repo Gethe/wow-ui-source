@@ -394,4 +394,39 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	<StatusBar name="TooltipStatusBarTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="0" y="12"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="5" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\Tooltips\UI-StatusBar-Border">
+					<Size>
+						<AbsDimension x="128" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="-2" y="2"/>
+						</Anchor>
+						<Anchor point="TOPRIGHT">
+							<Offset x="2" y="-2"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetStatusBarColor(0, 1.0, 0);
+			</OnLoad>
+		</Scripts>
+		<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+	</StatusBar>
 </Ui>

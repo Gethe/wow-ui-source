@@ -2,6 +2,7 @@ local MAINMENU_SLIDETIME = 0.5;
 local MAINMENU_GONEYPOS = 120;	--Distance off screen for MainMenuBar to be completely hidden
 local MAINMENU_XPOS = 0;
 local MAINMENU_VEHICLE_ENDCAPPOS = 548;
+local DoAnchors = true;
 
 function MainMenuExpBar_Update()
 	local currXP = UnitXP("player");
@@ -11,6 +12,9 @@ function MainMenuExpBar_Update()
 end
 
 function MainMenuBar_OnUpdate(self, elapsed)
+	if self.updateVehicleArt then
+		MainMenuBar_UpdateVehicleArt()
+	end
 	if self.animating then
 		MainMenuBar_ContinueAnimation(self, elapsed)
 	end
@@ -68,45 +72,54 @@ function MainMenuBar_UpdateVehicleArt()
 	if ( MainMenuBar.state ~= "vehicle" ) then 
 		--return;
 	end
-	local temp
-	local hasPoss = IsPossessBarVisible();
-	VehiclePossessionRightEndCap:ClearAllPoints()
-	VehiclePossessionLeftEndCap:ClearAllPoints()
-	VehiclePossessionLeftEndCap:SetPoint("LEFT", PossessButton1, "LEFT", -15, 2)
-	VehiclePossessionRightEndCap:SetPoint("RIGHT", PossessButton2, "RIGHT", 15, 2)
-	
-	temp = VehiclePossessionRightEndCap:GetLeft() - VehiclePossessionLeftEndCap:GetRight()
-	VehiclePossessionMiddleTexture:SetHeight(18)
-	VehiclePossessionMiddleTexture:SetWidth(temp)
-	VehiclePossessionMiddleTexture:SetTexCoord(0.0, 0.1796875, 0.0 , 0.3203125, temp/128, 0.1796875, temp/128, 0.3203125 )
-	
-	temp = (MainMenuBarVehicleLeftActionBarEndCap:GetBottom()-MainMenuBarVehicleBottomLeftTexture:GetTop())
-	MainMenuBarVehicleLeftVertBar:SetHeight(temp)
-	MainMenuBarVehicleLeftVertBar:SetWidth(18)
-	MainMenuBarVehicleLeftVertBar:SetTexCoord(temp/128, 0.1796875, 0.0, 0.1796875, temp/128, 0.3203125, 0.0 , 0.3203125)
-	
-	if ( hasPoss ) then
-		temp=temp+1	--Right side of possession art isn't quite as tall as left side.
+	if ( DoAnchors ) then	--Only set the anchors the first time we update vehicle art
+		VehiclePossessionRightEndCap:ClearAllPoints()
+		VehiclePossessionLeftEndCap:ClearAllPoints()
+		VehiclePossessionLeftEndCap:SetPoint("LEFT", PossessButton1, "LEFT", -15, 2)
+		VehiclePossessionRightEndCap:SetPoint("RIGHT", PossessButton2, "RIGHT", 15, 2)
+		DoAnchors=false;
 	end
-	MainMenuBarVehicleRightVertBar:SetHeight(temp)
-	MainMenuBarVehicleRightVertBar:SetWidth(18)
-	MainMenuBarVehicleRightVertBar:SetTexCoord(temp/128, 0.3203125, 0.0, 0.3203125, temp/128, 0.1796875, 0.0 , 0.1796875)
-	
-	if ( hasPoss ) then
-		temp = (MainMenuBarVehicleRightActionBarEndCap:GetLeft()-VehiclePossessionRightEndCap:GetRight())
-		VehiclePossessionRightEndCap:Show()
-		VehiclePossessionLeftEndCap:Show()
-		VehiclePossessionMiddleTexture:Show()
+	if (VehiclePossessionRightEndCap:GetLeft()) then
+		MainMenuBar.updateVehicleArt=false;
+		MainMenuBarPlayerArtFrame:Hide()
+		MainMenuBarVehicleArtFrame:Show()
+		local temp
+		local hasPoss = IsPossessBarVisible();
+		
+		temp = VehiclePossessionRightEndCap:GetLeft() - VehiclePossessionLeftEndCap:GetRight()
+		VehiclePossessionMiddleTexture:SetHeight(18)
+		VehiclePossessionMiddleTexture:SetWidth(temp)
+		VehiclePossessionMiddleTexture:SetTexCoord(0.0, 0.1796875, 0.0 , 0.3203125, temp/128, 0.1796875, temp/128, 0.3203125 )
+		
+		temp = (MainMenuBarVehicleLeftActionBarEndCap:GetBottom()-MainMenuBarVehicleBottomLeftTexture:GetTop())
+		MainMenuBarVehicleLeftVertBar:SetHeight(temp)
+		MainMenuBarVehicleLeftVertBar:SetWidth(17)
+		MainMenuBarVehicleLeftVertBar:SetTexCoord(temp/128, 0.186, 0.0, 0.186, temp/128, 0.3203125, 0.0 , 0.3203125)	--0.1796875
+		
+		if ( hasPoss ) then
+			temp=temp+2	--Right side of possession art isn't quite as tall as left side.
+		end
+		MainMenuBarVehicleRightVertBar:SetHeight(temp)
+		MainMenuBarVehicleRightVertBar:SetWidth(18)
+		MainMenuBarVehicleRightVertBar:SetTexCoord(temp/128, 0.3203125, 0.0, 0.3203125, temp/128, 0.1796875, 0.0 , 0.1796875)
+		
+		if ( hasPoss ) then
+			temp = (MainMenuBarVehicleRightActionBarEndCap:GetLeft()-VehiclePossessionRightEndCap:GetRight())
+			VehiclePossessionRightEndCap:Show()
+			VehiclePossessionLeftEndCap:Show()
+			VehiclePossessionMiddleTexture:Show()
+		else
+			temp = (MainMenuBarVehicleRightActionBarEndCap:GetLeft()-MainMenuBarVehicleLeftActionBarEndCap:GetRight())
+			VehiclePossessionRightEndCap:Hide()
+			VehiclePossessionLeftEndCap:Hide()
+			VehiclePossessionMiddleTexture:Hide()
+		end
+		MainMenuBarVehicleLeftHorizBar:SetHeight(18)
+		MainMenuBarVehicleLeftHorizBar:SetWidth(temp)
+		MainMenuBarVehicleLeftHorizBar:SetTexCoord(0.0, temp/128, 0.179, 0.3203125) --0.1796875
 	else
-		temp = (MainMenuBarVehicleRightActionBarEndCap:GetLeft()-MainMenuBarVehicleLeftActionBarEndCap:GetRight())
-		VehiclePossessionRightEndCap:Hide()
-		VehiclePossessionLeftEndCap:Hide()
-		VehiclePossessionMiddleTexture:Hide()
+		MainMenuBar.updateVehicleArt=true;
 	end
-	MainMenuBarVehicleLeftHorizBar:SetHeight(18)
-	MainMenuBarVehicleLeftHorizBar:SetWidth(temp)
-	MainMenuBarVehicleLeftHorizBar:SetTexCoord(0.0, temp/128, 0.1796875, 0.3203125)
-	
 end
 function MainMenuBar_ToVehicleArt(self)
 	MainMenuBar.state = "vehicle";
@@ -116,12 +129,10 @@ function MainMenuBar_ToVehicleArt(self)
 	MultiBarBottomLeft:Hide();
 	MultiBarBottomRight:Hide();
 	
-	MainMenuBarPlayerArtFrame:Hide()
-	MainMenuBarVehicleArtFrame:Show()
 
 	self.busy = false
 	PossessBar_Update(true);
-	MainMenuBar_UpdateVehicleArt()
+	MainMenuBar.updateVehicleArt=true;
 	if ( GetBonusBarOffset() > 0 ) then
 		ShowBonusActionBar(true);
 	else
@@ -155,12 +166,12 @@ function MainMenuBar_Animate(toVehicle)
 			MainMenuBar_SetUpAnimation(MainMenuBar, false, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos, MainMenuBar_ToVehicleArt);
 		else
 			PossessBar_Update(true)
-			MainMenuBar_UpdateVehicleArt()
+			MainMenuBar.updateVehicleArt=true;
 			MainMenuBar.busy=false;
 			if ( GetBonusBarOffset() > 0 ) then
-				ShowBonusActionBar();
+				ShowBonusActionBar(true);
 			else
-				HideBonusActionBar();
+				HideBonusActionBar(true);
 			end
 		end
 	else
@@ -168,11 +179,12 @@ function MainMenuBar_Animate(toVehicle)
 			MainMenuBar_SetUpAnimation(MainMenuBar, false, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos, MainMenuBar_ToPlayerArt);
 			MainMenuBar_SetUpAnimation(MultiBarRight, true, MAINMENU_SLIDETIME, MainMenuBar_GetRightABPos, nil, true);
 		else
+			PossessBar_Update(true)
 			MainMenuBar.busy=false;
 			if ( GetBonusBarOffset() > 0 ) then
-				ShowBonusActionBar();
+				ShowBonusActionBar(true);
 			else
-				HideBonusActionBar();
+				HideBonusActionBar(true);
 			end
 		end
 	end

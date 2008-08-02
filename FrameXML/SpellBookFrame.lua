@@ -211,7 +211,11 @@ function SpellBookFrame_UpdatePages()
 		return;
 	end
 	if ( currentPage > maxPages ) then
-		SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = maxPages;
+		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
+			SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET] = maxPages;
+		else
+			SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = maxPages;
+		end
 		currentPage = maxPages;
 		UpdateSpells();
 		if ( currentPage == 1 ) then
@@ -586,7 +590,7 @@ end
 function SpellBook_GetCurrentPage()
 	local currentPage, maxPages;
 	local numPetSpells = HasPetSpells();
-	if ( numPetSpells and SpellBookFrame.bookType == BOOKTYPE_PET ) then
+	if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		currentPage = SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET];
 		maxPages = ceil(numPetSpells/SPELLS_PER_PAGE);
 	else

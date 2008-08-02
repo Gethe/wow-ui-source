@@ -155,7 +155,7 @@
 				self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
 			</OnEvent>
 			<OnClick>
-				ToggleQuestLog();
+				ToggleFrame(QuestLogFrame);
 			</OnClick>
 		</Scripts>
 	</Button>

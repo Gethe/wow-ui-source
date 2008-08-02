@@ -358,7 +358,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBar" relativePoint="TOPLEFT">
 				<Offset>
-					<AbsDimension x="24" y="0"/>
+					<AbsDimension x="22" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -415,9 +415,6 @@
 			<OnHide>
 				UIParent_ManageFramePositions();
 			</OnHide>
-			<OnSizeChanged>
-				MainMenuBar_UpdateVehicleArt();
-			</OnSizeChanged>
 		</Scripts>
 	</Frame>
 </Ui>

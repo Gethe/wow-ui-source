@@ -1141,14 +1141,7 @@
 										self:ClearFocus();
 									</OnEscapePressed>
 									<OnTextChanged>
-										local scrollBar = getglobal(self:GetParent():GetName().."ScrollBar")
-										local min;
-										local max;
-										min, max = scrollBar:GetMinMaxValues();
-										if ( max > 0 and (self.max ~= max) ) then
-											self.max = max;
-											scrollBar:SetValue(max);
-										end
+										ScrollingEdit_OnTextChanged(self, self:GetParent());
 										local currentTab = GetCurrentGuildBankTab();
 										if ( currentTab > GetNumGuildBankTabs() ) then
 											GuildBankInfoSaveButton:Hide();
@@ -1162,7 +1155,7 @@
 										ScrollingEdit_OnCursorChanged(self, x, y-10, w, h);
 									</OnCursorChanged>
 									<OnUpdate>
-										ScrollingEdit_OnUpdate(GuildBankInfoScrollFrame);
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
 									</OnUpdate>
 								</Scripts>
 								<FontString inherits="GameFontHighlight"/>

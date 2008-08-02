@@ -273,7 +273,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="95" y="150"/>
+							<AbsDimension x="45" y="150"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -299,6 +299,15 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetStableStabledPet2" inherits="PetStableSlotTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableStabledPet1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString inherits="GameFontNormalSmall" text="STABLED_PETS">
@@ -313,9 +322,18 @@
 					</Layer>
 				</Layers>
 			</CheckButton>
-			<CheckButton name="PetStableStabledPet2" inherits="PetStableSlotTemplate" id="2">
+			<CheckButton name="PetStableStabledPet3" inherits="PetStableSlotTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetStableStabledPet1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="PetStableStabledPet2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetStableStabledPet4" inherits="PetStableSlotTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableStabledPet3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="15" y="0"/>
 						</Offset>

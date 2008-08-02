@@ -67,6 +67,8 @@ function PlayerTalentFrame_Update()
 	PanelTemplates_UpdateTabs(PlayerTalentFrame);
 
 	SetPortraitTexture(PlayerTalentFramePortrait, PlayerTalentFrame.unit);
+	SetPortraitTexture(PlayerTalentFrameType1:GetNormalTexture(),"player");
+	SetPortraitTexture(PlayerTalentFrameType2:GetNormalTexture(),"pet");
 
 	PlayerTalentFrame.currentSelectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
 end

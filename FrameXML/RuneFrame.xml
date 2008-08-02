@@ -6,7 +6,7 @@
       <AbsDimension x="18" y="18"/>
     </Size>
     <Frames>
-		<Cooldown name="$parentCooldown">
+		<Cooldown name="$parentCooldown" drawEdge="true">
 			<Size x="15" y="15"/>
 			<Anchors>
 			  <Anchor point="CENTER">
@@ -68,7 +68,8 @@
       </OnLoad>
     </Scripts>
   </Button>
-
+	
+	<!--If you change anything about RuneFrame (specifically anchors), make sure to change the relevant information in UnitFrame_SetUnit -->
   <Frame name="RuneFrame" parent="UIParent" frameStrata="LOW" toplevel="true" hidden="false">
     <Size>
       <AbsDimension x="130" y="18"/>

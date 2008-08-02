@@ -54,13 +54,11 @@ function PetFrame_OnEvent (self, event, ...)
 
 	local arg1, arg2, arg3, arg4, arg5 = ...;
 	if ( (event == "UNIT_PET" and arg1 == "player" ) or event == "PET_UI_UPDATE" ) then
-		local unit = "pet";
-		if ( UnitInVehicle("player") ) then
-			if ( UnitHasVehicleUI("player") ) then
-				unit = "player";
-			else
-				unit = "";
-			end
+		local unit
+		if ( UnitInVehicle("player") and UnitHasVehicleUI("player") ) then
+			unit = "player";
+		else
+			unit = "pet";
 		end
 		UnitFrame_SetUnit(self, unit, PetFrameHealthBar, PetFrameManaBar);
 		PetFrame_Update(self);
@@ -83,14 +81,15 @@ function PetFrame_OnEvent (self, event, ...)
 		StaticPopup_Show("RENAME_PET");
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		if ( arg1 == "player" ) then
-			local showVehicle = arg2;
-			if ( showVehicle ) then
-				UnitFrame_SetUnit(self, "player", PetFrameHealthBar, PetFrameManaBar);
-				PetFrame_Update(self);
+			local unit;
+			local showVehicleUI = arg2;
+			if ( showVehicleUI ) then
+				unit = "player";
 			else
-				UnitFrame_SetUnit(self, "", PetFrameHealthBar, PetFrameManaBar);
-				PetFrame_Update(self);
+				unit = "pet";
 			end
+			UnitFrame_SetUnit(self, unit, PetFrameHealthBar, PetFrameManaBar);
+			PetFrame_Update(self);
 		end
 	elseif ( event == "UNIT_EXITING_VEHICLE" ) then
 		if ( arg1 == "player" ) then

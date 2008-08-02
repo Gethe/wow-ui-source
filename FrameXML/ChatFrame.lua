@@ -1301,11 +1301,11 @@ end
 -- Slash commands
 SlashCmdList = { };
 
-SlashCmdList["CONSOLE"] = function(self, msg)
+SlashCmdList["CONSOLE"] = function(msg)
 	ConsoleExec(msg);
 end
 
-SlashCmdList["CHATLOG"] = function(self, msg)
+SlashCmdList["CHATLOG"] = function(msg)
 	local info = ChatTypeInfo["SYSTEM"];
 	if ( LoggingChat() ) then
 		LoggingChat(false);
@@ -1316,7 +1316,7 @@ SlashCmdList["CHATLOG"] = function(self, msg)
 	end
 end
 
-SlashCmdList["COMBATLOG"] = function(self, msg)
+SlashCmdList["COMBATLOG"] = function(msg)
 	local info = ChatTypeInfo["SYSTEM"];
 	if ( LoggingCombat() ) then
 		LoggingCombat(false);
@@ -1327,64 +1327,64 @@ SlashCmdList["COMBATLOG"] = function(self, msg)
 	end
 end
 
-SlashCmdList["INVITE"] = function(self, msg)
+SlashCmdList["INVITE"] = function(msg)
 	InviteUnit(msg);
 end
 
-SlashCmdList["UNINVITE"] = function(self, msg)
+SlashCmdList["UNINVITE"] = function(msg)
 	UninviteUnit(msg);
 end
 
-SlashCmdList["PROMOTE"] = function(self, msg)
+SlashCmdList["PROMOTE"] = function(msg)
 	PromoteToLeader(msg);
 end
 
-SlashCmdList["REPLY"] = function(self, msg)
+SlashCmdList["REPLY"] = function(msg, editBox)
 	local lastTell = ChatEdit_GetLastTellTarget();
 	if ( lastTell ~= "" ) then
-		SendChatMessage(msg, "WHISPER", self.language, lastTell);
+		SendChatMessage(msg, "WHISPER", editBox.language, lastTell);
 	else
 		-- error message
 	end
 end
 
-SlashCmdList["HELP"] = function(self, msg)
+SlashCmdList["HELP"] = function(msg)
 	ChatFrame_DisplayHelpText(DEFAULT_CHAT_FRAME);
 end
 
-SlashCmdList["MACROHELP"] = function(self, msg)
+SlashCmdList["MACROHELP"] = function(msg)
 	ChatFrame_DisplayMacroHelpText(DEFAULT_CHAT_FRAME);
 end
 
-SlashCmdList["TIME"] = function(self, msg)
+SlashCmdList["TIME"] = function(msg)
 	ChatFrame_DisplayGameTime(DEFAULT_CHAT_FRAME);
 end
 
-SlashCmdList["PLAYED"] = function(self, msg)
+SlashCmdList["PLAYED"] = function(msg)
 	RequestTimePlayed();
 end
 
-SlashCmdList["FOLLOW"] = function(self, msg)
+SlashCmdList["FOLLOW"] = function(msg)
 	FollowUnit(msg);
 end
 
-SlashCmdList["TRADE"] = function(self, msg)
+SlashCmdList["TRADE"] = function(msg)
 	InitiateTrade("target");
 end
 
-SlashCmdList["INSPECT"] = function(self, msg)
+SlashCmdList["INSPECT"] = function(msg)
 	InspectUnit("target");
 end
 
-SlashCmdList["LOGOUT"] = function(self, msg)
+SlashCmdList["LOGOUT"] = function(msg)
 	Logout();
 end
 
-SlashCmdList["QUIT"] = function(self, msg)
+SlashCmdList["QUIT"] = function(msg)
 	Quit();
 end
 
-SlashCmdList["JOIN"] = 	function(self, msg)
+SlashCmdList["JOIN"] = 	function(msg)
 	local name = gsub(msg, "%s*([^%s]+).*", "%1");
 	local password = gsub(msg, "%s*([^%s]+)%s*(.*)", "%2");
 	if(strlen(name) <= 0) then
@@ -1411,7 +1411,7 @@ SlashCmdList["JOIN"] = 	function(self, msg)
 	end
 end
 
-SlashCmdList["LEAVE"] = function(self, msg)
+SlashCmdList["LEAVE"] = function(msg)
 	local name = strmatch(msg, "%s*([^%s]+)");
 	if ( name ) then
 		LeaveChannelByName(name);
@@ -1419,7 +1419,7 @@ SlashCmdList["LEAVE"] = function(self, msg)
 	
 end
 
-SlashCmdList["LIST_CHANNEL"] = function(self, msg)
+SlashCmdList["LIST_CHANNEL"] = function(msg)
 	local name = strmatch(msg, "%s*([^%s]+)");
 	if ( name ) then
 		ListChannelByName(name);
@@ -1429,19 +1429,19 @@ SlashCmdList["LIST_CHANNEL"] = function(self, msg)
 end
 
 SlashCmdList["CHAT_HELP"] = 
-	function(self, msg)
+	function(msg)
 		ChatFrame_DisplayChatHelp(DEFAULT_CHAT_FRAME)
 	end
 
 SlashCmdList["CHAT_PASSWORD"] =
-	function(self, msg)
+	function(msg)
 		local name = gsub(msg, "%s*([^%s]+).*", "%1");
 		local password = gsub(msg, "%s*([^%s]+)%s*(.*)", "%2");
 		SetChannelPassword(name, password);
 	end
 
 SlashCmdList["CHAT_OWNER"] =
-	function(self, msg)
+	function(msg)
 		local channel = gsub(msg, "%s*([^%s]+).*", "%1");
 		local newowner = gsub(msg, "%s*([^%s]+)%s*(.*)", "%2");
 		if(strlen(channel) > 0) then
@@ -1454,7 +1454,7 @@ SlashCmdList["CHAT_OWNER"] =
 	end
 
 SlashCmdList["CHAT_MODERATOR"] = 
-	function(self, msg)
+	function(msg)
 	local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 		if ( channel and player ) then
 			ChannelModerator(channel, player);
@@ -1462,7 +1462,7 @@ SlashCmdList["CHAT_MODERATOR"] =
 	end
 
 SlashCmdList["CHAT_UNMODERATOR"] =
-	function(self, msg)
+	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 		if ( channel and player ) then
 			ChannelUnmoderator(channel, player);
@@ -1470,7 +1470,7 @@ SlashCmdList["CHAT_UNMODERATOR"] =
 	end
 
 SlashCmdList["CHAT_MUTE"] =
-	function(self, msg)
+	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 		if ( channel and player ) then
 			ChannelMute(channel, player);
@@ -1478,7 +1478,7 @@ SlashCmdList["CHAT_MUTE"] =
 	end
 
 SlashCmdList["CHAT_UNMUTE"] =
-	function(self, msg)
+	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 		if ( channel and player ) then
 			ChannelUnmute(channel, player);
@@ -1486,7 +1486,7 @@ SlashCmdList["CHAT_UNMUTE"] =
 	end
 
 SlashCmdList["CHAT_CINVITE"] =
-	function(self, msg)
+	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 		if ( channel and player ) then
 			ChannelInvite(channel, player);
@@ -1494,7 +1494,7 @@ SlashCmdList["CHAT_CINVITE"] =
 	end
 
 SlashCmdList["CHAT_KICK"] =
-	function(self, msg)
+	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 		if ( channel and player ) then
 			ChannelKick(channel, player);
@@ -1502,7 +1502,7 @@ SlashCmdList["CHAT_KICK"] =
 	end
 
 SlashCmdList["CHAT_BAN"] =
-	function(self, msg)
+	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 		if ( channel and player ) then
 			ChannelBan(channel, player);
@@ -1510,7 +1510,7 @@ SlashCmdList["CHAT_BAN"] =
 	end
 
 SlashCmdList["CHAT_UNBAN"] =
-	function(self, msg)
+	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 		if ( channel and player ) then
 			ChannelUnban(channel, player);
@@ -1518,7 +1518,7 @@ SlashCmdList["CHAT_UNBAN"] =
 	end
 
 SlashCmdList["CHAT_ANNOUNCE"] =
-	function(self, msg)
+	function(msg)
 		local channel = strmatch(msg, "%s*([^%s]+)");
 		if ( channel ) then
 			ChannelToggleAnnouncements(channel);
@@ -1526,7 +1526,7 @@ SlashCmdList["CHAT_ANNOUNCE"] =
 	end
 
 SlashCmdList["TEAM_INVITE"] =
-	function(self, msg)
+	function(msg)
 		if ( msg ~= "" ) then
 			local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
 			team = tonumber(team);
@@ -1541,7 +1541,7 @@ SlashCmdList["TEAM_INVITE"] =
 		ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_INVITE);
 	end
 
-SlashCmdList["TEAM_QUIT"] = function(self, msg)
+SlashCmdList["TEAM_QUIT"] = function(msg)
 	if ( msg ~= "" ) then
 		local team = strmatch(msg, "^(%d+)[%w+%d+]*");
 		team = tonumber(team);
@@ -1556,7 +1556,7 @@ SlashCmdList["TEAM_QUIT"] = function(self, msg)
 	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_QUIT);
 end
 
-SlashCmdList["TEAM_UNINVITE"] = function(self, msg)
+SlashCmdList["TEAM_UNINVITE"] = function(msg)
 	if ( msg ~= "" ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
 		team = tonumber(team);
@@ -1571,7 +1571,7 @@ SlashCmdList["TEAM_UNINVITE"] = function(self, msg)
 	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_UNINVITE);
 end
 
-SlashCmdList["TEAM_CAPTAIN"] = function(self, msg)
+SlashCmdList["TEAM_CAPTAIN"] = function(msg)
 	if ( msg ~= "" ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
 		team = tonumber(team);
@@ -1586,7 +1586,7 @@ SlashCmdList["TEAM_CAPTAIN"] = function(self, msg)
 	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_CAPTAIN);
 end
 
-SlashCmdList["TEAM_DISBAND"] = function(self, msg)
+SlashCmdList["TEAM_DISBAND"] = function(msg)
 	if ( msg ~= "" ) then
 		local team = strmatch(msg, "^(%d+)[%w+%d+]*");
 		team = tonumber(team);
@@ -1601,45 +1601,45 @@ SlashCmdList["TEAM_DISBAND"] = function(self, msg)
 	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_DISBAND);
 end
 
-SlashCmdList["GUILD_INVITE"] = function(self, msg)
+SlashCmdList["GUILD_INVITE"] = function(msg)
 	GuildInvite(msg);
 end
 
-SlashCmdList["GUILD_UNINVITE"] = function(self, msg)
+SlashCmdList["GUILD_UNINVITE"] = function(msg)
 	GuildUninvite(msg);
 end
 
-SlashCmdList["GUILD_PROMOTE"] = function(self, msg)
+SlashCmdList["GUILD_PROMOTE"] = function(msg)
 	GuildPromote(msg);
 end
 
-SlashCmdList["GUILD_DEMOTE"] = function(self, msg)
+SlashCmdList["GUILD_DEMOTE"] = function(msg)
 	GuildDemote(msg);
 end
 
-SlashCmdList["GUILD_LEADER"] = function(self, msg)
+SlashCmdList["GUILD_LEADER"] = function(msg)
 	GuildSetLeader(msg);
 end
 
-SlashCmdList["GUILD_MOTD"] = function(self, msg)
+SlashCmdList["GUILD_MOTD"] = function(msg)
 	GuildSetMOTD(msg)
 end
 
-SlashCmdList["GUILD_LEAVE"] = function(self, msg)
+SlashCmdList["GUILD_LEAVE"] = function(msg)
 	GuildLeave();
 end
 
-SlashCmdList["GUILD_DISBAND"] = function(self, msg)
+SlashCmdList["GUILD_DISBAND"] = function(msg)
 	if ( IsGuildLeader() ) then
 		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
 	end
 end
 
-SlashCmdList["GUILD_INFO"] = function(self, msg)
+SlashCmdList["GUILD_INFO"] = function(msg)
 	GuildInfo();
 end
 
-SlashCmdList["GUILD_ROSTER"] = function(self, msg)
+SlashCmdList["GUILD_ROSTER"] = function(msg)
 	if ( IsInGuild() ) then
 		PanelTemplates_SetTab(FriendsFrame, 3);
 		FriendsFrame_ShowSubFrame("GuildFrame");
@@ -1651,15 +1651,15 @@ end
 --	ChatFrame_DisplayGuildHelp(DEFAULT_CHAT_FRAME);
 --end
 
-SlashCmdList["CHAT_AFK"] = function(self, msg)
+SlashCmdList["CHAT_AFK"] = function(msg)
 	SendChatMessage(msg, "AFK");
 end
 
-SlashCmdList["CHAT_DND"] = function(self, msg)
+SlashCmdList["CHAT_DND"] = function(msg)
 	SendChatMessage(msg, "DND");
 end
 
-SlashCmdList["WHO"] = function(self, msg)
+SlashCmdList["WHO"] = function(msg)
 	if ( msg == "" ) then
 		msg = WhoFrame_GetDefaultWhoCommand();
 		ShowWhoPanel();
@@ -1671,11 +1671,11 @@ SlashCmdList["WHO"] = function(self, msg)
 	SendWho(msg);
 end
 
-SlashCmdList["CHANNEL"] = function(self, msg)
-	SendChatMessage(msg, "CHANNEL", self.language, self:GetAttribute("channelTarget"));
+SlashCmdList["CHANNEL"] = function(msg, editBox)
+	SendChatMessage(msg, "CHANNEL", editBox.language, editBox:GetAttribute("channelTarget"));
 end
 
-SlashCmdList["FRIENDS"] = function(self, msg)
+SlashCmdList["FRIENDS"] = function(msg)
 	local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 	if ( player ~= "" or UnitIsPlayer("target") ) then
 		AddFriend(player, note);
@@ -1684,11 +1684,11 @@ SlashCmdList["FRIENDS"] = function(self, msg)
 	end
 end
 
-SlashCmdList["REMOVEFRIEND"] = function(self, msg)
+SlashCmdList["REMOVEFRIEND"] = function(msg)
 	RemoveFriend(msg);
 end
 
-SlashCmdList["IGNORE"] = function(self, msg)
+SlashCmdList["IGNORE"] = function(msg)
 	if ( msg ~= "" or UnitIsPlayer("target") ) then
 		AddOrDelIgnore(msg);
 	else
@@ -1696,7 +1696,7 @@ SlashCmdList["IGNORE"] = function(self, msg)
 	end
 end
 
-SlashCmdList["UNIGNORE"] = function(self, msg)
+SlashCmdList["UNIGNORE"] = function(msg)
 	if ( msg ~= "" or UnitIsPlayer("target") ) then
 		DelIgnore(msg);
 	else
@@ -1704,31 +1704,31 @@ SlashCmdList["UNIGNORE"] = function(self, msg)
 	end
 end
 
-SlashCmdList["SCRIPT"] = function(self, msg)
+SlashCmdList["SCRIPT"] = function(msg)
 	RunScript(msg);
 end
 
-SlashCmdList["LOOT_FFA"] = function(self, msg)
+SlashCmdList["LOOT_FFA"] = function(msg)
 	SetLootMethod("freeforall");
 end
 
-SlashCmdList["LOOT_ROUNDROBIN"] = function(self, msg)
+SlashCmdList["LOOT_ROUNDROBIN"] = function(msg)
 	SetLootMethod("roundrobin");
 end
 
-SlashCmdList["LOOT_MASTER"] = function(self, msg)
+SlashCmdList["LOOT_MASTER"] = function(msg)
 	SetLootMethod("master", msg);
 end
 
-SlashCmdList["LOOT_GROUP"] = function(self, msg)
+SlashCmdList["LOOT_GROUP"] = function(msg)
 	SetLootMethod("group");
 end
 
-SlashCmdList["LOOT_NEEDBEFOREGREED"] = function(self, msg)
+SlashCmdList["LOOT_NEEDBEFOREGREED"] = function(msg)
 	SetLootMethod("needbeforegreed");
 end
 
-SlashCmdList["LOOT_SETTHRESHOLD"] = function(self, msg)
+SlashCmdList["LOOT_SETTHRESHOLD"] = function(msg)
 	if ( not msg ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(format(ERROR_SLASH_LOOT_SETTHRESHOLD, MIN_LOOT_THRESHOLD, MAX_LOOT_THRESHOLD), info.r, info.g, info.b, info.id);
@@ -1763,7 +1763,7 @@ SlashCmdList["LOOT_SETTHRESHOLD"] = function(self, msg)
 	end
 end
 
-SlashCmdList["RANDOM"] = function(self, msg)
+SlashCmdList["RANDOM"] = function(msg)
 	local num1 = gsub(msg, "(%s*)(%d+)(.*)", "%2", 1);
 	local rest = gsub(msg, "(%s*)(%d+)(.*)", "%3", 1);
 	local num2 = "";
@@ -1783,15 +1783,15 @@ SlashCmdList["RANDOM"] = function(self, msg)
 	end
 end
 
-SlashCmdList["MACRO"] = function(self, msg)
+SlashCmdList["MACRO"] = function(msg)
 	ShowMacroFrame();
 end
 
-SlashCmdList["PVP"] = function(self, msg)
+SlashCmdList["PVP"] = function(msg)
 	TogglePVP();
 end
 
-SlashCmdList["RAID_INFO"] = function(self, msg)
+SlashCmdList["RAID_INFO"] = function(msg)
 	RaidFrame.slashCommand = 1;
 	if ( ( GetNumSavedInstances() > 0 ) and not RaidInfoFrame:IsShown() ) then
 		ToggleFriendsFrame(5);
@@ -1801,17 +1801,17 @@ SlashCmdList["RAID_INFO"] = function(self, msg)
 	end
 end
 
-SlashCmdList["READYCHECK"] = function(self, msg)
+SlashCmdList["READYCHECK"] = function(msg)
 	if ( ((IsRaidLeader() or IsRaidOfficer()) and GetNumRaidMembers() > 0) or (IsPartyLeader() and GetNumPartyMembers()) ) then
 		DoReadyCheck();
 	end
 end
 
-SlashCmdList["SAVEGUILDROSTER"] = function(self, msg)
+SlashCmdList["SAVEGUILDROSTER"] = function(msg)
 	SaveGuildRoster();
 end
 
-SlashCmdList["LOOKINGFORGROUP"] = function(self, msg)
+SlashCmdList["LOOKINGFORGROUP"] = function(msg)
 	local updateType = LFGParentFrame_UpdateTabs();
 	if ( not updateType ) then
 		ToggleLFGParentFrame(1);
@@ -1825,35 +1825,35 @@ SlashCmdList["LOOKINGFORGROUP"] = function(self, msg)
 	end
 end
 
-SlashCmdList["LOOKINGFORMORE"] = function(self, msg)
+SlashCmdList["LOOKINGFORMORE"] = function(msg)
 	ToggleLFGParentFrame(2);
 end
 
-SlashCmdList["BENCHMARK"] = function(self, msg)
+SlashCmdList["BENCHMARK"] = function(msg)
 	SetTaxiBenchmarkMode(msg);
 end
 
-SlashCmdList["DISMOUNT"] = function(self, msg)
+SlashCmdList["DISMOUNT"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		Dismount();
 	end
 end
 
-SlashCmdList["RESETCHAT"] = function(self, msg)
+SlashCmdList["RESETCHAT"] = function(msg)
 	FCF_ResetAllWindows();
 end
 
-SlashCmdList["ENABLE_ADDONS"] = function(self, msg)
+SlashCmdList["ENABLE_ADDONS"] = function(msg)
 	EnableAllAddOns();
 	ReloadUI();
 end
 
-SlashCmdList["DISABLE_ADDONS"] = function(self, msg)
+SlashCmdList["DISABLE_ADDONS"] = function(msg)
 	DisableAllAddOns();
 	ReloadUI();
 end
 
-SlashCmdList["STOPWATCH"] = function(self, msg)
+SlashCmdList["STOPWATCH"] = function(msg)
 	if ( not IsAddOnLoaded("Blizzard_TimeManager") ) then
 		UIParentLoadAddOn("Blizzard_TimeManager");
 	end
@@ -1870,7 +1870,7 @@ SlashCmdList["STOPWATCH"] = function(self, msg)
 	end
 end
 
-SlashCmdList["CALENDAR"] = function(self, msg)
+SlashCmdList["CALENDAR"] = function(msg)
 	if ( not IsAddOnLoaded("Blizzard_Calendar") ) then
 		UIParentLoadAddOn("Blizzard_Calendar");
 	end
@@ -1879,7 +1879,7 @@ SlashCmdList["CALENDAR"] = function(self, msg)
 	end
 end
 
-SlashCmdList["ACHIEVEMENTUI"] = function(self, msg)
+SlashCmdList["ACHIEVEMENTUI"] = function(msg)
 	ToggleAchievementFrame();
 end
 
@@ -2246,7 +2246,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(CHAT_RESTRICTED, info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
-				self:AddMessage(format(getglobal("CHAT_"..type.."_GET")..arg1, arg4), info.r, info.g, info.b, info.id);
+				self:AddMessage(format(getglobal("CHAT_"..type.."_GET")..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
 			else
 				self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 			end
@@ -3156,7 +3156,7 @@ function ChatEdit_ParseText(editBox, send)
 	-- Check the hash tables for slash commands and emotes to see if we've run this before. 
 	if ( hash_SlashCmdList[command] ) then
 		-- if the code in here changes - change the corresponding code below
-		hash_SlashCmdList[command](editBox, strtrim(msg));
+		hash_SlashCmdList[command](strtrim(msg), editBox);
 		editBox:AddHistoryLine(text);
 		ChatEdit_OnEscapePressed(editBox);
 		return;
@@ -3177,7 +3177,7 @@ function ChatEdit_ParseText(editBox, send)
 			if ( cmdString == command ) then
 				-- if the code in here changes - change the corresponding code above
 				hash_SlashCmdList[command] = value;	-- add to hash
-				value(editBox, strtrim(msg));
+				value(strtrim(msg), editBox);
 				editBox:AddHistoryLine(text);
 				ChatEdit_OnEscapePressed(editBox);
 				return;

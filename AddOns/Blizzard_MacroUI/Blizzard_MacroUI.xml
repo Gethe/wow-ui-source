@@ -383,20 +383,13 @@
 								end
 								MacroFrameCharLimitText:SetFormattedText(MACROFRAME_CHAR_LIMIT, MacroFrameText:GetNumLetters());
 
-								local scrollBar = getglobal(self:GetParent():GetName().."ScrollBar")
-								local min;
-								local max;
-								min, max = scrollBar:GetMinMaxValues();
-								if ( max > 0 and (self.max ~= max) ) then
-									self.max = max;
-									scrollBar:SetValue(max);
-								end
+								ScrollingEdit_OnTextChanged(self, self:GetParent());
 							</OnTextChanged>
 							<OnCursorChanged>
 								ScrollingEdit_OnCursorChanged(self, x, y, w, h);
 							</OnCursorChanged>
 							<OnUpdate>
-								ScrollingEdit_OnUpdate(MacroFrameScrollFrame);
+								ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
 							</OnUpdate>
 							<OnEscapePressed>
 								self:ClearFocus();

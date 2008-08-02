@@ -4,16 +4,18 @@ function ToggleCharacter (tab)
 	local subFrame = getglobal(tab);
 	if ( subFrame ) then
 		PanelTemplates_SetTab(CharacterFrame, subFrame:GetID());
-		if ( CharacterFrame:IsShown() ) then
-			if ( subFrame:IsShown() ) then
-				HideUIPanel(CharacterFrame);	
+		if (not subFrame.hidden) then
+			if ( CharacterFrame:IsShown() ) then
+				if ( subFrame:IsShown() ) then
+					HideUIPanel(CharacterFrame);	
+				else
+					PlaySound("igCharacterInfoTab");
+					CharacterFrame_ShowSubFrame(tab);
+				end
 			else
-				PlaySound("igCharacterInfoTab");
+				ShowUIPanel(CharacterFrame);
 				CharacterFrame_ShowSubFrame(tab);
 			end
-		else
-			ShowUIPanel(CharacterFrame);
-			CharacterFrame_ShowSubFrame(tab);
 		end
 	end
 end

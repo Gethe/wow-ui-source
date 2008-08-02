@@ -120,9 +120,18 @@ end
 -- GameTimeFrame functions
 
 function GameTimeFrame_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES");
 	self:RegisterEvent("CALENDAR_EVENT_ALARM");
 	self:RegisterForClicks("AnyUp");
+
+	-- adjust button texture layers to not interfere with overlaid textures
+	local tex;
+	tex = self:GetNormalTexture();
+	tex:SetDrawLayer("BACKGROUND");
+	tex = self:GetPushedTexture();
+	tex:SetDrawLayer("BACKGROUND");
+
 	self.timeOfDay = 0;
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 	self.pendingCalendarInvites = 0;
@@ -134,15 +143,14 @@ function GameTimeFrame_OnEnter(self)
 end
 
 function GameTimeFrame_OnEvent(self, event, ...)
-	if ( event == "CALENDAR_UPDATE_PENDING_INVITES" ) then
-		Calendar_LoadUI();
-		if ( CalendarFrame and not CalendarFrame:IsShown() ) then
-			local pendingCalendarInvites = CalendarGetNumPendingInvites();
-			if ( pendingCalendarInvites > self.pendingCalendarInvites ) then
+	if ( event == "CALENDAR_UPDATE_PENDING_INVITES" or event == "PLAYER_ENTERING_WORLD" ) then
+		local pendingCalendarInvites = CalendarGetNumPendingInvites();
+		if ( pendingCalendarInvites > self.pendingCalendarInvites ) then
+			if ( not CalendarFrame or (CalendarFrame and not CalendarFrame:IsShown()) ) then
 				GameTimeCalendarInvitesTexture:Show();
 				UIFrameFlash(GameTimeCalendarInvitesTexture, 1.0, 1.0, -1);
+				self.pendingCalendarInvites = pendingCalendarInvites;
 			end
-			self.pendingCalendarInvites = pendingCalendarInvites;
 		end
 	elseif ( event == "CALENDAR_EVENT_ALARM" ) then
 		local title, hour, minute = ...;
@@ -193,6 +201,7 @@ function GameTimeFrame_OnClick(self)
 			Calendar_Show();
 		end
 		GameTimeCalendarInvitesTexture:Hide();
+		self.pendingCalendarInvites = 0;
 		UIFrameFlashStop(GameTimeCalendarInvitesTexture);
 	else
 		ToggleCalendar();

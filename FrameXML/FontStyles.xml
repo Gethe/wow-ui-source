@@ -259,10 +259,10 @@
 	</Font>
 	
 	<Font name="CombatLogFont" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
-	<Font name="GameTooltipText" inherits="SystemFont_Med1" justifyH="LEFT" virtual="true">
+	<Font name="GameTooltipText" inherits="Tooltip_Med" justifyH="LEFT" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	<Font name="GameTooltipTextSmall" inherits="SystemFont_Small" justifyH="LEFT" virtual="true">
+	<Font name="GameTooltipTextSmall" inherits="Tooltip_Small" justifyH="LEFT" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	<Font name="GameTooltipHeaderText" inherits="GameTooltipHeader" justifyH="LEFT" virtual="true">
@@ -284,8 +284,11 @@
 		<Color r="1.0" g="0.78" b="0"/>
 	</Font>
 	
-	<Font name="AchievementPointsFont" inherits="AchievementPoints" justifyH="CENTER" virtual="true">
-		<Color r="1" g="1" b="1"/>
+	<Font name="AchievementPointsFont" inherits="SystemFont_Shadow_Large" justifyH="CENTER" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>	
+	<Font name="AchievementPointsFontSmall" inherits="SystemFont_Shadow_Med1" justifyH="CENTER" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
 	</Font>	
 	<Font name="AchievementDescriptionDisabledFont" inherits="SystemFont_Shadow_Small" justifyH="CENTER" justifyV="TOP" virtual="true">
 		<Color r="1" g="1" b="1"/>

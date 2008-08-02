@@ -3799,20 +3799,13 @@
 												self:ClearFocus();
 											</OnEscapePressed>
 											<OnTextChanged>
-												local scrollBar = getglobal(self:GetParent():GetName().."ScrollBar")
-												local min;
-												local max;
-												min, max = scrollBar:GetMinMaxValues();
-												if ( max > 0 and (self.max ~= max) ) then
-													self.max = max;
-													scrollBar:SetValue(max);
-												end
+												ScrollingEdit_OnTextChanged(self, self:GetParent());
 											</OnTextChanged>
 											<OnCursorChanged>
 												ScrollingEdit_OnCursorChanged(self, x, y, w, h);
 											</OnCursorChanged>
 											<OnUpdate>
-												ScrollingEdit_OnUpdate(GuildInfoFrameScrollFrame);
+												ScrollingEdit_OnUpdate(self, 0, self:GetParent());
 											</OnUpdate>
 										</Scripts>
 										<FontString inherits="GameFontHighlight"/>

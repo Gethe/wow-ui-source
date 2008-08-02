@@ -767,13 +767,13 @@
 										</Anchors>
 										<Scripts>
 											<OnTextChanged>
-												ScrollingEdit_OnTextChanged(SendMailScrollFrame);
+												ScrollingEdit_OnTextChanged(self, self:GetParent());
 											</OnTextChanged>
 											<OnCursorChanged>
 												ScrollingEdit_OnCursorChanged(self, x, y-10, w, h);
 											</OnCursorChanged>
 											<OnUpdate>
-												ScrollingEdit_OnUpdate(self, elapsed, SendMailScrollFrame);
+												ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
 											</OnUpdate>
 											<OnTabPressed>
 												EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);

@@ -632,13 +632,13 @@
 								</Size>
 								<Scripts>
 									<OnTextChanged>
-										ScrollingEdit_OnTextChanged(self);
+										ScrollingEdit_OnTextChanged(self, self:GetParent());
 									</OnTextChanged>
 									<OnCursorChanged>
 										ScrollingEdit_OnCursorChanged(self, x, y, w, h);
 									</OnCursorChanged>
 									<OnUpdate>
-										ScrollingEdit_OnUpdate(self, elapsed);
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
 									</OnUpdate>
 									<OnEscapePressed>
 										self:ClearFocus();

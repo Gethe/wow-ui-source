@@ -182,6 +182,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 				UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
 				PlayerFrame_Update();
 				BuffFrame_Update();
+				PlayerFrame_ToVehicleArt()
 			else
 				UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
 				PlayerFrame_Update();
@@ -194,8 +195,44 @@ function PlayerFrame_OnEvent(self, event, ...)
 			UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
 			PlayerFrame_Update();
 			BuffFrame_Update();
+			PlayerFrame_ToPlayerArt();
 		end
 	end
+end
+
+function PlayerFrame_ToVehicleArt()
+	if ( not UnitHasVehicleUI("player") ) then
+		PlayerFrame_ToPlayerArt();
+		return;
+	end
+	
+	PlayerFrameTexture:Hide();
+	PlayerFrameVehicleTexture:Show();
+	PlayerName:SetPoint("CENTER",50,23);
+	PlayerLeaderIcon:SetPoint("TOPLEFT",50,0);
+	PlayerMasterIcon:SetPoint("TOPLEFT",86,0);
+	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -13);
+	PlayerFrameHealthBar:SetWidth(100);
+	PlayerFrameHealthBar:SetPoint("TOPLEFT",119,-41);
+	PlayerFrameManaBar:SetWidth(100);
+	PlayerFrameManaBar:SetPoint("TOPLEFT",119,-52);
+	PlayerFrameBackground:SetWidth(114);
+	PlayerLevelText:Hide();
+end
+
+function PlayerFrame_ToPlayerArt()
+	PlayerFrameTexture:Show();
+	PlayerFrameVehicleTexture:Hide();
+	PlayerName:SetPoint("CENTER",50,19);
+	PlayerLeaderIcon:SetPoint("TOPLEFT",50,-10);
+	PlayerMasterIcon:SetPoint("TOPLEFT",80,-10);
+	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -20);
+	PlayerFrameHealthBar:SetWidth(119);
+	PlayerFrameHealthBar:SetPoint("TOPLEFT",106,-41);
+	PlayerFrameManaBar:SetWidth(119);
+	PlayerFrameManaBar:SetPoint("TOPLEFT",106,-52);
+	PlayerFrameBackground:SetWidth(119);
+	PlayerLevelText:Show();
 end
 
 function PlayerFrame_UpdateVoiceStatus (status)
@@ -265,7 +302,15 @@ function PlayerFrame_OnReceiveDrag ()
 end
 
 function PlayerFrame_UpdateStatus()
-	if ( IsResting() ) then
+	if ( UnitHasVehicleUI("player") ) then
+		PlayerStatusTexture:Hide()
+		PlayerRestIcon:Hide()
+		PlayerAttackIcon:Hide()
+		PlayerRestGlow:Hide()
+		PlayerAttackGlow:Hide()
+		PlayerStatusGlow:Hide()
+		PlayerAttackBackground:Hide()
+	elseif ( IsResting() ) then
 		PlayerStatusTexture:SetVertexColor(1.0, 0.88, 0.25, 1.0);
 		PlayerStatusTexture:Show();
 		PlayerRestIcon:Show();

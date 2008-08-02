@@ -861,28 +861,32 @@ local CONTROL_KEY = "controlkey";
 local SHIFT_KEY = "shiftkey";
 local NO_KEY = "none";
 
+function BlizzardOptionsPanel_SetupControl (control)
+	if ( control.cvar ) then
+		if ( control.type == CONTROLTYPE_CHECKBOX ) then			
+			value = GetCVar(control.cvar);
+			control.currValue = value;
+			control.value = value;
+			if ( control.uvar ) then
+				setglobal(control.uvar, value);
+			end
+			
+			control.GetValue = function(self) return GetCVar(self.cvar); end
+			control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
+		elseif ( control.type == CONTROLTYPE_SLIDER ) then
+			control.currValue = GetCVar(control.cvar);
+			control:SetValue(control.currValue);
+		end
+	end
+	if ( control.setFunc ) then
+		control.setFunc(control.value);
+	end
+end
+
 function BlizzardOptionsPanel_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		for i, control in next, self.controls do
-			if ( control.cvar ) then
-				if ( control.type == CONTROLTYPE_CHECKBOX ) then			
-					value = GetCVar(control.cvar);
-					control.currValue = value;
-					control.value = value;
-					if ( control.uvar ) then
-						setglobal(control.uvar, value);
-					end
-					
-					control.GetValue = function(self) return GetCVar(self.cvar); end
-					control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
-				elseif ( control.type == CONTROLTYPE_SLIDER ) then
-					control.currValue = GetCVar(control.cvar);
-					control:SetValue(control.currValue);
-				end
-			end
-			if ( control.setFunc ) then
-				control.setFunc(control.value);
-			end
+			securecall(BlizzardOptionsPanel_SetupControl, control);
 		end
 		self:UnregisterEvent(event);
 	end

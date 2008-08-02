@@ -238,7 +238,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="MainMenuBarVehicleLeftEndCap" file="Interface\VehicleUI\UI-Vehicles-Endcap-Alliance">
+						<Texture name="MainMenuBarVehicleLeftEndCap" file="Interface\Vehicles\UI-Vehicles-Endcap">
 							<Size>
 								<AbsDimension x="128" y="92"/>
 							</Size>
@@ -251,7 +251,7 @@
 							</Anchors>
 							<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
 						</Texture>
-						<Texture name="MainMenuBarVehicleRightEndCap" file="Interface\VehicleUI\UI-Vehicles-Endcap-Alliance">
+						<Texture name="MainMenuBarVehicleRightEndCap" file="Interface\Vehicles\UI-Vehicles-Endcap">
 							<Size>
 								<AbsDimension x="128" y="92"/>
 							</Size>
@@ -274,9 +274,9 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture name="MainMenuBarVehicleBottomLeftTexture" file="Interface\VehicleUI\UI-Vehicles-Trim-Alliance">
+								<Texture name="MainMenuBarVehicleBottomLeftTexture" file="Interface\Vehicles\UI-Vehicles-Trim-Alliance">
 									<Size>
-										<AbsDimension x="87" y="17"/>
+										<AbsDimension x="96" y="18"/>
 									</Size>
 									<Anchors>
 										<Anchor point="BOTTOM">
@@ -285,24 +285,24 @@
 											</Offset>
 										</Anchor>
 									</Anchors>
-									<TexCoords left="0.0" right="0.6796875" top="0.0" bottom="0.1328125"/>
+									<TexCoords left="0.0625" right="0.8125" top="0.0" bottom="0.140625"/>
 								</Texture>
-								<Texture name="MainMenuBarVehicleLeftVertBar" file="Interface\VehicleUI\UI-Vehicles-Trim-Alliance">
+								<Texture name="MainMenuBarVehicleLeftVertBar" file="Interface\Vehicles\UI-Vehicles-Trim-Alliance">
 									<Size>
-										<AbsDimension x="18" y="128"/>
+										<AbsDimension x="17" y="128"/>
 									</Size>
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBarVehicleBottomLeftTexture" relativePoint="TOPRIGHT">
 											<Offset>
-												<AbsDimension x="2" y="0"/>
+												<AbsDimension x="-4" y="0"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
 									<TexCoords left="0.0" right="3.0" top="0.0" bottom="0.0"/> <!--A hack to force the engine to know that we will be using wrapping -->
 								</Texture>
-								<Texture name="MainMenuBarVehicleBottomRightTexture" file="Interface\VehicleUI\UI-Vehicles-Trim-Alliance">
+								<Texture name="MainMenuBarVehicleBottomRightTexture" file="Interface\Vehicles\UI-Vehicles-Trim-Alliance">
 									<Size>
-										<AbsDimension x="87" y="17"/>
+										<AbsDimension x="96" y="18"/>
 									</Size>
 									<Anchors>
 										<Anchor point="BOTTOM">
@@ -311,22 +311,22 @@
 											</Offset>
 										</Anchor>
 									</Anchors>
-									<TexCoords left="0.6796875" right="0.0" top="0.0" bottom="0.1328125"/>
+									<TexCoords left="0.8125" right="0.0625" top="0.0" bottom="0.140625"/>
 								</Texture>
-								<Texture name="MainMenuBarVehicleRightVertBar" file="Interface\VehicleUI\UI-Vehicles-Trim-Alliance">
+								<Texture name="MainMenuBarVehicleRightVertBar" file="Interface\Vehicles\UI-Vehicles-Trim-Alliance">
 									<Size>
 										<AbsDimension x="18" y="128"/>
 									</Size>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBarVehicleBottomRightTexture" relativePoint="TOPLEFT">
 											<Offset>
-												<AbsDimension x="-2" y="0"/>
+												<AbsDimension x="3" y="0"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
 									<TexCoords left="0.0" right="3.0" top="0.0" bottom="0.0"/> <!--A hack to force the engine to know that we will be using wrapping -->
 								</Texture>
-								<Texture name="VehiclePossessionLeftEndCap" file="Interface\VehicleUI\UI-Vehicles-Trim-Alliance">
+								<Texture name="VehiclePossessionLeftEndCap" file="Interface\Vehicles\UI-Vehicles-Trim-Alliance">
 									<Size>
 										<AbsDimension x="28" y="50"/>
 									</Size>
@@ -339,7 +339,7 @@
 									</Anchors>
 									<TexCoords left="0.1796875" right="0.3984375" top="0.375" bottom="0.765625"/>
 								</Texture>
-								<Texture name="VehiclePossessionMiddleTexture" file="Interface\VehicleUI\UI-Vehicles-Trim-Alliance">
+								<Texture name="VehiclePossessionMiddleTexture" file="Interface\Vehicles\UI-Vehicles-Trim-Alliance">
 									<Size>
 										<AbsDimension x="28" y="18"/>
 									</Size>
@@ -352,7 +352,7 @@
 									</Anchors>
 									<TexCoords left="0.0" right="3.0" top="0.0" bottom="0.0"/> <!--A hack to force the engine to know that we will be using wrapping -->
 								</Texture>
-								<Texture name="VehiclePossessionRightEndCap" file="Interface\VehicleUI\UI-Vehicles-Trim-Alliance">
+								<Texture name="VehiclePossessionRightEndCap" file="Interface\Vehicles\UI-Vehicles-Trim-Alliance">
 									<Size>
 										<AbsDimension x="30" y="50"/>
 									</Size>
@@ -365,7 +365,7 @@
 									</Anchors>
 									<TexCoords left="0.6640625" right="0.8984375" top="0.375" bottom="0.765625"/>
 								</Texture>
-								<Texture name="MainMenuBarVehicleLeftActionBarEndCap" file="Interface\VehicleUI\UI-Vehicles-Trim-Alliance">
+								<Texture name="MainMenuBarVehicleLeftActionBarEndCap" file="Interface\Vehicles\UI-Vehicles-Trim-Alliance">
 									<Size>
 										<AbsDimension x="25" y="21"/>
 									</Size>
@@ -378,7 +378,7 @@
 									</Anchors>
 									<TexCoords left="0.0" right="0.1953125" top="0.6171875" bottom="0.78125"/>
 								</Texture>
-								<Texture name="MainMenuBarVehicleRightActionBarEndCap" file="Interface\VehicleUI\UI-Vehicles-Trim-Alliance">
+								<Texture name="MainMenuBarVehicleRightActionBarEndCap" file="Interface\Vehicles\UI-Vehicles-Trim-Alliance">
 									<Size>
 										<AbsDimension x="25" y="21"/>
 									</Size>
@@ -391,7 +391,7 @@
 									</Anchors>
 									<TexCoords left="0.1953125" right="0.0" top="0.6171875" bottom="0.78125"/>
 								</Texture>
-								<Texture name="MainMenuBarVehicleLeftHorizBar" file="Interface\VehicleUI\UI-Vehicles-Trim-Alliance">
+								<Texture name="MainMenuBarVehicleLeftHorizBar" file="Interface\Vehicles\UI-Vehicles-Trim-Alliance">
 									<Size>
 										<AbsDimension x="18" y="128"/>
 									</Size>

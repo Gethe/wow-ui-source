@@ -308,6 +308,19 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
+						<Texture name="TargetFrameThreatIndicator" file="Interface\Minimap\ObjectIcons" hidden="true">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TargetPortrait">
+									<Offset>
+										<AbsDimension x="-31" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.75" right="0.875" top="0.5" bottom="1.0"/>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -414,7 +427,8 @@
 			<OnLoad>
 				UnitFrame_Initialize(self, "target", TargetName, TargetPortrait,
 									 TargetFrameHealthBar, TargetFrameHealthBarText,
-									 TargetFrameManaBar, TargetFrameManaBarText);
+									 TargetFrameManaBar, TargetFrameManaBarText,
+				                     TargetFrameThreatIndicator, "player");
 				self.noTextPrefix = true;
 				TargetFrame_OnLoad(self);
 			</OnLoad>

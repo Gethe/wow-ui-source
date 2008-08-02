@@ -144,13 +144,6 @@
 					<Size>
 						<AbsDimension x="177" y="20"/>
 					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentReputationBar" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
 					<TexCoords left="0.0" right="0.691" top="0.0" bottom="0.3125"/>
 				</Texture>
 			</Layer>
@@ -159,23 +152,9 @@
 					<Size>
 						<AbsDimension x="6" y="13"/>
 					</Size>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentExpandOrCollapseButton" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
 				</Texture>
 				<FontString name="$parentFactionName" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size x="135" y="10"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentExpandOrCollapseButton">
-							<Offset>
-								<AbsDimension x="10" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>

@@ -402,14 +402,6 @@
 						</Scripts>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnShow>
-						CalendarModalDummy_OnShow(self);
-					</OnShow>
-					<OnHide>
-						CalendarModalDummy_OnHide(self);
-					</OnHide>
-				</Scripts>
 			</Frame>
 			<Frame name="$parentModalOverlay" hidden="true">
 				<Layers>
@@ -578,6 +570,9 @@
 			<OnShow>
 				CalendarViewHolidayFrame_OnShow(self);
 			</OnShow>
+			<OnHide>
+				CalendarViewHolidayFrame_OnHide(self);
+			</OnHide>
 		</Scripts>
 	</Frame>
 
@@ -627,7 +622,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="CalendarViewEventDungeonName" inherits="GameFontNormalSmall" hidden="true">
+				<FontString name="CalendarViewEventTextureName" inherits="GameFontNormalSmall" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventTypeName" relativePoint="BOTTOMLEFT">
 							<Offset x="0" y="0"/>
@@ -714,20 +709,28 @@
 						<Offset x="16" y="-95"/>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<FontString name="CalendarViewEventDescription" inherits="GameFontNormalSmallLeft" justifyV="TOP">
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="5" y="-5"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="-5" y="5"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+				<Frames>
+					<ScrollFrame name="CalendarViewEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
+						<ScrollChild>
+							<Frame name="CalendarViewEventDescriptionScrollChild">
+								<Size x="263" y="1"/>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="CalendarViewEventDescription" inherits="GameFontNormalSmallLeft" justifyV="TOP">
+											<Size x="263" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
@@ -735,7 +738,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="CalendarViewEventInviteListFrame">
+			<Frame name="CalendarViewEventInviteListSection">
 				<Size x="320" y="320"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -855,75 +858,13 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="CalendarViewEventInviteNameSortButton" inherits="CalendarInviteSortButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="25" y="-40"/>
-							</Anchor>
-						</Anchors>
-						<ButtonText text="NAME" justifyH="LEFT"/>
-						<Scripts>
-							<OnLoad>
-								self.criteria = "name";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="CalendarViewEventInviteClassSortButton" inherits="CalendarInviteSortButtonTemplate">
+					<Frame name="CalendarViewEventInviteList" inherits="CalendarEventInviteListTemplate">
 						<Anchors>
 							<Anchor point="TOP">
-								<Offset x="0" y="-40"/>
+								<Offset x="0" y="-60"/>
 							</Anchor>
 						</Anchors>
-						<ButtonText text="CLASS" justifyH="CENTER"/>
-						<Scripts>
-							<OnLoad>
-								self.criteria = "class";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="CalendarViewEventInviteStatusSortButton" inherits="CalendarInviteSortButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset x="-25" y="-40"/>
-							</Anchor>
-						</Anchors>
-						<ButtonText text="STATUS" justifyH="RIGHT"/>
-						<Scripts>
-							<OnLoad>
-								self.criteria = "status";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<ScrollFrame name="CalendarViewEventInviteListScrollFrame" inherits="HybridScrollFrameTemplate">
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="8"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="8"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="1" right="1" top="1" bottom="1"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Size x="270" y="250"/>
-						<Anchors>
-							<Anchor point="TOP">
-								<Offset>
-									<AbsDimension x="0" y="-60"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Frames>
-							<Slider name="CalendarViewEventInviteListScrollBar" inherits="HybridScrollBarTemplate"/>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-							</OnLoad>
-						</Scripts>
-					</ScrollFrame>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Button name="CalendarViewEventCloseButton" inherits="CalendarEventCloseButtonTemplate"/>
@@ -977,7 +918,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="CalendarCreateEventDungeonName" inherits="GameFontNormalSmall" justifyH="CENTER">
+				<FontString name="CalendarCreateEventTextureName" inherits="GameFontNormalSmall" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset x="0" y="-40"/>
@@ -1040,9 +981,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetText(CALENDAR_EVENT_NAME);
-					</OnLoad>
+					<OnTextChanged>
+						CalendarEventSetTitle(self:GetText());
+					</OnTextChanged> 
 					<OnEnterPressed>
 						self:ClearFocus();
 					</OnEnterPressed>
@@ -1054,14 +995,10 @@
 						if ( self:GetText() == "" ) then
 							self:SetText(CALENDAR_EVENT_NAME);
 						end
-						CalendarEventSetTitle(self:GetText());
 					</OnEditFocusLost>
 					<OnEditFocusGained>
 						self:HighlightText();
 					</OnEditFocusGained>
-					<OnTextChanged>
-						CalendarEventSetTitle(self:GetText());
-					</OnTextChanged> 
 				</Scripts>
 			</EditBox>
 			<Frame name="CalendarCreateEventTypeDropDown" inherits="UIDropDownMenuTemplate">
@@ -1099,7 +1036,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Button name="CalendarCreateEventDescriptionEditButton">
+			<Frame name="CalendarCreateEventDescriptionContainer">
 				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<EdgeSize>
 						<AbsValue val="8"/>
@@ -1117,31 +1054,62 @@
 						<Offset x="16" y="-116"/>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<FontString name="CalendarCreateEventDescription" inherits="GameFontHighlightSmallLeft" justifyV="TOP" text="CALENDAR_EVENT_DESCRIPTION">
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="5" y="-5"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="-5" y="5"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+				<Frames>
+					<ScrollFrame name="CalendarCreateEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
+						<ScrollChild>
+							<EditBox name="CalendarCreateEventDescriptionEdit" multiLine="true" letters="255" autoFocus="false">
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Size x="263" y="1"/>
+								<Scripts>
+									<OnTextChanged>
+										ScrollingEdit_OnTextChanged(self, self:GetParent());
+										CalendarEventSetDescription(self:GetText());
+									</OnTextChanged> 
+									<OnCursorChanged>
+										ScrollingEdit_OnCursorChanged(self, x, y, w, h);
+									</OnCursorChanged>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+									</OnUpdate>
+									<OnEscapePressed>
+										self:ClearFocus();
+									</OnEscapePressed>
+									<OnEditFocusGained>
+										if ( self:GetText() == CALENDAR_EVENT_DESCRIPTION ) then
+											self:HighlightText();
+										end
+									</OnEditFocusGained>
+									<OnEditFocusLost>
+										self:HighlightText(0, 0);
+										if ( self:GetText() == "" ) then
+											self:SetText(CALENDAR_EVENT_DESCRIPTION);
+										end
+									</OnEditFocusLost>
+								</Scripts>
+								<FontString inherits="GameFontHighlightSmall"/>
+							</EditBox>
+						</ScrollChild>
+						<Frames>
+							<Button name="CalendarCreateEventDescriptionFocusButton" setAllPoints="true">
+								<Scripts>
+									<OnClick>
+										CalendarCreateEventDescriptionEdit:SetFocus();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+					</ScrollFrame>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
 					</OnLoad>
-					<OnClick>
-						StaticPopup_Show("CALENDAR_SET_DESCRIPTION");
-					</OnClick>
 				</Scripts>
-			</Button>
-			<Frame name="CalendarCreateEventInviteListFrame">
+			</Frame>
+			<Frame name="CalendarCreateEventInviteListSection">
 				<Size x="320" y="330"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -1212,77 +1180,17 @@
 							</OnLeave>
 						</Scripts>
 					</CheckButton>
-					<Button name="CalendarCreateEventInviteNameSortButton" inherits="CalendarInviteSortButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="25" y="-30"/>
-							</Anchor>
-						</Anchors>
-						<ButtonText text="NAME" justifyH="LEFT"/>
-						<Scripts>
-							<OnLoad>
-								self.criteria = "name";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="CalendarCreateEventInviteClassSortButton" inherits="CalendarInviteSortButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP">
-								<Offset x="0" y="-30"/>
-							</Anchor>
-						</Anchors>
-						<ButtonText text="CLASS" justifyH="CENTER"/>
-						<Scripts>
-							<OnLoad>
-								self.criteria = "class";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="CalendarCreateEventInviteStatusSortButton" inherits="CalendarInviteSortButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset x="-25" y="-30"/>
-							</Anchor>
-						</Anchors>
-						<ButtonText text="STATUS" justifyH="RIGHT"/>
-						<Scripts>
-							<OnLoad>
-								self.criteria = "status";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<ScrollFrame name="CalendarCreateEventInviteListScrollFrame" inherits="HybridScrollFrameTemplate">
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="8"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="8"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="1" right="1" top="1" bottom="1"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Size x="270" y="250"/>
+					<Frame name="CalendarCreateEventInviteList" inherits="CalendarEventInviteListTemplate">
 						<Anchors>
 							<Anchor point="TOP">
 								<Offset x="0" y="-50"/>
 							</Anchor>
 						</Anchors>
-						<Frames>
-							<Slider name="CalendarCreateEventInviteListScrollBar" inherits="HybridScrollBarTemplate"/>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-							</OnLoad>
-						</Scripts>
-					</ScrollFrame>
+					</Frame>
 					<EditBox name="CalendarCreateEventInviteEdit" letters="32" inherits="InputBoxTemplate" autoFocus="false">
 						<Size x="170" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteListScrollFrame" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteList" relativePoint="BOTTOMLEFT">
 								<Offset x="6" y="-3"/>
 							</Anchor>
 						</Anchors>
@@ -1292,7 +1200,7 @@
 							</OnLoad>
 							<OnEnterPressed>
 								local text = self:GetText();
-								if ( text == "" ) then
+								if ( text == "" or text == CALENDAR_PLAYER_NAME ) then
 									self:ClearFocus();
 								else
 									CalendarEventInvite(text);
@@ -1326,15 +1234,13 @@
 							<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteEdit" relativePoint="TOPRIGHT">
 								<Offset x="0" y="1"/>
 							</Anchor>
-							<Anchor point="TOPRIGHT" relativeTo="CalendarCreateEventInviteListScrollFrame" relativePoint="BOTTOMRIGHT">
+							<Anchor point="TOPRIGHT" relativeTo="CalendarCreateEventInviteList" relativePoint="BOTTOMRIGHT">
 								<Offset x="0" y="1"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								CalendarEventInvite(CalendarCreateEventInviteEdit:GetText());
-								CalendarCreateEventInviteEdit:SetText("");
-								CalendarCreateEventInviteEdit:ClearFocus();
+								CalendarCreateEventInviteButton_OnClick(self);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1640,14 +1546,20 @@
 		</Layers>
 		<Frames>
 			<ScrollFrame name="CalendarEventPickerScrollFrame" inherits="HybridScrollFrameTemplate">
-				<Size x="240" y="160"/>
+				<Size x="239" y="164"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="20" y="-26"/>
 					</Anchor>
 				</Anchors>
 				<Frames>
-					<Slider name="CalendarEventPickerScrollBar" inherits="HybridScrollBarTemplate"/>
+					<Slider name="CalendarEventPickerScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Slider>
 				</Frames>
 			</ScrollFrame>
 			<Button name="CalendarEventPickerCloseButton" inherits="CalendarEventButtonTemplate" text="CLOSE">
@@ -1673,8 +1585,8 @@
 		</Scripts>
 	</Frame>
 
-	<!-- Dungeon Picker -->
-	<Frame name="CalendarDungeonPickerFrame" inherits="CalendarModalDialogTemplate" parent="CalendarFrame" hidden="true">
+	<!-- Texture Picker -->
+	<Frame name="CalendarTexturePickerFrame" inherits="CalendarModalDialogTemplate" parent="CalendarFrame" hidden="true">
 		<Size x="290" y="286"/>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
@@ -1711,18 +1623,24 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="CalendarDungeonPickerScrollFrame" inherits="HybridScrollFrameTemplate">
-				<Size x="240" y="220"/>
+			<ScrollFrame name="CalendarTexturePickerScrollFrame" inherits="HybridScrollFrameTemplate">
+				<Size x="239" y="224"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="20" y="-26"/>
 					</Anchor>
 				</Anchors>
 				<Frames>
-					<Slider name="CalendarDungeonPickerScrollBar" inherits="HybridScrollBarTemplate"/>
+					<Slider name="CalendarTexturePickerScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+					</Slider>
 				</Frames>
 			</ScrollFrame>
-			<Button name="CalendarDungeonPickerCancelButton" inherits="CalendarEventButtonTemplate" text="CANCEL">
+			<Button name="CalendarTexturePickerCancelButton" inherits="CalendarEventButtonTemplate" text="CANCEL">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset x="-14" y="14"/>
@@ -1730,26 +1648,86 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CalendarDungeonPickerFrame_Hide();
+						CalendarTexturePickerFrame_Hide();
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="CalendarDungeonPickerAcceptButton" inherits="CalendarEventButtonTemplate" text="ACCEPT">
+			<Button name="CalendarTexturePickerAcceptButton" inherits="CalendarEventButtonTemplate" text="ACCEPT">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="CalendarDungeonPickerCancelButton" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeTo="CalendarTexturePickerCancelButton" relativePoint="LEFT">
 						<Offset x="-3" y="0"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CalendarDungeonPickerAcceptButton_OnClick(self);
+						CalendarTexturePickerAcceptButton_OnClick(self);
 					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				CalendarDungeonPickerFrame_OnLoad(self);
+				CalendarTexturePickerFrame_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<!-- Class Buttons -->
+	<Frame name="CalendarClassButtonContainer" parent="CalendarFrame" hidden="true">
+		<Size x="18" y="270"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
+		</Anchors>
+		<Frames>
+			<Button name="CalendarClassButtonTotals">
+				<Size x="20" y="10"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackgroundMiddle" file="Interface\SpellBook\SpellBook-SkillLineTab">
+							<Size x="26" y="8"/>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset x="-2" y="0"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.0" right="0.625" top="0.21875" bottom="0.640625"/>
+						</Texture>
+						<Texture name="$parentBackgroundTop" file="Interface\SpellBook\SpellBook-SkillLineTab">
+							<Size x="26" y="11"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentBackgroundMiddle" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0.0" right="0.625" top="0.0" bottom="0.21875"/>
+						</Texture>
+						<Texture name="$parentBackgroundBottom" file="Interface\SpellBook\SpellBook-SkillLineTab">
+							<Size x="26" y="15"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentBackgroundMiddle" relativePoint="BOTTOM"/>
+							</Anchors>
+							<TexCoords left="0.0" right="0.625" top="0.640625" bottom="0.875"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentCount" inherits="GameFontGreenSmall" text="0" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>		
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						CalendarClassButtonTotals_OnEnter(self);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				CalendarClassButtonContainer_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Frame>

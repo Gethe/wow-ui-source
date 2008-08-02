@@ -9,22 +9,17 @@ MOVING_RAID_PULLOUT = nil;
 RAID_PULLOUT_POSITIONS = {};
 RAID_SINGLE_POSITIONS = {};
 
-RAID_CLASS_BUTTONS = {
-	["WARRIOR"]	= {button = 1, coords = {0, 0.25, 0, 0.25};},
-	["MAGE"]		= {button = 8, coords = {0.25, 0.49609375, 0, 0.25};},
-	["ROGUE"]		= {button = 7, coords = {0.49609375, 0.7421875, 0, 0.25};},
-	["DRUID"]		= {button = 6, coords = {0.7421875, 0.98828125, 0, 0.25};},
-	["HUNTER"]		= {button = 10, coords = {0, 0.25, 0.25, 0.5};},
-	["SHAMAN"]	 	= {button = 5, coords = {0.25, 0.49609375, 0.25, 0.5};},
-	["PRIEST"]		= {button = 4, coords = {0.49609375, 0.7421875, 0.25, 0.5};},
-	["WARLOCK"]	= {button = 9, coords = {0.7421875, 0.98828125, 0.25, 0.5};},
-	["PALADIN"]		= {button = 3, coords = {0, 0.25, 0.5, 0.75};},
-	["DEATHKNIGHT"]		= {button = 2, coords = {0.25, .5, 0.5, .75};},
-	["PETS"]		= {button = 11, coords = {0, 1, 0, 1};}, 
-	["MAINTANK"]	= {button = 12, coords = {0, 1, 0, 1};},
-	["MAINASSIST"]	= {button = 13, coords = {0, 1, 0, 1};}
-};
-MAX_CLASSES = 13;
+RAID_CLASS_BUTTONS = { };
+do
+	-- fill in the table
+	for index, value in ipairs(CLASS_SORT_ORDER) do
+		RAID_CLASS_BUTTONS[value] = { button = index, coords = CLASS_ICON_TCOORDS[value] };
+	end
+	RAID_CLASS_BUTTONS["PETS"]			= { button = 11, coords = {0, 1, 0, 1} };
+	RAID_CLASS_BUTTONS["MAINTANK"]		= { button = 12, coords = {0, 1, 0, 1} };
+	RAID_CLASS_BUTTONS["MAINASSIST"]	= { button = 13, coords = {0, 1, 0, 1} };
+end
+MAX_RAID_CLASS_BUTTONS = MAX_CLASSES + 3;
 
 RAID_PULLOUT_SAVED_SETTINGS = { 
 	["showTarget"] = true, 
@@ -78,7 +73,7 @@ function RaidClassButton_Update()
 				button.count = #RAID_SUBGROUP_LISTS[index];
 			end
 		end
-		
+
 		if ( button.count > 0 ) then
 			SetItemButtonDesaturated(button, nil);
 			icon:SetAlpha(1);
@@ -214,7 +209,7 @@ function RaidGroupFrame_Update()
 	
 	if ( not classes ) then
 		classes = {};
-		for i=1, MAX_CLASSES do
+		for i=1, MAX_RAID_CLASS_BUTTONS do
 			classes[i] = getglobal("RaidClassButton"..i);
 		end
 	end
@@ -224,7 +219,7 @@ function RaidGroupFrame_Update()
 		for i=1, NUM_RAID_GROUPS do
 			raid_groupFrames[i]:Hide()
 		end
-		for i=1, MAX_CLASSES do
+		for i=1, MAX_RAID_CLASS_BUTTONS do
 			classes[i]:Hide();
 		end
 		RaidFrameReadyCheckButton:Hide();
@@ -232,7 +227,7 @@ function RaidGroupFrame_Update()
 		for i=1, NUM_RAID_GROUPS do
 			raid_groupFrames[i]:Show();
 		end
-		for i=1, MAX_CLASSES do
+		for i=1, MAX_RAID_CLASS_BUTTONS do
 			classes[i]:Show();
 		end
 	end
@@ -741,7 +736,7 @@ function RaidPullout_UpdateTarget(pullOutFrame, pullOutButton, unit, which)
 			-- Init the Healthbars
 			local temp, class = UnitClass(unit);
 			name:SetText(unitName);
-			securecall("UnitFrameHealthBar_Initialize", unit, statusBar, true);
+			securecall("UnitFrameHealthBar_Initialize", unit, statusBar, nil, true);
 			securecall("UnitFrameHealthBar_Update", statusBar, unit);
 			
 			-- If Unknown, turn the bar grey and fill it
@@ -888,7 +883,7 @@ function RaidPullout_Update(pullOutFrame)
 
 	-- Fill out the buttons
 	local pulloutButton, pulloutButtonName, color, unit, target;
-	local pulloutHealthBar, pulloutManaBar;
+	local pulloutHealthBar, pulloutManaBar, pulloutThreatIndicator;
 	local pulloutClearButton;
 	if ( numPulloutEntries > pullOutFrame.numPulloutButtons ) then
 		local index = pullOutFrame.numPulloutButtons + 1;
@@ -914,6 +909,7 @@ function RaidPullout_Update(pullOutFrame)
 			pulloutButtonName = pulloutButton.nameLabel;
 			pulloutHealthBar = pulloutButton.healthBar;
 			pulloutManaBar = pulloutButton.manaBar;
+			pulloutThreatIndicator = pulloutButton.threatIndicator;
 			if ( pulloutList ) then
 				id = pulloutList[i];
 			elseif ( single ) then
@@ -957,13 +953,13 @@ function RaidPullout_Update(pullOutFrame)
 			pullOutFrame.name = name;
 			pullOutFrame.single = single;
 			pulloutButton.raidIndex = id;
-			pulloutButton.manabar = pulloutManaBar;
-			pulloutManaBar.unit = unit;
 
-			securecall("UnitFrameHealthBar_Initialize", unit, pulloutHealthBar, true);
-			securecall("UnitFrameManaBar_Initialize", unit, pulloutManaBar);
+			securecall("UnitFrameHealthBar_Initialize", unit, pulloutHealthBar, nil, true);
+			securecall("UnitFrameManaBar_Initialize", unit, pulloutManaBar, nil);
+			securecall("UnitFrameThreatIndicator_Initialize", unit, pulloutButton);
 			securecall("UnitFrameHealthBar_Update", pulloutHealthBar, unit);
 			securecall("UnitFrameManaBar_Update", pulloutManaBar, unit);
+			securecall("UnitFrame_UpdateThreatIndicator", pulloutThreatIndicator, unit);
 
 			local minVal, maxVal;
 			if ( online ) then	

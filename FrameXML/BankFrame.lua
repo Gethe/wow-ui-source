@@ -64,6 +64,16 @@ function BankFrameItemButton_Update (button)
 	end
 
 	BankFrameItemButton_UpdateLocked(button);
+	BankFrame_UpdateCooldown(BANK_CONTAINER, button);
+end
+
+function BankFrame_UpdateCooldown(container, button)
+	local cooldown = getglobal(button:GetName().."Cooldown");
+	local start, duration, enable = GetContainerItemCooldown(container, button:GetID());
+	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	if ( duration > 0 and enable == 0 ) then
+		SetItemButtonTextureVertexColor(button, 0.4, 0.4, 0.4);
+	end
 end
 
 function BankFrameItemButton_UpdateLocked (button) 
@@ -165,6 +175,7 @@ function BankFrame_OnShow (self)
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED");
 	self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
 	self:RegisterEvent("PLAYER_MONEY");
+	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 
 	for i=1, NUM_BANKGENERIC_SLOTS, 1 do
 		button = getglobal("BankFrameItem"..i);

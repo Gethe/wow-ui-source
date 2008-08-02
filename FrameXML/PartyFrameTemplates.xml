@@ -100,6 +100,21 @@
 									</Anchors>
 								</FontString>
 							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentThreatIndicator" file="Interface\Minimap\ObjectIcons" hidden="true">
+									<Size>
+										<AbsDimension x="10" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentPortrait">
+											<Offset>
+												<AbsDimension x="10" y="6"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.75" right="0.875" top="0.5" bottom="1.0"/>
+								</Texture>
+							</Layer>
 						</Layers>
 					</Frame>
 				</Frames>
@@ -165,7 +180,8 @@
 				local prefix = "PartyMemberFrame"..id.."PetFrame";
 				local unit = "partypet"..id;
 				UnitFrame_Initialize(self, unit,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
-					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"));
+					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"),
+				       nil, nil, getglobal(prefix.."ThreatIndicator"));
 				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
 				getglobal(prefix.."Name"):Hide();
 				SecureUnitButton_OnLoad(self, unit);
@@ -348,6 +364,19 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
+								<Texture name="$parentThreatIndicator" file="Interface\Minimap\ObjectIcons" hidden="true">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentPortrait">
+											<Offset>
+												<AbsDimension x="19" y="6"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.75" right="0.875" top="0.5" bottom="1.0"/>
+								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -504,7 +533,8 @@
 				local prefix = "PartyMemberFrame"..id;
 				UnitFrame_Initialize(self, "party"..id,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
 					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"), 
-					  getglobal(prefix.."ManaBar"), getglobal(prefix.."ManaBarText"));
+					   getglobal(prefix.."ManaBar"), getglobal(prefix.."ManaBarText"),
+				       getglobal(prefix.."ThreatIndicator"));
 				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
 				PartyMemberFrame_OnLoad(self);
 			</OnLoad>

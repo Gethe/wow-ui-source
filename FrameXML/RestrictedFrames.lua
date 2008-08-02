@@ -233,7 +233,6 @@ function FRAME_G:GetScale()  return GetFrame(self):GetScale()  end
 function FRAME_G:GetEffectiveScale()
     return GetFrame(self):GetEffectiveScale()
 end
-function FRAME_G:GetAlpha()  return GetFrame(self):GetAlpha()  end
 function FRAME_G:GetFrameLevel()  return GetFrame(self):GetFrameLevel()  end
 function FRAME_G:GetAttribute(name)
     if (type(name) ~= "string" or name:match("^_")) then

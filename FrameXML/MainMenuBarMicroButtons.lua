@@ -79,7 +79,7 @@ function UpdateMicroButtons()
 		HelpMicroButton:SetButtonState("NORMAL");
 	end
 	
-	if ( AchievementFrame:IsShown() ) then
+	if ( AchievementFrame and AchievementFrame:IsShown() ) then
 		AchievementMicroButton:SetButtonState("PUSHED", 1);
 	else
 		AchievementMicroButton:SetButtonState("NORMAL");

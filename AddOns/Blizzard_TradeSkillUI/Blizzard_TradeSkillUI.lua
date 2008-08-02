@@ -330,17 +330,15 @@ function TradeSkillFrame_SetSelection(id)
 	
 	--Hide inapplicable buttons if we are inspecting. Otherwise show them
 	if ( IsTradeSkillLinked() ) then
-        TradeSkillCreateButton:Hide();
-        --TradeSkillCancelButton:Hide();
-        TradeSkillCreateAllButton:Hide();
-        TradeSkillDecrementButton:Hide();
-        TradeSkillInputBox:Hide();
-        TradeSkillIncrementButton:Hide();
-		TradeSkillLinkButton:Hide()
-		
-		TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft]])
-    else
-	
+		TradeSkillCreateButton:Hide();
+		TradeSkillCreateAllButton:Hide();
+		TradeSkillDecrementButton:Hide();
+		TradeSkillInputBox:Hide();
+		TradeSkillIncrementButton:Hide();
+		TradeSkillLinkButton:Hide();
+		TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\PaperDollInfoFrame\SkillFrame-BotLeft]]);
+		TradeSkillFrameBottomRightTexture:SetTexture([[Interface\PaperDollInfoFrame\SkillFrame-BotRight]]);
+	else
 		--Change button names and show/hide them depending on if this tradeskill creates an item or casts something
 		if ( not altVerb ) then
 			--Its an item with 'Create'
@@ -349,7 +347,8 @@ function TradeSkillFrame_SetSelection(id)
 			TradeSkillInputBox:Show();
 			TradeSkillIncrementButton:Show();
 			
-			TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\TradeSkillFrame\UI-TradeSkill-BotLeft]])
+			TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\TradeSkillFrame\UI-TradeSkill-BotLeft]]);
+			TradeSkillFrameBottomRightTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight]])
 		else
 			--Its something else
 			TradeSkillCreateAllButton:Hide();
@@ -357,14 +356,17 @@ function TradeSkillFrame_SetSelection(id)
 			TradeSkillInputBox:Hide();
 			TradeSkillIncrementButton:Hide();
 			
-			TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft]])
+			TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft]]);
+			TradeSkillFrameBottomRightTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight]]);
 		end
-		TradeSkillLinkButton:Show()
+		if ( GetTradeSkillListLink() ) then
+			TradeSkillLinkButton:Show();
+		else
+			TradeSkillLinkButton:Hide();
+		end
 		TradeSkillCreateButton:SetText(altVerb or CREATE);
 		TradeSkillCreateButton:Show();
-        --TradeSkillCancelButton:Show();
     end	
-		
 end
 
 function TradeSkillSkillButton_OnClick(self, button)

@@ -61,6 +61,7 @@ function GlyphFrameGlyph_SetGlyphType (glyph, glyphType)
 		glyph.setting:SetTexCoord(0.740234375, 0.953125, 0.484375, 0.697265625);
 		glyph.ring:SetWidth(82);
 		glyph.ring:SetHeight(82);
+		glyph.ring:SetPoint("CENTER", glyph, "CENTER", 0, -1);
 		glyph.ring:SetTexCoord(0.767578125, 0.92578125, 0.32421875, 0.482421875);
 		glyph.shine:SetTexCoord(0.9609375, 1, 0.9609375, 1);
 	else
@@ -70,6 +71,7 @@ function GlyphFrameGlyph_SetGlyphType (glyph, glyphType)
 		glyph.setting:SetTexCoord(0.765625, 0.927734375, 0.15625, 0.31640625);
 		glyph.ring:SetWidth(62);
 		glyph.ring:SetHeight(62);
+		glyph.ring:SetPoint("CENTER", glyph, "CENTER", 0, 1);
 		glyph.ring:SetTexCoord(0.787109375, 0.908203125, 0.033203125, 0.154296875);
 		glyph.shine:SetTexCoord(0.9609375, 1, 0.921875, 0.9609375);
 	end

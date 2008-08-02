@@ -484,6 +484,21 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentThreatIndicator" file="Interface\Minimap\ObjectIcons" hidden="false">
+					<Size>
+						<AbsDimension x="8" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0.5" bottom="1.0"/>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
@@ -808,11 +823,13 @@
 				RaidPulloutButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnLoad>
-				self.healthBar = getglobal(self:GetName().."HealthBar");
-				self.manaBar = getglobal(self:GetName().."ManaBar");
-				self.nameLabel = getglobal(self:GetName().."Name");
-				self.clearButton = getglobal(self:GetName().."ClearButton");
-				self.speaker = getglobal(self:GetName().."Speaker");
+				local prefix = self:GetName();
+				self.healthBar = getglobal(prefix.."HealthBar");
+				self.manaBar = getglobal(prefix.."ManaBar");
+				self.threatIndicator = getglobal(prefix.."ThreatIndicator");
+				self.nameLabel = getglobal(prefix.."Name");
+				self.clearButton = getglobal(prefix.."ClearButton");
+				self.speaker = getglobal(prefix.."Speaker");
 			</OnLoad>
 		</Scripts>
 	</Frame>
