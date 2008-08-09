@@ -2,12 +2,23 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
+	text = CONFIRM_REMOVE_GLYPH,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self) RemoveGlyphFromSocket(self.data); end,
+	OnCancel = function (self) end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+}
+
 StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
 	text = CONFIRM_GLYPH_PLACEMENT,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) PlaceGlyphInSocket(self.data) GlyphFrame_Update(); GlyphFrame_PulseGlow(); end,
-	OnCancel = function (self) self.data = nil; end,
+	OnAccept = function (self) PlaceGlyphInSocket(self.data); end,
+	OnCancel = function (self) end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
@@ -2535,6 +2546,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	dialog.which = which;
 	dialog.timeleft = StaticPopupDialogs[which].timeout;
 	dialog.hideOnEscape = StaticPopupDialogs[which].hideOnEscape;
+	dialog.enterClicksFirstButton = StaticPopupDialogs[which].enterClicksFirstButton;
 	-- Clear out data
 	dialog.data = nil;
 
@@ -2697,22 +2709,31 @@ end
 
 function StaticPopup_OnShow(self)
 	PlaySound("igMainMenuOpen");
-	local OnShow = StaticPopupDialogs[self.which].OnShow;
+
+	local dialog = StaticPopupDialogs[self.which];
+	local OnShow = dialog.OnShow;
 
 	if ( OnShow ) then
 		OnShow(self, self.data);
 	end
-	if ( StaticPopupDialogs[self.which].hasMoneyInputFrame ) then
+	if ( dialog.hasMoneyInputFrame ) then
 		getglobal(self:GetName().."MoneyInputFrameGold"):SetFocus();
+	end
+	if ( dialog.enterClicksFirstButton ) then
+		self:SetScript("OnKeyDown", StaticPopup_OnKeyDown);
 	end
 end
 
 function StaticPopup_OnHide(self)
 	PlaySound("igMainMenuClose");
 
-	local OnHide = StaticPopupDialogs[self.which].OnHide;
+	local dialog = StaticPopupDialogs[self.which];
+	local OnHide = dialog.OnHide;
 	if ( OnHide ) then
 		OnHide(self, self.data);
+	end
+	if ( dialog.enterClicksFirstButton ) then
+		self:SetScript("OnKeyDown", nil);
 	end
 end
 
@@ -2738,6 +2759,36 @@ function StaticPopup_OnClick(dialog, index)
 
 	if ( not dontHide and (which == dialog.which) ) then
 		dialog:Hide();
+	end
+end
+
+function StaticPopup_OnKeyDown(self, key)
+	-- previously, StaticPopup_EscapePressed() captured the escape key for dialogs, but now we need
+	-- to catch it here
+	debugprint("StaticPopup_OnKeyDown: key="..key);
+	if ( key == "ESCAPE" ) then
+		return StaticPopup_EscapePressed();
+	end
+
+	local dialog = StaticPopupDialogs[self.which];
+	if ( dialog ) then
+		if ( key == "ENTER" and dialog.enterClicksFirstButton ) then
+			local frameName = self:GetName();
+			local button;
+			local i = 1;
+			while ( true ) do
+				button = getglobal(frameName.."Button"..i);
+				if ( button ) then
+					if ( button:IsShown() ) then
+						StaticPopup_OnClick(self, i);
+						return;
+					end
+					i = i + 1;
+				else
+					break;
+				end
+			end
+		end
 	end
 end
 

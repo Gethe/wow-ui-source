@@ -42,7 +42,8 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 	elseif ( event == "BATTLEFIELDS_CLOSED" ) then
 		HideUIPanel(BattlefieldFrame);
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
-		BattlefieldFrame_UpdateStatus();
+		local arg1 = ...
+		BattlefieldFrame_UpdateStatus(false, arg1);
 		BattlefieldFrame_Update();
 	end
 	if ( event == "PARTY_LEADER_CHANGED" ) then
@@ -96,7 +97,7 @@ function BattlefieldFrame_OnUpdate(elapsed)
 	end
 end
 
-function BattlefieldFrame_UpdateStatus(tooltipOnly)
+function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 	local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch;
 	local numberQueues = 0;
 	local waitTime, timeInQueue;
@@ -166,7 +167,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 			elseif ( status == "confirm" ) then
 				-- Have been accepted show enter battleground dialog
 				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration(i)/1000));
-				if ( not tooltipOnly ) then
+				if ( (i==mapIndex) and (not tooltipOnly) ) then
 					local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
 					if ( dialog ) then
 						dialog.data = i;

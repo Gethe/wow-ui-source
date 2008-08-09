@@ -66,6 +66,9 @@ function Minimap_SetTooltip( pvpType, factionName )
 		elseif ( pvpType == "contested" ) then
 			GameTooltip:AddLine( subzoneName, 1.0, 0.7, 0.0 );	
 			GameTooltip:AddLine(CONTESTED_TERRITORY, 1.0, 0.7, 0.0);
+		elseif ( pvpType == "combat" ) then
+			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );	
+			GameTooltip:AddLine(COMBAT_ZONE, 1.0, 0.1, 0.1);
 		else
 			GameTooltip:AddLine( subzoneName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b );	
 		end

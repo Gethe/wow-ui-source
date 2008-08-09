@@ -4,8 +4,8 @@
                         ..\..\..\FrameXML\UI.xsd">
 
 	<Script file="RestrictedEnvironment.lua"/>
-	<Script file="RestrictedExecution.lua"/>
 	<Script file="RestrictedFrames.lua"/>
+	<Script file="RestrictedExecution.lua"/>
 	<Script file="SecureHandlers.lua"/>
 
   <Frame name="SecureHandlerBaseTemplate" inherits="SecureFrameTemplate"
@@ -104,7 +104,7 @@
     </Scripts>
   </Button>
 
-  <Frame name="SecureHandlerEnterLeaveTemplate" 
+  <Frame name="SecureHandleChildEnterLeaveTemplate" 
          inherits="SecureFrameTemplate" virtual="true">
     <Scripts>
       <OnEnter>

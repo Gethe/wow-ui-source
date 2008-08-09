@@ -27,7 +27,7 @@ function ChannelFrame_OnLoad(self)
 end
 
 function ChannelFrame_OnEvent(self, event, ...)
-	arg1, arg2, arg3 = ...;
+	local arg1, arg2, arg3 = ...;
 	if ( event == "PLAYER_ENTERING_WORLD" or event == "CHANNEL_UI_UPDATE" or event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
 		ChannelFrame_Update();
 	elseif ( event == "CHANNEL_FLAGS_UPDATED" ) then

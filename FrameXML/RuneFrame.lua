@@ -1,14 +1,15 @@
 --Readability == win
+local FirstTime = true;
 local RUNETYPE_BLOOD = 1;
 local RUNETYPE_DEATH = 2;
 local RUNETYPE_FROST = 3;
 local RUNETYPE_CHROMATIC = 4;
 
 local iconTextures = {};
-iconTextures[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Blood-On.tga";
-iconTextures[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Death-On.tga";
-iconTextures[RUNETYPE_FROST] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Frost-On.tga";
-iconTextures[RUNETYPE_CHROMATIC] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Chromatic-On.tga";
+iconTextures[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Blood";
+iconTextures[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Unholy";
+iconTextures[RUNETYPE_FROST] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Frost";
+iconTextures[RUNETYPE_CHROMATIC] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Death";
 
 local runeTextures = {
 	[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Blood-Off.tga",
@@ -27,8 +28,8 @@ end
 
 function RuneButton_OnUpdate (self, elapsed)
 	-- Constants that aren't used elsewhere and are actually constant are happiest inside their functions ;)
-	local RUNE_HEIGHT = 18;
-	local MIN_RUNE_ALPHA = .4
+	--local RUNE_HEIGHT = 18;
+	--local MIN_RUNE_ALPHA = .4
 	
 	local cooldown = getglobal(self:GetName().."Cooldown");
 	local start, duration, runeReady = GetRuneCooldown(self:GetID());
@@ -36,6 +37,10 @@ function RuneButton_OnUpdate (self, elapsed)
 	local displayCooldown = (runeReady and 0) or 1;
 	
 	CooldownFrame_SetTimer(cooldown, start, duration, displayCooldown);
+	
+	if ( ( GetTime()-start >= duration ) ) then
+		RuneButton_ShineFadeIn(getglobal(self:GetName().."Shine"))
+	end
 	-- if ( not enable ) then
 		-- self.fill:SetHeight(RUNE_HEIGHT * ((GetTime() - start)/duration));
 		-- self.fill:SetTexCoord(0, 1, (1 - ((GetTime() - start)/duration)), 1);
@@ -85,6 +90,10 @@ end
 
 function RuneFrame_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		if ( FirstTime ) then
+			RuneFrame_FixRunes(self);
+			FirstTime = false;
+		end
 		for rune in next, self.runes do
 			RuneButton_Update(self.runes[rune], rune);
 		end
@@ -103,4 +112,35 @@ end
 
 function RuneFrame_AddRune (runeFrame, rune)
 	tinsert(runeFrame.runes, rune);
+end
+
+function RuneFrame_FixRunes	(runeFrame)	--We want to swap where frost and unholy appear'
+	local temp;
+	
+	temp = runeFrame.runes[3];
+	runeFrame.runes[3] = runeFrame.runes[5];
+	runeFrame.runes[5] = temp;
+	
+	temp = runeFrame.runes[4];
+	runeFrame.runes[4] = runeFrame.runes[6];
+	runeFrame.runes[6] = temp;
+end
+
+function RuneButton_ShineFadeIn(self)
+	if self.shining then
+		return
+	end
+	local fadeInfo={
+	mode = "IN",
+	timeToFade = 0.5,
+	finishedFunc = RuneButton_ShineFadeOut,
+	finishedArg1 = self,
+	}
+	self.shining=true;
+	UIFrameFade(self, fadeInfo);
+end
+
+function RuneButton_ShineFadeOut(self)
+	self.shining=false;
+	UIFrameFadeOut(self, 0.5);
 end

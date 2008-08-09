@@ -2317,12 +2317,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					body = format(getglobal("CHAT_"..type.."_GET")..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..arg2.."|h");
 				else
 					body = format(getglobal("CHAT_"..type.."_GET")..arg1, pflag..arg2, arg2);
-
-					-- Add raid boss emote message
-					if ( strsub(type, 1, 9) == "RAID_BOSS" ) then
-						RaidNotice_AddMessage( RaidBossEmoteFrame, body, info );
-						PlaySound("RaidBossEmoteWarning");
-					end
 				end
 			end
 

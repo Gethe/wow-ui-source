@@ -45,6 +45,7 @@ function BuffFrame_Update()
 	end
 
 	-- Handle debuffs
+	DEBUFF_ACTUAL_DISPLAY = 0;
 	for i=1, DEBUFF_MAX_DISPLAY do
 		if ( BuffButton_Update("DebuffButton", i, "HARMFUL") ) then
 			DEBUFF_ACTUAL_DISPLAY = DEBUFF_ACTUAL_DISPLAY + 1;
@@ -53,7 +54,7 @@ function BuffFrame_Update()
 end
 
 function BuffButton_Update(buttonName, index, filter)
-	local name, rank, texture, count, debuffType, duration, timeLeft, untilCanceled = UnitAura(PlayerFrame.unit, index, filter);
+	local name, rank, texture, count, debuffType, duration, expirationTime, untilCanceled = UnitAura(PlayerFrame.unit, index, filter);
 
 	local buffName = buttonName..index;
 	local buff = getglobal(buffName);
@@ -77,6 +78,7 @@ function BuffButton_Update(buttonName, index, filter)
 
 			buffDuration = getglobal(buffName.."Duration");
 		end
+		buff.namePrefix = buttonName;
 		-- Anchor Buff
 		BuffButton_UpdateAnchors(buttonName, index, filter);
 		-- Setup Buff
@@ -85,13 +87,13 @@ function BuffButton_Update(buttonName, index, filter)
 		buff:SetAlpha(1.0);
 		buff:Show();
 
-		if ( SHOW_BUFF_DURATIONS == "1" and not untilCanceled and timeLeft ) then
+		if ( SHOW_BUFF_DURATIONS == "1" and not untilCanceled and expirationTime ) then
 			buffDuration:Show();
 			if ( not buff.timeLeft ) then
-				buff.timeLeft = ceil(timeLeft);
+				buff.timeLeft = expirationTime - GetTime();
 				buff:SetScript("OnUpdate", BuffButton_OnUpdate);
 			else
-				buff.timeLeft = ceil(timeLeft);
+				buff.timeLeft = expirationTime - GetTime();
 			end
 		else
 			buffDuration:Hide();

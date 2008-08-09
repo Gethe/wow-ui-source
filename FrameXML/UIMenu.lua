@@ -172,10 +172,10 @@ end
 
 function UIMenu_FinishInitializing(frame)
 	if ( UIMenu_GetNumButtons(frame) == 0 ) then
-		frame:Hide();
-	else
-		UIMenu_AutoSize(frame);
+		return false;
 	end
+	UIMenu_AutoSize(frame);
+	return true;
 end
 
 function UIMenu_GetNumButtons(frame)

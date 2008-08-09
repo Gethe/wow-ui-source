@@ -132,9 +132,12 @@ function GameTimeFrame_OnLoad(self)
 	tex = self:GetPushedTexture();
 	tex:SetDrawLayer("BACKGROUND");
 
+	self:GetFontString():SetDrawLayer("BACKGROUND");
+
 	self.timeOfDay = 0;
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 	self.pendingCalendarInvites = 0;
+	self.hour = 0;
 	GameTimeFrame_OnUpdate(self);
 end
 
@@ -152,6 +155,7 @@ function GameTimeFrame_OnEvent(self, event, ...)
 				self.pendingCalendarInvites = pendingCalendarInvites;
 			end
 		end
+		GameTimeFrame_SetDate();
 	elseif ( event == "CALENDAR_EVENT_ALARM" ) then
 		local title, hour, minute = ...;
 		local info = ChatTypeInfo["SYSTEM"];
@@ -172,6 +176,10 @@ function GameTimeFrame_OnUpdate(self, elapsed)
 		if(time < GAMETIME_DAWN or time >= GAMETIME_DUSK) then
 			minx = minx + 0.5;
 			maxx = maxx + 0.5;
+		end
+		if ( hour ~= self.hour ) then
+			self.hour = hour;
+			GameTimeFrame_SetDate();
 		end
 		GameTimeTexture:SetTexCoord(minx, maxx, miny, maxy);
 	end
@@ -206,5 +214,10 @@ function GameTimeFrame_OnClick(self)
 	else
 		ToggleCalendar();
 	end
+end
+
+function GameTimeFrame_SetDate()
+	local _, _, day = CalendarGetDate();
+	GameTimeFrame:SetText(day);
 end
 

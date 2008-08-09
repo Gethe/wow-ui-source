@@ -703,7 +703,6 @@
 				SELECTED_DOCK_FRAME = ChatFrame1;
 				self:RegisterEvent("UPDATE_CHAT_WINDOWS");
 				self:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS");
-				--ChatFrame_DisplayStartupText(this);
 			</OnLoad>
 			<OnEvent>
 				ChatFrame_OnEvent(self, event, ...);

@@ -96,7 +96,7 @@ function SpellBookFrame_Update(showing)
 	for i=1, MAX_SKILLLINE_TABS do
 		skillLineTab = getglobal("SpellBookSkillLineTab"..i);
 		if ( i <= numSkillLineTabs and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-			name, texture, offset, numSpells = GetSpellTabInfo(i);
+			name, texture = GetSpellTabInfo(i);
 			skillLineTab:SetNormalTexture(texture);
 			skillLineTab.tooltip = name;
 			skillLineTab:Show();
@@ -179,6 +179,19 @@ function SpellBookFrame_ShowSpells ()
 	SpellBookPageText:Show();
 end
 
+function SpellBookFrame_OpenToGlyphFrame ()
+	if ( not GlyphFrame ) then
+		GlyphFrame_LoadUI();
+	end
+	
+	SpellBookFrame:Show();
+	if ( SpellBookFrameTabButton2.bookType == "Inscription" ) then
+		SpellBookFrameTabButton2:Click();
+	else
+		SpellBookFrameTabButton3:Click();
+	end
+end
+
 function SpellBookFrame_ShowGlyphFrame ()
 	if ( not GlyphFrame ) then
 		GlyphFrame_LoadUI();
@@ -240,6 +253,11 @@ function SpellBookFrame_UpdatePages()
 		SpellBookNextPageButton:Enable();
 	end
 	SpellBookPageText:SetFormattedText(PAGE_NUMBER, currentPage);
+	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
+		ShowAllSpellRanksCheckBox:Show();
+	else
+		ShowAllSpellRanksCheckBox:Hide();
+	end
 end
 
 function SpellBookFrame_SetTabType(tabButton, bookType, token)
@@ -294,7 +312,7 @@ function SpellButton_OnLoad(self)
 end
 
 function SpellButton_OnEvent(self, event, ...)
-	if ( event == "SPELLS_CHANGED" or event == "SPELL_UPDATE_COOLDOWN" ) then 
+	if ( event == "SPELLS_CHANGED" or event == "SPELL_UPDATE_COOLDOWN" ) then
 		SpellButton_UpdateButton(self);
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		SpellButton_UpdateSelection(self);
@@ -328,7 +346,6 @@ function SpellButton_OnHide(self)
 end
  
 function SpellButton_OnEnter(self)
-	local name, texture, offset, numSpells = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
 	local id = SpellBook_GetSpellID(self:GetID());
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( GameTooltip:SetSpell(id, SpellBookFrame.bookType) ) then
@@ -393,9 +410,10 @@ function SpellButton_OnDrag(self)
 end
 
 function SpellButton_UpdateSelection(self)
-	local temp, texture, offset, numSpells = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
-	local id = SpellBook_GetSpellID(self:GetID());
-	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and (id > (offset + numSpells)) ) then
+	local temp, texture, offset, numSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+	
+	local id, displayID = SpellBook_GetSpellID(self:GetID());
+	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and (not displayID or displayID > (offset + numSpells)) ) then
 		self:SetChecked("false");
 		return;
 	end
@@ -411,9 +429,10 @@ function SpellButton_UpdateButton(self)
 	if ( not SpellBookFrame.selectedSkillLine ) then
 		SpellBookFrame.selectedSkillLine = 1;
 	end
-	local temp, texture, offset, numSpells = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
+	local temp, texture, offset, numSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
 	SpellBookFrame.selectedSkillLineOffset = offset;
-	local id = SpellBook_GetSpellID(self:GetID());
+
+	local id, displayID = SpellBook_GetSpellID(self:GetID());
 	local name = self:GetName();
 	local iconTexture = getglobal(name.."IconTexture");
 	local spellString = getglobal(name.."SpellName");
@@ -421,7 +440,7 @@ function SpellButton_UpdateButton(self)
 	local cooldown = getglobal(name.."Cooldown");
 	local autoCastableTexture = getglobal(name.."AutoCastable");
 
-	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and (id > (offset + numSpells)) ) then
+	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and (not displayID or displayID > (offset + numSpells)) ) then
 		self:Disable();
 		iconTexture:Hide();
 		spellString:Hide();
@@ -547,7 +566,7 @@ function SpellBookSkillLineTab_OnClick(self, id)
 		id = self:GetID();
 	end
 	SpellBookFrame.selectedSkillLine = id;
-	local name, texture, offset, numSpells = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
+	local name, texture, offset, numSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
 	SpellBookFrame.selectedSkillLineOffset = offset;
 	SpellBookFrame.selectedSkillLineNumSpells = numSpells;
 	SpellBook_UpdatePageArrows();
@@ -569,7 +588,11 @@ function SpellBook_GetSpellID(id)
 	if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		return id + (SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET] - 1));
 	else
-		return id + SpellBookFrame.selectedSkillLineOffset + ( SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] - 1));
+		slot = id + SpellBookFrame.selectedSkillLineOffset + ( SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] - 1));
+		if ( not GetCVarBool("ShowAllSpellRanks") ) then
+			return GetKnownSlotFromHighestRankSlot(slot), slot;
+		end
+		return slot, slot;
 	end
 end
 
@@ -595,7 +618,7 @@ function SpellBook_GetCurrentPage()
 		maxPages = ceil(numPetSpells/SPELLS_PER_PAGE);
 	else
 		currentPage = SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine];
-		local name, texture, offset, numSpells = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
+		local name, texture, offset, numSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
 		maxPages = ceil(numSpells/SPELLS_PER_PAGE);
 	end
 	return currentPage, maxPages;
@@ -626,3 +649,11 @@ function SpellBook_ReleaseAutoCastShine (shine)
 	tinsert(shineGet, shine);
 end
 
+function SpellBook_GetTabInfo(skillLine)
+	local name, texture, offset, numSpells, highestRankOffset, highestRankNumSpells = GetSpellTabInfo(skillLine);
+	if ( not GetCVarBool("ShowAllSpellRanks")) then
+		offset = highestRankOffset;
+		numSpells = highestRankNumSpells;
+	end
+	return name, texture, offset, numSpells;
+end

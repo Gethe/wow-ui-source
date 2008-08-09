@@ -17,6 +17,18 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="1" right="-4" top="-2" bottom="-2"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnClick>
+						if (self:GetParent().isCollapsed) then
+							ExpandFactionHeader(self:GetParent().index);
+						else
+							CollapseFactionHeader(self:GetParent().index);
+						end
+					</OnClick>
+				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
 					<Size>
 						<AbsDimension x="16" y="16"/>
@@ -41,18 +53,6 @@
 						</Anchor>
 					</Anchors>
 				</HighlightTexture>
-				<HitRectInsets>
-					<AbsInset left="1" right="-4" top="-2" bottom="-2"/>
-				</HitRectInsets>
-				<Scripts>
-					<OnClick>
-						if (self:GetParent().isCollapsed) then
-							ExpandFactionHeader(self:GetParent().index);
-						else
-							CollapseFactionHeader(self:GetParent().index);
-						end
-					</OnClick>
-				</Scripts>
 			</Button>
 			<StatusBar name="$parentReputationBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
 				<Size>
@@ -67,7 +67,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentAtWarHighlight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" alphaMode="ADD" alpha="10" hidden="true">
+						<Texture name="$parentAtWarHighlight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" alphaMode="ADD" hidden="true">
 							<Size>
 								<AbsDimension x="256" y="28"/>
 							</Size>

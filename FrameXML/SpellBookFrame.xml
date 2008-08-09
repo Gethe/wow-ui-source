@@ -382,6 +382,34 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
+			<CheckButton name="ShowAllSpellRanksCheckBox" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="26" y="26"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="74" y="-38"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName().."Text"):SetText(SHOW_ALL_SPELL_RANKS);
+					</OnLoad>
+					<OnShow>
+						self:SetChecked( GetCVarBool("ShowAllSpellRanks") );
+					</OnShow>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						SetCVar("ShowAllSpellRanks", self:GetChecked());
+						UpdateSpells();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
 			<CheckButton name="SpellButton1" inherits="SpellButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">

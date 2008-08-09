@@ -505,6 +505,7 @@ function GuildBankTab_OnClick(self, mouseButton, currentTab)
 	GuildBankFrame_Update();
 	if ( GuildBankFrameLog:IsShown() ) then
 		if ( GuildBankFrame.mode == "log" ) then
+			QueryGuildBankTab(currentTab);	--Need this to get the number of withdrawals left for this tab
 			QueryGuildBankLog(currentTab);
 			GuildBankFrame_UpdateLog();
 		else

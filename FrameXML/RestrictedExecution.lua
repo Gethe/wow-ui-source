@@ -20,25 +20,38 @@ local rawset = rawset;
 local setfenv = setfenv;
 local loadstring = loadstring;
 local setmetatable = setmetatable;
+local getmetatable = getmetatable;
 local pcall = pcall;
 local tostring = tostring;
 local next = next;
 local unpack = unpack;
 local newproxy = newproxy;
+local select = select;
+
+local IsFrameHandle = IsFrameHandle;
+local BeginFrameActions = BeginFrameActions;
+local EndFrameActions = EndFrameActions;
 
 ---------------------------------------------------------------------------
 -- RESTRICTED CLOSURES
---
+
+local function SelfScrub(self)
+    if (self ~= nil and IsFrameHandle(self)) then
+        return self;
+    end
+    return nil;
+end
+
 -- closure, err = BuildRestrictedClosure(body, env, signature)
 --
 -- body      -- The function body (defaults to "")
 -- env       -- The execution environment (defaults to {})
--- signature -- The function signature (defaults to "...")
+-- signature -- The function signature (defaults to "self,...")
 --
 -- Returns the constructed closure, or nil and an error
 local function BuildRestrictedClosure(body, env, signature)
     body = tostring(body) or "";
-    signature = tostring(signature) or "...";
+    signature = tostring(signature) or "self,...";
     if (type(env) ~= "table") then
         env = {};
     end
@@ -82,7 +95,7 @@ local function BuildRestrictedClosure(body, env, signature)
     setfenv(def, env);
 
     -- And then return a 'safe' wrapped invocation for the closure.
-    return function(...) return def(scrub(...)) end;
+    return function(self, ...) return def(SelfScrub(self), scrub(...)) end;
 end
 
 -- factory = CreateClosureFactory(env, signature)
@@ -124,20 +137,20 @@ end
 --
 
 -- Mapping table from restricted table 'proxy' to the 'real' storage
-local RESTRICTED_TABLES = {};
-setmetatable(RESTRICTED_TABLES, { __mode="k" });
+local LOCAL_Restricted_Tables = {};
+setmetatable(LOCAL_Restricted_Tables, { __mode="k" });
 
 -- Metatable common to all restricted tables (This introduces one
 -- level of indirection in every use as a means to share the same
 -- metatable between all instances)
-local RESTRICTED_META = {
+local LOCAL_Restricted_Table_Meta = {
     __index = function(t, k)
-                  local real = RESTRICTED_TABLES[t];
+                  local real = LOCAL_Restricted_Tables[t];
                   return real[k];
               end,
 
     __newindex = function(t, k, v)
-                     local real = RESTRICTED_TABLES[t];
+                     local real = LOCAL_Restricted_Tables[t];
                      if (not issecure()) then
                          error("Cannot insecurely modify restricted table");
                          return;
@@ -146,7 +159,8 @@ local RESTRICTED_META = {
                      if ((tv ~= "string") and (tv ~= "number")
                          and (tv ~= "boolean") and (tv ~= "nil")
                              and ((tv ~= "userdata")
-                                  or (not RESTRICTED_TABLES[v]))) then
+                                  or not (LOCAL_Restricted_Tables[v]
+                                          or  IsFrameHandle(v)))) then
                          error("Invalid value type '" .. tv .. "'");
                          return;
                      end
@@ -157,31 +171,115 @@ local RESTRICTED_META = {
                          return;
                      end
                      real[k] = v;
-                 end
+                 end,
+
+    __len = function(t)
+                local real = LOCAL_Restricted_Tables[t];
+                return #real;
+            end,
+
+    __metatable = false, -- False means read-write proxy
 }
 
+local LOCAL_Readonly_Restricted_Tables = {};
+setmetatable(LOCAL_Readonly_Restricted_Tables, { __mode="k" });
+
+local function CheckReadonlyValue(ret)
+    if (type(ret) == "userdata") then
+        if (LOCAL_Restricted_Tables[ret]) then
+            if (getmetatable(ret)) then
+                return ret;
+            end
+            return LOCAL_Readonly_Restricted_Tables[ret];
+        end
+    end
+    return ret;
+end
+
+-- Metatable common to all read-only restricted tables (This also introduces
+-- indirection so that a single metatable is viable)
+local LOCAL_Readonly_Restricted_Table_Meta = {
+    __index = function(t, k)
+                  local real = LOCAL_Restricted_Tables[t];
+                  return CheckReadonlyValue(real[k]);
+              end,
+
+    __newindex = function(t, k, v)
+                     error("Table is read-only");
+                 end,
+
+    __len = function(t)
+                local real = LOCAL_Restricted_Tables[t];
+                return #real;
+            end,
+
+    __metatable = true, -- True means read-only proxy
+}
+
+
+local LOCAL_Restricted_Prototype = newproxy(true);
+local LOCAL_Readonly_Restricted_Prototype = newproxy(true);
+do
+    local meta = getmetatable(LOCAL_Restricted_Prototype);
+    for k, v in pairs(LOCAL_Restricted_Table_Meta) do
+        meta[k] = v;
+    end
+
+    meta = getmetatable(LOCAL_Readonly_Restricted_Prototype);
+    for k, v in pairs(LOCAL_Readonly_Restricted_Table_Meta) do
+        meta[k] = v;
+    end
+end
+
+local function RestrictedTable_Readonly_index(t, k)
+    local real = LOCAL_Restricted_Tables[k];
+    if (not real) then return; end
+    if (not issecure()) then
+        error("Cannot create restricted tables from insecure code");
+    end
+
+    local ret = newproxy(LOCAL_Readonly_Restricted_Prototype);
+    LOCAL_Restricted_Tables[ret] = real;
+    t[k] = ret;
+    return ret;
+end
+
+getmetatable(LOCAL_Readonly_Restricted_Tables).__index
+    = RestrictedTable_Readonly_index;
 
 -- table = RestrictedTable_create(...)
 --
 -- Create a new, restricted table, populating it from ... if
 -- necessary, similar to the way the normal table constructor
 -- works.
-
-local PROXY_PROTOTYPE = newproxy(true);
-for k, v in pairs(RESTRICTED_META) do
-    getmetatable(PROXY_PROTOTYPE)[k] = v;
-end
-getmetatable(PROXY_PROTOTYPE).__metatable = false
-
 local function RestrictedTable_create(...)
-    local ret = newproxy(PROXY_PROTOTYPE);
-    RESTRICTED_TABLES[ret] = {};
+    local ret = newproxy(LOCAL_Restricted_Prototype);
+    if (not issecure()) then
+        error("Cannot create restricted tables from insecure code");
+    end
+    LOCAL_Restricted_Tables[ret] = {};
 
+    -- Use this loop to ensure that the contents of the new
+    -- table are all allowed
     for i = 1, select('#', ...) do
         ret[i] = select(i, ...);
     end
 
     return ret;
+end
+
+-- table = GetReadonlyRestrictedTable(otherTable)
+--
+-- Given a restricted table, return a read-only proxy to the same
+-- table (which will be itself, if it's already read-only)
+function GetReadonlyRestrictedTable(ref)
+    if (LOCAL_Restricted_Tables[ref]) then
+        if (getmetatable(ref)) then
+            return ref;
+        end
+        return LOCAL_Readonly_Restricted_Tables[ref];
+    end
+    error("Invalid restricted table");
 end
 
 -- key = RestrictedTable_next(table [,key])
@@ -190,9 +288,18 @@ end
 -- aware of restricted and normal tables and behaves consistently
 -- for both.
 local function RestrictedTable_next(T, k)
-    local PT = RESTRICTED_TABLES[T];
+    local PT = LOCAL_Restricted_Tables[T];
     if (PT) then
-        return next(PT, k);
+        if (getmetatable(T)) then
+            local idx, val = next(PT, k);
+            if (val ~= nil) then
+                return idx, CheckReadonlyValue(val);
+            else
+                return idx, val;
+            end
+        else
+            return next(PT, k);
+        end
     end
     return next(T, k);
 end
@@ -202,7 +309,7 @@ end
 -- An implementation of the pairs function, which is aware
 -- of and iterates over both restricted and normal tables.
 local function RestrictedTable_pairs(T)
-    local PT = RESTRICTED_TABLES[T];
+    local PT = LOCAL_Restricted_Tables[T];
     if (PT) then
         -- v
         return RestrictedTable_next, T, nil;
@@ -226,11 +333,22 @@ end
 -- An implementation of the ipairs function, which is aware
 -- of and iterates over both restricted and normal tables.
 local function RestrictedTable_ipairs(T)
-    local PT = RESTRICTED_TABLES[T];
+    local PT = LOCAL_Restricted_Tables[T];
     if (PT) then
         return RestrictedTable_ipairsaux, T, 0;
     end
     return ipairs(T);
+end
+
+-- Recursive helper to ensure all values from a list are properly converted
+-- to read-only proxies
+local RestrictedTable_unpack_ro;
+function RestrictedTable_unpack_ro(...)
+    local n = select('#', ...);
+    if (n == 0) then
+        return;
+    end
+    return CheckReadonlyValue(...), RestrictedTable_unpack_ro(select(2, ...));
 end
 
 -- ... = RestrictedTable_unpack(table)
@@ -238,28 +356,14 @@ end
 -- An implementation of unpack which unpacks both restricted
 -- and normal tables.
 local function RestrictedTable_unpack(T)
-    local PT = RESTRICTED_TABLES[T];
+    local PT = LOCAL_Restricted_Tables[T];
     if (PT) then
+        if (getmetatable(T)) then
+            return RestrictedTable_unpack_ro(unpack(PT));
+        end
         return unpack(PT)
     end
     return unpack(T);
-end
-
--- size = RestrictedTable_tablesize(table)
---
--- An equivalent to #table that works for both restricted
--- and normal tables.
-local function RestrictedTable_tablesize(T)
-    local tt = type(T);
-    if (tt == "userdata") then
-        local PT = RESTRICTED_TABLES[T];
-        if (PT) then
-            return #PT;
-        end
-    elseif (tt == "table") then
-        return #T;
-    end
-    error("input is not a table");
 end
 
 -- Export these functions so that addon code can use them if desired
@@ -269,7 +373,6 @@ rtable = {
     pairs = RestrictedTable_pairs;
     ipairs = RestrictedTable_ipairs;
     unpack = RestrictedTable_unpack;
-    tablesize = RestrictedTable_tablesize;
     newtable = RestrictedTable_create;
 };
 
@@ -284,12 +387,12 @@ rtable = {
 -- controlFunc     -- Control function to set/clear working and proxy
 --                    environments.
 --
--- The control function takes two or three parameters
---    controlFunc(set, workingTable [,proxyNamespace])
+-- The control function takes two parameters
+--    controlFunc(set, workingTable)
 --
--- set is a boolean;  If it's true then the working table and proxy environment
--- are set to the specified values. If it's false then the working table and
--- proxy environment are reset.
+-- set is a boolean;  If it's true then the working table is set to the
+-- specified value (pushing any previous environment onto a stack). If
+-- it's false then the working table is unset (and restored from stack).
 --
 -- The working table should be a restricted table, or an immutable object.
 --
@@ -299,15 +402,14 @@ rtable = {
 local function CreateRestrictedEnvironment(base)
     if (type(base) ~= "table") then base = {}; end
 
-    local working, proxyNamespace, depth = nil, nil, 0;
+    local working, depth = nil, 0;
+    local workingStack = {};
 
     local result = {};
     local meta_index;
 
     local function meta_index(t, k)
-        return base[k]
-            or (proxyNamespace ~= nil and proxyNamespace[k])
-            or working[k];
+        return base[k] or working[k];
     end;
 
     local function meta_newindex(t, k, v)
@@ -323,23 +425,15 @@ local function CreateRestrictedEnvironment(base)
 
     setmetatable(result, meta);
 
-    local function control(set, newWorking, newProxyNamespace)
+    local function control(set, newWorking)
         if (set) then
             if (depth == 0) then
                 depth = 1;
                 working = newWorking;
-                proxyNamespace = newProxyNamespace;
             else
-                if (working ~= newWorking) then
-                    error("Attempted to re-use environment with depth "
-                          .. depth);
-                    return;
-                end
-                if (proxyNamespace ~= newProxyNamespace) then
-                    error("Attempted to re-use environment with depth "
-                          .. depth);
-                    return;
-                end
+                workingStack[depth] = working;
+
+                working = newWorking;
                 depth = depth + 1;
             end
         else
@@ -353,19 +447,18 @@ local function CreateRestrictedEnvironment(base)
                 return;
             end
 
-            if (proxyNamespace ~= newProxyNamespace) then
-                error("Proxy namespace environment mismatch at release");
-                return;
-            end
-
             depth = depth - 1;
-            if (depth == 0) then working = nil; end
+            if (depth == 0) then
+                working = nil;
+            else
+                working = workingStack[depth];
+                workingStack[depth] = nil;
+            end
         end
     end
 
     return result, control;
 end
-
 
 ---------------------------------------------------------------------------
 -- AVAILABLE FUNCTIONS
@@ -384,12 +477,12 @@ end
 -- those functions one doesn't trust.
 
 -- A metatable to prevent tampering with the environment tables.
-local NO_SECURE_UPDATE_META = {
+local LOCAL_No_Secure_Update_Meta = {
     __newindex = function() end;
     __metatable = false;
 };
 
-local RESTRICTED_GLOBAL_FUNCTIONS = {
+local LOCAL_Restricted_Global_Functions = {
     newtable = RestrictedTable_create;
     pairs = RestrictedTable_pairs;
     ipairs = RestrictedTable_ipairs;
@@ -407,8 +500,12 @@ function PopulateGlobalFunctions(src, dest)
             elseif (tv == "table") then
                 local subdest = {};
                 PopulateGlobalFunctions(v, subdest);
-                setmetatable(subdest, NO_SECURE_UPDATE_META);
-                dest[k] = subdest;
+                setmetatable(subdest, LOCAL_No_Secure_Update_Meta);
+                local dproxy = newproxy(true);
+                local dproxy_meta = getmetatable(dproxy);
+                dproxy_meta.__index = subdest;
+                dproxy_meta.__metatable = false;
+                dest[k] = dproxy;
             end
         end
     end
@@ -417,21 +514,29 @@ end
 -- Import any functions initialized by other/earier files
 if (RESTRICTED_FUNCTIONS_SCOPE) then
     PopulateGlobalFunctions(RESTRICTED_FUNCTIONS_SCOPE,
-                            RESTRICTED_GLOBAL_FUNCTIONS);
+                            LOCAL_Restricted_Global_Functions);
     RESTRICTED_FUNCTIONS_SCOPE = nil;
 end
 
 -- Create the environment
-local FUNCTION_ENVIRONMENT, FUNCTION_ENVIRONMENT_CONTROL =
-    CreateRestrictedEnvironment(RESTRICTED_GLOBAL_FUNCTIONS);
+local LOCAL_Function_Environment, LOCAL_Function_Environment_Control =
+    CreateRestrictedEnvironment(LOCAL_Restricted_Global_Functions);
 
 -- Protect from injection via the string metatable index
 -- Assume for now that 'string' is relatively clean
 local strmeta = getmetatable("x");
 local newmetaindex = {};
 for k, v in pairs(string) do newmetaindex[k] = v; end
+setmetatable(newmetaindex, {
+                 __index = function(t,k)
+                               if (not issecure()) then
+                                   return string[k];
+                               end
+                           end;
+                 __metatable = false;
+             });
 strmeta.__index = newmetaindex;
-strmeta.__metatable = false;
+strmeta.__metatable = string;
 strmeta = nil;
 newmetaindex = nil;
 
@@ -441,14 +546,14 @@ newmetaindex = nil;
 -- An automatically populating table keyed by function signature with
 -- values that are closure factories for those signatures.
 
-local CLOSURE_FACTORIES = { };
+local LOCAL_Closure_Factories = { };
 
 local function ClosureFactories_index(t, signature)
     if (type(signature) ~= "string") then
         return;
     end
 
-    local factory = CreateClosureFactory(FUNCTION_ENVIRONMENT, signature);
+    local factory = CreateClosureFactory(LOCAL_Function_Environment, signature);
 
     if (not issecure()) then
         error("Cannot declare closure factories from insecure code");
@@ -459,43 +564,47 @@ local function ClosureFactories_index(t, signature)
     return factory;
 end
 
-setmetatable(CLOSURE_FACTORIES, { __index = ClosureFactories_index });
+setmetatable(LOCAL_Closure_Factories, { __index = ClosureFactories_index });
 
 ---------------------------------------------------------------------------
 -- FUNCTION CALL
 
 -- A helper method to release the restricted environment environment before
 -- returning from the function call.
-local function ReleaseAndReturn(workingEnv, proxyNs, pcallFlag, ...)
+local function ReleaseAndReturn(workingEnv, readok, pcallFlag, ...)
     -- Tampering at this point will irrevocably taint the protected
     -- environment, for now that's a handy protective measure.
-    FUNCTION_ENVIRONMENT_CONTROL(false, workingEnv, proxyNs);
+    LOCAL_Function_Environment_Control(false, workingEnv);
+    EndFrameActions(readok);
     if (pcallFlag) then
         return ...;
     end
     error("Call failed: " .. tostring( (...) ) );
 end
 
--- ? = CallRestrictedClosure(signature, workingEnv, proxyNs, body, ...)
+-- ? = CallRestrictedClosure(signature, workingEnv, onupdate, body, ...)
 --
 -- Invoke a managed closure, looking its definition up from a factory
 -- and managing its environment during execution.
 --
 -- signature  -- function signature
 -- workingEnv -- the working environment, must be a restricted table
--- proxyNs    -- an 'object proxies' namespace table, which can be nil
+-- onupdate   -- true if this is called from an OnUpdate handler and needs
+--               to be restricted to read-only environment and write-only
+--               frames
 -- body       -- function body
 -- ...        -- any arguments to pass to the executing closure
 --
 -- Returns whatever the restricted closure returns
-function CallRestrictedClosure(signature, workingEnv, proxyNs, body, ...)
-    if (not RESTRICTED_TABLES[workingEnv]) then
+function CallRestrictedClosure(signature, workingEnv, onupdate, body, ...)
+    onupdate = false; -- Disabled for now
+    if (not LOCAL_Restricted_Tables[workingEnv]) then
         error("Invalid working environment");
         return;
     end
 
     signature = tostring(signature);
-    local factory = CLOSURE_FACTORIES[signature];
+    local factory = LOCAL_Closure_Factories[signature];
     if (not factory) then
         error("Invalid signature '" .. signature .. "'");
         return;
@@ -510,6 +619,13 @@ function CallRestrictedClosure(signature, workingEnv, proxyNs, body, ...)
     if (not issecure()) then
         error("Cannot call restricted closure from insecure code");
     end
-    FUNCTION_ENVIRONMENT_CONTROL(true, workingEnv, proxyNs);
-    return ReleaseAndReturn(workingEnv, proxyNs, pcall( closure, ... ) );
+    if (onupdate) then
+        workingEnv = GetReadonlyRestrictedTable(workingEnv);
+    end
+
+    local readok = (not onupdate);
+
+    LOCAL_Function_Environment_Control(true, workingEnv);
+    BeginFrameActions(readok);
+    return ReleaseAndReturn(workingEnv, readok, pcall( closure, ... ) );
 end

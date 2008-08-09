@@ -17,6 +17,9 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
+				<!--
+				GameTimeTexture is the old day/night icon and is currently ALWAYS hidden, it is still here in case we want it back at some point
+				-->
 				<Texture name="GameTimeTexture" file="Interface\Minimap\UI-TOD-Indicator" hidden="true"/>
 				<Texture name="GameTimeCalendarInvitesTexture" file="Interface\Calendar\EventNotification" hidden="true">
 					<Size x="35" y="40"/>
@@ -55,6 +58,16 @@
 				GameTimeFrame_OnClick(self);
 			</OnClick>
 		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontBlack"/>
 		<NormalTexture file="Interface\Calendar\UI-Calendar-Button">
 			<TexCoords left="0.0" right="0.390625" top="0.0" bottom="0.78125"/>
 		</NormalTexture>

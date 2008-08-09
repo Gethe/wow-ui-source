@@ -120,21 +120,6 @@
 								</Anchors> 
 							</Cooldown>
 						</Frames>
-						<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
-							<Size>
-								<AbsDimension x="40" y="40"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="-1"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</NormalTexture>
-						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-						<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 						<Scripts>
 							<OnLoad>
 								getglobal(self:GetName().."Icon"):SetTexture("Interface\\Icons\\Spell_Shadow_Teleport");
@@ -164,6 +149,20 @@
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
+						<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+							<Size>
+								<AbsDimension x="40" y="40"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</NormalTexture>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 					</Button>					
 					<Button name="$parentNote">
 						<Size x="7" y="8"/>

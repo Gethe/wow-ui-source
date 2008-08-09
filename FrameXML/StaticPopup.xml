@@ -26,7 +26,7 @@
 		<DisabledFont style="GameFontDisable"/>
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
-	<Frame name="StaticPopupTemplate" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">
+	<Frame name="StaticPopupTemplate" toplevel="true" enableKeyboard="true" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="320" y="72"/>
 		</Size>

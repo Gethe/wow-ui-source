@@ -18,6 +18,16 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
+				<Texture name="$parentHighlight" file="Interface\Spellbook\UI-GlyphFrame" hidden="true" alphaMode="ADD">
+					<Size x="86" y="86"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.765625" right="0.927734375" top="0.15625" bottom="0.31640625"/>
+					<Color r="1" g="1" b="1" a=".25"/>
+				</Texture>
 				<Texture name="$parentBackground" file="Interface\Spellbook\UI-GlyphFrame">
 					<Size x="64" y="64"/>
 					<Anchors>
@@ -67,13 +77,15 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				GlyphFrameGlyph_UpdateSlot(self);
 			</OnShow>
 			<OnClick>
-				GlyphFrameGlyph_OnClick(self);
+				GlyphFrameGlyph_OnClick(self, button);
 			</OnClick>
 			<OnEnter>
 				self.hasCursor = true;
+				GlyphFrameGlyph_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				self.hasCursor = nil;
+				GlyphFrameGlyph_OnLeave(self);
 			</OnLeave>
 			<OnUpdate>
 				GlyphFrameGlyph_OnUpdate(self, elapsed);
@@ -142,19 +154,19 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Size x="90" y="90"/>
 				<Anchors>
 					<Anchor point="CENTER">
-						<Offset x="-14" y="139"/>
+						<Offset x="-15" y="140"/>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentGlyph2" inherits="GlyphTemplate" id="2">
+			<Button name="$parentGlyph4" inherits="GlyphTemplate" id="4">
 				<Size x="90" y="90"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-54" y="168"/>
+						<Offset x="-56" y="168"/>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentGlyph3" inherits="GlyphTemplate" id="3">
+			<Button name="$parentGlyph6" inherits="GlyphTemplate" id="6">
 				<Size x="90" y="90"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
@@ -162,7 +174,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</Button>	
-			<Button name="$parentGlyph4" inherits="GlyphTemplate" id="4">
+			<Button name="$parentGlyph2" inherits="GlyphTemplate" id="2">
 				<Size x="90" y="90"/>
 				<Anchors>
 					<Anchor point="CENTER">
@@ -178,7 +190,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentGlyph6" inherits="GlyphTemplate" id="6">
+			<Button name="$parentGlyph3" inherits="GlyphTemplate" id="3">
 				<Size x="90" y="90"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -203,6 +215,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnLeave>
 				GlyphFrame_OnLeave(self)
 			</OnLeave>
+			<OnEvent>
+				GlyphFrame_OnEvent(self, event, ...);
+			</OnEvent>
 		</Scripts>
 	</Frame>
 </Ui>

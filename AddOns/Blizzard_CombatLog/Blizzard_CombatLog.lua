@@ -1970,7 +1970,11 @@ local function CombatLog_String_DamageResultString( resisted, blocked, absorbed,
 
 		local tMode = "TEXT_MODE_"..textMode;
 		if ( resisted ) then
-			resultStr = format(TEXT_MODE_A_STRING_RESULT_RESIST, resisted);
+			if ( resisted < 0 ) then	--Its really a vulnerability
+				resultStr = format(TEXT_MODE_A_STRING_RESULT_VULNERABILITY, -resisted);
+			else
+				resultStr = format(TEXT_MODE_A_STRING_RESULT_RESIST, resisted);
+			end
 		end
 		if ( blocked ) then
 			if ( resultStr ) then
@@ -2306,9 +2310,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Miss type
 			missType,  amountMissed = select(4, ...);
 
+			resultEnabled = true;
 			-- Result String
 			if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
-				resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
+				if ( amountMissed ~= 0 ) then
+					resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
+				else
+					resultEnabled = false;
+				end
 			else
 				resultStr = _G["ACTION_SWING_MISSED_"..missType];
 			end
@@ -2320,7 +2329,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 
 			-- Disable appropriate sections
 			valueEnabled = false;
-			resultEnabled = true;
 		elseif ( event == "SPELL_HEAL" or event == "SPELL_BUILDING_HEAL") then 
 			-- Did the heal crit?
 			amount, overhealing, critical = select(4, ...);
@@ -2362,8 +2370,12 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				missType = select(4, ...);
 				
 				-- Result String
-				resultStr = _G["ACTION_SPELL_PERIODIC_MISSED_"..missType];
-
+				if ( missType == "ABSORB" ) then
+					resultStr = CombatLog_String_DamageResultString( resisted, blocked, select(5,...), critical, glancing, crushing, overhealing, textMode, spellId );
+				else
+					resultStr = _G["ACTION_SPELL_PERIODIC_MISSED_"..missType];
+				end
+				
 				-- Miss Event
 				if ( settings.fullText and missType ) then
 					event = format("%s_%s", event, missType);

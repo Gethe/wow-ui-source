@@ -1,4 +1,4 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/1801/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
   <Script file="RuneFrame.lua"/>
   <Button name="RuneButtonIndividualTemplate" virtual="true" hidden="false">
@@ -17,15 +17,15 @@
 			</Anchors>
 		</Cooldown>
 		<Frame name="$parentBorder">
-			<Size x="28" y="28"/>
+			<Size x="24" y="24"/>
 			<Anchors>
 				<Anchor point="CENTER">
-					<Offset x="0" y="0"/>
+					<Offset x="0" y="-1"/>
 				</Anchor>
 			</Anchors>
 			<Layers>
 				<Layer level="OVERLAY">
-					<Texture name="$parentTexture" file="Interface\CharacterFrame\TotemBorder">
+					<Texture name="$parentTexture" file="Interface\PlayerFrame\UI-PlayerFrame-Deathknight-Ring">
 						<Color r=".6" g=".6" b=".6" a="1"/>
 					</Texture>
 				</Layer>
@@ -38,19 +38,10 @@
 		</Frame>
     </Frames>
     <Layers>
-		<Layer level="BACKGROUND">
-			<Texture name="$parentBG">
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Color r="0" g="0" b="0" a=".4"/>
-			</Texture>
-		</Layer>
 		<Layer level="ARTWORK">
-			<Texture name="$parentRune" file="Interface\CharacterFrame\DeathKnight-BloodRune">
+			<Texture name="$parentRune" file="Interface\PlayerFrame\UI-PlayerFrame-Deathknight-Blood">
 				<Size>
-					<AbsDimension x="16" y="16"/>
+					<AbsDimension x="24" y="24"/>
 				</Size>
 				<Anchors>
 					<Anchor point="CENTER">
@@ -59,6 +50,17 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+				<Size x="60" y="35"/>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
 			</Texture>
 		</Layer>
     </Layers>
@@ -77,7 +79,7 @@
     <Anchors>
       <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
         <Offset>
-          <AbsDimension x="52" y="34"/>
+          <AbsDimension x="54" y="34"/>
         </Offset>
       </Anchor>
     </Anchors>
@@ -102,47 +104,47 @@
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual1" relativePoint="RIGHT">
         <Offset>
-          <AbsDimension x="4" y="0"/>
+          <AbsDimension x="3" y="0"/>
         </Offset>
       </Anchor>
     </Anchors>
   </Button>
 
-  <Button name="RuneButtonIndividual3" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="3">
+  <Button name="RuneButtonIndividual3" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="5">
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual2" relativePoint="RIGHT">
         <Offset>
-          <AbsDimension x="4" y="0"/>
+          <AbsDimension x="3" y="0"/>
         </Offset>
       </Anchor>
     </Anchors>
   </Button>
 
-  <Button name="RuneButtonIndividual4" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="4">
+  <Button name="RuneButtonIndividual4" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="6">
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual3" relativePoint="RIGHT">
         <Offset>
-          <AbsDimension x="4" y="0"/>
+          <AbsDimension x="3" y="0"/>
         </Offset>
       </Anchor>
     </Anchors>
   </Button>
 
-  <Button name="RuneButtonIndividual5" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="5">
+  <Button name="RuneButtonIndividual5" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="3">
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual4" relativePoint="RIGHT">
         <Offset>
-          <AbsDimension x="4" y="0"/>
+          <AbsDimension x="3" y="0"/>
         </Offset>
       </Anchor>
     </Anchors>
   </Button>
 
-  <Button name="RuneButtonIndividual6" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="6">
+  <Button name="RuneButtonIndividual6" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="4">
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual5" relativePoint="RIGHT">
         <Offset>
-          <AbsDimension x="4" y="0"/>
+          <AbsDimension x="3" y="0"/>
         </Offset>
       </Anchor>
     </Anchors>

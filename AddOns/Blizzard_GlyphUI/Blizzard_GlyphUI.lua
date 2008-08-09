@@ -8,20 +8,22 @@ GLYPH_SLOTS = {};
 -- Empty Texture
 GLYPH_SLOTS[0] = { left = 0.78125; right = 0.91015625; top = 0.69921875; bottom = 0.828125;}
 -- Major Glyphs
-GLYPH_SLOTS[1] = { left = 0.392578125; right = 0.521484375; top = 0.87109375; bottom = 1;}
-GLYPH_SLOTS[4] = { left = 0; right = 0.12890625; top = 0.87109375; bottom = 1;}
-GLYPH_SLOTS[6] = { left = 0.26171875; right = 0.390625; top = 0.87109375; bottom = 1;}
-GLYPH_SLOTS[5] = { left = 0.130859375; right = 0.259765625; top = 0.87109375; bottom = 1;}
+GLYPH_SLOTS[3] = { left = 0.392578125; right = 0.521484375; top = 0.87109375; bottom = 1;}
+GLYPH_SLOTS[1] = { left = 0; right = 0.12890625; top = 0.87109375; bottom = 1;}
+GLYPH_SLOTS[5] = { left = 0.26171875; right = 0.390625; top = 0.87109375; bottom = 1;}
 -- Minor Glyphs
-GLYPH_SLOTS[3] = { left = 0.654296875; right = 0.783203125; top = 0.87109375; bottom = 1;}
-GLYPH_SLOTS[2] = { left = 0.5234375; right = 0.65234375; top = 0.87109375; bottom = 1;}
+GLYPH_SLOTS[2] = { left = 0.130859375; right = 0.259765625; top = 0.87109375; bottom = 1;}
+GLYPH_SLOTS[6] = { left = 0.654296875; right = 0.783203125; top = 0.87109375; bottom = 1;}
+GLYPH_SLOTS[4] = { left = 0.5234375; right = 0.65234375; top = 0.87109375; bottom = 1;}
 
 NUM_GLYPH_SLOTS = 6
 
 function GlyphFrameGlyph_OnLoad (self)
 	local name = self:GetName();
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self.glyph = getglobal(name .. "Glyph");
 	self.setting = getglobal(name .. "Setting");
+	self.highlight = getglobal(name .. "Highlight");
 	self.background = getglobal(name .. "Background");
 	self.ring = getglobal(name .. "Ring");
 	self.shine = getglobal(name .. "Shine");
@@ -29,9 +31,10 @@ function GlyphFrameGlyph_OnLoad (self)
 end
 
 function GlyphFrameGlyph_UpdateSlot (self)
+	local GLYPH_TEXTURE_PATH = "Interface\\SpellBook\\UI-Glyph-Rune-%d";
 	local id = self:GetID();
 	
-	local enabled, glyphType, glyphSpell = GetGlyphSocketInfo(id);
+	local enabled, glyphType, glyphSpell, iconIndex = GetGlyphSocketInfo(id);
 	
 	if ( glyphType == 2 ) then
 		GlyphFrameGlyph_SetGlyphType(self, GLYPHTYPE_MINOR);
@@ -41,14 +44,20 @@ function GlyphFrameGlyph_UpdateSlot (self)
 	
 	if ( not enabled ) then
 		self.background:Hide();
+		self.shine:Hide();
 		self.glyph:Hide();
 		self.ring:Hide();
 	elseif ( not glyphSpell ) then
+		self.spell = nil;
+		self.shine:Show();
 		self.background:SetTexCoord(GLYPH_SLOTS[0].left, GLYPH_SLOTS[0].right, GLYPH_SLOTS[0].top, GLYPH_SLOTS[0].bottom);
 		self.glyph:Hide();
 	else
+		self.spell = glyphSpell;
+		self.shine:Show();
 		self.background:SetTexCoord(GLYPH_SLOTS[id].left, GLYPH_SLOTS[id].right, GLYPH_SLOTS[id].top, GLYPH_SLOTS[id].bottom);
 		self.glyph:Show();
+		self.glyph:SetTexture(string.format(GLYPH_TEXTURE_PATH, iconIndex));
 		return true;
 	end
 end
@@ -59,6 +68,9 @@ function GlyphFrameGlyph_SetGlyphType (glyph, glyphType)
 		glyph.setting:SetWidth(108);
 		glyph.setting:SetHeight(108);
 		glyph.setting:SetTexCoord(0.740234375, 0.953125, 0.484375, 0.697265625);
+		glyph.highlight:SetWidth(108);
+		glyph.highlight:SetHeight(108);
+		glyph.highlight:SetTexCoord(0.740234375, 0.953125, 0.484375, 0.697265625);
 		glyph.ring:SetWidth(82);
 		glyph.ring:SetHeight(82);
 		glyph.ring:SetPoint("CENTER", glyph, "CENTER", 0, -1);
@@ -69,6 +81,9 @@ function GlyphFrameGlyph_SetGlyphType (glyph, glyphType)
 		glyph.setting:SetWidth(86);
 		glyph.setting:SetHeight(86);
 		glyph.setting:SetTexCoord(0.765625, 0.927734375, 0.15625, 0.31640625);
+		glyph.highlight:SetWidth(86);
+		glyph.highlight:SetHeight(86);
+		glyph.highlight:SetTexCoord(0.765625, 0.927734375, 0.15625, 0.31640625);
 		glyph.ring:SetWidth(62);
 		glyph.ring:SetHeight(62);
 		glyph.ring:SetPoint("CENTER", glyph, "CENTER", 0, 1);
@@ -97,7 +112,7 @@ function GlyphFrameGlyph_OnUpdate (self, elapsed)
 	end
 	
 	if ( self.hasCursor and SpellIsTargeting() ) then
-		if ( GlyphMatchesSocket(self:GetID()) ) then
+		if ( GlyphMatchesSocket(self:GetID()) and self.background:IsShown() ) then
 			SetCursor("CAST_CURSOR");
 		else
 			SetCursor("CAST_ERROR_CURSOR");
@@ -107,11 +122,37 @@ end
 
 function GlyphFrameGlyph_OnClick (self, button)
 	local id = self:GetID();
-	-- self.background:IsShown() is only true when the slot is unlocked.
-	if ( GlyphMatchesSocket(id) and self.background:IsShown() ) then
+
+	if ( button == "RightButton" ) then
+		if ( IsShiftKeyDown() ) then
+			local glyphName;
+			local _, _, glyphSpell = GetGlyphSocketInfo(id);
+			if ( glyphSpell ) then
+				glyphName = GetSpellInfo(glyphSpell);
+				local dialog = StaticPopup_Show("CONFIRM_REMOVE_GLYPH", glyphName);
+				dialog.data = id;
+			end
+		end
+	elseif ( self.glyph:IsShown() and GlyphMatchesSocket(id) ) then
 		local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", id);
 		dialog.data = id;
+	else
+		PlaceGlyphInSocket(id);
 	end
+end
+
+function GlyphFrameGlyph_OnEnter (self)
+	if ( self.background:IsShown() ) then
+		self.highlight:Show();
+	end
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetGlyph(self:GetID());
+	GameTooltip:Show();
+end
+
+function GlyphFrameGlyph_OnLeave (self)
+	self.highlight:Hide();
+	GameTooltip:Hide();
 end
 
 GLYPHFRAME_PULSEIN = .2;
@@ -146,7 +187,8 @@ function GlyphFrame_OnShow (self)
 end
 
 function GlyphFrame_OnLoad (self)
-
+	self.glow = getglobal(self:GetName() .. "Glow");
+	self:RegisterEvent("GLYPH_UPDATE");
 end
 
 function GlyphFrame_OnEnter (self)
@@ -157,6 +199,11 @@ end
 
 function GlyphFrame_OnLeave (self)
 
+end
+
+function GlyphFrame_OnEvent (self, event, ...)
+	GlyphFrame_PulseGlow();
+	GlyphFrame_Update();
 end
 
 function GlyphFrame_Update ()

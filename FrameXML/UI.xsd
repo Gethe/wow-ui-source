@@ -566,6 +566,11 @@
 						<xs:restriction base="xs:float"/>
 					</xs:simpleType>
 				</xs:attribute>
+				<xs:attribute name="glow" default="1.0">
+					<xs:simpleType>
+						<xs:restriction base="xs:float"/>
+					</xs:simpleType>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -702,6 +707,7 @@
 		<xs:complexContent>
 			<xs:extension base="FrameType">
 				<xs:attribute name="reverse" type="xs:boolean" default="false"/>
+				<xs:attribute name="drawEdge" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

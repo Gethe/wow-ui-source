@@ -26,6 +26,20 @@ function CastingBarFrame_OnLoad (self, unit, showTradeSkills)
 	end
 end
 
+function CastingBarFrame_OnShow (self)
+	if ( self.casting ) then
+		local _, _, _, _, startTime = UnitCastingInfo(self.unit);
+		if ( startTime ) then
+			self.value = (GetTime() - (startTime / 1000));
+		end
+	else
+		local _, _, _, _, _, endTime = UnitChannelInfo(self.unit);
+		if ( endTime ) then
+			self.value = ((endTime / 1000) - GetTime());
+		end
+	end
+end
+
 function CastingBarFrame_OnEvent (self, event, ...)
 	local arg1 = ...;
 	

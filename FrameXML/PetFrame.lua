@@ -5,8 +5,8 @@
 function PetFrame_OnLoad (self)
 	self.attackModeCounter = 0;
 	self.attackModeSign = -1;
-	--this.flashState = 1;
-	--this.flashTimer = 0;
+	--self.flashState = 1;
+	--self.flashTimer = 0;
 	CombatFeedback_Initialize(self, PetHitIndicator, 30);
 	PetFrame_Update(self);
 	self:RegisterEvent("UNIT_PET");
@@ -32,8 +32,8 @@ function PetFrame_Update (self)
 		else
 			self:Show();
 		end
-		--this.flashState = 1;
-		--this.flashTimer = PET_FLASH_ON_TIME;
+		--self.flashState = 1;
+		--self.flashTimer = PET_FLASH_ON_TIME;
 		if ( UnitPowerMax(self.unit) == 0 ) then
 			PetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-SmallTargetingFrame-NoMana");
 			PetFrameManaBarText:Hide();
@@ -123,10 +123,10 @@ function PetFrame_OnUpdate (self, elapsed)
 	-- Expiration flash stuff
 	--local petTimeRemaining = nil;
 	--if ( GetPetTimeRemaining() ) then
-	---	if ( this.flashState == 1 ) then
-	--		this:SetAlpha(this.flashTimer/PET_FLASH_ON_TIME);
+	---	if ( self.flashState == 1 ) then
+	--		self:SetAlpha(this.flashTimer/PET_FLASH_ON_TIME);
 	--	else
-	--		this:SetAlpha((PET_FLASH_OFF_TIME - this.flashTimer)/PET_FLASH_OFF_TIME);
+	--		self:SetAlpha((PET_FLASH_OFF_TIME - this.flashTimer)/PET_FLASH_OFF_TIME);
 	--	end
 	--	petTimeRemaining = GetPetTimeRemaining() / 1000;
 	--end

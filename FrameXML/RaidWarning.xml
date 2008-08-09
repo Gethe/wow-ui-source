@@ -66,6 +66,9 @@
 			<OnUpdate>
 				RaidNotice_OnUpdate(self, elapsed);
 			</OnUpdate>
+			<OnEvent>
+				RaidBossEmoteFrame_OnEvent(self, event, ...);
+			</OnEvent>
 		</Scripts>
 	</Frame>
 

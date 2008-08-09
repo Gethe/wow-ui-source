@@ -79,6 +79,9 @@
 			<OnUpdate>
 				CastingBarFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
+			<OnShow>
+				CastingBarFrame_OnShow(self);
+			</OnShow>
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>

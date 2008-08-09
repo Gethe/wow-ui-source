@@ -11,7 +11,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Offset x="125" y="-120"/>
 			</Anchor>
 		</Anchors>
-		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" title="true" frameStrata="BACKGROUND">
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
 			<BackgroundInsets>
 				<AbsInset left="4" right="3" top="4" bottom="5"/>
 			</BackgroundInsets>
@@ -36,7 +36,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Frames>
 			<Slider name="$parentSlider" orientation="VERTICAL">
 				<Size>
-					<AbsDimension x="14"/>
+					<AbsDimension x="14" y="0"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -64,11 +64,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<HitRectInsets>
 					<AbsInset left="0" right="0" top="-10" bottom="-10"/>
 				</HitRectInsets>
-				<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Vertical">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
-				</ThumbTexture>			
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" inherits="GameFontNormal" text="SLIDER1_DEFAULT_VALUE"/>
@@ -108,6 +103,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						VehicleSlider_UpdateCVar(self);
 					</OnValueChanged>
 				</Scripts>
+				<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</ThumbTexture>			
 			</Slider>
 		</Frames>
 		<Scripts>
@@ -139,11 +139,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Anchors>
 			<Anchor point="LEFT">
 				<Offset>
-					<AbsDimension x="256"/>
+					<AbsDimension x="256" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" title="true" frameStrata="BACKGROUND">
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
 			<BackgroundInsets>
 				<AbsInset left="4" right="3" top="4" bottom="5"/>
 			</BackgroundInsets>
@@ -157,7 +157,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Frames>
 			<Slider name="$parentSlider" orientation="VERTICAL">
 				<Size>
-					<AbsDimension x="14"/>
+					<AbsDimension x="14" y="0"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -185,11 +185,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<HitRectInsets>
 					<AbsInset left="0" right="0" top="-10" bottom="-10"/>
 				</HitRectInsets>
-				<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Vertical">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
-				</ThumbTexture>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" inherits="GameFontNormal" text="SLIDER2_DEFAULT_VALUE"/>
@@ -211,9 +206,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentLabel" inherits="GameFontNormalLarge" nonSpaceWrap="true" text="A n g l e" spacing="8">
+						<FontString name="$parentLabel" inherits="GameFontNormalLarge" nonspacewrap="true" text="A n g l e" spacing="8">
 							<Size>
-								<AbsDimension x="16"/>
+								<AbsDimension x="16" y="0"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
@@ -241,6 +236,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						self:SetScript("OnEvent", VehicleSlider2_OnEvent);
 					</OnLoad>
 				</Scripts>				
+				<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</ThumbTexture>
 			</Slider>
 		</Frames>
 		<Scripts>
@@ -272,7 +272,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Offset x="4" y="0"/>
 			</Anchor>
 		</Anchors>
-		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" title="true" frameStrata="BACKGROUND">
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
 			<BackgroundInsets>
 				<AbsInset left="4" right="3" top="4" bottom="5"/>
 			</BackgroundInsets>

@@ -20,6 +20,8 @@ ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS = 5;
 
 ACHIEVEMENTUI_MAXCONTENTWIDTH = 330;
 
+ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS = {6, 503, 116, 545, 1017};
+
 -- Temporary access method
 
 SlashCmdList["ACHIEVEMENTUI"] = function() if ( AchievementFrame:IsShown() ) then HideUIPanel(AchievementFrame) else ShowUIPanel(AchievementFrame) end end;
@@ -341,7 +343,7 @@ function AchievementFrameCategories_DisplayButton (button, element)
 
 	-- For the tooltip
 	button.name = categoryName;
-	if ( AchievementFrame.selectedTab == 1 and element.id == displayCategories[#displayCategories].id ) then
+	if ( AchievementFrame_IsFeatOfStrength() ) then
 		-- This is the feat of strength category since it's sorted to the end of the list
 		button.text = FEAT_OF_STRENGTH_DESCRIPTION;
 		button.showTooltipFunc = AchievementFrameCategory_FeatOfStrengthTooltip;
@@ -412,12 +414,12 @@ function AchievementFrameCategories_SelectButton (button)
 	if ( button.categoryID == "summary" ) then
 		if ( achievementFunctions == STAT_FUNCTIONS or achievementFunctions == ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameSummary);
-			achievementFunctions.selectedCategory = button.categoryID;
-			return;
 		else
 			-- Put the summary stuff for comparison here, Derek!
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameSummary);
 		end
+		achievementFunctions.selectedCategory = button.categoryID;
+		return;
 	else
 		if ( achievementFunctions == STAT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameStats);
@@ -425,8 +427,23 @@ function AchievementFrameCategories_SelectButton (button)
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
 		elseif ( achievementFunctions == COMPARISON_ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparisonContainer);
+			AchievementFrameComparisonContainerScrollBar:SetValue(0);
+			local numAchievements, numCompleted = GetCategoryNumAchievements(button.categoryID);
+			
+			local statusBar = AchievementFrameComparisonSummaryPlayerStatusBar;
+			statusBar:SetMinMaxValues(0, numAchievements);
+			statusBar:SetValue(numCompleted);
+			statusBar.title:SetText(string.format(ACHIEVEMENTS_COMPLETED_CATEGORY, button.name));
+			statusBar.text:SetText(numCompleted.."/"..numAchievements);
+			
+			local friendCompleted = GetComparisonCategoryNumAchievements(button.categoryID);
+			statusBar = AchievementFrameComparisonSummaryFriendStatusBar;
+			statusBar:SetMinMaxValues(0, numAchievements);
+			statusBar:SetValue(friendCompleted);
+			statusBar.text:SetText(friendCompleted.."/"..numAchievements);
 		else
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparisonStatsContainer);
+			AchievementFrameComparisonStatsContainerScrollBar:SetValue(0);
 		end
 	end
 	
@@ -543,6 +560,13 @@ function AchievementFrameAchievements_Update ()
 	local buttons = scrollFrame.buttons;
 	local numAchievements, numCompleted = GetCategoryNumAchievements(category);
 	local numButtons = #buttons;
+	
+	-- If the current category is feats of strength and there are no entries then show the explanation text
+	if ( AchievementFrame_IsFeatOfStrength() and numAchievements == 0 ) then
+		AchievementFrameAchievementsFeatOfStrengthText:Show();
+	else
+		AchievementFrameAchievementsFeatOfStrengthText:Hide();
+	end
 	
 	local selection = AchievementFrameAchievements.selection;
 	if ( selection ) then
@@ -1442,8 +1466,8 @@ function AchievementFrameSummary_OnShow()
 	else
 		AchievementFrameComparisonDark:Hide();
 		AchievementFrameComparisonWatermark:Hide();
-		AchievementFrameComparison:SetWidth(649);
-		AchievementFrameSummary:SetWidth(649);
+		AchievementFrameComparison:SetWidth(650);
+		AchievementFrameSummary:SetWidth(650);
 		AchievementFrameSummary_Update(true);
 	end
 end
@@ -1459,7 +1483,8 @@ function AchievementFrameSummary_UpdateAchievements(...)
 	local id, name, points, completed, month, day, year, description, flags, icon;
 	local buttons = AchievementFrameSummaryAchievements.buttons;
 	local button, achievementID;
-	
+	local defaultAchievementCount = 1;
+
 	for i=1, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
 		if ( buttons ) then
 			button = buttons[i];
@@ -1495,9 +1520,39 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			button.icon.texture:SetTexture(icon);
 			button.id = id;
 			button.dateCompleted:SetText(Localization_GetShortDate(day, month, year));
+			button:Saturate();
+			button.tooltipTitle = nil;
 			button:Show();
 		else
-			button:Hide();
+			for i=defaultAchievementCount, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
+				achievementID = ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS[defaultAchievementCount];
+				if ( not achievementID ) then
+					break;
+				end
+				id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(achievementID);
+				if ( completed ) then
+					defaultAchievementCount = defaultAchievementCount+1;
+				else
+					id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(achievementID);
+					button.label:SetText(name);
+					button.description:SetText(description);
+					AchievementShield_SetPoints(points, button.shield.points, GameFontNormal, GameFontNormalSmall);
+					if ( points > 0 ) then
+						button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
+					else
+						button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
+					end
+					button.icon.texture:SetTexture(icon);
+					button.id = id;
+					button.dateCompleted:SetText(Localization_GetShortDate(day, month, year));
+					button:Show();
+					defaultAchievementCount = defaultAchievementCount+1;
+					button:Desaturate();
+					button.tooltipTitle = SUMMARY_ACHIEVEMENT_INCOMPLETE;
+					button.tooltip = SUMMARY_ACHIEVEMENT_INCOMPLETE_TEXT;
+					break;
+				end
+			end
 		end
 	end
 	if ( numAchievements == 0 ) then
@@ -1561,7 +1616,7 @@ function AchievementFrameSummaryAchievement_OnLoad(self)
 	self:Saturate();
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, 0.5);
 	self.titleBar:SetVertexColor(1,1,1,0.5);
-	self.description:SetVertexColor(0,0,0);
+	self.dateCompleted:Show();
 end
 
 function AchievementFrameSummaryAchievement_OnClick(self)
@@ -1581,6 +1636,16 @@ function AchievementFrameSummaryAchievement_OnClick(self)
 		AchievementFrame_SelectAchievement(nextID);
 	else
 		AchievementFrame_SelectAchievement(self.id);
+	end
+end
+
+function AchievementFrameSummaryAchievement_OnEnter(self)
+	self.highlight:Show();
+	if ( self.tooltipTitle ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.tooltipTitle,1,1,1);
+		GameTooltip:AddLine(self.tooltip, nil, nil, nil, 1);
+		GameTooltip:Show();
 	end
 end
 
@@ -1608,7 +1673,7 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 	end
 
 	getglobal(frame:GetName() .. "Name"):SetText(name);
-	AchievementShield_SetPoints(points, getglobal(frame:GetName() .. "Shield").points, AchievementPointsFont, AchievementPointsFontSmall);
+	AchievementShield_SetPoints(points, getglobal(frame:GetName() .. "Shield").points, GameFontNormal, GameFontNormalSmall);
 	getglobal(frame:GetName() .. "IconTexture"):SetTexture(icon);
 	frame.elapsed = 0;
 	frame.state = nil;
@@ -1736,6 +1801,7 @@ function AchievementAlertFrame_OnClick (self)
 end
 
 function AchievementFrame_SelectAchievement(id)
+	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 	AchievementFrameTab_OnClick(1);
 	AchievementFrameSummary:Hide();
 	AchievementFrameAchievements:Show();
@@ -1855,6 +1921,7 @@ function AchievementFrame_SelectAchievement(id)
 end
 
 function AchievementFrame_SelectSummaryStatistic (criteriaId)
+	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 	AchievementFrameTab_OnClick(2);
 	AchievementFrameStats:Show();
 	AchievementFrameSummary:Hide();
@@ -1973,6 +2040,7 @@ function AchievementFrameComparisonContainer_OnLoad (parent)
 	AchievementFrameComparisonContainerScrollBar.Show = 
 		function (self)
 			AchievementFrameComparison:SetWidth(626);
+			AchievementFrameComparisonSummaryPlayer:SetWidth(498);
 			for _, button in next, AchievementFrameComparisonContainer.buttons do
 				button:SetWidth(616);
 				button.player:SetWidth(498);
@@ -1983,6 +2051,7 @@ function AchievementFrameComparisonContainer_OnLoad (parent)
 	AchievementFrameComparisonContainerScrollBar.Hide = 
 		function (self)
 			AchievementFrameComparison:SetWidth(650);
+			AchievementFrameComparisonSummaryPlayer:SetWidth(522);
 			for _, button in next, AchievementFrameComparisonContainer.buttons do
 				button:SetWidth(640);
 				button.player:SetWidth(522);
@@ -2069,7 +2138,7 @@ function AchievementFrameComparison_Update ()
 	local buttons = scrollFrame.buttons;
 	local numAchievements, numCompleted = GetCategoryNumAchievements(category);
 	local numButtons = #buttons;
-	
+		
 	local buttonHeight = buttons[1]:GetHeight();
 	for i = 1, numButtons do
 		achievementIndex = i + offset;
@@ -2212,6 +2281,9 @@ function AchievementFrameComparisonStat_OnLoad (self)
 	self.left = getglobal(name.."HeaderLeft");
 	self.middle = getglobal(name.."HeaderMiddle");
 	self.right = getglobal(name.."HeaderRight");
+	self.left2 = getglobal(name.."HeaderLeft2");
+	self.middle2 = getglobal(name.."HeaderMiddle2");
+	self.right2 = getglobal(name.."HeaderRight2");
 	self.text = getglobal(name.."Text");
 	self.title = getglobal(name.."Title");
 	self.value = getglobal(name.."Value");
@@ -2263,8 +2335,9 @@ function AchievementFrameComparisonStats_SetStat (button, category, index, color
 		--debugprint(name.." has no criteria");
 	end
 	-- Just show the first criteria for now
-	local criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity;
+	local criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity, friendQuantity;
 	if ( not isSummary ) then
+		friendQuantity = GetComparisonStatistic(id);
 		quantity = GetStatistic(id);
 	else
 		criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity = GetAchievementCriteriaInfo(category);
@@ -2272,13 +2345,22 @@ function AchievementFrameComparisonStats_SetStat (button, category, index, color
 	if ( not quantity ) then
 		quantity = "--";
 	end
+	if ( not friendQuantity ) then
+		friendQuantity = "--";
+	end
+	
 	button.value:SetText(quantity);
+	button.friendValue:SetText(friendQuantity);
+	
 	
 	-- Hide the header images
 	button.title:Hide();
 	button.left:Hide();
 	button.middle:Hide();
 	button.right:Hide();
+	button.left2:Hide();
+	button.middle2:Hide();
+	button.right2:Hide();
 	button.isHeader = false;
 end
 
@@ -2287,8 +2369,12 @@ function AchievementFrameComparisonStats_SetHeader(button, id)
 	button.left:Show();
 	button.middle:Show();
 	button.right:Show();
+	button.left2:Show();
+	button.middle2:Show();
+	button.right2:Show();
 	button.title:SetText(GetCategoryInfo(id));
 	button.title:Show();
+	button.friendValue:SetText("");
 	button.value:SetText("");
 	button.text:SetText("");
 	button:SetHeight(24);
@@ -2398,4 +2484,11 @@ COMPARISON_STAT_FUNCTIONS = {
 
 function AchievementFrame_IsComparison()
 	return AchievementFrame.isComparison;
+end
+
+function AchievementFrame_IsFeatOfStrength()
+	if ( AchievementFrame.selectedTab == 1 and achievementFunctions.selectedCategory == displayCategories[#displayCategories].id ) then
+		return true;
+	end
+	return false;
 end

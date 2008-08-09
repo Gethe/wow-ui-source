@@ -113,7 +113,10 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 		frame.shownMoneyFrames = frame.shownMoneyFrames+1;
 	end
 	MoneyFrame_Update(moneyFrame:GetName(), money);
-	frame:SetMinimumWidth(moneyFrame:GetWidth());
+	local moneyFrameWidth = moneyFrame:GetWidth();
+	if ( frame:GetMinimumWidth() < moneyFrameWidth ) then
+		frame:SetMinimumWidth(moneyFrameWidth);
+	end
 	frame.hasMoney = 1;
 end
 

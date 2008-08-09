@@ -270,14 +270,14 @@ end
 
 function TargetDebuffButton_Update (self)
 	local button;
-	local name, rank, icon, count, debuffType, duration, timeLeft;
+	local name, rank, icon, count, debuffType, duration, expirationTime;
 	local buffCount;
 	local numBuffs = 0;
 	local largeBuffList = {};
 	local playerIsTarget = UnitIsUnit("player", "target");
-	local cooldown, startCooldownTime;
+	local cooldown;
 	for i=1, MAX_TARGET_BUFFS do
-		name, rank, icon, count, debuffType, duration, timeLeft = UnitBuff("target", i);
+		name, rank, icon, count, debuffType, duration, expirationTime = UnitBuff("target", i);
 		button = getglobal("TargetFrameBuff"..i);
 		if ( not button ) then
 			if ( not icon ) then
@@ -303,8 +303,7 @@ function TargetDebuffButton_Update (self)
 			if ( duration ) then
 				if ( duration > 0 ) then
 					cooldown:Show();
-					startCooldownTime = GetTime()-(duration-timeLeft);
-					CooldownFrame_SetTimer(cooldown, startCooldownTime, duration, 1);
+					CooldownFrame_SetTimer(cooldown, expirationTime - duration, duration, 1);
 				else
 					cooldown:Hide();
 				end
@@ -331,7 +330,7 @@ function TargetDebuffButton_Update (self)
 	local largeDebuffList = {};
 	for i=1, MAX_TARGET_DEBUFFS do
 		local debuffBorder = getglobal("TargetFrameDebuff"..i.."Border");
-		name, rank, icon, count, debuffType, duration, timeLeft = UnitDebuff("target", i);
+		name, rank, icon, count, debuffType, duration, expirationTime = UnitDebuff("target", i);
 		button = getglobal("TargetFrameDebuff"..i);
 		if ( not button ) then
 			if ( not icon ) then
@@ -361,8 +360,7 @@ function TargetDebuffButton_Update (self)
 			if ( duration  ) then
 				if ( duration > 0 ) then
 					cooldown:Show();
-					startCooldownTime = GetTime()-(duration-timeLeft);
-					CooldownFrame_SetTimer(cooldown, startCooldownTime, duration, 1);
+					CooldownFrame_SetTimer(cooldown, expirationTime - duration, duration, 1);
 				else
 					cooldown:Hide();
 				end

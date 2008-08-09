@@ -1055,7 +1055,7 @@ function GuildControlPopupFrame_OnShow()
 
 	UIPanelWindows["FriendsFrame"].width = FriendsFrame:GetWidth() + GuildControlPopupFrame:GetWidth();
 	UpdateUIPanelPositions(FriendsFrame);
-	GuildControlPopupFrame:RegisterEvent("GUILD_ROSTER_UPDATE");
+	--GuildControlPopupFrame:RegisterEvent("GUILD_ROSTER_UPDATE"); --It was decided that having a risk of conflict when two people are editing the guild permissions at once is better than resetting whenever someone joins the guild or changes ranks.
 end
 
 function GuildControlPopupFrame_OnEvent (self, event, ...)

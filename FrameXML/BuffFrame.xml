@@ -38,6 +38,11 @@
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnShow>
+				if ( self.namePrefix ) then
+					BuffButton_Update(self.namePrefix, self:GetID(), self.filter);
+				end
+			</OnShow>
 		</Scripts>
 	</Button>
 	<Button name="BuffButtonHarmful" inherits="BuffButtonTemplate" virtual="true">
@@ -94,6 +99,8 @@
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnShow>
+			</OnShow>
 		</Scripts>
 	</Button>
 

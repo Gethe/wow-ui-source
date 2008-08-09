@@ -14,7 +14,7 @@ function PVPFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_PVP_KILLS_CHANGED");
 	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
 	self:RegisterEvent("HONOR_CURRENCY_UPDATE");
-	--this:RegisterEvent("ARENA_SEASON_WORLD_STATE");
+	--self:RegisterEvent("ARENA_SEASON_WORLD_STATE");
 end
 
 function PVPFrame_OnEvent(self, event, ...)

@@ -62,7 +62,7 @@ function QuestLog_OnEvent(self, event, ...)
 		QuestLog_Update();
 		if ( event == "PARTY_MEMBERS_CHANGED" ) then
 			-- Determine whether the selected quest is pushable or not
-			if ( GetQuestLogPushable() and ( GetNumPartyMembers() > 0 or GetRealNumRaidMembers() > 1 ) ) then
+			if ( GetQuestLogPushable() and ( GetRealNumPartyMembers() > 0 or GetRealNumRaidMembers() > 1 ) ) then
 				QuestFramePushQuestButton:Enable();
 			else
 				QuestFramePushQuestButton:Disable();
@@ -286,7 +286,7 @@ function QuestLog_Update()
 	-- Determine whether the selected quest is pushable or not
 	if ( numEntries == 0 ) then
 		QuestFramePushQuestButton:Disable();
-	elseif ( GetQuestLogPushable() and ( GetNumPartyMembers() > 0 or GetRealNumRaidMembers() > 1 ) ) then
+	elseif ( GetQuestLogPushable() and ( GetRealNumPartyMembers() > 0 or GetRealNumRaidMembers() > 1 ) ) then
 		QuestFramePushQuestButton:Enable();
 	else
 		QuestFramePushQuestButton:Disable();

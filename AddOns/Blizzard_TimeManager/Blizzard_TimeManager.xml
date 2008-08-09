@@ -133,6 +133,11 @@
 								<Offset x="-17" y="1"/>
 							</Anchor>
 						</Anchors>
+						<Scripts>
+							<OnClick>
+								TimeManagerStopwatchCheck_OnClick(self);
+							</OnClick>
+						</Scripts>
 						<NormalTexture file="Interface\Icons\INV_Misc_PocketWatch_01">
 							<Size x="28" y="28"/>
 							<Anchors>
@@ -145,11 +150,6 @@
 						</NormalTexture>
 						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 						<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-						<Scripts>
-							<OnClick>
-								TimeManagerStopwatchCheck_OnClick(self);
-							</OnClick>
-						</Scripts>
 					</CheckButton>
 				</Frames>
 			</Frame>
@@ -369,14 +369,14 @@
 	<!-- Stopwatch -->
 	<Frame name="StopwatchFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" clampedToScreen="true" frameStrata="DIALOG">
 		<Size x="130" y="48"/>
-		<HitRectInsets>
-			<AbsInset left="3" right="-12" top="-10" bottom="8"/>
-		</HitRectInsets>
 		<Anchors>
 			<Anchor point="TOPRIGHT">
 				<Offset x="-250" y="-300"/>
 			</Anchor>
 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="3" right="-12" top="-10" bottom="8"/>
+		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackgroundLeft" file="Interface\TimeManager\TimerBackground">

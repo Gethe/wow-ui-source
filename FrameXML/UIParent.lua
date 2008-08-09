@@ -200,8 +200,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("VOICE_PUSH_TO_TALK_STOP");
 
 	-- Events for BarberShop Handling
-	this:RegisterEvent("BARBER_SHOP_OPEN");
-	this:RegisterEvent("BARBER_SHOP_CLOSE");
+	self:RegisterEvent("BARBER_SHOP_OPEN");
+	self:RegisterEvent("BARBER_SHOP_CLOSE");
 
 	-- Events for Guild bank UI
 	self:RegisterEvent("GUILDBANKFRAME_OPENED");
@@ -209,6 +209,9 @@ function UIParent_OnLoad(self)
 
 	-- Events for Achievements!
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
+	
+	-- Events for Glyphs!
+	self:RegisterEvent("GLYPHFRAME_OPEN");
 	
 	RegisterForSave("MISTER_SPARKLE");
 end
@@ -923,6 +926,11 @@ function UIParent_OnEvent(self, event, ...)
 			AchievementFrame_LoadUI();
 		end
 		self:UnregisterEvent(event);
+	end
+	
+	-- Events for Glyphs
+	if ( event == "GLYPHFRAME_OPEN" ) then
+		SpellBookFrame_OpenToGlyphFrame ();
 	end
 	
 	-- Display instance reset info
@@ -1937,11 +1945,12 @@ function IsOptionFrameOpen()
 	end
 end
 
-function SecondsToTime(seconds, noSeconds, notAbbreviated)
+function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount)
 	local time = "";
 	local count = 0;
 	local tempTime;
 	seconds = floor(seconds);
+	maxCount = maxCount or 2;
 	if ( seconds >= 86400  ) then
 		tempTime = floor(seconds / 86400);
 		if ( notAbbreviated ) then
@@ -1965,7 +1974,7 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		seconds = mod(seconds, 3600);
 		count = count + 1;
 	end
-	if ( count < 2 and seconds >= 60  ) then
+	if ( count < maxCount and seconds >= 60  ) then
 		if ( time ~= "" ) then
 			time = time.." ";
 		end
@@ -1978,7 +1987,7 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated)
 		seconds = mod(seconds, 60);
 		count = count + 1;
 	end
-	if ( count < 2 and seconds > 0 and not noSeconds ) then
+	if ( count < maxCount and seconds > 0 and not noSeconds ) then
 		if ( time ~= "" ) then
 			time = time.." ";
 		end
@@ -2512,7 +2521,7 @@ function ToggleGameMenu()
 	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
 		TimeManagerCloseButton:Click();
 	elseif ( securecall("CloseMenus") ) then
-	elseif ( CloseCalendarMenus and CloseCalendarMenus() ) then
+	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then

@@ -7,6 +7,18 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Size>
 			<AbsDimension x="20" y="0"/>
 		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="-18"/>
+				</Offset>
+			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="16"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBG" setAllPoints="true" hidden="true">
@@ -49,20 +61,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Texture>
 			</Layer>	
 		</Layers>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="-18"/>
-				</Offset>
-			</Anchor>
-			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="16"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
 		<Frames>
 			<Button name="$parentScrollUpButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
 				<Anchors>
 					<Anchor point="BOTTOM" relativePoint="TOP">
 						<Offset>
@@ -79,15 +82,15 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						HybridScrollFrameScrollUpButton_OnClick(self);
 					</OnClick>
 				</Scripts>
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
 				<NormalTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
 				<PushedTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
 				<DisabledTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
 				<HighlightTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
 				<Anchors>
 					<Anchor point="TOP" relativePoint="BOTTOM">
 						<Offset>
@@ -104,9 +107,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						HybridScrollFrameScrollDownButton_OnClick(self);
 					</OnClick>
 				</Scripts>
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
 				<NormalTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
 				<PushedTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
 				<DisabledTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
@@ -130,6 +130,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	</Slider>
 
 	<ScrollFrame name="HybridScrollFrameTemplate" virtual="true">			
+		<Scripts>
+			<OnLoad>
+				HybridScrollFrame_OnLoad(self);
+			</OnLoad>
+			<OnMouseWheel>
+				HybridScrollFrame_OnMouseWheel(self, delta);
+			</OnMouseWheel>
+		</Scripts>
 		<ScrollChild>
 			<Frame name="$parentScrollChild">
 				<Scripts>
@@ -139,16 +147,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Scripts>
 			</Frame>
 		</ScrollChild>
-		<Frames>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				HybridScrollFrame_OnLoad(self);
-			</OnLoad>
-			<OnMouseWheel>
-				HybridScrollFrame_OnMouseWheel(self, delta);
-			</OnMouseWheel>
-		</Scripts>
 	</ScrollFrame>
 
 	<ScrollFrame name="BasicHybridScrollFrameTemplate" inherits="HybridScrollFrameTemplate" virtual="true">

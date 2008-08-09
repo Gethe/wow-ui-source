@@ -121,4 +121,18 @@ function RaidBossEmoteFrame_OnLoad(self)
 	self.timings["RAID_NOTICE_MAX_HEIGHT"] = 35.0;
 	self.timings["RAID_NOTICE_SCALE_UP_TIME"] = 0.2;
 	self.timings["RAID_NOTICE_SCALE_DOWN_TIME"] = 0.4;
+	
+	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE");
+	self:RegisterEvent("CHAT_MSG_RAID_BOSS_WHISPER");
+end
+
+function RaidBossEmoteFrame_OnEvent(self, event, ...)
+	local arg1, arg2 = ...;
+	if ( strsub(event,10,18) == "RAID_BOSS" ) then
+		local mtype = strsub(event,10);
+		local body = format(getglobal("CHAT_"..mtype.."_GET")..arg1, arg2, arg2);	--No need for pflag, monsters can't be afk, dnd, or GMs.
+		local info = ChatTypeInfo[mtype];
+		RaidNotice_AddMessage( RaidBossEmoteFrame, body, info );
+		PlaySound("RaidBossEmoteWarning");
+	end
 end

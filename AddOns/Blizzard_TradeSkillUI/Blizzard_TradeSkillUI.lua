@@ -153,7 +153,7 @@ function TradeSkillFrame_Update()
 				end
 				skillButton:SetNormalTexture("");
 				getglobal("TradeSkillSkill"..i.."Highlight"):SetTexture("");
-				if ( numAvailable == 0 ) then
+				if ( numAvailable <= 0 ) then
 					skillButton:SetText(" "..skillName);
 				else
 					skillButton:SetText(" "..skillName.." ["..numAvailable.."]");
@@ -187,7 +187,7 @@ function TradeSkillFrame_Update()
 		end
 		if ( GetTradeSkillSelectionIndex() == i ) then
 			-- Set the max makeable items for the create all button
-			TradeSkillFrame.numAvailable = numAvailable;
+			TradeSkillFrame.numAvailable = math.abs(numAvailable);
 		end
 	end
 	-- If all headers are not expanded then show collapse button, otherwise show the expand button

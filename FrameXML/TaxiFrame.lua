@@ -15,6 +15,9 @@ TaxiButtonTypes["DISTANT"] = {
 	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-Yellow"
 }
 
+TAXI_BUTTON_HALF_WIDTH = 8;
+TAXI_BUTTON_HALF_HEIGHT = 8;
+
 
 function TaxiFrame_OnLoad(self)
 	self:RegisterEvent("TAXIMAP_OPENED");
@@ -40,15 +43,39 @@ function TaxiFrame_OnEvent(self, event, ...)
 				button:SetID(i);
 			end
 		end
-
+		
 		-- Draw nodes
+		local taxiNodePositions = {};
+		local numValidFlightNodes = 0;
 		for index = 1, num_nodes do
 			local type = TaxiNodeGetType(index);
 			local button = getglobal("TaxiButton"..index);
+			taxiNodePositions[index] = {};
 			if ( type ~= "NONE" ) then
+				numValidFlightNodes = numValidFlightNodes + 1;
 				local x, y = TaxiNodePosition(button:GetID());
+				local currX = x*TAXI_MAP_WIDTH;
+				local currY = y*TAXI_MAP_HEIGHT;
+				taxiNodePositions[index].x = currX;
+				taxiNodePositions[index].y = currY;
+				-- check if we are obscuring a previous placement (eg: Ebon Hold and Light's Hope Chapel)
+				if ( numValidFlightNodes > 1 ) then
+					for checkNode = 1, index - 1 do
+						local checkX = taxiNodePositions[checkNode].x;
+						local checkY = taxiNodePositions[checkNode].y;
+						if ( taxiNodePositions[checkNode].x ) then
+							if ( (currX > checkX - TAXI_BUTTON_HALF_WIDTH) and (currX < checkX + TAXI_BUTTON_HALF_WIDTH) ) then
+								if ( (currY > checkY - TAXI_BUTTON_HALF_HEIGHT) and (currY < checkY + TAXI_BUTTON_HALF_HEIGHT) ) then
+									taxiNodePositions[index].x = currX + currX - checkX;
+									taxiNodePositions[index].y = currY + currY - checkY;
+								end
+							end
+						end
+					end
+				end
+				-- set the button position
 				button:ClearAllPoints();
-				button:SetPoint("CENTER", "TaxiMap", "BOTTOMLEFT", x*TAXI_MAP_WIDTH, y*TAXI_MAP_HEIGHT);
+				button:SetPoint("CENTER", "TaxiMap", "BOTTOMLEFT", taxiNodePositions[index].x, taxiNodePositions[index].y);
 				button:SetNormalTexture(TaxiButtonTypes[type].file);
 				button:Show();
 			else

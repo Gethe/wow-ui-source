@@ -59,9 +59,6 @@
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
-		<Scripts>
-			
-		</Scripts>
 	</Frame>
 	<Frame name="BarberShopFrame" hidden="true">
 		<Size>
@@ -277,6 +274,13 @@
 		<Size>
 			<AbsDimension x="425" y="128"/>
 		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBGTexture" file="Interface\Barbershop\UI-Barbershop">
@@ -304,13 +308,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Anchors>
-			<Anchor point="TOP">
-				<Offset>
-					<AbsDimension x="0" y="-100"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
 		<Scripts>
 			<OnLoad>
 				self.caption = getglobal(self:GetName() .. "Caption");

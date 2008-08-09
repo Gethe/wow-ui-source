@@ -15,32 +15,32 @@ CHAT_CONFIG_CHAT_RIGHT = {
 	[1] = {
 		type = "PARTY",
 		checked = function () return IsListeningForMessageType("PARTY"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "PARTY"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY"); end;
 	},
 	[2] = {
 		type = "RAID",
 		checked = function () return IsListeningForMessageType("RAID"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "RAID"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID"); end;
 	},
 	[3] = {
 		type = "RAID_LEADER",
 		checked = function () return IsListeningForMessageType("RAID_LEADER"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "RAID_LEADER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_LEADER"); end;
 	},
 	[4] = {
 		type = "RAID_WARNING",
 		checked = function () return IsListeningForMessageType("RAID_WARNING"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
 	},
 	[5] = {
 		type = "BATTLEGROUND",
 		checked = function () return IsListeningForMessageType("BATTLEGROUND"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "BATTLEGROUND"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND"); end;
 	},
 	[6] = {
 		type = "BATTLEGROUND_LEADER",
 		checked = function () return IsListeningForMessageType("BATTLEGROUND_LEADER"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "BATTLEGROUND_LEADER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND_LEADER"); end;
 	}
 };
 
@@ -48,39 +48,39 @@ CHAT_CONFIG_CHAT_LEFT = {
 	[1] = {
 		type = "SAY",
 		checked = function () return IsListeningForMessageType("SAY"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "SAY"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "SAY"); end;
 	},
 	[2] = {
 		type = "EMOTE",
 		checked = function () return IsListeningForMessageType("EMOTE"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "EMOTE"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "EMOTE"); end;
 	},
 	[3] = {
 		type = "YELL",
 		checked = function () return IsListeningForMessageType("YELL"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "YELL"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "YELL"); end;
 	},
 	[4] = {
 		text = GUILD_CHAT,
 		type = "GUILD",
 		checked = function () return IsListeningForMessageType("GUILD"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "GUILD"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD"); end;
 	},
 	[5] = {
 		text = OFFICER_CHAT,
 		type = "GUILD_OFFICER",
 		checked = function () return IsListeningForMessageType("GUILD_OFFICER"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "GUILD_OFFICER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD_OFFICER"); end;
 	},
 	[6] = {
 		type = "GUILD_ACHIEVEMENT",
 		checked = function () return IsListeningForMessageType("GUILD_ACHIEVEMENT"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "GUILD_ACHIEVEMENT"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD_ACHIEVEMENT"); end;
 	},
 	[7] = {
 		type = "WHISPER",
 		checked = function () return IsListeningForMessageType("WHISPER"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "WHISPER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "WHISPER"); end;
 	}
 };
 
@@ -89,35 +89,35 @@ CHAT_CONFIG_CHAT_CREATURE_LEFT = {
 		text = SAY;
 		type = "MONSTER_SAY",
 		checked = function () return IsListeningForMessageType("MONSTER_SAY"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_SAY"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "MONSTER_SAY"); end;
 	},
 	[2] = {
 		text = EMOTE;
 		type = "MONSTER_EMOTE",
 		checked = function () return IsListeningForMessageType("MONSTER_EMOTE"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_EMOTE"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "MONSTER_EMOTE"); end;
 	},
 	[3] = {
 		text = YELL;
 		type = "MONSTER_YELL",
 		checked = function () return IsListeningForMessageType("MONSTER_YELL"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_YELL"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "MONSTER_YELL"); end;
 	},
 	[4] = {
 		text = WHISPER;
 		type = "MONSTER_WHISPER",
 		checked = function () return IsListeningForMessageType("MONSTER_WHISPER"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_WHISPER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "MONSTER_WHISPER"); end;
 	},
 	[5] = {
 		type = "MONSTER_BOSS_EMOTE",
 		checked = function () return IsListeningForMessageType("MONSTER_BOSS_EMOTE"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_BOSS_EMOTE"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "MONSTER_BOSS_EMOTE"); end;
 	},
 	[6] = {
 		type = "MONSTER_BOSS_WHISPER",
 		checked = function () return IsListeningForMessageType("MONSTER_BOSS_WHISPER"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "MONSTER_BOSS_WHISPER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "MONSTER_BOSS_WHISPER"); end;
 	}
 };
 
@@ -125,55 +125,55 @@ CHAT_CONFIG_OTHER_COMBAT = {
 	[1] = {
 		type = "COMBAT_XP_GAIN",
 		checked = function () return IsListeningForMessageType("COMBAT_XP_GAIN"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "COMBAT_XP_GAIN"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_XP_GAIN"); end;
 	},
 	[2] = {
 		type = "COMBAT_HONOR_GAIN",
 		checked = function () return IsListeningForMessageType("COMBAT_HONOR_GAIN"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "COMBAT_HONOR_GAIN"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_HONOR_GAIN"); end;
 	},
 	[3] = {
 		type = "COMBAT_FACTION_CHANGE",
 		checked = function () return IsListeningForMessageType("COMBAT_FACTION_CHANGE"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "COMBAT_FACTION_CHANGE"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_FACTION_CHANGE"); end;
 	},
 	[4] = {
 		text = SKILLUPS,
 		type = "SKILL",
 		checked = function () return IsListeningForMessageType("SKILL"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "SKILL"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "SKILL"); end;
 	},
 	[5] = {
 		text = ITEM_LOOT,
 		type = "LOOT",
 		checked = function () return IsListeningForMessageType("LOOT"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "LOOT"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "LOOT"); end;
 	},
 	[6] = {
 		text = MONEY_LOOT,
 		type = "MONEY",
 		checked = function () return IsListeningForMessageType("MONEY"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "MONEY"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "MONEY"); end;
 	},
 	[7] = {
 		type = "TRADESKILLS",
 		checked = function () return IsListeningForMessageType("TRADESKILLS"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "TRADESKILLS"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "TRADESKILLS"); end;
 	},
 	[8] = {
 		type = "OPENING",
 		checked = function () return IsListeningForMessageType("OPENING"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "OPENING"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "OPENING"); end;
 	},
 	[9] = {
 		type = "PET_INFO",
 		checked = function () return IsListeningForMessageType("PET_INFO"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "PET_INFO"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "PET_INFO"); end;
 	},
 	[10] = {
 		type = "COMBAT_MISC_INFO",
 		checked = function () return IsListeningForMessageType("COMBAT_MISC_INFO"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "COMBAT_MISC_INFO"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_MISC_INFO"); end;
 	},
 };
 
@@ -181,17 +181,17 @@ CHAT_CONFIG_OTHER_PVP = {
 	[1] = {
 		type = "BG_SYSTEM_HORDE",
 		checked = function () return IsListeningForMessageType("BG_HORDE"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "BG_HORDE"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BG_HORDE"); end;
 	},
 	[2] = {
 		type = "BG_SYSTEM_ALLIANCE",
 		checked = function () return IsListeningForMessageType("BG_ALLIANCE"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "BG_ALLIANCE"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BG_ALLIANCE"); end;
 	},
 	[3] = {
 		type = "BG_SYSTEM_NEUTRAL",
 		checked = function () return IsListeningForMessageType("BG_NEUTRAL"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "BG_NEUTRAL"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BG_NEUTRAL"); end;
 	},
 }
 
@@ -200,37 +200,37 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		text = SYSTEM_MESSAGES,
 		type = "SYSTEM",
 		checked = function () return IsListeningForMessageType("SYSTEM"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "SYSTEM"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "SYSTEM"); end;
 	},
 	[2] = {
 		type = "ERRORS",
 		checked = function () return IsListeningForMessageType("ERRORS"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "ERRORS"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "ERRORS"); end;
 	},
 	[3] = {
 		type = "AFK",
 		checked = function () return IsListeningForMessageType("AFK"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "AFK"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "AFK"); end;
 	},
 	[4] = {
 		type = "DND",
 		checked = function () return IsListeningForMessageType("DND"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "DND"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "DND"); end;
 	},
 	[5] = {
 		type = "IGNORED",
 		checked = function () return IsListeningForMessageType("IGNORED"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "IGNORED"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "IGNORED"); end;
 	},
 	[6] = {
 		type = "CHANNEL",
 		checked = function () return IsListeningForMessageType("CHANNEL"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "CHANNEL"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "CHANNEL"); end;
 	},
 	[7] = {
 		type = "ACHIEVEMENT",
 		checked = function () return IsListeningForMessageType("ACHIEVEMENT"); end;
-		func = function (checked) ToggleChatMessageGroup(checked, "ACHIEVEMENT"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "ACHIEVEMENT"); end;
 	},
 }
 
@@ -239,104 +239,104 @@ CHAT_CONFIG_CHANNEL_LIST = {};
 -- Combat Options
 COMBAT_CONFIG_MESSAGESOURCES_BY = {
 	[1] = {
-		text = COMBATLOG_FILTER_STRING_ME,
-		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_MINE); end;
+		text = function () return ( UsesGUID("SOURCE") and COMBATLOG_FILTER_STRING_CUSTOM_UNIT or COMBATLOG_FILTER_STRING_ME); end;
+		checked = function () return UsesGUID("SOURCE") or IsMessageDoneBy(COMBATLOG_FILTER_MINE); end;
 		disabled = function () return UsesGUID("SOURCE"); end;
-		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_MINE); end;
-		tooltip = FILTER_BY_ME_COMBATLOG_TOOLTIP;
+		func = function (self, checked) ToggleMessageSource(checked, COMBATLOG_FILTER_MINE); end;
+		tooltip = FILTER_BY_ME_COMBATLOG_TOOLTIP;	--Don't need to change tooltip because if it is the dummy box, it is disabled which means no tooltip
 	},
 	[2] = {
 		text = COMBATLOG_FILTER_STRING_MY_PET,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_MY_PET); end;
-		disabled = function () return UsesGUID("SOURCE"); end;
-		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_MY_PET); end;
+		hidden = function () return UsesGUID("SOURCE"); end;
+		func = function (self, checked) ToggleMessageSource(checked, COMBATLOG_FILTER_MY_PET); end;
 		tooltip = FILTER_BY_PET_COMBATLOG_TOOLTIP;
 	},
 	[3] = {
 		text = COMBATLOG_FILTER_STRING_FRIENDLY_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_FRIENDLY_UNITS); end;
-		disabled = function () return UsesGUID("SOURCE"); end;
-		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_FRIENDLY_UNITS); end;
+		hidden = function () return UsesGUID("SOURCE"); end;
+		func = function (self, checked) ToggleMessageSource(checked, COMBATLOG_FILTER_FRIENDLY_UNITS); end;
 		tooltip = FILTER_BY_FRIENDS_COMBATLOG_TOOLTIP;
 	},
 	[4] = {
 		text = COMBATLOG_FILTER_STRING_HOSTILE_PLAYERS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_HOSTILE_PLAYERS); end;
-		disabled = function () return UsesGUID("SOURCE"); end;
-		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_HOSTILE_PLAYERS); end;
+		hidden = function () return UsesGUID("SOURCE"); end;
+		func = function (self, checked) ToggleMessageSource(checked, COMBATLOG_FILTER_HOSTILE_PLAYERS); end;
 		tooltip = FILTER_BY_HOSTILE_PLAYERS_COMBATLOG_TOOLTIP;
 	},
 	[5] = {
 		text = COMBATLOG_FILTER_STRING_HOSTILE_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_HOSTILE_UNITS); end;
-		disabled = function () return UsesGUID("SOURCE"); end;
-		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_HOSTILE_UNITS); end;
+		hidden = function () return UsesGUID("SOURCE"); end;
+		func = function (self, checked) ToggleMessageSource(checked, COMBATLOG_FILTER_HOSTILE_UNITS); end;
 		tooltip = FILTER_BY_ENEMIES_COMBATLOG_TOOLTIP;
 	},
 	[6] = {
 		text = COMBATLOG_FILTER_STRING_NEUTRAL_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_NEUTRAL_UNITS); end;
-		disabled = function () return UsesGUID("SOURCE"); end;
-		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_NEUTRAL_UNITS); end;
+		hidden = function () return UsesGUID("SOURCE"); end;
+		func = function (self, checked) ToggleMessageSource(checked, COMBATLOG_FILTER_NEUTRAL_UNITS); end;
 		tooltip = FILTER_BY_NEUTRAL_COMBATLOG_TOOLTIP;
 	},
 	[7] = {
 		text = COMBATLOG_FILTER_STRING_UNKNOWN_UNITS,
 		checked = function () return IsMessageDoneBy(COMBATLOG_FILTER_UNKNOWN_UNITS); end;
-		disabled = function () return UsesGUID("SOURCE"); end;
-		func = function (checked) ToggleMessageSource(checked, COMBATLOG_FILTER_UNKNOWN_UNITS); end;
+		hidden = function () return UsesGUID("SOURCE"); end;
+		func = function (self, checked) ToggleMessageSource(checked, COMBATLOG_FILTER_UNKNOWN_UNITS); end;
 		tooltip = FILTER_BY_UNKNOWN_COMBATLOG_TOOLTIP;
 	},
 }
 
 COMBAT_CONFIG_MESSAGESOURCES_TO = {
 	[1] = {
-		text = COMBATLOG_FILTER_STRING_ME,
-		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_MINE); end;
+		text = function () return ( UsesGUID("DEST") and COMBATLOG_FILTER_STRING_CUSTOM_UNIT or COMBATLOG_FILTER_STRING_ME); end;
+		checked = function () return UsesGUID("DEST") or IsMessageDoneTo(COMBATLOG_FILTER_MINE); end;
 		disabled = function () return UsesGUID("DEST"); end;
-		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_MINE); end;
-		tooltip = FILTER_TO_ME_COMBATLOG_TOOLTIP;
+		func = function (self, checked) ToggleMessageDest(checked, COMBATLOG_FILTER_MINE); end;
+		tooltip = FILTER_TO_ME_COMBATLOG_TOOLTIP; --Don't need to change tooltip because if it is the dummy box, it is disabled which means no tooltip
 	},
 	[2] = {
 		text = COMBATLOG_FILTER_STRING_MY_PET,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_MY_PET); end;
-		disabled = function () return UsesGUID("DEST"); end;
-		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_MY_PET); end;
+		hidden = function () return UsesGUID("DEST"); end;
+		func = function (self, checked) ToggleMessageDest(checked, COMBATLOG_FILTER_MY_PET); end;
 		tooltip = FILTER_TO_PET_COMBATLOG_TOOLTIP;
 	},
 	[3] = {
 		text = COMBATLOG_FILTER_STRING_FRIENDLY_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_FRIENDLY_UNITS); end;
-		disabled = function () return UsesGUID("DEST"); end;
-		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_FRIENDLY_UNITS); end;
+		hidden = function () return UsesGUID("DEST"); end;
+		func = function (self, checked) ToggleMessageDest(checked, COMBATLOG_FILTER_FRIENDLY_UNITS); end;
 		tooltip = FILTER_TO_FRIENDS_COMBATLOG_TOOLTIP;
 	},
 	[4] = {
 		text = COMBATLOG_FILTER_STRING_HOSTILE_PLAYERS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_HOSTILE_PLAYERS); end;
-		disabled = function () return UsesGUID("DEST"); end;
-		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_HOSTILE_PLAYERS); end;
+		hidden = function () return UsesGUID("DEST"); end;
+		func = function (self, checked) ToggleMessageDest(checked, COMBATLOG_FILTER_HOSTILE_PLAYERS); end;
 		tooltip = FILTER_TO_HOSTILE_PLAYERS_COMBATLOG_TOOLTIP;
 	},
 	[5] = {
 		text = COMBATLOG_FILTER_STRING_HOSTILE_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_HOSTILE_UNITS); end;
-		disabled = function () return UsesGUID("DEST"); end;
-		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_HOSTILE_UNITS); end;
+		hidden = function () return UsesGUID("DEST"); end;
+		func = function (self, checked) ToggleMessageDest(checked, COMBATLOG_FILTER_HOSTILE_UNITS); end;
 		tooltip = FILTER_TO_HOSTILE_COMBATLOG_TOOLTIP;
 	},
 	[6] = {
 		text = COMBATLOG_FILTER_STRING_NEUTRAL_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_NEUTRAL_UNITS); end;
-		disabled = function () return UsesGUID("DEST"); end;
-		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_NEUTRAL_UNITS); end;
+		hidden = function () return UsesGUID("DEST"); end;
+		func = function (self, checked) ToggleMessageDest(checked, COMBATLOG_FILTER_NEUTRAL_UNITS); end;
 		tooltip = FILTER_TO_NEUTRAL_COMBATLOG_TOOLTIP;
 	},
 	[7] = {
 		text = COMBATLOG_FILTER_STRING_UNKNOWN_UNITS,
 		checked = function () return IsMessageDoneTo(COMBATLOG_FILTER_UNKNOWN_UNITS); end;
-		disabled = function () return UsesGUID("DEST"); end;
-		func = function (checked) ToggleMessageDest(checked, COMBATLOG_FILTER_UNKNOWN_UNITS); end;
+		hidden = function () return UsesGUID("DEST"); end;
+		func = function (self, checked) ToggleMessageDest(checked, COMBATLOG_FILTER_UNKNOWN_UNITS); end;
 		tooltip = FILTER_TO_UNKNOWN_COMBATLOG_TOOLTIP;
 	},
 }
@@ -345,21 +345,21 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 	[1] = {
 		text = MELEE,
 		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_LEFT, 1) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 1) end;
+		func = function (self, checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 1) end;
 		tooltip = MELEE_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
 				text = DAMAGE,
 				type = "SWING_DAMAGE",
 				checked = function () return HasMessageType("SWING_DAMAGE"); end;
-				func = function (checked) ToggleMessageType(checked, "SWING_DAMAGE") end;
+				func = function (self, checked) ToggleMessageType(checked, "SWING_DAMAGE") end;
 				tooltip = SWING_DAMAGE_COMBATLOG_TOOLTIP;
 			},
 			[2] = {
 				text = MISSES,
 				type = "SWING_MISSED",
 				checked = function () return HasMessageType("SWING_MISSED"); end;
-				func = function (checked) ToggleMessageType(checked, "SWING_MISSED"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SWING_MISSED"); end;
 				tooltip = SWING_MISSED_COMBATLOG_TOOLTIP;
 			},
 		}
@@ -367,21 +367,21 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 	[2] = {
 		text = RANGED,
 		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_LEFT, 2) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 2) end;
+		func = function (self, checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 2) end;
 		tooltip = RANGED_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
 				text = DAMAGE,
 				type = "RANGE_DAMAGE",
 				checked = function () return HasMessageType("RANGE_DAMAGE"); end;
-				func = function (checked) ToggleMessageType(checked, "RANGE_DAMAGE"); end;
+				func = function (self, checked) ToggleMessageType(checked, "RANGE_DAMAGE"); end;
 				tooltip = RANGE_DAMAGE_COMBATLOG_TOOLTIP;
 			},
 			[2] = {
 				text = MISSES,
 				type = "RANGE_MISSED",
 				checked = function () return HasMessageType("RANGE_MISSED"); end;
-				func = function (checked) ToggleMessageType(checked, "RANGE_MISSED"); end;
+				func = function (self, checked) ToggleMessageType(checked, "RANGE_MISSED"); end;
 				tooltip = RANGE_MISSED_COMBATLOG_TOOLTIP;
 			},
 		}
@@ -389,22 +389,22 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 	[3] = {
 		text = AURAS,
 		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_LEFT, 3) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 3) end;
+		func = function (self, checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 3) end;
 		tooltip = AURAS_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
 				text = BENEFICIAL,
-				type = {"SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE"};
+				type = {"SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE"};
 				checked = function () return not CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs end;
-				func = function (checked) 
+				func = function (self, checked) 
 					if ( checked ) then
 						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs = false;
-						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
+						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 					else
 						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs = true;
 						-- Only stop listening for the messages if hideDebuffs is also true
 						if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs ) then
-							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
+							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 						end
 					end
 				end;
@@ -412,17 +412,17 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 			},
 			[2] = {
 				text = HOSTILE,
-				type = {"SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE"};
+				type = {"SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE"};
 				checked = function () return not CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs end;
-				func = function (checked) 
+				func = function (self, checked) 
 					if ( checked ) then
 						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs = false;
-						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
+						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELl_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 					else
 						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs = true;
 						-- Only stop listening for the messages if hideDebuffs is also true
 						if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs ) then
-							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_APPLIED_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
+							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELl_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 						end
 					end
 				end;
@@ -432,14 +432,14 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 				text = DISPELS,
 				type = {"SPELL_DISPELLED_AURA","SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"};
 				checked = function () return HasMessageType("SPELL_DISPELLED_AURA", "SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_DISPELLED_AURA", "SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_DISPELLED_AURA", "SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"); end;
 				tooltip = DISPEL_AURA_COMBATLOG_TOOLTIP;
 			},
 			[4] = {
 				text = ENCHANTS,
 				type = {"ENCHANT_APPLIED", "ENCHANT_REMOVED"};
 				checked = function () return HasMessageType("ENCHANT_APPLIED", "ENCHANT_REMOVED"); end;
-				func = function (checked) ToggleMessageType(checked, "ENCHANT_APPLIED", "ENCHANT_REMOVED"); end;
+				func = function (self, checked) ToggleMessageType(checked, "ENCHANT_APPLIED", "ENCHANT_REMOVED"); end;
 				tooltip = ENCHANT_AURA_COMBATLOG_TOOLTIP;
 			},
 		}
@@ -447,35 +447,35 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 	[4] = {
 		text = PERIODIC,
 		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_LEFT, 4) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 4) end;
+		func = function (self, checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesLeft, 4) end;
 		tooltip = SPELL_PERIODIC_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
 				text = DAMAGE,
 				type = "SPELL_PERIODIC_DAMAGE",
 				checked = function () return HasMessageType("SPELL_PERIODIC_DAMAGE"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_PERIODIC_DAMAGE"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_PERIODIC_DAMAGE"); end;
 				tooltip = SPELL_PERIODIC_DAMAGE_COMBATLOG_TOOLTIP,
 			},
 			[2] = {
 				text = MISSES,
 				type = "SPELL_PERIODIC_MISSED",
 				checked = function () return HasMessageType("SPELL_PERIODIC_MISSED"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_PERIODIC_MISSED"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_PERIODIC_MISSED"); end;
 				tooltip = SPELL_PERIODIC_MISSED_COMBATLOG_TOOLTIP,
 			},
 			[3] = {
 				text = HEALS,
 				type = "SPELL_PERIODIC_HEAL",
 				checked = function () return HasMessageType("SPELL_PERIODIC_HEAL"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_PERIODIC_HEAL"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_PERIODIC_HEAL"); end;
 				tooltip = SPELL_PERIODIC_HEAL_COMBATLOG_TOOLTIP,
 			},
 			[4] = {
 				text = OTHER,
 				type = {"SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN","SPELL_PERIODIC_LEECH"};
 				checked = function () return HasMessageType("SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
 				tooltip = SPELL_PERIODIC_OTHER_COMBATLOG_TOOLTIP,
 			},
 		}
@@ -486,91 +486,91 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 	[1] = {
 		text = SPELLS,
 		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_RIGHT, 1) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesRight, 1) end;
+		func = function (self, checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesRight, 1) end;
 		tooltip = SPELLS_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
 				text = DAMAGE,
 				type = "SPELL_DAMAGE",
 				checked = function () return HasMessageType("SPELL_DAMAGE"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_DAMAGE"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_DAMAGE"); end;
 				tooltip = SPELL_DAMAGE_COMBATLOG_TOOLTIP,
 			},
 			[2] = {
 				text = MISSES,
 				type = "SPELL_MISSED",
 				checked = function () return HasMessageType("SPELL_MISSED"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_MISSED"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_MISSED"); end;
 				tooltip = SPELL_MISSED_COMBATLOG_TOOLTIP,
 			},
 			[3] = {
 				text = HEALS,
 				type = "SPELL_HEAL",
 				checked = function () return HasMessageType("SPELL_HEAL"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_HEAL"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_HEAL"); end;
 				tooltip = SPELL_HEAL_COMBATLOG_TOOLTIP,
 			},
 			[4] = {
 				text = POWER_GAINS,
 				type = "SPELL_ENERGIZE",
 				checked = function () return HasMessageType("SPELL_ENERGIZE"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
 				tooltip = POWER_GAINS_COMBATLOG_TOOLTIP,
 			},
 			[5] = {
 				text = DRAINS,
 				type = {"SPELL_DRAIN", "SPELL_LEECH"};
 				checked = function () return HasMessageType("SPELL_ENERGIZE"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
 				tooltip = SPELL_DRAIN_COMBATLOG_TOOLTIP,
 			},
 			[5] = {
 				text = INTERRUPTS,
 				type = {"SPELL_INTERRUPT"};
 				checked = function () return HasMessageType("SPELL_INTERRUPT"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_INTERRUPT"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_INTERRUPT"); end;
 				tooltip = SPELL_INTERRUPT_COMBATLOG_TOOLTIP,
 			},
 			[5] = {
 				text = SPECIAL,
 				type = {"SPELL_INSTAKILL"};
 				checked = function () return HasMessageType("SPELL_INSTAKILL"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_INSTAKILL"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_INSTAKILL"); end;
 				tooltip = SPELL_INSTAKILL_COMBATLOG_TOOLTIP,
 			},
 			[6] = {
 				text = EXTRA_ATTACKS,
 				type = {"SPELL_EXTRA_ATTACKS"};
 				checked = function () return HasMessageType("SPELL_EXTRA_ATTACKS"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_EXTRA_ATTACKS"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_EXTRA_ATTACKS"); end;
 				tooltip = SPELL_EXTRA_ATTACKS_COMBATLOG_TOOLTIP,
 			},
 			[7] = {
 				text = SUMMONS,
 				type = {"SPELL_SUMMON"};
 				checked = function () return HasMessageType("SPELL_SUMMON"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_SUMMON"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_SUMMON"); end;
 				tooltip = SPELL_SUMMON_COMBATLOG_TOOLTIP,
 			},
 			[8] = {
 				text = RESURRECT,
 				type = {"SPELL_RESURRECT"};
 				checked = function () return HasMessageType("SPELL_RESURRECT"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_RESURRECT"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_RESURRECT"); end;
 				tooltip = SPELL_RESURRECT_COMBATLOG_TOOLTIP,
 			},
 			[9] = {
 				text = BUILDING_DAMAGE,
 				type = {"SPELL_BUILDING_DAMAGE"};
 				checked = function () return HasMessageType("SPELL_BUILDING_DAMAGE"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_BUILDING_DAMAGE"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_BUILDING_DAMAGE"); end;
 				tooltip = BUILDING_DAMAGE_COMBATLOG_TOOLTIP,
 			},
 			[10] = {
 				text = BUILDING_HEAL,
 				type = {"SPELL_BUILDING_HEAL"};
 				checked = function () return HasMessageType("SPELL_BUILDING_HEAL"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_BUILDING_HEAL"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_BUILDING_HEAL"); end;
 				tooltip = BUILDING_HEAL_COMBATLOG_TOOLTIP,
 			},
 		}
@@ -578,28 +578,28 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 	[2] = {
 		text = SPELL_CASTING,
 		checked = function () return HasMessageTypeGroup(COMBAT_CONFIG_MESSAGETYPES_RIGHT, 2) end;
-		func = function (checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesRight, 2) end;
+		func = function (self, checked) ToggleMessageTypeGroup(checked, CombatConfigMessageTypesRight, 2) end;
 		tooltip = SPELL_CASTING_COMBATLOG_TOOLTIP,
 		subTypes = {
 			[1] = {
 				text = START,
 				type = "SPELL_CAST_START",
 				checked = function () return HasMessageType("SPELL_CAST_START"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_CAST_START"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_CAST_START"); end;
 				tooltip = SPELL_CAST_START_COMBATLOG_TOOLTIP,
 			},
 			[2] = {
 				text = SUCCESS,
 				type = "SPELL_CAST_SUCCESS",
 				checked = function () return HasMessageType("SPELL_CAST_SUCCESS"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_CAST_SUCCESS"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_CAST_SUCCESS"); end;
 				tooltip = SPELL_CAST_SUCCESS_COMBATLOG_TOOLTIP,
 			},
 			[3] = {
 				text = FAILURES,
 				type = "SPELL_CAST_FAILED",
 				checked = function () return HasMessageType("SPELL_CAST_FAILED"); end;
-				func = function (checked) ToggleMessageType(checked, "SPELL_CAST_FAILED"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_CAST_FAILED"); end;
 				tooltip = SPELL_CAST_FAILED_COMBATLOG_TOOLTIP,
 			},
 		}
@@ -609,26 +609,26 @@ COMBAT_CONFIG_MESSAGETYPES_MISC = {
 	[1] = {
 		text = DAMAGE_SHIELD,
 		checked = function () return HasMessageType("DAMAGE_SHIELD"); end;
-		func = function (checked) ToggleMessageType(checked, "DAMAGE_SHIELD"); end;
+		func = function (self, checked) ToggleMessageType(checked, "DAMAGE_SHIELD"); end;
 		tooltip = DAMAGE_SHIELD_COMBATLOG_TOOLTIP,
 	},
 	[2] = {
 		text = ENVIRONMENTAL_DAMAGE,
 		checked = function () return HasMessageType("ENVIRONMENTAL_DAMAGE"); end;
-		func = function (checked) ToggleMessageType(checked, "ENVIRONMENTAL_DAMAGE"); end;
+		func = function (self, checked) ToggleMessageType(checked, "ENVIRONMENTAL_DAMAGE"); end;
 		tooltip = ENVIRONMENTAL_DAMAGE_COMBATLOG_TOOLTIP,
 	},
 	[3] = {
 		text = KILLS,
 		checked = function () return HasMessageType("PARTY_KILL"); end;
-		func = function (checked) ToggleMessageType(checked, "PARTY_KILL"); end;
+		func = function (self, checked) ToggleMessageType(checked, "PARTY_KILL"); end;
 		tooltip = KILLS_COMBATLOG_TOOLTIP,
 	},
 	[4] = {
 		text = DEATHS,
 		type = {"UNIT_DIED", "UNIT_DESTROYED"};
 		checked = function () return HasMessageType("UNIT_DIED"); end;
-		func = function (checked) ToggleMessageType(checked, "UNIT_DIED"); end;
+		func = function (self, checked) ToggleMessageType(checked, "UNIT_DIED"); end;
 		tooltip = DEATHS_COMBATLOG_TOOLTIP,
 	},
 };
@@ -873,13 +873,18 @@ function ChatConfig_UpdateCheckboxes(frame)
 	if ( not FCF_GetCurrentChatFrame() ) then
 		return;
 	end
+	local height;
 	local checkBoxTable = frame.checkBoxTable;
 	local checkBoxNameString = frame:GetName().."CheckBox";
 	local checkBoxName, checkBox, baseName, colorSwatch;
+	local topnum, padding = 0, 8;
 	for index, value in ipairs(checkBoxTable) do
 		baseName = checkBoxNameString..index;
 		checkBox = getglobal(baseName.."Check");
 		if ( checkBox ) then
+			if ( not height ) then
+				height = checkBox:GetParent():GetHeight();
+			end
 			if ( type(value.checked) == "function" ) then
 				checkBox:SetChecked(value.checked());
 			else
@@ -898,12 +903,32 @@ function ChatConfig_UpdateCheckboxes(frame)
 					OptionsFrame_EnableCheckBox(checkBox, nil, nil, 1);
 				end
 			end
+			if ( type(value.hidden) == "function" ) then
+				if ( value.hidden() ) then
+					checkBox:GetParent():Hide();
+				else
+					checkBox:GetParent():Show();
+					topnum = index;
+				end
+			else
+				if ( value.hidden ) then
+					checkBox:GetParent():Hide();
+				else
+					checkBox:GetParent():Show();
+					topnum = index;
+				end
+			end
+			if ( type(value.text) == "function" ) then	--Dynamic text, we should update it
+				getglobal(checkBoxNameString..index.."CheckText"):SetText(value.text());
+			end
+			
 			colorSwatch = getglobal(baseName.."ColorSwatch");
 			if ( colorSwatch ) then
 				getglobal(baseName.."ColorSwatchNormalTexture"):SetVertexColor(GetMessageTypeColor(value.type));
 				colorSwatch.type = value.type;
 			end
 		end
+		frame:SetHeight( topnum * height + padding );
 	end
 	-- Hide remaining checkboxes
 	local count = #checkBoxTable+1;

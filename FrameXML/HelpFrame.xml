@@ -833,6 +833,14 @@
 				</Layers>
 			</Frame>
 			<Frame enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText">
+						<Offset x="-8" y="8"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TicketStatusTime">
+						<Offset x="30" y="-8"/>		<!-- width added to accomodate the status button -->
+					</Anchor>
+				</Anchors>
 				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<EdgeSize>
 						<AbsValue val="16"/>
@@ -844,14 +852,6 @@
 						<AbsInset left="5" right="5" top="5" bottom="5"/>
 					</BackgroundInsets>
 				</Backdrop>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText">
-						<Offset x="-8" y="8"/>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT" relativeTo="TicketStatusTime">
-						<Offset x="30" y="-8"/>		<!-- width added to accomodate the status button -->
-					</Anchor>
-				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);

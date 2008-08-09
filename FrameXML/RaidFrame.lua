@@ -96,7 +96,7 @@ end
 -- Populates Raid Info Data
 function RaidInfoFrame_Update()
 	local savedInstances = GetNumSavedInstances();
-	local instanceName, instanceID, instanceReset, width;
+	local instanceName, instanceID, instanceReset, instanceDifficulty, width;
 	local frameName, frameID, frameReset;
 	if ( savedInstances > 0 ) then
 		if ( savedInstances > MAX_RAID_INFOS_DISPLAYED ) then
@@ -115,7 +115,7 @@ function RaidInfoFrame_Update()
 		for i=1, MAX_RAID_INFOS do
 			local frame = getglobal("RaidInfoInstance"..i);
 			if ( i <=  savedInstances) then
-				instanceName, instanceID, instanceReset = GetSavedInstanceInfo(i);
+				instanceName, instanceID, instanceReset, instanceDifficulty = GetSavedInstanceInfo(i);
 				 
 				if ( not frame ) then
 					local name =  "RaidInfoInstance"..i;
@@ -129,7 +129,7 @@ function RaidInfoFrame_Update()
 
 				frameName:SetText(instanceName);
 				frameID:SetText(instanceID);
-				frameReset:SetText(RESETS_IN.." "..SecondsToTime(instanceReset));
+				frameReset:SetText(RESETS_IN.." "..SecondsToTime(instanceReset, nil, nil, 3));
 				if ( RaidInfoFrame.scrolling ) then
 					frameName:SetWidth(180);
 				else

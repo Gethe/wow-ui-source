@@ -7,43 +7,11 @@
 -- Nevin Flanagan (alestane@comcast.net)
 ---------------------------------------------------------------------------
 
-local SPARE_NAMESPACES = {}
-local SPARE_NAMESPACE_COUNT = 0;
-local USED_NAMESPACES = {};
-setmetatable(USED_NAMESPACES, { __mode = "k"; });
-
-local function GetNamespace(...)
-    local ns;
-    if ((not issecure()) or (SPARE_NAMESPACE_COUNT == 0)) then
-        ns = {};
-    else
-        ns = SPARE_NAMESPACES[SPARE_NAMESPACE_COUNT];
-        SPARE_NAMESPACES[SPARE_NAMESPACE_COUNT] = nil;
-        SPARE_NAMESPACE_COUNT = SPARE_NAMESPACE_COUNT - 1;
-    end
-
-    USED_NAMESPACES[ns] = true;
-
-    for i=1, select('#', ...), 2 do
-        local key, value = select(i, ...);
-        if (value) then
-            ns[key] = value;
-        end
-    end
-
-    return ns;
-end
-
-local function FreeNamespace(ns)
-    if (not USED_NAMESPACES[ns]) then return; end
-    USED_NAMESPACES[ns] = nil;
-    wipe(ns);
-
-    if (issecure()) then
-        SPARE_NAMESPACE_COUNT = SPARE_NAMESPACE_COUNT + 1;
-        SPARE_NAMESPACES[SPARE_NAMESPACE_COUNT] = ns;
-    end
-end
+local issecure = issecure;
+local GetFrameHandle = GetFrameHandle;
+local CallRestrictedClosure = CallRestrictedClosure;
+local securecall = securecall;
+local InCombatLockdown = InCombatLockdown;
 
 ---------------------------------------------------------------------------
 
@@ -54,19 +22,21 @@ local function ManagedEnvironmentsIndex(t, k)
         return;
     end;
 
-    if (type(k[0]) ~= "userdata") then
+    local ownerHandle = GetFrameHandle(k);
+    if (not ownerHandle) then
         error("Invalid access of managed environments table");
         return;
     end
 
     local e = RestrictedTable_create();
     e._G = e;
+    e.owner = ownerHandle;
     t[k] = e;
     return e;
 end
 
-local MANAGED_ENVIRONMENTS = {};
-setmetatable(MANAGED_ENVIRONMENTS,
+local _managed_environments = {};
+setmetatable(_managed_environments,
              {
                  __index = ManagedEnvironmentsIndex,
                  __mode = "k",
@@ -74,7 +44,7 @@ setmetatable(MANAGED_ENVIRONMENTS,
 
 local rawget = rawget;
 function GetManagedEnvironment(envKey)
-    return rawget(MANAGED_ENVIRONMENTS, envKey);
+    return rawget(_managed_environments, envKey);
 end
 
 ---------------------------------------------------------------------------
@@ -82,46 +52,39 @@ end
 local tostring = tostring;
 local type = type;
 
-local function SecureHandler_ChildExecute(self, environment, bodyid, ...)
+local function SecureHandler_ChildExecute(self, environment, onupdate,
+                                          bodyid, message, ...)
     local n = select('#', ...);
     if (n == 0) then return; end
 
-    local selfSurrogate = GetFrameSurrogate(self, false);
-    local namespace = GetNamespace("header", selfSurrogate);
-
     for i = 1, n do
         local child = select(i, ...);
-        if (child:IsProtected()) then
+        local _, p = child:IsProtected();
+        if (p) then
             local body = child:GetAttribute(bodyid);
             if (body and type(body) == "string") then
-                local childSurrogate = GetFrameSurrogate(child, true);
-                namespace.self = childSurrogate;
-                CallRestrictedClosure("", environment, namespace, body);
-                namespace.self = nil;
-                ReleaseFrameSurrogate(childSurrogate);
+                local selfHandle = GetFrameHandle(child);
+                CallRestrictedClosure("self,message",
+                                      environment, onupdate, body,
+                                      selfHandle, message);
             end
         end
     end
-    FreeNamespace(namespace);
-    ReleaseFrameSurrogate(selfSurrogate);
 end
 
 local SecureHandler_OnUpdate;
-local function SecureHandler_Execute(self, signature, body, ...)
-    if (not self:IsProtected()) then
+local function SecureHandler_Execute(self, onupdate, signature, body, ...)
+    local _, p = self:IsProtected();
+    if (not p) then
         return;
     end
 
-    local surrogate = GetFrameSurrogate(self, true);
-    local environment = MANAGED_ENVIRONMENTS[self];
-    local namespace = GetNamespace("self", surrogate);
+    local environment = _managed_environments[self];
+    local selfHandle = GetFrameHandle(self);
 
-    local childupdate, animate =
-        CallRestrictedClosure(signature, environment, namespace,
-                              body, ...);
-    FreeNamespace(namespace);
-    ReleaseFrameSurrogate(surrogate);
-    surrogate = nil;
+    local childupdate, childmessage, animate =
+        CallRestrictedClosure(signature, environment, onupdate,
+                              body, selfHandle, ...);
 
     if (animate) then
         self:SetScript("OnUpdate", SecureHandler_OnUpdate);
@@ -138,7 +101,8 @@ local function SecureHandler_Execute(self, signature, body, ...)
         childmethod = "_childupdate-" .. tostring(childupdate);
     end
 
-    SecureHandler_ChildExecute(self, environment, childmethod,
+    SecureHandler_ChildExecute(self, environment, onupdate,
+                               childmethod, childmessage,
                                self:GetChildren());
 end
 
@@ -146,14 +110,15 @@ end
 function SecureHandler_OnSimpleEvent(self, scriptid)
     local body = self:GetAttribute(scriptid);
     if (body and type(body) == "string") then
-        SecureHandler_Execute(self, "", body);
+        SecureHandler_Execute(self, false,  "self", body);
     end
 end
 
 function SecureHandler_OnClick(self, button, down)
     local body = self:GetAttribute("_onclick");
     if (body and type(body) == "string") then
-        SecureHandler_Execute(self, "button,down", body, button, down);
+        SecureHandler_Execute(self, false, "self,button,down",
+                              body, button, down);
     end
 end
 
@@ -161,7 +126,8 @@ end
 function SecureHandler_OnUpdate(self, elapsed)
     local body = self:GetAttribute("_onupdate");
     if (body and type(body) == "string") then
-        SecureHandler_Execute(self, "elapsed", body, tonumber(elapsed));
+        SecureHandler_Execute(self, true,
+                              "self,elapsed", body, tonumber(elapsed));
     end
 end
 
@@ -186,7 +152,7 @@ function SecureHandler_OnAttributeChanged(self, name, value)
             return true;
         end
         self:SetAttribute(name, nil);
-        SecureHandler_Execute(self, "", value);
+        SecureHandler_Execute(self, false, "self", value);
         return true;
     end
 
@@ -207,6 +173,21 @@ function SecureHandler_OnAttributeChanged(self, name, value)
         end
         return true;
     end
+
+    local frameid = name:match("^_frame%-(.+)");
+    if (frameid) then
+        if (value == nil) then
+            return true;
+        end
+        local refid = "frameref-" .. frameid;
+        local handle = nil;
+        if (type(value) == "table" and type(value[0]) == "userdata") then
+            handle = GetFrameHandle(value);
+        end
+        self:SetAttribute(refid, handle);
+        self:SetAttribute(name, nil);
+        return true;
+    end
 end
 
 
@@ -219,30 +200,25 @@ function SecureHandler_StateOnAttributeChanged(self, name, value)
     if (stateid) then
         local body = self:GetAttribute("_onstate-" .. stateid);
         if (body and type(body) == "string") then
-            SecureHandler_Execute(self, "stateid,newstate", body, stateid, value);
+            SecureHandler_Execute(self, false, "self,stateid,newstate",
+                                  body, stateid, value);
         end
         return;
     end
 end
 
 local function SecureHandler_Button_Execute(header, button, signature, body, ...)
-    if ((not header:IsProtected())
+    local _, hp = header:IsProtected();
+    if ((not hp)
         or (InCombatLockdown() and not button:IsProtected())) then
         return;
     end
 
-    local headerSurrogate = GetFrameSurrogate(header, false);
-    local buttonSurrogate = GetFrameSurrogate(button, true);
-    local environment = MANAGED_ENVIRONMENTS[header];
-    local namespace = GetNamespace("header", headerSurrogate,
-                                   "self", buttonSurrogate);
+    local environment = _managed_environments[header];
+    local selfHandle = GetFrameHandle(button);
     local newbutton, updatelater =
-        CallRestrictedClosure(signature, environment, namespace,
-                              body, ...);
-    FreeNamespace(namespace);
-    ReleaseFrameSurrogate(headerSurrogate);
-    ReleaseFrameSurrogate(buttonSurrogate);
-    headerSurrogate, buttonSurrogate = nil, nil;
+        CallRestrictedClosure(signature, environment, false,
+                              body, selfHandle, ...);
 
     if (type(newbutton) ~= "string") then
         newbutton = nil;
@@ -252,23 +228,17 @@ local function SecureHandler_Button_Execute(header, button, signature, body, ...
 end
 
 local function SecureHandler_Other_Execute(header, button, signature, body, ...)
-    if ((not header:IsProtected())
+    local _, hp = header:IsProtected();
+    if ((not hp)
         or (InCombatLockdown() and not button:IsProtected())) then
         return;
     end
 
-    local headerSurrogate = GetFrameSurrogate(header, false);
-    local buttonSurrogate = GetFrameSurrogate(button, true);
-    local environment = MANAGED_ENVIRONMENTS[header];
-    local namespace = GetNamespace("header", headerSurrogate,
-                                   "self", buttonSurrogate);
+    local environment = _managed_environments[header];
+    local selfHandle = GetFrameHandle(button);
     local propagate =
-        CallRestrictedClosure(signature, environment, namespace,
-                              body, ...);
-    FreeNamespace(namespace);
-    ReleaseFrameSurrogate(headerSurrogate);
-    ReleaseFrameSurrogate(buttonSurrogate);
-    headerSurrogate, buttonSurrogate = nil, nil;
+        CallRestrictedClosure(signature, environment, false,
+                              body, selfHandle, ...);
 
     return (propagate and true) or nil;
 end
@@ -280,7 +250,9 @@ function SecureHandlerAdoptee_OnClick(self, button, down)
     if (body and type(body) == "string") then
         header = self:GetAttribute("_secureheader");
         local newbutton, updatelater =
-            SecureHandler_Button_Execute(header, self, "button,down", body);
+            SecureHandler_Button_Execute(header, self,
+                                         "self,button,down", body,
+                                         button, down);
         if (newbutton) then
             button = tostring(newbutton);
         end
@@ -292,7 +264,8 @@ function SecureHandlerAdoptee_OnClick(self, button, down)
     if (fireupdate) then
         local body = header:GetAttribute("_onchildclick");
         if (body and type(body) == "string") then
-            SecureHandler_Execute(header, "button,down", body, button, down);
+            SecureHandler_Execute(header, false,
+                                  "self,button,down", body, button, down);
         end
     end
 end
@@ -313,6 +286,6 @@ function SecureHandlerChild_ChildAction(self, signature,
 
     local body = header:GetAttribute(handler);
     if (body and type(body) == "string") then
-        SecureHandler_Execute(header, signature, body, ...);
+        SecureHandler_Execute(header, false, signature, body, ...);
     end
 end

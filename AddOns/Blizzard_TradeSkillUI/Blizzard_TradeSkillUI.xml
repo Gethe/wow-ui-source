@@ -144,12 +144,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<NormalTexture file="Interface\TradeSkillFrame\UI-TradeSkill-LinkButton">
-					<TexCoords left="0" right="1.0" top="0" bottom="0.5"/>
-				</NormalTexture>
-				<HighlightTexture file="Interface\TradeSkillFrame\UI-TradeSkill-LinkButton" alphaMode="ADD">
-					<TexCoords left="0" right="1.0" top="0.5" bottom="1.0"/>
-				</HighlightTexture>
 				<Scripts>
 					<OnClick>
 						local link=GetTradeSkillListLink();
@@ -167,6 +161,12 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
+				<NormalTexture file="Interface\TradeSkillFrame\UI-TradeSkill-LinkButton">
+					<TexCoords left="0" right="1.0" top="0" bottom="0.5"/>
+				</NormalTexture>
+				<HighlightTexture file="Interface\TradeSkillFrame\UI-TradeSkill-LinkButton" alphaMode="ADD">
+					<TexCoords left="0" right="1.0" top="0.5" bottom="1.0"/>
+				</HighlightTexture>
 			</Button>
 			<CheckButton name="TradeSkillFrameAvailableFilterCheckButton" inherits="UICheckButtonTemplate">
 				<Size>

@@ -329,6 +329,8 @@ function ContainerFrame_UpdateCooldown(container, button)
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 	if ( duration > 0 and enable == 0 ) then
 		SetItemButtonTextureVertexColor(button, 0.4, 0.4, 0.4);
+	else
+		SetItemButtonTextureVertexColor(button, 1, 1, 1);
 	end
 end
 

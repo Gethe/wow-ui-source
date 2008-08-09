@@ -2,8 +2,8 @@ MAX_NUM_QUESTS = 32;
 MAX_NUM_ITEMS = 10;
 MAX_REQUIRED_ITEMS = 6;
 QUEST_DESCRIPTION_GRADIENT_LENGTH = 30;
-QUEST_DESCRIPTION_GRADIENT_CPS = 40;
-QUESTINFO_FADE_IN = 1;
+QUEST_DESCRIPTION_GRADIENT_CPS = 300;
+QUESTINFO_FADE_IN = 0.5;
 
 function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_GREETING");
@@ -57,9 +57,9 @@ function QuestFrame_OnEvent(self, event, ...)
 end
 
 function QuestFrame_SetPortrait()
-	QuestFrameNpcNameText:SetText(UnitName("npc"));
-	if ( UnitExists("npc") ) then
-		SetPortraitTexture(QuestFramePortrait, "npc");
+	QuestFrameNpcNameText:SetText(UnitName("questnpc"));
+	if ( UnitExists("questnpc") ) then
+		SetPortraitTexture(QuestFramePortrait, "questnpc");
 	else
 		QuestFramePortrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 	end

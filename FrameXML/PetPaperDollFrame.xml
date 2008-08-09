@@ -5,17 +5,16 @@
 		<Size>
 			<AbsDimension x="37" y="37"/>
 		</Size>
-		<DisabledTexture file="Interface\PetPaperDollFrame\UI-PetFrame-Slots-Mounts">
-			<TexCoords left="0.203125" right="0.765625" top="0.203125" bottom="0.7625625"/>
-		</DisabledTexture>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 		<Scripts>
 			<OnLoad>
 				CompanionButton_OnLoad(self);
 			</OnLoad>
 			<OnClick>
-				CompanionButton_OnClick(self);
+				if ( IsModifiedClick() ) then
+					CompanionButton_OnModifiedClick(self, button);
+				else
+					CompanionButton_OnClick(self, button);
+				end
 			</OnClick>
 			<OnDragStart>
 				CompanionButton_OnDrag(self);
@@ -26,7 +25,15 @@
 			<OnEnter>
 				CompanionButton_OnEnter(self)
 			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
 		</Scripts>
+		<DisabledTexture file="Interface\PetPaperDollFrame\UI-PetFrame-Slots-Mounts">
+			<TexCoords left="0.203125" right="0.765625" top="0.203125" bottom="0.7625625"/>
+		</DisabledTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 
 	<Frame name="PetPaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" id="2" hidden="true">
@@ -35,6 +42,18 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<FontString name="PetNameText" inherits="GameFontHighlight" hidden="true">
+					<Size>
+						<AbsDimension x="109" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="6" y="232"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
@@ -89,18 +108,6 @@
 			<Frame name="PetPaperDollFramePetFrame" setAllPoints="true" enableMouse="true" hidden="false" id="1">
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="PetNameText" inherits="GameFontHighlight" hidden="true">
-							<Size>
-								<AbsDimension x="109" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="6" y="232"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
 						<FontString name="PetLevelText" inherits="GameFontNormalSmall" text="Level level race class">
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="CENTER">
@@ -614,6 +621,9 @@
 				</Frames>
 			</Frame>
 			<Frame name="PetPaperDollFrameCompanionFrame" setAllPoints="true" enableMouse="true" id="2" hidden="true">
+				<HitRectInsets>
+					<AbsInset left="0" right="30" top="0" bottom="75"/>
+				</HitRectInsets>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture file="Interface\PetPaperDollFrame\UI-PetFrame-Slots">
@@ -747,7 +757,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								CallCompanion(PetPaperDollFrameCompanionFrame.mode,PetPaperDollFrame_FindCompanionIndex())
+								CompanionSummonButton_OnClick();
 							</OnClick>
 						</Scripts>
 					</Button>
