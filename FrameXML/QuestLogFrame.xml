@@ -1,6 +1,61 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="QuestLogFrame.lua"/>
+	
+	<StatusBar name="AchievementProgressBarTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="212" y="14"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self:SetStatusBarColor(0, .6, 0, 1);
+				self:SetMinMaxValues(0, 100);
+				self:SetValue(0);
+				self.text = getglobal(self:GetName() .. "Text");
+			</OnLoad>
+			<OnEnter>
+			
+			</OnEnter>
+		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBG">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".4"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-6" y="5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="6" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.8745" top="0" bottom="0.75"/>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="700/700">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+	</StatusBar>
+	
 	<Button name="QuestLogTitleButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="300" y="16"/>
@@ -1107,6 +1162,53 @@
 			<AbsDimension x="0" y="13"/>
 		</Size>
 	</FontString>
+	<FontString name="AchievementWatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="TOP">
+		<Size>
+			<AbsDimension x="0" y="16"/>
+		</Size>
+		<Color r=".8" g=".8" b=".8" a="1"/>
+	</FontString>
+	<Frame name="AchievementWatchLineTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="0" y="15"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT"/>
+			<Anchor point="RIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="AchievementWatchFontTemplate">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="-1"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentStatusBar" inherits="AchievementProgressBarTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="10" y="0"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-16" y="0"/>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				local name = self:GetName();
+				self.text = getglobal(name .. "Text");
+				self.border = getglobal(name .. "Border");
+				self.icon = getglobal(name .. "Icon");
+				self.statusBar = getglobal(name .. "StatusBar");
+			</OnLoad>
+		</Scripts>
+	</Frame>
 	<Frame name="QuestWatchFrame" toplevel="true" parent="UIParent" hidden="false">
 		<Size>
 			<AbsDimension x="280" y="20"/>
@@ -1280,5 +1382,139 @@
 				</FontString>
 			</Layer>
 		</Layers>
+	</Frame>
+	<Frame name="AchievementWatchFrame" parent="UIParent" hidden="true">
+		<Size x="280" y="20"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="AchievementWatchLine1">
+				<Size>
+					<AbsDimension x="0" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentIcon" file="Interface\Icons\Spell_Misc_HellifrePVPHonorHoldFavor" hidden="true">
+							<Size>
+								<AbsDimension x="14" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentText" inherits="AchievementWatchFontTemplate">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT">
+									<Offset x="4" y="-1"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" hidden="true">
+							<Size>
+								<AbsDimension x="22" y="22"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentIcon">
+									<Offset x="0" y="-1"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentButton">
+						<Size x="14" y="14"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								AchievementWatchButton_OnClick(self);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.text = getglobal(name .. "Text");
+						self.border = getglobal(name .. "Border");
+						self.icon = getglobal(name .. "Icon");
+						self.statusBar = getglobal(name .. "StatusBar");
+					</OnLoad>
+				</Scripts>				
+			</Frame>
+			<Frame name="AchievementWatchLine2" inherits="AchievementWatchLineTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine1" relativePoint="BOTTOMLEFT">
+						<Offset x="-4" y="-4"/>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="AchievementWatchLine3" inherits="AchievementWatchLineTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame name="AchievementWatchLine4" inherits="AchievementWatchLineTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame name="AchievementWatchLine5" inherits="AchievementWatchLineTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame name="AchievementWatchLine6" inherits="AchievementWatchLineTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine5" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame name="AchievementWatchLine7" inherits="AchievementWatchLineTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine6" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame name="AchievementWatchLine8" inherits="AchievementWatchLineTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine7" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame name="AchievementWatchLine9" inherits="AchievementWatchLineTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine8" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame name="AchievementWatchLine10" inherits="AchievementWatchLineTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine9" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEvent>
+				AchievementWatch_Update();
+			</OnEvent>
+			<OnShow>
+				AchievementWatch_Update();
+				UIParent_ManageFramePositions();
+			</OnShow>
+			<OnHide>
+				UIParent_ManageFramePositions();
+			</OnHide>
+		</Scripts>
 	</Frame>
 </Ui>

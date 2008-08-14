@@ -5,6 +5,7 @@ QUESTLOG_QUEST_HEIGHT = 16;
 UPDATE_DELAY = 0.1;
 MAX_QUESTLOG_QUESTS = 25;
 MAX_QUESTWATCH_LINES = 30;
+MAX_ACHIEVEMENTWATCH_LINES = 10;
 MAX_WATCHABLE_QUESTS = 5;
 MAX_NUM_PARTY_MEMBERS = 4;
 MAX_QUEST_WATCH_TIME = 300;
@@ -667,19 +668,18 @@ function QuestWatch_Update()
 		QuestLogTrackTracking:SetVertexColor(1.0, 0, 0);
 	end
 	
-	-- If no watch lines used then hide the frame and return
+	-- If no watch lines used then hide the frame. Don't return! We need to manage frame positions.
 	if ( watchTextIndex == 1 ) then
 		QuestWatchFrame:Hide();
-		return;
 	else
 		QuestWatchFrame:Show();
 		QuestWatchFrame:SetHeight(watchTextIndex * 13);
 		QuestWatchFrame:SetWidth(questWatchMaxWidth + 10);
-	end
-
-	-- Hide unused watch lines
-	for i=watchTextIndex, MAX_QUESTWATCH_LINES do
-		getglobal("QuestWatchLine"..i):Hide();
+		
+		-- Hide unused watch lines
+		for i=watchTextIndex, MAX_QUESTWATCH_LINES do
+			getglobal("QuestWatchLine"..i):Hide();
+		end
 	end
 
 	UIParent_ManageFramePositions();
@@ -723,4 +723,143 @@ function QuestLogUpdateQuestCount(numQuests)
 		QuestLogCount:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -44, -41);
 	end
 	QuestLogCount:SetWidth(width+hPadding);
+end
+
+function AchievementWatchButton_OnClick (self)
+	if ( not AchievementFrame ) then
+		AchievementFrame_LoadUI();
+		AchievementFrame_ToggleAchievementFrame();
+	elseif ( not AchievementFrame:IsShown() ) then
+		AchievementFrame_ToggleAchievementFrame();
+	end
+	
+	AchievementFrame_SelectAchievement(AchievementWatchFrame.achievementIndex);
+end
+
+function AchievementWatch_Update()
+	local numCriteria;
+	local achievementWatchMaxWidth = 0;
+	local tempWidth;
+	local watchLine, watchText;
+	local criteriaString, criteriaType, completed, uantity, totalQuantity, name, flags, assetID, quantityString;
+	local achievementTitle
+	local watchTextIndex = 1;
+	local achievementIndex;
+	local criteriaCompleted;
+
+	achievementIndex = GetTrackedAchievement();
+		-- questIndex = GetQuestIndexForWatch(i);
+	if ( achievementIndex ) then
+		numCriteria = GetAchievementNumCriteria(achievementIndex);
+	
+		AchievementWatchFrame.achievementIndex = achievementIndex;
+	
+		--If there are objectives set the title
+		if ( numCriteria > 0 ) then
+			local _, achievementName, _, completed, _, _, _, _, _, icon = GetAchievementInfo(achievementIndex);
+			-- Set title
+			watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
+			watchText = watchLine.text;
+			watchText:SetText(achievementName);
+			watchLine.icon:Show();
+			watchLine.border:Show();
+			watchLine.icon:SetTexture(icon);
+			
+			-- 18 is the width of watchLine.icon + it's offset
+			tempWidth = watchText:GetStringWidth() + 18;
+			-- Set the anchor of the title line a little lower
+			watchText:Show();
+			if ( tempWidth > achievementWatchMaxWidth ) then
+				achievementWatchMaxWidth = tempWidth;
+			end
+			watchTextIndex = watchTextIndex + 1;
+			criteriaCompleted = 0;
+			
+			local lastLine;
+			for j=1, numCriteria do
+				criteriaString, criteriaType, completed, quantity, totalQuantity, name, flags, assetID, quantityString = GetAchievementCriteriaInfo(achievementIndex, j);
+				lastLine = watchLine;
+				watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
+				
+				if ( completed or watchTextIndex > MAX_ACHIEVEMENTWATCH_LINES ) then
+					-- Do nothing =O
+				elseif ( watchTextIndex == MAX_ACHIEVEMENTWATCH_LINES ) then
+					-- We ran out of lines. Make sure we don't need to display anything else. If we do, change the last line to "..." and setup the mouseover.
+					if ( completed ) then
+						-- We don't need to display this criteria, so we haven't necessarily run out of space. Check all the remaining criteria to be sure!
+						for k=j, numCriteria do
+							_, _, completed = GetAchievementCriteriaInfo(achievementIndex, k);
+							if ( not completed ) then
+								break;
+							end
+						end
+					end
+					
+					if ( not completed ) then
+						-- We did run out of space ;(
+						watchLine.statusBar:Hide();
+						watchLine:Show();
+						watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, 0);
+						watchLine.text:SetText(" ...");
+						watchLine.text:Show();
+					end					
+					watchTextIndex = watchTextIndex + 1;
+				elseif ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
+					-- Progress Bar
+					watchLine.statusBar:Show();
+					watchLine.text:SetText("");
+					watchLine.statusBar:SetMinMaxValues(0, totalQuantity);
+					watchLine.statusBar:SetValue(quantity);
+					watchLine.statusBar.text:SetText(string.format("%s / %d", quantity, totalQuantity));
+					watchTextIndex = watchTextIndex + 1;
+					watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, -4);
+					tempWidth = 180;
+				else	
+					-- Regular text stuff
+					watchText = watchLine.text;
+					-- Set Objective text
+					tempWidth = watchText:GetStringWidth();
+					-- Color the objectives
+					watchText:SetTextColor(0.8, 0.8, 0.8);
+					
+					watchLine.statusBar:Hide();
+					watchText:SetText(" - "..criteriaString);
+					
+					watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, 0);
+					
+					tempWidth = watchText:GetStringWidth();
+					
+					watchLine:Show();
+					watchTextIndex = watchTextIndex + 1;
+				end
+								
+				if ( tempWidth > achievementWatchMaxWidth ) then
+					achievementWatchMaxWidth = tempWidth;
+				end
+			end
+			
+			if ( criteriaCompleted == numCriteria ) then
+				AchievementWatchLine1.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			else
+				AchievementWatchLine1.text:SetTextColor(0.75, 0.61, 0);
+			end
+		end
+	end
+	
+	-- If no watch lines used then hide the frame and return
+	if ( watchTextIndex == 1 ) then
+		AchievementWatchFrame:Hide();
+		return;
+	else
+		AchievementWatchFrame:Show();
+		AchievementWatchFrame:SetHeight(watchTextIndex * 1);
+		AchievementWatchFrame:SetWidth(achievementWatchMaxWidth + 10);
+	end
+
+	-- Hide unused watch lines
+	for i=watchTextIndex, MAX_ACHIEVEMENTWATCH_LINES do
+		getglobal("AchievementWatchLine"..i):Hide();
+	end
+
+	UIParent_ManageFramePositions();
 end

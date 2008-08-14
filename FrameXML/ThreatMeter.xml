@@ -1,0 +1,178 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ThreatMeter.lua"/>
+	<StatusBar name="ThreatMeterStatusBarTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="90" y="14"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" maxLines="1" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="90" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="1"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentIcon">
+					<Size>
+						<AbsDimension x="14" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset x="-1" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				ThreatMeterStatusBar_OnLoad(self);
+			</OnLoad>
+			<OnEnter>
+				ThreatMeterStatusBar_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				ThreatMeterStatusBar_OnLeave(self);
+			</OnLeave>
+		</Scripts>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+	</StatusBar>
+	<Frame name="ThreatMeterTemplate" frameStrata="LOW" toplevel="true" movable="true" clampedToScreen="true" hidden="true" parent="UIParent" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="22"/>
+		</Size>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" maxLines="1" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="92" y="0"/>
+					</Size>
+				</FontString>
+				<Texture name="$parentIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset x="-1" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" virtual="true">
+				<Size>
+					<AbsDimension x="44" y="32"/>
+				</Size>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameTooltipText" justifyH="CENTER"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar name="$parentStatusBar1" inherits="ThreatMeterStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="$parentStatusBar2" inherits="ThreatMeterStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentStatusBar1" relativePoint="BOTTOM"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="$parentStatusBar3" inherits="ThreatMeterStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentStatusBar2" relativePoint="BOTTOM"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="$parentStatusBar4" inherits="ThreatMeterStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentStatusBar3" relativePoint="BOTTOM"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="$parentStatusBar5" inherits="ThreatMeterStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentStatusBar4" relativePoint="BOTTOM"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnEvent>
+				ThreatMeter_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				ThreatMeter_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnEnter>
+				ThreatMeter_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				ThreatMeter_OnLeave(self);
+			</OnLeave>
+			<OnDragStart>
+				self.moving = true;
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+				self.moving = false;
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+	<Frame name="TargetThreatMeter" inherits="ThreatMeterTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="TargetFrame" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="-16" y="-16"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				ThreatMeter_OnLoad(self, "target");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="FocusThreatMeter" inherits="ThreatMeterTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="TargetThreatMeter" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="64" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				ThreatMeter_OnLoad(self, "focus");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

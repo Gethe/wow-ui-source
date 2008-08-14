@@ -884,6 +884,18 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="AUCTION_ITEM_INCOMING_AMOUNT" hidden="true">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
+									<Offset x="-14" y="3"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self);

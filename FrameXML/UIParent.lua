@@ -316,6 +316,9 @@ function InspectAchievements (unit)
 end
 
 function ToggleAchievementFrame(stats)
+	if ( GetCVar("ShowAchievmentUI") == "0" ) then
+		return;
+	end
 	AchievementFrame_LoadUI();
 	AchievementFrame_ToggleAchievementFrame(stats);
 end
@@ -924,6 +927,7 @@ function UIParent_OnEvent(self, event, ...)
 	if ( event == "ACHIEVEMENT_EARNED" ) then
 		if ( not AchievementFrame ) then
 			AchievementFrame_LoadUI();
+			AchievementAlertFrame_ShowAlert(...);
 		end
 		self:UnregisterEvent(event);
 	end
@@ -1693,7 +1697,22 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 	end
 	
-	QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+	if ( AchievementWatchFrame:IsShown() ) then
+		if ( AchievementWatchFrame:GetWidth() > QuestWatchFrame:GetWidth() or not QuestWatchFrame:IsShown() ) then
+			AchievementWatchFrame:ClearAllPoints();
+			QuestWatchFrame:ClearAllPoints();
+			AchievementWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+			QuestWatchFrame:SetPoint("TOPLEFT", "AchievementWatchFrame", "BOTTOMLEFT", 0, 0);
+		else
+			AchievementWatchFrame:ClearAllPoints();
+			QuestWatchFrame:ClearAllPoints();
+			QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY - AchievementWatchFrame:GetHeight());
+			AchievementWatchFrame:SetPoint("BOTTOMLEFT", "QuestWatchFrame", "TOPLEFT", 0, 0);
+		end
+	else
+		QuestWatchFrame:ClearAllPoints();
+		QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+	end
 
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();

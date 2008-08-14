@@ -135,8 +135,13 @@ function SecureButton_GetModifiedUnit(self, button)
 		end
 		return unit;
 	end
-	if ( SecureButton_GetModifiedAttribute(self, "checkselfcast", button) and IsModifiedClick("SELFCAST") ) then
-		return "player";
+	if ( SecureButton_GetModifiedAttribute(self, "checkselfcast", button) ) then
+		if ( IsModifiedClick("SELFCAST") ) then
+			return "player";
+		end
+		if ( IsModifiedClick("FOCUSCAST") ) then
+			return "focus";
+		end
 	end
 end
 function SecureButton_GetUnit(self)

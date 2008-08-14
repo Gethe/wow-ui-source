@@ -17,6 +17,19 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<Texture name="PetFrameFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
+					<Size>
+						<AbsDimension x="128" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-4" y="11"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="1.0" bottom="0"/>
+				</Texture>
 				<Texture name="PetPortrait">
 					<Size>
 						<AbsDimension x="37" y="37"/>
@@ -116,19 +129,6 @@
 										</Anchor>
 									</Anchors>
 									<TexCoords left="0.703125" right="1.0" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="PetFrameThreatIndicator" file="Interface\Minimap\ObjectIcons" hidden="true">
-									<Size>
-										<AbsDimension x="14" y="14"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="PetPortrait">
-											<Offset>
-												<AbsDimension x="21" y="-3"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.75" right="0.875" top="0.5" bottom="1.0"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -284,7 +284,7 @@
 				UnitFrame_Initialize(self, "pet", PetName, PetPortrait,
 									 PetFrameHealthBar, PetFrameHealthBarText, 
 									 PetFrameManaBar, PetFrameManaBarText,
-				                     PetFrameThreatIndicator);
+				                     PetFrameFlash);
 				PetFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>

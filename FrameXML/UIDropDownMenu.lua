@@ -641,7 +641,24 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 				xOffset = cursorX + xOffset;
 				yOffset = cursorY + yOffset;
 			else
-				relativeTo = anchorName;
+				-- See if the anchor was set manually using setanchor
+				if ( dropDownFrame.xOffset ) then
+					xOffset = dropDownFrame.xOffset;
+				end
+				if ( dropDownFrame.yOffset ) then
+					yOffset = dropDownFrame.yOffset;
+				end
+				if ( dropDownFrame.point ) then
+					point = dropDownFrame.point;
+				end
+				if ( dropDownFrame.relativeTo ) then
+					relativeTo = dropDownFrame.relativeTo;
+				else
+					relativeTo = anchorName;
+				end
+				if ( dropDownFrame.relativePoint ) then
+					relativePoint = dropDownFrame.relativePoint;
+				end
 			end
 			if ( not xOffset or not yOffset ) then
 				xOffset = 8;

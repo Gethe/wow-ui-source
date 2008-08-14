@@ -30,7 +30,7 @@ PowerBarColor[6] = PowerBarColor["RUNIC_POWER"];
 	I needed a seperate OnUpdate and OnEvent handlers. And needed to parse the event.
 ]]--
 
-function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatRelativeTo)
+function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit)
 	self.unit = unit;
 	self.name = name;
 	self.portrait = portrait;
@@ -39,7 +39,7 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.threatIndicator = threatIndicator;
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
 	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player"));
-	UnitFrameThreatIndicator_Initialize(unit, self, threatRelativeTo);
+	UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
 	UnitFrame_Update(self);
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
@@ -316,38 +316,27 @@ function UnitFrameManaBar_Update(statusbar, unit)
 	TextStatusBar_UpdateTextString(statusbar);
 end
 
-function UnitFrameThreatIndicator_Initialize(unit, unitFrame, threatRelativeTo)
+function UnitFrameThreatIndicator_Initialize(unit, unitFrame, feedbackUnit)
 	local indicator = unitFrame.threatIndicator;
 	if ( not indicator ) then
 		return;
 	end
 
 	indicator.unit = unit;
-	local indicatorFrame;
-	if ( indicator:IsObjectType("Texture") ) then
-		indicatorFrame = unitFrame;
-		indicator.texture = indicator;
-	else
-		indicatorFrame = indicator;
-		indicator.texture = getglobal(indicator:GetName().."Texture");
+	indicator.feedbackUnit = feedbackUnit or unit;
+
+	unitFrame:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE");
+	if ( unitFrame.OnEvent == nil ) then
+		unitFrame.OnEvent = unitFrame:GetScript("OnEvent") or false;
 	end
-	indicator.threatRelativeTo = threatRelativeTo;
-	if ( threatRelativeTo ) then
-		indicatorFrame:RegisterEvent("UNIT_THREAT_LIST_UPDATE");
-	else
-		indicatorFrame:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE");
-	end
-	if ( indicatorFrame.OnEvent == nil ) then
-		indicatorFrame.OnEvent = indicatorFrame:GetScript("OnEvent") or false;
-	end
-	indicatorFrame:SetScript("OnEvent", UnitFrameThreatIndicator_OnEvent);
+	unitFrame:SetScript("OnEvent", UnitFrameThreatIndicator_OnEvent);
 end
 
 function UnitFrameThreatIndicator_OnEvent(self, event, ...)
 	if ( self.OnEvent ) then
 		self.OnEvent(self, event, ...);
 	end
-	if ( event == "UNIT_THREAT_LIST_UPDATE" or event == "UNIT_THREAT_SITUATION_UPDATE" ) then
+	if ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
 		UnitFrame_UpdateThreatIndicator(self.threatIndicator, ...);
 	end
 end
@@ -357,19 +346,16 @@ function UnitFrame_UpdateThreatIndicator(indicator, unit)
 		return;
 	end
 
-	if ( not unit or unit == indicator.unit ) then
+	if ( not unit or unit == indicator.feedbackUnit ) then
 		local status;
-		if ( indicator.threatRelativeTo ) then
-			status = UnitThreatSituation(indicator.threatRelativeTo, indicator.unit);
+		if ( indicator.feedbackUnit ~= indicator.unit ) then
+			status = UnitThreatSituation(indicator.feedbackUnit, indicator.unit);
 		else
-			status = UnitThreatSituation(indicator.unit);
+			status = UnitThreatSituation(indicator.feedbackUnit);
 		end
 
 		if ( status > 0 and IsThreatWarningEnabled() ) then
-			local texture = indicator.texture;
-			if ( texture ) then
-				texture:SetVertexColor(GetThreatStatusColor(status));
-			end
+			indicator:SetVertexColor(GetThreatStatusColor(status));
 			indicator:Show();
 		else
 			indicator:Hide();

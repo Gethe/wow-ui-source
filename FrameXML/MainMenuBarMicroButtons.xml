@@ -127,7 +127,12 @@
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Achievement");
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			</OnLoad>
+			<OnEvent>
+				-- Put here to show/hide the achievement button
+				AchievementMicroButton_Update();
+			</OnEvent>
 			<OnClick>
 				ToggleAchievementFrame();
 			</OnClick>

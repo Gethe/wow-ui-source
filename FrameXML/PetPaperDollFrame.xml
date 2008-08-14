@@ -5,6 +5,9 @@
 		<Size>
 			<AbsDimension x="37" y="37"/>
 		</Size>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				CompanionButton_OnLoad(self);
@@ -298,7 +301,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								HideUIPanel(self:GetParent():GetParent());
+								HideUIPanel(CharacterFrame);
 							</OnClick>
 						</Scripts>
 					</Button>

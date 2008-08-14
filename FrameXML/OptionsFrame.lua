@@ -27,7 +27,7 @@ OptionsFrameSliders = {
 	{ text = FARCLIP, func = "farclip", minValue = OPTIONS_FARCLIP_MIN, maxValue = OPTIONS_FARCLIP_MAX, valueStep = (OPTIONS_FARCLIP_MAX - OPTIONS_FARCLIP_MIN)/10 , tooltipText = OPTION_TOOLTIP_FARCLIP},
 	{ text = TERRAIN_MIP, func = "TerrainMip", minValue = 0, maxValue = 1, valueStep = 1 , tooltipText = OPTION_TOOLTIP_TERRAIN_TEXTURE, restartClient = 1, tooltipRequirement = OPTION_RESTART_REQUIREMENT},
 	{ text = SPELL_DETAIL, func = "spellEffectLevel", minValue = 0, maxValue = 9, valueStep = 1 , tooltipText = OPTION_TOOLTIP_SPELL_DETAIL},
-	{ text = ENVIRONMENT_DETAIL, func = "WorldDetail", minValue = 0, maxValue = 2, valueStep = 1 , tooltipText = OPTION_TOOLTIP_ENVIRONMENT_DETAIL},
+	{ text = ENVIRONMENT_DETAIL, func = "environmentDetail", minValue = 0.5, maxValue = 1.5, valueStep = .25 , tooltipText = OPTION_TOOLTIP_ENVIRONMENT_DETAIL},
 	{ text = GROUND_DENSITY, func = "groundEffectDensity", minValue = 16, maxValue = 64, valueStep = 8 , tooltipText = OPTION_TOOLTIP_GROUND_DENSITY},
 	{ text = GROUND_RADIUS, func = "groundEffectDist", minValue = 70, maxValue = 140, valueStep = 10 , tooltipText = OPTION_TOOLTIP_GROUND_RADIUS},
 	{ text = TEXTURE_DETAIL, func = "BaseMip", minValue = 0, maxValue = 1, valueStep = 1 , tooltipText = OPTION_TOOLTIP_TEXTURE_DETAIL},
@@ -417,17 +417,20 @@ function OptionsFrame_SetDefaults()
 	local sliderValue;
 	for index, value in pairs(OptionsFrameSliders) do
 		slider = getglobal("OptionsFrameSlider"..index);
-		if ( value.func == "WorldDetail" ) then
-			sliderValue = GetCVarDefault("smallCull");
-			sliderValue = sliderValue + 0;
-			if ( sliderValue <= 0.07 ) then
-				sliderValue = 0;
-			elseif ( sliderValue <= 0.04 ) then
-				sliderValue = 1;
-			elseif ( sliderValue <= 0.01 ) then
-				sliderValue = 2;
-			end
-		elseif ( value.func == "TerrainMip" ) then
+		
+--		if ( value.func == "WorldDetail" ) then
+--			sliderValue = GetCVarDefault("environmentDetail");
+--			sliderValue = sliderValue + 0;
+--			if ( sliderValue <= 0.07 ) then
+--				sliderValue = 0;
+--			elseif ( sliderValue <= 0.04 ) then
+--				sliderValue = 1;
+--			elseif ( sliderValue <= 0.01 ) then
+--				sliderValue = 2;
+--			end
+--		elseif ( value.func == "TerrainMip" ) then
+
+		if ( value.func == "TerrainMip" ) then
 			sliderValue = 1 - GetCVarDefault("shadowLevel");
 		elseif ( value.func == "BaseMip" ) then
 			sliderValue = 1 - GetCVarDefault("baseMip");

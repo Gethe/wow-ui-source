@@ -58,6 +58,18 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
+				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
+					<Size>
+						<AbsDimension x="64" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-1" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentPortrait">
 					<Size>
 						<AbsDimension x="18" y="18"/>
@@ -99,21 +111,6 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-							</Layer>
-							<Layer level="OVERLAY">
-								<Texture name="$parentThreatIndicator" file="Interface\Minimap\ObjectIcons" hidden="true">
-									<Size>
-										<AbsDimension x="10" y="10"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentPortrait">
-											<Offset>
-												<AbsDimension x="10" y="6"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.75" right="0.875" top="0.5" bottom="1.0"/>
-								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -181,7 +178,7 @@
 				local unit = "partypet"..id;
 				UnitFrame_Initialize(self, unit,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
 					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"),
-				       nil, nil, getglobal(prefix.."ThreatIndicator"));
+				       nil, nil, getglobal(prefix.."Flash"));
 				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
 				getglobal(prefix.."Name"):Hide();
 				SecureUnitButton_OnLoad(self, unit);
@@ -209,6 +206,18 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
+					<Size>
+						<AbsDimension x="128" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-3" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentPortrait">
 					<Size>
 						<AbsDimension x="37" y="37"/>
@@ -224,24 +233,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentFlash" hidden="true">
-				<Size>
-					<AbsDimension x="128" y="64"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="-3" y="2"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash">
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 				<Size>
 					<AbsDimension x="10" y="10"/>
@@ -363,19 +354,6 @@
 											</Offset>
 										</Anchor>
 									</Anchors>
-								</Texture>
-								<Texture name="$parentThreatIndicator" file="Interface\Minimap\ObjectIcons" hidden="true">
-									<Size>
-										<AbsDimension x="16" y="16"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentPortrait">
-											<Offset>
-												<AbsDimension x="19" y="6"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.75" right="0.875" top="0.5" bottom="1.0"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -534,7 +512,7 @@
 				UnitFrame_Initialize(self, "party"..id,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
 					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"), 
 					   getglobal(prefix.."ManaBar"), getglobal(prefix.."ManaBarText"),
-				       getglobal(prefix.."ThreatIndicator"));
+				       getglobal(prefix.."Flash"));
 				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
 				PartyMemberFrame_OnLoad(self);
 			</OnLoad>

@@ -276,6 +276,28 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame name="WorldMapLevelDropDown" inherits="UIDropDownMenuTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="WorldMapZoomOutButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontNormalSmall" text="FLOOR">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Button name="WorldMapMagnifyingGlassButton">
 				<Size>
 					<AbsDimension x="179" y="40"/>

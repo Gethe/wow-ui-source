@@ -173,6 +173,19 @@
 			</Layer>
 		-->
 			<Layer level="ARTWORK">
+				<Texture name="$parentBlack" file="Interface\Calendar\EventHighlight" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="1"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="0" y="-2"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
 				<FontString name="$parentText1" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="83" y="12"/>
 					<Anchors>
@@ -205,7 +218,17 @@
 				CalendarDayEventButton_OnClick(self, button);
 			</OnClick>
 		</Scripts>
-		<HighlightTexture file="Interface\Calendar\EventHighlight" alphaMode="ADD"/>
+		<HighlightTexture file="Interface\Calendar\EventHighlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset x="-2" y="1"/>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset x="2" y="-2"/>
+				</Anchor>
+			</Anchors>
+			<TexCoords left="0" right="1" top="0" bottom="0.5"/>
+		</HighlightTexture>
 	</Button>
 
 	<!-- Calendar Misc Button Templates -->
@@ -318,6 +341,12 @@
 						</Anchors>
 					</Slider>
 				</Frames>
+				<Scripts>
+					<OnLoad>
+						HybridScrollFrame_OnLoad(self);
+						self:GetParent().scrollFrame = self;
+					</OnLoad>
+				</Scripts>
 			</ScrollFrame>
 			<Button name="$parentNameSortButton" inherits="CalendarEventInviteSortButtonTemplate">
 				<Anchors>
@@ -397,18 +426,18 @@
 						<Anchor point="LEFT" relativeTo="$parentPartyIcon" relativePoint="RIGHT"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentClass" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="80" y="14"/>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset x="110" y="0"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentStatus" inherits="GameFontNormalSmall" justifyH="RIGHT">
 					<Size x="56" y="14"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentClass" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="80" y="14"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="20" y="0"/>
+						</Anchor>
 					</Anchors>
 				</FontString>
 			</Layer>

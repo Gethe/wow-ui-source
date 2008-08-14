@@ -1,6 +1,143 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 
+	<Button name="AchievementFrameTabButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="115" y="32"/>
+        </Size>
+        <Layers>
+        	<Layer level="BACKGROUND">
+        		<Texture name="$parentLeftDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
+        			<Size>
+        				<AbsDimension x="21" y="59"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="TOPLEFT">
+        					<Offset>
+        						<AbsDimension x="0" y="5"/>
+        					</Offset>
+        				</Anchor>
+        			</Anchors>
+					<TexCoords left="0.47265625" right="0.513671875" top="0.76953125" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddleDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
+        			<Size>
+        				<AbsDimension x="88" y="59"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.513671875" right="0.685546875" top="0.76953125" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRightDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
+        			<Size>
+        				<AbsDimension x="18" y="59"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
+        			<Size>
+        				<AbsDimension x="21" y="49"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="TOPLEFT"/>
+        			</Anchors>
+					<TexCoords left="0.47265625" right="0.513671875" top="0.76953125" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddle" file="Interface\AchievementFrame\UI-Achievement-Header">
+        			<Size>
+        				<AbsDimension x="88" y="49"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.513671875" right="0.685546875" top="0.76953125" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
+        			<Size>
+        				<AbsDimension x="18" y="49"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentLeftHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" hidden="true" alphaMode="ADD">
+        			<Size>
+        				<AbsDimension x="32" y="49"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="TOPLEFT">
+							<Offset x="-3" y="-1"/>
+						</Anchor>
+        			</Anchors>
+					<TexCoords left="0.720703125" right="0.783203125" top="0.76953125" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRightHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" hidden="true" alphaMode="ADD">
+        			<Size>
+        				<AbsDimension x="18" y="49"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="TOPRIGHT">
+							<Offset x="-4" y="-1"/>
+						</Anchor>
+        			</Anchors>
+					<TexCoords left="0.923828125" right="0.986328125" top="0.76953125" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddleHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" hidden="true" alphaMode="ADD">
+        			<Size>
+        				<AbsDimension x="88" y="49"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeftHighlight" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentRightHighlight" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.783203125" right="0.923828125" top="0.76953125" bottom="1.0"/>
+        		</Texture>
+        	</Layer>
+        </Layers>
+		<Scripts>
+			<OnLoad>
+				local name = self:GetName();
+				getglobal(name.."Left"):SetVertexColor(0.6, 0.6, 0.6);
+				getglobal(name.."Middle"):SetVertexColor(0.6, 0.6, 0.6);
+				getglobal(name.."Right"):SetVertexColor(0.6, 0.6, 0.6);
+				getglobal(name.."LeftDisabled"):SetPoint("TOPLEFT", 0, 2);
+				self.leftHighlight = getglobal(name.."LeftHighlight");
+				self.middleHighlight = getglobal(name.."MiddleHighlight");
+				self.rightHighlight = getglobal(name.."RightHighlight");
+				self.text = getglobal(name.."Text");
+			</OnLoad>
+			<OnEnter>
+				self.leftHighlight:Show();
+				self.middleHighlight:Show();
+				self.rightHighlight:Show();
+			</OnEnter>
+			<OnLeave>
+				self.leftHighlight:Hide();
+				self.middleHighlight:Hide();
+				self.rightHighlight:Hide();
+			</OnLeave>
+			<OnShow>
+				PanelTemplates_TabResize(self, 10);
+			</OnShow>
+		</Scripts>
+		<ButtonText name="$parentText">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontHighlightSmall"/>
+    </Button>
 	<Frame name="AchievementFrameAchievementsObjectives"/>
 	<Frame name="MiniAchievementTemplate" virtual="true" parent="AchievementFrame">
 		<Size>
@@ -179,56 +316,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Scripts>
 	</Button>
 	
-	<StatusBar name="AchievementProgressBarTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="212" y="14"/>
-		</Size>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				AchievementProgressBar_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-			
-			</OnEnter>
-		</Scripts>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBG">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a=".4"/>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-6" y="5"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="6" y="-5"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="0.8745" top="0" bottom="0.75"/>
-				</Texture>
-				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="700/700">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-	</StatusBar>
+	<!-- Looking for AchievementProgressBarTemplate? It's in QuestLogFrame.xml, since tracking needs it!, -->
 
 	<StatusBar name="AchievementHeaderStatusBarTemplate" virtual="true">
 		<Anchors>
@@ -336,7 +424,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>
 						<Anchor point="RIGHT">
 							<Offset>
-								<AbsDimension x="8" y="0"/>
+								<AbsDimension x="-12" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>					
@@ -584,7 +672,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>	
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightTsunami" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
+					<Color r="1" g="1" b="1" a=".35"/>
 					<TexCoords left="0" right="0.72265" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentTopTsunami1" file="Interface\AchievementFrame\UI-Achievement-Tsunami-Horizontal">
@@ -1724,12 +1812,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Layer level="BACKGROUND">
 						<Texture name="$parentIcon" file="Interface\AchievementFrame\UI-Achievement-Shields">
 							<Size>
-								<AbsDimension x="48" y="48"/>
+								<AbsDimension x="52" y="48"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="0" y="-6"/>
+										<AbsDimension x="1" y="-6"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1746,7 +1834,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								</Anchor>
 							</Anchors>
 							<Size>
-								<AbsDimension x="40" y="26"/>
+								<AbsDimension x="64" y="64"/>
 							</Size>
 						</FontString>
 					</Layer>
@@ -3004,37 +3092,35 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="Achievements">
+			<Button name="$parentTab1" inherits="AchievementFrameTabButtonTemplate" id="1" text="Achievements">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="11" y="-28"/>
+							<AbsDimension x="11" y="-30"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						getglobal(self:GetName() .. "LeftDisabled"):SetPoint("TOPLEFT", 0, 0);
-					</OnLoad>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
+						self.text:SetPoint("CENTER", self, "CENTER", 0, -5);
+						AchievementFrameTab2.text:SetPoint("CENTER", AchievementFrameTab2, "CENTER", 0, -3);
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="Stats">
+			<Button name="$parentTab2" inherits="AchievementFrameTabButtonTemplate" id="2" text="Statistics">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="0"/>
+							<AbsDimension x="-5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						getglobal(self:GetName() .. "LeftDisabled"):SetPoint("TOPLEFT", 0, 0);
-					</OnLoad>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
+						self.text:SetPoint("CENTER", self, "CENTER", 0, -5);
+						AchievementFrameTab1.text:SetPoint("CENTER", AchievementFrameTab1, "CENTER", 0, -3);
 					</OnClick>
 				</Scripts>				
 			</Button>			

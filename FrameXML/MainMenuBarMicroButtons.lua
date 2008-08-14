@@ -93,6 +93,16 @@ function UpdateMicroButtons()
 	end
 end
 
+function AchievementMicroButton_Update()
+	if ( GetCVar("ShowAchievmentUI") == "0" ) then
+		AchievementMicroButton:Hide();
+		QuestLogMicroButton:SetPoint("BOTTOMLEFT", AchievementMicroButton, "BOTTOMLEFT", 0, 0);
+	else
+		AchievementMicroButton:Show();
+		QuestLogMicroButton:SetPoint("BOTTOMLEFT", AchievementMicroButton, "BOTTOMRIGHT", -3, 0);
+	end
+end
+
 function CharacterMicroButton_OnLoad(self)
 	SetPortraitTexture(MicroButtonPortrait, "player");
 	self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");

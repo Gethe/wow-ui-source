@@ -364,6 +364,105 @@
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
+			<Frame name="CalendarFilterFrame">
+				<Size x="106" y="20"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="CalendarFrame" relativePoint="TOPRIGHT">
+						<Offset x="-44" y="-21"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size x="8" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset x="-5" y="0"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size x="8" y="16"/>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size x="10" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" text="CALENDAR_FILTERS" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="-24" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="CalendarFilterButton">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="3" y="0"/>
+								</Anchor>
+							</Anchors>
+						</NormalTexture>
+						<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="3" y="0"/>
+								</Anchor>
+							</Anchors>
+						</PushedTexture>
+						<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="3" y="0"/>
+								</Anchor>
+							</Anchors>
+						</DisabledTexture>
+						<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="3" y="0"/>
+								</Anchor>
+							</Anchors>
+						</HighlightTexture>
+						<Scripts>
+							<OnClick>
+								CalendarFilterButton_OnClick(self);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="CalendarFilterDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Scripts>
+					<OnLoad>
+						CalendarFilterDropDown_OnLoad(self);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Button name="CalendarCloseButton" inherits="UIPanelCloseButton">
 				<Size x="32" y="34"/>
 				<Anchors>
@@ -920,6 +1019,11 @@
 								</Layers>
 							</Frame>
 						</ScrollChild>
+						<Scripts>
+							<OnLoad>
+								CalendarViewEventDescriptionScrollFrame_OnLoad(self);
+							</OnLoad>
+						</Scripts>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
@@ -1295,7 +1399,7 @@
 				<Frames>
 					<ScrollFrame name="CalendarCreateEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
 						<Frames>
-							<Button name="CalendarCreateEventDescriptionFocusButton" setAllPoints="true">
+							<Button name="$parentFocusButton" setAllPoints="true">
 								<Scripts>
 									<OnClick>
 										CalendarCreateEventDescriptionEdit:SetFocus();
@@ -1339,6 +1443,11 @@
 								<FontString inherits="GameFontHighlightSmall"/>
 							</EditBox>
 						</ScrollChild>
+						<Scripts>
+							<OnLoad>
+								CalendarCreateEventDescriptionScrollFrame_OnLoad(self);
+							</OnLoad>
+						</Scripts>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
@@ -1844,6 +1953,11 @@
 						</Anchors>
 					</Slider>
 				</Frames>
+				<Scripts>
+					<OnLoad>
+						CalendarEventPickerScrollFrame_OnLoad(self);
+					</OnLoad>
+				</Scripts>
 			</ScrollFrame>
 			<Button name="CalendarEventPickerCloseButton" inherits="CalendarEventButtonTemplate" text="CLOSE">
 				<Anchors>
@@ -1950,6 +2064,11 @@
 						</Anchors>
 					</Slider>
 				</Frames>
+				<Scripts>
+					<OnLoad>
+						CalendarTexturePickerScrollFrame_OnLoad(self);
+					</OnLoad>
+				</Scripts>
 			</ScrollFrame>
 			<Button name="CalendarTexturePickerCancelButton" inherits="CalendarEventButtonTemplate" text="CANCEL">
 				<Anchors>
@@ -2089,8 +2208,7 @@
 				<HighlightFont style="GameFontHighlightSmall"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
-			<Frame name="CalendarInviteToGroupDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
+			<Frame name="CalendarInviteToGroupDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="LEFT"/>
 				</Anchors>

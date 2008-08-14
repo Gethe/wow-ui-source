@@ -377,7 +377,18 @@ function AchievementFrameCategory_FeatOfStrengthTooltip(self)
 	GameTooltip:Show();
 end
 
-
+function AchievementFrameCategories_UpdateTooltip()
+	if ( not AchievementFrameCategoriesContainer.buttons ) then
+		return;
+	end
+	
+	for _, button in next, AchievementFrameCategoriesContainer.buttons do
+		if ( MouseIsOver(button) ) then
+			button:showTooltipFunc();
+			break;
+		end
+	end
+end
 
 function AchievementFrameCategories_SelectButton (button)
 	local action;
@@ -521,15 +532,20 @@ function AchievementFrameAchievements_OnLoad (self)
 			getmetatable(self).__index.Hide(self);
 		end
 		
-	self:RegisterEvent("ACHIEVEMENT_EARNED");
-	self:RegisterEvent("CRITERIA_UPDATE");
+	self:RegisterEvent("ADDON_LOADED");
 	AchievementFrameAchievementsContainerScrollBarBG:Show();
 	AchievementFrameAchievementsContainer.update = AchievementFrameAchievements_Update;
 	HybridScrollFrame_CreateButtons(AchievementFrameAchievementsContainer, "AchievementTemplate", 0, -2);
 end
 
 function AchievementFrameAchievements_OnEvent (self, event, ...)
-	if ( event == "ACHIEVEMENT_EARNED" ) then
+	if ( event == "ADDON_LOADED" ) then
+		self:RegisterEvent("ACHIEVEMENT_EARNED");
+		self:RegisterEvent("CRITERIA_UPDATE");
+	elseif ( event == "ACHIEVEMENT_EARNED" ) then
+		AchievementFrameCategories_Update();
+		AchievementFrameCategories_UpdateTooltip();
+		AchievementFrameAchievementsObjectives.id = nil;
 		AchievementFrameAchievements_Update();
 		AchievementAlertFrame_ShowAlert(...);
 		AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
@@ -541,6 +557,9 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 			AchievementFrameAchievementsObjectives.id = nil;
 			AchievementButton_DisplayObjectives(button, id, button.completed);
 		end
+	end
+	if ( not AchievementMicroButton:IsShown() ) then
+		AchievementMicroButton_Update();
 	end
 end
 
@@ -765,8 +784,18 @@ function AchievementButton_OnClick (self)
 			if ( achievementLink ) then
 				ChatEdit_InsertLink(achievementLink);
 			end
-			return;
+		elseif ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
+			local currTrack = GetTrackedAchievement();
+			if ( currTrack == self.id ) then
+				SetTrackedAchievement(0);
+				AchievementWatch_Update();
+			else
+				SetTrackedAchievement(self.id);
+				AchievementWatch_Update();
+			end
 		end
+		
+		return;
 	end
 
 	if ( self.selected ) then
@@ -860,7 +889,11 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		button.selected = true;
 		button.highlight:Show();		
 		local height = AchievementButton_DisplayObjectives(button, button.id, button.completed);
-		button:Expand(height);
+		if ( height == ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT ) then
+			button:Collapse();
+		else
+			button:Expand(height);
+		end
 	elseif ( button.selected ) then
 		button.selected = nil;
 		if ( not MouseIsOver(button) ) then
@@ -1209,9 +1242,13 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			end
 			
 			if ( completed ) then
+				criteria.check:SetPoint("LEFT", 18, -3);
+				criteria.name:SetPoint("LEFT", criteria.check, "RIGHT", 0, 2);
 				criteria.check:Show();
 				criteria.name:SetText(criteriaString);
 			else
+				criteria.check:SetPoint("LEFT", 0, -3);
+				criteria.name:SetPoint("LEFT", criteria.check, "RIGHT", 5, 2);
 				criteria.check:Hide();
 				criteria.name:SetText("- "..criteriaString);
 			end
@@ -1244,13 +1281,22 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		local numColumns = floor(ACHIEVEMENTUI_MAXCONTENTWIDTH/maxCriteriaWidth);
 		if ( numColumns > 1 ) then
 			local step;
-			local remainingColumns = numColumns;
-			for i=1, numColumns-1 do
-				step = ceil(textStrings/remainingColumns)+1;
-				criteria = criteriaTable[i*step];
-				criteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", i*ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns, 0);
-				textStrings = textStrings-step;
-				remainingColumns = remainingColumns-1;
+			local rows = 1;
+			local position = 0;
+			for i=1, #criteriaTable do
+				position = position + 1;
+				if ( position > numColumns ) then
+					position = position - numColumns;
+					rows = rows + 1;
+				end
+				
+				if ( rows == 1 ) then
+					criteriaTable[i]:ClearAllPoints();
+					criteriaTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns), 0);
+				else
+					criteriaTable[i]:ClearAllPoints();
+					criteriaTable[i]:SetPoint("TOPLEFT", criteriaTable[position + ((rows - 2) * numColumns)], "BOTTOMLEFT", 0, 0);
+				end
 			end
 			numRows = ceil(numRows/numColumns);
 		end
@@ -1258,15 +1304,6 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	
 	objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT);
 	objectivesFrame.mode = ACHIEVEMENTMODE_CRITERIA;
-end
-
--- [[ AchievementProgressBars ]] --
-
-function AchievementProgressBar_OnLoad (self)
-	self:SetStatusBarColor(0, .6, 0, 1);
-	self:SetMinMaxValues(0, 100);
-	self:SetValue(0);
-	self.text = getglobal(self:GetName() .. "Text");
 end
 
 -- [[ StatsFrames ]]--
@@ -1673,7 +1710,15 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 	end
 
 	getglobal(frame:GetName() .. "Name"):SetText(name);
-	AchievementShield_SetPoints(points, getglobal(frame:GetName() .. "Shield").points, GameFontNormal, GameFontNormalSmall);
+	
+	local shield = getglobal(frame:GetName() .. "Shield");
+	AchievementShield_SetPoints(points, shield.points, GameFontNormal, GameFontNormalSmall);
+	if ( points == 0 ) then
+		shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
+	else
+		shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
+	end
+	
 	getglobal(frame:GetName() .. "IconTexture"):SetTexture(icon);
 	frame.elapsed = 0;
 	frame.state = nil;
@@ -2111,14 +2156,11 @@ end
 
 function AchievementFrameComparison_SetUnit (unit)
 	-- This needs to be fixed once the API is changed
-	for i = 1, 4 do
-		RemoveAchievementComparisonUnit(i);
-	end
-	
-	AddAchievementComparisonUnit(unit);
+	ClearAchievementComparisonUnit();
+	SetAchievementComparisonUnit(unit);
 	
 	--Wrong number here for now
-	AchievementFrameComparisonHeaderPoints:SetText(GetTotalAchievementPoints());
+	AchievementFrameComparisonHeaderPoints:SetText(GetComparisonAchievementPoints());
 	AchievementFrameComparisonHeaderName:SetText(UnitName(unit));
 	SetPortraitTexture(AchievementFrameComparisonHeaderPortrait, unit);
 end

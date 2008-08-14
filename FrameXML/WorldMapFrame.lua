@@ -43,6 +43,7 @@ function WorldMapFrame_OnLoad(self)
 	UIDropDownMenu_Initialize(WorldMapZoneMinimapDropDown, WorldMapZoneMinimapDropDown_Initialize);
 	UIDropDownMenu_SetWidth(WorldMapZoneMinimapDropDown, 150);
 	WorldMapZoneMinimapDropDown_Update();
+	WorldMapLevelDropDown_Update();
 
 	-- PlayerArrowEffectFrame is created in code: CWorldMap::CreatePlayerArrowFrame()
 	PlayerArrowEffectFrame:SetFrameLevel(WorldMapParty1:GetFrameLevel() + 1);
@@ -59,6 +60,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			WorldMapFrame_Update();
 			WorldMapContinentsDropDown_Update();
 			WorldMapZoneDropDown_Update();
+			WorldMapLevelDropDown_Update();
 		end
 	elseif ( event == "CLOSE_WORLD_MAP" ) then
 		HideUIPanel(self);
@@ -87,6 +89,7 @@ function WorldMapFrame_Update()
 
 	local texName;
 	local dungeonLevel = GetCurrentMapDungeonLevel();
+	
 	for i=1, NUM_WORLDMAP_DETAIL_TILES, 1 do
 		if ( dungeonLevel > 0 ) then
 			texName = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..dungeonLevel.."_"..i;
@@ -299,6 +302,35 @@ function WorldMapFrame_LoadZones(...)
 		info.checked = nil;
 		UIDropDownMenu_AddButton(info);
 	end
+end
+
+function WorldMapLevelDropDown_Update()
+	UIDropDownMenu_Initialize(WorldMapLevelDropDown, WorldMapLevelDropDown_Initialize);
+	UIDropDownMenu_SetWidth(WorldMapLevelDropDown, 90);
+
+	if ( (GetNumDungeonMapLevels() == 0) ) then
+		UIDropDownMenu_ClearAll(WorldMapLevelDropDown);
+		WorldMapLevelDropDown:Hide();
+	else
+		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, GetCurrentMapDungeonLevel());
+		WorldMapLevelDropDown:Show();
+	end
+end
+
+function WorldMapLevelDropDown_Initialize()
+	local info = UIDropDownMenu_CreateInfo();
+	local level = GetCurrentMapDungeonLevel();
+	for i=1, GetNumDungeonMapLevels() do
+		info.text = string.format(FLOOR_NUMBER, i);
+		info.func = WorldMapLevelButton_OnClick;
+		info.checked = (i == level);
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function WorldMapLevelButton_OnClick(self)
+	UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, self:GetID());
+	SetDungeonMapLevel(self:GetID());
 end
 
 function WorldMapZoneMinimapDropDown_Initialize()

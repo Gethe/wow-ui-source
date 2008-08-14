@@ -32,7 +32,6 @@ function TargetFrame_OnLoad (self)
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED");
 	self:RegisterEvent("UNIT_HEALTH");
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("UNIT_FACTION");
@@ -62,14 +61,13 @@ function TargetFrame_Update (self)
 		self:Show();
 
 		-- Moved here to avoid taint from functions below
-		TargetofTarget_Update(self);
+		TargetofTarget_Update();
 
 		UnitFrame_Update(self);
 		TargetFrame_CheckLevel(self);
 		TargetFrame_CheckFaction(self);
 		TargetFrame_CheckClassification(self);
 		TargetFrame_CheckDead(self);
-		TargetFrame_CheckFocus(self);
 		if ( UnitIsPartyLeader("target") ) then
 			TargetLeaderIcon:Show();
 		else
@@ -101,8 +99,6 @@ function TargetFrame_OnEvent (self, event, ...)
 				PlaySound("igCreatureNeutralSelect");
 			end
 		end
-	elseif ( event == "PLAYER_FOCUS_CHANGED" ) then
-		TargetFrame_CheckFocus(self);
 	elseif ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == "target" ) then
 			TargetFrame_CheckDead(self);
@@ -133,7 +129,7 @@ function TargetFrame_OnEvent (self, event, ...)
 			end
 		end
 	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
-		TargetofTarget_Update(self);
+		TargetofTarget_Update();
 		TargetFrame_CheckFaction(self);
 	elseif ( event == "RAID_TARGET_UPDATE" ) then
 		TargetFrame_UpdateRaidTargetIcon(self);
@@ -254,17 +250,9 @@ function TargetFrame_CheckDead (self)
 	end
 end
 
-function TargetFrame_CheckFocus (self)
-	if ( UnitIsUnit("target", "focus") ) then
-		TargetFrameFlash:Show();
-	else
-		TargetFrameFlash:Hide();
-	end
-end
-
 function TargetFrame_OnUpdate (self, elapsed)
 	if ( TargetofTargetFrame:IsShown() ~= UnitExists("targettarget") ) then
-		TargetofTarget_Update(self, elapsed);
+		TargetofTarget_Update();
 	end
 end
 
@@ -637,7 +625,11 @@ function TargetofTarget_OnHide (self)
 	TargetDebuffButton_Update(self);
 end
 
-function TargetofTarget_Update (self)
+function TargetofTarget_Update (self, elapsed)
+	if ( not self ) then
+		self = TargetofTargetFrame;
+	end
+
 	local show;
 	if ( SHOW_TARGET_OF_TARGET == "1" and UnitExists("target") and UnitExists("targettarget") and ( not UnitIsUnit(PlayerFrame.unit, "target") ) and ( UnitHealth("target") > 0 ) ) then
 		if ( ( SHOW_TARGET_OF_TARGET_STATE == "5" ) or
@@ -652,16 +644,16 @@ function TargetofTarget_Update (self)
 	if ( show ) then
 		if ( not TargetofTargetFrame:IsShown() ) then
 			TargetofTargetFrame:Show();
-			Target_Spellbar_AdjustPosition(self);
+			Target_Spellbar_AdjustPosition();
 		end
 		UnitFrame_Update(self);
-		TargetofTarget_CheckDead(self);
-		TargetofTargetHealthCheck(self);
+		TargetofTarget_CheckDead();
+		TargetofTargetHealthCheck();
 		RefreshBuffs(TargetofTargetFrame, 0, "targettarget");
 	else
 		if ( TargetofTargetFrame:IsShown() ) then
 			TargetofTargetFrame:Hide();
-			Target_Spellbar_AdjustPosition(self);
+			Target_Spellbar_AdjustPosition();
 		end
 	end
 end
@@ -777,12 +769,12 @@ function Target_Spellbar_OnEvent (self, event, ...)
 			return;
 		end
 		-- The position depends on the classification of the target
-		Target_Spellbar_AdjustPosition(self);
+		Target_Spellbar_AdjustPosition();
 	end
 	CastingBarFrame_OnEvent(self, event, arg1, select(2, ...));
 end
 
-function Target_Spellbar_AdjustPosition (self)
+function Target_Spellbar_AdjustPosition ()
 	local yPos = 5;
 	if ( TargetFrame.buffRows and TargetFrame.buffRows <= 2 ) then
 		yPos = 38;
@@ -802,4 +794,3 @@ function Target_Spellbar_AdjustPosition (self)
 	end
 	TargetFrameSpellBar:SetPoint("BOTTOM", "TargetFrame", "BOTTOM", -15, -yPos);
 end
-

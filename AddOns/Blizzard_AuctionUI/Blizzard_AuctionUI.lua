@@ -1115,7 +1115,7 @@ function AuctionFrameAuctions_Update()
 	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
 	local buttonBuyoutText, buttonBuyoutFrame;
 	local isLastSlotEmpty;
-	local bidAmountMoneyFrame;
+	local bidAmountMoneyFrame, bidAmountMoneyFrameLabel;
 
 	-- Update sort arrows
 	SortButton_UpdateArrow(AuctionsQualitySort, "owner", "quality");
@@ -1136,7 +1136,7 @@ function AuctionFrameAuctions_Update()
 		else
 			auction:Show();
 			
-			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("owner", offset + i);
+			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner, saleStatus = GetAuctionItemInfo("owner", offset + i);
 			duration = GetAuctionItemTimeLeft("owner", offset + i);
 
 			buttonName = "AuctionsButton"..i;
@@ -1162,68 +1162,90 @@ function AuctionFrameAuctions_Update()
 				buttonHighlight:SetWidth(543);
 				AuctionsBidSort:SetWidth(193);
 			end
+			
+			-- Display differently based on the saleStatus
+			-- saleStatus "1" means that the item was sold
 			-- Set name and quality color
 			color = ITEM_QUALITY_COLORS[quality];
 			itemName = getglobal(buttonName.."Name");
-			itemName:SetText(name);
-			itemName:SetVertexColor(color.r, color.g, color.b);
-			-- Set high bidder
-			if ( not highBidder ) then
-				highBidder = RED_FONT_COLOR_CODE..NO_BIDS..FONT_COLOR_CODE_CLOSE;
-			end
-			getglobal(buttonName.."HighBidder"):SetText(highBidder);
-			-- Set closing time
-			getglobal(buttonName.."ClosingTimeText"):SetText(AuctionFrame_GetTimeLeftText(duration));
-			getglobal(buttonName.."ClosingTime").tooltip = AuctionFrame_GetTimeLeftTooltipText(duration);
-			-- Set item texture, count, and usability
 			iconTexture = getglobal(buttonName.."ItemIconTexture");
 			iconTexture:SetTexture(texture);
-			if ( not canUse ) then
-				iconTexture:SetVertexColor(1.0, 0.1, 0.1);
-			else
-				iconTexture:SetVertexColor(1.0, 1.0, 1.0);
-			end
 			itemCount = getglobal(buttonName.."ItemCount");
-			if ( count > 1 ) then
-				itemCount:SetText(count);
-				itemCount:Show();
-			else
-				itemCount:Hide();
-			end
-			
-			-- Handle bid amount
 			bidAmountMoneyFrame = getglobal(buttonName.."MoneyFrame");
-			if ( bidAmount > 0 ) then
-				-- Set high bid
+			bidAmountMoneyFrameLabel = getglobal(buttonName.."MoneyFrameLabel");
+			if ( saleStatus == 1 ) then
+				-- Sold item
+				itemName:SetText(format(AUCTION_ITEM_SOLD, name));
+				itemName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+				highBidder = GREEN_FONT_COLOR_CODE..highBidder..FONT_COLOR_CODE_CLOSE;
+				getglobal(buttonName.."ClosingTimeText"):SetText(format(AUCTION_ITEM_TIME_UNTIL_DELIVERY, SecondsToTime(duration)));
+				getglobal(buttonName.."ClosingTime").tooltip = format(AUCTION_ITEM_TIME_UNTIL_DELIVERY, SecondsToTime(duration));
+			
+				iconTexture:SetVertexColor(0.5, 0.5, 0.5);
+				itemCount:Hide();
+
 				MoneyFrame_Update(buttonName.."MoneyFrame", bidAmount);
 				bidAmountMoneyFrame:SetAlpha(1);
-				-- Set cancel price
-				auction.cancelPrice = floor(bidAmount * 0.05);
-				button.bidAmount = bidAmount;
-			else
-				-- No bids so show minBid and gray it out
-				MoneyFrame_Update(buttonName.."MoneyFrame", minBid);
-				bidAmountMoneyFrame:SetAlpha(0.5);
-				-- No cancel price
-				auction.cancelPrice = 0;
-				button.bidAmount = minBid;
-			end
-			
-			-- Set buyout price and adjust bid amount accordingly
-			if ( buyoutPrice > 0 ) then
-				bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 0, 10);
-				getglobal(buttonName.."BuyoutMoneyFrame"):Show();
-			else
-				bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 0, 3);
+				bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 0, -4);
+				bidAmountMoneyFrameLabel:Show();
 				getglobal(buttonName.."BuyoutMoneyFrame"):Hide();
-			end
-			MoneyFrame_Update(buttonName.."BuyoutMoneyFrame", buyoutPrice);
+			else
+				-- Normal item
+				itemName:SetText(name);
+				itemName:SetVertexColor(color.r, color.g, color.b);
+				if ( not highBidder ) then
+					highBidder = RED_FONT_COLOR_CODE..NO_BIDS..FONT_COLOR_CODE_CLOSE;
+				end
+				getglobal(buttonName.."ClosingTimeText"):SetText(AuctionFrame_GetTimeLeftText(duration));
+				getglobal(buttonName.."ClosingTime").tooltip = AuctionFrame_GetTimeLeftTooltipText(duration);
+			
+				if ( not canUse ) then
+					iconTexture:SetVertexColor(1.0, 0.1, 0.1);
+				else
+					iconTexture:SetVertexColor(1.0, 1.0, 1.0);
+				end
+				
+				if ( count > 1 ) then
+					itemCount:SetText(count);
+					itemCount:Show();
+				else
+					itemCount:Hide();
+				end
 
-			button.buyoutPrice = buyoutPrice;
-			button.itemCount = count;
+				bidAmountMoneyFrameLabel:Hide();
+				if ( bidAmount > 0 ) then
+					-- Set high bid
+					MoneyFrame_Update(buttonName.."MoneyFrame", bidAmount);
+					bidAmountMoneyFrame:SetAlpha(1);
+					-- Set cancel price
+					auction.cancelPrice = floor(bidAmount * 0.05);
+					button.bidAmount = bidAmount;
+				else
+					-- No bids so show minBid and gray it out
+					MoneyFrame_Update(buttonName.."MoneyFrame", minBid);
+					bidAmountMoneyFrame:SetAlpha(0.5);
+					-- No cancel price
+					auction.cancelPrice = 0;
+					button.bidAmount = minBid;
+				end
+				
+				-- Set buyout price and adjust bid amount accordingly
+				if ( buyoutPrice > 0 ) then
+					bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 0, 10);
+					getglobal(buttonName.."BuyoutMoneyFrame"):Show();
+				else
+					bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 0, 3);
+					getglobal(buttonName.."BuyoutMoneyFrame"):Hide();
+				end
+				MoneyFrame_Update(buttonName.."BuyoutMoneyFrame", buyoutPrice);
+
+				button.buyoutPrice = buyoutPrice;
+				button.itemCount = count;
+			end
+			getglobal(buttonName.."HighBidder"):SetText(highBidder);
 
 			-- Enable/Disable cancel auction button
-			if ( GetSelectedAuctionItem("owner") > 0 ) then
+			if ( (GetSelectedAuctionItem("owner") > 0) and (saleStatus == 0) ) then
 				AuctionsCancelAuctionButton:Enable();
 			else
 				AuctionsCancelAuctionButton:Disable();
@@ -1251,7 +1273,7 @@ function AuctionFrameAuctions_Update()
 		AuctionsSearchCountText:Hide();
 	end
 
-	if ( GetSelectedAuctionItem("owner") and (GetSelectedAuctionItem("owner") > 0) ) then
+	if ( GetSelectedAuctionItem("owner") and (GetSelectedAuctionItem("owner") > 0) and CanCancelAuction(GetSelectedAuctionItem("owner")) ) then
 		AuctionsCancelAuctionButton:Enable();
 	else
 		AuctionsCancelAuctionButton:Disable();

@@ -20,6 +20,19 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<Texture name="PlayerFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
+					<Size>
+						<AbsDimension x="242" y="95"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="1.0" right="0.05078125" top="0" bottom="0.7578125"/>
+				</Texture>
 				<Texture name="PlayerFrameBackground">
 					<Size>
 						<AbsDimension x="119" y="41"/>
@@ -217,19 +230,6 @@
 										</Anchor>
 									</Anchors>
 									<TexCoords left="0.5" right="1.0" top="0" bottom="0.5"/>
-								</Texture>
-								<Texture name="PlayerFrameThreatIndicator" file="Interface\Minimap\ObjectIcons" hidden="true">
-									<Size>
-										<AbsDimension x="16" y="16"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="PlayerPortrait">
-											<Offset>
-												<AbsDimension x="31" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.75" right="0.875" top="0.5" bottom="1.0"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -492,7 +492,7 @@
 				UnitFrame_Initialize(self, "player", PlayerName, PlayerPortrait,
 									 PlayerFrameHealthBar, PlayerFrameHealthBarText, 
 									 PlayerFrameManaBar, PlayerFrameManaBarText,
-				                     PlayerFrameThreatIndicator);
+				                     PlayerFrameFlash);
 				PlayerFrame_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
