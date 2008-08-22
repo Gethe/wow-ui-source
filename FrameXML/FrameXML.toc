@@ -62,6 +62,7 @@ ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
 TargetFrame.xml
+FocusFrame.xml
 ThreatMeter.xml
 TotemFrame.xml
 PetFrame.xml
@@ -122,6 +123,7 @@ EasyMenu.lua
 ChatConfigFrame.xml
 UIOptionsPanels.xml
 MovieFrame.xml
+VehicleMenuBar.xml
 
 ## add new modules above here
 LocalizationPost.xml

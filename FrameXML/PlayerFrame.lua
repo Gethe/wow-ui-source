@@ -181,20 +181,20 @@ function PlayerFrame_OnEvent(self, event, ...)
 			if ( showVehicle ) then
 				UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
 				PlayerFrame_Update();
-				BuffFrame_Update();
-				PlayerFrame_ToVehicleArt()
+				PlayerFrame_ToVehicleArt();
 			else
 				UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
 				PlayerFrame_Update();
-				BuffFrame_Update();
 			end
 			BuffFrame_Update();
+			ComboFrame_Update();
 		end
 	elseif ( event == "UNIT_EXITING_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
 			PlayerFrame_Update();
 			BuffFrame_Update();
+			ComboFrame_Update();
 			PlayerFrame_ToPlayerArt();
 		end
 	end

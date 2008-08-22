@@ -9,6 +9,47 @@
 -- Daniel Stephens (iriel@vigilance-committee.org)
 ---------------------------------------------------------------------------
 
+---------------------------------------------------------------------------
+-- Somewhat extensible print infrastructure for debugging, modelled around
+-- error handler code.
+--
+-- setprinthandler(func) -- Sets the active print handler
+-- func = getprinthandler() -- Gets the current print handler
+-- print(...) -- Passes its arguments to the current print handler
+--
+-- The default print handler simply strjoin's its arguments with a " "
+-- delimiter and adds it to DEFAULT_CHAT_FRAME
+
+local LOCAL_PrintHandler =
+    function(...)
+        DEFAULT_CHAT_FRAME:AddMessage(strjoin(" ", ...));
+    end
+
+function setprinthandler(func)
+    if (type(func) ~= "function") then
+        error("Invalid print handler");
+        LOCAL_PrintHandler = func;
+    end
+end
+
+function getprinthandler() return LOCAL_PrintHandler; end
+
+local pcall = pcall;
+local securecall = securecall;
+local geterrorhandler = geterrorhandler;
+
+local function print_inner(...)
+    local ok, err = pcall(LOCAL_PrintHandler, ...);
+    if (not ok) then
+        local func = geterrorhandler();
+        func(err);
+    end
+end
+
+function print(...)
+    securecall(pcall, print_inner, ...);
+end
+
 -- The bare minimum functions that should exist in order to be
 -- useful without being ridiculously restrictive.
 
@@ -20,7 +61,6 @@ RESTRICTED_FUNCTIONS_SCOPE = {
     select = select;
     tonumber = tonumber;
     tostring = tostring;
-    type = type;
 
     print = print;
 
@@ -80,7 +120,7 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
     "IsModifierKeyDown",
     "GetMouseButtonClicked", "GetActionBarPage", "GetBonusBarOffset",
     "IsMounted", "IsSwimming", "IsFlying", "IsFlyableArea",
-    "IsIndoors", "IsOutdoors"
+    "IsIndoors", "IsOutdoors",
 };
 
 -- Copy the direct functions into the table

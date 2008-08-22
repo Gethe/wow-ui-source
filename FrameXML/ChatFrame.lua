@@ -944,7 +944,7 @@ SecureCmdList["CANCELAURA"] = function(msg)
 		if ( not name ) then
 			name = spell;
 		end
-		CancelPlayerBuff(name, rank);
+		CancelUnitBuff("player", name, rank);
 	end
 end
 
@@ -1857,16 +1857,59 @@ SlashCmdList["STOPWATCH"] = function(msg)
 	if ( not IsAddOnLoaded("Blizzard_TimeManager") ) then
 		UIParentLoadAddOn("Blizzard_TimeManager");
 	end
-	if ( Stopwatch_ShowCountdown ) then
-		-- kinda ghetto, but hey, it's simple and it works =)
-		local hour, minute, second = strmatch(msg, "(%d+):(%d+):(%d+)");
-		if ( not hour ) then
-			minute, second = strmatch(msg, "(%d+):(%d+)");
-			if ( not minute ) then
-				second = strmatch(msg, "(%d+)");
+	if ( StopwatchFrame ) then
+		local text = strmatch(msg, "%s*([^%s]+)%s*");
+		if ( text ) then
+			text = strlower(text);
+
+			local i, compare;
+			-- try to match play
+			i = 1;
+			repeat
+				compare = getglobal("SLASH_STOPWATCH_PARAM_PLAY"..i);
+				if ( compare and compare == text ) then
+					Stopwatch_Play();
+					StopwatchFrame:Show();
+					return;
+				end
+				i = i + 1;
+			until ( not compare );
+			-- try to match pause
+			i = 1;
+			repeat
+				compare = getglobal("SLASH_STOPWATCH_PARAM_PAUSE"..i);
+				if ( compare and compare == text ) then
+					Stopwatch_Pause();
+					StopwatchFrame:Show();
+					return;
+				end
+				i = i + 1;
+			until ( not compare );
+			-- try to match stop
+			i = 1;
+			repeat
+				compare = getglobal("SLASH_STOPWATCH_PARAM_STOP"..i);
+				if ( compare and compare == text ) then
+					Stopwatch_Clear();
+					StopwatchFrame:Show();
+					return;
+				end
+				i = i + 1;
+			until ( not compare );
+			-- try to match a countdown
+			-- kinda ghetto, but hey, it's simple and it works =)
+			local hour, minute, second = strmatch(msg, "(%d+):(%d+):(%d+)");
+			if ( not hour ) then
+				minute, second = strmatch(msg, "(%d+):(%d+)");
+				if ( not minute ) then
+					second = strmatch(msg, "(%d+)");
+				end
 			end
+			Stopwatch_StartCountdown(tonumber(hour), tonumber(minute), tonumber(second));
+			StopwatchFrame:Show();
+		else
+			Stopwatch_Toggle();
 		end
-		Stopwatch_ShowCountdown(tonumber(hour), tonumber(minute), tonumber(second));
 	end
 end
 

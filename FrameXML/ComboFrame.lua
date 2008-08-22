@@ -5,15 +5,26 @@ COMBOFRAME_SHINE_FADE_IN = 0.3;
 COMBOFRAME_SHINE_FADE_OUT = 0.4;
 COMBO_FRAME_LAST_NUM_POINTS = 0;
 
-function ComboPointsFrame_OnEvent(self, event, ...)
-	local comboPoints = GetComboPoints();
+function ComboFrame_OnEvent(self, event, ...)
+	if ( event == "PLAYER_TARGET_CHANGED" ) then
+		ComboFrame_Update();
+	elseif ( event == "UNIT_COMBO_POINTS" ) then
+		local unit = ...;
+		if ( unit == PlayerFrame.unit ) then
+			ComboFrame_Update();
+		end
+	end
+end
+
+function ComboFrame_Update()
+	local comboPoints = GetComboPoints(PlayerFrame.unit, "target");
 	local comboPoint, comboPointHighlight, comboPointShine;
 	if ( comboPoints > 0 ) then
-		if ( not self:IsShown() ) then
-			self:Show();
-			UIFrameFadeIn(self, COMBOFRAME_FADE_IN);
+		if ( not ComboFrame:IsShown() ) then
+			ComboFrame:Show();
+			UIFrameFadeIn(ComboFrame, COMBOFRAME_FADE_IN);
 		end
-		
+
 		local fadeInfo = {};
 		for i=1, MAX_COMBO_POINTS do
 			comboPointHighlight = getglobal("ComboPoint"..i.."Highlight");
@@ -35,7 +46,7 @@ function ComboPointsFrame_OnEvent(self, event, ...)
 	else
 		ComboPoint1Highlight:SetAlpha(0);
 		ComboPoint1Shine:SetAlpha(0);
-		self:Hide();
+		ComboFrame:Hide();
 	end
 	COMBO_FRAME_LAST_NUM_POINTS = comboPoints;
 end

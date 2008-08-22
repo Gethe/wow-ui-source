@@ -6,7 +6,7 @@ BOOKTYPE_SPELL = "spell";
 BOOKTYPE_PET = "pet";
 SPELLBOOK_PAGENUMBERS = {};
 
-function ToggleSpellBook(bookType)
+function ToggleSpellBook(bookType, isTabbing)
 	local doToggle = 1;
 	-- If has no pet spells and is trying to open the corresponding book, then do nothing
 	if ( not HasPetSpells() and bookType == BOOKTYPE_PET ) then
@@ -76,6 +76,8 @@ function SpellBookFrame_OnShow(self)
 	-- Show multibar slots
 	MultiActionBar_ShowAllGrids();
 	UpdateMicroButtons();
+
+	SpellBookFrame_PlayOpenSound();
 end
 
 function SpellBookFrame_Update(showing)
@@ -130,26 +132,16 @@ function SpellBookFrame_Update(showing)
 	end
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
 		SpellBookTitleText:SetText(SPELLBOOK);
-		if ( showing ) then
-			PlaySound("igSpellBookOpen");
-		end
 		SpellBookFrame_ShowSpells();
 		SpellBookFrame_HideGlyphFrame();
 		SpellBookFrame_UpdatePages();
 	elseif ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		SpellBookTitleText:SetText(SpellBookFrame.petTitle);
-		-- Need to change to pet book open sound
-		if ( showing ) then
-			PlaySound("igAbilityOpen");
-		end
 		SpellBookFrame_ShowSpells();
 		SpellBookFrame_HideGlyphFrame();
 		SpellBookFrame_UpdatePages();
 	else
 		SpellBookTitleText:SetText(INSCRIPTION);
-		if ( showing ) then
-			PlaySound("igSpellBookOpen");
-		end
 		SpellBookFrame_HideSpells();
 		SpellBookFrame_ShowGlyphFrame();
 	end
@@ -286,13 +278,31 @@ function SpellBookFrame_SetTabType(tabButton, bookType, token)
 	tabButton:Show();
 end
 
-function SpellBookFrame_OnHide(self)
-	if ( self.bookType == BOOKTYPE_SPELL ) then
-		PlaySound("igSpellBookClose");
+function SpellBookFrame_PlayOpenSound()
+	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
+		PlaySound("igSpellBookOpen");
+	elseif ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
+		-- Need to change to pet book open sound
+		PlaySound("igAbilityOpen");
 	else
-		-- Need to change to pet book close sound
-		PlaySound("igAbilityClose");
+		PlaySound("igSpellBookOpen");
 	end
+end
+
+function SpellBookFrame_PlayCloseSound()
+	if ( not SpellBookFrame.suppressCloseSound ) then
+		if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
+			PlaySound("igSpellBookClose");
+		else
+			-- Need to change to pet book close sound
+			PlaySound("igAbilityClose");
+		end
+	end
+end
+
+function SpellBookFrame_OnHide(self)
+	SpellBookFrame_PlayCloseSound();
+
 	UpdateMicroButtons();
 
 	-- Stop the flash frame from flashing if its still flashing.. flash flash flash
@@ -525,7 +535,7 @@ function SpellButton_UpdateButton(self)
 	SpellButton_UpdateSelection(self);
 end
 
-function PrevPageButton_OnClick()
+function SpellBookPrevPageButton_OnClick()
 	local pageNum = SpellBook_GetCurrentPage() - 1;
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
 		PlaySound("igAbiliityPageTurn");
@@ -542,7 +552,7 @@ function PrevPageButton_OnClick()
 	
 end
 
-function NextPageButton_OnClick()
+function SpellBookNextPageButton_OnClick()
 	local pageNum = SpellBook_GetCurrentPage() + 1;
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
 		PlaySound("igAbiliityPageTurn");
@@ -582,6 +592,13 @@ function SpellBookSkillLineTab_OnClick(self, id)
 			tabFlash:Hide();
 		end
 	end
+end
+
+function SpellBookFrameTabButton_OnClick(self)
+	-- suppress the hiding sound so we don't play a hide and show sound simultaneously
+	SpellBookFrame.suppressCloseSound = true;
+	ToggleSpellBook(self.bookType, true);
+	SpellBookFrame.suppressCloseSound = false;
 end
 
 function SpellBook_GetSpellID(id)

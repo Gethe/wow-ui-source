@@ -34,7 +34,6 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, 
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("AUTOLOOTTOGGLE", value);
-				SetModifiedClick("MAILAUTOLOOTTOGGLE", value);
 				SaveBindings(GetCurrentBindingSet());
 				InterfaceOptionsControlsPanelAutoLootKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_LOOT_"..value.."_KEY");	
 			end;
@@ -111,7 +110,7 @@ function BlizzardOptionsPanel_UpdateAutoLootDropDown (value)
 	if ( not InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel ) then
 		return;
 	end
-	SetCVar("mailAutoLootDefault", value);
+
 	if ( value == "1" ) then
 		InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(LOOT_KEY_TEXT);
 	else
@@ -129,6 +128,7 @@ CombatPanelOptions = {
 	showTargetOfTarget = { text = "SHOW_TARGET_OF_TARGET_TEXT" },
 	showTargetCastbar = { text = "SHOW_TARGET_CASTBAR" },
 	showVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY" },
+	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
 }
 
 function InterfaceOptionsCombatPanelTOTDropDown_OnLoad(self)
@@ -192,7 +192,7 @@ function InterfaceOptionsCombatPanelTOTDropDown_Initialize(self)
 	else
 		info.checked = nil;
 	end
-	info.tooltipTitle = PARTY;
+	info.tooltipTitle = SOLO;
 	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_SOLO;
 	UIDropDownMenu_AddButton(info);
 
@@ -220,6 +220,173 @@ function InterfaceOptionsCombatPanelTOTDropDown_Initialize(self)
 	info.tooltipText = OPTION_TOOLTIP_TARGETOFTARGET_ALWAYS;
 	UIDropDownMenu_AddButton(info);
 end
+
+-- [[ Self Cast key dropdown ]] --
+function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+		UIDropDownMenu_Initialize(self, InterfaceOptionsCombatPanelSelfCastKeyDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, GetModifiedClick("SELFCAST"));
+		self.defaultValue = "NONE";
+		self.currValue = GetModifiedClick("SELFCAST");
+		self.value = self.currValue;
+		InterfaceOptionsCombatPanelSelfCastKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_SELF_CAST_"..self.value.."_KEY");
+		UIDropDownMenu_SetWidth(self, 90);
+		self.SetValue = 
+			function (self, value) 
+				self.value = value;
+				UIDropDownMenu_SetSelectedValue(self, value);
+				SetModifiedClick("SELFCAST", value);
+				SaveBindings(GetCurrentBindingSet());
+				InterfaceOptionsCombatPanelSelfCastKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_AUTO_SELF_CAST_"..value.."_KEY");	
+			end;
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+	end
+end
+
+function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnClick(self)
+	InterfaceOptionsCombatPanelSelfCastKeyDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsCombatPanelSelfCastKeyDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsCombatPanelSelfCastKeyDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = ALT_KEY;
+	info.func = InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnClick;
+	info.value = "ALT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = ALT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_SELF_CAST_ALT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CTRL_KEY;
+	info.func = InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnClick;
+	info.value = "CTRL";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CTRL_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_SELF_CAST_CTRL_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = SHIFT_KEY;
+	info.func = InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnClick;
+	info.value = "SHIFT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = SHIFT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_SELF_CAST_SHIFT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = NONE_KEY;
+	info.func = InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnClick;
+	info.value = "NONE";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NONE_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_SELF_CAST_NONE_KEY;
+	UIDropDownMenu_AddButton(info);
+end
+
+-- [[ Focus Cast key dropdown ]] --
+function InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+		UIDropDownMenu_Initialize(self, InterfaceOptionsCombatPanelFocusCastKeyDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, GetModifiedClick("FOCUSCAST"));
+		self.defaultValue = "NONE";
+		self.currValue = GetModifiedClick("FOCUSCAST");
+		self.value = self.currValue;
+		InterfaceOptionsCombatPanelFocusCastKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_FOCUS_CAST_"..self.value.."_KEY");
+		UIDropDownMenu_SetWidth(self, 90);
+		self.SetValue = 
+			function (self, value) 
+				self.value = value;
+				UIDropDownMenu_SetSelectedValue(self, value);
+				SetModifiedClick("FOCUSCAST", value);
+				SaveBindings(GetCurrentBindingSet());
+				InterfaceOptionsCombatPanelFocusCastKeyDropDown.tooltip = getglobal("OPTION_TOOLTIP_FOCUS_CAST_"..value.."_KEY");	
+			end;
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+	end
+end
+
+function InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnClick(self)
+	InterfaceOptionsCombatPanelFocusCastKeyDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsCombatPanelFocusCastKeyDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsCombatPanelFocusCastKeyDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = ALT_KEY;
+	info.func = InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnClick;
+	info.value = "ALT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = ALT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_FOCUS_CAST_ALT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CTRL_KEY;
+	info.func = InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnClick;
+	info.value = "CTRL";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CTRL_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_SELF_CAST_CTRL_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = SHIFT_KEY;
+	info.func = InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnClick;
+	info.value = "SHIFT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = SHIFT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_SELF_CAST_SHIFT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = NONE_KEY;
+	info.func = InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnClick;
+	info.value = "NONE";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NONE_KEY;
+	info.tooltipText = OPTION_TOOLTIP_AUTO_SELF_CAST_NONE_KEY;
+	UIDropDownMenu_AddButton(info);
+end
+
 
 -- [[ Display Options Panel ]] --
 
@@ -862,6 +1029,7 @@ local SHIFT_KEY = "shiftkey";
 local NO_KEY = "none";
 
 function BlizzardOptionsPanel_SetupControl (control)
+	local value
 	if ( control.cvar ) then
 		if ( control.type == CONTROLTYPE_CHECKBOX ) then			
 			value = GetCVar(control.cvar);

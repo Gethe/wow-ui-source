@@ -18,6 +18,7 @@
 				else
 					CompanionButton_OnClick(self, button);
 				end
+				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 			<OnDragStart>
 				CompanionButton_OnDrag(self);

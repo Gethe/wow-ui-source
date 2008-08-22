@@ -117,8 +117,8 @@ function RaidBossEmoteFrame_OnLoad(self)
 	RaidNotice_FadeInit(self.slot1);
 	RaidNotice_FadeInit(self.slot2);
 	self.timings = { };
-	self.timings["RAID_NOTICE_MIN_HEIGHT"] = 25.0;
-	self.timings["RAID_NOTICE_MAX_HEIGHT"] = 35.0;
+	self.timings["RAID_NOTICE_MIN_HEIGHT"] = 20.0;
+	self.timings["RAID_NOTICE_MAX_HEIGHT"] = 30.0;
 	self.timings["RAID_NOTICE_SCALE_UP_TIME"] = 0.2;
 	self.timings["RAID_NOTICE_SCALE_DOWN_TIME"] = 0.4;
 	
@@ -133,6 +133,7 @@ function RaidBossEmoteFrame_OnEvent(self, event, ...)
 		local body = format(getglobal("CHAT_"..mtype.."_GET")..arg1, arg2, arg2);	--No need for pflag, monsters can't be afk, dnd, or GMs.
 		local info = ChatTypeInfo[mtype];
 		RaidNotice_AddMessage( RaidBossEmoteFrame, body, info );
+--		RaidNotice_AddMessage( RaidBossEmoteFrame, "This is a TEST of the MESSAGE!", ChatTypeInfo["RAID_BOSS_EMOTE"] );
 		PlaySound("RaidBossEmoteWarning");
 	end
 end

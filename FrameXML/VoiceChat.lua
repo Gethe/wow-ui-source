@@ -21,7 +21,7 @@ local function AddTalker(name, unit)
 	talker.unit = unit;
 	tinsert(VOICECHAT_TALKERS, talker);
 	if ( not VoiceChatTalkers:GetScript("OnUpdate") ) then
-		VoiceChatTalkers:SetScript("OnUpdate", function() VoiceChatTalkers_OnUpdate(arg1) end);
+		VoiceChatTalkers:SetScript("OnUpdate", VoiceChatTalkers_OnUpdate);
 	end
 end
 

@@ -153,7 +153,7 @@
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnClick>
-						local modifiedClick = (IsModifiedClick("MAILAUTOLOOTTOGGLE") and GetCVar("mailAutoLootDefault") == "0") or (not IsModifiedClick("MAILAUTOLOOTTOGGLE") and GetCVar("mailAutoLootDefault") == "1");
+						local modifiedClick = IsModifiedClick("MAILAUTOLOOTTOGGLE");
 						if ( modifiedClick ) then
 							InboxFrame_OnModifiedClick(self, self.index);
 						else

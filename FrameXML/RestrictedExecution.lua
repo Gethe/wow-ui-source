@@ -27,10 +27,16 @@ local next = next;
 local unpack = unpack;
 local newproxy = newproxy;
 local select = select;
+local wipe = wipe;
+local tonumber = tonumber;
+
+local t_insert = table.insert;
+local t_maxn = table.maxn;
+local t_concat = table.concat;
+local t_sort = table.sort;
+local t_remove = table.remove;
 
 local IsFrameHandle = IsFrameHandle;
-local BeginFrameActions = BeginFrameActions;
-local EndFrameActions = EndFrameActions;
 
 ---------------------------------------------------------------------------
 -- RESTRICTED CLOSURES
@@ -166,7 +172,9 @@ local LOCAL_Restricted_Table_Meta = {
                      end
                      local tk = type(k);
                      if ((tk ~= "string") and (tk ~= "number")
-                         and (tk ~= "boolean")) then
+                         and (tk ~= "boolean")
+                             and ((tv ~= "userdata")
+                                  or not (IsFrameHandle(v)))) then
                          error("Invalid key type '" .. tk .. "'");
                          return;
                      end
@@ -236,6 +244,7 @@ local function RestrictedTable_Readonly_index(t, k)
     if (not real) then return; end
     if (not issecure()) then
         error("Cannot create restricted tables from insecure code");
+        return;
     end
 
     local ret = newproxy(LOCAL_Readonly_Restricted_Prototype);
@@ -256,6 +265,7 @@ local function RestrictedTable_create(...)
     local ret = newproxy(LOCAL_Restricted_Prototype);
     if (not issecure()) then
         error("Cannot create restricted tables from insecure code");
+        return;
     end
     LOCAL_Restricted_Tables[ret] = {};
 
@@ -366,6 +376,125 @@ local function RestrictedTable_unpack(T)
     return unpack(T);
 end
 
+-- table = RestrictedTable_wipe(table)
+--
+-- A restricted aware implementation of wipe()
+local function RestrictedTable_wipe(T)
+    local PT = LOCAL_Restricted_Tables[T];
+    if (PT) then
+        if (getmetatable(T)) then
+            error("Cannot wipe a read-only table");
+            return;
+        end
+        if (not issecure()) then
+            error("Cannot insecurely modify restricted table");
+            return;
+        end
+        wipe(PT);
+        return T;
+    end
+    return wipe(T);
+end
+
+-- RestrictedTable_maxn(table)
+--
+-- A restricted aware implementation of table.maxn()
+local function RestrictedTable_maxn(T)
+    local PT = LOCAL_Restricted_Tables[T];
+    if (PT) then
+        return t_maxn(PT);
+    end
+    return t_maxn(T);
+end
+
+-- RestrictedTable_concat(table)
+--
+-- A restricted aware implementation of table.concat()
+local function RestrictedTable_concat(T)
+    local PT = LOCAL_Restricted_Tables[T];
+    if (PT) then
+        return t_concat(PT);
+    end
+    return t_concat(T);
+end
+
+-- RestrictedTable_sort(table, func)
+--
+-- A restricted aware implementation of table.sort()
+local function RestrictedTable_sort(T, func)
+    local PT = LOCAL_Restricted_Tables[T];
+    if (PT) then
+        if (getmetatable(T)) then
+            error("Cannot sort a read-only table");
+            return;
+        end
+        if (not issecure()) then
+            error("Cannot insecurely modify restricted table");
+            return;
+        end
+        t_sort(PT, func);
+        return;
+    end
+    t_sort(T, func);
+end
+
+-- RestrictedTable_insert(table [,pos], val)
+--
+-- A restricted aware implementation of table.insert()
+local function RestrictedTable_insert(T, ...)
+    local PT = LOCAL_Restricted_Tables[T];
+    if (PT) then
+        if (getmetatable(T)) then
+            error("Cannot insert into a read-only table");
+            return;
+        end
+        local pos, val;
+        if (select('#', ...) == 1) then
+            T[#PT] = val;
+            return;
+        end
+        pos, val = ...;
+        pos = tonumber(pos);
+        t_insert(PT, pos, nil);
+        -- Leverage protections present on regular indexing
+        T[pos] = val;
+        return;
+    end
+    return t_insert(T, ...);
+end
+
+-- val = RestrictedTable_remove(table, pos)
+--
+-- A restricted aware implementation of table.remove()
+local function RestrictedTable_remove(T, pos)
+    local PT = LOCAL_Restricted_Tables[T];
+    if (PT) then
+        if (getmetatable(T)) then
+            error("Cannot remove from a read-only table");
+            return;
+        end
+        if (not issecure()) then
+            error("Cannot insecurely modify restricted table");
+            return;
+        end
+        return CheckReadonlyValue(t_remove(PT, pos));
+    end
+    return t_remove(T, pos);
+end
+
+-- objtype = type(obj)
+--
+-- A version of type which returns 'table' for restricted tables
+local function RestrictedTable_type(obj)
+    local t = type(obj);
+    if (t == "userdata") then
+        if (LOCAL_Restricted_Tables[obj]) then
+            t = "table";
+        end
+    end
+    return t;
+end
+
 -- Export these functions so that addon code can use them if desired
 -- and so that the handlers can create these tables
 rtable = {
@@ -374,21 +503,42 @@ rtable = {
     ipairs = RestrictedTable_ipairs;
     unpack = RestrictedTable_unpack;
     newtable = RestrictedTable_create;
+
+    maxn = RestrictedTable_maxn;
+    insert = RestrictedTable_insert;
+    remove = RestrictedTable_remove;
+    sort = RestrictedTable_sort;
+    concat = RestrictedTable_concat;
+    wipe = RestrictedTable_wipe;
+
+    type = RestrictedTable_type;
+};
+
+local LOCAL_Table_Namespace = {
+    table = {
+        maxn = RestrictedTable_maxn;
+        insert = RestrictedTable_insert;
+        remove = RestrictedTable_remove;
+        sort = RestrictedTable_sort;
+        concat = RestrictedTable_concat;
+        wipe = RestrictedTable_wipe;
+        new = RestrictedTable_create;
+    }
 };
 
 ---------------------------------------------------------------------------
 -- RESTRICTED ENVIRONMENT
 --
--- environment, controlFunc = CreateRestrictedEnvironment(baseEnvironment)
+-- environment, manageFunc = CreateRestrictedEnvironment(baseEnvironment)
 --
 -- baseEnvironment -- The base environment table (containing functions)
 --
 -- environment     -- The new restricted environment table
--- controlFunc     -- Control function to set/clear working and proxy
+-- manageFunc      -- Management function to set/clear working and proxy
 --                    environments.
 --
--- The control function takes two parameters
---    controlFunc(set, workingTable)
+-- The management function takes two parameters
+--    manageFunc(set, workingTable, controlHandle)
 --
 -- set is a boolean;  If it's true then the working table is set to the
 -- specified value (pushing any previous environment onto a stack). If
@@ -396,20 +546,27 @@ rtable = {
 --
 -- The working table should be a restricted table, or an immutable object.
 --
--- The control function monitors calls to get and set in order to prevent
+-- The controlHandle is an optional object which is made available to
+-- the restricted code with the name 'control'.
+--
+-- The management function monitors calls to get and set in order to prevent
 -- re-entrancy (i.e. calls to get and set must be balanced, and one cannot
 -- switch working tables in the middle).
 local function CreateRestrictedEnvironment(base)
     if (type(base) ~= "table") then base = {}; end
 
-    local working, depth = nil, 0;
-    local workingStack = {};
+    local working, control, depth = nil, nil, 0;
+    local workingStack, controlStack = {}, {};
 
     local result = {};
     local meta_index;
 
     local function meta_index(t, k)
-        return base[k] or working[k];
+        local v = base[k] or working[k];
+        if (v == nil) then
+            if (k == "control") then return control; end
+        end
+        return v;
     end;
 
     local function meta_newindex(t, k, v)
@@ -425,17 +582,18 @@ local function CreateRestrictedEnvironment(base)
 
     setmetatable(result, meta);
 
-    local function control(set, newWorking)
+    local function manage(set, newWorking, newControl)
         if (set) then
             if (depth == 0) then
                 depth = 1;
-                working = newWorking;
             else
                 workingStack[depth] = working;
+                controlStack[depth] = control;
 
-                working = newWorking;
                 depth = depth + 1;
             end
+            working = newWorking;
+            control = newControl;
         else
             if (depth == 0) then
                 error("Attempted to release unused environment");
@@ -447,17 +605,25 @@ local function CreateRestrictedEnvironment(base)
                 return;
             end
 
+            if (control ~= newControl) then
+                error("Control handle mismatch at release");
+                return;
+            end
+
             depth = depth - 1;
             if (depth == 0) then
                 working = nil;
+                control = nil;
             else
                 working = workingStack[depth];
+                control = controlStack[depth];
                 workingStack[depth] = nil;
+                controlStack[depth] = nil;
             end
         end
     end
 
-    return result, control;
+    return result, manage;
 end
 
 ---------------------------------------------------------------------------
@@ -487,6 +653,15 @@ local LOCAL_Restricted_Global_Functions = {
     pairs = RestrictedTable_pairs;
     ipairs = RestrictedTable_ipairs;
     next = RestrictedTable_next;
+    unpack = RestrictedTable_unpack;
+
+    -- Table methods
+    wipe = RestrictedTable_wipe;
+    tinsert = RestrictedTable_insert;
+    tremove = RestrictedTable_remove;
+
+    -- Synthetic restricted-table-aware 'type'
+    type = RestrictedTable_type;
 };
 
 -- A helper function to recursively copy and protect scopes
@@ -517,9 +692,11 @@ if (RESTRICTED_FUNCTIONS_SCOPE) then
                             LOCAL_Restricted_Global_Functions);
     RESTRICTED_FUNCTIONS_SCOPE = nil;
 end
+PopulateGlobalFunctions(LOCAL_Table_Namespace,
+                        LOCAL_Restricted_Global_Functions);
 
 -- Create the environment
-local LOCAL_Function_Environment, LOCAL_Function_Environment_Control =
+local LOCAL_Function_Environment, LOCAL_Function_Environment_Manager =
     CreateRestrictedEnvironment(LOCAL_Restricted_Global_Functions);
 
 -- Protect from injection via the string metatable index
@@ -571,11 +748,10 @@ setmetatable(LOCAL_Closure_Factories, { __index = ClosureFactories_index });
 
 -- A helper method to release the restricted environment environment before
 -- returning from the function call.
-local function ReleaseAndReturn(workingEnv, readok, pcallFlag, ...)
+local function ReleaseAndReturn(workingEnv, ctrlHandle, pcallFlag, ...)
     -- Tampering at this point will irrevocably taint the protected
     -- environment, for now that's a handy protective measure.
-    LOCAL_Function_Environment_Control(false, workingEnv);
-    EndFrameActions(readok);
+    LOCAL_Function_Environment_Manager(false, workingEnv, ctrlHandle);
     if (pcallFlag) then
         return ...;
     end
@@ -589,15 +765,12 @@ end
 --
 -- signature  -- function signature
 -- workingEnv -- the working environment, must be a restricted table
--- onupdate   -- true if this is called from an OnUpdate handler and needs
---               to be restricted to read-only environment and write-only
---               frames
+-- ctrlHandle -- a control handle
 -- body       -- function body
 -- ...        -- any arguments to pass to the executing closure
 --
 -- Returns whatever the restricted closure returns
-function CallRestrictedClosure(signature, workingEnv, onupdate, body, ...)
-    onupdate = false; -- Disabled for now
+function CallRestrictedClosure(signature, workingEnv, ctrlHandle, body, ...)
     if (not LOCAL_Restricted_Tables[workingEnv]) then
         error("Invalid working environment");
         return;
@@ -618,14 +791,13 @@ function CallRestrictedClosure(signature, workingEnv, onupdate, body, ...)
 
     if (not issecure()) then
         error("Cannot call restricted closure from insecure code");
-    end
-    if (onupdate) then
-        workingEnv = GetReadonlyRestrictedTable(workingEnv);
+        return;
     end
 
-    local readok = (not onupdate);
+    if (type(ctrlHandle) ~= "userdata") then
+        ctrlHandle = nil;
+    end
 
-    LOCAL_Function_Environment_Control(true, workingEnv);
-    BeginFrameActions(readok);
-    return ReleaseAndReturn(workingEnv, readok, pcall( closure, ... ) );
+    LOCAL_Function_Environment_Manager(true, workingEnv, ctrlHandle);
+    return ReleaseAndReturn(workingEnv, ctrlHandle, pcall( closure, ... ) );
 end

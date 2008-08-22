@@ -68,7 +68,7 @@ function AchievementFrame_OnLoad (self)
 end
 
 function AchievementFrame_OnShow (self)
-	PlaySound("igCharacterInfoOpen");
+	PlaySound("AchievementMenuOpen");
 	AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
 	if ( not AchievementFrame.wasShown ) then
 		AchievementFrame.wasShown = true;
@@ -78,15 +78,18 @@ function AchievementFrame_OnShow (self)
 end
 
 function AchievementFrame_OnHide (self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound("AchievementMenuClose");
 	UpdateMicroButtons();
 end
 
 function AchievementFrameBaseTab_OnClick (id)
 	PanelTemplates_Tab_OnClick(getglobal("AchievementFrameTab"..id), AchievementFrame);
+	
+	local isSummary = false
 	if ( id == 1 ) then
 		achievementFunctions = ACHIEVEMENT_FUNCTIONS;
 		if ( achievementFunctions.selectedCategory == "summary" ) then
+			isSummary = true;
 			AchievementFrame_ShowSubFrame(AchievementFrameSummary);
 		else
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
@@ -95,6 +98,7 @@ function AchievementFrameBaseTab_OnClick (id)
 	else
 		achievementFunctions = STAT_FUNCTIONS;
 		if ( achievementFunctions.selectedCategory == "summary" ) then
+			isSummary = true;
 			AchievementFrame_ShowSubFrame(AchievementFrameSummary);
 		else
 			AchievementFrame_ShowSubFrame(AchievementFrameStats);
@@ -104,14 +108,20 @@ function AchievementFrameBaseTab_OnClick (id)
 	
 	AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES);
 	AchievementFrameCategories_Update();
+	
+	if ( not isSummary ) then
+		achievementFunctions.updateFunc();
+	end
 end
 
 AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 
 function AchievementFrameComparisonTab_OnClick (id)
+	local isSummary = false
 	if ( id == 1 ) then
 		achievementFunctions = COMPARISON_ACHIEVEMENT_FUNCTIONS;
 		if ( achievementFunctions.selectedCategory == "summary" ) then
+			isSummary = true;
 			-- Do something comparisony here, Derek!
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameSummary);
 		else
@@ -121,6 +131,7 @@ function AchievementFrameComparisonTab_OnClick (id)
 	else
 		achievementFunctions = COMPARISON_STAT_FUNCTIONS;
 		if ( achievementFunctions.selectedCategory == "summary" ) then
+			isSummary = true;
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameSummary);
 		else
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparisonStatsContainer);
@@ -131,6 +142,10 @@ function AchievementFrameComparisonTab_OnClick (id)
 	AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES);
 	AchievementFrameCategories_Update();
 	PanelTemplates_Tab_OnClick(getglobal("AchievementFrameTab"..id), AchievementFrame);
+	
+	if ( not isSummary ) then
+		achievementFunctions.updateFunc();
+	end
 end
 
 ACHIEVEMENTFRAME_SUBFRAMES = {
@@ -689,7 +704,7 @@ end
 
 -- [[ AchievementButton ]] --
 
-ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT = 10;
+ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT = 20;
 ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT = 82;
 ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT = 15;
 ACHIEVEMENTBUTTON_MAXHEIGHT = 232;
@@ -763,6 +778,9 @@ function AchievementButton_OnLoad (self)
 	self.objectives = getglobal(name .. "Objectives");
 	self.highlight = getglobal(name .. "Highlight");
 	self.dateCompleted = getglobal(name .. "DateCompleted")
+	
+	self.dateCompleted:ClearAllPoints();
+	self.dateCompleted:SetPoint("TOP", self.shield, "BOTTOM", -8, 6);
 	
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 	self.Collapse = AchievementButton_Collapse;
@@ -877,7 +895,6 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 			else
 				button.rewardBackground:SetVertexColor(0.35, 0.35, 0.35);
 			end
-			
 		end		
 	end
 	
@@ -962,6 +979,9 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 	end
 
+	local descriptionHeight = button.description:GetHeight();
+	height = height + descriptionHeight - ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT;
+	
 	objectives.id = id;
 	return height;
 end
@@ -1218,7 +1238,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				progressBar:SetPoint("TOP", progressBarTable[progressBars-1], "BOTTOM", 0, 0);
 			end
 			
-			progressBar.text:SetText(string.format("%s / %d", quantityString, reqQuantity));
+			progressBar.text:SetText(string.format("%s", quantityString));
 			progressBar:SetMinMaxValues(0, reqQuantity);
 			progressBar:SetValue(quantity);
 			

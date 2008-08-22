@@ -172,7 +172,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("IGR_BILLING_NAG_DIALOG");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
-	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("RAID_INSTANCE_WELCOME");
 	self:RegisterEvent("LEVEL_GRANT_PROPOSED");
 
@@ -316,7 +315,7 @@ function InspectAchievements (unit)
 end
 
 function ToggleAchievementFrame(stats)
-	if ( GetCVar("ShowAchievmentUI") == "0" ) then
+	if ( not CanShowAchievementUI() ) then
 		return;
 	end
 	AchievementFrame_LoadUI();
@@ -817,12 +816,6 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("GOSSIP_ENTER_CODE");
 		return;
 	end
-	if ( event == "READY_CHECK" ) then
-		if ( arg1 ~= UnitName("player") ) then
-			ShowReadyCheck(arg1, arg2);
-		end
-		return;
-	end
 
 	-- Events for auction UI handling
 	if ( event == "AUCTION_HOUSE_SHOW" ) then
@@ -1045,7 +1038,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["ChatFrame1"] = {baseY = true, yOffset = 20, bottomLeft = actionBarOffset-20, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 20, bottomRight = actionBarOffset-20, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 22};
+	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	
 	-- Vars
 	["CONTAINER_OFFSET_X"] = {baseX = 0, rightLeft = 2*actionBarOffset+3, rightRight = actionBarOffset+3, isVar = "xAxis"};
@@ -1602,7 +1595,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 
 	if ( ( PetActionBarFrame and PetActionBarFrame:IsShown() ) or ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) or
-		 ( PossessBarFrame and PossessBarFrame:IsShown() ) ) then
+		 ( PossessBarFrame and PossessBarFrame:IsShown() ) or ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) ) then
 		tinsert(yOffsetFrames, "pet");
 		hasPetBar = 1;
 	end

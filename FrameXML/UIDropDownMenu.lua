@@ -468,6 +468,30 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	getglobal("DropDownList"..dropdownLevel):SetWidth(maxWidth+15);
 end
 
+function UIDropDownMenu_ResetValues ()
+	-- This will either taint everything, or clean taint off of everything, so be careful. Calling this while any dropdown menus are open/displayed is not recommended.	
+	
+	UIDROPDOWNMENU_MINBUTTONS = 8;
+	UIDROPDOWNMENU_MAXBUTTONS = 8;
+	UIDROPDOWNMENU_MAXLEVELS = 2;
+	UIDROPDOWNMENU_BUTTON_HEIGHT = 16;
+	UIDROPDOWNMENU_BORDER_HEIGHT = 15;
+	-- The current open menu
+	UIDROPDOWNMENU_OPEN_MENU = nil;
+	-- The current menu being initialized
+	UIDROPDOWNMENU_INIT_MENU = nil;
+	-- Current level shown of the open menu
+	UIDROPDOWNMENU_MENU_LEVEL = 1;
+	-- Current value of the open menu
+	UIDROPDOWNMENU_MENU_VALUE = nil;
+	-- Time to wait to hide the menu
+	UIDROPDOWNMENU_SHOW_TIME = 2;
+	-- Default dropdown text height
+	UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = nil;
+	-- List of open menus
+	OPEN_DROPDOWNMENUS = {};
+	UIDropDownMenu_ButtonInfo = {};
+end
 
 function UIDropDownMenu_SetSelectedName(frame, name, useValue)
 	frame.selectedName = name;
@@ -809,7 +833,6 @@ function UIDropDownMenu_SetButtonWidth(frame, width)
 	getglobal(frame:GetName().."Button"):SetWidth(width);
 	frame.noResize = 1;
 end
-
 
 function UIDropDownMenu_SetText(frame, text)
 	local filterText = getglobal(frame:GetName().."Text");

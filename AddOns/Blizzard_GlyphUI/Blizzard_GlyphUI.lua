@@ -28,15 +28,17 @@ function GlyphFrameGlyph_OnLoad (self)
 	self.ring = getglobal(name .. "Ring");
 	self.shine = getglobal(name .. "Shine");
 	self.elapsed = 0;
+	self.glyphType = nil;
 end
 
-function GlyphFrameGlyph_UpdateSlot (self)
+function GlyphFrameGlyph_UpdateSlot (self, eventUpdate)
 	local GLYPH_TEXTURE_PATH = "Interface\\SpellBook\\UI-Glyph-Rune-%d";
 	local id = self:GetID();
 	
 	local enabled, glyphType, glyphSpell, iconIndex = GetGlyphSocketInfo(id);
-	
-	if ( glyphType == 2 ) then
+
+	local isMinor = glyphType == 2;
+	if ( isMinor ) then
 		GlyphFrameGlyph_SetGlyphType(self, GLYPHTYPE_MINOR);
 	else
 		GlyphFrameGlyph_SetGlyphType(self, GLYPHTYPE_MAJOR);
@@ -63,6 +65,7 @@ function GlyphFrameGlyph_UpdateSlot (self)
 end
 
 function GlyphFrameGlyph_SetGlyphType (glyph, glyphType)
+	glyph.glyphType = glyphType;
 	if ( glyphType == GLYPHTYPE_MAJOR ) then
 		glyph.glyph:SetVertexColor(GLYPH_MAJOR.r, GLYPH_MAJOR.g, GLYPH_MAJOR.b);
 		glyph.setting:SetWidth(108);
@@ -188,7 +191,9 @@ end
 
 function GlyphFrame_OnLoad (self)
 	self.glow = getglobal(self:GetName() .. "Glow");
-	self:RegisterEvent("GLYPH_UPDATE");
+	self:RegisterEvent("GLYPH_ADDED");
+	self:RegisterEvent("GLYPH_REMOVED");
+	self:RegisterEvent("GLYPH_UPDATED");
 end
 
 function GlyphFrame_OnEnter (self)
@@ -202,8 +207,31 @@ function GlyphFrame_OnLeave (self)
 end
 
 function GlyphFrame_OnEvent (self, event, ...)
-	GlyphFrame_PulseGlow();
-	GlyphFrame_Update();
+	local index = ...;
+	local glyph = getglobal("GlyphFrameGlyph" .. index);
+	if ( glyph ) then
+		-- update the glyph
+		GlyphFrameGlyph_UpdateSlot(glyph);
+		-- play effects based on the event and glyph type
+		local glyphType = glyph.glyphType;
+		if ( event == "GLYPH_ADDED" or event == "GLYPH_UPDATED" ) then
+			if ( glyphType == GLYPHTYPE_MINOR ) then
+				GlyphFrame_PulseGlow();
+				PlaySound("Glyph_MinorCreate");
+			elseif ( glyphType == GLYPHTYPE_MAJOR ) then
+				GlyphFrame_PulseGlow();
+				PlaySound("Glyph_MajorCreate");
+			end
+		elseif ( event == "GLYPH_REMOVED" ) then
+			if ( glyphType == GLYPHTYPE_MINOR ) then
+				GlyphFrame_PulseGlow();
+				PlaySound("Glyph_MinorDestroy");
+			elseif ( glyphType == GLYPHTYPE_MAJOR ) then
+				GlyphFrame_PulseGlow();
+				PlaySound("Glyph_MajorDestroy");
+			end
+		end
+	end
 end
 
 function GlyphFrame_Update ()

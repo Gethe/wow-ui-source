@@ -51,7 +51,7 @@
 		</HitRectInsets>
 	  <Scripts>
 			<OnClick>
-				ToggleSpellBook(self.bookType);
+				SpellBookFrameTabButton_OnClick(self);
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -330,7 +330,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PrevPageButton_OnClick();
+						SpellBookPrevPageButton_OnClick();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -360,7 +360,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						NextPageButton_OnClick();
+						SpellBookNextPageButton_OnClick();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>

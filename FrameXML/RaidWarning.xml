@@ -47,12 +47,12 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="RaidBossEmoteFrameSlot1" inherits="BossEmoteNormalHuge" justifyH="CENTER" hidden="true">
+				<FontString name="RaidBossEmoteFrameSlot1" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>
 				</FontString>
-				<FontString name="RaidBossEmoteFrameSlot2" inherits="BossEmoteNormalHuge" justifyH="CENTER" hidden="true">
+				<FontString name="RaidBossEmoteFrameSlot2" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
 					<Anchors>
 						<Anchor point="TOP" relativeTo="RaidBossEmoteFrameSlot1" relativePoint="BOTTOM"/>
 					</Anchors>

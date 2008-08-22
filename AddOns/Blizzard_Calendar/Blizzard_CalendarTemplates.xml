@@ -485,10 +485,10 @@
 	<Frame name="CalendarModalDialogTemplate" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" virtual="true">
 		<Scripts>
 			<OnShow>
-				CalendarFrame_SetModal(self);
+				CalendarFrame_PushModal(self);
 			</OnShow>
 			<OnHide>
-				CalendarFrame_SetModal(nil);
+				CalendarFrame_PopModal();
 			</OnHide>
 		</Scripts>
 	</Frame>

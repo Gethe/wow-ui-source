@@ -1,8 +1,7 @@
 local MAINMENU_SLIDETIME = 0.5;
-local MAINMENU_GONEYPOS = 120;	--Distance off screen for MainMenuBar to be completely hidden
+local MAINMENU_GONEYPOS = 130;	--Distance off screen for MainMenuBar to be completely hidden
 local MAINMENU_XPOS = 0;
 local MAINMENU_VEHICLE_ENDCAPPOS = 548;
-local DoAnchors = true;
 
 function MainMenuExpBar_Update()
 	local currXP = UnitXP("player");
@@ -12,9 +11,6 @@ function MainMenuExpBar_Update()
 end
 
 function MainMenuBar_OnUpdate(self, elapsed)
-	if self.updateVehicleArt then
-		MainMenuBar_UpdateVehicleArt()
-	end
 	if self.animating then
 		MainMenuBar_ContinueAnimation(self, elapsed)
 	end
@@ -68,59 +64,21 @@ function MainMenuBar_SetUpAnimation(frame, direction, duration, positionFunc, po
 	end
 end
 
-function MainMenuBar_UpdateVehicleArt()
-	if ( MainMenuBar.state ~= "vehicle" ) then 
-		--return;
-	end
-	if ( DoAnchors ) then	--Only set the anchors the first time we update vehicle art
-		VehiclePossessionRightEndCap:ClearAllPoints()
-		VehiclePossessionLeftEndCap:ClearAllPoints()
-		VehiclePossessionLeftEndCap:SetPoint("LEFT", PossessButton1, "LEFT", -15, 2)
-		VehiclePossessionRightEndCap:SetPoint("RIGHT", PossessButton2, "RIGHT", 15, 2)
-		DoAnchors=false;
-	end
-	if (VehiclePossessionRightEndCap:GetLeft()) then
-		MainMenuBar.updateVehicleArt=false;
-		MainMenuBarPlayerArtFrame:Hide()
-		MainMenuBarVehicleArtFrame:Show()
-		local temp
-		local hasPoss = IsPossessBarVisible();
-		
-		temp = VehiclePossessionRightEndCap:GetLeft() - VehiclePossessionLeftEndCap:GetRight()
-		VehiclePossessionMiddleTexture:SetHeight(18)
-		VehiclePossessionMiddleTexture:SetWidth(temp)
-		VehiclePossessionMiddleTexture:SetTexCoord(0.0, 0.1796875, 0.0 , 0.3203125, temp/128, 0.1796875, temp/128, 0.3203125 )
-		
-		temp = (MainMenuBarVehicleLeftActionBarEndCap:GetBottom()-MainMenuBarVehicleBottomLeftTexture:GetTop())
-		MainMenuBarVehicleLeftVertBar:SetHeight(temp)
-		MainMenuBarVehicleLeftVertBar:SetWidth(17)
-		MainMenuBarVehicleLeftVertBar:SetTexCoord(temp/128, 0.186, 0.0, 0.186, temp/128, 0.3203125, 0.0 , 0.3203125)	--0.1796875
-		
-		if ( hasPoss ) then
-			temp=temp+2	--Right side of possession art isn't quite as tall as left side.
-		end
-		MainMenuBarVehicleRightVertBar:SetHeight(temp)
-		MainMenuBarVehicleRightVertBar:SetWidth(18)
-		MainMenuBarVehicleRightVertBar:SetTexCoord(temp/128, 0.3203125, 0.0, 0.3203125, temp/128, 0.1796875, 0.0 , 0.1796875)
-		
-		if ( hasPoss ) then
-			temp = (MainMenuBarVehicleRightActionBarEndCap:GetLeft()-VehiclePossessionRightEndCap:GetRight())
-			VehiclePossessionRightEndCap:Show()
-			VehiclePossessionLeftEndCap:Show()
-			VehiclePossessionMiddleTexture:Show()
+function MainMenuBar_AnimFinished(self)
+	MainMenuBar.busy = false;
+	if ( MainMenuBar.animComplete ) then
+		if ( UnitHasVehicleUI("player") ) then
+			MainMenuBar_ToVehicleArt(self);
 		else
-			temp = (MainMenuBarVehicleRightActionBarEndCap:GetLeft()-MainMenuBarVehicleLeftActionBarEndCap:GetRight())
-			VehiclePossessionRightEndCap:Hide()
-			VehiclePossessionLeftEndCap:Hide()
-			VehiclePossessionMiddleTexture:Hide()
+			if ( MainMenuBar.state ~= "player" ) then
+				MainMenuBar_ToPlayerArt(self)
+			else
+				MainMenuBarVehicleLeaveButton_Update();
+			end
 		end
-		MainMenuBarVehicleLeftHorizBar:SetHeight(18)
-		MainMenuBarVehicleLeftHorizBar:SetWidth(temp)
-		MainMenuBarVehicleLeftHorizBar:SetTexCoord(0.0, temp/128, 0.179, 0.3203125) --0.1796875
-	else
-		MainMenuBar.updateVehicleArt=true;
 	end
 end
+
 function MainMenuBar_ToVehicleArt(self)
 	MainMenuBar.state = "vehicle";
 	
@@ -129,26 +87,34 @@ function MainMenuBar_ToVehicleArt(self)
 	MultiBarBottomLeft:Hide();
 	MultiBarBottomRight:Hide();
 	
-
-	self.busy = false
+	MainMenuBar:Hide();
+	VehicleMenuBar:SetPoint(MainMenuBar_GetAnimPos(VehicleMenuBar, 0, true))
+	VehicleMenuBar_SetSkin(VehicleMenuBar.skin, IsVehicleAimAngleAdjustable());
+	VehicleMenuBar:Show();
+	MainMenuBar.busy = false;
 	PossessBar_Update(true);
-	MainMenuBar.updateVehicleArt=true;
 	if ( GetBonusBarOffset() > 0 ) then
 		ShowBonusActionBar(true);
 	else
 		HideBonusActionBar(true);
 	end
-	UIParent_ManageFramePositions()	--This is called in PossessBar_Update, but it doesn't actually do anything but change an attribute, so it is worth keeping	
-	MainMenuBar_SetUpAnimation(MainMenuBar,true, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos)
+	UIParent_ManageFramePositions();	--This is called in PossessBar_Update, but it doesn't actually do anything but change an attribute, so it is worth keeping	
+	
+	MainMenuBar_SetUpAnimation(VehicleMenuBar,true, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos, nil, true);
 end
 
 function MainMenuBar_ToPlayerArt(self)
 	MainMenuBar.state = "player";
-	MainMenuBarVehicleArtFrame:Hide();
-	MainMenuBarPlayerArtFrame:Show();
+	
+	VehicleMenuBar_MoveMicroButtons();
+	
+	VehicleMenuBar:Hide();
+	VehicleMenuBar_ReleaseSkins();
+	
+	MainMenuBar:Show();
 	MultiActionBar_Update()
 	
-	self.busy = false
+	MainMenuBar.busy = false
 	PossessBar_Update(true);
 	if ( GetBonusBarOffset() > 0 ) then
 		ShowBonusActionBar(true);
@@ -156,38 +122,27 @@ function MainMenuBar_ToPlayerArt(self)
 		HideBonusActionBar(true);
 	end
 	UIParent_ManageFramePositions()	--This is called in PossessBar_Update, but it doesn't actually do anything but change an attribute, so it is worth keeping	
+	MainMenuBarVehicleLeaveButton_Update();
 	MainMenuBar_SetUpAnimation(MainMenuBar,true, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos)
 end
 
-function MainMenuBar_Animate(toVehicle)
-	if ( toVehicle ) then
-		if ( MainMenuBar.state ~= "vehicle" ) then
-			MainMenuBar_SetUpAnimation(MultiBarRight, false, MAINMENU_SLIDETIME, MainMenuBar_GetRightABPos, nil, true);
-			MainMenuBar_SetUpAnimation(MainMenuBar, false, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos, MainMenuBar_ToVehicleArt);
+function MainMenuBarVehicleLeaveButton_Update()
+	if ( CanExitVehicle() ) then
+		MainMenuBarVehicleLeaveButton:ClearAllPoints();
+		if ( IsPossessBarVisible() ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessButton2, "RIGHT", 10, 0);
+		elseif ( GetNumShapeshiftForms() > 0 ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", "ShapeshiftButton"..GetNumShapeshiftForms(), "RIGHT", 10, 0);
 		else
-			PossessBar_Update(true)
-			MainMenuBar.updateVehicleArt=true;
-			MainMenuBar.busy=false;
-			if ( GetBonusBarOffset() > 0 ) then
-				ShowBonusActionBar(true);
-			else
-				HideBonusActionBar(true);
-			end
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessBarFrame, "LEFT", 10, 0);
 		end
+		MainMenuBarVehicleLeaveButton:Show();
 	else
-		if ( MainMenuBar.state ~= "player" ) then
-			MainMenuBar_SetUpAnimation(MainMenuBar, false, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos, MainMenuBar_ToPlayerArt);
-			MainMenuBar_SetUpAnimation(MultiBarRight, true, MAINMENU_SLIDETIME, MainMenuBar_GetRightABPos, nil, true);
-		else
-			PossessBar_Update(true)
-			MainMenuBar.busy=false;
-			if ( GetBonusBarOffset() > 0 ) then
-				ShowBonusActionBar(true);
-			else
-				HideBonusActionBar(true);
-			end
-		end
+		MainMenuBarVehicleLeaveButton:Hide();
 	end
+	
+	UIParent_ManageFramePositions();
+		
 end
 
 function MainMenuBar_OnLoad(self)
@@ -207,7 +162,7 @@ function MainMenuBar_OnLoad(self)
 end
 
 function MainMenuBar_OnEvent(self, event, ...)
-	local arg1, arg2 = ...;
+	local arg1, arg2, arg3, arg4 = ...;
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainMenuBarPageNumber:SetText(GetActionBarPage());
 	elseif ( event == "KNOWN_CURRENCY_TYPES_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" ) then
@@ -234,16 +189,44 @@ function MainMenuBar_OnEvent(self, event, ...)
 			MainMenuBar_UpdateKeyRing();
 		end
 	elseif ( (event == "UNIT_ENTERED_VEHICLE") and (arg1=="player") ) then
-		if UnitHasVehicleUI("player") then
-			MainMenuBar_Animate(true);
-		else
-			MainMenuBar_Animate(false);
+		MainMenuBar.animComplete = true;
+		if ( not MainMenuBar.busy ) then
+			MainMenuBar_AnimFinished(self);
 		end
 	elseif ( (event == "UNIT_EXITED_VEHICLE") and (arg1=="player") )then
-		MainMenuBar_Animate(false);
+		MainMenuBar.busy = false;
+		if ( MainMenuBar.state ~= "player" ) then
+			MainMenuBar_SetUpAnimation(VehicleMenuBar, false, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos, MainMenuBar_ToPlayerArt, true);
+			MainMenuBar_SetUpAnimation(MultiBarRight, true, MAINMENU_SLIDETIME, MainMenuBar_GetRightABPos, nil, true);
+		else
+			if ( GetBonusBarOffset() > 0 ) then
+				ShowBonusActionBar();
+			else
+				HideBonusActionBar();
+			end
+		end
 	elseif ( (event == "UNIT_ENTERING_VEHICLE") and (arg1=="player") ) then
 		MainMenuBar.busy = true;
+		MainMenuBar.animComplete = false;
+		VehicleMenuBar.skin = arg3;
+		if ( arg2 ) then	--We are going to show a vehicle UI
+			if ( MainMenuBar.state == "vehicle" ) then
+				MainMenuBar_SetUpAnimation(VehicleMenuBar, false, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos, MainMenuBar_AnimFinished);
+			else
+			MainMenuBar_SetUpAnimation(MultiBarRight, false, MAINMENU_SLIDETIME, MainMenuBar_GetRightABPos, nil, true);
+			MainMenuBar_SetUpAnimation(MainMenuBar, false, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos, MainMenuBar_AnimFinished);
+			end
+		else
+			if ( MainMenuBar.state == "vehicle" ) then
+				MainMenuBar_SetUpAnimation(VehicleMenuBar, false, MAINMENU_SLIDETIME, MainMenuBar_GetAnimPos, MainMenuBar_AnimFinished);
+			else
+				MainMenuBar.busy = false;
+				MainMenuBar.animComplete = true;
+				MainMenuBarVehicleLeaveButton_Update();
+			end
+		end
 	elseif ( (event == "UNIT_EXITING_VEHICLE") and (arg1=="player") ) then
+		MainMenuBarVehicleLeaveButton_Update();
 		MainMenuBar.busy = true;
 	end
 end

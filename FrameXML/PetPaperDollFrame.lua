@@ -20,13 +20,21 @@ function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_DEFENSE");
 	self:RegisterEvent("UNIT_ATTACK");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("COMPANION_LEARNED");
+	self:RegisterEvent("COMPANION_UPDATE");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+
+	PetPaperDollFrameCompanionFrame.mode = "CRITTER";
+	PetPaperDollFrameCompanionFrame.idMount = GetCompanionInfo("MOUNT", 1);
+	PetPaperDollFrameCompanionFrame.pageMount = 0;
+	PetPaperDollFrameCompanionFrame.idCritter = GetCompanionInfo("CRITTER", 1);
+	PetPaperDollFrameCompanionFrame.pageCritter = 0;
+
 	PetDamageFrameLabel:SetText(DAMAGE_COLON);
 	PetAttackPowerFrameLabel:SetText(ATTACK_POWER_COLON);
 	PetArmorFrameLabel:SetText(ARMOR_COLON);
 	SetTextStatusBarTextPrefix(PetPaperDollFrameExpBar, XP);
 	PetSpellDamageFrameLabel:SetText(SPELL_BONUS_COLON);
-
 end
 
 local tabPoints={
@@ -78,7 +86,7 @@ function PetPaperDollFrame_UpdateTabs()
 		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "RIGHT", -16, 0);
 	end
 	
-	if (( PanelTemplates_GetSelectedTab( PetPaperDollFrame ) == 1 ) and (not HasPetUI())) then
+	if ( (PanelTemplates_GetSelectedTab(PetPaperDollFrame) == 1) and (not HasPetUI()) ) then
 		if ( PetPaperDollFrameTab2:IsShown() ) then
 			PetPaperDollFrame_SetTab(2);
 		elseif ( PetPaperDollFrameTab3:IsShown() ) then
@@ -103,8 +111,8 @@ function PetPaperDollFrame_UpdateTabs()
 		PetPaperDollFrameTab2:Hide();
 		PetPaperDollFrameTab3:Hide();
 	end
-		
 end
+
 function PetPaperDollFrame_OnEvent (self, event, ...)
 	local arg1 = ...;
 	if ( event == "PET_UI_UPDATE" or event == "PET_UI_CLOSE" or event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") ) then
@@ -112,35 +120,23 @@ function PetPaperDollFrame_OnEvent (self, event, ...)
 		PetPaperDollFrame_Update();
 	elseif ( event == "UNIT_PET_EXPERIENCE" ) then
 		PetExpBar_Update();
+	elseif ( event == "COMPANION_LEARNED" ) then
+		if ( not CharacterFrame:IsVisible() ) then
+			SetButtonPulse(CharacterMicroButton, 60, 1);
+		end
+		if ( not PetPaperDollFrame:IsVisible() ) then
+			SetButtonPulse(CharacterFrameTab2, 60, 1);
+		end
+		PetPaperDollFrame_UpdateTabs();
+		PetPaperDollFrame_UpdateCompanions();
 	elseif ( event == "COMPANION_UPDATE" ) then
-		PetPaperDollFrame_UpdateTabs()
-		if ( GetNumCompanions("MOUNT") == 1 ) then	--Our first mount. Grats!
+		if ( not PetPaperDollFrameCompanionFrame.idMount ) then
 			PetPaperDollFrameCompanionFrame.idMount = GetCompanionInfo("MOUNT", 1);
 		end
-		if ( GetNumCompanions("CRITTER") == 1 ) then	--Our first critter
+		if ( not PetPaperDollFrameCompanionFrame.idCritter ) then
 			PetPaperDollFrameCompanionFrame.idCritter = GetCompanionInfo("CRITTER", 1);
 		end
-		if ( not arg1 ) then	--We learned something!
-			if ( not CharacterFrame:IsShown() ) then
-				SetButtonPulse(CharacterMicroButton, 60, 1);
-			end
-			if ( not PetPaperDollFrame:IsShown() ) then
-				SetButtonPulse(CharacterFrameTab2, 60, 1);
-			end
-		end
-		PetPaperDollFrame_SetCompanionPage((PetPaperDollFrameCompanionFrame.mode == "MOUNT" and PetPaperDollFrameCompanionFrame.pageMount or PetPaperDollFrameCompanionFrame.pageCritter) or 0);
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		PetPaperDollFrameCompanionFrame.mode = "CRITTER";
-		PetPaperDollFrameCompanionFrame.idMount = GetCompanionInfo("MOUNT",1);
-		PetPaperDollFrameCompanionFrame.idCritter = GetCompanionInfo("CRITTER",1);
-		PetPaperDollFrameCompanionFrame.pageMount = 0;
-		PetPaperDollFrameCompanionFrame.pageCritter = 0;
-		
-		PetPaperDollFrame_UpdateTabs();
-		
 		PetPaperDollFrame_UpdateCompanions();
-		self:RegisterEvent("COMPANION_UPDATE");
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 	elseif ( event == "SPELL_UPDATE_COOLDOWN" ) then
 		if ( self:IsVisible() ) then
 			PetPaperDollFrame_UpdateCompanionCooldowns();
@@ -211,8 +207,10 @@ function CompanionSummonButton_OnClick()
 	local creatureID, creatureName, spellID, icon, active = GetCompanionInfo(PetPaperDollFrameCompanionFrame.mode, selected);
 	if ( active ) then
 		DismissCompanion(PetPaperDollFrameCompanionFrame.mode);
+		PlaySound("igMainMenuOptionCheckBoxOn");
 	else
 		CallCompanion(PetPaperDollFrameCompanionFrame.mode, selected);
+		PlaySound("igMainMenuOptionCheckBoxOff");
 	end
 end
 
@@ -234,14 +232,16 @@ function CompanionButton_OnDrag(self)
 end
 
 function CompanionButton_OnClick(self, button)
-	local selected;
+	local selected, selectedID;
 	if ( PetPaperDollFrameCompanionFrame.mode == "CRITTER" ) then
 		selected = PetPaperDollFrame_FindCompanionIndex(PetPaperDollFrameCompanionFrame.idCritter);
+		selectedID = PetPaperDollFrameCompanionFrame.idCritter;
 	elseif ( PetPaperDollFrameCompanionFrame.mode == "MOUNT" ) then
 		selected = PetPaperDollFrame_FindCompanionIndex(PetPaperDollFrameCompanionFrame.idMount);
+		selectedID = PetPaperDollFrameCompanionFrame.idMount;
 	end
 
-	if ( button ~= "LeftButton" or (selected == self:GetID()) ) then
+	if ( button ~= "LeftButton" or ( selectedID == self.creatureID) ) then
 		local offset;
 		if ( PetPaperDollFrameCompanionFrame.mode == "CRITTER" ) then
 			offset = (PetPaperDollFrameCompanionFrame.pageCritter or 0) * NUM_COMPANIONS_PER_PAGE;

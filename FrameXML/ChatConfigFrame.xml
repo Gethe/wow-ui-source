@@ -385,6 +385,9 @@
 					</Anchors>
 				</Texture>
 				<FontString name="ChatConfigFrameHeaderText" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="185" y="12"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="ChatConfigFrameHeader">
 							<Offset x="0" y="-14"/>

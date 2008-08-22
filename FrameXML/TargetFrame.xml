@@ -75,12 +75,12 @@
 		<Scripts>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff("target", self.id);
+					GameTooltip:SetUnitDebuff(self.unit, self.id);
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
-				GameTooltip:SetUnitDebuff("target", self.id);
+				GameTooltip:SetUnitDebuff(self.unit, self.id);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -121,12 +121,12 @@
 		<Scripts>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitBuff("target", self.id);
+					GameTooltip:SetUnitBuff(self.unit, self.id);
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
-				GameTooltip:SetUnitBuff("target", self.id);
+				GameTooltip:SetUnitBuff(self.unit, self.id);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -175,6 +175,8 @@
 					</Anchors>
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
+			</Layer>
+			<Layer level="BORDER">
 				<Texture name="TargetFrameNameBackground" file="Interface\TargetingFrame\UI-TargetingFrame-LevelBackground">
 					<Size>
 						<AbsDimension x="119" y="19"/>
@@ -187,8 +189,6 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="BORDER">
 				<Texture name="TargetPortrait">
 					<Size>
 						<AbsDimension x="64" y="64"/>

@@ -503,7 +503,7 @@
 								WorldMapTooltip:Hide();
 							</OnLeave>
 							<OnMouseUp>
-								MapUnit_OnMouseUp(button, "WorldMapRaid", "WorldMapParty");
+								MapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
 							</OnMouseUp>
 						</Scripts>
 					</Frame>

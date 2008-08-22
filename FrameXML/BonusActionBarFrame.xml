@@ -358,7 +358,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBar" relativePoint="TOPLEFT">
 				<Offset>
-					<AbsDimension x="22" y="0"/>
+					<AbsDimension x="30" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

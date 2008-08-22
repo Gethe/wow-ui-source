@@ -70,7 +70,7 @@ end
 function ShowBonusActionBar (override)
 	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or override) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 		BonusActionBar_SetButtonTransitionState(nil);
-		if ( (BonusActionBarFrame.mode ~= "show") or (not UIParent:IsShown())) then
+		if ( (BonusActionBarFrame.mode ~= "show" and BonusActionBarFrame.state ~= "top") or (not UIParent:IsShown())) then
 			BonusActionBarFrame:Show();
 			if ( BonusActionBarFrame.completed ) then
 				BonusActionBarFrame.slideTimer = 0;
@@ -302,7 +302,7 @@ function PossessButton_OnClick (self)
 			VehicleExit();
 		else
 			local texture, name = GetPossessInfo(id);
-			CancelPlayerBuff(name);
+			CancelUnitBuff("player", name);
 		end
 	end
 end

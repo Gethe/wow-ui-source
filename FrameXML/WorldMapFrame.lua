@@ -1,7 +1,7 @@
 NUM_WORLDMAP_DETAIL_TILES = 12;
 NUM_WORLDMAP_POIS = 0;
-NUM_WORLDMAP_POI_COLUMNS = 8;
-WORLDMAP_POI_TEXTURE_WIDTH = 128;
+NUM_WORLDMAP_POI_COLUMNS = 16;
+WORLDMAP_POI_TEXTURE_WIDTH = 256;
 NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_FLAGS = 2;
 WORLDMAP_COSMIC_ID = -1;
@@ -12,7 +12,15 @@ BAD_BOY_UNITS = {};
 BAD_BOY_COUNT = 0;
 
 MAP_VEHICLES = {};
-MAP_VEHICLES_COUNT = 0;
+VEHICLE_TEXTURES = {};
+VEHICLE_TEXTURES["Drive"] = {
+	"Interface\\Minimap\\Vehicle-Ground-Unoccupied",
+	"Interface\\Minimap\\Vehicle-Ground-Occupied"
+};
+VEHICLE_TEXTURES["Fly"] = {
+	"Interface\\Minimap\\Vehicle-Air-Unoccupied",
+	"Interface\\Minimap\\Vehicle-Air-Occupied"
+};
 
 function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -489,7 +497,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	--Position player
 	UpdateWorldMapArrowFrames();
 	local playerX, playerY = GetPlayerMapPosition("player");
-	if ( playerX == 0 and playerY == 0 ) then
+	if ( (playerX == 0 and playerY == 0) ) then
 		ShowWorldMapArrowFrame(nil);
 		WorldMapPing:Hide();
 		WorldMapPlayer:Hide();
@@ -497,7 +505,11 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		playerX = playerX * WorldMapDetailFrame:GetWidth();
 		playerY = -playerY * WorldMapDetailFrame:GetHeight();
 		PositionWorldMapArrowFrame("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
-		ShowWorldMapArrowFrame(1);
+		if ( UnitInVehicle("player") ) then
+			ShowWorldMapArrowFrame(nil);
+		else
+			ShowWorldMapArrowFrame(1);
+		end
 
 		-- Position clear button to detect mouseovers
 		WorldMapPlayer:Show();
@@ -627,26 +639,46 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	
 	-- position vehicles
 	local numVehicles = GetNumBattlefieldVehicles();
+	local totalVehicles = #MAP_VEHICLES;
 	local index = 0;
 	for i=1, numVehicles do
-		if (i > MAP_VEHICLES_COUNT) then
-			MAP_VEHICLES[i] = CreateFrame("FRAME", "WorldMapVehicle"..i, WorldMapButton, "WorldMapFlagTemplate");
+		if (i > totalVehicles) then
+			MAP_VEHICLES[i] = CreateFrame("FRAME", "WorldMapVehicle"..i, WorldMapButton, "WorldMapVehicleTemplate");
 			MAP_VEHICLES[i].texture = getglobal("WorldMapVehicle"..i.."Texture");
-			MAP_VEHICLES_COUNT = MAP_VEHICLES_COUNT + 1;
 		end
-		local vehicleX, vehicleY, texture, orientation = GetBattlefieldVehicleInfo(i);
-		vehicleX = vehicleX * WorldMapDetailFrame:GetWidth();
-		vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight();
-		MAP_VEHICLES[i].texture:SetTexture( texture );
-		MAP_VEHICLES[i]:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);
-		MAP_VEHICLES[i]:Show();
-		index = i;	-- save for later
+		local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation = GetBattlefieldVehicleInfo(i);
+		if ( vehicleX ) then
+			vehicleX = vehicleX * WorldMapDetailFrame:GetWidth();
+			vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight();
+			MAP_VEHICLES[i].texture:SetRotation(orientation);
+			MAP_VEHICLES[i].texture:SetTexture(GetMapVehicleTexture(vehicleType, isPossessed));
+			MAP_VEHICLES[i]:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);
+			MAP_VEHICLES[i].name = unitName;
+			MAP_VEHICLES[i]:Show();
+			index = i;	-- save for later
+		end
+		
 	end
-	if (index < MAP_VEHICLES_COUNT) then
-		for i=index+1, MAP_VEHICLES_COUNT do
+	if (index < totalVehicles) then
+		for i=index+1, totalVehicles do
 			MAP_VEHICLES[i]:Hide();
 		end
 	end	
+end
+
+function GetMapVehicleTexture(vehicleType, isPossessed)
+	if ( not vehicleType ) then
+		return;
+	end
+	if ( not isPossessed ) then
+		isPossessed = 1;
+	else
+		isPossessed = 2;
+	end
+	if ( not VEHICLE_TEXTURES[vehicleType]) then
+		return;
+	end
+	return VEHICLE_TEXTURES[vehicleType][isPossessed];
 end
 
 function MapUnit_IsInactive(unit)
@@ -717,6 +749,16 @@ function WorldMapUnit_OnEnter(self)
 			newLineString = "\n";
 		end
 	end
+	--Check Vehicles
+	local numVehicles = GetNumBattlefieldVehicles();
+	for _, v in pairs(MAP_VEHICLES) do
+		if ( v:IsVisible() and MouseIsOver(v) ) then
+			if ( v.name ) then
+				tooltipText = tooltipText..newLineString..v.name;
+			end
+			newLineString = "\n";
+		end
+	end
 	WorldMapTooltip:SetText(tooltipText);
 	WorldMapTooltip:Show();
 end
@@ -771,7 +813,7 @@ function MapGroupDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function MapUnit_OnMouseUp( mouseButton, RaidUnitPrefix, PartyUnitPrefix)
+function MapUnit_OnMouseUp( self, mouseButton, RaidUnitPrefix, PartyUnitPrefix)
 	if ( GetCVar("enablePVPNotifyAFK") == "0" ) then
 		return;
 	end

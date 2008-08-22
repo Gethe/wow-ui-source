@@ -3,6 +3,10 @@
 	<Script file="Blizzard_Calendar.lua"/>
 	<Include file="Blizzard_CalendarTemplates.xml"/>
 
+	<!-- CalendarFrame -->
+	<!-- This is the main Calendar frame. It should be the parent of all related Calendar frames. If we
+		 decide to allow the event frames to be viewable without looking at the Calendar then nevermind!
+	-->
 	<Frame name="CalendarFrame" toplevel="true" parent="UIParent" enableMouse="true" enableKeyboard="true" frameStrata="HIGH" hidden="true">
 		<Size x="655" y="624"/>
 		<Anchors>
@@ -580,6 +584,7 @@
 	</Frame>
 
 	<!-- View Holiday -->
+	<!-- You see this frame when viewing a Holiday event. -->
 	<Frame name="CalendarViewHolidayFrame" toplevel="true" parent="CalendarFrame" enableMouse="true" frameStrata="HIGH" hidden="true">
 		<Size x="320" y="320"/>
 		<Anchors>
@@ -721,8 +726,9 @@
 		</Scripts>
 	</Frame>
 
-	<!-- View Raid Reset -->
-	<Frame name="CalendarViewRaidResetFrame" toplevel="true" parent="CalendarFrame" enableMouse="true" frameStrata="HIGH" hidden="true">
+	<!-- View Raid -->
+	<!-- You see this frame when viewing either a Raid Reset event or a Raid Lockout event. -->
+	<Frame name="CalendarViewRaidFrame" toplevel="true" parent="CalendarFrame" enableMouse="true" frameStrata="HIGH" hidden="true">
 		<Size x="320" y="150"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
@@ -742,7 +748,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="CalendarViewRaidResetBackground">
+				<Texture name="CalendarViewRaidBackground">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="4" y="-4"/>
@@ -801,7 +807,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<ScrollFrame name="CalendarViewRaidResetScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<ScrollFrame name="CalendarViewRaidScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size x="270" y="108"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -816,14 +822,14 @@
 					</OnLoad>
 				</Scripts>
 				<ScrollChild>
-					<Frame name="CalendarViewRaidResetScrollChild">
+					<Frame name="CalendarViewRaidScrollChild">
 						<Size x="270" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
-								<FontString name="CalendarViewRaidResetDescription" inherits="GameFontHighlightLeft" justifyV="TOP">
+								<FontString name="CalendarViewRaidDescription" inherits="GameFontHighlightLeft" justifyV="TOP">
 									<Size x="265" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
@@ -834,24 +840,26 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button name="CalendarViewRaidResetCloseButton" inherits="CalendarEventCloseButtonTemplate"/>
+			<Button name="CalendarViewRaidCloseButton" inherits="CalendarEventCloseButtonTemplate"/>
 
 			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				CalendarViewRaidResetFrame_OnLoad(self);
+				CalendarViewRaidFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				CalendarViewRaidResetFrame_OnShow(self);
+				CalendarViewRaidFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
-				CalendarViewRaidResetFrame_OnHide(self);
+				CalendarViewRaidFrame_OnHide(self);
 			</OnHide>
 		</Scripts>
 	</Frame>
 
 	<!-- View Event -->
+	<!-- This is the frame you get when you are viewing an event you were invited to. You only see this frame if
+		 you are not a moderator. If you are, you should see the Edit Event frame. -->
 	<Frame name="CalendarViewEventFrame" toplevel="true" parent="CalendarFrame" enableMouse="true" frameStrata="HIGH" hidden="true">
 		<Size x="320" y="500"/>
 		<Anchors>
@@ -1185,7 +1193,11 @@
 		</Scripts>
 	</Frame>
 
-	<!-- Create Event -->
+	<!-- Create Event and Edit Event -->
+	<!-- This module is actually both the create and edit event frame. You should see this when you are either creating
+		 an event for the first time or you are editing an existing event. I didn't want to call it the CreateOrEditEventFrame.
+		 I know it's a little unclear. I thought CreateOrEditEventFrame sounded kind of silly.
+	-->
 	<Frame name="CalendarCreateEventFrame" toplevel="true" parent="CalendarFrame" enableMouse="true" frameStrata="HIGH" hidden="true">
 		<Size x="320" y="580"/>
 		<Anchors>
@@ -1550,7 +1562,7 @@
 								local text = self:GetText();
 								if ( text == "" or text == CALENDAR_PLAYER_NAME ) then
 									self:ClearFocus();
-								else
+								elseif ( CalendarCanSendInvite() ) then
 									CalendarEventInvite(text);
 									self:SetText("");
 								end
@@ -1590,6 +1602,9 @@
 							<OnClick>
 								CalendarCreateEventInviteButton_OnClick(self);
 							</OnClick>
+							<OnUpdate>
+								CalendarCreateEventInviteButton_OnUpdate(self);
+							</OnUpdate>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -1623,6 +1638,9 @@
 					<OnClick>
 						CalendarCreateEventMassInviteButton_OnClick();
 					</OnClick>
+					<OnUpdate>
+						CalendarCreateEventMassInviteButton_OnUpdate(self);
+					</OnUpdate>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						GameTooltip:SetText(CALENDAR_TOOLTIP_MASSINVITE, nil, nil, nil, nil, 1);
@@ -1660,6 +1678,9 @@
 					<OnClick>
 						CalendarCreateEventCreateButton_OnClick(self);
 					</OnClick>
+					<OnUpdate>
+						CalendarCreateEventCreateButton_OnUpdate(self);
+					</OnUpdate>
 				</Scripts>
 			</Button>
 			<Button name="CalendarCreateEventCloseButton" inherits="CalendarEventCloseButtonTemplate"/>
@@ -1683,6 +1704,7 @@
 	</Frame>
 
 	<!-- Mass Invite -->
+	<!-- This module lets you auto-invite more than one player at a time based on a filter. -->
 	<Frame name="CalendarMassInviteFrame" parent="CalendarFrame" inherits="CalendarModalDialogTemplate" hidden="true">
 		<Size x="320" y="250"/>
 		<Anchors>
@@ -1720,7 +1742,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentLevelText" inherits="GameFontNormalSmall" text="LEVEL">
+				<FontString name="CalendarMassInviteGuildLevelText" inherits="GameFontNormalSmall" text="LEVEL">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="46" y="-53"/>
@@ -1734,7 +1756,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentRankText" inherits="GameFontNormalSmall" text="CALENDAR_MASSINVITE_GUILD_MINRANK">
+				<FontString name="CalendarMassInviteGuildRankText" inherits="GameFontNormalSmall" text="CALENDAR_MASSINVITE_GUILD_MINRANK">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="170" y="-53"/>
@@ -1811,6 +1833,11 @@
 					<OnEscapePressed>
 						self:ClearFocus();
 					</OnEscapePressed>
+					<OnEditFocusGained>
+						if ( not CanEditGuildEvent() ) then
+							self:ClearFocus();
+						end
+					</OnEditFocusGained>
 				</Scripts>
 			</EditBox>
 			<EditBox name="CalendarMassInviteGuildMaxLevelEdit" numeric="true" inherits="InputBoxTemplate" autoFocus="false">
@@ -1827,6 +1854,11 @@
 					<OnEscapePressed>
 						self:ClearFocus();
 					</OnEscapePressed>
+					<OnEditFocusGained>
+						if ( not CanEditGuildEvent() ) then
+							self:ClearFocus();
+						end
+					</OnEditFocusGained>
 				</Scripts>
 			</EditBox>
 			<Frame name="CalendarMassInviteGuildRankMenu" inherits="UIDropDownMenuTemplate" clampedToScreen="true">
@@ -1889,11 +1921,17 @@
 			<OnEvent>
 				CalendarMassInviteFrame_OnEvent(self, event, ...);
 			</OnEvent>
+			<OnUpdate>
+				CalendarMassInviteFrame_OnUpdate(self);
+			</OnUpdate>
 		</Scripts>
 	</Frame>
 
 	<!-- Event Picker -->
-	<Frame name="CalendarEventPickerFrame" inherits="CalendarModalDialogTemplate" parent="CalendarFrame" hidden="true">
+	<!-- This module should be used when a day has too many events to fit on the monthly display. It puts all of
+		 a day's events into a list.
+	-->
+	<Frame name="CalendarEventPickerFrame" inherits="CalendarModalDialogTemplate" parent="CalendarFrame" clampedToScreen="true" hidden="true">
 		<Size x="290" y="226"/>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
@@ -1999,6 +2037,7 @@
 	</Frame>
 
 	<!-- Texture Picker -->
+	<!-- This module is a selector for event types that have selectable textures. -->
 	<Frame name="CalendarTexturePickerFrame" inherits="CalendarModalDialogTemplate" parent="CalendarFrame" hidden="true">
 		<Size x="290" y="286"/>
 		<Anchors>
@@ -2135,6 +2174,7 @@
 	</Frame>
 
 	<!-- Class Buttons -->
+	<!-- This module is meant to keep track of class totals in an invite list. -->
 	<Frame name="CalendarClassButtonContainer" parent="CalendarFrame" hidden="true">
 		<Size x="18" y="270"/>
 		<Anchors>

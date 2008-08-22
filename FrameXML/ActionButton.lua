@@ -79,6 +79,7 @@ function ActionButton_OnLoad (self)
 	self:SetAttribute("showgrid", 0);
 	self:SetAttribute("type", "action");
 	self:SetAttribute("checkselfcast", true);
+	self:SetAttribute("checkfocuscast", true);
 	self:SetAttribute("useparent-unit", true);
 	self:SetAttribute("useparent-actionpage", true);
 	self:RegisterForDrag("LeftButton", "RightButton");

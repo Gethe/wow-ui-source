@@ -28,6 +28,7 @@
 				<Scripts>
 					<OnClick>
 						SetNextBarberShopStyle(self:GetParent():GetID(), 1);
+						PlaySound("UChatScrollButton");
 						BarberShop_Update(self);
 					</OnClick>
 				</Scripts>
@@ -50,6 +51,7 @@
 				<Scripts>
 					<OnClick>
 						SetNextBarberShopStyle(self:GetParent():GetID());
+						PlaySound("UChatScrollButton");
 						BarberShop_Update(self);
 					</OnClick>
 				</Scripts>
@@ -234,6 +236,7 @@
 				<Scripts>
 					<OnClick>
 						ApplyBarberShopStyle();
+						PlaySound("Barbershop_Haircut");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -251,6 +254,7 @@
 				<Scripts>
 					<OnClick>
 						CancelBarberShop();
+						PlaySound("igCharacterInfoClose");
 					</OnClick>
 				</Scripts>
 			</Button>

@@ -94,7 +94,7 @@ function UpdateMicroButtons()
 end
 
 function AchievementMicroButton_Update()
-	if ( GetCVar("ShowAchievmentUI") == "0" ) then
+	if ( not CanShowAchievementUI() ) then
 		AchievementMicroButton:Hide();
 		QuestLogMicroButton:SetPoint("BOTTOMLEFT", AchievementMicroButton, "BOTTOMLEFT", 0, 0);
 	else

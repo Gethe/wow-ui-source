@@ -28,7 +28,6 @@
 				UnitPopup_OnUpdate(elapsed);
 				BattlefieldFrame_OnUpdate(elapsed);
 				RequestBattlefieldPositions(elapsed);
-				CheckReadyCheckTime(elapsed);
 				AnimatedShine_OnUpdate(elapsed);
 				AutoCastShine_OnUpdate(nil, elapsed);
 			</OnUpdate>

@@ -14,7 +14,6 @@ BattlefieldMinimapDefaults = {
 };
 
 BG_VEHICLES = {};
-BG_VEHICLES_COUNT = 0;
 
 
 function BattlefieldMinimap_Toggle()
@@ -101,7 +100,7 @@ function BattlefieldMinimap_Update()
 	if ( not mapFileName ) then
 		return;
 	end
-
+	local iconSize = DEFAULT_POI_ICON_SIZE * GetBattlefieldMapIconScale();
 	local texName;
 	local dungeonLevel = GetCurrentMapDungeonLevel();
 	for i=1, NUM_WORLDMAP_DETAIL_TILES do
@@ -133,8 +132,8 @@ function BattlefieldMinimap_Update()
 			x = x * BattlefieldMinimap:GetWidth();
 			y = -y * BattlefieldMinimap:GetHeight();
 			battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y );
-			battlefieldPOI:SetWidth(DEFAULT_POI_ICON_SIZE * GetBattlefieldMapIconScale());
-			battlefieldPOI:SetHeight(DEFAULT_POI_ICON_SIZE * GetBattlefieldMapIconScale());
+			battlefieldPOI:SetWidth(iconSize);
+			battlefieldPOI:SetHeight(iconSize);
 			battlefieldPOI:Show();
 		else
 			battlefieldPOI:Hide();
@@ -239,7 +238,11 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		playerX = playerX * BattlefieldMinimap:GetWidth();
 		playerY = -playerY * BattlefieldMinimap:GetHeight();
 		PositionMiniWorldMapArrowFrame("CENTER", "BattlefieldMinimap", "TOPLEFT", playerX, playerY);
-		ShowMiniWorldMapArrowFrame(1);
+		if ( UnitInVehicle("player") ) then
+			ShowMiniWorldMapArrowFrame(nil);
+		else
+			ShowMiniWorldMapArrowFrame(1);
+		end
 	end
 	
 	-- If resizing the frame then scale everything accordingly
@@ -265,8 +268,6 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 				x = x * BattlefieldMinimap:GetWidth();
 				y = -y * BattlefieldMinimap:GetHeight();
 				battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y );
-				battlefieldPOI:SetWidth(DEFAULT_POI_ICON_SIZE * GetBattlefieldMapIconScale());
-				battlefieldPOI:SetHeight(DEFAULT_POI_ICON_SIZE * GetBattlefieldMapIconScale());
 				battlefieldPOI:Show();
 			else
 				battlefieldPOI:Hide();
@@ -282,7 +283,6 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			getglobal("BattlefieldMinimapRaid"..i):Hide();
 		end
 		wipe(BG_VEHICLES);
-		BG_VEHICLES_COUNT = 0;
 	else
 		--Position groupmates
 		local partyX, partyY, partyMemberFrame;
@@ -358,23 +358,28 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		
 		-- position vehicles
 		local numVehicles = GetNumBattlefieldVehicles();
+		local totalVehicles = #BG_VEHICLES;
 		local index = 0;
 		for i=1, numVehicles do
-			if (i > BG_VEHICLES_COUNT) then
-				BG_VEHICLES[i] = CreateFrame("FRAME", "WorldMapVehicle"..i, WorldMapButton, "WorldMapFlagTemplate");
-				BG_VEHICLES[i].texture = getglobal("WorldMapVehicle"..i.."Texture");
-				BG_VEHICLES_COUNT = BG_VEHICLES_COUNT + 1;
+			if (i > totalVehicles) then
+				BG_VEHICLES[i] = CreateFrame("FRAME", "BattlefieldMinimap"..i, BattlefieldMinimap, "WorldMapVehicleTemplate");
+				BG_VEHICLES[i].texture = getglobal("BattlefieldMinimap"..i.."Texture");
+				BG_VEHICLES[i]:SetWidth(30 * GetBattlefieldMapIconScale());
+				BG_VEHICLES[i]:SetHeight(30 * GetBattlefieldMapIconScale());
 			end
-			local vehicleX, vehicleY, texture, orientation = GetBattlefieldVehicleInfo(i);
-			vehicleX = vehicleX * WorldMapDetailFrame:GetWidth();
-			vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight();
-			BG_VEHICLES[i].texture:SetTexture( texture );
-			BG_VEHICLES[i]:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);
-			BG_VEHICLES[i]:Show();
-			index = i;	-- save for later
+			local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation = GetBattlefieldVehicleInfo(i);
+			if ( vehicleX)  then
+				vehicleX = vehicleX * BattlefieldMinimap:GetWidth();
+				vehicleY = -vehicleY * BattlefieldMinimap:GetHeight();
+				BG_VEHICLES[i].texture:SetTexture(GetMapVehicleTexture(vehicleType, isPossessed));
+				BG_VEHICLES[i].texture:SetRotation( orientation );
+				BG_VEHICLES[i]:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", vehicleX, vehicleY);
+				BG_VEHICLES[i]:Show();
+				index = i;	-- save for later
+			end
 		end
-		if (index < BG_VEHICLES_COUNT) then
-			for i=index+1, BG_VEHICLES_COUNT do
+		if (index < totalVehicles) then
+			for i=index+1, totalVehicles do
 				BG_VEHICLES[i]:Hide();
 			end
 		end	

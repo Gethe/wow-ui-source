@@ -3,18 +3,22 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ 
                         ..\..\..\FrameXML\UI.xsd">
 
-	<Script file="RestrictedEnvironment.lua"/>
-	<Script file="RestrictedFrames.lua"/>
-	<Script file="RestrictedExecution.lua"/>
-	<Script file="SecureHandlers.lua"/>
+  <Script file="RestrictedEnvironment.lua"/>
+  <Script file="RestrictedFrames.lua"/>
+  <Script file="RestrictedExecution.lua"/>
+  <Script file="SecureHandlers.lua"/>
+  
+
+  <!-- Templates for the common handler actions, use Wrap to
+       enable less common features -->
 
   <Frame name="SecureHandlerBaseTemplate" inherits="SecureFrameTemplate"
          virtual="true">
     <Size x="2" y="2"/>
     <Scripts>
-      <OnAttributeChanged>
-        SecureHandler_OnAttributeChanged(self, name, value);
-      </OnAttributeChanged>
+      <OnLoad>
+	SecureHandler_OnLoad(self);
+      </OnLoad>
     </Scripts>
   </Frame>
 
@@ -22,8 +26,24 @@
          virtual="true">
     <Size x="2" y="2"/>
     <Scripts>
+      <OnLoad>
+	SecureHandler_OnLoad(self);
+      </OnLoad>
       <OnAttributeChanged>
         SecureHandler_StateOnAttributeChanged(self, name, value);
+      </OnAttributeChanged>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerAttributeTemplate" inherits="SecureFrameTemplate"
+         virtual="true">
+    <Size x="2" y="2"/>
+    <Scripts>
+      <OnLoad>
+	SecureHandler_OnLoad(self);
+      </OnLoad>
+      <OnAttributeChanged>
+        SecureHandler_AttributeOnAttributeChanged(self, name, value);
       </OnAttributeChanged>
     </Scripts>
   </Frame>
@@ -33,12 +53,22 @@
           virtual="true">
     <Scripts>
       <OnClick>
-        SecureHandler_OnClick(self, button, down);
+        SecureHandler_OnClick(self, "_onclick", button, down);
       </OnClick>
     </Scripts>
   </Button>
 
-  <Frame name="SecureHandlerShowHideTemplate" 
+  <Button name="SecureHandlerDoubleClickTemplate"
+          inherits="SecureHandlerBaseTemplate"
+          virtual="true">
+    <Scripts>
+      <OnDoubleClick>
+        SecureHandler_OnClick(self, "_ondoubleclick", button, down);
+      </OnDoubleClick>
+    </Scripts>
+  </Button>
+
+  <Frame name="SecureHandlerShowHideTemplate"
          inherits="SecureHandlerBaseTemplate" virtual="true">
     <Scripts>
       <OnShow>
@@ -50,7 +80,19 @@
     </Scripts>
   </Frame>
 
-  <Frame name="SecureHandlerEnterLeaveTemplate" 
+  <Frame name="SecureHandlerDragTemplate"
+         inherits="SecureHandlerBaseTemplate" virtual="true">
+    <Scripts>
+      <OnDragStart>
+	SecureHandler_OnDragEvent("_ondragstart", self, button);
+      </OnDragStart>
+      <OnReceiveDrag>
+	SecureHandler_OnDragEvent("_onreceivedrag", self);
+      </OnReceiveDrag>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerEnterLeaveTemplate"
          inherits="SecureHandlerBaseTemplate" virtual="true">
     <Scripts>
       <OnEnter>
@@ -63,62 +105,6 @@
         if ( motion and self:GetAttribute("_entered") ) then
             self:SetAttribute("_entered", nil);
             SecureHandler_OnSimpleEvent(self, "_onleave");
-        end
-      </OnLeave>
-    </Scripts>
-  </Frame>
-
-  <Button name="SecureHandlerChildClickTemplate"
-          inherits="SecureFrameTemplate"
-          virtual="true">
-    <Scripts>
-      <OnClick>
-        SecureHandlerChild_ChildAction(self, "button,down",
-                                       "_childonclick", "_onchildonclick",
-                                       button, down);
-      </OnClick>
-    </Scripts>
-  </Button>
-
-  <Button name="SecureHandlerChildPreClickTemplate"
-          inherits="SecureFrameTemplate"
-          virtual="true">
-    <Scripts>
-      <PreClick>
-        SecureHandlerChild_ChildAction(self, "button,down",
-                                       "_childpreclick", "_onchildpreclick",
-                                       button, down);
-      </PreClick>
-    </Scripts>
-  </Button>
-
-  <Button name="SecureHandlerChildPostClickTemplate"
-          inherits="SecureFrameTemplate"
-          virtual="true">
-    <Scripts>
-      <PostClick>
-        SecureHandlerChild_ChildAction(self, "button,down",
-                                       "_childpostclick", "_onchildpostclick",
-                                       button, down);
-      </PostClick>
-    </Scripts>
-  </Button>
-
-  <Frame name="SecureHandleChildEnterLeaveTemplate" 
-         inherits="SecureFrameTemplate" virtual="true">
-    <Scripts>
-      <OnEnter>
-        if ( motion ) then
-            self:SetAttribute("_entered", true);
-            SecureHandlerChild_ChildAction(self, "",
-                                           "_childenter", "_onchildenter");
-        end
-      </OnEnter>
-      <OnLeave>
-        if ( motion and self:GetAttribute("_entered") ) then
-            self:SetAttribute("_entered", nil);
-            SecureHandlerChild_ChildAction(self, "",
-                                           "_childleave", "_onchildleave");
         end
       </OnLeave>
     </Scripts>

@@ -394,17 +394,17 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 		subTypes = {
 			[1] = {
 				text = BENEFICIAL,
-				type = {"SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE"};
+				type = {"SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE", "SPELL_AURA_REFRESH"};
 				checked = function () return not CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs end;
 				func = function (self, checked) 
 					if ( checked ) then
 						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs = false;
-						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
+						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE", "SPELL_AURA_REFRESH");
 					else
 						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs = true;
 						-- Only stop listening for the messages if hideDebuffs is also true
 						if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs ) then
-							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
+							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE", "SPELL_AURA_REFRESH");
 						end
 					end
 				end;
@@ -608,8 +608,8 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 COMBAT_CONFIG_MESSAGETYPES_MISC = {
 	[1] = {
 		text = DAMAGE_SHIELD,
-		checked = function () return HasMessageType("DAMAGE_SHIELD"); end;
-		func = function (self, checked) ToggleMessageType(checked, "DAMAGE_SHIELD"); end;
+		checked = function () return HasMessageType("DAMAGE_SHIELD", "DAMAGE_SHIELD_MISSED"); end;
+		func = function (self, checked) ToggleMessageType(checked, "DAMAGE_SHIELD", "DAMAGE_SHIELD_MISSED"); end;
 		tooltip = DAMAGE_SHIELD_COMBATLOG_TOOLTIP,
 	},
 	[2] = {

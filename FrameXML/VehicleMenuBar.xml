@@ -1,0 +1,297 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="VehicleMenuBar.lua"/>
+	<CheckButton name="VehicleActionButtonTemplate" inherits="BonusActionButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="60" y="60"/>
+		</Size>
+	</CheckButton>
+	<Frame name="VehicleMenuBar" toplevel="true" enableMouse="false" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="970" y="53"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM"/>
+		</Anchors>
+		<Frames>
+			<Button name="VehicleMenuBarPitchUpButton">
+				<Size>
+					<AbsDimension x="40" y="40"/>
+				</Size>
+				<NormalTexture/>
+				<PushedTexture/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Vehicles\UI-Vehicles-Button-Highlight">
+					<TexCoords left="0.130625" right="0.879375" top="0.130625" bottom="0.879375"/>
+				</HighlightTexture>
+				<Scripts>
+					<OnMouseDown>
+						VehicleAimUpStart();
+					</OnMouseDown>
+					<OnMouseUp>
+						VehicleAimUpStop();
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			<Button name="VehicleMenuBarPitchDownButton">
+				<Size>
+					<AbsDimension x="40" y="40"/>
+				</Size>
+				<NormalTexture/>
+				<PushedTexture/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Vehicles\UI-Vehicles-Button-Highlight">
+					<TexCoords left="0.130625" right="0.879375" top="0.130625" bottom="0.879375"/>
+				</HighlightTexture>
+				<Scripts>
+					<OnMouseDown>
+						VehicleAimDownStart();
+					</OnMouseDown>
+					<OnMouseUp>
+						VehicleAimDownStop();
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			<Button name="VehicleMenuBarLeaveButton">
+				<Size>
+					<AbsDimension x="40" y="40"/>
+				</Size>
+				<NormalTexture/>
+				<PushedTexture/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Vehicles\UI-Vehicles-Button-Highlight">
+					<TexCoords left="0.130625" right="0.879375" top="0.130625" bottom="0.879375"/>
+				</HighlightTexture>
+				<Scripts>
+					<OnClick>
+						VehicleExit();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="VehicleMenuBarActionButtonFrame" frameStrata="HIGH" enableMouse="false" toplevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="VehicleMenuBar"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="VehicleMenuBar"/>
+				</Anchors>
+				<Frames>
+					<CheckButton name="VehicleMenuBarActionButton1" inherits="VehicleActionButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="235" y="15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="VehicleMenuBarActionButton2" inherits="VehicleActionButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="VehicleMenuBarActionButton1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="VehicleMenuBarActionButton3" inherits="VehicleActionButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="VehicleMenuBarActionButton2" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="VehicleMenuBarActionButton4" inherits="VehicleActionButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="VehicleMenuBarActionButton3" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="VehicleMenuBarActionButton5" inherits="VehicleActionButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="VehicleMenuBarActionButton4" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="VehicleMenuBarActionButton6" inherits="VehicleActionButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="VehicleMenuBarActionButton5" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Button name="VehicleMenuBarPitchSlider" enableMouse="true" frameStrata="LOW">
+				<Size>
+					<AbsDimension x="31" y="78"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="192" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBG" file="Interface\Vehicles\UI-Vehicles-Endcap">
+							<TexCoords left="0.46875" right="0.50390625" top="0.31640625" bottom="0.62109375"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\Vehicles\UI-Vehicles-Endcap">
+							<TexCoords left="0.38671875" right="0.46484375" top="0.31640625" bottom="0.62109375"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentMarker" file="Interface\Vehicles\UI-Vehicles-Endcap">
+							<Size>
+								<AbsDimension x="30" y="15"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<TexCoords left="0.46875" right="0.50390625" top="0.45" bottom="0.55"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						VehicleMenuBarPitch_OnLoad(self);
+					</OnLoad>
+					<OnEvent>
+						VehicleMenuBarPitch_OnEvent(self, event, ...);
+					</OnEvent>
+					<OnClick>
+						VehicleMenuBarPitch_OnClick(self);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="VehicleMenuBarArtFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="VehicleMenuBar"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="VehicleMenuBar"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentBORDER1">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBORDER2">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBORDER3">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBORDER4">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBORDER5">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentARTWORK1">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentARTWORK2">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentARTWORK3">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentARTWORK4">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentARTWORK5">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentARTWORK6">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentARTWORK7">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentARTWORK8">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentARTWORK9">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentARTWORK10">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentOVERLAY1">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentOVERLAY2">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentOVERLAY3">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						
+					</OnLoad>
+					<OnEvent>
+						
+					</OnEvent>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				RaiseFrameLevel(VehicleMenuBarArtFrame);
+				VehicleMenuBar_OnLoad(self);
+				--VehicleMenuBar_Debug();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -749,7 +749,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentTitleBackground" relativePoint="TOP">
 							<Offset>
-								<AbsDimension x="-8" y="0"/>
+								<AbsDimension x="0" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -759,11 +759,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</FontString>
 				<FontString name="$parentDateCompleted" inherits="AchievementDateFont" text="5/16/08" hidden="true">
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-80" y="-8"/>
-							</Offset>
-						</Anchor>
+						<!-- This is a fake anchor. We don't want DateCompleted to be anchored to top. We reanchor it in AchievementButton_OnLoad so that it can be anchored to the shield, which is a frame, and not loaded at this point. -->
+						<Anchor point="TOP"/>
 					</Anchors>
 					<Size>
 						<AbsDimension x="60" y="14"/>
@@ -1085,9 +1082,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</FontString>
 				<FontString name="$parentDescription" inherits="AchievementDescriptionEnabledFont">
 					<Anchors>
-						<Anchor point="TOP">
+						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="-8" y="-30"/>
+								<AbsDimension x="48" y="-30"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1759,28 +1756,23 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<TexCoords left="0" right=".605" top="0" bottom=".703"/>
 				</Texture>
 				<FontString name="$parentUnlocked" inherits="GameFontBlackTiny" text="ACHIEVEMENT_UNLOCKED">
-					<Size>
-						<AbsDimension x="200" y="12"/>
-					</Size>
+					<Size x="200" y="12"/>
 					<Anchors>
 						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="7" y="-23"/>
-							</Offset>
+							<Offset x="7" y="-23"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentName" inherits="GameFontHighlight" text="For the Alliance!">
 					<Anchors>
-						<Anchor point="BOTTOM">
-							<Offset>
-								<AbsDimension x="7" y="36"/>
-							</Offset>
+						<Anchor point="BOTTOMLEFT">
+							<Offset x="72" y="36"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="-60" y="36"/>
 						</Anchor>
 					</Anchors>
-					<Size>
-						<AbsDimension x="240" y="16"/>
-					</Size>
+					<Size x="240" y="16"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -1893,7 +1885,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Scripts>
 	</Frame>	
 	
-	<Frame name="AchievementFrame" toplevel="true" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+	<Frame name="AchievementFrame" toplevel="true" parent="UIParent" frameStrata="MEDIUM" hidden="true" enableMouse="true">
 		<Size>
 			<AbsDimension x="768" y="500"/>
 		</Size>
@@ -3105,6 +3097,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						AchievementFrameTab_OnClick(self:GetID());
 						self.text:SetPoint("CENTER", self, "CENTER", 0, -5);
 						AchievementFrameTab2.text:SetPoint("CENTER", AchievementFrameTab2, "CENTER", 0, -3);
+						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -3121,6 +3114,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						AchievementFrameTab_OnClick(self:GetID());
 						self.text:SetPoint("CENTER", self, "CENTER", 0, -5);
 						AchievementFrameTab1.text:SetPoint("CENTER", AchievementFrameTab1, "CENTER", 0, -3);
+						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>				
 			</Button>			

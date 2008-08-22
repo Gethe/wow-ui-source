@@ -819,7 +819,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Layer level="ARTWORK">
 						<Texture name="LFGSearchIcon1">
 							<Size>
-								<AbsDimension x="64" y="64"/>
+								<AbsDimension x="53" y="48"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="LFGSearchBg1">
@@ -831,7 +831,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Texture>
 						<Texture name="LFGSearchIcon2">
 							<Size>
-								<AbsDimension x="64" y="64"/>
+								<AbsDimension x="53" y="48"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="LFGSearchBg2">
@@ -843,7 +843,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Texture>
 						<Texture name="LFGSearchIcon3">
 							<Size>
-								<AbsDimension x="64" y="64"/>
+								<AbsDimension x="53" y="48"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="LFGSearchBg3">

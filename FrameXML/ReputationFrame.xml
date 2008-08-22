@@ -56,7 +56,7 @@
 			</Button>
 			<StatusBar name="$parentReputationBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
 				<Size>
-					<AbsDimension x="120" y="13"/>
+					<AbsDimension x="103" y="13"/>
 				</Size>
 				<Anchors>
 					<Anchor point="RIGHT">
@@ -66,18 +66,34 @@
 					</Anchor>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentAtWarHighlight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" alphaMode="ADD" hidden="true">
+					<Layer level="OVERLAY">
+						<Texture name="$parentAtWarHighlight2" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" alphaMode="ADD" hidden="true">
 							<Size>
-								<AbsDimension x="256" y="28"/>
+								<AbsDimension x="103" y="17"/>
 							</Size>
-							<TexCoords left="0" right="0.679" top="0.719" bottom="1.0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.40234375" top="0.734375" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentAtWarHighlight1" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="0" y="17"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentAtWarHighlight2" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.25390625" right="1" top="0.375" bottom="0.640625"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="$parentLeftTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
 							<Size>
-								<AbsDimension x="79" y="20"/>
+								<AbsDimension x="62" y="21"/>
 							</Size>
 							<Anchors>
 								<Anchor point="LEFT">
@@ -90,21 +106,16 @@
 						</Texture>
 						<Texture name="$parentRightTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
 							<Size>
-								<AbsDimension x="61" y="20"/>
+								<AbsDimension x="42" y="21"/>
 							</Size>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset>
-										<AbsDimension x="1" y="0"/>
-									</Offset>
-								</Anchor>
 								<Anchor point="LEFT" relativeTo="$parentLeftTexture" relativePoint="RIGHT">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
-							<TexCoords left="0.0" right="0.238" top="0.3906" bottom="0.625"/>
+							<TexCoords left="0.0" right="0.164" top="0.3906" bottom="0.625"/>
 						</Texture>
 						<FontString name="$parentFactionStanding" inherits="GameFontHighlightSmall" text="Revered">
 							<Anchors>
@@ -117,20 +128,25 @@
 						</FontString>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="$parentHighlight1" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD" hidden="true">
-							<Size>
-								<AbsDimension x="256" y="28"/>
-							</Size>
-							<TexCoords left="0" right="1" top="0" bottom="0.4375"/>
-						</Texture>
 						<Texture name="$parentHighlight2" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD" hidden="true">
 							<Size>
 								<AbsDimension x="17" y="28"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentHighlight1" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT">
+									<Offset x="4" y="0"/>
+								</Anchor>
 							</Anchors>
 							<TexCoords left="0" right="0.06640625" top="0.4375" bottom="0.875"/>
+						</Texture>
+						<Texture name="$parentHighlight1" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="0" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentHighlight2" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="0.4375"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -142,16 +158,38 @@
 			<Layer level="ARTWORK">
 				<Texture name="$parentBackground" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
 					<Size>
-						<AbsDimension x="177" y="20"/>
+						<AbsDimension x="0" y="21"/>
 					</Size>
-					<TexCoords left="0.0" right="0.691" top="0.0" bottom="0.3125"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.0" right="0.7578125" top="0.0" bottom="0.328125"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentTreeTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" hidden="true">
+				<Texture name="$parentLeftLine" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
 					<Size>
-						<AbsDimension x="6" y="13"/>
+						<AbsDimension x="0" y="2"/>
 					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="2" top="0" bottom="2"/>
+				</Texture>
+				<Texture name="$parentBottomLine" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
+					<Size>
+						<AbsDimension x="2" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="2" top="0" bottom="2"/>
 				</Texture>
 				<FontString name="$parentFactionName" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size x="135" y="10"/>
@@ -160,11 +198,16 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				getglobal(self:GetName().."ReputationBarHighlight1"):SetPoint("TOPLEFT",self,"TOPLEFT",-0,4);
-				getglobal(self:GetName().."ReputationBarHighlight1"):SetPoint("BOTTOMRIGHT",self,"BOTTOMRIGHT",-10,-4);
-				getglobal(self:GetName().."ReputationBarAtWarHighlight"):SetPoint("TOPLEFT",self,"TOPLEFT",2,0);
-				getglobal(self:GetName().."ReputationBarAtWarHighlight"):SetPoint("BOTTOMRIGHT",self,"BOTTOMRIGHT",0,0);
-				getglobal(self:GetName().."ReputationBarAtWarHighlight"):SetAlpha(0.3);
+				getglobal(self:GetName().."ReputationBarHighlight1"):SetPoint("TOPLEFT",self,"TOPLEFT",-2, 4);
+				getglobal(self:GetName().."ReputationBarHighlight1"):SetPoint("BOTTOMRIGHT",self,"BOTTOMRIGHT",-10, -4);
+				getglobal(self:GetName().."ReputationBarAtWarHighlight1"):SetPoint("TOPLEFT",self,"TOPLEFT",3,-2);
+				getglobal(self:GetName().."ReputationBarAtWarHighlight2"):SetPoint("TOPRIGHT",self,"TOPRIGHT",-1,-2);
+				getglobal(self:GetName().."ReputationBarAtWarHighlight1"):SetAlpha(0.2);
+				getglobal(self:GetName().."ReputationBarAtWarHighlight2"):SetAlpha(0.2);
+				getglobal(self:GetName().."Background"):SetPoint("TOPRIGHT", self:GetName().."ReputationBarLeftTexture", "TOPLEFT", 0, 0);
+				getglobal(self:GetName().."LeftLine"):SetWidth(0);
+				getglobal(self:GetName().."BottomLine"):SetHeight(0);
+				getglobal(self:GetName().."BottomLine"):SetPoint("TOP", self:GetName().."ExpandOrCollapseButton", "CENTER", 5, 0);
 			</OnLoad>
 			<OnClick>
 				ReputationBar_OnClick(self);
@@ -260,18 +303,27 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="ReputationFrameTopTreeTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" hidden="false">
+				<Texture name="ReputationFrameTopTreeTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
 					<Size>
-						<AbsDimension x="5" y="12"/>
+						<AbsDimension x="2" y="4"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="37" y="-75"/>
-							</Offset>
+						<Anchor point="TOP" relativeTo="ReputationFrame" relativePoint="TOPLEFT">
+							<Offset x="35" y="-76"/>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.29296" right="0.3125" top="0.359375" bottom="0.5"/>
+					<TexCoords left="0" right="2" top="0" bottom="2"/>
+				</Texture>
+				<Texture name="ReputationFrameTopTreeTexture2" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
+					<Size>
+						<AbsDimension x="2" y="4"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ReputationFrame" relativePoint="TOPLEFT">
+							<Offset x="53" y="-76"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="2" top="0" bottom="2"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -427,6 +479,12 @@
 					<OnVerticalScroll>
 						FauxScrollFrame_OnVerticalScroll(self, offset, REPUTATIONFRAME_FACTIONHEIGHT, ReputationFrame_Update);
 					</OnVerticalScroll>
+					<OnShow>
+						ReputationBar1:SetPoint("TOPRIGHT", ReputationFrame, "TOPRIGHT", -70, -83);
+					</OnShow>
+					<OnHide>
+						ReputationBar1:SetPoint("TOPRIGHT", ReputationFrame, "TOPRIGHT", -46, -83);
+					</OnHide>
 				</Scripts>
 				<Layers>
 					<Layer level="BACKGROUND">

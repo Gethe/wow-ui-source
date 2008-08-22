@@ -25,7 +25,7 @@
 				WorldMapTooltip:Hide();
 			</OnLeave>
 			<OnMouseUp>
-				MapUnit_OnMouseUp(button, "WorldMapRaid", "WorldMapParty");
+				MapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
 			</OnMouseUp>
 			<OnUpdate>
 				MapUnit_OnUpdate(self);
@@ -56,6 +56,33 @@
 			<OnLoad>
 				self:SetFrameLevel(self:GetFrameLevel() + 2);
 			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="WorldMapVehicleTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="45" y="45"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="10" right="10" top="10" bottom="10"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetFrameLevel() + 2);
+			</OnLoad>
+			<OnEnter>
+				WorldMapUnit_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				WorldMapTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Frame>
 	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true">

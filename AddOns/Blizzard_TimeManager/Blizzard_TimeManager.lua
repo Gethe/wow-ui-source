@@ -574,7 +574,7 @@ function Stopwatch_Toggle()
 	end
 end
 
-function Stopwatch_ShowCountdown(hour, minute, second)
+function Stopwatch_StartCountdown(hour, minute, second)
 	local sec = 0;
 	if ( hour ) then
 		sec = hour * 3600;
@@ -599,6 +599,37 @@ function Stopwatch_ShowCountdown(hour, minute, second)
 	StopwatchTicker_Update();
 	StopwatchTicker.reverse = sec > 0;
 	StopwatchFrame:Show();
+end
+
+function Stopwatch_Play()
+	if ( StopwatchPlayPauseButton.playing ) then
+		return;
+	end
+	StopwatchPlayPauseButton.playing = true;
+	StopwatchTicker:SetScript("OnUpdate", StopwatchTicker_OnUpdate);
+	StopwatchPlayPauseButton:SetNormalTexture("Interface\\TimeManager\\PauseButton");
+end
+
+function Stopwatch_Pause()
+	if ( not StopwatchPlayPauseButton.playing ) then
+		return;
+	end
+	StopwatchPlayPauseButton.playing = false;
+	StopwatchTicker:SetScript("OnUpdate", nil);
+	StopwatchPlayPauseButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
+end
+
+function Stopwatch_IsPlaying()
+	return StopwatchPlayPauseButton.playing;
+end
+
+function Stopwatch_Clear()
+	StopwatchTicker.timer = 0;
+	StopwatchTicker.reverse = false;
+	StopwatchTicker:SetScript("OnUpdate", nil);
+	StopwatchTicker_Update();
+	StopwatchPlayPauseButton.playing = false;
+	StopwatchPlayPauseButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
 end
 
 function Stopwatch_FinishCountdown()
@@ -711,31 +742,6 @@ function StopwatchTicker_Update()
 	StopwatchTickerHour:SetFormattedText(STOPWATCH_TIME_UNIT, hour);
 	StopwatchTickerMinute:SetFormattedText(STOPWATCH_TIME_UNIT, minute);
 	StopwatchTickerSecond:SetFormattedText(STOPWATCH_TIME_UNIT, second);
-end
-
-function Stopwatch_Play()
-	StopwatchPlayPauseButton.playing = true;
-	StopwatchTicker:SetScript("OnUpdate", StopwatchTicker_OnUpdate);
-	StopwatchPlayPauseButton:SetNormalTexture("Interface\\TimeManager\\PauseButton");
-end
-
-function Stopwatch_Pause()
-	StopwatchPlayPauseButton.playing = false;
-	StopwatchTicker:SetScript("OnUpdate", nil);
-	StopwatchPlayPauseButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
-end
-
-function Stopwatch_IsPlaying()
-	return StopwatchPlayPauseButton.playing;
-end
-
-function Stopwatch_Clear()
-	StopwatchTicker.timer = 0;
-	StopwatchTicker.reverse = false;
-	StopwatchTicker:SetScript("OnUpdate", nil);
-	StopwatchTicker_Update();
-	StopwatchPlayPauseButton.playing = false;
-	StopwatchPlayPauseButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
 end
 
 function StopwatchResetButton_OnClick()

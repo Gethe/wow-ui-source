@@ -121,7 +121,6 @@ uvarInfo = {
 	["AUTO_QUEST_WATCH"] = { default = "1", cvar = "autoQuestWatch", event = "AUTO_QUEST_WATCH_TEXT" },
 	["LOOT_UNDER_MOUSE"] = { default = "0", cvar = "lootUnderMouse", event = "LOOT_UNDER_MOUSE_TEXT" },
 	["AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "autoLootDefault", event = "AUTO_LOOT_DEFAULT_TEXT" },
-	["MAIL_AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "mailAutoLootDefault", event = "MAIL_AUTO_LOOT_DEFAULT_TEXT" },
 	["SHOW_COMBAT_TEXT"] = { default = "0", cvar = "enableCombatText", event = "SHOW_COMBAT_TEXT_TEXT" },
 	["COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"] = { default = "0", cvar = "fctLowManaHealth", event = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
 	["COMBAT_TEXT_SHOW_AURAS"] = { default = "0", cvar = "fctAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },

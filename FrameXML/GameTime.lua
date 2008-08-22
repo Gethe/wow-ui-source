@@ -81,8 +81,7 @@ function GameTime_ComputeMilitaryTime(hour, am)
 end
 
 function GameTime_GetLocalTime(wantAMPM)
-	local dateInfo = date("*t");
-	local hour, minute = dateInfo.hour, dateInfo.min;
+	local hour, minute = tonumber(date("%H")), tonumber(date("%M"));
 	return GameTime_GetFormattedTime(hour, minute, wantAMPM), hour, minute;
 end
 
@@ -154,6 +153,10 @@ function GameTimeFrame_OnEvent(self, event, ...)
 				UIFrameFlash(GameTimeCalendarInvitesTexture, 1.0, 1.0, -1);
 				self.pendingCalendarInvites = pendingCalendarInvites;
 			end
+		elseif ( pendingCalendarInvites == 0 ) then
+				GameTimeCalendarInvitesTexture:Hide();
+				UIFrameFlashStop(GameTimeCalendarInvitesTexture);
+				self.pendingCalendarInvites = 0;
 		end
 		GameTimeFrame_SetDate();
 	elseif ( event == "CALENDAR_EVENT_ALARM" ) then

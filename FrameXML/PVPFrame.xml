@@ -32,6 +32,18 @@
                 </Texture>
 			</Layer>
 			<Layer level="BORDER">
+				<FontString inherits="GameFontNormal" text="PLAYER_V_PLAYER">
+					<Size>
+						<AbsDimension x="250" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>

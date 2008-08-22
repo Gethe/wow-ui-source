@@ -256,22 +256,25 @@ function TargetFrame_OnUpdate (self, elapsed)
 	end
 end
 
+local largeBuffList = {};
+local largeDebuffList = {};
+
 function TargetDebuffButton_Update (self)
 	local button;
-	local name, rank, icon, count, debuffType, duration, expirationTime;
+	local name, rank, icon, count, debuffType, duration, expirationTime, isMine;
 	local buffCount;
 	local numBuffs = 0;
-	local largeBuffList = {};
 	local playerIsTarget = UnitIsUnit("player", "target");
 	local cooldown;
 	for i=1, MAX_TARGET_BUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime = UnitBuff("target", i);
+		name, rank, icon, count, debuffType, duration, expirationTime, isMine = UnitBuff("target", i);
 		button = getglobal("TargetFrameBuff"..i);
 		if ( not button ) then
 			if ( not icon ) then
 				break;
 			else
 				button = CreateFrame("Button", "TargetFrameBuff"..i, TargetFrame, "TargetBuffButtonTemplate");
+				button.unit = "target";
 			end
 		end
 		
@@ -288,21 +291,15 @@ function TargetDebuffButton_Update (self)
 			
 			-- Handle cooldowns
 			cooldown = getglobal("TargetFrameBuff"..i.."Cooldown");
-			if ( duration ) then
-				if ( duration > 0 ) then
-					cooldown:Show();
-					CooldownFrame_SetTimer(cooldown, expirationTime - duration, duration, 1);
-				else
-					cooldown:Hide();
-				end
-				
-				-- Set the buff to be big if the buff is cast by the player and the target is not the player
-				if ( not playerIsTarget ) then
-					largeBuffList[i] = 1;
-				end
+			if ( duration > 0 ) then
+				cooldown:Show();
+				CooldownFrame_SetTimer(cooldown, expirationTime - duration, duration, 1);
 			else
 				cooldown:Hide();
 			end
+				
+			-- Set the buff to be big if the buff is cast by the player and the target is not the player
+			largeBuffList[i] = (isMine and not playerIsTarget);
 
 			button.id = i;
 			numBuffs = numBuffs + 1; 
@@ -315,10 +312,9 @@ function TargetDebuffButton_Update (self)
 	local debuffType, color;
 	local debuffCount;
 	local numDebuffs = 0;
-	local largeDebuffList = {};
 	for i=1, MAX_TARGET_DEBUFFS do
 		local debuffBorder = getglobal("TargetFrameDebuff"..i.."Border");
-		name, rank, icon, count, debuffType, duration, expirationTime = UnitDebuff("target", i);
+		name, rank, icon, count, debuffType, duration, expirationTime, isMine = UnitDebuff("target", i);
 		button = getglobal("TargetFrameDebuff"..i);
 		if ( not button ) then
 			if ( not icon ) then
@@ -326,6 +322,7 @@ function TargetDebuffButton_Update (self)
 			else
 				button = CreateFrame("Button", "TargetFrameDebuff"..i, TargetFrame, "TargetDebuffButtonTemplate");
 				debuffBorder = getglobal("TargetFrameDebuff"..i.."Border");
+				button.unit = "target";
 			end
 		end
 		if ( icon ) then
@@ -345,18 +342,15 @@ function TargetDebuffButton_Update (self)
 
 			-- Handle cooldowns
 			cooldown = getglobal("TargetFrameDebuff"..i.."Cooldown");
-			if ( duration  ) then
-				if ( duration > 0 ) then
-					cooldown:Show();
-					CooldownFrame_SetTimer(cooldown, expirationTime - duration, duration, 1);
-				else
-					cooldown:Hide();
-				end
-				-- Set the buff to be big if the buff is cast by the player
-				largeDebuffList[i] = 1;
+			if ( duration > 0 ) then
+				cooldown:Show();
+				CooldownFrame_SetTimer(cooldown, expirationTime - duration, duration, 1);
 			else
 				cooldown:Hide();
 			end
+
+			-- Set the buff to be big if the buff is cast by the player
+			largeDebuffList[i] = isMine;
 			
 			debuffBorder:SetVertexColor(color.r, color.g, color.b);
 			button:Show();
@@ -371,7 +365,7 @@ function TargetDebuffButton_Update (self)
 	-- Figure out general information that affects buff sizing and positioning
 	local numFirstRowBuffs;
 	if ( TargetofTargetFrame:IsShown() ) then
-		numFirstRowBuffs = 5;
+		numFirstRowBuffs = 4;
 	else
 		numFirstRowBuffs = 6;
 	end
@@ -565,7 +559,7 @@ function TargetFrameDropDown_Initialize (self)
 			menu = "PLAYER";
 		end
 	else
-		menu = "RAID_TARGET_ICON";
+		menu = "TARGET";
 		name = RAID_TARGET_ICON;
 	end
 	if ( menu ) then
@@ -690,7 +684,7 @@ end
 function SetTargetSpellbarAspect()
 	local frameText = getglobal(TargetFrameSpellBar:GetName().."Text");
 	if ( frameText ) then
-		frameText:SetTextHeight(10);
+		frameText:SetFontObject(SystemFont_Shadow_Small);
 		frameText:ClearAllPoints();
 		frameText:SetPoint("TOP", TargetFrameSpellBar, "TOP", 0, 4);
 	end
@@ -717,6 +711,7 @@ end
 function Target_Spellbar_OnLoad (self)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("VARIABLES_LOADED");
 	
 	CastingBarFrame_OnLoad(self, "target", false);
 
@@ -737,7 +732,7 @@ function Target_Spellbar_OnEvent (self, event, ...)
 	local arg1 = ...
 	
 	--	Check for target specific events
-	if ( (event == "CVAR_UPDATE") and (arg1 == "SHOW_TARGET_CASTBAR") ) then
+	if ( (event == "VARIABLES_LOADED") or ((event == "CVAR_UPDATE") and (arg1 == "SHOW_TARGET_CASTBAR")) ) then
 		if ( GetCVar("showTargetCastbar") == "0") then
 			self.showCastbar = false;
 		else

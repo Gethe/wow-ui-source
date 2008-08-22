@@ -139,6 +139,8 @@ function SecureButton_GetModifiedUnit(self, button)
 		if ( IsModifiedClick("SELFCAST") ) then
 			return "player";
 		end
+	end
+	if ( SecureButton_GetModifiedAttribute(self, "checkfocuscast", button) ) then
 		if ( IsModifiedClick("FOCUSCAST") ) then
 			return "focus";
 		end
@@ -298,6 +300,15 @@ function SecureActionButton_OnClick(self, button)
 			if ( text ) then
 				RunMacroText(text, button);
 			end
+		end
+	elseif ( type == "cancelaura" ) then
+		local index = SecureButton_GetModifiedAttribute(self, "index", button);
+		if ( index ) then
+			CancelUnitBuff(unit, index);
+		else
+			local spell = SecureButton_GetModifiedAttribute(self, "spell", button);
+			local rank = SecureButton_GetModifiedAttribute(self, "rank", button);
+			CancelUnitBuff(unit, spell, rank);
 		end
 	elseif ( type == "stop" ) then
 		if ( SpellIsTargeting() ) then

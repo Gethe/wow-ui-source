@@ -233,12 +233,10 @@ end
 
 function InboxFrame_OnModifiedClick(self, index)
 	local _, _, _, _, _, cod = GetInboxHeaderInfo(index);
-	if ( cod > 0 ) then
-		InboxFrame_OnClick(self, index);
-	else
+	if ( cod <= 0 ) then
 		AutoLootMailItem(index);
 	end
-	self:SetChecked(false);
+	InboxFrame_OnClick(self, index);
 end
 
 function InboxFrameItem_OnEnter(self)

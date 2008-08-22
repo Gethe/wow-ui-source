@@ -17,6 +17,7 @@ MAX_PLAYER_LEVEL_TABLE[0] = 60;
 MAX_PLAYER_LEVEL_TABLE[1] = 70;
 MAX_PLAYER_LEVEL_TABLE[2] = 80;
 MAX_PLAYER_LEVEL = 0;
+REPUTATIONFRAME_ROWSPACING = 23;
 
 function ReputationFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_FACTION");
@@ -49,31 +50,33 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 	local factionBackground = getglobal(factionRowName.."Background");
 	local factionLeftTexture = getglobal(factionRowName.."ReputationBarLeftTexture");
 	local factionRightTexture = getglobal(factionRowName.."ReputationBarRightTexture");
-	
+	factionLeftTexture:SetWidth(62);
+	factionRightTexture:SetWidth(42);
+	factionBar:SetPoint("RIGHT", factionRow, "RIGHT", 0, 0);
 	if ( rowType == 0 ) then --Not header, not child
-		factionRow:SetWidth(295);
+		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 44, 0);
 		factionButton:Hide();
 		factionTitle:SetPoint("LEFT", factionRow, "LEFT", 10, 0);
 		factionTitle:SetFontObject(GameFontHighlightSmall);
 		factionTitle:SetWidth(160);
 		factionBackground:Show();
-		factionLeftTexture:SetHeight(20);
-		factionRightTexture:SetHeight(20);
-		factionLeftTexture:SetTexCoord(0.691, 1.0, 0.0, 0.3125);
-		factionRightTexture:SetTexCoord(0.0, 0.238, 0.344, 0.656);
+		factionLeftTexture:SetHeight(21);
+		factionRightTexture:SetHeight(21);
+		factionLeftTexture:SetTexCoord(0.7578125, 1.0, 0.0, 0.328125);
+		factionRightTexture:SetTexCoord(0.0, 0.1640625, 0.34375, 0.671875);
 	elseif ( rowType == 1 ) then --Child, not header
-		factionRow:SetWidth(278);
+		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 62, 0);
 		factionButton:Hide()
 		factionTitle:SetPoint("LEFT", factionRow, "LEFT", 10, 0);
 		factionTitle:SetFontObject(GameFontHighlightSmall);
 		factionTitle:SetWidth(150);
 		factionBackground:Show();
-		factionLeftTexture:SetHeight(20);
-		factionRightTexture:SetHeight(20);
-		factionLeftTexture:SetTexCoord(0.691, 1.0, 0.0, 0.3125);
-		factionRightTexture:SetTexCoord(0.0, 0.238, 0.344, 0.656);
+		factionLeftTexture:SetHeight(21);
+		factionRightTexture:SetHeight(21);
+		factionLeftTexture:SetTexCoord(0.7578125, 1.0, 0.0, 0.328125);
+		factionRightTexture:SetTexCoord(0.0, 0.1640625, 0.34375, 0.671875);
 	elseif ( rowType == 2 ) then	--Header, not child
-		factionRow:SetWidth(295);
+		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 20, 0);
 		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);
 		factionButton:Show();
 		factionTitle:SetPoint("LEFT",factionButton,"RIGHT",10,0);
@@ -81,11 +84,15 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 		factionTitle:SetWidth(145);
 		factionBackground:Hide()	
 		factionLeftTexture:SetHeight(15);
+		factionLeftTexture:SetWidth(60);
 		factionRightTexture:SetHeight(15);
-		factionLeftTexture:SetTexCoord(0.691, 1.0, 0.047, 0.281);
-		factionRightTexture:SetTexCoord(0.0, 0.238, 0.3906, 0.625);
+		factionRightTexture:SetWidth(39);
+		factionLeftTexture:SetTexCoord(0.765625, 1.0, 0.046875, 0.28125);
+		factionRightTexture:SetTexCoord(0.0, 0.15234375, 0.390625, 0.625);
+		factionLeftTexture:SetPoint("LEFT", factionBar, "LEFT", -2, 0);
+		factionBar:SetPoint("RIGHT", factionRow, "RIGHT", 2, 0);
 	elseif ( rowType == 3 ) then --Header and child
-		factionRow:SetWidth(278);
+		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 39, 0);
 		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);	--Change this
 		factionButton:Show();
 		factionTitle:SetPoint("LEFT" ,factionButton, "RIGHT", 10, 0);
@@ -93,9 +100,13 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 		factionTitle:SetWidth(135);
 		factionBackground:Hide()
 		factionLeftTexture:SetHeight(15);
+		factionLeftTexture:SetWidth(60);
 		factionRightTexture:SetHeight(15);
-		factionLeftTexture:SetTexCoord(0.691, 1.0, 0.047, 0.281);
-		factionRightTexture:SetTexCoord(0.0, 0.238, 0.3906, 0.625);
+		factionRightTexture:SetWidth(39);
+		factionLeftTexture:SetTexCoord(0.765625, 1.0, 0.046875, 0.28125);
+		factionRightTexture:SetTexCoord(0.0, 0.15234375, 0.390625, 0.625);
+		factionLeftTexture:SetPoint("LEFT", factionBar, "LEFT", -2, 0);
+		factionBar:SetPoint("RIGHT", factionRow, "RIGHT", 2, 0);
 	end
 	
 	if ( (hasRep) or (rowType == 0) or (rowType == 1)) then
@@ -106,17 +117,18 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 		factionBar:Hide();
 	end
 end
+
 function ReputationFrame_Update()
 	local numFactions = GetNumFactions();
-	local factionIndex, factionRow, factionTitle, factionStanding, factionBar, factionButton, factionTexture, color, tooltipStanding;
+	local factionIndex, factionRow, factionTitle, factionStanding, factionBar, factionButton, factionLeftLine, factionBottomLine, factionBackground, color, tooltipStanding;
 	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, isWatched, isChild;
 	local atWarIndicator, rightBarTexture;
 
 	local previousBigTexture = ReputationFrameTopTreeTexture;	--In case we have a line going off the panel to the top
-	previousBigTexture:ClearAllPoints()	--We do this so that it is possible to set the bottom part of the frame again easily.
-	previousBigTexture:SetPoint("TOP", ReputationFrame, "TOPLEFT", 36, -75);
-	previousBigTexture:Hide()
-	
+	previousBigTexture:Hide();
+	local previousBigTexture2 = ReputationFrameTopTreeTexture2;
+	previousBigTexture2:Hide();
+
 	-- Update scroll frame
 	if ( not FauxScrollFrame_Update(ReputationListScrollFrame, numFactions, NUM_FACTIONS_DISPLAYED, REPUTATIONFRAME_FACTIONHEIGHT ) ) then
 		ReputationListScrollFrameScrollBar:SetValue(0);
@@ -126,14 +138,20 @@ function ReputationFrame_Update()
 	local gender = UnitSex("player");
 	
 	local i;
+	
+	local offScreenFudgeFactor = 5;
+	local previousBigTextureRows = 0;
+	local previousBigTextureRows2 = 0;
 	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
 		factionIndex = factionOffset + i;
 		factionRow = getglobal("ReputationBar"..i);
 		factionBar = getglobal("ReputationBar"..i.."ReputationBar");
 		factionTitle = getglobal("ReputationBar"..i.."FactionName");
 		factionButton = getglobal("ReputationBar"..i.."ExpandOrCollapseButton");
-		factionTexture = getglobal("ReputationBar"..i.."TreeTexture");
-		factionStanding = getglobal("ReputationBar"..i.."ReputationBarFactionStanding")
+		factionLeftLine = getglobal("ReputationBar"..i.."LeftLine");
+		factionBottomLine = getglobal("ReputationBar"..i.."BottomLine");
+		factionStanding = getglobal("ReputationBar"..i.."ReputationBarFactionStanding");
+		factionBackground = getglobal("ReputationBar"..i.."Background");
 		if ( factionIndex <= numFactions ) then
 			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild = GetFactionInfo(factionIndex);
 			factionTitle:SetText(name);
@@ -159,46 +177,51 @@ function ReputationFrame_Update()
 			local color = FACTION_BAR_COLORS[standingID];
 			factionBar:SetStatusBarColor(color.r, color.g, color.b);
 			
-			if ( (isHeader) and not (isChild) ) then
-				factionTexture:SetTexCoord(0.29296, 0.3125, 0.359375, 0.5);
-				factionTexture:ClearAllPoints()
-				factionTexture:SetPoint("TOP", factionButton, "CENTER", 0, 0);
-				factionTexture:SetWidth(5);
-				factionTexture:SetHeight(12);
-				factionTexture:Hide()
-				previousBigTexture = factionTexture;
-			elseif ( isHeader and isChild and previousBigTexture) then
-				factionTexture:SetTexCoord(0.3125, 0.36328, 0.421875, 0.46875);
-				factionTexture:ClearAllPoints()
-				factionTexture:SetPoint("RIGHT", factionButton, "CENTER", 0, 0)
-				factionTexture:SetWidth(17);
-				factionTexture:SetHeight(5);
-				previousBigTexture:SetPoint("BOTTOMLEFT", factionTexture, "TOPLEFT", 2, -1);
-				previousBigTexture:Show();
-				factionTexture:Show();
+			if ( isHeader and not isChild ) then
+				factionLeftLine:SetTexCoord(0, 0.25, 0, 2);
+				factionBottomLine:Hide();
+				factionLeftLine:Hide();
+				if ( previousBigTextureRows == 0 ) then
+					previousBigTexture:Hide();
+				end
+				previousBigTexture = factionBottomLine;
+				previousBigTextureRows = 0;
+			elseif ( isHeader and isChild ) then
+				ReputationBar_DrawHorizontalLine(factionLeftLine, 11, factionButton);
+				if ( previousBigTexture2 and previousBigTextureRows2 == 0 ) then
+					previousBigTexture2:Hide();
+				end
+				factionBottomLine:Hide();
+				previousBigTexture2 = factionBottomLine;
+				previousBigTextureRows2 = 0;
+				previousBigTextureRows = previousBigTextureRows+1;
+				ReputationBar_DrawVerticalLine(previousBigTexture, previousBigTextureRows);
+				
+			elseif ( isChild ) then
+				ReputationBar_DrawHorizontalLine(factionLeftLine, 11, factionBackground);
+				factionBottomLine:Hide();
+				previousBigTextureRows = previousBigTextureRows+1;
+				previousBigTextureRows2 = previousBigTextureRows2+1;
+				ReputationBar_DrawVerticalLine(previousBigTexture2, previousBigTextureRows2);
 			else
-				factionTexture:Hide();
+				-- is immediately under a main category
+				ReputationBar_DrawHorizontalLine(factionLeftLine, 13, factionBackground);
+				factionBottomLine:Hide();
+				previousBigTextureRows = previousBigTextureRows+1;
+				ReputationBar_DrawVerticalLine(previousBigTexture, previousBigTextureRows);
 			end
-			ReputationFrame_SetRowType(factionRow, ((isChild and 1 or 0) + (isHeader and 2 or 0)), hasRep);
 			
+			ReputationFrame_SetRowType(factionRow, ((isChild and 1 or 0) + (isHeader and 2 or 0)), hasRep);
 			
 			factionRow:Show();
 
-			--[[how a checkmark if this faction is being watched
-			if ( isWatched ) then
-				factionCheck:Show();
-				factionName:SetWidth(100);
-				factionCheck:SetPoint("LEFT", factionName, "LEFT", factionName:GetStringWidth(), 0);
-			else
-				factionCheck:Hide();
-				factionName:SetWidth(110);
-			end
-			--]]
 			-- Update details if this is the selected faction
 			if ( atWarWith ) then
-				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight"):Show();
+				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight1"):Show();
+				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight2"):Show();
 			else
-				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight"):Hide();
+				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight1"):Hide();
+				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight2"):Hide();
 			end
 			if ( factionIndex == GetSelectedFaction() ) then
 				if ( ReputationDetailFrame:IsShown() ) then
@@ -244,23 +267,37 @@ function ReputationFrame_Update()
 	
 	local i = NUM_
 	for i = (NUM_FACTIONS_DISPLAYED + factionOffset + 1), numFactions, 1 do
-		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, isWatched, isChild, hasRep = GetFactionInfo(i);
+		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild  = GetFactionInfo(i);
 		if not name then break; end
-		if ( isHeader and isChild ) then
-			local _,button = previousBigTexture:GetPoint("TOP")
-			previousBigTexture:ClearAllPoints();
-			if ( button ~= ReputationFrame ) then
-				previousBigTexture:SetPoint("TOP", button, "CENTER", 5, 0);
-				previousBigTexture:SetHeight((NUM_FACTIONS_DISPLAYED-previousBigTexture:GetParent():GetID() + 1)*23 -7);
-				previousBigTexture:Show()
-			else
-			
-			end
+		
+		if ( isHeader and not isChild ) then
 			break;
-		elseif ( (isHeader) and ( not isChild )) then
+		elseif ( (isHeader and isChild) or not(isHeader or isChild) ) then
+			ReputationBar_DrawVerticalLine(previousBigTexture, previousBigTextureRows+1);
+			break;
+		elseif ( isChild ) then
+			ReputationBar_DrawVerticalLine(previousBigTexture2, previousBigTextureRows2+1);
 			break;
 		end
 	end
+end
+
+function ReputationBar_DrawVerticalLine(texture, rows)
+	-- Need to add this fudge factor because the lines are anchored to the top of the screen in this case, not another button
+	local fudgeFactor = 0;
+	if ( texture == ReputationFrameTopTreeTexture or texture == ReputationFrameTopTreeTexture2) then
+		fudgeFactor = 5;
+	end
+	texture:SetHeight(rows*REPUTATIONFRAME_ROWSPACING-fudgeFactor);
+	texture:SetTexCoord(0, 0.25, 0, texture:GetHeight()/2);
+	texture:Show();
+end
+
+function ReputationBar_DrawHorizontalLine(texture, width, anchorTo)
+	texture:SetPoint("RIGHT", anchorTo, "LEFT", 3, 0);
+	texture:SetWidth(width);
+	texture:SetTexCoord(0, width/2, 0, 0.25);
+	texture:Show();
 end
 
 function ReputationBar_OnClick(self)
