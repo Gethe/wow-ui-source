@@ -6,22 +6,24 @@ function HybridScrollFrame_OnLoad (self)
 	self:EnableMouse(true);
 end
 
-function HybridScrollFrame_SetVerticalScroll (self, value)
+function HybridScrollFrame_OnValueChanged (self, value)
 	HybridScrollFrame_SetOffset(self, value);
 	
 	self.scrollUp:Enable();
 	self.scrollDown:Enable();
 
-	if ( math.floor(value) >= math.floor(select(2, self.scrollBar:GetMinMaxValues())) ) then		
+	local minVal, maxVal = self.scrollBar:GetMinMaxValues();
+	if ( value >= maxVal ) then		
 		if ( self.scrollDown ) then
 			self.scrollDown:Disable()
 		end
+		val = maxVal;
 	end
-	
-	if ( math.floor(value) == 0 ) then
+	if ( value <= minVal ) then
 		if ( self.scrollUp ) then
 			self.scrollUp:Disable();
 		end
+		val = minVal;
 	end
 end
 

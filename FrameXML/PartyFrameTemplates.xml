@@ -267,6 +267,18 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
+								<Texture name="$parentVehicleTexture" file="Interface\Vehicles\UI-Vehicles-PartyFrame" hidden="true">
+									<Size>
+										<AbsDimension x="128" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="-6" y="6"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
 								<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
 									<Anchors>
 										<Anchor point="BOTTOMLEFT">

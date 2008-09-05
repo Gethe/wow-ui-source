@@ -4,6 +4,7 @@ NUM_WORLDMAP_POI_COLUMNS = 16;
 WORLDMAP_POI_TEXTURE_WIDTH = 256;
 NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_FLAGS = 2;
+NUM_WORLDMAP_DEBUG_OBJECTS = 0;
 WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_WORLD_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
@@ -15,11 +16,27 @@ MAP_VEHICLES = {};
 VEHICLE_TEXTURES = {};
 VEHICLE_TEXTURES["Drive"] = {
 	"Interface\\Minimap\\Vehicle-Ground-Unoccupied",
-	"Interface\\Minimap\\Vehicle-Ground-Occupied"
+	"Interface\\Minimap\\Vehicle-Ground-Occupied",
+	width=45,
+	height=45,
 };
 VEHICLE_TEXTURES["Fly"] = {
 	"Interface\\Minimap\\Vehicle-Air-Unoccupied",
-	"Interface\\Minimap\\Vehicle-Air-Occupied"
+	"Interface\\Minimap\\Vehicle-Air-Occupied",
+	width=45,
+	height=45,
+};
+VEHICLE_TEXTURES["Airship Horde"] = {
+	"Interface\\Minimap\\Vehicle-Air-Horde",
+	"Interface\\Minimap\\Vehicle-Air-Horde",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Airship Alliance"] = {
+	"Interface\\Minimap\\Vehicle-Air-Alliance",
+	"Interface\\Minimap\\Vehicle-Air-Alliance",
+	width=64,
+	height=64,
 };
 
 function WorldMapFrame_OnLoad(self)
@@ -146,14 +163,13 @@ function WorldMapFrame_Update()
 	end
 
 	-- Setup the overlays
-	local numOverlays = GetNumMapOverlays();
 	local textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY;
 	local textureCount = 0;
 	local neededTextures;
 	local texture;
 	local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;
 	local numTexturesWide, numTexturesTall;
-	for i=1, numOverlays do
+	for i=1, GetNumMapOverlays() do
 		textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY = GetMapOverlayInfo(i);
 		if ( textureName and textureName ~= "" ) then
 			numTexturesWide = ceil(textureWidth/256);
@@ -207,6 +223,52 @@ function WorldMapFrame_Update()
 	end
 	for i=textureCount+1, NUM_WORLDMAP_OVERLAYS do
 		getglobal("WorldMapOverlay"..i):Hide();
+	end
+
+	-- Setup any debug objects
+	local numDebugObjects = GetNumMapDebugObjects();
+	if ( NUM_WORLDMAP_DEBUG_OBJECTS < numDebugObjects ) then
+		for i=NUM_WORLDMAP_DEBUG_OBJECTS+1, numDebugObjects do
+			CreateFrame("Frame", "WorldMapDebugObject"..i, WorldMapButton, "WorldMapDebugObjectTemplate");
+		end
+		NUM_WORLDMAP_DEBUG_OBJECTS = numDebugObjects;
+	end
+	textureCount = 0;
+	for i=1, numDebugObjects do
+		local name, size, x, y = GetMapDebugObjectInfo(i);
+		if ( (x ~= 0 or y ~= 0) and (size > 1 or GetCurrentMapZone() ~= WORLDMAP_WORLD_ID) ) then
+			textureCount = textureCount + 1;
+			local frame = getglobal("WorldMapDebugObject"..textureCount);
+			frame.index = i;
+			frame.name = name;
+			if ( GetCurrentMapZone() == WORLDMAP_WORLD_ID ) then
+				size = size - 1;
+			end
+			if ( size == 4 ) then
+				frame:SetWidth(64);
+				frame:SetHeight(64);
+				frame.texture:SetVertexColor(1.0, 0.6, 0.0, 0.5);
+			elseif ( size == 3 ) then
+				frame:SetWidth(32);
+				frame:SetHeight(32);
+				frame.texture:SetVertexColor(1.0, 1.0, 0.5, 0.5);
+			elseif ( size == 2 ) then
+				frame:SetWidth(16);
+				frame:SetHeight(16);
+				frame.texture:SetVertexColor(1.0, 1.0, 0.5, 0.5);
+			else
+				frame:SetWidth(4);
+				frame:SetHeight(4);
+				frame.texture:SetVertexColor(0.0, 1.0, 0.0, 0.5);
+			end
+			x = x * WorldMapDetailFrame:GetWidth();
+			y = -y * WorldMapDetailFrame:GetHeight();
+			frame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x, y);
+			frame:Show();
+		end
+	end
+	for i=textureCount+1, NUM_WORLDMAP_DEBUG_OBJECTS do
+		getglobal("WorldMapDebugObject"..i):Hide();
 	end
 end
 
@@ -314,7 +376,7 @@ end
 
 function WorldMapLevelDropDown_Update()
 	UIDropDownMenu_Initialize(WorldMapLevelDropDown, WorldMapLevelDropDown_Initialize);
-	UIDropDownMenu_SetWidth(WorldMapLevelDropDown, 90);
+	UIDropDownMenu_SetWidth(WorldMapLevelDropDown, 130);
 
 	if ( (GetNumDungeonMapLevels() == 0) ) then
 		UIDropDownMenu_ClearAll(WorldMapLevelDropDown);
@@ -328,8 +390,13 @@ end
 function WorldMapLevelDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
 	local level = GetCurrentMapDungeonLevel();
+	
+	local mapname = strupper(GetMapInfo() or "");
+	
+	local floorname
 	for i=1, GetNumDungeonMapLevels() do
-		info.text = string.format(FLOOR_NUMBER, i);
+		floorname = getglobal("DUNGEON_FLOOR_" .. mapname .. i);
+		info.text = floorname or string.format(FLOOR_NUMBER, i);
 		info.func = WorldMapLevelButton_OnClick;
 		info.checked = (i == level);
 		UIDropDownMenu_AddButton(info);
@@ -653,6 +720,8 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			MAP_VEHICLES[i].texture:SetRotation(orientation);
 			MAP_VEHICLES[i].texture:SetTexture(GetMapVehicleTexture(vehicleType, isPossessed));
 			MAP_VEHICLES[i]:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);
+			MAP_VEHICLES[i]:SetWidth(VEHICLE_TEXTURES[vehicleType].width);
+			MAP_VEHICLES[i]:SetHeight(VEHICLE_TEXTURES[vehicleType].height);
 			MAP_VEHICLES[i].name = unitName;
 			MAP_VEHICLES[i]:Show();
 			index = i;	-- save for later
@@ -678,6 +747,7 @@ function GetMapVehicleTexture(vehicleType, isPossessed)
 	if ( not VEHICLE_TEXTURES[vehicleType]) then
 		return;
 	end
+	
 	return VEHICLE_TEXTURES[vehicleType][isPossessed];
 end
 
@@ -728,7 +798,7 @@ function WorldMapUnit_OnEnter(self)
 			newLineString = "\n";
 		end
 	end
-	--Check Raid
+	-- Check Raid
 	for i=1, MAX_RAID_MEMBERS do
 		unitButton = getglobal("WorldMapRaid"..i);
 		if ( unitButton:IsVisible() and MouseIsOver(unitButton) ) then
@@ -749,13 +819,21 @@ function WorldMapUnit_OnEnter(self)
 			newLineString = "\n";
 		end
 	end
-	--Check Vehicles
+	-- Check Vehicles
 	local numVehicles = GetNumBattlefieldVehicles();
 	for _, v in pairs(MAP_VEHICLES) do
 		if ( v:IsVisible() and MouseIsOver(v) ) then
 			if ( v.name ) then
 				tooltipText = tooltipText..newLineString..v.name;
 			end
+			newLineString = "\n";
+		end
+	end
+	-- Check debug objects
+	for i = 1, NUM_WORLDMAP_DEBUG_OBJECTS do
+		unitButton = getglobal("WorldMapDebugObject"..i);
+		if ( unitButton:IsVisible() and MouseIsOver(unitButton) ) then
+			tooltipText = tooltipText..newLineString..unitButton.name;
 			newLineString = "\n";
 		end
 	end

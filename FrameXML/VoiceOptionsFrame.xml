@@ -31,7 +31,7 @@
 	</Slider>
 	<Frame name="VoiceOptionsFrame" enableMouse="true" parent="AudioOptionsFrame" hidden="true" id="2">
 		<Size>
-			<AbsDimension x="400" y="395"/>
+			<AbsDimension x="400" y="420"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -325,7 +325,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTalking" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="0"/>
+							<AbsDimension x="0" y="-10"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -491,7 +491,7 @@
 			</Frame>
 			<!--########-->
 			<Frame name="$parentSpeaking" inherits="OptionFrameBoxTemplate">
-				<Size x="180" y="270"/>
+				<Size x="180" y="300"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTalking" relativePoint="TOPRIGHT">
 						<Offset x="3" y="0"/>

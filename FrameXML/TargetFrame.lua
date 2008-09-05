@@ -231,14 +231,34 @@ function TargetFrame_CheckClassification (self)
 	local classification = UnitClassification("target");
 	if ( classification == "worldboss" ) then
 		TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
+		TargetFrameFlash:SetTexCoord(0, 0.9453125, 0.181640625, 0.400390625);
+		TargetFrameFlash:SetWidth(242);
+		TargetFrameFlash:SetHeight(112);
+		TargetFrameFlash:SetPoint("TOPLEFT", TargetFrame, "TOPLEFT", -22, 9);
 	elseif ( classification == "rareelite"  ) then
 		TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite");
+		TargetFrameFlash:SetTexCoord(0, 0.9453125, 0.181640625, 0.400390625);
+		TargetFrameFlash:SetWidth(242);
+		TargetFrameFlash:SetHeight(112);
+		TargetFrameFlash:SetPoint("TOPLEFT", TargetFrame, "TOPLEFT", -22, 9);
 	elseif ( classification == "elite"  ) then
 		TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
+		TargetFrameFlash:SetTexCoord(0, 0.9453125, 0.181640625, 0.400390625);
+		TargetFrameFlash:SetWidth(242);
+		TargetFrameFlash:SetHeight(112);
+		TargetFrameFlash:SetPoint("TOPLEFT", TargetFrame, "TOPLEFT", -22, 9);
 	elseif ( classification == "rare"  ) then
 		TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
+		TargetFrameFlash:SetTexCoord(0, 0.9453125, 0.181640625, 0.400390625);
+		TargetFrameFlash:SetWidth(242);
+		TargetFrameFlash:SetHeight(112);
+		TargetFrameFlash:SetPoint("TOPLEFT", TargetFrame, "TOPLEFT", -22, 9);
 	else
 		TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
+		TargetFrameFlash:SetTexCoord(0, 0.9453125, 0, 0.181640625);
+		TargetFrameFlash:SetWidth(242);
+		TargetFrameFlash:SetHeight(93);
+		TargetFrameFlash:SetPoint("TOPLEFT", TargetFrame, "TOPLEFT", -24, 0);
 	end
 end
 
@@ -261,13 +281,13 @@ local largeDebuffList = {};
 
 function TargetDebuffButton_Update (self)
 	local button;
-	local name, rank, icon, count, debuffType, duration, expirationTime, isMine;
+	local name, rank, icon, count, debuffType, duration, expirationTime, isMine, isStealable;
 	local buffCount;
 	local numBuffs = 0;
 	local playerIsTarget = UnitIsUnit("player", "target");
 	local cooldown;
 	for i=1, MAX_TARGET_BUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, isMine = UnitBuff("target", i);
+		name, rank, icon, count, debuffType, duration, expirationTime, isMine, isStealable = UnitBuff("target", i);
 		button = getglobal("TargetFrameBuff"..i);
 		if ( not button ) then
 			if ( not icon ) then
@@ -298,6 +318,14 @@ function TargetDebuffButton_Update (self)
 				cooldown:Hide();
 			end
 				
+			-- Show stealable frame if the target is not a player, the buff is stealable.
+			stealableFrame = getglobal(button:GetName().."Stealable");
+			if ( not UnitIsPlayer("target") and isStealable ) then
+				stealableFrame:Show();
+			else
+				stealableFrame:Hide();
+			end
+			
 			-- Set the buff to be big if the buff is cast by the player and the target is not the player
 			largeBuffList[i] = (isMine and not playerIsTarget);
 

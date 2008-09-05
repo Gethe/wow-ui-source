@@ -124,6 +124,7 @@ ChatConfigFrame.xml
 UIOptionsPanels.xml
 MovieFrame.xml
 VehicleMenuBar.xml
+AnimationSystem.lua
 
 ## add new modules above here
 LocalizationPost.xml

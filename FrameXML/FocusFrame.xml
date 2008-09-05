@@ -37,7 +37,7 @@
 	</Button>
 	<Button name="FocusFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
 		<Size>
-			<AbsDimension x="128" y="64"/>
+			<AbsDimension x="160" y="80"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -47,33 +47,31 @@
 			</Anchor>
 		</Anchors>
 		<HitRectInsets>
-			<AbsInset left="0" right="8" top="0" bottom="18"/>
+			<AbsInset left="0" right="8" top="0" bottom="22"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-<!--
 				<Texture name="FocusFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
 					<Size>
-						<AbsDimension x="242" y="95"/>
+						<AbsDimension x="176" y="82"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="-10" y="-1"/>
+								<AbsDimension x="-5" y="11"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.05078125" right="1.0" top="0" bottom="0.7578125"/>
+					<TexCoords left="0.55078125" right="0" top="0.400390625" bottom="0.52734375"/>
 				</Texture>
--->
 				<Texture name="FocusFrameBackground">
 					<Size>
-						<AbsDimension x="72" y="30"/>
+						<AbsDimension x="90" y="38"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="10" y="-6"/>
+								<AbsDimension x="12" y="-9"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -83,19 +81,19 @@
 			<Layer level="BORDER">
 				<Texture name="FocusFrameNameBackground" file="Interface\TargetingFrame\UI-TargetingFrame-LevelBackground">
 					<Size>
-						<AbsDimension x="70" y="11"/>
+						<AbsDimension x="90" y="20"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="12" y="-7"/>
+								<AbsDimension x="12" y="-6"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</Texture>
 				<Texture name="FocusPortrait">
 					<Size>
-						<AbsDimension x="34" y="34"/>
+						<AbsDimension x="43" y="43"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPRIGHT">
@@ -116,12 +114,12 @@
 						</Texture>
 						<FontString name="FocusName" inherits="GameFontNormalSmall">
 							<Size>
-								<AbsDimension x="70" y="10"/>
+								<AbsDimension x="90" y="10"/>
 							</Size>
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
-										<AbsDimension x="-20" y="20"/>
+										<AbsDimension x="-24" y="25"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -130,7 +128,7 @@
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
-										<AbsDimension x="-20" y="9"/>
+										<AbsDimension x="-22" y="9"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -139,7 +137,7 @@
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
-										<AbsDimension x="-20" y="-1"/>
+										<AbsDimension x="-22" y="-1"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -148,12 +146,12 @@
 					<Layer level="ARTWORK">
 						<Texture name="FocusRaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" hidden="true">
 							<Size>
-								<AbsDimension x="16" y="16"/>
+								<AbsDimension x="20" y="20"/>
 							</Size>
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="-25" y="-3"/>
+										<AbsDimension x="-31" y="-1"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -180,12 +178,12 @@
 			</Frame>
 			<StatusBar name="FocusFrameHealthBar" inherits="TextStatusBar">
 				<Size>
-					<AbsDimension x="70" y="5"/>
+					<AbsDimension x="90" y="7"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="12" y="-22"/>
+							<AbsDimension x="12" y="-28"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -206,12 +204,12 @@
 			</StatusBar>
 			<StatusBar name="FocusFrameManaBar" inherits="TextStatusBar">
 				<Size>
-					<AbsDimension x="70" y="5"/>
+					<AbsDimension x="90" y="7"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="12" y="-30"/>
+							<AbsDimension x="12" y="-37"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -228,7 +226,7 @@
 			</StatusBar>
 			<StatusBar name="FocusFrameSpellBar" inherits="CastingBarFrameTemplate" hidden="true">
 				<Size>
-					<AbsDimension x="115" y="10"/>
+					<AbsDimension x="135" y="10"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOM">
@@ -236,7 +234,7 @@
 							<AbsDimension x="0" y="0"/>
 						</Offset>
 					</Anchor>
-				</Anchors>`
+				</Anchors>
 				<Scripts>
 					<OnShow>
 						Focus_Spellbar_AdjustPosition(self);
@@ -253,7 +251,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="12" y="8"/>
+							<AbsDimension x="13" y="12"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -262,7 +260,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="4" y="0"/>
+							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -271,12 +269,21 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="4" y="0"/>
+							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="$parentDebuff4" inherits="FocusDebuffButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff5" inherits="FocusDebuffButtonTemplate" id="5">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentDebuff1" relativePoint="BOTTOM">
 						<Offset>
@@ -285,20 +292,29 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentDebuff5" inherits="FocusDebuffButtonTemplate" id="5">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff4" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="4" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 			<Button name="$parentDebuff6" inherits="FocusDebuffButtonTemplate" id="6">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff5" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="4" y="0"/>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff7" inherits="FocusDebuffButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentDebuff8" inherits="FocusDebuffButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -339,12 +355,12 @@
 	</Button>
 	<Button name="TargetofFocusFrame" movable="true" inherits="SecureUnitButtonTemplate" parent="FocusFrame" hidden="true">
 		<Size>
-			<AbsDimension x="70" y="34"/>
+			<AbsDimension x="93" y="45"/>
 		</Size>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="12" y="-4"/>
+					<AbsDimension x="14" y="-9"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -352,12 +368,12 @@
 			<Layer level="BACKGROUND">
 				<Texture name="TargetofFocusBackground">
 					<Size>
-						<AbsDimension x="35" y="11"/>
+						<AbsDimension x="46" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT">	
 							<Offset>
-								<AbsDimension x="33" y="12"/>
+								<AbsDimension x="42" y="13"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -367,12 +383,12 @@
 			<Layer level="BORDER">
 				<Texture name="TargetofFocusPortrait">
 					<Size>
-						<AbsDimension x="26" y="26"/>
+						<AbsDimension x="35" y="35"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="4" y="-4"/>
+								<AbsDimension x="5" y="-5"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -388,12 +404,12 @@
 						</Texture>
 						<FontString name="TargetofFocusName" inherits="GameFontNormalSmall" justifyH="LEFT">
 							<Size>
-								<AbsDimension x="100" y="10"/>
+								<AbsDimension x="60" y="10"/>
 							</Size>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT">
 									<Offset>
-										<AbsDimension x="30" y="-2"/>
+										<AbsDimension x="42" y="-2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -417,12 +433,12 @@
 			</Frame>
 			<StatusBar name="TargetofFocusHealthBar" inherits="TextStatusBar">
 				<Size>
-					<AbsDimension x="35" y="6"/>
+					<AbsDimension x="46" y="7"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-2" y="-10"/>
+							<AbsDimension x="-2" y="-15"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -436,12 +452,12 @@
 			</StatusBar>
 			<StatusBar name="TargetofFocusManaBar" inherits="TextStatusBar">
 				<Size>
-					<AbsDimension x="35" y="6"/>
+					<AbsDimension x="46" y="7"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-2" y="-18"/>
+							<AbsDimension x="-2" y="-23"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -452,7 +468,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="4" y="-5"/>
+							<AbsDimension x="4" y="-10"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

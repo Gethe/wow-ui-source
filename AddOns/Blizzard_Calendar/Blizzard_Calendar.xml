@@ -420,6 +420,11 @@
 								<Offset x="0" y="0"/>
 							</Anchor>
 						</Anchors>
+						<Scripts>
+							<OnClick>
+								CalendarFilterButton_OnClick(self);
+							</OnClick>
+						</Scripts>
 						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 							<Size x="20" y="20"/>
 							<Anchors>
@@ -452,11 +457,6 @@
 								</Anchor>
 							</Anchors>
 						</HighlightTexture>
-						<Scripts>
-							<OnClick>
-								CalendarFilterButton_OnClick(self);
-							</OnClick>
-						</Scripts>
 					</Button>
 				</Frames>
 			</Frame>
@@ -1009,6 +1009,11 @@
 				</Backdrop>
 				<Frames>
 					<ScrollFrame name="CalendarViewEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
+						<Scripts>
+							<OnLoad>
+								CalendarViewEventDescriptionScrollFrame_OnLoad(self);
+							</OnLoad>
+						</Scripts>
 						<ScrollChild>
 							<Frame name="CalendarViewEventDescriptionScrollChild">
 								<Size x="263" y="1"/>
@@ -1027,11 +1032,6 @@
 								</Layers>
 							</Frame>
 						</ScrollChild>
-						<Scripts>
-							<OnLoad>
-								CalendarViewEventDescriptionScrollFrame_OnLoad(self);
-							</OnLoad>
-						</Scripts>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
@@ -1334,9 +1334,7 @@
 				</Anchors>
 				<Scripts>
 					<OnTextChanged>
-						CalendarEventSetTitle(self:GetText());
-
-						CalendarCreateEventCreateButton_Update();
+						CalendarCreateEventTitleEdit_OnTextChanged(self);
 					</OnTextChanged>
 					<OnEnterPressed>
 						self:ClearFocus();
@@ -1345,10 +1343,7 @@
 						self:ClearFocus();
 					</OnEscapePressed>
 					<OnEditFocusLost>
-						self:HighlightText(0, 0);
-						if ( self:GetText() == "" ) then
-							self:SetText(CALENDAR_EVENT_NAME);
-						end
+						CalendarCreateEventTitleEdit_OnEditFocusLost(self);
 					</OnEditFocusLost>
 					<OnEditFocusGained>
 						self:HighlightText();
@@ -1419,6 +1414,11 @@
 								</Scripts>
 							</Button>
 						</Frames>
+						<Scripts>
+							<OnLoad>
+								CalendarCreateEventDescriptionScrollFrame_OnLoad(self);
+							</OnLoad>
+						</Scripts>
 						<ScrollChild>
 							<EditBox name="CalendarCreateEventDescriptionEdit" multiLine="true" letters="255" autoFocus="false">
 								<Anchors>
@@ -1455,11 +1455,6 @@
 								<FontString inherits="GameFontHighlightSmall"/>
 							</EditBox>
 						</ScrollChild>
-						<Scripts>
-							<OnLoad>
-								CalendarCreateEventDescriptionScrollFrame_OnLoad(self);
-							</OnLoad>
-						</Scripts>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
@@ -1646,6 +1641,46 @@
 						GameTooltip:SetText(CALENDAR_TOOLTIP_MASSINVITE, nil, nil, nil, nil, 1);
 						GameTooltip:Show();
 						--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_MASSINVITE, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="CalendarCreateEventRaidInviteButton" inherits="UIPanelButtonTemplate2" text="CALENDAR_INVITE_MEMBERS">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="12" y="12"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBorder" file="Interface\Buttons\UI-Button-Borders">
+							<Size x="106" y="26"/>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="-1" y="1"/>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset x="10" y="-3"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.0" right="0.4140625" top="0.0" bottom="0.40625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						CalendarCreateEventRaidInviteButton_OnLoad(self);
+					</OnLoad>
+					<OnEvent>
+						CalendarCreateEventRaidInviteButton_OnEvent(self, event, ...);
+					</OnEvent>
+					<OnClick>
+						CalendarCreateEventRaidInviteButton_OnClick(self);
+					</OnClick>
+					<OnEnter>
+						CalendarCreateEventRaidInviteButton_OnEnter(self);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -1985,9 +2020,7 @@
 				<Frames>
 					<Slider name="CalendarEventPickerScrollBar" inherits="HybridScrollBarTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset x="0" y="0"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
 						</Anchors>
 					</Slider>
 				</Frames>
@@ -2174,7 +2207,13 @@
 	</Frame>
 
 	<!-- Class Buttons -->
-	<!-- This module is meant to keep track of class totals in an invite list. -->
+	<!-- This module is meant to keep track of class totals in an invite list.
+		 The module stores buttons rather than frames to take advantage of the Enable and Disable
+		 functions that you can call on buttons. Enabling and Disabling the buttons provides an
+		 easy way to block OnEnter and OnLeave scripts. If memory becomes a problem, the buttons
+		 can be converted to frames as long as bookkeeping is done to block the enable and disable
+		 scripts at the appropriate times (e.g. when a modal dialog is up).
+	-->
 	<Frame name="CalendarClassButtonContainer" parent="CalendarFrame" hidden="true">
 		<Size x="18" y="270"/>
 		<Anchors>
@@ -2209,7 +2248,15 @@
 							<TexCoords left="0.0" right="0.625" top="0.640625" bottom="0.875"/>
 						</Texture>
 					</Layer>
+					<Layer level="BORDER">
+						<FontString name="CalendarClassTotalsText" inherits="GameFontGreenSmall" text="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
 				</Layers>
+<!--
 				<Frames>
 					<Frame name="CalendarClassTotalsButtonOnEnterDummy" enableMouse="true" setAllPoints="true">
 						<Scripts>
@@ -2222,7 +2269,9 @@
 						</Scripts>
 					</Frame>
 				</Frames>
+-->
 				<Scripts>
+<!--
 					<OnLoad>
 						CalendarClassTotalsButton_OnLoad(self);
 					</OnLoad>
@@ -2232,6 +2281,7 @@
 					<OnClick>
 						CalendarClassTotalsButton_OnClick(self);
 					</OnClick>
+-->
 					<OnEnter>
 						CalendarClassTotalsButton_OnEnter(self);
 					</OnEnter>
@@ -2239,6 +2289,7 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
+<!--
 				<ButtonText text="0">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -2247,7 +2298,9 @@
 				<NormalFont style="GameFontGreenSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+-->
 			</Button>
+<!--
 			<Frame name="CalendarInviteToGroupDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="LEFT"/>
@@ -2258,6 +2311,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+-->
 		</Frames>
 		<Scripts>
 			<OnLoad>

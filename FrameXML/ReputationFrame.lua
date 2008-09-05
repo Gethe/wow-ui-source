@@ -112,9 +112,11 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 	if ( (hasRep) or (rowType == 0) or (rowType == 1)) then
 		factionStanding:Show();
 		factionBar:Show();
+		factionBar:GetParent().hasRep = true;
 	else
 		factionStanding:Hide();
 		factionBar:Hide();
+		factionBar:GetParent().hasRep = false;
 	end
 end
 
@@ -304,9 +306,11 @@ function ReputationBar_OnClick(self)
 	if ( ReputationDetailFrame:IsShown() and (GetSelectedFaction() == self.index) ) then
 		ReputationDetailFrame:Hide();
 	else
-		SetSelectedFaction(self.index);
-		ReputationDetailFrame:Show();
-		ReputationFrame_Update();
+		if ( self.hasRep ) then
+			SetSelectedFaction(self.index);
+			ReputationDetailFrame:Show();
+			ReputationFrame_Update();
+		end
 	end
 end
 

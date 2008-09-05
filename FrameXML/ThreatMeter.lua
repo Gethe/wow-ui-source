@@ -55,8 +55,7 @@ function ThreatMeter_SetStatusBarIcon(icon, unit)
 			icon:Hide();
 		else
 			local class, fileName = UnitClassBase(unit);
-			icon:SetTexture("Interface\\Minimap\\ObjectIcons");
-			icon:SetTexCoord(0.75, 0.875, 0.5, 1.0);
+			icon:SetTexture("Interface\\RaidFrame\\UI-RaidFrame-Threat");
 			local color = RAID_CLASS_COLORS[fileName];
 			icon:SetVertexColor(color.r, color.g, color.b);
 			icon:Show();

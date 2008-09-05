@@ -17,35 +17,40 @@ function PetFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_HAPPINESS");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PET_RENAMEABLE");
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
-	self:RegisterEvent("UNIT_EXITING_VEHICLE");
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, PetFrameDropDown, "PetFrame", 44, 8);
 	end
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
+	
+	local _, class = UnitClass("player");
+	if ( class == "DEATHKNIGHT" ) then
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
+	end
 end
 
-function PetFrame_Update (self)
-	if ( UnitIsVisible(self.unit) ) then
-		if ( self:IsShown() ) then
-			UnitFrame_Update(self);
-		else
-			self:Show();
-		end
-		--self.flashState = 1;
-		--self.flashTimer = PET_FLASH_ON_TIME;
-		if ( UnitPowerMax(self.unit) == 0 ) then
-			PetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-SmallTargetingFrame-NoMana");
-			PetFrameManaBarText:Hide();
-		else
-			PetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-SmallTargetingFrame");
-		end
-		PetAttackModeTexture:Hide();
+function PetFrame_Update (self, override)
+	if ( (not PlayerFrame.animating) or (override) ) then
+		if ( UnitIsVisible(self.unit) ) then
+			if ( self:IsShown() ) then
+				UnitFrame_Update(self);
+			else
+				self:Show();
+			end
+			--self.flashState = 1;
+			--self.flashTimer = PET_FLASH_ON_TIME;
+			if ( UnitPowerMax(self.unit) == 0 ) then
+				PetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-SmallTargetingFrame-NoMana");
+				PetFrameManaBarText:Hide();
+			else
+				PetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-SmallTargetingFrame");
+			end
+			PetAttackModeTexture:Hide();
 
-		PetFrame_SetHappiness(self);
-		RefreshBuffs(self, 0, self.unit);
-	else
-		self:Hide();
+			PetFrame_SetHappiness(self);
+			RefreshBuffs(self, 0, self.unit);
+		else
+			self:Hide();
+		end
 	end
 end
 
@@ -79,23 +84,6 @@ function PetFrame_OnEvent (self, event, ...)
 		PetFrame_SetHappiness(self);
 	elseif ( event == "PET_RENAMEABLE" ) then
 		StaticPopup_Show("RENAME_PET");
-	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
-		if ( arg1 == "player" ) then
-			local unit;
-			local showVehicleUI = arg2;
-			if ( showVehicleUI ) then
-				unit = "player";
-			else
-				unit = "pet";
-			end
-			UnitFrame_SetUnit(self, unit, PetFrameHealthBar, PetFrameManaBar);
-			PetFrame_Update(self);
-		end
-	elseif ( event == "UNIT_EXITING_VEHICLE" ) then
-		if ( arg1 == "player" ) then
-			UnitFrame_SetUnit(self, "pet", PetFrameHealthBar, PetFrameManaBar);
-			PetFrame_Update(self);
-		end
 	end
 end
 

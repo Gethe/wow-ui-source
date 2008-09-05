@@ -16,7 +16,6 @@ local GetGameTime = _G.GetGameTime;
 -- private data
 local SEC_TO_MINUTE_FACTOR = 1/60;
 local SEC_TO_HOUR_FACTOR = SEC_TO_MINUTE_FACTOR*SEC_TO_MINUTE_FACTOR;
-MAX_TIMER_SEC = 99*3600 + 59*60 + 59;	-- 99:59:59
 
 local WARNING_SOUND_TRIGGER_OFFSET = -2 * SEC_TO_MINUTE_FACTOR;	-- play warning sound 2 sec before alarm sound
 
@@ -36,6 +35,10 @@ local CVAR_USE_LOCAL_TIME = "timeMgrUseLocalTime";
 local CVAR_ALARM_TIME = "timeMgrAlarmTime";
 local CVAR_ALARM_MESSAGE = "timeMgrAlarmMessage";
 local CVAR_ALARM_ENABLED = "timeMgrAlarmEnabled";
+
+
+-- public data
+MAX_TIMER_SEC = 99*3600 + 59*60 + 59;	-- 99:59:59
 
 
 local function _TimeManager_GetCurrentMinutes(localTime)
@@ -681,12 +684,12 @@ end
 
 function StopwatchFrame_OnUpdate(self)
 	if ( self.prevMouseIsOver ) then
-		if ( not MouseIsOver(self, 20, -8, -8, 20) ) then
+		if ( not MouseIsOver(self) ) then
 			UIFrameFadeOut(StopwatchTabFrame, CHAT_FRAME_FADE_TIME);
 			self.prevMouseIsOver = false;
 		end
 	else
-		if ( MouseIsOver(self, 20, -8, -8, 20) ) then
+		if ( MouseIsOver(self) ) then
 			UIFrameFadeIn(StopwatchTabFrame, CHAT_FRAME_FADE_TIME);
 			self.prevMouseIsOver = true;
 		end

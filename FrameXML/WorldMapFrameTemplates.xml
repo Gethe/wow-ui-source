@@ -119,4 +119,26 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
+	<Frame name="WorldMapDebugObjectTemplate" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\RaidFrame\UI-RaidFrame-Threat" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				self.texture = self:GetRegions();
+			</OnLoad>
+			<OnEnter>
+				WorldMapUnit_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				WorldMapTooltip:Hide();
+			</OnLeave>
+			<OnMouseUp>
+				TeleportToDebugObject(self.index);
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
 </Ui>

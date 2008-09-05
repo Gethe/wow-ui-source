@@ -62,12 +62,16 @@ function PVPFrame_OnShow()
 	PVPFrame_SetFaction();
 	PVPFrame_Update();
 	PVPMicroButton_SetPushed();
+	UpdateMicroButtons();
 	SetPortraitTexture(PVPFramePortrait, "player");
+	PlaySound("igCharacterInfoOpen");
 end
 
 function PVPFrame_OnHide()
 	PVPTeamDetails:Hide();
 	PVPMicroButton_SetNormal();
+	UpdateMicroButtons();
+	PlaySound("igCharacterInfoClose");
 end
 
 function PVPFrame_SetFaction()
@@ -115,13 +119,13 @@ function PVPTeam_Update()
 
 	-- fill out data
 	for index, value in pairs(ARENA_TEAMS) do
+		buttonIndex = buttonIndex + 1;
+		button = getglobal("PVPTeam"..buttonIndex);
 		if ( value.index ) then
-			buttonIndex = buttonIndex + 1;
 			-- Pull Values
 			teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, playerRating, background.r, background.g, background.b, emblem, emblemColor.r, emblemColor.g, emblemColor.b, border, borderColor.r, borderColor.g, borderColor.b = GetArenaTeam(value.index);
 
 			-- Set button elements to variables 
-			button = getglobal("PVPTeam"..buttonIndex);
 			buttonName = "PVPTeam"..buttonIndex;
 			data = buttonName.."Data";
 			standard = buttonName.."Standard";
@@ -198,18 +202,8 @@ function PVPTeam_Update()
 			getglobal(buttonName.."Background"):SetVertexColor(0, 0, 0);
 			getglobal(buttonName.."Background"):SetAlpha(1);
 			getglobal(buttonName.."TeamType"):Hide();
-		end
-	end
-	for i=(buttonIndex+1), MAX_ARENA_TEAMS do
-		getglobal("PVPTeam"..i):SetID(0);
-	end
-
-	-- show unused teams
-	for index, value in pairs(ARENA_TEAMS) do
-		if ( not value.index ) then
+		else
 			-- Set button elements to variables 
-			buttonIndex = buttonIndex + 1;
-			button = getglobal("PVPTeam"..buttonIndex);
 			buttonName = "PVPTeam"..buttonIndex;
 			data = buttonName.."Data";
 
@@ -226,15 +220,15 @@ function PVPTeam_Update()
 			getglobal(buttonName.."StandardBorder"):Hide();
 			getglobal(buttonName.."StandardEmblem"):Hide();
 			getglobal(buttonName.."TeamType"):SetFormattedText(PVP_TEAMSIZE, value.size, value.size);
-			getglobal(buttonName.."TeamType"):Show();
+			getglobal(buttonName.."TeamType"):Show();		end
 			count = count +1;
-		end
 	end
 	if ( count == 3 ) then
 		PVPFrameToggleButton:Hide();
 	else
 		PVPFrameToggleButton:Show();
 	end
+
 end
 
 function PVPTeam_OnEnter(self)

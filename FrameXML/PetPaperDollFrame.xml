@@ -5,6 +5,11 @@
 		<Size>
 			<AbsDimension x="37" y="37"/>
 		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentActiveTexture" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
@@ -37,7 +42,18 @@
 			<TexCoords left="0.203125" right="0.765625" top="0.203125" bottom="0.7625625"/>
 		</DisabledTexture>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-Button-Outline" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="66" y="66"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</CheckedTexture>
 	</CheckButton>
 
 	<Frame name="PetPaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" id="2" hidden="true">

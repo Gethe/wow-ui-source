@@ -355,12 +355,13 @@ function HANDLE:IsUnderMouse(recursive)
     local frame = GetHandleFrame(self);
     local x, y = GetCursorPosition();
     local l, b, w, h = frame:GetRect()
-    if (not w or not h) then return nil; end
-    local e = frame:GetEffectiveScale();
-    local fx = x / e - l;
-    if ((fx >= 0) and (fx <= w)) then
-        local fy = y / e - b;
-        if ((fy >= 0) and (fy <= h)) then return true; end
+    if (w and h) then
+        local e = frame:GetEffectiveScale();
+        local fx = x / e - l;
+        if ((fx >= 0) and (fx <= w)) then
+            local fy = y / e - b;
+            if ((fy >= 0) and (fy <= h)) then return true; end
+        end
     end
     if (not recursive) then
         return;
@@ -598,4 +599,25 @@ function HANDLE:SetParent(handle)
     end
 
     GetHandleFrame(self):SetParent(parent);
+end
+
+---------------------------------------------------------------------------
+-- Type specific methods
+
+function HANDLE:Disable()
+    local frame = GetHandleFrame(self);
+    if (not frame:IsObjectType("Button")) then
+        error("Frame is not a Button");
+        return;
+    end
+    frame:Disable();
+end
+
+function HANDLE:Enable()
+    local frame = GetHandleFrame(self);
+    if (not frame:IsObjectType("Button")) then
+        error("Frame is not a Button");
+        return;
+    end
+    frame:Enable();
 end

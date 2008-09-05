@@ -284,7 +284,10 @@ function MacroPopupButton_OnClick(self, button)
 	MacroPopupFrame.selectedIconTexture = nil;
 	MacroFrameSelectedMacroButtonIcon:SetTexture(GetMacroIconInfo(MacroPopupFrame.selectedIcon));
 	MacroPopupOkayButton_Update();
+	local mode = MacroPopupFrame.mode;
+	MacroPopupFrame.mode = nil;
 	MacroPopupFrame_Update(MacroPopupFrame);
+	MacroPopupFrame.mode = mode;
 end
 
 function MacroPopupOkayButton_OnClick(self, button)

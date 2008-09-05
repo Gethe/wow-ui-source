@@ -130,7 +130,7 @@
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture">
 							<Offset>
-								<AbsDimension x="-4" y="1"/>
+								<AbsDimension x="-1" y="1"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

@@ -139,7 +139,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 					<TexCoords left="0" right="0.6875" top="0" bottom="0.861328125"/>
 				</Texture>
-				<Texture name="$parentSparkle" inherits="SparkleTexture1">
+				<Texture name="$parentSparkle" inherits="SparkleTextureNormal">
 					<Size x="24" y="24"/>
 					<Anchors>
 						<Anchor point="CENTER">

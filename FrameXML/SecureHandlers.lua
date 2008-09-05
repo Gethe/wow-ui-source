@@ -99,7 +99,7 @@ end
 ---------------------------------------------------------------------------
 -- Standard invocation for header executions and child executions
 
-local function SecureHandler_Execute(self, signature, body, ...)
+local function SecureHandler_Self_Execute(self, signature, body, ...)
     if (type(body) ~= "string") then return; end
 
     local selfHandle = GetFrameHandle(self, true);
@@ -132,13 +132,13 @@ end
 
 function SecureHandler_OnSimpleEvent(self, snippetAttr)
     local body = self:GetAttribute(snippetAttr);
-    SecureHandler_Execute(self, "self", body);
+    SecureHandler_Self_Execute(self, "self", body);
 end
 
 function SecureHandler_OnClick(self, snippetAttr, button, down)
     local body = self:GetAttribute(snippetAttr);
-    SecureHandler_Execute(self, "self,button,down",
-                          body, button, down);
+    SecureHandler_Self_Execute(self, "self,button,down",
+                               body, button, down);
 end
 
 function SecureHandler_StateOnAttributeChanged(self, name, value)
@@ -146,8 +146,8 @@ function SecureHandler_StateOnAttributeChanged(self, name, value)
     if (stateid) then
         local body = self:GetAttribute("_onstate-" .. stateid);
         if (body) then
-            SecureHandler_Execute(self, "self,stateid,newstate",
-                                  body, stateid, value);
+            SecureHandler_Self_Execute(self, "self,stateid,newstate",
+                                       body, stateid, value);
         end
     end
 end
@@ -159,8 +159,8 @@ function SecureHandler_AttributeOnAttributeChanged(self, name, value)
 
     local body = self:GetAttribute("_onattributechanged");
     if (body) then
-        SecureHandler_Execute(self, "self,name,value",
-                              body, name, value);
+        SecureHandler_Self_Execute(self, "self,name,value",
+                                   body, name, value);
     end
 end
 
@@ -198,9 +198,9 @@ end
 function SecureHandler_OnDragEvent(snippetAttr, self, button)
     local body = self:GetAttribute(snippetAttr);
     if (body) then
-        PickupAny( SecureHandler_Execute(self,
-                                         "self,button,kind,value,...",
-                                         body, button, GetCursorInfo()) );
+        PickupAny( SecureHandler_Self_Execute(self,
+                                              "self,button,kind,value,...",
+                                              body, button, GetCursorInfo()) );
     end
 end
 
@@ -520,8 +520,8 @@ local function API_OnAttributeChanged(self, name, value)
             error("Invalid execute body");
             return;
         end
-        -- Most validation is performed by SecureHandler_Execute
-        SecureHandler_Execute(frame, "self", value);
+        -- Most validation is performed by SecureHandler_Self_Execute
+        SecureHandler_Self_Execute(frame, "self", value);
         return;
     end
 
@@ -720,22 +720,27 @@ end
 
 ---------------------------------------------------------------------------
 -- Helper Methods, these are just friendly wrappers for the
--- global functions
+-- global functions.
+
 
 local function SecureHandlerMethod_Execute(self, body)
+    -- Kept as a wrapper for consistency
     return SecureHandlerExecute(self, body);
 end
 
 local function SecureHandlerMethod_WrapScript(self, frame, script,
                                               preBody, postBody)
+    -- Wrapped since args are in different order
     return SecureHandlerWrapScript(frame, script, self, preBody, postBody);
 end
 
 local function SecureHandlerMethod_UnwrapScript(self, frame, script)
+    -- Wrapped since args are in different order
     return SecureHandlerUnwrapScript(frame, script);
 end
 
 local function SecureHandlerMethod_SetFrameRef(self, id, frame)
+    -- Kept as a wrapper for consistency
     return SecureHandlerSetFrameRef(self, id, frame);
 end
 
@@ -901,7 +906,8 @@ local function SecureHandler_Update_Dispatch(self, elapsed)
                 if (selfHandle) then
                     local ok, err =
                         pcall(CallRestrictedClosure, "self,when,message",
-                              env, self, body, selfHandle, when, message);
+                              env, controlHandle, body,
+                              selfHandle, when, message);
                     if (not ok) then
                         SoftError(err);
                     end
@@ -1037,7 +1043,7 @@ local function ChildUpdate_Helper(environment, controlHandle,
                 if (selfHandle) then
                     CallRestrictedClosure("self,scriptid,message",
                                           environment, controlHandle, body,
-                                          selfHandle, message, scriptid);
+                                          selfHandle, scriptid, message);
                 end
             end
         end
@@ -1131,7 +1137,7 @@ end
 local function CallMethod_inner(frame, methodName, ...)
     local method = frame[methodName];
     -- Refuse to run secure code
-    if (issecure() or type(method) ~= "string") then
+    if (issecure() or type(method) ~= "function") then
         error("Invalid method '" .. methodName .. "'");
         return;
     end

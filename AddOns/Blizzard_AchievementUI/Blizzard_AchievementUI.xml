@@ -952,21 +952,32 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Layer level="OVERLAY">
 						<FontString name="$parentPoints" inherits="AchievementPointsFont">
 							<Anchors>
-								<Anchor point="CENTER" relativeTo="$parentIcon">
-									<Offset>
-										<AbsDimension x="-2" y="3"/>
-									</Offset>
+								<Anchor point="TOPLEFT" relativeTo="$parentIcon">
+									<Offset x="14" y="-21"/>
+								</Anchor>
+								<Anchor point="TOPRIGHT" relativeTo="$parentIcon">
+									<Offset x="-16" y="-21"/>
 								</Anchor>
 							</Anchors>
-							<Size>
-								<AbsDimension x="40" y="16"/>
-							</Size>
 						</FontString>
 					</Layer>
 				</Layers>				
 				<Scripts>
 					<OnLoad>
 						AchievementShield_OnLoad(self);
+						self.points.SetText = 
+							function (self, text)
+								getmetatable(self).__index.SetText(self, text);
+								local width = self:GetStringWidth();
+								
+								-- Round the width, GetStringWidth returns a float.
+								width = math.floor(width * 10^0 + 0.5) / 10^0;
+								if ( math.fmod(width, 2) == 0 ) then
+									self:SetPoint("TOPLEFT", "$parentIcon", 13, -21);
+								else
+									self:SetPoint("TOPLEFT", "$parentIcon", 14, -21);
+								end
+							end
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -3084,7 +3095,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab1" inherits="AchievementFrameTabButtonTemplate" id="1" text="Achievements">
+			<Button name="$parentTab1" inherits="AchievementFrameTabButtonTemplate" id="1" text="ACHIEVEMENTS">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
@@ -3101,7 +3112,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="AchievementFrameTabButtonTemplate" id="2" text="Statistics">
+			<Button name="$parentTab2" inherits="AchievementFrameTabButtonTemplate" id="2" text="STATISTICS">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
 						<Offset>

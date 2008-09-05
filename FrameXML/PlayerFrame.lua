@@ -26,7 +26,10 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITING_VEHICLE");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+	
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
 
@@ -174,53 +177,117 @@ function PlayerFrame_OnEvent(self, event, ...)
 	elseif ( event == "READY_CHECK_FINISHED" ) then
 		ReadyCheck_Finish(PlayerFrameReadyCheck);
 	elseif ( event == "UNIT_RUNIC_POWER" and arg1 == "player" ) then
-		PlayerFrame_SetRunicPower(UnitMana("player"));
+		PlayerFrame_SetRunicPower(UnitPower("player"));
+	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
+		if ( arg1 == "player" ) then
+			if ( arg2 ) then
+				PlayerFrame_AnimateOut(self);
+			else
+				if ( PlayerFrame.state == "vehicle" ) then
+					PlayerFrame_AnimateOut(self);
+				end
+			end
+		end
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		if ( arg1 == "player" ) then
-			local showVehicle = arg2;
-			if ( showVehicle ) then
-				UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
-				PlayerFrame_Update();
-				PlayerFrame_ToVehicleArt();
-			else
-				UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
-				PlayerFrame_Update();
-			end
-			BuffFrame_Update();
-			ComboFrame_Update();
+			self.inSeat = true;
+			PlayerFrame_UpdateArt(self);
 		end
 	elseif ( event == "UNIT_EXITING_VEHICLE" ) then
-		if ( arg1 == "player" ) then
-			UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
-			PlayerFrame_Update();
-			BuffFrame_Update();
-			ComboFrame_Update();
-			PlayerFrame_ToPlayerArt();
+		if ( self.state == "vehicle" ) then
+			PlayerFrame_AnimateOut(self);
 		end
+	elseif ( event == "UNIT_EXITED_VEHICLE" ) then
+		self.inSeat = true;
+		PlayerFrame_UpdateArt(self);
 	end
 end
 
-function PlayerFrame_ToVehicleArt()
+local function PlayerFrame_AnimPos(self, fraction)
+	return "TOPLEFT", UIParent, "TOPLEFT", -19, fraction*140-4;
+end
+
+local PlayerFrameAnimTable = {
+	totalTime = 0.3,
+	updateFunc = "SetPoint",
+	getPosFunc = PlayerFrame_AnimPos,
+	}
+function PlayerFrame_AnimateOut(self)
+	self.inSeat = false;
+	self.animFinished = false;
+	self.inSequence = true;
+	SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_AnimFinished, false)
+end
+
+function PlayerFrame_AnimFinished(self)
+	self.animFinished = true;
+	PlayerFrame_UpdateArt(self);
+end
+
+function PlayerFrame_UpdateArt(self)
+	if ( self.animFinished and self.inSeat and self.inSequence) then
+		PlayerFrame_ToVehicleArt(self, UnitVehicleSkin("player"));	--This will go to PlayerArt if it should
+		SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
+	end
+end
+
+function PlayerFrame_SequenceFinished(self)
+	self.inSequence = false;
+	PetFrame_Update(PetFrame);
+end
+
+function PlayerFrame_ToVehicleArt(self, vehicleType)
 	if ( not UnitHasVehicleUI("player") ) then
-		PlayerFrame_ToPlayerArt();
+		PlayerFrame_ToPlayerArt(self);
 		return;
 	end
 	
+	--Swap frame
+
+	UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
+	UnitFrame_SetUnit(PetFrame, "player", PetFrameHealthBar, PetFrameManaBar);
+	PetFrame_Update(PetFrame);
+	PlayerFrame_Update();
+	BuffFrame_Update();
+	ComboFrame_Update();
+			
 	PlayerFrameTexture:Hide();
+	if ( vehicleType == "Natural" ) then
+		PlayerFrameVehicleTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Organic");
+		PlayerFrameHealthBar:SetWidth(103);
+		PlayerFrameHealthBar:SetPoint("TOPLEFT",116,-41);
+		PlayerFrameManaBar:SetWidth(103);
+		PlayerFrameManaBar:SetPoint("TOPLEFT",116,-52);
+	else
+		PlayerFrameVehicleTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame");
+		PlayerFrameHealthBar:SetWidth(100);
+		PlayerFrameHealthBar:SetPoint("TOPLEFT",119,-41);
+		PlayerFrameManaBar:SetWidth(100);
+		PlayerFrameManaBar:SetPoint("TOPLEFT",119,-52);
+	end
 	PlayerFrameVehicleTexture:Show();
+	
 	PlayerName:SetPoint("CENTER",50,23);
 	PlayerLeaderIcon:SetPoint("TOPLEFT",50,0);
 	PlayerMasterIcon:SetPoint("TOPLEFT",86,0);
 	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -13);
-	PlayerFrameHealthBar:SetWidth(100);
-	PlayerFrameHealthBar:SetPoint("TOPLEFT",119,-41);
-	PlayerFrameManaBar:SetWidth(100);
-	PlayerFrameManaBar:SetPoint("TOPLEFT",119,-52);
+	
 	PlayerFrameBackground:SetWidth(114);
 	PlayerLevelText:Hide();
+	
+	PlayerFrame.state = "vehicle";
 end
 
-function PlayerFrame_ToPlayerArt()
+function PlayerFrame_ToPlayerArt(self)
+	--Unswap frame
+	
+	UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
+	UnitFrame_SetUnit(PetFrame, "pet", PetFrameHealthBar, PetFrameManaBar);
+	PetFrame_Update(PetFrame);
+	PlayerFrame_Update();
+	BuffFrame_Update();
+	ComboFrame_Update();
+			
 	PlayerFrameTexture:Show();
 	PlayerFrameVehicleTexture:Hide();
 	PlayerName:SetPoint("CENTER",50,19);
@@ -233,6 +300,8 @@ function PlayerFrame_ToPlayerArt()
 	PlayerFrameManaBar:SetPoint("TOPLEFT",106,-52);
 	PlayerFrameBackground:SetWidth(119);
 	PlayerLevelText:Show();
+	
+	PlayerFrame.state = "player";
 end
 
 function PlayerFrame_UpdateVoiceStatus (status)
@@ -390,7 +459,9 @@ function PlayerFrame_UpdatePlaytime()
 end
 
 function PlayerFrame_SetupDeathKnniggetLayout ()
-	-- PlayerFrame:SetPoint("TOPLEFT", -11, -8);
+	PlayerFrame:SetHitRectInsets(0,0,0,35);
+	
+	--[[ PlayerFrame:SetPoint("TOPLEFT", -11, -8);
 	PlayerFrame:RegisterEvent("UNIT_RUNIC_POWER");
 	PlayerPortrait:SetDrawLayer("BACKGROUND");
 	PlayerFrameTexture:ClearAllPoints();
@@ -451,7 +522,7 @@ function PlayerFrame_SetupDeathKnniggetLayout ()
 	runicPowerBar:SetWidth(64);
 	runicPowerBar:SetHeight(63);
 	
-	PlayerFrame_SetRunicPower(UnitMana("player"));
+	PlayerFrame_SetRunicPower(UnitPower("player"));--]]
 end
 
 CustomClassLayouts = {
@@ -461,7 +532,7 @@ CustomClassLayouts = {
 local layoutUpdated = false;
 
 function PlayerFrame_UpdateLayout ()
-	if ( true ) then
+	if ( layoutUpdated ) then
 		return;
 	end
 	layoutUpdated = true;
@@ -485,8 +556,6 @@ RUNICGLOW_FINISHTHROBANDHIDE = false;
 local RUNICGLOW_THROBSTART = 0;
 
 function PlayerFrame_SetRunicPower (runicPower)
-	assert(runicPower and (tonumber(runicPower) == runicPower));
-	
 	PlayerFrameRunicPowerBar:SetHeight(RUNICPOWERBARHEIGHT * (runicPower / 100));
 	PlayerFrameRunicPowerBar:SetTexCoord(0, 1, (1 - (runicPower / 100)), 1);
 	
@@ -509,7 +578,7 @@ function DeathKnniggetThrobFunction (self, elapsed)
 	if ( RUNICGLOW_THROBSTART == 0 ) then
 		RUNICGLOW_THROBSTART = GetTime();
 	elseif ( not RUNICGLOW_FINISHTHROBANDHIDE ) then
-		local interval = RUNICGLOW_THROBINTERVAL - math.abs( .9 - (UnitMana("player") / 100)); 
+		local interval = RUNICGLOW_THROBINTERVAL - math.abs( .9 - (UnitPower("player") / 100)); 
 		local animTime = GetTime() - RUNICGLOW_THROBSTART;
 		if ( animTime >= interval ) then
 			-- Fading out

@@ -173,8 +173,8 @@ local LOCAL_Restricted_Table_Meta = {
                      local tk = type(k);
                      if ((tk ~= "string") and (tk ~= "number")
                          and (tk ~= "boolean")
-                             and ((tv ~= "userdata")
-                                  or not (IsFrameHandle(v)))) then
+                             and ((tk ~= "userdata")
+                                  or not (IsFrameHandle(k)))) then
                          error("Invalid key type '" .. tk .. "'");
                          return;
                      end
@@ -450,7 +450,8 @@ local function RestrictedTable_insert(T, ...)
         end
         local pos, val;
         if (select('#', ...) == 1) then
-            T[#PT] = val;
+            local val = ...;
+            T[#PT + 1] = val;
             return;
         end
         pos, val = ...;

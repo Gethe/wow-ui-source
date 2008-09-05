@@ -1505,8 +1505,11 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
+			</OnLoad>
 			<OnEvent>
-				AchievementWatch_Update();
+				AchievementWatch_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
 				AchievementWatch_Update();

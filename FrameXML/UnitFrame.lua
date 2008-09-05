@@ -11,7 +11,8 @@ PowerBarColor["RUNIC_POWER"] = { r = 0.00, g = 0.82, b = 1.00 };
 PowerBarColor["AMMOSLOT"] = { r = 0.80, g = 0.60, b = 0.00 };
 PowerBarColor["FUEL"] = { r = 0.0, g = 0.55, b = 0.5 };
 
--- these are mostly needed for a fallback case, in case the code tries to index a power token above is missing from the table
+-- these are mostly needed for a fallback case (in case the code tries to index a power token that is missing from the table,
+-- it will try to index by power type instead)
 PowerBarColor[0] = PowerBarColor["MANA"];
 PowerBarColor[1] = PowerBarColor["RAGE"];
 PowerBarColor[2] = PowerBarColor["FOCUS"];
@@ -37,8 +38,14 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.healthbar = healthbar;
 	self.manabar = manabar;
 	self.threatIndicator = threatIndicator;
+	if (self.healthbar) then
+		self.healthbar.capNumericDisplay = true;
+	end
+	if (self.manabar) then
+		self.manabar.capNumericDisplay = true;
+	end
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
-	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player"));
+	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player" or unit == "pet"));
 	UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
 	UnitFrame_Update(self);
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -50,7 +57,9 @@ end
 function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 	self.unit = unit;
 	healthbar.unit = unit;
-	manabar.unit = unit;
+	if ( manabar ) then	--Party Pet frames don't have a mana bar.
+		manabar.unit = unit;
+	end
 	self:SetAttribute("unit", unit);
 	if ( (self==PlayerFrame or self==PetFrame) and unit=="player") then
 		local _,class = UnitClass("player");
@@ -70,11 +79,31 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 end
 
 function UnitFrame_Update (self)
-	self.name:SetText(GetUnitName(self.unit));
-	SetPortraitTexture(self.portrait, self.unit);
+	if ( self.overrideName ) then
+		self.name:SetText(GetUnitName(self.overrideName));
+	else
+		self.name:SetText(GetUnitName(self.unit));
+	end
+	
+	UnitFramePortrait_Update(self);
 	UnitFrameHealthBar_Update(self.healthbar, self.unit);
 	UnitFrameManaBar_Update(self.manabar, self.unit);
 	UnitFrame_UpdateThreatIndicator(self.threatIndicator, self.unit);
+end
+
+function UnitFramePortrait_Update (self)
+	SetPortraitTexture(self.portrait, self.unit);
+	local textureName = self.portrait:GetTexture();
+	if ( (not textureName) or (textureName == "Interface\\CharacterFrame\\TemporaryPortrait-Pet") or
+		(string.sub(textureName or "", 1, 51) == "Interface\\CharacterFrame\\TemporaryPortrait-Vehicle-") ) then
+		if ( self.portraitType == "Mechanical" ) then
+			self.portrait:SetTexture("Interface\\CharacterFrame\\TemporaryPortrait-Vehicle-Mechanical");
+		elseif ( self.portraitType == "Natural" ) then
+			self.portrait:SetTexture("Interface\\CharacterFrame\\TemporaryPortrait-Vehicle-Organic");
+		else
+			self.portrait:SetTexture("Interface\\CharacterFrame\\TemporaryPortrait-Pet");
+		end
+	end
 end
 
 function UnitFrame_OnEvent(self, event, ...)
@@ -87,7 +116,7 @@ function UnitFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		if ( arg1 == unit ) then
-			SetPortraitTexture(self.portrait, unit);
+			UnitFramePortrait_Update(self);
 		end
 	elseif ( event == "UNIT_DISPLAYPOWER" ) then
 		if ( arg1 == unit ) then
@@ -144,11 +173,8 @@ function UnitFrame_UpdateManaType (unitFrame)
 		-- couldn't find a power token entry...default to indexing by power type or just mana if we don't have that either
 		info = PowerBarColor[powerType] or PowerBarColor["MANA"];
 	end
+	unitFrame.manabar.powerType = powerType;
 	unitFrame.manabar:SetStatusBarColor(info.r, info.g, info.b);
-	--Hack for pets
-	if ( unitFrame.unit == "pet" and powerToken ~= "HAPPINESS" ) then
-		return;
-	end
 	-- Update the manabar text
 	if ( not unitFrame.noTextPrefix ) then
 		SetTextStatusBarTextPrefix(unitFrame.manabar, prefix);
@@ -156,12 +182,15 @@ function UnitFrame_UpdateManaType (unitFrame)
 	TextStatusBar_UpdateTextString(unitFrame.manabar);
 
 	-- Setup newbie tooltip
-	if ( unitFrame:GetName() == "PlayerFrame" ) then
-		unitFrame.manabar.tooltipTitle = prefix;
-		unitFrame.manabar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR_"..powerType);
-	else
-		unitFrame.manabar.tooltipTitle = nil;
-		unitFrame.manabar.tooltipText = nil;
+	-- FIXME: Fix this to use powerToken instead of powerType
+	if ( unitFrame.unit ~= "pet" or powerToken == "HAPPINESS" ) then
+	    if ( unitFrame:GetName() == "PlayerFrame" ) then
+		    unitFrame.manabar.tooltipTitle = prefix;
+		    unitFrame.manabar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR_"..powerType);
+	    else
+		    unitFrame.manabar.tooltipTitle = nil;
+		    unitFrame.manabar.tooltipText = nil;
+	    end
 	end
 end
 
@@ -282,7 +311,7 @@ end
 
 function UnitFrameManaBar_OnUpdate(self)
 	if ( not self.disconnected ) then
-		local currValue = UnitMana(self.unit);
+		local currValue = UnitPower(self.unit, self.powerType);
 		if ( currValue ~= self.currValue ) then
 			self:SetValue(currValue);
 			self.currValue = currValue;
@@ -295,9 +324,12 @@ function UnitFrameManaBar_Update(statusbar, unit)
 	if ( not statusbar ) then
 		return;
 	end
-	
+
 	if ( unit == statusbar.unit ) then
-		local maxValue = UnitManaMax(unit);
+		-- be sure to update the power type before grabbing the max power!
+		UnitFrame_UpdateManaType(statusbar:GetParent());
+
+		local maxValue = UnitPowerMax(unit, statusbar.powerType);
 
 		statusbar:SetMinMaxValues(0, maxValue);
 
@@ -307,10 +339,9 @@ function UnitFrameManaBar_Update(statusbar, unit)
 			statusbar.currValue = maxValue;
 			statusbar:SetStatusBarColor(0.5, 0.5, 0.5);
 		else
-			local currValue = UnitMana(unit);
+			local currValue = UnitPower(unit, statusbar.powerType);
 			statusbar:SetValue(currValue);
 			statusbar.currValue = currValue;
-			UnitFrame_UpdateManaType(statusbar:GetParent());
 		end
 	end
 	TextStatusBar_UpdateTextString(statusbar);

@@ -485,7 +485,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentThreatIndicator" file="Interface\Minimap\ObjectIcons" hidden="false">
+				<Texture name="$parentThreatIndicator" file="Interface\RaidFrame\UI-RaidFrame-Threat" hidden="false">
 					<Size>
 						<AbsDimension x="8" y="8"/>
 					</Size>
@@ -496,7 +496,18 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.75" right="0.875" top="0.5" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentVehicleIndicator" file="Interface\Vehicles\UI-Vehicles-Raid-Icon" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="10" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -830,6 +841,7 @@
 				self.nameLabel = getglobal(prefix.."Name");
 				self.clearButton = getglobal(prefix.."ClearButton");
 				self.speaker = getglobal(prefix.."Speaker");
+				self.vehicleIndicator = getglobal(prefix.."VehicleIndicator");
 			</OnLoad>
 		</Scripts>
 	</Frame>

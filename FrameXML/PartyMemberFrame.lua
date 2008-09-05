@@ -17,6 +17,50 @@ function ShowPartyFrame()
 	end
 end
 
+function PartyMemberFrame_ToPlayerArt(self)
+	self.state = "player";
+	local prefix = self:GetName();
+	_G[prefix.."VehicleTexture"]:Hide();
+	_G[prefix.."Texture"]:Show();
+	_G[prefix.."Portrait"]:SetPoint("TOPLEFT", 7, -6);
+	_G[prefix.."LeaderIcon"]:SetPoint("TOPLEFT", 0, 0);
+	_G[prefix.."MasterIcon"]:SetPoint("TOPLEFT", 32, 0);
+	_G[prefix.."PVPIcon"]:SetPoint("TOPLEFT", -9, -15);
+	_G[prefix.."Disconnect"]:SetPoint("LEFT", -7, -1);
+	
+	self.overrideName = nil;
+	
+	self.portraitType = nil;
+	
+	UnitFrame_SetUnit(self, "party"..self:GetID(), _G[prefix.."HealthBar"], _G[prefix.."ManaBar"]);
+	UnitFrame_SetUnit(_G[prefix.."PetFrame"], "partypet"..self:GetID(), _G[prefix.."PetFrameHealthBar"], nil);
+	PartyMemberFrame_UpdateMember(self);
+	
+	UnitFrame_Update(self)
+end
+
+function PartyMemberFrame_ToVehicleArt(self, vehicleType)
+	self.state = "vehicle";
+	local prefix = self:GetName();
+	_G[prefix.."Texture"]:Hide();
+	_G[prefix.."VehicleTexture"]:Show();
+	_G[prefix.."Portrait"]:SetPoint("TOPLEFT", 4, -9);
+	_G[prefix.."LeaderIcon"]:SetPoint("TOPLEFT", -3, 0);
+	_G[prefix.."MasterIcon"]:SetPoint("TOPLEFT", 29, 0);
+	_G[prefix.."PVPIcon"]:SetPoint("TOPLEFT", -12, -15);
+	_G[prefix.."Disconnect"]:SetPoint("LEFT", -10, -1);
+	
+	self.overrideName = "party"..self:GetID();
+	
+	self.portraitType = vehicleType;
+	
+	UnitFrame_SetUnit(self, "partypet"..self:GetID(), _G[prefix.."HealthBar"], _G[prefix.."ManaBar"]);
+	UnitFrame_SetUnit(_G[prefix.."PetFrame"], "party"..self:GetID(), _G[prefix.."PetFrameHealthBar"], nil);
+	PartyMemberFrame_UpdateMember(self);
+	
+	UnitFrame_Update(self)
+end
+
 function PartyMemberFrame_OnLoad (self)
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -39,11 +83,20 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, getglobal("PartyMemberFrame"..self:GetID().."DropDown"), self:GetName(), 47, 15);
 	end
 	SecureUnitButton_OnLoad(self, "party"..self:GetID(), showmenu);
+	
+	if ( UnitHasVehicleUI("party"..self:GetID()) ) then
+		local vehicleType = UnitVehicleSkin("party"..self:GetID());
+		PartyMemberFrame_ToVehicleArt(self, vehicleType);
+	else
+		PartyMemberFrame_ToPlayerArt(self);
+	end
 end
 
 function PartyMemberFrame_UpdateMember (self)
@@ -55,7 +108,6 @@ function PartyMemberFrame_UpdateMember (self)
 	if ( GetPartyMember(id) ) then
 		self:Show();
 
-		UnitFrame_UpdateManaType(self);
 		UnitFrame_Update(self);
 
 		local masterIcon = getglobal(self:GetName().."MasterIcon");
@@ -93,6 +145,9 @@ function PartyMemberFrame_UpdatePet (self, id)
 		petFrame:Hide();
 		petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -27);
 	end
+	
+	petFrame.portraitType = UnitVehicleSkin("party"..id);
+	
 	PartyMemberFrame_RefreshPetBuffs(self, id);
 	UpdatePartyMemberBackground();
 end
@@ -212,7 +267,7 @@ end
 function PartyMemberFrame_OnEvent(self, event, ...)
 	UnitFrame_OnEvent(self, event, ...);
 	
-	local arg1 = ...;
+	local arg1, arg2, arg3 = ...;
  
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		if ( GetPartyMember(self:GetID()) ) then
@@ -302,13 +357,23 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 			speaker.timer = VOICECHAT_DELAY;
 			VoiceChat_Animate(speaker, nil);
 		end
-	end
-	if ( event == "VARIABLES_LOADED" ) then
+	elseif ( event == "VARIABLES_LOADED" ) then
 		PartyMemberFrame_UpdatePet(self);
 		PartyMemberFrame_UpdateVoiceStatus(self);
-	end
-	if ( event == "VOICE_STATUS_UPDATE" ) then
+	elseif ( event == "VOICE_STATUS_UPDATE" ) then
 		PartyMemberFrame_UpdateVoiceStatus(self);
+	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
+		if ( arg1 == "party"..self:GetID() ) then
+			if ( arg2 ) then
+				PartyMemberFrame_ToVehicleArt(self, arg3);
+			else
+				PartyMemberFrame_ToPlayerArt(self);
+			end
+		end
+	elseif ( event == "UNIT_EXITED_VEHICLE" ) then
+		if ( arg1 == "party"..self:GetID() ) then
+			PartyMemberFrame_ToPlayerArt(self);
+		end
 	end
 end
 

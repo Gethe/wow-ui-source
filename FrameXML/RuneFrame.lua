@@ -18,6 +18,13 @@ local runeTextures = {
 	[RUNETYPE_CHROMATIC] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Chromatic-Off.tga",
 }
 
+runeMapping = {
+	[1] = "BLOOD",
+	[2] = "UNHOLY",
+	[3] = "FROST",
+	[4] = "DEATH",
+}
+
 function RuneButton_OnLoad (self)
 	RuneFrame_AddRune(RuneFrame, self);
 	
@@ -64,10 +71,24 @@ function RuneButton_Update (self, rune)
 		-- self.fill:SetTexture(iconTextures[runeType]);
 		self.rune:Show();
 		-- self.fill:Show();
+		self.tooltipText = _G["COMBAT_TEXT_RUNE_"..runeMapping[runeType]];
 	else
 		self.rune:Hide();
 		-- self.fill:Hide();
+		self.tooltipText = nil;
 	end
+end
+
+function RuneButton_OnEnter(self)
+	if ( self.tooltipText ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.tooltipText);
+		GameTooltip:Show();
+	end
+end
+
+function RuneButton_OnLeave(self)
+	GameTooltip:Hide();
 end
 
 function RuneFrame_OnLoad (self)

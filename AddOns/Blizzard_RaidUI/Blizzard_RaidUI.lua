@@ -1000,6 +1000,13 @@ function RaidPullout_Update(pullOutFrame)
 				RefreshBuffs(pulloutButton, pullOutFrame.showBuffs, unit);
 			end
 
+			--Handle vehicle indicator
+			if ( UnitHasVehicleUI(unit) ) then
+				pulloutButton.vehicleIndicator:Show();
+			else
+				pulloutButton.vehicleIndicator:Hide();
+			end
+			
 			pulloutButton:RegisterEvent("PLAYER_ENTERING_WORLD");
 			pulloutButton:RegisterEvent("UNIT_HEALTH");
 			pulloutButton:RegisterEvent("UNIT_AURA");
@@ -1007,6 +1014,8 @@ function RaidPullout_Update(pullOutFrame)
 			pulloutButton:RegisterEvent("VOICE_STATUS_UPDATE");
 			pulloutButton:RegisterEvent("VOICE_START");
 			pulloutButton:RegisterEvent("VOICE_STOP");
+			pulloutButton:RegisterEvent("UNIT_ENTERED_VEHICLE");
+			pulloutButton:RegisterEvent("UNIT_EXITED_VEHICLE");
 			pulloutButton:Show();
 		else
 			pulloutButton:UnregisterEvent("PLAYER_ENTERING_WORLD");
@@ -1077,6 +1086,15 @@ function RaidPulloutButton_OnEvent(self, event, ...)
 		end
 	elseif ( event == "VOICE_STATUS_UPDATE" ) then
 		RaidPulloutButton_UpdateVoice(self);
+	elseif (( event == "UNIT_ENTERED_VEHICLE" ) or ( event == "UNIT_EXITED_VEHICLE" )) then
+		local arg1 = ...;
+		if ( arg1 == self.unit ) then
+			if ( UnitHasVehicleUI(arg1) ) then
+				self.vehicleIndicator:Show();
+			else
+				self.vehicleIndicator:Hide();
+			end
+		end
 	end
 end
 

@@ -6,6 +6,56 @@
 			<AbsDimension x="60" y="60"/>
 		</Size>
 	</CheckButton>
+	<Button name="VehicleSeatIndicatorButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				VehicleSeatIndicatorButton_OnClick(self);
+			</OnClick>
+			<OnEnter>
+				VehicleSeatIndicatorButton_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				VehicleSeatIndicatorButton_OnLeave(self);
+			</OnLeave>
+		</Scripts>
+		<NormalTexture/>
+		<DisabledTexture/>
+		<PushedTexture/>
+	</Button>
+	<Frame name="VehicleSeatIndicator" toplevel="true" enableMouse="false" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="128" y="128"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="40" y="15"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackgroundTexture"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentButton1" inherits="VehicleSeatIndicatorButtonTemplate" id="1"/>
+			<Button name="$parentButton2" inherits="VehicleSeatIndicatorButtonTemplate" id="2"/>
+			<Button name="$parentButton3" inherits="VehicleSeatIndicatorButtonTemplate" id="3"/>
+			<Button name="$parentButton4" inherits="VehicleSeatIndicatorButtonTemplate" id="4"/>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				VehicleSeatIndicator_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				VehicleSeatIndicator_OnEvent(self, event, ...);
+			</OnEvent>
+		</Scripts>
+	</Frame>
 	<Frame name="VehicleMenuBar" toplevel="true" enableMouse="false" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="970" y="53"/>
@@ -18,11 +68,6 @@
 				<Size>
 					<AbsDimension x="40" y="40"/>
 				</Size>
-				<NormalTexture/>
-				<PushedTexture/>
-				<HighlightTexture alphaMode="ADD" file="Interface\Vehicles\UI-Vehicles-Button-Highlight">
-					<TexCoords left="0.130625" right="0.879375" top="0.130625" bottom="0.879375"/>
-				</HighlightTexture>
 				<Scripts>
 					<OnMouseDown>
 						VehicleAimUpStart();
@@ -31,16 +76,16 @@
 						VehicleAimUpStop();
 					</OnMouseUp>
 				</Scripts>
-			</Button>
-			<Button name="VehicleMenuBarPitchDownButton">
-				<Size>
-					<AbsDimension x="40" y="40"/>
-				</Size>
 				<NormalTexture/>
 				<PushedTexture/>
 				<HighlightTexture alphaMode="ADD" file="Interface\Vehicles\UI-Vehicles-Button-Highlight">
 					<TexCoords left="0.130625" right="0.879375" top="0.130625" bottom="0.879375"/>
 				</HighlightTexture>
+			</Button>
+			<Button name="VehicleMenuBarPitchDownButton">
+				<Size>
+					<AbsDimension x="40" y="40"/>
+				</Size>
 				<Scripts>
 					<OnMouseDown>
 						VehicleAimDownStart();
@@ -49,21 +94,26 @@
 						VehicleAimDownStop();
 					</OnMouseUp>
 				</Scripts>
-			</Button>
-			<Button name="VehicleMenuBarLeaveButton">
-				<Size>
-					<AbsDimension x="40" y="40"/>
-				</Size>
 				<NormalTexture/>
 				<PushedTexture/>
 				<HighlightTexture alphaMode="ADD" file="Interface\Vehicles\UI-Vehicles-Button-Highlight">
 					<TexCoords left="0.130625" right="0.879375" top="0.130625" bottom="0.879375"/>
 				</HighlightTexture>
+			</Button>
+			<Button name="VehicleMenuBarLeaveButton">
+				<Size>
+					<AbsDimension x="40" y="40"/>
+				</Size>
 				<Scripts>
 					<OnClick>
 						VehicleExit();
 					</OnClick>
 				</Scripts>
+				<NormalTexture/>
+				<PushedTexture/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Vehicles\UI-Vehicles-Button-Highlight">
+					<TexCoords left="0.130625" right="0.879375" top="0.130625" bottom="0.879375"/>
+				</HighlightTexture>
 			</Button>
 			<Frame name="VehicleMenuBarActionButtonFrame" frameStrata="HIGH" enableMouse="false" toplevel="true">
 				<Anchors>
@@ -290,7 +340,6 @@
 			<OnLoad>
 				RaiseFrameLevel(VehicleMenuBarArtFrame);
 				VehicleMenuBar_OnLoad(self);
-				--VehicleMenuBar_Debug();
 			</OnLoad>
 		</Scripts>
 	</Frame>

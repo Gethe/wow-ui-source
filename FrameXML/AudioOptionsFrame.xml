@@ -225,7 +225,7 @@
 	</Slider>
 	<Frame name="AudioOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
 		<Size>
-			<AbsDimension x="400" y="395"/>
+			<AbsDimension x="400" y="420"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>

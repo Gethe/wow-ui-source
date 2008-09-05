@@ -1,4 +1,4 @@
-MAX_FOCUS_BUFFS = 6;
+MAX_FOCUS_BUFFS = 8;
 
 UnitReactionColor = {
 	{ r = 1.0, g = 0.0, b = 0.0 },
@@ -19,6 +19,7 @@ function FocusFrame_OnLoad (self)
 	self.buffStartX = 5;
 	self.buffStartY = 32;
 	self.buffSpacing = 3;
+	FocusFrame.debuffTotal = 0;
 
 	self:RegisterForDrag("LeftButton");
 	FocusFrame_Update(self);
@@ -311,7 +312,7 @@ function SetFocusSpellbarAspect()
 	local frameBorder = getglobal(FocusFrameSpellBar:GetName().."Border");
 	if ( frameBorder ) then
 		frameBorder:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
-		frameBorder:SetWidth(150);
+		frameBorder:SetWidth(177);
 		frameBorder:SetHeight(49);
 		frameBorder:ClearAllPoints();
 		frameBorder:SetPoint("TOP", FocusFrameSpellBar, "TOP", 0, 20);
@@ -320,7 +321,7 @@ function SetFocusSpellbarAspect()
 	local frameFlash = getglobal(FocusFrameSpellBar:GetName().."Flash");
 	if ( frameFlash ) then
 		frameFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
-		frameFlash:SetWidth(150);
+		frameFlash:SetWidth(177);
 		frameFlash:SetHeight(49);
 		frameFlash:ClearAllPoints();
 		frameFlash:SetPoint("TOP", FocusFrameSpellBar, "TOP", 0, 20);
@@ -341,8 +342,7 @@ function Focus_Spellbar_OnLoad (self)
 
 	SetFocusSpellbarAspect();
 	
-	--The target casting bar has less room for text than most, so shorten it
-	getglobal(self:GetName().."Text"):SetWidth(115)
+	getglobal(self:GetName().."Text"):SetWidth(130);
 	-- check to see if the castbar should be shown
 	if ( GetCVar("showTargetCastbar") == "0") then
 		self.showCastbar = false;	
@@ -392,14 +392,14 @@ end
 
 function Focus_Spellbar_AdjustPosition ()
 	local yPos = 3;
-	if ( FocusFrame.debuffTotal > 3 ) then
-		yPos = 27;
-	elseif ( TargetofFocusFrame:IsShown() ) then
+	if ( FocusFrame.debuffTotal > 4 ) then
 		yPos = 25;
+	elseif ( TargetofFocusFrame:IsShown() ) then
+		yPos = 30;
 	elseif ( FocusFrame.debuffTotal > 0 ) then
 		yPos = 15
 	end
-	FocusFrameSpellBar:SetPoint("BOTTOM", "FocusFrame", "BOTTOM", 15, -yPos);
+	FocusFrameSpellBar:SetPoint("BOTTOM", "FocusFrame", "BOTTOM", 20, -yPos);
 end
 
 FOCUS_FRAME_LOCKED = true;

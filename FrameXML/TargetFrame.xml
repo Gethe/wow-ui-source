@@ -92,10 +92,10 @@
 			<AbsDimension x="21" y="21"/>
 		</Size>
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon" setAllPoints="true"/>
 			</Layer>
-			<Layer level="OVERLAY">
+			<Layer level="ARTWORK">
 				<FontString name="$parentCount" inherits="NumberFontNormalSmall">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT">
@@ -105,6 +105,20 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentStealable" file="Interface\TargetingFrame\UI-TargetingFrame-Stealable" hidden="true" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -151,16 +165,16 @@
 			<Layer level="BACKGROUND">
 				<Texture name="TargetFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
 					<Size>
-						<AbsDimension x="242" y="95"/>
+						<AbsDimension x="242" y="93"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="-10" y="-1"/>
+								<AbsDimension x="-24" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.05078125" right="1.0" top="0" bottom="0.7578125"/>
+					<TexCoords left="0" right="0.9453125" top="0" bottom="0.181640625"/>
 				</Texture>
 				<Texture name="TargetFrameBackground">
 					<Size>
@@ -472,7 +486,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="6" y="-6"/>
+								<AbsDimension x="5" y="-5"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

@@ -96,7 +96,7 @@ function PetPaperDollFrame_UpdateTabs()
 				ToggleCharacter("PetPaperDollFrame");
 			end
 		end
-	elseif ( not PetPaperDollFrame.selectedTab ) then
+	elseif ( (not PetPaperDollFrame.selectedTab) or (not PetPaperDollFrame_BeenViewed) ) then
 		if ( PetPaperDollFrameTab1:IsShown() ) then
 			PetPaperDollFrame_SetTab(1);
 		elseif ( PetPaperDollFrameTab2:IsShown() ) then
@@ -128,7 +128,8 @@ function PetPaperDollFrame_OnEvent (self, event, ...)
 			SetButtonPulse(CharacterFrameTab2, 60, 1);
 		end
 		PetPaperDollFrame_UpdateTabs();
-		PetPaperDollFrame_UpdateCompanions();
+		--PetPaperDollFrame_UpdateCompanions();	--This is called in SetCompanionPage
+		PetPaperDollFrame_SetCompanionPage((PetPaperDollFrameCompanionFrame.mode=="MOUNT") and PetPaperDollFrameCompanionFrame.pageMount or PetPaperDollFrameCompanionFrame.pageCritter);
 	elseif ( event == "COMPANION_UPDATE" ) then
 		if ( not PetPaperDollFrameCompanionFrame.idMount ) then
 			PetPaperDollFrameCompanionFrame.idMount = GetCompanionInfo("MOUNT", 1);
@@ -356,7 +357,13 @@ function PetPaperDollFrame_UpdateCompanions()
 				CompanionSummonButton:SetText(PetPaperDollFrameCompanionFrame.mode == "MOUNT" and MOUNT or SUMMON);
 			end
 		else
-			button:SetChecked(active);
+			button:SetChecked(false);
+		end
+		
+		if ( active ) then
+			_G["CompanionButton"..i.."ActiveTexture"]:Show();
+		else
+			_G["CompanionButton"..i.."ActiveTexture"]:Hide();
 		end
 	end
 end
@@ -389,7 +396,12 @@ function PetPaperDollFrame_UpdateCompanionPreview()
 		CompanionSelectedName:SetText(creatureName);
 	end
 end
-function PetPaperDollFrame_OnShow()
+
+PetPaperDollFrame_BeenViewed = false;
+function PetPaperDollFrame_OnShow(self)
+	if ( self:IsVisible() ) then
+		PetPaperDollFrame_BeenViewed = true;
+	end
 	SetButtonPulse(CharacterFrameTab2, 0, 1);	--Stop the button pulse
 	CharacterNameText:Hide();
 	PetNameText:Show();

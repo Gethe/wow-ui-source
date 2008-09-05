@@ -167,7 +167,7 @@ function ShowPetActionBar()
 		else
 			PETACTIONBAR_XPOS = 36
 		end
-		if ( MainMenuBar.busy or UnitHasVehicleUI("player") ) then
+		if ( MainMenuBar.busy or UnitInVehicleControlSeat("player") ) then
 			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 			PetActionBarFrame.state = "top";
 			PetActionBarFrame:Show();
@@ -189,7 +189,7 @@ end
 
 function HidePetActionBar()
 	if ( PetActionBarFrame.showgrid == 0 and PetActionBarFrame:IsShown() and not PetActionBarFrame.locked and not PetActionBarFrame.ctrlPressed ) then
-		if ( MainMenuBar.busy or UnitHasVehicleUI("player") ) then
+		if ( MainMenuBar.busy or UnitInVehicleControlSeat("player") ) then
 			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
 			PetActionBarFrame.state = "bottom";
 			PetActionBarFrame:Hide();

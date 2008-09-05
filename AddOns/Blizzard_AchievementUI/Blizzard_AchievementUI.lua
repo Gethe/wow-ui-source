@@ -745,8 +745,8 @@ function AchievementButton_Saturate (self)
 	self.shield.points:SetVertexColor(1, 1, 1);
 	self.reward:SetVertexColor(1, .82, 0);
 	self.label:SetVertexColor(1, 1, 1);
-	self.description:SetShadowOffset(0, 0);
 	self.description:SetFontObject("AchievementDescriptionEnabledFont");
+	self.description:SetShadowOffset(0, 0);
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 end
 
@@ -979,8 +979,10 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 	end
 
-	local descriptionHeight = button.description:GetHeight();
-	height = height + descriptionHeight - ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT;
+	if ( height ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT ) then		
+		local descriptionHeight = button.description:GetHeight();
+		height = height + descriptionHeight - ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT;
+	end
 	
 	objectives.id = id;
 	return height;
@@ -1274,13 +1276,16 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			end
 			
 			if ( objectivesFrame.completed and completed ) then
-				criteria.name:SetTextColor(0, 0, 0, 1);
 				criteria.name:SetFontObject("AchievementDescriptionEnabledFont");
+				criteria.name:SetTextColor(0, 0, 0, 1);
+				criteria.name:SetShadowOffset(0, 0);
 			elseif ( completed ) then
 				criteria.name:SetTextColor(0, 1, 0, 1);
+				criteria.name:SetShadowOffset(1, -1);
 			else
 				criteria.name:SetFontObject("AchievementDescriptionDisabledFont");
 				criteria.name:SetTextColor(.6, .6, .6, 1);
+				criteria.name:SetShadowOffset(1, -1);
 			end
 				
 			criteria:SetParent(objectivesFrame);
@@ -1328,6 +1333,12 @@ end
 
 -- [[ StatsFrames ]]--
 
+function AchievementFrameStats_OnEvent (self, event, ...)
+	if ( event == "CRITERIA_UPDATE" and self:IsShown() ) then
+		AchievementFrameStats_Update();
+	end
+end
+
 function AchievementFrameStats_OnLoad (self)
 	AchievementFrameStatsContainerScrollBar.Show = 
 		function (self)
@@ -1347,6 +1358,7 @@ function AchievementFrameStats_OnLoad (self)
 			getmetatable(self).__index.Hide(self);
 		end
 		
+	self:RegisterEvent("CRITERIA_UPDATE");
 	AchievementFrameStatsContainerScrollBarBG:Show();
 	AchievementFrameStatsContainer.update = AchievementFrameStats_Update;
 	HybridScrollFrame_CreateButtons(AchievementFrameStatsContainer, "StatTemplate");
@@ -1354,7 +1366,7 @@ end
 
 local displayStatCategories = {};
 TEMPONE = displayStatCategories;
-function AchievementFrameStats_Update (category)
+function AchievementFrameStats_Update ()
 	local category = achievementFunctions.selectedCategory;
 	local scrollFrame = AchievementFrameStatsContainer;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
@@ -1576,7 +1588,13 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			end
 			button.icon.texture:SetTexture(icon);
 			button.id = id;
-			button.dateCompleted:SetText(Localization_GetShortDate(day, month, year));
+
+			if ( completed ) then
+				button.dateCompleted:SetText(Localization_GetShortDate(day, month, year));
+			else
+				button.dateCompleted:SetText("");
+			end
+			
 			button:Saturate();
 			button.tooltipTitle = nil;
 			button:Show();

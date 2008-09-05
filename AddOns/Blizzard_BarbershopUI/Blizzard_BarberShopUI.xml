@@ -62,7 +62,7 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="BarberShopFrame" hidden="true">
+	<Frame name="BarberShopFrame" parent="UIParent" toplevel="true" hidden="true">
 		<Size>
 			<AbsDimension x="200" y="275"/>
 		</Size>
@@ -218,7 +218,7 @@
 				<Scripts>
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "STATIC");
+						MoneyFrame_SetType(self, "GUILD_REPAIR");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -258,6 +258,27 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+				<Size>
+					<AbsDimension x="80" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="1" y="13"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						BarberShopReset();
+						BarberShop_ResetLabelColors();
+						BarberShop_UpdateCost();
+						BarberShop_UpdateBanner(GetBarberShopStyleInfo(1));
+						PlaySound("igCharacterInfoClose");
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -274,7 +295,7 @@
 			</OnEvent>
 		</Scripts>
 	</Frame>
-	<Frame name="BarberShopBannerFrame">
+	<Frame name="BarberShopBannerFrame" toplevel="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="425" y="128"/>
 		</Size>

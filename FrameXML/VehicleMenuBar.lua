@@ -423,11 +423,257 @@ end
 function VehicleMenuBarPitch_SetValue(pitch)
 	VehicleMenuBarPitchSliderMarker:SetPoint("CENTER",VehicleMenuBarPitchSlider, "BOTTOM", 0, pitch * (VehicleMenuBarPitchSlider:GetHeight() - 20) + 8 );
 end
+
+----------Seat Indicator--------------
+local MAX_VEHICLE_INDICATOR_BUTTONS = 4;
+local SeatIndicatorSkinsData = {
+	["Demolisher"] = {
+		Overall = {
+			height = 128,
+			width = 128,
+			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher",
+		},
+		[1] = {
+			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher-Seat-3",
+			height = 42,
+			width = 38,
+			xPos = -46,
+			yPos = -55,
+			texCoord = { 0.21875, 0.8125, 0.15625, 0.8125 },
+		},
+		[2] = {
+			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher-Seat-4",
+			height = 51,
+			width = 16,
+			xPos = -57,
+			yPos = -7,
+			texCoord = { 0.390625, 0.640625, 0.046875, 0.84375 },
+		},
+		[3] = {
+			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher-Seat-2",
+			height = 41,
+			width = 29,
+			xPos = -26,
+			yPos = -21,
+			texCoord = { 0.296875, 0.75, 0.09375, 0.734375 },
+		},
+		[4] = {
+			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher-Seat-1",
+			height = 41,
+			width = 29,
+			xPos = -75,
+			yPos = -21,
+			texCoord = { 0.28125, 0.734375, 0.09375, 0.734375 },
+		},
+	},
+	["Bomber"] = {
+		Overall = {
+			height = 128,
+			width = 128,
+			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Bomber",
+		},
+		[1] = {
+			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Bomber-Seat-1",
+			height = 32,
+			width = 32,
+			xPos = -47,
+			yPos = -40,
+		},
+		[2] = {
+			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Bomber-Seat-2",
+			height = 32,
+			width = 32,
+			xPos = -47,
+			yPos = -70,
+		},
+	},
+	["SiegeEngine"] = {
+		Overall = {
+			height = 128,
+			width = 128,
+			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine",
+		},
+		[1] = {
+			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine-Seat-1",
+			height = 43,
+			width = 64,
+			xPos = -32,
+			yPos = 0,
+			texCoord = { 0.0, 1.0, 0.109375, 0.78125 },
+		},
+		[2] = {
+			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine-Seat-4",
+			height = 32,
+			width = 32,
+			xPos = -19,
+			yPos = -87,
+		},
+		[3] = {
+			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine-Seat-2",
+			height = 32,
+			width = 32,
+			xPos = -76,
+			yPos = -87,
+		},
+		[4] = {
+			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine-Seat-3",
+			height = 54,
+			width = 28,
+			xPos = -51,
+			yPos = -60,
+			texCoord = { 0.265625, 0.703125, 0.09375, 0.9375 },
+		},
+	},
+}
+
+function VehicleSeatIndicator_SetUpVehicle(vehicleName)
+	if ( vehicleName == VehicleSeatIndicator.currSkin ) then
+		return;
+	end
+	
+	local vehicleData = SeatIndicatorSkinsData[vehicleName];
+	
+	if ( not vehicleData ) then
+		VehicleSeatIndicator_UnloadTextures();
+		return;
+	end
+	
+	VehicleSeatIndicator.currSkin = vehicleName;
+	
+	VehicleSeatIndicator:SetHeight(vehicleData.Overall.height);
+	VehicleSeatIndicator:SetWidth(vehicleData.Overall.width);
+	
+	VehicleSeatIndicatorBackgroundTexture:SetTexture(vehicleData.Overall.background);
+	
+	for i=1, MAX_VEHICLE_INDICATOR_BUTTONS do
+		local seatData = vehicleData[i];
+		local button = _G["VehicleSeatIndicatorButton"..i];
+		
+		if ( seatData ) then
+			local NormalTexture = button:GetNormalTexture();
+			local DisabledTexture = button:GetDisabledTexture();
+			local PushedTexture = button:GetPushedTexture();
+			
+			NormalTexture:SetTexture(seatData.texture);
+			DisabledTexture:SetTexture(seatData.texture);
+			PushedTexture:SetTexture(seatData.texture);
+			
+			
+			if ( seatData.texCoord ) then
+				NormalTexture:SetTexCoord(unpack(seatData.texCoord))
+				DisabledTexture:SetTexCoord(unpack(seatData.texCoord))
+				PushedTexture:SetTexCoord(unpack(seatData.texCoord))
+			else
+				NormalTexture:SetTexCoord(0,1,0,1)
+				DisabledTexture:SetTexCoord(0,1,0,1)
+				PushedTexture:SetTexCoord(0,1,0,1)
+			end
+			
+			--button:SetHighlightTexture(seatData.texture);
+			--button:GetHighlightTexture():SetTexCoord(unpack(seatData.texCoord))
+			
+			button:SetHeight(seatData.height);
+			button:SetWidth(seatData.width);
+			button:SetPoint("TOPRIGHT", (seatData.xPos or 0), (seatData.yPos or 0));
+			
+			button:Show()
+		else
+			button:GetNormalTexture():SetTexture(nil);
+			button:GetDisabledTexture():SetTexture(nil);
+			button:GetPushedTexture():SetTexture(nil);
+			--button:SetHighlightTexture(nil);
+			
+			button:Hide();
+		end
+	end	
+	
+	VehicleSeatIndicator:Show();
+	DurabilityFrame_SetAlerts();
+	VehicleSeatIndicator_Update();
+end
+
+function VehicleSeatIndicator_UnloadTextures()
+	if ( not VehicleSeatIndicator.currSkin ) then
+		return;
+	end
+	for i=1, MAX_VEHICLE_INDICATOR_BUTTONS do
+		local button = _G["VehicleSeatIndicatorButton"..i];
+		button:GetNormalTexture():SetTexture(nil);
+		button:GetDisabledTexture():SetTexture(nil);
+		button:GetPushedTexture():SetTexture(nil);
+	end
+	VehicleSeatIndicatorBackgroundTexture:SetTexture(nil);
+	VehicleSeatIndicator:Hide()
+	VehicleSeatIndicator.currSkin = nil;
+	DurabilityFrame_SetAlerts();
+end
+
+function VehicleSeatIndicator_OnLoad(self)
+	--VehicleSeatIndicator_SetUpVehicle("Demolisher");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("VEHICLE_PASSENGERS_CHANGED");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+end
+
+function VehicleSeatIndicator_OnEvent(self, event, ...)
+	local arg1, _, _, _, _, indicatorType = ...;
+	if ( event == "UNIT_ENTERED_VEHICLE" and arg1 == "player" ) then
+		VehicleSeatIndicator_SetUpVehicle(indicatorType);
+	elseif ( event == "VEHICLE_PASSENGERS_CHANGED" ) then
+		VehicleSeatIndicator_Update();
+	elseif ( event == "UNIT_EXITED_VEHICLE" and arg1 == "player" ) then
+		VehicleSeatIndicator_UnloadTextures();
+	end
+end
+function VehicleSeatIndicator_Update()
+	if ( not VehicleSeatIndicator.currSkin ) then
+		return;
+	end
+	for i=1, MAX_VEHICLE_INDICATOR_BUTTONS do
+		local controlType, occupantName = UnitVehicleSeatInfo("player", i);
+		local button = _G["VehicleSeatIndicatorButton"..i];
+		if ( occupantName ) then
+			button:Disable();
+			if ( occupantName == UnitName("player") ) then
+				button:GetDisabledTexture():SetVertexColor(.8,.8,0);
+			else
+				button:GetDisabledTexture():SetVertexColor(1,1,1);
+			end
+		else
+			button:Enable();
+			button:GetNormalTexture():SetVertexColor(.5,1,.5);
+			button:GetPushedTexture():SetVertexColor(.5,1,.5);
+		end
+	end
+end
+
+function VehicleSeatIndicatorButton_OnClick(self)
+	UnitSwitchToVehicleSeat("player", self:GetID());
+end
+
+function VehicleSeatIndicatorButton_OnEnter(self)
+	if ( not self:IsEnabled() ) then
+		return;
+	end
+	self:GetNormalTexture():SetPoint("TOPLEFT", -1, 1);
+	self:GetNormalTexture():SetPoint("BOTTOMRIGHT", -1, 1);
+	
+	self:Raise()
+end
+
+function VehicleSeatIndicatorButton_OnLeave(self)
+	self:GetNormalTexture():SetPoint("TOPLEFT", 0, 0);
+	self:GetNormalTexture():SetPoint("BOTTOMRIGHT", 0, 0);
+end
+
 --------------------------------------------------------------------
 ---------------------------DEBUG--------------------------------
 
-function debug(msg)
-	DEFAULT_CHAT_FRAME:AddMessage("VehicleMenuBar: "..msg, 1.0, 0 ,0 ,0)
+function debug(msg, ...)
+	DEFAULT_CHAT_FRAME:AddMessage("VehicleMenuBar: "..tostring(msg), 1.0, 0 ,0 ,0)
+	if ( ... ) then
+		debug(...)
+	end
 end
 function ValidateSkinsData(skintable)
 	for skinname, skindata in pairs(skintable) do
@@ -444,10 +690,25 @@ function ValidateSkinsData(skintable)
 end
 
 function VehicleMenuBar_Debug()
-	MainMenuBar:Hide()
-	if ( ValidateSkinsData(SkinsData) ) then
-		VehicleMenuBar_SetSkin("Mechanical");
+	VehicleSeatIndicator_SetUpVehicle("Demolisher")
+end
+
+local testframe = CreateFrame("Frame")
+local testData = {
+	["Wintergrasp Demolisher"] = "Demolisher",
+	["Wintergrasp Siege Engine"] = "SiegeEngine",
+	["Wintergrasp Siege Turret"] = "SiegeEngine",
+	["Wintergrasp Flying Machine 2 (Bomber)"] = "Bomber",
+	["Wintergrasp Bomber Cockpit"] = "Bomber",
+	}
+function VehicleMenuBar_DebugOnUpdate(self)
+	if ( testData[UnitName("vehicle")] ) then
+		VehicleSeatIndicator_SetUpVehicle(testData[UnitName("vehicle")]);
+		VehicleSeatIndicator_Update();
+	else
+		VehicleSeatIndicator_UnloadTextures();
 	end
 end
+--testframe:SetScript("OnUpdate", VehicleMenuBar_DebugOnUpdate);
 --------------------END DEBUG---------------------------------
 -------------------------------------------------------------------

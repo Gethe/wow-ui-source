@@ -51,6 +51,9 @@ function WorldFrame_OnUpdate(self, elapsed)
 	if ( TimeManagerClockButton and not TimeManagerClockButton:IsVisible() and TimeManager_ShouldCheckAlarm() ) then
 		TimeManager_CheckAlarm(elapsed);
 	end
+	if ( StopwatchTicker and not StopwatchTicker:IsVisible() and Stopwatch_IsPlaying() ) then
+		StopwatchTicker_OnUpdate(StopwatchTicker, elapsed);
+	end
 end
 
 SCREENSHOT_STATUS_FADETIME = 1.5;

@@ -311,7 +311,7 @@
 	</Frame>
 	<!-- Minimap button to access the TimeManagerButton -->
 	<Button name="TimeManagerClockButton" parent="Minimap" hidden="true">
-		<Size x="51" y="24"/>
+		<Size x="60" y="28"/>
 		<Anchors>
 			<Anchor point="CENTER">
 				<Offset x="0" y="-68"/>
@@ -319,13 +319,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture file="Interface\TimeManager\ClockBackground">
-					<Size x="51" y="24"/>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset x="0" y="0"/>
-						</Anchor>
-					</Anchors>
+				<Texture file="Interface\TimeManager\ClockBackground" setAllPoints="true">
 					<TexCoords left="0.015625" right="0.8125" top="0.015625" bottom="0.390625"/>
 				</Texture>
 			</Layer>
@@ -337,13 +331,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="TimeManagerAlarmFiredTexture" file="Interface\TimeManager\ClockBackground" alphaMode="ADD" hidden="true">
-					<Size x="51" y="24"/>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset x="0" y="0"/>
-						</Anchor>
-					</Anchors>
+				<Texture name="TimeManagerAlarmFiredTexture" file="Interface\TimeManager\ClockBackground" alphaMode="ADD" hidden="true" setAllPoints="true">
 					<TexCoords left="0.015625" right="0.8125" top="0.51625" bottom="0.890625"/>
 				</Texture>
 			</Layer>
@@ -368,34 +356,27 @@
 	</Button>
 	<!-- Stopwatch -->
 	<Frame name="StopwatchFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" clampedToScreen="true" frameStrata="DIALOG">
-		<Size x="130" y="48"/>
+		<Size x="132" y="44"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT">
 				<Offset x="-250" y="-300"/>
 			</Anchor>
 		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="3" right="-12" top="-10" bottom="8"/>
-		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackgroundLeft" file="Interface\TimeManager\TimerBackground">
-					<Size x="128" y="29"/>
+					<Size x="122" y="29"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
-					<TexCoords left="0" right="1.0" top="0" bottom="0.453125"/>
+					<TexCoords left="0.046875" right="1.0" top="0" bottom="0.453125"/>
 				</Texture>
 				<Texture file="Interface\TimeManager\TimerBackground">
-					<Size x="10" y="35"/>
+					<Size x="10" y="29"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundLeft" relativePoint="TOPRIGHT">
-							<Offset x="0" y="1"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentBackgroundLeft" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0" right="0.078125" top="0.453125" bottom="1"/>
+					<TexCoords left="0.0" right="0.078125" top="0.46875" bottom="0.921875"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -403,8 +384,8 @@
 			<Frame name="StopwatchTicker">
 				<Size x="100" y="20"/>
 				<Anchors>
-					<Anchor point="RIGHT">
-						<Offset x="-41" y="-1"/>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-49" y="3"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
@@ -448,47 +429,45 @@
 				</Layers>
 			</Frame>
 			<Frame name="StopwatchTabFrame">
-				<Size>
-					<AbsDimension x="130" y="24"/>
-				</Size>
+				<Size x="126" y="16"/>
 				<Anchors>
 					<Anchor point="TOP">
-						<Offset x="1" y="0"/>
+						<Offset x="0" y="0"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentLeft" file="Interface\ChatFrame\ChatFrameTab">
-							<Size x="16" y="24"/>
+							<Size x="7" y="1"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="7" y="13"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT"/>
+								<Anchor point="TOP"/>
+								<Anchor point="BOTTOM"/>
 							</Anchors>
-							<TexCoords left="0.0" right="0.25" top="0.0" bottom="1.0"/>
+							<TexCoords left="0.03125" right="0.140625" top="0.28125" bottom="1.0"/>
 						</Texture>
 						<Texture name="$parentMiddle" file="Interface\ChatFrame\ChatFrameTab">
-							<Size x="98" y="24"/>
+							<Size x="112" y="1"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="TOP"/>
+								<Anchor point="BOTTOM"/>
 							</Anchors>
-							<TexCoords left="0.25" right="0.75" top="0.0" bottom="1.0"/>
+							<TexCoords left="0.140625" right="0.859375" top="0.28125" bottom="1.0"/>
 						</Texture>
 						<Texture name="$parentRight" file="Interface\ChatFrame\ChatFrameTab">
-							<Size x="16" y="24"/>
+							<Size x="7" y="1"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+								<Anchor point="TOP"/>
+								<Anchor point="BOTTOM"/>
 							</Anchors>
-							<TexCoords left="0.75" right="1.0" top="0.0" bottom="1.0"/>
+							<TexCoords left="0.859375" right="0.96875" top="0.28125" bottom="1.0"/>
 						</Texture>
 						<FontString name="StopwatchTitle" text="STOPWATCH_TITLE" inherits="GameFontNormalSmall" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="3" y="2"/>
-									</Offset>
+									<Offset x="0" y="-3"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -498,8 +477,8 @@
 					<Button name="StopwatchCloseButton" inherits="UIPanelCloseButton">
 						<Size x="20" y="20"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
-								<Offset x="5" y="6"/>
+							<Anchor point="TOPRIGHT">
+								<Offset x="1" y="1"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
@@ -513,8 +492,8 @@
 			<Button name="StopwatchResetButton">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT">
-						<Offset x="5" y="0"/>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-2" y="3"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>

@@ -17,13 +17,23 @@ function TotemFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
-	TotemFrame_Update();
+	local _, class = UnitClass("player");
+	if ( class == "DEATHKNIGHT" ) then
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 65, -55);
+	end
 end
 
 function TotemFrame_Update ()
+	local _, class = UnitClass("player");
 	if ( PetFrame and PetFrame:IsShown() ) then
-		TotemFrame:Hide();
-		return;
+		if ( class == "DEATHKNIGHT" ) then
+			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
+		else
+			TotemFrame:Hide();
+			return;
+		end
+	elseif ( class == "DEATHKNIGHT" ) then
+		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 65, -55);
 	end
 
 	local haveTotem, name, startTime, duration, icon;

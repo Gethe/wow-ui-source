@@ -22,6 +22,8 @@ SoundOptionsFrameCheckButtons["ENABLE_MUSIC_LOOPING"] = { index = 6, cvar = "Sou
 SoundOptionsFrameCheckButtons["ENABLE_BGSOUND"] = { index = 9, cvar = "Sound_EnableSoundWhenGameIsInBG", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_BGSOUND};
 SoundOptionsFrameCheckButtons["ENABLE_REVERB"] = { index = 10, cvar = "Sound_EnableReverb", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_REVERB,};
 SoundOptionsFrameCheckButtons["ENABLE_HARDWARE"] = { index = 11, cvar = "Sound_EnableHardware", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_HARDWARE};
+SoundOptionsFrameCheckButtons["ENABLE_SOFTWARE_HRTF"] = { index = 12, cvar = "Sound_EnableSoftwareHRTF", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_SOFTWARE_HRTF};
+SoundOptionsFrameCheckButtons["ENABLE_DSP_EFFECTS"] = { index = 13, cvar = "Sound_EnableDSPEffects", initialValue = nil , tooltipText = OPTION_TOOLTIP_ENABLE_DSP_EFFECTS};
 
 SoundOptionsFrameSliders = {
 	{ index = 2, text = SOUND_VOLUME, cvar = "Sound_SFXVolume", minValue = 0, maxValue = 1, valueStep = 0.1, initialValue = nil , tooltipText = OPTION_TOOLTIP_SOUND_VOLUME},
@@ -149,6 +151,8 @@ function SoundOptionsCheckButton_OnClick(self)
 				if ( SoundOptionsFrameCheckButtons["ENABLE_HARDWARE"].value == 1 ) then
 					AudioOptionsFrame.SoundRestart = 1;
 				end
+			elseif ( value.cvar == "Sound_EnableDSPEffects" or value.cvar == "Sound_EnableSoftwareHRTF" ) then 
+				AudioOptionsFrame.SoundRestart = 1;
 			end
 		end
 	end

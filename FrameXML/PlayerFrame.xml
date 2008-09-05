@@ -22,16 +22,16 @@
 			<Layer level="BACKGROUND">
 				<Texture name="PlayerFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
 					<Size>
-						<AbsDimension x="242" y="95"/>
+						<AbsDimension x="242" y="93"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-1"/>
+								<AbsDimension x="13" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="1.0" right="0.05078125" top="0" bottom="0.7578125"/>
+					<TexCoords left="0.9453125" right="0" top="0" bottom="0.181640625"/>
 				</Texture>
 				<Texture name="PlayerFrameBackground">
 					<Size>

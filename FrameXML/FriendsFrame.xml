@@ -316,7 +316,7 @@
 				</FontString>
 				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="100" y="8"/>
+						<AbsDimension x="80" y="8"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
@@ -476,7 +476,7 @@
 				</FontString>
 				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="100" y="14"/>
+						<AbsDimension x="80" y="14"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">

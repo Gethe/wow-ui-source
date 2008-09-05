@@ -52,6 +52,17 @@ function MultiActionBar_Update ()
 		MultiBarLeft:Hide();
 		VIEWABLE_ACTION_BAR_PAGES[LEFT_ACTIONBAR_PAGE] = 1;
 	end
+	
+	--Adjust VehicleSeatIndicator position
+	if ( VehicleSeatIndicator ) then
+		if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 ) then
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MultiBarLeft, "TOPLEFT", -10, -50);
+		elseif ( SHOW_MULTI_ACTIONBAR_3 ) then
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", "MultiBarRight", "TOPLEFT", -10, -50);
+		else
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", UIParent, "BOTTOMRIGHT", -10, 550);
+		end
+	end
 end
 
 function MultiActionBar_ShowAllGrids ()

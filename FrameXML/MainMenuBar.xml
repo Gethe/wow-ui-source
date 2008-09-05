@@ -348,30 +348,26 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						VehicleExit();
+					</OnClick>
+				</Scripts>
 				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">
 					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
 				</NormalTexture>
-				
 				<PushedTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Down">
 					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
 				</PushedTexture>
 				<HighlightTexture alphaMode="ADD" file="Interface\Vehicles\UI-Vehicles-Button-Highlight">
 					<TexCoords left="0.130625" right="0.879375" top="0.130625" bottom="0.879375"/>
 				</HighlightTexture>
-				<Scripts>
-					<OnClick>
-						VehicleExit();
-					</OnClick>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				RaiseFrameLevel(MainMenuBarArtFrame);
 			</OnLoad>
-			<OnUpdate>
-				MainMenuBar_OnUpdate(self, elapsed)
-			</OnUpdate>
 		</Scripts>
 	</Frame>
 	<Button name="ExhaustionTick" parent="MainMenuBar" hidden="false" frameStrata="DIALOG">

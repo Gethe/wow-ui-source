@@ -6,12 +6,13 @@ local Sparkle = SparkleFrame:CreateTexture();
 function Sparkle:New (sparkleFrame, sparkleTemplate)
 	if ( sparkleFrame.freeSparkles[1] ) then
 		local sparkle = sparkleFrame.freeSparkles[1];
+		sparkle:Reuse(sparkleTemplate);
 		tremove(sparkleFrame.freeSparkles, 1);
 		tinsert(sparkleFrame.sparkles, sparkle);
 		return sparkle;
 	end
 	
-	sparkleTemplate = sparkleTemplate or "SparkleTexture1"
+	sparkleTemplate = sparkleTemplate or "SparkleTextureNormal"
 	local name = sparkleFrame:GetName();
 	local sparkle;
 	if ( name ) then
@@ -31,17 +32,44 @@ end
 
 function Sparkle:Free ()
 	local sparkleFrame = self:GetParent();
+	if ( self.OnFinished ) then
+		self:OnFinished();
+	end
 	
 	self:Hide(); 
 	for i = 1, self.numArgs do
 		self["param" .. i] = nil;
 	end
 	
+	self.name = nil;
 	self.elapsed = nil;
 	self.loop = nil;
 	self.Animate = nil;
 	
 	tinsert(sparkleFrame.freeSparkles, self);
+end
+
+local SparkleDimensions = 
+{
+	["SparkleTextureNormal"] = { height = 13, width = 13 },
+	["SparkleTextureKindaSmall"] = { height = 10, width = 10 },
+	["SparkleTextureSmall"] = { height = 7, width = 7 },
+}
+
+
+
+function Sparkle:Reuse (sparkleTemplate)
+	local dimensions = SparkleDimensions[sparkleTemplate]
+	if ( not dimensions ) then
+		error()
+	end
+	
+	self:SetHeight(dimensions.height);
+	self:SetWidth(dimensions.width);
+end
+
+function Sparkle:SetOnFinished (func)
+	self.OnFinished = func;
 end
 
 function Sparkle:LinearTranslate (elapsed)
@@ -100,6 +128,9 @@ end
 local cos = cos;
 local sin = sin;
 
+local cosTable = {};
+local sinTable = {};
+
 function Sparkle:RadialTranslate (elapsed)
 	-- Parameters for RadialTranslate:
 	-- relativePoint, radius, startDegree, stopDegree, duration
@@ -109,7 +140,24 @@ function Sparkle:RadialTranslate (elapsed)
 	self.elapsed = self.elapsed + elapsed;
 	local range = startDegree - stopDegree;
 	local position = self.elapsed/duration
-	local degree = startDegree + (range * position);
+	local degree = math.floor(startDegree + (range * position));
+	
+	local xPos, yPos
+	local cosVal = cosTable[degree];
+	if ( cosVal ) then
+		xPos = offsetX + (radius * cosVal);
+	else
+		cosTable[degree] = cos(degree);
+		xPos = offsetX + (radius * cosTable[degree]);
+	end
+	
+	local sinVal = sinTable[degree];
+	if ( sinVal ) then
+		yPos = offsetY + (radius * sinVal);
+	else
+		sinTable[degree] = sin(degree);
+		yPos = offsetY + (radius + sinTable[degree]);
+	end
 	
 	local xPos = offsetX + (radius * cos(degree));
 	local yPos = offsetY + (radius * sin(degree));
@@ -152,18 +200,19 @@ function SparkleFrame:SetFrameRate(framesPerSec)
 end
 
 function SparkleFrame:OnUpdate(elapsed)
-	self.timeSinceLast = self.timeSinceLast + elapsed;
-	if ( self.timeSinceLast >= self.updateTime ) then
-		for i, sparkle in next, self.sparkles do
-			debugprofilestart()
-			if ( sparkle:Animate(self.timeSinceLast) ) then
-				sparkle:Free();
-				self.sparkles[i] = nil;
+	local timeSinceLast = self.timeSinceLast + elapsed;
+	if ( timeSinceLast >= self.updateTime ) then
+		local sparkles = self.sparkles;
+		for i = #sparkles, 1, -1 do
+			if ( sparkles[i] and sparkles[i]:Animate(timeSinceLast) ) then
+				sparkles[i]:Free();
+				tremove(sparkles, i);
 			end
-			msg(debugprofilestop());
 		end
 		self.timeSinceLast = 0;
+		return;
 	end
+	self.timeSinceLast = timeSinceLast;
 end
 
 function SparkleFrame:StartAnimation (name, animationType, sparkleTemplate, loop, ...)
@@ -181,13 +230,16 @@ function SparkleFrame:StartAnimation (name, animationType, sparkleTemplate, loop
 	sparkle.elapsed = 0;
 	sparkle.loop = loop;
 	sparkle.Animate = Sparkle[animationType];
+	
+	return sparkle
 end
 
 function SparkleFrame:EndAnimation (name)
-	for i, sparkle in next, self.sparkles do
-		if ( sparkle.name == name ) then
-			sparkle:Free(i);
-			self.sparkles[i] = nil;
+	local sparkles, sparkle = self.sparkles;
+	for i = #sparkles, 1, -1 do
+		if ( sparkles[i].name == name ) then
+			sparkles[i]:Free();
+			tremove(sparkles, i);
 		end
 	end
 end

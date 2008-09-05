@@ -68,6 +68,12 @@
       <OnLoad>
         RuneButton_OnLoad(self);
       </OnLoad>
+		<OnEnter>
+			RuneButton_OnEnter(self);
+		</OnEnter>
+		<OnLeave>
+			RuneButton_OnLeave(self);
+		</OnLeave>
     </Scripts>
   </Button>
 	

@@ -31,7 +31,7 @@
 	</Slider>
 	<Frame name="SoundOptionsFrame" enableMouse="true" parent="AudioOptionsFrame" hidden="true" id="1">
 		<Size>
-			<AbsDimension x="400" y="395"/>
+			<AbsDimension x="400" y="420"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -62,7 +62,7 @@
 
 			<Frame name="$parentPlayback" inherits="OptionFrameBoxTemplate">
 				<Size>
-					<AbsDimension x="180" y="290"/>
+					<AbsDimension x="180" y="315"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -82,7 +82,7 @@
 					<CheckButton name="SoundOptionsFrameCheckButton2" inherits="SoundOptionsCheckButtonTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT">
-								<Offset x="10" y="-8"/>
+								<Offset x="8" y="-6"/>
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -92,7 +92,7 @@
 						</Size>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton2" relativePoint="BOTTOM">
-								<Offset x="10" y="0"/>
+								<Offset x="10" y="4"/>
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -102,14 +102,14 @@
 						</Size>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton3" relativePoint="BOTTOM">
-								<Offset x="0" y="0"/>
+								<Offset x="0" y="4"/>
 							</Anchor>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SoundOptionsFrameCheckButton5" inherits="SoundOptionsCheckButtonTemplate" id="5">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton4" relativePoint="BOTTOM">
-								<Offset x="-10" y="0"/>
+								<Offset x="-10" y="4"/>
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -119,35 +119,73 @@
 						</Size>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton5" relativePoint="BOTTOM">
-								<Offset x="10" y="0"/>
+								<Offset x="10" y="4"/>
 							</Anchor>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SoundOptionsFrameCheckButton7" inherits="SoundOptionsCheckButtonTemplate" id="7">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton6" relativePoint="BOTTOM">
-								<Offset x="-10" y="0"/>
+								<Offset x="-10" y="4"/>
 							</Anchor>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SoundOptionsFrameCheckButton8" inherits="SoundOptionsCheckButtonTemplate" id="8" hidden="true">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton7" relativePoint="BOTTOM">
-								<Offset x="0" y="0"/>
+								<Offset x="0" y="4"/>
 							</Anchor>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SoundOptionsFrameCheckButton9" inherits="SoundOptionsCheckButtonTemplate" id="9">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton7" relativePoint="BOTTOM">
-								<Offset x="0" y="0"/>
+								<Offset x="0" y="4"/>
 							</Anchor>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SoundOptionsFrameCheckButton10" inherits="SoundOptionsCheckButtonTemplate" id="10">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton9" relativePoint="BOTTOM">
-								<Offset x="0" y="0"/>
+								<Offset x="0" y="4"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								if ( self.tooltipText ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								end
+								if ( self.tooltipRequirement ) then
+									GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="SoundOptionsFrameCheckButton12" inherits="SoundOptionsCheckButtonTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton10" relativePoint="BOTTOM">
+								<Offset x="0" y="4"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								if ( self.tooltipText ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								end
+								if ( self.tooltipRequirement ) then
+									GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="SoundOptionsFrameCheckButton13" inherits="SoundOptionsCheckButtonTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="SoundOptionsFrameCheckButton12" relativePoint="BOTTOM">
+								<Offset x="0" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
@@ -165,7 +203,7 @@
 					</CheckButton>
 					<Slider name="SoundOptionsFrameSlider6" inherits="SoundOptionsLowHighSliderTemplate" id="6">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SoundOptionsFrameCheckButton10" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="SoundOptionsFrameCheckButton13" relativePoint="BOTTOMLEFT">
 								<Offset x="14" y="-15"/>
 							</Anchor>
 						</Anchors>
@@ -173,7 +211,7 @@
 				</Frames>
 			</Frame>
 			<Frame name="$parentHardware" inherits="OptionFrameBoxTemplate">
-				<Size x="180" y="135"/>
+				<Size x="180" y="145"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPlayback" relativePoint="TOPRIGHT">
 						<Offset x="3" y="0"/>
@@ -191,7 +229,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" >
 								<Offset>
-									<AbsDimension x="-5" y="-25"/>
+									<AbsDimension x="-5" y="-28"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -253,7 +291,7 @@
 				</Frames>
 			</Frame>
 			<Frame name="$parentVolume" inherits="OptionFrameBoxTemplate">
-				<Size x="180" y="137"/>
+				<Size x="180" y="152"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-18"/>
@@ -271,14 +309,14 @@
 						<FontString inherits="GameFontHighlightSmall" text="LOW">
 							<Anchors>
 								<Anchor point="TOPLEFT">
-									<Offset x="70" y="-41"/>
+									<Offset x="70" y="-45"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
 						<FontString inherits="GameFontHighlightSmall" text="HIGH">
 							<Anchors>
 								<Anchor point="TOPRIGHT">
-									<Offset x="-10" y="-41"/>
+									<Offset x="-10" y="-45"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -288,14 +326,14 @@
 					<Slider name="SoundOptionsFrameSlider1" inherits="SoundOptionsSliderTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT">
-								<Offset x="15" y="-23"/>
+								<Offset x="15" y="-27"/>
 							</Anchor>
 						</Anchors>
 					</Slider>
 					<Slider name="SoundOptionsFrameSlider2" inherits="SoundOptionsVolumeSliderTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT">
-								<Offset x="70" y="-54"/>
+								<Offset x="70" y="-58"/>
 							</Anchor>
 						</Anchors>
 					</Slider>

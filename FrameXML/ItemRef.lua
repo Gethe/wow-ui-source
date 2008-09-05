@@ -64,8 +64,7 @@ function SetItemRef(link, text, button)
 		return;
 	elseif ( strsub(link, 1, 7) == "channel" ) then
 		if ( IsModifiedClick("CHATLINK") ) then
-			FriendsFrame:Show();
-			FriendsFrameTab4:Click();
+			ToggleFriendsFrame(4);
 		elseif ( button == "LeftButton" ) then
 			local chan = strsub(link, 9);
 			local channum = tonumber(chan)

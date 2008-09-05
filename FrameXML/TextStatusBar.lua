@@ -57,8 +57,10 @@ function TextStatusBar_UpdateTextString(textStatusBar)
 				return;
 			else
 				textStatusBar.isZero = nil;
-				value = TextStatusBar_CapDisplayOfNumericValue(value);
-				valueMax = TextStatusBar_CapDisplayOfNumericValue(valueMax);
+				if ( textStatusBar.capNumericDisplay ) then
+					value = TextStatusBar_CapDisplayOfNumericValue(value);
+					valueMax = TextStatusBar_CapDisplayOfNumericValue(valueMax);
+				end
 				if ( textStatusBar.prefix and (textStatusBar.alwaysPrefix or not (textStatusBar.cvar and GetCVar(textStatusBar.cvar) == "1" and textStatusBar.textLockable) ) ) then
 					textString:SetText(textStatusBar.prefix.." "..value.." / "..valueMax);
 				else

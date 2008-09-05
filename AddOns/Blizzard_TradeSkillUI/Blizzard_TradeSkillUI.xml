@@ -691,7 +691,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="TradeSkillReagentLabel" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="-5" y="-3"/>
+											<AbsDimension x="-2" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>

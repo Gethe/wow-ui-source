@@ -879,7 +879,7 @@ function UIParent_OnEvent(self, event, ...)
 		return;
 	end
 	if ( event == "BARBER_SHOP_CLOSE" ) then
-		if ( BarberShopFrame:IsVisible() ) then
+		if ( BarberShopFrame and BarberShopFrame:IsVisible() ) then
 			BarberShopFrame:Hide();
 		end
 		return;
@@ -1014,6 +1014,7 @@ end
 -- some standard offsets
 local actionBarOffset = 45;
 local menuBarTop = 55;
+local vehicleMenuBarTop = 40;
 
 function UpdateMenuBarTop ()
 	--Determines the optimal magic number based on resolution and action bar status.
@@ -1030,13 +1031,13 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	--"yOffset" gets added to the value of "baseY", which is used for values based on menuBarTop.
 	["MultiBarBottomLeft"] = {baseY = 17, reputation = 1, maxLevel = 1, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT"};
 	["MultiBarRight"] = {baseY = 98, reputation = 1, anchorTo = "UIParent", point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT"};
-	["VoiceChatTalkers"] = {baseY = true, bottomEither = actionBarOffset, reputation = 1};
-	["GroupLootFrame1"] = {baseY = true, bottomEither = actionBarOffset, pet = 1, reputation = 1};
-	["TutorialFrameParent"] = {baseY = true, bottomEither = actionBarOffset, reputation = 1};
-	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, pet = 1, reputation = 1};
-	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, pet = 1, reputation = 1};
-	["ChatFrame1"] = {baseY = true, yOffset = 20, bottomLeft = actionBarOffset-20, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
-	["ChatFrame2"] = {baseY = true, yOffset = 20, bottomRight = actionBarOffset-20, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
+	["VoiceChatTalkers"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, reputation = 1};
+	["GroupLootFrame1"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
+	["TutorialFrameParent"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, reputation = 1};
+	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
+	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
+	["ChatFrame1"] = {baseY = true, yOffset = 20, bottomLeft = actionBarOffset-20, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
+	["ChatFrame2"] = {baseY = true, yOffset = 20, bottomRight = actionBarOffset-20, vehicleMenuBar = vehicleMenuBarTop, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	
@@ -1064,7 +1065,7 @@ function UIParent_ManageFramePosition(index, value, yOffsetFrames, xOffsetFrames
 	local frame, xOffset, yOffset, anchorTo, point, rpoint;
 
 	frame = getglobal(index);
-	if ( not frame ) then
+	if ( not frame or (type(frame)=="table" and frame.ignoreFramePositionManager)) then
 		return;
 	end
 	
@@ -1293,6 +1294,9 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 			-- Push center
 			self:MoveUIPanel("center", "right", 1);
 			self:SetUIPanel("center", frame);
+		elseif ( framePushable <= centerPushable and centerArea ~= "center" ) then
+			-- Replace left
+			self:SetUIPanel("left", frame);
 		else
 			-- Replace center
 			self:SetUIPanel("center", frame);
@@ -1577,27 +1581,37 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	-- Set up flags
 	local hasBottomLeft, hasBottomRight, hasPetBar;
 	
-	if ( MultiBarBottomLeft:IsShown() or MultiBarBottomRight:IsShown() ) then
-		tinsert(yOffsetFrames, "bottomEither");
-	end
-	if ( MultiBarBottomRight:IsShown() ) then
-		tinsert(yOffsetFrames, "bottomRight");
-		hasBottomRight = 1;
-	end
-	if ( MultiBarBottomLeft:IsShown() ) then
-		tinsert(yOffsetFrames, "bottomLeft");
-		hasBottomLeft = 1;
-	end
-	if ( MultiBarLeft:IsShown() ) then
-		tinsert(xOffsetFrames, "rightLeft");
-	elseif ( MultiBarRight:IsShown() ) then
-		tinsert(xOffsetFrames, "rightRight");
-	end
+	if ( VehicleMenuBar and VehicleMenuBar:IsShown() ) then
+		tinsert(yOffsetFrames, "vehicleMenuBar");
+	else	
+		if ( MultiBarBottomLeft:IsShown() or MultiBarBottomRight:IsShown() ) then
+			tinsert(yOffsetFrames, "bottomEither");
+		end
+		if ( MultiBarBottomRight:IsShown() ) then
+			tinsert(yOffsetFrames, "bottomRight");
+			hasBottomRight = 1;
+		end
+		if ( MultiBarBottomLeft:IsShown() ) then
+			tinsert(yOffsetFrames, "bottomLeft");
+			hasBottomLeft = 1;
+		end
+		if ( MultiBarLeft:IsShown() ) then
+			tinsert(xOffsetFrames, "rightLeft");
+		elseif ( MultiBarRight:IsShown() ) then
+			tinsert(xOffsetFrames, "rightRight");
+		end
 
-	if ( ( PetActionBarFrame and PetActionBarFrame:IsShown() ) or ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) or
-		 ( PossessBarFrame and PossessBarFrame:IsShown() ) or ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) ) then
-		tinsert(yOffsetFrames, "pet");
-		hasPetBar = 1;
+		if ( ( PetActionBarFrame and PetActionBarFrame:IsShown() ) or ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) or
+			 ( PossessBarFrame and PossessBarFrame:IsShown() ) or ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) ) then
+			tinsert(yOffsetFrames, "pet");
+			hasPetBar = 1;
+		end
+		if ( ReputationWatchBar:IsShown() and MainMenuExpBar:IsShown() ) then
+			tinsert(yOffsetFrames, "reputation");
+		end
+		if ( MainMenuBarMaxLevelBar:IsShown() ) then
+			tinsert(yOffsetFrames, "maxLevel");
+		end
 	end
 	
 	if ( IsVoiceChatEnabled() and VoiceChatTalkers and not VoiceChatTalkers:IsUserPlaced() and VoiceChatTalkers:IsShown() ) then
@@ -1606,13 +1620,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameParent"].baseX = nil;
 	end
 	
-	if ( ReputationWatchBar:IsShown() and MainMenuExpBar:IsShown() ) then
-		tinsert(yOffsetFrames, "reputation");
-	end
-	if ( MainMenuBarMaxLevelBar:IsShown() ) then
-		tinsert(yOffsetFrames, "maxLevel");
-	end
-
+	
 	-- Iterate through frames and set anchors according to the flags set
 	for index, value in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
 		securecall("UIParent_ManageFramePosition", index, value, yOffsetFrames, xOffsetFrames, hasBottomLeft, hasBottomRight, hasPetBar);
@@ -1688,6 +1696,14 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( DurabilityFrame:IsShown() ) then
 			anchorY = anchorY - DurabilityFrame:GetHeight();
 		end
+	end
+	--Setup Vehicle seat indicator offset
+	if ( VehicleSeatIndicator ) then
+		--VehicleSeatIndicator:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+		if ( VehicleSeatIndicator and VehicleSeatIndicator:IsShown() ) then
+			anchorY = anchorY - VehicleSeatIndicator:GetHeight();
+		end
+		
 	end
 	
 	if ( AchievementWatchFrame:IsShown() ) then
@@ -2436,11 +2452,6 @@ function tContains(table, item)
 end
 
 function MouseIsOver(frame, topOffset, bottomOffset, leftOffset, rightOffset)
-	-- Don't honor this if options frame is up. Might want to extend this to all center frames
-	if ( InterfaceOptionsFrame:IsShown() ) then
-		return nil;
-	end
-	
 	local x, y = GetCursorPosition();
 	x = x / frame:GetEffectiveScale();
 	y = y / frame:GetEffectiveScale();
@@ -2905,7 +2916,7 @@ end
 
 function UnitHasMana(unit)
 	local powerType, powerToken = UnitPowerType(unit);
-	if ( powerToken == "MANA" and UnitPowerMax(unit) > 0 ) then
+	if ( powerToken == "MANA" and UnitPowerMax(unit, powerType) > 0 ) then
 		return 1;
 	end
 	return nil;
