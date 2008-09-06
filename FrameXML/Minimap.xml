@@ -175,14 +175,17 @@
 								self:SetFrameLevel(self:GetFrameLevel()+1)
 							</OnLoad>
 							<OnEvent>
-								if ( event == "UPDATE_PENDING_MAIL" ) then
-									if ( HasNewMail() ) then
-										self:Show();
-									else
-										self:Hide();
-									end
-								end
-							</OnEvent>
+                if ( event == "UPDATE_PENDING_MAIL" ) then
+                  if ( HasNewMail() ) then
+                    self:Show();
+                    if( GameTooltip:IsOwned( self ) ) then
+                      MinimapMailFrameUpdate();
+                    end
+                  else
+                    self:Hide();
+                  end
+                end
+              </OnEvent>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 								if( GameTooltip:IsOwned( self ) ) then
@@ -497,9 +500,7 @@
 												MiniMapTracking_Update();
 											</OnLoad>
 											<OnEvent>
-												if ( event == "MINIMAP_UPDATE_TRACKING" ) then
-													MiniMapTracking_Update();
-												end
+												MiniMapTracking_Update();
 											</OnEvent>
 											<OnClick>
 												ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);

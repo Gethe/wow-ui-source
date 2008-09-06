@@ -5,11 +5,16 @@ GAMETIME_PM = false;
 local GAMETIME_DAWN = ( 5 * 60) + 30;		-- 5:30 AM
 local GAMETIME_DUSK = (21 * 60) +  0;		-- 9:00 PM
 
-local _G = getfenv(0);
-local date = _G.date;
-local getglobal = _G.getglobal;
-local format = _G.format;
 
+local date = date;
+local format = format;
+local GetCVarBool = GetCVarBool;
+local CalendarGetDate = CalendarGetDate;
+
+local PI = PI;
+local TWOPI = PI * 2.0;
+local cos = math.cos;
+local INVITE_PULSE_SEC	= 1.0 / (2.0*1.0);	-- mul by 2 so the pulse constant counts for half a flash
 
 -- general GameTime functions
 function GameTime_GetFormattedTime(hour, minute, wantAMPM)
@@ -58,7 +63,7 @@ function GameTime_ComputeMinutes(hour, minute, militaryTime, am)
 	return minutes;
 end
 
--- GameTime_ComputeStandardTime assumes the given time is military
+-- GameTime_ComputeStandardTime assumes the given time is military (24 hour)
 function GameTime_ComputeStandardTime(hour)
 	if ( hour > 12 ) then
 		return hour - 12, GAMETIME_PM;
@@ -69,7 +74,7 @@ function GameTime_ComputeStandardTime(hour)
 	end
 end
 
--- GameTime_ComputeMilitaryTime assumes the given time is standard
+-- GameTime_ComputeMilitaryTime assumes the given time is standard (12 hour)
 function GameTime_ComputeMilitaryTime(hour, am)
 	if ( am and hour == 12 ) then
 		return 0;
@@ -91,7 +96,7 @@ function GameTime_GetGameTime(wantAMPM)
 end
 
 function GameTime_GetTime(showAMPM)
-	if( GetCVarBool("timeMgrUseLocalTime") ) then
+	if ( GetCVarBool("timeMgrUseLocalTime") ) then
 		return GameTime_GetLocalTime(showAMPM);
 	else
 		return GameTime_GetGameTime(showAMPM);
@@ -137,6 +142,7 @@ function GameTimeFrame_OnLoad(self)
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 	self.pendingCalendarInvites = 0;
 	self.hour = 0;
+	self.flashTimer = 0.0;
 	GameTimeFrame_OnUpdate(self);
 end
 
@@ -150,12 +156,14 @@ function GameTimeFrame_OnEvent(self, event, ...)
 		if ( pendingCalendarInvites > self.pendingCalendarInvites ) then
 			if ( not CalendarFrame or (CalendarFrame and not CalendarFrame:IsShown()) ) then
 				GameTimeCalendarInvitesTexture:Show();
-				UIFrameFlash(GameTimeCalendarInvitesTexture, 1.0, 1.0, -1);
+				GameTimeCalendarInvitesGlow:Show();
+				GameTimeFrame.flashInvite = true;
 				self.pendingCalendarInvites = pendingCalendarInvites;
 			end
 		elseif ( pendingCalendarInvites == 0 ) then
 				GameTimeCalendarInvitesTexture:Hide();
-				UIFrameFlashStop(GameTimeCalendarInvitesTexture);
+				GameTimeCalendarInvitesGlow:Hide();
+				GameTimeFrame.flashInvite = false;
 				self.pendingCalendarInvites = 0;
 		end
 		GameTimeFrame_SetDate();
@@ -203,6 +211,19 @@ function GameTimeFrame_OnUpdate(self, elapsed)
 		end
 		GameTooltip:Show();
 	end
+	-- Flashing stuff
+	if ( elapsed and GameTimeFrame.flashInvite ) then
+		local flashIndex = TWOPI * self.flashTimer * INVITE_PULSE_SEC;
+		local flashValue = max(0.0, 0.5 + 0.5*cos(flashIndex));
+		if ( flashIndex >= TWOPI ) then
+			self.flashTimer = 0.0;
+		else
+			self.flashTimer = self.flashTimer + elapsed;
+		end
+		
+		GameTimeCalendarInvitesTexture:SetAlpha(flashValue);
+		GameTimeCalendarInvitesGlow:SetAlpha(flashValue);
+	end
 end
 
 function GameTimeFrame_OnClick(self)
@@ -212,8 +233,9 @@ function GameTimeFrame_OnClick(self)
 			Calendar_Show();
 		end
 		GameTimeCalendarInvitesTexture:Hide();
+		GameTimeCalendarInvitesGlow:Hide();
 		self.pendingCalendarInvites = 0;
-		UIFrameFlashStop(GameTimeCalendarInvitesTexture);
+		GameTimeFrame.flashInvite = false;
 	else
 		ToggleCalendar();
 	end

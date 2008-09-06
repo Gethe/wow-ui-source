@@ -906,6 +906,12 @@
 			<OnUpdate>
 				TicketStatusFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
+			<OnShow>
+				TemporaryEnchantFrame:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", -205, (-self:GetHeight()));
+			</OnShow>
+			<OnHide>
+				TemporaryEnchantFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -180, -13);
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -234,13 +234,19 @@ function ReputationFrame_Update()
 					else
 						ReputationDetailAtWarCheckBox:SetChecked(nil);
 					end
-					if ( canToggleAtWar ) then
+					if ( canToggleAtWar and (not isHeader)) then
 						ReputationDetailAtWarCheckBox:Enable();
 						ReputationDetailAtWarCheckBoxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 					else
 						ReputationDetailAtWarCheckBox:Disable();
 						ReputationDetailAtWarCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-
+					end
+					if ( not isHeader ) then
+						ReputationDetailInactiveCheckBox:Enable();
+						ReputationDetailInactiveCheckBoxText:SetTextColor(ReputationDetailInactiveCheckBoxText:GetFontObject():GetTextColor());
+					else
+						ReputationDetailInactiveCheckBox:Disable();
+						ReputationDetailInactiveCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					end
 					if ( IsFactionInactive(factionIndex) ) then
 						ReputationDetailInactiveCheckBox:SetChecked(1);

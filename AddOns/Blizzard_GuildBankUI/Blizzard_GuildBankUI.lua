@@ -620,7 +620,7 @@ end
 
 function GuildBankLogScroll()
 	local offset = FauxScrollFrame_GetOffset(GuildBankTransactionsScrollFrame);
-	local numTransactions;
+	local numTransactions = 0;
 	if ( GuildBankFrame.mode == "log" ) then
 		numTransactions = GetNumGuildBankTransactions(GetCurrentGuildBankTab());
 	elseif ( GuildBankFrame.mode == "moneylog" ) then

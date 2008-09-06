@@ -8,7 +8,7 @@
 		<Anchors>
 			<Anchor point="TOP">
 				<Offset>
-					<AbsDimension x="0" y="-122"/>
+					<AbsDimension x="0" y="-122"/>	<!--If you change this, make sure to change the dynamic positioning in BarberShopUI.xml -->
 				</Offset>
 			</Anchor>
 		</Anchors>

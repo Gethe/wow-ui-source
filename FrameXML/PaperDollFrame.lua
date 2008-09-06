@@ -468,9 +468,12 @@ function PaperDollFrame_SetResilience(statFrame)
 		lowestRating = CR_CRIT_TAKEN_SPELL;
 	end
 
+	local maxRatingBonus = GetMaxCombatRatingBonus(lowestRating);
+	local lowestRatingBonus = GetCombatRatingBonus(lowestRating);
+
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, minResilience);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..STAT_RESILIENCE.." "..minResilience..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, GetCombatRatingBonus(lowestRating), min(GetCombatRatingBonus(lowestRating) * 2, 25.00), GetCombatRatingBonus(lowestRating));
+	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, lowestRatingBonus, min(lowestRatingBonus * 2, maxRatingBonus), lowestRatingBonus);
 	statFrame:Show();
 end
 
@@ -753,7 +756,11 @@ function PaperDollFrame_SetRangedDamage(statFrame, unit)
 		baseDamage = (minDamage + maxDamage) * 0.5;
 		fullDamage = baseDamage * percent;
 		totalBonus = 0;
-		damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
+		if( rangedAttackSpeed == 0 ) then
+			damagePerSecond = 0;
+		else
+			damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
+		end
 		tooltip = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
 	else
 		minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
@@ -762,7 +769,11 @@ function PaperDollFrame_SetRangedDamage(statFrame, unit)
 		baseDamage = (minDamage + maxDamage) * 0.5;
 		fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
 		totalBonus = (fullDamage - baseDamage);
-		damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
+		if( rangedAttackSpeed == 0 ) then
+			damagePerSecond = 0;
+		else
+			damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
+		end
 		tooltip = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
 	end
 

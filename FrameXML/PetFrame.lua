@@ -25,6 +25,8 @@ function PetFrame_OnLoad (self)
 	local _, class = UnitClass("player");
 	if ( class == "DEATHKNIGHT" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
+	elseif ( class == "SHAMAN" ) then
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
 	end
 end
 

@@ -75,12 +75,12 @@
 		<Scripts>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff(self.unit, self.id);
+					GameTooltip:SetUnitDebuff(self.unit, self:GetID());
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
-				GameTooltip:SetUnitDebuff(self.unit, self.id);
+				GameTooltip:SetUnitDebuff(self.unit, self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -135,12 +135,12 @@
 		<Scripts>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitBuff(self.unit, self.id);
+					GameTooltip:SetUnitBuff(self.unit, self:GetID());
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
-				GameTooltip:SetUnitBuff(self.unit, self.id);
+				GameTooltip:SetUnitBuff(self.unit, self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -604,7 +604,7 @@
 				TargetofTarget_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				TargetDebuffButton_Update(self);
+				TargetFrame_UpdateAuras(self);
 			</OnShow>
 			<OnHide>
 				TargetofTarget_OnHide(self);

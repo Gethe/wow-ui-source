@@ -178,6 +178,9 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="GossipFrameNpcNameText" inherits="GameFontHighlight">
+							<Size>
+								<AbsDimension x="235" y="20"/>
+							</Size>
 							<Anchors>
 								<Anchor point="LEFT"/>
 								<Anchor point="RIGHT"/>

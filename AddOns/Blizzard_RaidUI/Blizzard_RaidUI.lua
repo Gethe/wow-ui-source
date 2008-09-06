@@ -1025,6 +1025,8 @@ function RaidPullout_Update(pullOutFrame)
 			pulloutButton:UnregisterEvent("VOICE_STATUS_UPDATE");
 			pulloutButton:UnregisterEvent("VOICE_START");
 			pulloutButton:UnregisterEvent("VOICE_STOP");
+			pulloutButton:UnregisterEvent("UNIT_ENTERED_VEHICLE");
+			pulloutButton:UnregisterEvent("UNIT_EXITED_VEHICLE");
 			pulloutButton:Hide();
 		end
 	end

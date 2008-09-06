@@ -84,22 +84,19 @@ function AuraButton_Update(buttonName, index, filter)
 		-- Setup Buff
 		buff.namePrefix = buttonName;
 		buff:SetID(index);
+		buff.unit = unit;
 		buff.filter = filter;
 		buff:SetAlpha(1.0);
 		buff:Show();
 
 		-- Set filter-specific attributes
 		if ( helpful ) then
-			-- Set secure attributes before we do any positioning or set scripts
-			-- These will let us cancel our buffs
-			buff:SetAttribute("unit", unit);
-			buff:SetAttribute("index", index);
 			-- Anchor Buffs
 			BuffButton_UpdateAnchors(buttonName, index);
 		else
-			buff.unit = nil;
 			-- Anchor Debuffs
 			DebuffButton_UpdateAnchors(buttonName, index);
+
 			-- Set color of debuff border based on dispel class.
 			local debuffSlot = getglobal(buffName.."Border");
 			if ( debuffSlot ) then
@@ -182,6 +179,10 @@ end
 
 function BuffButton_OnLoad (self)
 	self:RegisterForClicks("RightButtonUp");
+end
+
+function BuffButton_OnClick (self)
+	CancelUnitBuff(self.unit, self:GetID(), self.filter);
 end
 
 function BuffButton_OnUpdate (self, elapsed)

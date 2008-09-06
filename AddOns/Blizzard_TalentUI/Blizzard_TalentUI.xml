@@ -209,6 +209,9 @@
 					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 				</Texture>
 				<FontString name="PlayerTalentFrameSpentPoints" inherits="GameFontNormalSmall">
+					<Size>
+						<AbsDimension x="0" y="10"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="PlayerTalentFramePointsMiddle">
 							<Offset>
@@ -218,6 +221,9 @@
 					</Anchors>
 				</FontString>
 				<FontString name="PlayerTalentFrameTalentPointsText" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="0" y="10"/>
+					</Size>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
 							<Offset>
@@ -227,8 +233,11 @@
 					</Anchors>
 				</FontString>
 				<FontString name="PlayerTalentFrameTalentPoints" inherits="GameFontNormalSmall" text="CHARACTER_POINTS1_COLON">
+					<Size>
+						<AbsDimension x="0" y="10"/>
+					</Size>
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="PlayerTalentFrameTalentPointsText" relativePoint="LEFT">
+						<Anchor point="TOPRIGHT" relativeTo="PlayerTalentFrameTalentPointsText" relativePoint="TOPLEFT">
 							<Offset>
 								<AbsDimension x="-3" y="0"/>
 							</Offset>

@@ -5,6 +5,7 @@
 		<Scripts>
 			<OnClick>
 				SendMailRadioButton_OnClick(self:GetID());
+				SendMailFrame_CanSend();
 			</OnClick>
 		</Scripts>
 	</CheckButton>
@@ -909,7 +910,7 @@
 					</Frame>
 					<EditBox name="SendMailSubjectEditBox" letters="64" historyLines="0" autoFocus="false">
 						<Size>
-							<AbsDimension x="237" y="20"/>
+							<AbsDimension x="220" y="20"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="SendMailNameEditBox" relativePoint="BOTTOMLEFT">

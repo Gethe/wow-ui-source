@@ -391,6 +391,10 @@ function TimeManager_ToggleTimeFormat()
 	TimeManager_UpdateAlarmTime();
 	-- TimeManagerFrame_OnUpdate will pick up the time ticker change
 	-- TimeManagerClockButton_OnUpdate will pick up the clock change
+	if ( CalendarFrame_UpdateTimeFormat ) then
+		-- update the Calendar's time format if it's available
+		CalendarFrame_UpdateTimeFormat();	
+	end
 end
 
 function TimeManagerLocalTimeCheck_OnClick(self)

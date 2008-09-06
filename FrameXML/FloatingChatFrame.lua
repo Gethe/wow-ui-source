@@ -683,10 +683,21 @@ function FCF_OnUpdate(elapsed)
 		
 		-- New version of the crazy function
 		if ( FCF_IsValidChatFrame(chatFrame) ) then
+			local isLocked = FCF_Get_ChatLocked();
 			--Tab height
 			local yOffset = 45;
+			local isCombatLog;
 			if ( IsCombatLog(chatFrame) ) then
-				yOffset = yOffset + CombatLogQuickButtonFrame_Custom:GetHeight();				
+				isCombatLog = true;
+				if ( isLocked ) then
+					CombatLogQuickButtonFrame_Custom:SetParent(chatFrame);
+				else
+					CombatLogQuickButtonFrame_Custom:SetParent(chatTab);
+					CombatLogQuickButtonFrame_Custom:SetAlpha(1);
+					if ( chatFrame:IsShown() ) then
+						CombatLogQuickButtonFrame_Custom:Show();
+					end
+				end
 			end
 			if ( (MouseIsOver(chatFrame, yOffset, -10, -5, 5) or chatFrame.resizing) ) then
 				-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
@@ -702,12 +713,16 @@ function FCF_OnUpdate(elapsed)
 					if ( (chatFrame.hoverTime > CHAT_TAB_SHOW_DELAY) or (MOVING_CHATFRAME and (chatFrame == DEFAULT_CHAT_FRAME)) ) then
 						-- If the chatframe's alpha is less than the current default, then fade it in 
 						if ( not chatFrame.hasBeenFaded and (chatFrame.oldAlpha and chatFrame.oldAlpha < DEFAULT_CHATFRAME_ALPHA) ) then
-							chatTab:Show();
+							if ( isLocked and isCombatLog ) then
+								CombatLogQuickButtonFrame_Custom:Show();
+							elseif ( not isLocked ) then
+								chatTab:Show();
+							end
 							for index, value in pairs(CHAT_FRAME_TEXTURES) do
 								UIFrameFadeIn(getglobal(chatFrame:GetName()..value), CHAT_FRAME_FADE_TIME, chatFrame.oldAlpha, DEFAULT_CHATFRAME_ALPHA);
 							end
 							
-							if ( IsCombatLog(chatFrame) ) then
+							if ( isCombatLog ) then
 								-- Fade in quick button frame
 								UIFrameFadeIn(CombatLogQuickButtonFrame, CHAT_FRAME_FADE_TIME, chatFrame.oldAlpha, 1.0);
 							end
@@ -718,10 +733,18 @@ function FCF_OnUpdate(elapsed)
 						-- Fadein to different values depending on the selected tab
 						if ( not chatTab.hasBeenFaded ) then
 							if ( SELECTED_DOCK_FRAME:GetID() == chatTab:GetID() or not chatFrame.isDocked) then
-								UIFrameFadeIn(chatTab, CHAT_FRAME_FADE_TIME);
+								if ( isLocked and isCombatLog ) then
+									UIFrameFadeIn(CombatLogQuickButtonFrame_Custom, CHAT_FRAME_FADE_TIME);
+								elseif ( not isLocked ) then
+									UIFrameFadeIn(chatTab, CHAT_FRAME_FADE_TIME);
+								end
 								chatTab.oldAlpha = 1;
 							else
-								UIFrameFadeIn(chatTab, CHAT_FRAME_FADE_TIME, 0, 0.5);
+								if ( isLocked and isCombatLog ) then
+									UIFrameFadeIn(CombatLogQuickButtonFrame_Custom, CHAT_FRAME_FADE_TIME, 0, 0.5);
+								elseif ( not isLocked ) then
+									UIFrameFadeIn(chatTab, CHAT_FRAME_FADE_TIME, 0, 0.5);
+								end
 								chatTab.oldAlpha = 0.5;
 							end
 
@@ -773,7 +796,12 @@ function FCF_OnUpdate(elapsed)
 						fadeInfo.finishedArg1 = chatTab;
 						fadeInfo.finishedArg2 = getglobal("ChatFrame"..chatTab:GetID());
 						fadeInfo.finishedFunc = FCF_ChatTabFadeFinished;
-						UIFrameFade(chatTab, fadeInfo);
+						
+						if ( isLocked and isCombatLog ) then
+							UIFrameFade(CombatLogQuickButtonFrame_Custom, fadeInfo);
+						elseif ( not isLocked ) then
+							UIFrameFade(chatTab, fadeInfo);
+						end
 
 						chatFrame.hover = nil;
 						chatTab.hasBeenFaded = nil;
@@ -783,7 +811,6 @@ function FCF_OnUpdate(elapsed)
 				chatFrame.hoverTime = 0;
 			end	
 		end
-		
 		-- See if any of the tabs are flashing
 		if ( UIFrameIsFlashing(getglobal("ChatFrame"..j.."TabFlash")) and chatFrame.isDocked ) then
 			showAllDockTabs = 1;
@@ -792,14 +819,24 @@ function FCF_OnUpdate(elapsed)
 	-- If one tab is flashing, show all the docked tabs
 	if ( showAllDockTabs ) then
 		for index, value in pairs(DOCKED_CHAT_FRAMES) do
+			local isLocked = FCF_Get_ChatLocked();
+			local isChatLog = IsCombatLog(value);
 			chatTab = getglobal(value:GetName().."Tab");
 			chatTab.needsHide = nil;
 			if ( not chatTab.hasBeenFaded ) then
 				if ( SELECTED_DOCK_FRAME:GetID() == chatTab:GetID() ) then
-					UIFrameFadeIn(chatTab, CHAT_FRAME_FADE_TIME);
+					if ( isLocked and isCombatLog ) then
+						UIFrameFadeIn(CombatLogQuickButtonFrame_Custom, CHAT_FRAME_FADE_TIME);
+					elseif ( not isLocked ) then
+						UIFrameFadeIn(chatTab, CHAT_FRAME_FADE_TIME);
+					end
 					chatTab.oldAlpha = 1;
 				else
-					UIFrameFadeIn(chatTab, CHAT_FRAME_FADE_TIME, 0, 0.5);
+					if ( isLocked and isCombatLog ) then
+						UIFrameFadeIn(CombatLogQuickButtonFrame_Custom, CHAT_FRAME_FADE_TIME, 0, 0.5);
+					elseif ( notLocked ) then
+						UIFrameFadeIn(chatTab, CHAT_FRAME_FADE_TIME, 0, 0.5);
+					end
 					chatTab.oldAlpha = 0.5;
 				end
 				chatTab.hasBeenFaded = 1;
@@ -807,6 +844,8 @@ function FCF_OnUpdate(elapsed)
 		end
 	elseif ( hideAnyDockTabs) then
 		for index, value in pairs(DOCKED_CHAT_FRAMES) do
+			local isLocked = FCF_Get_ChatLocked();
+			local isChatLog = IsCombatLog(value);
 			chatTab = getglobal(value:GetName().."Tab");
 			if ( chatTab.needsHide ) then
 				local fadeInfo = {};
@@ -816,7 +855,11 @@ function FCF_OnUpdate(elapsed)
 				fadeInfo.finishedArg1 = chatTab;
 				fadeInfo.finishedArg2 = getglobal("ChatFrame"..chatTab:GetID());
 				fadeInfo.finishedFunc = FCF_ChatTabFadeFinished;
-				UIFrameFade(chatTab, fadeInfo);
+				if ( isLocked and isCombatLog ) then
+					UIFrameFade(CombatLogQuickButtonFrame_Custom, fadeInfo);
+				elseif ( not isLocked ) then
+					UIFrameFade(chatTab, fadeInfo);
+				end
 
 				chatFrame.hover = nil;
 				chatTab.hasBeenFaded = nil;
@@ -871,10 +914,6 @@ function FCF_IsValidChatFrame(chatFrame)
 	end
 	
 	if ( SIMPLE_CHAT == "1" ) then
-		return nil;
-	end
-
-	if ( FCF_Get_ChatLocked() ) then
 		return nil;
 	end
 	

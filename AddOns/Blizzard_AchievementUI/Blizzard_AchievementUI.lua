@@ -398,7 +398,7 @@ function AchievementFrameCategories_UpdateTooltip()
 	end
 	
 	for _, button in next, AchievementFrameCategoriesContainer.buttons do
-		if ( MouseIsOver(button) ) then
+		if ( MouseIsOver(button) and button.showTooltipFunc ) then
 			button:showTooltipFunc();
 			break;
 		end
@@ -562,7 +562,6 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		AchievementFrameCategories_UpdateTooltip();
 		AchievementFrameAchievementsObjectives.id = nil;
 		AchievementFrameAchievements_Update();
-		AchievementAlertFrame_ShowAlert(...);
 		AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
 
 	elseif ( event == "CRITERIA_UPDATE" ) then
@@ -795,8 +794,8 @@ function AchievementButton_OnLoad (self)
 	tinsert(AchievementFrameAchievements.buttons, self);
 end
 
-function AchievementButton_OnClick (self)
-	if(IsModifiedClick()) then
+function AchievementButton_OnClick (self, ignoreModifiers)
+	if(IsModifiedClick() and not ignoreModifiers) then
 		if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
 			local achievementLink = GetAchievementLink(self.id);
 			if ( achievementLink ) then
@@ -1211,19 +1210,19 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				metaCriteria.check:Show();
 				metaCriteria.border:SetVertexColor(1, 1, 1, 1);
 				metaCriteria.icon:SetVertexColor(1, 1, 1, 1);
-				metaCriteria.label:SetFontObject("AchievementDescriptionEnabledFont");
+				metaCriteria.label:SetFontObject("AchievementCriteriaEnabledFont");
 				metaCriteria.label:SetTextColor(0, 0, 0, 1);
 			elseif ( completed ) then
 				metaCriteria.check:Show();
 				metaCriteria.border:SetVertexColor(1, 1, 1, 1);
 				metaCriteria.icon:SetVertexColor(1, 1, 1, 1);
-				metaCriteria.label:SetFontObject("AchievementDescriptionEnabledFont");
+				metaCriteria.label:SetFontObject("AchievementCriteriaEnabledFont");
 				metaCriteria.label:SetTextColor(0, 1, 0, 1);
 			else
 				metaCriteria.check:Hide();
 				metaCriteria.border:SetVertexColor(.75, .75, .75, 1);
 				metaCriteria.icon:SetVertexColor(.55, .55, .55, 1);
-				metaCriteria.label:SetFontObject("AchievementDescriptionDisabledFont");
+				metaCriteria.label:SetFontObject("AchievementCriteriaDisabledFont");
 				metaCriteria.label:SetTextColor(.6, .6, .6, 1);
 			end
 			
@@ -1466,7 +1465,6 @@ function AchievementFrameStats_SetStat(button, category, index, colorIndex, isSu
 	local numCriteria = GetAchievementNumCriteria(id);
 	if ( numCriteria == 0 ) then
 		-- This is no good!
-		--debugprint(name.." has no criteria");
 	end
 	-- Just show the first criteria for now
 	local criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity;
@@ -1696,22 +1694,19 @@ end
 
 function AchievementFrameSummaryAchievement_OnClick(self)
 	local id = self.id
-	
-	local nextID = GetNextAchievement(self.id);
-	if ( nextID ) then
-		local _, _, _, completed = GetAchievementInfo(nextID)
+	local nextID, completed = GetNextAchievement(id);
+	if ( nextID and completed ) then
+		local newID;
 		while ( nextID and completed ) do
-			if ( GetNextAchievement(nextID) ) then
-				nextID = GetNextAchievement(nextID);
-				_, _, _, completed = GetAchievementInfo(nextID);
-			else
-				completed = false;
+			newID, completed = GetNextAchievement(nextID);
+			if ( completed ) then
+				nextID = newID;
 			end
 		end
-		AchievementFrame_SelectAchievement(nextID);
-	else
-		AchievementFrame_SelectAchievement(self.id);
+		id = nextID;
 	end
+	
+	AchievementFrame_SelectAchievement(id);
 end
 
 function AchievementFrameSummaryAchievement_OnEnter(self)
@@ -1722,165 +1717,6 @@ function AchievementFrameSummaryAchievement_OnEnter(self)
 		GameTooltip:AddLine(self.tooltip, nil, nil, nil, 1);
 		GameTooltip:Show();
 	end
-end
-
--- [[ AchievementAlertFrame ]] --
-function AchievementAlertFrame_OnLoad (self)
-	self.glow = getglobal(self:GetName().."ButtonGlow");
-	self.shine = getglobal(self:GetName().."ButtonShine");
-	-- Setup a continous timescale since the table values are offsets
-	self.fadeinDuration = 0.2;
-	self.flashDuration = 0.5;
-	self.shineStartTime = 0.3;
-	self.shineDuration = 0.85;
-	self.holdDuration = 3;
-	self.fadeoutDuration = 1.5;
-end
-
-function AchievementAlertFrame_ShowAlert (achievementID)
-	local frame = AchievementAlertFrame_GetAlertFrame();
-	local _, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(achievementID);
-	if ( not frame ) then
-		-- change this!!!
-		local info = ChatTypeInfo["SYSTEM"];
-		DEFAULT_CHAT_FRAME:AddMessage(format(ACHIEVEMENT_UNLOCKED_CHAT_MSG, name), info.r, info.g, info.b);
-		return;
-	end
-
-	getglobal(frame:GetName() .. "Name"):SetText(name);
-	
-	local shield = getglobal(frame:GetName() .. "Shield");
-	AchievementShield_SetPoints(points, shield.points, GameFontNormal, GameFontNormalSmall);
-	if ( points == 0 ) then
-		shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
-	else
-		shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
-	end
-	
-	getglobal(frame:GetName() .. "IconTexture"):SetTexture(icon);
-	frame.elapsed = 0;
-	frame.state = nil;
-	frame:SetAlpha(0);
-	frame:Show();
-	frame.id = achievementID;
-	
-	frame:SetScript("OnUpdate", AchievementAlertFrame_OnUpdate);
-end
-
-function AchievementAlertFrame_GetAlertFrame()
-	local maxAlerts = 2;
-	local name, frame, previousFrame;
-	for i=1, maxAlerts do
-		name = "AchievementAlertFrame"..i;
-		frame = getglobal(name);
-		if ( frame ) then
-			if ( not frame:IsShown() ) then
-				return frame;
-			end
-		else
-			frame = CreateFrame("Frame", name, UIParent, "AchievementAlertFrameTemplate");
-			if ( not previousFrame ) then
-				frame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
-			else
-				frame:SetPoint("BOTTOM", previousFrame, "TOP", 0, -10);
-			end
-			return frame;
-		end
-		previousFrame = frame;
-	end
-	return nil;
-end
-
-function AchievementAlertFrame_OnUpdate (self, elapsed)
-	local state = self.state;
-	local alpha;
-	local deltaTime = elapsed;
-	--initialize
-	if ( not state ) then
-		state = "fadein";
-		self.glow:Show();
-		self.glow:SetAlpha(0);
-		self.totalElapsed = 0;
-	end
-	self.totalElapsed = self.totalElapsed+elapsed;
-	elapsed = self.elapsed + elapsed;
-	if ( state == "fadein" ) then
-		if ( elapsed >= self.fadeinDuration ) then
-			state = "flash";
-			elapsed = 0;
-			self:SetAlpha(1);
-			self.glow:Show();
-		else
-			self:SetAlpha(elapsed/self.fadeinDuration);
-			self.glow:SetAlpha(elapsed/self.fadeinDuration);
-		end
-	elseif ( state == "flash" ) then
-		if ( elapsed >= self.flashDuration ) then
-			state = "hold";
-			elapsed = 0;
-			self.glow:Hide();
-		else
-			self.glow:SetAlpha(1-(elapsed/self.flashDuration));
-		end
-	elseif ( state == "hold" ) then
-		if ( elapsed >= self.holdDuration ) then
-			state = "fadeout";
-			elapsed = 0;
-		end
-	elseif ( state == "fadeout" ) then
-		if ( elapsed >= self.fadeoutDuration ) then
-			state = nil;
-			self:SetScript("OnUpdate", nil);
-			self:Hide();
-			self.id = nil;
-		else
-			self:SetAlpha(1-(elapsed/self.fadeoutDuration));
-		end
-	end
-
-	--Handle shine
-	local normalizedTime = self.totalElapsed - self.shineStartTime;
-	if ( normalizedTime >= 0 and normalizedTime <= self.shineDuration ) then
-		if ( not self.shine:IsShown() ) then
-			self.shine:Show();
-			self.shine:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -8);
-			self.shine:SetAlpha(1);
-		end
-		local target = 239;
-		local _,_,_,x = self.shine:GetPoint();
-		if ( x ~= target ) then
-			x = x +(target-x)*(deltaTime/(self.shineDuration/3));
-			if ( floor(abs(target - x)) == 0 ) then
-				x = target;
-			end
-		end
-		
-		self.shine:SetPoint("TOPLEFT", self, "TOPLEFT", x, -8);
-		self.shine:SetAlpha(1);
-		local startShineFade = 0.8*self.shineDuration;
-		if ( normalizedTime >= startShineFade ) then
-			self.shine:SetAlpha(1-((normalizedTime-startShineFade)/(self.shineDuration-startShineFade)));
-		end
-	else
-		if ( self.shine:IsShown() ) then
-			self.shine:Hide();
-			self.vel = nil;
-		end
-	end
-
-	self.state = state;
-	self.elapsed = elapsed;
-end
-
-function AchievementAlertFrame_OnClick (self)
-	local id = self.id;
-	if ( not id ) then
-		return;
-	end
-	
-	self.elapsed = 0;
-	ShowUIPanel(AchievementFrame);
-	AchievementFrame_SelectAchievement(id)
 end
 
 function AchievementFrame_SelectAchievement(id)
@@ -1902,15 +1738,13 @@ function AchievementFrame_SelectAchievement(id)
 			end
 		end
 	elseif ( completed ) then 
-		local nextID = GetNextAchievement(id);
-		if ( nextID ) then
-			local _, _, _, completed = GetAchievementInfo(nextID)
+		local nextID, completed = GetNextAchievement(id);
+		if ( nextID and completed ) then
+			local newID
 			while ( nextID and completed ) do
-				if ( GetNextAchievement(nextID) ) then
-					nextID = GetNextAchievement(nextID);
-					_, _, _, completed = GetAchievementInfo(nextID);
-				else
-					completed = false;
+				newID, completed = GetNextAchievement(nextID);
+				if ( completed ) then
+					nextID = newID;
 				end
 			end
 			id = nextID;
@@ -1976,7 +1810,8 @@ function AchievementFrame_SelectAchievement(id)
 	while ( not shown ) do
 		for _, button in next, AchievementFrameAchievementsContainer.buttons do
 			if ( button.id == id and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
-				AchievementButton_OnClick(button);
+				-- The "True" here ignores modifiers, so you don't accidentally track or link this achievement. :P
+				AchievementButton_OnClick(button, true);
 				
 				-- We found the button! MAKE IT SHOWN ZOMG!
 				shown = button;
@@ -2412,7 +2247,6 @@ function AchievementFrameComparisonStats_SetStat (button, category, index, color
 	local numCriteria = GetAchievementNumCriteria(id);
 	if ( numCriteria == 0 ) then
 		-- This is no good!
-		--debugprint(name.." has no criteria");
 	end
 	-- Just show the first criteria for now
 	local criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity, friendQuantity;

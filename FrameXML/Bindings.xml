@@ -608,16 +608,16 @@
 		Minimap_ZoomOut();
 	</Binding>
 	<Binding name="TOGGLEMUSIC">
-		SoundOptionsFrame_ToggleMusic();
+		AudioOptionsSoundPanel_ToggleMusic();
 	</Binding>
 	<Binding name="TOGGLESOUND">
-		SoundOptionsFrame_ToggleSound();
+		AudioOptionsSoundPanel_ToggleSound();
 	</Binding>
 	<Binding name="MASTERVOLUMEUP">
-		SoundOptionsFrame_MasterVolumeUp();
+		AudioOptionsSoundPanel_MasterVolumeUp();
 	</Binding>
 	<Binding name="MASTERVOLUMEDOWN">
-		SoundOptionsFrame_MasterVolumeDown();
+		AudioOptionsSoundPanel_MasterVolumeDown();
 	</Binding>
 	<Binding name="TOGGLESELFMUTE">
 		if ( GetCVar("VoiceChatSelfMute") == "0" ) then
@@ -1231,7 +1231,7 @@
 
 	<!-- Modified Click Actions -->
 	<ModifiedClick action="SELFCAST" default="ALT"/>
-	<ModifiedClick action="FOCUSCAST"/>
+	<ModifiedClick action="FOCUSCAST" default="NONE"/>
 	<ModifiedClick action="AUTOLOOTTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="MAILAUTOLOOTTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="STICKYCAMERA" default="CTRL"/>

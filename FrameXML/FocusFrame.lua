@@ -16,9 +16,6 @@ function FocusFrame_OnLoad (self)
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
 
-	self.buffStartX = 5;
-	self.buffStartY = 32;
-	self.buffSpacing = 3;
 	FocusFrame.debuffTotal = 0;
 
 	self:RegisterForDrag("LeftButton");
@@ -58,7 +55,7 @@ function FocusFrame_Update (self)
 
 		UnitFrame_Update(self);
 		FocusFrame_CheckFaction(self);
-		FocusDebuffButton_Update(self);
+		FocusFrame_UpdateBuffs(self);
 		FocusPortrait:SetAlpha(1.0);
 	end
 end
@@ -90,7 +87,7 @@ function FocusFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == "focus" ) then
-			FocusDebuffButton_Update(self);
+			FocusFrame_UpdateBuffs(self);
 		end
 	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
 		TargetofFocus_Update();
@@ -161,7 +158,7 @@ function FocusFrame_OnUpdate (self, elapsed)
 	end
 end
 
-function FocusDebuffButton_Update (self)
+function FocusFrame_UpdateBuffs (self)
 	RefreshBuffs(self, 0, "focus", MAX_FOCUS_BUFFS);
 end
 

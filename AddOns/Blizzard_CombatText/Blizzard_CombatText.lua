@@ -134,10 +134,9 @@ function CombatText_OnEvent(self, event, ...)
 			return;
 		end
 	elseif ( event == "UNIT_MANA" ) then
-		local power = UnitPower(self.unit);
-		local powerType, powerToken = UnitPowerType(self.unit);
 		if ( arg1 == self.unit ) then
-			if ( powerToken == "MANA" and power/UnitPowerMax(self.unit) <= COMBAT_TEXT_LOW_MANA_THRESHOLD ) then
+			local powerType, powerToken = UnitPowerType(self.unit);
+			if ( powerToken == "MANA" and (UnitPower(self.unit) / UnitPowerMax(self.unit)) <= COMBAT_TEXT_LOW_MANA_THRESHOLD ) then
 				if ( not CombatText.lowMana ) then
 					messageType = "MANA_LOW";
 					CombatText.lowMana = 1;
@@ -260,7 +259,7 @@ function CombatText_OnEvent(self, event, ...)
 		else
 			message = ABSORB;
 		end
-	elseif ( messageType == "RESIST" or messageType == "SPELL_RESISTED" ) then
+	elseif ( messageType == "RESIST" or messageType == "SPELL_RESIST" ) then
 		if ( arg3 ) then
 			-- Partial resist
 			message = data.." "..format(RESIST_TRAILER, arg3);

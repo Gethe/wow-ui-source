@@ -166,6 +166,11 @@ function ContainerFrame_OnShow(self)
 		PlaySound("igBackPackOpen");
 	end
  	ContainerFrame_Update(self);
+	
+	-- If there are tokens watched then decide if we should show the bar
+	if ( ManageBackpackTokenFrame ) then
+		ManageBackpackTokenFrame();
+	end
 end
 
 function OpenBag(id)

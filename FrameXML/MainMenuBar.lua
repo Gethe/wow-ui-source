@@ -41,7 +41,7 @@ end
 
 function MainMenuBar_UpdateArt(self)
 	if ( MainMenuBar.animComplete and not MainMenuBar.busy) then
-		if ( UnitInVehicleControlSeat("player") ) then
+		if ( UnitHasVehicleUI("player") ) then
 			MainMenuBar_ToVehicleArt(self);
 		else
 			if ( MainMenuBar.state ~= "player" ) then
@@ -150,19 +150,24 @@ function MainMenuBar_OnEvent(self, event, ...)
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainMenuBarPageNumber:SetText(GetActionBarPage());
 	elseif ( event == "KNOWN_CURRENCY_TYPES_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" ) then
-		if ( not GetCVarBool("showTokenFrame") ) then
-			-- Show Tutorial and show the token frame button somehow
-			--FIX ME!!!! when we know how to access the token frame
+		if ( GetCurrencyListSize() > 0 ) then
+			if ( not GetCVarBool("showTokenFrame") ) then
+				if ( not CharacterFrame:IsVisible() ) then
+					SetButtonPulse(CharacterMicroButton, 60, 1);
+				end
+				if ( not TokenFrame:IsVisible() ) then
+					SetButtonPulse(CharacterFrameTab5, 60, 1);
+				end
+			end
 			SetCVar("showTokenFrame", 1);
+			TokenFrame_LoadUI();
+			TokenFrame_Update();
+			BackpackTokenFrame_Update();
+		else
+			CharacterFrameTab5:Hide();
 		end
-		TokenFrame_LoadUI();
-		TokenFrame_Update();
-		BackpackTokenFrame_Update();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		MainMenuBar_UpdateKeyRing();
-		if ( GetCVarBool("showTokenFrame") ) then
-			TokenFrame_LoadUI();
-		end
 		if ( not firstEnteringWorld ) then
 			MainMenuBar_ToPlayerArt();
 		end
@@ -186,7 +191,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 		MainMenuBar.busy = true;
 		MainMenuBar.animComplete = false;
 		VehicleMenuBar.skin = arg3;
-		if ( arg5 ) then	--We are going to show a vehicle UI
+		if ( arg2 ) then	--We are going to show a vehicle UI
 			if ( MainMenuBar.state == "vehicle" ) then
 				MultiBarRight.ignoreFramePositionManager = true;
 				SetUpAnimation(VehicleMenuBar, AnimDataTable.MenuBar_Slide, MainMenuBar_AnimFinished, false);

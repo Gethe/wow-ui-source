@@ -10,6 +10,9 @@
 					TradeSkillSkillButton_OnClick(self, button);
 				end
 			</OnClick>
+			<OnLoad>
+				_G[self:GetName().."Text"]:SetWidth(275);
+			</OnLoad>
 		</Scripts>
 	</Button>
 	<Button name="TradeSkillItemTemplate" inherits="QuestItemTemplate" virtual="true">
@@ -212,6 +215,9 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="CENTER">
+							<Size>
+								<AbsDimension x="0" y="9"/>
+							</Size>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="TradeSkillFrameTitleText">
 									<Offset>

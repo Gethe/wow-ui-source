@@ -11,27 +11,27 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<FontString name="$parentCount" inherits="GameFontHighlightRight" text="100">
-					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT">
-							<Offset x="32" y="0"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<Texture name="$parentIcon">
 					<Size>
 						<AbsDimension x="15" y="15"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentCount" relativePoint="RIGHT">
-							<Offset x="2" y="-1"/>
+						<Anchor point="RIGHT" >
+							<Offset x="-20" y="0"/>
 						</Anchor>
 					</Anchors>
 				</Texture>
+				<FontString name="$parentCount" inherits="GameFontHighlightRight" text="100">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentIcon" relativePoint="LEFT">
+							<Offset x="-5" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
 				<FontString name="$parentName" inherits="GameFontHighlightLeft">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT">
-							<Offset x="11" y="1"/>
+						<Anchor point="LEFT">
+							<Offset x="11" y="0"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
@@ -192,100 +192,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
             </Layer>
         </Layers>
         <Frames>
-            <Frame name="$parentHonorFrame">
-            	<Size>
-            		<AbsDimension x="232" y="20"/>
-            	</Size>
-            	<Anchors>
-            		<Anchor point="TOPLEFT">
-            			<Offset x="90" y="-46"/>
-            		</Anchor>
-            	</Anchors>
-            	<Layers>
-            		<Layer level="BACKGROUND">
-						<Texture name="$parentHonorLeft" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="20"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentHonorRight" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="20"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentHonorMiddle" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="248" y="20"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentHonorLeft" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="$parentHonorRight" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-						</Texture>
-            		</Layer>
-					<Layer level="ARTWORK">
-						<FontString name="$parentHonorLabel" inherits="GameFontNormalSmall" text="PVP_LABEL_HONOR">
-							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="5" y="0"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentHonor" inherits="GameFontHighlightSmall" text="99999">
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentHonorLabel" relativePoint="RIGHT">
-									<Offset x="8" y="0"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<Texture name="$parentHonorIcon">
-							<Size>
-								<AbsDimension x="28" y="28"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentHonor" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="4" y="-6"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentArenaIcon" file="Interface\PVPFrame\PVP-ArenaPoints-Icon">
-							<Size>
-								<AbsDimension x="17" y="15"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="-5" y="0"/>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentArena" inherits="GameFontHighlightSmall" text="99999">
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="$parentArenaIcon" relativePoint="LEFT">
-									<Offset x="-4" y="0"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentArenaLabel" inherits="GameFontNormalSmall" text="PVP_LABEL_ARENA">
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="$parentArena" relativePoint="LEFT">
-									<Offset x="-4" y="0"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-            	</Layers>
-            </Frame>
 			<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
 				<Size x="299" y="330"/>
 				<Anchors>
@@ -351,7 +257,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				TokenFrame_OnLoad();
 			</OnLoad>
 			<OnShow>
-				TokenFrame_Update();
+				TokenFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
 				TokenFramePopup:Hide();
@@ -416,6 +322,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							SetCurrencyUnused(TokenFrame.selectedID, 0);
 						end
 						TokenFrame_Update();
+						BackpackTokenFrame_Update();
+						ManageBackpackTokenFrame();
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -485,28 +393,29 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	</Frame>
 	<Frame name="BackpackTokenTemplate" hidden="true" virtual="true">
 		<Size>
-			<AbsDimension x="40" y="12"/>
+			<AbsDimension x="50" y="12"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+				
+				<FontString name="$parentCount" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+					<Size x="38" y="10"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
-				</Texture>
-				<FontString name="$parentCount" inherits="GameFontHighlightSmall">
-					<Size x="30" y="10"/>
+				</FontString>
+				<Texture name="$parentIcon">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIcon">
-							<Offset x="2" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentCount" relativePoint="RIGHT">
+							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
-				</FontString>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -517,7 +426,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetCurrencyToken(self.index);
+				GameTooltip:SetBackpackToken(self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -543,34 +452,34 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentToken1" inherits="BackpackTokenTemplate">
+			<Frame name="$parentToken1" inherits="BackpackTokenTemplate" id="1">
 				<Anchors>
 					<Anchor point="LEFT">
-						<Offset x="13" y="1"/>
+						<Offset x="13" y="0"/>
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentToken2" inherits="BackpackTokenTemplate">
+			<Frame name="$parentToken2" inherits="BackpackTokenTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentToken1" relativePoint="RIGHT">
 						<Offset x="2" y="0"/>
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentToken3" inherits="BackpackTokenTemplate">
+			<Frame name="$parentToken3" inherits="BackpackTokenTemplate" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentToken2" relativePoint="RIGHT">
 						<Offset x="2" y="0"/>
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentToken4" inherits="BackpackTokenTemplate">
+			<!--<Frame name="$parentToken4" inherits="BackpackTokenTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentToken3" relativePoint="RIGHT">
 						<Offset x="2" y="0"/>
 					</Anchor>
 				</Anchors>
-			</Frame>
+			</Frame>-->
 		</Frames>
 	</Frame>
 </Ui>

@@ -395,4 +395,5 @@
 			</OnMouseWheel>
 		</Scripts>
 	</Frame>
+	<Frame name="BattlefieldTimerFrame"/>
 </Ui>

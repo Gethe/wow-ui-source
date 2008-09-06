@@ -39,6 +39,13 @@ VEHICLE_TEXTURES["Airship Alliance"] = {
 	height=64,
 };
 
+WORLDMAP_DEBUG_ICON_INFO = {};
+WORLDMAP_DEBUG_ICON_INFO[1] = { size =  6, r = 0.0, g = 1.0, b = 0.0 };
+WORLDMAP_DEBUG_ICON_INFO[2] = { size = 16, r = 1.0, g = 1.0, b = 0.5 };
+WORLDMAP_DEBUG_ICON_INFO[3] = { size = 32, r = 1.0, g = 1.0, b = 0.5 };
+WORLDMAP_DEBUG_ICON_INFO[4] = { size = 64, r = 1.0, g = 0.6, b = 0.0 };
+
+
 function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
@@ -226,6 +233,7 @@ function WorldMapFrame_Update()
 	end
 
 	-- Setup any debug objects
+	local baseLevel = WorldMapButton:GetFrameLevel() + 1;
 	local numDebugObjects = GetNumMapDebugObjects();
 	if ( NUM_WORLDMAP_DEBUG_OBJECTS < numDebugObjects ) then
 		for i=NUM_WORLDMAP_DEBUG_OBJECTS+1, numDebugObjects do
@@ -241,28 +249,20 @@ function WorldMapFrame_Update()
 			local frame = getglobal("WorldMapDebugObject"..textureCount);
 			frame.index = i;
 			frame.name = name;
+
+			local info = WORLDMAP_DEBUG_ICON_INFO[size];
 			if ( GetCurrentMapZone() == WORLDMAP_WORLD_ID ) then
-				size = size - 1;
-			end
-			if ( size == 4 ) then
-				frame:SetWidth(64);
-				frame:SetHeight(64);
-				frame.texture:SetVertexColor(1.0, 0.6, 0.0, 0.5);
-			elseif ( size == 3 ) then
-				frame:SetWidth(32);
-				frame:SetHeight(32);
-				frame.texture:SetVertexColor(1.0, 1.0, 0.5, 0.5);
-			elseif ( size == 2 ) then
-				frame:SetWidth(16);
-				frame:SetHeight(16);
-				frame.texture:SetVertexColor(1.0, 1.0, 0.5, 0.5);
+				frame:SetWidth(info.size / 2);
+				frame:SetHeight(info.size / 2);
 			else
-				frame:SetWidth(4);
-				frame:SetHeight(4);
-				frame.texture:SetVertexColor(0.0, 1.0, 0.0, 0.5);
+				frame:SetWidth(info.size);
+				frame:SetHeight(info.size);
 			end
+			frame.texture:SetVertexColor(info.r, info.g, info.b, 0.5);
+
 			x = x * WorldMapDetailFrame:GetWidth();
 			y = -y * WorldMapDetailFrame:GetHeight();
+			frame:SetFrameLevel(baseLevel + (4 - size));
 			frame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x, y);
 			frame:Show();
 		end

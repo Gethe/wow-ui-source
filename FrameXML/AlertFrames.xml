@@ -1,0 +1,244 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+
+<Script file="AlertFrames.lua"/>
+
+<Frame name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true">
+	<Size>
+		<AbsDimension x="300" y="88"/>
+	</Size>
+	<Anchors>
+		<Anchor point="BOTTOM">
+			<Offset>
+				<AbsDimension x="0" y="128"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Alert-Background">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<TexCoords left="0" right=".605" top="0" bottom=".703"/>
+			</Texture>
+			<FontString name="$parentUnlocked" inherits="GameFontBlackTiny" text="ACHIEVEMENT_UNLOCKED">
+				<Size x="200" y="12"/>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="7" y="-23"/>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentName" inherits="GameFontHighlight" text="For the Alliance!">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="72" y="36"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-60" y="36"/>
+					</Anchor>
+				</Anchors>
+				<Size x="240" y="16"/>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame name="$parentIcon" inherits="AchievementIconFrameTemplate">
+			<Size>
+				<AbsDimension x="124" y="124"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="-26" y="16"/>
+					</Offset>
+				</Anchor>
+			</Anchors>		
+			<Layers>			
+				<Layer level="BACKGROUND">
+					<Texture name="$parentBackfill" file="Interface\AchievementFrame\UI-Achievement-IconFrame-Backfill" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Size>
+							<AbsDimension x="64" y="64"/>
+						</Size>
+					</Texture>
+				</Layer>
+				<Layer level="BORDER">
+					<Texture name="$parentBling" file="Interface\AchievementFrame\UI-Achievement-Bling" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="-1" y="1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size>
+							<AbsDimension x="116" y="116"/>
+						</Size>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture name="$parentTexture" file="Interface\Icons\Spell_Misc_HellifrePVPHonorHoldFavor">
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size>
+							<AbsDimension x="50" y="50"/>
+						</Size>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture name="$parentOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="-1" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size>
+							<AbsDimension x="72" y="72"/>
+						</Size>
+						<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					local name = self:GetName();
+					self.bling = getglobal(name .. "Bling");
+					self.texture = getglobal(name .. "Texture");
+					self.frame = getglobal(name .. "Overlay");
+					
+					self.Desaturate = 
+						function (self) 
+							self.bling:SetVertexColor(.6, .6, .6, 1);
+							self.frame:SetVertexColor(.75, .75, .75, 1);
+							self.texture:SetVertexColor(.55, .55, .55, 1);
+						end
+						
+					self.Saturate = 
+						function (self)
+							self.bling:SetVertexColor(1, 1, 1, 1);
+							self.frame:SetVertexColor(1, 1, 1, 1);
+							self.texture:SetVertexColor(1, 1, 1, 1);						
+						end
+				</OnLoad>
+			</Scripts>			
+		</Frame>
+		<Frame name="$parentShield">
+			<Size>
+				<AbsDimension x="64" y="64"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-10" y="-13"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture name="$parentIcon" file="Interface\AchievementFrame\UI-Achievement-Shields">
+						<Size>
+							<AbsDimension x="52" y="48"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="1" y="-6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<TexCoords left="0" right=".5" top="0" bottom=".9"/>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<FontString name="$parentPoints" inherits="GameFontNormal">
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="7" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size>
+							<AbsDimension x="64" y="64"/>
+						</Size>
+					</FontString>
+				</Layer>
+			</Layers>				
+			<Scripts>
+				<OnLoad>
+					AchievementShield_OnLoad(self);
+				</OnLoad>
+			</Scripts>
+		</Frame>
+		<Button name="$parentButton">
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT"/>
+			</Anchors>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD">
+						<Size>
+							<AbsDimension x="400" y="171"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+						<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+					</Texture>
+					<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD">
+						<Size>
+							<AbsDimension x="67" y="72"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+						<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					self:RegisterForClicks("LeftButtonUp");
+				</OnLoad>
+				<OnClick>
+					AchievementAlertFrame_OnClick(self:GetParent());
+				</OnClick>
+			</Scripts>
+		</Button>
+	</Frames>
+	<Scripts>
+		<OnLoad>
+			AchievementAlertFrame_OnLoad(self)
+		</OnLoad>
+	</Scripts>
+</Frame>
+
+<Frame name="AlertFrame" parent="UIParent" hidden="true">
+	<Scripts>
+		<OnLoad>
+			AlertFrame_OnLoad(self);
+		</OnLoad>
+		<OnEvent>
+			AlertFrame_OnEvent(self, event, ...);
+		</OnEvent>
+	</Scripts>
+</Frame>
+
+</Ui>

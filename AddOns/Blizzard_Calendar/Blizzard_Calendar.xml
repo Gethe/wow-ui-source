@@ -196,7 +196,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8203125"/>
 				</Texture>
-				<FontString name="CalendarWeekday1Name" inherits="GameFontNormal" justifyH="CENTER" text="CALENDAR_WEEKDAY_SUNDAY">
+				<FontString name="CalendarWeekday1Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="CalendarWeekday1Background">
 							<Offset x="0" y="0"/>
@@ -204,7 +204,7 @@
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
-				<FontString name="CalendarWeekday2Name" inherits="GameFontNormal" justifyH="CENTER" text="CALENDAR_WEEKDAY_MONDAY">
+				<FontString name="CalendarWeekday2Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="CalendarWeekday2Background">
 							<Offset x="0" y="0"/>
@@ -212,7 +212,7 @@
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
-				<FontString name="CalendarWeekday3Name" inherits="GameFontNormal" justifyH="CENTER" text="CALENDAR_WEEKDAY_TUESDAY">
+				<FontString name="CalendarWeekday3Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="CalendarWeekday3Background">
 							<Offset x="0" y="0"/>
@@ -220,7 +220,7 @@
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
-				<FontString name="CalendarWeekday4Name" inherits="GameFontNormal" justifyH="CENTER" text="CALENDAR_WEEKDAY_WEDNESDAY">
+				<FontString name="CalendarWeekday4Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="CalendarWeekday4Background">
 							<Offset x="0" y="0"/>
@@ -228,7 +228,7 @@
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
-				<FontString name="CalendarWeekday5Name" inherits="GameFontNormal" justifyH="CENTER" text="CALENDAR_WEEKDAY_THURSDAY">
+				<FontString name="CalendarWeekday5Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="CalendarWeekday5Background">
 							<Offset x="0" y="0"/>
@@ -236,7 +236,7 @@
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
-				<FontString name="CalendarWeekday6Name" inherits="GameFontNormal" justifyH="CENTER" text="CALENDAR_WEEKDAY_FRIDAY">
+				<FontString name="CalendarWeekday6Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="CalendarWeekday6Background">
 							<Offset x="0" y="0"/>
@@ -244,7 +244,7 @@
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
-				<FontString name="CalendarWeekday7Name" inherits="GameFontNormal" justifyH="CENTER" text="CALENDAR_WEEKDAY_SATURDAY">
+				<FontString name="CalendarWeekday7Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="CalendarWeekday7Background">
 							<Offset x="0" y="0"/>
@@ -687,7 +687,7 @@
 					<OnLoad>
 						self.scrollBarHideable = 1;
 						ScrollFrame_OnLoad(self);
-						ScrollFrame_OnScrollRangeChanged(self, 0);
+						ScrollFrame_OnScrollRangeChanged(self);
 					</OnLoad>
 				</Scripts>
 				<ScrollChild>
@@ -818,7 +818,7 @@
 					<OnLoad>
 						self.scrollBarHideable = 1;
 						ScrollFrame_OnLoad(self);
-						ScrollFrame_OnScrollRangeChanged(self, 0);
+						ScrollFrame_OnScrollRangeChanged(self);
 					</OnLoad>
 				</Scripts>
 				<ScrollChild>
@@ -1554,22 +1554,13 @@
 								self:SetText(CALENDAR_PLAYER_NAME);
 							</OnLoad>
 							<OnEnterPressed>
-								local text = self:GetText();
-								if ( text == "" or text == CALENDAR_PLAYER_NAME ) then
-									self:ClearFocus();
-								elseif ( CalendarCanSendInvite() ) then
-									CalendarEventInvite(text);
-									self:SetText("");
-								end
+								CalendarCreateEventInviteEdit_OnEnterPressed(self);
 							</OnEnterPressed>
 							<OnEscapePressed>
 								self:ClearFocus();
 							</OnEscapePressed>
 							<OnEditFocusLost>
-								self:HighlightText(0, 0);
-								if ( self:GetText() == "" ) then
-									self:SetText(CALENDAR_PLAYER_NAME);
-								end
+								CalendarCreateEventInviteEdit_OnEditFocusLost(self);
 							</OnEditFocusLost>
 							<OnEditFocusGained>
 								self:HighlightText();
@@ -1956,9 +1947,6 @@
 			<OnEvent>
 				CalendarMassInviteFrame_OnEvent(self, event, ...);
 			</OnEvent>
-			<OnUpdate>
-				CalendarMassInviteFrame_OnUpdate(self);
-			</OnUpdate>
 		</Scripts>
 	</Frame>
 

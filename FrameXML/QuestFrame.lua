@@ -397,16 +397,7 @@ function QuestFrameItems_Update(questState)
 		QuestHonorFrame_Update(questState.."HonorFrame", honor);
 		QuestFrame_SetAsLastShown(honorFrame, spacerFrame);
 	end
-	if (talents == 0) then
-		talentFrame:Hide();
-	else
-		if ( honor ~= 0 ) then
-			talentFrame:SetPoint("TOPLEFT", honorFrame, "BOTTOMLEFT", 0, -5);
-		end
-		talentFrame:Show();
-		QuestTalentFrame_Update(questState.."TalentFrame", talents);
-		QuestFrame_SetAsLastShown(talentFrame, spacerFrame);
-	end
+
 	if ( not playerTitle ) then
 		playerTitleFrame:Hide();
 	else
@@ -530,6 +521,7 @@ function QuestFrameItems_Update(questState)
 		getglobal(questState.."SpellLearnText"):Hide();
 	end
 	
+	talentFrame:Hide();
 	-- Setup mandatory rewards
 	if ( numQuestRewards > 0 or money > 0 or honor > 0 or talents > 0 ) then
 		QuestFrame_SetTextColor(questItemReceiveText, material);
@@ -550,6 +542,16 @@ function QuestFrameItems_Update(questState)
 		end
 		questItemReceiveText:Show();
 		QuestFrame_SetAsLastShown(questItemReceiveText, spacerFrame);
+		
+		if (talents ~= 0) then
+			if ( honor ~= 0 ) then
+				talentFrame:SetPoint("TOPLEFT", honorFrame, "BOTTOMLEFT", 0, -5);
+			end
+			talentFrame:Show();
+			QuestTalentFrame_Update(questState.."TalentFrame", talents);
+			QuestFrame_SetAsLastShown(talentFrame, spacerFrame);
+		end
+	
 		-- Setup mandatory rewards
 		local index;
 		local baseIndex = rewardsCount;

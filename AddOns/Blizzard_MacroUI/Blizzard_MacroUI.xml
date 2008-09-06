@@ -154,6 +154,9 @@
 					</Anchors>
 				</FontString>
 				<FontString name="MacroFrameCharLimitText" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="0" y="10"/>
+					</Size>
 					<Anchors>
 						<Anchor point="BOTTOM">
 							<Offset>
@@ -180,168 +183,72 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="MacroButton1" inherits="MacroButtonTemplate" id="1">
+			<ScrollFrame name="MacroButtonScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size x="294" y="146"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="42" y="-83"/>
-						</Offset>
+						<Offset x="23" y="-76"/>
 					</Anchor>
 				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton2" inherits="MacroButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton3" inherits="MacroButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton4" inherits="MacroButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton5" inherits="MacroButtonTemplate" id="5">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton4" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton6" inherits="MacroButtonTemplate" id="6">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton5" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton7" inherits="MacroButtonTemplate" id="7">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="MacroButton1" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-10"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton8" inherits="MacroButtonTemplate" id="8">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton7" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton9" inherits="MacroButtonTemplate" id="9">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton8" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton10" inherits="MacroButtonTemplate" id="10">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton9" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton11" inherits="MacroButtonTemplate" id="11">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton10" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton12" inherits="MacroButtonTemplate" id="12">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton11" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton13" inherits="MacroButtonTemplate" id="13">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="MacroButton7" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-10"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton14" inherits="MacroButtonTemplate" id="14">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton13" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton15" inherits="MacroButtonTemplate" id="15">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton14" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton16" inherits="MacroButtonTemplate" id="16">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton15" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton17" inherits="MacroButtonTemplate" id="17">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton16" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroButton18" inherits="MacroButtonTemplate" id="18">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroButton17" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="102"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="1"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						ScrollFrame_OnLoad(self);
+					</OnLoad>
+				</Scripts>
+				<ScrollChild>
+					<Frame name="MacroButtonContainer">
+						<Size x="285" y="10"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								MacroButtonContainer_OnLoad(self);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
 			<Button name="MacroEditButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" text="CHANGE_MACRO_NAME_ICON">
 				<Size>
 					<AbsDimension x="170" y="22"/>
@@ -459,6 +366,7 @@
 						MacroFrame_SaveMacro();
 						MacroFrame_SetAccountMacros();
 						MacroFrame_Update();
+						MacroButtonScrollFrame:SetVerticalScroll(0);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -481,6 +389,7 @@
 						MacroFrame_SaveMacro();
 						MacroFrame_SetCharacterMacros();
 						MacroFrame_Update();
+						MacroButtonScrollFrame:SetVerticalScroll(0);
 					</OnClick>
 				</Scripts>
 			</Button>

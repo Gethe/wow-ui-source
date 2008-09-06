@@ -13,9 +13,9 @@ local format = format;
 local select = select;
 local tinsert = tinsert;
 local bit_band = bit.band;
-local bit_bor = bit.bor;
 local cos = math.cos;
 local strtrim = strtrim;
+local GetCVarBool = GetCVarBool;
 local PI = PI;
 local TWOPI = PI * 2.0;
 
@@ -93,12 +93,12 @@ function CloseCalendarMenus()
 end
 
 
--- constants
+-- global constants
+CALENDAR_FIRST_WEEKDAY						= 1;		-- 1=SUN 2=MON 3=TUE 4=WED 5=THU 6=FRI 7=SAT
+
+-- local constants
 local CALENDAR_MAX_DAYS_PER_MONTH			= 42;		-- 6 weeks
 local CALENDAR_MAX_DARKDAYS_PER_MONTH		= 14;		-- max days from the previous and next months when viewing the current month
-
-local CALENDAR_MAX_ADVANCE_SCHEDULING_DAYS	= 35;
-local CALENDAR_MAX_HISTORY_DAYS				= 35;
 
 -- Event Types
 local CALENDAR_EVENTTYPE_RAID		= 1;
@@ -381,44 +381,44 @@ local DARKDAY_BOTTOM_TCOORDS = {
 
 -- more local constants
 local CALENDAR_MONTH_NAMES = {
-	CALENDAR_MONTH_JANUARY,
-	CALENDAR_MONTH_FEBRUARY,
-	CALENDAR_MONTH_MARCH,
-	CALENDAR_MONTH_APRIL,
-	CALENDAR_MONTH_MAY,
-	CALENDAR_MONTH_JUNE,
-	CALENDAR_MONTH_JULY,
-	CALENDAR_MONTH_AUGUST,
-	CALENDAR_MONTH_SEPTEMBER,
-	CALENDAR_MONTH_OCTOBER,
-	CALENDAR_MONTH_NOVEMBER,
-	CALENDAR_MONTH_DECEMBER
+	MONTH_JANUARY,
+	MONTH_FEBRUARY,
+	MONTH_MARCH,
+	MONTH_APRIL,
+	MONTH_MAY,
+	MONTH_JUNE,
+	MONTH_JULY,
+	MONTH_AUGUST,
+	MONTH_SEPTEMBER,
+	MONTH_OCTOBER,
+	MONTH_NOVEMBER,
+	MONTH_DECEMBER,
 };
 
 -- month names show up differently for full date displays in some languages
 local CALENDAR_FULLDATE_MONTH_NAMES = {
-	CALENDAR_FULLDATE_MONTH_JANUARY,
-	CALENDAR_FULLDATE_MONTH_FEBRUARY,
-	CALENDAR_FULLDATE_MONTH_MARCH,
-	CALENDAR_FULLDATE_MONTH_APRIL,
-	CALENDAR_FULLDATE_MONTH_MAY,
-	CALENDAR_FULLDATE_MONTH_JUNE,
-	CALENDAR_FULLDATE_MONTH_JULY,
-	CALENDAR_FULLDATE_MONTH_AUGUST,
-	CALENDAR_FULLDATE_MONTH_SEPTEMBER,
-	CALENDAR_FULLDATE_MONTH_OCTOBER,
-	CALENDAR_FULLDATE_MONTH_NOVEMBER,
-	CALENDAR_FULLDATE_MONTH_DECEMBER
+	FULLDATE_MONTH_JANUARY,
+	FULLDATE_MONTH_FEBRUARY,
+	FULLDATE_MONTH_MARCH,
+	FULLDATE_MONTH_APRIL,
+	FULLDATE_MONTH_MAY,
+	FULLDATE_MONTH_JUNE,
+	FULLDATE_MONTH_JULY,
+	FULLDATE_MONTH_AUGUST,
+	FULLDATE_MONTH_SEPTEMBER,
+	FULLDATE_MONTH_OCTOBER,
+	FULLDATE_MONTH_NOVEMBER,
+	FULLDATE_MONTH_DECEMBER,
 };
 
 local CALENDAR_WEEKDAY_NAMES = {
-	CALENDAR_WEEKDAY_SUNDAY,
-	CALENDAR_WEEKDAY_MONDAY,
-	CALENDAR_WEEKDAY_TUESDAY,
-	CALENDAR_WEEKDAY_WEDNESDAY,
-	CALENDAR_WEEKDAY_THURSDAY,
-	CALENDAR_WEEKDAY_FRIDAY,
-	CALENDAR_WEEKDAY_SATURDAY,
+	WEEKDAY_SUNDAY,
+	WEEKDAY_MONDAY,
+	WEEKDAY_TUESDAY,
+	WEEKDAY_WEDNESDAY,
+	WEEKDAY_THURSDAY,
+	WEEKDAY_FRIDAY,
+	WEEKDAY_SATURDAY,
 };
 
 local CALENDAR_EVENTCOLOR_MODERATOR = {r=0.54, g=0.75, b=1.0};
@@ -678,8 +678,20 @@ local function safeselect(index, ...)
 	end
 end
 
-local function _CalendarFrame_GetWeekdayIndex(dayButtonIndex)
-	return mod(dayButtonIndex - 1, 7) + 1;
+local function _CalendarFrame_GetDayOfWeek(index)
+	return mod(index - 1, 7) + 1;
+end
+
+-- _CalendarFrame_GetWeekdayIndex takes an index in the range [1, n] and maps it to a weekday starting
+-- at CALENDAR_FIRST_WEEKDAY. For example,
+-- CALENDAR_FIRST_WEEKDAY = 1 => [SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY]
+-- CALENDAR_FIRST_WEEKDAY = 2 => [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY]
+-- CALENDAR_FIRST_WEEKDAY = 6 => [FRIDAY, SATURDAY, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY]
+local function _CalendarFrame_GetWeekdayIndex(index)
+	-- the expanded form for the left input to mod() is:
+	-- (index - 1) + (CALENDAR_FIRST_WEEKDAY - 1)
+	-- why the - 1 and then + 1 before return? because lua has 1-based indexes! awesome!
+	return mod(index - 2 + CALENDAR_FIRST_WEEKDAY, 7) + 1;
 end
 
 local function _CalendarFrame_GetFullDate(weekday, month, day, year)
@@ -689,8 +701,8 @@ local function _CalendarFrame_GetFullDate(weekday, month, day, year)
 end
 
 local function _CalendarFrame_GetFullDateFromDay(dayButton)
-	local month, year = CalendarGetMonth(dayButton.monthOffset);
 	local weekday = _CalendarFrame_GetWeekdayIndex(dayButton:GetID());
+	local month, year = CalendarGetMonth(dayButton.monthOffset);
 	local day = dayButton.day;
 	return _CalendarFrame_GetFullDate(weekday, month, day, year);
 end
@@ -732,17 +744,7 @@ local function _CalendarFrame_CanInviteeRSVP(inviteStatus)
 		inviteStatus == CALENDAR_INVITESTATUS_DECLINED;
 end
 
-function _CalendarFrame_CacheEventTextures(eventType)
-	if ( eventType ~= CalendarEventTextureCache.eventType ) then
-		CalendarEventTextureCache.eventType = eventType
-		if ( eventType ) then
-			return _CalendarFrame_CacheEventTextures_Internal(CalendarEventGetTextures(eventType));
-		end
-	end
-	return true;
-end
-
-function _CalendarFrame_CacheEventTextures_Internal(...)
+local function _CalendarFrame_CacheEventTextures_Internal(...)
 	local numTextures = select("#", ...) / 3;
 	if ( numTextures <= 0 ) then
 		CalendarEventTextureCache.eventType = nil;
@@ -790,6 +792,16 @@ function _CalendarFrame_CacheEventTextures_Internal(...)
 		end
 
 		cacheIndex = cacheIndex + 1;
+	end
+	return true;
+end
+
+local function _CalendarFrame_CacheEventTextures(eventType)
+	if ( eventType ~= CalendarEventTextureCache.eventType ) then
+		CalendarEventTextureCache.eventType = eventType
+		if ( eventType ) then
+			return _CalendarFrame_CacheEventTextures_Internal(CalendarEventGetTextures(eventType));
+		end
 	end
 	return true;
 end
@@ -858,7 +870,7 @@ local function _CalendarFrame_ResetClassData()
 	end
 end
 
-function _CalendarFrame_UpdateClassData()
+local function _CalendarFrame_UpdateClassData()
 	_CalendarFrame_ResetClassData();
 
 	for i = 1, CalendarEventGetNumInvites() do
@@ -922,6 +934,31 @@ function CalendarFrame_GetEventFrame()
 	return CalendarFrame.eventFrame;
 end
 
+function CalendarFrame_UpdateTimeFormat()
+	-- update all frames that display a time
+	local militaryTime = GetCVarBool("timeMgrUseMilitaryTime");
+	if ( CalendarFrame:IsShown() and militaryTime ~= CalendarFrame.militaryTime ) then
+		-- update the main frame
+		CalendarFrame_Update();
+		local eventFrame = CalendarFrame.eventFrame;
+		if ( eventFrame ) then
+			-- update the event frame
+			if ( eventFrame == CalendarCreateEventFrame ) then
+				-- the create event frame is handled specially because a full update could potentially clobber
+				-- a player's changes if he is creating or editing an event
+				CalendarCreateEvent_UpdateTimeFormat();
+			elseif ( eventFrame.update ) then
+				eventFrame.update();
+			end
+		end
+		if ( CalendarEventPickerFrame:IsShown() ) then
+			-- update the event picker frame
+			CalendarEventPickerScrollFrame_Update();
+		end
+		CalendarFrame.militaryTime = militaryTime;
+	end
+end
+
 function CalendarFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST");
 --	self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES");		-- event list updates are fired for invite status changes now
@@ -939,9 +976,9 @@ function CalendarFrame_OnLoad(self)
 	self.selectedDay = nil;
 	self.selectedYear = nil;
 
-	-- initialize the viewed date to the current date
-	self.viewedMonth = self.selectedMonth;
-	self.viewedYear = self.selectedYear;
+	-- initialize the viewed date
+	self.viewedMonth = nil;
+	self.viewedYear = nil;
 
 	-- initialize modal dialog handling
 	self.modalFrame = nil;
@@ -984,6 +1021,8 @@ function CalendarFrame_OnShow(self)
 	-- an event could have stayed selected if the calendar closed without the player doing so explicitly
 	-- (e.g. reloadui) so make sure that we're not selecting an event when the calendar comes back
 	CalendarFrame_CloseEvent();
+
+	self.militaryTime = GetCVarBool("timeMgrUseMilitaryTime");
 
 	local weekday, month, day, year = CalendarGetDate();
 	CalendarSetAbsMonth(month, year);
@@ -1064,15 +1103,20 @@ function CalendarFrame_Update()
 	local selectedMonth = CalendarFrame.selectedMonth;
 	local selectedDay = CalendarFrame.selectedDay;
 	local selectedYear = CalendarFrame.selectedYear;
-
 	local selectedEventMonthOffset, selectedEventDay, selectedEventIndex = CalendarGetEventIndex();
 
 	-- set title
 	CalendarFrame_UpdateTitle();
-	-- if we hit a min or max month, disable a prev/next month button
+	-- update the prev/next month buttons in case we hit a min or max month
 	CalendarFrame_UpdateMonthOffsetButtons();
 
-	-- init hidden attributes
+	-- initialize weekdays
+	for i = 1, 7 do
+		local weekday = _CalendarFrame_GetWeekdayIndex(i);
+		_G["CalendarWeekday"..i.."Name"]:SetText(CALENDAR_WEEKDAY_NAMES[weekday]);
+	end
+
+	-- initialize hidden attributes
 	CalendarTodayFrame:Hide();
 	CalendarWeekdaySelectedTexture:Hide();
 	CalendarLastDayDarkTexture:Hide();
@@ -1087,12 +1131,16 @@ function CalendarFrame_Update()
 	local day;
 	local eventIndex, isSelectedEventMonthOffset;
 
+	-- adjust the first week day
+	--firstWeekday = _CalendarFrame_GetWeekdayIndex(firstWeekday);
+
 	-- set the previous month's days before the first day of the week
-	day = prevNumDays - (firstWeekday - 2);
+	local viewablePrevMonthDays = mod((firstWeekday - CALENDAR_FIRST_WEEKDAY - 1) + 7, 7);
+	day = prevNumDays - viewablePrevMonthDays;
 	isSelectedMonth = selectedMonth == prevMonth and selectedYear == prevYear;
 	isThisMonth = presentMonth == prevMonth and presentYear == prevYear;
 	isSelectedEventMonthOffset = selectedEventMonthOffset == -1;
-	while ( buttonIndex < firstWeekday ) do
+	while ( _CalendarFrame_GetWeekdayIndex(buttonIndex) ~= firstWeekday ) do
 		darkTopFlags = DARKFLAG_PREVMONTH + DARKFLAG_SIDE_TOP;
 		darkBottomFlags = DARKFLAG_PREVMONTH + DARKFLAG_SIDE_BOTTOM;
 		if ( buttonIndex == 1 ) then
@@ -1147,7 +1195,7 @@ function CalendarFrame_Update()
 		darkTopFlags = DARKFLAG_NEXTMONTH;
 		darkBottomFlags = DARKFLAG_NEXTMONTH;
 		-- left darkness
-		dayOfWeek = _CalendarFrame_GetWeekdayIndex(buttonIndex);
+		dayOfWeek = _CalendarFrame_GetDayOfWeek(buttonIndex);
 		if ( dayOfWeek == 1 or day == 1 ) then
 			darkTopFlags = darkTopFlags + DARKFLAG_SIDE_LEFT;
 			darkBottomFlags = darkBottomFlags + DARKFLAG_SIDE_LEFT;
@@ -1471,7 +1519,7 @@ function CalendarFrame_SetSelectedDay(dayButton)
 	CalendarFrame.selectedDayButton = dayButton;
 
 	-- highlight the weekday label at this point too
-	local weekdayBackground = _G["CalendarWeekday".._CalendarFrame_GetWeekdayIndex(dayButton:GetID()).."Background"];
+	local weekdayBackground = _G["CalendarWeekday".._CalendarFrame_GetDayOfWeek(dayButton:GetID()).."Background"];
 	CalendarWeekdaySelectedTexture:ClearAllPoints();
 	CalendarWeekdaySelectedTexture:SetPoint("CENTER", weekdayBackground, "CENTER");
 	CalendarWeekdaySelectedTexture:Show();
@@ -2149,7 +2197,7 @@ function CalendarDayButton_OnEnter(self)
 				GameTooltip:ClearLines();
 
 				-- add date if we hit our first viewable event
-				local fullDate = format(CALENDAR_EVENT_FULLDATE, _CalendarFrame_GetFullDateFromDay(self));
+				local fullDate = format(FULLDATE, _CalendarFrame_GetFullDateFromDay(self));
 				GameTooltip:AddLine(fullDate, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				GameTooltip:AddLine(" ");
 			else
@@ -2166,14 +2214,27 @@ function CalendarDayButton_OnEnter(self)
 				1
 			);
 			if ( calendarType == "PLAYER" or calendarType == "GUILD" or calendarType == "ARENA" ) then
+				local isGuildWide = CalendarContextEventIsGuildWide(monthOffset, day, i);
 				if ( UnitIsUnit("player", invitedBy) ) then
-					GameTooltip:AddLine(
-						CALENDAR_INVITEDBY_YOURSELF,
-						NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					if ( isGuildWide ) then
+						GameTooltip:AddLine(
+							CALENDAR_ANNOUNCEMENT_CREATEDBY_YOURSELF,
+							NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					else
+						GameTooltip:AddLine(
+							CALENDAR_INVITEDBY_YOURSELF,
+							NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					end
 				elseif ( invitedBy ~= "" ) then
-					GameTooltip:AddLine(
-						format(CALENDAR_INVITEDBY_PLAYERNAME, invitedBy),
-						NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					if ( isGuildWide ) then
+						GameTooltip:AddLine(
+							format(CALENDAR_ANNOUNCEMENT_CREATEDBY_PLAYER, invitedBy),
+							NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					else
+						GameTooltip:AddLine(
+							format(CALENDAR_INVITEDBY_PLAYER, invitedBy),
+							NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					end
 				end
 			end
 
@@ -2472,6 +2533,50 @@ function CalendarEventDescriptionScrollFrame_OnLoad(self)
 	-- as soon as it needs to be shown
 	self.scrollBarHideable = 1;
 	scrollBar:Hide();
+
+	-- register the addon loaded event for post-load fixups
+	self:RegisterEvent("ADDON_LOADED");
+	self:SetScript("OnEvent", CalendarEventDescriptionScrollFrame_OnEvent);
+end
+
+function CalendarEventDescriptionScrollFrame_OnEvent(self, event, ...)
+	if ( event == "ADDON_LOADED" ) then
+		local addonName = ...;
+		if ( not addonName or (addonName and addonName ~= "Blizzard_Calendar") ) then
+			return;
+		end
+
+		-- NOTE: this function expects the scroll frame to have a .content member, which should be the
+		-- stuff we're scrolling on (scroll frame's scroll child's frame)!
+		if ( self.content ) then
+			local scrollBar = self.scrollBar;
+			scrollBar.Show = 
+				function (self)
+					local scrollFrame = self:GetParent();
+					-- adjust scroll frame width
+					scrollFrame:SetPoint("BOTTOMRIGHT", scrollFrame:GetParent(), "BOTTOMRIGHT", -4 - self:GetWidth(), 4);
+					scrollFrame:GetScrollChild():SetWidth(scrollFrame:GetWidth());
+					-- adjust content width
+					scrollFrame.content:SetWidth(scrollFrame.defaultContentWidth);
+					getmetatable(self).__index.Show(self);
+				end
+			scrollBar.Hide = 
+				function (self)
+					local scrollFrame = self:GetParent();
+					-- adjust scroll frame width
+					scrollFrame:SetPoint("BOTTOMRIGHT", scrollFrame:GetParent(), "BOTTOMRIGHT", -4, 4);
+					scrollFrame:GetScrollChild():SetWidth(scrollFrame:GetWidth());
+					-- adjust content width
+					scrollFrame.content:SetWidth(scrollFrame.defaultContentWidth + self:GetWidth());
+					getmetatable(self).__index.Hide(self);
+				end
+
+			self.defaultContentWidth = self.content:GetWidth();
+		end
+
+		-- we don't need this event any more
+		self:UnregisterEvent(event)		
+	end
 end
 
 function CalendarEventInviteList_OnLoad(self)
@@ -2705,7 +2810,7 @@ function CalendarViewEventFrame_Update()
 	-- set the creator
 	CalendarViewEventCreatorName:SetFormattedText(CALENDAR_EVENT_CREATORNAME, creator);
 	-- set the date
-	CalendarViewEventDateLabel:SetFormattedText(CALENDAR_EVENT_FULLDATE, _CalendarFrame_GetFullDate(weekday, month, day, year));
+	CalendarViewEventDateLabel:SetFormattedText(FULLDATE, _CalendarFrame_GetFullDate(weekday, month, day, year));
 	-- set the time
 	CalendarViewEventTimeLabel:SetText(GameTime_GetFormattedTime(hour, minute, true));
 	-- set the description
@@ -2759,47 +2864,8 @@ function CalendarViewEventFrame_Update()
 end
 
 function CalendarViewEventDescriptionScrollFrame_OnLoad(self)
+	self.content = CalendarViewEventDescription;
 	CalendarEventDescriptionScrollFrame_OnLoad(self);
-
-	-- register the addon loaded event for post-load fixups
-	self:RegisterEvent("ADDON_LOADED");
-	self:SetScript("OnEvent", CalendarViewEventDescriptionScrollFrame_OnEvent);
-end
-
-function CalendarViewEventDescriptionScrollFrame_OnEvent(self, event, ...)
-	if ( event == "ADDON_LOADED" ) then
-		local addonName = ...;
-		if ( not addonName or (addonName and addonName ~= "Blizzard_Calendar") ) then
-			return;
-		end
-
-		local scrollBar = self.scrollBar;
-		scrollBar.Show = 
-			function (self)
-				local scrollFrame = CalendarViewEventDescriptionScrollFrame;
-				-- adjust scroll frame width
-				scrollFrame:SetPoint("BOTTOMRIGHT", scrollFrame:GetParent(), "BOTTOMRIGHT", -4 - self:GetWidth(), 4);
-				CalendarViewEventDescriptionScrollChild:SetWidth(scrollFrame:GetWidth());
-				-- adjust text width
-				CalendarViewEventDescription:SetWidth(scrollFrame.defaultTextWidth);
-				getmetatable(self).__index.Show(self);
-			end
-		scrollBar.Hide = 
-			function (self)
-				local scrollFrame = self:GetParent();
-				-- adjust scroll frame width
-				scrollFrame:SetPoint("BOTTOMRIGHT", scrollFrame:GetParent(), "BOTTOMRIGHT", -4, 4);
-				CalendarViewEventDescriptionScrollChild:SetWidth(scrollFrame:GetWidth());
-				-- adjust text width
-				CalendarViewEventDescription:SetWidth(scrollFrame.defaultTextWidth + self:GetWidth());
-				getmetatable(self).__index.Hide(self);
-			end
-
-		self.defaultTextWidth = CalendarViewEventDescription:GetWidth();
-
-		-- we don't need this event any more
-		self:UnregisterEvent(event)		
-	end
 end
 
 function CalendarViewEventAcceptButton_OnUpdate(self)
@@ -3035,8 +3101,6 @@ function CalendarCreateEventFrame_OnLoad(self)
 	-- used to update the frame when it is shown via CalendarFrame_ShowEventFrame
 	self.update = CalendarCreateEventFrame_Update;
 
-	CalendarCreateEventFrame.militaryTime = GetCVarBool("timeMgrMilitaryTime");
-
 	-- record the default (non-guild-wide) frame size
 	self.defaultHeight = self:GetHeight();
 
@@ -3115,13 +3179,12 @@ function CalendarCreateEventFrame_OnHide(self)
 end
 
 function CalendarCreateEventFrame_Update()
-	CalendarCreateEventFrame.militaryTime = GetCVarBool("timeMgrMilitaryTime");
 	if ( CalendarCreateEventFrame.mode == "create" ) then
 		CalendarCreateEventCreateButton:SetText(CALENDAR_CREATE);
 
 		-- set the event date based on the selected date
 		local dayButton = CalendarCreateEventFrame.dayButton;
-		CalendarCreateEventDateLabel:SetFormattedText(CALENDAR_EVENT_FULLDATE, _CalendarFrame_GetFullDateFromDay(dayButton));
+		CalendarCreateEventDateLabel:SetFormattedText(FULLDATE, _CalendarFrame_GetFullDateFromDay(dayButton));
 		local month, year = CalendarGetMonth(dayButton.monthOffset);
 		CalendarEventSetDate(month, dayButton.day, year);
 		-- deselect the selected event
@@ -3135,10 +3198,9 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventDescriptionEdit:SetText(CALENDAR_CREATEEVENTFRAME_DEFAULT_DESCRIPTION);
 		CalendarEventSetDescription("");
 		-- reset event time
-		CalendarCreateEventFrame.militaryTime = GetCVarBool("timeMgrMilitaryTime");
 		CalendarCreateEventFrame.selectedMinute = CALENDAR_CREATEEVENTFRAME_DEFAULT_MINUTE;
 		CalendarCreateEventFrame.selectedAM = CALENDAR_CREATEEVENTFRAME_DEFAULT_AM;
-		if ( CalendarCreateEventFrame.militaryTime ) then
+		if ( CalendarFrame.militaryTime ) then
 			CalendarCreateEventFrame.selectedHour = GameTime_ComputeMilitaryTime(CALENDAR_CREATEEVENTFRAME_DEFAULT_HOUR, CalendarCreateEventFrame.selectedAM);
 		else
 			CalendarCreateEventFrame.selectedHour = CALENDAR_CREATEEVENTFRAME_DEFAULT_HOUR;
@@ -3208,16 +3270,16 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventDescriptionEdit:ClearFocus();
 		CalendarCreateEventDescriptionScrollFrame:SetVerticalScroll(0);
 		-- update date
-		CalendarCreateEventDateLabel:SetFormattedText(CALENDAR_EVENT_FULLDATE, CALENDAR_WEEKDAY_NAMES[weekday], CALENDAR_MONTH_NAMES[month], day, year, month);
+		CalendarCreateEventDateLabel:SetFormattedText(FULLDATE, _CalendarFrame_GetFullDate(weekday, month, day, year));
 		-- update time
-		if ( CalendarCreateEventFrame.militaryTime ) then
+		if ( CalendarFrame.militaryTime ) then
 			CalendarCreateEventFrame.selectedHour = hour;
 		else
 			CalendarCreateEventFrame.selectedHour = GameTime_ComputeStandardTime(hour);
 		end
 		CalendarCreateEventFrame.selectedMinute = minute;
 		CalendarCreateEventFrame.selectedAM = hour < 12;
-		if ( CalendarCreateEventFrame.militaryTime ) then
+		if ( CalendarFrame.militaryTime ) then
 			CalendarCreateEventFrame.selectedHour = hour;
 		else
 			CalendarCreateEventFrame.selectedHour = GameTime_ComputeStandardTime(hour, CalendarCreateEventFrame.selectedAM);
@@ -3490,14 +3552,14 @@ end
 
 function CalendarCreateEvent_SetEventTime()
 	local hour = CalendarCreateEventFrame.selectedHour;
-	if ( not CalendarCreateEventFrame.militaryTime ) then
+	if ( not CalendarFrame.militaryTime ) then
 		hour = GameTime_ComputeMilitaryTime(hour, CalendarCreateEventFrame.selectedAM);
 	end
 	CalendarEventSetTime(hour, CalendarCreateEventFrame.selectedMinute);
 end
 
 function CalendarCreateEvent_UpdateEventTime()
-	if ( CalendarCreateEventFrame.militaryTime ) then
+	if ( CalendarFrame.militaryTime ) then
 		CalendarCreateEventAMPMDropDown:Hide();
 	else
 		CalendarCreateEventAMPMDropDown:Show();
@@ -3518,13 +3580,13 @@ function CalendarCreateEvent_UpdateTimeFormat()
 	local hour, am = CalendarCreateEventFrame.selectedHour, CalendarCreateEventFrame.selectedAM;
 	local militaryTime = GetCVarBool("timeMgrUseMilitaryTime");
 	if ( militaryTime ) then
-		if ( not CalendarCreateEventFrame.militaryTime ) then
+		if ( not CalendarFrame.militaryTime ) then
 			-- need to convert from 12hr to 24hr
 			CalendarCreateEventFrame.selectedHour = GameTime_ComputeMilitaryTime(hour, am);
 			CalendarCreateEventAMPMDropDown:Hide();
 		end
 	else
-		if ( CalendarCreateEventFrame.militaryTime ) then
+		if ( CalendarFrame.militaryTime ) then
 			-- need to convert from 24hr to 12hr
 			CalendarCreateEventFrame.selectedHour, CalendarCreateEventFrame.selectedAM = GameTime_ComputeStandardTime(hour);
 			CalendarCreateEventAMPMDropDown:Show();
@@ -3536,7 +3598,7 @@ function CalendarCreateEvent_UpdateTimeFormat()
 			UIDropDownMenu_SetSelectedID(CalendarCreateEventAMPMDropDown, 2);
 		end
 	end
-	CalendarCreateEventFrame.militaryTime = militaryTime;
+	CalendarFrame.militaryTime = militaryTime;
 	UIDropDownMenu_Initialize(CalendarCreateEventHourDropDown, CalendarCreateEventHourDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(CalendarCreateEventHourDropDown, CalendarCreateEventFrame.selectedHour);
 	UIDropDownMenu_Initialize(CalendarCreateEventMinuteDropDown, CalendarCreateEventMinuteDropDown_Initialize);
@@ -3544,45 +3606,8 @@ function CalendarCreateEvent_UpdateTimeFormat()
 end
 
 function CalendarCreateEventDescriptionScrollFrame_OnLoad(self)
+	self.content = CalendarCreateEventDescriptionEdit;
 	CalendarEventDescriptionScrollFrame_OnLoad(self);
-
-	-- register the addon loaded event for post-load fixups
-	self:RegisterEvent("ADDON_LOADED");
-	self:SetScript("OnEvent", CalendarCreateEventDescriptionScrollFrame_OnEvent);
-end
-
-function CalendarCreateEventDescriptionScrollFrame_OnEvent(self, event, ...)
-	if ( event == "ADDON_LOADED" ) then
-		local addonName = ...;
-		if ( not addonName or (addonName and addonName ~= "Blizzard_Calendar") ) then
-			return;
-		end
-
-		local scrollBar = self.scrollBar;
-		scrollBar.Show = 
-			function (self)
-				local scrollFrame = CalendarCreateEventDescriptionScrollFrame;
-				-- adjust scroll frame width
-				scrollFrame:SetPoint("BOTTOMRIGHT", scrollFrame:GetParent(), "BOTTOMRIGHT", -4 - self:GetWidth(), 4);
-				-- adjust edit box width
-				CalendarCreateEventDescriptionEdit:SetWidth(scrollFrame.defaultEditWidth);
-				getmetatable(self).__index.Show(self);
-			end
-		scrollBar.Hide = 
-			function (self)
-				local scrollFrame = self:GetParent();
-				-- adjust scroll frame width
-				scrollFrame:SetPoint("BOTTOMRIGHT", scrollFrame:GetParent(), "BOTTOMRIGHT", -4, 4);
-				-- adjust edit box width
-				CalendarCreateEventDescriptionEdit:SetWidth(scrollFrame.defaultEditWidth + self:GetWidth());
-				getmetatable(self).__index.Hide(self);
-			end
-
-		self.defaultEditWidth = CalendarCreateEventDescriptionEdit:GetWidth();
-
-		-- we don't need this event any more
-		self:UnregisterEvent(event)		
-	end
 end
 
 function CalendarCreateEventAutoApproveCheck_OnLoad(self)
@@ -3908,14 +3933,34 @@ function CalendarInviteStatusContextMenu_SetStatusOption(self)
 	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 end
 
-function CalendarCreateEventInviteButton_OnClick(self)
-	local text = self:GetText();
-	if ( text == "" or text == CALENDAR_PLAYER_NAME ) then
+function CalendarCreateEventInviteEdit_OnEnterPressed(self)
+	local text = strtrim(self:GetText());
+	local trimmedText = strtrim(text);
+	if ( trimmedText == "" or trimmedText == CALENDAR_PLAYER_NAME ) then
 		self:ClearFocus();
-	else
-		CalendarEventInvite(CalendarCreateEventInviteEdit:GetText());
-		CalendarCreateEventInviteEdit:SetText("");
+	elseif ( CalendarCanSendInvite() ) then
+		CalendarEventInvite(text);
+		self:SetText("");
+	end
+end
+
+function CalendarCreateEventInviteEdit_OnEditFocusLost(self)
+	self:HighlightText(0, 0);
+	local trimmedText = strtrim(self:GetText());
+	if ( trimmedText == "" ) then
+		self:SetText(CALENDAR_PLAYER_NAME);
+	end
+end
+
+function CalendarCreateEventInviteButton_OnClick(self)
+	local text = strtrim(CalendarCreateEventInviteEdit:GetText());
+	local trimmedText = strtrim(text);
+	if ( trimmedText == "" or trimmedText == CALENDAR_PLAYER_NAME ) then
 		CalendarCreateEventInviteEdit:ClearFocus();
+	else
+		CalendarEventInvite(text);
+		CalendarCreateEventInviteEdit:SetText("");
+		--CalendarCreateEventInviteEdit:ClearFocus();
 	end
 
 	PlaySound("igMainMenuOptionCheckBoxOn");
@@ -4057,7 +4102,7 @@ end
 function CalendarMassInviteFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
---	self:RegisterEvent("CALENDAR_ACTION_PENDING");
+	self:RegisterEvent("CALENDAR_ACTION_PENDING");
 
 	local minLevel, maxLevel = CalendarDefaultGuildFilter();
 	CalendarMassInviteGuildMinLevelEdit:SetNumber(minLevel);
@@ -4088,7 +4133,6 @@ function CalendarMassInviteFrame_OnEvent(self, event, ...)
 			-- if we are no longer in a guild OR an arena team, we can't mass invite
 			CalendarMassInviteFrame:Hide();
 			CalendarCreateEventMassInviteButton_Update();
---[[
 		else
 			if ( event == "CALENDAR_ACTION_PENDING" ) then
 				CalendarMassInviteGuild_Update();
@@ -4098,7 +4142,6 @@ function CalendarMassInviteFrame_OnEvent(self, event, ...)
 			elseif ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
 				CalendarMassInviteArena_Update();
 			end
---]]
 		end
 	end
 end
@@ -4215,7 +4258,7 @@ end
 function CalendarEventPickerFrame_Show(dayButton)
 	CalendarEventPickerFrame.dayButton = dayButton;
 	CalendarEventPickerFrame:ClearAllPoints();
-	if ( _CalendarFrame_GetWeekdayIndex(dayButton:GetID()) > 3 ) then
+	if ( _CalendarFrame_GetDayOfWeek(dayButton:GetID()) > 4 ) then
 		CalendarEventPickerFrame:SetPoint("TOPRIGHT", dayButton, "TOPLEFT");
 	else
 		CalendarEventPickerFrame:SetPoint("TOPLEFT", dayButton, "TOPRIGHT");

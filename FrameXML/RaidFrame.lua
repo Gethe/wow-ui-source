@@ -100,13 +100,13 @@ function RaidInfoFrame_Update()
 	local frameName, frameID, frameReset;
 	if ( savedInstances > 0 ) then
 		if ( savedInstances > MAX_RAID_INFOS_DISPLAYED ) then
-			width = 205;
+			width = 210;
 			RaidInfoScrollFrameTop:Show();
 			RaidInfoScrollFrameBottom:Show();
 			RaidInfoScrollFrameScrollBar:Show();
 			RaidInfoFrame.scrolling = 1;
 		else
-			width = 230;
+			width = 235;
 			RaidInfoScrollFrameTop:Hide();
 			RaidInfoScrollFrameBottom:Hide();
 			RaidInfoScrollFrameScrollBar:Hide();
@@ -131,9 +131,9 @@ function RaidInfoFrame_Update()
 				frameID:SetText(instanceID);
 				frameReset:SetText(RESETS_IN.." "..SecondsToTime(instanceReset, nil, nil, 3));
 				if ( RaidInfoFrame.scrolling ) then
-					frameName:SetWidth(180);
+					frameName:SetWidth(170);
 				else
-					frameName:SetWidth(190);
+					frameName:SetWidth(180);
 				end
 				frame:SetWidth(width);
 				frame:Show();

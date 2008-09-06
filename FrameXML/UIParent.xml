@@ -26,7 +26,6 @@
 				FCF_OnUpdate(elapsed);
 				ButtonPulse_OnUpdate(elapsed);
 				UnitPopup_OnUpdate(elapsed);
-				BattlefieldFrame_OnUpdate(elapsed);
 				RequestBattlefieldPositions(elapsed);
 				AnimatedShine_OnUpdate(elapsed);
 				AutoCastShine_OnUpdate(nil, elapsed);

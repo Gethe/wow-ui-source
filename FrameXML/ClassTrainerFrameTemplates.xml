@@ -60,9 +60,6 @@
 			</Anchors>
 		</DisabledTexture>
 		<ButtonText name="$parentText">
-			<Size>
-				<AbsDimension x="0" y="13"/>
-			</Size>
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
 					<Offset>

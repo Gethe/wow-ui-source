@@ -1,6 +1,7 @@
 local MAX_OVERLAY = 3;
 local MAX_ARTWORK = 10;
-local MAX_BORDER = 5;
+local MAX_BORDER = 7;
+local MAX_BACKGROUND = 1;
 
 local MAX_ACTIONBUTTONS = 6;
 
@@ -47,19 +48,34 @@ local SkinsData = {
 			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-Exit-Down]],
 			pushedTexCoord = { 0.140625, 0.859375, 0.140625, 0.859375 },
 		},
-		["ActionButton1"] = {
+		["ActionButtonFrame"] = {
 			point = "BOTTOMLEFT",
 			relativePoint = "BOTTOMRIGHT",
 			xOfs = -735,
 			yOfs = 15,
-			onlyPosition = true,
 		},
 		["PitchSlider"] = {
+			height = 78,
+			width = 31,
 			point = "BOTTOMLEFT",
 			xOfs = 192,
 			yOfs = 5,
-			onlyPosition = true,
 			pitchHidden = 1,
+		},
+		["PitchSliderBG"] = {
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
+			texCoord = { 0.46875, 0.50390625, 0.31640625, 0.62109375 },
+		},
+		["PitchSliderOverlayThing"] = {
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
+			texCoord = { 0.38671875, 0.46484375, 0.31640625, 0.62109375 },
+		},
+		["PitchSliderMarker"] = {
+			height = 15,
+			width = 30,
+			point = "CENTER",
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
+			texCoord = { 0.46875, 0.50390625, 0.45, 0.55 },
 		},
 		[1] = {	--Left end cap
 			layer = "BORDER",
@@ -246,8 +262,238 @@ local SkinsData = {
 			pitchHidden = 2,
 		},
 	},
+	["Natural"] = {
+		["Overall"] = {
+			yesPitchWidth = 942,
+			noPitchWidth = 869,
+			yesPitchHeight = 53,
+			noPitchHeight = 53,
+		},
+		["PitchUpButton"] = {	--Pitch up button
+			height = 35,
+			width = 34,
+			point = "BOTTOMLEFT",
+			xOfs = 166,
+			yOfs = 41,
+			normalTexture = [[Interface\Vehicles\UI-Vehicles-Button-Pitch-Up]],
+			normalTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
+			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-Pitch-Down]],
+			pushedTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
+			pitchHidden = 1,
+		},
+		["PitchDownButton"] = {	--Pitch up button
+			height = 35,
+			width = 34,
+			point = "BOTTOMLEFT",
+			xOfs = 166,
+			yOfs = 3,
+			normalTexture = [[Interface\Vehicles\UI-Vehicles-Button-PitchDown-Up]],
+			normalTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
+			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-PitchDown-Down]],
+			pushedTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
+			pitchHidden = 1,
+		},
+		["LeaveButton"] = {	--Leave button
+			height = 47,
+			width = 50,
+			point = "BOTTOMRIGHT",
+			xOfs = -148,
+			yOfs = 18,
+			normalTexture = [[Interface\Vehicles\UI-Vehicles-Button-Exit-Up]],
+			normalTexCoord = { 0.140625, 0.859375, 0.140625, 0.859375 },
+			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-Exit-Down]],
+			pushedTexCoord = { 0.140625, 0.859375, 0.140625, 0.859375 },
+		},
+		["ActionButtonFrame"] = {
+			point = "BOTTOMLEFT",
+			relativePoint = "BOTTOMRIGHT",
+			xOfs = -820,
+			yOfs = 26,
+			scale = 0.85,
+		},
+		["PitchSlider"] = {
+			height = 82,
+			width = 31,
+			point = "BOTTOMLEFT",
+			xOfs = 204,
+			yOfs = 0,
+			pitchHidden = 1,
+		},
+		["PitchSliderBG"] = {
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.46875, 0.50390625, 0.31640625, 0.62109375 },
+		},
+		["PitchSliderOverlayThing"] = {
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.38671875, 0.46484375, 0.31640625, 0.62109375 },
+		},
+		["PitchSliderMarker"] = {
+			height = 15,
+			width = 30,
+			point = "CENTER",
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.46875, 0.50390625, 0.45, 0.55 },
+		},
+		[1] = {	--Left end cap
+			layer = "OVERLAY",
+			height = 128,
+			width = 170,
+			point = "BOTTOMLEFT",
+			xOfs = 0,
+			yOfs = -15,
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Organic]],
+			texCoord = { 0.0, 0.6640625, 0.0, 1.0 },
+		},
+		[2] = {	--Right end cap
+			layer = "OVERLAY",
+			height = 128,
+			width = 170,
+			point = "BOTTOMRIGHT",
+			xOfs = 0,
+			yOfs = -15,
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Organic]],
+			texCoord = { 0.6640625, 0.0, 0.0, 1.0 },
+		},
+		[3] = {	--Top right buckle
+			layer = "ARTWORK",
+			height = 26,
+			width = 92,
+			point = "BOTTOMRIGHT",
+			xOfs = -159,
+			yOfs = 73,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.640625, 1.0, 0.0546875, 0.15625 },
+		},
+		[4] = {	--Leave Seat Buckle
+			layer = "BORDER",
+			height = 91,
+			width = 76,
+			point = "BOTTOMRIGHT",
+			xOfs = -161,
+			yOfs = -10,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.00390625, 0.30078125, 0.3203125, 0.67578125 },
+		},
+		[5] = {	--Action buttons background
+			layer = "BACKGROUND",
+			height = 85,
+			width = 470,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -237,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.0, 1.8359375, 0.68359375, 1.0 },
+		},
+		[6] = {	--Top border
+			layer = "BORDER",
+			height = 16,
+			width = 533,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -237,
+			yOfs = 79,
+			texture = [[Interface\Vehicles\UI-Vehicle-Frame-Border-Organic]],
+			texCoord = { 0.0, 8.3125, 0.0, 1.0 },
+		},
+		[7] = {	--Border between micro buttons and action buttons
+			layer = "BORDER",
+			height = 84,
+			width = 17,
+			point = "BOTTOMRIGHT",
+			xOfs = -363,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.93359375, 1.0, 0.3515625, 0.6796875 },
+		},
+		[8] = {	--Top left buckle
+			layer = "ARTWORK",
+			height = 25,
+			width = 110,
+			point = "BOTTOMLEFT",
+			xOfs = 159,
+			yOfs = 76,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.0, 0.4296875, 0.0390625, 0.13671875 },
+		},
+		[9] = {	--Pitch Slider right border
+			layer = "BORDER",
+			height = 84,
+			width = 18,
+			point = "BOTTOMLEFT",
+			xOfs = 221,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.859375, 0.9296875, 0.3515625, 0.6796875 },
+			pitchHidden = 1,
+		},
+		[10] = {	--Pitch Slider left border
+			layer = "BORDER",
+			height = 84,
+			width = 18,
+			point = "BOTTOMLEFT",
+			xOfs = 200,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.859375, 0.9296875, 0.3515625, 0.6796875 },
+			pitchHidden = 1,
+		},
+		[11] = { --Pitch buttons border
+			layer = "BORDER",
+			height = 87,
+			width = 48,
+			point = "BOTTOMLEFT",
+			xOfs = 160,
+			yOfs = -3,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.515625, 0.703125, 0.32421875, 0.6640625 },
+			pitchHidden = 1,
+		},
+		[12] = {	--Bottom border
+			layer = "BORDER",
+			height = 16,
+			width = 328,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -377,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicle-Frame-Border-Organic]],
+			texCoord = { 0.0, 8.3125, 0.0, 1.0 },
+		},
+		[13] = {	--Bottom right buckle
+			layer = "ARTWORK",
+			height = 20,
+			width = 77,
+			point = "BOTTOMRIGHT",
+			xOfs = -377,
+			yOfs = -3,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.640625, 1.0, 0.0546875, 0.15625 },
+		},
+		[14] = {	--Bottom left buckle
+			layer = "ARTWORK",
+			height = 20,
+			width = 77,
+			point = "BOTTOMRIGHT",
+			xOfs = -629,
+			yOfs = -3,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 1.0, 0.640625, 0.0546875, 0.15625 },
+		},
+		[15] = {	--Top right buckle
+			layer = "ARTWORK",
+			height = 21,
+			width = 31,
+			point = "BOTTOMRIGHT",
+			xOfs = -370,
+			yOfs = 75,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
+			texCoord = { 0.640625, 0.78125, 0.06640625, 0.15625 },
+		},
+	},
 }
 
+local frameCount = { BACKGROUND = 1, BORDER = 1, ARTWORK = 1, OVERLAY = 1};
 function VehicleMenuBar_SetSkin(skinName, pitchVisible)
 	local skinTable = SkinsData[skinName];
 	if ( not skinTable ) then
@@ -261,7 +507,9 @@ function VehicleMenuBar_SetSkin(skinName, pitchVisible)
 	end
 	VehicleMenuBar.currSkin = skinName;
 	VehicleMenuBar.currPitchVisible = pitchVisible;
-	local frameCount = { BORDER = 1, ARTWORK = 1, OVERLAY = 1};
+	for frametype, count in pairs(frameCount) do
+		frameCount[frametype] = 1;
+	end
 	local frame, framedata
 	
 	if ( pitchVisible ) then
@@ -296,19 +544,36 @@ function VehicleMenuBar_SetSkin(skinName, pitchVisible)
 		if ( type(framename) == "string" and framename ~= "Overall") then
 			frame = getglobal("VehicleMenuBar"..framename)
 			
-			if ( not framedata.onlyPosition) then
+			if ( framedata.height ) then
 				frame:SetHeight(framedata.height);
 				frame:SetWidth(framedata.width);
-				
+			end
+			
+			if ( framedata.normalTexture ) then
 				frame:GetNormalTexture():SetTexture(framedata.normalTexture);
 				frame:GetNormalTexture():SetTexCoord( unpack(framedata.normalTexCoord) );
-				
+			end
+			
+			if ( framedata.pushedTexture ) then
 				frame:GetPushedTexture():SetTexture(framedata.pushedTexture);
 				frame:GetPushedTexture():SetTexCoord( unpack(framedata.pushedTexCoord) );
 			end
 			
-			frame:ClearAllPoints();
-			frame:SetPoint(framedata.point, ( framedata.relativeFrame or frame:GetParent() ) , ( framedata.relativePoint or framedata.point ), ( framedata.xOfs or 0 ) , ( framedata.yOfs or 0 ));
+			if ( framedata.texture ) then
+				frame:SetTexture(framedata.texture);
+				frame:SetTexCoord( unpack(framedata.texCoord) );
+			end
+			
+		
+			
+			if ( framedata.point ) then
+				frame:ClearAllPoints();
+				frame:SetPoint(framedata.point, ( framedata.relativeFrame or frame:GetParent() ) , ( framedata.relativePoint or framedata.point ), ( framedata.xOfs or 0 ) , ( framedata.yOfs or 0 ));
+			end
+			
+			if ( frame.SetScale ) then
+				frame:SetScale(framedata.scale or 1);
+			end
 			
 			if ( bit.band((framedata.pitchHidden or 0),(pitchVisible or 0)+1) ~= 0 ) then	--0 = never hide. 1 = hide when no pitch slider 2 = hide when pitch slider
 				frame:Hide();
@@ -360,10 +625,25 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);
 		
 		UpdateTalentButton();
+	elseif ( skinName == "Natural" ) then
+	
+		for _, frame in pairs(MicroButtons) do
+			frame:SetParent(VehicleMenuBarArtFrame);
+			frame:Show();
+		end
+		CharacterMicroButton:ClearAllPoints();
+		CharacterMicroButton:SetPoint("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -365, 41);
+		SocialsMicroButton:ClearAllPoints();
+		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);
+		
+		UpdateTalentButton();
 	end
 end
 function VehicleMenuBar_ReleaseSkins()
 	VehicleMenuBar.currSkin = nil;
+	for i=1, MAX_BACKGROUND do
+		getglobal("VehicleMenuBarArtFrameBACKGROUND"..i):SetTexture(nil);
+	end
 	for i=1, MAX_BORDER do
 		getglobal("VehicleMenuBarArtFrameBORDER"..i):SetTexture(nil);
 	end
@@ -380,6 +660,9 @@ function VehicleMenuBar_ReleaseSkins()
 	VehicleMenuBarPitchDownButton:GetPushedTexture():SetTexture(nil);
 	VehicleMenuBarLeaveButton:GetNormalTexture():SetTexture(nil);
 	VehicleMenuBarLeaveButton:GetPushedTexture():SetTexture(nil);
+	VehicleMenuBarPitchSliderBG:SetTexture(nil);
+	VehicleMenuBarPitchSliderOverlayThing:SetTexture(nil);
+	VehicleMenuBarPitchSliderMarker:SetTexture(nil);
 end
 
 function VehicleMenuBar_UpdateActionBars()
@@ -665,50 +948,3 @@ function VehicleSeatIndicatorButton_OnLeave(self)
 	self:GetNormalTexture():SetPoint("TOPLEFT", 0, 0);
 	self:GetNormalTexture():SetPoint("BOTTOMRIGHT", 0, 0);
 end
-
---------------------------------------------------------------------
----------------------------DEBUG--------------------------------
-
-function debug(msg, ...)
-	DEFAULT_CHAT_FRAME:AddMessage("VehicleMenuBar: "..tostring(msg), 1.0, 0 ,0 ,0)
-	if ( ... ) then
-		debug(...)
-	end
-end
-function ValidateSkinsData(skintable)
-	for skinname, skindata in pairs(skintable) do
-		for num, framedata in ipairs(skindata) do
-			if not framedata.layer then debug(skinname.." - "..num.." : ".."Missing layer"); return false; end
-			if not framedata.texture then debug(skinname.." - "..num.." : ".."Missing texture"); return false; end
-			if not framedata.height then debug(skinname.." - "..num.." : ".."Missing height"); return false; end
-			if not framedata.width then debug(skinname.." - "..num.." : ".."Missing width"); return false; end
-			if not framedata.point then debug(skinname.." - "..num.." : ".."Missing point"); return false; end
-		end
-		if not skindata.PitchUpButton then debug(skinname.." : ".."Missing PitchUpButton"); return false; end
-	end
-	return true;
-end
-
-function VehicleMenuBar_Debug()
-	VehicleSeatIndicator_SetUpVehicle("Demolisher")
-end
-
-local testframe = CreateFrame("Frame")
-local testData = {
-	["Wintergrasp Demolisher"] = "Demolisher",
-	["Wintergrasp Siege Engine"] = "SiegeEngine",
-	["Wintergrasp Siege Turret"] = "SiegeEngine",
-	["Wintergrasp Flying Machine 2 (Bomber)"] = "Bomber",
-	["Wintergrasp Bomber Cockpit"] = "Bomber",
-	}
-function VehicleMenuBar_DebugOnUpdate(self)
-	if ( testData[UnitName("vehicle")] ) then
-		VehicleSeatIndicator_SetUpVehicle(testData[UnitName("vehicle")]);
-		VehicleSeatIndicator_Update();
-	else
-		VehicleSeatIndicator_UnloadTextures();
-	end
-end
---testframe:SetScript("OnUpdate", VehicleMenuBar_DebugOnUpdate);
---------------------END DEBUG---------------------------------
--------------------------------------------------------------------

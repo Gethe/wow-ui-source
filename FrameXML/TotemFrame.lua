@@ -28,6 +28,8 @@ function TotemFrame_Update ()
 	if ( PetFrame and PetFrame:IsShown() ) then
 		if ( class == "DEATHKNIGHT" ) then
 			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
+		elseif ( class == "SHAMAN" ) then
+			--Nothing!
 		else
 			TotemFrame:Hide();
 			return;

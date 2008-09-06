@@ -18,7 +18,7 @@
 				<FontString name="$parentDuration" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent">
-							<Offset x="0" y="0"/>
+							<Offset x="0" y="5"/>
 						</Anchor>
 					</Anchors>
 				</FontString>

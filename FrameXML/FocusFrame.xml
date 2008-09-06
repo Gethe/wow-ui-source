@@ -42,7 +42,7 @@
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>
-					<AbsDimension x="12" y="-395"/>
+					<AbsDimension x="12" y="-420"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

@@ -449,7 +449,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "DUEL" ) then
-			if ( canCoop == 0 ) then
+			if ( UnitCanAttack("player", dropdownMenu.unit) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "INSPECT" or value == "ACHIEVEMENTS" ) then
@@ -565,11 +565,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "DUNGEON_DIFFICULTY" ) then
-			if ( UnitLevel("player") < 65 and GetCurrentDungeonDifficulty() == 1) then
+			if ( UnitLevel("player") < 65 and GetCurrentDungeonDifficulty() == 1 ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "MUTE" ) then
-			if ( not IsVoiceChatEnabled() or (unit and not UnitIsConnected(unit))) then
+			if ( not IsVoiceChatEnabled() or (unit and not UnitIsConnected(unit)) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;			
 			else
 				-- Hide if already muted.

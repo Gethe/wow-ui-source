@@ -88,11 +88,15 @@ function UnitFrame_Update (self)
 	UnitFramePortrait_Update(self);
 	UnitFrameHealthBar_Update(self.healthbar, self.unit);
 	UnitFrameManaBar_Update(self.manabar, self.unit);
-	UnitFrame_UpdateThreatIndicator(self.threatIndicator, self.unit);
+	UnitFrame_UpdateThreatIndicator(self.threatIndicator);
 end
 
 function UnitFramePortrait_Update (self)
 	SetPortraitTexture(self.portrait, self.unit);
+	if ( self == PlayerFrame ) then
+		return;
+	end
+	
 	local textureName = self.portrait:GetTexture();
 	if ( (not textureName) or (textureName == "Interface\\CharacterFrame\\TemporaryPortrait-Pet") or
 		(string.sub(textureName or "", 1, 51) == "Interface\\CharacterFrame\\TemporaryPortrait-Vehicle-") ) then

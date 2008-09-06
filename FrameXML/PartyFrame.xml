@@ -7,7 +7,7 @@
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>
-					<AbsDimension x="10" y="-135"/>
+					<AbsDimension x="10" y="-160"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

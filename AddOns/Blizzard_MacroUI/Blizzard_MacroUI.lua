@@ -1,5 +1,6 @@
 MAX_ACCOUNT_MACROS = 36;
 MAX_CHARACTER_MACROS = 18;
+NUM_MACROS_PER_ROW = 6;
 NUM_MACRO_ICONS_SHOWN = 20;
 NUM_ICONS_PER_ROW = 5;
 NUM_ICON_ROWS = 4;
@@ -54,7 +55,7 @@ end
 function MacroFrame_Update()
 	local numMacros;
 	local numAccountMacros, numCharacterMacros = GetNumMacros();
-	local macroButton, macroIcon, macroName;
+	local macroButtonName, macroButton, macroIcon, macroName;
 	local name, texture, body;
 	local selectedName, selectedBody, selectedIcon;
 
@@ -65,35 +66,38 @@ function MacroFrame_Update()
 	end
 
 	-- Macro List
-	for i=1, MacroFrame.macroMax do
-		macroButton = getglobal("MacroButton"..i);
-		macroIcon = getglobal("MacroButton"..i.."Icon");
-		macroName = getglobal("MacroButton"..i.."Name");
-		if ( not macroButton ) then
-			-- FIXME: Add UI for this
-			break;
-		end
-		if ( i <= numMacros ) then
-			name, texture, body = GetMacroInfo(MacroFrame.macroBase + i);
-			macroIcon:SetTexture(texture);
-			macroName:SetText(name);
-			macroButton:Enable();
-			-- Highlight Selected Macro
-			if ( MacroFrame.selectedMacro and (i == (MacroFrame.selectedMacro - MacroFrame.macroBase)) ) then
-				macroButton:SetChecked(1);
-				MacroFrameSelectedMacroName:SetText(name);
-				MacroFrameText:SetText(body);
-				MacroFrameSelectedMacroButton:SetID(i);
-				MacroFrameSelectedMacroButtonIcon:SetTexture(texture);
-				MacroPopupFrame.selectedIconTexture = texture;
+	local maxMacroButtons = max(MAX_ACCOUNT_MACROS, MAX_CHARACTER_MACROS);
+	for i=1, maxMacroButtons do
+		macroButtonName = "MacroButton"..i;
+		macroButton = _G[macroButtonName];
+		macroIcon = _G[macroButtonName.."Icon"];
+		macroName = _G[macroButtonName.."Name"];
+		if ( i <= MacroFrame.macroMax ) then
+			if ( i <= numMacros ) then
+				name, texture, body = GetMacroInfo(MacroFrame.macroBase + i);
+				macroIcon:SetTexture(texture);
+				macroName:SetText(name);
+				macroButton:Enable();
+				-- Highlight Selected Macro
+				if ( MacroFrame.selectedMacro and (i == (MacroFrame.selectedMacro - MacroFrame.macroBase)) ) then
+					macroButton:SetChecked(1);
+					MacroFrameSelectedMacroName:SetText(name);
+					MacroFrameText:SetText(body);
+					MacroFrameSelectedMacroButton:SetID(i);
+					MacroFrameSelectedMacroButtonIcon:SetTexture(texture);
+					MacroPopupFrame.selectedIconTexture = texture;
+				else
+					macroButton:SetChecked(0);
+				end
 			else
 				macroButton:SetChecked(0);
+				macroIcon:SetTexture("");
+				macroName:SetText("");
+				macroButton:Disable();
 			end
+			macroButton:Show();
 		else
-			macroButton:SetChecked(0);
-			macroIcon:SetTexture("");
-			macroName:SetText("");
-			macroButton:Disable();
+			macroButton:Hide();
 		end
 	end
 
@@ -176,6 +180,22 @@ function MacroFrame_ShowDetails()
 	MacroFrameSelectedMacroButton:Show();
 end
 
+function MacroButtonContainer_OnLoad(self)
+	local button;
+	local maxMacroButtons = max(MAX_ACCOUNT_MACROS, MAX_CHARACTER_MACROS);
+	for i=1, maxMacroButtons do
+		button = CreateFrame("CheckButton", "MacroButton"..i, self, "MacroButtonTemplate");
+		button:SetID(i);
+		if ( i == 1 ) then
+			button:SetPoint("TOPLEFT", self, "TOPLEFT", 6, -6);
+		elseif ( mod(i, NUM_MACROS_PER_ROW) == 1 ) then
+			button:SetPoint("TOP", "MacroButton"..(i-NUM_MACROS_PER_ROW), "BOTTOM", 0, -10);
+		else
+			button:SetPoint("LEFT", "MacroButton"..(i-1), "RIGHT", 13, 0);
+		end
+	end
+end
+
 function MacroPopupFrame_OnShow(self)
 	if ( self.mode == "new" ) then
 		MacroFrameText:Hide();
@@ -237,8 +257,8 @@ function MacroPopupFrame_Update(self)
 	-- Icon list
 	local texture;
 	for i=1, NUM_MACRO_ICONS_SHOWN do
-		macroPopupIcon = getglobal("MacroPopupButton"..i.."Icon");
-		macroPopupButton = getglobal("MacroPopupButton"..i);
+		macroPopupIcon = _G["MacroPopupButton"..i.."Icon"];
+		macroPopupButton = _G["MacroPopupButton"..i];
 		index = (macroPopupOffset * NUM_ICONS_PER_ROW) + i;
 		texture = GetMacroIconInfo(index);
 		if ( index <= numMacroIcons ) then

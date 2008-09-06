@@ -148,7 +148,7 @@
 					</OnLeave>
                 </Scripts>
             </Button>
-			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="TOKENS">
+			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="TOKENS" hidden="true">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="CharacterFrameTab4" relativePoint="RIGHT">
                         <Offset>

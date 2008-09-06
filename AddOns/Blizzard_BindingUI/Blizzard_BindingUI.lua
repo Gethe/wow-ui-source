@@ -191,6 +191,8 @@ function KeyBindingFrame_OnKeyDown(self, keyOrButton)
 			if ( (not key1 or key1 == keyPressed) and (not key2 or key2 == keyPressed) ) then
 				--Error message
 				KeyBindingFrameOutputText:SetFormattedText(KEY_UNBOUND_ERROR, GetBindingText(oldAction, "BINDING_NAME_"));
+			else
+				KeyBindingFrameOutputText:SetText(KEY_BOUND);
 			end
 		else
 			KeyBindingFrameOutputText:SetText(KEY_BOUND);

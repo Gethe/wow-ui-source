@@ -278,7 +278,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 					<TexCoords left="0" right="0.65625" top="0" bottom="1"/>
 				</Texture>
-				<FontString name="$parentLabel" inherits="AchievementDescriptionDisabledFont" text="Fake Achievement name!">
+				<FontString name="$parentLabel" inherits="AchievementCriteriaDisabledFont" text="Fake Achievement name!">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
@@ -412,20 +412,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentLabel" text="This is a Category" inherits="GameFontNormal" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="0" y="14"/>
-					</Size>
+				<FontString name="$parentLabel" text="This is a Category" inherits="GameFontNormalLeftBottom">
+					<Size x="180" y="14"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="16" y="0"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-12" y="0"/>
-							</Offset>
+						<Anchor point="BOTTOMLEFT">
+							<Offset x="16" y="4"/> 
 						</Anchor>
 					</Anchors>					
 				</FontString>
@@ -951,6 +942,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString name="$parentPoints" inherits="AchievementPointsFont">
+							<Size x="48" y="16"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentIcon">
 									<Offset x="14" y="-21"/>
@@ -1745,7 +1737,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</OnLoad>
 		</Scripts>
 	</Button>
-	
+
+<!-- 	
 	<Frame name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true">
 		<Size>
 			<AbsDimension x="300" y="88"/>
@@ -1895,6 +1888,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</OnLoad>
 		</Scripts>
 	</Frame>	
+
+-->
 	
 	<Frame name="AchievementFrame" toplevel="true" parent="UIParent" frameStrata="MEDIUM" hidden="true" enableMouse="true">
 		<Size>
@@ -2134,7 +2129,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentHeader">
+			<Frame name="$parentHeader" enableMouse="true">
 				<Size>
 					<AbsDimension x="726" y="106"/>
 				</Size>
@@ -2157,6 +2152,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							<TexCoords left="0.419921875" right="0.6796875" top="0.4140625" bottom="0.56640625"/>
 						</Texture>
 						<FontString name="$parentTitle" inherits="GameFontNormal" text="ACHIEVEMENT_TITLE">
+							<Size x="200" y="12"/>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP">
 									<Offset x="0" y="7"/>
@@ -2166,6 +2162,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Layer>
 					<Layer level="ARTWORK">
 						<FontString name="$parentPoints" inherits="GameFontHighlight">
+							<Size x="0" y="12"/>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP">
 									<Offset x="0" y="-13"/>
@@ -2791,7 +2788,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 										</Anchor>
 									</Anchors>
 									<Size x="36" y="36"/>
-									<TexCoords left="0" right="1" top="0" bottom=".9"/>
+									<TexCoords left="0.05" right=".95" top="0" bottom=".9"/>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
@@ -3094,6 +3091,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<Offset x="3" y="4"/>
 					</Anchor>
 				</Anchors>
+				<Scripts>
+					<OnShow>
+						if ( AchievementFrameComparisonHeader:IsShown() ) then
+							self:SetFrameLevel(AchievementFrameComparisonHeader:GetFrameLevel() + 1);
+						end
+					</OnShow>
+				</Scripts>
 			</Button>
 			<Button name="$parentTab1" inherits="AchievementFrameTabButtonTemplate" id="1" text="ACHIEVEMENTS">
 				<Anchors>

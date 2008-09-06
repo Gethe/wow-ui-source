@@ -46,10 +46,23 @@
 			<OnLoad>
 				CharacterMicroButton_OnLoad(self);
 			</OnLoad>
-			<OnClick>
+			<OnMouseDown>
 				if ( self.down ) then
 					self.down = nil;
 					ToggleCharacter("PaperDollFrame");
+					return;
+				end
+				CharacterMicroButton_SetPushed();
+				self.down = 1;
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( self.down ) then
+					self.down = nil;
+					if ( MouseIsOver(self) ) then
+						ToggleCharacter("PaperDollFrame");
+					else
+						UpdateMicroButtons();
+					end
 					return;
 				end
 				if ( self:GetButtonState() == "NORMAL" ) then
@@ -59,7 +72,7 @@
 					CharacterMicroButton_SetNormal();
 					self.down = 1;
 				end
-			</OnClick>
+			</OnMouseUp>
 			<OnEvent>
 				CharacterMicroButton_OnEvent(self, event, ...);
 			</OnEvent>
@@ -213,7 +226,6 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("UPDATE_BINDINGS");
-				self:RegisterForClicks("LeftButtonDown", "RightButtonDown", "LeftButtonUp", "RightButtonUp");
 				
 				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
 				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
@@ -229,10 +241,23 @@
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLEPVP");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
 			</OnEvent>
-			<OnClick>
+			<OnMouseDown>
 				if ( self.down ) then
 					self.down = nil;
 					ToggleFrame(PVPFrame);
+					return;
+				end
+				PVPMicroButton_SetPushed();
+				self.down = 1;
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( self.down ) then
+					self.down = nil;
+					if ( MouseIsOver(self) ) then
+						ToggleFrame(PVPFrame);
+					else
+						UpdateMicroButtons();
+					end
 					return;
 				end
 				if ( self:GetButtonState() == "NORMAL" ) then
@@ -242,7 +267,7 @@
 					PVPMicroButton_SetNormal();
 					self.down = 1;
 				end
-			</OnClick>
+			</OnMouseUp>
 		</Scripts>
 	</Button>
 	<Button name="LFGMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
@@ -277,17 +302,14 @@
 			</Anchor>
 		</Anchors>
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="OVERLAY">
 				<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
 					<Size>
-						<AbsDimension x="16" y="8"/>
+						<AbsDimension x="14" y="7"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="MainMenuMicroButton" relativePoint="TOPLEFT">
 							<Offset x="10" y="-34"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-2" y="16"/>
 						</Anchor>
 					</Anchors>
 				</Texture>
@@ -304,6 +326,7 @@
 				PERFORMANCEBAR_UPDATE_INTERVAL = 10;
 				self.hover = nil;
 				self.updateInterval = 0;
+				self:RegisterForClicks("LeftButtonDown", "RightButtonDown", "LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnUpdate>
 				if (self.updateInterval > 0) then
@@ -327,17 +350,29 @@
 				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
 			</OnEvent>
 			<OnClick>
-				if ( OptionsFrame:IsShown() ) then
-					OptionsFrameCancel:Click();
+				if ( self.down ) then
+					self.down = nil;
+					if ( not GameMenuFrame:IsShown() ) then
+						CloseMenus();
+						CloseAllWindows()
+						PlaySound("igMainMenuOpen");
+						ShowUIPanel(GameMenuFrame);
+					else
+						PlaySound("igMainMenuQuit");
+						HideUIPanel(GameMenuFrame);
+						MainMenuMicroButton_SetNormal();
+					end
+					if ( InterfaceOptionsFrame:IsShown() ) then
+						InterfaceOptionsFrameCancel:Click();
+					end
+					return;
 				end
-				if ( GameMenuFrame:IsShown() ) then
-					PlaySound("igMainMenuQuit");
-					HideUIPanel(GameMenuFrame);
+				if ( self:GetButtonState() == "NORMAL" ) then
+					MainMenuMicroButton_SetPushed();
+					self.down = 1;
 				else
-					CloseMenus();
-					CloseAllWindows()
-					PlaySound("igMainMenuOpen");
-					ShowUIPanel(GameMenuFrame);
+					
+					self.down = 1;
 				end
 			</OnClick>
 			<OnEnter>

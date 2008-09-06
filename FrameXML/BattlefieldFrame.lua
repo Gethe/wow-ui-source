@@ -51,21 +51,49 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 	end
 end
 
-function BattlefieldFrame_OnUpdate(elapsed)
-	if ( BATTLEFIELD_SHUTDOWN_TIMER == 0 ) then
+local QUEUE_LAST_UPDATED = {}
+
+function BattlefieldTimerFrame_OnUpdate(self, elapsed)
+	local keepUpdating = false;
+	if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
+		keepUpdating = true;
+	else
+		for i = 1, MAX_BATTLEFIELD_QUEUES do
+			local expiration = GetBattlefieldPortExpiration(i)/1000;
+			if 	(	( expiration > 0 and expiration <= 10 ) and 
+					( not QUEUE_LAST_UPDATED[i] or QUEUE_LAST_UPDATED[i] and QUEUE_LAST_UPDATED[i] + 10 < GetTime() ) ) then 
+				QUEUE_LAST_UPDATED[i] = GetTime();
+				local _, mapName = GetBattlefieldStatus(i);
+				local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
+				if ( dialog ) then
+					dialog.data = i;
+				end
+				PlaySound("PVPTHROUGHQUEUE");
+				keepUpdating = true;
+			elseif ( expiration > 10 ) then
+				keepUpdating = true;
+			end
+		end
+	end
+	
+	if ( not keepUpdating ) then
+		BattlefieldTimerFrame:SetScript("OnUpdate", nil);
 		return;
 	end
+	
+	local frame = BattlefieldFrame
+	
 	BATTLEFIELD_SHUTDOWN_TIMER = BATTLEFIELD_SHUTDOWN_TIMER - elapsed;
 	-- Set the time for the score frame
 	WorldStateScoreFrameTimer:SetFormattedText(SecondsToTimeAbbrev(BATTLEFIELD_SHUTDOWN_TIMER));
 	-- Check if I should send a message only once every 3 seconds (BATTLEFIELD_TIMER_DELAY)
-	BattlefieldFrame.timerDelay = BattlefieldFrame.timerDelay + elapsed;
-	if ( BattlefieldFrame.timerDelay < BATTLEFIELD_TIMER_DELAY ) then
+	frame.timerDelay = frame.timerDelay + elapsed;
+	if ( frame.timerDelay < BATTLEFIELD_TIMER_DELAY ) then
 		return;
 	else
-		BattlefieldFrame.timerDelay = 0
+		frame.timerDelay = 0
 	end
-	
+
 	local threshold = BATTLEFIELD_TIMER_THRESHOLDS[BATTLEFIELD_TIMER_THRESHOLD_INDEX];
 	if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
 		if ( BATTLEFIELD_SHUTDOWN_TIMER < threshold and BATTLEFIELD_TIMER_THRESHOLD_INDEX ~= #BATTLEFIELD_TIMER_THRESHOLDS ) then
@@ -166,7 +194,12 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 				showRightClickText = 1;
 			elseif ( status == "confirm" ) then
 				-- Have been accepted show enter battleground dialog
-				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration(i)/1000));
+				local seconds = SecondsToTime(GetBattlefieldPortExpiration(i)/1000);
+				if ( seconds ~= "" ) then
+					tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, seconds);
+				else
+					tooltip = format(BATTLEFIELD_QUEUE_PENDING_REMOVAL, mapName);
+				end
 				if ( (i==mapIndex) and (not tooltipOnly) ) then
 					local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
 					if ( dialog ) then
@@ -176,6 +209,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 					MiniMapBattlefieldFrame:Show();
 				end
 				showRightClickText = 1;
+				BattlefieldTimerFrame:SetScript("OnUpdate", BattlefieldTimerFrame_OnUpdate);
 			elseif ( status == "active" ) then
 				-- In the battleground
 				if ( teamSize ~= 0 ) then
@@ -184,6 +218,9 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 					tooltip = format(BATTLEFIELD_IN_BATTLEFIELD, mapName);
 				end
 				BATTLEFIELD_SHUTDOWN_TIMER = GetBattlefieldInstanceExpiration()/1000;
+				if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
+					BattlefieldTimerFrame:SetScript("OnUpdate", BattlefieldTimerFrame_OnUpdate);
+				end
 				BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
 				PREVIOUS_BATTLEFIELD_MOD = 0;
 				MiniMapBattlefieldFrame.status = status;

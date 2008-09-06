@@ -107,3 +107,23 @@ function CharacterFrame_OnHide (self)
 	HideTextStatusBarText(PetFrameManaBar);
 	HideWatchedReputationBarText();
 end
+
+function CharacterFrame_TabBoundsCheck(self)
+	if ( string.sub(self:GetName(), 1, 17) ~= "CharacterFrameTab" ) then
+		return;
+	end
+	
+	local diff = CharacterFrame:GetRight() - 25 - CharacterFrameTab5:GetRight();
+	if ( diff < 0 and CharacterFrameTab5:IsShown() and CharacterFrameTab2:IsShown()) then
+		--Find the biggest tab
+		local BiggestTab = CharacterFrameTab1;
+		for i=2, 5 do
+			if (_G["CharacterFrameTab"..i]:GetWidth() > BiggestTab:GetWidth()) then
+				BiggestTab = _G["CharacterFrameTab"..i];
+			end
+		end
+		
+		_G[BiggestTab:GetName().."Text"]:SetWidth(_G[BiggestTab:GetName().."Text"]:GetWidth() + diff);
+		PanelTemplates_TabResize(BiggestTab, 0);
+	end
+end

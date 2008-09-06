@@ -337,6 +337,12 @@
 			<OnLoad>
 				self.caption = getglobal(self:GetName() .. "Caption");
 			</OnLoad>
+			<OnShow>
+				UIErrorsFrame:SetPoint("TOP", self, "BOTTOM", 0, 0);
+			</OnShow>
+			<OnHide>
+				UIErrorsFrame:SetPoint("TOP", UIParent, "TOP", 0, -122);
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

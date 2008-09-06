@@ -7,3 +7,4 @@
 ## LoadOnDemand: 1
 Blizzard_BarberShopUI.lua
 Blizzard_BarberShopUI.xml
+Localization.lua

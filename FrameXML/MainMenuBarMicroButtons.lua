@@ -45,20 +45,20 @@ function UpdateMicroButtons()
 	end
 	
 	if ( ( GameMenuFrame:IsShown() ) 
-		or ( OptionsFrame:IsShown()) 
-		or ( AudioOptionsFrame:IsShown()) 
-		or ( InterfaceOptionsFrame and InterfaceOptionsFrame:IsShown()) 
+		or ( InterfaceOptionsFrame:IsShown()) 
 		or ( KeyBindingFrame and KeyBindingFrame:IsShown()) 
 		or ( MacroFrame and MacroFrame:IsShown()) ) then
-		MainMenuMicroButton:SetButtonState("PUSHED", 1);
+		MainMenuMicroButton_SetPushed();
 	else
-		MainMenuMicroButton:SetButtonState("NORMAL");
+		MainMenuMicroButton_SetNormal();
 	end
 
 	if ( PVPFrame:IsShown() ) then
 		PVPMicroButton:SetButtonState("PUSHED", 1);
+		PVPMicroButton_SetPushed();
 	else
 		PVPMicroButton:SetButtonState("NORMAL");
+		PVPMicroButton_SetNormal();
 	end
 	
 	if ( FriendsFrame:IsShown() ) then
@@ -110,7 +110,6 @@ function CharacterMicroButton_OnLoad(self)
 	self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("UPDATE_BINDINGS");
-	self:RegisterForClicks("LeftButtonDown", "RightButtonDown", "LeftButtonUp", "RightButtonUp");
 	self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
 	self.newbieText = NEWBIE_TOOLTIP_CHARACTER;
 end
@@ -135,6 +134,16 @@ end
 function CharacterMicroButton_SetNormal()
 	MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
 	MicroButtonPortrait:SetAlpha(1.0);
+end
+
+function MainMenuMicroButton_SetPushed()
+	MainMenuMicroButton:SetButtonState("PUSHED", 1);
+	MainMenuBarPerformanceBar:SetPoint("TOPLEFT", MainMenuMicroButton, "TOPLEFT", 9, -36);
+end
+
+function MainMenuMicroButton_SetNormal()
+	MainMenuMicroButton:SetButtonState("NORMAL");
+	MainMenuBarPerformanceBar:SetPoint("TOPLEFT", MainMenuMicroButton, "TOPLEFT", 10, -34);
 end
 
 --Talent button specific functions

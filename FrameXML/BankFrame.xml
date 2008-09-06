@@ -34,6 +34,13 @@
 	<Button name="BankItemButtonBagTemplate" inherits="ItemButtonTemplate" virtual="true">
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+			<Frame name="$parentHighlightFrame" setAllPoints="true">
+				<Layers>
+					<Layer>
+						<Texture name="$parentTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -60,15 +67,6 @@
 	            BankFrameItemButtonBag_OnClick(self);
 	        </OnReceiveDrag>
 		</Scripts>
-		<Frames>
-			<Frame name="$parentHighlightFrame" setAllPoints="true">
-				<Layers>
-					<Layer>
-						<Texture name="$parentTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
 	</Button>
 
 

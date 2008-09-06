@@ -127,7 +127,6 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:SetFrameLevel(self:GetFrameLevel() + 1);
 				self.texture = self:GetRegions();
 			</OnLoad>
 			<OnEnter>
@@ -137,7 +136,11 @@
 				WorldMapTooltip:Hide();
 			</OnLeave>
 			<OnMouseUp>
-				TeleportToDebugObject(self.index);
+				if ( IsModifierKeyDown("CTRL") ) then
+					TeleportToDebugObject(self.index);
+				else
+					WorldMapButton_OnClick(WorldMapButton, button);
+				end
 			</OnMouseUp>
 		</Scripts>
 	</Frame>

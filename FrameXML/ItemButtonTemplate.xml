@@ -65,7 +65,7 @@
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\Buttons\UI-EmptySlot-Disabled">
 					<Size>
-						<AbsDimension x="64" y="64"/>
+						<AbsDimension x="45" y="45"/>
 					</Size>
 					<Anchors>
 						<Anchor point="CENTER">
@@ -74,6 +74,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
+					<TexCoords left="0.140625" right="0.84375" top="0.140625" bottom="0.84375"/>
 				</Texture>
 			</Layer>
 		</Layers>

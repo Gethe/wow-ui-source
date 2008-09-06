@@ -938,7 +938,7 @@
 					</OnShow>
 				</Scripts>
 			</Frame>
-			<Button name="PetPaperDollFrameTab1" inherits="TabButtonTemplate" frameStrata="HIGH" text="PET" id="1">
+			<Button name="PetPaperDollFrameTab1" inherits="TabButtonTemplate" text="PET" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -950,13 +950,14 @@
 					<OnLoad>
 						PanelTemplates_TabResize(self, 0);
 						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
 					</OnLoad>
 					<OnClick>
 						PetPaperDollFrame_SetTab(1);
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="PetPaperDollFrameTab2" inherits="TabButtonTemplate" frameStrata="HIGH" text="COMPANIONS" id="2">
+			<Button name="PetPaperDollFrameTab2" inherits="TabButtonTemplate" text="COMPANIONS" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="PetPaperDollFrameTab1" relativePoint="RIGHT">
 						<Offset>
@@ -965,13 +966,18 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						PanelTemplates_TabResize(self, 0);
+						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
+					</OnLoad>
 					<OnClick>
 						PanelTemplates_SelectTab(self);
 						PetPaperDollFrame_SetTab(2);
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="PetPaperDollFrameTab3" inherits="TabButtonTemplate" frameStrata="HIGH" text="MOUNTS" id="3">
+			<Button name="PetPaperDollFrameTab3" inherits="TabButtonTemplate" text="MOUNTS" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="PetPaperDollFrameTab2" relativePoint="RIGHT">
 						<Offset>
@@ -980,6 +986,11 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						PanelTemplates_TabResize(self, 0);
+						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
+					</OnLoad>
 					<OnClick>
 						PanelTemplates_SelectTab(self);
 						PetPaperDollFrame_SetTab(3);

@@ -3,13 +3,13 @@
 	<Script file="RaidFrame.lua"/>
 	<Frame name="RaidInfoInstanceTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="220" y="40"/>
+			<AbsDimension x="230" y="40"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="190" y="16"/>
+						<AbsDimension x="170" y="16"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -19,11 +19,14 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentID" inherits="GameFontDisableSmall">
+				<FontString name="$parentID" inherits="GameFontDisableSmall" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="55" y="10"/>
+					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
 							<Offset>
-								<AbsDimension x="0" y="-1"/>
+								<AbsDimension x="0" y="-11"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

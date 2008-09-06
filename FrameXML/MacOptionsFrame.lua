@@ -259,7 +259,14 @@ function MacOptionsFrame_SetDefaults()
 		checkButton = getglobal("MacOptionsFrameCheckButton"..value.index);
 		checkButton:SetChecked(GetCVarDefault(value.cvar));
 	end
-	MacOptionsFrame_EnableCheckBox(getglobal("MacOptionsFrameCheckButton3"));
+	if(not MovieRecording_IsCursorRecordingSupported()) then
+		local button = getglobal("MacOptionsFrameCheckButton3");
+		button:SetChecked(0);
+		MacOptionsFrame_DisableCheckBox(button);
+	else
+		local button = getglobal("MacOptionsFrameCheckButton3");
+		MacOptionsFrame_EnableCheckBox(button);
+	end
 
 	UIDropDownMenu_Initialize(MacOptionsFrameFramerateDropDown, MacOptionsFrameFramerateDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(MacOptionsFrameFramerateDropDown, "29.97");

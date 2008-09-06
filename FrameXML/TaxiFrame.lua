@@ -66,8 +66,10 @@ function TaxiFrame_OnEvent(self, event, ...)
 						if ( taxiNodePositions[checkNode].x ) then
 							if ( (currX > checkX - TAXI_BUTTON_HALF_WIDTH) and (currX < checkX + TAXI_BUTTON_HALF_WIDTH) ) then
 								if ( (currY > checkY - TAXI_BUTTON_HALF_HEIGHT) and (currY < checkY + TAXI_BUTTON_HALF_HEIGHT) ) then
-									taxiNodePositions[index].x = currX + currX - checkX;
-									taxiNodePositions[index].y = currY + currY - checkY;
+									taxiNodePositions[index].x = currX + (currX - checkX) * 0.5;
+									taxiNodePositions[index].y = currY + (currY - checkY) * 0.5;
+									taxiNodePositions[checkNode].x = checkX + (checkX - currX) * 0.5;
+									taxiNodePositions[checkNode].y = checkY + (checkY - currY) * 0.5;
 								end
 							end
 						end

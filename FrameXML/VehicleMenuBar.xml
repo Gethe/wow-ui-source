@@ -116,16 +116,18 @@
 				</HighlightTexture>
 			</Button>
 			<Frame name="VehicleMenuBarActionButtonFrame" frameStrata="HIGH" enableMouse="false" toplevel="true">
+				<Size>
+					<AbsDimension x="1" y="1"/>
+				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="VehicleMenuBar"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="VehicleMenuBar"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
 					<CheckButton name="VehicleMenuBarActionButton1" inherits="VehicleActionButtonTemplate" id="1">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="235" y="15"/>
+									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -195,7 +197,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture file="Interface\Vehicles\UI-Vehicles-Endcap">
+						<Texture name="$parentOverlayThing" file="Interface\Vehicles\UI-Vehicles-Endcap">
 							<TexCoords left="0.38671875" right="0.46484375" top="0.31640625" bottom="0.62109375"/>
 						</Texture>
 					</Layer>
@@ -229,6 +231,13 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="VehicleMenuBar"/>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBACKGROUND1">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentBORDER1">
 							<Anchors>
@@ -251,6 +260,16 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBORDER5">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBORDER6">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBORDER7">
 							<Anchors>
 								<Anchor point="BOTTOM"/>
 							</Anchors>

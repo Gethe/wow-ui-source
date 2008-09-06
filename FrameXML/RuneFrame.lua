@@ -1,23 +1,29 @@
 --Readability == win
 local FirstTime = true;
 local RUNETYPE_BLOOD = 1;
-local RUNETYPE_DEATH = 2;
+local RUNETYPE_UNHOLY = 2;
 local RUNETYPE_FROST = 3;
-local RUNETYPE_CHROMATIC = 4;
+local RUNETYPE_DEATH = 4;
 
 local iconTextures = {};
 iconTextures[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Blood";
-iconTextures[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Unholy";
+iconTextures[RUNETYPE_UNHOLY] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Unholy";
 iconTextures[RUNETYPE_FROST] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Frost";
-iconTextures[RUNETYPE_CHROMATIC] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Death";
+iconTextures[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Death";
 
 local runeTextures = {
 	[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Blood-Off.tga",
-	[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Death-Off.tga",
+	[RUNETYPE_UNHOLY] = "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Death-Off.tga",
 	[RUNETYPE_FROST] = "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Frost-Off.tga",
-	[RUNETYPE_CHROMATIC] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Chromatic-Off.tga",
+	[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Chromatic-Off.tga",
 }
 
+local runeColors = {
+	[RUNETYPE_BLOOD] = {1, 0, 0},
+	[RUNETYPE_UNHOLY] = {0, 0.5, 0},
+	[RUNETYPE_FROST] = {0, 1, 1},
+	[RUNETYPE_DEATH] = {0.8, 0.1, 1},
+}
 runeMapping = {
 	[1] = "BLOOD",
 	[2] = "UNHOLY",
@@ -30,6 +36,7 @@ function RuneButton_OnLoad (self)
 	
 	self.rune = getglobal(self:GetName().."Rune");
 	self.fill = getglobal(self:GetName().."Fill");
+	self.shine = getglobal(self:GetName().."ShineTexture");
 	RuneButton_Update(self);
 end
 
@@ -45,9 +52,6 @@ function RuneButton_OnUpdate (self, elapsed)
 	
 	CooldownFrame_SetTimer(cooldown, start, duration, displayCooldown);
 	
-	if ( ( GetTime()-start >= duration ) ) then
-		RuneButton_ShineFadeIn(getglobal(self:GetName().."Shine"))
-	end
 	-- if ( not enable ) then
 		-- self.fill:SetHeight(RUNE_HEIGHT * ((GetTime() - start)/duration));
 		-- self.fill:SetTexCoord(0, 1, (1 - ((GetTime() - start)/duration)), 1);
@@ -62,7 +66,7 @@ function RuneButton_OnUpdate (self, elapsed)
 	end
 end
 
-function RuneButton_Update (self, rune)
+function RuneButton_Update (self, rune, dontFlash)
 	rune = rune or self:GetID();
 	local runeType = GetRuneType(rune);
 	
@@ -76,6 +80,11 @@ function RuneButton_Update (self, rune)
 		self.rune:Hide();
 		-- self.fill:Hide();
 		self.tooltipText = nil;
+	end
+	
+	if ( not dontFlash and runeType) then
+		self.shine:SetVertexColor(unpack(runeColors[runeType]));
+		RuneButton_ShineFadeIn(self.shine)
 	end
 end
 
@@ -101,7 +110,6 @@ function RuneFrame_OnLoad (self)
 	
 	self:RegisterEvent("RUNE_POWER_UPDATE");
 	self:RegisterEvent("RUNE_TYPE_UPDATE");
-	self:RegisterEvent("RUNE_REGEN_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	
 	self:SetScript("OnEvent", RuneFrame_OnEvent);
@@ -116,12 +124,15 @@ function RuneFrame_OnEvent (self, event, ...)
 			FirstTime = false;
 		end
 		for rune in next, self.runes do
-			RuneButton_Update(self.runes[rune], rune);
+			RuneButton_Update(self.runes[rune], rune, true);
 		end
 	elseif ( event == "RUNE_POWER_UPDATE" ) then
 		local rune, usable = ...;
 		if ( not usable and rune and self.runes[rune] ) then
 			self.runes[rune]:SetScript("OnUpdate", RuneButton_OnUpdate);
+		elseif ( usable and rune and self.runes[rune] ) then
+			self.runes[rune].shine:SetVertexColor(1, 1, 1);
+			RuneButton_ShineFadeIn(self.runes[rune].shine)
 		end
 	elseif ( event == "RUNE_TYPE_UPDATE" ) then
 		local rune = ...;

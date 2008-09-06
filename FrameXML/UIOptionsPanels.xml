@@ -895,7 +895,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-174" y="-8"/>
+							<AbsDimension x="-140" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -941,6 +941,41 @@
 					<OnLoad>
 						<!-- No, I don't think self name is long enough. Yes, I would name it something longer if I could. Hrm. I probably should have put DDL in there for a touch of hungarian.-->
 						InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad(self)
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<!-- Aggro Warning System -->
+			<Frame name="InterfaceOptionsDisplayPanelAggroWarningDisplay" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowClock" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-13" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="AGGRO_WARNING_DISPLAY">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnLoad>
+						InterfaceOptionsDisplayPanelAggroWarningDisplay_OnLoad(self)
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -1306,7 +1341,7 @@
 						self.label = "bottomLeftActionBar";
 						self.uvar = "SHOW_MULTI_ACTIONBAR_1";
 						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						self.GetValue = function() return(select(1, GetActionBarToggles())) end
+						self.GetValue = function() return (select(1, GetActionBarToggles()) and "1") or "0" end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1325,7 +1360,7 @@
 						self.label = "bottomRightActionBar";
 						self.uvar = "SHOW_MULTI_ACTIONBAR_2";
 						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						self.GetValue = function() return(select(2, GetActionBarToggles())) end
+						self.GetValue = function() return (select(2, GetActionBarToggles()) and "1") or "0" end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1344,7 +1379,7 @@
 						self.label = "rightActionBar";
 						self.uvar = "SHOW_MULTI_ACTIONBAR_3";
 						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						self.GetValue = function() return(select(3, GetActionBarToggles())) end
+						self.GetValue = function() return (select(3, GetActionBarToggles()) and "1") or "0" end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1363,7 +1398,7 @@
 						self.label = "rightTwoActionBar";
 						self.uvar = "SHOW_MULTI_ACTIONBAR_4";
 						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						self.GetValue = function() return(select(4, GetActionBarToggles())) end
+						self.GetValue = function() return (select(4, GetActionBarToggles()) and "1") or "0" end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsActionBarsPanelRight, self);
 					</OnLoad>

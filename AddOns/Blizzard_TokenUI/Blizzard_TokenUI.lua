@@ -1,6 +1,6 @@
 UIPanelWindows["TokenFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 TOKEN_BUTTON_OFFSET = 3;
-MAX_WATCHED_TOKENS = 4;
+MAX_WATCHED_TOKENS = 3;
 BACKPACK_TOKENFRAME_HEIGHT = 22;
 
 -- REMOVE ME!!!
@@ -48,18 +48,12 @@ function TokenFrame_OnLoad()
 	end
 end
 
+function TokenFrame_OnShow(self)
+	SetButtonPulse(CharacterFrameTab5, 0, 1);	--Stop the button pulse
+	TokenFrame_Update();
+end
+
 function TokenFrame_Update()
-	if ( not GetCVarBool("showTokenFrame") ) then
-		return;
-	end
-	
-	-- Setup honor and arena points
-	local factionGroup = UnitFactionGroup("player");
-	if ( factionGroup ) then
-		TokenFrameHonorFrameHonorIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-	end
-	TokenFrameHonorFrameHonor:SetText(GetHonorCurrency());
-	TokenFrameHonorFrameArena:SetText(GetArenaCurrency());
 
 	-- Setup the buttons
 	local scrollFrame = TokenFrameContainer;
@@ -128,6 +122,7 @@ function TokenFrame_Update()
 			end
 			--Manage highlight
 			if ( name == TokenFrame.selectedToken ) then
+				TokenFrame.selectedID = index;
 				button:LockHighlight();
 			else
 				button:UnlockHighlight();
@@ -145,6 +140,12 @@ function TokenFrame_Update()
 	local displayedHeight = #buttons * (button:GetHeight()+TOKEN_BUTTON_OFFSET);
 
 	HybridScrollFrame_Update(scrollFrame, numTokenTypes, totalHeight, displayedHeight);
+	
+	if ( numTokenTypes == 0 ) then
+		CharacterFrameTab5:Hide();
+	else
+		CharacterFrameTab5:Show();
+	end
 end
 
 function TokenFramePopup_CloseIfHidden()
@@ -162,33 +163,29 @@ function TokenFramePopup_CloseIfHidden()
 end
 
 function BackpackTokenFrame_Update()
-	local watchIndex = 1;
 	local watchButton;
-	local numTokenTypes = GetCurrencyListSize();
-	for i=1, numTokenTypes do
-		name, isHeader, _, _, isWatched, count, icon = GetCurrencyListInfo(i);
+	local name, count, icon;
+	for i=1, MAX_WATCHED_TOKENS do
+		name, count, icon = GetBackpackCurrencyInfo(i);
 		-- Update watched tokens
-		if ( isWatched and watchIndex <= MAX_WATCHED_TOKENS ) then
-			watchButton = getglobal("BackpackTokenFrameToken"..watchIndex);
+		if ( name ) then
+			watchButton = getglobal("BackpackTokenFrameToken"..i);
 			watchButton.icon:SetTexture(icon);
-			watchButton.count:SetText("x"..count);
-			watchButton.index = i;
+			if ( count <= 99999 ) then
+				watchButton.count:SetText(count);
+			else
+				watchButton.count:SetText("*");
+			end
 			watchButton:Show();
-			watchIndex = watchIndex+1;
+			BackpackTokenFrame.shouldShow = 1;
+			BackpackTokenFrame.numWatchedTokens = i;
+		else
+			getglobal("BackpackTokenFrameToken"..i):Hide();
+			if ( i == 1 ) then
+				BackpackTokenFrame.shouldShow = nil;
+			end
 		end
 	end
-	-- Hide unhidden token buttons
-	for i=watchIndex, MAX_WATCHED_TOKENS do
-		getglobal("BackpackTokenFrameToken"..i):Hide();
-	end
-	if ( watchIndex == 1 ) then
-		-- No tokens are being watched so hide the backpack bar
-		BackpackTokenFrame.shouldShow = nil;
-	else
-		-- Tokens are shown so show the backpack bar
-		BackpackTokenFrame.shouldShow = 1;
-	end
-	BackpackTokenFrame.numWatchedTokens = watchIndex-1;
 end
 
 function GetNumWatchedTokens()
@@ -208,7 +205,8 @@ function ManageBackpackTokenFrame(backpack)
 		backpack = GetBackpackFrame();
 	end
 	if ( not backpack ) then
-		-- If still no backpack then don't worry about it
+		-- If still no backpack then we don't show the frame
+		BackpackTokenFrame:Hide();
 		return;
 	end
 	if ( BackpackTokenFrame_IsShown() ) then
@@ -235,6 +233,7 @@ function TokenButton_OnClick(self)
 			TokenFrame.selectedID = self.index;
 			if ( self.isWatched ) then
 				SetCurrencyBackpack(TokenFrame.selectedID, 0);
+				self.isWatched = false;
 			else
 				-- Set an error message if trying to show too many quests
 				if ( GetNumWatchedTokens() >= MAX_WATCHED_TOKENS ) then
@@ -242,6 +241,10 @@ function TokenButton_OnClick(self)
 					return;
 				end
 				SetCurrencyBackpack(TokenFrame.selectedID, 1);
+				self.isWatched = true;
+			end
+			if ( TokenFrame.selectedID == self.index ) then
+				TokenFrame_UpdatePopup(self);
 			end
 			BackpackTokenFrame_Update();
 			ManageBackpackTokenFrame();

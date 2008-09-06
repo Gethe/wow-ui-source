@@ -7,3 +7,4 @@
 ## LoadOnDemand: 1
 Blizzard_AchievementUI.lua
 Blizzard_AchievementUI.xml
+Localization.lua

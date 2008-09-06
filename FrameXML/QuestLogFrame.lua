@@ -733,6 +733,11 @@ function QuestLogUpdateQuestCount(numQuests)
 end
 
 function AchievementWatch_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self:UnregisterEvent(event);
+		event = "TRACKED_ACHIEVEMENT_UPDATE";
+	end
+	
 	if ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
 		local achievementID, criteriaID, elapsed, maxTime = ...;
 		if ( not achievementID ) then
@@ -748,7 +753,7 @@ function AchievementWatch_OnEvent (self, event, ...)
 			AchievementWatch_Update();
 		elseif ( GetTrackedAchievement() ~= achievementID and AchievementWatchFrame:IsShown() ) then
 			-- Don't do anything if they're already tracking another achievement
-		else
+		elseif ( maxTime > elapsed ) then
 			SetTrackedAchievement(achievementID);
 			self.hasTimer = true;
 			self.maxTime = maxTime;
@@ -759,7 +764,7 @@ function AchievementWatch_OnEvent (self, event, ...)
 	end
 end
 
-function AchievementWatchButton_OnClick (self)
+function AchievementWatchButton_OnClick ()
 	if ( not AchievementFrame ) then
 		AchievementFrame_LoadUI();
 		AchievementFrame_ToggleAchievementFrame();
@@ -767,7 +772,7 @@ function AchievementWatchButton_OnClick (self)
 		AchievementFrame_ToggleAchievementFrame();
 	end
 	
-	AchievementFrame_SelectAchievement(AchievementWatchFrame.achievementIndex);
+	AchievementFrame_SelectAchievement(AchievementWatchFrame.achievementID);
 end
 
 function WatchLine_OnUpdate (self, elapsed)
@@ -796,20 +801,21 @@ function AchievementWatch_Update()
 	local criteriaString, criteriaType, completed, uantity, totalQuantity, name, flags, assetID, quantityString;
 	local achievementTitle
 	local watchTextIndex = 1;
-	local achievementIndex;
+	local achievementID;
 	local criteriaCompleted;
 	
 	local watchFrame = AchievementWatchFrame;
 
 	NUM_ACHIEVEMENTWATCH_LINES_USED = 0;
 	
-	achievementIndex = GetTrackedAchievement();
-		-- questIndex = GetQuestIndexForWatch(i);
+	achievementID = GetTrackedAchievement();
+		
+	local frameHeight = 0;
 
-	if ( achievementIndex ) then
-		numCriteria = GetAchievementNumCriteria(achievementIndex);
-		local _, achievementName, _, completed, _, _, _, _, _, icon = GetAchievementInfo(achievementIndex);
-		watchFrame.achievementIndex = achievementIndex;
+	if ( achievementID ) then
+		numCriteria = GetAchievementNumCriteria(achievementID);
+		local _, achievementName, _, completed, _, _, _, _, _, icon = GetAchievementInfo(achievementID);
+		watchFrame.achievementID = achievementID;
 		
 		--If there are objectives set the title
 		if ( not completed and ( numCriteria > 0 or watchFrame.hasTimer ) ) then
@@ -821,6 +827,8 @@ function AchievementWatch_Update()
 			watchLine.icon:Show();
 			watchLine.border:Show();
 			watchLine.icon:SetTexture(icon);
+			
+			frameHeight = frameHeight + 15;
 			
 			-- 18 is the width of watchLine.icon + it's offset
 			tempWidth = watchText:GetStringWidth() + 18;
@@ -850,7 +858,7 @@ function AchievementWatch_Update()
 			end
 			
 			for j=1, numCriteria do
-				criteriaString, criteriaType, completed, quantity, totalQuantity, name, flags, assetID, quantityString = GetAchievementCriteriaInfo(achievementIndex, j);
+				criteriaString, criteriaType, completed, quantity, totalQuantity, name, flags, assetID, quantityString = GetAchievementCriteriaInfo(achievementID, j);
 				
 				if ( completed or watchTextIndex > MAX_ACHIEVEMENTWATCH_LINES ) then
 					-- Do nothing =O
@@ -861,7 +869,7 @@ function AchievementWatch_Update()
 					if ( completed ) then
 						-- We don't need to display this criteria, so we haven't necessarily run out of space. Check all the remaining criteria to be sure!
 						for k=j, numCriteria do
-							_, _, completed = GetAchievementCriteriaInfo(achievementIndex, k);
+							_, _, completed = GetAchievementCriteriaInfo(achievementID, k);
 							if ( not completed ) then
 								break;
 							end
@@ -875,6 +883,7 @@ function AchievementWatch_Update()
 						watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset, 0);
 						watchLine.text:SetText(" ...");
 						watchLine.text:Show();
+						frameHeight = frameHeight + 15;
 						nextXOffset = 0;
 					end					
 					watchTextIndex = watchTextIndex + 1;
@@ -887,10 +896,16 @@ function AchievementWatch_Update()
 					watchLine.statusBar:SetMinMaxValues(0, totalQuantity);
 					watchLine.statusBar:SetValue(quantity);
 					watchLine.statusBar.text:SetText(string.format("%s / %d", quantity, totalQuantity));
+					watchLine.statusBar.OnClick = AchievementWatchButton_OnClick;
 					watchTextIndex = watchTextIndex + 1;
-					watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset, -4);
+					if ( lastLine.icon and lastLine.icon:IsShown() ) then
+						watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset, -8);
+					else
+						watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset, -4);
+					end
 					nextXOffset = 0;
 					tempWidth = 180;
+					frameHeight = frameHeight + 19;
 				else
 					lastLine = watchLine;
 					watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
@@ -911,6 +926,7 @@ function AchievementWatch_Update()
 					
 					watchLine:Show();
 					watchTextIndex = watchTextIndex + 1;
+					frameHeight = frameHeight + 15;
 				end
 								
 				if ( tempWidth > achievementWatchMaxWidth ) then
@@ -928,18 +944,23 @@ function AchievementWatch_Update()
 	
 	-- If no watch lines used then hide the frame and return
 	if ( watchTextIndex == 1 ) then
-		AchievementWatchFrame:Hide();
+		watchFrame:Hide();
 		return;
-	else
-		NUM_ACHIEVEMENTWATCH_LINES_USED = watchTextIndex;
-		AchievementWatchFrame:Show();
-		AchievementWatchFrame:SetHeight(watchTextIndex * 1);
-		AchievementWatchFrame:SetWidth(achievementWatchMaxWidth + 10);
+	else		
+		NUM_ACHIEVEMENTWATCH_LINES_USED = watchTextIndex - 1;
+			
+		watchFrame:Show();
+		watchFrame:SetHeight(frameHeight);
+		watchFrame:SetWidth(achievementWatchMaxWidth + 10);
+		watchFrame.desiredWidth = achievementWatchMaxWidth + 10;
 	end
 
 	-- Hide unused watch lines
-	for i=watchTextIndex, MAX_ACHIEVEMENTWATCH_LINES do
-		getglobal("AchievementWatchLine"..i):Hide();
+	
+	if ( watchTextIndex < MAX_ACHIEVEMENTWATCH_LINES ) then
+		for i=watchTextIndex, MAX_ACHIEVEMENTWATCH_LINES do
+			getglobal("AchievementWatchLine"..i):Hide();
+		end
 	end
 
 	UIParent_ManageFramePositions();

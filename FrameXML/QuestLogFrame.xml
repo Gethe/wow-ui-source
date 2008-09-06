@@ -47,12 +47,31 @@
 					<TexCoords left="0" right="0.8745" top="0" bottom="0.75"/>
 				</Texture>
 				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="700/700">
+					<Size y="10" x="150"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOP">
+							<Offset x="0" y="-2"/>
+						</Anchor>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button name="$parentButton">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						if ( parent.OnClick ) then
+							parent.OnClick(parent);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 	</StatusBar>
 	
@@ -1507,6 +1526,7 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			</OnLoad>
 			<OnEvent>
 				AchievementWatch_OnEvent(self, event, ...);

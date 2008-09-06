@@ -68,7 +68,7 @@ function BonusActionBar_OnUpdate(self, elapsed)
 end
 
 function ShowBonusActionBar (override)
-	if (( (not MainMenuBar.busy) and (not UnitInVehicleControlSeat("player")) ) or override) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or override) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 		BonusActionBar_SetButtonTransitionState(nil);
 		if ( (BonusActionBarFrame.mode ~= "show" and BonusActionBarFrame.state ~= "top") or (not UIParent:IsShown())) then
 			BonusActionBarFrame:Show();
@@ -82,7 +82,7 @@ function ShowBonusActionBar (override)
 end
 
 function HideBonusActionBar (override)
-	if (( (not MainMenuBar.busy) and (not UnitInVehicleControlSeat("player")) ) or override) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or override) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 		if ( (BonusActionBarFrame:IsShown()) or (not UIParent:IsShown())) then
 			BonusActionBar_SetButtonTransitionState(1);
 			if ( BonusActionBarFrame.completed ) then
@@ -249,7 +249,7 @@ function PossessBar_OnEvent (self, event, ...)
 end
 
 function PossessBar_Update (override)
-	if ( (not MainMenuBar.busy and not UnitInVehicleControlSeat("player")) or override ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+	if ( (not MainMenuBar.busy and not UnitHasVehicleUI("player")) or override ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 		if ( IsPossessBarVisible() ) then
 			PossessBarFrame:Show();
 			ShapeshiftBarFrame:Hide();

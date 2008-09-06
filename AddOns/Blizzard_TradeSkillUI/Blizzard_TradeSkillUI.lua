@@ -10,7 +10,7 @@ TradeSkillTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25,	font = GameFontNo
 TradeSkillTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50,	font = GameFontNormalLeftGrey };
 TradeSkillTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,		font = GameFontNormalLeft };
 
-UIPanelWindows["TradeSkillFrame"] =	{ area = "left", pushable = 3 };
+UIPanelWindows["TradeSkillFrame"] =	{ area = "left", pushable = 3, showFailedFunc = "TradeSkillFrame_ShowFailed" };
 
 CURRENT_TRADESKILL = "";
 
@@ -37,6 +37,10 @@ end
 
 function TradeSkillFrame_Hide()
 	HideUIPanel(TradeSkillFrame);
+end
+
+function TradeSkillFrame_ShowFailed(self)
+	CloseTradeSkill();
 end
 
 function TradeSkillFrame_OnLoad(self)

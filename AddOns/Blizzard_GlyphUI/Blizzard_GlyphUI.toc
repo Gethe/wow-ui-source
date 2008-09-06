@@ -7,3 +7,4 @@
 ## LoadOnDemand: 1
 Blizzard_GlyphUI.lua
 Blizzard_GlyphUI.xml
+Localization.lua

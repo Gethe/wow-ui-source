@@ -23,7 +23,7 @@
 	</CheckButton>
 	<Frame name="GMSurveyQuestionTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="543" y="80"/>
+			<AbsDimension x="568" y="80"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -61,7 +61,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(self:GetName().."Score"):SetText(GM_SURVEY_NOT_APPLICABLE);
+						_G[self:GetName().."Score"]:SetText(GM_SURVEY_NOT_APPLICABLE);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -75,7 +75,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(self:GetName().."Score"):SetText(GMSURVEYRATING1);
+						_G[self:GetName().."Score"]:SetText(GMSURVEYRATING1);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -89,7 +89,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(self:GetName().."Score"):SetText(GMSURVEYRATING2);
+						_G[self:GetName().."Score"]:SetText(GMSURVEYRATING2);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -103,7 +103,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(self:GetName().."Score"):SetText(GMSURVEYRATING3);
+						_G[self:GetName().."Score"]:SetText(GMSURVEYRATING3);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -117,7 +117,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(self:GetName().."Score"):SetText(GMSURVEYRATING4);
+						_G[self:GetName().."Score"]:SetText(GMSURVEYRATING4);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -131,23 +131,17 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(self:GetName().."Score"):SetText(GMSURVEYRATING5);
+						_G[self:GetName().."Score"]:SetText(GMSURVEYRATING5);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				self:SetBackdropBorderColor(0.5,0.5,0.5);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-				getglobal(self:GetName().."RadioButton1"):SetPoint("LEFT", self:GetName().."RadioButton0", "RIGHT", GMSURVEY_NA_SPACING, 0);
-				getglobal(self:GetName().."RadioButton2"):SetPoint("LEFT", self:GetName().."RadioButton1", "RIGHT", GMSURVEY_RATING_SPACING, 0);
-				getglobal(self:GetName().."RadioButton3"):SetPoint("LEFT", self:GetName().."RadioButton2", "RIGHT", GMSURVEY_RATING_SPACING, 0);
-				getglobal(self:GetName().."RadioButton4"):SetPoint("LEFT", self:GetName().."RadioButton3", "RIGHT", GMSURVEY_RATING_SPACING, 0);
-				getglobal(self:GetName().."RadioButton5"):SetPoint("LEFT", self:GetName().."RadioButton4", "RIGHT", GMSURVEY_RATING_SPACING, 0);
+				GMSurveyQuestion_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				GMSurveyRadioButton_OnClick(self, 0);
+				GMSurveyQuestion_OnShow(self);
 			</OnShow>
 		</Scripts>
 	</Frame>
@@ -351,20 +345,16 @@
 					</Layer>
 				</Layers>
 			</Frame>
-<!--The sizes for these objects are changed in GMSurveyFrame_Update() -->
 			<ScrollFrame name="GMSurveyScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="541" y="460"/>
-				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-80" y="-55"/>
-						</Offset>
-					</Anchor>
 					<Anchor point="TOPLEFT">
 						<Offset>
 							<AbsDimension x="20" y="-55"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-55" y="48"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -418,25 +408,24 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						ScrollFrame_OnLoad(self);
-						self.scrollBarHideable = 1;
+						GMSurveyScrollFrame_OnLoad(self);
 					</OnLoad>
 					<OnScrollRangeChanged>
 						ScrollFrame_OnScrollRangeChanged(self, yrange);
-						GMSurveyFrame_Update();
 					</OnScrollRangeChanged>
 				</Scripts>
 				<ScrollChild>
 					<Frame name="GMSurveyScrollChildFrame">
 						<Size>
-							<AbsDimension x="543" y="10"/>
+							<AbsDimension x="541" y="10"/>
 						</Size>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString name="GMSurveyAdditionalCommentsText" inherits="GameFontNormal" text="ADDITIONAL_COMMENTS" justifyH="LEFT">
-									<Size x="543" y="0"/>
+									<Size x="541" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
+										<Anchor point="TOPRIGHT"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -576,7 +565,7 @@
 							</Frame>
 							<Frame name="GMSurveyCommentFrame">
 								<Size>
-									<AbsDimension x="543" y="85"/>
+									<AbsDimension x="541" y="85"/>
 								</Size>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyAdditionalCommentsText" relativePoint="BOTTOMLEFT">
@@ -586,7 +575,7 @@
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyAdditionalCommentsText" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="-10" y="0"/>
+											<AbsDimension x="0" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -603,22 +592,22 @@
 								</Backdrop>
 								<Frames>
 									<ScrollFrame name="GMSurveyCommentScrollFrame" inherits="UIPanelScrollFrameTemplate">
-										<Size>
-											<AbsDimension x="505" y="75"/>
-										</Size>
 										<Anchors>
 											<Anchor point="TOPLEFT">
 												<Offset>
 													<AbsDimension x="10" y="-5"/>
 												</Offset>
 											</Anchor>
-											<Anchor point="TOPRIGHT">
+											<Anchor point="BOTTOMRIGHT">
 												<Offset>
-													<AbsDimension x="-28" y="-5"/>
+													<AbsDimension x="-10" y="5"/>
 												</Offset>
 											</Anchor>
 										</Anchors>
 										<Scripts>
+											<OnLoad>
+												GMSurveyCommentScrollFrame_OnLoad(self);
+											</OnLoad>
 											<OnMouseDown>
 												GMSurveyFrameComment:SetFocus();
 											</OnMouseDown>
@@ -629,22 +618,21 @@
 										<ScrollChild>
 											<EditBox name="GMSurveyFrameComment" multiLine="true" letters="500" enableMouse="true" autoFocus="false">
 												<Size>
-													<AbsDimension x="505" y="60"/>
+													<AbsDimension x="530" y="60"/>
 												</Size>
 												<Scripts>
 													<OnEscapePressed>
 														self:ClearFocus();
 													</OnEscapePressed>
 													<OnTextChanged>
-														local scrollBar = getglobal(self:GetParent():GetName().."ScrollBar")
-														local min;
-														local max;
-														min, max = scrollBar:GetMinMaxValues();
-														if ( max > 0 and (self.max ~= max) ) then
-															self.max = max;
-															scrollBar:SetValue(max);
-														end
+														ScrollingEdit_OnTextChanged(self, self:GetParent());
 													</OnTextChanged>
+													<OnCursorChanged>
+														ScrollingEdit_OnCursorChanged(self, x, y, w, h);
+													</OnCursorChanged>
+													<OnUpdate>
+														ScrollingEdit_OnUpdate(self, 0, self:GetParent());
+													</OnUpdate>
 													<OnShow>
 														GMSurveyFrameComment:SetText("");
 													</OnShow>
@@ -721,6 +709,7 @@
 			</OnLoad>
 			<OnShow>
 				GMSurveyFrame_Update();
+				GMSurveyScrollFrame:SetVerticalScroll(0);
 			</OnShow>
 		</Scripts>
 	</Frame>

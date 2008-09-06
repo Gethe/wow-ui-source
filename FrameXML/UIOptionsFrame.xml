@@ -341,7 +341,7 @@
 
 	<Frame name="InterfaceOptionsFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
 		<Size>
-			<AbsDimension x="620" y="500"/>
+			<AbsDimension x="648" y="520"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -371,7 +371,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="INTERFACE_OPTIONS">
+				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="UIOPTIONS_MENU">
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentHeader">
 							<Offset>
@@ -383,7 +383,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+			<Button name="$parentApply" inherits="UIPanelButtonTemplate" text="APPLY">
 				<Size>
 					<AbsDimension x="96" y="22"/>
 				</Size>
@@ -393,6 +393,19 @@
 							<AbsDimension x="-16" y="16"/>
 						</Offset>
 					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						InterfaceOptionsFrameOkay_OnClick(true);
+					</OnClick>
+				</Scripts>
+			</Button>		
+			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentApply" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -432,7 +445,7 @@
 			</Button>
 			<Frame name="$parentCategories" inherits="InterfaceOptionsListTemplate">
 				<Size>
-					<AbsDimension x="175" y="409"/>
+					<AbsDimension x="175" y="429"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -452,7 +465,7 @@
 			</Frame>
 			<Frame name="$parentAddOns" inherits="InterfaceOptionsListTemplate" hidden="true">
 				<Size>
-					<AbsDimension x="175" y="409"/>
+					<AbsDimension x="175" y="429"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">

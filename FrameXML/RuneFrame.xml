@@ -6,7 +6,7 @@
       <AbsDimension x="18" y="18"/>
     </Size>
     <Frames>
-		<Cooldown name="$parentCooldown" drawEdge="true">
+		<Cooldown name="$parentCooldown" drawEdge="true" frameStrata="LOW">
 			<Size x="15" y="15"/>
 			<Anchors>
 			  <Anchor point="CENTER">
@@ -16,7 +16,7 @@
 			  </Anchor>
 			</Anchors>
 		</Cooldown>
-		<Frame name="$parentBorder">
+		<Frame name="$parentBorder" frameStrata="LOW">
 			<Size x="24" y="24"/>
 			<Anchors>
 				<Anchor point="CENTER">
@@ -36,6 +36,21 @@
 				</OnLoad>
 			</Scripts>
 		</Frame>
+		<Frame frameStrata="MEDIUM" setAllPoints="true" name="$parentShine">
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture name="$parentTexture" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+						<Size x="60" y="35"/>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+						<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
+					</Texture>
+				</Layer>
+			</Layers>
+		</Frame>
     </Frames>
     <Layers>
 		<Layer level="ARTWORK">
@@ -50,17 +65,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Texture>
-		</Layer>
-		<Layer level="OVERLAY">
-			<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
-				<Size x="60" y="35"/>
-				<Anchors>
-					<Anchor point="CENTER">
-						<Offset x="0" y="0"/>
-					</Anchor>
-				</Anchors>
-				<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
 			</Texture>
 		</Layer>
     </Layers>

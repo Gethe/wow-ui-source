@@ -4,6 +4,11 @@ local blizzardCategories = {};
 INTERFACEOPTIONS_ADDONCATEGORIES = {};
 INTERFACEOPTIONSLIST_BUTTONHEIGHT = 18;
 
+function InterfaceOptionsFrame_AudioRestart ()
+	InterfaceOptionsFrame.audioRestart = nil;
+	Sound_GameSystem_RestartSoundSystem();
+end
+
 function InterfaceOptionsFrameCancel_OnClick ()
 	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
 
@@ -14,11 +19,14 @@ function InterfaceOptionsFrameCancel_OnClick ()
 	for _, category in next, INTERFACEOPTIONS_ADDONCATEGORIES do
 		securecall("pcall", category.cancel, category);
 	end
+	
+	InterfaceOptionsFrame.audioRestart = nil;
+	InterfaceOptionsFrame.gxRestart = nil;
 			
 	InterfaceOptionsFrame_Show();
 end
 
-function InterfaceOptionsFrameOkay_OnClick ()
+function InterfaceOptionsFrameOkay_OnClick (isApply)
 	--Iterate through registered panels and run their okay methods in a taint-safe fashion
 
 	for _, category in next, blizzardCategories do
@@ -28,8 +36,17 @@ function InterfaceOptionsFrameOkay_OnClick ()
 	for _, category in next, INTERFACEOPTIONS_ADDONCATEGORIES do
 		securecall("pcall", category.okay, category);
 	end
-
-	InterfaceOptionsFrame_Show();
+	
+	if ( InterfaceOptionsFrame.gxRestart ) then
+		InterfaceOptionsFrame.gxRestart = nil;
+		ConsoleExec("gxRestart");
+	elseif ( InterfaceOptionsFrame.audioRestart ) then
+		InterfaceOptionsFrame_AudioRestart()
+	end
+	
+	if ( not isApply ) then
+		InterfaceOptionsFrame_Show();
+	end
 end
 
 function InterfaceOptionsFrameDefaults_OnClick ()
@@ -89,6 +106,9 @@ function InterfaceOptionsFrame_OnShow ()
 	if ( not InterfaceOptionsFramePanelContainer.displayedFrame ) then
 		InterfaceOptionsFrameCategories.buttons[1]:Click();
 	end
+	
+	local quality = VideoOptionsPanel_GetVideoQuality();
+	VideoOptionsPanel_SetVideoQualityLabels(quality);
 end
 
 function InterfaceOptionsFrame_OnHide ()
@@ -567,7 +587,7 @@ end
 -------------------------------------------------------------------------------------------------
 
 
-function InterfaceOptions_AddCategory (frame, addOn)
+function InterfaceOptions_AddCategory (frame, addOn, position)
 	if ( issecure() and ( not addOn ) ) then
 		local parent = frame.parent;
 		if ( parent ) then
@@ -587,7 +607,12 @@ function InterfaceOptions_AddCategory (frame, addOn)
 			end
 		end
 		
-		tinsert(blizzardCategories, frame);
+		if ( position ) then
+			tinsert(blizzardCategories, position, frame);
+		else
+			tinsert(blizzardCategories, frame);
+		end
+		
 		InterfaceCategoryList_Update();
 	elseif ( not type(frame) == "table" or not frame.name ) then
 		--Check to make sure that AddOn interface panels have the necessary attributes to work with the system.
@@ -635,8 +660,12 @@ function InterfaceOptions_AddCategory (frame, addOn)
 				return;
 			end
 		end
-					
-		tinsert(categories, frame);
+		
+		if ( position ) then
+			tinsert(categories, position, frame);
+		else
+			tinsert(categories, frame);
+		end
 		InterfaceAddOnsList_Update();
 	end
 end
@@ -705,6 +734,229 @@ local function BlizzardOptionsPanel_Default (self)
 	end
 end
 
+function BlizzardOptionsPanel_SetupControl (control)
+	local value
+	if ( control.cvar ) then
+		if ( control.type == CONTROLTYPE_CHECKBOX ) then			
+			value = GetCVar(control.cvar);
+			control.currValue = value;
+			control.value = value;
+			if ( control.uvar ) then
+				setglobal(control.uvar, value);
+			end
+			
+			control.GetValue = function(self) return GetCVar(self.cvar); end
+			control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
+		elseif ( control.type == CONTROLTYPE_SLIDER ) then
+			control.currValue = GetCVar(control.cvar);
+			control:SetValue(control.currValue);
+		end
+	end
+	if ( control.setFunc ) then
+		control.setFunc(control.value);
+	end
+end
+
+function BlizzardOptionsPanel_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		for i, control in next, self.controls do
+			securecall(BlizzardOptionsPanel_SetupControl, control);
+		end
+		self:UnregisterEvent(event);
+	end
+end
+
+function BlizzardOptionsPanel_OnLoad (frame)
+	InterfaceOptionsFrame_SetupBlizzardPanel(frame);
+	InterfaceOptions_AddCategory(frame);
+	frame:RegisterEvent("PLAYER_ENTERING_WORLD");
+	if ( not frame:GetScript("OnEvent") ) then
+		frame:SetScript("OnEvent", BlizzardOptionsPanel_OnEvent);
+	end
+	
+	if ( frame.options and frame.controls ) then
+		local entry;
+		for i, control in next, frame.controls do
+			entry = frame.options[(control.cvar or control.label)];
+			if ( entry ) then
+				if ( entry.text ) then
+					control.tooltipText = (getglobal("OPTION_TOOLTIP_" .. gsub(entry.text, "_TEXT$", "")) or entry.tooltip);
+					getglobal(control:GetName() .. "Text"):SetText(getglobal(entry.text) or entry.text);
+				end
+				
+				if ( control.cvar ) then
+					control.defaultValue = GetCVarDefault(control.cvar);
+				else
+				control.defaultValue = control.defaultValue or entry.default;
+				end
+				
+				control.event = entry.event or entry.text;
+				
+				if ( control.type == CONTROLTYPE_SLIDER ) then
+					OptionsFrame_EnableSlider(control);
+					control:SetMinMaxValues(entry.minValue, entry.maxValue);
+					control:SetValueStep(entry.valueStep);
+				end
+			end
+		end
+	end
+end
+
+function BlizzardOptionsPanel_OnShow (panel)
+	-- This function needs to be reworked.
+
+	local value;
+	
+	for _, control in next, panel.controls do
+		if ( control.cvar ) then
+			if ( control.type == CONTROLTYPE_CHECKBOX ) then
+				value = GetCVar(control.cvar);
+				
+				if ( not control.invert ) then
+					if ( value == "1" ) then
+						control:SetChecked(true);
+					else
+						control:SetChecked(false);
+					end
+				else
+					if ( value == "0" ) then
+						control:SetChecked(true);
+					else
+						control:SetChecked(false);
+					end
+				end
+				
+				if ( control.dependentControls ) then
+					if ( control:GetChecked() ) then
+						for _, depControl in next, control.dependentControls do
+							depControl:Enable();
+						end
+					else
+						for _, depControl in next, control.dependentControls do
+							depControl:Disable();
+						end
+					end
+				end
+			elseif ( control.type == CONTROLTYPE_SLIDER ) then
+				-- Don't do anything.
+			end
+		elseif ( control.GetValue ) then
+			if ( control.type == CONTROLTYPE_CHECKBOX ) then
+				value = tostring(control:GetValue());
+				
+				if ( not control.invert ) then
+					if ( value == "1" ) then
+						control:SetChecked(true);
+					else
+						control:SetChecked(false);
+					end
+				else
+					if ( value == "0" ) then
+						control:SetChecked(true);
+					else
+						control:SetChecked(false);
+					end
+				end
+				
+				if ( control.dependentControls ) then
+					if ( control:GetChecked() ) then
+						for _, depControl in next, control.dependentControls do
+							depControl:Enable();
+						end
+					else
+						for _, depControl in next, control.dependentControls do
+							depControl:Disable();
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function BlizzardOptionsPanel_RegisterControl (control, parentFrame)
+	if ( ( not parentFrame ) or ( not control ) ) then
+		return;
+	end
+	
+	parentFrame.controls = parentFrame.controls or {};
+	
+	tinsert(parentFrame.controls, control);
+	
+	local value;
+	if ( control.cvar ) then
+		-- Don't do anything here any more, just wait.
+	elseif ( control.GetValue ) then
+		if ( control.type == CONTROLTYPE_CHECKBOX ) then
+			value = control:GetValue();
+			control.currValue = value;
+			control.value = value;
+			if ( control.uvar ) then
+				setglobal(control.uvar, value);
+			end
+			
+			control.SetValue = function(self, value) self.value = value; if ( self.uvar ) then setglobal(self.uvar, value); end if ( self.setFunc ) then self.setFunc(value) end end;
+		end
+	end
+end
+
+function BlizzardOptionsPanel_SetupDependentControl (dependency, control)
+	if ( not dependency ) then
+		return;
+	end
+	
+	assert(control);
+	
+	dependency.dependentControls = dependency.dependentControls or {};
+	tinsert(dependency.dependentControls, control);
+	
+	if ( control.type ~= CONTROLTYPE_DROPDOWN ) then
+		control.Disable = function (self) getmetatable(self).__index.Disable(self) getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
+		control.Enable = function (self) getmetatable(self).__index.Enable(self) getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;
+	else
+		control.Disable = function (self) UIDropDownMenu_DisableDropDown(self) end;
+		control.Enable = function (self) UIDropDownMenu_EnableDropDown(self) end;
+	end
+end
+
+function BlizzardOptionsPanel_CheckButton_OnClick (checkButton)
+	local setting = "0";
+	if ( checkButton:GetChecked() ) then
+		if ( not checkButton.invert ) then
+			setting = "1"
+		end
+	elseif ( checkButton.invert ) then
+		setting = "1"
+	end 
+	
+	checkButton.value = setting;
+	
+	if ( checkButton.cvar ) then
+		SetCVar(checkButton.cvar, setting, checkButton.event);
+	end
+
+	if ( checkButton.uvar ) then
+		setglobal(checkButton.uvar, setting);
+	end
+
+	if ( checkButton.dependentControls ) then
+		if ( checkButton:GetChecked() ) then
+			for _, control in next, checkButton.dependentControls do
+				control:Enable();
+			end
+		else
+			for _, control in next, checkButton.dependentControls do
+				control:Disable();
+			end
+		end
+	end
+	
+	if ( checkButton.setFunc ) then	
+		checkButton.setFunc(checkButton.value);
+	end
+end
+
+
 function InterfaceOptionsFrame_SetupBlizzardPanel (frame)
 	frame.okay = BlizzardOptionsPanel_Okay;
 	frame.cancel = BlizzardOptionsPanel_Cancel;
@@ -734,4 +986,20 @@ function InterfaceOptionsFrame_LoadUVars ()
 			end
 		end
 	end
+end
+
+function OptionsFrame_DisableSlider(slider)
+	local name = slider:GetName();
+	getmetatable(slider).__index.Disable(slider);
+	getglobal(name.."Text"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	getglobal(name.."Low"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	getglobal(name.."High"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+end
+
+function OptionsFrame_EnableSlider(slider)
+	local name = slider:GetName();
+	getmetatable(slider).__index.Enable(slider);
+	getglobal(name.."Text"):SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
+	getglobal(name.."Low"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	getglobal(name.."High"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 end

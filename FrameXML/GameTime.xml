@@ -24,9 +24,21 @@
 				<Texture name="GameTimeCalendarInvitesTexture" file="Interface\Calendar\EventNotification" hidden="true">
 					<Size x="35" y="40"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER">
+							<Offset x="0" y="1"/>
+						</Anchor>
 					</Anchors>
 					<TexCoords left="0.03125" right="0.6484375" top="0.03125" bottom="0.8671875"/>
+				</Texture>
+				<Texture name="GameTimeCalendarInvitesGlow" file="Interface\Calendar\EventNotificationGlow" hidden="true" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="2"/>
+						</Anchor>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">

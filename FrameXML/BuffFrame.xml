@@ -37,15 +37,14 @@
 			</OnShow>
 		</Scripts>
 	</Button>
-	<Button name="BuffButtonTemplate" inherits="SecureActionButtonTemplate, AuraButtonTemplate" virtual="true">
-		<Attributes>
-			<Attribute name="type" value="cancelaura"/>
-			<Attribute name="index" type="number"/>
-		</Attributes>
+	<Button name="BuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
 				BuffButton_OnLoad(self);
 			</OnLoad>
+			<OnClick>
+				BuffButton_OnClick(self);
+			</OnClick>
 		</Scripts>
 	</Button>
 	<Button name="DebuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">

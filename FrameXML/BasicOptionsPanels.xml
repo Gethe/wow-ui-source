@@ -1,0 +1,2312 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="BasicOptionsPanels.lua"/>
+	
+	<!-- Templates -->
+	
+	<CheckButton name="OptionsPanelsBaseCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="26" y="26"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="-100" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				end
+				BlizzardOptionsPanel_CheckButton_OnClick(self);
+			</OnClick>
+			<OnEnter>
+				if ( self.tooltipText ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+	 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+	</CheckButton>
+	<CheckButton name="OptionsPanelsCheckButtonTemplate" virtual="true" inherits="OptionsPanelsBaseCheckButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	<CheckButton name="OptionsPanelsSmallCheckButtonTemplate" virtual="true" inherits="OptionsPanelsBaseCheckButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	<Slider name="OptionsPanelsSliderTemplate" orientation="HORIZONTAL" virtual="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="144" y="17"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+		</HitRectInsets>
+		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="8"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="8"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="6" bottom="6"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLow" inherits="GameFontNormalSmall" text="LOW">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="-4" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHigh" inherits="GameFontNormalSmall" text="HIGH">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( self.tooltipText and not self.disabled ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipText);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+		</ThumbTexture>
+	</Slider>
+	<Frame name="OptionsPanelsFrameBoxTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTitle" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+				self:SetBackdropColor(0.5, 0.5, 0.5);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<CheckButton name="VideoOptionsPanelsCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				end
+				VideoOptionsPanel_CheckButton_OnClick(self);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	
+	<!-- Resolution Panel -->
+	
+	<Frame name="VideoOptionsResolutionPanel" hidden="false" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="RESOLUTION_LABEL" inherits="GameFontNormalLargeLeftTop">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="RESOLUTION_SUBTEXT" inherits="GameFontHighlightSmallLeftTop" nonspacewrap="true" maxLines="3">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.name = RESOLUTION_LABEL;
+				self.options = ResolutionPanelOptions;
+				VideoOptionsPanel_OnLoad(self);
+			</OnLoad>
+			<OnShow>
+				VideoOptionsPanel_OnShow(self);
+				VideoOptionsResolutionPanel_UpdateGammaControls();
+			</OnShow>
+		</Scripts>	
+		<Frames>
+			<Frame name="$parentResolutionDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="0" y="-92"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="RESOLUTION">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset x="21" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());					
+						VideoOptionsResolutionPanelResolutionDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						VideoOptionsResolutionPanelResolutionDropDown_OnLoad(self);
+					</OnShow>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(OPTION_TOOLTIP_USE_RESOLUTION);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentRefreshDropDown" inherits="UIDropDownMenuTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentResolutionDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-16"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="REFRESH_RATE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset x="21" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());						
+						VideoOptionsResolutionPanelRefreshDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						VideoOptionsResolutionPanelRefreshDropDown_OnLoad(self);
+					</OnShow>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(OPTION_TOOLTIP_USE_REFRESH);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentMultiSampleDropDown" inherits="UIDropDownMenuTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentResolutionDropDown" relativePoint="RIGHT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MULTISAMPLE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset x="21" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());	
+						VideoOptionsResolutionPanelMultiSampleDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						VideoOptionsResolutionPanelMultiSampleDropDown_OnLoad(self);
+					</OnShow>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(OPTION_TOOLTIP_MULTISAMPLING);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentUseUIScale" inherits="OptionsPanelsSmallCheckButtonTemplate, VideoOptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMultiSampleDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="16" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>					
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "useUiScale";
+						self.restart = true;
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Slider name="$parentUIScaleSlider" inherits="OptionsPanelsSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentUseUIScale" relativePoint="BOTTOMLEFT">
+						<Offset x="5" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "uiscale";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetCVar(self.cvar, value);
+						end
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(OptionsResolutionPanelUseUIScale, self);
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = value;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>			
+			<CheckButton name="$parentVSync" inherits="OptionsPanelsSmallCheckButtonTemplate, VideoOptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRefreshDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="16" y="-32"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "gxVSync";
+						self.restart = true;
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>				
+			<CheckButton name="$parentTripleBuffer" inherits="OptionsPanelsSmallCheckButtonTemplate, VideoOptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentVSync" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "gxTripleBuffer";
+						self.restart = true;
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(OptionsResolutionPanelVSync, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentHardwareCursor" inherits="OptionsPanelsSmallCheckButtonTemplate, VideoOptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTripleBuffer" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-16" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "gxCursor";
+						self.restart = true;
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>			
+			<CheckButton name="$parentWindowed" inherits="OptionsPanelsSmallCheckButtonTemplate, VideoOptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentVSync" relativePoint="RIGHT">
+						<Offset x="164" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "gxWindow";
+						self.restart = true;
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+						self.setFunc = OptionsResolutionPanel_UpdateGammaControls;
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentMaximized" inherits="OptionsPanelsSmallCheckButtonTemplate, VideoOptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWindowed" relativePoint="BOTTOMLEFT">
+						<Offset x="16" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "gxMaximize";
+						self.restart = true;
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(OptionsResolutionPanelWindowed, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>			
+			<CheckButton name="$parentDisableResize" inherits="OptionsPanelsSmallCheckButtonTemplate, VideoOptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMaximized" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "windowResizeLock";
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(OptionsResolutionPanelWindowed, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>		
+			<Frame name="$parentBrightness" inherits="OptionsPanelsFrameBoxTemplate">
+				<Size x="380" y="96"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="16" y="16"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentGrayScale" file="Interface\OptionsFrame\21stepgrayscale">
+							<Size x="356" y="32"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset x="12" y="12"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(OPTIONS_BRIGHTNESS);
+					</OnLoad>
+				</Scripts>
+			</Frame>			
+			<CheckButton name="$parentDesktopGamma" inherits="OptionsPanelsSmallCheckButtonTemplate, VideoOptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBrightness" relativePoint="TOPLEFT">
+						<Offset x="12" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Disable = function (self) getmetatable(self).__index.Disable(self) getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
+						self.Enable = function (self) getmetatable(self).__index.Enable(self) getglobal(self:GetName().."Text"):SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b) end;
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "desktopGamma";
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+						self.setFunc = OptionsResolutionPanel_UpdateGammaControls;
+					</OnLoad>
+				</Scripts>
+			</CheckButton>		
+			<Slider name="$parentGammaSlider" inherits="OptionsPanelsSliderTemplate">
+				<Size x="154" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentBrightness" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.label = "gamma";
+						self.value = GetGamma();
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetGamma(value);
+						end
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = value;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>	
+		</Frames>
+	</Frame>	
+	
+	<!-- Effects Panel -->
+	
+	<Frame name="VideoOptionsEffectsPanel" hidden="false" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="EFFECTS_LABEL" inherits="GameFontNormalLargeLeftTop">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="EFFECTS_SUBTEXT" inherits="GameFontHighlightSmallLeftTop" nonspacewrap="true" maxLines="3">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.name = EFFECTS_LABEL;
+				self.options = EffectsPanelOptions;
+				VideoOptionsPanel_OnLoad(self);
+			</OnLoad>
+			<OnShow>
+				BlizzardOptionsPanel_OnShow(self);
+			</OnShow>
+		</Scripts>	
+		<Frames>
+			<Frame name="$parentQuality" inherits="OptionsPanelsFrameBoxTemplate">
+				<Size x="380" y="120"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="16" y="-72"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalLargeLeftTop" text="LOW">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="16" y="-16"/>
+								</Anchor>
+								<Anchor point="RIGHT">
+									<Offset x="-16" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentSubText" inherits="GameFontHighlightSmallLeftTop" text="This is a description of what happens when you set the quality slider to its Low setting.">
+							<Size x="320" y="42"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLabel" relativePoint="BOTTOMLEFT">
+									<Offset x="0" y="-8"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):Hide();
+					</OnLoad>
+				</Scripts>
+			</Frame>		
+			<Slider name="$parentQualitySlider" inherits="OptionsPanelsSliderTemplate">
+				<Size x="334" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentQuality" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentCustom" inherits="GameFontHighlightSmall" text="CUSTOM">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="4" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						getglobal(name .. "High"):SetPoint("TOPRIGHT", "$parent", "BOTTOMRIGHT", -79, 3);
+						self.type = CONTROLTYPE_SLIDER;
+						self.label = "quality";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+						end
+						getglobal(name.."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						VideoOptionsPanel_SetVideoQuality(value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>	
+			<Slider name="$parentTerrainDistance" inherits="OptionsPanelsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentQuality" relativePoint="BOTTOMLEFT">
+						<Offset x="2" y="-20"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "farclip";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetCVar(self.cvar, value);
+						end
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = self:GetValue();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>		
+			<Slider name="$parentTerrainDetail" inherits="OptionsPanelsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTerrainDistance" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.label = "TerrainMip";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetTerrainMip(value);
+						end
+						self.GetValue = function () return GetTerrainMip() end;
+						self.value = GetTerrainMip();
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = value;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>			
+			<Slider name="$parentSpellDetail" inherits="OptionsPanelsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTerrainDetail" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "spellEffectLevel";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetCVar(self.cvar, value);
+						end
+						getglobal(name.."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = value;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>		
+			<Slider name="$parentEnvironmentDetail" inherits="OptionsPanelsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTerrainDistance" relativePoint="TOPRIGHT">
+						<Offset x="20" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "environmentDetail";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetCVar(self.cvar, value);
+						end
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = self:GetValue();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>		
+			<Slider name="$parentClutterDensity" inherits="OptionsPanelsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentDetail" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "groundEffectDensity";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetCVar(self.cvar, value);
+						end
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = self:GetValue();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>		
+			<Slider name="$parentClutterRadius" inherits="OptionsPanelsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentClutterDensity" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "groundEffectDist";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetCVar(self.cvar, value);
+						end
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = self:GetValue();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>					
+			<Slider name="$parentTextureResolution" inherits="OptionsPanelsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentDetail" relativePoint="TOPRIGHT">
+						<Offset x="20" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "BaseMip";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetCVar(self.cvar, value);
+						end
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = self:GetValue();
+					</OnValueChanged>
+					<OnEnter>
+						if ( self.tooltipText and not self.disabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltipText);
+						end
+					</OnEnter>					
+				</Scripts>
+			</Slider>	
+			<Slider name="$parentTextureFiltering" inherits="OptionsPanelsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTextureResolution" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "textureFilteringMode";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetCVar(self.cvar, value);
+						end
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = self:GetValue();
+						self:SetValue(self:GetValue());
+					</OnValueChanged>
+					<OnEnter>
+						if ( self.tooltipText and not self.disabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltipText);
+						end
+					</OnEnter>					
+				</Scripts>
+			</Slider>				
+			<Slider name="$parentWeatherIntensity" inherits="OptionsPanelsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTextureFiltering" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "weatherDensity";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							SetCVar(self.cvar, value);
+						end
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = self:GetValue();
+						self:SetValue(self:GetValue());
+					</OnValueChanged>
+					<OnEnter>
+						if ( self.tooltipText and not self.disabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltipText);
+						end
+					</OnEnter>					
+				</Scripts>
+			</Slider>	
+			<Frame name="$parentShaders" inherits="OptionsPanelsFrameBoxTemplate">
+				<Size x="380" y="76"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="16" y="16"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(OPTIONS_SHADERS);
+					</OnLoad>
+				</Scripts>
+			</Frame>	
+			<CheckButton name="$parentSpecularLighting" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShaders" relativePoint="TOPLEFT">
+						<Offset x="12" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "specular";
+						self.restart = true;
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
+						VideoOptionsPanel_CheckButton_OnClick(self);
+					</OnClick>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentFullScreenGlow" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSpecularLighting" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "ffxGlow";
+						self.restart = true;
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
+						VideoOptionsPanel_CheckButton_OnClick(self);
+					</OnClick>					
+				</Scripts>
+			</CheckButton>		
+			<CheckButton name="$parentDeathEffect" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShaders">
+						<Offset x="180" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "ffxDeath";
+						self.restart = true;
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
+						VideoOptionsPanel_CheckButton_OnClick(self);
+					</OnClick>
+				</Scripts>
+			</CheckButton>					
+		</Frames>
+	</Frame>	
+	
+	<!-- Sound Panel -->
+	
+	<Frame name="AudioOptionsSoundPanel" hidden="false" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="SOUND_LABEL" inherits="GameFontNormalLargeLeftTop">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="SOUND_SUBTEXT" inherits="GameFontHighlightSmallLeftTop" nonspacewrap="true" maxLines="3">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentEnableSound" inherits="OptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="-64" y="-72"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableAllSound";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
+			<Frame name="$parentPlayback" inherits="OptionsPanelsFrameBoxTemplate">
+				<Size x="186" y="296"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="16" y="-116"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(PLAYBACK);
+					</OnLoad>
+				</Scripts>
+			</Frame>		
+			<CheckButton name="$parentSoundEffects" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayback">
+						<Offset x="8" y="-6"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableSFX";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>				
+			<CheckButton name="$parentErrorSpeech" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundEffects" relativePoint="BOTTOMLEFT">
+						<Offset x="8" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableErrorSpeech";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelSoundEffects, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentEmoteSounds" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentErrorSpeech" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableEmoteSounds";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelSoundEffects, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentMusic" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEmoteSounds" relativePoint="BOTTOMLEFT">
+						<Offset x="-8" y="2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableMusic";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentLoopMusic" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMusic" relativePoint="BOTTOMLEFT">
+						<Offset x="8" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_ZoneMusicNoDelay";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelMusic, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>				
+			<CheckButton name="$parentAmbientSounds" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLoopMusic" relativePoint="BOTTOMLEFT">
+						<Offset x="-8" y="2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableAmbience";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>			
+			<CheckButton name="$parentSoundInBG" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAmbientSounds" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableSoundWhenGameIsInBG";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>				
+			<CheckButton name="$parentReverb" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundInBG" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableReverb";
+						self.restart = true;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentHRTF" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentReverb" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableSoftwareHRTF";
+						self.restart = true;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>				
+			<CheckButton name="$parentEnableDSPs" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHRTF" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableDSPEffects";
+						self.restart = true;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>				
+			<Slider name="$parentSoundQuality" inherits="OptionsPanelsSliderTemplate">
+				<Size x="156" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnableDSPs" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_OutputQuality";
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>	
+			</Slider>
+			<Frame name="$parentHardware" inherits="OptionsPanelsFrameBoxTemplate">
+				<Size x="186" y="136"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayback" relativePoint="TOPRIGHT">
+						<Offset x="8" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(HARDWARE);
+					</OnLoad>
+				</Scripts>
+			</Frame>		
+			<Frame name="$parentHardwareDropDown" inherits="UIDropDownMenuTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="TOPLEFT">
+						<Offset x="-6" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="GAME_SOUND_OUTPUT">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());	
+						AudioOptionsSoundPanelHardwareDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						AudioOptionsSoundPanelHardwareDropDown_OnLoad(self);
+					</OnShow>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Slider name="$parentSoundChannels" inherits="OptionsPanelsSliderTemplate">
+				<Size x="138" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHardwareDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="24" y="-12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_NumChannels";
+						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>	
+			</Slider>			
+			<CheckButton name="$parentUseHardware" inherits="OptionsPanelsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundChannels" relativePoint="BOTTOMLEFT">
+						<Offset x="-4" y="-16"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableHardware";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>			
+			<Frame name="$parentVolume" inherits="OptionsPanelsFrameBoxTemplate">
+				<Size x="186" y="144"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-16"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(VOLUME);
+					</OnLoad>
+				</Scripts>
+			</Frame>			
+			<Slider name="$parentMasterVolume" inherits="OptionsPanelsSliderTemplate">
+				<Size x="118" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentVolume">
+						<Offset>
+							<AbsDimension x="15" y="-27"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						getglobal(name.."Low"):Hide();
+						getglobal(name.."High"):Hide();
+						self.label = getglobal(name .. "Label");
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_MasterVolume";						
+						getglobal(name.."Text"):SetFontObject("GameFontNormalSmall");
+						getglobal(name.."Text"):SetPoint("BOTTOM", self, "TOP", 0, 4);
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnShow>
+						local value = GetCVar("Sound_MasterVolume");
+						self.label:SetText(tostring(ceil(value * 100)).."%");
+					</OnShow>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+						self.label:SetText(tostring(ceil(value * 100)).."%");
+					</OnValueChanged>
+				</Scripts>	
+			</Slider>	
+			<Slider name="$parentSoundVolume" inherits="OptionsPanelsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentVolume" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="SOUND_VOLUME">
+							<Size x="64" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						local label = getglobal(name.."Low")
+						label:ClearAllPoints();
+						label:SetPoint("BOTTOMLEFT", "$parent", "TOPLEFT", -2, 4);
+						
+						label = getglobal(name.."High")
+						label:ClearAllPoints();
+						label:SetPoint("BOTTOMRIGHT", "$parent", "TOPRIGHT", 4, 4);
+						getglobal(name.."Text"):Hide();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_SFXVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>	
+			</Slider>				
+			<Slider name="$parentMusicVolume" inherits="OptionsPanelsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentSoundVolume" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="MUSIC_VOLUME">
+							<Size x="64" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						getglobal(name.."Low"):Hide()
+						getglobal(name.."High"):Hide();
+						getglobal(name.."Text"):Hide();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_MusicVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>	
+			</Slider>
+			<Slider name="$parentAmbienceVolume" inherits="OptionsPanelsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentMusicVolume" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="AMBIENCE_VOLUME">
+							<Size x="64" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						getglobal(name.."Low"):Hide()
+						getglobal(name.."High"):Hide();
+						getglobal(name.."Text"):Hide();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_AmbienceVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>	
+			</Slider>			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = SOUND_LABEL;
+				self.options = SoundPanelOptions;
+				BlizzardOptionsPanel_OnLoad(self);
+				self.okay = AudioOptionsPanel_Okay
+				self.cancel = AudioOptionsPanel_Cancel
+				self.default = AudioOptionsPanel_Default
+			</OnLoad>
+			<OnShow>
+				BlizzardOptionsPanel_OnShow(self);
+			</OnShow>
+		</Scripts>			
+	</Frame>
+
+	<Frame name="AudioOptionsVoicePanel" hidden="false" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="VOICE_LABEL" inherits="GameFontNormalLargeLeftTop">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="VOICE_SUBTEXT" inherits="GameFontHighlightSmallLeftTop" nonspacewrap="true" maxLines="3">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentEnableVoice" inherits="OptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="-64" y="-72"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "EnableVoiceChat";
+						self.setFunc = AudioOptionsVoicePanel_UpdateControls
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentDisabledMessage" hidden="true">
+				<Size>
+					<AbsDimension x="0" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-72"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-30" y="-72"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" text="VOICECHAT_DISABLED" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(VOICECHAT_DISABLED_TEXT, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>			
+			<Frame name="$parentTalking" inherits="OptionsPanelsFrameBoxTemplate">
+				<Size x="186" y="150"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="16" y="-116"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(VOICE_TALKING);
+					</OnLoad>				
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentEnableMicrophone" inherits="OptionsPanelsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTalking">
+						<Offset x="10" y="-5"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "EnableMicrophone";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentInputDeviceDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnableMicrophone" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());						
+						AudioOptionsVoicePanelInputDeviceDropDown_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						if ( UIDropDownMenu_IsEnabled(self) ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(OPTION_TOOLTIP_VOICE_INPUT, nil, nil, nil, nil, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>			
+			<Slider name="$parentMicrophoneVolume" inherits="OptionsPanelsSliderTemplate">
+				<Size x="132" y="17"/>
+					
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInputDeviceDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						local label = getglobal(name.."Low")
+						label:Hide();
+						label = getglobal(name.."High")
+						label:Hide();
+						self.label = getglobal(name.."Label");
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "OutboundChatVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnShow>
+						local value = GetCVar("OutboundChatVolume");
+						local min, max = self:GetMinMaxValues();
+						value, max = (value - min), (max - min);
+						self.label:SetText(tostring(ceil((value/max) * 100)).."%");
+					</OnShow>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+						local min, max = self:GetMinMaxValues();
+						value, max = (value - min), (max - min);
+						self.label:SetText(tostring(ceil((value/max) * 100)).."%");
+					</OnValueChanged>				
+				</Scripts>
+			</Slider>
+			<Frame name="$parentMicTest">
+				<Size>
+					<AbsDimension x="180" y="55"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMicrophoneVolume" relativePoint="BOTTOMLEFT">
+						<Offset x="-12" y="6"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="VOICE_MICROPHONE_TEST">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset x="0" y="-10"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="RecordLoopbackSoundButton" inherits="OptionsButtonTemplate">
+						<Size x="26" y="21"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="12" y="-24"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentTexture" file="Interface\OptionsFrame\VoiceChat-Record">
+									<Size>
+										<AbsDimension x="10" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								RecordLoopbackSoundButtonTexture:SetVertexColor(1, 0, 0);													
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(VOICE_MIC_TEST_RECORD, nil, nil, nil, nil, 1);
+								getglobal(self:GetName().."Texture"):SetVertexColor(1, 1, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								getglobal(self:GetName().."Texture"):SetVertexColor(0.5, 0.5, 0.5);								
+								PlaySound("gsTitleOptionExit");
+								VoiceChat_RecordLoopbackSound(5);
+								self.clicked = 1;
+							</OnClick>
+							<OnUpdate>
+								RecordLoopbackSoundButton_OnUpdate(self, elapsed);
+							</OnUpdate>
+							<OnLeave>
+								getglobal(self:GetName().."Texture"):SetVertexColor(1, 0, 0);
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="PlayLoopbackSoundButton" inherits="OptionsButtonTemplate">
+						<Size x="26" y="21"/>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="RecordLoopbackSoundButton">
+								<Offset x="3" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentTexture" file="Interface\OptionsFrame\VoiceChat-Play">
+									<Size>
+										<AbsDimension x="10" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								getglobal(self:GetName().."Texture"):SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(VOICE_MIC_TEST_PLAY, nil, nil, nil, nil, 1);
+								getglobal(self:GetName().."Texture"):SetVertexColor(1, 1, 1);
+							</OnEnter>
+							<OnClick>
+								PlaySound("gsTitleOptionExit");
+								VoiceChat_StopRecordingLoopbackSound();
+								VoiceChat_PlayLoopbackSound();
+							</OnClick>
+							<OnLeave>
+								getglobal(self:GetName().."Texture"):SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Frame inherits="OptionFrameBoxTemplate">
+						<Size x="100" y="25"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="PlayLoopbackSoundButton" relativePoint="RIGHT">
+								<Offset x="3" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+								self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
+							</OnLoad>
+						</Scripts>
+						<Frames>
+						  <!-- Loopback VU Meter -->
+							<StatusBar name="LoopbackVUMeter" drawLayer="BACKGROUND" inherits="TextStatusBar" enableMouse="false">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset x="6" y="-6"/>
+									</Anchor>
+									<Anchor point="BOTTOMRIGHT">
+										<Offset x="0" y="6"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										LoopbackVUMeter_OnLoad(self);
+									</OnLoad>
+									<OnUpdate>
+										LoopbackVUMeter_OnUpdate(self, elapsed);
+									</OnUpdate>
+								</Scripts>
+								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+							</StatusBar>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>			
+			<Frame name="$parentBinding" inherits="OptionsPanelsFrameBoxTemplate">
+				<Size x="186" y="138"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTalking" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-8"/>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentChatModeDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBinding">
+						<Offset>
+							<AbsDimension x="-5" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="VOICE_CHAT_MODE">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());						
+						AudioOptionsVoicePanelChatModeDropDown_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						if ( UIDropDownMenu_IsEnabled(self) and self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<!-- Key Binding Selection -->
+			<Frame name="$parentChatMode1">
+				<Size>
+					<AbsDimension x="160" y="50"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentChatModeDropDown" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="KEY_BINDING">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>			
+					<Button name="$parentKeyBindingButton" inherits="OptionsButtonTemplate">
+						<Size x="155" y="21"/>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentLabel" relativePoint="BOTTOM">
+								<Offset x="0" y="-3"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString name="$parentHiddenText" inherits="GameFontNormal" hidden="true">
+									<Size>
+										<AbsDimension x="0" y="13"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								AudioOptionsVoicePanelKeyBindingButton_OnShow(self);
+								AudioOptionsVoicePanelKeyBindingButton_SetTooltip(self);
+							</OnShow>
+							<OnClick>
+								AudioOptionsVoicePanelKeyBindingButton_OnClick(self, button);
+							</OnClick>
+							<OnLoad>
+								self:RegisterForClicks("AnyUp");
+								self:SetScript("OnKeyUp", nil);
+								self:SetScript("OnKeyDown", nil);
+							</OnLoad>
+							<OnEnter>
+								AudioOptionsVoicePanelKeyBindingButton_OnEnter(self);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnKeyUp>
+								AudioOptionsVoicePanelKeyBindingButton_OnKeyUp(self, button)
+							</OnKeyUp>
+							<OnKeyDown>
+								AudioOptionsVoicePanelKeyBindingButton_OnKeyDown(self, button)
+							</OnKeyDown>
+						</Scripts>
+					</Button>
+					<CheckButton name="AudioOptionsVoicePanelPushToTalkSound" inherits="OptionsPanelsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="0" y="-46"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "PushToTalkSound";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<Frame name="AudioOptionsVoicePanelBindingOutput">
+						<Size x="160" y="50"/>
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset x="-1" y="-36"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="AudioOptionsVoicePanelBindingOutputText" inherits="GameFontHighlightSmall" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOP"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>					
+				</Frames>
+			</Frame>
+			<!-- Voice Activation Threshold -->
+			<Frame name="$parentChatMode2" hidden="true">
+				<Size>
+					<AbsDimension x="160" y="50"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentChatModeDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="20" y="-15"/>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Slider name="AudioOptionsVoicePanelVoiceActivateSlider" inherits="OptionsPanelsSliderTemplate">
+						<Size x="132" y="17"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="12" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_SLIDER;
+								self.cvar = "VoiceActivationSensitivity";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+							<OnValueChanged>
+								self.value = value;
+								SetCVar(self.cvar, value);
+							</OnValueChanged>		
+						</Scripts>
+					</Slider>
+				</Frames>
+			</Frame>
+			<Frame name="$parentListening" inherits="OptionsPanelsFrameBoxTemplate">
+				<Size x="186" y="296"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTalking" relativePoint="TOPRIGHT">
+						<Offset x="8" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(self:GetName().."Title"):SetText(VOICE_LISTENING);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentOutputDeviceDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentListening">
+						<Offset x="-5" y="-37"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="VOICE_CHAT_OUTPUT_DEVICE">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset x="0" y="12"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());						
+						AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						if ( UIDropDownMenu_IsEnabled(self) ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(OPTION_TOOLTIP_VOICE_OUTPUT, nil, nil, nil, nil, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Slider name="$parentSpeakerVolume" inherits="OptionsPanelsSliderTemplate">
+				<Size x="132" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentOutputDeviceDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="18" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						local label = getglobal(name.."Low")
+						label:Hide();
+						label = getglobal(name.."High")
+						label:Hide();
+						self.label = getglobal(name.."Label");
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "InboundChatVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnShow>
+						local value = GetCVar("InboundChatVolume");
+						local min, max = self:GetMinMaxValues();
+						value, max = (value - min), (max - min);
+						self.label:SetText(tostring(ceil((value/max) * 100)).."%");
+					</OnShow>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+						local min, max = self:GetMinMaxValues();
+						value, max = (value - min), (max - min);
+						self.label:SetText(tostring(ceil((value/max) * 100)).."%");
+					</OnValueChanged>						
+				</Scripts>
+			</Slider>		
+			<Frame name="$parentAudio">
+				<Size>
+					<AbsDimension x="180" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentListening" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-113"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="VOICE_GAME_DUCKING" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="160" y="50"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentDescription" inherits="GameFontHighlightSmall" text="VOICE_CHAT_AUDIO_DUCKING" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="160" y="50"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-18"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentOff" inherits="GameFontHighlightSmall" text="OFF">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="70" y="-80"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNormal" inherits="GameFontHighlightSmall" text="VOICE_CHAT_NORMAL">
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="-80"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Slider name="$parentSoundFade" inherits="OptionsPanelsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="SOUND_VOLUME">
+							<Size x="60" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAudio">
+						<Offset>
+							<AbsDimension x="70" y="-96"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						local label = getglobal(name.."Low")
+						label:Hide();
+						label = getglobal(name.."High")
+						label:Hide();
+						self.label = getglobal(name.."Label");
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "ChatSoundVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());					
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentMusicFade" inherits="OptionsPanelsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundFade" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="MUSIC_VOLUME">
+							<Size x="60" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>				
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						local label = getglobal(name.."Low")
+						label:Hide();
+						label = getglobal(name.."High")
+						label:Hide();
+						self.label = getglobal(name.."Label");
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "ChatMusicVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());					
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentAmbienceFade" inherits="OptionsPanelsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMusicFade"  relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="AMBIENCE_VOLUME">
+							<Size x="60" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>				
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						local label = getglobal(name.."Low")
+						label:Hide();
+						label = getglobal(name.."High")
+						label:Hide();
+						self.label = getglobal(name.."Label");
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "ChatAmbienceVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());					
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+		</Frames>		
+		<Scripts>
+			<OnLoad>
+				self.name = VOICE_LABEL;
+				self.options = VoicePanelOptions;
+				AudioOptionsVoicePanel_OnLoad(self);
+				self.okay = AudioOptionsPanel_Okay
+				self.cancel = AudioOptionsPanel_Cancel
+				self.default = AudioOptionsPanel_Default
+			</OnLoad>
+			<OnShow>
+				BlizzardOptionsPanel_OnShow(self);
+			</OnShow>
+		</Scripts>
+
+	</Frame>
+	</Ui>

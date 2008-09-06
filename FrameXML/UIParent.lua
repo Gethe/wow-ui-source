@@ -17,8 +17,6 @@ BATTLEFIELD_TAB_OFFSET_Y = 0;
 -- Per panel settings
 UIPanelWindows = {};
 UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["OptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["AudioOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["InterfaceOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1 };
 UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
@@ -918,11 +916,11 @@ function UIParent_OnEvent(self, event, ...)
 	
 	-- Events for achievement handling
 	if ( event == "ACHIEVEMENT_EARNED" ) then
-		if ( not AchievementFrame ) then
-			AchievementFrame_LoadUI();
-			AchievementAlertFrame_ShowAlert(...);
-		end
-		self:UnregisterEvent(event);
+		-- if ( not AchievementFrame ) then
+			-- AchievementFrame_LoadUI();
+			-- AchievementAlertFrame_ShowAlert(...);
+		-- end
+		-- self:UnregisterEvent(event);
 	end
 	
 	-- Events for Glyphs
@@ -1171,6 +1169,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	frameArea = GetUIPanelWindowInfo(frame, "area");
 
 	if ( not CanOpenPanels() and frameArea ~= "center" and frameArea ~= "full" ) then
+		self:ShowUIPanelFailed(frame);
 		return;
 	end
 	framePushable = GetUIPanelWindowInfo(frame, "pushable") or 0;
@@ -1185,6 +1184,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 		if ( force ) then
 			self:SetUIPanel("fullscreen", nil, 1);
 		else
+			self:ShowUIPanelFailed(frame);
 			return;
 		end
 	end
@@ -1198,6 +1198,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 			if ( force ) then
 				self:SetUIPanel("center", nil, 1);
 			else
+				self:ShowUIPanelFailed(frame);
 				return;
 			end
 		end
@@ -1342,6 +1343,13 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 		self:SetUIPanel("center", frame);
 	else
 		self:SetUIPanel("left", frame);
+	end
+end
+
+function FramePositionDelegate:ShowUIPanelFailed(frame)
+	local showFailedFunc = _G[GetUIPanelWindowInfo(frame, "showFailedFunc")];
+	if ( showFailedFunc ) then
+		showFailedFunc(frame);
 	end
 end
 
@@ -1710,13 +1718,15 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( AchievementWatchFrame:GetWidth() > QuestWatchFrame:GetWidth() or not QuestWatchFrame:IsShown() ) then
 			AchievementWatchFrame:ClearAllPoints();
 			QuestWatchFrame:ClearAllPoints();
-			AchievementWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+			AchievementWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY - 13); -- This -13 is here because the QuestWatchFrame has a built in 13 pixel offset that we have to fake.
+ 			AchievementWatchFrame:SetWidth(AchievementWatchFrame.desiredWidth);
 			QuestWatchFrame:SetPoint("TOPLEFT", "AchievementWatchFrame", "BOTTOMLEFT", 0, 0);
 		else
 			AchievementWatchFrame:ClearAllPoints();
 			QuestWatchFrame:ClearAllPoints();
 			QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY - AchievementWatchFrame:GetHeight());
 			AchievementWatchFrame:SetPoint("BOTTOMLEFT", "QuestWatchFrame", "TOPLEFT", 0, 0);
+			AchievementWatchFrame:SetWidth(QuestWatchFrame:GetWidth());
 		end
 	else
 		QuestWatchFrame:ClearAllPoints();
@@ -1966,7 +1976,7 @@ function UpdateUIPanelPositions(currentFrame)
 end
 
 function IsOptionFrameOpen()
-	if ( GameMenuFrame:IsShown() or OptionsFrame:IsShown() or AudioOptionsFrame:IsShown() or (KeyBindingFrame and KeyBindingFrame:IsShown()) ) then
+	if ( GameMenuFrame:IsShown() or InterfaceOptionsFrame:IsShown() or (KeyBindingFrame and KeyBindingFrame:IsShown()) ) then
 		return 1;
 	else
 		return nil;
@@ -2530,8 +2540,6 @@ end
 -- Function that handles the escape key functions
 function ToggleGameMenu()
 	if ( securecall("StaticPopup_EscapePressed") ) then
-	elseif ( OptionsFrame:IsShown() ) then
-		OptionsFrameCancel:Click();
 	elseif ( GameMenuFrame:IsShown() ) then
 		PlaySound("igMainMenuQuit");
 		HideUIPanel(GameMenuFrame);
