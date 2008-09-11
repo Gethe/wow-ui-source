@@ -11,6 +11,9 @@
 			<AbsDimension x="16" y="16"/>
 		</Size>
 		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
 			<OnClick>
 				VehicleSeatIndicatorButton_OnClick(self);
 			</OnClick>

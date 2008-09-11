@@ -297,8 +297,8 @@ local SkinsData = {
 			height = 47,
 			width = 50,
 			point = "BOTTOMRIGHT",
-			xOfs = -148,
-			yOfs = 18,
+			xOfs = -177,
+			yOfs = 15,
 			normalTexture = [[Interface\Vehicles\UI-Vehicles-Button-Exit-Up]],
 			normalTexCoord = { 0.140625, 0.859375, 0.140625, 0.859375 },
 			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-Exit-Down]],
@@ -942,9 +942,32 @@ function VehicleSeatIndicatorButton_OnEnter(self)
 	self:GetNormalTexture():SetPoint("BOTTOMRIGHT", -1, 1);
 	
 	self:Raise()
+	
+	local controlType, occupantName = UnitVehicleSeatInfo("player", self:GetID());
+	if ( controlType == "None" ) then
+		if ( occupantName ) then
+			SetCursor("Interface\\CURSOR\\UnablevehichleCursor");
+		else
+			SetCursor("Interface\\CURSOR\\vehichleCursor");
+		end
+	elseif ( controlType == "Root" ) then
+		if ( occupantName ) then
+			SetCursor("UNABLEINSPECT_CURSOR");
+		else
+			SetCursor("INTERACT_CURSOR");
+		end
+	elseif ( controlType == "Child" ) then
+		if ( occupantName ) then
+			SetCursor("Interface\\CURSOR\\UnableGunner");
+		else
+			SetCursor("Interface\\CURSOR\\Gunner");
+		end
+	end
 end
 
 function VehicleSeatIndicatorButton_OnLeave(self)
 	self:GetNormalTexture():SetPoint("TOPLEFT", 0, 0);
 	self:GetNormalTexture():SetPoint("BOTTOMRIGHT", 0, 0);
+	
+	SetCursor(nil);
 end

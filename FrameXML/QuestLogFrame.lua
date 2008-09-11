@@ -66,7 +66,7 @@ function QuestLog_OnEvent(self, event, ...)
 		QuestLog_Update();
 		if ( event == "PARTY_MEMBERS_CHANGED" ) then
 			-- Determine whether the selected quest is pushable or not
-			if ( GetQuestLogPushable() and ( GetRealNumPartyMembers() > 0 or GetRealNumRaidMembers() > 1 ) ) then
+			if ( GetQuestLogPushable() and ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 1 ) ) then
 				QuestFramePushQuestButton:Enable();
 			else
 				QuestFramePushQuestButton:Disable();
@@ -290,7 +290,7 @@ function QuestLog_Update()
 	-- Determine whether the selected quest is pushable or not
 	if ( numEntries == 0 ) then
 		QuestFramePushQuestButton:Disable();
-	elseif ( GetQuestLogPushable() and ( GetRealNumPartyMembers() > 0 or GetRealNumRaidMembers() > 1 ) ) then
+	elseif ( GetQuestLogPushable() and ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 1 ) ) then
 		QuestFramePushQuestButton:Enable();
 	else
 		QuestFramePushQuestButton:Disable();
@@ -672,7 +672,7 @@ function QuestWatch_Update()
 	end
 	
 	-- If no watch lines used then hide the frame. Don't return! We need to manage frame positions.
-	if ( watchTextIndex == 1 ) then
+	if ( watchTextIndex == 1 and (not (BarberShopFrame and BarberShopFrame:IsShown())) ) then
 		QuestWatchFrame:Hide();
 	else
 		QuestWatchFrame:Show();
@@ -943,7 +943,7 @@ function AchievementWatch_Update()
 	end
 	
 	-- If no watch lines used then hide the frame and return
-	if ( watchTextIndex == 1 ) then
+	if ( watchTextIndex == 1 and (not (BarberShopFrame and BarberShopFrame:IsShown()))) then
 		watchFrame:Hide();
 		return;
 	else		

@@ -515,7 +515,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-20" y="-12"/>
+							<AbsDimension x="-40" y="-12"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -979,6 +979,24 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<!-- Show aggro percentage numbers -->
+			<CheckButton name="$parentShowAggroPercentage" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InterfaceOptionsDisplayPanelAggroWarningDisplay" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "threatShowNumeric";
+						self.setFunc = InterfaceOptionsDisplayPanelShowAggroPercentage_SetFunc;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 	</Frame>
 	
@@ -2727,8 +2745,8 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.value = self:GetValue();
-						self:SetValue(self:GetValue());
+						self.value = value;
+						SetCVar(self.cvar, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>				
@@ -2744,18 +2762,12 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "cameraYawMoveSpeed";
-						self.oldSetValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:oldSetValue(value);
-							self.value = value;
-							SetCVar(self.cvar, value);
-							SetCVar("cameraPitchMoveSpeed", value/2);
-						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.value = self:GetValue();
-						self:SetValue(self:GetValue());
+						self.value = value
+						SetCVar(self.cvar, value);
+						SetCVar("cameraPitchMoveSpeed", value/2);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>

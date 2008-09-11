@@ -364,7 +364,7 @@ end
 
 function RefreshBuffs(button, showBuffs, unit, numbuffs)
 	local buttonName = button:GetName();
-	local name, rank, icon, debuffType, debuffStack, debuffColor, unitStatus, statusColor;
+	local name, rank, icon, debuffType, debuffStack, debuffColor, unitStatus, statusColor, duration, expirationTime, ph;
 	local debuffTotal = 0;
 	button.hasDispellable = nil;
 	if ( not numbuffs ) then
@@ -375,6 +375,7 @@ function RefreshBuffs(button, showBuffs, unit, numbuffs)
 
 		local debuffBorder = getglobal(buttonName.."Debuff"..i.."Border");
 		local debuffIcon = getglobal(buttonName.."Debuff"..i.."Icon");
+		local coolDown = getglobal(buttonName.."Debuff"..i.."Cooldown");
 
 		if ( unit == "party"..i ) then
 			unitStatus = getglobal(buttonName.."Status");
@@ -385,11 +386,11 @@ function RefreshBuffs(button, showBuffs, unit, numbuffs)
 			if ( GetCVarBool("showCastableBuffs") ) then
 				filter = "RAID";
 			end
-			name, rank, icon = UnitBuff(unit, i, filter);
+			name, rank, icon, ph, ph, duration, expirationTime = UnitBuff(unit, i, filter);
 			debuffBorder:Show();
 		-- Show all debuffs
 		elseif ( showBuffs == 0 ) then
-			name, rank, icon, debuffStack, debuffType = UnitDebuff(unit, i);
+			name, rank, icon, debuffStack, debuffType, duration, expirationTime = UnitDebuff(unit, i);
 			debuffBorder:Show();
 		-- Show dispellable debuffs (value nil or anything ~= 0 or 1)
 		else
@@ -397,7 +398,7 @@ function RefreshBuffs(button, showBuffs, unit, numbuffs)
 			if ( GetCVarBool("showDispelDebuffs") ) then
 				filter = "RAID";
 			end
-			name, rank, icon, debuffStack, debuffType = UnitDebuff(unit, i, filter);
+			name, rank, icon, debuffStack, debuffType, duration, expirationTime = UnitDebuff(unit, i, filter);
 			debuffBorder:Show();
 		end
 		
@@ -412,6 +413,9 @@ function RefreshBuffs(button, showBuffs, unit, numbuffs)
 				debuffColor = DebuffTypeColor["none"];
 			end
 			debuffBorder:SetVertexColor(debuffColor.r, debuffColor.g, debuffColor.b);
+			if ( coolDown ) then
+				CooldownFrame_SetTimer(coolDown, expirationTime - duration, duration, 1);
+			end
 			getglobal(buttonName.."Debuff"..i):Show();
 		else
 			getglobal(buttonName.."Debuff"..i):Hide();

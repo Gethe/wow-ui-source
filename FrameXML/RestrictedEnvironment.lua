@@ -75,11 +75,13 @@ end
 
 function getprinthandler() return LOCAL_PrintHandler; end
 
+local geterrorhandler = geterrorhandler;
+local forceinsecure = forceinsecure;
 local pcall = pcall;
 local securecall = securecall;
-local geterrorhandler = geterrorhandler;
 
 local function print_inner(...)
+    forceinsecure();
     local ok, err = pcall(LOCAL_PrintHandler, ...);
     if (not ok) then
         local func = geterrorhandler();
@@ -108,7 +110,7 @@ RESTRICTED_FUNCTIONS_SCOPE = {
     -- String methods
     format = format;
     gmatch = gmatch;
-    gsub = gsub;
+    gsub = gsub; -- Restricted table aware rtgsub is added later
     strbyte = strbyte;
     strchar = strchar;
     strconcat = strconcat;
@@ -119,7 +121,7 @@ RESTRICTED_FUNCTIONS_SCOPE = {
     strmatch = strmatch;
     strrep = strrep;
     strrev = strrev;
-    strsplit = strsplt;
+    strsplit = strsplit;
     strsub = strsub;
     strtrim = strtrim;
     strupper = strupper;

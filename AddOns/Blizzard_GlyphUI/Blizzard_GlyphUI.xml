@@ -40,7 +40,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentGlyph" file="Interface\Spellbook\UI-Glyph-Rune1">
-					<Size x="64" y="64"/>
+					<Size x="53" y="53"/>
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset x="0" y="0"/>

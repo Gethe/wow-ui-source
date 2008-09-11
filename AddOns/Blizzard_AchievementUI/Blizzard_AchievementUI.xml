@@ -1063,7 +1063,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentTitleBackground" relativePoint="TOP">
 							<Offset>
-								<AbsDimension x="-8" y="0"/>
+								<AbsDimension x="0" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1085,9 +1085,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</FontString>
 				<FontString name="$parentDescription" inherits="AchievementDescriptionEnabledFont">
 					<Anchors>
-						<Anchor point="TOPLEFT">
+						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="48" y="-30"/>
+								<AbsDimension x="0" y="-30"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1713,6 +1713,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 				</FontString>
 				<FontString name="$parentComparisonValue" inherits="GameFontHighlightRight">
+					<Size x="115" y="14"/>
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset x="-15" y="0"/>
@@ -1721,6 +1722,28 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame name="$parentMouseover" enableMouse="true" hidden="true"> 
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentComparisonValue"/>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-4" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						local tooltip = self.tooltip;
+						if ( tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(tooltip, nil, nil, nil, nil, 1);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				AchievementFrameComparisonStat_OnLoad(self);

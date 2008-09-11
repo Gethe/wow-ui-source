@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
     <Button name="CharacterFrameTabButtonTemplate" virtual="true">
         <Size>
-            <AbsDimension x="115" y="32"/>
+            <AbsDimension x="10" y="32"/>
         </Size>
         <Layers>
         	<Layer level="BACKGROUND">

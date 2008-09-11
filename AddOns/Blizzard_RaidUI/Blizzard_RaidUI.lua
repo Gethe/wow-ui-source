@@ -959,7 +959,7 @@ function RaidPullout_Update(pullOutFrame)
 			securecall("UnitFrameThreatIndicator_Initialize", unit, pulloutButton);
 			securecall("UnitFrameHealthBar_Update", pulloutHealthBar, unit);
 			securecall("UnitFrameManaBar_Update", pulloutManaBar, unit);
-			securecall("UnitFrame_UpdateThreatIndicator", pulloutThreatIndicator, unit);
+			securecall("UnitFrame_UpdateThreatIndicator", pulloutThreatIndicator, nil, unit);
 
 			local minVal, maxVal;
 			if ( online ) then	

@@ -1,5 +1,5 @@
 CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame", "TokenFrame" };
-
+local NUM_CHARACTERFRAME_TABS = 5;
 function ToggleCharacter (tab)
 	local subFrame = getglobal(tab);
 	if ( subFrame ) then
@@ -108,22 +108,39 @@ function CharacterFrame_OnHide (self)
 	HideWatchedReputationBarText();
 end
 
+local function CompareFrameSize(frame1, frame2)
+	return frame1:GetWidth() > frame2:GetWidth();
+end
+local CharTabtable = {};
 function CharacterFrame_TabBoundsCheck(self)
 	if ( string.sub(self:GetName(), 1, 17) ~= "CharacterFrameTab" ) then
 		return;
 	end
 	
-	local diff = CharacterFrame:GetRight() - 25 - CharacterFrameTab5:GetRight();
-	if ( diff < 0 and CharacterFrameTab5:IsShown() and CharacterFrameTab2:IsShown()) then
+	local totalSize = 60;
+	for i=1, NUM_CHARACTERFRAME_TABS do
+		_G["CharacterFrameTab"..i.."Text"]:SetWidth(0);
+		PanelTemplates_TabResize(_G["CharacterFrameTab"..i], 0);
+		totalSize = totalSize + _G["CharacterFrameTab"..i]:GetWidth();
+	end
+	
+	local diff = totalSize - 465
+	
+	if ( diff > 0 and CharacterFrameTab5:IsShown() and CharacterFrameTab2:IsShown()) then
 		--Find the biggest tab
-		local BiggestTab = CharacterFrameTab1;
-		for i=2, 5 do
-			if (_G["CharacterFrameTab"..i]:GetWidth() > BiggestTab:GetWidth()) then
-				BiggestTab = _G["CharacterFrameTab"..i];
-			end
+		for i=1, NUM_CHARACTERFRAME_TABS do
+			CharTabtable[i]=_G["CharacterFrameTab"..i];
 		end
+		table.sort(CharTabtable, CompareFrameSize);
 		
-		_G[BiggestTab:GetName().."Text"]:SetWidth(_G[BiggestTab:GetName().."Text"]:GetWidth() + diff);
-		PanelTemplates_TabResize(BiggestTab, 0);
+		local i=1;
+		while ( diff > 0 and i <= NUM_CHARACTERFRAME_TABS) do
+			local tabText = _G[CharTabtable[i]:GetName().."Text"]
+			local change = min(10, diff);
+			tabText:SetWidth(tabText:GetWidth() - change);
+			diff = diff - change;
+			PanelTemplates_TabResize(CharTabtable[i], 0);
+			i = i+1;
+		end
 	end
 end

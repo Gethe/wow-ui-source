@@ -16,6 +16,15 @@ function BarberShop_OnShow(self)
 	self:SetPoint("RIGHT", min(-50, -CONTAINER_OFFSET_X), -50);
 
 	PlaySound("BarberShop_Sit");
+	
+	QuestWatchFrame:Hide();
+	AchievementWatchFrame:Hide();
+end
+
+function BarberShop_OnHide(self)
+	BarberShopBannerFrame:Hide();
+	QuestWatch_Update();
+	AchievementWatch_Update();
 end
 
 function BarberShop_OnEvent(self, event, ...)

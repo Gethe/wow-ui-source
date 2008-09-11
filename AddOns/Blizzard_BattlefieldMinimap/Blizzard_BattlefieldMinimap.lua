@@ -114,7 +114,7 @@ function BattlefieldMinimap_Update()
 
 	-- Setup the POI's
 	local numPOIs = GetNumMapLandmarks();
-	local name, description, textureIndex, x, y;
+	local name, description, textureIndex, x, y, showInBattleMap;
 	local battlefieldPOI;
 	local x1, x2, y1, y2;
 	if ( NUM_BATTLEFIELDMAP_POIS < numPOIs ) then
@@ -126,15 +126,19 @@ function BattlefieldMinimap_Update()
 	for i=1, NUM_BATTLEFIELDMAP_POIS, 1 do
 		battlefieldPOI = getglobal("BattlefieldMinimapPOI"..i);
 		if ( i <= numPOIs ) then
-			name, description, textureIndex, x, y = GetMapLandmarkInfo(i);
-			x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
-			getglobal(battlefieldPOI:GetName().."Texture"):SetTexCoord(x1, x2, y1, y2);
-			x = x * BattlefieldMinimap:GetWidth();
-			y = -y * BattlefieldMinimap:GetHeight();
-			battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y );
-			battlefieldPOI:SetWidth(iconSize);
-			battlefieldPOI:SetHeight(iconSize);
-			battlefieldPOI:Show();
+			name, description, textureIndex, x, y, showInBattleMap = GetMapLandmarkInfo(i);
+			if ( showInBattleMap ) then
+				x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
+				getglobal(battlefieldPOI:GetName().."Texture"):SetTexCoord(x1, x2, y1, y2);
+				x = x * BattlefieldMinimap:GetWidth();
+				y = -y * BattlefieldMinimap:GetHeight();
+				battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y );
+				battlefieldPOI:SetWidth(iconSize);
+				battlefieldPOI:SetHeight(iconSize);
+				battlefieldPOI:Show();
+			else
+				battlefieldPOI:Hide();
+			end
 		else
 			battlefieldPOI:Hide();
 		end
@@ -255,20 +259,24 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			mapPiece:SetHeight(sizeUnit);
 		end
 		local numPOIs = GetNumMapLandmarks();
-		local name, description, textureIndex, x, y;
+		local name, description, textureIndex, x, y, showInBattleMap;
 		local battlefieldPOI;
 		local x1, x2, y1, y2;
 		local battlefieldPOI;
 		for i=1, NUM_BATTLEFIELDMAP_POIS, 1 do
 			battlefieldPOI = getglobal("BattlefieldMinimapPOI"..i);
 			if ( i <= numPOIs ) then
-				name, description, textureIndex, x, y = GetMapLandmarkInfo(i);
-				x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
-				getglobal(battlefieldPOI:GetName().."Texture"):SetTexCoord(x1, x2, y1, y2);
-				x = x * BattlefieldMinimap:GetWidth();
-				y = -y * BattlefieldMinimap:GetHeight();
-				battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y );
-				battlefieldPOI:Show();
+				name, description, textureIndex, x, y, showInBattleMap = GetMapLandmarkInfo(i);
+				if ( showInBattleMap ) then
+					x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
+					getglobal(battlefieldPOI:GetName().."Texture"):SetTexCoord(x1, x2, y1, y2);
+					x = x * BattlefieldMinimap:GetWidth();
+					y = -y * BattlefieldMinimap:GetHeight();
+					battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y );
+					battlefieldPOI:Show();
+				else
+					battlefieldPOI:Hide();
+				end
 			else
 				battlefieldPOI:Hide();
 			end

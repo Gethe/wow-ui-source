@@ -413,8 +413,6 @@ function FocusFrame_OnDragStart(self, button)
 		local cursorX, cursorY = GetCursorPosition();
 		self:SetFrameStrata("DIALOG");
 		self:StartMoving();
-		self:ClearAllPoints();
-		self:SetPoint("TOP", nil, "BOTTOMLEFT", cursorX*GetScreenWidthScale(), cursorY*GetScreenHeightScale());
 		FOCUS_FRAME_MOVING = true;
 	end
 end
@@ -423,14 +421,7 @@ function FocusFrame_OnDragStop(self)
 	if ( not FOCUS_FRAME_LOCKED and FOCUS_FRAME_MOVING ) then
 		self:StopMovingOrSizing();
 		self:SetFrameStrata("BACKGROUND");
-		self:ClearAllPoints();
-		
-		local x, _ = self:GetCenter();
-		local y = self:GetTop();
-		self:SetPoint("TOP", nil, "BOTTOMLEFT", x, y);
 		ValidateFramePosition(self, 25);
-		-- Save the end positions
-		-- SAVE;
 		FOCUS_FRAME_MOVING = false;
 	end
 end

@@ -31,13 +31,14 @@ PowerBarColor[6] = PowerBarColor["RUNIC_POWER"];
 	I needed a seperate OnUpdate and OnEvent handlers. And needed to parse the event.
 ]]--
 
-function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit)
+function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit, threatNumericIndicator)
 	self.unit = unit;
 	self.name = name;
 	self.portrait = portrait;
 	self.healthbar = healthbar;
 	self.manabar = manabar;
 	self.threatIndicator = threatIndicator;
+	self.threatNumericIndicator = threatNumericIndicator;
 	if (self.healthbar) then
 		self.healthbar.capNumericDisplay = true;
 	end
@@ -88,7 +89,7 @@ function UnitFrame_Update (self)
 	UnitFramePortrait_Update(self);
 	UnitFrameHealthBar_Update(self.healthbar, self.unit);
 	UnitFrameManaBar_Update(self.manabar, self.unit);
-	UnitFrame_UpdateThreatIndicator(self.threatIndicator);
+	UnitFrame_UpdateThreatIndicator(self.threatIndicator, self.threatNumericIndicator);
 end
 
 function UnitFramePortrait_Update (self)
@@ -372,11 +373,11 @@ function UnitFrameThreatIndicator_OnEvent(self, event, ...)
 		self.OnEvent(self, event, ...);
 	end
 	if ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
-		UnitFrame_UpdateThreatIndicator(self.threatIndicator, ...);
+		UnitFrame_UpdateThreatIndicator(self.threatIndicator, self.threatNumericIndicator,...);
 	end
 end
 
-function UnitFrame_UpdateThreatIndicator(indicator, unit)
+function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 	if ( not indicator ) then
 		return;
 	end
@@ -392,8 +393,22 @@ function UnitFrame_UpdateThreatIndicator(indicator, unit)
 		if ( status > 0 and IsThreatWarningEnabled() ) then
 			indicator:SetVertexColor(GetThreatStatusColor(status));
 			indicator:Show();
+
+			if ( numericIndicator ) then
+				if ( ShowNumericThreat() ) then
+					local isTanking, status, percentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
+					numericIndicator.text:SetText(format("%d", percentage).."%");
+					numericIndicator.bg:SetVertexColor(GetThreatStatusColor(status));
+					numericIndicator:Show();
+				else
+					numericIndicator:Hide();
+				end
+			end
 		else
 			indicator:Hide();
+			if ( numericIndicator ) then
+				numericIndicator:Hide();
+			end
 		end
 	end
 end
@@ -408,5 +423,13 @@ function GetUnitName(unit, showServerName)
 		end
 	else
 		return name;
+	end
+end
+
+function ShowNumericThreat()
+	if ( GetCVar("threatShowNumeric") == "1" ) then
+		return true;
+	else
+		return false;
 	end
 end

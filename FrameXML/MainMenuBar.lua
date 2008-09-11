@@ -120,8 +120,10 @@ function MainMenuBarVehicleLeaveButton_Update()
 			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessBarFrame, "LEFT", 10, 0);
 		end
 		MainMenuBarVehicleLeaveButton:Show();
+		ShowPetActionBar(true);
 	else
 		MainMenuBarVehicleLeaveButton:Hide();
+		ShowPetActionBar(true);
 	end
 	
 	UIParent_ManageFramePositions();
@@ -150,8 +152,20 @@ function MainMenuBar_OnEvent(self, event, ...)
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainMenuBarPageNumber:SetText(GetActionBarPage());
 	elseif ( event == "KNOWN_CURRENCY_TYPES_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" ) then
-		if ( GetCurrencyListSize() > 0 ) then
-			if ( not GetCVarBool("showTokenFrame") ) then
+		local showTokenFrame, showTokenFrameHonor = GetCVarBool("showTokenFrame"), GetCVarBool("showTokenFrameHonor");
+		if ( not showTokenFrame or not showTokenFrameHonor ) then
+			local name, isHeader, isExpanded, isUnused, isWatched, count, icon, isTypePVP;
+			local hasPVPTokens, hasNormalTokens;
+			for index=1, GetCurrencyListSize() do
+				name, isHeader, isExpanded, isUnused, isWatched, count, isTypePVP, icon = GetCurrencyListInfo(index);
+				if ( (not isHeader) and (isTypePVP) and (count>0) ) then
+					hasPVPTokens = true;
+				elseif ( (not isHeader) and (not isTypePVP) and (count>0) ) then
+					hasNormalTokens = true;
+				end
+			end
+			if ( (not showTokenFrame) and (hasNormalTokens) ) then
+				SetCVar("showTokenFrame", 1);
 				if ( not CharacterFrame:IsVisible() ) then
 					SetButtonPulse(CharacterMicroButton, 60, 1);
 				end
@@ -159,12 +173,26 @@ function MainMenuBar_OnEvent(self, event, ...)
 					SetButtonPulse(CharacterFrameTab5, 60, 1);
 				end
 			end
-			SetCVar("showTokenFrame", 1);
+			if ( (not showTokenFrameHonor) and (hasPVPTokens) ) then
+				SetCVar("showTokenFrameHonor", 1);
+				if ( not CharacterFrame:IsVisible() ) then
+					SetButtonPulse(CharacterMicroButton, 60, 1);
+				end
+				if ( not TokenFrame:IsVisible() ) then
+					SetButtonPulse(CharacterFrameTab5, 60, 1);
+				end
+			end
+			if ( hasNormalTokens or hasPVPTokens or showTokenFrame or showTokenFrameHonor ) then
+				TokenFrame_LoadUI();
+				TokenFrame_Update();
+				BackpackTokenFrame_Update();
+			else
+				CharacterFrameTab5:Hide();
+			end
+		else
 			TokenFrame_LoadUI();
 			TokenFrame_Update();
 			BackpackTokenFrame_Update();
-		else
-			CharacterFrameTab5:Hide();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		MainMenuBar_UpdateKeyRing();

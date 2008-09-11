@@ -122,8 +122,8 @@ function ShapeshiftBar_OnLoad (self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_USABLE");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN");
+	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");	-- Wha?? Still Wha...
-	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 end
 
@@ -137,12 +137,6 @@ function ShapeshiftBar_OnEvent (self, event, ...)
 			HideBonusActionBar();
 		end
 	else
-		if ( event == "UNIT_AURA" ) then
-			local unit = ...;
-			if ( unit ~= "player" ) then
-				return;
-			end
-		end
 		ShapeshiftBar_UpdateState();
 	end
 end
@@ -253,10 +247,14 @@ function PossessBar_Update (override)
 		if ( IsPossessBarVisible() ) then
 			PossessBarFrame:Show();
 			ShapeshiftBarFrame:Hide();
+			MainMenuBarVehicleLeaveButton_Update()
+			ShowPetActionBar(true);
 		else
 			PossessBarFrame:Hide();
 			if(GetNumShapeshiftForms() > 0) then
 				ShapeshiftBarFrame:Show();
+				MainMenuBarVehicleLeaveButton_Update()
+				ShowPetActionBar(true);
 			end
 		end
 		PossessBar_UpdateState();

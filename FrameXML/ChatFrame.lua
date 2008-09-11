@@ -1862,40 +1862,34 @@ SlashCmdList["STOPWATCH"] = function(msg)
 		if ( text ) then
 			text = strlower(text);
 
-			local i, compare;
-			-- try to match play
-			i = 1;
-			repeat
-				compare = getglobal("SLASH_STOPWATCH_PARAM_PLAY"..i);
-				if ( compare and compare == text ) then
-					Stopwatch_Play();
-					StopwatchFrame:Show();
-					return;
-				end
-				i = i + 1;
-			until ( not compare );
-			-- try to match pause
-			i = 1;
-			repeat
-				compare = getglobal("SLASH_STOPWATCH_PARAM_PAUSE"..i);
-				if ( compare and compare == text ) then
-					Stopwatch_Pause();
-					StopwatchFrame:Show();
-					return;
-				end
-				i = i + 1;
-			until ( not compare );
-			-- try to match stop
-			i = 1;
-			repeat
-				compare = getglobal("SLASH_STOPWATCH_PARAM_STOP"..i);
-				if ( compare and compare == text ) then
-					Stopwatch_Clear();
-					StopwatchFrame:Show();
-					return;
-				end
-				i = i + 1;
-			until ( not compare );
+			-- in any of the following cases, the stopwatch will be shown
+			StopwatchFrame:Show();
+
+			-- try to match a command
+			local function MatchCommand(param, text)
+				local i, compare;
+				i = 1;
+				repeat
+					compare = getglobal(param..i);
+					if ( compare and compare == text ) then
+						return true;
+					end
+					i = i + 1;
+				until ( not compare );
+				return false;
+			end
+			if ( MatchCommand("SLASH_STOPWATCH_PARAM_PLAY", text) ) then
+				Stopwatch_Play();
+				return;
+			end
+			if ( MatchCommand("SLASH_STOPWATCH_PARAM_PAUSE", text) ) then
+				Stopwatch_Pause();
+				return;
+			end
+			if ( MatchCommand("SLASH_STOPWATCH_PARAM_STOP", text) ) then
+				Stopwatch_Clear();
+				return;
+			end
 			-- try to match a countdown
 			-- kinda ghetto, but hey, it's simple and it works =)
 			local hour, minute, second = strmatch(msg, "(%d+):(%d+):(%d+)");
@@ -1906,7 +1900,6 @@ SlashCmdList["STOPWATCH"] = function(msg)
 				end
 			end
 			Stopwatch_StartCountdown(tonumber(hour), tonumber(minute), tonumber(second));
-			StopwatchFrame:Show();
 		else
 			Stopwatch_Toggle();
 		end

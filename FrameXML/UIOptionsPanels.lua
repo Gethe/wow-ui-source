@@ -397,6 +397,7 @@ DisplayPanelOptions = {
 	showLootSpam = { text = "SHOW_LOOT_SPAM" },
 	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS" },
 	showClock = { text = "SHOW_CLOCK" },
+	threatShowNumeric = { text = "SHOW_NUMERIC_THREAT" },
 }
 
 function InterfaceOptionsDisplayPanelShowClock_SetFunc(value)
@@ -410,6 +411,11 @@ function InterfaceOptionsDisplayPanelShowClock_SetFunc(value)
 			TimeManagerClockButton_Hide();
 		end
 	end
+end
+
+function InterfaceOptionsDisplayPanelShowAggroPercentage_SetFunc()
+	UnitFrame_Update(TargetFrame);
+	UnitFrame_Update(FocusFrame);
 end
 
 function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad (self)

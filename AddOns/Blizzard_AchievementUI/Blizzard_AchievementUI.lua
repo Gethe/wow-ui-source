@@ -1,6 +1,6 @@
 local desaturateSupported = IsDesaturateSupported();
 
-UIPanelWindows["AchievementFrame"] = { area = "doublewide", pushable = 0, width = 700, xoffset = 80, whileDead = 1 };
+UIPanelWindows["AchievementFrame"] = { area = "doublewide", pushable = 0, width = 840, xoffset = 80, whileDead = 1 };
 
 ACHIEVEMENTUI_CATEGORIES = {};
 
@@ -15,6 +15,9 @@ ACHIEVEMENTUI_REDBORDER_B = 0.05;
 ACHIEVEMENTUI_REDBORDER_A = 1;
 
 ACHIEVEMENTUI_CATEGORIESWIDTH = 175;
+
+ACHIEVEMENTUI_PROGRESSIVEHEIGHT = 50;
+ACHIEVEMENTUI_PROGRESSIVEWIDTH = 42;
 
 ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS = 5;
 
@@ -560,8 +563,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
 		AchievementFrameCategories_Update();
 		AchievementFrameCategories_UpdateTooltip();
-		AchievementFrameAchievementsObjectives.id = nil;
-		AchievementFrameAchievements_Update();
+		AchievementFrameAchievements_ForceUpdate();
 		AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
 
 	elseif ( event == "CRITERIA_UPDATE" ) then
@@ -627,8 +629,23 @@ function AchievementFrameAchievements_Update ()
 	end
 end
 
-function AchievementHasProgressBar (achievementID)
-	return false;
+function AchievementFrameAchievements_ForceUpdate ()
+	if ( AchievementFrameAchievements.selection ) then
+		local nextID = GetNextAchievement(AchievementFrameAchievements.selection);
+		local id, _, _, completed = GetAchievementInfo(AchievementFrameAchievements.selection);
+		if ( nextID and completed ) then
+			AchievementFrameAchievements.selection = nil;
+		end
+	end
+	AchievementFrameAchievementsObjectives:Hide();
+	AchievementFrameAchievementsObjectives.id = nil;
+
+	local buttons = AchievementFrameAchievementsContainer.buttons;
+	for i, button in next, buttons do
+		button.id = nil;
+	end
+	
+	AchievementFrameAchievements_Update();
 end
 
 function AchievementFrameAchievements_ClearSelection ()
@@ -1150,8 +1167,8 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 		i = index;
 	end
 	
-	objectivesFrame:SetHeight(math.ceil(i/6) * 42);
-	objectivesFrame:SetWidth(min(i, 6) * 42);
+	objectivesFrame:SetHeight(math.ceil(i/6) * ACHIEVEMENTUI_PROGRESSIVEHEIGHT);
+	objectivesFrame:SetWidth(min(i, 6) * ACHIEVEMENTUI_PROGRESSIVEWIDTH);
 	objectivesFrame.mode = ACHIEVEMENTMODE_PROGRESSIVE;
 end
 
@@ -1211,18 +1228,21 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				metaCriteria.border:SetVertexColor(1, 1, 1, 1);
 				metaCriteria.icon:SetVertexColor(1, 1, 1, 1);
 				metaCriteria.label:SetFontObject("AchievementCriteriaEnabledFont");
+				metaCriteria.label:SetShadowOffset(0, 0)
 				metaCriteria.label:SetTextColor(0, 0, 0, 1);
 			elseif ( completed ) then
 				metaCriteria.check:Show();
 				metaCriteria.border:SetVertexColor(1, 1, 1, 1);
 				metaCriteria.icon:SetVertexColor(1, 1, 1, 1);
 				metaCriteria.label:SetFontObject("AchievementCriteriaEnabledFont");
+				metaCriteria.label:SetShadowOffset(0, 0)
 				metaCriteria.label:SetTextColor(0, 1, 0, 1);
 			else
 				metaCriteria.check:Hide();
 				metaCriteria.border:SetVertexColor(.75, .75, .75, 1);
 				metaCriteria.icon:SetVertexColor(.55, .55, .55, 1);
 				metaCriteria.label:SetFontObject("AchievementCriteriaDisabledFont");
+				metaCriteria.label:SetShadowOffset(1, -1)
 				metaCriteria.label:SetTextColor(.6, .6, .6, 1);
 			end
 			
@@ -2205,6 +2225,7 @@ function AchievementFrameComparisonStat_OnLoad (self)
 	self.value:SetVertexColor(1, 0.97, 0.6);
 	self.friendValue = getglobal(name.."ComparisonValue");
 	self.friendValue:SetVertexColor(1, 0.97, 0.6);
+	self.mouseover = getglobal(name.. "Mouseover");
 end
 
 function AchievementFrameComparisonStats_SetStat (button, category, index, colorIndex, isSummary)
@@ -2222,13 +2243,15 @@ function AchievementFrameComparisonStats_SetStat (button, category, index, color
 		id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfoFromCriteria(category);
 	end
 	
+	button.id = id;
+	
 	if ( not colorIndex ) then
 		if ( not index ) then
 			message("Error, need a color index or index");
 		end
 		colorIndex = index;
 	end
-	button.text:SetText(name);
+	
 	button.background:Show();
 	-- Color every other line yellow
 	if ( mod(colorIndex, 2) == 1 ) then
@@ -2264,6 +2287,19 @@ function AchievementFrameComparisonStats_SetStat (button, category, index, color
 	end
 	
 	button.value:SetText(quantity);
+	
+	-- We're gonna use button.text here to measure string width for friendQuantity. This saves us many strings!
+	button.text:SetText(friendQuantity);
+	local width = button.text:GetStringWidth();
+	if ( width > button.friendValue:GetWidth() ) then
+		button.mouseover:Show();
+		button.mouseover.tooltip = friendQuantity;
+	else
+		button.mouseover:Hide();
+		button.mouseover.tooltip = nil;
+	end
+	
+	button.text:SetText(name);
 	button.friendValue:SetText(friendQuantity);
 	
 	

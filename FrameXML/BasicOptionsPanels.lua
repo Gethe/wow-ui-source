@@ -23,6 +23,9 @@ end
 function VideoOptionsPanel_Cancel (self)
 	for _, control in next, self.controls do
 		control.newValue = nil;
+		if ( control.value ) then
+			control:SetValue(control.value);
+		end
 	end
 end
 
@@ -137,7 +140,9 @@ function VideoOptionsPanel_SetupControl (control)
 			local value;
 			if ( control.cvar ) then
 				value = GetCVar(control.cvar);
-			else				
+			elseif ( control.GetCurrentValue ) then
+				value = control:GetCurrentValue();
+			else
 				value = control:GetValue();
 			end
 			
@@ -550,9 +555,15 @@ function VideoOptionsResolutionPanel_UpdateGammaControls ()
 	-- SetCVar("desktopGamma", value);
 end
 
+-- [[ Effects Options Panel ]] --
+
 function VideoOptionsPanel_SetVideoQuality (value)
 	if ( not value or not GraphicsQualityLevels[value] or InterfaceOptionsFrame.videoQuality == value ) then
 		return;
+	elseif ( value == VIDEO_OPTIONS_CUSTOM_QUALITY ) then
+		InterfaceOptionsFrame.videoQuality = value
+		VideoOptionsPanel_SetVideoQualityLabels (value);	
+		return
 	end
 	
 	for control, value in next, GraphicsQualityLevels[value] do
@@ -578,12 +589,6 @@ function VideoOptionsPanel_SetVideoQualityLabels (value)
 	VideoOptionsEffectsPanelQualityLabel:SetText(format(VIDEO_QUALITY_S, getglobal("VIDEO_QUALITY_LABEL" .. value)));
 	VideoOptionsEffectsPanelQualitySubText:SetText(getglobal("VIDEO_QUALITY_SUBTEXT" .. value));
 	VideoOptionsEffectsPanelQualitySlider:oldSetValue(value);
-	
-	if ( value == VIDEO_OPTIONS_CUSTOM_QUALITY ) then
-		VideoOptionsEffectsPanel_SetCustomQuality();
-	else
-		VideoOptionsEffectsPanel_SetPresetQuality();
-	end
 end
 
 function VideoOptionsPanel_GetVideoQuality ()
@@ -596,9 +601,11 @@ function VideoOptionsPanel_GetVideoQuality ()
 					mismatch = true;
 					break;
 				end
+			elseif ( not control.GetValue and control.type == CONTROLTYPE_CHECKBOX  ) then
+				-- We're in the midst of loading...
 			else
-				local currValue = tonumber(control:GetValue());
-				if ( ( value and currValue == 0 ) or ( not value and currValue == 1 ) ) then
+				local currValue = control:GetChecked()
+				if ( ( value and not currValue ) or ( not value and currValue ) ) then
 					mismatch = true;
 					break;
 				end			
@@ -608,84 +615,15 @@ function VideoOptionsPanel_GetVideoQuality ()
 			return quality;
 		end
 	end
-	
+
 	return VIDEO_OPTIONS_CUSTOM_QUALITY
 end
-
-GraphicsQualityLevels = {
-	[1] = { VideoOptionsEffectsPanelTerrainDistance = 177,
-			VideoOptionsEffectsPanelTerrainDetail = 0,
-			VideoOptionsEffectsPanelSpellDetail = 0, 
-			VideoOptionsEffectsPanelEnvironmentDetail = 0.5,
-			VideoOptionsEffectsPanelClutterDensity = 16,
-			VideoOptionsEffectsPanelClutterRadius = 70,
-			VideoOptionsEffectsPanelTextureResolution = 0,
-			VideoOptionsEffectsPanelTextureFiltering = 0,
-			VideoOptionsEffectsPanelWeatherIntensity = 0,
-			VideoOptionsEffectsPanelSpecularLighting = false,
-			VideoOptionsEffectsPanelFullScreenGlow = false,
-			VideoOptionsEffectsPanelDeathEffect = false,			
-			},
-	[2] = { VideoOptionsEffectsPanelTerrainDistance = 507,
-			VideoOptionsEffectsPanelTerrainDetail = 0,
-			VideoOptionsEffectsPanelSpellDetail = 3, 
-			VideoOptionsEffectsPanelEnvironmentDetail = 0.75,
-			VideoOptionsEffectsPanelClutterDensity = 32,
-			VideoOptionsEffectsPanelClutterRadius = 70,
-			VideoOptionsEffectsPanelTextureResolution = 0,
-			VideoOptionsEffectsPanelTextureFiltering = 1,
-			VideoOptionsEffectsPanelWeatherIntensity = 1,
-			VideoOptionsEffectsPanelSpecularLighting = false,
-			VideoOptionsEffectsPanelFullScreenGlow = 1,
-			VideoOptionsEffectsPanelDeathEffect = false,
-			},
-	[3] = { VideoOptionsEffectsPanelTerrainDistance = 947,
-			VideoOptionsEffectsPanelTerrainDetail = 1,
-			VideoOptionsEffectsPanelSpellDetail = 6, 
-			VideoOptionsEffectsPanelEnvironmentDetail = 1.0,
-			VideoOptionsEffectsPanelClutterDensity = 48,
-			VideoOptionsEffectsPanelClutterRadius = 100,
-			VideoOptionsEffectsPanelTextureResolution = 1,
-			VideoOptionsEffectsPanelTextureFiltering = 3,
-			VideoOptionsEffectsPanelWeatherIntensity = 2,
-			VideoOptionsEffectsPanelSpecularLighting = true,
-			VideoOptionsEffectsPanelFullScreenGlow = true,
-			VideoOptionsEffectsPanelDeathEffect = true,			
-			},
-	[4] = { VideoOptionsEffectsPanelTerrainDistance = 1277,
-			VideoOptionsEffectsPanelTerrainDetail = 1,
-			VideoOptionsEffectsPanelSpellDetail = 9, 
-			VideoOptionsEffectsPanelEnvironmentDetail = 1.5,
-			VideoOptionsEffectsPanelClutterDensity = 64,
-			VideoOptionsEffectsPanelClutterRadius = 140,
-			VideoOptionsEffectsPanelTextureResolution = 1,
-			VideoOptionsEffectsPanelTextureFiltering = 5,
-			VideoOptionsEffectsPanelWeatherIntensity = 3,
-			VideoOptionsEffectsPanelSpecularLighting = true,
-			VideoOptionsEffectsPanelFullScreenGlow = true,
-			VideoOptionsEffectsPanelDeathEffect = true,			
-			},
-	[5] = { VideoOptionsEffectsPanelTerrainDistance = 177,
-			VideoOptionsEffectsPanelTerrainDetail = 0,
-			VideoOptionsEffectsPanelSpellDetail = 0, 
-			VideoOptionsEffectsPanelEnvironmentDetail = 0.5,
-			VideoOptionsEffectsPanelClutterDensity = 16,
-			VideoOptionsEffectsPanelClutterRadius = 70,
-			VideoOptionsEffectsPanelTextureResolution = 0,
-			VideoOptionsEffectsPanelTextureFiltering = 0,
-			VideoOptionsEffectsPanelWeatherIntensity = 0,
-			VideoOptionsEffectsPanelSpecularLighting = true,
-			VideoOptionsEffectsPanelFullScreenGlow = true,
-			VideoOptionsEffectsPanelDeathEffect = true,					
-			},			
-}
-
--- [[ Effects Options Panel ]] --
 
 EffectsPanelOptions = {
 	farclip = { text = "FARCLIP", minValue = OPTIONS_FARCLIP_MIN, maxValue = OPTIONS_FARCLIP_MAX, valueStep = (OPTIONS_FARCLIP_MAX - OPTIONS_FARCLIP_MIN)/10},
 	TerrainMip = { text = "TERRAIN_MIP", minValue = 0, maxValue = 1, valueStep = 1, tooltip = OPTION_TOOLTIP_TERRAIN_TEXTURE},
 	spellEffectLevel = { text = "SPELL_DETAIL", minValue = 0, maxValue = 9, valueStep = 1},
+	extShadowQuality = { text = "SHADOW_QUALITY", minValue = 0, maxValue = 4, valueStep = 1},
 	environmentDetail = { text = "ENVIRONMENT_DETAIL", minValue = 0.5, maxValue = 1.5, valueStep = .25},
 	groundEffectDensity = { text = "GROUND_DENSITY", minValue = 16, maxValue = 64, valueStep = 8},
 	groundEffectDist = { text = "GROUND_RADIUS", minValue = 70, maxValue = 140, valueStep = 10 },
@@ -709,6 +647,13 @@ function VideoOptionsEffectsPanel_SetPresetQuality ()
 	for control in next, GraphicsQualityLevels[1] do
 		control = getglobal(control);
 		control:Disable();
+	end
+end
+
+function VideoOptionsEffectsPanel_UpdateVideoQuality ()
+	local quality = VideoOptionsPanel_GetVideoQuality();
+	if ( quality ~= InterfaceOptionsFrame.videoQuality ) then
+		VideoOptionsPanel_SetVideoQuality(quality);
 	end
 end
 

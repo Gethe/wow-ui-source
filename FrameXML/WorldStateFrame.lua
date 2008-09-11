@@ -100,14 +100,11 @@ function WorldStateAlwaysUpFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		WorldStateFrame_ToggleBattlefieldMinimap();
 		WorldStateAlwaysUpFrame_StopBGChatFilter(self);	
-		return;
 	elseif ( event == "PLAYER_ENTERING_BATTLEGROUND" ) then
 		WorldStateAlwaysUpFrame_StartBGChatFilter(self);
-		return;
-	elseif ( event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES" ) then
-
+	else
+		WorldStateAlwaysUpFrame_Update();
 	end
-	WorldStateAlwaysUpFrame_Update();
 end
 
 function WorldStateAlwaysUpFrame_Update()
@@ -198,7 +195,6 @@ function WorldStateAlwaysUpFrame_Update()
 			frame:Hide();
 		end
 	end
-	UIParent_ManageFramePositions();
 end
 
 function WorldStateAlwaysUpFrame_OnUpdate(self, elapsed)

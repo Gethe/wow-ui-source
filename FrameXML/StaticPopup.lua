@@ -662,7 +662,6 @@ StaticPopupDialogs["NAME_CHAT"] = {
 			FCF_OpenNewWindow(name);
 		end
 		self.editBox:SetText("");
-		FCF_DockUpdate();
 	end,
 	timeout = 0,
 	EditBoxOnEnterPressed = function(self, renameID)
@@ -675,7 +674,6 @@ StaticPopupDialogs["NAME_CHAT"] = {
 			FCF_OpenNewWindow(name);
 		end
 		editBox:SetText("");
-		FCF_DockUpdate();
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function (self)

@@ -46,10 +46,9 @@ function GlyphFrameGlyph_OnLoad (self)
 end
 
 function GlyphFrameGlyph_UpdateSlot (self)
-	local GLYPH_TEXTURE_PATH = "Interface\\SpellBook\\UI-Glyph-Rune-%d";
 	local id = self:GetID();
 	
-	local enabled, glyphType, glyphSpell, iconIndex = GetGlyphSocketInfo(id);
+	local enabled, glyphType, glyphSpell, iconFilename = GetGlyphSocketInfo(id);
 
 	local isMinor = glyphType == 2;
 	if ( isMinor ) then
@@ -88,7 +87,11 @@ function GlyphFrameGlyph_UpdateSlot (self)
 		self.background:SetAlpha(1);
 		self.background:SetTexCoord(GLYPH_SLOTS[id].left, GLYPH_SLOTS[id].right, GLYPH_SLOTS[id].top, GLYPH_SLOTS[id].bottom);
 		self.glyph:Show();
-		self.glyph:SetTexture(string.format(GLYPH_TEXTURE_PATH, iconIndex));
+		if ( iconFilename ) then
+			self.glyph:SetTexture(iconFilename);
+		else
+			self.glyph:SetTexture("Interface\\Spellbook\\UI-Glyph-Rune1");
+		end
 		self.ring:Show();
 	end
 end

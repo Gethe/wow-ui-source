@@ -175,13 +175,13 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						KnowledgeBaseMotdTextFrame_OnEnter();
+						KnowledgeBaseMotdTextFrame_OnEnter(self);
 					</OnEnter>
 					<OnUpdate>
 						KnowledgeBaseMotdTextFrame_OnUpdate(self, elapsed);
 					</OnUpdate>
 					<OnLeave>
-						KnowledgeBaseMotdTextFrame_OnLeave();
+						KnowledgeBaseMotdTextFrame_OnLeave(self);
 					</OnLeave>
 				</Scripts>
 			</Frame>
@@ -214,13 +214,13 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						KnowledgeBaseServerMessageTextFrame_OnEnter();
+						KnowledgeBaseServerMessageTextFrame_OnEnter(self);
 					</OnEnter>
 					<OnUpdate>
 						KnowledgeBaseServerMessageTextFrame_OnUpdate(self, elapsed);
 					</OnUpdate>
 					<OnLeave>
-						KnowledgeBaseServerMessageTextFrame_OnLeave();
+						KnowledgeBaseServerMessageTextFrame_OnLeave(self);
 					</OnLeave>
 				</Scripts>
 			</Frame>
@@ -723,7 +723,7 @@
 				KnowledgeBaseFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
-				KnowledgeBaseFrame_OnShow();
+				KnowledgeBaseFrame_OnShow(self);
 			</OnShow>
 			<OnEvent>
 				KnowledgeBaseFrame_OnEvent(self, event, ...);

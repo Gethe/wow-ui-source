@@ -43,7 +43,7 @@ function KnowledgeBaseFrame_OnLoad(self)
 	KnowledgeBaseArticleListFramePreviousButton:SetPoint("RIGHT", "KnowledgeBaseArticleListFrameNextButton", "LEFT", - (KnowledgeBaseArticleListFramePreviousButtonText:GetWidth() +   KnowledgeBaseArticleListFrameNextButtonText:GetWidth() + 5), 0);
 end
 
-function KnowledgeBaseFrame_OnShow()
+function KnowledgeBaseFrame_OnShow(self)
 	if ( KBASE_SETUP_LOADED == 0 ) then
 		KBSetup_BeginLoading(KBASE_NUM_ARTICLES_PER_PAGE, KBASE_CURRENT_PAGE);
 	end

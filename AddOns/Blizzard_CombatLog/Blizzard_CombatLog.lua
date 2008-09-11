@@ -2332,7 +2332,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			end
 
 			-- Miss Event
-			if ( settings.fullText and missType ) then
+			if ( missType ) then
 				event = format("%s_%s", event, missType);
 			end
 

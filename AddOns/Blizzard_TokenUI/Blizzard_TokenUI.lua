@@ -61,11 +61,11 @@ function TokenFrame_Update()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local numTokenTypes = GetCurrencyListSize();
-	local name, isHeader, isExpanded, isUnused, isWatched, count, icon;
+	local name, isHeader, isExpanded, isUnused, isWatched, count, icon, isTypePVP;
 	local button, index;
 	for i=1, numButtons do
 		index = offset+i;
-		name, isHeader, isExpanded, isUnused, isWatched, count, icon = GetCurrencyListInfo(index);
+		name, isHeader, isExpanded, isUnused, isWatched, count, isTypePVP, icon = GetCurrencyListInfo(index);
 		--[[ TEST STUFF
 		name = "test"
 		isHeader = nil;

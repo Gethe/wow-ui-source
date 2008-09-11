@@ -82,7 +82,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Texture>
 				</Layer>
 				<Layer level="ARTWORK">
-					<Texture name="$parentTexture" file="Interface\Icons\Spell_Misc_HellifrePVPHonorHoldFavor">
+					<Texture name="$parentTexture">
 						<Anchors>
 							<Anchor point="CENTER">
 								<Offset>

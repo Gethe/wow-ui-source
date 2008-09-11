@@ -246,19 +246,11 @@ function PVPTeam_OnLeave(self)
 end
 
 function PVPTeamDetails_OnShow()
-	UIPanelWindows["CharacterFrame"].width = CharacterFrame:GetWidth() + PVPTeamDetails:GetWidth();
-	CharacterFrame:SetAttribute("UIPanelLayout-defined", false);	--Use this to force an update on the width so it isn't cached.
-	CharacterFrame:SetAttribute("UIPanelLayout-enabled", false);
-	UpdateUIPanelPositions(CharacterFrame);
 	PlaySound("igSpellBookOpen");
 end
 
 function PVPTeamDetails_OnHide()
 	CloseArenaTeamRoster();
-	UIPanelWindows["CharacterFrame"].width = CharacterFrame:GetWidth();
-	CharacterFrame:SetAttribute("UIPanelLayout-defined", false);	--Use this to force an update on the width so it isn't cached.
-	CharacterFrame:SetAttribute("UIPanelLayout-enabled", false);
-	UpdateUIPanelPositions();
 	PlaySound("igSpellBookClose");
 end
 

@@ -25,6 +25,17 @@
 				</Texture>	
 			</Layer>
 		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true" drawEdge="true" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+		</Frames>
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -319,13 +330,57 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<Frame name="FocusFrameNumericalThreat" hidden="true">
+				<Size>
+					<AbsDimension x="49" y="18"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP">
+						<Offset x="-23" y="-5"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentValue" inherits="GameFontHighlight" text="100%">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset x="0" y="-4"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentBG" file="Interface\TargetingFrame\UI-StatusBar">
+							<Size>
+								<AbsDimension x="37" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset x="0" y="-3"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\TargetingFrame\NumericThreatBorder">
+							<TexCoords left="0" right="0.765625" top="0" bottom="0.5625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.text = getglobal(self:GetName().."Value");
+						self.bg = getglobal(self:GetName().."BG");
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				UnitFrame_Initialize(self, "focus", FocusName, FocusPortrait,
 									 FocusFrameHealthBar, FocusFrameHealthBarText,
 									 FocusFrameManaBar, FocusFrameManaBarText,
-				                     FocusFrameFlash, "player");
+				                     FocusFrameFlash,
+									 "player",
+									 FocusFrameNumericalThreat);
 				self.noTextPrefix = true;
 				FocusFrame_OnLoad(self);
 			</OnLoad>

@@ -104,7 +104,7 @@ function InterfaceOptionsFrame_OnShow ()
 	InterfaceCategoryList_Update();
 	InterfaceAddOnsList_Update();
 	if ( not InterfaceOptionsFramePanelContainer.displayedFrame ) then
-		InterfaceOptionsFrameCategories.buttons[1]:Click();
+		InterfaceOptionsFrame_OpenToFrame(CONTROLS_LABEL);
 	end
 	
 	local quality = VideoOptionsPanel_GetVideoQuality();

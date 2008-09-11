@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Script file="GraphicsQualityLevels.lua"/>
 	<Script file="BasicOptionsPanels.lua"/>
 	
 	<!-- Templates -->
@@ -115,7 +116,7 @@
 			<OnEnter>
 				if ( self.tooltipText and not self.disabled ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltipText);
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -426,7 +427,7 @@
 						self.cvar = "gxWindow";
 						self.restart = true;
 						BasicOptionsPanel_RegisterControl(self, self:GetParent());
-						self.setFunc = OptionsResolutionPanel_UpdateGammaControls;
+						self.setFunc = VideoOptionsResolutionPanel_UpdateGammaControls;
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -442,7 +443,7 @@
 						self.cvar = "gxMaximize";
 						self.restart = true;
 						BasicOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(OptionsResolutionPanelWindowed, self);
+						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsResolutionPanelWindowed, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
@@ -457,7 +458,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "windowResizeLock";
 						BasicOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(OptionsResolutionPanelWindowed, self);
+						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsResolutionPanelWindowed, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
@@ -580,7 +581,7 @@
 		</Scripts>	
 		<Frames>
 			<Frame name="$parentQuality" inherits="OptionsPanelsFrameBoxTemplate">
-				<Size x="380" y="120"/>
+				<Size x="380" y="92"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-72"/>
@@ -588,10 +589,10 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentLabel" inherits="GameFontNormalLargeLeftTop" text="LOW">
+						<FontString name="$parentLabel" inherits="GameFontNormalLeft" text="LOW">
 							<Anchors>
 								<Anchor point="TOPLEFT">
-									<Offset x="16" y="-16"/>
+									<Offset x="16" y="-8"/>
 								</Anchor>
 								<Anchor point="RIGHT">
 									<Offset x="-16" y="0"/>
@@ -602,7 +603,7 @@
 							<Size x="320" y="42"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentLabel" relativePoint="BOTTOMLEFT">
-									<Offset x="0" y="-8"/>
+									<Offset x="0" y="-2"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -617,11 +618,11 @@
 				</Scripts>
 			</Frame>		
 			<Slider name="$parentQualitySlider" inherits="OptionsPanelsSliderTemplate">
-				<Size x="334" y="17"/>
+				<Size x="348" y="17"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentQuality" relativePoint="TOPLEFT">
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentQuality">
 						<Offset>
-							<AbsDimension x="22" y="-80"/>
+							<AbsDimension x="16" y="16"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -641,7 +642,7 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						getglobal(name .. "High"):SetPoint("TOPRIGHT", "$parent", "BOTTOMRIGHT", -79, 3);
+						getglobal(name .. "High"):SetPoint("TOPRIGHT", "$parent", "BOTTOMRIGHT", -82, 3);
 						self.type = CONTROLTYPE_SLIDER;
 						self.label = "quality";
 						self.oldSetValue = self.SetValue;
@@ -670,13 +671,15 @@
 						self.oldSetValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:oldSetValue(value);
+							self.newValue = nil;
 							SetCVar(self.cvar, value);
 						end
 						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
 						BasicOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = self:GetValue();
+						self.newValue = value;
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
 					</OnValueChanged>
 				</Scripts>
 			</Slider>		
@@ -694,15 +697,17 @@
 						self.oldSetValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:oldSetValue(value);
+							self.newValue = nil;
 							SetTerrainMip(value);
 						end
-						self.GetValue = function () return GetTerrainMip() end;
+						self.GetCurrentValue = function (self) return GetTerrainMip() end;
 						self.value = GetTerrainMip();
 						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
 						BasicOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
 					</OnValueChanged>
 				</Scripts>
 			</Slider>			
@@ -721,6 +726,7 @@
 						self.oldSetValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:oldSetValue(value);
+							self.newValue = nil;
 							SetCVar(self.cvar, value);
 						end
 						getglobal(name.."Text"):SetFontObject("GameFontNormalSmall");
@@ -728,9 +734,10 @@
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
 					</OnValueChanged>
 				</Scripts>
-			</Slider>		
+			</Slider>	
 			<Slider name="$parentEnvironmentDetail" inherits="OptionsPanelsSliderTemplate">
 				<Size x="112" y="17"/>
 				<Anchors>
@@ -745,13 +752,15 @@
 						self.oldSetValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:oldSetValue(value);
+							self.newValue = nil;
 							SetCVar(self.cvar, value);
 						end
 						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
 						BasicOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = self:GetValue();
+						self.newValue = value;
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
 					</OnValueChanged>
 				</Scripts>
 			</Slider>		
@@ -769,13 +778,15 @@
 						self.oldSetValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:oldSetValue(value);
+							self.newValue = nil;
 							SetCVar(self.cvar, value);
 						end
 						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
 						BasicOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = self:GetValue();
+						self.newValue = value;
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
 					</OnValueChanged>
 				</Scripts>
 			</Slider>		
@@ -793,16 +804,45 @@
 						self.oldSetValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:oldSetValue(value);
+							self.newValue = nil;
 							SetCVar(self.cvar, value);
 						end
 						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
 						BasicOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = self:GetValue();
+						self.newValue = value;
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
 					</OnValueChanged>
 				</Scripts>
-			</Slider>					
+			</Slider>		
+			<Slider name="$parentShadowQuality" inherits="OptionsPanelsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentClutterRadius" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "extShadowQuality";
+						self.oldSetValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:oldSetValue(value);
+							self.newValue = nil;
+							SetCVar(self.cvar, value);
+						end
+						getglobal(name.."Text"):SetFontObject("GameFontNormalSmall");
+						BasicOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = value;
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
 			<Slider name="$parentTextureResolution" inherits="OptionsPanelsSliderTemplate">
 				<Size x="112" y="17"/>
 				<Anchors>
@@ -817,20 +857,16 @@
 						self.oldSetValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:oldSetValue(value);
+							self.newValue = nil;
 							SetCVar(self.cvar, value);
 						end
 						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
 						BasicOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = self:GetValue();
-					</OnValueChanged>
-					<OnEnter>
-						if ( self.tooltipText and not self.disabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.tooltipText);
-						end
-					</OnEnter>					
+						self.newValue = value;
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
+					</OnValueChanged>					
 				</Scripts>
 			</Slider>	
 			<Slider name="$parentTextureFiltering" inherits="OptionsPanelsSliderTemplate">
@@ -847,6 +883,7 @@
 						self.oldSetValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:oldSetValue(value);
+							self.newValue = nil;
 							SetCVar(self.cvar, value);
 						end
 						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
@@ -854,14 +891,8 @@
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = self:GetValue();
-						self:SetValue(self:GetValue());
-					</OnValueChanged>
-					<OnEnter>
-						if ( self.tooltipText and not self.disabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.tooltipText);
-						end
-					</OnEnter>					
+						VideoOptionsEffectsPanel_UpdateVideoQuality();						
+					</OnValueChanged>				
 				</Scripts>
 			</Slider>				
 			<Slider name="$parentWeatherIntensity" inherits="OptionsPanelsSliderTemplate">
@@ -878,21 +909,16 @@
 						self.oldSetValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:oldSetValue(value);
+							self.newValue = nil;
 							SetCVar(self.cvar, value);
 						end
 						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
 						BasicOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = self:GetValue();
-						self:SetValue(self:GetValue());
-					</OnValueChanged>
-					<OnEnter>
-						if ( self.tooltipText and not self.disabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.tooltipText);
-						end
-					</OnEnter>					
+						self.newValue = value;
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
+					</OnValueChanged>				
 				</Scripts>
 			</Slider>	
 			<Frame name="$parentShaders" inherits="OptionsPanelsFrameBoxTemplate">
@@ -930,6 +956,7 @@
 							PlaySound("igMainMenuOptionCheckBoxOff");
 						end
 						VideoOptionsPanel_CheckButton_OnClick(self);
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
 					</OnClick>
 				</Scripts>
 			</CheckButton>	
@@ -953,6 +980,7 @@
 							PlaySound("igMainMenuOptionCheckBoxOff");
 						end
 						VideoOptionsPanel_CheckButton_OnClick(self);
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
 					</OnClick>					
 				</Scripts>
 			</CheckButton>		
@@ -976,6 +1004,7 @@
 							PlaySound("igMainMenuOptionCheckBoxOff");
 						end
 						VideoOptionsPanel_CheckButton_OnClick(self);
+						VideoOptionsEffectsPanel_UpdateVideoQuality();
 					</OnClick>
 				</Scripts>
 			</CheckButton>					

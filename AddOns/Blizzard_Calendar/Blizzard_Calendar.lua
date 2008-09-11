@@ -95,6 +95,8 @@ end
 
 -- global constants
 CALENDAR_FIRST_WEEKDAY						= 1;		-- 1=SUN 2=MON 3=TUE 4=WED 5=THU 6=FRI 7=SAT
+CALENDAR_USE_SEQUENCE_FOR_EVENT_TEXTURE		= true;
+CALENDAR_USE_SEQUENCE_FOR_OVERLAY_TEXTURE	= false;
 
 -- local constants
 local CALENDAR_MAX_DAYS_PER_MONTH			= 42;		-- 6 weeks
@@ -1045,6 +1047,15 @@ function CalendarFrame_OnHide(self)
 	-- are left shown, which shouldn't happen
 	CalendarFrame_PopModal(true);
 
+	-- clean up texture references
+	local dayButton, dayButtonName;
+	for i = 1, CALENDAR_MAX_DAYS_PER_MONTH do
+		dayButton = CalendarDayButtons[i];
+		dayButtonName = dayButton:GetName();
+		_G[dayButtonName.."EventTexture"]:SetTexture();
+		_G[dayButtonName.."OverlayFrameTexture"]:SetTexture();
+	end
+
 	PlaySound("igSpellBookClose");
 end
 
@@ -1301,42 +1312,14 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 
 	-- first pass:
 	-- record the number of viewable events
-	-- record event indexes
-	-- record the first event button
-	-- record first holiday index
 	local numViewableEvents = 0;
-	local eventIndex = 1;
-	local eventButtonIndex = 1;
-	local firstEventButton;
-	local firstHolidayIndex;
-	local eventButton;
 	local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy;
-	while ( eventButtonIndex <= CALENDAR_DAYBUTTON_MAX_VISIBLE_EVENTS or eventIndex <= numEvents ) do
-		eventButton = _G[dayButtonName.."EventButton"..eventButtonIndex];
-		if ( eventButton ) then
-			eventButton.eventIndex = nil;
+	for i = 1, numEvents do
+		title, hour, minute, calendarType, sequenceType, eventType, texture,
+			modStatus, inviteStatus, invitedBy = CalendarGetDayEvent(monthOffset, day, i);
+		if ( title and sequenceType ~= "ONGOING" ) then
+			numViewableEvents = numViewableEvents + 1;
 		end
-		if ( eventIndex <= numEvents ) then
-			title, hour, minute, calendarType, sequenceType, eventType, texture,
-				modStatus, inviteStatus, invitedBy = CalendarGetDayEvent(monthOffset, day, eventIndex);
-			if ( title ) then
-				if ( sequenceType ~= "ONGOING" ) then
-					-- this event is viewable
-					if ( eventButton ) then
-						eventButton.eventIndex = eventIndex;
-						-- record the first event button
-						firstEventButton = firstEventButton or eventButton;
-					end
-					numViewableEvents = numViewableEvents + 1;
-				end
-				if ( calendarType == "HOLIDAY" and not firstHolidayIndex ) then
-					-- this is the event index of the first holiday
-					firstHolidayIndex = eventIndex;
-				end
-			end
-			eventIndex = eventIndex + 1;
-		end
-		eventButtonIndex = eventButtonIndex + 1;
 	end
 	dayButton.numViewableEvents = numViewableEvents;
 
@@ -1344,97 +1327,117 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 	-- adjust the event buttons based on the number of viewable events in the day
 	-- also, determine whether or not we need the more events button
 	local moreEventsButton = _G[dayButtonName.."MoreEventsButton"];
+	moreEventsButton:Hide();
 	local buttonHeight;
 	local text1RelPoint, text2Point, text2JustifyH;
 	local showingBigEvents = numViewableEvents <= CALENDAR_DAYBUTTON_MAX_VISIBLE_BIGEVENTS;
 	if ( numViewableEvents > 0 ) then
 		if ( showingBigEvents ) then
-			moreEventsButton:Hide();
 			buttonHeight = CALENDAR_DAYEVENTBUTTON_BIGHEIGHT;
-			text1RelPoint = nil;
+			--text1RelPoint = nil;
 			text2Point = "BOTTOMLEFT";
 			text2JustifyH = "LEFT";
 		else
-			-- while we're checking the number of events, show or hide the more events button
 			if ( numViewableEvents > CALENDAR_DAYBUTTON_MAX_VISIBLE_EVENTS ) then
+				-- we have more viewable events than we have buttons
 				moreEventsButton:Show();
-			else
-				moreEventsButton:Hide();
 			end
 			buttonHeight = CALENDAR_DAYEVENTBUTTON_HEIGHT;
 			text1RelPoint = "BOTTOMLEFT";
 			text2Point = "RIGHT";
 			text2JustifyH = "RIGHT";
 		end
-	else
-		moreEventsButton:Hide();
 	end
 
 	-- second pass:
-	-- show event buttons with event indexes
-	-- hide the rest
-	local eventButtonName, eventButtonBackground, eventButtonText1, eventButtonText2;
-	local eventColor;
+	-- record the first event button
+	-- record first holiday index
+	-- show viewable events
+	local firstEventButton;
+	local firstHolidayIndex;
+	local eventIndex = 1;
+	local eventButtonIndex = 1;
+	local eventButton, eventButtonName, eventButtonBackground, eventButtonText1, eventButtonText2, eventColor;
 	local prevEventButton;
-	for i = 1, CALENDAR_DAYBUTTON_MAX_VISIBLE_EVENTS do
-		eventButton = _G[dayButtonName.."EventButton"..i];
-		if ( eventButton.eventIndex ) then
-			eventIndex = eventButton.eventIndex;
-			eventButtonName = eventButton:GetName();
-			eventButtonText1 = _G[eventButtonName.."Text1"];
-			eventButtonText2 = _G[eventButtonName.."Text2"];
+	while ( eventButtonIndex <= CALENDAR_DAYBUTTON_MAX_VISIBLE_EVENTS and eventIndex <= numEvents ) do
+		eventButton = _G[dayButtonName.."EventButton"..eventButtonIndex];
+		eventButtonName = eventButton:GetName();
+		eventButtonText1 = _G[eventButtonName.."Text1"];
+		eventButtonText2 = _G[eventButtonName.."Text2"];
 
-			title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus =
-				CalendarGetDayEvent(monthOffset, day, eventIndex);
-
-			-- anchor the event button to the day button
-			eventButton:SetPoint("BOTTOMLEFT", dayButton, "BOTTOMLEFT", CALENDAR_DAYEVENTBUTTON_XOFFSET, -CALENDAR_DAYEVENTBUTTON_YOFFSET);
-			if ( prevEventButton ) then
-				-- anchor the prev event button to this one...this makes the latest event stay at the bottom
-				prevEventButton:SetPoint("BOTTOMLEFT", eventButton, "TOPLEFT", 0, -CALENDAR_DAYEVENTBUTTON_YOFFSET);
+		title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus =
+			CalendarGetDayEvent(monthOffset, day, eventIndex);
+		if ( title ) then
+			-- record the first holiday index...the first holiday can have sequenceType "ONGOING"
+			if ( calendarType == "HOLIDAY" and not firstHolidayIndex ) then
+				firstHolidayIndex = eventIndex;
 			end
+			-- set the event button if the sequence type is not ongoing
+			if ( sequenceType ~= "ONGOING" ) then
+				-- record the event Index
+				eventButton.eventIndex = eventIndex;
 
-			-- set the event button size
-			eventButton:SetHeight(buttonHeight);
-
-			-- set the event time and title
-			if ( calendarType == "HOLIDAY" or calendarType == "RAID_LOCKOUT" or calendarType == "RAID_RESET" ) then
-				-- any event that does not display the time should go here
-				eventButtonText2:Hide();
-				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
-				eventButtonText1:ClearAllPoints();
-				eventButtonText1:SetAllPoints(eventButton);
-				eventButtonText1:Show();
-			else
-				eventButtonText2:SetText(GameTime_GetFormattedTime(hour, minute, showingBigEvents));
-				eventButtonText2:ClearAllPoints();
-				eventButtonText2:SetPoint(text2Point, eventButton, text2Point);
-				eventButtonText2:SetJustifyH(text2JustifyH);
-				eventButtonText2:Show();
-				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
-				eventButtonText1:ClearAllPoints();
-				eventButtonText1:SetPoint("TOPLEFT", eventButton, "TOPLEFT");
-				if ( text1RelPoint ) then
-					eventButtonText1:SetPoint("BOTTOMRIGHT", eventButtonText2, text1RelPoint);
+				-- set the event button size
+				eventButton:SetHeight(buttonHeight);
+				-- set the event time and title
+				if ( calendarType == "HOLIDAY" or calendarType == "RAID_LOCKOUT" or calendarType == "RAID_RESET" ) then
+					-- any event that does not display the time should go here
+					eventButtonText2:Hide();
+					eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
+					eventButtonText1:ClearAllPoints();
+					eventButtonText1:SetAllPoints(eventButton);
+					eventButtonText1:Show();
+				else
+					eventButtonText2:SetText(GameTime_GetFormattedTime(hour, minute, showingBigEvents));
+					eventButtonText2:ClearAllPoints();
+					eventButtonText2:SetPoint(text2Point, eventButton, text2Point);
+					eventButtonText2:SetJustifyH(text2JustifyH);
+					eventButtonText2:Show();
+					eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
+					eventButtonText1:ClearAllPoints();
+					eventButtonText1:SetPoint("TOPLEFT", eventButton, "TOPLEFT");
+					if ( text1RelPoint ) then
+						eventButtonText1:SetPoint("BOTTOMRIGHT", eventButtonText2, text1RelPoint);
+					end
+					eventButtonText1:Show();
 				end
-				eventButtonText1:Show();
-			end
-			-- set the event color
-			eventColor = _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus);
-			eventButtonText1:SetTextColor(eventColor.r, eventColor.g, eventColor.b);
+				-- set the event color
+				eventColor = _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus);
+				eventButtonText1:SetTextColor(eventColor.r, eventColor.g, eventColor.b);
 
-			-- highlight the selected event
-			if ( selectedEventIndex and eventIndex == selectedEventIndex ) then
-				CalendarFrame_SetSelectedEvent(eventButton);
-			else
-				eventButton:UnlockHighlight();
-			end
+				-- anchor the event button
+				eventButton:SetPoint("BOTTOMLEFT", dayButton, "BOTTOMLEFT", CALENDAR_DAYEVENTBUTTON_XOFFSET, -CALENDAR_DAYEVENTBUTTON_YOFFSET);
+				if ( prevEventButton ) then
+					-- anchor the prev event button to this one...this makes the latest event stay at the bottom
+					prevEventButton:SetPoint("BOTTOMLEFT", eventButton, "TOPLEFT", 0, -CALENDAR_DAYEVENTBUTTON_YOFFSET);
+				end
+				prevEventButton = eventButton;
 
-			eventButton:Show();
-			prevEventButton = eventButton;
-		else
-			eventButton:Hide();
+				-- highlight the selected event
+				if ( selectedEventIndex and eventIndex == selectedEventIndex ) then
+					CalendarFrame_SetSelectedEvent(eventButton);
+				else
+					eventButton:UnlockHighlight();
+				end
+
+				-- show the event button
+				eventButton:Show();
+
+				-- record the first event button
+				firstEventButton = firstEventButton or eventButton;
+
+				eventButtonIndex = eventButtonIndex + 1;
+			end
 		end
+
+		eventIndex = eventIndex + 1;
+	end
+	-- hide unused event buttons
+	while ( eventButtonIndex <= CALENDAR_DAYBUTTON_MAX_VISIBLE_EVENTS ) do
+		eventButton = _G[dayButtonName.."EventButton"..eventButtonIndex];
+		eventButton.eventIndex = nil;
+		eventButton:Hide();
+		eventButtonIndex = eventButtonIndex + 1;
 	end
 
 	-- update day textures
@@ -1472,9 +1475,12 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 		-- set day texture
 		title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus =
 			CalendarGetDayEvent(monthOffset, day, firstEventButton.eventIndex);
-		eventTex:SetTexture("");
-		-- we don't want a sequence for the event texture
-		texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, "", eventType);
+		eventTex:SetTexture();
+		if ( CALENDAR_USE_SEQUENCE_FOR_EVENT_TEXTURE ) then
+			texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
+		else
+			texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, "", eventType);
+		end
 		if ( texturePath ) then
 			eventTex:SetTexture(texturePath);
 			eventTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
@@ -1494,8 +1500,12 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 		-- for now, the overlay texture is the first holiday's sequence texture
 		title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus =
 			CalendarGetDayEvent(monthOffset, day, firstHolidayIndex);
-		overlayTex:SetTexture("");
-		texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
+		overlayTex:SetTexture();
+		if ( CALENDAR_USE_SEQUENCE_FOR_OVERLAY_TEXTURE ) then
+			texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
+		else
+			texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, "ONGOING", eventType);
+		end
 		if ( texturePath ) then
 			overlayTex:SetTexture(texturePath);
 			overlayTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
@@ -2466,7 +2476,7 @@ function CalendarViewHolidayFrame_Update()
 	CalendarViewHolidayFrameTitle:SetText(name);
 	CalendarViewHolidayFrameTitleBackgroundMiddle:SetWidth(max(140, CalendarViewHolidayFrameTitle:GetWidth()));
 	CalendarViewHolidayDescription:SetText(description);
-	CalendarViewHolidayInfoTexture:SetTexture("");
+	CalendarViewHolidayInfoTexture:SetTexture();
 --[[
 	local texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, "HOLIDAY", "INFO", 0);
 	if ( texturePath ) then
@@ -2789,7 +2799,7 @@ function CalendarViewEventFrame_Update()
 	-- reset the flash timer to reinforce the visual feedback that the player is switching between events
 	CalendarViewEventFrame.flashTimer = 0.0;
 	-- set the icon
-	CalendarViewEventIcon:SetTexture("");
+	CalendarViewEventIcon:SetTexture();
 	local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 	CalendarViewEventIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 	local eventTex = _CalendarFrame_GetEventTexture(textureIndex, eventType);
@@ -2969,6 +2979,7 @@ function CalendarViewEventInviteListScrollFrame_Update()
 				buttonModIcon:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
 				buttonModIcon:Show();
 			else
+				buttonModIcon:SetTexture();
 				buttonModIcon:Hide();
 			end
 --[[
@@ -3357,7 +3368,7 @@ function CalendarCreateEventTexture_Update()
 	local eventType = CalendarCreateEventFrame.selectedEventType;
 	local textureIndex = CalendarCreateEventFrame.selectedTextureIndex;
 
-	CalendarCreateEventIcon:SetTexture("");
+	CalendarCreateEventIcon:SetTexture();
 	local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 	CalendarCreateEventIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 	local eventTex = _CalendarFrame_GetEventTexture(textureIndex, eventType);
@@ -3704,6 +3715,7 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 				buttonModIcon:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
 				buttonModIcon:Show();
 			else
+				buttonModIcon:SetTexture();
 				buttonModIcon:Hide();
 			end
 --[[
@@ -4165,6 +4177,8 @@ function CalendarMassInviteGuild_Update()
 		UIDropDownMenu_Initialize(CalendarMassInviteGuildRankMenu, CalendarMassInviteGuildRankMenu_Initialize);
 		-- set text color back to normal
 		CalendarMassInviteGuildLevelText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		CalendarMassInviteGuildMinLevelEdit:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		CalendarMassInviteGuildMaxLevelEdit:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		CalendarMassInviteGuildRankText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	else
 		-- disable the accept button
@@ -4173,6 +4187,8 @@ function CalendarMassInviteGuild_Update()
 		UIDropDownMenu_DisableDropDown(CalendarMassInviteGuildRankMenu);
 		-- set text color to a disabled color
 		CalendarMassInviteGuildLevelText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		CalendarMassInviteGuildMinLevelEdit:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		CalendarMassInviteGuildMaxLevelEdit:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		CalendarMassInviteGuildRankText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
 end
@@ -4273,6 +4289,10 @@ function CalendarEventPickerFrame_Hide()
 	CalendarContextMenu_Hide(CalendarDayContextMenu_Initialize);
 	CalendarEventPickerFrame.dayButton = nil;
 	CalendarEventPickerFrame:Hide();
+	-- clean up texture references
+	for i = 1, #CalendarEventPickerScrollFrame.buttons do
+		_G[CalendarEventPickerScrollFrame.buttons[i]:GetName().."Icon"]:SetTexture();
+	end
 end
 
 function CalendarEventPickerFrame_Toggle(dayButton)
@@ -4406,7 +4426,7 @@ function CalendarEventPickerScrollFrame_Update()
 				button.eventIndex = eventIndex;
 
 				-- set event texture
-				buttonIcon:SetTexture("");
+				buttonIcon:SetTexture();
 				texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
 				if ( texturePath and texturePath ~= "" ) then
 					buttonIcon:SetTexture(texturePath);
@@ -4558,6 +4578,10 @@ function CalendarTexturePickerFrame_Hide()
 	CalendarTexturePickerFrame.eventType = nil;
 	CalendarTexturePickerFrame.selectedTextureIndex = nil;
 	CalendarTexturePickerFrame:Hide();
+	-- clean up texture references
+	for i = 1, #CalendarTexturePickerScrollFrame.buttons do
+		_G[CalendarTexturePickerScrollFrame.buttons[i]:GetName().."Icon"]:SetTexture();
+	end
 end
 
 function CalendarTexturePickerFrame_Toggle(eventType)
@@ -4672,7 +4696,7 @@ function CalendarTexturePickerScrollFrame_Update()
 				buttonTitle:SetPoint("LEFT", buttonIcon, "RIGHT");
 				buttonTitle:Show();
 				-- set the eventTex icon
-				buttonIcon:SetTexture("");
+				buttonIcon:SetTexture();
 				local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 				buttonIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 				if ( eventTex.texture ~= "" ) then

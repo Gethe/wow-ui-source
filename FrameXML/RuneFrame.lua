@@ -70,22 +70,24 @@ function RuneButton_Update (self, rune, dontFlash)
 	rune = rune or self:GetID();
 	local runeType = GetRuneType(rune);
 	
+	if ( (not dontFlash) and (runeType) and (runeType ~= self.rune.runeType)) then
+		self.shine:SetVertexColor(unpack(runeColors[runeType]));
+		RuneButton_ShineFadeIn(self.shine)
+	end
+	
 	if (runeType) then
 		self.rune:SetTexture(iconTextures[runeType]);
 		-- self.fill:SetTexture(iconTextures[runeType]);
 		self.rune:Show();
 		-- self.fill:Show();
+		self.rune.runeType = runeType;
 		self.tooltipText = _G["COMBAT_TEXT_RUNE_"..runeMapping[runeType]];
 	else
 		self.rune:Hide();
 		-- self.fill:Hide();
 		self.tooltipText = nil;
 	end
-	
-	if ( not dontFlash and runeType) then
-		self.shine:SetVertexColor(unpack(runeColors[runeType]));
-		RuneButton_ShineFadeIn(self.shine)
-	end
+
 end
 
 function RuneButton_OnEnter(self)

@@ -1953,9 +1953,11 @@
 				<Scripts>
 					<OnClick>
 						HideUIPanel(ChatConfigFrame);
-						Blizzard_CombatLog_RefreshGlobalLinks();
-						Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings);
-						Blizzard_CombatLog_Refilter();
+						if ( IsCombatLog(FCF_GetCurrentChatFrame()) ) then
+							Blizzard_CombatLog_RefreshGlobalLinks();
+							Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings);
+							Blizzard_CombatLog_Refilter();
+						end
 						PlaySound("gsTitleOptionOK");
 					</OnClick>
 				</Scripts>

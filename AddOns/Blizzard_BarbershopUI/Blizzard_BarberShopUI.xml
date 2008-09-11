@@ -62,7 +62,7 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="BarberShopFrame" parent="UIParent" toplevel="true" hidden="true">
+	<Frame name="BarberShopFrame" parent="UIParent" toplevel="true" hidden="true" enableMouse="true">
 		<Size>
 			<AbsDimension x="200" y="275"/>
 		</Size>
@@ -288,7 +288,7 @@
 				BarberShop_OnShow(self);
 			</OnShow>
 			<OnHide>
-				BarberShopBannerFrame:Hide();
+				BarberShop_OnHide(self);
 			</OnHide>
 			<OnEvent>
 				BarberShop_OnEvent(self, event, ...);

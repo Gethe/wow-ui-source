@@ -572,11 +572,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		playerX = playerX * WorldMapDetailFrame:GetWidth();
 		playerY = -playerY * WorldMapDetailFrame:GetHeight();
 		PositionWorldMapArrowFrame("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
-		if ( UnitInVehicle("player") ) then
-			ShowWorldMapArrowFrame(nil);
-		else
-			ShowWorldMapArrowFrame(1);
-		end
+		ShowWorldMapArrowFrame(1);
 
 		-- Position clear button to detect mouseovers
 		WorldMapPlayer:Show();

@@ -95,7 +95,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\Minimap\POIIcons" setAllPoints="true">
-					<TexCoords left="0.875" right="1.0" top="0" bottom="0.125"/>
+					<TexCoords left="0.5" right="0.5625" top="0" bottom="0.0625"/>
 				</Texture>
 			</Layer>
 		</Layers>

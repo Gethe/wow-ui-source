@@ -550,7 +550,7 @@
 		</Scripts>
 	</Frame>
 	<!-- PVPTeam Details -->
-	<Frame name="PVPTeamDetails" parent="PVPFrame" hidden="true" enableMouse="true">
+	<Frame name="PVPTeamDetails" parent="PVPFrame" hidden="true" enableMouse="true" toplevel="true">
 		<Size>
 			<AbsDimension x="365" y="355"/>
 		</Size>

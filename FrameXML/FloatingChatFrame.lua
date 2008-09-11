@@ -441,6 +441,9 @@ function FCF_OpenNewWindow(name)
 			FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);
 			SetChatWindowLocked(i, nil);
 
+			-- clear stale messages
+			chatFrame:Clear();
+
 			-- Listen to the standard messages
 			ChatFrame_RemoveAllMessageGroups(chatFrame);
 			ChatFrame_AddMessageGroup(chatFrame, "SAY");
@@ -517,6 +520,7 @@ function FCF_SetWindowName(frame, name, doNotSave)
 	if ( not doNotSave ) then
 		SetChatWindowName(frame:GetID(), name);
 	end
+	FCF_DockUpdate();
 end
 
 function FCF_SetWindowColor(frame, r, g, b, doNotSave)

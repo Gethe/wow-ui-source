@@ -163,7 +163,11 @@ function PetFrameDropDown_Initialize ()
 		if ( PetFrame.unit == "player" ) then
 			UnitPopup_ShowMenu(PetFrameDropDown, "SELF", "player");
 		else
-			UnitPopup_ShowMenu(PetFrameDropDown, "PET", "pet");
+			if ( UnitIsUnit("pet", "vehicle") ) then
+				UnitPopup_ShowMenu(PetFrameDropDown, "VEHICLE", "vehicle");
+			else
+				UnitPopup_ShowMenu(PetFrameDropDown, "PET", "pet");
+			end
 		end
 	end
 end

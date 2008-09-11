@@ -8,6 +8,7 @@
 ---------------------------------------------------------------------------
 
 -- Local references to things so that they can't be subverted
+local forceinsecure = forceinsecure;
 local geterrorhandler = geterrorhandler;
 local issecure = issecure;
 local newproxy = newproxy;
@@ -587,18 +588,13 @@ local function API_OnAttributeChanged(self, name, value)
         end
         local header, preBody, postBody = RemoveWrapper(frame, script);
         if (type(data) == "table") then
-            -- data[1] + issecure() protocol assures that the result is
-            -- tainted so nobody can use this mechanism as a factory for
-            -- untainted string values.
-            if (data[1] == false) then
-                --if (not issecure()) then
-                data[1] = frame;
-                data[2] = script;
-                data[3] = header;
-                data[4] = preBody;
-                data[5] = postBody;
-                --end
-            end
+            forceinsecure();
+            wipe(data);
+            data[1] = frame;
+            data[2] = script;
+            data[3] = header;
+            data[4] = preBody;
+            data[5] = postBody;
         end
         return;
     end
@@ -1136,8 +1132,9 @@ end
 
 local function CallMethod_inner(frame, methodName, ...)
     local method = frame[methodName];
-    -- Refuse to run secure code
-    if (issecure() or type(method) ~= "function") then
+    -- Ensure code isn't run securely
+    forceinsecure();
+    if (type(method) ~= "function") then
         error("Invalid method '" .. methodName .. "'");
         return;
     end

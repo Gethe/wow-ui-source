@@ -671,7 +671,7 @@
 				SetChatWindowShown(self:GetID(), 1);
 			</OnShow>
 			<OnHide>
-				if (not self:IsShown() ) then
+				if ( not self:IsShown() ) then
 					getglobal(self:GetName().."BottomButton"):Hide();
 					getglobal(self:GetName().."DownButton"):Hide();
 					getglobal(self:GetName().."UpButton"):Hide();

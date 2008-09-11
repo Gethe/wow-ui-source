@@ -36,6 +36,8 @@ local t_concat = table.concat;
 local t_sort = table.sort;
 local t_remove = table.remove;
 
+local s_gsub = string.gsub;
+
 local IsFrameHandle = IsFrameHandle;
 
 ---------------------------------------------------------------------------
@@ -483,7 +485,7 @@ local function RestrictedTable_remove(T, pos)
     return t_remove(T, pos);
 end
 
--- objtype = type(obj)
+-- objtype = RestrictedTable_type(obj)
 --
 -- A version of type which returns 'table' for restricted tables
 local function RestrictedTable_type(obj)
@@ -494,6 +496,18 @@ local function RestrictedTable_type(obj)
         end
     end
     return t;
+end
+
+-- ns = RestrictedTable_rtgsub(s, pattern, repl, n)
+--
+-- A version of string.gsub which is able to be passed restricted tables
+local function RestrictedTable_rtgsub(s, pattern, repl, n)
+    local t = type(repl);
+    if (t == "userdata") then
+        local PT = LOCAL_Restricted_Tables[repl];
+        return s_gsub(s, pattern, PT, n);
+    end
+    return s_gsub(s, pattern, repl, n);
 end
 
 -- Export these functions so that addon code can use them if desired
@@ -513,7 +527,11 @@ rtable = {
     wipe = RestrictedTable_wipe;
 
     type = RestrictedTable_type;
+    rtgsub = RestrictedTable_rtgsub;
 };
+
+-- Add this version of gsub to the string metatable
+string.rtgsub = RestrictedTable_rtgsub;
 
 local LOCAL_Table_Namespace = {
     table = {
@@ -663,6 +681,9 @@ local LOCAL_Restricted_Global_Functions = {
 
     -- Synthetic restricted-table-aware 'type'
     type = RestrictedTable_type;
+
+    -- Restricted table aware gsub
+    rtgsub = RestrictedTable_rtgsub;
 };
 
 -- A helper function to recursively copy and protect scopes

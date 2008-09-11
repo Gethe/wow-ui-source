@@ -160,14 +160,16 @@ function PetActionBar_UpdateCooldowns()
 	end
 end
 
-function ShowPetActionBar()
-	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and not PetActionBarFrame.locked and not PetActionBarFrame.ctrlPressed ) then
-		if ( ShapeshiftBarFrame and GetNumShapeshiftForms() > 0 ) then
+function ShowPetActionBar(doNotSlide)
+	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and (not PetActionBarFrame.locked or doNotSlide) and not PetActionBarFrame.ctrlPressed ) then
+		if ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
+			PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
+		elseif ( ShapeshiftBarFrame and GetNumShapeshiftForms() > 0 ) then
 			PETACTIONBAR_XPOS = getglobal("ShapeshiftButton"..GetNumShapeshiftForms()):GetRight() + 20;
 		else
 			PETACTIONBAR_XPOS = 36
 		end
-		if ( MainMenuBar.busy or UnitHasVehicleUI("player") ) then
+		if ( MainMenuBar.busy or UnitHasVehicleUI("player") or doNotSlide ) then
 			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 			PetActionBarFrame.state = "top";
 			PetActionBarFrame:Show();

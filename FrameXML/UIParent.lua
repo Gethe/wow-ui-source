@@ -2589,17 +2589,17 @@ function ValidateFramePosition(frame, offscreenPadding, returnOffscreen)
 	if ( not offscreenPadding ) then
 		offscreenPadding = 15;
 	end
-	if ( top < (0 + MainMenuBar:GetHeight() + offscreenPadding)) then
+	if ( bottom < (0 + MainMenuBar:GetHeight() + offscreenPadding)) then
 		-- Off the bottom of the screen
 		newAnchorY = MainMenuBar:GetHeight() + frame:GetHeight() - GetScreenHeight(); 
-	elseif ( bottom > GetScreenHeight() ) then
+	elseif ( top > GetScreenHeight() ) then
 		-- Off the top of the screen
 		newAnchorY =  0;
 	end
-	if ( right < 0 ) then
+	if ( left < 0 ) then
 		-- Off the left of the screen
 		newAnchorX = 0;
-	elseif ( left > GetScreenWidth() ) then
+	elseif ( right > GetScreenWidth() ) then
 		-- Off the right of the screen
 		newAnchorX = GetScreenWidth() - frame:GetWidth();
 	end

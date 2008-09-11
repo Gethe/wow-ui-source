@@ -1,5 +1,4 @@
 REQUIRED_REST_HOURS = 5;
-local PVP_COUNTDOWN_TIME = 300000;
 
 function PlayerFrame_OnLoad(self)
 	self.statusCounter = 0;
@@ -134,7 +133,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerSpeakerFrame:Show();
 		PlayerFrame_UpdateVoiceStatus(UnitIsTalking(UnitName("player")));
 		
-		if ( (UnitIsPVP("player")) and (GetPVPDesired() == 0) and (not UnitIsPVPFreeForAll("player"))) then
+		if ( IsPVPTimerRunning() ) then
 			PlayerPVPTimerText:Show();
 			PlayerPVPTimerText.timeLeft = GetPVPTimer();
 		else
@@ -215,7 +214,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 		self.inSeat = true;
 		PlayerFrame_UpdateArt(self);
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
-		if ( (UnitIsPVP("player")) and (GetPVPDesired() == 0) and (not UnitIsPVPFreeForAll("player"))) then
+		if ( IsPVPTimerRunning() ) then
 			PlayerPVPTimerText:Show();
 			PlayerPVPTimerText.timeLeft = GetPVPTimer();
 		else
