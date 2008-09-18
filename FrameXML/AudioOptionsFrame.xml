@@ -1,0 +1,84 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- if you change something here you probably want to change the glue version too -->
+
+	<Script file="AudioOptionsFrame.lua"/>
+
+	<Frame name="AudioOptionsFrame" inherits="OptionsFrameTemplate">
+		<Frames>
+			<Button name="$parentApply" inherits="UIPanelButtonTemplate" text="APPLY">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						AudioOptionsFrameOkay_OnClick(true);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentApply" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AudioOptionsFrameCancel_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AudioOptionsFrameOkay_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentDefaults" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						AudioOptionsFrameDefault_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				AudioOptionsFrame_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				AudioOptionsFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnHide>
+				AudioOptionsFrame_OnHide(self);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

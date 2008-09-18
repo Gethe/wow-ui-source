@@ -6,6 +6,7 @@ function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PET_BAR_UPDATE");
 	self:RegisterEvent("PET_UI_CLOSE");
+	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("UNIT_PET_EXPERIENCE");
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
@@ -115,7 +116,8 @@ end
 
 function PetPaperDollFrame_OnEvent (self, event, ...)
 	local arg1 = ...;
-	if ( event == "PET_UI_UPDATE" or event == "PET_UI_CLOSE" or event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") ) then
+	if ( event == "PET_UI_UPDATE" or event == "PET_UI_CLOSE" or event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") or
+		(event == "UNIT_NAME_UPDATE" and arg1 == "pet") ) then
 		PetPaperDollFrame_UpdateTabs();
 		PetPaperDollFrame_Update();
 	elseif ( event == "UNIT_PET_EXPERIENCE" ) then
@@ -421,6 +423,9 @@ function PetPaperDollFrame_Update()
 	PetModelFrame:SetUnit("pet");
 	if ( UnitCreatureFamily("pet") ) then
 		PetLevelText:SetText(format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..UnitCreatureFamily("pet"));
+	end
+	if ( PetPaperDollFramePetFrame:IsShown() ) then
+		PetNameText:SetText(UnitName("pet"));
 	end
 	PetExpBar_Update();
 	PetPaperDollFrame_SetResistances();

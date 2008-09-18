@@ -77,12 +77,12 @@
 				</Texture>
 				<Texture name="FocusFrameBackground">
 					<Size>
-						<AbsDimension x="90" y="38"/>
+						<AbsDimension x="88" y="38"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="12" y="-9"/>
+								<AbsDimension x="14" y="-9"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -92,12 +92,12 @@
 			<Layer level="BORDER">
 				<Texture name="FocusFrameNameBackground" file="Interface\TargetingFrame\UI-TargetingFrame-LevelBackground">
 					<Size>
-						<AbsDimension x="90" y="20"/>
+						<AbsDimension x="88" y="19"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="12" y="-6"/>
+								<AbsDimension x="14" y="-7"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

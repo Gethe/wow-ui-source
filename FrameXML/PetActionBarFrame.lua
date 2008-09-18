@@ -60,6 +60,12 @@ function PetActionBar_OnEvent (self, event, ...)
 	end
 end
 
+function PetActionBarFrame_IsAboveShapeshift(ignoreShowing)
+	return ( ((ShapeshiftBarFrame and GetNumShapeshiftForms() > 0) or
+		(MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown())) and
+		(not MultiBarBottomLeft:IsShown() and MultiBarBottomRight:IsShown()) and
+		(ignoreShowing or (PetActionBarFrame and PetActionBarFrame:IsShown())))
+end
 function PetActionBarFrame_OnUpdate(self, elapsed)
 	local yPos;
 	if ( self.slideTimer and (self.slideTimer < self.timeToSlide) ) then
@@ -92,7 +98,7 @@ function PetActionBarFrame_OnUpdate(self, elapsed)
 end
 
 function PetActionBar_Update (self)
-	local petActionButton, petActionIcon, petAutoCastableTexture, petAutoCastModel;
+	local petActionButton, petActionIcon, petAutoCastableTexture, petAutoCastShine;
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
 		local buttonName = "PetActionButton" .. i;
 		petActionButton = _G[buttonName];
@@ -160,15 +166,20 @@ function PetActionBar_UpdateCooldowns()
 	end
 end
 
+function PetActionBar_UpdatePositionValues()
+	if ( PetActionBarFrame_IsAboveShapeshift(true) ) then
+		PETACTIONBAR_XPOS = 36;
+	elseif ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
+		PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
+	elseif ( ShapeshiftBarFrame and GetNumShapeshiftForms() > 0 ) then
+		PETACTIONBAR_XPOS = getglobal("ShapeshiftButton"..GetNumShapeshiftForms()):GetRight() + 20;
+	else
+		PETACTIONBAR_XPOS = 36
+	end
+end
 function ShowPetActionBar(doNotSlide)
 	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and (not PetActionBarFrame.locked or doNotSlide) and not PetActionBarFrame.ctrlPressed ) then
-		if ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
-			PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
-		elseif ( ShapeshiftBarFrame and GetNumShapeshiftForms() > 0 ) then
-			PETACTIONBAR_XPOS = getglobal("ShapeshiftButton"..GetNumShapeshiftForms()):GetRight() + 20;
-		else
-			PETACTIONBAR_XPOS = 36
-		end
+		PetActionBar_UpdatePositionValues();
 		if ( MainMenuBar.busy or UnitHasVehicleUI("player") or doNotSlide ) then
 			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 			PetActionBarFrame.state = "top";

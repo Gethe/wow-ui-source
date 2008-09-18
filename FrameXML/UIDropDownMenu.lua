@@ -152,12 +152,8 @@ function UIDropDownMenu_CreateInfo()
 	for k,v in pairs(info) do
 		info[k] = nil;
 	end
-	
-	if ( secure ) then
-		return UIDropDownMenu_SecureInfo;
-	end
-		
-	return UIDropDownMenu_ButtonInfo;
+
+	return info;
 end
 
 function UIDropDownMenu_CreateFrames(level, index)

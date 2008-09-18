@@ -352,6 +352,12 @@
 					<OnClick>
 						VehicleExit();
 					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">
 					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>

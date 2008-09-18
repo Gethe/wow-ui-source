@@ -379,7 +379,7 @@
 		</Size>
 		<Frames>
 			<Frame name="$parentName">
-				<Size x="90" y="14"/>
+				<Size x="104" y="14"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="10" y="-1"/>
@@ -392,7 +392,7 @@
 				</Layers>
 			</Frame>
 			<Frame name="$parentClass">
-				<Size x="55" y="14"/>
+				<Size x="73" y="14"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
 						<Offset x="4" y="0"/>
@@ -469,7 +469,7 @@
 				</Layers>
 			</Frame>
 			<Frame name="$parentRating">
-				<Size x="50" y="14"/>
+				<Size x="54" y="14"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentWinLoss" relativePoint="RIGHT">
 						<Offset x="4" y="0"/>

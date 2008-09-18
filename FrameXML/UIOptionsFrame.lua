@@ -1,126 +1,266 @@
--- Note: If you're looking to modify any of the actual interface options, you probably want UIOptionsPanels.lua
 
-local blizzardCategories = {};
 INTERFACEOPTIONS_ADDONCATEGORIES = {};
 INTERFACEOPTIONSLIST_BUTTONHEIGHT = 18;
 
-function InterfaceOptionsFrame_AudioRestart ()
-	InterfaceOptionsFrame.audioRestart = nil;
-	Sound_GameSystem_RestartSoundSystem();
+local blizzardCategories = {};
+
+local next = next;
+local function SecureNext(elements, key)
+	return securecall(next, elements, key);
 end
 
-function InterfaceOptionsFrameCancel_OnClick ()
-	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
 
-	for _, category in next, blizzardCategories do
-		securecall("pcall", category.cancel, category);
+-- [[ InterfaceOptionsList functions ]] --
+
+function InterfaceOptionsList_DisplayPanel (frame)	
+	if ( InterfaceOptionsFramePanelContainer.displayedPanel ) then
+		InterfaceOptionsFramePanelContainer.displayedPanel:Hide();
 	end
-	
-	for _, category in next, INTERFACEOPTIONS_ADDONCATEGORIES do
-		securecall("pcall", category.cancel, category);
+
+	InterfaceOptionsFramePanelContainer.displayedPanel = frame;
+
+	frame:SetParent(InterfaceOptionsFramePanelContainer);
+	frame:ClearAllPoints();
+	frame:SetPoint("TOPLEFT", InterfaceOptionsFramePanelContainer, "TOPLEFT");
+	frame:SetPoint("BOTTOMRIGHT", InterfaceOptionsFramePanelContainer, "BOTTOMRIGHT");
+	frame:Show();
+end
+
+function InterfaceOptionsListButton_OnClick (mouseButton, button)
+	if ( mouseButton == "RightButton" ) then
+		if ( button.element.hasChildren ) then
+			button.toggle:Click();
+		end
+		return;
 	end
-	
-	InterfaceOptionsFrame.audioRestart = nil;
-	InterfaceOptionsFrame.gxRestart = nil;
+
+	local parent = button:GetParent();
+	local buttons = parent.buttons;
+
+	OptionsList_ClearSelection(InterfaceOptionsFrameCategories, InterfaceOptionsFrameCategories.buttons);
+	OptionsList_ClearSelection(InterfaceOptionsFrameAddOns, InterfaceOptionsFrameAddOns.buttons);
+	OptionsList_SelectButton(parent, button);
+
+	InterfaceOptionsList_DisplayPanel(button.element);
+end
+
+
+--Table to reuse! Yay reuse!
+local displayedElements = {}
+
+function InterfaceCategoryList_Update ()
+	--Redraw the scroll lists
+	local offset = FauxScrollFrame_GetOffset(InterfaceOptionsFrameCategoriesList);
+	local buttons = InterfaceOptionsFrameCategories.buttons;
+	local element;
+
+	for i, element in SecureNext, displayedElements do
+		displayedElements[i] = nil;
+	end
+
+	for i, element in SecureNext, blizzardCategories do
+		if ( not element.hidden ) then
+			tinsert(displayedElements, element);
+		end
+	end
+
+	local numButtons = #buttons;
+	local numCategories = #displayedElements;
+
+	if ( numCategories > numButtons and ( not InterfaceOptionsFrameCategoriesList:IsShown() ) ) then
+		OptionsList_DisplayScrollBar(InterfaceOptionsFrameCategories);
+	elseif ( numCategories <= numButtons and ( InterfaceOptionsFrameCategoriesList:IsShown() ) ) then
+		OptionsList_HideScrollBar(InterfaceOptionsFrameCategories);	
+	end
+
+	FauxScrollFrame_Update(InterfaceOptionsFrameCategoriesList, numCategories, numButtons, buttons[1]:GetHeight());
+
+	local selection = InterfaceOptionsFrameCategories.selection;
+	if ( selection ) then
+		-- Store the currently selected element and clear all the buttons, we're redrawing.
+		OptionsList_ClearSelection(InterfaceOptionsFrameCategories, InterfaceOptionsFrameCategories.buttons);
+	end
+
+	for i = 1, numButtons do
+		element = displayedElements[i + offset];
+		if ( not element ) then
+			OptionsList_HideButton(buttons[i]);
+		else
+			OptionsList_DisplayButton(buttons[i], element);
+
+			if ( selection ) and ( selection == element ) and ( not InterfaceOptionsFrameCategories.selection ) then
+				OptionsList_SelectButton(InterfaceOptionsFrameCategories, buttons[i]);
+			end
+		end
+		
+	end
+
+	if ( selection ) then
+		-- If there was a selected element before we cleared the button highlights, restore it, 'cause we're done.
+		-- Note: This theoretically might already have been done by OptionsList_SelectButton, but in the event that the selected button hasn't been drawn, this is still necessary.
+		InterfaceOptionsFrameCategories.selection = selection;
+	end
+end
+
+function InterfaceAddOnsList_Update ()
+	-- Might want to merge this into InterfaceCategoryList_Update depending on whether or not things get differentiated.
+	local offset = FauxScrollFrame_GetOffset(InterfaceOptionsFrameAddOnsList);
+	local buttons = InterfaceOptionsFrameAddOns.buttons;
+	local element;
+
+	for i, element in SecureNext, displayedElements do
+		displayedElements[i] = nil;
+	end
+
+	for i, element in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
+		if ( not element.hidden ) then
+			tinsert(displayedElements, element);
+		end
+	end
+
+	local numAddOnCategories = #displayedElements;
+	local numButtons = #buttons;
+
+	-- Show the AddOns tab if it's not empty.
+	if ( ( InterfaceOptionsFrameTab2 and not InterfaceOptionsFrameTab2:IsShown() ) and numAddOnCategories > 0 ) then
+		InterfaceOptionsFrameCategoriesTop:Hide();
+		InterfaceOptionsFrameAddOnsTop:Hide();
+		InterfaceOptionsFrameTab1:Show();
+		InterfaceOptionsFrameTab2:Show();
+	end
+
+	if ( numAddOnCategories > numButtons and ( not InterfaceOptionsFrameAddOnsList:IsShown() ) ) then
+		-- We need to show the scroll bar, we have more elements than buttons.
+		OptionsList_DisplayScrollBar(InterfaceOptionsFrameAddOns);
+	elseif ( numAddOnCategories <= numButtons and ( InterfaceOptionsFrameAddOnsList:IsShown() ) ) then
+		-- Hide the scrollbar, there's nothing to scroll.
+		OptionsList_HideScrollBar(InterfaceOptionsFrameAddOns);
+	end
+
+	FauxScrollFrame_Update(InterfaceOptionsFrameAddOnsList, numAddOnCategories, numButtons, buttons[1]:GetHeight());
+
+	local selection = InterfaceOptionsFrameAddOns.selection;
+	if ( selection ) then
+		OptionsList_ClearSelection(InterfaceOptionsFrameAddOns, InterfaceOptionsFrameAddOns.buttons);
+	end
+
+	for i = 1, #buttons do
+		element = displayedElements[i + offset]
+		if ( not element ) then
+			OptionsList_HideButton(buttons[i]);
+		else
+			OptionsList_DisplayButton(buttons[i], element);
 			
-	InterfaceOptionsFrame_Show();
+			if ( selection ) and ( selection == element ) and ( not InterfaceOptionsFrameAddOns.selection ) then
+				OptionsList_SelectButton(InterfaceOptionsFrameAddOns, buttons[i]);
+			end
+		end
+	end
+
+	if ( selection ) then
+		InterfaceOptionsFrameAddOns.selection = selection;
+	end
+end
+
+
+-- [[ InterfaceOptionsFrame ]] --
+
+function InterfaceOptionsFrame_Show ()
+	if ( InterfaceOptionsFrame:IsShown() ) then
+		InterfaceOptionsFrame:Hide();
+	else
+		InterfaceOptionsFrame:Show();
+	end
 end
 
 function InterfaceOptionsFrameOkay_OnClick (isApply)
 	--Iterate through registered panels and run their okay methods in a taint-safe fashion
 
-	for _, category in next, blizzardCategories do
+	for _, category in SecureNext, blizzardCategories do
 		securecall("pcall", category.okay, category);
 	end
 	
-	for _, category in next, INTERFACEOPTIONS_ADDONCATEGORIES do
+	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
 		securecall("pcall", category.okay, category);
 	end
-	
-	if ( InterfaceOptionsFrame.gxRestart ) then
-		InterfaceOptionsFrame.gxRestart = nil;
-		ConsoleExec("gxRestart");
-	elseif ( InterfaceOptionsFrame.audioRestart ) then
-		InterfaceOptionsFrame_AudioRestart()
+
+	if ( InterfaceOptionsFrame.gameRestart ) then
+		StaticPopup_Show("CLIENT_RESTART_ALERT");
+		InterfaceOptionsFrame.gameRestart = nil;
+	elseif ( InterfaceOptionsFrame.logout ) then
+		StaticPopup_Show("CLIENT_LOGOUT_ALERT");
+		InterfaceOptionsFrame.logout = nil;
 	end
-	
+
 	if ( not isApply ) then
 		InterfaceOptionsFrame_Show();
 	end
 end
 
+function InterfaceOptionsFrameCancel_OnClick ()
+	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
+
+	for _, category in SecureNext, blizzardCategories do
+		securecall("pcall", category.cancel, category);
+	end
+
+	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
+		securecall("pcall", category.cancel, category);
+	end
+
+	InterfaceOptionsFrame.gameRestart = nil;
+	InterfaceOptionsFrame.logout = nil;
+
+	InterfaceOptionsFrame_Show();
+end
+
 function InterfaceOptionsFrameDefaults_OnClick ()
-	StaticPopup_Show("CONFIRM_RESET_SETTINGS");
+	StaticPopup_Show("CONFIRM_RESET_INTERFACE_SETTINGS");
 end
 
 function InterfaceOptionsFrame_SetAllToDefaults ()
 	--Iterate through registered panels and run their default methods in a taint-safe fashion
 
-	for _, category in next, blizzardCategories do
+	for _, category in SecureNext, blizzardCategories do
 		securecall("pcall", category.default, category);
 	end
-	
-	for _, category in next, INTERFACEOPTIONS_ADDONCATEGORIES do
+
+	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
 		securecall("pcall", category.default, category);
 	end
-	
-	--Run the OnShow method of the currently displayed panel so that it can update any values that were changed.
-	local displayedFrame = InterfaceOptionsFramePanelContainer.displayedFrame;
-	if ( displayedFrame and displayedFrame.GetScript ) then
-		local script = displayedFrame:GetScript("OnShow");
-		if ( script ) then
-			securecall(script, displayedFrame);
-		end
-	end
+
+	--Refresh the categories to pick up changes made.
+	InterfaceOptionsOptionsFrame_RefreshCategories();
+	InterfaceOptionsOptionsFrame_RefreshAddOns();
 end
 
 function InterfaceOptionsFrame_SetCurrentToDefaults ()
-	local displayedFrame = InterfaceOptionsFramePanelContainer.displayedFrame;
-	
-	if ( not displayedFrame or not displayedFrame.default ) then
+	local displayedPanel = InterfaceOptionsFramePanelContainer.displayedPanel;
+	if ( not displayedPanel or not displayedPanel.default ) then
 		return;
 	end
-	
-	securecall("pcall", displayedFrame.default, displayedFrame);
-	if ( displayedFrame and displayedFrame.GetScript ) then
-		local script = displayedFrame:GetScript("OnShow");
-		if ( script ) then
-			securecall(script, displayedFrame);
+
+	--Run the currently displayed panel's default method in a taint-safe fashion.
+	securecall("pcall", displayedPanel.default, displayedPanel);
+	if ( displayedPanel ) then
+		securecall("pcall", displayedPanel.default, displayedPanel);
+		--Run the refresh method to refresh any values that were changed.
+		if ( displayedPanel.refresh ) then
+			securecall("pcall", displayedPanel.refresh, displayedPanel);
 		end
 	end
 end
 
-function InterfaceOptionsFrame_OnLoad (self)
-	--Make sure all the UVars get their default values set, since systems that require them to be defined will be loaded before anything in UIOptionsPanels
-	self:RegisterEvent("VARIABLES_LOADED");
-	InterfaceOptionsFrame_InitializeUVars();
-	PanelTemplates_SetNumTabs(self, 2);
-	InterfaceOptionsFrame.selectedTab = 1;
-	PanelTemplates_UpdateTabs(self);	
+function InterfaceOptionsOptionsFrame_RefreshCategories ()
+	for _, category in SecureNext, blizzardCategories do
+		securecall("pcall", category.refresh, category);
+	end
 end
 
-function InterfaceOptionsFrame_OnShow ()
-	--Refresh the two category lists and display the "Controls" group of options if nothing is selected.
-	InterfaceCategoryList_Update();
-	InterfaceAddOnsList_Update();
-	if ( not InterfaceOptionsFramePanelContainer.displayedFrame ) then
-		InterfaceOptionsFrame_OpenToFrame(CONTROLS_LABEL);
+function InterfaceOptionsOptionsFrame_RefreshAddOns ()
+	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
+		securecall("pcall", category.refresh, category);
 	end
-	
-	local quality = VideoOptionsPanel_GetVideoQuality();
-	VideoOptionsPanel_SetVideoQualityLabels(quality);
-end
-
-function InterfaceOptionsFrame_OnHide ()
-	--Yay for playing sounds
-	PlaySound("gsTitleOptionExit");
-	
-	if ( InterfaceOptionsFrame.lastFrame ) then
-		ShowUIPanel(InterfaceOptionsFrame.lastFrame);
-		InterfaceOptionsFrame.lastFrame = nil;
-	end
-	
-	UpdateMicroButtons();
 end
 
 uvarInfo = {
@@ -161,17 +301,67 @@ uvarInfo = {
 	["SHOW_DISPELLABLE_DEBUFFS"] = { default = "1", cvar = "showDispelDebuffs", event = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
 }
 
- function InterfaceOptionsFrame_OnEvent (self, event, ...)
+function InterfaceOptionsFrame_InitializeUVars ()
+	-- Setup UVars that keep settings
+	for uvar, setting in SecureNext, uvarInfo do
+		setglobal(uvar, setting.default);
+	end
+end
+
+function InterfaceOptionsFrame_LoadUVars ()
+	local variable, cvarValue
+	for uvar, setting in SecureNext, uvarInfo do
+		variable = getglobal(uvar);
+		cvarValue = GetCVar(setting.cvar);
+		if ( cvarValue == setting.default and variable ~= setting.default ) then
+			SetCVar(setting.cvar, variable, setting.event)
+			if ( setting.func ) then
+				setting.func()
+			end
+		elseif ( cvarValue ~= setting.default or ( not ( getglobal(uvar) ) ) ) then
+			if ( setting.func ) then
+				setting.func()
+			end
+		end
+	end
+end
+
+function InterfaceOptionsFrame_OnLoad (self)
+	--Make sure all the UVars get their default values set, since systems that require them to be defined will be loaded before anything in UIOptionsPanels
+	self:RegisterEvent("VARIABLES_LOADED");
+	InterfaceOptionsFrame_InitializeUVars();
+	PanelTemplates_SetNumTabs(self, 2);
+	InterfaceOptionsFrame.selectedTab = 1;
+	PanelTemplates_UpdateTabs(self);	
+end
+
+function InterfaceOptionsFrame_OnEvent (self, event, ...)
 	if ( event == "VARIABLES_LOADED" ) then
 		InterfaceOptionsFrame_LoadUVars();
 	end
 end
 
-function InterfaceOptionsFrame_Show ()
-	if ( InterfaceOptionsFrame:IsShown() ) then
-		InterfaceOptionsFrame:Hide();
-	else
-		InterfaceOptionsFrame:Show();
+function InterfaceOptionsFrame_OnShow (self)
+	--Refresh the two category lists and display the "Controls" group of options if nothing is selected.
+	InterfaceCategoryList_Update();
+	InterfaceAddOnsList_Update();
+	if ( not InterfaceOptionsFramePanelContainer.displayedPanel ) then
+		InterfaceOptionsFrame_OpenToCategory(CONTROLS_LABEL);
+	end
+	--Refresh the categories to pick up changes made while the options frame was hidden.
+	InterfaceOptionsOptionsFrame_RefreshCategories();
+	InterfaceOptionsOptionsFrame_RefreshAddOns();
+end
+
+function InterfaceOptionsFrame_OnHide (self)
+	OptionsFrame_OnHide(InterfaceOptionsFrame);
+
+	if ( InterfaceOptionsFrame.gameRestart ) then
+		StaticPopup_Show("CLIENT_RESTART_ALERT");
+		InterfaceOptionsFrame.gameRestart = nil;
+	elseif ( InterfaceOptionsFrame.logout ) then
+		StaticPopup_Show("CLIENT_LOGOUT_ALERT");
+		InterfaceOptionsFrame.logout = nil;
 	end
 end
 
@@ -191,19 +381,19 @@ function InterfaceOptionsFrame_TabOnClick ()
 	end
 end
 
-function InterfaceOptionsFrame_OpenToFrame (frame)
-	local frameName;
-	if ( type(frame) == "string" ) then
-		frameName = frame;
-		frame = nil;
+function InterfaceOptionsFrame_OpenToCategory (panel)
+	local panelName;
+	if ( type(panel) == "string" ) then
+		panelName = panel;
+		panel = nil;
 	end
 	
-	assert(frameName or frame, 'Usage: InterfaceOptionsFrame_OpenToFrame("categoryName" or frame)');
+	assert(panelName or panel, 'Usage: InterfaceOptionsFrame_OpenToCategory("categoryName" or panel)');
 	
 	local blizzardElement, elementToDisplay
 	
-	for i, element in next, blizzardCategories do
-		if ( element == frame or (frameName and element.name and element.name == frameName) ) then
+	for i, element in SecureNext, blizzardCategories do
+		if ( element == panel or (panelName and element.name and element.name == panelName) ) then
 			elementToDisplay = element;
 			blizzardElement = true;
 			break;
@@ -211,8 +401,8 @@ function InterfaceOptionsFrame_OpenToFrame (frame)
 	end
 	
 	if ( not elementToDisplay ) then
-		for i, element in next, INTERFACEOPTIONS_ADDONCATEGORIES do
-			if ( element == frame or (frameName and element.name and element.name == frameName) ) then
+		for i, element in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
+			if ( element == panel or (panelName and element.name and element.name == panelName) ) then
 				elementToDisplay = element;
 				break;
 			end
@@ -226,7 +416,7 @@ function InterfaceOptionsFrame_OpenToFrame (frame)
 	if ( blizzardElement ) then
 		InterfaceOptionsFrameTab1:Click();
 		local buttons = InterfaceOptionsFrameCategories.buttons
-		for i, button in next, buttons do
+		for i, button in SecureNext, buttons do
 			if ( button.element == elementToDisplay ) then
 				button:Click();
 			elseif ( elementToDisplay.parent and button.element and (button.element.name == elementToDisplay.parent and button.element.collapsed) ) then
@@ -240,7 +430,7 @@ function InterfaceOptionsFrame_OpenToFrame (frame)
 	else
 		InterfaceOptionsFrameTab2:Click();
 		local buttons = InterfaceOptionsFrameAddOns.buttons
-		for i, button in next, buttons do
+		for i, button in SecureNext, buttons do
 			if ( button.element == elementToDisplay ) then
 				button:Click();
 			elseif ( elementToDisplay.parent and button.element and (button.element.name == elementToDisplay.parent and button.element.collapsed) ) then
@@ -254,251 +444,7 @@ function InterfaceOptionsFrame_OpenToFrame (frame)
 	end
 end
 
-function InterfaceOptionsList_OnLoad (categoryFrame)
-	local name = categoryFrame:GetName();
-	
-	--Setup random things!
-	categoryFrame.scrollBar = getglobal(name .. "ListScrollBar");
-	categoryFrame:SetBackdropBorderColor(.6, .6, .6, 1);
-	getglobal(name.."Bottom"):SetVertexColor(.66, .66, .66);
-	
-	--Create buttons for scrolling
-	local buttons = {};
-	local button = CreateFrame("BUTTON", name .. "Button1", categoryFrame, "InterfaceOptionsButtonTemplate");
-	button:SetPoint("TOPLEFT", categoryFrame, 0, -8);
-	categoryFrame.buttonHeight = button:GetHeight();
-	tinsert(buttons, button);
-	
-	local maxButtons = (categoryFrame:GetHeight() - 8) / categoryFrame.buttonHeight;
-	for i = 2, maxButtons do
-		button = CreateFrame("BUTTON", name .. "Button" .. i, categoryFrame, "InterfaceOptionsButtonTemplate");
-		button:SetPoint("TOPLEFT", buttons[#buttons], "BOTTOMLEFT");
-		tinsert(buttons, button);
-	end
-	
-	categoryFrame.buttons = buttons;	
-end
 
---Table to reuse! Yay reuse!
-local displayedElements = {}
-
-function InterfaceCategoryList_Update ()
-	--Redraw the scroll lists
-	local offset = FauxScrollFrame_GetOffset(InterfaceOptionsFrameCategoriesList);
-	local buttons = InterfaceOptionsFrameCategories.buttons;
-	local element;
-	
-	for i, element in next, displayedElements do
-		displayedElements[i] = nil;
-	end
-	
-	for i, element in next, blizzardCategories do
-		if ( not element.hidden ) then
-			tinsert(displayedElements, element);
-		end
-	end
-	
-	local numButtons = #buttons;
-	local numCategories = #displayedElements;
-	
-	if ( numCategories > numButtons and ( not InterfaceOptionsFrameCategoriesList:IsShown() ) ) then
-		InterfaceOptionsList_DisplayScrollBar(InterfaceOptionsFrameCategories);
-	elseif ( numCategories <= numButtons and ( InterfaceOptionsFrameCategoriesList:IsShown() ) ) then
-		InterfaceOptionsList_HideScrollBar(InterfaceOptionsFrameCategories);	
-	end
-	
-	FauxScrollFrame_Update(InterfaceOptionsFrameCategoriesList, numCategories, numButtons, buttons[1]:GetHeight());
-	
-	local selection = InterfaceOptionsFrameCategories.selection;
-	if ( selection ) then
-		-- Store the currently selected element and clear all the buttons, we're redrawing.
-		InterfaceOptionsList_ClearSelection(InterfaceOptionsFrameCategories, InterfaceOptionsFrameCategories.buttons);
-	end
-		
-	
-	for i = 1, numButtons do
-		element = displayedElements[i + offset];
-		if ( not element ) then
-			InterfaceOptionsList_HideButton(buttons[i]);
-		else
-			InterfaceOptionsList_DisplayButton(buttons[i], element);
-			
-			if ( selection ) and ( selection == element ) and ( not InterfaceOptionsFrameCategories.selection ) then
-				InterfaceOptionsList_SelectButton(InterfaceOptionsFrameCategories, buttons[i]);
-			end
-		end
-		
-	end
-	
-	if ( selection ) then
-		-- If there was a selected element before we cleared the button highlights, restore it, 'cause we're done.
-		-- Note: This theoretically might already have been done by InterfaceOptionsList_SelectButton, but in the event that the selected button hasn't been drawn, this is still necessary.
-		InterfaceOptionsFrameCategories.selection = selection;
-	end
-end
-
-function InterfaceAddOnsList_Update ()
-	-- Might want to merge this into InterfaceCategoryList_Update depending on whether or not things get differentiated.
-	local offset = FauxScrollFrame_GetOffset(InterfaceOptionsFrameAddOnsList);
-	local buttons = InterfaceOptionsFrameAddOns.buttons;
-	local element;
-	
-	for i, element in next, displayedElements do
-		displayedElements[i] = nil;
-	end
-	
-	for i, element in next, INTERFACEOPTIONS_ADDONCATEGORIES do
-		if ( not element.hidden ) then
-			tinsert(displayedElements, element);
-		end
-	end
-	
-	local numAddOnCategories = #displayedElements;
-	local numButtons = #buttons;
-	
-	-- Show the AddOns tab if it's not empty.
-	if ( ( InterfaceOptionsFrameTab2 and not InterfaceOptionsFrameTab2:IsShown() ) and numAddOnCategories > 0 ) then
-		InterfaceOptionsFrameCategoriesTop:Hide();
-		InterfaceOptionsFrameAddOnsTop:Hide();
-		InterfaceOptionsFrameTab1:Show();
-		InterfaceOptionsFrameTab2:Show();
-	end
-	
-	if ( numAddOnCategories > numButtons and ( not InterfaceOptionsFrameAddOnsList:IsShown() ) ) then
-		-- We need to show the scroll bar, we have more elements than buttons.
-		InterfaceOptionsList_DisplayScrollBar(InterfaceOptionsFrameAddOns);
-	elseif ( numAddOnCategories <= numButtons and ( InterfaceOptionsFrameAddOnsList:IsShown() ) ) then
-		-- Hide the scrollbar, there's nothing to scroll.
-		InterfaceOptionsList_HideScrollBar(InterfaceOptionsFrameAddOns);
-	end
-	
-	FauxScrollFrame_Update(InterfaceOptionsFrameAddOnsList, numAddOnCategories, numButtons, buttons[1]:GetHeight());
-	
-	local selection = InterfaceOptionsFrameAddOns.selection;
-	if ( selection ) then
-		InterfaceOptionsList_ClearSelection(InterfaceOptionsFrameAddOns, InterfaceOptionsFrameAddOns.buttons);
-	end
-	
-	for i = 1, #buttons do
-		element = displayedElements[i + offset]
-		if ( not element ) then
-			InterfaceOptionsList_HideButton(buttons[i]);
-		else
-			InterfaceOptionsList_DisplayButton(buttons[i], element);
-			
-			if ( selection ) and ( selection == element ) and ( not InterfaceOptionsFrameAddOns.selection ) then
-				InterfaceOptionsList_SelectButton(InterfaceOptionsFrameAddOns, buttons[i]);
-			end
-		end
-	end
-	
-	if ( selection ) then
-		InterfaceOptionsFrameAddOns.selection = selection;
-	end
-end
-
-function InterfaceOptionsList_DisplayScrollBar (frame)
-	local list = getglobal(frame:GetName() .. "List");
-	list:Show();
-
-	local listWidth = list:GetWidth();
-	
-	for _, button in next, frame.buttons do
-		button:SetWidth(button:GetWidth() - listWidth);
-	end
-end
-
-function InterfaceOptionsList_HideScrollBar (frame)
-	local list = getglobal(frame:GetName() .. "List");
-	list:Hide();
-	
-	local listWidth = list:GetWidth();
-	
-	for _, button in next, frame.buttons do
-		button:SetWidth(button:GetWidth() + listWidth);
-	end
-end
-
-function InterfaceOptionsList_HideButton (button)
-	-- Sparse for now, who knows what will end up here?
-	button:Hide();
-end
-
-function InterfaceOptionsList_DisplayButton (button, element)
-	-- Do display things
-	button:Show();
-	button.element = element;
-	
-	if (element.parent) then
-		button:SetNormalFontObject(GameFontHighlightSmall);
-		button:SetHighlightFontObject(GameFontHighlightSmall);
-		button.text:SetPoint("LEFT", 16, 2);
-	else
-		button:SetNormalFontObject(GameFontNormal);
-		button:SetHighlightFontObject(GameFontHighlight);
-		button.text:SetPoint("LEFT", 8, 2);
-	end
-	button.text:SetText(element.name);
-	
-	if (element.hasChildren) then
-		if (element.collapsed) then
-			button.toggle:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-UP");
-			button.toggle:SetPushedTexture("Interface\\Buttons\\UI-PlusButton-DOWN");
-		else
-			button.toggle:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-UP");
-			button.toggle:SetPushedTexture("Interface\\Buttons\\UI-MinusButton-DOWN");		
-		end
-		button.toggle:Show();
-	else
-		button.toggle:Hide();
-	end
-end
-
-function InterfaceOptionsListButton_OnClick (mouseButton, button)
-	if ( mouseButton == "RightButton" ) then
-		if ( button.element.hasChildren ) then
-			button.toggle:Click();
-		end
-		return;
-	end
-	
-	local parent = button:GetParent();
-	local buttons = parent.buttons;
-	
-	InterfaceOptionsList_ClearSelection(InterfaceOptionsFrameCategories, InterfaceOptionsFrameCategories.buttons);
-	InterfaceOptionsList_ClearSelection(InterfaceOptionsFrameAddOns, InterfaceOptionsFrameAddOns.buttons);
-	InterfaceOptionsList_SelectButton(parent, button);
-	
-	InterfaceOptionsList_DisplayFrame(button.element);
-end
-
-function InterfaceOptionsList_DisplayFrame (frame)	
-	if ( InterfaceOptionsFramePanelContainer.displayedFrame ) then
-		InterfaceOptionsFramePanelContainer.displayedFrame:Hide();
-	end
-	
-	InterfaceOptionsFramePanelContainer.displayedFrame = frame;
-	
-	frame:SetParent(InterfaceOptionsFramePanelContainer);
-	frame:ClearAllPoints();
-	frame:SetPoint("TOPLEFT", InterfaceOptionsFramePanelContainer, "TOPLEFT");
-	frame:SetPoint("BOTTOMRIGHT", InterfaceOptionsFramePanelContainer, "BOTTOMRIGHT");
-	frame:Show();
-end
-
-function InterfaceOptionsList_ClearSelection (listFrame, buttons)
-	for _, button in next, buttons do
-		button:UnlockHighlight();
-	end
-	
-	listFrame.selection = nil;
-end
-
-function InterfaceOptionsList_SelectButton (listFrame, button)
-	button:LockHighlight()
-
-	listFrame.selection = button.element;
-end
 ---------------------------------------------------------------------------------------------------
 -- HOWTO: Add new categories of options
 --
@@ -676,7 +622,7 @@ function InterfaceOptions_ToggleSubCategories (button)
 	element.collapsed = not element.collapsed;
 	local collapsed = element.collapsed;
 	
-	for _, category in next, blizzardCategories do
+	for _, category in SecureNext, blizzardCategories do
 		if ( category.parent == element.name ) then
 			if ( collapsed ) then
 				category.hidden = true;
@@ -686,7 +632,7 @@ function InterfaceOptions_ToggleSubCategories (button)
 		end
 	end
 
-	for _, category in next, INTERFACEOPTIONS_ADDONCATEGORIES do
+	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
 		if ( category.parent == element.name ) then
 			if ( collapsed ) then
 				category.hidden = true;
@@ -695,311 +641,7 @@ function InterfaceOptions_ToggleSubCategories (button)
 			end
 		end
 	end
-	
+
 	InterfaceCategoryList_Update();
 	InterfaceAddOnsList_Update();
-end
-
-function BlizzardOptionsPanel_ResetControl (control)
-	if ( control.value and control.currValue and ( control.value ~= control.currValue ) ) then
-		control:SetValue(control.currValue);
-	end
-end
-
-function BlizzardOptionsPanel_DefaultControl (control)
-	if ( control:GetValue() ~= control.defaultValue ) then
-		control:SetValue(control.defaultValue);
-	end
-end
-
-function BlizzardOptionsPanel_UpdateCurrentControlValue (control)
-	control.currValue = control.value;
-end
-
-local function BlizzardOptionsPanel_Okay (self)
-	for _, control in next, self.controls do
-		securecall(BlizzardOptionsPanel_UpdateCurrentControlValue, control);
-	end
-end
-
-local function BlizzardOptionsPanel_Cancel (self)
-	for _, control in next, self.controls do
-		securecall(BlizzardOptionsPanel_ResetControl, control);
-	end
-end
-
-local function BlizzardOptionsPanel_Default (self)
-	for _, control in next, self.controls do
-		securecall(BlizzardOptionsPanel_DefaultControl, control);
-	end
-end
-
-function BlizzardOptionsPanel_SetupControl (control)
-	local value
-	if ( control.cvar ) then
-		if ( control.type == CONTROLTYPE_CHECKBOX ) then			
-			value = GetCVar(control.cvar);
-			control.currValue = value;
-			control.value = value;
-			if ( control.uvar ) then
-				setglobal(control.uvar, value);
-			end
-			
-			control.GetValue = function(self) return GetCVar(self.cvar); end
-			control.SetValue = function(self, value) self.value = value; SetCVar(self.cvar, value, self.event); if ( self.uvar ) then setglobal(self.uvar, value) end if ( self.setFunc ) then self.setFunc(value) end end
-		elseif ( control.type == CONTROLTYPE_SLIDER ) then
-			control.currValue = GetCVar(control.cvar);
-			control:SetValue(control.currValue);
-		end
-	end
-	if ( control.setFunc ) then
-		control.setFunc(control.value);
-	end
-end
-
-function BlizzardOptionsPanel_OnEvent (self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		for i, control in next, self.controls do
-			securecall(BlizzardOptionsPanel_SetupControl, control);
-		end
-		self:UnregisterEvent(event);
-	end
-end
-
-function BlizzardOptionsPanel_OnLoad (frame)
-	InterfaceOptionsFrame_SetupBlizzardPanel(frame);
-	InterfaceOptions_AddCategory(frame);
-	frame:RegisterEvent("PLAYER_ENTERING_WORLD");
-	if ( not frame:GetScript("OnEvent") ) then
-		frame:SetScript("OnEvent", BlizzardOptionsPanel_OnEvent);
-	end
-	
-	if ( frame.options and frame.controls ) then
-		local entry;
-		for i, control in next, frame.controls do
-			entry = frame.options[(control.cvar or control.label)];
-			if ( entry ) then
-				if ( entry.text ) then
-					control.tooltipText = (getglobal("OPTION_TOOLTIP_" .. gsub(entry.text, "_TEXT$", "")) or entry.tooltip);
-					getglobal(control:GetName() .. "Text"):SetText(getglobal(entry.text) or entry.text);
-				end
-				
-				if ( control.cvar ) then
-					control.defaultValue = GetCVarDefault(control.cvar);
-				else
-				control.defaultValue = control.defaultValue or entry.default;
-				end
-				
-				control.event = entry.event or entry.text;
-				
-				if ( control.type == CONTROLTYPE_SLIDER ) then
-					OptionsFrame_EnableSlider(control);
-					control:SetMinMaxValues(entry.minValue, entry.maxValue);
-					control:SetValueStep(entry.valueStep);
-				end
-			end
-		end
-	end
-end
-
-function BlizzardOptionsPanel_OnShow (panel)
-	-- This function needs to be reworked.
-
-	local value;
-	
-	for _, control in next, panel.controls do
-		if ( control.cvar ) then
-			if ( control.type == CONTROLTYPE_CHECKBOX ) then
-				value = GetCVar(control.cvar);
-				
-				if ( not control.invert ) then
-					if ( value == "1" ) then
-						control:SetChecked(true);
-					else
-						control:SetChecked(false);
-					end
-				else
-					if ( value == "0" ) then
-						control:SetChecked(true);
-					else
-						control:SetChecked(false);
-					end
-				end
-				
-				if ( control.dependentControls ) then
-					if ( control:GetChecked() ) then
-						for _, depControl in next, control.dependentControls do
-							depControl:Enable();
-						end
-					else
-						for _, depControl in next, control.dependentControls do
-							depControl:Disable();
-						end
-					end
-				end
-			elseif ( control.type == CONTROLTYPE_SLIDER ) then
-				-- Don't do anything.
-			end
-		elseif ( control.GetValue ) then
-			if ( control.type == CONTROLTYPE_CHECKBOX ) then
-				value = tostring(control:GetValue());
-				
-				if ( not control.invert ) then
-					if ( value == "1" ) then
-						control:SetChecked(true);
-					else
-						control:SetChecked(false);
-					end
-				else
-					if ( value == "0" ) then
-						control:SetChecked(true);
-					else
-						control:SetChecked(false);
-					end
-				end
-				
-				if ( control.dependentControls ) then
-					if ( control:GetChecked() ) then
-						for _, depControl in next, control.dependentControls do
-							depControl:Enable();
-						end
-					else
-						for _, depControl in next, control.dependentControls do
-							depControl:Disable();
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
-function BlizzardOptionsPanel_RegisterControl (control, parentFrame)
-	if ( ( not parentFrame ) or ( not control ) ) then
-		return;
-	end
-	
-	parentFrame.controls = parentFrame.controls or {};
-	
-	tinsert(parentFrame.controls, control);
-	
-	local value;
-	if ( control.cvar ) then
-		-- Don't do anything here any more, just wait.
-	elseif ( control.GetValue ) then
-		if ( control.type == CONTROLTYPE_CHECKBOX ) then
-			value = control:GetValue();
-			control.currValue = value;
-			control.value = value;
-			if ( control.uvar ) then
-				setglobal(control.uvar, value);
-			end
-			
-			control.SetValue = function(self, value) self.value = value; if ( self.uvar ) then setglobal(self.uvar, value); end if ( self.setFunc ) then self.setFunc(value) end end;
-		end
-	end
-end
-
-function BlizzardOptionsPanel_SetupDependentControl (dependency, control)
-	if ( not dependency ) then
-		return;
-	end
-	
-	assert(control);
-	
-	dependency.dependentControls = dependency.dependentControls or {};
-	tinsert(dependency.dependentControls, control);
-	
-	if ( control.type ~= CONTROLTYPE_DROPDOWN ) then
-		control.Disable = function (self) getmetatable(self).__index.Disable(self) getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
-		control.Enable = function (self) getmetatable(self).__index.Enable(self) getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;
-	else
-		control.Disable = function (self) UIDropDownMenu_DisableDropDown(self) end;
-		control.Enable = function (self) UIDropDownMenu_EnableDropDown(self) end;
-	end
-end
-
-function BlizzardOptionsPanel_CheckButton_OnClick (checkButton)
-	local setting = "0";
-	if ( checkButton:GetChecked() ) then
-		if ( not checkButton.invert ) then
-			setting = "1"
-		end
-	elseif ( checkButton.invert ) then
-		setting = "1"
-	end 
-	
-	checkButton.value = setting;
-	
-	if ( checkButton.cvar ) then
-		SetCVar(checkButton.cvar, setting, checkButton.event);
-	end
-
-	if ( checkButton.uvar ) then
-		setglobal(checkButton.uvar, setting);
-	end
-
-	if ( checkButton.dependentControls ) then
-		if ( checkButton:GetChecked() ) then
-			for _, control in next, checkButton.dependentControls do
-				control:Enable();
-			end
-		else
-			for _, control in next, checkButton.dependentControls do
-				control:Disable();
-			end
-		end
-	end
-	
-	if ( checkButton.setFunc ) then	
-		checkButton.setFunc(checkButton.value);
-	end
-end
-
-
-function InterfaceOptionsFrame_SetupBlizzardPanel (frame)
-	frame.okay = BlizzardOptionsPanel_Okay;
-	frame.cancel = BlizzardOptionsPanel_Cancel;
-	frame.default = BlizzardOptionsPanel_Default;
-end
-
-function InterfaceOptionsFrame_InitializeUVars ()
-	-- Setup UVars that keep settings
-	for uvar, setting in next, uvarInfo do
-		setglobal(uvar, setting.default);
-	end
-end
-
-function InterfaceOptionsFrame_LoadUVars ()
-	local variable, cvarValue
-	for uvar, setting in next, uvarInfo do
-		variable = getglobal(uvar);
-		cvarValue = GetCVar(setting.cvar);
-		if ( cvarValue == setting.default and variable ~= setting.default ) then
-			SetCVar(setting.cvar, variable, setting.event)
-			if ( setting.func ) then
-				setting.func()
-			end
-		elseif ( cvarValue ~= setting.default or ( not ( getglobal(uvar) ) ) ) then
-			if ( setting.func ) then
-				setting.func()
-			end
-		end
-	end
-end
-
-function OptionsFrame_DisableSlider(slider)
-	local name = slider:GetName();
-	getmetatable(slider).__index.Disable(slider);
-	getglobal(name.."Text"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	getglobal(name.."Low"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	getglobal(name.."High"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-end
-
-function OptionsFrame_EnableSlider(slider)
-	local name = slider:GetName();
-	getmetatable(slider).__index.Enable(slider);
-	getglobal(name.."Text"):SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
-	getglobal(name.."Low"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	getglobal(name.."High"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 end

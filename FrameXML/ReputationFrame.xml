@@ -56,7 +56,7 @@
 			</Button>
 			<StatusBar name="$parentReputationBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
 				<Size>
-					<AbsDimension x="103" y="13"/>
+					<AbsDimension x="101" y="13"/>
 				</Size>
 				<Anchors>
 					<Anchor point="RIGHT">

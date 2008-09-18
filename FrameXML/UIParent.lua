@@ -17,7 +17,9 @@ BATTLEFIELD_TAB_OFFSET_Y = 0;
 -- Per panel settings
 UIPanelWindows = {};
 UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["InterfaceOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["VideoOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["AudioOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["InterfaceOptionsFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1 };
 UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
@@ -71,6 +73,7 @@ UIChildWindows = {
 	"OpenMailFrame",
 	"GuildControlPopupFrame",
 	"GuildMemberDetailFrame",
+	"TokenFramePopup",
 	"GuildInfoFrame",
 	"PVPTeamDetails",
 	"GuildBankPopupFrame",
@@ -172,6 +175,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_INSTANCE_WELCOME");
 	self:RegisterEvent("LEVEL_GRANT_PROPOSED");
+	self:RegisterEvent("RAISED_AS_GHOUL");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -394,7 +398,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		return;
 	end	
-	if ( event == "PLAYER_ALIVE" ) then
+	if ( event == "PLAYER_ALIVE" or event == "RAISED_AS_GHOUL" ) then
 		StaticPopup_Hide("DEATH");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		return;
@@ -1034,16 +1038,16 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["TutorialFrameParent"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, reputation = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
 	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
-	["ChatFrame1"] = {baseY = true, yOffset = 20, bottomLeft = actionBarOffset-20, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
+	["ChatFrame1"] = {baseY = true, yOffset = 20, bottomLeft = actionBarOffset-20, justBottomRightAndShapeshift = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 20, bottomRight = actionBarOffset-20, vehicleMenuBar = vehicleMenuBarTop, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	
 	-- Vars
 	["CONTAINER_OFFSET_X"] = {baseX = 0, rightLeft = 2*actionBarOffset+3, rightRight = actionBarOffset+3, isVar = "xAxis"};
-	["CONTAINER_OFFSET_Y"] = {baseY = true, bottomEither = actionBarOffset, reputation = 1, isVar = "yAxis"};
+	["CONTAINER_OFFSET_Y"] = {baseY = true, yOffset = 10, bottomEither = actionBarOffset, reputation = 1, isVar = "yAxis"};
 	["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 210, bottomRight = actionBarOffset, reputation = 1, isVar = "yAxis"};
-	["PETACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, isVar = "yAxis"};
+	["PETACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = actionBarOffset, justBottomRightAndShapeshift = actionBarOffset, reputation = 1, maxLevel = 1, isVar = "yAxis"};
 };
 
 -- constant offsets
@@ -1608,6 +1612,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		elseif ( MultiBarRight:IsShown() ) then
 			tinsert(xOffsetFrames, "rightRight");
 		end
+		if (PetActionBarFrame_IsAboveShapeshift and PetActionBarFrame_IsAboveShapeshift()) then
+			tinsert(yOffsetFrames, "justBottomRightAndShapeshift");
+		end
 
 		if ( ( PetActionBarFrame and PetActionBarFrame:IsShown() ) or ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) or
 			 ( PossessBarFrame and PossessBarFrame:IsShown() ) or ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) ) then
@@ -1650,8 +1657,13 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			end
 		end
 	else
-		SlidingActionBarTexture0:Show();
-		SlidingActionBarTexture1:Show();
+		if (PetActionBarFrame_IsAboveShapeshift and PetActionBarFrame_IsAboveShapeshift()) then
+			SlidingActionBarTexture0:Hide();
+			SlidingActionBarTexture1:Hide();
+		else
+			SlidingActionBarTexture0:Show();
+			SlidingActionBarTexture1:Show();
+		end
 		if ( ShapeshiftBarFrame ) then
 		if ( GetNumShapeshiftForms() > 2 ) then
 			ShapeshiftBarMiddle:Show();
@@ -1667,6 +1679,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 
 	-- If petactionbar is already shown have to set its point is addition to changing its y target
 	if ( PetActionBarFrame:IsShown() ) then
+		PetActionBar_UpdatePositionValues();
 		PetActionBarFrame:SetPoint("TOPLEFT", MainMenuBar, "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 	end
 
@@ -2547,6 +2560,10 @@ function ToggleGameMenu()
 		if ( HelpFrame.back and HelpFrame.back.Click ) then
 			HelpFrame.back:Click();
 		end
+	elseif ( VideoOptionsFrame:IsShown() ) then
+		VideoOptionsFrameCancel:Click();
+	elseif ( AudioOptionsFrame:IsShown() ) then
+		AudioOptionsFrameCancel:Click();
 	elseif ( InterfaceOptionsFrame:IsShown() ) then
 		InterfaceOptionsFrameCancel:Click();
 	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then

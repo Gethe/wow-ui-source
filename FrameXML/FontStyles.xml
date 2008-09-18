@@ -115,6 +115,11 @@
 	<Font name="GameFontHighlightSmallLeft" inherits="GameFontHighlightSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontHighlightSmallLeftTop" inherits="GameFontHighlightSmallLeft" justifyV="TOP" virtual="true"/>
 	<Font name="GameFontHighlightSmallRight" inherits="GameFontHighlightSmall" justifyH="RIGHT" virtual="true"/>
+	<Font name="GameFontHighlightExtraSmall" inherits="GameFontHighlightSmall" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontHighlightExtraSmallLeft" inherits="GameFontHighlightExtraSmall" justifyH="LEFT" virtual="true"/>
+	<Font name="GameFontHighlightExtraSmallLeftTop" inherits="GameFontHighlightExtraSmallLeft" justifyV="TOP" virtual="true"/>
 	<Font name="GameFontDisableSmall" inherits="GameFontNormalSmall" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
@@ -294,17 +299,17 @@
 	<Font name="AchievementPointsFontSmall" inherits="SystemFont_Shadow_Med1" justifyH="CENTER" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>	
-	<Font name="AchievementDescriptionDisabledFont" inherits="SystemFont_Shadow_Small" justifyH="CENTER" justifyV="TOP" virtual="true">
+	<Font name="AchievementDescriptionFont" inherits="SystemFont_Small" justifyH="CENTER" justifyV="TOP" virtual="true">
+		<!-- 	You might be wondering why AchievementDescriptionFont inherits from SystemFont_Small and has its own shadow, rather than inheriting from SystemFont_Shadow_Small. 
+			Good question! SystemFont_Shadow_Small and SystemFont_Small are the same height in most languages, but in Chinese, they are different. SystemFont_Small is the smaller of the two, and what
+			we need to use for things to fit at all well. -->
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
 		<Color r="1" g="1" b="1"/>
-	</Font>
-	<Font name="AchievementDescriptionEnabledFont" inherits="SystemFont_Small" justifyH="CENTER" justifyV="TOP" virtual="true">
-		<Color r="0" g="0" b="0"/>
-	</Font>
-	<Font name="AchievementCriteriaDisabledFont" inherits="SystemFont_Shadow_Small" justifyH="LEFT" justifyV="MIDDLE" virtual="true">
-		<Color r="1" g="1" b="1"/>
-	</Font>
-	<Font name="AchievementCriteriaEnabledFont" inherits="SystemFont_Small" justifyH="LEFT" justifyV="MIDDLE" virtual="true">
-		<Color r="0" g="0" b="0"/>
 	</Font>
 	<Font name="AchievementDateFont" inherits="SystemFont_Small" justifyH="RIGHT" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>

@@ -3,6 +3,10 @@ function OpenStackSplitFrame(maxStack, parent, anchor, anchorTo)
 	if ( StackSplitFrame.owner ) then
 		StackSplitFrame.owner.hasStackSplit = 0;
 	end
+	
+	if ( not maxStack ) then
+		maxStack = 0;
+	end
 
 	StackSplitFrame.maxStack = maxStack;
 	if ( StackSplitFrame.maxStack < 2 ) then

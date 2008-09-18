@@ -696,7 +696,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<PlayerModel name="CompanionModelFrame">
+					<DressUpModel name="CompanionModelFrame">
 						<Size>
 							<AbsDimension x="288" y="160"/>
 						</Size>
@@ -763,7 +763,7 @@
 								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 							</Button>
 						</Frames>
-					</PlayerModel>
+					</DressUpModel>
 					<Button name="CompanionSummonButton" inherits="GameMenuButtonTemplate" text="SUMMON">
 						<Size>
 							<AbsDimension x="150" y="25"/>

@@ -717,36 +717,16 @@ local SeatIndicatorSkinsData = {
 			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher",
 		},
 		[1] = {
-			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher-Seat-3",
-			height = 42,
-			width = 38,
-			xPos = -46,
+			xPos = -49,
 			yPos = -55,
-			texCoord = { 0.21875, 0.8125, 0.15625, 0.8125 },
 		},
 		[2] = {
-			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher-Seat-4",
-			height = 51,
-			width = 16,
-			xPos = -57,
-			yPos = -7,
-			texCoord = { 0.390625, 0.640625, 0.046875, 0.84375 },
-		},
-		[3] = {
-			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher-Seat-2",
-			height = 41,
-			width = 29,
 			xPos = -26,
 			yPos = -21,
-			texCoord = { 0.296875, 0.75, 0.09375, 0.734375 },
 		},
-		[4] = {
-			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher-Seat-1",
-			height = 41,
-			width = 29,
-			xPos = -75,
+		[3] = {
+			xPos = -73,
 			yPos = -21,
-			texCoord = { 0.28125, 0.734375, 0.09375, 0.734375 },
 		},
 	},
 	["Bomber"] = {
@@ -756,18 +736,12 @@ local SeatIndicatorSkinsData = {
 			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Bomber",
 		},
 		[1] = {
-			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Bomber-Seat-1",
-			height = 32,
-			width = 32,
-			xPos = -47,
-			yPos = -40,
+			xPos = -52,
+			yPos = -30,
 		},
 		[2] = {
-			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Bomber-Seat-2",
-			height = 32,
-			width = 32,
-			xPos = -47,
-			yPos = -70,
+			xPos = -52,
+			yPos = -60,
 		},
 	},
 	["SiegeEngine"] = {
@@ -777,34 +751,20 @@ local SeatIndicatorSkinsData = {
 			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine",
 		},
 		[1] = {
-			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine-Seat-1",
-			height = 43,
-			width = 64,
-			xPos = -32,
-			yPos = 0,
-			texCoord = { 0.0, 1.0, 0.109375, 0.78125 },
+			xPos = -52,
+			yPos = -5,
 		},
 		[2] = {
-			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine-Seat-4",
-			height = 32,
-			width = 32,
-			xPos = -19,
+			xPos = -27,
 			yPos = -87,
 		},
 		[3] = {
-			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine-Seat-2",
-			height = 32,
-			width = 32,
 			xPos = -76,
 			yPos = -87,
 		},
 		[4] = {
-			texture = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine-Seat-3",
-			height = 54,
-			width = 28,
 			xPos = -51,
 			yPos = -60,
-			texCoord = { 0.265625, 0.703125, 0.09375, 0.9375 },
 		},
 	},
 }
@@ -833,39 +793,9 @@ function VehicleSeatIndicator_SetUpVehicle(vehicleName)
 		local button = _G["VehicleSeatIndicatorButton"..i];
 		
 		if ( seatData ) then
-			local NormalTexture = button:GetNormalTexture();
-			local DisabledTexture = button:GetDisabledTexture();
-			local PushedTexture = button:GetPushedTexture();
-			
-			NormalTexture:SetTexture(seatData.texture);
-			DisabledTexture:SetTexture(seatData.texture);
-			PushedTexture:SetTexture(seatData.texture);
-			
-			
-			if ( seatData.texCoord ) then
-				NormalTexture:SetTexCoord(unpack(seatData.texCoord))
-				DisabledTexture:SetTexCoord(unpack(seatData.texCoord))
-				PushedTexture:SetTexCoord(unpack(seatData.texCoord))
-			else
-				NormalTexture:SetTexCoord(0,1,0,1)
-				DisabledTexture:SetTexCoord(0,1,0,1)
-				PushedTexture:SetTexCoord(0,1,0,1)
-			end
-			
-			--button:SetHighlightTexture(seatData.texture);
-			--button:GetHighlightTexture():SetTexCoord(unpack(seatData.texCoord))
-			
-			button:SetHeight(seatData.height);
-			button:SetWidth(seatData.width);
 			button:SetPoint("TOPRIGHT", (seatData.xPos or 0), (seatData.yPos or 0));
-			
 			button:Show()
 		else
-			button:GetNormalTexture():SetTexture(nil);
-			button:GetDisabledTexture():SetTexture(nil);
-			button:GetPushedTexture():SetTexture(nil);
-			--button:SetHighlightTexture(nil);
-			
 			button:Hide();
 		end
 	end	
@@ -876,35 +806,47 @@ function VehicleSeatIndicator_SetUpVehicle(vehicleName)
 end
 
 function VehicleSeatIndicator_UnloadTextures()
-	if ( not VehicleSeatIndicator.currSkin ) then
-		return;
-	end
-	for i=1, MAX_VEHICLE_INDICATOR_BUTTONS do
-		local button = _G["VehicleSeatIndicatorButton"..i];
-		button:GetNormalTexture():SetTexture(nil);
-		button:GetDisabledTexture():SetTexture(nil);
-		button:GetPushedTexture():SetTexture(nil);
-	end
 	VehicleSeatIndicatorBackgroundTexture:SetTexture(nil);
 	VehicleSeatIndicator:Hide()
 	VehicleSeatIndicator.currSkin = nil;
 	DurabilityFrame_SetAlerts();
 end
+local SeatIndicator_PulseTable;
+
+local function SeatIndicator_PulseFunc(self, elapsed)
+	return abs(sin(elapsed*360));
+end
+
+function SeatIndicator_Pulse(self, isPlayer)
+	self:Show();
+	self:SetAlpha(0);
+	SetUpAnimation(self, SeatIndicator_PulseTable, self.Hide);
+end
 
 function VehicleSeatIndicator_OnLoad(self)
 	--VehicleSeatIndicator_SetUpVehicle("Demolisher");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
 	self:RegisterEvent("VEHICLE_PASSENGERS_CHANGED");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	
+	SeatIndicator_PulseTable = {
+	totalTime = 2,
+	updateFunc = VehicleSeatIndicatorButton1PulseTexture.SetAlpha,
+	getPosFunc = SeatIndicator_PulseFunc,
+	}
 end
 
 function VehicleSeatIndicator_OnEvent(self, event, ...)
 	local arg1, _, _, _, _, indicatorType = ...;
 	if ( event == "UNIT_ENTERED_VEHICLE" and arg1 == "player" ) then
 		VehicleSeatIndicator_SetUpVehicle(indicatorType);
+	elseif ( event == "UNIT_ENTERING_VEHICLE" and arg1 == "player" ) then
+		self.hasPulsedPlayer = false;
 	elseif ( event == "VEHICLE_PASSENGERS_CHANGED" ) then
 		VehicleSeatIndicator_Update();
-	elseif ( event == "UNIT_EXITED_VEHICLE" and arg1 == "player" ) then
+	elseif ( (event == "UNIT_EXITED_VEHICLE" and arg1 == "player") or (event == "PLAYER_ENTERING_WORLD") ) then
 		VehicleSeatIndicator_UnloadTextures();
 	end
 end
@@ -916,16 +858,21 @@ function VehicleSeatIndicator_Update()
 		local controlType, occupantName = UnitVehicleSeatInfo("player", i);
 		local button = _G["VehicleSeatIndicatorButton"..i];
 		if ( occupantName ) then
-			button:Disable();
+			button.occupantName = occupantName;
 			if ( occupantName == UnitName("player") ) then
-				button:GetDisabledTexture():SetVertexColor(.8,.8,0);
+				_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Show();
+				_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Hide();
+				if ( not VehicleSeatIndicator.hasPulsedPlayer ) then
+					SeatIndicator_Pulse(_G["VehicleSeatIndicatorButton"..i.."PulseTexture"], true);
+					VehicleSeatIndicator.hasPulsedPlayer = true;
+				end
 			else
-				button:GetDisabledTexture():SetVertexColor(1,1,1);
+				_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Hide();
+				_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Show();
 			end
 		else
-			button:Enable();
-			button:GetNormalTexture():SetVertexColor(.5,1,.5);
-			button:GetPushedTexture():SetVertexColor(.5,1,.5);
+			_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Hide();
+			_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Hide();
 		end
 	end
 end
@@ -938,36 +885,43 @@ function VehicleSeatIndicatorButton_OnEnter(self)
 	if ( not self:IsEnabled() ) then
 		return;
 	end
-	self:GetNormalTexture():SetPoint("TOPLEFT", -1, 1);
-	self:GetNormalTexture():SetPoint("BOTTOMRIGHT", -1, 1);
-	
-	self:Raise()
 	
 	local controlType, occupantName = UnitVehicleSeatInfo("player", self:GetID());
+	local highlight = _G[self:GetName().."Highlight"]
 	if ( controlType == "None" ) then
 		if ( occupantName ) then
-			SetCursor("Interface\\CURSOR\\UnablevehichleCursor");
+			highlight:Hide();
+			GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(occupantName);
 		else
+			highlight:Show();
 			SetCursor("Interface\\CURSOR\\vehichleCursor");
 		end
 	elseif ( controlType == "Root" ) then
 		if ( occupantName ) then
-			SetCursor("UNABLEINSPECT_CURSOR");
+			highlight:Hide();
+			GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(occupantName);
 		else
-			SetCursor("INTERACT_CURSOR");
+			highlight:Show();
+			SetCursor("Interface\\CURSOR\\Driver");
 		end
 	elseif ( controlType == "Child" ) then
 		if ( occupantName ) then
-			SetCursor("Interface\\CURSOR\\UnableGunner");
+			highlight:Hide();
+			GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(occupantName);
 		else
+			highlight:Show();
 			SetCursor("Interface\\CURSOR\\Gunner");
 		end
 	end
 end
 
 function VehicleSeatIndicatorButton_OnLeave(self)
-	self:GetNormalTexture():SetPoint("TOPLEFT", 0, 0);
-	self:GetNormalTexture():SetPoint("BOTTOMRIGHT", 0, 0);
-	
+	GameTooltip:Hide();
 	SetCursor(nil);
 end

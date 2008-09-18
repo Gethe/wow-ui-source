@@ -1,16 +1,5 @@
 MAX_FOCUS_BUFFS = 8;
 
-UnitReactionColor = {
-	{ r = 1.0, g = 0.0, b = 0.0 },
-	{ r = 1.0, g = 0.0, b = 0.0 },
-	{ r = 1.0, g = 0.5, b = 0.0 },
-	{ r = 1.0, g = 1.0, b = 0.0 },
-	{ r = 0.0, g = 1.0, b = 0.0 },
-	{ r = 0.0, g = 1.0, b = 0.0 },
-	{ r = 0.0, g = 1.0, b = 0.0 },
-	{ r = 0.0, g = 1.0, b = 0.0 },
-};
-
 function FocusFrame_OnLoad (self)
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -103,51 +92,11 @@ function FocusFrame_OnHide (self)
 end
 
 function FocusFrame_CheckFaction (self)
-	if ( UnitPlayerControlled("focus") ) then
-		local r, g, b;
-		if ( UnitCanAttack("focus", "player") ) then
-			-- Hostile players are red
-			if ( not UnitCanAttack("player", "focus") ) then
-				r = 0.0;
-				g = 0.0;
-				b = 1.0;
-			else
-				r = UnitReactionColor[2].r;
-				g = UnitReactionColor[2].g;
-				b = UnitReactionColor[2].b;
-			end
-		elseif ( UnitCanAttack("player", "focus") ) then
-			-- Players we can attack but which are not hostile are yellow
-			r = UnitReactionColor[4].r;
-			g = UnitReactionColor[4].g;
-			b = UnitReactionColor[4].b;
-		elseif ( UnitIsPVP("focus") and not UnitIsPVPSanctuary("focus") and not UnitIsPVPSanctuary("player") ) then
-			-- Players we can assist but are PvP flagged are green
-			r = UnitReactionColor[6].r;
-			g = UnitReactionColor[6].g;
-			b = UnitReactionColor[6].b;
-		else
-			-- All other players are blue (the usual state on the "blue" server)
-			r = 0.0;
-			g = 0.0;
-			b = 1.0;
-		end
-		FocusFrameNameBackground:SetVertexColor(r, g, b);
-		FocusPortrait:SetVertexColor(1.0, 1.0, 1.0);
-	elseif ( UnitIsTapped("focus") and not UnitIsTappedByPlayer("focus") ) then
+	if ( not UnitPlayerControlled("focus") and UnitIsTapped("focus") and not UnitIsTappedByPlayer("focus") ) then
 		FocusFrameNameBackground:SetVertexColor(0.5, 0.5, 0.5);
 		FocusPortrait:SetVertexColor(0.5, 0.5, 0.5);
 	else
-		local reaction = UnitReaction("focus", "player");
-		if ( reaction ) then
-			local r, g, b;
-			r = UnitReactionColor[reaction].r;
-			g = UnitReactionColor[reaction].g;
-			b = UnitReactionColor[reaction].b;
-			FocusFrameNameBackground:SetVertexColor(r, g, b);
-		else
-			FocusFrameNameBackground:SetVertexColor(0, 0, 1.0);
-		end
+		FocusFrameNameBackground:SetVertexColor(UnitSelectionColor("focus"));
 		FocusPortrait:SetVertexColor(1.0, 1.0, 1.0);
 	end
 end

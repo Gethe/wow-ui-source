@@ -24,13 +24,55 @@ StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
 	exclusive = 1,
 }
 
-StaticPopupDialogs["CONFIRM_RESET_SETTINGS"] = { 
+StaticPopupDialogs["CONFIRM_RESET_VIDEO_SETTINGS"] = { 
 	text = CONFIRM_RESET_SETTINGS,
 	button1 = ALL_SETTINGS,
 	button3 = CURRENT_SETTINGS,
 	button2 = CANCEL,
-	OnAccept = InterfaceOptionsFrame_SetAllToDefaults,
-	OnAlt = InterfaceOptionsFrame_SetCurrentToDefaults,
+	OnAccept = function ()
+		VideoOptionsFrame_SetAllToDefaults();
+	end,
+	OnAlt = function ()
+		VideoOptionsFrame_SetCurrentToDefaults();
+	end,
+	OnCancel = function() end,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["CONFIRM_RESET_AUDIO_SETTINGS"] = { 
+	text = CONFIRM_RESET_SETTINGS,
+	button1 = ALL_SETTINGS,
+	button3 = CURRENT_SETTINGS,
+	button2 = CANCEL,
+	OnAccept = function ()
+		AudioOptionsFrame_SetAllToDefaults();
+	end,
+	OnAlt = function ()
+		AudioOptionsFrame_SetCurrentToDefaults();
+	end,
+	OnCancel = function() end,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["CONFIRM_RESET_INTERFACE_SETTINGS"] = { 
+	text = CONFIRM_RESET_INTERFACE_SETTINGS,
+	button1 = ALL_SETTINGS,
+	button3 = CURRENT_SETTINGS,
+	button2 = CANCEL,
+	OnAccept = function ()
+		InterfaceOptionsFrame_SetAllToDefaults();
+	end,
+	OnAlt = function ()
+		InterfaceOptionsFrame_SetCurrentToDefaults();
+	end,
 	OnCancel = function() end,
 	timeout = 0,
 	exclusive = 1,
@@ -431,6 +473,14 @@ StaticPopupDialogs["HELP_TICKET_QUEUE_DISABLED"] = {
 
 StaticPopupDialogs["CLIENT_RESTART_ALERT"] = {
 	text = CLIENT_RESTART_ALERT,
+	button1 = OKAY,
+	showAlert = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["CLIENT_LOGOUT_ALERT"] = {
+	text = CLIENT_LOGOUT_ALERT,
 	button1 = OKAY,
 	showAlert = 1,
 	timeout = 0,
@@ -2311,7 +2361,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 				break;
 			end
 		end
-		
+
 		--If dialog not found and there's a preferredIndex then try to find an available frame before the preferredIndex
 		if ( not dialog and StaticPopupDialogs[which].preferredIndex ) then
 			for i = 1, StaticPopupDialogs[which].preferredIndex do
@@ -2350,7 +2400,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	else
 		text:SetFormattedText(StaticPopupDialogs[which].text, text_arg1, text_arg2);
 	end
-	
+
 	-- If is any of the guild message popups
 	local wideEditBox = getglobal(dialog:GetName().."WideEditBox");
 	local editBox = getglobal(dialog:GetName().."EditBox");
@@ -2395,7 +2445,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		wideEditBox:Hide();
 		editBox:Hide();
 	end
-	
+
 	-- Show or hide money frame
 	if ( StaticPopupDialogs[which].hasMoneyFrame ) then
 		getglobal(dialog:GetName().."MoneyFrame"):Show();
@@ -2437,7 +2487,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	else
 		getglobal(dialog:GetName().."ItemFrame"):Hide();
 	end
-	
+
 	-- Set the buttons of the dialog
 	local button1 = getglobal(dialog:GetName().."Button1");
 	local button2 = getglobal(dialog:GetName().."Button2");
@@ -2450,17 +2500,14 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 			button1:SetPoint("TOPRIGHT", editBox, "BOTTOM", -72, -8);
 			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-			
 		elseif ( StaticPopupDialogs[which].hasMoneyFrame ) then
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -24);
 			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-			
 		elseif ( StaticPopupDialogs[which].hasMoneyInputFrame ) then
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -30);
 			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-			
 		elseif ( StaticPopupDialogs[which].hasItemFrame ) then
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -70);
 			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
@@ -2480,7 +2527,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		end
 		button2:Enable();
 		button2:Show();
-		
+
 		width = button3:GetTextWidth();
 		if ( width > 110 ) then
 			button3:SetWidth(width + 20);
@@ -2489,7 +2536,6 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		end
 		button3:Enable();
 		button3:Show();
-		
 	elseif ( StaticPopupDialogs[which].button2 and
 	   ( not StaticPopupDialogs[which].DisplayButton2 or StaticPopupDialogs[which].DisplayButton2() ) ) then
 		button1:ClearAllPoints();

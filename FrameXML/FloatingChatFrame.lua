@@ -696,6 +696,7 @@ function FCF_OnUpdate(elapsed)
 				if ( isLocked ) then
 					CombatLogQuickButtonFrame_Custom:SetParent(chatFrame);
 				else
+					yOffset = yOffset + CombatLogQuickButtonFrame_Custom:GetHeight();
 					CombatLogQuickButtonFrame_Custom:SetParent(chatTab);
 					CombatLogQuickButtonFrame_Custom:SetAlpha(1);
 					if ( chatFrame:IsShown() ) then

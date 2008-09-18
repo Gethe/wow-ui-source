@@ -215,26 +215,10 @@ function MerchantFrame_UpdateMerchantInfo()
 end
 
 function MerchantFrame_UpdateAltCurrency(index, i)
-	local itemTexture, itemValue, pointsTexture, button;
+	local itemTexture, itemValue, button;
 	local honorPoints, arenaPoints, itemCount = GetMerchantItemCostInfo(index);
 	local frameName = "MerchantItem"..i.."AltCurrencyFrame";
-	button = getglobal(frameName.."Points");
-	-- update Alt Currency Frame with pointsValues
-	if ( honorPoints and honorPoints ~= 0 ) then
-		local factionGroup = UnitFactionGroup("player");
-		if ( factionGroup ) then
-			pointsTexture = "Interface\\TargetingFrame\\UI-PVP-"..factionGroup;
-		end
-		button.pointType = HONOR_POINTS;
-		AltCurrencyFrame_Update(frameName.."Points", pointsTexture, honorPoints);
-		button:Show();
-	elseif ( arenaPoints and arenaPoints ~= 0 ) then
-		button.pointType = ARENA_POINTS;
-		AltCurrencyFrame_Update(frameName.."Points", "Interface\\PVPFrame\\PVP-ArenaPoints-Icon", arenaPoints);
-		button:Show();
-	else
-		button:Hide();
-	end
+	local frameAnchor = AltCurrencyFrame_PointsUpdate( frameName, honorPoints, arenaPoints );
 
 	-- update Alt Currency Frame with itemValues
 	if ( itemCount > 0 ) then
@@ -251,9 +235,9 @@ function MerchantFrame_UpdateAltCurrency(index, i)
 			if ( i > 1 ) then
 				button:SetPoint("LEFT", frameName.."Item"..i-1, "RIGHT", 4, 0);
 			elseif ( i == 1 and ( arenaPoints and honorPoints == 0 ) ) then
-				button:SetPoint("LEFT", frameName.."Points", "LEFT", 0, 0);	
+				button:SetPoint("LEFT", frameAnchor, "LEFT", 0, 0);	
 			else
-				button:SetPoint("LEFT", frameName.."Points", "RIGHT", 4, 0);
+				button:SetPoint("LEFT", frameAnchor, "RIGHT", 4, 0);
 			end
 			if ( not itemTexture ) then
 				button:Hide();

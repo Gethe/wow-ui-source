@@ -621,55 +621,17 @@
 				<Texture name="CalendarViewHolidayInfoTexture" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT">
-							<Offset x="4" y="-4"/>
+							<Offset x="12" y="-13"/>
 						</Anchor>
 						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-4" y="4"/>
+							<Offset x="-11" y="11"/>
 						</Anchor>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame>
-				<Size x="168" y="40"/>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset x="0" y="12"/>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTitleBackgroundMiddle" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="140" y="40"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-							<TexCoords left="0.28125" right="0.71484375" top="0.0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentTitleBackgroundLeft" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="14" y="40"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="$parentTitleBackgroundMiddle" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.2265625" right="0.28125" top="0.0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentTitleBackgroundRight" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="14" y="40"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentTitleBackgroundMiddle" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.71484375" right="0.76953125" top="0.0" bottom="0.625"/>
-						</Texture>
-						<FontString name="$parentTitle" inherits="GameFontNormal">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTitleBackgroundMiddle">
-									<Offset x="0" y="-14"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+			<Frame name="CalendarViewHolidayTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
@@ -762,45 +724,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame>
-				<Size x="168" y="40"/>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset x="0" y="12"/>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTitleBackgroundMiddle" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="140" y="40"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-							<TexCoords left="0.28125" right="0.71484375" top="0.0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentTitleBackgroundLeft" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="14" y="40"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="$parentTitleBackgroundMiddle" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.2265625" right="0.28125" top="0.0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentTitleBackgroundRight" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="14" y="40"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentTitleBackgroundMiddle" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.71484375" right="0.76953125" top="0.0" bottom="0.625"/>
-						</Texture>
-						<FontString name="$parentTitle" inherits="GameFontNormal">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTitleBackgroundMiddle">
-									<Offset x="0" y="-14"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+			<Frame name="CalendarViewRaidTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
@@ -944,45 +868,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame>
-				<Size x="168" y="40"/>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset x="0" y="12"/>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTitleBackgroundMiddle" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="140" y="40"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-							<TexCoords left="0.28125" right="0.71484375" top="0.0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentTitleBackgroundLeft" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="14" y="40"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="$parentTitleBackgroundMiddle" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.2265625" right="0.28125" top="0.0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentTitleBackgroundRight" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="14" y="40"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentTitleBackgroundMiddle" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.71484375" right="0.76953125" top="0.0" bottom="0.625"/>
-						</Texture>
-						<FontString name="$parentTitle" inherits="GameFontNormal" text="CALENDAR_VIEW_EVENT">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTitleBackgroundMiddle">
-									<Offset x="0" y="-14"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+			<Frame name="CalendarViewEventTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
@@ -1140,7 +1026,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="CalendarViewEventRemoveButton" inherits="CalendarEventButtonTemplate" text="REMOVE">
+					<Button name="CalendarViewEventRemoveButton" inherits="CalendarEventButtonTemplate" text="CALENDAR_VIEW_EVENT_REMOVE">
 						<Anchors>
 							<Anchor point="TOPRIGHT">
 								<Offset x="-14" y="0"/>
@@ -1280,45 +1166,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame>
-				<Size x="168" y="40"/>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset x="0" y="12"/>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture name="$parentTitleBackgroundMiddle" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="140" y="40"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-							<TexCoords left="0.28125" right="0.71484375" top="0.0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentTitleBackgroundLeft" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="14" y="40"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="$parentTitleBackgroundMiddle" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.2265625" right="0.28125" top="0.0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentTitleBackgroundRight" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="14" y="40"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentTitleBackgroundMiddle" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.71484375" right="0.76953125" top="0.0" bottom="0.625"/>
-						</Texture>
-						<FontString name="$parentTitle" inherits="GameFontNormal">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTitleBackgroundMiddle">
-									<Offset x="0" y="-14"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+			<Frame name="CalendarCreateEventTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
@@ -1513,8 +1361,8 @@
 					<CheckButton name="CalendarCreateEventLockEventCheck" inherits="UICheckButtonTemplate">
 						<Size x="24" y="24"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="200" y="0"/>
+							<Anchor point="TOPRIGHT">
+								<Offset x="-95" y="0"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
@@ -1678,7 +1526,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="CalendarCreateEventCreateButton" inherits="CalendarEventButtonTemplate" text="CREATE">
+			<Button name="CalendarCreateEventCreateButton" inherits="CalendarEventButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset x="-11" y="12"/>
@@ -1800,47 +1648,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame>
-				<Size x="168" y="40"/>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset x="0" y="12"/>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTitleBackgroundMiddle" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="140" y="40"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-							<TexCoords left="0.28125" right="0.71484375" top="0.0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentTitleBackgroundLeft" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="14" y="40"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="$parentTitleBackgroundMiddle" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.2265625" right="0.28125" top="0.0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentTitleBackgroundRight" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="14" y="40"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentTitleBackgroundMiddle" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.71484375" right="0.76953125" top="0.0" bottom="0.625"/>
-						</Texture>
-						<FontString name="$parentTitle" inherits="GameFontNormal" text="CALENDAR_MASS_INVITE">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTitleBackgroundMiddle">
-									<Offset x="0" y="-14"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+			<Frame name="CalendarMassInviteTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
+						CalendarTitleFrame_SetText(self, CALENDAR_MASS_INVITE);
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
 					</OnLoad>
 				</Scripts>
@@ -1969,20 +1780,6 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTitleBackground" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="12"/>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentTitle" inherits="GameFontNormal" text="CALENDAR_EVENT_PICKER_TITLE">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTitleBackground">
-							<Offset x="0" y="-14"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<Texture name="$parentButtonBackground" file="Interface\Buttons\UI-Button-Borders">
 					<Size x="256" y="26"/>
 					<Anchors>
@@ -1998,6 +1795,13 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="CalendarEventPickerTitleFrame" inherits="CalendarTitleFrameTemplate">
+				<Scripts>
+					<OnLoad>
+						CalendarTitleFrame_SetText(self, CALENDAR_EVENT_PICKER_TITLE);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<ScrollFrame name="CalendarEventPickerScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Size x="239" y="165"/>
 				<Anchors>
@@ -2079,20 +1883,6 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTitleBackground" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="12"/>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentTitle" inherits="GameFontNormal" text="CALENDAR_DUNGEON_PICKER_TITLE">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTitleBackground">
-							<Offset x="0" y="-14"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<Texture name="$parentButtonBackground" file="Interface\Buttons\UI-Button-Borders">
 					<Size x="256" y="26"/>
 					<Anchors>
@@ -2108,6 +1898,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="CalendarTexturePickerTitleFrame" inherits="CalendarTitleFrameTemplate"/>
 			<ScrollFrame name="CalendarTexturePickerScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Size x="239" y="225"/>
 				<Anchors>

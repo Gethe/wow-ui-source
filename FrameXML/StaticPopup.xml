@@ -62,7 +62,7 @@
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="12" y="0"/>
+								<AbsDimension x="12" y="12"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

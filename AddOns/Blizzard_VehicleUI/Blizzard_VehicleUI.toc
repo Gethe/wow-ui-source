@@ -1,6 +1,0 @@
-## Interface: 30000
-## Title: Blizzard_VehicleUI
-## Notes: Placeholder for eventual vehicle controls, currently just two sliders
-## Secure: 1
-## FIXME: LoadOnDemand: 1
-Blizzard_VehicleUI.xml

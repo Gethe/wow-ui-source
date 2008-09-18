@@ -349,7 +349,7 @@
 			<OnEvent>
 				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
 			</OnEvent>
-			<OnClick>
+			<OnMouseDown>
 				if ( self.down ) then
 					self.down = nil;
 					if ( not GameMenuFrame:IsShown() ) then
@@ -367,14 +367,40 @@
 					end
 					return;
 				end
+				MainMenuMicroButton_SetPushed();
+				self.down = 1;
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( self.down ) then
+					self.down = nil;
+					if ( MouseIsOver(self) ) then
+						if ( not GameMenuFrame:IsShown() ) then
+							CloseMenus();
+							CloseAllWindows()
+							PlaySound("igMainMenuOpen");
+							ShowUIPanel(GameMenuFrame);
+						else
+							PlaySound("igMainMenuQuit");
+							HideUIPanel(GameMenuFrame);
+							MainMenuMicroButton_SetNormal();
+						end
+						if ( InterfaceOptionsFrame:IsShown() ) then
+							InterfaceOptionsFrameCancel:Click();
+						end
+					else
+						UpdateMicroButtons();
+					end
+					return;
+				end
 				if ( self:GetButtonState() == "NORMAL" ) then
 					MainMenuMicroButton_SetPushed();
 					self.down = 1;
 				else
-					
+					MainMenuMicroButton_SetNormal();
 					self.down = 1;
 				end
-			</OnClick>
+			</OnMouseUp>
+			
 			<OnEnter>
 				self.hover = 1;
 				self.updateInterval = 0;

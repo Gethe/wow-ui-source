@@ -472,6 +472,7 @@ function WorldStateScoreFrame_Update()
 			WorldStateScoreFrameTeam:Show();
 			WorldStateScoreFrameHonorGainedText:SetText(SCORE_RATING_CHANGE);
 			WorldStateScoreFrameHonorGained.sortType = "team";
+			WorldStateScoreFrameHonorGained.tooltip = RATING_CHANGE_TOOLTIP;
 			WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameTeam", "RIGHT", -10, 0);
 		else
 			WorldStateScoreFrameHonorGained:Hide();
@@ -488,6 +489,7 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameHK:Show();
 		WorldStateScoreFrameHonorGained.sortType = "cp";
 		WorldStateScoreFrameHonorGainedText:SetText(SCORE_HONOR_GAINED);
+		WorldStateScoreFrameHonorGained.tooltip = HONOR_GAINED_TOOLTIP;
 		WorldStateScoreFrameHKText:SetText(SCORE_HONORABLE_KILLS);
 		WorldStateScoreFrameHonorGained:Show();
 		-- Reanchor some columns.

@@ -892,15 +892,15 @@ function ChatConfig_UpdateCheckboxes(frame)
 			end
 			if ( type(value.disabled) == "function" ) then
 				if( value.disabled() ) then
-					OptionsFrame_DisableCheckBox(checkBox);
+					BlizzardOptionsPanel_CheckButton_Disable(checkBox);
 				else
-					OptionsFrame_EnableCheckBox(checkBox, nil, nil, 1);
+					BlizzardOptionsPanel_CheckButton_Enable(checkBox, true);
 				end
 			else
 				if ( value.disabled ) then
-					OptionsFrame_DisableCheckBox(checkBox);
+					BlizzardOptionsPanel_CheckButton_Disable(checkBox);
 				else
-					OptionsFrame_EnableCheckBox(checkBox, nil, nil, 1);
+					BlizzardOptionsPanel_CheckButton_Enable(checkBox, true);
 				end
 			end
 			if ( type(value.hidden) == "function" ) then
@@ -1022,9 +1022,9 @@ function ChatConfig_UpdateTieredCheckboxes(frame, index)
 			end
 			
 			if ( groupChecked ) then
-				OptionsFrame_EnableCheckBox(subCheckBox, nil, nil, 1);
+				BlizzardOptionsPanel_CheckButton_Enable(subCheckBox, true);
 			else
-				OptionsFrame_DisableCheckBox(subCheckBox);
+				BlizzardOptionsPanel_CheckButton_Disable(subCheckBox);
 			end
 		end
 	end
@@ -1040,9 +1040,9 @@ function CombatConfig_Colorize_Update()
 	-- Spell Names
 	CombatConfigColorsColorizeSpellNamesCheck:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityColoring);
 	if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityColoring ) then
-		OptionsFrame_EnableCheckBox(CombatConfigColorsColorizeSpellNamesSchoolColoring, nil, nil, 1);
+		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeSpellNamesSchoolColoring, true);
 	else
-		OptionsFrame_DisableCheckBox(CombatConfigColorsColorizeSpellNamesSchoolColoring);
+		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeSpellNamesSchoolColoring, true);
 	end
 	CombatConfigColorsColorizeSpellNamesSchoolColoring:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.abilitySchoolColoring);
 	CombatConfigColorsColorizeSpellNamesColorSwatchNormalTexture:SetVertexColor(GetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell));
@@ -1050,9 +1050,9 @@ function CombatConfig_Colorize_Update()
 	-- Damage Number
 	CombatConfigColorsColorizeDamageNumberCheck:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring);
 	if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring ) then
-		OptionsFrame_EnableCheckBox(CombatConfigColorsColorizeDamageNumberSchoolColoring, nil, nil, 1);
+		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeDamageNumberSchoolColoring, true);
 	else
-		OptionsFrame_DisableCheckBox(CombatConfigColorsColorizeDamageNumberSchoolColoring);
+		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeDamageNumberSchoolColoring, true);
 	end
 	CombatConfigColorsColorizeDamageNumberSchoolColoring:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.amountSchoolColoring);
 	CombatConfigColorsColorizeDamageNumberColorSwatchNormalTexture:SetVertexColor(GetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage));
@@ -1063,11 +1063,11 @@ function CombatConfig_Colorize_Update()
 	-- Line Coloring
 	CombatConfigColorsColorizeEntireLineCheck:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColoring);
 	if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColoring ) then
-		OptionsFrame_EnableCheckBox(CombatConfigColorsColorizeEntireLineBySource, nil, nil, 1);
-		OptionsFrame_EnableCheckBox(CombatConfigColorsColorizeEntireLineByTarget, nil, nil, 1);
+		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeEntireLineBySource, true);
+		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeEntireLineByTarget, true);
 	else
-		OptionsFrame_DisableCheckBox(CombatConfigColorsColorizeEntireLineBySource);
-		OptionsFrame_DisableCheckBox(CombatConfigColorsColorizeEntireLineByTarget);
+		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeEntireLineBySource);
+		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeEntireLineByTarget);
 	end
 	if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColorPriority == 1 ) then
 		CombatConfigColorsColorizeEntireLineBySource:SetChecked(1);
@@ -1097,13 +1097,13 @@ function CombatConfig_Formatting_Update()
 	CombatConfigFormattingShowTimeStamp:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.timestamp);
 	CombatConfigFormattingShowBraces:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.braces);
 	if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.braces ) then
-		OptionsFrame_EnableCheckBox(CombatConfigFormattingUnitNames, nil, nil, 1);
-		OptionsFrame_EnableCheckBox(CombatConfigFormattingSpellNames, nil, nil, 1);
-		OptionsFrame_EnableCheckBox(CombatConfigFormattingItemNames, nil, nil, 1);
+		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigFormattingUnitNames, true);
+		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigFormattingSpellNames, true);
+		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigFormattingItemNames, true);
 	else
-		OptionsFrame_DisableCheckBox(CombatConfigFormattingUnitNames);
-		OptionsFrame_DisableCheckBox(CombatConfigFormattingSpellNames);
-		OptionsFrame_DisableCheckBox(CombatConfigFormattingItemNames);
+		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigFormattingUnitNames);
+		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigFormattingSpellNames);
+		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigFormattingItemNames);
 	end
 	CombatConfigFormattingUnitNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.unitBraces);
 	CombatConfigFormattingSpellNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.spellBraces);
@@ -1122,13 +1122,13 @@ end
 function CombatConfig_Settings_Update()
 	CombatConfigSettingsShowQuickButton:SetChecked(CHATCONFIG_SELECTED_FILTER.hasQuickButton);
 	if ( CHATCONFIG_SELECTED_FILTER.hasQuickButton ) then
-		OptionsFrame_EnableCheckBox(CombatConfigSettingsSolo, nil, nil, 1);
-		OptionsFrame_EnableCheckBox(CombatConfigSettingsParty, nil, nil, 1);
-		OptionsFrame_EnableCheckBox(CombatConfigSettingsRaid, nil, nil, 1);
+		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigSettingsSolo, true);
+		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigSettingsParty, true);
+		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigSettingsRaid, true);
 	else
-		OptionsFrame_DisableCheckBox(CombatConfigSettingsSolo);
-		OptionsFrame_DisableCheckBox(CombatConfigSettingsParty);
-		OptionsFrame_DisableCheckBox(CombatConfigSettingsRaid);
+		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigSettingsSolo);
+		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigSettingsParty);
+		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigSettingsRaid);
 	end
 	CombatConfigSettingsSolo:SetChecked(CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.solo);
 	CombatConfigSettingsParty:SetChecked(CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.party);

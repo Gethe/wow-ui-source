@@ -245,8 +245,7 @@ function HANDLE:GetEffectiveAttribute(name, button, prefix, suffix)
 end
 
 
-local FrameHandleMapper;
-function FrameHandleMapper(nolockdown, frame, nextFrame, ...)
+local function FrameHandleMapper(nolockdown, frame, nextFrame, ...)
     if (not frame) then
         return;
     end
@@ -254,7 +253,7 @@ function FrameHandleMapper(nolockdown, frame, nextFrame, ...)
     -- the frame handle lookup
     local p = nolockdown;
     if (not p) then
-        local p = frame:IsProtected();
+        p = frame:IsProtected();
     end
     if (p) then
         frame = LOCAL_FrameHandle_Lookup[frame];
@@ -330,8 +329,7 @@ end
 -- Used only for recursive check, since it's more expensive
 --
 -- Only check protected and visible children
-local RF_CheckUnderMouse;
-function RF_CheckUnderMouse(x, y, ...)
+local function RF_CheckUnderMouse(x, y, ...)
     for i = 1, select('#', ...) do
         local frame = select(i, ...);
         if (frame and frame:IsProtected() and frame:IsVisible()) then
@@ -367,6 +365,21 @@ function HANDLE:IsUnderMouse(recursive)
         return;
     end
     return RF_CheckUnderMouse(x, y, frame:GetChildren());
+end
+
+function HANDLE:GetNumPoints()
+    return GetHandleFrame(self):GetNumPoints();
+end
+
+function HANDLE:GetPoint(i)
+    local point, frame, relative, dx, dy = GetHandleFrame(self):GetPoint(i);
+    local handle;
+    if (frame) then
+        handle = FrameHandleMapper(not InCombatLockdown(), frame);
+    end
+    if (handle or not frame) then
+        return point, handle, relative, dx, dy;
+    end
 end
 
 ---------------------------------------------------------------------------

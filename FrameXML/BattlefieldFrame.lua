@@ -18,6 +18,8 @@ function BattlefieldFrame_OnLoad (self)
 	self:RegisterEvent("BATTLEFIELDS_CLOSED");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	
 	BattlefieldFrame.timerDelay = 0;
 end
@@ -25,6 +27,7 @@ end
 function BattlefieldFrame_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		MiniMapBattlefieldDropDown_OnLoad();
+		BattlefieldFrame_UpdateStatus(false, nil);
 	elseif ( event == "BATTLEFIELDS_SHOW" ) then
 		if ( not IsBattlefieldArena() ) then
 			ShowUIPanel(BattlefieldFrame);
@@ -41,7 +44,7 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "BATTLEFIELDS_CLOSED" ) then
 		HideUIPanel(BattlefieldFrame);
-	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
+	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
 		local arg1 = ...
 		BattlefieldFrame_UpdateStatus(false, arg1);
 		BattlefieldFrame_Update();
@@ -63,7 +66,19 @@ function BattlefieldTimerFrame_OnUpdate(self, elapsed)
 			if 	(	( expiration > 0 and expiration <= 10 ) and 
 					( not QUEUE_LAST_UPDATED[i] or QUEUE_LAST_UPDATED[i] and QUEUE_LAST_UPDATED[i] + 10 < GetTime() ) ) then 
 				QUEUE_LAST_UPDATED[i] = GetTime();
-				local _, mapName = GetBattlefieldStatus(i);
+				local _, mapName, instanceID, _, _, teamSize, registeredMatch = GetBattlefieldStatus(i);
+				if ( mapName ) then
+					if ( instanceID ~= 0 ) then
+						mapName = mapName.." "..instanceID;
+					end
+					if ( teamSize ~= 0 ) then
+						if ( registeredMatch ) then
+							mapName = ARENA_RATED_MATCH.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
+						else
+							mapName = ARENA_CASUAL.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
+						end
+					end
+				end
 				local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
 				if ( dialog ) then
 					dialog.data = i;
@@ -147,6 +162,16 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 		CURRENT_BATTLEFIELD_QUEUES = {};
 	end
 
+	if ( CanHearthAndResurrectFromArea() ) then
+		if ( not MiniMapBattlefieldFrame.inWorldPVPArea ) then
+			MiniMapBattlefieldFrame.inWorldPVPArea = true;
+			UIFrameFadeIn(MiniMapBattlefieldFrame, CHAT_FRAME_FADE_TIME);
+			BattlegroundShineFadeIn();
+		end
+	else
+		MiniMapBattlefieldFrame.inWorldPVPArea = false;
+	end
+	
 	for i=1, MAX_BATTLEFIELD_QUEUES do
 		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(i);
 		if ( mapName ) then
@@ -245,7 +270,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 	
 	if ( not tooltipOnly ) then
 		MiniMapBattlefieldFrame_isArena();
-		if ( numberQueues == 0 ) then
+		if ( numberQueues == 0 and (not CanHearthAndResurrectFromArea()) ) then
 			-- Clear everything out
 			MiniMapBattlefieldFrame:Hide();
 		else
@@ -393,6 +418,23 @@ function MiniMapBattlefieldDropDown_Initialize()
 	local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch;
 	local numQueued = 0;
 	local numShown = 0;
+	
+	if ( CanHearthAndResurrectFromArea() ) then
+		numShown = numShown + 1;
+		info = UIDropDownMenu_CreateInfo();
+		info.text = GetRealZoneText();
+		info.isTitle = 1;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+
+		info = UIDropDownMenu_CreateInfo();
+		info.text = format(LEAVE_ZONE, GetRealZoneText());			
+		
+		info.func = HearthAndResurrectFromArea;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+	end
+		
 	for i=1, MAX_BATTLEFIELD_QUEUES do
 		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(i);
 

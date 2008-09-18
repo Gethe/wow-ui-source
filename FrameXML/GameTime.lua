@@ -10,6 +10,8 @@ local date = date;
 local format = format;
 local GetCVarBool = GetCVarBool;
 local CalendarGetDate = CalendarGetDate;
+local max = max;
+local tonumber = tonumber;
 
 local PI = PI;
 local TWOPI = PI * 2.0;
@@ -161,10 +163,10 @@ function GameTimeFrame_OnEvent(self, event, ...)
 				self.pendingCalendarInvites = pendingCalendarInvites;
 			end
 		elseif ( pendingCalendarInvites == 0 ) then
-				GameTimeCalendarInvitesTexture:Hide();
-				GameTimeCalendarInvitesGlow:Hide();
-				GameTimeFrame.flashInvite = false;
-				self.pendingCalendarInvites = 0;
+			GameTimeCalendarInvitesTexture:Hide();
+			GameTimeCalendarInvitesGlow:Hide();
+			GameTimeFrame.flashInvite = false;
+			self.pendingCalendarInvites = 0;
 		end
 		GameTimeFrame_SetDate();
 	elseif ( event == "CALENDAR_EVENT_ALARM" ) then
@@ -220,7 +222,7 @@ function GameTimeFrame_OnUpdate(self, elapsed)
 		else
 			self.flashTimer = self.flashTimer + elapsed;
 		end
-		
+
 		GameTimeCalendarInvitesTexture:SetAlpha(flashValue);
 		GameTimeCalendarInvitesGlow:SetAlpha(flashValue);
 	end

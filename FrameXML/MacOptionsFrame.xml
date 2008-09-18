@@ -46,7 +46,7 @@
 		</Layers>
 		<Frames>
 			<!-- Movie Recording section -->
-			<Frame name="MacOptionsFrameMovieRecording" inherits="OptionFrameBoxTemplate">
+			<Frame name="MacOptionsFrameMovieRecording" inherits="OptionsBoxTemplate">
 				<Size>
 					<AbsDimension x="400" y="265"/>
 				</Size>
@@ -434,7 +434,7 @@
 			<!-- End of Movie Recording section -->
 
 			<!-- iTunes Remote section -->
-			<Frame name="MacOptionsITunesRemote" inherits="OptionFrameBoxTemplate">
+			<Frame name="MacOptionsITunesRemote" inherits="OptionsBoxTemplate">
 				<Size>
 					<AbsDimension x="400" y="80"/>
 				</Size>

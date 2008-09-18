@@ -357,47 +357,47 @@
 					</Layer>
 				</Layers>
 			</Button>
-			<Frame name="$parentBuyoutMoneyFrame" inherits="SmallMoneyFrameTemplate">
+			<Frame name="$parentBuyoutFrame">
+				<!-- width is meaningless here, see anchors -->
+				<Size x="1" y="13"/>
 				<Anchors>
+					<Anchor point="LEFT" relativeTo="BrowseCurrentBidSort">
+						<Offset x="4" y="0"/>
+					</Anchor>
 					<Anchor point="TOPRIGHT" relativeTo="$parentMoneyFrame" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
+						<Offset x="0" y="-1"/>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "AUCTION");
-						SetMoneyFrameColor(self:GetName(), "yellow")
-					</OnLoad>
-				</Scripts>
+				<Frames>
+					<Frame name="$parentMoney" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "AUCTION");
+								SetMoneyFrameColor(self:GetName(), "yellow")
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentText">
+						<!-- NOTE: this size is here to get the FontString to show up -->
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentMoney" relativePoint="BOTTOMLEFT">
+								<Offset x="-2" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormalSmallLeft" setAllPoints="true" text="BUYOUT_COST"/>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
 			</Frame>
-			<Button name="$parentBuyoutText" hidden="true">
-				<Size>
-					<AbsDimension x="10" y="11"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuyoutMoneyFrame" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-178" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString inherits="GameFontNormalSmall" text="BUYOUT_COST" justifyH="RIGHT">
-							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnClick>
@@ -880,7 +880,7 @@
 				<Anchors>
 					<Anchor point="RIGHT">
 						<Offset>
-							<AbsDimension x="0" y="3"/>
+							<AbsDimension x="10" y="3"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -903,33 +903,45 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentBuyoutMoneyFrame" inherits="SmallMoneyFrameTemplate">
+			<Frame name="$parentBuyoutFrame" hidden="true">
+				<!-- width is meaningless here, see anchors -->
+				<Size x="1" y="13"/>
 				<Anchors>
-					<Anchor point="RIGHT">
-						<Offset>
-							<AbsDimension x="0" y="-5"/>
-						</Offset>
+					<Anchor point="LEFT" relativeTo="AuctionsBidSort">
+						<Offset x="2" y="0"/>
+					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="$parentMoneyFrame" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-1"/>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentText" inherits="GameFontNormalSmall" text="BUYOUT">
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="-205" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "AUCTION");
-					</OnLoad>
-				</Scripts>
+				<Frames>
+					<Frame name="$parentMoney" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "AUCTION");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentText">
+						<!-- NOTE: this size is here to get the FontString to show up -->
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentMoney" relativePoint="BOTTOMLEFT">
+								<Offset x="-2" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormalSmallLeft" text="BUYOUT" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>

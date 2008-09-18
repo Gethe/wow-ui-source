@@ -48,8 +48,10 @@ function UpdateMicroButtons()
 		or ( InterfaceOptionsFrame:IsShown()) 
 		or ( KeyBindingFrame and KeyBindingFrame:IsShown()) 
 		or ( MacroFrame and MacroFrame:IsShown()) ) then
+		MainMenuMicroButton:SetButtonState("PUSHED", 1);
 		MainMenuMicroButton_SetPushed();
 	else
+		MainMenuMicroButton:SetButtonState("NORMAL");
 		MainMenuMicroButton_SetNormal();
 	end
 

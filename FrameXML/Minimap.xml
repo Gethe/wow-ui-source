@@ -175,20 +175,20 @@
 								self:SetFrameLevel(self:GetFrameLevel()+1)
 							</OnLoad>
 							<OnEvent>
-                if ( event == "UPDATE_PENDING_MAIL" ) then
-                  if ( HasNewMail() ) then
-                    self:Show();
-                    if( GameTooltip:IsOwned( self ) ) then
-                      MinimapMailFrameUpdate();
-                    end
-                  else
-                    self:Hide();
-                  end
-                end
-              </OnEvent>
+								if ( event == "UPDATE_PENDING_MAIL" ) then
+									if ( HasNewMail() ) then
+										self:Show();
+										if( GameTooltip:IsOwned(self) ) then
+											MinimapMailFrameUpdate();
+										end
+									else
+										self:Hide();
+									end
+								end
+							</OnEvent>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-								if( GameTooltip:IsOwned( self ) ) then
+								if( GameTooltip:IsOwned(self) ) then
 									MinimapMailFrameUpdate();
 								end
 							</OnEnter>							

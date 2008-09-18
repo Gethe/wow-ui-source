@@ -154,13 +154,13 @@ function MainMenuBar_OnEvent(self, event, ...)
 	elseif ( event == "KNOWN_CURRENCY_TYPES_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" ) then
 		local showTokenFrame, showTokenFrameHonor = GetCVarBool("showTokenFrame"), GetCVarBool("showTokenFrameHonor");
 		if ( not showTokenFrame or not showTokenFrameHonor ) then
-			local name, isHeader, isExpanded, isUnused, isWatched, count, icon, isTypePVP;
+			local name, isHeader, isExpanded, isUnused, isWatched, count, icon, extraCurrencyType;
 			local hasPVPTokens, hasNormalTokens;
 			for index=1, GetCurrencyListSize() do
-				name, isHeader, isExpanded, isUnused, isWatched, count, isTypePVP, icon = GetCurrencyListInfo(index);
-				if ( (not isHeader) and (isTypePVP) and (count>0) ) then
+				name, isHeader, isExpanded, isUnused, isWatched, count, extraCurrencyType, icon = GetCurrencyListInfo(index);
+				if ( (not isHeader) and (extraCurrencyType > 0) and (count>0) ) then
 					hasPVPTokens = true;
-				elseif ( (not isHeader) and (not isTypePVP) and (count>0) ) then
+				elseif ( (not isHeader) and (extraCurrencyType <= 0) and (count>0) ) then
 					hasNormalTokens = true;
 				end
 			end
@@ -224,6 +224,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 				MultiBarRight.ignoreFramePositionManager = true;
 				SetUpAnimation(VehicleMenuBar, AnimDataTable.MenuBar_Slide, MainMenuBar_AnimFinished, false);
 			else
+				MainMenuBar.state = "vehicle";
 				MultiBarRight.ignoreFramePositionManager = true;
 				SetUpAnimation(MultiBarRight, AnimDataTable.ActionBar_Slide, nil, false);
 				SetUpAnimation(MainMenuBar, AnimDataTable.MenuBar_Slide, MainMenuBar_AnimFinished, false);

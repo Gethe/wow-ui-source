@@ -503,6 +503,38 @@ function AltCurrencyFrame_Update(frameName, texture, cost)
 	button:SetWidth(button:GetTextWidth() + MONEY_ICON_WIDTH_SMALL);
 end
 
+function AltCurrencyFrame_PointsUpdate(frameName, honor, arena)
+	local buttonHonor = getglobal(frameName.."Honor");
+	if ( honor and honor > 0 ) then
+		buttonHonor.pointType = HONOR_POINTS;
+		local factionGroup = UnitFactionGroup("player");
+		local honorTexture = "Interface\\TargetingFrame\\UI-PVP-Horde";
+		if ( factionGroup ) then
+			honorTexture = "Interface\\TargetingFrame\\UI-PVP-"..factionGroup;
+		end
+		AltCurrencyFrame_Update( frameName.."Honor", honorTexture, honor );
+		buttonHonor:Show();
+	else
+		buttonHonor:Hide();
+	end
+	
+	local buttonArena = getglobal(frameName.."Arena");
+	if ( arena and arena > 0 ) then
+		buttonHonor.pointType = ARENA_POINTS;
+		AltCurrencyFrame_Update( frameName.."Arena", "Interface\\PVPFrame\\PVP-ArenaPoints-Icon", arena );
+		if ( honor and honor > 0 ) then
+			buttonArena:SetPoint("LEFT", buttonHonor, "RIGHT", 0, 0);
+		else
+			buttonArena:SetPoint("LEFT", frameName, "LEFT", 13, 0);
+		end
+		buttonArena:Show();
+		return buttonArena;
+	else
+		buttonArena:Hide();
+	end
+	return buttonHonor;
+end
+
 function GetDenominationsFromCopper(money)
 	return GetCoinText(money, " ");
 end

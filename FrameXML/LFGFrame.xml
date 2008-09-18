@@ -401,7 +401,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								</Frames>
 								<Scripts>
 									<OnLoad>
-										OptionsCheckButton_SetText(self, AUTO_ADD_MEMBERS);
+										_G[self:GetName().."Text"]:SetText(AUTO_ADD_MEMBERS);
 										self:RegisterEvent("VARIABLES_LOADED");
 									</OnLoad>
 									<OnEvent>
@@ -958,7 +958,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								</Frames>
 								<Scripts>
 									<OnLoad>
-										OptionsCheckButton_SetText(self, AUTO_JOIN);
+										_G[self:GetName().."Text"]:SetText(AUTO_JOIN);
 										self:RegisterEvent("VARIABLES_LOADED");
 									</OnLoad>
 									<OnEvent>

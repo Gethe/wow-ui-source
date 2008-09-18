@@ -1,6 +1,6 @@
 --[[	animTable = {	--Note that only consistent data should be in here. These tables are meant to be shared across "sessions" of animations. Put changing data in the frame.
-	totalTime = number,		--Time to complete the animation.
-	updateFunc = function,		--The function called to do the actual change. Usually frame.SetPoint, frame.SetAlpha, ect.
+	totalTime = number,		--Time to complete the animation in seconds.
+	updateFunc = function,		--The function called to do the actual change. Takes self, elapsed fraction. Usually frame.SetPoint, frame.SetAlpha, ect.
 	getPosFunc = function,		--The function returning the data being passed into updateFunc. For example. might return .18 if updateFunc is frame.SetAlpha.
 --]]
 local EmptyTable = {};	--To be used so as to have an easy comparison without ruining next()
@@ -11,7 +11,7 @@ local AnimUpdateFrame = CreateFrame("Frame");
 
 function SetUpAnimation(frame, animTable, postFunc, reverse)
 	if ( type(animTable.updateFunc) == "string" ) then
-		animTable.updateFunc = AnimUpdateFrame[animTable.updateFunc];	--AnimUpdateFrame.SetPoint == AnyFrame.SetPoint. Now people don't have to wait until their frames are loaded.
+		animTable.updateFunc = frame[animTable.updateFunc];
 	end
 	AnimatingFrames[frame] = animTable;
 	

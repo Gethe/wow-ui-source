@@ -264,7 +264,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						OptionsCheckButton_SetText(self, TIMEMANAGER_24HOURMODE);
+						_G[self:GetName().."Text"]:SetText(TIMEMANAGER_24HOURMODE);
 						TimeManagerMilitaryTimeCheckText:ClearAllPoints();
 						TimeManagerMilitaryTimeCheckText:SetPoint("RIGHT", self, "RIGHT", -self:GetWidth(), 0);
 						TimeManagerMilitaryTimeCheckText:SetFontObject(GameFontHighlightSmall);
@@ -283,7 +283,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						OptionsCheckButton_SetText(self, TIMEMANAGER_LOCALTIME);
+						_G[self:GetName().."Text"]:SetText(TIMEMANAGER_LOCALTIME);
 						TimeManagerLocalTimeCheckText:ClearAllPoints();
 						TimeManagerLocalTimeCheckText:SetPoint("RIGHT", self, "RIGHT", -self:GetWidth(), 0);
 						TimeManagerLocalTimeCheckText:SetFontObject(GameFontHighlightSmall);

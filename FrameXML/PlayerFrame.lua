@@ -121,11 +121,12 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerFrame_UpdatePvPStatus();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		if ( UnitHasVehicleUI("player") ) then
-			UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
-		else
-			UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
-		end
+		PlayerFrame_ToPlayerArt(self);
+--		if ( UnitHasVehicleUI("player") ) then
+--			UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
+--		else
+--			UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
+--		end
 		self.inCombat = nil;
 		self.onHateList = nil;
 		PlayerFrame_Update();

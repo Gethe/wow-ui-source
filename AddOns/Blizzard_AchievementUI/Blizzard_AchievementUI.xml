@@ -1,6 +1,58 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 
+	<CheckButton name="AchievementCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="15" y="15"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" text="TRACK_ACHIEVEMENT">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT"/>
+					</Anchors>
+					<Color r=".6" g=".6" b=".6" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>		
+		<HitRectInsets>
+			<AbsInset left="0" right="-100" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				end
+				AchievementButton_ToggleTracking(self:GetParent().id);
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				if ( self:GetChecked() ) then
+					GameTooltip:SetText(UNTRACK_ACHIEVEMENT_TOOLTIP, nil, nil, nil, nil, 1);
+				else
+					GameTooltip:SetText(TRACK_ACHIEVEMENT_TOOLTIP, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnShow>
+				if ( GetTrackedAchievement() == self:GetParent().id ) then
+					self:SetChecked(true);
+				else
+					self:SetChecked(false);
+				end
+			</OnShow>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+	 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+	</CheckButton>
+
 	<Button name="AchievementFrameTabButtonTemplate" virtual="true">
         <Size>
             <AbsDimension x="115" y="32"/>
@@ -278,7 +330,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 					<TexCoords left="0" right="0.65625" top="0" bottom="1"/>
 				</Texture>
-				<FontString name="$parentLabel" inherits="AchievementCriteriaDisabledFont" text="Fake Achievement name!">
+				<FontString name="$parentLabel" inherits="AchievementDescriptionFont" text="Fake criteria!">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
@@ -398,7 +450,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	
 	<Button name="AchievementCategoryTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="165" y="24"/>
+			<AbsDimension x="158" y="24"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -536,7 +588,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="$parentName" inherits="AchievementDescriptionDisabledFont" text="Capture the Bone Wastes">
+				<FontString name="$parentName" inherits="AchievementDescriptionFont" text="Capture the Bone Wastes">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentCheck" relativePoint="RIGHT">
 							<Offset>
@@ -737,6 +789,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>	
 			<Layer level="OVERLAY">
 				<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="For the Alliance!">
+					<Size>
+						<AbsDimension x="320" y="20"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentTitleBackground" relativePoint="TOP">
 							<Offset>
@@ -744,32 +799,32 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<Size>
-						<AbsDimension x="335" y="20"/>
-					</Size>
 				</FontString>
 				<FontString name="$parentDateCompleted" inherits="AchievementDateFont" text="5/16/08" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="14"/>
+					</Size>
 					<Anchors>
 						<!-- This is a fake anchor. We don't want DateCompleted to be anchored to top. We reanchor it in AchievementButton_OnLoad so that it can be anchored to the shield, which is a frame, and not loaded at this point. -->
 						<Anchor point="TOP"/>
 					</Anchors>
-					<Size>
-						<AbsDimension x="60" y="14"/>
-					</Size>
 				</FontString>
 				<FontString name="$parentReward" inherits="GameFontNormalSmall" hidden="true">
+					<Size>
+						<AbsDimension x="400" y="20"/>
+					</Size>					
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentRewardBackground" relativePoint="TOP">
 							<Offset>
-								<AbsDimension x="0" y="-4"/>
+								<AbsDimension x="0" y="1"/>
 							</Offset>
 						</Anchor>
-					</Anchors>		
-					<Size>
-						<AbsDimension x="400" y="20"/>
-					</Size>						
+					</Anchors>							
 				</FontString>
-				<FontString name="$parentDescription" inherits="AchievementDescriptionEnabledFont">
+				<FontString name="$parentDescription" inherits="AchievementDescriptionFont">
+					<Size>
+						<AbsDimension x="0" y="0"/>
+					</Size>				
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
@@ -777,25 +832,31 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Offset>
 						</Anchor>
 					</Anchors>
+				</FontString>
+				<FontString name="$parentHiddenDescription" inherits="AchievementDescriptionFont" hidden="true">
 					<Size>
 						<AbsDimension x="0" y="0"/>
 					</Size>
-				</FontString>
-				<FontString name="$parentHiddenDescription" inherits="AchievementDescriptionEnabledFont" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-75" y="-30"/>
-							</Offset>
+							<Offset x="-75" y="-30"/>
 						</Anchor>
 						<Anchor point="TOPRIGHT">
 							<Offset x="75" y="-30"/>
 						</Anchor>
 					</Anchors>
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
 				</FontString>
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true">
+					<Size>
+						<AbsDimension x="20" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
+							<Offset x="0" y="-1"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -997,6 +1058,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 			</Frame>
+			<CheckButton name="$parentTracked" hidden="true" inherits="AchievementCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="12" y="-66"/>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
 		</Frames>
 	</Button>
 	<Frame name="ComparisonPlayerTemplate" virtual="true">
@@ -1083,7 +1151,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<AbsDimension x="60" y="14"/>
 					</Size>
 				</FontString>
-				<FontString name="$parentDescription" inherits="AchievementDescriptionEnabledFont">
+				<FontString name="$parentDescription" inherits="AchievementDescriptionFont">
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
@@ -1706,17 +1774,18 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 				</FontString>
 				<FontString name="$parentValue" inherits="GameFontHighlightRight">
+					<Size x="500" y="24"/>
 					<Anchors>
 						<Anchor point="RIGHT">
-							<Offset x="-155" y="0"/>
+							<Offset x="-155" y="-2"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentComparisonValue" inherits="GameFontHighlightRight">
-					<Size x="115" y="14"/>
+					<Size x="100" y="24"/>
 					<Anchors>
 						<Anchor point="RIGHT">
-							<Offset x="-15" y="0"/>
+							<Offset x="-15" y="-2"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
@@ -3098,7 +3167,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						self:RegisterEvent("ACHIEVEMENT_EARNED");
 					</OnLoad>
 					<OnEvent>
-						AchievementFrameComparison_Update();
+						AchievementFrameComparison_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnShow>
 						AchievementFrameComparison_OnShow();

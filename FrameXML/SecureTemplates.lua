@@ -445,7 +445,7 @@ function SecureGroupHeader_OnEvent(self, event, ...)
 end
 
 function SecureGroupHeader_OnAttributeChanged(self, name, value)
-	if ( self:IsShown() ) then
+	if ( self:IsVisible() ) then
 		SecureGroupHeader_Update(self);
 	end
 end
@@ -599,10 +599,12 @@ local function configureChildren(self)
 			return;
 		end
 		for i = 1, needButtons, 1 do
-			if not ( self:GetAttribute("child"..i) ) then
-				local newButton = CreateFrame(templateType, name.."UnitButton"..i, self, buttonTemplate);
-				SetupUnitButtonConfiguration(self, newButton);
-				self:SetAttribute("child"..i, newButton);
+			local childAttr = "child" .. i;
+			if not ( self:GetAttribute(childAttr) ) then
+					local newButton = CreateFrame(templateType, name.."UnitButton"..i, self, buttonTemplate);
+					SetupUnitButtonConfiguration(self, newButton);
+					self:SetAttribute(childAttr, newButton);
+					SecureHandlerSetFrameRef(self, childAttr, newButton);
 			end
 		end
 	end

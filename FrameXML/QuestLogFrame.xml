@@ -9,17 +9,6 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Scripts>
-			<OnLoad>
-				self:SetStatusBarColor(0, .6, 0, 1);
-				self:SetMinMaxValues(0, 100);
-				self:SetValue(0);
-				self.text = getglobal(self:GetName() .. "Text");
-			</OnLoad>
-			<OnEnter>
-			
-			</OnEnter>
-		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBG">
@@ -56,22 +45,14 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button name="$parentButton">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						if ( parent.OnClick ) then
-							parent.OnClick(parent);
-						end
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetStatusBarColor(0, .6, 0, 1);
+				self:SetMinMaxValues(0, 100);
+				self:SetValue(0);
+				self.text = getglobal(self:GetName() .. "Text");
+			</OnLoad>
+		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 	</StatusBar>
 	
@@ -1189,7 +1170,7 @@
 	</FontString>
 	<Frame name="AchievementWatchLineTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="0" y="15"/>
+			<AbsDimension x="200" y="15"/>
 		</Size>
 		<Anchors>
 			<Anchor point="LEFT"/>
@@ -1202,6 +1183,7 @@
 						<Anchor point="LEFT">
 							<Offset x="0" y="-1"/>
 						</Anchor>
+						<Anchor point="RIGHT"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1216,7 +1198,32 @@
 						<Offset x="-16" y="0"/>
 					</Anchor>
 				</Anchors>
+				<Scripts>
+					<OnShow>
+						local parent = self:GetParent();
+						getglobal(parent:GetName() .. "Button"):Show();
+					</OnShow>
+					<OnHide>
+						local parent = self:GetParent();
+						getglobal(parent:GetName() .. "Button"):Hide();
+					</OnHide>
+				</Scripts>
 			</StatusBar>
+			<Button name="$parentButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentStatusBar"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentStatusBar"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local statusBar = getglobal(parent:GetName() .. "StatusBar");
+						if ( statusBar.OnClick ) then
+							statusBar.OnClick(statusBar);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>		
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -1435,6 +1442,7 @@
 								<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT">
 									<Offset x="4" y="-1"/>
 								</Anchor>
+								<Anchor point="RIGHT"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1527,6 +1535,7 @@
 			<OnLoad>
 				self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
+				self:RegisterEvent("ACHIEVEMENT_EARNED");
 			</OnLoad>
 			<OnEvent>
 				AchievementWatch_OnEvent(self, event, ...);

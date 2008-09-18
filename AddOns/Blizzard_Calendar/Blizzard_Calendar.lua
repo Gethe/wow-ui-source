@@ -477,39 +477,51 @@ local CALENDAR_CALENDARTYPE_TEXTURE_PATHS = {
 --	["ARENA"]				= "",
 };
 local CALENDAR_CALENDARTYPE_TEXTURES = {
---	["PLAYER"]				= "",
---	["GUILD"]				= "",
---	["SYSTEM"]				= "",
-	["HOLIDAY"]				= "",
---	["RAID_LOCKOUT"]		= "",
---	["RAID_RESET"]			= "",
---	["ARENA"]				= "",
+	["PLAYER"] = {
+--		[""]				= "",
+	},
+	["GUILD"] = {
+--		[""]				= "",
+	},
+	["SYSTEM"] = {
+--		[""]				= "",
+	},
+	["HOLIDAY"] = {
+		["START"]			= "Interface\\Calendar\\Holidays\\Calendar_DefaultHoliday",
+--		["ONGOING"]			= "",
+		["END"]				= "Interface\\Calendar\\Holidays\\Calendar_DefaultHoliday",
+		["INFO"]			= "Interface\\Calendar\\Holidays\\Calendar_DefaultHoliday",
+--		[""]				= "",
+	},
+	["RAID_LOCKOUT"] = {
+--		[""]				= "",
+	},
+	["RAID_RESET"] = {
+--		[""]				= "",
+	},
+	["ARENA"] = {
+--		[""]				= "",
+	},
 };
 local CALENDAR_CALENDARTYPE_TEXTURE_APPEND = {
 --	["PLAYER"] = {
---		[""]				= "",
 --	},
 --	["GUILD"] = {
---		[""]				= "",
 --	},
 --	["SYSTEM"] = {
---		[""]				= "",
 --	},
 	["HOLIDAY"] = {
 		["START"]			= "Start",
 		["ONGOING"]			= "Ongoing",
 		["END"]				= "End",
-		["INFO"]			= "",
+		["INFO"]			= "Info",
 		[""]				= "",
 	},
 --	["RAID_LOCKOUT"] = {
---		[""]				= "%s",
 --	},
 --	["RAID_RESET"] = {
---		[""]				= "%s",
 --	},
 --	["ARENA"] = {
---		[""]				= "%s",
 --	},
 };
 local CALENDAR_CALENDARTYPE_TCOORDS = {
@@ -833,15 +845,15 @@ local function _CalendarFrame_GetTextureFile(textureName, calendarType, sequence
 		elseif ( CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType] ) then
 			texture = CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..textureName;
 			tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
-		elseif ( CALENDAR_CALENDARTYPE_TEXTURES[calendarType] ) then
-			texture = CALENDAR_CALENDARTYPE_TEXTURES[calendarType];
+		elseif ( CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType] ) then
+			texture = CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType];
 			tcoords = CALENDAR_CALENDARTYPE_TCOORDS[calendarType];
 		elseif ( CALENDAR_EVENTTYPE_TEXTURES[eventType] ) then
 			texture = CALENDAR_EVENTTYPE_TEXTURES[eventType];
 			tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 		end
-	elseif ( CALENDAR_CALENDARTYPE_TEXTURES[calendarType] ) then
-		texture = CALENDAR_CALENDARTYPE_TEXTURES[calendarType];
+	elseif ( CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType] ) then
+		texture = CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType];
 		tcoords = CALENDAR_CALENDARTYPE_TCOORDS[calendarType];
 	elseif ( CALENDAR_EVENTTYPE_TEXTURES[eventType] ) then
 		texture = CALENDAR_EVENTTYPE_TEXTURES[eventType];
@@ -2449,8 +2461,8 @@ function CalendarDayEventButton_Click(button, openEvent)
 	local selectedEventMonthOffset, selectedEventDay, selectedEventIndex = CalendarGetEventIndex();
 	if ( selectedEventIndex ~= eventIndex or selectedEventDay ~= day or selectedEventMonthOffset ~= monthOffset ) then
 		StaticPopup_Hide("CALENDAR_DELETE_EVENT");
-		CalendarFrame_SetSelectedEvent(button);
 	end
+	CalendarFrame_SetSelectedEvent(button);
 
 	if ( openEvent ) then
 		CalendarFrame_OpenEvent(dayButton, eventIndex);
@@ -2458,10 +2470,20 @@ function CalendarDayEventButton_Click(button, openEvent)
 end
 
 
+-- Calendar Misc Templates
+function CalendarTitleFrame_SetText(titleFrame, text)
+	local name = titleFrame:GetName();
+	local textFrame = _G[name.."Text"];
+	textFrame:SetText(text);
+	_G[name.."BackgroundMiddle"]:SetWidth(max(140, textFrame:GetWidth()));
+end
+
+
 -- CalendarViewHolidayFrame
 
 function CalendarViewHolidayFrame_OnLoad(self)
 	self.update = CalendarViewHolidayFrame_Update;
+	CalendarViewHolidayInfoTexture:SetAlpha(0.4);
 end
 
 function CalendarViewHolidayFrame_OnShow(self)
@@ -2473,20 +2495,20 @@ end
 
 function CalendarViewHolidayFrame_Update()
 	local name, description, texture = CalendarGetHolidayInfo(CalendarGetEventIndex());
-	CalendarViewHolidayFrameTitle:SetText(name);
-	CalendarViewHolidayFrameTitleBackgroundMiddle:SetWidth(max(140, CalendarViewHolidayFrameTitle:GetWidth()));
+	CalendarTitleFrame_SetText(CalendarViewHolidayTitleFrame, name);
 	CalendarViewHolidayDescription:SetText(description);
 	CalendarViewHolidayInfoTexture:SetTexture();
---[[
-	local texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, "HOLIDAY", "INFO", 0);
-	if ( texturePath ) then
-		CalendarViewHolidayInfoTexture:SetTexture(texturePath);
+	-- mschweitzer NOTE: we're going to use the default texture here until we can get real INFO art
+	local texture = CALENDAR_CALENDARTYPE_TEXTURES["HOLIDAY"]["INFO"];
+	local tcoords = CALENDAR_CALENDARTYPE_TCOORDS["HOLIDAY"];
+--	local texture, tcoords = _CalendarFrame_GetTextureFile(texture, "HOLIDAY", "INFO", 0);
+	if ( texture ) then
+		CalendarViewHolidayInfoTexture:SetTexture(texture);
 		CalendarViewHolidayInfoTexture:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 		CalendarViewHolidayInfoTexture:Show();
 	else
 		CalendarViewHolidayInfoTexture:Hide();
 	end
---]]
 end
 
 
@@ -2505,8 +2527,7 @@ end
 
 function CalendarViewRaidFrame_Update()
 	local name, calendarType, raidID, hour, minute, difficulty = CalendarGetRaidInfo(CalendarGetEventIndex());
-	CalendarViewRaidFrameTitle:SetText(name);
-	CalendarViewRaidFrameTitleBackgroundMiddle:SetWidth(max(140, CalendarViewRaidFrameTitle:GetWidth()));
+	CalendarTitleFrame_SetText(CalendarViewRaidTitleFrame, name);
 	if ( calendarType == "RAID_LOCKOUT" ) then
 		CalendarViewRaidDescription:SetFormattedText(CALENDAR_RAID_LOCKOUT_DESCRIPTION, name, GameTime_GetFormattedTime(hour, minute, true));
 	else
@@ -2616,12 +2637,12 @@ function CalendarEventInviteList_OnEvent(self, event, ...)
 			function (self)
 				local scrollFrame = self:GetParent();
 				local scrollFrameParent = scrollFrame:GetParent();
-				local scrollBarFudge = scrollFrameParent.scrollBarWidth;
+				local scrollBarWidth = scrollFrameParent.scrollBarWidth;
 				-- adjust scroll frame width
-				scrollFrame:SetPoint("BOTTOMRIGHT", scrollFrameParent, "BOTTOMRIGHT", -scrollBarFudge, 3);
+				scrollFrame:SetPoint("BOTTOMRIGHT", scrollFrameParent, "BOTTOMRIGHT", -scrollBarWidth, 3);
 				scrollFrame.scrollChild:SetWidth(scrollFrame:GetWidth());
 				-- adjust button width
-				local buttonWidth = scrollFrameParent.defaultButtonWidth - scrollBarFudge;
+				local buttonWidth = scrollFrameParent.defaultButtonWidth - scrollBarWidth;
 				for _, button in next, scrollFrame.buttons do
 					button:SetWidth(buttonWidth);
 				end
@@ -2631,7 +2652,6 @@ function CalendarEventInviteList_OnEvent(self, event, ...)
 			function (self)
 				local scrollFrame = self:GetParent();
 				local scrollFrameParent = scrollFrame:GetParent();
-				local scrollBarFudge = scrollFrameParent.scrollBarWidth;
 				-- adjust scroll frame width
 				scrollFrame:SetPoint("BOTTOMRIGHT", scrollFrameParent, "BOTTOMRIGHT", 0, 3);
 				scrollFrame.scrollChild:SetWidth(scrollFrame:GetWidth());
@@ -2847,13 +2867,13 @@ function CalendarViewEventFrame_Update()
 		CalendarViewEventDescription:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 	if ( CalendarEventIsGuildWide() ) then
-		CalendarViewEventFrameTitle:SetText(CALENDAR_VIEW_ANNOUNCEMENT);
+		CalendarTitleFrame_SetText(CalendarViewEventTitleFrame, CALENDAR_VIEW_ANNOUNCEMENT);
 		-- guild wide events don't have invite lists, auto approval, or event locks
 		CalendarViewEventInviteListSection:Hide();
 		CalendarViewEventFrame:SetHeight(CalendarViewEventFrame.defaultHeight - CalendarViewEventInviteListSection:GetHeight());
 		CalendarClassButtonContainer_Hide();
 	else
-		CalendarViewEventFrameTitle:SetText(CALENDAR_VIEW_EVENT);
+		CalendarTitleFrame_SetText(CalendarViewEventTitleFrame, CALENDAR_VIEW_EVENT);
 		CalendarViewEventInviteListSection:Show();
 		CalendarViewEventFrame:SetHeight(CalendarViewEventFrame.defaultHeight);
 		if ( locked ) then
@@ -3155,11 +3175,16 @@ function CalendarCreateEventFrame_OnEvent(self, event, ...)
 --]]
 			CalendarCreateEventInviteList_Update();
 			CalendarCreateEventRaidInviteButton_Update();
-		elseif ( event == "CALENDAR_NEW_EVENT" or event == "CALENDAR_CLOSE_EVENT" ) then
+		elseif ( event == "CALENDAR_NEW_EVENT" ) then
+			local isCopy = ...;
 			-- the CALENDAR_NEW_EVENT event gets fired when you successfully create a calendar event,
-			-- so to provide feedback to the player, we close the create event frame when we get this
+			-- so to provide feedback to the player, we close the current event frame when we get this
 			-- event...the other part of the feedback is that the event shows up on their calendar
 			-- (that part gets picked up by a CALENDAR_UPDATE_EVENT_LIST event)
+			if ( not isCopy ) then
+				CalendarFrame_HideEventFrame(CalendarCreateEventFrame);
+			end
+		elseif ( event == "CALENDAR_CLOSE_EVENT" ) then
 			CalendarFrame_HideEventFrame(CalendarCreateEventFrame);
 --[[
 		elseif ( event == "CALENDAR_ACTION_PENDING" ) then
@@ -3191,7 +3216,7 @@ end
 
 function CalendarCreateEventFrame_Update()
 	if ( CalendarCreateEventFrame.mode == "create" ) then
-		CalendarCreateEventCreateButton:SetText(CALENDAR_CREATE);
+		CalendarCreateEventCreateButton_SetText(CALENDAR_CREATE);
 
 		-- set the event date based on the selected date
 		local dayButton = CalendarCreateEventFrame.dayButton;
@@ -3232,14 +3257,14 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEvent_UpdateRepeatOption();
 		CalendarEventSetRepeatOption(CalendarCreateEventFrame.selectedRepeatOption);
 		if ( CalendarEventIsGuildWide() ) then
-			CalendarCreateEventFrameTitle:SetText(CALENDAR_CREATE_ANNOUNCEMENT);
+			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_CREATE_ANNOUNCEMENT);
 			-- guild wide events don't have invites
 			CalendarCreateEventInviteListSection:Hide();
 			CalendarCreateEventMassInviteButton:Hide();
 			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight - CalendarCreateEventInviteListSection:GetHeight());
 			CalendarClassButtonContainer_Hide();
 		else
-			CalendarCreateEventFrameTitle:SetText(CALENDAR_CREATE_EVENT);
+			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_CREATE_EVENT);
 			-- reset auto-approve
 			CalendarCreateEventAutoApproveCheck:SetChecked(CALENDAR_CREATEEVENTFRAME_DEFAULT_AUTOAPPROVE);
 			CalendarCreateEvent_SetAutoApprove();
@@ -3269,7 +3294,7 @@ function CalendarCreateEventFrame_Update()
 			return;
 		end
 
-		CalendarCreateEventCreateButton:SetText(UPDATE);
+		CalendarCreateEventCreateButton_SetText(CALENDAR_UPDATE);
 
 		-- update event title
 		CalendarCreateEventTitleEdit:SetText(title);
@@ -3309,14 +3334,14 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventFrame.selectedRepeatOption = repeatOption;
 		CalendarCreateEvent_UpdateRepeatOption();
 		if ( CalendarEventIsGuildWide() ) then
-			CalendarCreateEventFrameTitle:SetText(CALENDAR_EDIT_ANNOUNCEMENT);
+			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_ANNOUNCEMENT);
 			-- guild wide events don't have invites
 			CalendarCreateEventInviteListSection:Hide();
 			CalendarCreateEventRaidInviteButton:Hide();
 			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight - CalendarCreateEventInviteListSection:GetHeight());
 			CalendarClassButtonContainer_Hide();
 		else
-			CalendarCreateEventFrameTitle:SetText(CALENDAR_EDIT_EVENT);
+			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_EVENT);
 			-- update auto approve
 			CalendarCreateEventAutoApproveCheck:SetChecked(autoApprove);
 			-- update locked
@@ -4090,6 +4115,12 @@ function CalendarCreateEventCreateButton_OnUpdate(self)
 	CalendarCreateEventCreateButton_Update();
 end
 
+function CalendarCreateEventCreateButton_SetText(text)
+	local button = CalendarCreateEventCreateButton;
+	button:SetText(text);
+	button:SetWidth(button:GetTextWidth() + 40);
+end
+
 function CalendarCreateEventCreateButton_Update()
 	if ( CalendarCreateEventFrame.mode == "create" ) then
 		if ( CalendarCanAddEvent() ) then
@@ -4097,14 +4128,14 @@ function CalendarCreateEventCreateButton_Update()
 		else
 			CalendarCreateEventCreateButton:Disable();
 		end
-		--CalendarCreateEventCreateButton:SetText(CALENDAR_CREATE);
+		--CalendarCreateEventCreateButton_SetText(CALENDAR_CREATE);
 	elseif ( CalendarCreateEventFrame.mode == "edit" ) then
 		if ( CalendarEventHaveSettingsChanged() and not CalendarIsActionPending() ) then
 			CalendarCreateEventCreateButton:Enable();
 		else
 			CalendarCreateEventCreateButton:Disable();
 		end
-		--CalendarCreateEventCreateButton:SetText(UPDATE);
+		--CalendarCreateEventCreateButton_SetText(CALENDAR_UPDATE);
 	end
 end
 
@@ -4331,13 +4362,13 @@ function CalendarEventPickerScrollFrame_OnEvent(self, event, ...)
 		scrollBar.Show = 
 			function (self)
 				local scrollFrame = self:GetParent();
-				local scrollBarFudge = scrollFrame.scrollBarWidth;
+				local scrollBarWidth = self:GetWidth();
 				-- adjust scroll frame width
-				local scrollFrameWidth = scrollFrame.defaultWidth - scrollBarFudge;
+				local scrollFrameWidth = scrollFrame.defaultWidth - scrollBarWidth;
 				scrollFrame:SetWidth(scrollFrameWidth);
 				scrollFrame.scrollChild:SetWidth(scrollFrameWidth);
 				-- adjust button width
-				local buttonWidth = scrollFrame.defaultButtonWidth - scrollBarFudge;
+				local buttonWidth = scrollFrame.defaultButtonWidth - scrollBarWidth;
 				for _, button in next, scrollFrame.buttons do
 					button:SetWidth(buttonWidth);
 				end
@@ -4346,7 +4377,6 @@ function CalendarEventPickerScrollFrame_OnEvent(self, event, ...)
 		scrollBar.Hide = 
 			function (self)
 				local scrollFrame = self:GetParent();
-				local scrollBarFudge = scrollFrame.scrollBarWidth;
 				-- adjust scroll frame width
 				local scrollFrameWidth = scrollFrame.defaultWidth;
 				scrollFrame:SetWidth(scrollFrameWidth);
@@ -4362,12 +4392,12 @@ function CalendarEventPickerScrollFrame_OnEvent(self, event, ...)
 		self.update = CalendarEventPickerScrollFrame_Update;
 		HybridScrollFrame_CreateButtons(self, "CalendarEventPickerButtonTemplate");
 
-		self.scrollBarWidth = 25;	-- looks better than actual scroll bar width
-		self.defaultWidth = self:GetWidth() + self.scrollBarWidth;
-		self.defaultButtonWidth = self.buttons[1]:GetWidth() + self.scrollBarWidth;
+		local scrollBarWidth = scrollBar:GetWidth();
+		self.defaultWidth = self:GetWidth() + scrollBarWidth;
+		self.defaultButtonWidth = self.buttons[1]:GetWidth() + scrollBarWidth;
 
 		-- we don't need this event any more
-		self:UnregisterEvent(event)		
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -4571,7 +4601,7 @@ function CalendarTexturePickerFrame_Show(eventType)
 		CalendarTexturePickerFrame.selectedTextureIndex = CalendarCreateEventFrame.selectedTextureIndex;
 	end
 	CalendarTexturePickerFrame:Show();
-	CalendarTexturePickerScrollFrame_Update();
+	CalendarTexturePickerFrame_Update();
 end
 
 function CalendarTexturePickerFrame_Hide()
@@ -4589,6 +4619,24 @@ function CalendarTexturePickerFrame_Toggle(eventType)
 		CalendarTexturePickerFrame_Hide();
 	else
 		CalendarTexturePickerFrame_Show(eventType);
+	end
+end
+
+function CalendarTexturePickerFrame_Update()
+	if ( not CalendarTexturePickerFrame.eventType ) then
+		CalendarTexturePickerFrame_Hide();
+		return;
+	end
+
+	CalendarTexturePickerTitleFrame_Update();
+	CalendarTexturePickerScrollFrame_Update();
+end
+
+function CalendarTexturePickerTitleFrame_Update()
+	if ( CalendarTexturePickerFrame.eventType == CALENDAR_EVENTTYPE_RAID ) then
+		CalendarTitleFrame_SetText(CalendarTexturePickerTitleFrame, CALENDAR_TEXTURE_PICKER_TITLE_RAID);
+	else
+		CalendarTitleFrame_SetText(CalendarTexturePickerTitleFrame, CALENDAR_TEXTURE_PICKER_TITLE_DUNGEON);
 	end
 end
 
@@ -4610,13 +4658,13 @@ function CalendarTexturePickerScrollFrame_OnEvent(self, event, ...)
 		scrollBar.Show = 
 			function (self)
 				local scrollFrame = self:GetParent();
-				local scrollBarFudge = scrollFrame.scrollBarWidth;
+				local scrollBarWidth = self:GetWidth();
 				-- adjust scroll frame width
-				local scrollFrameWidth = scrollFrame.defaultWidth - scrollBarFudge;
+				local scrollFrameWidth = scrollFrame.defaultWidth - scrollBarWidth;
 				scrollFrame:SetWidth(scrollFrameWidth);
 				scrollFrame.scrollChild:SetWidth(scrollFrameWidth);
 				-- adjust button width
-				local buttonWidth = scrollFrame.defaultButtonWidth - scrollBarFudge;
+				local buttonWidth = scrollFrame.defaultButtonWidth - scrollBarWidth;
 				for _, button in next, scrollFrame.buttons do
 					button:SetWidth(buttonWidth);
 				end
@@ -4625,7 +4673,6 @@ function CalendarTexturePickerScrollFrame_OnEvent(self, event, ...)
 		scrollBar.Hide = 
 			function (self)
 				local scrollFrame = self:GetParent();
-				local scrollBarFudge = scrollFrame.scrollBarWidth;
 				-- adjust scroll frame width
 				local scrollFrameWidth = scrollFrame.defaultWidth;
 				scrollFrame:SetWidth(scrollFrameWidth);
@@ -4641,9 +4688,9 @@ function CalendarTexturePickerScrollFrame_OnEvent(self, event, ...)
 		self.update = CalendarTexturePickerScrollFrame_Update;
 		HybridScrollFrame_CreateButtons(self, "CalendarTexturePickerButtonTemplate");
 
-		self.scrollBarWidth = 25;	-- looks better than actual scroll bar width
-		self.defaultWidth = self:GetWidth() + self.scrollBarWidth;
-		self.defaultButtonWidth = self.buttons[1]:GetWidth() + self.scrollBarWidth;
+		local scrollBarWidth = scrollBar:GetWidth();
+		self.defaultWidth = self:GetWidth() + scrollBarWidth;
+		self.defaultButtonWidth = self.buttons[1]:GetWidth() + scrollBarWidth;
 
 		-- we don't need this event any more
 		self:UnregisterEvent(event)		
@@ -4651,11 +4698,6 @@ function CalendarTexturePickerScrollFrame_OnEvent(self, event, ...)
 end
 
 function CalendarTexturePickerScrollFrame_Update()
-	if ( not CalendarTexturePickerFrame.eventType ) then
-		CalendarTexturePickerFrame_Hide();
-		return;
-	end
-
 	local buttons = CalendarTexturePickerScrollFrame.buttons;
 	local numButtons = #buttons;
 	local numTextures = #CalendarEventTextureCache;

@@ -12,17 +12,6 @@ local AURA_ROW_WIDTH = 122;
 local TOT_AURA_ROW_WIDTH = 101;
 local NUM_TOT_AURA_ROWS = 2;	-- TODO: replace with TOT_AURA_ROW_HEIGHT functionality if this becomes a problem
 
-UnitReactionColor = {
-	{ r = 1.0, g = 0.0, b = 0.0 },
-	{ r = 1.0, g = 0.0, b = 0.0 },
-	{ r = 1.0, g = 0.5, b = 0.0 },
-	{ r = 1.0, g = 1.0, b = 0.0 },
-	{ r = 0.0, g = 1.0, b = 0.0 },
-	{ r = 0.0, g = 1.0, b = 0.0 },
-	{ r = 0.0, g = 1.0, b = 0.0 },
-	{ r = 0.0, g = 1.0, b = 0.0 },
-};
-
 function TargetFrame_OnLoad (self)
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -166,51 +155,11 @@ function TargetFrame_CheckLevel (self)
 end
 
 function TargetFrame_CheckFaction (self)
-	if ( UnitPlayerControlled("target") ) then
-		local r, g, b;
-		if ( UnitCanAttack("target", "player") ) then
-			-- Hostile players are red
-			if ( not UnitCanAttack("player", "target") ) then
-				r = 0.0;
-				g = 0.0;
-				b = 1.0;
-			else
-				r = UnitReactionColor[2].r;
-				g = UnitReactionColor[2].g;
-				b = UnitReactionColor[2].b;
-			end
-		elseif ( UnitCanAttack("player", "target") ) then
-			-- Players we can attack but which are not hostile are yellow
-			r = UnitReactionColor[4].r;
-			g = UnitReactionColor[4].g;
-			b = UnitReactionColor[4].b;
-		elseif ( UnitIsPVP("target") and not UnitIsPVPSanctuary("target") and not UnitIsPVPSanctuary("player") ) then
-			-- Players we can assist but are PvP flagged are green
-			r = UnitReactionColor[6].r;
-			g = UnitReactionColor[6].g;
-			b = UnitReactionColor[6].b;
-		else
-			-- All other players are blue (the usual state on the "blue" server)
-			r = 0.0;
-			g = 0.0;
-			b = 1.0;
-		end
-		TargetFrameNameBackground:SetVertexColor(r, g, b);
-		TargetPortrait:SetVertexColor(1.0, 1.0, 1.0);
-	elseif ( UnitIsTapped("target") and not UnitIsTappedByPlayer("target") ) then
+	if ( not UnitPlayerControlled("target") and UnitIsTapped("target") and not UnitIsTappedByPlayer("target") ) then
 		TargetFrameNameBackground:SetVertexColor(0.5, 0.5, 0.5);
 		TargetPortrait:SetVertexColor(0.5, 0.5, 0.5);
 	else
-		local reaction = UnitReaction("target", "player");
-		if ( reaction ) then
-			local r, g, b;
-			r = UnitReactionColor[reaction].r;
-			g = UnitReactionColor[reaction].g;
-			b = UnitReactionColor[reaction].b;
-			TargetFrameNameBackground:SetVertexColor(r, g, b);
-		else
-			TargetFrameNameBackground:SetVertexColor(0, 0, 1.0);
-		end
+		TargetFrameNameBackground:SetVertexColor(UnitSelectionColor("target"));
 		TargetPortrait:SetVertexColor(1.0, 1.0, 1.0);
 	end
 
@@ -332,7 +281,7 @@ function TargetFrame_UpdateAuras (self)
 			end
 
 			-- Set the buff to be big if the buff is cast by the player and the target is not the player
-			largeBuffList[i] = (isMine and not playerIsTarget);
+			largeBuffList[i] = (isMine and not playerIsTarget and not UnitIsEnemy("target", "player"));
 
 			numBuffs = numBuffs + 1;
 

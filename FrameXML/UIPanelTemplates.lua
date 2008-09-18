@@ -230,7 +230,7 @@ function FauxScrollFrame_OnVerticalScroll(self, value, itemHeight, updateFunctio
 	local scrollbar = getglobal(self:GetName().."ScrollBar");
 	scrollbar:SetValue(value);
 	self.offset = floor((value / itemHeight) + 0.5);
-	updateFunction();
+	updateFunction(self);
 end
 
 function FauxScrollFrame_GetOffset(frame)

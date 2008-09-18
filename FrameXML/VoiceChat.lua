@@ -319,5 +319,4 @@ function SetSelfMuteState()
 	else
 		MiniMapVoiceChatFrameIconMuted:Hide();
 	end
-
 end

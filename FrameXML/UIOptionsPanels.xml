@@ -4,13 +4,7 @@
 	
 	<!-- Templates -->
 	
-	<CheckButton name="InterfaceOptionsBaseCheckButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="26" y="26"/>
-		</Size>
-		<HitRectInsets>
-			<AbsInset left="0" right="-100" top="0" bottom="0"/>
-		</HitRectInsets>
+	<CheckButton name="InterfaceOptionsBaseCheckButtonTemplate" inherits="OptionsBaseCheckButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
 				if ( self:GetChecked() ) then
@@ -18,27 +12,9 @@
 				else
 					PlaySound("igMainMenuOptionCheckBoxOff");
 				end
-				BlizzardOptionsPanel_CheckButton_OnClick(self);
+				InterfaceOptionsPanel_CheckButton_OnClick(self);
 			</OnClick>
-			<OnEnter>
-				if ( self.tooltipText ) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-				end
-				if ( self.tooltipRequirement ) then
-					GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
-					GameTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
 		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-	 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
 	</CheckButton>
 	<CheckButton name="InterfaceOptionsCheckButtonTemplate" virtual="true" inherits="InterfaceOptionsBaseCheckButtonTemplate">
 		<Layers>
@@ -58,7 +34,7 @@
 	<CheckButton name="InterfaceOptionsSmallCheckButtonTemplate" virtual="true" inherits="InterfaceOptionsBaseCheckButtonTemplate">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontNormalSmall">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
@@ -70,75 +46,9 @@
 			</Layer>
 		</Layers>
 	</CheckButton>
-	<Slider name="InterfaceOptionsSliderTemplate" orientation="HORIZONTAL" virtual="true" enableMouse="true">
-		<Size>
-			<AbsDimension x="144" y="17"/>
-		</Size>
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
-		</HitRectInsets>
-		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="8"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="8"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="3" top="6" bottom="6"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlight">
-					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="TOP"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentLow" inherits="GameFontNormalSmall" text="LOW">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="-4" y="3"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentHigh" inherits="GameFontNormalSmall" text="HIGH">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="4" y="3"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				if ( self.tooltipText ) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-				end
-				if ( self.tooltipRequirement ) then
-					GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
-					GameTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
-			<Size>
-				<AbsDimension x="32" y="32"/>
-			</Size>
-		</ThumbTexture>
-	</Slider>
-	
+
 	<!-- Controls Panel -->
-	
+
 	<Frame name="InterfaceOptionsControlsPanel" hidden="false" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -170,18 +80,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = CONTROLS_LABEL;
-				self.options = ControlsPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-				UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, GetModifiedClick("AUTOLOOTTOGGLE"));
-				UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelAutoLootKeyDropDown);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>
-		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentStickyTargeting" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -341,6 +239,15 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = CONTROLS_LABEL;
+				self.options = ControlsPanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+				UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, GetModifiedClick("AUTOLOOTTOGGLE"));
+				UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelAutoLootKeyDropDown);
+			</OnLoad>
+		</Scripts>	
 	</Frame>
 	
 	<!-- Combat panel -->
@@ -376,16 +283,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = COMBAT_LABEL;
-				self.options = CombatPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>
-		</Scripts>	
 		<Frames>		
 			<CheckButton name="$parentAttackOnAssist" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -613,9 +510,9 @@
 						self.type = CONTROLTYPE_DROPDOWN;
 						self.cvar = "targetOfTargetMode";
 						self.uvar = "SHOW_TARGET_OF_TARGET_STATE";
-						self:RegisterEvent("VARIABLES_LOADED");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelTargetOfTarget, self);
+						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
 					<OnEnter>
 						if ( not self.isDisabled ) then
@@ -675,6 +572,13 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = COMBAT_LABEL;
+				self.options = CombatPanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>
 	</Frame>
 	
 	<!-- Display panel -->
@@ -710,16 +614,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = DISPLAY_LABEL;
-				self.options = DisplayPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>
-		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentShowCloak" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -736,17 +630,12 @@
 						self.text:SetText(SHOW_CLOAK);
 						self.tooltipText = OPTION_TOOLTIP_SHOW_CLOAK;
 						self.defaultValue = "1";
-						self.GetValue = function (self) return ( (ShowingCloak() and "1") or "0" ); end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						<!-- Thanks Alestane for Lua trickz! -->
-						self.Disable = function (self) getmetatable(self).__index.Disable(self) getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
-						self.Enable = function (self) getmetatable(self).__index.Enable(self) getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;
+
+						self.GetValue = function (self) return ( (ShowingCloak() and "1") or "0" ); end
 						self.SetValue = function (self, value) self.value = value; self:SetChecked(value); ShowCloak(value); end
 						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 					</OnLoad>
-					<OnShow>
-						self:SetValue((ShowingCloak() and "1") or "0");
-					</OnShow>
 					<OnClick>			
 						local value = ((self:GetChecked() and "1") or "0")
 						if ( value == "1" ) then
@@ -780,16 +669,12 @@
 						self.text:SetText(SHOW_HELM);
 						self.tooltipText = OPTION_TOOLTIP_SHOW_HELM;
 						self.defaultValue = "1";
-						self.GetValue = function (self) return ( (ShowingHelm() and "1") or "0" ); end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self.Disable = function (self) getmetatable(self).__index.Disable(self) getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
-						self.Enable = function (self) getmetatable(self).__index.Enable(self) getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;			
+
+						self.GetValue = function (self) return ( (ShowingHelm() and "1") or "0" ); end
 						self.SetValue = function (self, value) self.value = value; self:SetChecked(value); ShowHelm(value); end		
 						self:RegisterEvent("PLAYER_FLAGS_CHANGED");						
 					</OnLoad>
-					<OnShow>
-						self:SetValue((ShowingHelm() and "1") or "0");
-					</OnShow>			
 					<OnClick>
 						local value = ((self:GetChecked() and "1") or "0")
 						if ( value == "1" ) then
@@ -939,7 +824,7 @@
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnLoad>
-						<!-- No, I don't think self name is long enough. Yes, I would name it something longer if I could. Hrm. I probably should have put DDL in there for a touch of hungarian.-->
+						<!-- No, I don't think this name is long enough. Yes, I would name it something longer if I could. Hrm. I probably should have put DDL in there for a touch of hungarian.-->
 						InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad(self)
 					</OnLoad>
 				</Scripts>
@@ -998,6 +883,11 @@
 				</Scripts>
 			</CheckButton>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				InterfaceOptionsDisplayPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>	
 	</Frame>
 	
 	<!-- Quest panel -->
@@ -1033,16 +923,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = QUESTS_LABEL;
-				self.options = QuestPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>
-		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentInstantQuestText" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -1079,6 +959,13 @@
 				</Scripts>
 			</CheckButton>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = QUESTS_LABEL;
+				self.options = QuestPanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>	
 	</Frame>
 	
 	<!-- Social panel -->
@@ -1114,20 +1001,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = SOCIAL_LABEL;
-				self.options = SocialPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-				InterfaceOptionsSocialPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>
-			<OnEvent>
-				InterfaceOptionsSocialPanel_OnEvent(self, event, ...);
-			</OnEvent>
-		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentProfanityFilter" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -1295,6 +1168,14 @@
 				</Scripts>
 			</CheckButton>			
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				InterfaceOptionsSocialPanel_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				InterfaceOptionsSocialPanel_OnEvent(self, event, ...);
+			</OnEvent>
+		</Scripts>	
 	</Frame>
 	
 	<!-- ActionBars panel -->
@@ -1330,20 +1211,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = ACTIONBARS_LABEL;
-				self.options = ActionBarsPanelOptions
-				InterfaceOptionsActionBarsPanel_OnLoad(self);
-				BlizzardOptionsPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>
-			<OnEvent>
-				InterfaceOptionsActionBarsPanel_OnEvent(self, event, ...);
-			</OnEvent>
-		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentBottomLeft" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -1359,7 +1226,7 @@
 						self.label = "bottomLeftActionBar";
 						self.uvar = "SHOW_MULTI_ACTIONBAR_1";
 						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						self.GetValue = function() return (select(1, GetActionBarToggles()) and "1") or "0" end
+						self.GetValue = function () return self.value or ((select(1, GetActionBarToggles()) and "1") or "0"); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1378,7 +1245,7 @@
 						self.label = "bottomRightActionBar";
 						self.uvar = "SHOW_MULTI_ACTIONBAR_2";
 						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						self.GetValue = function() return (select(2, GetActionBarToggles()) and "1") or "0" end
+						self.GetValue = function () return self.value or ((select(2, GetActionBarToggles()) and "1") or "0"); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1397,7 +1264,7 @@
 						self.label = "rightActionBar";
 						self.uvar = "SHOW_MULTI_ACTIONBAR_3";
 						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						self.GetValue = function() return (select(3, GetActionBarToggles()) and "1") or "0" end
+						self.GetValue = function () return self.value or ((select(3, GetActionBarToggles()) and "1") or "0"); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1416,7 +1283,7 @@
 						self.label = "rightTwoActionBar";
 						self.uvar = "SHOW_MULTI_ACTIONBAR_4";
 						self.setFunc = InterfaceOptions_UpdateMultiActionBars;
-						self.GetValue = function() return (select(4, GetActionBarToggles()) and "1") or "0" end
+						self.GetValue = function () return self.value or ((select(4, GetActionBarToggles()) and "1") or "0"); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsActionBarsPanelRight, self);
 					</OnLoad>
@@ -1475,6 +1342,14 @@
 				</Scripts>
 			</CheckButton>			
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				InterfaceOptionsActionBarsPanel_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				InterfaceOptionsActionBarsPanel_OnEvent(self, event, ...);
+			</OnEvent>
+		</Scripts>	
 	</Frame>
 	
 	<!-- Names panel -->
@@ -1510,16 +1385,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = NAMES_LABEL;
-				self.options = NamePanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>
-		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentMyName" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -1734,6 +1599,13 @@
 				</Frames>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = NAMES_LABEL;
+				self.options = NamePanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>	
 	</Frame>
 	
 	<!-- Combat Text panel -->
@@ -1769,16 +1641,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = COMBATTEXT_LABEL;
-				self.options = FCTPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>	
-		</Scripts>
 		<Frames>
 			<CheckButton name="$parentTargetDamage" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>				
@@ -1844,6 +1706,39 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "CombatHealing";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentTargetEffects" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>				
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="173" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctSpellMechanics";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentOtherTargetEffects" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTargetEffects" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fctSpellMechanicsOther";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelTargetEffects, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -2027,26 +1922,16 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "fctComboPoints";
 						self.uvar = "COMBAT_TEXT_SHOW_COMBO_POINTS";
-						<!-- self runs first so the new Disable method will be registered when BlizzardOptionsPanel_RegisterControl runs the control's setFunc at startup -->
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 						self.setFunc = function (value)
 							local _, class = UnitClass("player");
 							if ( class ~= "ROGUE" and class ~= "DRUID" ) then
-								InterfaceOptionsCombatTextPanelComboPoints:SetChecked(false);
-								InterfaceOptionsCombatTextPanelComboPoints:Disable();								
-							end					
+								self:SetChecked(false);
+								self:Disable();
+							end
 							BlizzardOptionsPanel_UpdateCombatText();
 						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self.Enable = function (self) 
-							<!-- fix for bug 106687: self button can no longer be enabled if you're not a rogue or a druid -->
-							local _, class = UnitClass("player");
-							if ( class ~= "ROGUE" and class ~= "DRUID" ) then
-								return;
-							end
-							getmetatable(self).__index.Enable(self); 
-							getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) 
-						end;
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
@@ -2136,6 +2021,11 @@
 				</Scripts>
 			</CheckButton>				
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				InterfaceOptionsCombatTextPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>
 	</Frame>
 	
 	<!-- Status Text panel -->
@@ -2171,16 +2061,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = STATUSTEXT_LABEL;
-				self.options = StatusTextPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>	
-		</Scripts>
 		<Frames>
 			<CheckButton name="$parentPlayer" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -2279,6 +2159,13 @@
 				</Scripts>
 			</CheckButton>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = STATUSTEXT_LABEL;
+				self.options = StatusTextPanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>
 	</Frame>
 	
 	<!-- Party & Raid panel -->
@@ -2314,16 +2201,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = PARTYRAID_LABEL;
-				self.options = PartyRaidPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>			
-		</Scripts>
 		<Frames>
 			<CheckButton name="$parentPartyBackground" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -2437,6 +2314,13 @@
 				</Scripts>
 			</CheckButton>				
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = PARTYRAID_LABEL;
+				self.options = PartyRaidPanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>
 	</Frame>
 	
 	<!-- Camera Panel -->
@@ -2472,16 +2356,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = CAMERA_LABEL;
-				self.options = CameraPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self)
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>			
-		</Scripts>	
 		<Frames>
 			<Frame name="$parentStyleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
@@ -2507,8 +2381,8 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
-						self:RegisterEvent("VARIABLES_LOADED");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
 					<OnEnter>
 						if ( not self.isDisabled ) then
@@ -2526,7 +2400,7 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>		
-			<Slider name="$parentFollowSpeedSlider" inherits="InterfaceOptionsSliderTemplate">
+			<Slider name="$parentFollowSpeedSlider" inherits="OptionsSliderTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentStyleDropDown" relativePoint="TOPRIGHT">
 						<Offset>
@@ -2538,9 +2412,9 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "cameraYawSmoothSpeed";
-						self.oldSetValue = self.SetValue;
+						self.SetDisplayValue = self.SetValue;
 						self.SetValue = function (self, value)
-							self:oldSetValue(value);
+							self:SetDisplayValue(value);
 							self.value = value;
 							SetCVar(self.cvar, value);
 							SetCVar("cameraPitchSmoothSpeed", value/4);
@@ -2548,12 +2422,12 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.value = self:GetValue();
-						self:SetValue(self:GetValue());
+						self.value = value;
+						SetCVar(self.cvar, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
-			<Slider name="$parentMaxDistanceSlider" inherits="InterfaceOptionsSliderTemplate">
+			<Slider name="$parentMaxDistanceSlider" inherits="OptionsSliderTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" relativeTo="$parentFollowSpeedSlider" relativePoint="TOP">
 						<Offset>
@@ -2565,17 +2439,17 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "cameraDistanceMaxFactor";
-						self.oldSetValue = self.SetValue;
+						self.SetDisplayValue = self.SetValue;
 						self.SetValue = function (self, value)
-							self:oldSetValue(value);
+							self:SetDisplayValue(value);
 							self.value = value;
 							SetCVar(self.cvar, value);
 						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.value = self:GetValue();
-						self:SetValue(self:GetValue());
+						self.value = value;
+						SetCVar(self.cvar, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>			
@@ -2591,8 +2465,6 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "cameraTerrainTilt";
-						self.Disable = function (self) getmetatable(self).__index.Disable(self) getglobal(self:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
-						self.Enable = function (self) getmetatable(self).__index.Enable(self) getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -2646,6 +2518,11 @@
 				</Scripts>
 			</CheckButton>					
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				InterfaceOptionsCameraPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>	
 	</Frame>
 	
 	<!-- Mouse panel -->
@@ -2681,16 +2558,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = MOUSE_LABEL;
-				self.options = MousePanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>
-		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentInvertMouse" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -2724,7 +2591,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<Slider name="$parentMouseSensitivitySlider" inherits="InterfaceOptionsSliderTemplate">
+			<Slider name="$parentMouseSensitivitySlider" inherits="OptionsSliderTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInvertMouse" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -2736,9 +2603,9 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "mouseSpeed";
-						self.oldSetValue = self.SetValue;
+						self.SetDisplayValue = self.SetValue;
 						self.SetValue = function (self, value)
-							self:oldSetValue(value);
+							self:SetDisplayValue(value);
 							self.value = value;
 							SetCVar(self.cvar, value);
 						end
@@ -2749,8 +2616,8 @@
 						SetCVar(self.cvar, value);
 					</OnValueChanged>
 				</Scripts>
-			</Slider>				
-			<Slider name="$parentMouseLookSpeedSlider" inherits="InterfaceOptionsSliderTemplate">
+			</Slider>
+			<Slider name="$parentMouseLookSpeedSlider" inherits="OptionsSliderTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentMouseSensitivitySlider" relativePoint="BOTTOM">
 						<Offset>
@@ -2762,6 +2629,13 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "cameraYawMoveSpeed";
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							self.value = value;
+							SetCVar(self.cvar, value);
+							SetCVar("cameraPitchMoveSpeed", value/2);
+						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
@@ -2795,9 +2669,9 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
-						self:RegisterEvent("VARIABLES_LOADED");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsMousePanelClickToMove, self);
+						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
 					<OnEnter>
 						if ( not self.isDisabled ) then
@@ -2816,6 +2690,13 @@
 				</Scripts>
 			</Frame>		
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = MOUSE_LABEL;
+				self.options = MousePanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>	
 	</Frame>
 	
 	<!-- Help panel -->
@@ -2851,17 +2732,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = HELP_LABEL;
-				self.options = HelpPanelOptions;
-				BlizzardOptionsPanel_OnLoad(self);
-				InterfaceOptionsHelpPanel_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>
-		</Scripts>	
 		<Frames>
 			<CheckButton name="$parentTutorials" inherits="InterfaceOptionsCheckButtonTemplate">
 				<!-- The Tutorials button LOVES being special -->
@@ -2983,10 +2853,18 @@
 				<HighlightFont style="GameFontHighlightSmall"/>				
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = HELP_LABEL;
+				self.options = HelpPanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+				InterfaceOptionsHelpPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>
 	</Frame>
-	
+
 	<!-- Languages -->
-	
+
 	<Frame name="InterfaceOptionsLanguagesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -3018,16 +2896,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.name = LANGUAGES_LABEL;
-				self.options = LanguagesPanelOptions;
-				InterfaceOptionsLanguagesPanel_OnLoad(self);			
-			</OnLoad>
-			<OnShow>
-				BlizzardOptionsPanel_OnShow(self);
-			</OnShow>
-		</Scripts>		
 		<Frames>
 			<Frame name="$parentLocaleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
@@ -3069,6 +2937,13 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = LANGUAGES_LABEL;
+				self.options = LanguagesPanelOptions;
+				InterfaceOptionsLanguagesPanel_OnLoad(self);			
+			</OnLoad>
+		</Scripts>		
 	</Frame>
 	
 </Ui>

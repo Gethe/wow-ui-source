@@ -24,7 +24,7 @@ GraphicsQualityLevels = {
 			VideoOptionsEffectsPanelTextureFiltering = 1,
 			VideoOptionsEffectsPanelWeatherIntensity = 1,
 			VideoOptionsEffectsPanelSpecularLighting = true,
-			VideoOptionsEffectsPanelFullScreenGlow = 1,
+			VideoOptionsEffectsPanelFullScreenGlow = true,
 			VideoOptionsEffectsPanelDeathEffect = true,
 			},
 	[3] = { VideoOptionsEffectsPanelTerrainDistance = 727,

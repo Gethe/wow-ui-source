@@ -17,12 +17,6 @@ LAST_ITEM_COUNT = 0;
 LAST_ITEM_START_BID = 0;
 LAST_ITEM_BUYOUT = 0;
 
--- added these so that they could be changed in localization files
-BUYOUT_TEXT_OFFSET_NO_SCROLL = -178;
-BUYOUT_TEXT_OFFSET_WITH_SCROLL = -153
-BUYOUT_TEXT_YOFFSET_NO_SCROLL = 0;
-BUYOUT_TEXT_YOFFSET_WITH_SCROLL = 0;
-
 AuctionSort = { };
 
 -- owner sorts
@@ -701,7 +695,7 @@ end
 
 function AuctionFrameBrowse_Update()
 	local numBatchAuctions, totalAuctions = GetNumAuctionItems("list");
-	local button, buttonName, iconTexture, itemName, color, itemCount, moneyFrame, buyoutMoneyFrame, buyoutText, buttonHighlight;
+	local button, buttonName, iconTexture, itemName, color, itemCount, moneyFrame, buyoutFrame, buyoutMoney, buttonHighlight;
 	local offset = FauxScrollFrame_GetOffset(BrowseScrollFrame);
 	local index;
 	local isLastSlotEmpty;
@@ -739,17 +733,14 @@ function AuctionFrameBrowse_Update()
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal("BrowseButton"..i.."Highlight");
 			if ( numBatchAuctions < NUM_BROWSE_TO_DISPLAY ) then
-				getglobal(button:GetName().."BuyoutText"):SetPoint("LEFT", getglobal(button:GetName().."BuyoutMoneyFrame"), "RIGHT", BUYOUT_TEXT_OFFSET_NO_SCROLL, BUYOUT_TEXT_YOFFSET_NO_SCROLL)
 				button:SetWidth(625);
 				buttonHighlight:SetWidth(589);
 				BrowseCurrentBidSort:SetWidth(207);
 			elseif ( numBatchAuctions == NUM_BROWSE_TO_DISPLAY and totalAuctions <= NUM_BROWSE_TO_DISPLAY ) then
-				getglobal(button:GetName().."BuyoutText"):SetPoint("LEFT", getglobal(button:GetName().."BuyoutMoneyFrame"), "RIGHT", BUYOUT_TEXT_OFFSET_NO_SCROLL, BUYOUT_TEXT_YOFFSET_NO_SCROLL)
 				button:SetWidth(625);
 				buttonHighlight:SetWidth(589);
 				BrowseCurrentBidSort:SetWidth(207);
 			else
-				getglobal(button:GetName().."BuyoutText"):SetPoint("LEFT", getglobal(button:GetName().."BuyoutMoneyFrame"), "RIGHT", BUYOUT_TEXT_OFFSET_WITH_SCROLL, BUYOUT_TEXT_YOFFSET_WITH_SCROLL)
 				button:SetWidth(600);
 				buttonHighlight:SetWidth(562);
 				BrowseCurrentBidSort:SetWidth(184);
@@ -785,9 +776,6 @@ function AuctionFrameBrowse_Update()
 			end
 			-- Set high bid
 			moneyFrame = getglobal(buttonName.."MoneyFrame");
-			yourBidText = getglobal(buttonName.."YourBidText");
-			buyoutMoneyFrame = getglobal(buttonName.."BuyoutMoneyFrame");
-			buyoutText = getglobal(buttonName.."BuyoutText");
 			-- If not bidAmount set the bid amount to the min bid
 			if ( bidAmount == 0 ) then
 				displayedPrice = minBid;
@@ -798,6 +786,7 @@ function AuctionFrameBrowse_Update()
 			end
 			MoneyFrame_Update(moneyFrame:GetName(), displayedPrice);
 
+			yourBidText = getglobal(buttonName.."YourBidText");
 			if ( highBidder ) then
 				yourBidText:Show();
 			else
@@ -808,15 +797,15 @@ function AuctionFrameBrowse_Update()
 				-- Lie about our buyout price
 				buyoutPrice = requiredBid;
 			end
+			buyoutFrame = getglobal(buttonName.."BuyoutFrame");
 			if ( buyoutPrice > 0 ) then
-				moneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 10, 10);
-				MoneyFrame_Update(buyoutMoneyFrame:GetName(), buyoutPrice);
-				buyoutMoneyFrame:Show();
-				buyoutText:Show();
+				moneyFrame:SetPoint("RIGHT", button, "RIGHT", 10, 10);
+				buyoutMoney = getglobal(buyoutFrame:GetName().."Money");
+				MoneyFrame_Update(buyoutMoney, buyoutPrice);
+				buyoutFrame:Show();
 			else
-				moneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 10, 3);
-				buyoutMoneyFrame:Hide();
-				buyoutText:Hide();
+				moneyFrame:SetPoint("RIGHT", button, "RIGHT", 10, 3);
+				buyoutFrame:Hide();
 			end
 			-- Set high bidder
 			--if ( not highBidder ) then
@@ -1113,7 +1102,7 @@ function AuctionFrameAuctions_Update()
 	local offset = FauxScrollFrame_GetOffset(AuctionsScrollFrame);
 	local index;
 	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
-	local buttonBuyoutText, buttonBuyoutFrame;
+	local buttonBuyoutFrame, buttonBuyoutMoney;
 	local isLastSlotEmpty;
 	local bidAmountMoneyFrame, bidAmountMoneyFrameLabel;
 
@@ -1144,20 +1133,15 @@ function AuctionFrameAuctions_Update()
 
 			-- Resize button if there isn't a scrollbar
 			buttonHighlight = getglobal(buttonName.."Highlight");
-			buttonBuyoutFrame = getglobal(buttonName.."BuyoutMoneyFrame");
-			buttonBuyoutText = getglobal(buttonName.."BuyoutMoneyFrameText");
 			if ( numBatchAuctions < NUM_AUCTIONS_TO_DISPLAY ) then
-				buttonBuyoutText:SetPoint("LEFT", buttonBuyoutFrame, "RIGHT", -205, 0)
 				auction:SetWidth(599);
 				buttonHighlight:SetWidth(565);
 				AuctionsBidSort:SetWidth(213);
 			elseif ( numBatchAuctions == NUM_AUCTIONS_TO_DISPLAY and totalAuctions <= NUM_AUCTIONS_TO_DISPLAY ) then
-				buttonBuyoutText:SetPoint("LEFT", buttonBuyoutFrame, "RIGHT", -205, 0)
 				auction:SetWidth(599);
 				buttonHighlight:SetWidth(565);
 				AuctionsBidSort:SetWidth(213);
 			else
-				buttonBuyoutText:SetPoint("LEFT", buttonBuyoutFrame, "RIGHT", -182, 0)
 				auction:SetWidth(576);
 				buttonHighlight:SetWidth(543);
 				AuctionsBidSort:SetWidth(193);
@@ -1186,9 +1170,9 @@ function AuctionFrameAuctions_Update()
 
 				MoneyFrame_Update(buttonName.."MoneyFrame", bidAmount);
 				bidAmountMoneyFrame:SetAlpha(1);
-				bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 0, -4);
+				bidAmountMoneyFrame:SetPoint("RIGHT", button, "RIGHT", 10, -4);
 				bidAmountMoneyFrameLabel:Show();
-				getglobal(buttonName.."BuyoutMoneyFrame"):Hide();
+				getglobal(buttonName.."BuyoutFrame"):Hide();
 			else
 				-- Normal item
 				itemName:SetText(name);
@@ -1230,14 +1214,16 @@ function AuctionFrameAuctions_Update()
 				end
 				
 				-- Set buyout price and adjust bid amount accordingly
+				buttonBuyoutFrame = getglobal(buttonName.."BuyoutFrame");
 				if ( buyoutPrice > 0 ) then
-					bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 0, 10);
-					getglobal(buttonName.."BuyoutMoneyFrame"):Show();
+					bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 10, 10);
+					buttonBuyoutMoney = getglobal(buttonName.."BuyoutFrameMoney");
+					MoneyFrame_Update(buttonBuyoutMoney, buyoutPrice);
+					buttonBuyoutFrame:Show();
 				else
-					bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 0, 3);
-					getglobal(buttonName.."BuyoutMoneyFrame"):Hide();
+					bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 10, 3);
+					buttonBuyoutFrame:Hide();
 				end
-				MoneyFrame_Update(buttonName.."BuyoutMoneyFrame", buyoutPrice);
 
 				button.buyoutPrice = buyoutPrice;
 				button.itemCount = count;
@@ -1304,7 +1290,7 @@ function AuctionsRadioButton_OnClick(index)
 	if ( index == 1 ) then
 		AuctionsShortAuctionButton:SetChecked(1);
 		AuctionFrameAuctions.duration = 720;
-	elseif ( index ==2 ) then
+	elseif ( index == 2 ) then
 		AuctionsMediumAuctionButton:SetChecked(1);
 		AuctionFrameAuctions.duration = 1440;
 	else

@@ -1106,9 +1106,9 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 		GuildControlTabPermissionsDepositItems:SetChecked(1);
 		GuildControlTabPermissionsViewTab:SetChecked(1);
 		GuildControlTabPermissionsUpdateText:SetChecked(1);
-		OptionsFrame_DisableCheckBox(GuildControlTabPermissionsDepositItems);
-		OptionsFrame_DisableCheckBox(GuildControlTabPermissionsViewTab);
-		OptionsFrame_DisableCheckBox(GuildControlTabPermissionsUpdateText);
+		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsDepositItems);
+		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsViewTab);
+		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsUpdateText);
 		GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		GuildControlWithdrawItemsEditBox:SetNumeric(nil);
 		GuildControlWithdrawItemsEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
@@ -1123,22 +1123,22 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 		GuildControlWithdrawGoldEditBox:SetText(UNLIMITED);
 		GuildControlWithdrawGoldEditBox:ClearFocus();
 		GuildControlWithdrawGoldEditBoxMask:Show();
-		OptionsFrame_DisableCheckBox(GuildControlPopupFrameCheckbox15);
-		OptionsFrame_DisableCheckBox(GuildControlPopupFrameCheckbox16);
+		BlizzardOptionsPanel_CheckButton_Disable(GuildControlPopupFrameCheckbox15);
+		BlizzardOptionsPanel_CheckButton_Disable(GuildControlPopupFrameCheckbox16);
 	else
 		if ( GetNumGuildBankTabs() == 0 ) then
 			-- No tabs, no permissions! Disable the tab related doohickies
 			GuildBankTabLabel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			OptionsFrame_DisableCheckBox(GuildControlTabPermissionsViewTab);
-			OptionsFrame_DisableCheckBox(GuildControlTabPermissionsDepositItems);
-			OptionsFrame_DisableCheckBox(GuildControlTabPermissionsUpdateText);
+			BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsViewTab);
+			BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsDepositItems);
+			BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsUpdateText);
 			GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 			GuildControlWithdrawItemsEditBox:SetText(UNLIMITED);
 			GuildControlWithdrawItemsEditBox:ClearFocus();
 			GuildControlWithdrawItemsEditBoxMask:Show();
 		else
 			GuildBankTabLabel:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			OptionsFrame_EnableCheckBox(GuildControlTabPermissionsViewTab);
+			BlizzardOptionsPanel_CheckButton_Enable(GuildControlTabPermissionsViewTab);
 			GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 			GuildControlWithdrawItemsEditBox:SetNumeric(1);
 			GuildControlWithdrawItemsEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -1151,8 +1151,8 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 		GuildControlWithdrawGoldEditBox:SetMaxLetters(MAX_GOLD_WITHDRAW_DIGITS);
 		GuildControlWithdrawGoldEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		GuildControlWithdrawGoldEditBoxMask:Hide();
-		OptionsFrame_EnableCheckBox(GuildControlPopupFrameCheckbox15);
-		OptionsFrame_EnableCheckBox(GuildControlPopupFrameCheckbox16);
+		BlizzardOptionsPanel_CheckButton_Enable(GuildControlPopupFrameCheckbox15);
+		BlizzardOptionsPanel_CheckButton_Enable(GuildControlPopupFrameCheckbox16);
 
 		-- Update tab specific info
 		local viewTab, canDeposit, canUpdateText, numWithdrawals = GetGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab);
@@ -1342,11 +1342,11 @@ end
 
 function GuildControlPopup_UpdateDepositCheckBox()
 	if(GuildControlTabPermissionsViewTab:GetChecked()) then
-		OptionsFrame_EnableCheckBox(GuildControlTabPermissionsDepositItems);
-		OptionsFrame_EnableCheckBox(GuildControlTabPermissionsUpdateText);
+		BlizzardOptionsPanel_CheckButton_Enable(GuildControlTabPermissionsDepositItems);
+		BlizzardOptionsPanel_CheckButton_Enable(GuildControlTabPermissionsUpdateText);
 	else
-		OptionsFrame_DisableCheckBox(GuildControlTabPermissionsDepositItems);
-		OptionsFrame_DisableCheckBox(GuildControlTabPermissionsUpdateText);
+		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsDepositItems);
+		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsUpdateText);
 	end
 end
 

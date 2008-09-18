@@ -756,48 +756,7 @@ function RaidPullout_UpdateTarget(pullOutFrame, pullOutButton, unit, which)
 				name:SetVertexColor(1.0, 0.82, 0);
 			end
 
-			local r, g, b;
-			if ( UnitPlayerControlled(unit) ) then
-				-- Color the name if the unit is a player
-				if ( UnitCanAttack(unit, "player") ) then
-					if ( not UnitCanAttack("player", unit) ) then
-						r = 0.0;
-						g = 1.0;
-						b = 0.0;
-					else
-						-- Hostile players are red
-						r = UnitReactionColor[2].r;
-						g = UnitReactionColor[2].g;
-						b = UnitReactionColor[2].b;
-					end
-				elseif ( UnitCanAttack("player", unit) ) then
-					-- Players we can attack but which are not hostile are yellow
-					r = UnitReactionColor[4].r;
-					g = UnitReactionColor[4].g;
-					b = UnitReactionColor[4].b;
-				elseif ( UnitIsPVP(unit) and not UnitIsPVPSanctuary(unit) and not UnitIsPVPSanctuary("player") ) then
-					-- Players we can assist but are PvP flagged are green
-					r = UnitReactionColor[6].r;
-					g = UnitReactionColor[6].g;
-					b = UnitReactionColor[6].b;
-				else
-					-- All other players are blue (the usual state on the "blue" server)
-					r = 0.0;
-					g = 1.0;
-					b = 0.0;
-				end
-				statusBar:SetStatusBarColor(r, g, b);
-			else
-				local reaction = UnitReaction(unit, "player");
-				if ( reaction ) then
-					r = UnitReactionColor[reaction].r;
-					g = UnitReactionColor[reaction].g;
-					b = UnitReactionColor[reaction].b;
-					statusBar:SetStatusBarColor(r, g, b);
-				else
-					statusBar:SetStatusBarColor(0, 1.0, 0);
-				end
-			end
+			statusBar:SetStatusBarColor(UnitSelectionColor(unit));
 			name:Show();
 
 		else

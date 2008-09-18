@@ -11,6 +11,7 @@ MAX_NUM_PARTY_MEMBERS = 4;
 MAX_QUEST_WATCH_TIME = 300;
 QUEST_WATCH_NO_EXPIRE = -1;
 ACHIEVEMENTWATCH_TIMEDWIDTH = 160;
+ACHIEVEMENTWATCH_MAXWIDTH = 210;
 
 NUM_ACHIEVEMENTWATCH_LINES_USED = 0;
 
@@ -739,27 +740,27 @@ function AchievementWatch_OnEvent (self, event, ...)
 	end
 	
 	if ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
-		local achievementID, criteriaID, elapsed, maxTime = ...;
-		if ( not achievementID ) then
-			achievementID = GetTrackedAchievement();
-			local _, _, _, completed = GetAchievementInfo(achievementID);
-			if ( completed ) then
-				SetTrackedAchievement(0);
-			end
+		local achievementID, criteriaID, elapsed, duration = ...;
+		if ( not elapsed or ( elapsed >= duration ) ) then
 			self.hasTimer = nil;
-			self.maxTime = nil;
-			self.elapsed = nil;
+			self.startTime = nil;
+			self.duration = nil;
 			self.timedCriteria = nil;
 			AchievementWatch_Update();
 		elseif ( GetTrackedAchievement() ~= achievementID and AchievementWatchFrame:IsShown() ) then
 			-- Don't do anything if they're already tracking another achievement
-		elseif ( maxTime > elapsed ) then
+		elseif ( duration > elapsed ) then
 			SetTrackedAchievement(achievementID);
 			self.hasTimer = true;
-			self.maxTime = maxTime;
-			self.elapsed = elapsed;
+			self.startTime = GetTime() - elapsed;
+			self.duration = duration;
 			self.timedCriteria = criteriaID;
-			AchievementWatch_Update();
+			AchievementWatch_Update();	
+		end
+	elseif ( event == "ACHIEVEMENT_EARNED" ) then
+		local id = ...
+		if ( id == GetTrackedAchievement() ) then
+			AchievementWatch_Update();	
 		end
 	end
 end
@@ -776,19 +777,34 @@ function AchievementWatchButton_OnClick ()
 end
 
 function WatchLine_OnUpdate (self, elapsed)
-	self.elapsed = self.elapsed + elapsed;
-	local timeLeft = math.floor(self.maxTime - self.elapsed);
-	if ( timeLeft == 0 ) then
+	local timeNow = GetTime();
+	local timeLeft = math.floor(self.startTime + self.duration - timeNow);
+	if ( timeLeft <= 0 ) then
 		self.text:SetText(string.format("- " .. SECONDS_ABBR, 0));
 		self.text:SetTextColor(1, 0, 0, 1);
 		self:SetScript("OnUpdate", nil);
+		for i = 1, MAX_ACHIEVEMENTWATCH_LINES do
+			local watchLine = getglobal("AchievementWatchLine" .. i);
+			if ( watchLine.id == AchievementWatchFrame.timedCriteria ) then
+				if ( watchLine.statusBar:IsShown() ) then
+					watchLine.statusBar:GetStatusBarTexture():SetVertexColor(1, 0, 0, 1);
+				end
+			end
+		end
 	else
 		self.text:SetText("- " .. SecondsToTime(timeLeft));
-		if ( self.elapsed / self.maxTime >= .8 ) then
-			-- Once 20% time is left, make the text yellow and slowly fade to red.
-			self.text:SetTextColor(1, ((1 - self.elapsed/self.maxTime) * 10)/2, 0, 1);
-		else
+		local percentage = ( timeNow - self.startTime ) / self.duration;
+		if ( percentage < .6 ) then
 			self.text:SetTextColor(1, 1, 1, 1);
+		elseif ( percentage < .8 ) then
+			percentage = percentage - .6;
+			local redPercentage = percentage / .2;
+			self.text:SetTextColor(1, 1, 1 - redPercentage, 1);
+		else
+			-- Once 20% time is left, slowly fade to red.
+			percentage = percentage - .8;
+			local greenPercentage = percentage / .2;
+			self.text:SetTextColor(1, 1 - greenPercentage, 0, 1);
 		end
 	end
 end
@@ -817,148 +833,180 @@ function AchievementWatch_Update()
 		local _, achievementName, _, completed, _, _, _, _, _, icon = GetAchievementInfo(achievementID);
 		watchFrame.achievementID = achievementID;
 		
-		--If there are objectives set the title
-		if ( not completed and ( numCriteria > 0 or watchFrame.hasTimer ) ) then
 				
-			-- Set title
-			watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
-			watchText = watchLine.text;
-			watchText:SetText(achievementName);
-			watchLine.icon:Show();
-			watchLine.border:Show();
-			watchLine.icon:SetTexture(icon);
+		-- Set title
+		watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
+		watchText = watchLine.text;
+		watchText:SetText(achievementName);
+		watchLine:Show();
+		watchLine.icon:Show();
+		watchLine.border:Show();
+		watchLine.icon:SetTexture(icon);
 			
-			frameHeight = frameHeight + 15;
+		if ( completed ) then
+			watchText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		else
+			watchText:SetTextColor(0.75, 0.61, 0);
+		end
 			
-			-- 18 is the width of watchLine.icon + it's offset
-			tempWidth = watchText:GetStringWidth() + 18;
-			-- Set the anchor of the title line a little lower
-			watchText:Show();
-			if ( tempWidth > achievementWatchMaxWidth ) then
-				achievementWatchMaxWidth = tempWidth;
-			end
-			watchTextIndex = watchTextIndex + 1;
-			criteriaCompleted = 0;
+		frameHeight = frameHeight + 15;
+			
+		-- 18 is the width of watchLine.icon + it's offset
+		tempWidth = watchText:GetStringWidth() + 18;
+		-- Set the anchor of the title line a little lower
+		watchText:Show();
+		if ( tempWidth > achievementWatchMaxWidth ) then
+			achievementWatchMaxWidth = tempWidth;
+		end
+		watchTextIndex = watchTextIndex + 1;
+		criteriaCompleted = 0;
 
-			local lastLine = watchLine;
-			local nextXOffset = 0;
+		local lastLine = watchLine;
+		local nextXOffset = 0;
 			
-			if ( watchFrame.hasTimer ) then
-				watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
-				watchLine.elapsed = watchFrame.elapsed;
-				watchLine.maxTime = watchFrame.maxTime;
-				watchLine:SetScript("OnUpdate", WatchLine_OnUpdate);
-				watchLine:Show();
-				watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 16, 0);
-				watchTextIndex = watchTextIndex + 1;
-				if ( achievementWatchMaxWidth <= ACHIEVEMENTWATCH_TIMEDWIDTH ) then
-					achievementWatchMaxWidth = ACHIEVEMENTWATCH_TIMEDWIDTH;
-				end
-				nextXOffset = -16;
+		if ( watchFrame.hasTimer and not completed ) then
+			watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
+			watchLine.startTime = watchFrame.startTime;
+			watchLine.duration = watchFrame.duration;
+			watchLine.statusBar:Hide();
+			watchLine:SetScript("OnUpdate", WatchLine_OnUpdate);
+			watchLine:Show();
+			watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 16, 0);
+			watchTextIndex = watchTextIndex + 1;
+			if ( achievementWatchMaxWidth <= ACHIEVEMENTWATCH_TIMEDWIDTH ) then
+				achievementWatchMaxWidth = ACHIEVEMENTWATCH_TIMEDWIDTH;
 			end
+			nextXOffset = -16;
+			frameHeight = frameHeight + 15;
+		end
 			
-			for j=1, numCriteria do
-				criteriaString, criteriaType, completed, quantity, totalQuantity, name, flags, assetID, quantityString = GetAchievementCriteriaInfo(achievementID, j);
+			
+		for j=1, numCriteria do
+			criteriaString, criteriaType, completed, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID = GetAchievementCriteriaInfo(achievementID, j);
+			
+			if ( completed or watchTextIndex > MAX_ACHIEVEMENTWATCH_LINES ) then
+				-- Do nothing =O
+			elseif ( watchTextIndex == MAX_ACHIEVEMENTWATCH_LINES ) then
+				lastLine = watchLine;
+				watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
+				watchLine:SetScript("OnUpdate", nil);
+				-- We ran out of lines. Make sure we don't need to display anything else. If we do, change the last line to "..." and setup the mouseover.
+		
+				local numUncompleted = 0;
+				if ( not completed ) then
+					numUncompleted = numUncompleted + 1;
+				end
 				
-				if ( completed or watchTextIndex > MAX_ACHIEVEMENTWATCH_LINES ) then
-					-- Do nothing =O
-				elseif ( watchTextIndex == MAX_ACHIEVEMENTWATCH_LINES ) then
-					lastLine = watchLine;
-					watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
-					-- We ran out of lines. Make sure we don't need to display anything else. If we do, change the last line to "..." and setup the mouseover.
-					if ( completed ) then
-						-- We don't need to display this criteria, so we haven't necessarily run out of space. Check all the remaining criteria to be sure!
-						for k=j, numCriteria do
-							_, _, completed = GetAchievementCriteriaInfo(achievementID, k);
-							if ( not completed ) then
-								break;
-							end
-						end
-					end
-					
+				for k=j+1, numCriteria do
+					local tempCriteriaString, tempCriteriaType, completed = GetAchievementCriteriaInfo(achievementID, k);
 					if ( not completed ) then
-						-- We did run out of space ;(
-						watchLine.statusBar:Hide();
-						watchLine:Show();
-						watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset, 0);
-						watchLine.text:SetText(" ...");
-						watchLine.text:Show();
-						frameHeight = frameHeight + 15;
-						nextXOffset = 0;
-					end					
-					watchTextIndex = watchTextIndex + 1;
-				elseif ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
-					lastLine = watchLine;
-					watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
-					-- Progress Bar
-					watchLine.statusBar:Show();
-					watchLine.text:SetText("");
-					watchLine.statusBar:SetMinMaxValues(0, totalQuantity);
-					watchLine.statusBar:SetValue(quantity);
-					watchLine.statusBar.text:SetText(string.format("%s / %d", quantity, totalQuantity));
-					watchLine.statusBar.OnClick = AchievementWatchButton_OnClick;
-					watchTextIndex = watchTextIndex + 1;
-					if ( lastLine.icon and lastLine.icon:IsShown() ) then
-						watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset, -8);
-					else
-						watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset, -4);
+						criteriaString = tempCriteriaString;
+						numUncompleted = numUncompleted + 1;
 					end
-					nextXOffset = 0;
-					tempWidth = 180;
-					frameHeight = frameHeight + 19;
-				else
-					lastLine = watchLine;
-					watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
-					-- Regular text stuff
+				end
+				
+				if ( numUncompleted == 0 ) then
+					-- Total false alarm. Hide the last line (we only displayed MAX_ACHIEVEMENTWATCH_LINES - 1) but increment watchTextIndex anyways, so we can skip the above loop.
+					watchLine:Hide();
+				elseif ( numUncompleted > 1 ) then
+					-- We did run out of space
+					watchLine.statusBar:Hide();
+					watchLine:Show();
+					watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset + 4, 0);
+					debugbreak();
+					watchLine.text:SetText("...");
+					watchLine.text:Show();
+					frameHeight = frameHeight + 15;
+				else	
+					-- Just enough space!
 					watchText = watchLine.text;
 					-- Set Objective text
 					tempWidth = watchText:GetStringWidth();
 					-- Color the objectives
 					watchText:SetTextColor(0.8, 0.8, 0.8);
-					
 					watchLine.statusBar:Hide();
 					watchText:SetText(" - "..criteriaString);
-					
 					watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, 0);
 					nextXOffset = 0;
-					
 					tempWidth = watchText:GetStringWidth();
-					
 					watchLine:Show();
-					watchTextIndex = watchTextIndex + 1;
 					frameHeight = frameHeight + 15;
 				end
-								
-				if ( tempWidth > achievementWatchMaxWidth ) then
-					achievementWatchMaxWidth = tempWidth;
+				
+				watchTextIndex = watchTextIndex + 1;
+			elseif ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
+				lastLine = watchLine;
+				watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
+				-- Progress Bar
+				watchLine:SetScript("OnUpdate", nil);
+				watchLine:Show();
+				watchLine.statusBar:Show();
+				watchLine.id = criteriaID
+				watchLine.text:SetText("");
+				watchLine.statusBar:GetStatusBarTexture():SetVertexColor(0, 0.6, 0, 1);
+				watchLine.statusBar:SetMinMaxValues(0, totalQuantity);
+				watchLine.statusBar:SetValue(quantity);
+				watchLine.statusBar.text:SetText(string.format("%s / %d", quantity, totalQuantity));
+				watchLine.statusBar.OnClick = AchievementWatchButton_OnClick;
+				watchTextIndex = watchTextIndex + 1;
+				if ( lastLine.icon and lastLine.icon:IsShown() ) then
+					watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset, -8);
+				else
+					watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset, -4);
 				end
-			end
-			
-			if ( criteriaCompleted == numCriteria ) then
-				AchievementWatchLine1.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				nextXOffset = 0;
+				tempWidth = 180;
+				frameHeight = frameHeight + 19;
 			else
-				AchievementWatchLine1.text:SetTextColor(0.75, 0.61, 0);
+				lastLine = watchLine;
+				watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
+				-- Regular text stuff
+				watchText = watchLine.text;
+				-- Set Objective text
+				tempWidth = watchText:GetStringWidth();
+				-- Color the objectives
+				watchText:SetTextColor(0.8, 0.8, 0.8);
+				
+				watchLine.statusBar:Hide();
+				watchText:SetText(" - "..criteriaString);
+				
+				watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, 0);
+				nextXOffset = 0;
+				
+				tempWidth = watchText:GetStringWidth();
+				
+				watchLine:SetScript("OnUpdate", nil);
+				watchLine:Show();
+				watchTextIndex = watchTextIndex + 1;
+				frameHeight = frameHeight + 15;
+			end
+							
+			if ( tempWidth > achievementWatchMaxWidth ) then
+				achievementWatchMaxWidth = tempWidth;
 			end
 		end
 	end
 	
 	-- If no watch lines used then hide the frame and return
 	if ( watchTextIndex == 1 and (not (BarberShopFrame and BarberShopFrame:IsShown()))) then
+		watchLine = getglobal("AchievementWatchLine"..watchTextIndex);
+		watchLine:Hide();
 		watchFrame:Hide();
 		return;
 	else		
 		NUM_ACHIEVEMENTWATCH_LINES_USED = watchTextIndex - 1;
-			
+		
+		achievementWatchMaxWidth = min(ACHIEVEMENTWATCH_MAXWIDTH, achievementWatchMaxWidth) + 10;
+		
 		watchFrame:Show();
 		watchFrame:SetHeight(frameHeight);
-		watchFrame:SetWidth(achievementWatchMaxWidth + 10);
-		watchFrame.desiredWidth = achievementWatchMaxWidth + 10;
+		watchFrame:SetWidth(achievementWatchMaxWidth);
+		watchFrame.desiredWidth = achievementWatchMaxWidth;
 	end
 
 	-- Hide unused watch lines
-	
-	if ( watchTextIndex < MAX_ACHIEVEMENTWATCH_LINES ) then
-		for i=watchTextIndex, MAX_ACHIEVEMENTWATCH_LINES do
+	if ( NUM_ACHIEVEMENTWATCH_LINES_USED < MAX_ACHIEVEMENTWATCH_LINES ) then
+		for i=NUM_ACHIEVEMENTWATCH_LINES_USED + 1, MAX_ACHIEVEMENTWATCH_LINES do
 			getglobal("AchievementWatchLine"..i):Hide();
 		end
 	end

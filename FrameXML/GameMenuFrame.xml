@@ -56,9 +56,8 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOption");
-						ShowUIPanel(InterfaceOptionsFrame);
-						InterfaceOptionsFrame.lastFrame = GameMenuFrame;
-						InterfaceOptionsFrame_OpenToFrame(VideoOptionsResolutionPanel);
+						ShowUIPanel(VideoOptionsFrame);
+						VideoOptionsFrame.lastFrame = GameMenuFrame;
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -73,9 +72,8 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOption");
-						ShowUIPanel(InterfaceOptionsFrame);
-						InterfaceOptionsFrame.lastFrame = GameMenuFrame;
-						InterfaceOptionsFrame_OpenToFrame(AudioOptionsSoundPanel);
+						ShowUIPanel(AudioOptionsFrame);
+						AudioOptionsFrame.lastFrame = GameMenuFrame;
 					</OnClick>
 				</Scripts>
 			</Button>

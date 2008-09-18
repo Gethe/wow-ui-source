@@ -140,7 +140,7 @@ function AchievementAlertFrame_OnUpdate (self, elapsed)
 		local _,_,_,x = self.shine:GetPoint();
 		if ( x ~= target ) then
 			x = x +(target-x)*(deltaTime/(self.shineDuration/3));
-			if ( floor(abs(target - x)) == 0 ) then
+			if ( floor(abs(target - x)) >= 0 ) then
 				x = target;
 			end
 		end

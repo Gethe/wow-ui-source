@@ -3275,6 +3275,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		amount = "";
 	end
 
+	if ( sourceString == "" ) then
+		sourceString = UNKNOWN;
+	end
+	
+	if ( destString == "" ) then
+		destString = UNKNOWN;
+	end
+	
 	local finalString = format(formatString, sourceString, spellString, actionString, destString, valueString, resultString, schoolString, powerTypeString, amount, extraAmount);
 	
 	finalString = gsub(finalString, " [ ]+", " " ); -- extra white spaces

@@ -1468,7 +1468,7 @@
 					</Button>
 					<Button name="AuctionsBidSort" inherits="AuctionSortButtonTemplate" text="CURRENT_BID">
 						<Size>
-							<AbsDimension x="193" y="19"/>
+							<AbsDimension x="213" y="19"/>
 						</Size>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="AuctionsHighBidderSort" relativePoint="RIGHT">

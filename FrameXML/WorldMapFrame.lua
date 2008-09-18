@@ -701,7 +701,13 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	end
 	
 	-- position vehicles
-	local numVehicles = GetNumBattlefieldVehicles();
+	local numVehicles;
+	if ( GetCurrentMapContinent() == WORLDMAP_WORLD_ID or GetCurrentMapZone() == 0 ) then
+		-- Hide vehicles on the worldmap and continent maps
+		numVehicles = 0;
+	else
+		numVehicles = GetNumBattlefieldVehicles();
+	end
 	local totalVehicles = #MAP_VEHICLES;
 	local index = 0;
 	for i=1, numVehicles do

@@ -43,6 +43,11 @@ function PartyMemberFrame_ToVehicleArt(self, vehicleType)
 	self.state = "vehicle";
 	local prefix = self:GetName();
 	_G[prefix.."Texture"]:Hide();
+	if ( vehicleType == "Natural" ) then
+		_G[prefix.."VehicleTexture"]:SetTexture("Interface\\Vehicles\\UI-Vehicles-PartyFrame-Organic");
+	else
+		_G[prefix.."VehicleTexture"]:SetTexture("Interface\\Vehicles\\UI-Vehicles-PartyFrame");
+	end
 	_G[prefix.."VehicleTexture"]:Show();
 	_G[prefix.."Portrait"]:SetPoint("TOPLEFT", 4, -9);
 	_G[prefix.."LeaderIcon"]:SetPoint("TOPLEFT", -3, 0);

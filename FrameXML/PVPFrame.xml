@@ -107,8 +107,51 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBlackFilter" hidden="true">
+					<Size>
+						<AbsDimension x="320" y="275"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-156"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" b="0" g="0" a="0.7"/>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="$parentOffSeason" hidden="true">
+				<Size>
+					<AbsDimension x="320" y="275"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-156"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentText" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="CENTER" text="CANHAZDUMMYTEXT">
+							<Size>
+								<AbsDimension x="290" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
                 <Anchors>
                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
@@ -552,7 +595,7 @@
 	<!-- PVPTeam Details -->
 	<Frame name="PVPTeamDetails" parent="PVPFrame" hidden="true" enableMouse="true" toplevel="true">
 		<Size>
-			<AbsDimension x="365" y="355"/>
+			<AbsDimension x="400" y="355"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="PVPFrame" relativePoint="TOPRIGHT">
@@ -565,7 +608,7 @@
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\PVPFrame\UI-Character-PVP-Elements">
 					<Size>
-						<AbsDimension x="365" y="355"/>
+						<AbsDimension x="400" y="355"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -734,7 +777,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						WhoFrameColumn_SetWidth(self, 96);
+						WhoFrameColumn_SetWidth(self, 110);
 						self.sortType = "name";
 					</OnLoad>
 				</Scripts>
@@ -749,7 +792,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						WhoFrameColumn_SetWidth(self, 62);
+						WhoFrameColumn_SetWidth(self, 80);
 						self.sortType = "class";
 					</OnLoad>
 				</Scripts>
@@ -795,7 +838,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						WhoFrameColumn_SetWidth(self, 55);
+						WhoFrameColumn_SetWidth(self, 59);
 						self.sortType = "rating";
 					</OnLoad>
 				</Scripts>

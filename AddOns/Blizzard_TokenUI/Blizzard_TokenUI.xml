@@ -29,6 +29,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 				</FontString>
 				<FontString name="$parentName" inherits="GameFontHighlightLeft">
+					<Size>
+						<AbsDimension x="210" y="11"/>
+					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset x="11" y="0"/>
@@ -97,7 +100,17 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetCurrencyToken(self:GetParent().index);
+						if ( self:GetParent().extraCurrencyType == 1 ) then
+							GameTooltip:SetText(ARENA_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+							GameTooltip:AddLine(TOOLTIP_ARENA_POINTS, nil, nil, nil, 1);
+							GameTooltip:Show();
+						elseif ( self:GetParent().extraCurrencyType == 2 ) then
+							GameTooltip:SetText(HONOR_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+							GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1);
+							GameTooltip:Show();
+						else
+							GameTooltip:SetCurrencyToken(self:GetParent().index);
+						end
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -264,7 +277,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="TokenFramePopup" parent="TokenFrame" hidden="true">
+	<Frame name="TokenFramePopup" parent="TokenFrame" hidden="true" enableMouse="true">
 		<Size>
 			<AbsDimension x="205" y="100"/>
 		</Size>
@@ -310,7 +323,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						OptionsCheckButton_SetText(self, UNUSED);
+						_G[self:GetName().."Text"]:SetText(UNUSED);
 						getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					</OnLoad>
 					<OnClick>
@@ -345,11 +358,16 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						OptionsCheckButton_SetText(self, SHOW_ON_BACKPACK);
+						_G[self:GetName().."Text"]:SetText(SHOW_ON_BACKPACK);
 						getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					</OnLoad>
 					<OnClick>
 						if ( self:GetChecked() ) then
+							if ( GetNumWatchedTokens() >= MAX_WATCHED_TOKENS ) then
+								UIErrorsFrame:AddMessage(format(TOO_MANY_WATCHED_TOKENS, MAX_WATCHED_TOKENS), 1.0, 0.1, 0.1, 1.0);
+								self:SetChecked(false);
+								return;
+							end
 							PlaySound("igMainMenuOptionCheckBoxOn");
 							SetCurrencyBackpack(TokenFrame.selectedID, 1);
 						else
@@ -426,7 +444,17 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetBackpackToken(self:GetID());
+				if ( self.extraCurrencyType == 1 ) then
+					GameTooltip:SetText(ARENA_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					GameTooltip:AddLine(TOOLTIP_ARENA_POINTS, nil, nil, nil, 1);
+					GameTooltip:Show();
+				elseif ( self.extraCurrencyType == 2 ) then
+					GameTooltip:SetText(HONOR_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1);
+					GameTooltip:Show();
+				else
+					GameTooltip:SetBackpackToken(self:GetID());
+				end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

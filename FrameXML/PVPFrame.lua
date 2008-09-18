@@ -88,6 +88,12 @@ function PVPFrame_Update()
 	end	
 	PVPHonor_Update();
 	PVPTeam_Update();
+	
+	if ( GetCurrentArenaSeason() == 0 ) then	--We're in an off-season.
+		PVPFrame_SetToOffSeason();
+	elseif ( PVPFrameOffSeason:IsShown() ) then
+		PVPFrame_SetToInSeason();
+	end
 end
 
 function PVPTeam_Update()
@@ -515,4 +521,33 @@ end
 function PVPMicroButton_SetNormal()
 	PVPMicroButtonTexture:SetPoint("TOP", PVPMicroButton, "TOP", 6, -30);
 	PVPMicroButtonTexture:SetAlpha(1.0);
+end
+
+function PVPFrame_SetToOffSeason()
+	PVPTeam1:Hide();
+	PVPTeam1Standard:Hide();
+	PVPTeam2:Hide();
+	PVPTeam2Standard:Hide();
+	PVPTeam3:Hide();
+	PVPTeam3Standard:Hide();
+	
+	PVPFrameBlackFilter:Show();
+	
+	PVPFrameOffSeason:Show();
+	
+	local previousArenaSeason = GetPreviousArenaSeason();
+	PVPFrameOffSeasonText:SetText(format(ARENA_OFF_SEASON_TEXT, previousArenaSeason, previousArenaSeason+1));
+end
+
+function PVPFrame_SetToInSeason()
+	PVPTeam1:Show();
+	PVPTeam1Standard:Show();
+	PVPTeam2:Show();
+	PVPTeam2Standard:Show();
+	PVPTeam3:Show();
+	PVPTeam3Standard:Show();
+	
+	PVPFrameBlackFilter:Hide();
+	
+	PVPFrameOffSeason:Hide();
 end
