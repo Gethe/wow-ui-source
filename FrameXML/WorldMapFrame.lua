@@ -944,3 +944,70 @@ function MapUnit_OnUpdate(self)
 		end
 	end
 end
+
+function WorldMap_ClearTextures()
+	for i=1, NUM_WORLDMAP_OVERLAYS do
+		getglobal("WorldMapOverlay"..i):SetTexture(nil);
+	end
+	for i=1, NUM_WORLDMAP_DETAIL_TILES do
+		getglobal("WorldMapFrameTexture"..i):SetTexture(nil);
+		getglobal("WorldMapDetailTile"..i):SetTexture(nil);
+	end
+end
+
+WORLDMAP_TEXTURES_TO_LOAD = {
+	{	
+		name="WorldMapFrameTexture1", 
+		file="Interface\\WorldMap\\UI-WorldMap-Top1",
+	},
+	{	
+		name="WorldMapFrameTexture2", 
+		file="Interface\\WorldMap\\UI-WorldMap-Top2",
+	},
+	{	
+		name="WorldMapFrameTexture3", 
+		file="Interface\\WorldMap\\UI-WorldMap-Top3",
+	},
+	{	
+		name="WorldMapFrameTexture4", 
+		file="Interface\\WorldMap\\UI-WorldMap-Top4",
+	},
+	{	
+		name="WorldMapFrameTexture5", 
+		file="Interface\\WorldMap\\UI-WorldMap-Middle1",
+	},
+	{	
+		name="WorldMapFrameTexture6", 
+		file="Interface\\WorldMap\\UI-WorldMap-Middle2",
+	},
+	{	
+		name="WorldMapFrameTexture7", 
+		file="Interface\\WorldMap\\UI-WorldMap-Middle3",
+	},
+	{	
+		name="WorldMapFrameTexture8", 
+		file="Interface\\WorldMap\\UI-WorldMap-Middle4",
+	},
+	{	
+		name="WorldMapFrameTexture9", 
+		file="Interface\\WorldMap\\UI-WorldMap-Bottom1",
+	},
+	{	
+		name="WorldMapFrameTexture10", 
+		file="Interface\\WorldMap\\UI-WorldMap-Bottom2",
+	},
+	{	
+		name="WorldMapFrameTexture11", 
+		file="Interface\\WorldMap\\UI-WorldMap-Bottom3",
+	},
+	{	
+		name="WorldMapFrameTexture12", 
+		file="Interface\\WorldMap\\UI-WorldMap-Bottom4",
+	},
+}
+
+function WorldMap_LoadTextures()
+	for k, v in pairs(WORLDMAP_TEXTURES_TO_LOAD) do
+		getglobal(v.name):SetTexture(v.file);
+	end
+end

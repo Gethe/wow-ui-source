@@ -330,7 +330,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 					<TexCoords left="0" right="0.65625" top="0" bottom="1"/>
 				</Texture>
-				<FontString name="$parentLabel" inherits="AchievementDescriptionFont" text="Fake criteria!">
+				<FontString name="$parentLabel" inherits="AchievementCriteriaFont" text="Fake criteria!">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
@@ -588,7 +588,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="$parentName" inherits="AchievementDescriptionFont" text="Capture the Bone Wastes">
+				<FontString name="$parentName" inherits="AchievementCriteriaFont" text="Capture the Bone Wastes">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentCheck" relativePoint="RIGHT">
 							<Offset>
@@ -1136,7 +1136,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>
 					</Anchors>
 					<Size>
-						<AbsDimension x="335" y="20"/>
+						<AbsDimension x="260" y="20"/>
 					</Size>
 				</FontString>
 				<FontString name="$parentDateCompleted" inherits="AchievementDateFont" text="5/16/08" hidden="true">
@@ -2578,7 +2578,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture file="Interface\AchievementFrame\UI-Achievement-AchievementBackground">
+						<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-AchievementBackground">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset x="3" y="-3"/>

@@ -213,7 +213,7 @@
 		</Layers>
 		<Frames>
 			<!--	Replace once code is ready...	
-			<CheckButton name="SkillSortButton" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="SkillSortButton" inherits="OptionsSmallCheckButtonTemplate">
 				<Size>
 					<AbsDimension x="25" y="25"/>
 				</Size>

@@ -913,7 +913,6 @@ function AchievementWatch_Update()
 					watchLine.statusBar:Hide();
 					watchLine:Show();
 					watchLine:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", nextXOffset + 4, 0);
-					debugbreak();
 					watchLine.text:SetText("...");
 					watchLine.text:Show();
 					frameHeight = frameHeight + 15;

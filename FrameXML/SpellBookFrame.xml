@@ -382,7 +382,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<CheckButton name="ShowAllSpellRanksCheckBox" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="ShowAllSpellRanksCheckBox" inherits="OptionsSmallCheckButtonTemplate">
 				<Size>
 					<AbsDimension x="26" y="26"/>
 				</Size>

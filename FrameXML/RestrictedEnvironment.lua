@@ -160,7 +160,7 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
     "IsRightAltKeyDown", "IsLeftAltKeyDown", "IsAltKeyDown",
     "IsRightControlKeyDown", "IsLeftControlKeyDown", "IsControlKeyDown",
     "IsLeftShiftKeyDown", "IsRightShiftKeyDown", "IsShiftKeyDown",
-    "IsModifierKeyDown",
+    "IsModifierKeyDown", "IsModifiedClick",
     "GetMouseButtonClicked", "GetActionBarPage", "GetBonusBarOffset",
     "IsMounted", "IsSwimming", "IsFlying", "IsFlyableArea",
     "IsIndoors", "IsOutdoors",

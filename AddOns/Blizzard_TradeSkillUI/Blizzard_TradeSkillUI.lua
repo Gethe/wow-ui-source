@@ -59,10 +59,8 @@ function TradeSkillFrame_OnEvent(self, event, ...)
 		if ( GetTradeSkillSelectionIndex() > 1 and GetTradeSkillSelectionIndex() <= GetNumTradeSkills() ) then
 			TradeSkillFrame_SetSelection(GetTradeSkillSelectionIndex());
 		else
-			if ( GetNumTradeSkills() > 0 ) then
-				TradeSkillFrame_SetSelection(GetFirstTradeSkill());
-				FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
-			end
+			TradeSkillFrame_SetSelection(GetFirstTradeSkill());
+			FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
 			TradeSkillListScrollFrameScrollBar:SetValue(0);
 		end
 		TradeSkillFrame_Update();

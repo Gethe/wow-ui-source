@@ -137,7 +137,7 @@
 			</Frame>
 			<StatusBar name="PetFrameHealthBar" inherits="TextStatusBar">
 				<Size>
-					<AbsDimension x="70" y="8"/>
+					<AbsDimension x="69" y="8"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -161,7 +161,7 @@
 			</StatusBar>
 			<StatusBar name="PetFrameManaBar" inherits="TextStatusBar">
 				<Size>
-					<AbsDimension x="70" y="8"/>
+					<AbsDimension x="69" y="8"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">

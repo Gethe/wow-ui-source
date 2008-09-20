@@ -312,7 +312,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentInactiveCheckBox" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentInactiveCheckBox" inherits="OptionsSmallCheckButtonTemplate">
 				<Size>
 					<AbsDimension x="26" y="26"/>
 				</Size>
@@ -347,7 +347,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</OnLeave>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentBackpackCheckBox" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentBackpackCheckBox" inherits="OptionsSmallCheckButtonTemplate">
 				<Size>
 					<AbsDimension x="26" y="26"/>
 				</Size>

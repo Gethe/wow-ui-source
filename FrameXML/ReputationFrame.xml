@@ -706,7 +706,7 @@
 						</CheckedTexture>
 						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
-					<CheckButton name="ReputationDetailInactiveCheckBox" inherits="OptionsCheckButtonTemplate">
+					<CheckButton name="ReputationDetailInactiveCheckBox" inherits="OptionsSmallCheckButtonTemplate">
 						<Size>
 							<AbsDimension x="26" y="26"/>
 						</Size>
@@ -742,7 +742,7 @@
 							</OnLeave>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="ReputationDetailMainScreenCheckBox" inherits="OptionsCheckButtonTemplate">
+					<CheckButton name="ReputationDetailMainScreenCheckBox" inherits="OptionsSmallCheckButtonTemplate">
 						<Size>
 							<AbsDimension x="26" y="26"/>
 						</Size>

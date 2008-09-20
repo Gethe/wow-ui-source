@@ -2850,7 +2850,7 @@ function CalendarViewEventFrame_Update()
 	if ( locked ) then
 		-- set the event title
 		CalendarViewEventTitle:SetFormattedText(CALENDAR_VIEW_EVENTTITLE_LOCKED, title);
-		SetTextureDesaturated(CalendarViewEventIcon, true);
+		SetDesaturation(CalendarViewEventIcon, true);
 		CalendarViewEventTypeName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		CalendarViewEventCreatorName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		--CalendarViewEventDateLabel:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
@@ -2859,7 +2859,7 @@ function CalendarViewEventFrame_Update()
 	else
 		-- set the event title
 		CalendarViewEventTitle:SetText(title);
-		SetTextureDesaturated(CalendarViewEventIcon, false);
+		SetDesaturation(CalendarViewEventIcon, false);
 		CalendarViewEventTypeName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		CalendarViewEventCreatorName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		--CalendarViewEventDateLabel:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
@@ -4860,15 +4860,15 @@ function CalendarClassButtonContainer_Update()
 		if ( count > 0 ) then
 			buttonCount:Show();
 			if ( isModal ) then
-				SetTextureDesaturated(buttonIcon, true);
+				SetDesaturation(buttonIcon, true);
 				button:Disable();
 			else
-				SetTextureDesaturated(buttonIcon, false);
+				SetDesaturation(buttonIcon, false);
 				button:Enable();
 			end
 		else
 			buttonCount:Hide();
-			SetTextureDesaturated(buttonIcon, true);
+			SetDesaturation(buttonIcon, true);
 			button:Disable();
 		end
 		-- adjust the total

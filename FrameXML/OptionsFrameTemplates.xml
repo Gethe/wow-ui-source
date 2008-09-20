@@ -240,7 +240,7 @@
 						ScrollFrameTemplate_OnMouseWheel(self, delta);
 					</OnMouseWheel>					
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(self, offset, INTERFACEOPTIONSLIST_BUTTONHEIGHT, OptionsListScroll_Update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, self:GetParent().buttonHeight, OptionsListScroll_Update);
 					</OnVerticalScroll>
 				</Scripts>
 				<Frames>
@@ -276,7 +276,7 @@
 			<AbsDimension x="175" y="18"/>
 		</Size>
 		<Frames>
-			<Button name="$parentToggle" inherits="InterfaceOptionsToggleButtonTemplate">
+			<Button name="$parentToggle" hidden="true">
 				<Size>
 					<AbsDimension x="14" y="14"/>
 				</Size>
@@ -294,7 +294,7 @@
 					</OnLoad>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						OptionsFrame_ToggleSubCategories(self);
+						OptionsListButtonToggle_OnClick(self);
 					</OnClick>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-MinusButton-UP"/>
@@ -329,11 +329,7 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnLoad>
-				self.text = getglobal(self:GetName() .. "Text");
-				self.highlight = self:GetHighlightTexture();
-				self.highlight:SetVertexColor(.196, .388, .8);
-				self.text:SetPoint("RIGHT", "$parentToggle", "LEFT", -2, 0);
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				OptionsListButton_OnLoad(self);
 			</OnLoad>
 			<OnClick>
 				PlaySound("igMainMenuOptionCheckBoxOn");
@@ -402,6 +398,7 @@
 						--self.labelText = CATEGORY;
 						OptionsList_OnLoad(self);
 						self.update = OptionsCategoryFrame_Update;
+						self.toggleSubCategories = OptionsFrame_ToggleSubCategories;
 					</OnLoad>
 				</Scripts>
 			</Frame>

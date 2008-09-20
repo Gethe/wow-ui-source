@@ -60,8 +60,12 @@ function VideoOptionsPanel_Default (self)
 	end
 end
 
-function VideoOptionsPanel_OnLoad (self)
-	BlizzardOptionsPanel_OnLoad(self, VideoOptionsPanel_Okay, VideoOptionsPanel_Cancel, VideoOptionsPanel_Default);
+function VideoOptionsPanel_OnLoad (self, okay, cancel, default, refresh)
+	okay = okay or VideoOptionsPanel_Okay;
+	cancel = cancel or VideoOptionsPanel_Cancel;
+	default = default or VideoOptionsPanel_Default;
+	refresh = refresh or BlizzardOptionsPanel_Refresh;
+	BlizzardOptionsPanel_OnLoad(self, okay, cancel, default, refresh);
 
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 end
@@ -73,6 +77,7 @@ ResolutionPanelOptions = {
 	gxVSync = { text = "VERTICAL_SYNC" },
 	gxTripleBuffer = { text = "TRIPLE_BUFFER" },
 	gxCursor = { text = "HARDWARE_CURSOR" },
+	gxFixLag = { text = "FIX_LAG" },
 	gxWindow = { text = "WINDOWED_MODE" },
 	gxMaximize = { text = "WINDOWED_MAXIMIZED" },
 	windowResizeLock = { text = "WINDOW_LOCK" },
@@ -82,6 +87,18 @@ ResolutionPanelOptions = {
 	uiscale = { text = "", minValue = .64, maxValue = 1, valueStep = .01 },
 }
 
+function VideoOptionsResolutionPanel_Default (self)
+	RestoreVideoResolutionDefaults();
+	for _, control in next, self.controls do
+		if ( control.cvar ) then
+			control:SetValue(BlizzardOptionsPanel_GetCVar(control.cvar));
+		elseif ( control.GetValue ) then
+			control:SetValue(control:GetValue());
+		end
+		control.newValue = nil;
+	end
+end
+
 function VideoOptionsResolutionPanel_Refresh (self)
 	BlizzardOptionsPanel_Refresh(self);
 	VideoOptionsResolutionPanel_RefreshGammaControls();
@@ -90,9 +107,7 @@ end
 function VideoOptionsResolutionPanel_OnLoad (self)
 	self.name = RESOLUTION_LABEL;
 	self.options = ResolutionPanelOptions;
-	VideoOptionsPanel_OnLoad(self);
-	-- this must come AFTER the parent OnLoad because the functions will be set to defaults there
-	self.refresh = VideoOptionsResolutionPanel_Refresh;
+	VideoOptionsPanel_OnLoad(self, nil, nil, VideoOptionsResolutionPanel_Default, VideoOptionsResolutionPanel_Refresh);
 end
 
 function VideoOptionsResolutionPanel_RefreshGammaControls ()
@@ -346,22 +361,55 @@ EffectsPanelOptions = {
 	quality = { text = "", minValue = 1, maxValue = 5, valueStep = 1 },
 }
 
+function VideoOptionsEffectsPanel_Default (self)
+	RestoreVideoEffectsDefaults();
+	for _, control in next, self.controls do
+		if ( control.cvar ) then
+			control:SetValue(BlizzardOptionsPanel_GetCVar(control.cvar));
+		elseif ( control.GetValue ) then
+			control:SetValue(control:GetValue());
+		end
+		control.newValue = nil;
+	end
+end
+
+function VideoOptionsEffectsPanel_Refresh (self)
+	BlizzardOptionsPanel_Refresh(self);
+	VideoOptionsEffectsPanel_UpdateVideoQuality();
+	-- HACK: force update the quality slider because the update video quality call will change the new value
+	VideoOptionsEffectsPanelQualitySlider.value = VideoOptionsEffectsPanelQualitySlider.newValue;
+end
+
 function VideoOptionsEffectsPanel_OnLoad (self)
 	self.name = EFFECTS_LABEL;
 	self.options = EffectsPanelOptions;
-	VideoOptionsPanel_OnLoad(self);
+	VideoOptionsPanel_OnLoad(self, nil, nil, VideoOptionsEffectsPanel_Default, VideoOptionsEffectsPanel_Refresh);
+
+	-- this must come AFTER the parent OnLoad because the functions will be set to defaults there
+	self:SetScript("OnEvent", VideoOptionsEffectsPanel_OnEvent);
 end
 
-function VideoOptionsEffectsPanel_SetVideoQuality (value)
-	if ( not value or not GraphicsQualityLevels[value] or VideoOptionsFrame.videoQuality == value ) then
+function VideoOptionsEffectsPanel_OnEvent (self, event, ...)
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+
+	if ( event == "SET_GLUE_SCREEN" ) then
+		-- fixup value steps for the farclip control, which has an adjustable min/max
+		local farclipControl = VideoOptionsEffectsPanelViewDistance;
+		local minValue, maxValue = farclipControl:GetMinMaxValues();
+		farclipControl:SetValueStep((maxValue - minValue) / 10);
+	end
+end
+
+function VideoOptionsEffectsPanel_SetVideoQuality (quality)
+	if ( not quality or not GraphicsQualityLevels[quality] or VideoOptionsEffectsPanel.videoQuality == quality ) then
 		return;
-	elseif ( value == VIDEO_OPTIONS_CUSTOM_QUALITY ) then
-		VideoOptionsFrame.videoQuality = value;
-		VideoOptionsEffectsPanel_SetVideoQualityLabels(value);	
+	elseif ( quality == VIDEO_OPTIONS_CUSTOM_QUALITY ) then
+		VideoOptionsEffectsPanel.videoQuality = quality;
+		VideoOptionsEffectsPanel_SetVideoQualityLabels(quality);
 		return;
 	end
 
-	for control, value in next, GraphicsQualityLevels[value] do
+	for control, value in next, GraphicsQualityLevels[quality] do
 		control = _G[control];
 		if ( control.type == CONTROLTYPE_SLIDER ) then
 			control:SetDisplayValue(value);
@@ -375,15 +423,15 @@ function VideoOptionsEffectsPanel_SetVideoQuality (value)
 		end
 	end
 
-	VideoOptionsEffectsPanel_SetVideoQualityLabels (value);	
-	VideoOptionsFrame.videoQuality = value;
+	VideoOptionsEffectsPanel.videoQuality = quality;
+	VideoOptionsEffectsPanel_SetVideoQualityLabels(quality);
 end
 
-function VideoOptionsEffectsPanel_SetVideoQualityLabels (value)
-	value = value or 5;
-	VideoOptionsEffectsPanelQualityLabel:SetText(format(VIDEO_QUALITY_S, _G["VIDEO_QUALITY_LABEL" .. value]));
-	VideoOptionsEffectsPanelQualitySubText:SetText(_G["VIDEO_QUALITY_SUBTEXT" .. value]);
-	VideoOptionsEffectsPanelQualitySlider:SetValue(value);
+function VideoOptionsEffectsPanel_SetVideoQualityLabels (quality)
+	quality = quality or 5;
+	VideoOptionsEffectsPanelQualityLabel:SetText(format(VIDEO_QUALITY_S, _G["VIDEO_QUALITY_LABEL" .. quality]));
+	VideoOptionsEffectsPanelQualitySubText:SetText(_G["VIDEO_QUALITY_SUBTEXT" .. quality]);
+	VideoOptionsEffectsPanelQualitySlider:SetValue(quality);
 end
 
 function VideoOptionsEffectsPanel_GetVideoQuality ()
@@ -391,19 +439,17 @@ function VideoOptionsEffectsPanel_GetVideoQuality ()
 		local mismatch = false;
 		for control, value in next, controls do
 			control = _G[control];
-			if ( control.type == CONTROLTYPE_SLIDER ) then
+			if ( control.type == CONTROLTYPE_CHECKBOX  ) then
+				local checked = control:GetChecked();
+				if ( ( value and not checked ) or ( not value and checked ) ) then
+					mismatch = true;
+					break;
+				end
+			elseif ( control.GetValue ) then
 				if ( control:GetValue() ~= value ) then
 					mismatch = true;
 					break;
 				end
-			elseif ( not control.GetValue and control.type == CONTROLTYPE_CHECKBOX  ) then
-				-- We're in the midst of loading...
-			else
-				local currValue = control:GetChecked()
-				if ( ( value and not currValue ) or ( not value and currValue ) ) then
-					mismatch = true;
-					break;
-				end			
 			end
 		end
 		if ( not mismatch ) then
@@ -430,7 +476,7 @@ end
 
 function VideoOptionsEffectsPanel_UpdateVideoQuality ()
 	local quality = VideoOptionsEffectsPanel_GetVideoQuality();
-	if ( quality ~= VideoOptionsFrame.videoQuality ) then
+	if ( quality ~= VideoOptionsEffectsPanel.videoQuality ) then
 		VideoOptionsEffectsPanel_SetVideoQuality(quality);
 	end
 end

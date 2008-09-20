@@ -14,7 +14,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\WorldMap\UI-WorldMap-Top1">
+				<Texture name="$parentTexture1">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -26,7 +26,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Top2">
+				<Texture name="$parentTexture2">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -38,7 +38,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Top3">
+				<Texture name="$parentTexture3">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -50,7 +50,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Top4">
+				<Texture name="$parentTexture4">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -62,7 +62,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Middle1">
+				<Texture name="$parentTexture5">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -74,7 +74,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Middle2">
+				<Texture name="$parentTexture6">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -86,7 +86,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Middle3">
+				<Texture name="$parentTexture7">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -98,7 +98,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Middle4">
+				<Texture name="$parentTexture8">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -110,7 +110,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Bottom1">
+				<Texture name="$parentTexture9">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -122,7 +122,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Bottom2">
+				<Texture name="$parentTexture10">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -134,7 +134,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Bottom3">
+				<Texture name="$parentTexture11">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -146,7 +146,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\WorldMap\UI-WorldMap-Bottom4">
+				<Texture name="$parentTexture12">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -167,7 +167,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-
 			</Layer>
 		</Layers>
 		<Frames>
@@ -697,10 +696,12 @@
 				PlaySound("igQuestLogOpen");
 				CloseDropDownMenus();
 				WorldMapFrame_PingPlayerPosition();
+				WorldMap_LoadTextures();
 			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();
 				PlaySound("igQuestLogClose");
+				WorldMap_ClearTextures();
 			</OnHide>
 			<OnEvent>
 				WorldMapFrame_OnEvent(self, event, ...);

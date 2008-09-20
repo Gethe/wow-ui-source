@@ -60,7 +60,11 @@ end
 function AudioOptionsFrameCancel_OnClick ()
 	OptionsFrameCancel_OnClick(AudioOptionsFrame);
 
-	AudioOptionsFrame.audioRestart = nil;
+	if ( AudioOptionsFrame.audioRestart ) then
+		AudioOptionsFrame.audioRestart = nil;
+		AudioOptionsFrame_AudioRestart();
+	end
+
 	AudioOptionsFrame.gameRestart = nil;
 	AudioOptionsFrame.logout = nil;
 

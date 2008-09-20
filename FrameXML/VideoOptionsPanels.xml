@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<!-- if you change something here you probably want to change the glue version too -->
 
-	<Script file="..\FrameXML\GraphicsQualityLevels.lua"/>
+	<Script file="GraphicsQualityLevels.lua"/>
 	<Script file="OptionsPanelTemplates.lua"/>
 	<Script file="VideoOptionsPanels.lua"/>
 
@@ -228,7 +228,24 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
+			<CheckButton name="$parentFixInputLag" inherits="OptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursor" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "gxFixLag";
+						self.restart = true;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 			<CheckButton name="$parentWindowed" inherits="OptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentVSync" relativePoint="RIGHT">
@@ -282,8 +299,8 @@
 			<Frame name="$parentBrightness" inherits="OptionsBoxTemplate">
 				<Size x="380" y="96"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursor" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-24"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentFixInputLag" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-20"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
@@ -476,11 +493,13 @@
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_SetVideoQuality(value);
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_SetVideoQuality(value);
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>	
-			<Slider name="$parentTerrainDistance" inherits="OptionsSliderTemplate">
+			<Slider name="$parentViewDistance" inherits="OptionsSliderTemplate">
 				<Size x="112" y="17"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentQuality" relativePoint="BOTTOMLEFT">
@@ -508,7 +527,7 @@
 			<Slider name="$parentTerrainDetail" inherits="OptionsSliderTemplate">
 				<Size x="112" y="17"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTerrainDistance" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentViewDistance" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-24"/>
 					</Anchor>
 				</Anchors>
@@ -561,7 +580,7 @@
 			<Slider name="$parentEnvironmentDetail" inherits="OptionsSliderTemplate">
 				<Size x="112" y="17"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTerrainDistance" relativePoint="TOPRIGHT">
+					<Anchor point="TOPLEFT" relativeTo="$parentViewDistance" relativePoint="TOPRIGHT">
 						<Offset x="20" y="0"/>
 					</Anchor>
 				</Anchors>

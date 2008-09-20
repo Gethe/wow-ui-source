@@ -1,6 +1,8 @@
 
 -- if you change something here you probably want to change the glue version too
 
+-- if you change something here you probably want to change the glue version too
+
 CONTROLTYPE_CHECKBOX = 1;
 CONTROLTYPE_DROPDOWN = 2;
 CONTROLTYPE_SLIDER = 3;
@@ -16,8 +18,11 @@ local function SecureNext(elements, key)
 	return securecall(next, elements, key);
 end
 
+local tinsert = tinsert;
 local tonumber = tonumber;
 local tostring = tostring;
+local gsub = gsub;
+local setglobal = setglobal;
 
 
 -- [[ Slider functions ]] --
@@ -115,11 +120,11 @@ function BlizzardOptionsPanel_CheckButton_SetNewValue (checkButton)
 
 	if ( checkButton.dependentControls ) then
 		if ( checkButton:GetChecked() ) then
-			for _, control in next, checkButton.dependentControls do
+			for _, control in SecureNext, checkButton.dependentControls do
 				control:Enable();
 			end
 		else
-			for _, control in next, checkButton.dependentControls do
+			for _, control in SecureNext, checkButton.dependentControls do
 				control:Disable();
 			end
 		end
@@ -148,11 +153,11 @@ function BlizzardOptionsPanel_CheckButton_OnClick (checkButton)
 
 	if ( checkButton.dependentControls ) then
 		if ( checkButton:GetChecked() ) then
-			for _, control in next, checkButton.dependentControls do
+			for _, control in SecureNext, checkButton.dependentControls do
 				control:Enable();
 			end
 		else
-			for _, control in next, checkButton.dependentControls do
+			for _, control in SecureNext, checkButton.dependentControls do
 				control:Disable();
 			end
 		end
@@ -189,11 +194,11 @@ function BlizzardOptionsPanel_CheckButton_Refresh (checkButton)
 
 		if ( checkButton.dependentControls ) then
 			if ( checkButton:GetChecked() ) then
-				for _, depControl in next, checkButton.dependentControls do
+				for _, depControl in SecureNext, checkButton.dependentControls do
 					depControl:Enable();
 				end
 			else
-				for _, depControl in next, checkButton.dependentControls do
+				for _, depControl in SecureNext, checkButton.dependentControls do
 					depControl:Disable();
 				end
 			end
@@ -242,6 +247,18 @@ end
 
 function BlizzardOptionsPanel_GetCVarDefaultSafe (cvar)
 	local value = GetCVarDefault(cvar);
+	value = tonumber(value) or value;
+	return value;
+end
+
+function BlizzardOptionsPanel_GetCVarMinSafe (cvar)
+	local value = GetCVarMin(cvar);
+	value = tonumber(value) or value;
+	return value;
+end
+
+function BlizzardOptionsPanel_GetCVarMaxSafe (cvar)
+	local value = GetCVarMax(cvar);
 	value = tonumber(value) or value;
 	return value;
 end
@@ -330,7 +347,8 @@ function BlizzardOptionsPanel_OnEvent (frame, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		if ( frame.options and frame.controls ) then
 			local entry;
-			for i, control in next, frame.controls do
+			local minValue, maxValue;
+			for i, control in SecureNext, frame.controls do
 				entry = frame.options[(control.cvar or control.label)];
 				if ( entry ) then
 					if ( entry.text ) then
@@ -347,20 +365,24 @@ function BlizzardOptionsPanel_OnEvent (frame, event, ...)
 
 					control.event = entry.event or entry.text;
 
-					if ( control.type == CONTROLTYPE_SLIDER ) then
-						BlizzardOptionsPanel_Slider_Enable(control);
-						control:SetMinMaxValues(entry.minValue, entry.maxValue);
-						control:SetValueStep(entry.valueStep);
-					end
-
 					if ( control.cvar ) then
 						if ( control.type == CONTROLTYPE_CHECKBOX ) then
 							control.defaultValue = GetCVarDefault(control.cvar);
 						else
 							control.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(control.cvar);
+							minValue = BlizzardOptionsPanel_GetCVarMinSafe(control.cvar) or entry.minValue;
+							maxValue = BlizzardOptionsPanel_GetCVarMaxSafe(control.cvar) or entry.maxValue;
 						end
 					else
 						control.defaultValue = control.defaultValue or entry.default;
+						minValue = entry.minValue;
+						maxValue = entry.maxValue;
+					end
+
+					if ( control.type == CONTROLTYPE_SLIDER ) then
+						BlizzardOptionsPanel_Slider_Enable(control);
+						control:SetMinMaxValues(minValue, maxValue);
+						control:SetValueStep(entry.valueStep);
 					end
 
 					securecall(BlizzardOptionsPanel_SetupControl, control);
@@ -380,34 +402,7 @@ function BlizzardOptionsPanel_RegisterControl (control, parentFrame)
 
 	tinsert(parentFrame.controls, control);
 
-	local value;
-	if ( control.cvar ) then
-		-- Wait and setup the control after CVars are loaded using the panel's OnEvent handler
-	elseif ( control.GetValue ) then
-		if ( control.type == CONTROLTYPE_CHECKBOX ) then
-			value = control:GetValue();
-			if ( value ) then
-				control.value = tostring(value);
-			else
-				control.value = "0";
-			end
-			if ( control.uvar ) then
-				setglobal(control.uvar, value);
-			end
-
-			control.SetValue = function(self, value) self.value = value; if ( self.uvar ) then setglobal(self.uvar, value); end end;
-			control.Disable = function (self) getmetatable(self).__index.Disable(self) _G[self:GetName().."Text"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
-			control.Enable = function (self)
-				getmetatable(self).__index.Enable(self);
-				local text = _G[self:GetName().."Text"];
-				local fontObject = text:GetFontObject();
-				_G[self:GetName().."Text"]:SetTextColor(fontObject:GetTextColor());
-			end
-		elseif ( control.type == CONTROLTYPE_SLIDER ) then
-			control.Disable = BlizzardOptionsPanel_Slider_Disable;
-			control.Enable = BlizzardOptionsPanel_Slider_Enable;
-		end
-	end
+	-- Use the panel's OnEvent handler to wait and setup the control after game data is loaded
 end
 
 function BlizzardOptionsPanel_SetupControl (control)
@@ -415,6 +410,7 @@ function BlizzardOptionsPanel_SetupControl (control)
 		if ( control.cvar ) then
 			local value = GetCVar(control.cvar);
 			control.value = value;
+
 			if ( control.uvar ) then
 				setglobal(control.uvar, value);
 			end
@@ -427,6 +423,27 @@ function BlizzardOptionsPanel_SetupControl (control)
 				local text = _G[self:GetName().."Text"];
 				local fontObject = text:GetFontObject();
 				_G[self:GetName().."Text"]:SetTextColor(fontObject:GetTextColor());
+			end
+		elseif ( control.GetValue ) then
+			if ( control.type == CONTROLTYPE_CHECKBOX ) then
+				value = control:GetValue();
+				if ( value ) then
+					control.value = tostring(value);
+				else
+					control.value = "0";
+				end
+				if ( control.uvar ) then
+					setglobal(control.uvar, value);
+				end
+
+				control.SetValue = function(self, value) self.value = value; if ( self.uvar ) then setglobal(self.uvar, value); end end;
+				control.Disable = function (self) getmetatable(self).__index.Disable(self) _G[self:GetName().."Text"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
+				control.Enable = function (self)
+					getmetatable(self).__index.Enable(self);
+					local text = _G[self:GetName().."Text"];
+					local fontObject = text:GetFontObject();
+					_G[self:GetName().."Text"]:SetTextColor(fontObject:GetTextColor());
+				end
 			end
 		end
 	elseif ( control.type == CONTROLTYPE_SLIDER ) then

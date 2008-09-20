@@ -2,8 +2,6 @@ UIPanelWindows["AchievementFrame"] = { area = "doublewide", pushable = 0, width 
 
 ACHIEVEMENTUI_CATEGORIES = {};
 
-fubar = true
-
 ACHIEVEMENTUI_GOLDBORDER_R = 1;
 ACHIEVEMENTUI_GOLDBORDER_G = 0.675;
 ACHIEVEMENTUI_GOLDBORDER_B = 0.125;
@@ -86,11 +84,13 @@ function AchievementFrame_OnShow (self)
 		AchievementCategoryButton_OnClick(AchievementFrameCategoriesContainerButton1);
 	end
 	UpdateMicroButtons();
+	AchievementFrame_LoadTextures();
 end
 
 function AchievementFrame_OnHide (self)
 	PlaySound("AchievementMenuClose");
 	UpdateMicroButtons();
+	AchievementFrame_ClearTextures();
 end
 
 function AchievementFrameBaseTab_OnClick (id)
@@ -419,10 +419,6 @@ end
 function AchievementFrameCategories_SelectButton (button)
 	local id = button.element.id;
 	
-	if ( achievementFunctions.selectedCategory == id ) then
-		return;
-	end
-	
 	if ( type(button.element.parent) ~= "number" ) then
 		-- Is top level category (can expand/contract)
 		if ( button.isSelected and button.element.collapsed == false ) then
@@ -444,11 +440,11 @@ function AchievementFrameCategories_SelectButton (button)
 			end
 			button.element.collapsed = false;
 		end
-		
-		local buttons = AchievementFrameCategoriesContainer.buttons;
-		for _, button in next, buttons do
-			button.isSelected = nil;
-		end
+	end
+	
+	local buttons = AchievementFrameCategoriesContainer.buttons;
+	for _, button in next, buttons do
+		button.isSelected = nil;
 	end
 	
 	button.isSelected = true;
@@ -457,6 +453,7 @@ function AchievementFrameCategories_SelectButton (button)
 		if ( achievementFunctions == STAT_FUNCTIONS or achievementFunctions == ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameSummary);
 			achievementFunctions.selectedCategory = id;
+			return;
 		elseif ( achievementFunctions == COMPARISON_ACHIEVEMENT_FUNCTIONS ) then
 			-- Put the summary stuff for comparison here, Derek!
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparisonContainer);
@@ -1420,29 +1417,33 @@ function AchievementFrameStats_Update ()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local statHeight = 24;
-
+	
+	local numStats, numCompleted = GetCategoryNumAchievements(category);
+	
 	categories = ACHIEVEMENTUI_CATEGORIES;
 	-- clear out table
-	local statCat;
-	for i in next, displayStatCategories do
-		displayStatCategories[i] = nil;
-	end
-	-- build a list of shown category and stat id's
-	
-	tinsert(displayStatCategories, {id = category, header = true});
-	local numStats, numCompleted = GetCategoryNumAchievements(category);
-	for i=1, numStats do
-		tinsert(displayStatCategories, {id = GetAchievementInfo(category, i)});
-	end
-	-- add all the subcategories and their stat id's
-	for i, cat in next, categories do
-		if ( cat.parent == category ) then
-			tinsert(displayStatCategories, {id = cat.id, header = true});
-			numStats = GetCategoryNumAchievements(cat.id);
-			for k=1, numStats do
-				tinsert(displayStatCategories, {id = GetAchievementInfo(cat.id, k)});
+	if ( achievementFunctions.lastCategory ~= category ) then
+		local statCat;
+		for i in next, displayStatCategories do
+			displayStatCategories[i] = nil;
+		end
+		-- build a list of shown category and stat id's
+		
+		tinsert(displayStatCategories, {id = category, header = true});
+		for i=1, numStats do
+			tinsert(displayStatCategories, {id = GetAchievementInfo(category, i)});
+		end
+		-- add all the subcategories and their stat id's
+		for i, cat in next, categories do
+			if ( cat.parent == category ) then
+				tinsert(displayStatCategories, {id = cat.id, header = true});
+				numStats = GetCategoryNumAchievements(cat.id);
+				for k=1, numStats do
+					tinsert(displayStatCategories, {id = GetAchievementInfo(cat.id, k)});
+				end
 			end
 		end
+		achievementFunctions.lastCategory = category;
 	end
 
 	-- iterate through the displayStatCategories and display them
@@ -2187,22 +2188,31 @@ function AchievementFrameComparison_UpdateStats ()
 	local numButtons = #buttons;
 	local headerHeight = 24;
 	local statHeight = 23;
+	local totalHeight = 0;	
+	local numStats, numCompleted = GetCategoryNumAchievements(category);
 
 	categories = ACHIEVEMENTUI_CATEGORIES;
 	-- clear out table
-	local statCat;
-	for i in next, displayStatCategories do
-		displayStatCategories[i] = nil;
+	if ( achievementFunctions.lastCategory ~= category ) then
+		local statCat;
+		for i in next, displayStatCategories do
+			displayStatCategories[i] = nil;
+		end
+		-- build a list of shown category and stat id's
+
+		tinsert(displayStatCategories, {id = category, header = true});
+		totalHeight = totalHeight+headerHeight;
+
+		for i=1, numStats do
+			tinsert(displayStatCategories, {id = GetAchievementInfo(category, i)});
+			totalHeight = totalHeight+statHeight;
+		end
+		achievementFunctions.lastCategory = category;
+		achievementFunctions.lastHeight = totalHeight;
+	else
+		totalHeight = achievementFunctions.lastHeight;
 	end
-	-- build a list of shown category and stat id's
-	local totalHeight = 0;
-	tinsert(displayStatCategories, {id = category, header = true});
-	totalHeight = totalHeight+headerHeight;
-	local numStats, numCompleted = GetCategoryNumAchievements(category);
-	for i=1, numStats do
-		tinsert(displayStatCategories, {id = GetAchievementInfo(category, i)});
-		totalHeight = totalHeight+statHeight;
-	end
+	
 	-- add all the subcategories and their stat id's
 	for i, cat in next, categories do
 		if ( cat.parent == category ) then
@@ -2489,3 +2499,56 @@ COMPARISON_STAT_FUNCTIONS = {
 }
 
 achievementFunctions = ACHIEVEMENT_FUNCTIONS;
+
+
+ACHIEVEMENT_TEXTURES_TO_LOAD = {
+	{	
+		name="AchievementFrameAchievementsBackground", 
+		file="Interface\\AchievementFrame\\UI-Achievement-AchievementBackground",
+	},
+	{	
+		name="AchievementFrameSummaryBackground", 
+		file="Interface\\AchievementFrame\\UI-Achievement-AchievementBackground",
+	},
+	{	
+		name="AchievementFrameComparisonBackground", 
+		file="Interface\\AchievementFrame\\UI-Achievement-AchievementBackground",
+	},
+	{	
+		name="AchievementFrameCategoriesBG", 
+		file="Interface\\AchievementFrame\\UI-Achievement-AchievementBackground",
+	},
+	{	
+		name="AchievementFrameWaterMark", 
+	},
+	{	
+		name="AchievementFrameHeaderLeft", 
+		file="Interface\\AchievementFrame\\UI-Achievement-Header",
+	},
+	{	
+		name="AchievementFrameHeaderRight", 
+		file="Interface\\AchievementFrame\\UI-Achievement-Header",
+	},
+	{	
+		name="AchievementFrameHeaderPointBorder", 
+		file="Interface\\AchievementFrame\\UI-Achievement-Header",
+	},
+	{	
+		name="AchievementFrameComparisonWatermark", 
+		file="Interface\\AchievementFrame\\UI-Achievement-StatsComparisonBackground",
+	},
+}
+
+function AchievementFrame_ClearTextures()
+	for k, v in pairs(ACHIEVEMENT_TEXTURES_TO_LOAD) do
+		getglobal(v.name):SetTexture(nil);
+	end
+end
+
+function AchievementFrame_LoadTextures()
+	for k, v in pairs(ACHIEVEMENT_TEXTURES_TO_LOAD) do
+		if ( v.file ) then
+			getglobal(v.name):SetTexture(v.file);
+		end
+	end
+end

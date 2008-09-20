@@ -304,7 +304,7 @@ function BattlefieldFrame_Update()
 	local playerLevel = UnitLevel("player");
 	local button, buttonStatus;
 	local instanceID;
-	local mapName, mapDescription, minLevel, maxLevel, mapID, mapX, mapY, mapFull, levelMax, maxGroup = GetBattlefieldInfo();
+	local mapName, mapDescription, minLevel, maxLevel, mapFull, levelMax, maxGroup = GetBattlefieldInfo();
 	
 	-- Set title text
 	BattlefieldFrameFrameLabel:SetText(mapName);

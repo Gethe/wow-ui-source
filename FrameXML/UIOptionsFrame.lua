@@ -1,6 +1,5 @@
 
 INTERFACEOPTIONS_ADDONCATEGORIES = {};
-INTERFACEOPTIONSLIST_BUTTONHEIGHT = 18;
 
 local blizzardCategories = {};
 
@@ -8,6 +7,9 @@ local next = next;
 local function SecureNext(elements, key)
 	return securecall(next, elements, key);
 end
+
+local tinsert = tinsert;
+local strlower = strlower;
 
 
 -- [[ InterfaceOptionsList functions ]] --
@@ -26,7 +28,7 @@ function InterfaceOptionsList_DisplayPanel (frame)
 	frame:Show();
 end
 
-function InterfaceOptionsListButton_OnClick (mouseButton, button)
+function InterfaceOptionsListButton_OnClick (self, mouseButton)
 	if ( mouseButton == "RightButton" ) then
 		if ( button.element.hasChildren ) then
 			button.toggle:Click();
@@ -34,14 +36,44 @@ function InterfaceOptionsListButton_OnClick (mouseButton, button)
 		return;
 	end
 
-	local parent = button:GetParent();
+	local parent = self:GetParent();
 	local buttons = parent.buttons;
 
 	OptionsList_ClearSelection(InterfaceOptionsFrameCategories, InterfaceOptionsFrameCategories.buttons);
 	OptionsList_ClearSelection(InterfaceOptionsFrameAddOns, InterfaceOptionsFrameAddOns.buttons);
-	OptionsList_SelectButton(parent, button);
+	OptionsList_SelectButton(parent, self);
 
-	InterfaceOptionsList_DisplayPanel(button.element);
+	InterfaceOptionsList_DisplayPanel(self.element);
+end
+
+function InterfaceOptionsListButton_ToggleSubCategories (self)
+	local element = self.element;
+
+	element.collapsed = not element.collapsed;
+	local collapsed = element.collapsed;
+
+	for _, category in SecureNext, blizzardCategories do
+		if ( category.parent == element.name ) then
+			if ( collapsed ) then
+				category.hidden = true;
+			else
+				category.hidden = false;
+			end
+		end
+	end
+
+	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
+		if ( category.parent == element.name ) then
+			if ( collapsed ) then
+				category.hidden = true;
+			else
+				category.hidden = false;
+			end
+		end
+	end
+
+	InterfaceCategoryList_Update();
+	InterfaceAddOnsList_Update();
 end
 
 
@@ -179,7 +211,7 @@ function InterfaceOptionsFrameOkay_OnClick (isApply)
 	for _, category in SecureNext, blizzardCategories do
 		securecall("pcall", category.okay, category);
 	end
-	
+
 	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
 		securecall("pcall", category.okay, category);
 	end
@@ -241,9 +273,9 @@ function InterfaceOptionsFrame_SetCurrentToDefaults ()
 	end
 
 	--Run the currently displayed panel's default method in a taint-safe fashion.
-	securecall("pcall", displayedPanel.default, displayedPanel);
 	if ( displayedPanel ) then
 		securecall("pcall", displayedPanel.default, displayedPanel);
+
 		--Run the refresh method to refresh any values that were changed.
 		if ( displayedPanel.refresh ) then
 			securecall("pcall", displayedPanel.refresh, displayedPanel);
@@ -311,14 +343,14 @@ end
 function InterfaceOptionsFrame_LoadUVars ()
 	local variable, cvarValue
 	for uvar, setting in SecureNext, uvarInfo do
-		variable = getglobal(uvar);
+		variable = _G[uvar];
 		cvarValue = GetCVar(setting.cvar);
 		if ( cvarValue == setting.default and variable ~= setting.default ) then
 			SetCVar(setting.cvar, variable, setting.event)
 			if ( setting.func ) then
 				setting.func()
 			end
-		elseif ( cvarValue ~= setting.default or ( not ( getglobal(uvar) ) ) ) then
+		elseif ( cvarValue ~= setting.default or ( not ( _G[uvar] ) ) ) then
 			if ( setting.func ) then
 				setting.func()
 			end
@@ -448,7 +480,7 @@ end
 ---------------------------------------------------------------------------------------------------
 -- HOWTO: Add new categories of options
 --
--- The new Interface Options frames allows authors to place their configuration
+-- The new Interface Options frame allows authors to place their configuration
 -- frames (aka "panels") alongside the panels for modifying the default UI.
 --
 -- Adding a new panel to the Interface Options frame is a fairly straightforward process.
@@ -484,7 +516,12 @@ end
 -- panel.default - function (optional)
 --	This method will run when the player clicks "defaults". 
 --	Use this to revert their changes to your defaults.
---					
+--
+-- panel.refresh - function (optional)
+--  This method will run when the Interface Options frame calls its OnShow function and after defaults
+--  have been applied via the panel.default method described above.
+--  Use this to refresh your panel's UI in case settings were changed without player interaction.
+--
 -- EXAMPLE -- Use XML to create a frame, and through its OnLoad function, make the frame a panel.
 --
 --	MyAddOn.xml
@@ -552,13 +589,13 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 				end
 			end
 		end
-		
+
 		if ( position ) then
 			tinsert(blizzardCategories, position, frame);
 		else
 			tinsert(blizzardCategories, frame);
 		end
-		
+
 		InterfaceCategoryList_Update();
 	elseif ( not type(frame) == "table" or not frame.name ) then
 		--Check to make sure that AddOn interface panels have the necessary attributes to work with the system.
@@ -567,9 +604,10 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 		frame.okay = frame.okay or function () end;
 		frame.cancel = frame.cancel or function () end;
 		frame.default = frame.default or function () end;
-		
+		frame.refresh = frame.refresh or function () end;
+
 		local categories = INTERFACEOPTIONS_ADDONCATEGORIES;
-		
+
 		local name = strlower(frame.name);
 		local parent = frame.parent;
 		if ( parent ) then
@@ -583,22 +621,22 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 						InterfaceAddOnsList_Update();
 						return;						
 					end
-					
+
 					frame.hidden = ( categories[i].collapsed );
-					
+
 					local j = i + 1;
 					while ( categories[j] and categories[j].parent == parent ) do
 						-- Skip to the end of the list of children, add this there.
 						j = j + 1;
 					end
-					
+
 					tinsert(categories, j, frame);
 					InterfaceAddOnsList_Update();
 					return;
 				end
 			end
 		end
-		
+
 		for i = 1, #categories do
 			if ( ( not categories[i].parent ) and ( name < strlower(categories[i].name) ) ) then
 				tinsert(categories, i, frame);
@@ -606,7 +644,7 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 				return;
 			end
 		end
-		
+
 		if ( position ) then
 			tinsert(categories, position, frame);
 		else
@@ -614,34 +652,4 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 		end
 		InterfaceAddOnsList_Update();
 	end
-end
-
-function InterfaceOptions_ToggleSubCategories (button)
-	local element = button:GetParent().element;
-	
-	element.collapsed = not element.collapsed;
-	local collapsed = element.collapsed;
-	
-	for _, category in SecureNext, blizzardCategories do
-		if ( category.parent == element.name ) then
-			if ( collapsed ) then
-				category.hidden = true;
-			else
-				category.hidden = false;
-			end
-		end
-	end
-
-	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
-		if ( category.parent == element.name ) then
-			if ( collapsed ) then
-				category.hidden = true;
-			else
-				category.hidden = false;
-			end
-		end
-	end
-
-	InterfaceCategoryList_Update();
-	InterfaceAddOnsList_Update();
 end

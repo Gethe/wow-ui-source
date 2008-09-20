@@ -97,27 +97,10 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>		
-			<CheckButton name="$parentFixInputLag" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentStickyTargeting" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "gxFixLag";
-						self.setFunc = function(value) if (value ~= GetCVar("gxFixLag")) then ConsoleExec("gxRestart") end end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 			<CheckButton name="$parentAutoDismount" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentFixInputLag" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentStickyTargeting" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -2745,20 +2728,11 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.text = getglobal(self:GetName().."Text");
-						self.text:SetText(SHOW_TUTORIALS);
-						self.tooltipText = OPTION_TOOLTIP_SHOW_TUTORIALS;
+						self.label = "showTutorials";
+						self.setFunc = InterfaceOptionsHelpPanel_SetTutorials;
+						self.GetValue = function () return self.value or ((TutorialsEnabled() and "1") or "0"); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnShow>
-						self:SetChecked(TutorialsEnabled())
-					</OnShow>
-					<OnClick>
-						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
-						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
-						end					
-					</OnClick>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentLoadingScreenTips" inherits="InterfaceOptionsCheckButtonTemplate">
@@ -2844,8 +2818,9 @@
 						TutorialFrame_HideAllAlerts();
 						TutorialFrameCheckButton:SetChecked(1);
 						--Check the show tutorials option
-						if not (getglobal(self:GetParent():GetName() .. "Tutorials"):GetChecked()) then
-							getglobal(self:GetParent():GetName() .. "Tutorials"):Click()
+						local tutorialsCheckButton = _G[self:GetParent():GetName() .. "Tutorials"];
+						if ( not tutorialsCheckButton:GetChecked() ) then
+							tutorialsCheckButton:Click()
 						end
 					</OnClick>
 				</Scripts>
@@ -2858,7 +2833,6 @@
 				self.name = HELP_LABEL;
 				self.options = HelpPanelOptions;
 				InterfaceOptionsPanel_OnLoad(self);
-				InterfaceOptionsHelpPanel_OnLoad(self);
 			</OnLoad>
 		</Scripts>
 	</Frame>

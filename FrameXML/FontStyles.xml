@@ -311,6 +311,7 @@
 		</Shadow>
 		<Color r="1" g="1" b="1"/>
 	</Font>
+	<Font name="AchievementCriteriaFont" inherits="AchievementDescriptionFont" justifyH="LEFT" justifyV="MIDDLE" virtual="true"/>
 	<Font name="AchievementDateFont" inherits="SystemFont_Small" justifyH="RIGHT" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>	

@@ -253,7 +253,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 	if ( BattlefieldMinimap.resizing ) then
 		local sizeUnit = BattlefieldMinimap:GetWidth()/4;
 		local mapPiece;
-		for i=1, 12 do
+		for i=1, NUM_WORLDMAP_DETAIL_TILES do
 			mapPiece = getglobal("BattlefieldMinimap"..i);
 			mapPiece:SetWidth(sizeUnit);
 			mapPiece:SetHeight(sizeUnit);
@@ -564,4 +564,13 @@ function BattlefieldMinimapUnit_OnEnter(self)
 	end
 	GameTooltip:SetText(tooltipText);
 	GameTooltip:Show();
+end
+
+function BattlefieldMinimap_ClearTextures()
+	for i=1, NUM_BATTLEFIELDMAP_OVERLAYS do
+		getglobal("BattlefieldMinimapOverlay"..i):SetTexture(nil);
+	end
+	for i=1, NUM_WORLDMAP_DETAIL_TILES do
+		getglobal("BattlefieldMinimap"..i):SetTexture(nil);
+	end
 end

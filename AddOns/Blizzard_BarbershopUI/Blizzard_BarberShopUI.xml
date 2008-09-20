@@ -230,17 +230,17 @@
 	</Frame>
 	<Frame name="BarberShopBannerFrame" toplevel="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="393" y="305"/>
+			<AbsDimension x="381" y="210"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP">
-				<Offset x="0" y="-19"/>
+				<Offset x="2" y="5"/>
 			</Anchor>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBGTexture" setAllPoints="true">
-					<TexCoords left="0" right="0.767578" top="0" bottom="0.595703"/>
+					<TexCoords left="0" right="0.744141" top="0" bottom="0.820313"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -250,7 +250,7 @@
 					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="BarberShopBannerFrame" relativePoint="TOP">
-							<Offset x="-6" y="-134"/>
+							<Offset x="0" y="-94"/>
 						</Anchor>
 					</Anchors>
 				</FontString>

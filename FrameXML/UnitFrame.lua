@@ -169,7 +169,11 @@ end
 function UnitFrame_UpdateManaType (unitFrame)
 	assert(unitFrame);
 	if ( not unitFrame.manabar ) then
-		return;
+		if ( unitFrame.manaBar ) then
+			unitFrame.manabar = unitFrame.manaBar;
+		else
+			return;
+		end
 	end
 	local powerType, powerToken = UnitPowerType(unitFrame.unit);
 	local prefix = getglobal(powerToken);

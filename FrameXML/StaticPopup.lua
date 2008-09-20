@@ -2809,9 +2809,11 @@ end
 function StaticPopup_OnKeyDown(self, key)
 	-- previously, StaticPopup_EscapePressed() captured the escape key for dialogs, but now we need
 	-- to catch it here
-	debugprint("StaticPopup_OnKeyDown: key="..key);
 	if ( key == "ESCAPE" ) then
 		return StaticPopup_EscapePressed();
+	elseif ( key == "PRINTSCREEN" ) then
+		RunBinding(GetBindingAction(key));
+		return;
 	end
 
 	local dialog = StaticPopupDialogs[self.which];

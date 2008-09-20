@@ -57,6 +57,14 @@ local function InterfaceOptionsPanel_CancelControl (control)
 	end
 end
 
+local function InterfaceOptionsPanel_DefaultControl (control)
+	if ( control.defaultValue and control.value ~= control.defaultValue ) then
+		control:SetValue(control.defaultValue);
+		control.value = control.defaultValue;
+		control.newValue = nil;
+	end
+end
+
 local function InterfaceOptionsPanel_Okay (self)
 	for _, control in SecureNext, self.controls do
 		securecall(BlizzardOptionsPanel_OkayControl, control);
@@ -71,7 +79,7 @@ end
 
 local function InterfaceOptionsPanel_Default (self)
 	for _, control in SecureNext, self.controls do
-		securecall(BlizzardOptionsPanel_DefaultControl, control);
+		securecall(InterfaceOptionsPanel_DefaultControl, control);
 		if ( control.setFunc ) then
 			control.setFunc(control:GetValue());
 		end
@@ -97,13 +105,12 @@ end
 
 ControlsPanelOptions = {
 	deselectOnClick = { text = "GAMEFIELD_DESELECT_TEXT" },
-	gxFixLag = { text = "FIX_LAG" },
 	autoDismountFlying = { text = "AUTO_DISMOUNT_FLYING_TEXT" },
 	autoClearAFK = { text = "CLEAR_AFK" },
-	blockTrades = { text="BLOCK_TRADES" },
+	blockTrades = { text = "BLOCK_TRADES" },
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
 	autoLootDefault = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
-	autoLootKey = { text="AUTO_LOOT_KEY_TEXT", default="NONE" },
+	autoLootKey = { text = "AUTO_LOOT_KEY_TEXT", default = "NONE" },
 }
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad()
@@ -757,7 +764,6 @@ function InterfaceOptionsActionBarsPanel_OnEvent (self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		ALWAYS_SHOW_MULTIBARS = (GetCVarBool("alwaysShowActionBars") and "1") or "0";
 		InterfaceOptions_UpdateMultiActionBars();
 	end
@@ -1174,23 +1180,19 @@ end
 -- [[ Help Options Panel ]] --
 
 HelpPanelOptions = {
-	showTutorials = { text = "SHOW_TUTORIALS" },
+	showTutorials = { text = "SHOW_TUTORIALS", default = "1", tooltipText = OPTION_TOOLTIP_SHOW_TUTORIALS },
 	showGameTips = { text = "SHOW_TIPOFTHEDAY_TEXT" },
 	UberTooltips = { text = "USE_UBERTOOLTIPS" },
 	showNewbieTips = { text = "SHOW_NEWBIE_TIPS_TEXT" },
 	scriptErrors = { text = "SHOW_LUA_ERRORS" },
 }
 
-function InterfaceOptionsHelpPanel_OnLoad (panel)
-	panel.okay = function (self)
-		InterfaceOptionsPanel_Okay();
-
-		if ( InterfaceOptionsHelpPanelTutorials:GetChecked() and not TutorialsEnabled() ) then
-			ResetTutorials();
-		elseif ( ( not InterfaceOptionsHelpPanelTutorials:GetChecked() ) and TutorialsEnabled() ) then
-			ClearTutorials();
-			TutorialFrame_HideAllAlerts();
-		end
+function InterfaceOptionsHelpPanel_SetTutorials (value)
+	if ( value == "1" and not TutorialsEnabled() ) then
+		ResetTutorials();
+	elseif ( value == "0" and TutorialsEnabled() ) then
+		ClearTutorials();
+		TutorialFrame_HideAllAlerts();
 	end
 end
 

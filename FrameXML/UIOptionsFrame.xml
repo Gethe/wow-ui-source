@@ -1,7 +1,21 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="UIOptionsFrame.lua"/>
-	
+
+	<!-- Interface Options Frame Templates -->
+
+	<Button name="InterfaceOptionsListButtonTemplate" inherits="OptionsListButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				OptionsListButton_OnLoad(self, InterfaceOptionsListButton_ToggleSubCategories);
+			</OnLoad>
+			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
+				InterfaceOptionsListButton_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+
 	<Frame name="InterfaceOptionsFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
 		<Size>
 			<AbsDimension x="648" y="520"/>
@@ -129,7 +143,7 @@
 				<Scripts>
 					<OnLoad>
 						self.labelText = CATEGORY;
-						OptionsList_OnLoad(self);
+						OptionsList_OnLoad(self, "InterfaceOptionsListButtonTemplate");
 						self.update = InterfaceCategoryList_Update;
 					</OnLoad>
 				</Scripts>
@@ -148,7 +162,7 @@
 				<Scripts>
 					<OnLoad>
 						self.labelText = ADDONS
-						OptionsList_OnLoad(self);
+						OptionsList_OnLoad(self, "InterfaceOptionsListButtonTemplate");
 						self.update = InterfaceAddOnsList_Update;
 					</OnLoad>
 				</Scripts>

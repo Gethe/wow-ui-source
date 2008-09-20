@@ -516,6 +516,11 @@ function SpellButton_UpdateButton(self)
 		self.shine:SetParent(self);
 		self.shine:SetPoint("CENTER", self, "CENTER");
 		AutoCastShine_AutoCastStart(self.shine);
+	elseif ( autoCastEnabled ) then
+		self.shine:Show();
+		self.shine:SetParent(self);
+		self.shine:SetPoint("CENTER", self, "CENTER");
+		AutoCastShine_AutoCastStart(self.shine);
 	elseif ( not autoCastEnabled ) then
 		SpellBook_ReleaseAutoCastShine(self.shine);
 		self.shine = nil;

@@ -369,7 +369,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Layer>
 						</Layers>
 						<Frames>
-							<CheckButton name="AutoAddMembersCheckButton" inherits="OptionsCheckButtonTemplate">
+							<CheckButton name="AutoAddMembersCheckButton" inherits="OptionsSmallCheckButtonTemplate">
 								<Size x="24" y="24"/>
 								<Anchors>
 									<Anchor point="LEFT">
@@ -930,7 +930,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Layer>
 						</Layers>
 						<Frames>
-							<CheckButton name="AutoJoinCheckButton" inherits="OptionsCheckButtonTemplate">
+							<CheckButton name="AutoJoinCheckButton" inherits="OptionsSmallCheckButtonTemplate">
 								<Size x="24" y="24"/>
 								<Anchors>
 									<Anchor point="LEFT">

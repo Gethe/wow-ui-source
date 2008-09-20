@@ -728,6 +728,13 @@ function AuctionFrameBrowse_Update()
 
 			buttonName = "BrowseButton"..i;
 			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("list", offset + i);
+			if ( not name ) then	--Bug  145328
+				button:Hide();
+				-- If the last button is empty then set isLastSlotEmpty var
+				if ( i == NUM_BROWSE_TO_DISPLAY ) then
+					isLastSlotEmpty = 1;
+				end
+			end
 			duration = GetAuctionItemTimeLeft("list", offset + i);
 
 			-- Resize button if there isn't a scrollbar

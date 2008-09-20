@@ -905,6 +905,7 @@ function RaidPullout_Update(pullOutFrame)
 			name = UnitName(unit);
 			pulloutButtonName:SetText(name);
 			pulloutButton.unit = unit;
+			pulloutButton.secondaryUnit = unit;
 
 			-- Set for tooltip support
 			pulloutClearButton = pulloutButton.clearButton;
@@ -965,6 +966,7 @@ function RaidPullout_Update(pullOutFrame)
 			else
 				pulloutButton.vehicleIndicator:Hide();
 			end
+			RaidPulloutButton_UpdateSwapFrames(pulloutButton, unit)
 			
 			pulloutButton:RegisterEvent("PLAYER_ENTERING_WORLD");
 			pulloutButton:RegisterEvent("UNIT_HEALTH");
@@ -1026,7 +1028,7 @@ function RaidPulloutButton_OnEvent(self, event, ...)
 		end
 	elseif ( event == "VOICE_START") then
 		local arg1 = ...;
-		if ( arg1 == self.unit ) then
+		if ( arg1 == (self.secondaryUnit or self.unit) ) then
 			speaker.timer = nil;
 			speaker:Show();
 			UIFrameFadeIn(speaker, 0.2, speaker:GetAlpha(), 1);
@@ -1036,7 +1038,7 @@ function RaidPulloutButton_OnEvent(self, event, ...)
 		end
 	elseif ( event == "VOICE_STOP" ) then
 		local arg1 = ...;
-		if ( arg1 == self.unit ) then
+		if ( arg1 == (self.secondaryUnit or self.unit) ) then
 			speaker.timer = VOICECHAT_DELAY;
 			VoiceChat_Animate(speaker, nil);
 			if ( self.muted ) then
@@ -1049,13 +1051,37 @@ function RaidPulloutButton_OnEvent(self, event, ...)
 		RaidPulloutButton_UpdateVoice(self);
 	elseif (( event == "UNIT_ENTERED_VEHICLE" ) or ( event == "UNIT_EXITED_VEHICLE" )) then
 		local arg1 = ...;
-		if ( arg1 == self.unit ) then
+		if ( arg1 == (self.secondaryUnit or self.unit) ) then
 			if ( UnitHasVehicleUI(arg1) ) then
 				self.vehicleIndicator:Show();
 			else
 				self.vehicleIndicator:Hide();
 			end
+			RaidPulloutButton_UpdateSwapFrames(self, arg1);
 		end
+	end
+end
+
+function RaidPulloutButton_UpdateSwapFrames(self, unit)
+	--if ( UnitHasVehicleUI(unit) ) then
+	if ( false ) then
+		local prefix, id = unit:match("([^%d]+)([%d]+)");
+		self.secondaryUnit = unit;
+		unit = prefix.."pet"..id;
+		self.healthBar.unit = unit;
+		self.manaBar.unit = unit;
+		self.unit = unit;
+		_G[self:GetName().."ClearButton"]:SetAttribute("unit", unit)		
+		UnitFrame_UpdateManaType(self)
+		UnitFrameManaBar_Update(self.manaBar, unit)
+	elseif ( self.secondaryUnit ) then
+		self.healthBar.unit = self.secondaryUnit;
+		self.manaBar.unit = self.secondaryUnit;
+		self.unit = self.secondaryUnit;
+		_G[self:GetName().."ClearButton"]:SetAttribute("unit", self.secondaryUnit);
+		self.secondaryUnit = nil;
+		UnitFrame_UpdateManaType(self)
+		UnitFrameManaBar_Update(self.manaBar, unit)
 	end
 end
 
@@ -1079,8 +1105,8 @@ function RaidPulloutButton_UpdateVoice(pullOutButton)
 	local button = pullOutButton:GetName();
 	local icon = pullOutButton.speaker;
 	local muted = getglobal(button.."SpeakerMuted");
-	local muteStatus = GetMuteStatus(UnitName(pullOutButton.unit), "raid");
-	local state = UnitIsTalking(UnitName(pullOutButton.unit));
+	local muteStatus = GetMuteStatus(UnitName((pullOutButton.secondaryUnit or pullOutButton.unit)), "raid");
+	local state = UnitIsTalking(UnitName(pullOutButton.secondaryUnit or pullOutButton.unit));
 	if ( muteStatus ) then
 		VoiceChat_Animate(icon, nil);
 		icon:SetAlpha(1);
@@ -1299,7 +1325,7 @@ function RaidPulloutDropDown_Initialize()
 		for i=1, currentPullout.numPulloutButtons do
 			local button = getglobal(currentPullout:GetName().."Button"..i);
 			if ( MouseIsOver(button) ) then
-				unit = button.unit;
+				unit = (button.secondaryUnit or button.unit);
 				break;
 			end
 		end

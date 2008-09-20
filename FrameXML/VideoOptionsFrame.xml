@@ -73,9 +73,6 @@
 			<OnLoad>
 				VideoOptionsFrame_OnLoad(self);
 			</OnLoad>
-			<OnShow>
-				VideoOptionsFrame_OnShow(self);
-			</OnShow>
 			<OnHide>
 				VideoOptionsFrame_OnHide(self);
 			</OnHide>

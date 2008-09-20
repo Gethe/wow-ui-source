@@ -10,7 +10,7 @@ end
 
 -- [[ functions for OptionsFrameTemplates controls ]] --
 
-function OptionsList_OnLoad (self)
+function OptionsList_OnLoad (self, buttonTemplate)
 	local name = self:GetName();
 
 	--Setup random things!
@@ -20,18 +20,19 @@ function OptionsList_OnLoad (self)
 
 	--Create buttons for scrolling
 	local buttons = {};
-	local button = CreateFrame("BUTTON", name .. "Button1", self, "OptionsListButtonTemplate");
+	local button = CreateFrame("BUTTON", name .. "Button1", self, buttonTemplate or "OptionsListButtonTemplate");
 	button:SetPoint("TOPLEFT", self, 0, -8);
 	self.buttonHeight = button:GetHeight();
 	tinsert(buttons, button);
 
 	local maxButtons = (self:GetHeight() - 8) / self.buttonHeight;
 	for i = 2, maxButtons do
-		button = CreateFrame("BUTTON", name .. "Button" .. i, self, "OptionsListButtonTemplate");
+		button = CreateFrame("BUTTON", name .. "Button" .. i, self, buttonTemplate or "OptionsListButtonTemplate");
 		button:SetPoint("TOPLEFT", buttons[#buttons], "BOTTOMLEFT");
 		tinsert(buttons, button);
 	end
 
+	self.buttonHeight = button:GetHeight();
 	self.buttons = buttons;
 end
 
@@ -119,10 +120,25 @@ function OptionsList_SelectButton (listFrame, button)
 	listFrame.selection = button.element;
 end
 
+function OptionsListScroll_Update (frame)
+	local parent = frame:GetParent();
+	securecall("pcall", parent.update, parent);
+end
+
+function OptionsListButton_OnLoad (self, toggleFunc)
+	self.text = _G[self:GetName() .. "Text"];
+	self.highlight = self:GetHighlightTexture();
+	self.highlight:SetVertexColor(.196, .388, .8);
+	self.text:SetPoint("RIGHT", "$parentToggle", "LEFT", -2, 0);
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+
+	self.toggleFunc = toggleFunc or OptionsListButton_ToggleSubCategories;
+end
+
 function OptionsListButton_OnClick (self, mouseButton)
 	if ( mouseButton == "RightButton" ) then
 		if ( self.element.hasChildren ) then
-			self.toggle:Click();
+			OptionsListButtonToggle_OnClick(self.toggle);
 		end
 		return;
 	end
@@ -135,9 +151,127 @@ function OptionsListButton_OnClick (self, mouseButton)
 	OptionsList_DisplayPanel(self.element);
 end
 
-function OptionsListScroll_Update(frame)
-	local parent = frame:GetParent();
-	securecall("pcall", parent.update, parent);
+function OptionsListButton_ToggleSubCategories (self)
+	local element = self.element;
+
+	element.collapsed = not element.collapsed;
+
+	local collapsed = element.collapsed;
+
+	local categoryFrame = self:GetParent();
+	local optionsFrame = categoryFrame:GetParent();
+	local categoryList = optionsFrame.categoryList;
+	for _, category in SecureNext, categoryList do
+		if ( category.parent == element.name ) then
+			if ( collapsed ) then
+				category.hidden = true;
+			else
+				category.hidden = false;
+			end
+		end
+	end
+
+	securecall("pcall", categoryFrame.update, categoryFrame);
+end
+
+function OptionsListButtonToggle_OnClick (self)
+	local button = self:GetParent();
+	securecall("pcall", button.toggleFunc, button);
+end
+
+
+-- [[ OptionsFrameTemplate ]] --
+
+-- NOTE: the difference between "category" and "panel" is mostly a terminology difference
+-- let's say we have a set of options called foo
+-- "category" is used when referring to foo as data
+-- "panel" is used when referring to the frame that displays foo
+
+function OptionsFrameOkay_OnClick (self, apply)
+	--Iterate through registered panels and run their okay methods in a taint-safe fashion
+	for _, category in SecureNext, self.categoryList do
+		securecall("pcall", category.okay, category);
+	end
+end
+
+function OptionsFrameCancel_OnClick (self)
+	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
+	for _, category in SecureNext, self.categoryList do
+		securecall("pcall", category.cancel, category);
+	end
+end
+
+function OptionsFrameDefault_OnClick (self)
+	-- NOTE: defer setting defaults until a popup dialog button is clicked
+end
+
+function OptionsFrame_OnLoad(self)
+	local name = self:GetName();
+
+	self.categoryFrame = _G[name.."CategoryFrame"];
+	self.panelContainer = _G[name.."PanelContainer"];
+
+	self.okay = _G[name.."Okay"];
+	self.cancel = _G[name.."Cancel"];
+	self.apply = _G[name.."Apply"];
+	self.default = _G[name.."Default"];
+
+	self.categoryList = { };
+
+	self:SetFrameLevel(UIErrorsFrame:GetFrameLevel() - 1);
+end
+
+function OptionsFrame_OnShow (self)
+	--Refresh the category frames and display the first category if nothing is displayed.
+	securecall("pcall", self.categoryFrame.update, self.categoryFrame);
+	if ( not self.panelContainer.displayedPanel ) then
+		self.categoryFrame.buttons[1]:Click();
+	end
+	--Refresh the categories to pick up changes made while the options frame was hidden.
+	OptionsFrame_RefreshCategories(self);
+end
+
+function OptionsFrame_OnHide (self)
+	PlaySound("gsTitleOptionExit");
+
+	if ( self.lastFrame ) then
+		ShowUIPanel(self.lastFrame);
+		self.lastFrame = nil;
+	end
+
+	UpdateMicroButtons();
+end
+
+function OptionsFrame_SetAllToDefaults (self)
+	--Iterate through registered panels and run their default methods in a taint-safe fashion
+	for _, category in SecureNext, self.categoryList do
+		securecall("pcall", category.default, category);
+	end
+
+	--Refresh the categories to pick up changes made.
+	OptionsFrame_RefreshCategories(self);
+end
+
+function OptionsFrame_SetCurrentToDefaults (self)
+	local displayedPanel = self.panelContainer.displayedPanel;
+	if ( not displayedPanel or not displayedPanel.default ) then
+		return;
+	end
+
+	--Run the currently displayed panel's default method in a taint-safe fashion.
+	if ( displayedPanel ) then
+		securecall("pcall", displayedPanel.default, displayedPanel);
+		--Run the refresh method to refresh any values that were changed.
+		if ( displayedPanel.refresh ) then
+			securecall("pcall", displayedPanel.refresh, displayedPanel);
+		end
+	end
+end
+
+function OptionsFrame_RefreshCategories (self)
+	for _, category in SecureNext, self.categoryList do
+		securecall("pcall", category.refresh, category);
+	end
 end
 
 --Table to reuse! Yay reuse!
@@ -195,142 +329,6 @@ function OptionsCategoryFrame_Update (self)
 	end
 end
 
-
--- [[ OptionsFrameTemplate ]] --
-
--- NOTE: the difference between "category" and "panel" is mostly a terminology difference
--- let's say we have a set of options called foo
--- "category" is used when referring to foo as data
--- "panel" is used when referring to the frame that displays foo
-
-function OptionsFrameOkay_OnClick (self, apply)
-	--Iterate through registered panels and run their okay methods in a taint-safe fashion
-	for _, category in SecureNext, self.categoryList do
-		securecall("pcall", category.okay, category);
-	end
-end
-
-function OptionsFrameCancel_OnClick (self)
-	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
-	for _, category in SecureNext, self.categoryList do
-		securecall("pcall", category.cancel, category);
-	end
-end
-
-function OptionsFrameDefault_OnClick (self)
-	-- NOTE: defer setting defaults until a popup dialog button is clicked
-end
-
-function OptionsFrame_OnLoad(self)
-	self.categoryFrame = _G[self:GetName().."CategoryFrame"];
-	self.panelContainer = _G[self:GetName().."PanelContainer"];
-
-	self.okay = _G[self:GetName().."Okay"];
-	self.cancel = _G[self:GetName().."Cancel"];
-	self.apply = _G[self:GetName().."Apply"];
-	self.default = _G[self:GetName().."Default"];
-
-	self.categoryList = { };
-
-	self:SetFrameLevel(UIErrorsFrame:GetFrameLevel() - 1);
-end
-
-function OptionsFrame_OnShow (self)
-	--Refresh the category frames and display the first category if nothing is displayed.
-	securecall("pcall", self.categoryFrame.update, self.categoryFrame);
-	if ( not self.panelContainer.displayedPanel ) then
-		self.categoryFrame.buttons[1]:Click();
-	end
-	--Refresh the categories to pick up changes made while the options frame was hidden.
-	OptionsFrame_RefreshCategories(self);
-end
-
-function OptionsFrame_OnHide (self)
-	PlaySound("gsTitleOptionExit");
-
-	if ( self.lastFrame ) then
-		ShowUIPanel(self.lastFrame);
-		self.lastFrame = nil;
-	end
-
-	UpdateMicroButtons();
-end
-
-function OptionsFrame_SetAllToDefaults (self)
-	--Iterate through registered panels and run their default methods in a taint-safe fashion
-	for _, category in SecureNext, self.categoryList do
-		securecall("pcall", category.default, category);
-	end
-
-	--Refresh the categories to pick up changes made.
-	OptionsFrame_RefreshCategories(self);
-end
-
-function OptionsFrame_SetCurrentToDefaults (self)
-	local displayedPanel = self.panelContainer.displayedPanel;
-	if ( not displayedPanel or not displayedPanel.default ) then
-		return;
-	end
-
-	--Run the currently displayed panel's default method in a taint-safe fashion.
-	securecall("pcall", displayedPanel.default, displayedPanel);
-	if ( displayedPanel ) then
-		securecall("pcall", displayedPanel.default, displayedPanel);
-		--Run the refresh method to refresh any values that were changed.
-		if ( displayedPanel.refresh ) then
-			securecall("pcall", displayedPanel.refresh, displayedPanel);
-		end
-	end
-end
-
-function OptionsFrame_AddCategory (self, panel)
-	local parent = panel.parent;
-	if ( parent ) then
-		for i = 1, #self.categoryList do
-			if ( self.categoryList[i].name == parent ) then
-				if ( self.categoryList[i].hasChildren ) then
-					panel.hidden = self.categoryList[i].collapsed;
-				else
-					panel.hidden = true;
-					self.categoryList[i].hasChildren = true;
-					self.categoryList[i].collapsed = true;
-				end
-				tinsert(self.categoryList, i + 1, panel);
-				securecall("pcall", self.categoryFrame.update, self.categoryFrame);
-				self.categoryFrame:update();
-				return;
-			end
-		end
-	end
-
-	tinsert(self.categoryList, panel);
-	securecall("pcall", self.categoryFrame.update, self.categoryFrame);
-end
-
-function OptionsFrame_ToggleSubCategories (button)
-	local parent = button:GetParent();
-	local element = button:GetParent().element;
-	
-	element.collapsed = not element.collapsed;
-
-	local collapsed = element.collapsed;
-
-	local categoryFrame = parent:GetParent();
-	local optionsFrame = categoryFrame:GetParent();
-	local categoryList = optionsFrame.categoryList;
-	for _, category in SecureNext, categoryList do
-		if ( category.parent == element.name ) then
-			if ( collapsed ) then
-				category.hidden = true;
-			else
-				category.hidden = false;
-			end
-		end
-	end
-
-	securecall("pcall", self.categoryFrame.update, self.categoryFrame);
-end
-
 function OptionsFrame_OpenToCategory (self, panel)
 	local panelName;
 	if ( type(panel) == "string" ) then
@@ -368,9 +366,27 @@ function OptionsFrame_OpenToCategory (self, panel)
 	end
 end
 
-function OptionsFrame_RefreshCategories (self)
-	for _, category in SecureNext, self.categoryList do
-		securecall("pcall", category.refresh, category);
+function OptionsFrame_AddCategory (self, panel)
+	local parent = panel.parent;
+	if ( parent ) then
+		for i = 1, #self.categoryList do
+			if ( self.categoryList[i].name == parent ) then
+				if ( self.categoryList[i].hasChildren ) then
+					panel.hidden = self.categoryList[i].collapsed;
+				else
+					panel.hidden = true;
+					self.categoryList[i].hasChildren = true;
+					self.categoryList[i].collapsed = true;
+				end
+				tinsert(self.categoryList, i + 1, panel);
+				securecall("pcall", self.categoryFrame.update, self.categoryFrame);
+				self.categoryFrame:update();
+				return;
+			end
+		end
 	end
+
+	tinsert(self.categoryList, panel);
+	securecall("pcall", self.categoryFrame.update, self.categoryFrame);
 end
 

@@ -13,7 +13,7 @@ function VideoOptionsFrame_SetAllToDefaults ()
 
 	if ( VideoOptionsFrame.gxRestart ) then
 		VideoOptionsFrame.gxRestart = nil;
-		ConsoleExec("gxRestart");
+		RestartGx();
 		-- HACK: get around the fact that some gx cvars don't ACTUALLY get set until a restart
 		VideoOptionsResolutionPanel:refresh();
 	end
@@ -24,7 +24,7 @@ function VideoOptionsFrame_SetCurrentToDefaults ()
 
 	if ( VideoOptionsFrame.gxRestart ) then
 		VideoOptionsFrame.gxRestart = nil;
-		ConsoleExec("gxRestart");
+		RestartGx();
 		if ( VideoOptionsFrame.panelContainer.displayedPanel == VideoOptionsResolutionPanel ) then
 			-- HACK: get around the fact that some gx cvars don't ACTUALLY get set until a restart
 			VideoOptionsResolutionPanel:refresh();
@@ -36,12 +36,6 @@ function VideoOptionsFrame_OnLoad (self)
 	OptionsFrame_OnLoad(self);
 
 	_G[self:GetName().."HeaderText"]:SetText(VIDEOOPTIONS_MENU);
-end
-
-function VideoOptionsFrame_OnShow (self)
-	OptionsFrame_OnShow(self);
-
-	VideoOptionsEffectsPanel_UpdateVideoQuality();
 end
 
 function VideoOptionsFrame_OnHide (self)
@@ -61,7 +55,7 @@ function VideoOptionsFrameOkay_OnClick (apply)
 
 	if ( VideoOptionsFrame.gxRestart ) then
 		VideoOptionsFrame.gxRestart = nil;
-		ConsoleExec("gxRestart");
+		RestartGx();
 	end
 
 	if ( not apply ) then
@@ -72,7 +66,11 @@ end
 function VideoOptionsFrameCancel_OnClick ()
 	OptionsFrameCancel_OnClick(VideoOptionsFrame);
 
-	VideoOptionsFrame.gxRestart = nil;
+	if ( VideoOptionsFrame.gxRestart ) then
+		VideoOptionsFrame.gxRestart = nil;
+		RestartGx();
+	end
+
 	VideoOptionsFrame.logout = nil;
 	VideoOptionsFrame.gameRestart = nil;
 

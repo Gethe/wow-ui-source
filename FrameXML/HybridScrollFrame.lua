@@ -2,6 +2,8 @@
 
 -----------------------------------------------------------------------------------------------]]--
 
+local round = function (num) return math.floor(num + .5); end
+
 function HybridScrollFrame_OnLoad (self)
 	self:EnableMouse(true);
 end
@@ -86,8 +88,8 @@ function HybridScrollFrameScrollChild_OnLoad (self)
 end
 
 function HybridScrollFrame_ExpandButton (self, offset, height)
-	self.largeButtonTop = offset;
-	self.largeButtonHeight = height
+	self.largeButtonTop = round(offset);
+	self.largeButtonHeight = round(height)
 end
 
 function HybridScrollFrame_CollapseButton (self)
@@ -125,7 +127,7 @@ function HybridScrollFrame_SetOffset (self, offset)
 		scrollHeight = overflow * buttonHeight;
 	end
 	
-	if ( math.floor(self.offset or 0) ~= element and self.update ) then
+	if ( math.floor(self.offset or 0) ~= math.floor(element) and self.update ) then
 		self.offset = element;
 		self.update();
 	else
@@ -161,7 +163,7 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 		tinsert(buttons, button);
 	end
 	
-	self.buttonHeight = buttonHeight;
+	self.buttonHeight = round(buttonHeight);
 	
 	local numButtons = (self:GetHeight() / buttonHeight) + 1;
 	self.overflow = math.ceil(numButtons) - numButtons;

@@ -196,25 +196,6 @@ function VoiceChat_Animate(frame, animate)
 	end
 end
 
-function SetTextureDesaturated(icon, desaturated, r, g, b)
-	if ( not icon ) then
-		return;
-	end
-	local shaderSupported = icon:SetDesaturated(desaturated);
-
-	if ( not desaturated ) then
-		r = 1.0;
-		g = 1.0;
-		b = 1.0;
-	elseif ( not r or not shaderSupported ) then
-		r = 0.5;
-		g = 0.5;
-		b = 0.5;
-	end
-	
-	icon:SetVertexColor(r, g, b);
-end
-
 
 function MiniMapVoiceChat_Update()
 	local count = GetNumVoiceSessions();

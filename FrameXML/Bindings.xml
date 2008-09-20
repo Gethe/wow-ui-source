@@ -608,16 +608,16 @@
 		Minimap_ZoomOut();
 	</Binding>
 	<Binding name="TOGGLEMUSIC">
-		AudioOptionsSoundPanel_ToggleMusic();
+		Sound_ToggleMusic();
 	</Binding>
 	<Binding name="TOGGLESOUND">
-		AudioOptionsSoundPanel_ToggleSound();
+		Sound_ToggleSound();
 	</Binding>
 	<Binding name="MASTERVOLUMEUP">
-		AudioOptionsSoundPanel_MasterVolumeUp();
+		Sound_MasterVolumeUp();
 	</Binding>
 	<Binding name="MASTERVOLUMEDOWN">
-		AudioOptionsSoundPanel_MasterVolumeDown();
+		Sound_MasterVolumeDown();
 	</Binding>
 	<Binding name="TOGGLESELFMUTE">
 		if ( GetCVar("VoiceChatSelfMute") == "0" ) then

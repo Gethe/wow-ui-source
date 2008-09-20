@@ -457,6 +457,7 @@
 		</OnShow>
 		<OnHide>
 			BattlefieldMinimapTab:Hide();
+			BattlefieldMinimap_ClearTextures();
 		</OnHide>
 		<OnEvent>
 			BattlefieldMinimap_OnEvent(self, event, ...);

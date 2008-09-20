@@ -477,7 +477,7 @@
 			</Button>
 
 			<!-- Context menus -->
-			<Frame name="CalendarContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" clampedToScreen="true" hidden="true">
+			<Frame name="CalendarContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" clampedToScreen="true" hidden="true">
 				<Scripts>
 					<OnLoad>
 						CalendarContextMenu_OnLoad(self);
@@ -487,7 +487,7 @@
 					</OnHide>
 				</Scripts>
 			</Frame>
-			<Frame name="CalendarArenaTeamContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" hidden="true" parent="CalendarContextMenu">
+			<Frame name="CalendarArenaTeamContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" hidden="true" parent="CalendarContextMenu">
 				<Scripts>
 					<OnLoad>
 						CalendarArenaTeamContextMenu_OnLoad(self);
@@ -500,7 +500,7 @@
 					</OnEvent>
 				</Scripts>
 			</Frame>
-			<Frame name="CalendarInviteStatusContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" hidden="true" parent="CalendarContextMenu">
+			<Frame name="CalendarInviteStatusContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" hidden="true" parent="CalendarContextMenu">
 				<Scripts>
 					<OnLoad>
 						CalendarInviteStatusContextMenu_OnLoad(self);
@@ -660,7 +660,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
-								<FontString name="CalendarViewHolidayDescription" inherits="GameFontHighlightLeft" justifyV="TOP">
+								<FontString name="CalendarViewHolidayDescription" inherits="GameFontHighlightLeft" nonspacewrap="true" justifyV="TOP">
 									<Size x="265" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
@@ -753,7 +753,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
-								<FontString name="CalendarViewRaidDescription" inherits="GameFontHighlightLeft" justifyV="TOP">
+								<FontString name="CalendarViewRaidDescription" inherits="GameFontHighlightLeft" nonspacewrap="true" justifyV="TOP">
 									<Size x="265" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
@@ -908,7 +908,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<FontString name="CalendarViewEventDescription" inherits="GameFontNormalSmallLeft" justifyV="TOP">
+										<FontString name="CalendarViewEventDescription" inherits="GameFontNormalSmallLeft" nonspacewrap="true" justifyV="TOP">
 											<Size x="263" y="0"/>
 											<Anchors>
 												<Anchor point="TOPLEFT"/>
@@ -1173,7 +1173,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<EditBox name="CalendarCreateEventTitleEdit" letters="32" inherits="InputBoxTemplate" autoFocus="false">
+			<EditBox name="CalendarCreateEventTitleEdit" letters="31" inherits="InputBoxTemplate" autoFocus="false">
 				<Size x="120" y="20"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
