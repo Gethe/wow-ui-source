@@ -242,11 +242,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		playerX = playerX * BattlefieldMinimap:GetWidth();
 		playerY = -playerY * BattlefieldMinimap:GetHeight();
 		PositionMiniWorldMapArrowFrame("CENTER", "BattlefieldMinimap", "TOPLEFT", playerX, playerY);
-		if ( UnitInVehicle("player") ) then
-			ShowMiniWorldMapArrowFrame(nil);
-		else
-			ShowMiniWorldMapArrowFrame(1);
-		end
+		ShowMiniWorldMapArrowFrame(1);
 	end
 	
 	-- If resizing the frame then scale everything accordingly
@@ -375,8 +371,9 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 				BG_VEHICLES[i]:SetWidth(30 * GetBattlefieldMapIconScale());
 				BG_VEHICLES[i]:SetHeight(30 * GetBattlefieldMapIconScale());
 			end
-			local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation = GetBattlefieldVehicleInfo(i);
-			if ( vehicleX)  then
+			local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer = GetBattlefieldVehicleInfo(i);
+			-- If vehicle has position and isn't the player
+			if ( vehicleX and not isPlayer)  then
 				vehicleX = vehicleX * BattlefieldMinimap:GetWidth();
 				vehicleY = -vehicleY * BattlefieldMinimap:GetHeight();
 				BG_VEHICLES[i].texture:SetTexture(GetMapVehicleTexture(vehicleType, isPossessed));
@@ -384,6 +381,8 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 				BG_VEHICLES[i]:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", vehicleX, vehicleY);
 				BG_VEHICLES[i]:Show();
 				index = i;	-- save for later
+			else
+				BG_VEHICLES[i]:Hide();
 			end
 		end
 		if (index < totalVehicles) then

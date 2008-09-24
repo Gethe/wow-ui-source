@@ -137,7 +137,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString name="$parentText" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="CENTER" text="CANHAZDUMMYTEXT">
+						<FontString name="$parentText" inherits="GameFontNormalLarge" justifyH="LEFT" text="CANHAZDUMMYTEXT">
 							<Size>
 								<AbsDimension x="290" y="0"/>
 							</Size>

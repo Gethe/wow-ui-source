@@ -1,9 +1,9 @@
 -- if you change something here you probably want to change the glue version too
 
-OPTIONSLIST_BUTTONHEIGHT = 18;
-
 local next = next;
 local function SecureNext(elements, key)
+	-- not totally necessary in all cases in this file (since Interface Options are independent), but
+	-- it's used anyway to keep things consistent, plus it's not a huge performance hindrance
 	return securecall(next, elements, key);
 end
 
@@ -122,7 +122,7 @@ end
 
 function OptionsListScroll_Update (frame)
 	local parent = frame:GetParent();
-	securecall("pcall", parent.update, parent);
+	parent:update();
 end
 
 function OptionsListButton_OnLoad (self, toggleFunc)
@@ -171,12 +171,12 @@ function OptionsListButton_ToggleSubCategories (self)
 		end
 	end
 
-	securecall("pcall", categoryFrame.update, categoryFrame);
+	categoryFrame:update();
 end
 
 function OptionsListButtonToggle_OnClick (self)
 	local button = self:GetParent();
-	securecall("pcall", button.toggleFunc, button);
+	button:toggleFunc();
 end
 
 
@@ -186,24 +186,6 @@ end
 -- let's say we have a set of options called foo
 -- "category" is used when referring to foo as data
 -- "panel" is used when referring to the frame that displays foo
-
-function OptionsFrameOkay_OnClick (self, apply)
-	--Iterate through registered panels and run their okay methods in a taint-safe fashion
-	for _, category in SecureNext, self.categoryList do
-		securecall("pcall", category.okay, category);
-	end
-end
-
-function OptionsFrameCancel_OnClick (self)
-	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
-	for _, category in SecureNext, self.categoryList do
-		securecall("pcall", category.cancel, category);
-	end
-end
-
-function OptionsFrameDefault_OnClick (self)
-	-- NOTE: defer setting defaults until a popup dialog button is clicked
-end
 
 function OptionsFrame_OnLoad(self)
 	local name = self:GetName();
@@ -223,9 +205,9 @@ end
 
 function OptionsFrame_OnShow (self)
 	--Refresh the category frames and display the first category if nothing is displayed.
-	securecall("pcall", self.categoryFrame.update, self.categoryFrame);
+	self.categoryFrame:update();
 	if ( not self.panelContainer.displayedPanel ) then
-		self.categoryFrame.buttons[1]:Click();
+		OptionsListButton_OnClick(self.categoryFrame.buttons[1]);
 	end
 	--Refresh the categories to pick up changes made while the options frame was hidden.
 	OptionsFrame_RefreshCategories(self);
@@ -242,10 +224,44 @@ function OptionsFrame_OnHide (self)
 	UpdateMicroButtons();
 end
 
+local function OptionsFrame_RunOkayForCategory (category)
+	pcall(category.okay, category);
+end
+
+local function OptionsFrame_RunCancelForCategory (category)
+	pcall(category.cancel, category);
+end
+
+local function OptionsFrame_RunDefaultForCategory (category)
+	pcall(category.default, category);
+end
+
+local function OptionsFrame_RunRefreshForCategory (category)
+	pcall(category.refresh, category);
+end
+
+function OptionsFrameOkay_OnClick (self, apply)
+	--Iterate through registered panels and run their okay methods in a taint-safe fashion
+	for _, category in SecureNext, self.categoryList do
+		securecall(OptionsFrame_RunOkayForCategory, category);
+	end
+end
+
+function OptionsFrameCancel_OnClick (self)
+	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
+	for _, category in SecureNext, self.categoryList do
+		securecall(OptionsFrame_RunCancelForCategory, category);
+	end
+end
+
+function OptionsFrameDefault_OnClick (self)
+	-- NOTE: defer setting defaults until a popup dialog button is clicked
+end
+
 function OptionsFrame_SetAllToDefaults (self)
 	--Iterate through registered panels and run their default methods in a taint-safe fashion
 	for _, category in SecureNext, self.categoryList do
-		securecall("pcall", category.default, category);
+		securecall(OptionsFrame_RunDefaultForCategory, category);
 	end
 
 	--Refresh the categories to pick up changes made.
@@ -258,19 +274,14 @@ function OptionsFrame_SetCurrentToDefaults (self)
 		return;
 	end
 
-	--Run the currently displayed panel's default method in a taint-safe fashion.
-	if ( displayedPanel ) then
-		securecall("pcall", displayedPanel.default, displayedPanel);
-		--Run the refresh method to refresh any values that were changed.
-		if ( displayedPanel.refresh ) then
-			securecall("pcall", displayedPanel.refresh, displayedPanel);
-		end
-	end
+	displayedPanel.default(displayedPanel);
+	--Run the refresh method to refresh any values that were changed.
+	displayedPanel.refresh(displayedPanel);
 end
 
 function OptionsFrame_RefreshCategories (self)
 	for _, category in SecureNext, self.categoryList do
-		securecall("pcall", category.refresh, category);
+		securecall(OptionsFrame_RunRefreshForCategory, category);
 	end
 end
 
@@ -367,6 +378,10 @@ function OptionsFrame_OpenToCategory (self, panel)
 end
 
 function OptionsFrame_AddCategory (self, panel)
+	if ( not issecure() ) then
+		-- disallow any non-blizzard code to enter here...
+		-- we may want to change this in the future if we merge this with Interface Options
+	end
 	local parent = panel.parent;
 	if ( parent ) then
 		for i = 1, #self.categoryList do
@@ -379,7 +394,6 @@ function OptionsFrame_AddCategory (self, panel)
 					self.categoryList[i].collapsed = true;
 				end
 				tinsert(self.categoryList, i + 1, panel);
-				securecall("pcall", self.categoryFrame.update, self.categoryFrame);
 				self.categoryFrame:update();
 				return;
 			end
@@ -387,6 +401,6 @@ function OptionsFrame_AddCategory (self, panel)
 	end
 
 	tinsert(self.categoryList, panel);
-	securecall("pcall", self.categoryFrame.update, self.categoryFrame);
+	self.categoryFrame:update();
 end
 

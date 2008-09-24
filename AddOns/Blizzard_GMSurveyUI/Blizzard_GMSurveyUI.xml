@@ -5,6 +5,9 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentScore" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="90" y="0"/>
+					</Size>
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP">
 							<Offset>
@@ -59,81 +62,137 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Score"]:SetText(GM_SURVEY_NOT_APPLICABLE);
-					</OnLoad>
-				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentRadioButton1" inherits="GMSurveyRadioButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRadioButton0" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="90" y="0"/>
+							<AbsDimension x="60" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Score"]:SetText(GMSURVEYRATING1);
-					</OnLoad>
-				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentNetPromoterLow" inherits="GameFontHighlight" text="NET_PROMOTER_LOW" justifyH="LEFT" hidden="true">
+							<Size>
+								<AbsDimension x="100" y="40"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="-20" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</CheckButton>
 			<CheckButton name="$parentRadioButton2" inherits="GMSurveyRadioButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRadioButton1" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="50" y="0"/>
+							<AbsDimension x="80" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Score"]:SetText(GMSURVEYRATING2);
-					</OnLoad>
-				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentRadioButton3" inherits="GMSurveyRadioButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRadioButton2" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="50" y="0"/>
+							<AbsDimension x="80" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Score"]:SetText(GMSURVEYRATING3);
-					</OnLoad>
-				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentRadioButton4" inherits="GMSurveyRadioButtonTemplate" id="4">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRadioButton3" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="50" y="0"/>
+							<AbsDimension x="80" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Score"]:SetText(GMSURVEYRATING4);
-					</OnLoad>
-				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentRadioButton5" inherits="GMSurveyRadioButtonTemplate" id="5">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRadioButton4" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="50" y="0"/>
+							<AbsDimension x="80" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Score"]:SetText(GMSURVEYRATING5);
-					</OnLoad>
-				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton6" inherits="GMSurveyRadioButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton7" inherits="GMSurveyRadioButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton8" inherits="GMSurveyRadioButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton9" inherits="GMSurveyRadioButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton10" inherits="GMSurveyRadioButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton11" inherits="GMSurveyRadioButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton10" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentNetPromoterHigh" inherits="GameFontHighlight" text="NET_PROMOTER_HIGH" justifyH="RIGHT" hidden="true">
+							<Size>
+								<AbsDimension x="100" y="40"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="20" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</CheckButton>
 		</Frames>
 		<Scripts>
@@ -152,7 +211,7 @@
 		<Anchors>
 			<Anchor point="CENTER">
 				<Offset>
-					<AbsDimension x="0" y="0"/>
+					<AbsDimension x="40" y="20"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -264,11 +323,11 @@
 						<Anchor point="TOPRIGHT" relativeTo="GMSurveyBottomRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString inherits="GameFontHighlight" text="GMSURVEY_REQUEST_TEXT">
+				<FontString inherits="GameFontHighlight" justifyH="CENTER" text="GMSURVEY_REQUEST_TEXT">
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="-35"/>
+								<AbsDimension x="-10" y="-30"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -421,7 +480,7 @@
 						</Size>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString name="GMSurveyAdditionalCommentsText" inherits="GameFontNormal" text="ADDITIONAL_COMMENTS" justifyH="LEFT">
+								<FontString name="GMSurveyAdditionalCommentsText" inherits="GameFontHighlight" text="ADDITIONAL_COMMENTS" justifyH="LEFT">
 									<Size x="541" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
@@ -451,16 +510,31 @@
 									</Anchor>
 								</Anchors>
 							</Frame>
+							<Frame name="GMBlock" >
+								<Size x="541" y="60"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion2" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="10" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="GMBlockText" inherits="GameFontHighlight" justifyH="LEFT" text="GMSURVEY_BLOCK_TEXT"/>
+									</Layer>
+								</Layers>
+							</Frame>
 							<Frame name="GMSurveyQuestion3" inherits="GMSurveyQuestionTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion2" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-40"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion2" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-40"/>
 										</Offset>
 									</Anchor>
 								</Anchors>

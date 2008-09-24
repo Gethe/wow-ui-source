@@ -222,6 +222,12 @@ function TargetFrame_OnUpdate (self, elapsed)
 	if ( TargetofTargetFrame:IsShown() ~= UnitExists("targettarget") ) then
 		TargetofTarget_Update();
 	end
+	
+	self.elapsed = (self.elapsed or 0) + elapsed;
+	if ( self.elapsed > 0.5 ) then
+		self.elapsed = 0;
+		UnitFrame_UpdateThreatIndicator(self.threatIndicator, self.threatNumericIndicator, self.feedbackUnit);
+	end
 end
 
 local largeBuffList = {};

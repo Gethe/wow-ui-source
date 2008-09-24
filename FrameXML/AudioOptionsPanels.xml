@@ -1164,6 +1164,13 @@
 			</Frame>
 			<Slider name="$parentSoundFade" inherits="OptionsSliderTemplate">
 				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAudio">
+						<Offset>
+							<AbsDimension x="70" y="-96"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="SOUND_VOLUME">
@@ -1178,13 +1185,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAudio">
-						<Offset>
-							<AbsDimension x="70" y="-96"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();

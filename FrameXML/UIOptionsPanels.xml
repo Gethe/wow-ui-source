@@ -689,7 +689,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "buffDurations";
 						self.uvar = "SHOW_BUFF_DURATIONS";
-						self.setFunc = BuffButtons_UpdatePositions;
+						self.setFunc = function () BuffButtons_UpdatePositions(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -706,7 +706,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "rotateMinimap";
-						self.setFunc = Minimap_UpdateRotationSetting;
+						self.setFunc = function () Minimap_UpdateRotationSetting(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -771,7 +771,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showClock";
-						self.setFunc = InterfaceOptionsDisplayPanelShowClock_SetFunc;
+						self.setFunc = function() InterfaceOptionsDisplayPanelShowClock_SetFunc(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -860,7 +860,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "threatShowNumeric";
-						self.setFunc = InterfaceOptionsDisplayPanelShowAggroPercentage_SetFunc;
+						self.setFunc = function() InterfaceOptionsDisplayPanelShowAggroPercentage_SetFunc(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -2198,7 +2198,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showPartyBackground";
 						self.uvar = "SHOW_PARTY_BACKGROUND";
-						self.setFunc = UpdatePartyMemberBackground;
+						self.setFunc = function () UpdatePartyMemberBackground(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -2216,7 +2216,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "hidePartyInRaid";
 						self.uvar = "HIDE_PARTY_INTERFACE";
-						self.setFunc = RaidOptionsFrame_UpdatePartyFrames;
+						self.setFunc = function () RaidOptionsFrame_UpdatePartyFrames(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>

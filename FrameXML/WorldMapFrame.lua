@@ -715,8 +715,8 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			MAP_VEHICLES[i] = CreateFrame("FRAME", "WorldMapVehicle"..i, WorldMapButton, "WorldMapVehicleTemplate");
 			MAP_VEHICLES[i].texture = getglobal("WorldMapVehicle"..i.."Texture");
 		end
-		local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation = GetBattlefieldVehicleInfo(i);
-		if ( vehicleX ) then
+		local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer = GetBattlefieldVehicleInfo(i);
+		if ( vehicleX and not isPlayer ) then
 			vehicleX = vehicleX * WorldMapDetailFrame:GetWidth();
 			vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight();
 			MAP_VEHICLES[i].texture:SetRotation(orientation);
@@ -727,6 +727,8 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			MAP_VEHICLES[i].name = unitName;
 			MAP_VEHICLES[i]:Show();
 			index = i;	-- save for later
+		else
+			MAP_VEHICLES[i]:Hide();
 		end
 		
 	end
@@ -749,7 +751,6 @@ function GetMapVehicleTexture(vehicleType, isPossessed)
 	if ( not VEHICLE_TEXTURES[vehicleType]) then
 		return;
 	end
-	
 	return VEHICLE_TEXTURES[vehicleType][isPossessed];
 end
 

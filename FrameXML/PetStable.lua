@@ -158,7 +158,7 @@ function PetStable_Update()
 		PetStableCurrentPet:SetChecked(nil);
 	end
 	-- Set tooltip and icon info
-	if ( GetPetIcon() ) then
+	if ( GetPetIcon() and UnitCreatureFamily("pet") ) then
 		SetItemButtonTexture(PetStableCurrentPet, GetPetIcon());
 		PetStableCurrentPet.tooltip = UnitName("pet");
 		PetStableCurrentPet.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..UnitCreatureFamily("pet");

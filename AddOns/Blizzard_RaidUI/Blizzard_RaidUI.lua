@@ -1063,8 +1063,7 @@ function RaidPulloutButton_OnEvent(self, event, ...)
 end
 
 function RaidPulloutButton_UpdateSwapFrames(self, unit)
-	--if ( UnitHasVehicleUI(unit) ) then
-	if ( false ) then
+	if ( UnitTargetsVehicleInRaidUI(unit) ) then
 		local prefix, id = unit:match("([^%d]+)([%d]+)");
 		self.secondaryUnit = unit;
 		unit = prefix.."pet"..id;

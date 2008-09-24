@@ -10,26 +10,10 @@ end
 
 function VideoOptionsFrame_SetAllToDefaults ()
 	OptionsFrame_SetAllToDefaults(VideoOptionsFrame);
-
-	if ( VideoOptionsFrame.gxRestart ) then
-		VideoOptionsFrame.gxRestart = nil;
-		RestartGx();
-		-- HACK: get around the fact that some gx cvars don't ACTUALLY get set until a restart
-		VideoOptionsResolutionPanel:refresh();
-	end
 end
 
 function VideoOptionsFrame_SetCurrentToDefaults ()
 	OptionsFrame_SetCurrentToDefaults(VideoOptionsFrame);
-
-	if ( VideoOptionsFrame.gxRestart ) then
-		VideoOptionsFrame.gxRestart = nil;
-		RestartGx();
-		if ( VideoOptionsFrame.panelContainer.displayedPanel == VideoOptionsResolutionPanel ) then
-			-- HACK: get around the fact that some gx cvars don't ACTUALLY get set until a restart
-			VideoOptionsResolutionPanel:refresh();
-		end
-	end
 end
 
 function VideoOptionsFrame_OnLoad (self)

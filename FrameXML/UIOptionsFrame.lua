@@ -30,8 +30,8 @@ end
 
 function InterfaceOptionsListButton_OnClick (self, mouseButton)
 	if ( mouseButton == "RightButton" ) then
-		if ( button.element.hasChildren ) then
-			button.toggle:Click();
+		if ( self.element.hasChildren ) then
+			OptionsListButtonToggle_OnClick(self.toggle);
 		end
 		return;
 	end
@@ -205,15 +205,31 @@ function InterfaceOptionsFrame_Show ()
 	end
 end
 
+local function InterfaceOptionsFrame_RunOkayForCategory (category)
+	pcall(category.okay, category);
+end
+
+local function InterfaceOptionsFrame_RunDefaultForCategory (category)
+	pcall(category.default, category);
+end
+
+local function InterfaceOptionsFrame_RunCancelForCategory (category)
+	pcall(category.cancel, category);
+end
+
+local function InterfaceOptionsFrame_RunRefreshForCategory (category)
+	pcall(category.refresh, category);
+end
+
 function InterfaceOptionsFrameOkay_OnClick (isApply)
 	--Iterate through registered panels and run their okay methods in a taint-safe fashion
 
 	for _, category in SecureNext, blizzardCategories do
-		securecall("pcall", category.okay, category);
+		securecall(InterfaceOptionsFrame_RunOkayForCategory, category);
 	end
 
 	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
-		securecall("pcall", category.okay, category);
+		securecall(InterfaceOptionsFrame_RunOkayForCategory, category);
 	end
 
 	if ( InterfaceOptionsFrame.gameRestart ) then
@@ -233,11 +249,11 @@ function InterfaceOptionsFrameCancel_OnClick ()
 	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
 
 	for _, category in SecureNext, blizzardCategories do
-		securecall("pcall", category.cancel, category);
+		securecall(InterfaceOptionsFrame_RunCancelForCategory, category);
 	end
 
 	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
-		securecall("pcall", category.cancel, category);
+		securecall(InterfaceOptionsFrame_RunCancelForCategory, category);
 	end
 
 	InterfaceOptionsFrame.gameRestart = nil;
@@ -254,11 +270,11 @@ function InterfaceOptionsFrame_SetAllToDefaults ()
 	--Iterate through registered panels and run their default methods in a taint-safe fashion
 
 	for _, category in SecureNext, blizzardCategories do
-		securecall("pcall", category.default, category);
+		securecall(InterfaceOptionsFrame_RunDefaultForCategory, category);
 	end
 
 	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
-		securecall("pcall", category.default, category);
+		securecall(InterfaceOptionsFrame_RunDefaultForCategory, category);
 	end
 
 	--Refresh the categories to pick up changes made.
@@ -272,26 +288,20 @@ function InterfaceOptionsFrame_SetCurrentToDefaults ()
 		return;
 	end
 
-	--Run the currently displayed panel's default method in a taint-safe fashion.
-	if ( displayedPanel ) then
-		securecall("pcall", displayedPanel.default, displayedPanel);
-
-		--Run the refresh method to refresh any values that were changed.
-		if ( displayedPanel.refresh ) then
-			securecall("pcall", displayedPanel.refresh, displayedPanel);
-		end
-	end
+	displayedPanel.default(displayedPanel);
+	--Run the refresh method to refresh any values that were changed.
+	displayedPanel.refresh(displayedPanel);
 end
 
 function InterfaceOptionsOptionsFrame_RefreshCategories ()
 	for _, category in SecureNext, blizzardCategories do
-		securecall("pcall", category.refresh, category);
+		securecall(InterfaceOptionsFrame_RunRefreshForCategory, category);
 	end
 end
 
 function InterfaceOptionsOptionsFrame_RefreshAddOns ()
 	for _, category in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
-		securecall("pcall", category.refresh, category);
+		securecall(InterfaceOptionsFrame_RunRefreshForCategory, category);
 	end
 end
 
@@ -419,11 +429,11 @@ function InterfaceOptionsFrame_OpenToCategory (panel)
 		panelName = panel;
 		panel = nil;
 	end
-	
+
 	assert(panelName or panel, 'Usage: InterfaceOptionsFrame_OpenToCategory("categoryName" or panel)');
-	
+
 	local blizzardElement, elementToDisplay
-	
+
 	for i, element in SecureNext, blizzardCategories do
 		if ( element == panel or (panelName and element.name and element.name == panelName) ) then
 			elementToDisplay = element;
@@ -431,7 +441,7 @@ function InterfaceOptionsFrame_OpenToCategory (panel)
 			break;
 		end
 	end
-	
+
 	if ( not elementToDisplay ) then
 		for i, element in SecureNext, INTERFACEOPTIONS_ADDONCATEGORIES do
 			if ( element == panel or (panelName and element.name and element.name == panelName) ) then
@@ -440,19 +450,19 @@ function InterfaceOptionsFrame_OpenToCategory (panel)
 			end
 		end
 	end
-	
+
 	if ( not elementToDisplay ) then
 		return;
 	end
-	
+
 	if ( blizzardElement ) then
 		InterfaceOptionsFrameTab1:Click();
-		local buttons = InterfaceOptionsFrameCategories.buttons
+		local buttons = InterfaceOptionsFrameCategories.buttons;
 		for i, button in SecureNext, buttons do
 			if ( button.element == elementToDisplay ) then
-				button:Click();
+				InterfaceOptionsListButton_OnClick(button);
 			elseif ( elementToDisplay.parent and button.element and (button.element.name == elementToDisplay.parent and button.element.collapsed) ) then
-				button.toggle:Click();
+				OptionsListButtonToggle_OnClick(button.toggle);
 			end
 		end
 		
@@ -461,15 +471,15 @@ function InterfaceOptionsFrame_OpenToCategory (panel)
 		end
 	else
 		InterfaceOptionsFrameTab2:Click();
-		local buttons = InterfaceOptionsFrameAddOns.buttons
+		local buttons = InterfaceOptionsFrameAddOns.buttons;
 		for i, button in SecureNext, buttons do
 			if ( button.element == elementToDisplay ) then
-				button:Click();
+				InterfaceOptionsListButton_OnClick(button);
 			elseif ( elementToDisplay.parent and button.element and (button.element.name == elementToDisplay.parent and button.element.collapsed) ) then
-				button.toggle:Click();
+				OptionsListButtonToggle_OnClick(button.toggle);
 			end
 		end
-		
+
 		if ( not InterfaceOptionsFrame:IsShown() ) then
 			InterfaceOptionsFrame_Show();
 		end

@@ -91,7 +91,7 @@ function VideoOptionsResolutionPanel_Default (self)
 	RestoreVideoResolutionDefaults();
 	for _, control in next, self.controls do
 		if ( control.cvar ) then
-			control:SetValue(BlizzardOptionsPanel_GetCVar(control.cvar));
+			control:SetValue(BlizzardOptionsPanel_GetCVarSafe(control.cvar));
 		elseif ( control.GetValue ) then
 			control:SetValue(control:GetValue());
 		end
@@ -364,12 +364,14 @@ EffectsPanelOptions = {
 function VideoOptionsEffectsPanel_Default (self)
 	RestoreVideoEffectsDefaults();
 	for _, control in next, self.controls do
-		if ( control.cvar ) then
-			control:SetValue(BlizzardOptionsPanel_GetCVar(control.cvar));
-		elseif ( control.GetValue ) then
-			control:SetValue(control:GetValue());
+		if ( control ~= VideoOptionsEffectsPanelQualitySlider ) then
+			if ( control.cvar ) then
+				control:SetValue(BlizzardOptionsPanel_GetCVarSafe(control.cvar));
+			elseif ( control.GetValue ) then
+				control:SetValue(control:GetValue());
+			end
+			control.newValue = nil;
 		end
-		control.newValue = nil;
 	end
 end
 

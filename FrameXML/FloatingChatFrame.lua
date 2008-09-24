@@ -520,7 +520,6 @@ function FCF_SetWindowName(frame, name, doNotSave)
 	if ( not doNotSave ) then
 		SetChatWindowName(frame:GetID(), name);
 	end
-	FCF_DockUpdate();
 end
 
 function FCF_SetWindowColor(frame, r, g, b, doNotSave)

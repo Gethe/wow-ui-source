@@ -258,7 +258,13 @@ function SpellBookFrame_UpdatePages()
 		SpellBookNextPageButton:Enable();
 	end
 	SpellBookPageText:SetFormattedText(PAGE_NUMBER, currentPage);
-	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
+	-- Hide spell rank checkbox if the player is a rogue or warrior
+	local _, class = UnitClass("player");
+	local showSpellRanks = true;
+	if ( class == "ROGUE" or class == "WARRIOR" ) then
+		showSpellRanks = false;
+	end
+	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL and showSpellRanks ) then
 		ShowAllSpellRanksCheckBox:Show();
 	else
 		ShowAllSpellRanksCheckBox:Hide();

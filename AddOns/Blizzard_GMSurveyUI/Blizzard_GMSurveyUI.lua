@@ -1,7 +1,10 @@
 MAX_RADIO_BUTTONS = 5;
 MAX_SURVEY_QUESTIONS = 10;
-GMSURVEY_NA_SPACING = 70;
-GMSURVEY_RATING_SPACING = 60;
+MAX_SURVEY_ANSWERS = 12;
+GMSURVEY_NA_SPACING = 60;
+GMSURVEY_NA_SHORT_SPACING = 40;
+GMSURVEY_RATING_SPACING = 80;
+GMSURVEY_RATING_SHORT_SPACING = 25;
 
 UIPanelWindows["GMSurveyFrame"] = { area = "center", pushable = 0, whileDead = 1 };
 
@@ -14,12 +17,28 @@ function GMSurveyFrame_Update()
 		questionFrame = _G["GMSurveyQuestion"..i];
 		if ( surveyQuestion ) then
 			GMSurveyFrame.numQuestions = GMSurveyFrame.numQuestions + 1;
-			_G["GMSurveyQuestion"..i.."Text"]:SetText(surveyQuestion);
+			questionFrameText = _G["GMSurveyQuestion"..i.."Text"];
+			questionFrameText:SetText(surveyQuestion);
+			for j=1, MAX_SURVEY_ANSWERS do
+				local surveyAnswer = GMSurveyAnswer(i,j);
+				local answerFrame = _G["GMSurveyQuestion"..i.."RadioButton"..(j-1)];
+				if ( surveyAnswer ) then
+					_G["GMSurveyQuestion"..i.."RadioButton"..(j-1).."Score"]:SetText(surveyAnswer);
+					answerFrame:Show();
+				else
+					answerFrame:Hide();
+				end
+			end
+			GMSurveyQuestion_SpaceAnswers(questionFrame, i);
+			if ( i == 1 ) then
+				questionFrame:SetHeight(questionFrameText:GetHeight() + 100);
+			else
+				questionFrame:SetHeight(questionFrameText:GetHeight() + 55);
+			end
 			questionFrame:Show();
 		else
 			questionFrame:Hide();
 		end
-		questionFrame:SetHeight(_G["GMSurveyQuestion"..i.."Text"]:GetHeight() + 55);
 	end
 
 	if ( GMSurveyFrame.numQuestions == 0 ) then
@@ -90,13 +109,35 @@ function GMSurveyQuestion_OnLoad(self)
 		_G[name.."RadioButton3"],
 		_G[name.."RadioButton4"],
 		_G[name.."RadioButton5"],
+		_G[name.."RadioButton6"],
+		_G[name.."RadioButton7"],
+		_G[name.."RadioButton8"],
+		_G[name.."RadioButton9"],
+		_G[name.."RadioButton10"],
+		_G[name.."RadioButton11"],
 	};
+end
+
+function GMSurveyQuestion_SpaceAnswers(self, questionNumber)
 	local radioButtons = self.radioButtons;
-	radioButtons[1]:SetPoint("LEFT", radioButtons[0], "RIGHT", GMSURVEY_NA_SPACING, 0);
-	radioButtons[2]:SetPoint("LEFT", radioButtons[1], "RIGHT", GMSURVEY_RATING_SPACING, 0);
-	radioButtons[3]:SetPoint("LEFT", radioButtons[2], "RIGHT", GMSURVEY_RATING_SPACING, 0);
-	radioButtons[4]:SetPoint("LEFT", radioButtons[3], "RIGHT", GMSURVEY_RATING_SPACING, 0);
-	radioButtons[5]:SetPoint("LEFT", radioButtons[4], "RIGHT", GMSURVEY_RATING_SPACING, 0);
+	
+	if (questionNumber == 1) then
+		radioButtons[0]:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 30, 45);
+		radioButtons[1]:SetPoint("LEFT", radioButtons[0], "RIGHT", GMSURVEY_NA_SHORT_SPACING, 0);
+		for j=2, MAX_SURVEY_ANSWERS-1 do
+			radioButtons[j]:SetPoint("LEFT", radioButtons[j-1], "RIGHT", GMSURVEY_RATING_SHORT_SPACING, 0);
+		end
+		_G[radioButtons[1]:GetName().."NetPromoterLow"]:Show();
+		_G[radioButtons[11]:GetName().."NetPromoterHigh"]:Show();
+	else
+		radioButtons[0]:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 30, 5);
+		radioButtons[1]:SetPoint("LEFT", radioButtons[0], "RIGHT", GMSURVEY_NA_SPACING, 0);
+		for j=2, MAX_SURVEY_ANSWERS -1 do
+			radioButtons[j]:SetPoint("LEFT", radioButtons[j-1], "RIGHT", GMSURVEY_RATING_SPACING, 0);
+		end
+		_G[radioButtons[1]:GetName().."NetPromoterLow"]:Hide();
+		_G[radioButtons[11]:GetName().."NetPromoterHigh"]:Hide();
+	end
 end
 
 function GMSurveyQuestion_OnShow(self)

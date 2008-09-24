@@ -712,6 +712,7 @@ StaticPopupDialogs["NAME_CHAT"] = {
 			FCF_OpenNewWindow(name);
 		end
 		self.editBox:SetText("");
+		FCF_DockUpdate();
 	end,
 	timeout = 0,
 	EditBoxOnEnterPressed = function(self, renameID)
@@ -724,6 +725,7 @@ StaticPopupDialogs["NAME_CHAT"] = {
 			FCF_OpenNewWindow(name);
 		end
 		editBox:SetText("");
+		FCF_DockUpdate();
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function (self)
@@ -870,7 +872,7 @@ StaticPopupDialogs["RESURRECT"] = {
 	end,
 	OnCancel = function(self)
 		DeclineResurrect();
-		if ( UnitIsDead("player") ) then
+		if ( UnitIsDead("player") and not UnitIsControlling("player") ) then
 			StaticPopup_Show("DEATH");
 		end
 	end,
@@ -895,7 +897,7 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	end,
 	OnCancel = function(self)
 		DeclineResurrect();
-		if ( UnitIsDead("player") ) then
+		if ( UnitIsDead("player") and not UnitIsControlling("player") ) then
 			StaticPopup_Show("DEATH");
 		end
 	end,
@@ -918,7 +920,7 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	end,
 	OnCancel = function(self)
 		DeclineResurrect();
-		if ( UnitIsDead("player") ) then
+		if ( UnitIsDead("player") and not UnitIsControlling("player") ) then
 			StaticPopup_Show("DEATH");
 		end
 	end,

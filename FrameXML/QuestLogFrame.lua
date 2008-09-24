@@ -747,10 +747,7 @@ function AchievementWatch_OnEvent (self, event, ...)
 			self.duration = nil;
 			self.timedCriteria = nil;
 			AchievementWatch_Update();
-		elseif ( GetTrackedAchievement() ~= achievementID and AchievementWatchFrame:IsShown() ) then
-			-- Don't do anything if they're already tracking another achievement
-		elseif ( duration > elapsed ) then
-			SetTrackedAchievement(achievementID);
+		elseif ( GetTrackedAchievement() == achievementID and duration > elapsed ) then
 			self.hasTimer = true;
 			self.startTime = GetTime() - elapsed;
 			self.duration = duration;

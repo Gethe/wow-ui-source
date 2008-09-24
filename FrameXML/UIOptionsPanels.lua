@@ -510,6 +510,7 @@ function InterfaceOptionsDisplayPanel_OnEvent (self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		BuffButtons_UpdatePositions();
 		InterfaceOptionsDisplayPanelShowClock_SetFunc(GetCVar(InterfaceOptionsDisplayPanelShowClock.cvar));
 	end
 end
