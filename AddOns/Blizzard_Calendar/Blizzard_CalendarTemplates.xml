@@ -233,7 +233,7 @@
 
 	<!-- Calendar Misc Templates -->
 	<Frame name="CalendarTitleFrameTemplate" virtual="true">
-		<Size x="168" y="40"/>
+		<Size x="240" y="40"/>
 		<Anchors>
 			<Anchor point="TOP">
 				<Offset x="0" y="12"/>
@@ -263,6 +263,7 @@
 					<TexCoords left="0.71484375" right="0.76953125" top="0.0" bottom="0.625"/>
 				</Texture>
 				<FontString name="$parentText" inherits="GameFontNormal">
+					<Size x="0" y="14"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle">
 							<Offset x="0" y="-14"/>

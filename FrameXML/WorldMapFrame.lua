@@ -4,6 +4,7 @@ NUM_WORLDMAP_POI_COLUMNS = 16;
 WORLDMAP_POI_TEXTURE_WIDTH = 256;
 NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_FLAGS = 2;
+NUM_WORLDMAP_DEBUG_ZONEMAP = 0;
 NUM_WORLDMAP_DEBUG_OBJECTS = 0;
 WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_WORLD_ID = 0;
@@ -232,6 +233,45 @@ function WorldMapFrame_Update()
 		getglobal("WorldMapOverlay"..i):Hide();
 	end
 
+	-- Show debug zone map if available
+	local numDebugZoneMapTextures = 0;
+	if ( HasDebugZoneMap() ) then
+		local ZONEMAP_SIZE = 32;
+		local mapW = WorldMapDetailFrame:GetWidth();
+		local mapH = WorldMapDetailFrame:GetHeight();
+		for y=1, ZONEMAP_SIZE do
+			for x=1, ZONEMAP_SIZE do
+				local id, minX, minY, maxX, maxY, r, g, b, a = GetDebugZoneMap(x, y);
+				if ( id ) then
+					if ( not WorldMapDetailFrame.zoneMap ) then
+						WorldMapDetailFrame.zoneMap = {};
+					end
+
+					numDebugZoneMapTextures = numDebugZoneMapTextures + 1;
+					local texture = WorldMapDetailFrame.zoneMap[numDebugZoneMapTextures];
+					if ( not texture ) then
+						texture = WorldMapDetailFrame:CreateTexture(nil, "OVERLAY");
+						texture:SetTexture(1, 1, 1);
+						WorldMapDetailFrame.zoneMap[numDebugZoneMapTextures] = texture;
+					end
+
+					texture:SetVertexColor(r, g, b, a);
+					minX = minX * mapW;
+					minY = -minY * mapH;
+					texture:SetPoint("TOPLEFT", "WorldMapDetailFrame", "TOPLEFT", minX, minY);
+					maxX = maxX * mapW;
+					maxY = -maxY * mapH;
+					texture:SetPoint("BOTTOMRIGHT", "WorldMapDetailFrame", "TOPLEFT", maxX, maxY);
+					texture:Show();
+				end
+			end
+		end
+	end
+	for i=numDebugZoneMapTextures+1, NUM_WORLDMAP_DEBUG_ZONEMAP do
+		WorldMapDetailFrame.zoneMap[i]:Hide();
+	end
+	NUM_WORLDMAP_DEBUG_ZONEMAP = numDebugZoneMapTextures;
+	
 	-- Setup any debug objects
 	local baseLevel = WorldMapButton:GetFrameLevel() + 1;
 	local numDebugObjects = GetNumMapDebugObjects();

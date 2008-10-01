@@ -644,15 +644,8 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("SPLITSTACK") ) then
 		local texture, itemCount, locked = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
 		if ( not locked ) then
-			if ( button ~= "LeftButton" and MerchantFrame:IsShown() and MerchantFrame.selectedTab ~= 2 ) then
-				self.SplitStack = function(button, split)
-					SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
-					MerchantItemButton_OnClick("LeftButton");
-				end
-			else
-				self.SplitStack = function(button, split)
-					SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
-				end
+			self.SplitStack = function(button, split)
+				SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 			end
 			OpenStackSplitFrame(itemCount, self, "BOTTOMRIGHT", "TOPRIGHT");
 		end

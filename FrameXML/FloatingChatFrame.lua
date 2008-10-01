@@ -1442,6 +1442,7 @@ function FCF_ResetChatWindows()
 
 	-- resets to hard coded defaults
 	ResetChatWindows();
+	UIParent_ManageFramePositions();
 end
 
 function IsCombatLog(frame)

@@ -1324,13 +1324,21 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 
 	-- first pass:
 	-- record the number of viewable events
+	-- record first holiday index
 	local numViewableEvents = 0;
-	local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy;
+	local firstHolidayIndex;
+	local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy, difficulty;
 	for i = 1, numEvents do
 		title, hour, minute, calendarType, sequenceType, eventType, texture,
 			modStatus, inviteStatus, invitedBy = CalendarGetDayEvent(monthOffset, day, i);
-		if ( title and sequenceType ~= "ONGOING" ) then
-			numViewableEvents = numViewableEvents + 1;
+		if ( title ) then
+			if ( calendarType == "HOLIDAY" and not firstHolidayIndex ) then
+				-- record the first holiday index...the first holiday can have sequenceType "ONGOING"
+				firstHolidayIndex = i;
+			end
+			if ( sequenceType ~= "ONGOING" ) then
+				numViewableEvents = numViewableEvents + 1;
+			end
 		end
 	end
 	dayButton.numViewableEvents = numViewableEvents;
@@ -1363,10 +1371,8 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 
 	-- second pass:
 	-- record the first event button
-	-- record first holiday index
 	-- show viewable events
 	local firstEventButton;
-	local firstHolidayIndex;
 	local eventIndex = 1;
 	local eventButtonIndex = 1;
 	local eventButton, eventButtonName, eventButtonBackground, eventButtonText1, eventButtonText2, eventColor;
@@ -1377,69 +1383,73 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 		eventButtonText1 = _G[eventButtonName.."Text1"];
 		eventButtonText2 = _G[eventButtonName.."Text2"];
 
-		title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus =
+		title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy, difficulty =
 			CalendarGetDayEvent(monthOffset, day, eventIndex);
-		if ( title ) then
-			-- record the first holiday index...the first holiday can have sequenceType "ONGOING"
-			if ( calendarType == "HOLIDAY" and not firstHolidayIndex ) then
-				firstHolidayIndex = eventIndex;
-			end
+		if ( title and sequenceType ~= "ONGOING" ) then
 			-- set the event button if the sequence type is not ongoing
-			if ( sequenceType ~= "ONGOING" ) then
-				-- record the event Index
-				eventButton.eventIndex = eventIndex;
 
-				-- set the event button size
-				eventButton:SetHeight(buttonHeight);
-				-- set the event time and title
-				if ( calendarType == "HOLIDAY" or calendarType == "RAID_LOCKOUT" or calendarType == "RAID_RESET" ) then
-					-- any event that does not display the time should go here
-					eventButtonText2:Hide();
-					eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
-					eventButtonText1:ClearAllPoints();
-					eventButtonText1:SetAllPoints(eventButton);
-					eventButtonText1:Show();
-				else
-					eventButtonText2:SetText(GameTime_GetFormattedTime(hour, minute, showingBigEvents));
-					eventButtonText2:ClearAllPoints();
-					eventButtonText2:SetPoint(text2Point, eventButton, text2Point);
-					eventButtonText2:SetJustifyH(text2JustifyH);
-					eventButtonText2:Show();
-					eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
-					eventButtonText1:ClearAllPoints();
-					eventButtonText1:SetPoint("TOPLEFT", eventButton, "TOPLEFT");
-					if ( text1RelPoint ) then
-						eventButtonText1:SetPoint("BOTTOMRIGHT", eventButtonText2, text1RelPoint);
-					end
-					eventButtonText1:Show();
+			-- record the event Index
+			eventButton.eventIndex = eventIndex;
+
+			-- set the event button size
+			eventButton:SetHeight(buttonHeight);
+			-- set the event time and title
+			if ( calendarType == "HOLIDAY" ) then
+				-- any event that does not display the time should go here
+				eventButtonText2:Hide();
+				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
+				eventButtonText1:ClearAllPoints();
+				eventButtonText1:SetAllPoints(eventButton);
+				eventButtonText1:Show();
+			elseif ( calendarType == "RAID_LOCKOUT" or calendarType == "RAID_RESET" ) then
+				eventButtonText2:Hide();
+				if ( difficulty > 1 ) then
+					title = format(DUNGEON_NAME_WITH_DIFFICULTY, title, _G["DUNGEON_DIFFICULTY"..difficulty]);
 				end
-				-- set the event color
-				eventColor = _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus);
-				eventButtonText1:SetTextColor(eventColor.r, eventColor.g, eventColor.b);
-
-				-- anchor the event button
-				eventButton:SetPoint("BOTTOMLEFT", dayButton, "BOTTOMLEFT", CALENDAR_DAYEVENTBUTTON_XOFFSET, -CALENDAR_DAYEVENTBUTTON_YOFFSET);
-				if ( prevEventButton ) then
-					-- anchor the prev event button to this one...this makes the latest event stay at the bottom
-					prevEventButton:SetPoint("BOTTOMLEFT", eventButton, "TOPLEFT", 0, -CALENDAR_DAYEVENTBUTTON_YOFFSET);
+				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
+				eventButtonText1:ClearAllPoints();
+				eventButtonText1:SetAllPoints(eventButton);
+				eventButtonText1:Show();
+			else
+				eventButtonText2:SetText(GameTime_GetFormattedTime(hour, minute, showingBigEvents));
+				eventButtonText2:ClearAllPoints();
+				eventButtonText2:SetPoint(text2Point, eventButton, text2Point);
+				eventButtonText2:SetJustifyH(text2JustifyH);
+				eventButtonText2:Show();
+				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
+				eventButtonText1:ClearAllPoints();
+				eventButtonText1:SetPoint("TOPLEFT", eventButton, "TOPLEFT");
+				if ( text1RelPoint ) then
+					eventButtonText1:SetPoint("BOTTOMRIGHT", eventButtonText2, text1RelPoint);
 				end
-				prevEventButton = eventButton;
-
-				-- highlight the selected event
-				if ( selectedEventIndex and eventIndex == selectedEventIndex ) then
-					CalendarFrame_SetSelectedEvent(eventButton);
-				else
-					eventButton:UnlockHighlight();
-				end
-
-				-- show the event button
-				eventButton:Show();
-
-				-- record the first event button
-				firstEventButton = firstEventButton or eventButton;
-
-				eventButtonIndex = eventButtonIndex + 1;
+				eventButtonText1:Show();
 			end
+			-- set the event color
+			eventColor = _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus);
+			eventButtonText1:SetTextColor(eventColor.r, eventColor.g, eventColor.b);
+
+			-- anchor the event button
+			eventButton:SetPoint("BOTTOMLEFT", dayButton, "BOTTOMLEFT", CALENDAR_DAYEVENTBUTTON_XOFFSET, -CALENDAR_DAYEVENTBUTTON_YOFFSET);
+			if ( prevEventButton ) then
+				-- anchor the prev event button to this one...this makes the latest event stay at the bottom
+				prevEventButton:SetPoint("BOTTOMLEFT", eventButton, "TOPLEFT", 0, -CALENDAR_DAYEVENTBUTTON_YOFFSET);
+			end
+			prevEventButton = eventButton;
+
+			-- highlight the selected event
+			if ( selectedEventIndex and eventIndex == selectedEventIndex ) then
+				CalendarFrame_SetSelectedEvent(eventButton);
+			else
+				eventButton:UnlockHighlight();
+			end
+
+			-- show the event button
+			eventButton:Show();
+
+			-- record the first event button
+			firstEventButton = firstEventButton or eventButton;
+
+			eventButtonIndex = eventButtonIndex + 1;
 		end
 
 		eventIndex = eventIndex + 1;
@@ -2207,12 +2217,12 @@ function CalendarDayButton_OnEnter(self)
 	end
 
 	-- add events
-	local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, invitedBy;
+	local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, invitedBy, difficulty;
 	local eventTime, eventColor;
 	local numShownEvents = 0;
 	for i = 1, numEvents do
 		title, hour, minute, calendarType, sequenceType, eventType, texture,
-			modStatus, inviteStatus, invitedBy = CalendarGetDayEvent(monthOffset, day, i);
+			modStatus, inviteStatus, invitedBy, difficulty = CalendarGetDayEvent(monthOffset, day, i);
 		if ( title and sequenceType ~= "ONGOING" ) then
 			if ( numShownEvents == 0 ) then
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -2228,6 +2238,11 @@ function CalendarDayButton_OnEnter(self)
 
 			eventTime = GameTime_GetFormattedTime(hour, minute, true);
 			eventColor = _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus);
+			if ( calendarType == "RAID_RESET" or calendarType == "RAID_LOCKOUT" ) then
+				if ( difficulty > 1 ) then
+					title = format(DUNGEON_NAME_WITH_DIFFICULTY, title, _G["DUNGEON_DIFFICULTY"..difficulty]);
+				end
+			end
 			GameTooltip:AddDoubleLine(
 				format(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title),
 				eventTime,
@@ -2474,8 +2489,11 @@ end
 function CalendarTitleFrame_SetText(titleFrame, text)
 	local name = titleFrame:GetName();
 	local textFrame = _G[name.."Text"];
+	local middleFrame = _G[name.."BackgroundMiddle"];
+	textFrame:SetWidth(0);
 	textFrame:SetText(text);
-	_G[name.."BackgroundMiddle"]:SetWidth(max(140, textFrame:GetWidth()));
+	middleFrame:SetWidth(min(240, max(140, textFrame:GetWidth())));
+	textFrame:SetWidth(middleFrame:GetWidth());
 end
 
 
@@ -2527,6 +2545,9 @@ end
 
 function CalendarViewRaidFrame_Update()
 	local name, calendarType, raidID, hour, minute, difficulty = CalendarGetRaidInfo(CalendarGetEventIndex());
+	if ( difficulty > 1 ) then
+		name = format(DUNGEON_NAME_WITH_DIFFICULTY, name, _G["DUNGEON_DIFFICULTY"..difficulty]);
+	end
 	CalendarTitleFrame_SetText(CalendarViewRaidTitleFrame, name);
 	if ( calendarType == "RAID_LOCKOUT" ) then
 		CalendarViewRaidDescription:SetFormattedText(CALENDAR_RAID_LOCKOUT_DESCRIPTION, name, GameTime_GetFormattedTime(hour, minute, true));
@@ -4411,14 +4432,14 @@ function CalendarEventPickerScrollFrame_Update()
 		return;
 	end
 
-	local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus;
+	local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy, difficulty;
 
 	-- since we aren't displaying ongoing events, we need to count all ongoing events towards the offset
 	-- if they come before the offset
 	local offset = HybridScrollFrame_GetOffset(CalendarEventPickerScrollFrame);
 	local eventIndex = 1 + offset;
 	for i=1, offset do
-		title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus =
+		title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy, difficulty =
 			CalendarGetDayEvent(monthOffset, day, i);
 		if ( title and sequenceType == "ONGOING" ) then
 			eventIndex = eventIndex + 1;
@@ -4442,7 +4463,7 @@ function CalendarEventPickerScrollFrame_Update()
 	local displayedHeight = 0;
 	local i = 1;
 	while ( i <= numButtons and eventIndex <= numEvents ) do
-		title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus =
+		title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy, difficulty =
 			CalendarGetDayEvent(monthOffset, day, eventIndex);
 		if ( sequenceType ~= "ONGOING" ) then
 			-- pretend like ongoing events aren't even in the event list
@@ -4469,15 +4490,18 @@ function CalendarEventPickerScrollFrame_Update()
 				end
 
 				-- set event title and time
-				buttonTitle:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
 				if ( calendarType == "HOLIDAY" ) then
 					buttonTime:Hide();
 					buttonTitle:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT");
 				else
+					if ( calendarType == "RAID_RESET" or calendarType == "RAID_LOCKOUT" and difficulty > 1 ) then
+						title = format(DUNGEON_NAME_WITH_DIFFICULTY, title, _G["DUNGEON_DIFFICULTY"..difficulty]);
+					end
 					buttonTime:SetText(GameTime_GetFormattedTime(hour, minute, true));
 					buttonTime:Show();
 					buttonTitle:SetPoint("BOTTOMLEFT", buttonTime, "BOTTOMLEFT");
 				end
+				buttonTitle:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
 				-- set event color
 				eventColor = _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus);
 				buttonTitle:SetTextColor(eventColor.r, eventColor.g, eventColor.b);

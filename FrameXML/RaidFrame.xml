@@ -7,24 +7,12 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="170" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-2" y="-10"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentID" inherits="GameFontDisableSmall" justifyH="RIGHT">
 					<Size>
 						<AbsDimension x="55" y="10"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
 							<Offset>
 								<AbsDimension x="0" y="-11"/>
 							</Offset>
@@ -33,15 +21,51 @@
 				</FontString>
 				<FontString name="$parentReset" inherits="GameFontHighlightSmall" >
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
+						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="0" y="0"/>
+								<AbsDimension x="-2" y="-26"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame name="$parentName" enableMouse="true">
+				<Size>
+					<AbsDimension x="170" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						local text = _G[self:GetName().."Text"];
+						if ( text:GetWidth() > self:GetWidth() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(text:GetText());
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
 	</Frame>
 	<Frame name="RaidFrame" setAllPoints="true" hidden="true" parent="FriendsFrame">
 		<Layers>

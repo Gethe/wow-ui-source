@@ -742,6 +742,25 @@ function AchievementWatch_OnEvent (self, event, ...)
 	if ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
 		local achievementID, criteriaID, elapsed, duration = ...;
 		if ( not elapsed or ( elapsed >= duration ) ) then
+			local timerInfo = self.timers[achievementID];
+			if ( timerInfo ) then
+				-- This would have been autotimed at some point.
+				local startTime, duration, criteriaID = timerInfo.startTime, timerInfo.duration, timerInfo.criteriaID;
+				if ( GetTime() - startTime >= duration ) then
+					-- This timer already expired, don't display any timer info.
+					timerInfo.startTime = nil;
+					timerInfo.duration = nil;
+					timerInfo.criteriaID = nil;
+					self.timers[achievementID] = nil;
+				else
+					self.hasTimer = true;
+					self.startTime = startTime;
+					self.duration = duration;
+					self.timedCriteria = criteriaID;
+					AchievementWatch_Update();
+					return
+				end
+			end
 			self.hasTimer = nil;
 			self.startTime = nil;
 			self.duration = nil;
@@ -752,7 +771,26 @@ function AchievementWatch_OnEvent (self, event, ...)
 			self.startTime = GetTime() - elapsed;
 			self.duration = duration;
 			self.timedCriteria = criteriaID;
+		
+			local timerInfo = self.timers[achievementID]
+			if ( timerInfo ) then
+				timerInfo.startTime = GetTime() - elapsed;
+				timerInfo.duration = duration;
+				timerInfo.criteriaID = criteriaID;
+			else
+				self.timers[achievementID] = { ["startTime"] = GetTime() - elapsed, ["duration"] = duration, ["criteriaID"] = criteriaID };
+			end
 			AchievementWatch_Update();	
+		elseif ( achievementID and duration ) then
+			-- I didn't really want to be creating tables here, but this isn't going to be hit on a regular basis, and it solves the issue for now.
+			local timerInfo = self.timers[achievementID]
+			if ( timerInfo ) then
+				timerInfo.startTime = GetTime() - elapsed;
+				timerInfo.duration = duration;
+				timerInfo.criteriaID = criteriaID;
+			else
+				self.timers[achievementID] = { ["startTime"] = GetTime() - elapsed, ["duration"] = duration, ["criteriaID"] = criteriaID };
+			end
 		end
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
 		local id = ...

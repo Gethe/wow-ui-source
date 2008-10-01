@@ -911,7 +911,7 @@
 			<Frame name="ReputationWatchBarOverlayFrame" frameStrata="DIALOG" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="ReputationWatchStatusBarText" inherits="NumberFontNormal" hidden="true">
+						<FontString name="ReputationWatchStatusBarText" inherits="TextStatusBarText" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>

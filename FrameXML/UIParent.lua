@@ -1095,12 +1095,12 @@ function UIParent_ManageFramePosition(index, value, yOffsetFrames, xOffsetFrames
 	
 	-- Iterate through frames that affect y offsets
 	local hasBottomEitherFlag;
-	for flag, flagValue in pairs(yOffsetFrames) do
-		if ( flagValue == "bottomEither" and value[flagValue] ) then
-			hasBottomEitherFlag = 1;
-		end
-		if ( value[flagValue] ) then
-			yOffset = yOffset + value[flagValue];
+	for _, flag in pairs(yOffsetFrames) do
+		if ( value[flag] ) then
+			if ( flag == "bottomEither" ) then
+				hasBottomEitherFlag = 1;
+			end
+			yOffset = yOffset + value[flag];
 		end
 	end
 	
@@ -1111,9 +1111,9 @@ function UIParent_ManageFramePosition(index, value, yOffsetFrames, xOffsetFrames
 	end
 
 	-- Iterate through frames that affect x offsets
-	for flag, flagValue in pairs(xOffsetFrames) do
-		if ( value[flagValue] ) then
-			xOffset = xOffset + value[flagValue];
+	for _, flag in pairs(xOffsetFrames) do
+		if ( value[flag] ) then
+			xOffset = xOffset + value[flag];
 		end
 	end
 
@@ -1665,9 +1665,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			SlidingActionBarTexture1:Show();
 		end
 		if ( ShapeshiftBarFrame ) then
-		if ( GetNumShapeshiftForms() > 2 ) then
-			ShapeshiftBarMiddle:Show();
-		end
+			if ( GetNumShapeshiftForms() > 2 ) then
+				ShapeshiftBarMiddle:Show();
+			end
 			ShapeshiftBarLeft:Show();
 			ShapeshiftBarRight:Show();
 			for i=1, GetNumShapeshiftForms() do

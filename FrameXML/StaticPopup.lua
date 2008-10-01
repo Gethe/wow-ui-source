@@ -1083,7 +1083,7 @@ StaticPopupDialogs["LEVEL_GRANT_PROPOSED"] = {
 };
 
 function ChatChannelPasswordHandler(self, data)
-	local password = getglobal(self:GetParent():GetName().."EditBox"):GetText();
+	local password = getglobal(self:GetName().."EditBox"):GetText();
 	local name = data;
 	local zoneChannel, channelName = JoinPermanentChannel(name, password, DEFAULT_CHAT_FRAME:GetID(), 1);
 	if ( channelName ) then
@@ -1110,10 +1110,10 @@ StaticPopupDialogs["CHAT_CHANNEL_PASSWORD"] = {
 	button2 = CANCEL,
 	sound = "igPlayerInvite",
 	OnAccept = function(self, data)
-		ChatChannelPasswordHandler(data);
+		ChatChannelPasswordHandler(self, data);
 	end,
 	EditBoxOnEnterPressed = function(self, data)
-		ChatChannelPasswordHandler(data);
+		ChatChannelPasswordHandler(self:GetParent(), data);
 		self:GetParent():Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)

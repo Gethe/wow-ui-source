@@ -385,7 +385,7 @@ function TimeManager_ToggleTimeFormat()
 		Settings.alarmHour, Settings.alarmAM = GameTime_ComputeStandardTime(Settings.alarmHour);
 	else
 		_TimeManager_Setting_SetBool(CVAR_USE_MILITARY_TIME, "militaryTime", true);
-		Settings.alarmHour = GameTime_ComputeStandardTime(Settings.alarmHour, Settings.alarmAM);
+		Settings.alarmHour = GameTime_ComputeMilitaryTime(Settings.alarmHour, Settings.alarmAM);
 	end
 	_TimeManager_Setting_SetTime();
 	TimeManager_UpdateAlarmTime();

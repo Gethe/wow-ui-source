@@ -97,7 +97,7 @@ end
 function RaidInfoFrame_Update()
 	local savedInstances = GetNumSavedInstances();
 	local instanceName, instanceID, instanceReset, instanceDifficulty, width;
-	local frameName, frameID, frameReset;
+	local frameName, frameNameText, frameID, frameReset;
 	if ( savedInstances > 0 ) then
 		if ( savedInstances > MAX_RAID_INFOS_DISPLAYED ) then
 			width = 210;
@@ -113,7 +113,7 @@ function RaidInfoFrame_Update()
 			RaidInfoFrame.scrolling = nil;
 		end
 		for i=1, MAX_RAID_INFOS do
-			local frame = getglobal("RaidInfoInstance"..i);
+			local frame = _G["RaidInfoInstance"..i];
 			if ( i <=  savedInstances) then
 				instanceName, instanceID, instanceReset, instanceDifficulty = GetSavedInstanceInfo(i);
 				 
@@ -123,11 +123,16 @@ function RaidInfoFrame_Update()
 					frame:SetPoint("TOPLEFT", "RaidInfoInstance"..i-1, "BOTTOMLEFT", 0, 5);
 				end
 
-				frameName = getglobal("RaidInfoInstance"..i.."Name");
-				frameID = getglobal("RaidInfoInstance"..i.."ID");
-				frameReset = getglobal("RaidInfoInstance"..i.."Reset");
+				frameName = _G["RaidInfoInstance"..i.."Name"];
+				frameNameText = _G["RaidInfoInstance"..i.."NameText"];
+				frameID = _G["RaidInfoInstance"..i.."ID"];
+				frameReset = _G["RaidInfoInstance"..i.."Reset"];
 
-				frameName:SetText(instanceName);
+				if ( instanceDifficulty > 1 ) then
+					frameNameText:SetFormattedText(DUNGEON_NAME_WITH_DIFFICULTY, instanceName, _G["DUNGEON_DIFFICULTY"..instanceDifficulty]);
+				else
+					frameNameText:SetText(instanceName);
+				end
 				frameID:SetText(instanceID);
 				frameReset:SetText(RESETS_IN.." "..SecondsToTime(instanceReset, nil, nil, 3));
 				if ( RaidInfoFrame.scrolling ) then

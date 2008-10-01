@@ -5,6 +5,51 @@
 	<Script file="OptionsPanelTemplates.lua"/>
 	<Script file="AudioOptionsPanels.lua"/>
 
+	<!-- Templates -->
+	
+	<CheckButton name="AudioOptionsBaseCheckButtonTemplate" inherits="OptionsBaseCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				end
+				AudioOptionsPanel_CheckButton_OnClick(self);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="AudioOptionsCheckButtonTemplate" virtual="true" inherits="AudioOptionsBaseCheckButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	<CheckButton name="AudioOptionsSmallCheckButtonTemplate" virtual="true" inherits="AudioOptionsBaseCheckButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+
 	<!-- Sound Panel -->
 
 	<Frame name="AudioOptionsSoundPanel" hidden="false" parent="AudioOptionsFramePanelContainer">
@@ -39,7 +84,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentEnableSound" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentEnableSound" inherits="AudioOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOP">
 						<Offset x="-64" y="-72"/>
@@ -64,11 +109,11 @@
 					<OnLoad>
 						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
 						self:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(self:GetName().."Title"):SetText(PLAYBACK);
+						_G[self:GetName().."Title"]:SetText(PLAYBACK);
 					</OnLoad>
 				</Scripts>
 			</Frame>		
-			<CheckButton name="$parentSoundEffects" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentSoundEffects" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPlayback">
 						<Offset x="8" y="-6"/>
@@ -82,7 +127,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<CheckButton name="$parentErrorSpeech" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentErrorSpeech" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSoundEffects" relativePoint="BOTTOMLEFT">
 						<Offset x="8" y="4"/>
@@ -97,7 +142,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
-			<CheckButton name="$parentEmoteSounds" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentEmoteSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentErrorSpeech" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="4"/>
@@ -112,7 +157,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
-			<CheckButton name="$parentMusic" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentEmoteSounds" relativePoint="BOTTOMLEFT">
 						<Offset x="-8" y="2"/>
@@ -126,7 +171,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
-			<CheckButton name="$parentLoopMusic" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentLoopMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMusic" relativePoint="BOTTOMLEFT">
 						<Offset x="8" y="4"/>
@@ -141,7 +186,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<CheckButton name="$parentAmbientSounds" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentAmbientSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLoopMusic" relativePoint="BOTTOMLEFT">
 						<Offset x="-8" y="2"/>
@@ -155,7 +200,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
-			<CheckButton name="$parentSoundInBG" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentSoundInBG" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAmbientSounds" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="2"/>
@@ -169,7 +214,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<CheckButton name="$parentReverb" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentReverb" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSoundInBG" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="2"/>
@@ -184,7 +229,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
-			<CheckButton name="$parentHRTF" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentHRTF" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentReverb" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="2"/>
@@ -199,7 +244,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<CheckButton name="$parentEnableDSPs" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentEnableDSPs" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHRTF" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="2"/>
@@ -213,7 +258,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 			<Slider name="$parentSoundQuality" inherits="OptionsSliderTemplate">
 				<Size x="156" y="17"/>
 				<Anchors>
@@ -227,16 +272,17 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "Sound_OutputQuality";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						self.restart = true;
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = value;
+						local prevValue = self.value;
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:GetParent():IsShown() and self.restart and prevValue and prevValue ~= value) then
+							AudioOptionsFrame_AudioRestart();
+						end
 					</OnValueChanged>
 				</Scripts>	
 			</Slider>
@@ -251,7 +297,7 @@
 					<OnLoad>
 						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
 						self:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(self:GetName().."Title"):SetText(HARDWARE);
+						_G[self:GetName().."Title"]:SetText(HARDWARE);
 					</OnLoad>
 				</Scripts>
 			</Frame>		
@@ -303,20 +349,21 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "Sound_NumChannels";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						self.restart = true;
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = value;
+						local prevValue = self.value;
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:GetParent():IsShown() and self.restart and prevValue and prevValue ~= value) then
+							AudioOptionsFrame_AudioRestart();
+						end
 					</OnValueChanged>
 				</Scripts>	
 			</Slider>			
-			<CheckButton name="$parentUseHardware" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentUseHardware" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSoundChannels" relativePoint="BOTTOMLEFT">
 						<Offset x="-4" y="-16"/>
@@ -326,6 +373,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "Sound_EnableHardware";
+						self.restart = true;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -341,7 +389,7 @@
 					<OnLoad>
 						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
 						self:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(self:GetName().."Title"):SetText(VOLUME);
+						_G[self:GetName().."Title"]:SetText(VOLUME);
 					</OnLoad>
 				</Scripts>
 			</Frame>			
@@ -370,22 +418,18 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						getglobal(name.."Low"):Hide();
-						getglobal(name.."High"):Hide();
-						self.label = getglobal(name .. "Label");
+						_G[name.."Low"]:Hide();
+						_G[name.."High"]:Hide();
+						self.label = _G[name .. "Label"];
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "Sound_MasterVolume";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						getglobal(name.."Text"):SetFontObject("GameFontNormalSmall");
-						getglobal(name.."Text"):SetPoint("BOTTOM", self, "TOP", 0, 4);
+						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
+						_G[name.."Text"]:SetPoint("BOTTOM", self, "TOP", 0, 4);
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = value;
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						self.label:SetText(tostring(ceil(value * 100)).."%");
 					</OnValueChanged>
 				</Scripts>	
@@ -416,25 +460,20 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						local label = getglobal(name.."Low")
+						local label = _G[name.."Low"];
 						label:ClearAllPoints();
 						label:SetPoint("BOTTOMLEFT", "$parent", "TOPLEFT", -2, 4);
-						
-						label = getglobal(name.."High")
+						label = _G[name.."High"];
 						label:ClearAllPoints();
 						label:SetPoint("BOTTOMRIGHT", "$parent", "TOPRIGHT", 4, 4);
-						getglobal(name.."Text"):Hide();
+						_G[name.."Text"]:Hide();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "Sound_SFXVolume";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = value;
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 					</OnValueChanged>
 				</Scripts>	
 			</Slider>				
@@ -464,20 +503,16 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						getglobal(name.."Low"):Hide()
-						getglobal(name.."High"):Hide();
-						getglobal(name.."Text"):Hide();
+						_G[name.."Low"]:Hide()
+						_G[name.."High"]:Hide();
+						_G[name.."Text"]:Hide();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "Sound_MusicVolume";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = value;
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 					</OnValueChanged>
 				</Scripts>	
 			</Slider>
@@ -507,20 +542,16 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						getglobal(name.."Low"):Hide();
-						getglobal(name.."High"):Hide();
-						getglobal(name.."Text"):Hide();
+						_G[name.."Low"]:Hide();
+						_G[name.."High"]:Hide();
+						_G[name.."Text"]:Hide();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "Sound_AmbienceVolume";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
-						self.newValue = value;
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
@@ -566,7 +597,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentEnableVoice" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentEnableVoice" inherits="AudioOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOP">
 						<Offset x="-64" y="-72"/>
@@ -592,11 +623,11 @@
 					<OnLoad>
 						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
 						self:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(self:GetName().."Title"):SetText(VOICE_TALKING);
+						_G[self:GetName().."Title"]:SetText(VOICE_TALKING);
 					</OnLoad>				
 				</Scripts>
 			</Frame>
-			<CheckButton name="$parentEnableMicrophone" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentEnableMicrophone" inherits="AudioOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTalking">
 						<Offset x="10" y="-5"/>
@@ -662,16 +693,17 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						local label = getglobal(name.."Low")
+						local label = _G[name.."Low"];
 						label:Hide();
-						label = getglobal(name.."High")
+						label = _G[name.."High"];
 						label:Hide();
-						self.label = getglobal(name.."Label");
+						self.label = _G[name.."Label"];
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "OutboundChatVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
+						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						local min, max = self:GetMinMaxValues();
 						value, max = (value - min), (max - min);
@@ -942,7 +974,7 @@
 							</OnKeyDown>
 						</Scripts>
 					</Button>
-					<CheckButton name="AudioOptionsVoicePanelPushToTalkSound" inherits="OptionsCheckButtonTemplate">
+					<CheckButton name="AudioOptionsVoicePanelPushToTalkSound" inherits="AudioOptionsCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset x="0" y="-46"/>
@@ -1005,7 +1037,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 							<OnValueChanged>
-								self.newValue = value;
+								self.value = value;
 							</OnValueChanged>		
 						</Scripts>
 					</Slider>
@@ -1022,7 +1054,7 @@
 					<OnLoad>
 						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
 						self:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(self:GetName().."Title"):SetText(VOICE_LISTENING);
+						_G[self:GetName().."Title"]:SetText(VOICE_LISTENING);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -1086,18 +1118,18 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						local label = getglobal(name.."Low")
+						local label = _G[name.."Low"];
 						label:Hide();
-						label = getglobal(name.."High")
+						label = _G[name.."High"];
 						label:Hide();
-						self.label = getglobal(name.."Label");
+						self.label = _G[name.."Label"];
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "InboundChatVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.value = value;
-						SetCVar(self.cvar, value);
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						local min, max = self:GetMinMaxValues();
 						value, max = (value - min), (max - min);
 						self.label:SetText(tostring(ceil((value/max) * 100)).."%");
@@ -1188,18 +1220,18 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						local label = getglobal(name.."Low")
+						local label = _G[name.."Low"];
 						label:Hide();
-						label = getglobal(name.."High")
+						label = _G[name.."High"];
 						label:Hide();
-						self.label = getglobal(name.."Label");
+						self.label = _G[name.."Label"];
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "ChatSoundVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());					
 					</OnLoad>
 					<OnValueChanged>
 						self.value = value;
-						SetCVar(self.cvar, value);
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
@@ -1229,18 +1261,18 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						local label = getglobal(name.."Low")
+						local label = _G[name.."Low"];
 						label:Hide();
-						label = getglobal(name.."High")
+						label = _G[name.."High"];
 						label:Hide();
-						self.label = getglobal(name.."Label");
+						self.label = _G[name.."Label"];
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "ChatMusicVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());					
 					</OnLoad>
 					<OnValueChanged>
 						self.value = value;
-						SetCVar(self.cvar, value);
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
@@ -1270,18 +1302,18 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						local label = getglobal(name.."Low")
+						local label = _G[name.."Low"];
 						label:Hide();
-						label = getglobal(name.."High")
+						label = _G[name.."High"];
 						label:Hide();
-						self.label = getglobal(name.."Label");
+						self.label = _G[name.."Label"];
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "ChatAmbienceVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());					
 					</OnLoad>
 					<OnValueChanged>
 						self.value = value;
-						SetCVar(self.cvar, value);
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>

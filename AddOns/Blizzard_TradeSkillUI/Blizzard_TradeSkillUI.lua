@@ -2,6 +2,7 @@
 TRADE_SKILLS_DISPLAYED = 8;
 MAX_TRADE_SKILL_REAGENTS = 8;
 TRADE_SKILL_HEIGHT = 16;
+TRADE_SKILL_TEXT_WIDTH = 275;
 
 TradeSkillTypeColor = { };
 TradeSkillTypeColor["optimal"]	= { r = 1.00, g = 0.50, b = 0.25,	font = GameFontNormalLeftOrange };
@@ -121,10 +122,15 @@ function TradeSkillFrame_Update()
 	FauxScrollFrame_Update(TradeSkillListScrollFrame, numTradeSkills, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316 );
 	
 	TradeSkillHighlightFrame:Hide();
+	local skillName, skillType, numAvailable, isExpanded, altVerb;
+	local skillIndex, skillButton, skillButtonText, skillButtonCount;
+	local nameWidth, countWidth;
 	for i=1, TRADE_SKILLS_DISPLAYED, 1 do
-		local skillIndex = i + skillOffset;
-		local skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(skillIndex);
-		local skillButton = getglobal("TradeSkillSkill"..i);
+		skillIndex = i + skillOffset;
+		skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(skillIndex);
+		skillButton = _G["TradeSkillSkill"..i];
+		skillButtonText = _G["TradeSkillSkill"..i.."Text"];
+		skillButtonCount = _G["TradeSkillSkill"..i.."Count"];
 		if ( skillIndex <= numTradeSkills ) then	
 			-- Set button widths if scrollbar is shown or hidden
 			if ( TradeSkillListScrollFrame:IsShown() ) then
@@ -135,6 +141,10 @@ function TradeSkillFrame_Update()
 			local color = TradeSkillTypeColor[skillType];
 			if ( color ) then
 				skillButton:SetNormalFontObject(color.font);
+				skillButtonCount:SetVertexColor(color.r, color.g, color.b);
+				skillButton.r = color.r;
+				skillButton.g = color.g;
+				skillButton.b = color.b;
 			end
 			
 			skillButton:SetID(skillIndex);
@@ -142,6 +152,8 @@ function TradeSkillFrame_Update()
 			-- Handle headers
 			if ( skillType == "header" ) then
 				skillButton:SetText(skillName);
+				skillButtonText:SetWidth(TRADE_SKILL_TEXT_WIDTH);
+				skillButtonCount:SetText("");
 				if ( isExpanded ) then
 					skillButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
 				else
@@ -157,17 +169,32 @@ function TradeSkillFrame_Update()
 				getglobal("TradeSkillSkill"..i.."Highlight"):SetTexture("");
 				if ( numAvailable <= 0 ) then
 					skillButton:SetText(" "..skillName);
+					skillButtonText:SetWidth(TRADE_SKILL_TEXT_WIDTH);
+					skillButtonCount:SetText("");
 				else
-					skillButton:SetText(" "..skillName.." ["..numAvailable.."]");
+					skillName = " "..skillName;
+					skillButtonCount:SetText("["..numAvailable.."]");
+					TradeSkillFrameDummyString:SetText(skillName);
+					nameWidth = TradeSkillFrameDummyString:GetWidth();
+					countWidth = skillButtonCount:GetWidth();
+					skillButtonText:SetText(skillName);
+					if ( nameWidth + 2 + countWidth > TRADE_SKILL_TEXT_WIDTH ) then
+						skillButtonText:SetWidth(TRADE_SKILL_TEXT_WIDTH-2-countWidth);
+					else
+						skillButtonText:SetWidth(0);
+					end
 				end
 				
 				-- Place the highlight and lock the highlight state
 				if ( GetTradeSkillSelectionIndex() == skillIndex ) then
 					TradeSkillHighlightFrame:SetPoint("TOPLEFT", "TradeSkillSkill"..i, "TOPLEFT", 0, 0);
 					TradeSkillHighlightFrame:Show();
-					getglobal("TradeSkillSkill"..i):LockHighlight();
+					skillButtonCount:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					skillButton:LockHighlight();
+					skillButton.isHighlighted = true;
 				else
-					getglobal("TradeSkillSkill"..i):UnlockHighlight();
+					skillButton:UnlockHighlight();
+					skillButton.isHighlighted = false;
 				end
 			end
 			

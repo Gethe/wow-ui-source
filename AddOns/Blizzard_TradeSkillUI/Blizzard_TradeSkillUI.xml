@@ -2,6 +2,18 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TradeSkillUI.lua"/>
 	<Button name="TradeSkillSkillButtonTemplate" inherits="ClassTrainerSkillButtonTemplate" hidden="false" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCount" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+						<Size x="0" y="13"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
@@ -11,8 +23,17 @@
 				end
 			</OnClick>
 			<OnLoad>
-				_G[self:GetName().."Text"]:SetWidth(275);
+				_G[self:GetName().."Text"]:SetHeight(13);
+				_G[self:GetName().."Count"]:SetPoint("LEFT", self:GetName().."Text", "RIGHT", 2, 0);
 			</OnLoad>
+			<OnEnter>
+				_G[self:GetName().."Count"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			</OnEnter>
+			<OnLeave>
+				if ( not self.isHighlighted ) then
+					_G[self:GetName().."Count"]:SetVertexColor(self.r, self.g, self.b);
+				end
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="TradeSkillItemTemplate" inherits="QuestItemTemplate" virtual="true">
@@ -50,19 +71,27 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-        <Texture name="TradeSkillFramePortrait">
-          <Size>
-            <AbsDimension x="60" y="60"/>
-          </Size>
-          <Anchors>
-            <Anchor point="TOPLEFT">
-              <Offset>
-                <AbsDimension x="7" y="-6"/>
-              </Offset>
-            </Anchor>
-          </Anchors>
-        </Texture>
-      </Layer>
+				<Texture name="TradeSkillFramePortrait">
+				  <Size>
+					<AbsDimension x="60" y="60"/>
+				  </Size>
+				  <Anchors>
+					<Anchor point="TOPLEFT">
+					  <Offset>
+						<AbsDimension x="7" y="-6"/>
+					  </Offset>
+					</Anchor>
+				  </Anchors>
+				</Texture>
+				<FontString name="$parentDummyString" inherits="GameFontNormal" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<Size x="0" y="0"/>
+				</FontString>
+			  </Layer>
 			<Layer level="BORDER">
 				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
 					<Size>

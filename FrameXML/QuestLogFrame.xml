@@ -1536,6 +1536,7 @@
 				self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 				self:RegisterEvent("ACHIEVEMENT_EARNED");
+				self.timers = {}
 			</OnLoad>
 			<OnEvent>
 				AchievementWatch_OnEvent(self, event, ...);

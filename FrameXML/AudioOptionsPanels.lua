@@ -6,52 +6,92 @@ local VOICE_OPTIONS_BINDING_FAIL_FADE = 6;
 
 -- [[ Generic Audio Options Panel ]] --
 
-function AudioOptionsPanel_Okay (self)
-	for _, control in next, self.controls do
-		if ( control.newValue ) then
-			if ( control.value ~= control.newValue ) then
-				if ( control.gameRestart ) then
-					AudioOptionsFrame.gameRestart = true;
-				end
-				if ( control.restart ) then
-					AudioOptionsFrame.audioRestart = true;
-				end
-				control:SetValue(control.newValue);
-				control.value = control.newValue;
-				control.newValue = nil;
-			end
-		elseif ( control.value ) then
-			control:SetValue(control.value);
+function AudioOptionsPanel_CheckButton_OnClick (checkButton)
+	local setting = "0";
+	if ( checkButton:GetChecked() ) then
+		if ( not checkButton.invert ) then
+			setting = "1"
 		end
+	elseif ( checkButton.invert ) then
+		setting = "1"
+	end
+
+	local prevValue = checkButton:GetValue();
+
+	checkButton:SetValue(setting);
+
+	if ( checkButton.restart and prevValue ~= setting ) then
+		AudioOptionsFrame_AudioRestart();
+	end
+
+	if ( checkButton.dependentControls ) then
+		if ( checkButton:GetChecked() ) then
+			for _, control in next, checkButton.dependentControls do
+				control:Enable();
+			end
+		else
+			for _, control in next, checkButton.dependentControls do
+				control:Disable();
+			end
+		end
+	end
+
+	if ( checkButton.setFunc ) then
+		checkButton.setFunc(setting);
 	end
 end
 
-function AudioOptionsPanel_Cancel (self)
+
+local function AudioOptionsPanel_Okay (self)
 	for _, control in next, self.controls do
-		if ( control.newValue ) then
-			if ( control.value and control.value ~= control.newValue ) then
+		if ( control.value and control:GetValue() ~= control.value ) then
+			if ( control.restart ) then
+				AudioOptionsFrame.audioRestart = true;
+			end
+			control:SetValue(control.value);
+		end
+	end
+	MiniMapVoiceChat_Update();
+end
+
+local function AudioOptionsPanel_Cancel (self)
+	for _, control in next, self.controls do
+		if ( control.oldValue ) then
+			if ( control.value and control.value ~= control.oldValue ) then
 				if ( control.restart ) then
 					AudioOptionsFrame.audioRestart = true;
 				end
-				-- we need to force-set the value here just in case the control was doing dynamic updating
+				control:SetValue(control.oldValue);
+			end
+		elseif ( control.value ) then
+			if ( control:GetValue() ~= control.value ) then
+				if ( control.restart ) then
+					AudioOptionsFrame.audioRestart = true;
+				end
 				control:SetValue(control.value);
-				control.newValue = nil;
 			end
-		elseif ( control.value ) then
-			control:SetValue(control.value);
 		end
 	end
 end
 
-function AudioOptionsPanel_Default (self)
+local function AudioOptionsPanel_Default (self)
 	for _, control in next, self.controls do
 		if ( control.defaultValue and control.value ~= control.defaultValue ) then
 			if ( control.restart ) then
 				AudioOptionsFrame.audioRestart = true;
 			end
 			control:SetValue(control.defaultValue);
-			control.newValue = nil;
+			control.value = control.defaultValue;
 		end
+	end
+	MiniMapVoiceChat_Update();
+end
+
+local function AudioOptionsPanel_Refresh (self)
+	for _, control in next, self.controls do
+		BlizzardOptionsPanel_RefreshControl(control);
+		-- record values so we can cancel back to this state
+		control.oldValue = control.value;
 	end
 end
 
@@ -83,7 +123,7 @@ SoundPanelOptions = {
 function AudioOptionsSoundPanel_OnLoad (self)
 	self.name = SOUND_LABEL;
 	self.options = SoundPanelOptions;
-	BlizzardOptionsPanel_OnLoad(self, AudioOptionsPanel_Okay, AudioOptionsPanel_Cancel, AudioOptionsPanel_Default);
+	BlizzardOptionsPanel_OnLoad(self, AudioOptionsPanel_Okay, AudioOptionsPanel_Cancel, AudioOptionsPanel_Default, AudioOptionsPanel_Refresh);
 	OptionsFrame_AddCategory(AudioOptionsFrame, self);
 end
 
@@ -102,7 +142,8 @@ function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)
 	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
 
 	self.SetValue = 
-		function (self, value) 
+		function (self, value)
+			self.value = value;
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 		end
 	self.GetValue =
@@ -145,10 +186,11 @@ function AudioOptionsSoundPanelHardwareDropDown_OnClick(self)
 	local value = self.value;
 	local dropdown = AudioOptionsSoundPanelHardwareDropDown;
 	UIDropDownMenu_SetSelectedValue(dropdown, value);
-	if ( dropdown.value == value ) then
-		dropdown.newValue = nil;
-	else
-		dropdown.newValue = value;
+
+	local prevValue = dropdown:GetValue();
+	dropdown:SetValue(value);
+	if ( dropdown.restart and prevValue ~= value ) then
+		AudioOptionsFrame_AudioRestart();
 	end
 end
 
@@ -502,9 +544,9 @@ function AudioOptionsVoicePanelInputDeviceDropDown_OnLoad (self)
 	UIDropDownMenu_Initialize(self, AudioOptionsVoicePanelInputDeviceDropDown_Initialize);
 
 	self.SetValue = 
-		function (self, value) 
+		function (self, value)
+			self.value = value;
 			AudioOptionsVoicePanel_SetInputDevice(value);
-			-- TODO: not sure if this needs to be done or not...maybe for dynamic update?
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 		end
 	self.GetValue =
@@ -546,13 +588,7 @@ function AudioOptionsVoicePanelInputDeviceDropDown_OnClick(self)
 	local value = self.value;
 	local dropdown = AudioOptionsVoicePanelInputDeviceDropDown;
 	UIDropDownMenu_SetSelectedValue(dropdown, value);
-	if ( dropdown.value == value ) then
-		dropdown.newValue = nil;
-	else
-		dropdown.newValue = value;
-		-- TODO: might need a dynamic update so people can test their mics immediately
-		--AudioOptionsVoicePanel_SetInputDevice(value);
-	end
+	dropdown:SetValue(value);
 end
 
 --==============================
@@ -622,6 +658,7 @@ function AudioOptionsVoicePanelChatModeDropDown_OnLoad (self)
 
 	self.SetValue = 
 		function (self, value)
+			self.value = value;
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 			AudioOptionsVoicePanelBindingType_Update(value);
 			SetSelfMuteState();
@@ -679,13 +716,7 @@ function AudioOptionsVoicePanelChatModeDropDown_OnClick(self)
 	local dropdown = AudioOptionsVoicePanelChatModeDropDown;
 	UIDropDownMenu_SetSelectedValue(dropdown, value);
 	dropdown.tooltip = _G["OPTION_TOOLTIP_VOICE_TYPE"..(value+1)];
-	if ( dropdown.value == value ) then
-		dropdown.newValue = nil;
-	else
-		dropdown.newValue = value;
-	end
-	AudioOptionsVoicePanelBindingType_Update(value);
-	--SetSelfMuteState();
+	dropdown:SetValue(value);
 end
 
 function AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad (self)
@@ -705,8 +736,8 @@ function AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad (self)
 
 	self.SetValue = 
 		function (self, value)
+			self.value = value;
 			AudioOptionsVoicePanel_SetOutputDevice(value);
-			-- TODO: not sure if this needs to be done or not...this is a weird system
 			BlizzardOptionsPanel_SetCVarSafe("Sound_VoiceChatOutputDriverIndex", value);
 		end
 	self.GetValue =
@@ -748,12 +779,6 @@ function AudioOptionsVoicePanelOutputDeviceDropDown_OnClick(self)
 	local value = self.value;
 	local dropdown = AudioOptionsVoicePanelOutputDeviceDropDown;
 	UIDropDownMenu_SetSelectedValue(dropdown, value);
-	if ( dropdown.value == value ) then
-		dropdown.newValue = nil;
-	else
-		dropdown.newValue = value;
-		-- TODO: might need a dynamic update so people can test their output
-		--AudioOptionsVoicePanel_SetOutputDevice(value);
-	end
+	dropdown:SetValue(value);
 end
 

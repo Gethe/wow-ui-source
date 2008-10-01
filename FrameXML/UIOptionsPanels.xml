@@ -174,7 +174,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "autoLootDefault";
-						self.setFunc = BlizzardOptionsPanel_UpdateAutoLootDropDown;
+						self.setFunc = InterfaceOptionsControlsPanelAutoLootKeyDropDown_Update;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -203,9 +203,8 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
-						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnLoad(self);
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 					</OnLoad>
 					<OnEnter>
 						if ( not self.isDisabled ) then
@@ -214,7 +213,7 @@
 						end
 					</OnEnter>
 					<OnEvent>
-						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...);
+						InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -473,21 +472,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<!--
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontHighlight" text="MODE">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="16" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				-->
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
@@ -495,7 +479,7 @@
 						self.uvar = "SHOW_TARGET_OF_TARGET_STATE";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelTargetOfTarget, self);
-						self:RegisterEvent("VARIABLES_LOADED");
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 					</OnLoad>
 					<OnEnter>
 						if ( not self.isDisabled ) then
@@ -503,14 +487,14 @@
 							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 						end
 					</OnEnter>
-					<OnEvent>
-						if ( event == "VARIABLES_LOADED" ) then
-							InterfaceOptionsCombatPanelTOTDropDown_OnLoad(self);
-						end
-					</OnEvent>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
+					<OnEvent>
+						if ( event == "PLAYER_ENTERING_WORLD" ) then
+							InterfaceOptionsCombatPanelTOTDropDown_OnEvent(self, event, ...);
+						end
+					</OnEvent>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentFocusCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
@@ -771,13 +755,13 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showClock";
-						self.setFunc = function() InterfaceOptionsDisplayPanelShowClock_SetFunc(); end;
+						self.setFunc = InterfaceOptionsDisplayPanelShowClock_SetFunc;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
 			<!-- World PVP Objectives -->
-			<Frame name="InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Frame name="$parentWorldPVPObjectiveDisplay" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowFreeBagSpace" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -807,13 +791,18 @@
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnLoad>
-						<!-- No, I don't think this name is long enough. Yes, I would name it something longer if I could. Hrm. I probably should have put DDL in there for a touch of hungarian.-->
-						InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnLoad(self)
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
+					<OnEvent>
+						<!-- No, I don't think this name is long enough. Yes, I would name it something longer if I could. Hrm. I probably should have put DDL in there for a touch of hungarian.-->
+						InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnEvent(self, event, ...);
+					</OnEvent>
 				</Scripts>
 			</Frame>
 			<!-- Aggro Warning System -->
-			<Frame name="InterfaceOptionsDisplayPanelAggroWarningDisplay" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Frame name="$parentAggroWarningDisplay" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowClock" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -843,8 +832,13 @@
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnLoad>
-						InterfaceOptionsDisplayPanelAggroWarningDisplay_OnLoad(self)
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
+					<OnEvent>
+						InterfaceOptionsDisplayPanelAggroWarningDisplay_OnEvent(self, event, ...);
+					</OnEvent>
 				</Scripts>
 			</Frame>
 			<!-- Show aggro percentage numbers -->
@@ -1772,7 +1766,7 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
-						self:RegisterEvent("VARIABLES_LOADED");
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
@@ -1783,9 +1777,7 @@
 						end
 					</OnEnter>
 					<OnEvent>
-						if ( event == "VARIABLES_LOADED" ) then
-							InterfaceOptionsCombatTextPanelFCTDropDown_OnLoad(self);
-						end
+						InterfaceOptionsCombatTextPanelFCTDropDown_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -2365,7 +2357,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self:RegisterEvent("VARIABLES_LOADED");
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 					</OnLoad>
 					<OnEnter>
 						if ( not self.isDisabled ) then
@@ -2374,9 +2366,7 @@
 						end
 					</OnEnter>
 					<OnEvent>
-						if ( event == "VARIABLES_LOADED" ) then
-							InterfaceOptionsCameraPanelStyleDropDown_OnLoad(self);
-						end
+						InterfaceOptionsCameraPanelStyleDropDown_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -2654,7 +2644,7 @@
 						self.type = CONTROLTYPE_DROPDOWN;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsMousePanelClickToMove, self);
-						self:RegisterEvent("VARIABLES_LOADED");
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 					</OnLoad>
 					<OnEnter>
 						if ( not self.isDisabled ) then
@@ -2663,9 +2653,7 @@
 						end
 					</OnEnter>
 					<OnEvent>
-						if ( event == "VARIABLES_LOADED" ) then
-							InterfaceOptionsMousePanelClickMoveStyleDropDown_OnLoad(self);
-						end
+						InterfaceOptionsMousePanelClickMoveStyleDropDown_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -2896,10 +2884,10 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self:RegisterEvent("VARIABLES_LOADED");
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 					</OnLoad>
 					<OnEvent>
-						InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad(self);
+						InterfaceOptionsLanguagesPanelLocaleDropDown_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");

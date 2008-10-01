@@ -577,9 +577,15 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		self:RegisterEvent("ACHIEVEMENT_EARNED");
 		self:RegisterEvent("CRITERIA_UPDATE");
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
+		local achievementID = ...;
 		AchievementFrameCategories_Update();
 		AchievementFrameCategories_UpdateTooltip();
+		-- This has to happen before AchievementFrameAchievements_ForceUpdate() in order to achieve the behavior we want, since it clears the selection for progressive achievements.
+		local selection = AchievementFrameAchievements.selection;
 		AchievementFrameAchievements_ForceUpdate();
+		if ( AchievementFrameAchievementsContainer:IsShown() and selection == achievementID ) then
+			AchievementFrame_SelectAchievement(selection);
+		end
 		AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
 
 	elseif ( event == "CRITERIA_UPDATE" ) then
@@ -1855,34 +1861,31 @@ function AchievementFrame_SelectAchievement(id)
 	AchievementFrameAchievements_Update();
 	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 
-	local shown, i = false, 1;
+	local shown = false;
 	while ( not shown ) do
 		for _, button in next, AchievementFrameAchievementsContainer.buttons do
-			if ( button.id == id and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
+			if ( button.id == id and math.ceil(button:GetTop()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
 				-- The "True" here ignores modifiers, so you don't accidentally track or link this achievement. :P
 				AchievementButton_OnClick(button, true);
 				
-				-- We found the button! MAKE IT SHOWN ZOMG!
+				-- We found the button!
 				shown = button;
+				break;
 			end
 		end			
 		
+		local _, maxVal = AchievementFrameAchievementsContainerScrollBar:GetMinMaxValues();
 		if ( shown ) then
 			-- If we can, move the achievement we're scrolling to to the top of the screen.
-			AchievementFrameAchievementsContainerScrollBar:SetValue(AchievementFrameAchievementsContainerScrollBar:GetValue() + AchievementFrameAchievementsContainer:GetTop() - shown:GetTop());
+			local newHeight = AchievementFrameAchievementsContainerScrollBar:GetValue() + AchievementFrameAchievementsContainer:GetTop() - shown:GetTop();
+			newHeight = min(newHeight, maxVal);
+			AchievementFrameAchievementsContainerScrollBar:SetValue(newHeight);
 		else
-			local _, maxVal = AchievementFrameAchievementsContainerScrollBar:GetMinMaxValues();
 			if ( AchievementFrameAchievementsContainerScrollBar:GetValue() == maxVal ) then
-				assert(false)
+				assert(false, "Failed to find achievement " .. id .. " while jumping!")
 			else
 				HybridScrollFrame_OnMouseWheel(AchievementFrameAchievementsContainer, -1);
 			end			
-		end
-		
-		-- Remove me if everything's working fine.
-		i = i + 1;
-		if ( i > 100 ) then
-			assert(false);
 		end
 	end
 end
@@ -2062,6 +2065,11 @@ function AchievementFrameComparison_OnEvent (self, event, ...)
 	if ( event == "INSPECT_ACHIEVEMENT_READY" ) then
 		AchievementFrameComparisonHeaderPoints:SetText(GetComparisonAchievementPoints());
 		AchievementFrameComparison_UpdateFriendStatusBar(achievementFunctions.selectedCategory)
+	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		local updateUnit = ...;
+		if ( updateUnit and updateUnit == AchievementFrameComparisonHeaderPortrait.unit and UnitName(updateUnit) == AchievementFrameComparisonHeaderName:GetText() ) then
+			SetPortraitTexture(AchievementFrameComparisonHeaderPortrait, updateUnit);
+		end
 	end
 	
 	AchievementFrameComparison_ForceUpdate();
@@ -2074,6 +2082,9 @@ function AchievementFrameComparison_SetUnit (unit)
 	AchievementFrameComparisonHeaderPoints:SetText(GetComparisonAchievementPoints());
 	AchievementFrameComparisonHeaderName:SetText(UnitName(unit));
 	SetPortraitTexture(AchievementFrameComparisonHeaderPortrait, unit);
+	AchievementFrameComparisonHeaderPortrait.unit = unit;
+	AchievementFrameComparisonHeaderPortrait.race = UnitRace(unit);
+	AchievementFrameComparisonHeaderPortrait.sex = UnitSex(unit);
 end
 
 function AchievementFrameComparison_ClearSelection ()

@@ -102,7 +102,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(OPTION_TOOLTIP_USE_RESOLUTION, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(OPTION_TOOLTIP_USE_REFRESH, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -134,7 +134,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(OPTION_TOOLTIP_USE_RESOLUTION, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(OPTION_TOOLTIP_MULTISAMPLING, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -144,7 +144,7 @@
 			<CheckButton name="$parentUseUIScale" inherits="OptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMultiSampleDropDown" relativePoint="BOTTOMLEFT">
-						<Offset x="16" y="-8"/>
+						<Offset x="16" y="-2"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -319,7 +319,7 @@
 					<OnLoad>
 						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
 						self:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(self:GetName().."Title"):SetText(OPTIONS_BRIGHTNESS);
+						_G[self:GetName().."Title"]:SetText(OPTIONS_BRIGHTNESS);
 					</OnLoad>
 				</Scripts>
 			</Frame>			
@@ -369,7 +369,8 @@
 							self:SetDisplayValue(value);
 							SetGamma(value);
 						end
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						self.GetCurrentValue = function (self) return GetGamma(); end;
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
@@ -455,7 +456,7 @@
 					<OnLoad>
 						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
 						self:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(self:GetName().."Title"):Hide();
+						_G[self:GetName().."Title"]:Hide();
 					</OnLoad>
 				</Scripts>
 			</Frame>		
@@ -484,8 +485,8 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						getglobal(name .. "High"):SetPoint("TOPRIGHT", "$parent", "BOTTOMRIGHT", -79, 3);
-						getglobal(name.."Text"):SetFontObject("GameFontNormalSmall");
+						_G[name.."High"]:SetPoint("TOPRIGHT", "$parent", "BOTTOMRIGHT", -79, 3);
+						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
 
 						self.type = CONTROLTYPE_SLIDER;
 						self.label = "quality";
@@ -515,12 +516,14 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_UpdateVideoQuality();
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>		
@@ -540,14 +543,15 @@
 							self:SetDisplayValue(value);
 							SetTerrainMip(value);
 						end
-						self.GetCurrentValue = function (self) return GetTerrainMip() end
-						self.value = GetTerrainMip();
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						self.GetCurrentValue = function (self) return GetTerrainMip(); end;
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_UpdateVideoQuality();
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>			
@@ -568,12 +572,14 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						getglobal(name.."Text"):SetFontObject("GameFontNormalSmall");
+						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_UpdateVideoQuality();
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>		
@@ -593,12 +599,14 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_UpdateVideoQuality();
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>		
@@ -618,12 +626,14 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_UpdateVideoQuality();
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>		
@@ -643,12 +653,14 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_UpdateVideoQuality();
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>					
@@ -669,12 +681,14 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						getglobal(name.."Text"):SetFontObject("GameFontNormalSmall");
+						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_UpdateVideoQuality();
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>			
@@ -700,12 +714,14 @@
 							local min, max = self:GetMinMaxValues();
 							return min - value + max;
 						end
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_UpdateVideoQuality();						
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>	
@@ -725,12 +741,14 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_UpdateVideoQuality();
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>				
@@ -750,12 +768,14 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						getglobal(self:GetName().."Text"):SetFontObject("GameFontNormalSmall");
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						VideoOptionsEffectsPanel_UpdateVideoQuality();
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
 					</OnValueChanged>
 				</Scripts>
 			</Slider>	
@@ -770,7 +790,7 @@
 					<OnLoad>
 						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
 						self:SetBackdropColor(0.15, 0.15, 0.15);
-						getglobal(self:GetName().."Title"):SetText(OPTIONS_SHADERS);
+						_G[self:GetName().."Title"]:SetText(OPTIONS_SHADERS);
 					</OnLoad>
 				</Scripts>
 			</Frame>	

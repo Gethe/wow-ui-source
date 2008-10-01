@@ -12,7 +12,6 @@ function AudioOptionsFrame_SetAllToDefaults ()
 	OptionsFrame_SetAllToDefaults(AudioOptionsFrame);
 
 	if ( AudioOptionsFrame.audioRestart ) then
-		AudioOptionsFrame.audioRestart = nil;
 		AudioOptionsFrame_AudioRestart();
 	end
 end
@@ -21,7 +20,6 @@ function AudioOptionsFrame_SetCurrentToDefaults ()
 	OptionsFrame_SetCurrentToDefaults(AudioOptionsFrame);
 
 	if ( AudioOptionsFrame.audioRestart ) then
-		AudioOptionsFrame.audioRestart = nil;
 		AudioOptionsFrame_AudioRestart();
 	end
 end
@@ -61,7 +59,6 @@ function AudioOptionsFrameCancel_OnClick ()
 	OptionsFrameCancel_OnClick(AudioOptionsFrame);
 
 	if ( AudioOptionsFrame.audioRestart ) then
-		AudioOptionsFrame.audioRestart = nil;
 		AudioOptionsFrame_AudioRestart();
 	end
 
@@ -75,7 +72,6 @@ function AudioOptionsFrameOkay_OnClick (apply)
 	OptionsFrameOkay_OnClick(AudioOptionsFrame, apply);
 
 	if ( AudioOptionsFrame.audioRestart ) then
-		AudioOptionsFrame.audioRestart = nil;
 		AudioOptionsFrame_AudioRestart();
 	end
 

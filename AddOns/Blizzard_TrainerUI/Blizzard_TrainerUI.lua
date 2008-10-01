@@ -57,6 +57,7 @@ end
 
 function ClassTrainerFrame_OnLoad(self)
 	self:RegisterEvent("TRAINER_UPDATE");
+	self:RegisterEvent("TRAINER_DESCRIPTION_UPDATE");
 	ClassTrainerDetailScrollFrame.scrollBarHideable = 1;
 end
 
@@ -67,6 +68,8 @@ function ClassTrainerFrame_OnEvent(self, event, ...)
 	if ( event == "TRAINER_UPDATE" ) then
 		ClassTrainer_SelectFirstLearnableSkill();
 		ClassTrainerFrame_Update();
+	elseif ( event == "TRAINER_DESCRIPTION_UPDATE" ) then
+		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
 	end
 end
 

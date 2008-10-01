@@ -6,7 +6,7 @@
 
 	<Frame name="AudioOptionsFrame" inherits="OptionsFrameTemplate">
 		<Frames>
-			<Button name="$parentApply" inherits="UIPanelButtonTemplate" text="APPLY">
+			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size>
 					<AbsDimension x="96" y="22"/>
 				</Size>
@@ -16,20 +16,6 @@
 							<AbsDimension x="-16" y="16"/>
 						</Offset>
 					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						AudioOptionsFrameOkay_OnClick(true);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size>
-					<AbsDimension x="96" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentApply" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

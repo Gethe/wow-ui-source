@@ -83,17 +83,14 @@ ResolutionPanelOptions = {
 	windowResizeLock = { text = "WINDOW_LOCK" },
 	desktopGamma = { text = "DESKTOP_GAMMA" },
 	gamma = { text = "GAMMA", minValue = -.5, maxValue = .5, valueStep = .1 },
-	quality = { text = "", minValue = 1, maxValue = 5, valueStep = 1 },
 	uiscale = { text = "", minValue = .64, maxValue = 1, valueStep = .01 },
 }
 
 function VideoOptionsResolutionPanel_Default (self)
 	RestoreVideoResolutionDefaults();
 	for _, control in next, self.controls do
-		if ( control.cvar ) then
-			control:SetValue(BlizzardOptionsPanel_GetCVarSafe(control.cvar));
-		elseif ( control.GetValue ) then
-			control:SetValue(control:GetValue());
+		if ( control == VideoOptionsResolutionPanelUseUIScale or control == VideoOptionsResolutionPanelUIScaleSlider ) then
+			control:SetValue(control.defaultValue);
 		end
 		control.newValue = nil;
 	end
@@ -365,11 +362,6 @@ function VideoOptionsEffectsPanel_Default (self)
 	RestoreVideoEffectsDefaults();
 	for _, control in next, self.controls do
 		if ( control ~= VideoOptionsEffectsPanelQualitySlider ) then
-			if ( control.cvar ) then
-				control:SetValue(BlizzardOptionsPanel_GetCVarSafe(control.cvar));
-			elseif ( control.GetValue ) then
-				control:SetValue(control:GetValue());
-			end
 			control.newValue = nil;
 		end
 	end
