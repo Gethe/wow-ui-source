@@ -1038,6 +1038,7 @@
 							</OnLoad>
 							<OnValueChanged>
 								self.value = value;
+								BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 							</OnValueChanged>		
 						</Scripts>
 					</Slider>

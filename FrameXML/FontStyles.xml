@@ -312,7 +312,18 @@
 		<Color r="1" g="1" b="1"/>
 	</Font>
 	<Font name="AchievementCriteriaFont" inherits="AchievementDescriptionFont" justifyH="LEFT" justifyV="MIDDLE" virtual="true"/>
-	<Font name="AchievementDateFont" inherits="SystemFont_Small" justifyH="RIGHT" virtual="true">
+	<Font name="AchievementDateFont" inherits="AchievementFont_Small" justifyH="RIGHT" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>	
+	<Font name="ReputationDetailFont" inherits="SystemFont_Small" virtual="true">
+		<!-- 	You might be wondering why ReputationDetailFont inherits from SystemFont_Small and has its own shadow, rather than inheriting from SystemFont_Shadow_Small. 
+			This is being done for the same reason as AchievementDescriptionFont. -->
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0.0" g="0.0" b="0.0"/>
+		</Shadow>
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
 </Ui>

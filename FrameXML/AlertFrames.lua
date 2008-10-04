@@ -31,9 +31,7 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 	local frame = AchievementAlertFrame_GetAlertFrame();
 	local _, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(achievementID);
 	if ( not frame ) then
-		-- change this!!!
-		local info = ChatTypeInfo["SYSTEM"];
-		DEFAULT_CHAT_FRAME:AddMessage(format(ACHIEVEMENT_UNLOCKED_CHAT_MSG, name), info.r, info.g, info.b);
+		-- We ran out of frames! Bail!
 		return;
 	end
 

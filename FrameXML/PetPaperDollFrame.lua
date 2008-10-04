@@ -44,6 +44,11 @@ local tabPoints={
 	[3]={ point="LEFT", relativePoint="RIGHT", xoffset=0, yoffset=0},
 }
 function PetPaperDollFrame_UpdateTabs()
+	if ( not PetPaperDollFrame:IsVisible() ) then
+		-- There's no need to run this when the frame isn't shown (i.e. we're zoning), it causes problems with the subtabs (bug 145137)
+		return;
+	end
+		
 	local currVal, currRef = 1, tabPoints[1];
 
 	--PetPaperDollFrameTab1:ClearAllPoints()	--Never moved, just hidden
@@ -382,7 +387,9 @@ function PetPaperDollFrame_UpdateCompanionCooldowns()
 		local cooldown = _G[button:GetName().."Cooldown"];
 		if ( button.creatureID ) then
 			local start, duration, enable = GetCompanionCooldown(PetPaperDollFrameCompanionFrame.mode, offset + button:GetID());
-			CooldownFrame_SetTimer(cooldown, start, duration, enable);
+			if ( start and duration and enable ) then
+				CooldownFrame_SetTimer(cooldown, start, duration, enable);
+			end
 		else
 			cooldown:Hide();
 		end
@@ -408,6 +415,7 @@ function PetPaperDollFrame_OnShow(self)
 	CharacterNameText:Hide();
 	PetNameText:Show();
 	PetPaperDollFrame_Update();
+	PetPaperDollFrame_UpdateTabs();
 end
 
 function PetPaperDollFrame_OnHide()

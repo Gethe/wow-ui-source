@@ -1467,7 +1467,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<FontString name="$parentStatus" inherits="AchievementDateFont" text="Incomplete">
 							<Anchors>
 								<Anchor point="BOTTOM">
-									<Offset x="20" y="7"/>
+									<Offset x="20" y="5"/>
 								</Anchor>
 							</Anchors>
 						</FontString>

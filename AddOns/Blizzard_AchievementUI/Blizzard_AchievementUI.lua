@@ -1071,6 +1071,7 @@ function AchievementButton_GetCriteria (index)
 	end
 	
 	local frame = CreateFrame("FRAME", "AchievementFrameCriteria" .. index, AchievementFrameAchievements, "AchievementCriteriaTemplate");
+	AchievementFrame_LocalizeCriteria(frame);
 	criteriaTable[index] = frame;
 	
 	return frame;
@@ -1090,6 +1091,7 @@ function AchievementButton_GetMiniAchievement (index)
 	end
 	
 	local frame = CreateFrame("FRAME", "AchievementFrameMiniAchievement" .. index, AchievementFrameAchievements, "MiniAchievementTemplate");
+	AchievementButton_LocalizeMiniAchievement(frame);
 	miniTable[index] = frame;
 	
 	return frame;
@@ -1108,6 +1110,7 @@ function AchievementButton_GetProgressBar (index)
 	end
 	
 	local frame = CreateFrame("STATUSBAR", "AchievementFrameProgressBar" .. index, AchievementFrameAchievements, "AchievementProgressBarTemplate");
+	AchievementButton_LocalizeProgressBar(frame);
 	progressBarTable[index] = frame;
 	
 	return frame;
@@ -1126,6 +1129,7 @@ function AchievementButton_GetMeta (index)
 	end
 	
 	local frame = CreateFrame("BUTTON", "AchievementFrameMeta" .. index, AchievementFrameAchievements, "MetaCriteriaTemplate");
+	AchievementButton_LocalizeMetaAchievement(frame);
 	metaCriteriaTable[index] = frame;
 	
 	return frame;
@@ -1626,6 +1630,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			if ( not buttons ) then
 				buttons = AchievementFrameSummaryAchievements.buttons;
 			end
+			AchievementFrameSummary_LocalizeButton(button);
 		end;
 		
 		if ( i <= numAchievements ) then
@@ -2125,6 +2130,11 @@ function AchievementFrameComparison_Update ()
 	HybridScrollFrame_Update(scrollFrame, numAchievements, buttonHeight*numAchievements, buttonHeight*numButtons);
 end
 
+ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT1 = GameFontNormal;
+ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT2 = GameFontNormalSmall;
+ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT1 = GameFontNormalSmall;
+ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT2 = GameFontNormalSmall;
+
 function AchievementFrameComparison_DisplayAchievement (button, category, index)
 	local id, name, points, completed, month, day, year, description, flags, icon, rewardText = GetAchievementInfo(category, index);
 	if ( not id ) then
@@ -2160,8 +2170,8 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 			player.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 			friend.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 		end
-		AchievementShield_SetPoints(points, player.shield.points, GameFontNormal, GameFontNormalSmall);
-		AchievementShield_SetPoints(points, friend.shield.points, GameFontNormalSmall, GameFontNormalSmall);
+		AchievementShield_SetPoints(points, player.shield.points, ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT1, ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT2);
+		AchievementShield_SetPoints(points, friend.shield.points, ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT1, ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT2);
 		
 		if ( completed and not player.completed ) then
 			player.completed = true;

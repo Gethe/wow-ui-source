@@ -581,7 +581,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="ReputationDetailFactionDescription" inherits="GameFontHighlightSmall" justifyH="LEFT">
+						<FontString name="ReputationDetailFactionDescription" inherits="ReputationDetailFont" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="170" y="0"/>
 							</Size>

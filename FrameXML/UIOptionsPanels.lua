@@ -442,7 +442,7 @@ function InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnEvent (self, event, .
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("FOCUSCAST", value);
 				SaveBindings(GetCurrentBindingSet());
-				InterfaceOptionsCombatPanelFocusCastKeyDropDown.tooltip = _G["OPTION_TOOLTIP_FOCUS_CAST_"..value.."_KEY"];
+				self.tooltip = _G["OPTION_TOOLTIP_FOCUS_CAST_"..value.."_KEY"];
 			end;
 		self.GetValue =
 			function (self)
@@ -523,6 +523,7 @@ DisplayPanelOptions = {
 	showLootSpam = { text = "SHOW_LOOT_SPAM" },
 	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS" },
 	showClock = { text = "SHOW_CLOCK" },
+	movieSubtitle = { text = "CINEMATIC_SUBTITLES" },
 	threatShowNumeric = { text = "SHOW_NUMERIC_THREAT" },
 }
 
@@ -582,7 +583,7 @@ function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnEvent(self, even
 			function (self, value)
 				self.value = value;
 				SetCVar(self.cvar, value, self.event);
-				self.tooltip = _G["OPTION_TOOLTIP_WORLD_PVP_DISPLAY"..tostring(value)];
+				self.tooltip = _G["OPTION_TOOLTIP_WORLD_PVP_DISPLAY"..value];
 				UIDropDownMenu_SetSelectedValue(self, value);
 				WORLD_PVP_OBJECTIVES_DISPLAY = value;
 				WorldStateAlwaysUpFrame_Update();
@@ -815,8 +816,8 @@ function InterfaceOptionsActionBarsPanel_OnEvent (self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		ALWAYS_SHOW_MULTIBARS = (GetCVarBool("alwaysShowActionBars") and "1") or "0";
-		InterfaceOptions_UpdateMultiActionBars();
+		ALWAYS_SHOW_MULTIBARS = GetCVar("alwaysShowActionBars");
+		InterfaceOptionsActionBarsPanelAlwaysShowActionBars.setFunc();
 	end
 end
 
@@ -1091,7 +1092,12 @@ function InterfaceOptionsCameraPanelStyleDropDown_OnEvent(self, event, ...)
 		self.defaultValue = GetCVarDefault(self.cvar);
 		self.value = value;
 		self.oldValue = value;
-		self.tooltip = _G["OPTION_TOOLTIP_CAMERA"..value];
+		if ( value == "0" ) then
+			--For the purposes of tooltips and the dropdown list, value "0" in the CVar cameraSmoothStyle is actually "3".
+			self.tooltip = OPTION_TOOLTIP_CAMERA3;
+		else
+			self.tooltip = _G["OPTION_TOOLTIP_CAMERA"..value];
+		end	
 
 		UIDropDownMenu_SetWidth(self, 144);
 		UIDropDownMenu_Initialize(self, InterfaceOptionsCameraPanelStyleDropDown_Initialize);
@@ -1102,13 +1108,13 @@ function InterfaceOptionsCameraPanelStyleDropDown_OnEvent(self, event, ...)
 				self.value = value;
 				SetCVar(self.cvar, value, self.event);
 				UIDropDownMenu_SetSelectedValue(self, value);
-				if ( tostring(value) == "0" ) then
+				if ( value == "0" ) then
 					--For the purposes of tooltips and the dropdown list, value "0" in the CVar cameraSmoothStyle is actually "3".
 					self.tooltip = OPTION_TOOLTIP_CAMERA3;
 					BlizzardOptionsPanel_Slider_Disable(InterfaceOptionsCameraPanelFollowSpeedSlider);
 					InterfaceOptionsCameraPanelFollowTerrain:Disable();
 				else
-					self.tooltip = _G["OPTION_TOOLTIP_CAMERA" .. tostring(value)];
+					self.tooltip = _G["OPTION_TOOLTIP_CAMERA"..value];
 					BlizzardOptionsPanel_Slider_Enable(InterfaceOptionsCameraPanelFollowSpeedSlider);
 					InterfaceOptionsCameraPanelFollowTerrain:Enable();
 				end	
@@ -1187,7 +1193,12 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnEvent(self, event, .
 		self.defaultValue = GetCVarDefault(self.cvar);
 		self.oldValue = value;
 		self.value = value;
-		self.tooltip = _G["OPTION_TOOLTIP_CLICK_CAMERA"..value];
+		if ( value == "0" ) then
+			--For the purposes of tooltips and dropdown lists, "0" in the CVar cameraSmoothTrackingStyle is "3".
+			self.tooltip = OPTION_TOOLTIP_CLICK_CAMERA3;
+		else
+			self.tooltip = _G["OPTION_TOOLTIP_CLICK_CAMERA"..value];
+		end
 
 		UIDropDownMenu_SetWidth(self, 140);
 		UIDropDownMenu_Initialize(self, InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize);
@@ -1198,11 +1209,11 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnEvent(self, event, .
 				self.value = value;
 				SetCVar(self.cvar, value, self.event);
 				UIDropDownMenu_SetSelectedValue(self, value);
-				if ( tostring(value) == "0" ) then
+				if ( value == "0" ) then
 					--For the purposes of tooltips and dropdown lists, "0" in the CVar cameraSmoothTrackingStyle is "3".
 					self.tooltip = OPTION_TOOLTIP_CLICK_CAMERA3;
 				else
-					self.tooltip = _G["OPTION_TOOLTIP_CLICK_CAMERA" .. tostring(value)];
+					self.tooltip = _G["OPTION_TOOLTIP_CLICK_CAMERA"..value];
 				end
 			end
 		self.GetValue =

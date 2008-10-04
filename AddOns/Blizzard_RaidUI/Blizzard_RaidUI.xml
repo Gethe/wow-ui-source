@@ -630,7 +630,7 @@
 						self:SetFrameLevel(self:GetFrameLevel()+2);
 					</OnLoad>
 					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(self, value);
+						--UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 					<OnMouseUp>
 						TargetUnit(self:GetParent().unit.."target");
@@ -737,7 +737,7 @@
 				</Frames>
 				<Scripts>
 					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(self, value);
+						--UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 					<OnMouseUp>
 						TargetUnit(self:GetParent().unit.."targettarget");
