@@ -597,6 +597,31 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="$parentDisabledMessage" hidden="true">
+				<Size x="1" y="24"/>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="0" y="-72"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" text="VOICECHAT_DISABLED"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetWidth(_G[self:GetName().."Text"]:GetWidth());
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(VOICECHAT_DISABLED_TEXT, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>			
 			<CheckButton name="$parentEnableVoice" inherits="AudioOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOP">

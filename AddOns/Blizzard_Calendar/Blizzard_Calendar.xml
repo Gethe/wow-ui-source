@@ -1486,6 +1486,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
+<!--
 			<Button name="CalendarCreateEventRaidInviteButton" inherits="UIPanelButtonTemplate2" text="CALENDAR_INVITE_MEMBERS">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
@@ -1526,6 +1527,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
+-->
 			<Button name="CalendarCreateEventCreateButton" inherits="CalendarEventButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">

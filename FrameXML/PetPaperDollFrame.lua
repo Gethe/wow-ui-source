@@ -43,9 +43,23 @@ local tabPoints={
 	[2]={ point="LEFT", relativePoint="RIGHT", xoffset=0, yoffset=0},
 	[3]={ point="LEFT", relativePoint="RIGHT", xoffset=0, yoffset=0},
 }
+
+function PetPaperDollFrame_UpdateIsAvailable()
+	if ( (not HasPetUI()) and (GetNumCompanions("CRITTER") == 0) and (GetNumCompanions("MOUNT") == 0) ) then
+		PetPaperDollFrame.hidden = true;
+		CharacterFrameTab2:Hide();
+		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "LEFT", 0, 0);
+	else
+		PetPaperDollFrame.hidden = false;
+		CharacterFrameTab2:Show();
+		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "RIGHT", -16, 0);
+	end
+end
+
 function PetPaperDollFrame_UpdateTabs()
 	if ( not PetPaperDollFrame:IsVisible() ) then
 		-- There's no need to run this when the frame isn't shown (i.e. we're zoning), it causes problems with the subtabs (bug 145137)
+		PetPaperDollFrame_UpdateIsAvailable(); --But we still need to update the tabs on the CharacterFrame (bug 150500)
 		return;
 	end
 		
@@ -82,15 +96,7 @@ function PetPaperDollFrame_UpdateTabs()
 		PetPaperDollFrameTab3:Hide();
 	end
 	
-	if ( currVal == 1 ) then --No tabs are being shown
-		PetPaperDollFrame.hidden = true;
-		CharacterFrameTab2:Hide();
-		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "LEFT", 0, 0);
-	else
-		PetPaperDollFrame.hidden = false;
-		CharacterFrameTab2:Show();
-		CharacterFrameTab3:SetPoint("LEFT", "CharacterFrameTab2", "RIGHT", -16, 0);
-	end
+	PetPaperDollFrame_UpdateIsAvailable();
 	
 	if ( (PanelTemplates_GetSelectedTab(PetPaperDollFrame) == 1) and (not HasPetUI()) ) then
 		if ( PetPaperDollFrameTab2:IsShown() ) then

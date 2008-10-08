@@ -3195,7 +3195,7 @@ function CalendarCreateEventFrame_OnEvent(self, event, ...)
 			end
 --]]
 			CalendarCreateEventInviteList_Update();
-			CalendarCreateEventRaidInviteButton_Update();
+			--CalendarCreateEventRaidInviteButton_Update();
 		elseif ( event == "CALENDAR_NEW_EVENT" ) then
 			local isCopy = ...;
 			-- the CALENDAR_NEW_EVENT event gets fired when you successfully create a calendar event,
@@ -3301,7 +3301,7 @@ function CalendarCreateEventFrame_Update()
 			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight);
 		end
 		-- hide the raid invite button, it is only used when editing events
-		CalendarCreateEventRaidInviteButton:Hide();
+		--CalendarCreateEventRaidInviteButton:Hide();
 		-- update the modal frame blocker
 		CalendarEventFrameBlocker_Update();
 	elseif ( CalendarCreateEventFrame.mode == "edit" ) then
@@ -3358,7 +3358,7 @@ function CalendarCreateEventFrame_Update()
 			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_ANNOUNCEMENT);
 			-- guild wide events don't have invites
 			CalendarCreateEventInviteListSection:Hide();
-			CalendarCreateEventRaidInviteButton:Hide();
+			--CalendarCreateEventRaidInviteButton:Hide();
 			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight - CalendarCreateEventInviteListSection:GetHeight());
 			CalendarClassButtonContainer_Hide();
 		else
@@ -3370,9 +3370,9 @@ function CalendarCreateEventFrame_Update()
 			-- update invite list
 			CalendarCreateEventInviteList_Update();
 			-- update raid invite button
-			CalendarCreateEventRaidInviteButton_Update();
+			--CalendarCreateEventRaidInviteButton_Update();
 			CalendarCreateEventInviteListSection:Show();
-			CalendarCreateEventRaidInviteButton:Show();
+			--CalendarCreateEventRaidInviteButton:Show();
 			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight);
 		end
 		-- we're not able to mass invite after an event is created...
@@ -4062,38 +4062,65 @@ function CalendarCreateEventRaidInviteButton_OnEvent(self, event, ...)
 	if ( self:IsShown() ) then
 		if ( event == "PARTY_MEMBERS_CHANGED" ) then
 			CalendarCreateEventRaidInviteButton_Update();
-			if ( self.inviteCount and self.inviteCount > MAX_PARTY_MEMBERS and
-				 GetRealNumRaidMembers() == 0 and
-				 GetRealNumPartyMembers() >= 1 ) then
-				-- in case we weren't able to convert to a raid before sending up the party invites, we will want to
-				-- convert to a raid as soon as possible (as soon as we get at least one party member)
-				ConvertToRaid();
+			if ( GetRealNumPartyMembers() >= 1 and self.inviteLostMembers ) then
+				if ( GetRealNumRaidMembers() > 0 ) then
+					-- should already be in a raid at this point, invite members who were not invited due to the party to raid conversion
+					local maxInviteCount = MAX_RAID_MEMBERS - GetRealNumRaidMembers();
+					local inviteCount = 0;
+					local i = 1;
+					local name, level, className, classFilename, inviteStatus, modStatus;
+					while ( inviteCount < maxInviteCount and i <= CalendarEventGetNumInvites() ) do
+						name, level, className, classFilename, inviteStatus, modStatus = CalendarEventGetInvite(i);
+						if ( not UnitInParty(name) and not UnitInRaid(name) and
+							 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED) ) then
+							InviteUnit(name);
+							inviteCount = inviteCount + 1;
+						end
+						i = i + 1;
+					end
+					self.inviteLostMembers = false;
+				else
+					-- in case we weren't able to convert to a raid when the player clicked the raid invite button
+					-- (which means the player was not in a party), we want to convert to a raid now since he has a party
+					ConvertToRaid();
+				end
 			end
 		end
 	end
 end
 
 function CalendarCreateEventRaidInviteButton_OnClick(self)
-	local maxInviteCount = min(MAX_RAID_MEMBERS - GetRealNumRaidMembers(), CalendarEventGetNumInvites());
+	-- invite as many players as possible
+	local maxInviteCount;
+	if ( GetRealNumRaidMembers() == 0 ) then
+		maxInviteCount = MAX_PARTY_MEMBERS - GetRealNumPartyMembers();
+	else
+		maxInviteCount = MAX_RAID_MEMBERS - GetRealNumRaidMembers();
+	end
+	local numInvited = 0;
+	local i = 1;
 	local name, level, className, classFilename, inviteStatus, modStatus;
-	for i = 1, maxInviteCount do
+	while ( numInvited < maxInviteCount and i <= CalendarEventGetNumInvites() ) do
 		name, level, className, classFilename, inviteStatus, modStatus = CalendarEventGetInvite(i);
 		if ( not UnitInParty(name) and not UnitInRaid(name) and
 			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED) ) then
 			InviteUnit(name);
+			numInvited = numInvited + 1;
 		end
+		i = i + 1;
 	end
-	-- NOTE: if self.inviteCount doesn't match the number of people we just invited then something went horribly wrong!
-	if ( GetRealNumRaidMembers() == 0 and GetRealNumPartyMembers() + self.inviteCount > MAX_PARTY_MEMBERS ) then
-		-- if i'm going to be inviting more people than can fit in my party and i'm not already in a raid,
-		-- then immediately convert the party to a raid before sending invites
+
+	if ( numInvited < self.inviteCount ) then
+		-- if I invited less people than I was supposed to, then I am not in a raid and need to form
+		-- a raid to fit everyone...try to convert to a raid now
 		ConvertToRaid();
+		self.inviteLostMembers = true;
 	end
 end
 
 function CalendarCreateEventRaidInviteButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	if ( GetRealNumPartyMembers() + self.inviteCount > MAX_PARTY_MEMBERS or GetRealNumRaidMembers() > 0 ) then
+	if ( GetRealNumRaidMembers() > 0 or GetRealNumPartyMembers() + self.inviteCount > MAX_PARTY_MEMBERS ) then
 		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_RAID, nil, nil, nil, nil, 1);
 	else
 		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, 1);
@@ -4106,15 +4133,17 @@ function CalendarCreateEventRaidInviteButton_Update()
 	-- NOTE: it might be an efficiency concern that we go through this list twice: once to get a count
 	-- and once to do the actual inviting (that's in the OnClick), but I thought it would be better to
 	-- go through the list twice than to take up extra space in memory and potentially cause a lot of
-	-- garbage collection due to constantly rebuilding the list
-	local maxInviteCount = min(MAX_RAID_MEMBERS - GetRealNumRaidMembers(), CalendarEventGetNumInvites());
+	-- garbage collection due to constantly rebuilding a saved table
+	local maxInviteCount = MAX_RAID_MEMBERS - GetRealNumRaidMembers();
 	local inviteCount = 0;
-	for i = 1, maxInviteCount do
+	local i = 1;
+	while ( inviteCount < maxInviteCount and i <= CalendarEventGetNumInvites() ) do
 		name, level, className, classFilename, inviteStatus, modStatus = CalendarEventGetInvite(i);
 		if ( not UnitInParty(name) and not UnitInRaid(name) and
 			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED) ) then
 			inviteCount = inviteCount + 1;
 		end
+		i = i + 1;
 	end
 	if ( inviteCount > 0 ) then
 		CalendarCreateEventRaidInviteButton:Enable();

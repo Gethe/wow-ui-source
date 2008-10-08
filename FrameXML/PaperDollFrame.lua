@@ -284,9 +284,9 @@ function PaperDollFrame_SetRating(statFrame, ratingIndex)
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..statName.." "..rating..FONT_COLOR_CODE_CLOSE;
 	-- Can probably axe this if else tree if all rating tooltips follow the same format
 	if ( ratingIndex == CR_HIT_MELEE ) then
-		statFrame.tooltip2 = format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), ratingBonus, GetCombatRatingBonus(CR_ARMOR_PENETRATION), GetArmorPenetration());
+		statFrame.tooltip2 = format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), ratingBonus, GetCombatRating(CR_ARMOR_PENETRATION), GetArmorPenetration());
 	elseif ( ratingIndex == CR_HIT_RANGED ) then
-		statFrame.tooltip2 = format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), ratingBonus, GetCombatRatingBonus(CR_ARMOR_PENETRATION), GetArmorPenetration());
+		statFrame.tooltip2 = format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), ratingBonus, GetCombatRating(CR_ARMOR_PENETRATION), GetArmorPenetration());
 	elseif ( ratingIndex == CR_DODGE ) then
 		statFrame.tooltip2 = format(CR_DODGE_TOOLTIP, ratingBonus);
 	elseif ( ratingIndex == CR_PARRY ) then

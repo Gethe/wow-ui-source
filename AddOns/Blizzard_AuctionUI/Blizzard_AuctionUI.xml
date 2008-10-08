@@ -904,7 +904,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								AuctionFrameBrowse_Search(self, button);
+								AuctionFrameBrowse_Search();
 							</OnClick>
 							<OnUpdate>
 								BrowseSearchButton_OnUpdate(self, elapsed);

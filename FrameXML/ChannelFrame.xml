@@ -271,8 +271,14 @@
 								local text = getglobal(self:GetName().."Text");
 								text:SetText(VOICE_CHAT_PARTY_RAID);
 								text:SetPoint("LEFT", self, "RIGHT", 2, 1);
-								self:SetChecked(GetCVar("autojoinPartyVoice"))
+
+								self:RegisterEvent("PLAYER_ENTERING_WORLD");
 							</OnLoad>
+							<OnEvent>
+								if ( event == "PLAYER_ENTERING_WORLD" ) then
+									self:SetChecked(GetCVar("autojoinPartyVoice"));
+								end
+							</OnEvent>
 							<OnEnter>
 								GameTooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT", -20);
 								GameTooltip:SetText(AUTO_JOIN_VOICE);
@@ -283,7 +289,7 @@
 								GameTooltip:Hide();
 							</OnLeave>
 							<OnClick>
-								SetCVar("autojoinPartyVoice", self:GetChecked())
+								SetCVar("autojoinPartyVoice", self:GetChecked());
 								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOff");
 								else
@@ -307,8 +313,14 @@
 								local text = getglobal(self:GetName().."Text");
 								text:SetText(VOICE_CHAT_BATTLEGROUND);
 								text:SetPoint("LEFT", self, "RIGHT", 2, 1);
-								self:SetChecked(GetCVar("autojoinBGVoice"))
+
+								self:RegisterEvent("PLAYER_ENTERING_WORLD");
 							</OnLoad>
+							<OnEvent>
+								if ( event == "PLAYER_ENTERING_WORLD" ) then
+									self:SetChecked(GetCVar("autojoinBGVoice"));
+								end
+							</OnEvent>
 							<OnEnter>
 								GameTooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT", -20);
 								GameTooltip:SetText(AUTO_JOIN_VOICE);
@@ -319,7 +331,7 @@
 								GameTooltip:Hide();
 							</OnLeave>
 							<OnClick>
-								SetCVar("autojoinBGVoice", self:GetChecked())
+								SetCVar("autojoinBGVoice", self:GetChecked());
 								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOff");
 								else

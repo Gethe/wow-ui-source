@@ -231,7 +231,7 @@ local AudioOptionsVoicePanelFrameMicrophoneList =
 };
 
 function AudioOptionsVoicePanel_Refresh (self)
-	BlizzardOptionsPanel_Refresh(self);
+	AudioOptionsPanel_Refresh(self);
 	AudioOptionsVoicePanelEnableVoice_UpdateControls(GetCVar(AudioOptionsVoicePanelEnableVoice.cvar));
 	AudioOptionsVoicePanelBindingType_Update(GetCVar(AudioOptionsVoicePanelChatModeDropDown.cvar));
 	AudioOptionsVoicePanelKeyBindingButton_Refresh();
@@ -241,9 +241,7 @@ end
 function AudioOptionsVoicePanel_OnLoad (self)
 	self.name = VOICE_LABEL;
 	self.options = VoicePanelOptions;
-	BlizzardOptionsPanel_OnLoad(self, AudioOptionsPanel_Okay, AudioOptionsPanel_Cancel, AudioOptionsPanel_Default);
-	-- this must come AFTER the parent OnLoad because the functions will be set to defaults there
-	self.refresh = AudioOptionsVoicePanel_Refresh;
+	BlizzardOptionsPanel_OnLoad(self, AudioOptionsPanel_Okay, AudioOptionsPanel_Cancel, AudioOptionsPanel_Default, AudioOptionsVoicePanel_Refresh);
 	self:SetScript("OnEvent", AudioOptionsVoicePanel_OnEvent);
 end
 
@@ -264,9 +262,11 @@ function AudioOptionsVoicePanelEnableVoice_UpdateControls (value)
 		BlizzardOptionsPanel_SetCVarSafe("EnableVoiceChat", 0);
 		voiceChatEnabled = false;
 		AudioOptionsVoicePanelEnableVoice:Hide();
+		AudioOptionsVoicePanelDisabledMessage:Show();
 	elseif ( not AudioOptionsVoicePanelEnableVoice:IsShown() ) then
 		--Pretty certain this won't be changing dynamically, but better safe than sorry.
 		AudioOptionsVoicePanelEnableVoice:Show();
+		AudioOptionsVoicePanelDisabledMessage:Hide();
 	end
 	if ( voiceChatEnabled ) then
 		UIDropDownMenu_EnableDropDown(AudioOptionsVoicePanelOutputDeviceDropDown);

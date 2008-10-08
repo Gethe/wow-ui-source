@@ -519,7 +519,7 @@
 		ToggleTalentFrame();
 	</Binding>
 	<Binding name="TOGGLECHARACTER4">
-		ToggleCharacter("TokenFrame");
+		ToggleFrame(PVPFrame);
 	</Binding>
 	<Binding name="TOGGLECHARACTER3">
 		ToggleCharacter("PetPaperDollFrame");
