@@ -972,7 +972,6 @@
 						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
 					</OnLoad>
 					<OnClick>
-						PanelTemplates_SelectTab(self);
 						PetPaperDollFrame_SetTab(2);
 					</OnClick>
 				</Scripts>
@@ -992,7 +991,6 @@
 						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
 					</OnLoad>
 					<OnClick>
-						PanelTemplates_SelectTab(self);
 						PetPaperDollFrame_SetTab(3);
 					</OnClick>
 				</Scripts>

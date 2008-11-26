@@ -277,7 +277,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="TokenFramePopup" parent="TokenFrame" hidden="true" enableMouse="true">
+	<Frame name="TokenFramePopup" parent="TokenFrame" toplevel="true" hidden="true" enableMouse="true">
 		<Size>
 			<AbsDimension x="205" y="100"/>
 		</Size>

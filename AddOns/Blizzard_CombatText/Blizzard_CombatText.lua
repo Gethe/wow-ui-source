@@ -154,14 +154,19 @@ function CombatText_OnEvent(self, event, ...)
 		messageType = "ENTERING_COMBAT";
 	elseif ( event == "PLAYER_REGEN_ENABLED" ) then
 		messageType = "LEAVING_COMBAT";
-	elseif ( event == "PLAYER_COMBO_POINTS" ) then
-		local comboPoints = GetComboPoints();
-		if ( comboPoints > 0 ) then
-			messageType = "COMBO_POINTS";
-			data = comboPoints;
-			-- Show message as a crit if max combo points
-			if ( comboPoints == MAX_COMBO_POINTS ) then
-				displayType = "crit";
+	elseif ( event == "UNIT_COMBO_POINTS" ) then
+		local unit = ...;
+		if ( unit == "player" ) then
+			local comboPoints = GetComboPoints("player", "target");
+			if ( comboPoints > 0 ) then
+				messageType = "COMBO_POINTS";
+				data = comboPoints;
+				-- Show message as a crit if max combo points
+				if ( comboPoints == MAX_COMBO_POINTS ) then
+					displayType = "crit";
+				end
+			else
+				return;
 			end
 		else
 			return;
@@ -492,7 +497,7 @@ function CombatText_UpdateDisplayedMessages()
 		CombatText:UnregisterEvent("UNIT_MANA");
 		CombatText:UnregisterEvent("PLAYER_REGEN_DISABLED");
 		CombatText:UnregisterEvent("PLAYER_REGEN_ENABLED");
-		CombatText:UnregisterEvent("PLAYER_COMBO_POINTS");
+		CombatText:UnregisterEvent("UNIT_COMBO_POINTS");
 		CombatText:UnregisterEvent("RUNE_POWER_UPDATE");
 		CombatText:UnregisterEvent("UNIT_ENTERED_VEHICLE");
 		CombatText:UnregisterEvent("UNIT_EXITING_VEHICLE");
@@ -513,7 +518,7 @@ function CombatText_UpdateDisplayedMessages()
 	CombatText:RegisterEvent("UNIT_MANA");
 	CombatText:RegisterEvent("PLAYER_REGEN_DISABLED");
 	CombatText:RegisterEvent("PLAYER_REGEN_ENABLED");
-	CombatText:RegisterEvent("PLAYER_COMBO_POINTS");
+	CombatText:RegisterEvent("UNIT_COMBO_POINTS");
 	CombatText:RegisterEvent("RUNE_POWER_UPDATE");
 	CombatText:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	CombatText:RegisterEvent("UNIT_EXITING_VEHICLE");

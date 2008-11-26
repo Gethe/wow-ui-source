@@ -19,10 +19,10 @@ DebuffTypeColor["Poison"]	= { r = 0.00, g = 0.60, b = 0 };
 
 
 function BuffFrame_OnLoad (self)
-	BuffFrame.BuffFrameUpdateTime = 0;
-	BuffFrame.BuffFrameFlashTime = 0;
-	BuffFrame.BuffFrameFlashState = 1;
-	BuffFrame.BuffAlphaValue = 1;
+	self.BuffFrameUpdateTime = 0;
+	self.BuffFrameFlashTime = 0;
+	self.BuffFrameFlashState = 1;
+	self.BuffAlphaValue = 1;
 	self:RegisterEvent("UNIT_AURA");
 end
 
@@ -110,8 +110,13 @@ function AuraButton_Update(buttonName, index, filter)
 			end
 		end
 
-		if ( SHOW_BUFF_DURATIONS == "1" and duration > 0 and expirationTime ) then
-			buffDuration:Show();
+		if ( duration > 0 and expirationTime ) then
+			if ( SHOW_BUFF_DURATIONS == "1" ) then
+				buffDuration:Show();
+			else
+				buffDuration:Hide();
+			end
+
 			if ( not buff.timeLeft ) then
 				buff.timeLeft = expirationTime - GetTime();
 				buff:SetScript("OnUpdate", BuffButton_OnUpdate);
@@ -148,33 +153,33 @@ function AuraButton_Update(buttonName, index, filter)
 end
 
 function BuffFrame_OnUpdate (self, elapsed)
-	if ( BuffFrame.BuffFrameUpdateTime > 0 ) then
-		BuffFrame.BuffFrameUpdateTime = BuffFrame.BuffFrameUpdateTime - elapsed;
+	if ( self.BuffFrameUpdateTime > 0 ) then
+		self.BuffFrameUpdateTime = self.BuffFrameUpdateTime - elapsed;
 	else
-		BuffFrame.BuffFrameUpdateTime = BuffFrame.BuffFrameUpdateTime + TOOLTIP_UPDATE_TIME;
+		self.BuffFrameUpdateTime = self.BuffFrameUpdateTime + TOOLTIP_UPDATE_TIME;
 	end
 
-	BuffFrame.BuffFrameFlashTime = BuffFrame.BuffFrameFlashTime - elapsed;
-	if ( BuffFrame.BuffFrameFlashTime < 0 ) then
-		local overtime = -BuffFrame.BuffFrameFlashTime;
-		if ( BuffFrame.BuffFrameFlashState == 0 ) then
-			BuffFrame.BuffFrameFlashState = 1;
-			BuffFrame.BuffFrameFlashTime = BUFF_FLASH_TIME_ON;
+	self.BuffFrameFlashTime = self.BuffFrameFlashTime - elapsed;
+	if ( self.BuffFrameFlashTime < 0 ) then
+		local overtime = -self.BuffFrameFlashTime;
+		if ( self.BuffFrameFlashState == 0 ) then
+			self.BuffFrameFlashState = 1;
+			self.BuffFrameFlashTime = BUFF_FLASH_TIME_ON;
 		else
-			BuffFrame.BuffFrameFlashState = 0;
-			BuffFrame.BuffFrameFlashTime = BUFF_FLASH_TIME_OFF;
+			self.BuffFrameFlashState = 0;
+			self.BuffFrameFlashTime = BUFF_FLASH_TIME_OFF;
 		end
-		if ( overtime < BuffFrame.BuffFrameFlashTime ) then
-			BuffFrame.BuffFrameFlashTime = BuffFrame.BuffFrameFlashTime - overtime;
+		if ( overtime < self.BuffFrameFlashTime ) then
+			self.BuffFrameFlashTime = self.BuffFrameFlashTime - overtime;
 		end
 	end
 
-	if ( BuffFrame.BuffFrameFlashState == 1 ) then
-		BuffFrame.BuffAlphaValue = (BUFF_FLASH_TIME_ON - BuffFrame.BuffFrameFlashTime) / BUFF_FLASH_TIME_ON;
+	if ( self.BuffFrameFlashState == 1 ) then
+		self.BuffAlphaValue = (BUFF_FLASH_TIME_ON - self.BuffFrameFlashTime) / BUFF_FLASH_TIME_ON;
 	else
-		BuffFrame.BuffAlphaValue = BuffFrame.BuffFrameFlashTime / BUFF_FLASH_TIME_ON;
+		self.BuffAlphaValue = self.BuffFrameFlashTime / BUFF_FLASH_TIME_ON;
 	end
-	BuffFrame.BuffAlphaValue = (BuffFrame.BuffAlphaValue * (1 - BUFF_MIN_ALPHA)) + BUFF_MIN_ALPHA;
+	self.BuffAlphaValue = (self.BuffAlphaValue * (1 - BUFF_MIN_ALPHA)) + BUFF_MIN_ALPHA;
 end
 
 function BuffButton_OnLoad (self)

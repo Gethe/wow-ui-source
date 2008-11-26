@@ -399,7 +399,7 @@ function BrowseDropDown_Initialize()
 	info.func = BrowseDropDown_OnClick;
 	UIDropDownMenu_AddButton(info);
 	for i=0, getn(ITEM_QUALITY_COLORS)-2  do
-		info.text = getglobal("ITEM_QUALITY"..i.."_DESC");
+		info.text = _G["ITEM_QUALITY"..i.."_DESC"];
 		info.value = i;
 		info.func = BrowseDropDown_OnClick;
 		info.checked = nil;
@@ -567,7 +567,7 @@ function AuctionFrameFilters_UpdateClasses()
 	local offset = FauxScrollFrame_GetOffset(BrowseFilterScrollFrame);
 	index = offset;
 	for i=1, NUM_FILTERS_TO_DISPLAY do
-		button = getglobal("AuctionFilterButton"..i);
+		button = _G["AuctionFilterButton"..i];
 		if ( getn(OPEN_FILTER_LIST) > NUM_FILTERS_TO_DISPLAY ) then
 			button:SetWidth(136);
 		else
@@ -622,7 +622,7 @@ function AuctionFrameFilters_UpdateInvTypes(...)
 	for i=1, select("#", ...), 2 do
 -- each type has 2 args: token name(i), display in list(i+1)
 		idx = (i + 1) / 2;
-		invType = HIGHLIGHT_FONT_COLOR_CODE..getglobal(select(i, ...))..FONT_COLOR_CODE_CLOSE; 
+		invType = HIGHLIGHT_FONT_COLOR_CODE.._G[select(i, ...)]..FONT_COLOR_CODE_CLOSE; 
 		if ( (i + 1) == select("#", ...) ) then
 			isLast = 1;
 		end
@@ -636,9 +636,9 @@ function AuctionFrameFilters_UpdateInvTypes(...)
 end
 
 function FilterButton_SetType(button, type, text, isLast)
-	local normalText = getglobal(button:GetName().."NormalText");
-	local normalTexture = getglobal(button:GetName().."NormalTexture");
-	local line = getglobal(button:GetName().."Lines");
+	local normalText = _G[button:GetName().."NormalText"];
+	local normalTexture = _G[button:GetName().."NormalTexture"];
+	local line = _G[button:GetName().."Lines"];
 	if ( type == "class" ) then
 		button:SetText(text);
 		normalText:SetPoint("LEFT", button, "LEFT", 4, 0);
@@ -715,7 +715,7 @@ function AuctionFrameBrowse_Update()
 
 	for i=1, NUM_BROWSE_TO_DISPLAY do
 		index = offset + i + (NUM_AUCTION_ITEMS_PER_PAGE * AuctionFrameBrowse.page);
-		button = getglobal("BrowseButton"..i);
+		button = _G["BrowseButton"..i];
 		-- Show or hide auction buttons
 		if ( index > (numBatchAuctions + (NUM_AUCTION_ITEMS_PER_PAGE * AuctionFrameBrowse.page)) ) then
 			button:Hide();
@@ -738,7 +738,7 @@ function AuctionFrameBrowse_Update()
 			duration = GetAuctionItemTimeLeft("list", offset + i);
 
 			-- Resize button if there isn't a scrollbar
-			buttonHighlight = getglobal("BrowseButton"..i.."Highlight");
+			buttonHighlight = _G["BrowseButton"..i.."Highlight"];
 			if ( numBatchAuctions < NUM_BROWSE_TO_DISPLAY ) then
 				button:SetWidth(625);
 				buttonHighlight:SetWidth(589);
@@ -754,27 +754,27 @@ function AuctionFrameBrowse_Update()
 			end
 			-- Set name and quality color
 			color = ITEM_QUALITY_COLORS[quality];
-			itemName = getglobal(buttonName.."Name");
+			itemName = _G[buttonName.."Name"];
 			itemName:SetText(name);
 			itemName:SetVertexColor(color.r, color.g, color.b);
 			-- Set level
 			if ( level > UnitLevel("player") ) then
-				getglobal(buttonName.."Level"):SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
+				_G[buttonName.."Level"]:SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
 			else
-				getglobal(buttonName.."Level"):SetText(level);
+				_G[buttonName.."Level"]:SetText(level);
 			end
 			-- Set closing time
-			getglobal(buttonName.."ClosingTimeText"):SetText(AuctionFrame_GetTimeLeftText(duration));
-			getglobal(buttonName.."ClosingTime").tooltip = AuctionFrame_GetTimeLeftTooltipText(duration);
+			_G[buttonName.."ClosingTimeText"]:SetText(AuctionFrame_GetTimeLeftText(duration));
+			_G[buttonName.."ClosingTime"].tooltip = AuctionFrame_GetTimeLeftTooltipText(duration);
 			-- Set item texture, count, and usability
-			iconTexture = getglobal(buttonName.."ItemIconTexture");
+			iconTexture = _G[buttonName.."ItemIconTexture"];
 			iconTexture:SetTexture(texture);
 			if ( not canUse ) then
 				iconTexture:SetVertexColor(1.0, 0.1, 0.1);
 			else
 				iconTexture:SetVertexColor(1.0, 1.0, 1.0);
 			end
-			itemCount = getglobal(buttonName.."ItemCount");
+			itemCount = _G[buttonName.."ItemCount"];
 			if ( count > 1 ) then
 				itemCount:SetText(count);
 				itemCount:Show();
@@ -782,7 +782,7 @@ function AuctionFrameBrowse_Update()
 				itemCount:Hide();
 			end
 			-- Set high bid
-			moneyFrame = getglobal(buttonName.."MoneyFrame");
+			moneyFrame = _G[buttonName.."MoneyFrame"];
 			-- If not bidAmount set the bid amount to the min bid
 			if ( bidAmount == 0 ) then
 				displayedPrice = minBid;
@@ -793,7 +793,7 @@ function AuctionFrameBrowse_Update()
 			end
 			MoneyFrame_Update(moneyFrame:GetName(), displayedPrice);
 
-			yourBidText = getglobal(buttonName.."YourBidText");
+			yourBidText = _G[buttonName.."YourBidText"];
 			if ( highBidder ) then
 				yourBidText:Show();
 			else
@@ -804,10 +804,10 @@ function AuctionFrameBrowse_Update()
 				-- Lie about our buyout price
 				buyoutPrice = requiredBid;
 			end
-			buyoutFrame = getglobal(buttonName.."BuyoutFrame");
+			buyoutFrame = _G[buttonName.."BuyoutFrame"];
 			if ( buyoutPrice > 0 ) then
 				moneyFrame:SetPoint("RIGHT", button, "RIGHT", 10, 10);
-				buyoutMoney = getglobal(buyoutFrame:GetName().."Money");
+				buyoutMoney = _G[buyoutFrame:GetName().."Money"];
 				MoneyFrame_Update(buyoutMoney, buyoutPrice);
 				buyoutFrame:Show();
 			else
@@ -818,7 +818,7 @@ function AuctionFrameBrowse_Update()
 			--if ( not highBidder ) then
 			--	highBidder = RED_FONT_COLOR_CODE..NO_BIDS..FONT_COLOR_CODE_CLOSE;
 			--end
-			getglobal(buttonName.."HighBidder"):SetText(owner);
+			_G[buttonName.."HighBidder"]:SetText(owner);
 
 			button.bidAmount = displayedPrice;
 			button.buyoutPrice = buyoutPrice;
@@ -933,7 +933,7 @@ function AuctionFrameBid_Update()
 
 	for i=1, NUM_BIDS_TO_DISPLAY do
 		index = offset + i;
-		button = getglobal("BidButton"..i);
+		button = _G["BidButton"..i];
 		-- Show or hide auction buttons
 		if ( index > numBatchAuctions ) then
 			button:Hide();
@@ -948,7 +948,7 @@ function AuctionFrameBid_Update()
 			duration = GetAuctionItemTimeLeft("bidder", offset + i);
 
 			-- Resize button if there isn't a scrollbar
-			buttonHighlight = getglobal("BidButton"..i.."Highlight");
+			buttonHighlight = _G["BidButton"..i.."Highlight"];
 			if ( numBatchAuctions < NUM_BIDS_TO_DISPLAY ) then
 				button:SetWidth(793);
 				buttonHighlight:SetWidth(758);
@@ -964,34 +964,34 @@ function AuctionFrameBid_Update()
 			end
 			-- Set name and quality color
 			color = ITEM_QUALITY_COLORS[quality];
-			itemName = getglobal(buttonName.."Name");
+			itemName = _G[buttonName.."Name"];
 			itemName:SetText(name);
 			itemName:SetVertexColor(color.r, color.g, color.b);
 			-- Set level
 			if ( level > UnitLevel("player") ) then
-				getglobal(buttonName.."Level"):SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
+				_G[buttonName.."Level"]:SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
 			else
-				getglobal(buttonName.."Level"):SetText(level);
+				_G[buttonName.."Level"]:SetText(level);
 			end
 			-- Set bid status
 			if ( highBidder ) then
-				getglobal(buttonName.."BidStatus"):SetText(GREEN_FONT_COLOR_CODE..HIGH_BIDDER..FONT_COLOR_CODE_CLOSE);
+				_G[buttonName.."BidStatus"]:SetText(GREEN_FONT_COLOR_CODE..HIGH_BIDDER..FONT_COLOR_CODE_CLOSE);
 			else
-				getglobal(buttonName.."BidStatus"):SetText(RED_FONT_COLOR_CODE..OUTBID..FONT_COLOR_CODE_CLOSE);
+				_G[buttonName.."BidStatus"]:SetText(RED_FONT_COLOR_CODE..OUTBID..FONT_COLOR_CODE_CLOSE);
 			end
 			
 			-- Set closing time
-			getglobal(buttonName.."ClosingTimeText"):SetText(AuctionFrame_GetTimeLeftText(duration));
-			getglobal(buttonName.."ClosingTime").tooltip = AuctionFrame_GetTimeLeftTooltipText(duration);
+			_G[buttonName.."ClosingTimeText"]:SetText(AuctionFrame_GetTimeLeftText(duration));
+			_G[buttonName.."ClosingTime"].tooltip = AuctionFrame_GetTimeLeftTooltipText(duration);
 			-- Set item texture, count, and usability
-			iconTexture = getglobal(buttonName.."ItemIconTexture");
+			iconTexture = _G[buttonName.."ItemIconTexture"];
 			iconTexture:SetTexture(texture);
 			if ( not canUse ) then
 				iconTexture:SetVertexColor(1.0, 0.1, 0.1);
 			else
 				iconTexture:SetVertexColor(1.0, 1.0, 1.0);
 			end
-			itemCount = getglobal(buttonName.."ItemCount");
+			itemCount = _G[buttonName.."ItemCount"];
 			if ( count > 1 ) then
 				itemCount:SetText(count);
 				itemCount:Show();
@@ -1105,12 +1105,15 @@ end
 
 function AuctionFrameAuctions_Update()
 	local numBatchAuctions, totalAuctions = GetNumAuctionItems("owner");
-	local auction, button, buttonName, iconTexture, itemName, color, itemCount;
 	local offset = FauxScrollFrame_GetOffset(AuctionsScrollFrame);
 	local index;
-	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
-	local buttonBuyoutFrame, buttonBuyoutMoney;
+	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, saleStatus;
 	local isLastSlotEmpty;
+
+	local auction, button, buttonName, iconTexture, itemName, color, itemCount;
+	local highBidderFrame;
+	local closingTimeFrame, closingTimeText;
+	local buttonBuyoutFrame, buttonBuyoutMoney;
 	local bidAmountMoneyFrame, bidAmountMoneyFrameLabel;
 
 	-- Update sort arrows
@@ -1121,7 +1124,7 @@ function AuctionFrameAuctions_Update()
 
 	for i=1, NUM_AUCTIONS_TO_DISPLAY do
 		index = offset + i + (NUM_AUCTION_ITEMS_PER_PAGE * AuctionFrameAuctions.page);
-		auction = getglobal("AuctionsButton"..i);
+		auction = _G["AuctionsButton"..i];
 		-- Show or hide auction buttons
 		if ( index > (numBatchAuctions + (NUM_AUCTION_ITEMS_PER_PAGE * AuctionFrameAuctions.page)) ) then
 			auction:Hide();
@@ -1136,10 +1139,10 @@ function AuctionFrameAuctions_Update()
 			duration = GetAuctionItemTimeLeft("owner", offset + i);
 
 			buttonName = "AuctionsButton"..i;
-			button = getglobal(buttonName);
+			button = _G[buttonName];
 
 			-- Resize button if there isn't a scrollbar
-			buttonHighlight = getglobal(buttonName.."Highlight");
+			buttonHighlight = _G[buttonName.."Highlight"];
 			if ( numBatchAuctions < NUM_AUCTIONS_TO_DISPLAY ) then
 				auction:SetWidth(599);
 				buttonHighlight:SetWidth(565);
@@ -1158,50 +1161,66 @@ function AuctionFrameAuctions_Update()
 			-- saleStatus "1" means that the item was sold
 			-- Set name and quality color
 			color = ITEM_QUALITY_COLORS[quality];
-			itemName = getglobal(buttonName.."Name");
-			iconTexture = getglobal(buttonName.."ItemIconTexture");
+			itemName = _G[buttonName.."Name"];
+			iconTexture = _G[buttonName.."ItemIconTexture"];
 			iconTexture:SetTexture(texture);
-			itemCount = getglobal(buttonName.."ItemCount");
-			bidAmountMoneyFrame = getglobal(buttonName.."MoneyFrame");
-			bidAmountMoneyFrameLabel = getglobal(buttonName.."MoneyFrameLabel");
+			highBidderFrame = _G[buttonName.."HighBidder"];
+			closingTimeFrame = _G[buttonName.."ClosingTime"];
+			closingTimeText = _G[buttonName.."ClosingTimeText"];
+			itemCount = _G[buttonName.."ItemCount"];
+			bidAmountMoneyFrame = _G[buttonName.."MoneyFrame"];
+			bidAmountMoneyFrameLabel = _G[buttonName.."MoneyFrameLabel"];
+			buttonBuyoutFrame = _G[buttonName.."BuyoutFrame"];
 			if ( saleStatus == 1 ) then
 				-- Sold item
-				itemName:SetText(format(AUCTION_ITEM_SOLD, name));
+				itemName:SetFormattedText(AUCTION_ITEM_SOLD, name);
 				itemName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-				highBidder = GREEN_FONT_COLOR_CODE..highBidder..FONT_COLOR_CODE_CLOSE;
-				getglobal(buttonName.."ClosingTimeText"):SetText(format(AUCTION_ITEM_TIME_UNTIL_DELIVERY, SecondsToTime(duration)));
-				getglobal(buttonName.."ClosingTime").tooltip = format(AUCTION_ITEM_TIME_UNTIL_DELIVERY, SecondsToTime(duration));
-			
+
+				if ( highBidder ) then
+					highBidder = GREEN_FONT_COLOR_CODE..highBidder..FONT_COLOR_CODE_CLOSE;
+					highBidderFrame:SetText(highBidder);
+				end
+
+				closingTimeText:SetFormattedText(AUCTION_ITEM_TIME_UNTIL_DELIVERY, SecondsToTime(duration));
+				closingTimeFrame.tooltip = closingTimeText:GetText();
+
 				iconTexture:SetVertexColor(0.5, 0.5, 0.5);
+
 				itemCount:Hide();
+				button.itemCount = count;
 
 				MoneyFrame_Update(buttonName.."MoneyFrame", bidAmount);
 				bidAmountMoneyFrame:SetAlpha(1);
 				bidAmountMoneyFrame:SetPoint("RIGHT", button, "RIGHT", 10, -4);
 				bidAmountMoneyFrameLabel:Show();
-				getglobal(buttonName.."BuyoutFrame"):Hide();
+
+				buttonBuyoutFrame:Hide();
 			else
 				-- Normal item
 				itemName:SetText(name);
 				itemName:SetVertexColor(color.r, color.g, color.b);
+
 				if ( not highBidder ) then
 					highBidder = RED_FONT_COLOR_CODE..NO_BIDS..FONT_COLOR_CODE_CLOSE;
 				end
-				getglobal(buttonName.."ClosingTimeText"):SetText(AuctionFrame_GetTimeLeftText(duration));
-				getglobal(buttonName.."ClosingTime").tooltip = AuctionFrame_GetTimeLeftTooltipText(duration);
-			
+				highBidderFrame:SetText(highBidder);
+
+				closingTimeText:SetText(AuctionFrame_GetTimeLeftText(duration));
+				closingTimeFrame.tooltip = AuctionFrame_GetTimeLeftTooltipText(duration);
+
 				if ( not canUse ) then
 					iconTexture:SetVertexColor(1.0, 0.1, 0.1);
 				else
 					iconTexture:SetVertexColor(1.0, 1.0, 1.0);
 				end
-				
+
 				if ( count > 1 ) then
 					itemCount:SetText(count);
 					itemCount:Show();
 				else
 					itemCount:Hide();
 				end
+				button.itemCount = count;
 
 				bidAmountMoneyFrameLabel:Hide();
 				if ( bidAmount > 0 ) then
@@ -1219,23 +1238,19 @@ function AuctionFrameAuctions_Update()
 					auction.cancelPrice = 0;
 					button.bidAmount = minBid;
 				end
-				
+
 				-- Set buyout price and adjust bid amount accordingly
-				buttonBuyoutFrame = getglobal(buttonName.."BuyoutFrame");
 				if ( buyoutPrice > 0 ) then
 					bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 10, 10);
-					buttonBuyoutMoney = getglobal(buttonName.."BuyoutFrameMoney");
+					buttonBuyoutMoney = _G[buttonName.."BuyoutFrameMoney"];
 					MoneyFrame_Update(buttonBuyoutMoney, buyoutPrice);
 					buttonBuyoutFrame:Show();
 				else
 					bidAmountMoneyFrame:SetPoint("RIGHT", buttonName, "RIGHT", 10, 3);
 					buttonBuyoutFrame:Hide();
 				end
-
 				button.buyoutPrice = buyoutPrice;
-				button.itemCount = count;
 			end
-			getglobal(buttonName.."HighBidder"):SetText(highBidder);
 
 			-- Enable/Disable cancel auction button
 			if ( (GetSelectedAuctionItem("owner") > 0) and (saleStatus == 0) ) then
@@ -1259,7 +1274,7 @@ function AuctionFrameAuctions_Update()
 		else
 			AuctionsSearchCountText:Hide();
 		end
-		
+
 		-- Artifically inflate the number of results so the scrollbar scrolls one extra row
 		numBatchAuctions = numBatchAuctions + 1;
 	else
@@ -1373,7 +1388,7 @@ function AuctionFrame_UpdateTimeLeft(elapsed, type)
 		elseif ( type == "owner" ) then
 			index = index + FauxScrollFrame_GetOffset(AuctionsScrollFrame);
 		end
-		getglobal(self:GetName().."ClosingTime"):SetText(SecondsToTime(GetAuctionItemTimeLeft(type, index)));
+		_G[self:GetName().."ClosingTime"]:SetText(SecondsToTime(GetAuctionItemTimeLeft(type, index)));
 	else
 		self.updateCounter = self.updateCounter + elapsed;
 	end
@@ -1381,11 +1396,11 @@ end
 ]]
 
 function AuctionFrame_GetTimeLeftText(id)
-	return getglobal("AUCTION_TIME_LEFT"..id);
+	return _G["AUCTION_TIME_LEFT"..id];
 end
 
 function AuctionFrame_GetTimeLeftTooltipText(id)
-	return getglobal("AUCTION_TIME_LEFT"..id.."_DETAIL");
+	return _G["AUCTION_TIME_LEFT"..id.."_DETAIL"];
 end
 
 function AuctionFrameItem_OnEnter(self, type, index)
@@ -1395,11 +1410,11 @@ function AuctionFrameItem_OnEnter(self, type, index)
 	-- add price per unit info
 	local button;
 	if ( type == "owner" ) then
-		button = getglobal("AuctionsButton"..self:GetParent():GetID());
+		button = _G["AuctionsButton"..self:GetParent():GetID()];
 	elseif ( type == "bidder" ) then
-		button = getglobal("BidButton"..self:GetParent():GetID());
+		button = _G["BidButton"..self:GetParent():GetID()];
 	elseif ( type == "list" ) then
-		button = getglobal("BrowseButton"..self:GetParent():GetID());
+		button = _G["BrowseButton"..self:GetParent():GetID()];
 	end
 	if ( button and button.itemCount > 1 ) then
 		if ( button.bidAmount > 0 ) then
@@ -1427,15 +1442,15 @@ function SortButton_UpdateArrow(button, type, sort)
 	if (sort == primaryColumn) then
 		-- primary column, show the sort arrow
 		if (reversed) then
-			getglobal(button:GetName().."Arrow"):Show();
-			getglobal(button:GetName().."Arrow"):SetTexCoord(0, 0.5625, 1.0, 0);
+			_G[button:GetName().."Arrow"]:Show();
+			_G[button:GetName().."Arrow"]:SetTexCoord(0, 0.5625, 1.0, 0);
 		else
-			getglobal(button:GetName().."Arrow"):Show();
-			getglobal(button:GetName().."Arrow"):SetTexCoord(0, 0.5625, 0, 1.0);
+			_G[button:GetName().."Arrow"]:Show();
+			_G[button:GetName().."Arrow"]:SetTexCoord(0, 0.5625, 0, 1.0);
 		end
 	else
 		-- hide sort arrows for non-primary column
-		getglobal(button:GetName().."Arrow"):Hide();
+		_G[button:GetName().."Arrow"]:Hide();
 	end
 end
 

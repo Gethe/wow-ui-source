@@ -123,7 +123,7 @@ function ActionButton_CalculateAction (self, button)
 		local page = SecureButton_GetModifiedAttribute(self, "actionpage", button);
 		if ( not page ) then
 			page = GetActionBarPage();
-			if ( self.isBonus and page == 1 ) then
+			if ( self.isBonus and (page == 1 or self.alwaysBonus) ) then
 				local offset = GetBonusBarOffset();
 				if ( offset == 0 and BonusActionBarFrame and BonusActionBarFrame.lastBonusBar ) then
 					offset = BonusActionBarFrame.lastBonusBar;
@@ -174,6 +174,9 @@ function ActionButton_Update (self)
 			self:RegisterEvent("PLAYER_LEAVE_COMBAT");
 			self:RegisterEvent("START_AUTOREPEAT_SPELL");
 			self:RegisterEvent("STOP_AUTOREPEAT_SPELL");
+			self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+			self:RegisterEvent("UNIT_EXITED_VEHICLE");
+			self:RegisterEvent("COMPANION_UPDATE");
 			self.eventsRegistered = true;
 		end
 
@@ -197,6 +200,9 @@ function ActionButton_Update (self)
 			self:UnregisterEvent("PLAYER_LEAVE_COMBAT");
 			self:UnregisterEvent("START_AUTOREPEAT_SPELL");
 			self:UnregisterEvent("STOP_AUTOREPEAT_SPELL");
+			self:UnregisterEvent("UNIT_ENTERED_VEHICLE");
+			self:UnregisterEvent("UNIT_EXITED_VEHICLE");
+			self:UnregisterEvent("COMPANION_UPDATE");
 			self.eventsRegistered = nil;
 		end
 
@@ -359,7 +365,9 @@ function ActionButton_OnEvent (self, event, ...)
 
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
 		self.rangeTimer = -1;
-	elseif ( event == "ACTIONBAR_UPDATE_STATE" ) then
+	elseif ( (event == "ACTIONBAR_UPDATE_STATE") or
+		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
+		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) ) then
 		ActionButton_UpdateState(self);
 	elseif ( event == "ACTIONBAR_UPDATE_USABLE" ) then
 		ActionButton_UpdateUsable(self);

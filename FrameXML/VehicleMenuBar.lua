@@ -803,6 +803,8 @@ function VehicleSeatIndicator_SetUpVehicle(vehicleName)
 	VehicleSeatIndicator:Show();
 	DurabilityFrame_SetAlerts();
 	VehicleSeatIndicator_Update();
+	
+	UIParent_ManageFramePositions();
 end
 
 function VehicleSeatIndicator_UnloadTextures()
@@ -810,6 +812,8 @@ function VehicleSeatIndicator_UnloadTextures()
 	VehicleSeatIndicator:Hide()
 	VehicleSeatIndicator.currSkin = nil;
 	DurabilityFrame_SetAlerts();
+	
+	UIParent_ManageFramePositions();
 end
 local SeatIndicator_PulseTable;
 

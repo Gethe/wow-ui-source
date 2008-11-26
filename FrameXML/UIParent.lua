@@ -1702,6 +1702,15 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			end
 		end	
 	end
+	
+	--Setup Vehicle seat indicator offset
+	if ( VehicleSeatIndicator ) then
+		if ( VehicleSeatIndicator and VehicleSeatIndicator:IsShown() ) then
+			anchorY = anchorY - VehicleSeatIndicator:GetHeight() - 18;	--The -18 is there to give a small buffer for things like the QuestTimeFrame below the Seat Indicator
+		end
+		
+	end
+
 	-- Quest timers
 	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	if ( QuestTimerFrame:IsShown() ) then
@@ -1717,14 +1726,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( DurabilityFrame:IsShown() ) then
 			anchorY = anchorY - DurabilityFrame:GetHeight();
 		end
-	end
-	--Setup Vehicle seat indicator offset
-	if ( VehicleSeatIndicator ) then
-		--VehicleSeatIndicator:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-		if ( VehicleSeatIndicator and VehicleSeatIndicator:IsShown() ) then
-			anchorY = anchorY - VehicleSeatIndicator:GetHeight();
-		end
-		
 	end
 	
 	if ( AchievementWatchFrame:IsShown() ) then

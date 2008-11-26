@@ -65,8 +65,8 @@ GraphicsQualityLevels = {
 			VideoOptionsEffectsPanelTextureResolution = 0,
 			VideoOptionsEffectsPanelTextureFiltering = 0,
 			VideoOptionsEffectsPanelWeatherIntensity = 0,
-			VideoOptionsEffectsPanelSpecularLighting = 0,
-			VideoOptionsEffectsPanelFullScreenGlow = 0,
-			VideoOptionsEffectsPanelDeathEffect = 0,					
+			VideoOptionsEffectsPanelSpecularLighting = false,
+			VideoOptionsEffectsPanelFullScreenGlow = false,
+			VideoOptionsEffectsPanelDeathEffect = false,					
 			},			
 }

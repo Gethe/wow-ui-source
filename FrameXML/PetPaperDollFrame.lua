@@ -24,6 +24,8 @@ function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("COMPANION_LEARNED");
 	self:RegisterEvent("COMPANION_UPDATE");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 
 	PetPaperDollFrameCompanionFrame.mode = "CRITTER";
 	PetPaperDollFrameCompanionFrame.idMount = GetCompanionInfo("MOUNT", 1);
@@ -155,6 +157,8 @@ function PetPaperDollFrame_OnEvent (self, event, ...)
 		if ( self:IsVisible() ) then
 			PetPaperDollFrame_UpdateCompanionCooldowns();
 		end
+	elseif ( (event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) then
+		PetPaperDollFrame_UpdateCompanions();
 	elseif ( arg1 == "pet" ) then
 		PetPaperDollFrame_Update();
 	end
@@ -436,7 +440,7 @@ function PetPaperDollFrame_Update()
 	end
 	PetModelFrame:SetUnit("pet");
 	if ( UnitCreatureFamily("pet") ) then
-		PetLevelText:SetText(format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..UnitCreatureFamily("pet"));
+		PetLevelText:SetFormattedText(UNIT_TYPE_LEVEL_TEMPLATE,UnitLevel("pet"),UnitCreatureFamily("pet"));
 	end
 	if ( PetPaperDollFramePetFrame:IsShown() ) then
 		PetNameText:SetText(UnitName("pet"));

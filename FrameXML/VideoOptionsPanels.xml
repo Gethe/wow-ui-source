@@ -432,7 +432,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="LOW">
+						<FontString name="$parentLabel" inherits="GameFontNormalLeft" text="LOW">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset x="16" y="-8"/>

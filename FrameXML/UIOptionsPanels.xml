@@ -394,7 +394,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-40" y="-12"/>
+							<AbsDimension x="-40" y="-10"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -620,7 +620,7 @@
 						end
 					</OnEvent>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 			<CheckButton name="$parentShowHelm" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowCloak" relativePoint="BOTTOMLEFT">
@@ -659,7 +659,7 @@
 						end
 					</OnEvent>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 			<CheckButton name="$parentBuffDurations" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowHelm" relativePoint="BOTTOMLEFT">
@@ -677,7 +677,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 			<CheckButton name="$parentRotateMinimap" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentBuffDurations" relativePoint="BOTTOMLEFT">
@@ -694,7 +694,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 			<CheckButton name="$parentScreenEdgeFlash" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRotateMinimap" relativePoint="BOTTOMLEFT">
@@ -710,7 +710,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 			<CheckButton name="$parentDetailedLootInfo" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentScreenEdgeFlash" relativePoint="BOTTOMLEFT">
@@ -726,7 +726,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 			<CheckButton name="$parentShowFreeBagSpace" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDetailedLootInfo" relativePoint="BOTTOMLEFT">
@@ -742,12 +742,12 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 			<CheckButton name="$parentShowClock" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-140" y="-8"/>
+							<AbsDimension x="-150" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -760,22 +760,64 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCinematicSubtitles" inherits="InterfaceOptionsCheckButtonTemplate">
+			<!-- Aggro Warning System -->
+			<Frame name="$parentAggroWarningDisplay" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowClock" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="-13" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="AGGRO_WARNING_DISPLAY">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEvent>
+						InterfaceOptionsDisplayPanelAggroWarningDisplay_OnEvent(self, event, ...);
+					</OnEvent>
+				</Scripts>
+			</Frame>
+			<!-- Show aggro percentage numbers -->
+			<CheckButton name="$parentShowAggroPercentage" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAggroWarningDisplay" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "movieSubtitle";
+						self.cvar = "threatShowNumeric";
+						self.setFunc = function() InterfaceOptionsDisplayPanelShowAggroPercentage_SetFunc(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 			<!-- World PVP Objectives -->
 			<Frame name="$parentWorldPVPObjectiveDisplay" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
@@ -817,60 +859,18 @@
 					</OnEvent>
 				</Scripts>
 			</Frame>
-			<!-- Aggro Warning System -->
-			<Frame name="$parentAggroWarningDisplay" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<CheckButton name="$parentCinematicSubtitles" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentWorldPVPObjectiveDisplay" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="-13" y="-24"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="AGGRO_WARNING_DISPLAY">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="16" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						self:RegisterEvent("PLAYER_ENTERING_WORLD");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnEvent>
-						InterfaceOptionsDisplayPanelAggroWarningDisplay_OnEvent(self, event, ...);
-					</OnEvent>
-				</Scripts>
-			</Frame>
-			<!-- Show aggro percentage numbers -->
-			<CheckButton name="$parentShowAggroPercentage" inherits="InterfaceOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="InterfaceOptionsDisplayPanelAggroWarningDisplay" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
+							<AbsDimension x="13" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "threatShowNumeric";
-						self.setFunc = function() InterfaceOptionsDisplayPanelShowAggroPercentage_SetFunc(); end;
+						self.cvar = "movieSubtitle";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -880,7 +880,7 @@
 			<OnLoad>
 				InterfaceOptionsDisplayPanel_OnLoad(self);
 			</OnLoad>
-		</Scripts>	
+		</Scripts>
 	</Frame>
 	
 	<!-- Quest panel -->
@@ -1286,7 +1286,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-174" y="-8"/>
+							<AbsDimension x="-180" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1466,7 +1466,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-16" y="-8"/>
+							<AbsDimension x="-35" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1655,7 +1655,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTargetDamage" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="16" y="-2"/>
+							<AbsDimension x="10" y="-2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1690,7 +1690,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPetDamage" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="-16" y="-2"/>
+							<AbsDimension x="-10" y="-2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1704,9 +1704,9 @@
 			</CheckButton>	
 			<CheckButton name="$parentTargetEffects" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>				
-					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPRIGHT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="173" y="-8"/>
+							<AbsDimension x="-176" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1717,12 +1717,12 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentOtherTargetEffects" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTargetEffects" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="16" y="-2"/>
+							<AbsDimension x="10" y="-2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1734,7 +1734,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelTargetEffects, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentEnableFCT" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHealing" relativePoint="BOTTOMLEFT">
@@ -1803,7 +1803,7 @@
 			<CheckButton name="$parentDodgeParryMiss" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentEnableFCT" relativePoint="BOTTOMLEFT">
-						<Offset x="16" y="-2"/>
+						<Offset x="10" y="-2"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -1816,7 +1816,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentDamageReduction" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDodgeParryMiss" relativePoint="BOTTOMLEFT">
@@ -1833,7 +1833,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentRepChanges" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDamageReduction" relativePoint="BOTTOMLEFT">
@@ -1850,7 +1850,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentReactiveAbilities" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRepChanges" relativePoint="BOTTOMLEFT">
@@ -1867,7 +1867,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentFriendlyHealerNames" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentReactiveAbilities" relativePoint="BOTTOMLEFT">
@@ -1884,7 +1884,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentCombatState" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentFriendlyHealerNames" relativePoint="BOTTOMLEFT">
@@ -1901,7 +1901,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 			<CheckButton name="$parentComboPoints" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCombatState" relativePoint="BOTTOMLEFT">
@@ -1925,11 +1925,11 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentLowManaHealth" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDodgeParryMiss" relativePoint="TOPRIGHT">
-						<Offset x="150" y="0"/>
+						<Offset x="160" y="0"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -1942,7 +1942,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentEnergyGains" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLowManaHealth" relativePoint="BOTTOMLEFT">
@@ -1993,7 +1993,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 			<CheckButton name="$parentAuras" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHonorGains" relativePoint="BOTTOMLEFT">
@@ -2010,7 +2010,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>

@@ -457,8 +457,14 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 			pointsTexture = "Interface\\PVPFrame\\PVP-Currency-"..factionGroup;
 			itemsString = " |T" .. pointsTexture .. ":0:0:0:-1|t" ..  honorPoints .. " " .. HONOR_POINTS;
 		end
-	elseif ( arenaPoints and arenaPoints ~= 0 ) then
-		itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
+	end
+	if ( arenaPoints and arenaPoints ~= 0 ) then
+		if ( itemsString ) then
+			-- adding an extra space here because it looks nicer
+			itemsString = itemsString .. "  |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
+		else
+			itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
+		end
 	end
 	
 	local maxQuality = 0;

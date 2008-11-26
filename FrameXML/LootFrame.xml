@@ -494,6 +494,9 @@
 			<OnEvent>
 				GroupLootFrame_OnEvent(self, event, ...);
 			</OnEvent>
+			<OnHide>
+				GroupLootFrame_OnHide(self);
+			</OnHide>
 		</Scripts>
 	</Frame>
 	<Frame name="GroupLootFrame1" inherits="GroupLootFrameTemplate" id="1">

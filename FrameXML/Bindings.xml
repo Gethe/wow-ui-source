@@ -590,6 +590,9 @@
 	<Binding name="TOGGLESTATISTICS">
 		ToggleAchievementFrame(1);
 	</Binding>
+	<Binding name="TOGGLECURRENCY">
+		ToggleCharacter("TokenFrame");
+	</Binding>
 
 	<!-- Misc -->
 	<Binding name="STOPCASTING" header="MISC">

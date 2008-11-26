@@ -3,8 +3,8 @@ local NUM_CHARACTERFRAME_TABS = 5;
 function ToggleCharacter (tab)
 	local subFrame = getglobal(tab);
 	if ( subFrame ) then
-		PanelTemplates_SetTab(CharacterFrame, subFrame:GetID());
 		if (not subFrame.hidden) then
+			PanelTemplates_SetTab(CharacterFrame, subFrame:GetID());
 			if ( CharacterFrame:IsShown() ) then
 				if ( subFrame:IsShown() ) then
 					HideUIPanel(CharacterFrame);	

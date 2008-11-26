@@ -211,7 +211,12 @@ end
 function GlyphFrameGlyph_OnClick (self, button)
 	local id = self:GetID();
 
-	if ( button == "RightButton" ) then
+	if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
+		local link = GetGlyphLink(id);
+		if ( link ) then
+			ChatEdit_InsertLink(link);
+		end
+	elseif ( button == "RightButton" ) then
 		if ( IsShiftKeyDown() ) then
 			local glyphName;
 			local _, _, glyphSpell = GetGlyphSocketInfo(id);

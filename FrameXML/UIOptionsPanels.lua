@@ -73,6 +73,9 @@ end
 local function InterfaceOptionsPanel_Cancel (self)
 	for _, control in SecureNext, self.controls do
 		securecall(InterfaceOptionsPanel_CancelControl, control);
+		if ( control.setFunc ) then
+			control.setFunc(control:GetValue());
+		end
 	end
 end
 

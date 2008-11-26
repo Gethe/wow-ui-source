@@ -138,9 +138,12 @@ function RaidGroupFrame_OnLoad()
 	RaidFrame:RegisterEvent("UNIT_LEVEL");
 	RaidFrame:RegisterEvent("UNIT_HEALTH");
 	RaidFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+	RaidFrame:RegisterEvent("VARIABLES_LOADED")
 	RaidFrame:SetScript("OnHide", RaidGroupFrame_OnHide);
 	RaidFrame:SetScript("OnEvent", RaidGroupFrame_OnEvent);
 	RaidFrame:SetScript("OnUpdate", RaidGroupFrame_OnUpdate);
+	
+	RaidFrame.showRange = GetCVarBool("showRaidRange");
 end
 
 function RaidGroupFrame_OnHide()
@@ -170,6 +173,8 @@ function RaidGroupFrame_OnEvent(self, event, ...)
 		RaidFrameReadyCheckButton_Update();
 		RaidFrameAddMemberButton_Update();
 		RaidPullout_RenewFrames();
+	elseif ( event == "VARIABLES_LOADED" ) then
+		RaidFrame.showRange = GetCVarBool("showRaidRange");
 	end
 end
 

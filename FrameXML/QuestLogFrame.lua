@@ -980,7 +980,7 @@ function AchievementWatch_Update()
 				watchLine.statusBar:GetStatusBarTexture():SetVertexColor(0, 0.6, 0, 1);
 				watchLine.statusBar:SetMinMaxValues(0, totalQuantity);
 				watchLine.statusBar:SetValue(quantity);
-				watchLine.statusBar.text:SetText(string.format("%s / %d", quantity, totalQuantity));
+				watchLine.statusBar.text:SetText(quantityString);
 				watchLine.statusBar.OnClick = AchievementWatchButton_OnClick;
 				watchTextIndex = watchTextIndex + 1;
 				if ( lastLine.icon and lastLine.icon:IsShown() ) then

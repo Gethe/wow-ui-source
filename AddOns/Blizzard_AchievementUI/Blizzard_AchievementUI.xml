@@ -800,9 +800,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentDateCompleted" inherits="AchievementDateFont" text="5/16/08" hidden="true">
+				<FontString name="$parentDateCompleted" inherits="AchievementDateFont" text="5/16/08" hidden="true" justifyH="CENTER">
 					<Size>
-						<AbsDimension x="60" y="14"/>
+						<AbsDimension x="100" y="14"/>
 					</Size>
 					<Anchors>
 						<!-- This is a fake anchor. We don't want DateCompleted to be anchored to top. We reanchor it in AchievementButton_OnLoad so that it can be anchored to the shield, which is a frame, and not loaded at this point. -->
@@ -1148,7 +1148,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>
 					</Anchors>
 					<Size>
-						<AbsDimension x="60" y="14"/>
+						<AbsDimension x="100" y="14"/>
 					</Size>
 				</FontString>
 				<FontString name="$parentDescription" inherits="AchievementDescriptionFont">
@@ -1777,15 +1777,15 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Size x="500" y="24"/>
 					<Anchors>
 						<Anchor point="RIGHT">
-							<Offset x="-155" y="-2"/>
+							<Offset x="-150" y="-1"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentComparisonValue" inherits="GameFontHighlightRight">
-					<Size x="100" y="24"/>
+					<Size x="120" y="24"/>
 					<Anchors>
 						<Anchor point="RIGHT">
-							<Offset x="-15" y="-2"/>
+							<Offset x="-4" y="-1"/>
 						</Anchor>
 					</Anchors>
 				</FontString>

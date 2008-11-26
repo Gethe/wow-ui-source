@@ -34,6 +34,6 @@ end
 function Sound_MasterVolumeDown()
 	local volume = tonumber(GetCVar("Sound_MasterVolume"));
 	if ( volume ) then
-		SetCVar("Sound_MasterVolume", volume - 0.1);
+		SetCVar("Sound_MasterVolume", volume - SOUND_MASTERVOLUME_STEP);
 	end
 end

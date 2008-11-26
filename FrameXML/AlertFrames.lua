@@ -27,6 +27,29 @@ function AchievementAlertFrame_OnLoad (self)
 	self.fadeoutDuration = 1.5;
 end
 
+function AchievementAlertFrame_FixAnchors ()
+	-- Temporary (here's hoping) workaround so that achievement alerts are anchored to loot roll windows. Eventually we want one system to handle placement for both alerts.
+	if ( not AchievementAlertFrame1 ) then
+		-- We haven't displayed any achievement alerts yet, so there's nothing to reanchor (read: this got called by LootFrame.lua)
+		return;
+	end
+	
+	
+	local lastVisibleLootFrame;
+	for i=1, NUM_GROUP_LOOT_FRAMES do
+		local frame = getglobal("GroupLootFrame"..i);
+		if ( frame and frame:IsShown() ) then
+			lastVisibleLootFrame = frame;
+		end
+	end
+	
+	if ( lastVisibleLootFrame ) then
+		AchievementAlertFrame1:SetPoint("BOTTOM", lastVisibleLootFrame, "TOP", 0, 10);
+	else
+		AchievementAlertFrame1:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
+	end
+end
+
 function AchievementAlertFrame_ShowAlert (achievementID)
 	local frame = AchievementAlertFrame_GetAlertFrame();
 	local _, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(achievementID);
@@ -34,6 +57,8 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 		-- We ran out of frames! Bail!
 		return;
 	end
+
+	AchievementAlertFrame_FixAnchors();
 
 	getglobal(frame:GetName() .. "Name"):SetText(name);
 	

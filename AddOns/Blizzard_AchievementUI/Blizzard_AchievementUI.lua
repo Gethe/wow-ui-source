@@ -814,7 +814,7 @@ function AchievementButton_OnLoad (self)
 	self.check = getglobal(name .. "Check");
 	
 	self.dateCompleted:ClearAllPoints();
-	self.dateCompleted:SetPoint("TOP", self.shield, "BOTTOM", -8, 6);
+	self.dateCompleted:SetPoint("TOP", self.shield, "BOTTOM", -3, 6);
 	
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 	self.Collapse = AchievementButton_Collapse;
@@ -852,7 +852,7 @@ function AchievementButton_OnClick (self, ignoreModifiers)
 		AchievementFrameAchievements_Update();
 		return;
 	end
-	
+	AchievementFrameAchievements_ClearSelection()
 	AchievementFrameAchievements_SelectButton(self);
 	AchievementButton_DisplayAchievement(self, achievementFunctions.selectedCategory, self.index, self.id);
 	HybridScrollFrame_ExpandButton(AchievementFrameAchievementsContainer, ((self.index - 1) * ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT), self:GetHeight());
@@ -909,11 +909,11 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		button.icon.texture:SetTexture(icon);
 		if ( completed and not button.completed ) then
 			button.completed = true;
-			button.dateCompleted:SetText(Localization_GetShortDate(day, month, year));
+			button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
 			button.dateCompleted:Show();
 			button:Saturate();
 		elseif ( completed ) then
-			button.dateCompleted:SetText(Localization_GetShortDate(day, month, year));
+			button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
 		else
 			button.completed = nil;
 			button.dateCompleted:Hide();
@@ -1200,7 +1200,7 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 		miniAchievement.name = achievementName;
 		miniAchievement.desc = description;
 		if ( month ) then
-			miniAchievement.date = Localization_GetShortDate(day, month, year);
+			miniAchievement.date = string.format(SHORTDATE, day, month, year);
 		end
 		i = index;
 	end
@@ -1254,7 +1254,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			local id, achievementName, points, completed, month, day, year, description, flags, iconpath = GetAchievementInfo(assetID);
 			
 			if ( month ) then
-				metaCriteria.date = Localization_GetShortDate(day, month, year);
+				metaCriteria.date = string.format(SHORTDATE, day, month, year);
 			else
 				metaCriteria.date = nil;
 			end
@@ -1648,7 +1648,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			button.id = id;
 
 			if ( completed ) then
-				button.dateCompleted:SetText(Localization_GetShortDate(day, month, year));
+				button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
 			else
 				button.dateCompleted:SetText("");
 			end
@@ -1677,7 +1677,11 @@ function AchievementFrameSummary_UpdateAchievements(...)
 					end
 					button.icon.texture:SetTexture(icon);
 					button.id = id;
-					button.dateCompleted:SetText(Localization_GetShortDate(day, month, year));
+					if ( month ) then
+						button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+					else
+						button.dateCompleted:SetText("");
+					end
 					button:Show();
 					defaultAchievementCount = defaultAchievementCount+1;
 					button:Desaturate();
@@ -2175,11 +2179,11 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 		
 		if ( completed and not player.completed ) then
 			player.completed = true;
-			player.dateCompleted:SetText(Localization_GetShortDate(day, month, year));
+			player.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
 			player.dateCompleted:Show();
 			player:Saturate();
 		elseif ( completed ) then
-			player.dateCompleted:SetText(Localization_GetShortDate(day, month, year));
+			player.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
 		else
 			player.completed = nil;
 			player.dateCompleted:Hide();
@@ -2188,10 +2192,10 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 		
 		if ( friendCompleted and not friend.completed ) then
 			friend.completed = true;
-			friend.status:SetText(Localization_GetShortDate(friendDay, friendMonth, friendYear));
+			friend.status:SetText(string.format(SHORTDATE, friendDay, friendMonth, friendYear));
 			friend:Saturate();
 		elseif ( friendCompleted ) then
-			friend.status:SetText(Localization_GetShortDate(friendDay, friendMonth, friendYear));
+			friend.status:SetText(string.format(SHORTDATE, friendDay, friendMonth, friendYear));
 		else
 			friend.completed = nil;
 			friend.status:SetText(INCOMPLETE);
@@ -2353,9 +2357,11 @@ function AchievementFrameComparisonStats_SetStat (button, category, index, color
 	button.text:SetText(friendQuantity);
 	local width = button.text:GetStringWidth();
 	if ( width > button.friendValue:GetWidth() ) then
+		button.friendValue:SetFontObject("AchievementFont_Small");
 		button.mouseover:Show();
 		button.mouseover.tooltip = friendQuantity;
 	else
+		button.friendValue:SetFontObject("GameFontHighlightRight");
 		button.mouseover:Hide();
 		button.mouseover.tooltip = nil;
 	end

@@ -1,23 +1,18 @@
 
--- speed optimizations
-local next = next;
-local date = date;
-local abs = abs;
-local min = min;
-local max = max;
-local floor = floor;
-local mod = mod;
-local tonumber = tonumber;
-local random = random;
-local format = format;
-local select = select;
-local tinsert = tinsert;
-local bit_band = bit.band;
-local cos = math.cos;
-local strtrim = strtrim;
-local GetCVarBool = GetCVarBool;
-local PI = PI;
-local TWOPI = PI * 2.0;
+-- Event Types
+CALENDAR_EVENTTYPE_RAID			= 1;
+CALENDAR_EVENTTYPE_DUNGEON		= 2;
+CALENDAR_EVENTTYPE_PVP			= 3;
+CALENDAR_EVENTTYPE_MEETING		= 4;
+CALENDAR_EVENTTYPE_OTHER		= 5;
+
+-- Invite Statuses
+CALENDAR_INVITESTATUS_INVITED		= 1;
+CALENDAR_INVITESTATUS_ACCEPTED		= 2;
+CALENDAR_INVITESTATUS_DECLINED		= 3;
+CALENDAR_INVITESTATUS_CONFIRMED		= 4;
+CALENDAR_INVITESTATUS_OUT			= 5;
+CALENDAR_INVITESTATUS_STANDBY		= 6;
 
 
 -- static popups
@@ -61,7 +56,8 @@ StaticPopupDialogs["CALENDAR_ERROR"] = {
 	enterClicksFirstButton = 1,
 };
 
--- make the Calendar part of the UIParent menuing system
+
+-- UIParent integration
 tinsert(UIMenus, "CalendarContextMenu");
 UIPanelWindows["CalendarFrame"] = { area = "doublewide", pushable = 0, width = 840,	whileDead = 1, yOffset = 20 };
 
@@ -93,29 +89,36 @@ function CloseCalendarMenus()
 end
 
 
--- global constants
-CALENDAR_FIRST_WEEKDAY						= 1;		-- 1=SUN 2=MON 3=TUE 4=WED 5=THU 6=FRI 7=SAT
+-- speed optimizations
+local next = next;
+local date = date;
+local abs = abs;
+local min = min;
+local max = max;
+local floor = floor;
+local mod = mod;
+local tonumber = tonumber;
+local random = random;
+local format = format;
+local select = select;
+local tinsert = tinsert;
+local bit_band = bit.band;
+local cos = math.cos;
+local strtrim = strtrim;
+local GetCVarBool = GetCVarBool;
+local PI = PI;
+local TWOPI = PI * 2.0;
+
+-- dev constants
 CALENDAR_USE_SEQUENCE_FOR_EVENT_TEXTURE		= true;
 CALENDAR_USE_SEQUENCE_FOR_OVERLAY_TEXTURE	= false;
+
+-- global constants
+CALENDAR_FIRST_WEEKDAY			= 1;		-- 1=SUN 2=MON 3=TUE 4=WED 5=THU 6=FRI 7=SAT
 
 -- local constants
 local CALENDAR_MAX_DAYS_PER_MONTH			= 42;		-- 6 weeks
 local CALENDAR_MAX_DARKDAYS_PER_MONTH		= 14;		-- max days from the previous and next months when viewing the current month
-
--- Event Types
-local CALENDAR_EVENTTYPE_RAID		= 1;
-local CALENDAR_EVENTTYPE_DUNGEON	= 2;
-local CALENDAR_EVENTTYPE_PVP		= 3;
-local CALENDAR_EVENTTYPE_MEETING	= 4;
-local CALENDAR_EVENTTYPE_OTHER		= 5;
-
--- Invite Statuses
-local CALENDAR_INVITESTATUS_INVITED		= 1;
-local CALENDAR_INVITESTATUS_ACCEPTED	= 2;
-local CALENDAR_INVITESTATUS_DECLINED	= 3;
-local CALENDAR_INVITESTATUS_CONFIRMED	= 4;
-local CALENDAR_INVITESTATUS_OUT			= 5;
-local CALENDAR_INVITESTATUS_STANDBY		= 6;
 
 -- DayButton constants
 local CALENDAR_DAYBUTTON_NORMALIZED_TEX_WIDTH	= 91 / 256 - 0.001; -- fudge factor to prevent texture seams
@@ -895,6 +898,37 @@ local function _CalendarFrame_UpdateClassData()
 	end
 end
 
+local function _CalendarFrame_InviteToRaid(maxInviteCount)
+	local inviteCount = 0;
+	local i = 1;
+	local name, level, className, classFilename, inviteStatus, modStatus;
+	while ( inviteCount < maxInviteCount and i <= CalendarEventGetNumInvites() ) do
+		name, level, className, classFilename, inviteStatus, modStatus = CalendarEventGetInvite(i);
+		if ( not UnitInParty(name) and not UnitInRaid(name) and
+			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED) ) then
+			InviteUnit(name);
+			inviteCount = inviteCount + 1;
+		end
+		i = i + 1;
+	end
+	return inviteCount;
+end
+
+local function _CalendarFrame_GetInviteToRaidCount(maxInviteCount)
+	local inviteCount = 0;
+	local i = 1;
+	local name, level, className, classFilename, inviteStatus, modStatus;
+	while ( inviteCount < maxInviteCount and i <= CalendarEventGetNumInvites() ) do
+		name, level, className, classFilename, inviteStatus, modStatus = CalendarEventGetInvite(i);
+		if ( not UnitInParty(name) and not UnitInRaid(name) and
+			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED) ) then
+			inviteCount = inviteCount + 1;
+		end
+		i = i + 1;
+	end
+	return inviteCount;
+end
+
 
 -- CalendarFrame
 
@@ -1522,22 +1556,23 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 		-- for now, the overlay texture is the first holiday's sequence texture
 		title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus =
 			CalendarGetDayEvent(monthOffset, day, firstHolidayIndex);
-		overlayTex:SetTexture();
-		if ( CALENDAR_USE_SEQUENCE_FOR_OVERLAY_TEXTURE ) then
-			texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
-		else
-			texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, "ONGOING", eventType);
+		if ( sequenceType and sequenceType ~= "" ) then
+			-- don't set an overlay texture for textures with no sequence type
+			overlayTex:SetTexture();
+			if ( CALENDAR_USE_SEQUENCE_FOR_OVERLAY_TEXTURE ) then
+				texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
+			else
+				texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, "ONGOING", eventType);
+			end
+			if ( texturePath ) then
+				overlayTex:SetTexture(texturePath);
+				overlayTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
+				overlayTex:GetParent():Show();
+				return;
+			end
 		end
-		if ( texturePath ) then
-			overlayTex:SetTexture(texturePath);
-			overlayTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
-			overlayTex:GetParent():Show();
-		else
-			overlayTex:GetParent():Hide();
-		end
-	else
-		overlayTex:GetParent():Hide();
 	end
+	overlayTex:GetParent():Hide();
 end
 
 function CalendarFrame_SetSelectedDay(dayButton)
@@ -3232,6 +3267,9 @@ end
 
 function CalendarCreateEventFrame_OnHide(self)
 	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
+	-- clear the raid invite button data so we don't get strange party-invite behavior next time we show this frame
+	CalendarCreateEventRaidInviteButton.inviteLostMembers = false;
+	CalendarCreateEventRaidInviteButton.inviteCount = 0;
 	CalendarMassInviteFrame:Hide();
 end
 
@@ -4054,68 +4092,55 @@ end
 
 function CalendarCreateEventRaidInviteButton_OnLoad(self)
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("PARTY_CONVERTED_TO_RAID");
 
 	self:SetWidth(self:GetTextWidth() + 40);
 end
 
 function CalendarCreateEventRaidInviteButton_OnEvent(self, event, ...)
-	if ( self:IsShown() ) then
+	if ( self:IsShown() and self:GetParent():IsShown() ) then
 		if ( event == "PARTY_MEMBERS_CHANGED" ) then
 			CalendarCreateEventRaidInviteButton_Update();
-			if ( GetRealNumPartyMembers() >= 1 and self.inviteLostMembers ) then
-				if ( GetRealNumRaidMembers() > 0 ) then
-					-- should already be in a raid at this point, invite members who were not invited due to the party to raid conversion
-					local maxInviteCount = MAX_RAID_MEMBERS - GetRealNumRaidMembers();
-					local inviteCount = 0;
-					local i = 1;
-					local name, level, className, classFilename, inviteStatus, modStatus;
-					while ( inviteCount < maxInviteCount and i <= CalendarEventGetNumInvites() ) do
-						name, level, className, classFilename, inviteStatus, modStatus = CalendarEventGetInvite(i);
-						if ( not UnitInParty(name) and not UnitInRaid(name) and
-							 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED) ) then
-							InviteUnit(name);
-							inviteCount = inviteCount + 1;
-						end
-						i = i + 1;
-					end
-					self.inviteLostMembers = false;
-				else
-					-- in case we weren't able to convert to a raid when the player clicked the raid invite button
-					-- (which means the player was not in a party), we want to convert to a raid now since he has a party
-					ConvertToRaid();
-				end
+			if ( GetRealNumRaidMembers() == 0 and GetRealNumPartyMembers() >= 1 and self.inviteLostMembers ) then
+				-- in case we weren't able to convert to a raid when the player clicked the raid invite button
+				-- (which means the player was not in a party), we want to convert to a raid now since he has a party
+				ConvertToRaid();
+			end
+		elseif ( event == "PARTY_CONVERTED_TO_RAID" ) then
+			CalendarCreateEventRaidInviteButton_Update();
+			if ( self.inviteLostMembers ) then
+				-- should already be in a raid at this point, invite members who were not invited due to the party to raid conversion
+				local maxInviteCount = MAX_RAID_MEMBERS - GetRealNumRaidMembers();
+				local inviteCount = _CalendarFrame_InviteToRaid(maxInviteCount);
+				self.inviteLostMembers = false;
 			end
 		end
 	end
 end
 
 function CalendarCreateEventRaidInviteButton_OnClick(self)
-	-- invite as many players as possible
+	-- compute the max number of players that we should invite
 	local maxInviteCount;
-	if ( GetRealNumRaidMembers() == 0 ) then
-		maxInviteCount = MAX_PARTY_MEMBERS - GetRealNumPartyMembers();
-	else
-		maxInviteCount = MAX_RAID_MEMBERS - GetRealNumRaidMembers();
-	end
-	local numInvited = 0;
-	local i = 1;
-	local name, level, className, classFilename, inviteStatus, modStatus;
-	while ( numInvited < maxInviteCount and i <= CalendarEventGetNumInvites() ) do
-		name, level, className, classFilename, inviteStatus, modStatus = CalendarEventGetInvite(i);
-		if ( not UnitInParty(name) and not UnitInRaid(name) and
-			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED) ) then
-			InviteUnit(name);
-			numInvited = numInvited + 1;
+	local realNumRaidMembers = GetRealNumRaidMembers();
+	local realNumPartyMembers = GetRealNumPartyMembers();
+	if ( realNumRaidMembers == 0 ) then
+		if ( realNumPartyMembers + self.inviteCount > MAX_PARTY_MEMBERS ) then
+			-- if I can't invite the number of people that I'm supposed to...
+			self.inviteLostMembers = true;
+			if ( realNumPartyMembers > 0 ) then
+				--...and I'm already in a party, then I need to form a raid first to fit everyone
+				ConvertToRaid();
+				return;
+			end
+			--...and I'm NOT already in a party, then I need to form a party first (happens below),
+			-- then form a raid to fit everyone (happens as a response to the PARTY_MEMBERS_CHANGED event)
 		end
-		i = i + 1;
+		maxInviteCount = MAX_PARTY_MEMBERS - realNumPartyMembers;
+	else
+		maxInviteCount = MAX_RAID_MEMBERS - realNumRaidMembers;
 	end
 
-	if ( numInvited < self.inviteCount ) then
-		-- if I invited less people than I was supposed to, then I am not in a raid and need to form
-		-- a raid to fit everyone...try to convert to a raid now
-		ConvertToRaid();
-		self.inviteLostMembers = true;
-	end
+	_CalendarFrame_InviteToRaid(maxInviteCount);
 end
 
 function CalendarCreateEventRaidInviteButton_OnEnter(self)
@@ -4130,21 +4155,12 @@ function CalendarCreateEventRaidInviteButton_OnEnter(self)
 end
 
 function CalendarCreateEventRaidInviteButton_Update()
-	-- NOTE: it might be an efficiency concern that we go through this list twice: once to get a count
+	-- NOTE: it might be an efficiency concern that we go through the list twice: once to get a count
 	-- and once to do the actual inviting (that's in the OnClick), but I thought it would be better to
 	-- go through the list twice than to take up extra space in memory and potentially cause a lot of
 	-- garbage collection due to constantly rebuilding a saved table
 	local maxInviteCount = MAX_RAID_MEMBERS - GetRealNumRaidMembers();
-	local inviteCount = 0;
-	local i = 1;
-	while ( inviteCount < maxInviteCount and i <= CalendarEventGetNumInvites() ) do
-		name, level, className, classFilename, inviteStatus, modStatus = CalendarEventGetInvite(i);
-		if ( not UnitInParty(name) and not UnitInRaid(name) and
-			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED) ) then
-			inviteCount = inviteCount + 1;
-		end
-		i = i + 1;
-	end
+	local inviteCount = _CalendarFrame_GetInviteToRaidCount(maxInviteCount);
 	if ( inviteCount > 0 ) then
 		CalendarCreateEventRaidInviteButton:Enable();
 	else

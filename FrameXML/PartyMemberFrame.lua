@@ -30,8 +30,6 @@ function PartyMemberFrame_ToPlayerArt(self)
 	
 	self.overrideName = nil;
 	
-	self.portraitType = nil;
-	
 	UnitFrame_SetUnit(self, "party"..self:GetID(), _G[prefix.."HealthBar"], _G[prefix.."ManaBar"]);
 	UnitFrame_SetUnit(_G[prefix.."PetFrame"], "partypet"..self:GetID(), _G[prefix.."PetFrameHealthBar"], nil);
 	PartyMemberFrame_UpdateMember(self);
@@ -56,8 +54,6 @@ function PartyMemberFrame_ToVehicleArt(self, vehicleType)
 	_G[prefix.."Disconnect"]:SetPoint("LEFT", -10, -1);
 	
 	self.overrideName = "party"..self:GetID();
-	
-	self.portraitType = vehicleType;
 	
 	UnitFrame_SetUnit(self, "partypet"..self:GetID(), _G[prefix.."HealthBar"], _G[prefix.."ManaBar"]);
 	UnitFrame_SetUnit(_G[prefix.."PetFrame"], "party"..self:GetID(), _G[prefix.."PetFrameHealthBar"], nil);
@@ -133,6 +129,7 @@ function PartyMemberFrame_UpdateMember (self)
 	PartyMemberFrame_UpdateVoiceStatus(self);
 	PartyMemberFrame_UpdatePet(self);
 	PartyMemberFrame_UpdateReadyCheck(self);
+	PartyMemberFrame_UpdateOnlineStatus(self);
 	UpdatePartyMemberBackground();
 end
 
@@ -151,8 +148,6 @@ function PartyMemberFrame_UpdatePet (self, id)
 		petFrame:Hide();
 		petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -27);
 	end
-	
-	petFrame.portraitType = UnitVehicleSkin("party"..id);
 	
 	PartyMemberFrame_RefreshPetBuffs(self, id);
 	UpdatePartyMemberBackground();

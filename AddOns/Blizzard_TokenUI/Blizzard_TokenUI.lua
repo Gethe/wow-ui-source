@@ -4,7 +4,7 @@ MAX_WATCHED_TOKENS = 3;
 BACKPACK_TOKENFRAME_HEIGHT = 22;
 
 -- REMOVE ME!!!
-SlashCmdList["TOKENUI"] = function() ToggleFrame(TokenFrame) end;
+SlashCmdList["TOKENUI"] = function() ToggleCharacter("TokenFrame"); end;
 
 function TokenButton_OnLoad(self)
 	local name = self:GetName();

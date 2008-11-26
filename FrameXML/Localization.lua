@@ -13,11 +13,3 @@ function LocalizeFrames()
 	CATEGORY_TO_NOT_DISPLAY = 9;
 
 end
-
-function Localization_GetShortDate (day, month, year)
-	if ( not day or not month or not year ) then
-		return "";
-	end
-	
-	return string.format("%1d/%1d/%02d", month, day, year);
-end

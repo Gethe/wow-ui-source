@@ -105,6 +105,37 @@ function VideoOptionsResolutionPanel_OnLoad (self)
 	self.name = RESOLUTION_LABEL;
 	self.options = ResolutionPanelOptions;
 	VideoOptionsPanel_OnLoad(self, nil, nil, VideoOptionsResolutionPanel_Default, VideoOptionsResolutionPanel_Refresh);
+
+	self:SetScript("OnEvent", VideoOptionsResolutionPanel_OnEvent);
+end
+
+function VideoOptionsResolutionPanel_OnEvent (self, event, ...)
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		-- don't allow systems that don't support features to enable them
+		local anisotropic, pixelShaders, vertexShaders, trilinear, buffering, maxAnisotropy, hardwareCursor = GetVideoCaps();
+		if ( not hardwareCursor ) then
+			VideoOptionsResolutionPanelHardwareCursor:SetChecked(false);
+			VideoOptionsResolutionPanelHardwareCursor:Disable();
+		end
+		VideoOptionsResolutionPanelHardwareCursor.SetChecked =
+			function (self, checked)
+				local anisotropic, pixelShaders, vertexShaders, trilinear, buffering, maxAnisotropy, hardwareCursor = GetVideoCaps();
+				if ( not hardwareCursor ) then
+					checked = false;
+				end
+				getmetatable(self).__index.SetChecked(self, checked);
+			end
+		VideoOptionsResolutionPanelHardwareCursor.Enable =
+			function (self)
+				local anisotropic, pixelShaders, vertexShaders, trilinear, buffering, maxAnisotropy, hardwareCursor = GetVideoCaps();
+				if ( not hardwareCursor ) then
+					return;
+				end
+				getmetatable(self).__index.Enable(self);
+			end
+	end
 end
 
 function VideoOptionsResolutionPanel_RefreshGammaControls ()
@@ -386,11 +417,16 @@ end
 function VideoOptionsEffectsPanel_OnEvent (self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 
-	if ( event == "SET_GLUE_SCREEN" ) then
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- fixup value steps for the farclip control, which has an adjustable min/max
 		local farclipControl = VideoOptionsEffectsPanelViewDistance;
 		local minValue, maxValue = farclipControl:GetMinMaxValues();
 		farclipControl:SetValueStep((maxValue - minValue) / 10);
+
+		-- some of the values in the preset graphics quality levels aren't available on all platforms, so we
+		-- need to fixup the quality levels now
+		VideoOptionsEffectsPanel_FixupQualityLevels();
+		VideoOptionsEffectsPanel_UpdateVideoQuality();
 	end
 end
 
@@ -423,7 +459,7 @@ end
 
 function VideoOptionsEffectsPanel_SetVideoQualityLabels (quality)
 	quality = quality or 5;
-	VideoOptionsEffectsPanelQualityLabel:SetText(format(VIDEO_QUALITY_S, _G["VIDEO_QUALITY_LABEL" .. quality]));
+	VideoOptionsEffectsPanelQualityLabel:SetFormattedText(VIDEO_QUALITY_S, _G["VIDEO_QUALITY_LABEL" .. quality]);
 	VideoOptionsEffectsPanelQualitySubText:SetText(_G["VIDEO_QUALITY_SUBTEXT" .. quality]);
 	VideoOptionsEffectsPanelQualitySlider:SetValue(quality);
 end
@@ -472,6 +508,24 @@ function VideoOptionsEffectsPanel_UpdateVideoQuality ()
 	local quality = VideoOptionsEffectsPanel_GetVideoQuality();
 	if ( quality ~= VideoOptionsEffectsPanel.videoQuality ) then
 		VideoOptionsEffectsPanel_SetVideoQuality(quality);
+	end
+end
+
+function VideoOptionsEffectsPanel_FixupQualityLevels ()
+	-- set the lowest and highest
+	for quality, controls in ipairs(GraphicsQualityLevels) do
+		for index, value in next, controls do
+			local control = _G[index];
+			if ( control.type ~= CONTROLTYPE_CHECKBOX and control.cvar ) then
+				local minValue = BlizzardOptionsPanel_GetCVarMinSafe(control.cvar);
+				local maxValue = BlizzardOptionsPanel_GetCVarMaxSafe(control.cvar);
+				if ( minValue and value < minValue ) then
+					controls[index] = minValue;
+				elseif ( maxValue and value > maxValue ) then
+					controls[index] = maxValue;
+				end
+			end
+		end
 	end
 end
 

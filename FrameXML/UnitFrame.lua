@@ -94,21 +94,6 @@ end
 
 function UnitFramePortrait_Update (self)
 	SetPortraitTexture(self.portrait, self.unit);
-	if ( self == PlayerFrame ) then
-		return;
-	end
-	
-	local textureName = self.portrait:GetTexture();
-	if ( (not textureName) or (textureName == "Interface\\CharacterFrame\\TemporaryPortrait-Pet") or
-		(string.sub(textureName or "", 1, 51) == "Interface\\CharacterFrame\\TemporaryPortrait-Vehicle-") ) then
-		if ( self.portraitType == "Mechanical" ) then
-			self.portrait:SetTexture("Interface\\CharacterFrame\\TemporaryPortrait-Vehicle-Mechanical");
-		elseif ( self.portraitType == "Natural" ) then
-			self.portrait:SetTexture("Interface\\CharacterFrame\\TemporaryPortrait-Vehicle-Organic");
-		else
-			self.portrait:SetTexture("Interface\\CharacterFrame\\TemporaryPortrait-Pet");
-		end
-	end
 end
 
 function UnitFrame_OnEvent(self, event, ...)

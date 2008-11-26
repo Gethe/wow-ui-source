@@ -314,6 +314,10 @@ function GroupLootFrame_OnShow(self)
 	getglobal("GroupLootFrame"..id.."Name"):SetVertexColor(color.r, color.g, color.b);
 end
 
+function GroupLootFrame_OnHide (self)
+	AchievementAlertFrame_FixAnchors();
+end
+
 function GroupLootFrame_OnEvent(self, event, ...)
 	if ( event == "CANCEL_LOOT_ROLL" ) then
 		local arg1 = ...;
