@@ -1696,21 +1696,21 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="CalendarMassInviteArenaButton2" inherits="CalendarMassInviteArenaButtonTemplate" id="2">
+			<Button name="CalendarMassInviteArenaButton2" inherits="CalendarMassInviteArenaButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="14" y="-190"/>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="CalendarMassInviteArenaButton3" inherits="CalendarMassInviteArenaButtonTemplate" id="3">
+			<Button name="CalendarMassInviteArenaButton3" inherits="CalendarMassInviteArenaButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOP">
 						<Offset x="0" y="-190"/>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="CalendarMassInviteArenaButton5" inherits="CalendarMassInviteArenaButtonTemplate" id="5">
+			<Button name="CalendarMassInviteArenaButton5" inherits="CalendarMassInviteArenaButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset x="-14" y="-190"/>

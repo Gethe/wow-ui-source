@@ -4347,6 +4347,7 @@ function CalendarMassInviteArena_Update()
 			button = _G["CalendarMassInviteArenaButton"..teamSize];
 			button:SetFormattedText(PVP_TEAMTYPE, teamSize, teamSize);
 			button.teamName = teamName;
+			button:SetID(i);
 			button:Enable();
 		end
 	end
@@ -4355,7 +4356,7 @@ function CalendarMassInviteArena_Update()
 end
 
 function CalendarMassInviteArenaButton_OnLoad(self)
-	local teamSize = self:GetID();
+	local teamSize = ARENA_TEAMS[self:GetID()];
 	self:SetFormattedText(PVP_TEAMTYPE, teamSize, teamSize);
 end
 
