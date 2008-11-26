@@ -368,11 +368,6 @@ function PetPaperDollFrame_UpdateCompanions()
 		end
 		if ( (id == selected) and creatureID ) then
 			button:SetChecked(true);
-			if ( active ) then
-				CompanionSummonButton:SetText(PetPaperDollFrameCompanionFrame.mode == "MOUNT" and BINDING_NAME_DISMOUNT or PET_DISMISS);
-			else
-				CompanionSummonButton:SetText(PetPaperDollFrameCompanionFrame.mode == "MOUNT" and MOUNT or SUMMON);
-			end
 		else
 			button:SetChecked(false);
 		end
@@ -381,6 +376,15 @@ function PetPaperDollFrame_UpdateCompanions()
 			_G["CompanionButton"..i.."ActiveTexture"]:Show();
 		else
 			_G["CompanionButton"..i.."ActiveTexture"]:Hide();
+		end
+	end
+	
+	if ( selected > 0 ) then
+		creatureID, creatureName, spellID, icon, active = GetCompanionInfo(PetPaperDollFrameCompanionFrame.mode, selected);
+		if ( active and creatureID ) then
+			CompanionSummonButton:SetText(PetPaperDollFrameCompanionFrame.mode == "MOUNT" and BINDING_NAME_DISMOUNT or PET_DISMISS);
+		else
+			CompanionSummonButton:SetText(PetPaperDollFrameCompanionFrame.mode == "MOUNT" and MOUNT or SUMMON);
 		end
 	end
 end

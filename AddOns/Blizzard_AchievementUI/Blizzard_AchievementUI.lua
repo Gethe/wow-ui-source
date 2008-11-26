@@ -1784,6 +1784,10 @@ function AchievementFrameSummaryAchievement_OnEnter(self)
 end
 
 function AchievementFrame_SelectAchievement(id)
+	if ( not AchievementFrame:IsShown() ) then
+		return;
+	end
+	
 	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 	AchievementFrameTab_OnClick(1);
 	AchievementFrameSummary:Hide();

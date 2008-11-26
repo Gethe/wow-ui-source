@@ -333,6 +333,9 @@ function GlyphFrame_OnEvent (self, event, ...)
 				end
 			end
 		end
+		
+		--Refresh tooltip!
+		GlyphFrameGlyph_OnEnter(glyph);
 	end
 end
 

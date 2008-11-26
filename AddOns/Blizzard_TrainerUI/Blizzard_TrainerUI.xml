@@ -211,6 +211,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<!-- The width of the Text element on these buttons is changed in ClassTrainerFrame_Update() -->
 			<Button name="ClassTrainerSkill1" inherits="ClassTrainerSkillButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ClassTrainerFrame">

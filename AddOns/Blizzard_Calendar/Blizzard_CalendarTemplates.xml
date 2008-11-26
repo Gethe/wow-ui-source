@@ -1,12 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<!-- Calendar Day Templates -->
-	<Texture name="CalendarDarkDayTopTextureTemplate" file="Interface\Calendar\CalendarShadows" virtual="true">
-		<Size x="91" y="46"/>
-	</Texture>
-	<Texture name="CalendarDarkDayBottomTextureTemplate" file="Interface\Calendar\CalendarShadows" virtual="true">
-		<Size x="91" y="45"/>
-	</Texture>
 	<Button name="CalendarDayButtonTemplate" virtual="true">
 		<Size x="91" y="91"/>
 		<Anchors>
@@ -105,20 +99,16 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture name="$parentTop" file="Interface\Calendar\CalendarShadows">
-							<Size x="91" y="46"/>
+							<Size x="91" y="45"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="TOP"/>
 							</Anchors>
 							<Color r="1.0" g="1.0" b="1.0" a="0.9"/>
 						</Texture>
 						<Texture name="$parentBottom" file="Interface\Calendar\CalendarShadows">
-							<Size x="91" y="45"/>
+							<Size x="91" y="46"/>
 							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="BOTTOM"/>
 							</Anchors>
 							<Color r="1.0" g="1.0" b="1.0" a="0.9"/>
 						</Texture>
@@ -510,6 +500,9 @@
 	</Button>
 	<Button name="CalendarMassInviteArenaButtonTemplate" inherits="CalendarEventButtonTemplate" virtual="true">
 		<Scripts>
+			<OnLoad>
+				CalendarMassInviteArenaButton_OnLoad(self);
+			</OnLoad>
 			<OnClick>
 				CalendarMassInviteArenaButton_OnClick(self);
 			</OnClick>

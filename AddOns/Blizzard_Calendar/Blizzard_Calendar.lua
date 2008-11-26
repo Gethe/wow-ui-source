@@ -205,182 +205,182 @@ local DARKFLAG_NEXTMONTH_RIGHT				= DARKFLAG_NEXTMONTH + DARKFLAG_SIDE_RIGHT;
 -- the dark day texture maps simplify tex coord setup for dark days
 local DARKDAY_TOP_TCOORDS = {
 	[DARKFLAG_PREVMONTH_TOP] = {
-		left	= 0.177734375,
-		right	= 0.35546875,
+		left	= 91 / 512,
+		right	= 182 / 512,
 		top		= 0.0,
-		bottom	= 0.1796875,
+		bottom	= 46 / 256,
 	},
 	[DARKFLAG_PREVMONTH_TOPLEFT] = {
 		left	= 0.0,
-		right	= 0.177734375,
+		right	= 91 / 512,
 		top		= 0.0,
-		bottom	= 0.1796875,
+		bottom	= 46 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 	[DARKFLAG_PREVMONTH_TOPRIGHT] = {
-		left	= 0.177734375,
+		left	= 91 / 512,
 		right	= 0.0,
 		top		= 0.0,
-		bottom	= 0.1796875,
+		bottom	= 46 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 	[DARKFLAG_PREVMONTH_TOPLEFTRIGHT] = {
 		left	= 0.0,
-		right	= 0.177734375,
-		top		= 0.71875,
-		bottom	= 0.8984375,
+		right	= 91 / 512,
+		top		= 184 / 256,
+		bottom	= 230 / 256,
 	},
 
-	-- next 3 are same as bottom (blank, left, right so no top/bottom changes)
+	-- next 3 are same as DARKDAY_BOTTOM_TCOORDS (blank, left, right--no difference between top & bottom)
 	[DARKFLAG_NEXTMONTH] = {	-- no drop shadowing
-		left	= 0.177734375,
-		right	= 0.35546875,
-		top		= 0.1796875,
-		bottom	= 0.359375,
+		left	= 91 / 512,
+		right	= 182 / 512,
+		top		= 46 / 256,
+		bottom	= 92 / 256,
 	},
 	[DARKFLAG_NEXTMONTH_LEFT] = {
-		left	= 0.177734375,
+		left	= 91 / 512,
 		right	= 0.0,
-		top		= 0.359375,
-		bottom	= 0.5390625,
+		top		= 92 / 256,
+		bottom	= 138 / 256,
 	},
 	[DARKFLAG_NEXTMONTH_RIGHT] = {
 		left	= 0.0,
-		right	= 0.177734375,
-		top		= 0.359375,
-		bottom	= 0.5390625,
+		right	= 91 / 512,
+		top		= 92 / 256,
+		bottom	= 138 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 
 	[DARKFLAG_NEXTMONTH_TOP] = {
-		left	= 0.177734375,
-		right	= 0.35546875,
+		left	= 91 / 512,
+		right	= 182 / 512,
 		top		= 0.0,
-		bottom	= 0.1796875,
+		bottom	= 46 / 256,
 	},
 	[DARKFLAG_NEXTMONTH_TOPLEFT] = {
 		left	= 0.0,
-		right	= 0.177734375,
+		right	= 91 / 512,
 		top		= 0.0,
-		bottom	= 0.1796875,
+		bottom	= 46 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 	[DARKFLAG_NEXTMONTH_TOPRIGHT] = {
-		left	= 0.177734375,
+		left	= 91 / 512,
 		right	= 0.0,
 		top		= 0.0,
-		bottom	= 0.1796875,
+		bottom	= 46 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 
 	-- day 8 of next month
 	[DARKFLAG_NEXTMONTH_CORNER] = {
-		left	= 0.177734375,
-		right	= 0.35546875,
-		top		= 0.5390625,
-		bottom	= 0.71875,
+		left	= 91 / 512,
+		right	= 182 / 512 - 0.001,	-- fudge factor to prevent texture seams
+		top		= 138 / 256,
+		bottom	= 184 / 256,
 	},
 	-- day 7 of next month
 	[DARKFLAG_NEXTMONTH_CORNER_TOP] = {
 		left	= 0.0,
-		right	= 0.177734375,
-		top		= 0.5390625,
-		bottom	= 0.71875,
+		right	= 91 / 512,
+		top		= 138 / 256,
+		bottom	= 184 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 	-- day 8 of next month, index 42
 	[DARKFLAG_NEXTMONTH_CORNER_RIGHT] = {
-		left	= 0.35546875,
-		right	= 0.533203125,
-		top		= 0.1796875,
-		bottom	= 0.359375,
+		left	= 182 / 512,
+		right	= 273 / 512 - 0.001,	-- fudge factor to prevent texture seams
+		top		= 46 / 256,
+		bottom	= 92 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 	-- day 1 of next month
 	[DARKFLAG_NEXTMONTH_CORNER_TOPLEFT] = {
 		left	= 0.0,
-		right	= 0.177734375,
-		top		= 0.1796875,
-		bottom	= 0.359375,
+		right	= 91 / 512,
+		top		= 46 / 256,
+		bottom	= 92 / 256,
 	},
 	-- day 1 of next month, 7th day of the week
 	[DARKFLAG_NEXTMONTH_CORNER_TOPLEFTRIGHT] = {
-		left	= 0.35546875,
-		right	= 0.177734375,
-		top		= 0.8984375,
-		bottom	= 0.71875,
+		left	= 182 / 512,
+		right	= 91 / 512,
+		top		= 230 / 256,
+		bottom	= 184 / 256,
 	},
 };
 local DARKDAY_BOTTOM_TCOORDS = {
 	[DARKFLAG_PREVMONTH_BOTTOM] = {
-		left	= 0.177734375,
-		right	= 0.35546875,
-		top		= 0.1796875,
+		left	= 91 / 512,
+		right	= 182 / 512,
+		top		= 46 / 256,
 		bottom	= 0.0,
 	},
 	[DARKFLAG_PREVMONTH_BOTTOMLEFT] = {
 		left	= 0.0,
-		right	= 0.177734375,
-		top		= 0.1796875,
+		right	= 91 / 512,
+		top		= 46 / 256 - 0.001,	-- fudge factor to prevent texture seams
 		bottom	= 0.0,
 	},
 	[DARKFLAG_PREVMONTH_BOTTOMRIGHT] = {
-		left	= 0.177734375,
+		left	= 91 / 512,
 		right	= 0.0,
-		top		= 0.359375,
-		bottom	= 0.1796875,
+		top		= 92 / 256,
+		bottom	= 46 / 256,
 	},
 	[DARKFLAG_PREVMONTH_BOTTOMLEFTRIGHT] = {
-		left	= 0.177734375,
-		right	= 0.35546875,
-		top		= 0.71875,
-		bottom	= 0.8984375,
+		left	= 91 / 512,
+		right	= 182 / 512,
+		top		= 184 / 256,
+		bottom	= 230 / 256,
 	},
 
-	-- next 3 are same as top (blank, left, right--no difference between top & bottom)
+	-- next 3 are same as DARKDAY_TOP_TCOORDS (blank, left, right--no difference between top & bottom)
 	[DARKFLAG_NEXTMONTH] = {	-- no drop shadowing
-		left	= 0.177734375,
-		right	= 0.35546875,
-		top		= 0.1796875,
-		bottom	= 0.359375,
+		left	= 91 / 512,
+		right	= 182 / 512,
+		top		= 46 / 256,
+		bottom	= 92 / 256,
 	},
 	[DARKFLAG_NEXTMONTH_LEFT] = {
-		left	= 0.177734375,
+		left	= 91 / 512,
 		right	= 0.0,
-		top		= 0.359375,
-		bottom	= 0.5390625,
+		top		= 92 / 256,
+		bottom	= 138 / 256,
 	},
 	[DARKFLAG_NEXTMONTH_RIGHT] = {
 		left	= 0.0,
-		right	= 0.177734375,
-		top		= 0.359375,
-		bottom	= 0.5390625,
+		right	= 91 / 512,
+		top		= 92 / 256,
+		bottom	= 138 / 256,
 	},
 
 	[DARKFLAG_NEXTMONTH_BOTTOM] = {
-		left	= 0.177734375,
-		right	= 0.35546875,
-		top		= 0.1796875,
+		left	= 91 / 512,
+		right	= 182 / 512,
+		top		= 46 / 256,
 		bottom	= 0.0,
 	},
 	[DARKFLAG_NEXTMONTH_BOTTOMLEFT] = {
 		left	= 0.0,
-		right	= 0.177734375,
-		top		= 0.1796875,
+		right	= 91 / 512,
+		top		= 46 / 256,
 		bottom	= 0.0,
 	},
 	[DARKFLAG_NEXTMONTH_BOTTOMRIGHT] = {
-		left	= 0.177734375,
+		left	= 91 / 512,
 		right	= 0.0,
-		top		= 0.1796875,
+		top		= 46 / 256,
 		bottom	= 0.0,
 	},
 	[DARKFLAG_NEXTMONTH_BOTTOMLEFTRIGHT] = {
 		left	= 0.0,
-		right	= 0.177734375,
-		top		= 0.8984375,
-		bottom	= 0.71875,
+		right	= 91 / 512,
+		top		= 230 / 256,
+		bottom	= 184 / 256,
 	},
 
 	-- day 1 of next month, 7th day of the week, not index 42
 	[DARKFLAG_NEXTMONTH_LEFTRIGHT] = {
-		left	= 0.35546875,
-		right	= 0.533203125,
+		left	= 182 / 512,
+		right	= 273 / 512 - 0.001,	-- fudge factor to prevent texture seams
 		top		= 0.0,
-		bottom	= 0.1796875,
+		bottom	= 46 / 256,
 	},
 };
 
@@ -1289,11 +1289,19 @@ function CalendarFrame_Update()
 		buttonIndex = buttonIndex + 1;
 	end
 
-	-- if this month didn't have a selected event active, then hide the event frame
-	if ( not CalendarFrame.selectedEventButton and 
-		 not (CalendarFrame_GetEventFrame() == CalendarCreateEventFrame and CalendarCreateEventFrame.mode == "create") ) then
-		CalendarFrame_CloseEvent();
+	-- if this month didn't have a selected event...
+	if ( not CalendarFrame.selectedEventButton ) then
+		local eventFrame = CalendarFrame_GetEventFrame();
+		if ( eventFrame and (eventFrame ~= CalendarCreateEventFrame or eventFrame.mode ~= "create") ) then
+			--...and the event frame was open and not in create mode, hide the event frame
+			CalendarFrame_CloseEvent();
+		end
 	end
+
+	-- this is a kludgy fix...but for now, we can't reliably figure out whether or not the delete confirmation
+	-- popup still refers to a valid event (or at least the event that the player wants to delete) so we're going
+	-- to have to force the delete confirmation popup to close on each update...kind of annoying
+	StaticPopup_Hide("CALENDAR_DELETE_EVENT");
 end
 
 function CalendarFrame_UpdateTitle()
@@ -3230,7 +3238,7 @@ function CalendarCreateEventFrame_OnEvent(self, event, ...)
 			end
 --]]
 			CalendarCreateEventInviteList_Update();
-			--CalendarCreateEventRaidInviteButton_Update();
+			CalendarCreateEventRaidInviteButton_Update();
 		elseif ( event == "CALENDAR_NEW_EVENT" ) then
 			local isCopy = ...;
 			-- the CALENDAR_NEW_EVENT event gets fired when you successfully create a calendar event,
@@ -3339,7 +3347,7 @@ function CalendarCreateEventFrame_Update()
 			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight);
 		end
 		-- hide the raid invite button, it is only used when editing events
-		--CalendarCreateEventRaidInviteButton:Hide();
+		CalendarCreateEventRaidInviteButton:Hide();
 		-- update the modal frame blocker
 		CalendarEventFrameBlocker_Update();
 	elseif ( CalendarCreateEventFrame.mode == "edit" ) then
@@ -3396,7 +3404,7 @@ function CalendarCreateEventFrame_Update()
 			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_ANNOUNCEMENT);
 			-- guild wide events don't have invites
 			CalendarCreateEventInviteListSection:Hide();
-			--CalendarCreateEventRaidInviteButton:Hide();
+			CalendarCreateEventRaidInviteButton:Hide();
 			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight - CalendarCreateEventInviteListSection:GetHeight());
 			CalendarClassButtonContainer_Hide();
 		else
@@ -3408,9 +3416,9 @@ function CalendarCreateEventFrame_Update()
 			-- update invite list
 			CalendarCreateEventInviteList_Update();
 			-- update raid invite button
-			--CalendarCreateEventRaidInviteButton_Update();
+			CalendarCreateEventRaidInviteButton_Update();
 			CalendarCreateEventInviteListSection:Show();
-			--CalendarCreateEventRaidInviteButton:Show();
+			CalendarCreateEventRaidInviteButton:Show();
 			CalendarCreateEventFrame:SetHeight(CalendarCreateEventFrame.defaultHeight);
 		end
 		-- we're not able to mass invite after an event is created...
@@ -4209,9 +4217,9 @@ end
 -- CalendarMassInviteFrame
 
 function CalendarMassInviteFrame_OnLoad(self)
-	self:RegisterEvent("GUILD_ROSTER_UPDATE");
-	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
 	self:RegisterEvent("CALENDAR_ACTION_PENDING");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("ARENA_TEAM_UPDATE");
 
 	local minLevel, maxLevel = CalendarDefaultGuildFilter();
 	CalendarMassInviteGuildMinLevelEdit:SetNumber(minLevel);
@@ -4248,7 +4256,7 @@ function CalendarMassInviteFrame_OnEvent(self, event, ...)
 				CalendarMassInviteArena_Update();
 			elseif ( event == "GUILD_ROSTER_UPDATE" ) then
 				CalendarMassInviteGuild_Update();
-			elseif ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
+			elseif ( event == "ARENA_TEAM_UPDATE" ) then
 				CalendarMassInviteArena_Update();
 			end
 		end
@@ -4320,25 +4328,33 @@ end
 
 local ARENA_TEAMS = {2, 3, 5};
 function CalendarMassInviteArena_Update()
-	local canSendInvite = CalendarCanSendInvite();
-
+	-- initialize the teams
 	local teamName, teamSize;
 	local button;
 	for i = 1, MAX_ARENA_TEAMS do
-		button = _G["CalendarMassInviteArenaButton"..i];
+		button = _G["CalendarMassInviteArenaButton"..ARENA_TEAMS[i]];
+		button.teamName = nil;
+		button:Disable();
+	end
+
+	-- set the teams
+	local canSendInvite = CalendarCanSendInvite();
+	for i = 1, MAX_ARENA_TEAMS do
 		teamName, teamSize = GetArenaTeam(i);
 		if ( canSendInvite and teamName ) then
+			button = _G["CalendarMassInviteArenaButton"..teamSize];
 			button:SetFormattedText(PVP_TEAMTYPE, teamSize, teamSize);
-			button:SetID(i);
 			button.teamName = teamName;
 			button:Enable();
-		else
-			button:SetFormattedText(PVP_TEAMTYPE, ARENA_TEAMS[i], ARENA_TEAMS[i]);
-			button:SetID(0);
-			button.teamName = nil;
-			button:Disable();
 		end
 	end
+
+	-- optimization note: using two separate init and set loops yields less redundancy and less branches than two nested loops
+end
+
+function CalendarMassInviteArenaButton_OnLoad(self)
+	local teamSize = self:GetID();
+	self:SetFormattedText(PVP_TEAMTYPE, teamSize, teamSize);
 end
 
 function CalendarMassInviteArenaButton_OnClick(self)

@@ -25,6 +25,19 @@ local function MainMenuBar_GetRightABPos(self, fraction)
 	return "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", (sin(fraction*90)) * finaloffset, 98;
 end
 
+local function MainMenuBar_GetSeatIndicatorPos(self, fraction)
+
+	if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 ) then
+		finaloffset = -100;
+	elseif ( SHOW_MULTI_ACTIONBAR_3 ) then
+		finaloffset = -62;
+	else
+		finaloffset = 0;
+	end
+	
+	return "TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", (cos(fraction*90)) * finaloffset, -13;
+end
+
 function MainMenuBar_AnimFinished(self)
 	MainMenuBar.busy = false;
 	if ( GetBonusBarOffset() > 0 ) then
@@ -63,6 +76,11 @@ local AnimDataTable = {
 		totalTime = MAINMENU_SLIDETIME,
 		updateFunc = "SetPoint",
 		getPosFunc = MainMenuBar_GetRightABPos,
+	},
+	SeatIndicator_Slide = {
+		totalTime = MAINMENU_SLIDETIME,
+		updateFunc = "SetPoint",
+		getPosFunc = MainMenuBar_GetSeatIndicatorPos,
 	},
 }
 
@@ -106,6 +124,7 @@ function MainMenuBar_ToPlayerArt(self)
 	MainMenuBarVehicleLeaveButton_Update();
 	SetUpAnimation(MainMenuBar, AnimDataTable.MenuBar_Slide, nil, true);
 	SetUpAnimation(MultiBarRight, AnimDataTable.ActionBar_Slide, MainMenuBar_UnlockAB, true);
+	SetUpAnimation(VehicleSeatIndicator, AnimDataTable.SeatIndicator_Slide, nil, true);
 	MultiBarRight:SetPoint(MainMenuBar_GetRightABPos(MultiBarRight, 1));
 end
 
@@ -228,6 +247,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 				MultiBarRight.ignoreFramePositionManager = true;
 				SetUpAnimation(MultiBarRight, AnimDataTable.ActionBar_Slide, nil, false);
 				SetUpAnimation(MainMenuBar, AnimDataTable.MenuBar_Slide, MainMenuBar_AnimFinished, false);
+				SetUpAnimation(VehicleSeatIndicator, AnimDataTable.SeatIndicator_Slide, nil, false);
 			end
 		else
 			if ( MainMenuBar.state == "vehicle" ) then

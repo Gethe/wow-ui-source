@@ -381,28 +381,28 @@
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER1">
-		if ( UnitIsUnit("party1", "target") ) then
+		if ( UnitIsUnit("party1", "target") or UnitHasVehicleUI("party1") ) then
 			TargetUnit("partypet1");
 		else
 			TargetUnit("party1");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER2">
-		if ( UnitIsUnit("party2", "target") ) then
+		if ( UnitIsUnit("party2", "target") or UnitHasVehicleUI("party2") ) then
 			TargetUnit("partypet2");
 		else
 			TargetUnit("party2");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER3">
-		if ( UnitIsUnit("party3", "target") ) then
+		if ( UnitIsUnit("party3", "target") or UnitHasVehicleUI("party3") ) then
 			TargetUnit("partypet3");
 		else
 			TargetUnit("party3");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER4">
-		if ( UnitIsUnit("party4", "target") ) then
+		if ( UnitIsUnit("party4", "target") or UnitHasVehicleUI("party4") ) then
 			TargetUnit("partypet4");
 		else
 			TargetUnit("party4");
@@ -542,8 +542,8 @@
 	<Binding name="TOGGLEWORLDMAP">
 		ToggleFrame(WorldMapFrame);
 	</Binding>
-	<Binding name="TOGGLEPVP">
-		ToggleFrame(PVPFrame);
+	<Binding name="TOGGLECURRENCY">
+		ToggleCharacter("TokenFrame");
 	</Binding>
 	<Binding name="TOGGLESOCIAL">
 		ToggleFriendsFrame();

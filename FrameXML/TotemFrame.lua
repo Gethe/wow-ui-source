@@ -13,7 +13,7 @@ TOTEM_PRIORITIES =
 	FIRE_TOTEM_SLOT
 };
 
-function TotemFrame_OnLoad (self)
+function TotemFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
@@ -23,7 +23,7 @@ function TotemFrame_OnLoad (self)
 	end
 end
 
-function TotemFrame_Update ()
+function TotemFrame_Update()
 	local _, class = UnitClass("player");
 	if ( PetFrame and PetFrame:IsShown() ) then
 		if ( class == "DEATHKNIGHT" ) then
@@ -47,18 +47,18 @@ function TotemFrame_Update ()
 		slot = TOTEM_PRIORITIES[i];
 		haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
 		if ( haveTotem ) then
-			button = getglobal("TotemFrameTotem"..buttonIndex);
+			button = _G["TotemFrameTotem"..buttonIndex];
 			button.slot = slot;
 			TotemButton_Update(button, startTime, duration, icon);
-			buttonIndex = buttonIndex + 1;
 
 			if ( button:IsShown() ) then
 				TotemFrame.activeTotems = TotemFrame.activeTotems + 1;
 			end
-		else
-			button = getglobal("TotemFrameTotem"..MAX_TOTEMS - i + buttonIndex);
-			button.slot = 0;
 
+			buttonIndex = buttonIndex + 1;
+		else
+			button = _G["TotemFrameTotem"..MAX_TOTEMS - i + buttonIndex];
+			button.slot = 0;
 			button:Hide();
 		end
 	end
@@ -69,7 +69,7 @@ function TotemFrame_Update ()
 	end
 end
 
-function TotemFrame_OnEvent (self, event, ...)
+function TotemFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		TotemFrame_Update();
 	elseif ( event == "PLAYER_TOTEM_UPDATE" ) then
@@ -77,24 +77,24 @@ function TotemFrame_OnEvent (self, event, ...)
 		local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
 		local button;
 		for i=1, MAX_TOTEMS do
-			button = getglobal("TotemFrameTotem"..i);
+			button = _G["TotemFrameTotem"..i];
 			if ( button.slot == slot ) then
 				local previouslyShown = button:IsShown();
 				TotemButton_Update(button, startTime, duration, icon);
-				-- check to see if we should be showing or hiding the parent frame
+				-- if we have no active totems then we need to hide the whole frame, otherwise show it
 				if ( previouslyShown ) then
 					if ( not button:IsShown() ) then
-						TotemFrame.activeTotems = TotemFrame.activeTotems - 1;
+						self.activeTotems = self.activeTotems - 1;
 					end
 				else
 					if ( button:IsShown() ) then
-						TotemFrame.activeTotems = TotemFrame.activeTotems + 1;
+						self.activeTotems = self.activeTotems + 1;
 					end
 				end
-				if ( TotemFrame.activeTotems > 0 ) then
-					TotemFrame:Show();
+				if ( self.activeTotems > 0 ) then
+					self:Show();
 				else
-					TotemFrame:Hide();
+					self:Hide();
 				end
 				return;
 			end
@@ -107,24 +107,28 @@ function TotemFrame_OnEvent (self, event, ...)
 	end
 end
 
-function TotemButton_OnClick (self, mouseButton)
+function TotemButton_OnClick(self, mouseButton)
 	if ( mouseButton == "RightButton" ) then
 		DestroyTotem(self.slot);
 	end
 end
 
-function TotemButton_OnUpdate (button, elapsed)
+function TotemButton_OnLoad(self)
+	self:RegisterForClicks("RightButtonUp");
+end
+
+function TotemButton_OnUpdate(button, elapsed)
 	BuffFrame_UpdateDuration(button, GetTotemTimeLeft(button.slot));
 	if ( GameTooltip:IsOwned(button) ) then
 		GameTooltip:SetTotem(button.slot);
 	end
 end
 
-function TotemButton_Update (button, startTime, duration, icon)
+function TotemButton_Update(button, startTime, duration, icon)
 	local buttonName = button:GetName();
-	local buttonIcon = getglobal(buttonName.."IconTexture");
-	local buttonDuration = getglobal(buttonName.."Duration");
-	local buttonCooldown = getglobal(buttonName.."IconCooldown");
+	local buttonIcon = _G[buttonName.."IconTexture"];
+	local buttonDuration = _G[buttonName.."Duration"];
+	local buttonCooldown = _G[buttonName.."IconCooldown"];
 
 	if ( duration > 0 ) then
 		buttonIcon:SetTexture(icon);

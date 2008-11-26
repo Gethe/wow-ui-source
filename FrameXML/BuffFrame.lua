@@ -16,6 +16,7 @@ DebuffTypeColor["Magic"]	= { r = 0.20, g = 0.60, b = 1.00 };
 DebuffTypeColor["Curse"]	= { r = 0.60, g = 0.00, b = 1.00 };
 DebuffTypeColor["Disease"]	= { r = 0.60, g = 0.40, b = 0 };
 DebuffTypeColor["Poison"]	= { r = 0.00, g = 0.60, b = 0 };
+DebuffTypeColor[""]	= DebuffTypeColor["none"];
 
 
 function BuffFrame_OnLoad (self)

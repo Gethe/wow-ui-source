@@ -914,19 +914,34 @@ function InterfaceOptionsCombatTextPanel_OnEvent (self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local control;
+
 		-- run the enable FCT button's set func to refresh floating combat text and make sure the addon is loaded
-		InterfaceOptionsCombatTextPanelEnableFCT.setFunc(GetCVar(InterfaceOptionsCombatTextPanelEnableFCT.cvar));
+		control = InterfaceOptionsCombatTextPanelEnableFCT;
+		control.setFunc(GetCVar(control.cvar));
 
 		-- fix for bug 106687: self button can no longer be enabled if you're not a rogue or a druid
-		InterfaceOptionsCombatTextPanelComboPoints.Enable =
-			function (self) 
+		control = InterfaceOptionsCombatTextPanelComboPoints;
+		control.SetChecked =
+			function (self, checked)
+				local _, class = UnitClass("player");
+				if ( class ~= "ROGUE" and class ~= "DRUID" ) then
+					checked = false;
+				end
+				getmetatable(self).__index.SetChecked(self, checked);
+			end
+		control.Enable =
+			function (self)
 				local _, class = UnitClass("player");
 				if ( class ~= "ROGUE" and class ~= "DRUID" ) then
 					return;
 				end
 				getmetatable(self).__index.Enable(self);
+				local text = _G[self:GetName().."Text"];
+				local fontObject = text:GetFontObject();
+				_G[self:GetName().."Text"]:SetTextColor(fontObject:GetTextColor());
 			end
-		InterfaceOptionsCombatTextPanelComboPoints.setFunc(GetCVar(InterfaceOptionsCombatTextPanelComboPoints.cvar));
+		control.setFunc(GetCVar(control.cvar));
 	end
 end
 

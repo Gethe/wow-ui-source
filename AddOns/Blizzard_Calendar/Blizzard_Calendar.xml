@@ -130,33 +130,33 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
+				<!--
+					HACK: 0.01 was subtracted from the bottom of all weekday background tex coords to prevent texture seams
+					the real bottom value is 0.8203125
+				-->
 				<Texture name="CalendarWeekday1Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLeftTopTexture" relativePoint="TOPRIGHT">
-							<!-- HACK: 1 pixel x offset is in here because it seems to help with a 1 pixel gap issue -->
+							<!-- HACK: 1 pixel x offset is in here to prevent texture seams -->
 							<Offset x="-1" y="0"/>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8203125"/>
+					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday2Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="CalendarWeekday1Background" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="CalendarWeekday1Background" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.35546875" right="0.70703125" top="0.7109375" bottom="0.8203125"/>
+					<TexCoords left="0.35546875" right="0.70703125" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday3Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="CalendarWeekday2Background" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="CalendarWeekday2Background" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8203125"/>
+					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday4Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
@@ -165,90 +165,68 @@
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.35546875" right="0.70703125" top="0.7109375" bottom="0.8203125"/>
+					<TexCoords left="0.35546875" right="0.70703125" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday5Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="CalendarWeekday4Background" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="CalendarWeekday4Background" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8203125"/>
+					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday6Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="CalendarWeekday5Background" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="CalendarWeekday5Background" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.35546875" right="0.70703125" top="0.7109375" bottom="0.8203125"/>
+					<TexCoords left="0.35546875" right="0.70703125" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday7Background" file="Interface\Calendar\CalendarBackground">
-					<Size>
-						<AbsDimension x="91" y="28"/>
-					</Size>
+					<Size x="91" y="28"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="CalendarWeekday6Background" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="CalendarWeekday6Background" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8203125"/>
+					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<FontString name="CalendarWeekday1Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="CalendarWeekday1Background">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="CalendarWeekday1Background"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
 				<FontString name="CalendarWeekday2Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="CalendarWeekday2Background">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="CalendarWeekday2Background"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
 				<FontString name="CalendarWeekday3Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="CalendarWeekday3Background">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="CalendarWeekday3Background"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
 				<FontString name="CalendarWeekday4Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="CalendarWeekday4Background">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="CalendarWeekday4Background"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
 				<FontString name="CalendarWeekday5Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="CalendarWeekday5Background">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="CalendarWeekday5Background"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
 				<FontString name="CalendarWeekday6Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="CalendarWeekday6Background">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="CalendarWeekday6Background"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
 				<FontString name="CalendarWeekday7Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="CalendarWeekday7Background">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="CalendarWeekday7Background"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="0.6039215686274509803921568627451"/>
 				</FontString>
@@ -290,7 +268,8 @@
 			<Layer level="ARTWORK">
 				<Texture name="CalendarLastDayDarkTexture" file="Interface\Calendar\CalendarShadows" hidden="true">
 					<Size x="3" y="3"/>
-					<TexCoords left="0.0" right="0.005859375" top="0.90234375" bottom="0.9140625"/>
+					<!-- HACK: 0.01 was subtracted from the right to prevent texture seams	-->
+					<TexCoords left="0.0" right="0.004859375" top="0.90234375" bottom="0.9140625"/>
 				</Texture>
 				<Texture name="CalendarWeekdaySelectedTexture" file="Interface\Calendar\Highlights" alphaMode="ADD" hidden="true">
 					<Size x="85" y="21"/>
@@ -1486,7 +1465,6 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-<!--
 			<Button name="CalendarCreateEventRaidInviteButton" inherits="UIPanelButtonTemplate2" text="CALENDAR_INVITE_MEMBERS">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
@@ -1527,7 +1505,6 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
--->
 			<Button name="CalendarCreateEventCreateButton" inherits="CalendarEventButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
@@ -1719,21 +1696,21 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="CalendarMassInviteArenaButton1" inherits="CalendarMassInviteArenaButtonTemplate" id="1">
+			<Button name="CalendarMassInviteArenaButton2" inherits="CalendarMassInviteArenaButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="14" y="-190"/>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="CalendarMassInviteArenaButton2" inherits="CalendarMassInviteArenaButtonTemplate" id="2">
+			<Button name="CalendarMassInviteArenaButton3" inherits="CalendarMassInviteArenaButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOP">
 						<Offset x="0" y="-190"/>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="CalendarMassInviteArenaButton3" inherits="CalendarMassInviteArenaButtonTemplate" id="3">
+			<Button name="CalendarMassInviteArenaButton5" inherits="CalendarMassInviteArenaButtonTemplate" id="5">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset x="-14" y="-190"/>

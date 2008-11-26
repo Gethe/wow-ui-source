@@ -13,7 +13,7 @@
 			GameTooltip:Hide();
 		</OnLeave>
 		<OnMouseUp>
-			MapUnit_OnMouseUp(button, "BattlefieldMinimapRaid", "BattlefieldMinimapParty");
+			MapUnit_OnMouseUp(self, button, "BattlefieldMinimapRaid", "BattlefieldMinimapParty");
 		</OnMouseUp>
 	</Scripts>
 </Frame>

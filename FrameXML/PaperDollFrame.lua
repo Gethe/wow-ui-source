@@ -39,6 +39,7 @@ ARMOR_PER_AGILITY = 2;
 MANA_PER_INTELLECT = 15;
 MANA_REGEN_PER_SPIRIT = 0.2;
 DODGE_PARRY_BLOCK_PERCENT_PER_DEFENSE = 0.04;
+RESILIENCE_CRIT_CHANCE_TO_DAMAGE_REDUCTION_MULTIPLIER = 2.2;
 
 --Pet scaling:
 HUNTER_PET_BONUS = {};
@@ -474,7 +475,7 @@ function PaperDollFrame_SetResilience(statFrame)
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, minResilience);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..STAT_RESILIENCE.." "..minResilience..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, lowestRatingBonus, min(lowestRatingBonus * 2, maxRatingBonus), lowestRatingBonus);
+	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, lowestRatingBonus, min(lowestRatingBonus * RESILIENCE_CRIT_CHANCE_TO_DAMAGE_REDUCTION_MULTIPLIER, maxRatingBonus), lowestRatingBonus);
 	statFrame:Show();
 end
 
@@ -744,6 +745,9 @@ function PaperDollFrame_SetRangedDamage(statFrame, unit)
 	end
 
 	local rangedAttackSpeed, minDamage, maxDamage, physicalBonusPos, physicalBonusNeg, percent = UnitRangedDamage(unit);
+	
+	-- Round to the third decimal place (i.e. 99.9 percent)
+	percent = math.floor(percent  * 10^3 + 0.5) / 10^3
 	local displayMin = max(floor(minDamage),1);
 	local displayMax = max(ceil(maxDamage),1);
 

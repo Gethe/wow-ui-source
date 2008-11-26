@@ -23,7 +23,6 @@
 				end
 			</OnClick>
 			<OnLoad>
-				_G[self:GetName().."Text"]:SetHeight(13);
 				_G[self:GetName().."Count"]:SetPoint("LEFT", self:GetName().."Text", "RIGHT", 2, 0);
 			</OnLoad>
 			<OnEnter>

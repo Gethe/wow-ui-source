@@ -76,7 +76,7 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 			end
 		end
 	end
-	UnitFrame_Update(self);
+	securecall("UnitFrame_Update", self);
 end
 
 function UnitFrame_Update (self)

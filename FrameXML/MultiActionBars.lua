@@ -56,11 +56,11 @@ function MultiActionBar_Update ()
 	--Adjust VehicleSeatIndicator position
 	if ( VehicleSeatIndicator ) then
 		if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 ) then
-			VehicleSeatIndicator:SetPoint("TOPRIGHT", MultiBarLeft, "TOPLEFT", -15, 50);
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -100, -13);
 		elseif ( SHOW_MULTI_ACTIONBAR_3 ) then
-			VehicleSeatIndicator:SetPoint("TOPRIGHT", MultiBarRight, "TOPLEFT", -15, 50);
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -62, -13);
 		else
-			VehicleSeatIndicator:SetPoint("TOPRIGHT", UIParent, "BOTTOMRIGHT", -15, 650);
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", 0, -13);
 		end
 	end
 end

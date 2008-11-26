@@ -1,5 +1,7 @@
 
 CLASS_TRAINER_SKILLS_DISPLAYED = 11;
+CLASS_TRAINER_SKILL_SUBTEXT_WIDTH = 210
+CLASS_TRAINER_SKILL_NOSUBTEXT_WIDTH = 270
 CLASS_TRAINER_SKILL_HEIGHT = 16;
 MAX_LEARNABLE_PROFESSIONS = 2;
 
@@ -126,11 +128,13 @@ function ClassTrainerFrame_Update()
 				skillButton:SetWidth(323);
 			end
 			local skillSubText = getglobal("ClassTrainerSkill"..i.."SubText");
+			local skillText = getglobal("ClassTrainerSkill"..i.."Text");
 			-- Type stuff
 			if ( serviceType == "header" ) then
 				skillButton:SetText(serviceName);
 				skillButton:SetNormalFontObject(GameFontNormalLeft);
 				skillSubText:Hide();
+				skillText:SetWidth(CLASS_TRAINER_SKILL_NOSUBTEXT_WIDTH);
 				if ( isExpanded ) then
 					skillButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
 				else
@@ -143,9 +147,12 @@ function ClassTrainerFrame_Update()
 				skillButton:SetText("  "..serviceName);
 				if ( serviceSubText and serviceSubText ~= "" ) then
 					skillSubText:SetFormattedText(PARENS_TEMPLATE, serviceSubText);
-					skillSubText:SetPoint("LEFT", "ClassTrainerSkill"..i.."Text", "RIGHT", 10, 0);
+					skillText:SetWidth(CLASS_TRAINER_SKILL_SUBTEXT_WIDTH);
+					skillSubText:ClearAllPoints();
+					skillSubText:SetPoint("RIGHT", skillButton, "RIGHT", -2, 0);
 					skillSubText:Show();
 				else
+					skillText:SetWidth(CLASS_TRAINER_SKILL_NOSUBTEXT_WIDTH);
 					skillSubText:Hide();
 				end
 				

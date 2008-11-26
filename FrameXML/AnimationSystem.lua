@@ -20,6 +20,7 @@ function SetUpAnimation(frame, animTable, postFunc, reverse)
 	frame.animPostFunc = postFunc;
 	frame.animating = true;
 	
+	animTable.updateFunc(frame, animTable.getPosFunc(frame, frame.animReverse and 1 or 0));
 end
 
 local function Animation_UpdateFrame(self, elapsed, animTable)

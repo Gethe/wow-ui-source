@@ -159,7 +159,7 @@
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(MicroButtonTooltipText(CURRENCY, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
+						GameTooltip:SetText(MicroButtonTooltipText(CURRENCY, "TOGGLECURRENCY"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

@@ -3279,7 +3279,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		sourceString = UNKNOWN;
 	end
 	
-	if ( destString == "" ) then
+	if ( destEnabled and destString == "" ) then
 		destString = UNKNOWN;
 	end
 	

@@ -565,7 +565,7 @@ end
 
 --[ Channel Roster Functions ]--
 function ChannelRoster_Update(id)
-	if ( not id ) then
+	if ( (not id) or (type(id) ~= "number") ) then
 		id = GetSelectedDisplayChannel();
 	end
 	if ( not id ) then

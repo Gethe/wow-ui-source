@@ -424,7 +424,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				getglobal(self:GetName().."Label"):SetText(GROUP.." "..self:GetID());
+				_G[self:GetName().."Label"]:SetText(GROUP.." "..self:GetID());
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -434,8 +434,8 @@
 		</Size>
 		<Scripts>
 			<OnLoad>
-				getglobal(self:GetName().."Border"):SetWidth(13);
-				getglobal(self:GetName().."Border"):SetHeight(13);
+				_G[self:GetName().."Border"]:SetWidth(13);
+				_G[self:GetName().."Border"]:SetHeight(13);
 			</OnLoad>
 			<OnEnter>
 				if ( self:GetCenter() > GetScreenWidth()/2 ) then
@@ -835,13 +835,13 @@
 			</OnEvent>
 			<OnLoad>
 				local prefix = self:GetName();
-				self.healthBar = getglobal(prefix.."HealthBar");
-				self.manaBar = getglobal(prefix.."ManaBar");
-				self.threatIndicator = getglobal(prefix.."ThreatIndicator");
-				self.nameLabel = getglobal(prefix.."Name");
-				self.clearButton = getglobal(prefix.."ClearButton");
-				self.speaker = getglobal(prefix.."Speaker");
-				self.vehicleIndicator = getglobal(prefix.."VehicleIndicator");
+				self.healthBar = _G[prefix.."HealthBar"];
+				self.manaBar = _G[prefix.."ManaBar"];
+				self.threatIndicator = _G[prefix.."ThreatIndicator"];
+				self.nameLabel = _G[prefix.."Name"];
+				self.clearButton = _G[prefix.."ClearButton"];
+				self.speaker = _G[prefix.."Speaker"];
+				self.vehicleIndicator = _G[prefix.."VehicleIndicator"];
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -918,7 +918,7 @@
 				self:RegisterEvent("READY_CHECK_FINISHED");
 				self:RegisterForDrag("LeftButton");
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				self.label = getglobal(self:GetName() .. "Name");
+				self.label = _G[self:GetName() .. "Name"];
 				self.buttons = {};
 			</OnLoad>
 			<OnEvent>
@@ -933,7 +933,7 @@
 			</OnDragStop>
 			<OnClick>
 				if (button == "RightButton") then
-					ToggleDropDownMenu(1, nil, getglobal(self:GetName().."DropDown"));
+					ToggleDropDownMenu(1, nil, _G[self:GetName().."DropDown"]);
 				end
 			</OnClick>
 			<OnMouseUp>

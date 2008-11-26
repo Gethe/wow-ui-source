@@ -134,6 +134,9 @@ function VideoOptionsResolutionPanel_OnEvent (self, event, ...)
 					return;
 				end
 				getmetatable(self).__index.Enable(self);
+				local text = _G[self:GetName().."Text"];
+				local fontObject = text:GetFontObject();
+				_G[self:GetName().."Text"]:SetTextColor(fontObject:GetTextColor());
 			end
 	end
 end
