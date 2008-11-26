@@ -1076,6 +1076,8 @@ function CalendarFrame_OnShow(self)
 	CalendarSetAbsMonth(month, year);
 	CalendarFrame_Update();
 
+	OpenCalendar();
+
 	PlaySound("igSpellBookOpen");
 end
 

@@ -125,7 +125,7 @@ function ClassTrainerFrame_Update()
 			if ( ClassTrainerListScrollFrame:IsShown() ) then
 				skillButton:SetWidth(293);
 			else
-				skillButton:SetWidth(323);
+				skillButton:SetWidth(313);
 			end
 			local skillSubText = getglobal("ClassTrainerSkill"..i.."SubText");
 			local skillText = getglobal("ClassTrainerSkill"..i.."Text");
