@@ -544,6 +544,7 @@ function InterfaceOptionsDisplayPanel_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		BuffButtons_UpdatePositions();
 		InterfaceOptionsDisplayPanelShowClock_SetFunc(GetCVar(InterfaceOptionsDisplayPanelShowClock.cvar));
+		Minimap_UpdateRotationSetting();
 	end
 end
 
@@ -1311,6 +1312,10 @@ function InterfaceOptionsHelpPanel_SetTutorials (value)
 end
 
 -- [[ Languages Options Panel ]] --
+
+LanguagesPanelOptions = {
+	useEnglishAudio = { text = "USE_ENGLISH_AUDIO" },
+}
 
 function InterfaceOptionsLanguagesPanel_OnLoad (panel)
 	-- Check and see if we have more than one locale. If we don't, then don't register this panel.

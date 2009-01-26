@@ -92,7 +92,7 @@ function ToggleBackpack()
 		-- If there are tokens watched then show the bar
 		if ( ManageBackpackTokenFrame ) then
 			BackpackTokenFrame_Update();
-			ManageBackpackTokenFrame(frame);
+			ManageBackpackTokenFrame();
 		end
 	end
 end

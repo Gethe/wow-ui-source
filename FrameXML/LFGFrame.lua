@@ -684,7 +684,7 @@ function Dropdown_GetLFGTypes(...)
 end
 
 function LFGTypeButton_OnClick(self)
-	SetLFGTypeCriteria(getglobal(self.owner), self:GetID());
+	SetLFGTypeCriteria(self.owner, self:GetID());
 	LFGFrame_UpdateDropDowns();
 end
 
@@ -756,7 +756,7 @@ function Dropdown_GetLFGTypeNames(...)
 end
 
 function LFGNameButton_OnClick(self)
-	SetLFGNameCriteria(getglobal(self.owner), self:GetID(), self.value);
+	SetLFGNameCriteria(self.owner, self:GetID(), self.value);
 	LFGFrame_UpdateDropDowns();
 end
 

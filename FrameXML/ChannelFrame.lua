@@ -685,7 +685,7 @@ end
 
 --[ DropDown Functions ]--
 function ChannelRosterDropDown_Initialize()
-	UnitPopup_ShowMenu(getglobal(UIDROPDOWNMENU_OPEN_MENU), "CHAT_ROSTER", nil, ChannelRosterDropDown.name);
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "CHAT_ROSTER", nil, ChannelRosterDropDown.name);
 end
 
 function ChannelRosterFrame_ShowDropdown(id)
@@ -980,7 +980,6 @@ function ChannelPulloutRoster_GetActiveSession ()
 end
 
 function ChannelPulloutRoster_GetSessionIDByName (name)
-	assert(name, "Usage: ChannelPulloutRoster_GetSessionIDByName(name)");
 	for i = 1, GetNumVoiceSessions() do
 		if ( GetVoiceSessionInfo(i) == name ) then
 			return i;
@@ -1028,9 +1027,7 @@ function ChannelPulloutRoster_GetSessionInfo (roster)
 end
 
 function ChannelPulloutRoster_Populate (roster, templateName, maxButtons)
-	rosterFrame = roster or rosterFrame;
-	assert(rosterFrame and templateName, 'Usage: ChannelPullout_PopulateRoster(rosterFrame, "templateName")');
-	
+	rosterFrame = roster or rosterFrame;	
 	local button;
 	if ( not rosterFrame.buttons ) then
 		rosterFrame.buttons = {}

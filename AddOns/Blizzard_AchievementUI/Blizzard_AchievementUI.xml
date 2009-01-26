@@ -1,6 +1,131 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 
+	<StatusBar name="AchievementFrameSummaryCategoryTemplate" drawLayer="BORDER" virtual="true">
+		<Size>
+			<AbsDimension x="234" y="21"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="6" y="4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="0" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="-5" y="3"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
+					<Size>
+						<AbsDimension x="32" y="48"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="-15" y="16"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.423828125" right="0.486" top="0.56640625" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
+					<Size>
+						<AbsDimension x="32" y="48"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset x="15" y="16"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords right="0.423828125" left="0.486" bottom="0.75" top="0.56640625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\AchievementFrame\UI-Achievement-Header">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords right="0.486" left="0.889224609375" bottom="0.75" top="0.56640625"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentFillBar">
+					<Size>
+						<AbsDimension x="0" y="15"/>
+					</Size>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+		<BarColor r="0" g="1" b="0"/>
+		<Frames>
+			<Button name="$parentButton">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentHighlight" setAllPoints="true" hidden="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-StatusBar-Highlight" alphaMode="ADD">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset x="-7" y="8"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="1" top="0" bottom="1"/>
+								</Texture>
+								<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-StatusBar-Highlight" alphaMode="ADD">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT">
+											<Offset x="7" y="8"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords right="0" left="1" top="0" bottom="1"/>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\AchievementFrame\UI-Achievement-StatusBar-Highlight" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+									<TexCoords right="1" left="0.5" top="0" bottom="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnClick function="AchievementFrameSummaryCategoryButton_OnClick"/>
+					<OnEnter>
+						getglobal(self:GetName().."Highlight"):Show();
+					</OnEnter>
+					<OnLeave>
+						getglobal(self:GetName().."Highlight"):Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="AchievementFrameSummaryCategory_OnLoad"/>
+			<OnShow function="AchievementFrameSummaryCategory_OnShow"/>
+		</Scripts>		
+	</StatusBar>
 	<CheckButton name="AchievementCheckButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="15" y="15"/>
@@ -285,7 +410,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 
 	<Button name="MetaCriteriaTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="30" y="30"/>
+			<AbsDimension x="155" y="30"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -293,15 +418,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon">
+					<Size x="17" y="17"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
 								<AbsDimension x="6" y="-6"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-7" y="7"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -309,9 +430,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder">
+					<Size x="30" y="30"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
 				</Texture>
@@ -332,9 +453,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Texture>
 				<FontString name="$parentLabel" inherits="AchievementCriteriaFont" text="Fake criteria!">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
+						<Anchor point="LEFT" relativePoint="LEFT">
 							<Offset>
-								<AbsDimension x="4" y="2"/>
+								<AbsDimension x="34" y="2"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -353,7 +474,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnEnter>
 				if ( self.date ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:AddLine(self.date, 1, 1, 1);
+					GameTooltip:AddLine(string.format(ACHIEVEMENT_META_COMPLETED_DATE, self.date), 1, 1, 1);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -366,6 +487,15 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				end
 			</OnClick>
 		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset x="0" y="2"/>
+				</Anchor>
+			</Anchors>						
+			<Color r="1" g="1" b="1" a=".15"/>
+		</HighlightTexture>
 	</Button>
 	
 	<!-- Looking for AchievementProgressBarTemplate? It's in QuestLogFrame.xml, since tracking needs it!, -->
@@ -857,6 +987,17 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="1"/>
 				</Texture>
+				<Texture name="$parentPlusMinus" file="Interface\AchievementFrame\UI-Achievement-PlusMinus" hidden="true">
+					<Size>
+						<AbsDimension x="15" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="72" y="-9"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right=".5" top="0" bottom=".5"/>
+				</Texture>				
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -989,7 +1130,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Layer level="BACKGROUND">
 						<Texture name="$parentIcon" file="Interface\AchievementFrame\UI-Achievement-Shields">
 							<Size>
-								<AbsDimension x="64" y="64"/>
+								<AbsDimension x="66" y="64"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPRIGHT">
@@ -1003,35 +1144,17 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString name="$parentPoints" inherits="AchievementPointsFont">
-							<Size x="48" y="16"/>
+							<Size x="32" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentIcon">
-									<Offset x="14" y="-21"/>
-								</Anchor>
-								<Anchor point="TOPRIGHT" relativeTo="$parentIcon">
-									<Offset x="-16" y="-21"/>
+								<Anchor point="TOPRIGHT">
+									<Offset x="-18" y="-26"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>				
 				<Scripts>
-					<OnLoad>
-						AchievementShield_OnLoad(self);
-						self.points.SetText = 
-							function (self, text)
-								getmetatable(self).__index.SetText(self, text);
-								local width = self:GetStringWidth();
-								
-								-- Round the width, GetStringWidth returns a float.
-								width = math.floor(width * 10^0 + 0.5) / 10^0;
-								if ( math.fmod(width, 2) == 0 ) then
-									self:SetPoint("TOPLEFT", "$parentIcon", 13, -21);
-								else
-									self:SetPoint("TOPLEFT", "$parentIcon", 14, -21);
-								end
-							end
-					</OnLoad>
+					<OnLoad function="AchievementShield_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentObjectives">
@@ -2231,48 +2354,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 				<Layers>
-					<Layer level="BORDER">
-						<Texture name="$parentPointBorder" file="Interface\AchievementFrame\UI-Achievement-Header">
-							<Size>
-								<AbsDimension x="133" y="39"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="AchievementFrameHeader" relativePoint="BOTTOM">
-									<Offset x="20" y="16"/>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.419921875" right="0.6796875" top="0.4140625" bottom="0.56640625"/>
-						</Texture>
-						<FontString name="$parentTitle" inherits="GameFontNormal" text="ACHIEVEMENT_TITLE">
-							<Size x="200" y="12"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP">
-									<Offset x="0" y="7"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString name="$parentPoints" inherits="GameFontHighlight">
-							<Size x="0" y="12"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP">
-									<Offset x="0" y="-13"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<Texture name="$parentShield" file="Interface\AchievementFrame\UI-Achievement-TinyShield">
-							<Size>
-								<AbsDimension x="20" y="20"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT">
-									<Offset x="3" y="-1"/>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.625" top="0" bottom="0.625"/>
-						</Texture> 	
-					</Layer>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
 							<Size>
@@ -2294,6 +2375,56 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Anchors>
 							<TexCoords left="0" right="0.419921875" top="0.4140625" bottom="0.8046875"/>
 						</Texture>
+					</Layer>				
+					<Layer level="BORDER">
+						<Texture name="$parentPointBorder" file="Interface\AchievementFrame\UI-Achievement-Header">
+							<Size>
+								<AbsDimension x="133" y="39"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="AchievementFrameHeader" relativePoint="BOTTOM">
+									<Offset x="20" y="16"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.419921875" right="0.6796875" top="0.4140625" bottom="0.56640625"/>
+						</Texture>
+						<FontString name="$parentTitle" inherits="GameFontNormal" text="ACHIEVEMENT_TITLE">
+							<Size x="200" y="12"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP">
+									<Offset x="0" y="7"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentRightDDLInset" file="Interface\AchievementFrame\UI-Achievement-RightDDLInset">
+							<Size x="128" y="32"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset x="-76" y="-56"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentPoints" inherits="GameFontHighlight">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP">
+									<Offset x="0" y="-13"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentShield" file="Interface\AchievementFrame\UI-Achievement-TinyShield">
+							<Size>
+								<AbsDimension x="20" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT">
+									<Offset x="3" y="-1"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.625" top="0" bottom="0.625"/>
+						</Texture> 	
 					</Layer>
 				</Layers>
 			</Frame>
@@ -2427,6 +2558,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<OnEvent>
 						AchievementFrameAchievements_OnEvent(self, event, ...);
 					</OnEvent>
+					<OnShow>
+						AchievementFrameFilterDropDown:Show();
+						AchievementFrameHeaderRightDDLInset:Show();
+					</OnShow>
+					<OnHide>
+						AchievementFrameFilterDropDown:Hide();
+						AchievementFrameHeaderRightDDLInset:Hide();
+					</OnHide>
 				</Scripts>
 				<Frames>
 					<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
@@ -2481,7 +2620,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Frame>
 			<Frame name="$parentStats" hidden="true">
 				<Size>
-					<AbsDimension x="504" y="440"/>
+					<AbsDimension x="506" y="440"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT">
@@ -2491,20 +2630,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 					<Anchor point="BOTTOM" relativeTo="$parentCategories" relativePoint="BOTTOM"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\AchievementFrame\UI-Achievement-StatsBackground">
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="0" y="0"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="0" y="0"/>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>
 						AchievementFrameStats_OnLoad(self);
@@ -2514,6 +2639,35 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</OnEvent>
 				</Scripts>
 				<Frames>
+					<Frame name="$parentBG">
+						<!-- This prevents the BG from being resized with the rest of the frame when the scrollbar pops in and out -->
+						<Size x="526" y="438"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="2" y="0"/>
+							</Anchor>
+							<Anchor point="BOTTOM">
+								<Offset x="0" y="3"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\AchievementFrame\UI-Achievement-StatsBackground">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset x="0" y="0"/>
+										</Anchor>
+										<Anchor point="BOTTOMRIGHT">
+											<Offset x="0" y="0"/>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad function="LowerFrameLevel"/>
+						</Scripts>
+					</Frame>
 					<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -2591,81 +2745,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Layer>
 				</Layers>
 				<Frames>
-					<StatusBar name="$parentStatusBar" drawLayer="BORDER">
-						<Size>
-							<AbsDimension x="488" y="21"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOP">
-								<Offset x="-0" y="-21"/>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString name="$parentTitle" inherits="GameFontNormal" text="ACHIEVEMENTS_COMPLETED">
-									<Anchors>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="6" y="4"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentText" inherits="GameFontHighlight">
-									<Size>
-										<AbsDimension x="0" y="14"/>
-									</Size>
-									<Anchors>
-										<Anchor point="RIGHT">
-											<Offset x="-5" y="3"/>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
-									<Size>
-										<AbsDimension x="32" y="48"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="-15" y="16"/>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.423828125" right="0.486" top="0.56640625" bottom="0.75"/>
-								</Texture>
-								<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
-									<Size>
-										<AbsDimension x="32" y="48"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPRIGHT">
-											<Offset x="15" y="16"/>
-										</Anchor>
-									</Anchors>
-									<TexCoords right="0.423828125" left="0.486" bottom="0.75" top="0.56640625"/>
-								</Texture>
-								<Texture name="$parentMiddle" file="Interface\AchievementFrame\UI-Achievement-Header">
-									<Size>
-										<AbsDimension x="218" y="48"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
-									</Anchors>
-									<TexCoords right="0.486" left="0.889224609375" bottom="0.75" top="0.56640625"/>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentFillBar">
-									<Size>
-										<AbsDimension x="0" y="15"/>
-									</Size>
-									<Color r="0" g="0" b="0" a="0.5"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-						<BarColor r="0" g="1" b="0"/>
-					</StatusBar>
 					<Frame setAllPoints="true">
 						<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 							<EdgeSize>
@@ -2686,14 +2765,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Frame>
 					<Frame name="$parentAchievements">
 						<Size>
-							<AbsDimension x="0" y="258"/>
+							<AbsDimension x="0" y="210"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
-								<Offset x="5" y="-52"/>
+								<Offset x="5" y="-20"/>
 							</Anchor>
 							<Anchor point="TOPRIGHT">
-								<Offset x="-5" y="-52"/>
+								<Offset x="-5" y="-20"/>
 							</Anchor>
 						</Anchors>
 						<Layers>
@@ -2744,29 +2823,18 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Frame>
 						</Frames>
 					</Frame>
-					<Frame name="$parentStats">
+					<Frame name="$parentCategories">
 						<Size>
 							<AbsDimension x="0" y="164"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAchievements" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="0"/>
+								<Offset x="0" y="-8"/>
 							</Anchor>
 							<Anchor point="TOPRIGHT" relativeTo="$parentAchievements" relativePoint="BOTTOMRIGHT">
-								<Offset x="0" y="0"/>
+								<Offset x="0" y="-8"/>
 							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentEmptyText" inherits="GameFontHighlight" text="NO_UPDATED_STATS_TEXT">
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset x="0" y="-30"/>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
+						</Anchors>								
 						<Frames>
 							<Frame name="$parentHeader">
 								<Size x="0" y="20"/>
@@ -2780,43 +2848,18 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture name="$parentHeaderLeft" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons">
-											<Size>
-												<AbsDimension x="23" y="23"/>
-											</Size>
+										<Texture name="$parentTexture" file="Interface\AchievementFrame\UI-Achievement-RecentHeader">
 											<Anchors>
-												<Anchor point="BOTTOMLEFT">
-													<Offset x="0" y="-1"/>
+												<Anchor point="TOPLEFT">
+													<Offset x="-20" y="0"/>
 												</Anchor>
-											</Anchors>
-											<TexCoords left="0" right="0.08984375" top="0" bottom="0.1796875"/>
-										</Texture>
-										<Texture name="$parentHeaderRight" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons">
-											<Size>
-												<AbsDimension x="23" y="23"/>
-											</Size>
-											<Anchors>
 												<Anchor point="BOTTOMRIGHT">
-													<Offset x="0" y="-1"/>
+													<Offset x="20" y="0"/>
 												</Anchor>
 											</Anchors>
-											<TexCoords left="0.91015625" right="1" top="0" bottom="0.1796875"/>
+											<TexCoords left="0" right="1" top="0" bottom="0.71875"/>
 										</Texture>
-										<Texture name="$parentHeaderMiddle" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons">
-											<Size>
-												<AbsDimension x="0" y="23"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="$parentHeaderLeft" relativePoint="TOPRIGHT">
-													<Offset x="0" y="0"/>
-												</Anchor>
-												<Anchor point="TOPRIGHT" relativeTo="$parentHeaderRight" relativePoint="TOPLEFT">
-													<Offset x="0" y="0"/>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0.08984375" right="0.91015625" top="0" bottom="0.1796875"/>
-										</Texture>
-										<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="LATEST_UPDATED_STATS">
+										<FontString name="$parentTitle" inherits="GameFontNormal" text="ACHIEVEMENT_CATEGORY_PROGRESS">
 											<Size x="0" y="20"/>
 											<Anchors>
 												<Anchor point="CENTER">
@@ -2827,6 +2870,137 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 									</Layer>
 								</Layers>
 							</Frame>
+							<StatusBar name="$parentStatusBar" drawLayer="BORDER">
+								<Size>
+									<AbsDimension x="488" y="21"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentHeader" relativePoint="BOTTOM">
+										<Offset x="0" y="-6"/>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString name="$parentTitle" inherits="GameFontNormal" text="ACHIEVEMENTS_COMPLETED">
+											<Anchors>
+												<Anchor point="LEFT">
+													<Offset>
+														<AbsDimension x="6" y="4"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="$parentText" inherits="GameFontHighlight">
+											<Size>
+												<AbsDimension x="0" y="14"/>
+											</Size>
+											<Anchors>
+												<Anchor point="RIGHT">
+													<Offset x="-5" y="3"/>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
+											<Size>
+												<AbsDimension x="32" y="48"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset x="-15" y="16"/>
+												</Anchor>
+											</Anchors>
+											<TexCoords left="0.423828125" right="0.486" top="0.56640625" bottom="0.75"/>
+										</Texture>
+										<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
+											<Size>
+												<AbsDimension x="32" y="48"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPRIGHT">
+													<Offset x="15" y="16"/>
+												</Anchor>
+											</Anchors>
+											<TexCoords right="0.423828125" left="0.486" bottom="0.75" top="0.56640625"/>
+										</Texture>
+										<Texture name="$parentMiddle" file="Interface\AchievementFrame\UI-Achievement-Header">
+											<Size>
+												<AbsDimension x="218" y="48"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+												<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+											</Anchors>
+											<TexCoords right="0.486" left="0.889224609375" bottom="0.75" top="0.56640625"/>
+										</Texture>
+									</Layer>
+									<Layer level="BACKGROUND">
+										<Texture name="$parentFillBar">
+											<Size>
+												<AbsDimension x="0" y="15"/>
+											</Size>
+											<Color r="0" g="0" b="0" a="0.5"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+								<BarColor r="0" g="1" b="0"/>
+							</StatusBar>							
+							<StatusBar name="$parentCategory1" inherits="AchievementFrameSummaryCategoryTemplate" id="92">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentStatusBar" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="-24"/>
+									</Anchor>
+								</Anchors>
+							</StatusBar>
+							<StatusBar name="$parentCategory2" inherits="AchievementFrameSummaryCategoryTemplate" id="96">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="TOPRIGHT">
+										<Offset x="20" y="0"/>
+									</Anchor>
+								</Anchors>
+							</StatusBar>
+							<StatusBar name="$parentCategory3" inherits="AchievementFrameSummaryCategoryTemplate" id="97">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="-14"/>
+									</Anchor>
+								</Anchors>							
+							</StatusBar>
+							<StatusBar name="$parentCategory4" inherits="AchievementFrameSummaryCategoryTemplate" id="95">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="TOPRIGHT">
+										<Offset x="20" y="0"/>
+									</Anchor>
+								</Anchors>						
+							</StatusBar>
+							<StatusBar name="$parentCategory5" inherits="AchievementFrameSummaryCategoryTemplate" id="168">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="-14"/>
+									</Anchor>
+								</Anchors>						
+							</StatusBar>
+							<StatusBar name="$parentCategory6" inherits="AchievementFrameSummaryCategoryTemplate" id="169">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="TOPRIGHT">
+										<Offset x="20" y="0"/>
+									</Anchor>
+								</Anchors>
+							</StatusBar>
+							<StatusBar name="$parentCategory7" inherits="AchievementFrameSummaryCategoryTemplate" id="201">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="-14"/>
+									</Anchor>
+								</Anchors>							
+							</StatusBar>
+							<StatusBar name="$parentCategory8" inherits="AchievementFrameSummaryCategoryTemplate" id="155">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="TOPRIGHT">
+										<Offset x="20" y="0"/>
+									</Anchor>
+								</Anchors>							
+							</StatusBar>							
 						</Frames>
 					</Frame>
 				</Frames>
@@ -3224,7 +3398,82 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>				
-			</Button>			
+			</Button>
+			<Frame name="$parentFilterDropDown" hidden="false">
+				<Size x="110" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-98" y="10"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Text">
+							<Size x="0" y="32"/>								
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset x="0" y="4"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+						
+				<Frames>
+					<Button name="$parentButton">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ToggleDropDownMenu(nil, nil, self:GetParent());
+								PlaySound("igMainMenuOptionCheckBoxOn");
+							</OnClick>
+						</Scripts>
+						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</NormalTexture>
+						<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</PushedTexture>
+						<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</DisabledTexture>
+						<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</HighlightTexture>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad function="AchievementFrameFilterDropDown_OnLoad"/>
+					<OnHide>
+						CloseDropDownMenus()
+					</OnHide>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>

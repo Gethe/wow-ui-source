@@ -17,6 +17,15 @@ function ShowPartyFrame()
 	end
 end
 
+function PartyMemberFrame_UpdateArt(self)
+	if ( UnitHasVehicleUI("party"..self:GetID()) ) then
+		local vehicleType = UnitVehicleSkin("party"..self:GetID());
+		PartyMemberFrame_ToVehicleArt(self, vehicleType);
+	else
+		PartyMemberFrame_ToPlayerArt(self);
+	end
+end
+
 function PartyMemberFrame_ToPlayerArt(self)
 	self.state = "player";
 	local prefix = self:GetName();
@@ -93,12 +102,7 @@ function PartyMemberFrame_OnLoad (self)
 	end
 	SecureUnitButton_OnLoad(self, "party"..self:GetID(), showmenu);
 	
-	if ( UnitHasVehicleUI("party"..self:GetID()) ) then
-		local vehicleType = UnitVehicleSkin("party"..self:GetID());
-		PartyMemberFrame_ToVehicleArt(self, vehicleType);
-	else
-		PartyMemberFrame_ToPlayerArt(self);
-	end
+	PartyMemberFrame_UpdateArt(self);
 end
 
 function PartyMemberFrame_UpdateMember (self)
@@ -281,6 +285,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 
 	if ( event == "PARTY_MEMBERS_CHANGED" ) then
 		PartyMemberFrame_UpdateMember(self);
+		PartyMemberFrame_UpdateArt(self);
 		return;
 	end
 	
@@ -499,12 +504,7 @@ function PartyFrameDropDown_OnLoad (self)
 end
 
 function PartyFrameDropDown_Initialize (self)
-	local dropdown;
-	if ( UIDROPDOWNMENU_OPEN_MENU ) then
-		dropdown = getglobal(UIDROPDOWNMENU_OPEN_MENU);
-	else
-		dropdown = self;
-	end
+	local dropdown = UIDROPDOWNMENU_OPEN_MENU or self;
 	UnitPopup_ShowMenu(dropdown, "PARTY", "party"..dropdown:GetParent():GetID());
 end
 

@@ -21,14 +21,8 @@ StaticPopupDialogs["CALENDAR_DELETE_EVENT"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	whileDead = 1,
-	OnAccept = function(self)
-		local dayButton = CalendarContextMenu.dayButton;
-		local eventButton = CalendarContextMenu.eventButton;
-		CalendarContextEventRemove(dayButton.monthOffset, dayButton.day, eventButton.eventIndex);
-		if ( CalendarFrame.selectedEventButton == eventButton ) then
-			CalendarFrame_HideEventFrame();
-			CalendarDayEventButton_Click();
-		end
+	OnAccept = function (self)
+		CalendarContextEventRemove();
 	end,
 	OnShow = function (self)
 		CalendarFrame_PushModal(self);
@@ -61,7 +55,7 @@ StaticPopupDialogs["CALENDAR_ERROR"] = {
 tinsert(UIMenus, "CalendarContextMenu");
 UIPanelWindows["CalendarFrame"] = { area = "doublewide", pushable = 0, width = 840,	whileDead = 1, yOffset = 20 };
 
--- CalendarMenus is a table of frames that should close when you press Escape. The logic is in CloseCalendarMenus()
+-- CalendarMenus is an ORDERED table of frames, one of which will close when you press Escape.
 local CalendarMenus = {
 	"CalendarEventPickerFrame",
 	"CalendarTexturePickerFrame",
@@ -71,7 +65,7 @@ local CalendarMenus = {
 	"CalendarViewHolidayFrame",
 	"CalendarViewRaidFrame"
 };
--- this function will attempt to close the first open menu in the CalendarMenus table...ORDER IS IMPORTANT!
+-- this function will attempt to close the first open menu in the CalendarMenus table
 function CloseCalendarMenus()
 	for _, menuName in next, CalendarMenus do
 		local menu = _G[menuName];
@@ -134,19 +128,6 @@ local CALENDAR_DAYEVENTBUTTON_HEIGHT	= 12;
 local CALENDAR_DAYEVENTBUTTON_BIGHEIGHT	= 24;
 local CALENDAR_DAYEVENTBUTTON_XOFFSET	= 4;
 local CALENDAR_DAYEVENTBUTTON_YOFFSET	= -3;
-local CALENDAR_DAYEVENTBUTTON_BACKDROP = {
-	bgFile		= "Interface\\Calendar\\EventButtonBackdropBackground",
-	edgeFile	= "Interface\\Calendar\\EventButtonBackdropBorder",
-	tile		= false,
-	tileSize	= 8,
-	edgeSize	= 8,
-	insets = {
-		left	= 0,
-		right	= 0,
-		top		= 0,
-		bottom	= 0,
-	},
-};
 
 -- ContextMenu flags
 local CALENDAR_CONTEXTMENU_FLAG_SHOWDAY			= 0x01;
@@ -202,7 +183,7 @@ local DARKFLAG_NEXTMONTH_LEFTRIGHT			= DARKFLAG_NEXTMONTH + DARKFLAG_SIDE_LEFT +
 -- shared flags
 local DARKFLAG_NEXTMONTH_LEFT				= DARKFLAG_NEXTMONTH + DARKFLAG_SIDE_LEFT;
 local DARKFLAG_NEXTMONTH_RIGHT				= DARKFLAG_NEXTMONTH + DARKFLAG_SIDE_RIGHT;
--- the dark day texture maps simplify tex coord setup for dark days
+-- the dark day tcoord tables simplify tex coord setup for dark days
 local DARKDAY_TOP_TCOORDS = {
 	[DARKFLAG_PREVMONTH_TOP] = {
 		left	= 91 / 512,
@@ -1035,12 +1016,6 @@ end
 function CalendarFrame_OnEvent(self, event, ...)
 	if ( event == "CALENDAR_UPDATE_EVENT_LIST" ) then
 		CalendarFrame_Update();
---[[
-	elseif ( event == "CALENDAR_UPDATE_PENDING_INVITES" ) then
-		-- we do a full update here because, for example, if a day had pending invites and now it no longer
-		-- does (or vice versa), then it's pending invite texture needs to change its shown state
-		CalendarFrame_Update();
---]]
 	elseif ( event == "CALENDAR_OPEN_EVENT" ) then
 		-- hide the invite context menu right off the bat, since it's probably going to be invalid
 		CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
@@ -1163,6 +1138,7 @@ function CalendarFrame_Update()
 	local selectedDay = CalendarFrame.selectedDay;
 	local selectedYear = CalendarFrame.selectedYear;
 	local selectedEventMonthOffset, selectedEventDay, selectedEventIndex = CalendarGetEventIndex();
+	local contextEventMonthOffset, contextEventDay, contextEventIndex = CalendarContextGetEventIndex();
 
 	-- set title
 	CalendarFrame_UpdateTitle();
@@ -1187,8 +1163,10 @@ function CalendarFrame_Update()
 	local darkBottomFlags = 0;
 	local isSelectedDay, isSelectedMonth;
 	local isToday, isThisMonth;
+	local isContextEventDay;
+	local isSelectedEventMonthOffset;
+	local isContextEventMonthOffset;
 	local day;
-	local eventIndex, isSelectedEventMonthOffset;
 
 	-- adjust the first week day
 	--firstWeekday = _CalendarFrame_GetWeekdayIndex(firstWeekday);
@@ -1199,6 +1177,7 @@ function CalendarFrame_Update()
 	isSelectedMonth = selectedMonth == prevMonth and selectedYear == prevYear;
 	isThisMonth = presentMonth == prevMonth and presentYear == prevYear;
 	isSelectedEventMonthOffset = selectedEventMonthOffset == -1;
+	isContextEventMonthOffset = contextEventMonthOffset == -1;
 	while ( _CalendarFrame_GetWeekdayIndex(buttonIndex) ~= firstWeekday ) do
 		darkTopFlags = DARKFLAG_PREVMONTH + DARKFLAG_SIDE_TOP;
 		darkBottomFlags = DARKFLAG_PREVMONTH + DARKFLAG_SIDE_BOTTOM;
@@ -1210,12 +1189,15 @@ function CalendarFrame_Update()
 			darkTopFlags = darkTopFlags + DARKFLAG_SIDE_RIGHT;
 			darkBottomFlags = darkBottomFlags + DARKFLAG_SIDE_RIGHT;
 		end
+
 		isSelectedDay = isSelectedMonth and selectedDay == day;
 		isToday = isThisMonth and presentDay == day;
-		eventIndex = isSelectedEventMonthOffset and selectedEventDay == day and selectedEventIndex;
+		isContextEventDay = isContextEventMonthOffset and contextEventDay == day;
 
-		CalendarFrame_UpdateDay(buttonIndex, day, -1, isSelectedDay, isToday, darkTopFlags, darkBottomFlags);
-		CalendarFrame_UpdateDayEvents(buttonIndex, day, -1, eventIndex);
+		CalendarFrame_UpdateDay(buttonIndex, day, -1, isSelectedDay, isContextEventDay, isToday, darkTopFlags, darkBottomFlags);
+		CalendarFrame_UpdateDayEvents(buttonIndex, day, -1,
+			isSelectedEventMonthOffset and selectedEventDay == day and selectedEventIndex,
+			isContextEventDay and contextEventIndex);
 
 		day = day + 1;
 		darkTexIndex = darkTexIndex + 1;
@@ -1226,13 +1208,16 @@ function CalendarFrame_Update()
 	isSelectedMonth = selectedMonth == month and selectedYear == year;
 	isThisMonth = presentMonth == month and presentYear == year;
 	isSelectedEventMonthOffset = selectedEventMonthOffset == 0;
+	isContextEventMonthOffset = contextEventMonthOffset == 0;
 	while ( day <= numDays ) do
 		isSelectedDay = isSelectedMonth and selectedDay == day;
 		isToday = isThisMonth and presentDay == day;
-		eventIndex = isSelectedEventMonthOffset and selectedEventDay == day and selectedEventIndex;
+		isContextEventDay = isContextEventMonthOffset and contextEventDay == day;
 
-		CalendarFrame_UpdateDay(buttonIndex, day, 0, isSelectedDay, isToday);
-		CalendarFrame_UpdateDayEvents(buttonIndex, day, 0, eventIndex);
+		CalendarFrame_UpdateDay(buttonIndex, day, 0, isSelectedDay, isContextEventDay, isToday);
+		CalendarFrame_UpdateDayEvents(buttonIndex, day, 0,
+			isSelectedEventMonthOffset and selectedEventDay == day and selectedEventIndex,
+			isContextEventDay and contextEventIndex);
 
 		day = day + 1;
 		buttonIndex = buttonIndex + 1;
@@ -1281,10 +1266,12 @@ function CalendarFrame_Update()
 
 		isSelectedDay = isSelectedMonth and selectedDay == day;
 		isToday = isThisMonth and presentDay == day;
-		eventIndex = isSelectedEventMonthOffset and selectedEventDay == day and selectedEventIndex;
+		isContextEventDay = isContextEventMonthOffset and contextEventDay == day;
 
-		CalendarFrame_UpdateDay(buttonIndex, day, 1, isSelectedDay, isToday, darkTopFlags, darkBottomFlags);
-		CalendarFrame_UpdateDayEvents(buttonIndex, day, 1, eventIndex);
+		CalendarFrame_UpdateDay(buttonIndex, day, 1, isSelectedDay, isContextEventDay, isToday, darkTopFlags, darkBottomFlags);
+		CalendarFrame_UpdateDayEvents(buttonIndex, day, 1,
+			isSelectedEventMonthOffset and selectedEventDay == day and selectedEventIndex,
+			isContextEventDay and contextEventIndex);
 
 		day = day + 1;
 		darkTexIndex = darkTexIndex + 1;
@@ -1300,10 +1287,31 @@ function CalendarFrame_Update()
 		end
 	end
 
-	-- this is a kludgy fix...but for now, we can't reliably figure out whether or not the delete confirmation
-	-- popup still refers to a valid event (or at least the event that the player wants to delete) so we're going
-	-- to have to force the delete confirmation popup to close on each update...kind of annoying
-	StaticPopup_Hide("CALENDAR_DELETE_EVENT");
+	-- if the context menu was set to an event...
+	if ( CalendarContextMenu.eventButton and
+		 CalendarContextMenu.func == CalendarDayContextMenu_Initialize ) then
+		if ( contextEventDay == 0 ) then
+			--...and the context event no longer exists
+			-- hide the context menu
+			CalendarContextMenu_Hide();
+			-- hide the event deletion popup
+			-- this might seem kludgy, but it takes just as long, if not longer, to check visibility of the popup
+			-- as it does to just hide it, that's why we don't check visibility first
+			StaticPopup_Hide("CALENDAR_DELETE_EVENT");
+		elseif ( CalendarContextMenu:IsShown() ) then
+			local dayButton = CalendarContextMenu.dayButton;
+			local eventButton = CalendarContextMenu.eventButton;
+			if ( dayButton.monthOffset ~= contextEventMonthOffset or
+				 dayButton.day ~= contextEventDay or
+				 eventButton.eventIndex ~= contextEventIndex ) then
+				--...and the event index changed, hide the context menu
+				-- you might be thinking "why don't we just reanchor the context menu to the proper day?"
+				-- great question! we don't do this because we don't want the UI to jump around on the user
+				-- like that, especially since calendar updates are not always caused by the user
+				CalendarContextMenu_Hide();
+			end
+		end
+	end
 end
 
 function CalendarFrame_UpdateTitle()
@@ -1311,7 +1319,7 @@ function CalendarFrame_UpdateTitle()
 	CalendarYearName:SetText(CalendarFrame.viewedYear);
 end
 
-function CalendarFrame_UpdateDay(index, day, monthOffset, isSelected, isToday, darkTopFlags, darkBottomFlags)
+function CalendarFrame_UpdateDay(index, day, monthOffset, isSelected, isContext, isToday, darkTopFlags, darkBottomFlags)
 	local button = CalendarDayButtons[index];
 	local buttonName = button:GetName();
 	local dateLabel = _G[buttonName.."DateFrameDate"];
@@ -1341,7 +1349,9 @@ function CalendarFrame_UpdateDay(index, day, monthOffset, isSelected, isToday, d
 	if ( isSelected ) then
 		CalendarFrame_SetSelectedDay(button);
 	else
-		button:UnlockHighlight();
+		if ( not isContext ) then
+			button:UnlockHighlight();
+		end
 	end
 
 	-- highlight the button if it is today
@@ -1351,7 +1361,7 @@ function CalendarFrame_UpdateDay(index, day, monthOffset, isSelected, isToday, d
 	end
 end
 
-function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventIndex)
+function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventIndex, contextEventIndex)
 	local dayButton = CalendarDayButtons[index];
 	local dayButtonName = dayButton:GetName();
 
@@ -1484,7 +1494,10 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 			if ( selectedEventIndex and eventIndex == selectedEventIndex ) then
 				CalendarFrame_SetSelectedEvent(eventButton);
 			else
-				eventButton:UnlockHighlight();
+				-- only unlock the highlight if this is not the context event
+				if ( not contextEventIndex or eventIndex ~= contextEventIndex ) then
+					eventButton:UnlockHighlight();
+				end
 			end
 
 			-- show the event button
@@ -1948,9 +1961,7 @@ end
 
 function CalendarContextMenu_OnEvent(self, event, ...)
 	if ( event == "GUILD_ROSTER_UPDATE" ) then
-		if ( self:IsShown() and self.func == CalendarDayContextMenu_Initialize ) then
-			CalendarContextMenu_Show(self.attachFrame, self.func, "cursor", 3, -3, self.flags, self.dayButton, self.eventButton);
-		end
+		CalendarDayContextMenu_RefreshEvent();
 	end
 end
 
@@ -1958,7 +1969,7 @@ function CalendarContextMenu_OnHide(self)
 	-- fail safe: unlock old highlights
 	CalendarDayContextMenu_UnlockHighlights();
 	CalendarInviteContextMenu_UnlockHighlights();
-	-- fail safe: always hide nested menus when this hides
+	-- fail safe: always hide nested menus
 	CalendarArenaTeamContextMenu:Hide();
 	CalendarInviteStatusContextMenu:Hide();
 end
@@ -2100,6 +2111,8 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 			dayButton:LockHighlight();
 		end
 		if ( eventButton ) then
+			-- if we're highlighting an event, then register it with the context selection system
+			CalendarContextSelectEvent(monthOffset, day, eventButton.eventIndex);
 			eventButton:LockHighlight();
 		end
 		return true;
@@ -2112,6 +2125,14 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 			StaticPopup_Show("CALENDAR_ERROR", format(CALENDAR_ERROR_CREATEDATE_AFTER_MAX, _CalendarFrame_GetFullDate(CalendarGetMaxCreateDate())));
 		end
 		return false;
+	end
+end
+
+function CalendarDayContextMenu_RefreshEvent()
+	-- this function assumes that the CalendarContextMenu is already attached to an event
+	local menu = CalendarContextMenu;
+	if ( menu:IsShown() and menu.func == CalendarDayContextMenu_Initialize ) then
+		CalendarContextMenu_Show(menu.attachFrame, menu.func, "cursor", 3, -3, menu.flags, menu.dayButton, menu.eventButton);
 	end
 end
 
@@ -2155,8 +2176,7 @@ function CalendarDayContextMenu_CreateGuildAnnouncement()
 end
 
 function CalendarDayContextMenu_CopyEvent()
-	local dayButton = CalendarContextMenu.dayButton;
-	CalendarContextEventCopy(dayButton.monthOffset, dayButton.day, CalendarContextMenu.eventButton.eventIndex);
+	CalendarContextEventCopy();
 end
 
 function CalendarDayContextMenu_PasteEvent()
@@ -2169,23 +2189,19 @@ function CalendarDayContextMenu_DeleteEvent()
 end
 
 function CalendarDayContextMenu_ReportSpam()
-	local dayButton = CalendarContextMenu.dayButton;
-	CalendarContextEventComplain(dayButton.monthOffset, dayButton.day, CalendarContextMenu.eventButton.eventIndex);
+	CalendarContextEventComplain();
 end
 
 function CalendarDayContextMenu_AcceptInvite()
-	local dayButton = CalendarContextMenu.dayButton;
-	CalendarContextInviteAvailable(dayButton.monthOffset, dayButton.day, CalendarContextMenu.eventButton.eventIndex);
+	CalendarContextInviteAvailable();
 end
 
 function CalendarDayContextMenu_DeclineInvite()
-	local dayButton = CalendarContextMenu.dayButton;
-	CalendarContextInviteDecline(dayButton.monthOffset, dayButton.day, CalendarContextMenu.eventButton.eventIndex);
+	CalendarContextInviteDecline();
 end
 
 function CalendarDayContextMenu_RemoveInvite()
-	local dayButton = CalendarContextMenu.dayButton;
-	CalendarContextInviteRemove(dayButton.monthOffset, dayButton.day, CalendarContextMenu.eventButton.eventIndex);
+	CalendarContextInviteRemove();
 end
 
 function CalendarArenaTeamContextMenu_OnLoad(self)
@@ -2647,7 +2663,7 @@ function CalendarEventDescriptionScrollFrame_OnEvent(self, event, ...)
 		-- stuff we're scrolling on (scroll frame's scroll child's frame)!
 		if ( self.content ) then
 			local scrollBar = self.scrollBar;
-			scrollBar.Show = 
+			scrollBar.Show =
 				function (self)
 					local scrollFrame = self:GetParent();
 					-- adjust scroll frame width
@@ -2657,7 +2673,7 @@ function CalendarEventDescriptionScrollFrame_OnEvent(self, event, ...)
 					scrollFrame.content:SetWidth(scrollFrame.defaultContentWidth);
 					getmetatable(self).__index.Show(self);
 				end
-			scrollBar.Hide = 
+			scrollBar.Hide =
 				function (self)
 					local scrollFrame = self:GetParent();
 					-- adjust scroll frame width
@@ -2672,7 +2688,7 @@ function CalendarEventDescriptionScrollFrame_OnEvent(self, event, ...)
 		end
 
 		-- we don't need this event any more
-		self:UnregisterEvent(event)		
+		self:UnregisterEvent(event)
 	end
 end
 
@@ -2699,7 +2715,7 @@ function CalendarEventInviteList_OnEvent(self, event, ...)
 		end
 
 		local scrollBar = self.scrollFrame.scrollBar;
-		scrollBar.Show = 
+		scrollBar.Show =
 			function (self)
 				local scrollFrame = self:GetParent();
 				local scrollFrameParent = scrollFrame:GetParent();
@@ -2714,7 +2730,7 @@ function CalendarEventInviteList_OnEvent(self, event, ...)
 				end
 				getmetatable(self).__index.Show(self);
 			end
-		scrollBar.Hide = 
+		scrollBar.Hide =
 			function (self)
 				local scrollFrame = self:GetParent();
 				local scrollFrameParent = scrollFrame:GetParent();
@@ -2737,7 +2753,7 @@ function CalendarEventInviteList_OnEvent(self, event, ...)
 		self.defaultButtonWidth = self.scrollFrame.buttons[1]:GetWidth() + self.scrollBarWidth;
 
 		-- we don't need this event any more
-		self:UnregisterEvent(event)		
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -4444,7 +4460,7 @@ function CalendarEventPickerScrollFrame_OnEvent(self, event, ...)
 		end
 
 		local scrollBar = self.scrollBar;
-		scrollBar.Show = 
+		scrollBar.Show =
 			function (self)
 				local scrollFrame = self:GetParent();
 				local scrollBarWidth = self:GetWidth();
@@ -4459,7 +4475,7 @@ function CalendarEventPickerScrollFrame_OnEvent(self, event, ...)
 				end
 				getmetatable(self).__index.Show(self);
 			end
-		scrollBar.Hide = 
+		scrollBar.Hide =
 			function (self)
 				local scrollFrame = self:GetParent();
 				-- adjust scroll frame width
@@ -4743,7 +4759,7 @@ function CalendarTexturePickerScrollFrame_OnEvent(self, event, ...)
 		end
 
 		local scrollBar = self.scrollBar;
-		scrollBar.Show = 
+		scrollBar.Show =
 			function (self)
 				local scrollFrame = self:GetParent();
 				local scrollBarWidth = self:GetWidth();
@@ -4758,7 +4774,7 @@ function CalendarTexturePickerScrollFrame_OnEvent(self, event, ...)
 				end
 				getmetatable(self).__index.Show(self);
 			end
-		scrollBar.Hide = 
+		scrollBar.Hide =
 			function (self)
 				local scrollFrame = self:GetParent();
 				-- adjust scroll frame width
@@ -4781,7 +4797,7 @@ function CalendarTexturePickerScrollFrame_OnEvent(self, event, ...)
 		self.defaultButtonWidth = self.buttons[1]:GetWidth() + scrollBarWidth;
 
 		-- we don't need this event any more
-		self:UnregisterEvent(event)		
+		self:UnregisterEvent(event);
 	end
 end
 

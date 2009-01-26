@@ -31,6 +31,10 @@ function ReadyCheckFrame_OnEvent(self, event, ...)
 	if ( event == "READY_CHECK" ) then
 		ShowReadyCheck(...);
 	elseif ( event == "READY_CHECK_FINISHED" ) then
+		if ( self:IsShown() and ReadyCheckListenerFrame:IsShown() ) then
+			local info = ChatTypeInfo["SYSTEM"];
+			DEFAULT_CHAT_FRAME:AddMessage(READY_CHECK_YOU_WERE_AFK, info.r, info.g, info.b, info.id);
+		end
 		self:Hide();
 	elseif ( event == "RAID_ROSTER_UPDATE" ) then
 		if ( GetNumRaidMembers() == 0 ) then

@@ -29,13 +29,13 @@ function HybridScrollFrame_OnValueChanged (self, value)
 	end
 end
 
-function HybridScrollFrame_OnMouseWheel (self, delta)
+function HybridScrollFrame_OnMouseWheel (self, delta, stepSize)
 	if ( not self.scrollBar:IsVisible() ) then
 		return;
 	end
 	
 	local minVal, maxVal = 0, self.range;
-	local stepSize = self.range * (self:GetHeight() / self.range) * .75;
+	stepSize = stepSize or self.stepSize or self.buttonHeight;
 	if ( delta == 1 ) then
 		self.scrollBar:SetValue(max(minVal, self.scrollBar:GetValue() - stepSize));
 	else
@@ -43,18 +43,30 @@ function HybridScrollFrame_OnMouseWheel (self, delta)
 	end
 end
 
-function HybridScrollFrameScrollUpButton_OnClick (self)
-	local parent = self.parent or self:GetParent():GetParent();
-	
-	HybridScrollFrame_OnMouseWheel (parent, 1);
-	PlaySound("UChatScrollButton");
+function HybridScrollFrameScrollButton_OnUpdate (self, elapsed)
+	self.timeSinceLast = self.timeSinceLast + elapsed;
+	if ( self.timeSinceLast >= ( self.updateInterval or 0.08 ) ) then
+		if ( not IsMouseButtonDown("LeftButton") ) then
+			self:SetScript("OnUpdate", nil);
+		elseif ( MouseIsOver(self) ) then
+			local parent = self.parent or self:GetParent():GetParent();
+			HybridScrollFrame_OnMouseWheel (parent, self.direction, (self.stepSize or parent.buttonHeight/3));
+			self.timeSinceLast = 0;
+		end
+	end
 end
 
-function HybridScrollFrameScrollDownButton_OnClick (self)
+function HybridScrollFrameScrollButton_OnClick (self, button, down)
 	local parent = self.parent or self:GetParent():GetParent();
 	
-	HybridScrollFrame_OnMouseWheel (parent, -1);
-	PlaySound("UChatScrollButton");
+	if ( down ) then
+		self.timeSinceLast = (self.timeToStart or -0.2);
+		self:SetScript("OnUpdate", HybridScrollFrameScrollButton_OnUpdate);
+		HybridScrollFrame_OnMouseWheel (parent, self.direction);
+		PlaySound("UChatScrollButton");
+	else
+		self:SetScript("OnUpdate", nil);
+	end
 end
 
 function HybridScrollFrame_Update (self, numElements, totalHeight, displayedHeight)
@@ -63,7 +75,11 @@ function HybridScrollFrame_Update (self, numElements, totalHeight, displayedHeig
 		local minVal, maxVal = self.scrollBar:GetMinMaxValues();
 		if ( math.floor(self.scrollBar:GetValue()) >= math.floor(maxVal) ) then
 			self.scrollBar:SetMinMaxValues(0, range)
-			self.scrollBar:SetValue(range);
+			if ( math.floor(self.scrollBar:GetValue()) ~= math.floor(range) ) then
+				self.scrollBar:SetValue(range);
+			else
+				HybridScrollFrame_SetOffset(self, range); -- If we've scrolled to the bottom, we need to recalculate the offset.
+			end
 		else
 			self.scrollBar:SetMinMaxValues(0, range)
 		end

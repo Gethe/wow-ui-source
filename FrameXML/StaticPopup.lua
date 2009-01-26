@@ -216,7 +216,7 @@ StaticPopupDialogs["CONFIRM_BUY_GUILDBANK_TAB"] = {
 StaticPopupDialogs["TOO_MANY_LUA_ERRORS"] = {
 	text = TOO_MANY_LUA_ERRORS,
 	button1 = DISABLE_ADDONS,
-	button2 = IGNORE,
+	button2 = IGNORE_ERRORS,
 	OnAccept = function(self)
 		DisableAllAddOns();
 		ReloadUI();
@@ -337,6 +337,9 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 		if ( not AcceptBattlefieldPort(data, 1) ) then
 			return 1;
 		end
+		if( StaticPopup_Visible( "DEATH" ) ) then
+			StaticPopup_Hide( "DEATH" );
+		end
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -432,8 +435,8 @@ StaticPopupDialogs["CONFIRM_TEAM_LEAVE"] = {
 	text = CONFIRM_TEAM_LEAVE,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		ArenaTeamLeave(PVPTeamDetails.team);
+	OnAccept = function(self, team)
+		ArenaTeamLeave(team);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -2784,6 +2787,9 @@ function StaticPopup_OnHide(self)
 end
 
 function StaticPopup_OnClick(dialog, index)
+	if ( not dialog:IsShown() ) then
+		return;
+	end
 	local which = dialog.which;
 	local dontHide = nil;
 	if ( index == 1 ) then

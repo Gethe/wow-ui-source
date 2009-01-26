@@ -1219,6 +1219,6 @@
 	<Button name="RaidGroupButton40" inherits="RaidGroupButtonTemplate" id="40"/>
 	<!-- This must be after all of the raid pullout stuff! -->
 	<Script>
-		RaidGroupFrame_OnLoad(self);
+		RaidGroupFrame_OnLoad();
 	</Script>
 </Ui>

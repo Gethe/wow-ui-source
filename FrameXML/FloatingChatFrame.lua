@@ -39,7 +39,7 @@ function FloatingChatFrame_OnEvent(self, event, ...)
 end
 
 function FloatingChatFrame_Update(id, onUpdateEvent)	
-	local name, fontSize, r, g, b, a, shown, locked, docked = GetChatWindowInfo(id);
+	local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = GetChatWindowInfo(id);
 	local chatFrame = getglobal("ChatFrame"..id);
 	local chatTab = getglobal("ChatFrame"..id.."Tab");
 
@@ -51,6 +51,7 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 		FCF_SetWindowColor(chatFrame, r, g, b, 1);
 		FCF_SetWindowAlpha(chatFrame, a, 1);
 		FCF_SetLocked(chatFrame, locked);
+		FCF_SetUninteractable(chatFrame, uninteractable);
 	end
 
 	if ( shown ) then
@@ -114,7 +115,7 @@ function FCFOptionsDropDown_Initialize(dropDown)
 	end
 	-- Window options
 	info = UIDropDownMenu_CreateInfo();
-	if ( FCF_GetCurrentChatFrame(dropDown) and FCF_GetCurrentChatFrame().isLocked ) then
+	if ( FCF_GetCurrentChatFrame(dropDown) and FCF_GetCurrentChatFrame(dropDown).isLocked ) then
 		info.text = UNLOCK_WINDOW;
 	else
 		info.text = LOCK_WINDOW;
@@ -123,6 +124,17 @@ function FCFOptionsDropDown_Initialize(dropDown)
 	info.notCheckable = 1;
 	UIDropDownMenu_AddButton(info);
 
+	--Add Uninteractable button
+	info = UIDropDownMenu_CreateInfo();
+	if ( FCF_GetCurrentChatFrame(dropDown) and FCF_GetCurrentChatFrame(dropDown).isUninteractable) then
+		info.text = MAKE_INTERACTABLE;
+	else
+		info.text = MAKE_UNINTERACTABLE;
+	end
+	info.func = FCF_ToggleUninteractable;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info);
+	
 	-- Add name button
 	info = UIDropDownMenu_CreateInfo();
 	info.text = RENAME_CHAT_WINDOW;
@@ -633,6 +645,42 @@ function FCF_SetLocked(chatFrame, isLocked)
 	SetChatWindowLocked(chatFrame:GetID(), isLocked);
 end
 
+function FCF_ToggleUninteractable()
+	local chatFrame = FCF_GetCurrentChatFrame();
+	if ( chatFrame.isUninteractable ) then
+		FCF_SetExpandedUninteractable(chatFrame, false)
+	else
+		FCF_SetExpandedUninteractable(chatFrame, true)
+	end
+end
+
+function FCF_SetExpandedUninteractable(chatFrame, isUninteractable)
+	if ( chatFrame.isDocked ) then
+		for _, frame in pairs(DOCKED_CHAT_FRAMES) do
+			FCF_SetUninteractable(frame, isUninteractable);
+		end
+	else
+		FCF_SetUninteractable(chatFrame, isUninteractable);
+	end
+end
+
+function FCF_SetUninteractable(chatFrame, isUninteractable)	--No, uninteractable is not really a word.
+	chatFrame.isUninteractable = isUninteractable;
+	SetChatWindowUninteractable(chatFrame:GetID(), isUninteractable);
+	chatFrame:SetHyperlinksEnabled(not isUninteractable);
+	if ( isUninteractable ) then
+		_G[chatFrame:GetName().."ResizeTop"]:EnableMouse(false);
+		_G[chatFrame:GetName().."ResizeBottom"]:EnableMouse(false);
+		_G[chatFrame:GetName().."ResizeLeft"]:EnableMouse(false);
+		_G[chatFrame:GetName().."ResizeRight"]:EnableMouse(false);
+	else
+		_G[chatFrame:GetName().."ResizeTop"]:EnableMouse(true);
+		_G[chatFrame:GetName().."ResizeBottom"]:EnableMouse(true);
+		_G[chatFrame:GetName().."ResizeLeft"]:EnableMouse(true);
+		_G[chatFrame:GetName().."ResizeRight"]:EnableMouse(true);
+	end
+end
+
 -- Docking handling functions
 
 function FCF_OnUpdate(elapsed)
@@ -652,7 +700,7 @@ function FCF_OnUpdate(elapsed)
 	end
 
 	-- Detect if mouse is over any chat frames and if so show their tabs, if not hide them
-	local chatFrame, chatTab;
+	local chatFrame, chatTab, activeFrame;
 
 	if ( MOVING_CHATFRAME ) then
 		-- Set buttons to the left or right side of the frame
@@ -689,6 +737,7 @@ function FCF_OnUpdate(elapsed)
 			local isLocked = FCF_Get_ChatLocked();
 			--Tab height
 			local yOffset = 45;
+			local activeYOffset = 45;
 			local isCombatLog;
 			if ( IsCombatLog(chatFrame) ) then
 				isCombatLog = true;
@@ -703,7 +752,17 @@ function FCF_OnUpdate(elapsed)
 					end
 				end
 			end
-			if ( (MouseIsOver(chatFrame, yOffset, -10, -5, 5) or chatFrame.resizing) ) then
+			if ( chatFrame.isDocked ) then
+				activeFrame = SELECTED_DOCK_FRAME;
+				if ( IsCombatLog(activeFrame) and not isLocked) then
+					activeYOffset = activeYOffset + CombatLogQuickButtonFrame_Custom:GetHeight();
+				end
+			else
+				activeFrame = chatFrame;
+			end
+			if ( MouseIsOver(activeFrame, activeYOffset, activeFrame:GetTop()-activeFrame:GetBottom(), -5, 5) or
+			((MouseIsOver(chatFrame, yOffset, -10, -5, 5) and not chatFrame.isUninteractable)) or
+			chatFrame.resizing or activeFrame.resizing ) then
 				-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 				if ( chatFrame.hover ) then
 					if ( (chatFrame.oldx == xPos and chatFrame.oldy == yPos) or REMOVE_CHAT_DELAY == "1" ) then
@@ -1085,6 +1144,11 @@ function FCF_DockFrame(frame, index, selected)
 	
 	-- Lock frame
 	FCF_SetLocked(frame, 1);
+	
+	--If the frame that is being docked and the frame it is docking to have different interactable settings, make them both interactable.
+	if ( frame.isUninteractable ~= DEFAULT_CHAT_FRAME.isUninteractable ) then
+		FCF_SetExpandedUninteractable(frame, false)
+	end
 	
 	if ( frame == COMBATLOG ) then
 		Blizzard_CombatLog_Update_QuickButtons();

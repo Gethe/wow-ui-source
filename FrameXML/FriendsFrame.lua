@@ -86,7 +86,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID)
 end
 
 function FriendsFrameDropDown_Initialize()
-	UnitPopup_ShowMenu(getglobal(UIDROPDOWNMENU_OPEN_MENU), "FRIEND", nil, FriendsDropDown.name);
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "FRIEND", nil, FriendsDropDown.name);
 end
 
 function FriendsFrame_OnLoad(self)
@@ -788,7 +788,6 @@ function GuildStatus_Update()
 end
 
 function WhoFrameColumn_SetWidth(frame, width)
-	assert(frame)
 	frame:SetWidth(width);
 	getglobal(frame:GetName().."Middle"):SetWidth(width - 9);
 end

@@ -18,22 +18,34 @@ UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = nil;
 -- List of open menus
 OPEN_DROPDOWNMENUS = {};
 
-function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menuList)
-	assert(frame);
-	frame.menuList = menuList;
+local UIDropDownMenuDelegate = CreateFrame("FRAME");
 
-	if ( frame:GetName() ~= UIDROPDOWNMENU_OPEN_MENU ) then
+function UIDropDownMenuDelegate_OnAttributeChanged (self, attribute, value)
+	if ( attribute == "createframes" and value == true ) then
+		UIDropDownMenu_CreateFrames(self:GetAttribute("createframes-level"), self:GetAttribute("createframes-index"));
+	elseif ( attribute == "initmenu" ) then
+		UIDROPDOWNMENU_INIT_MENU = value;
+	elseif ( attribute == "openmenu" ) then
+		UIDROPDOWNMENU_OPEN_MENU = value;
+	end
+end
+
+UIDropDownMenuDelegate:SetScript("OnAttributeChanged", UIDropDownMenuDelegate_OnAttributeChanged);
+
+function UIDropDownMenu_InitializeHelper (frame)
+	-- This deals with the potentially tainted stuff!
+	if ( frame ~= UIDROPDOWNMENU_OPEN_MENU ) then
 		UIDROPDOWNMENU_MENU_LEVEL = 1;
 	end
 
 	-- Set the frame that's being intialized
-	UIDROPDOWNMENU_INIT_MENU = frame:GetName();
-
+	UIDropDownMenuDelegate:SetAttribute("initmenu", frame);
+	
 	-- Hide all the buttons
 	local button, dropDownList;
 	for i = 1, UIDROPDOWNMENU_MAXLEVELS, 1 do
 		dropDownList = getglobal("DropDownList"..i);
-		if ( i >= UIDROPDOWNMENU_MENU_LEVEL or frame:GetName() ~= UIDROPDOWNMENU_OPEN_MENU ) then
+		if ( i >= UIDROPDOWNMENU_MENU_LEVEL or frame ~= UIDROPDOWNMENU_OPEN_MENU ) then
 			dropDownList.numButtons = 0;
 			dropDownList.maxWidth = 0;
 			for j=1, UIDROPDOWNMENU_MAXBUTTONS, 1 do
@@ -44,6 +56,12 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 		end
 	end
 	frame:SetHeight(UIDROPDOWNMENU_BUTTON_HEIGHT * 2);
+end
+
+function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menuList)
+	frame.menuList = menuList;
+
+	securecall("UIDropDownMenu_InitializeHelper", frame);
 	
 	-- Set the initialize function and call it.  The initFunction populates the dropdown list.
 	if ( initFunction ) then
@@ -53,16 +71,17 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 
 	-- Change appearance based on the displayMode
 	if ( displayMode == "MENU" ) then
-		getglobal(frame:GetName().."Left"):Hide();
-		getglobal(frame:GetName().."Middle"):Hide();
-		getglobal(frame:GetName().."Right"):Hide();
-		getglobal(frame:GetName().."ButtonNormalTexture"):SetTexture("");
-		getglobal(frame:GetName().."ButtonDisabledTexture"):SetTexture("");
-		getglobal(frame:GetName().."ButtonPushedTexture"):SetTexture("");
-		getglobal(frame:GetName().."ButtonHighlightTexture"):SetTexture("");
-		getglobal(frame:GetName().."Button"):ClearAllPoints();
-		getglobal(frame:GetName().."Button"):SetPoint("LEFT", frame:GetName().."Text", "LEFT", -9, 0);
-		getglobal(frame:GetName().."Button"):SetPoint("RIGHT", frame:GetName().."Text", "RIGHT", 6, 0);
+		local name = frame:GetName();
+		getglobal(name.."Left"):Hide();
+		getglobal(name.."Middle"):Hide();
+		getglobal(name.."Right"):Hide();
+		getglobal(name.."ButtonNormalTexture"):SetTexture("");
+		getglobal(name.."ButtonDisabledTexture"):SetTexture("");
+		getglobal(name.."ButtonPushedTexture"):SetTexture("");
+		getglobal(name.."ButtonHighlightTexture"):SetTexture("");
+		getglobal(name.."Button"):ClearAllPoints();
+		getglobal(name.."Button"):SetPoint("LEFT", name.."Text", "LEFT", -9, 0);
+		getglobal(name.."Button"):SetPoint("RIGHT", name.."Text", "RIGHT", 6, 0);
 		frame.displayMode = "MENU";
 	end
 
@@ -198,7 +217,9 @@ function UIDropDownMenu_AddButton(info, level)
 	local index = listFrame.numButtons + 1;
 	local width;
 
-	UIDropDownMenu_CreateFrames(level, index);
+	UIDropDownMenuDelegate:SetAttribute("createframes-level", level);
+	UIDropDownMenuDelegate:SetAttribute("createframes-index", index);
+	UIDropDownMenuDelegate:SetAttribute("createframes", true);
 	
 	-- Set the number of buttons in the listframe
 	listFrame.numButtons = index;
@@ -342,9 +363,7 @@ function UIDropDownMenu_AddButton(info, level)
 	end
 	
 	-- If no open frame then set the frame to the currently initialized frame
-	if ( not frame ) then
-		frame = getglobal(UIDROPDOWNMENU_INIT_MENU);
-	end
+	frame = frame or UIDROPDOWNMENU_INIT_MENU;
 
 	button:SetPoint("TOPLEFT", button:GetParent(), "TOPLEFT", xPos, yPos);
 
@@ -402,7 +421,6 @@ end
 function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	local button, checked, checkImage, normalText, width;
 	local maxWidth = 0;
-	assert(frame);
 	if ( not dropdownLevel ) then
 		dropdownLevel = UIDROPDOWNMENU_MENU_LEVEL;
 	end
@@ -462,31 +480,6 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 		button:SetWidth(maxWidth);
 	end
 	getglobal("DropDownList"..dropdownLevel):SetWidth(maxWidth+15);
-end
-
-function UIDropDownMenu_ResetValues ()
-	-- This will either taint everything, or clean taint off of everything, so be careful. Calling this while any dropdown menus are open/displayed is not recommended.	
-	
-	UIDROPDOWNMENU_MINBUTTONS = 8;
-	UIDROPDOWNMENU_MAXBUTTONS = 8;
-	UIDROPDOWNMENU_MAXLEVELS = 2;
-	UIDROPDOWNMENU_BUTTON_HEIGHT = 16;
-	UIDROPDOWNMENU_BORDER_HEIGHT = 15;
-	-- The current open menu
-	UIDROPDOWNMENU_OPEN_MENU = nil;
-	-- The current menu being initialized
-	UIDROPDOWNMENU_INIT_MENU = nil;
-	-- Current level shown of the open menu
-	UIDROPDOWNMENU_MENU_LEVEL = 1;
-	-- Current value of the open menu
-	UIDROPDOWNMENU_MENU_VALUE = nil;
-	-- Time to wait to hide the menu
-	UIDROPDOWNMENU_SHOW_TIME = 2;
-	-- Default dropdown text height
-	UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = nil;
-	-- List of open menus
-	OPEN_DROPDOWNMENUS = {};
-	UIDropDownMenu_ButtonInfo = {};
 end
 
 function UIDropDownMenu_SetSelectedName(frame, name, useValue)
@@ -582,7 +575,9 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	if ( not level ) then
 		level = 1;
 	end
-	UIDropDownMenu_CreateFrames(level, 0);
+	UIDropDownMenuDelegate:SetAttribute("createframes-level", level);
+	UIDropDownMenuDelegate:SetAttribute("createframes-index", 0);
+	UIDropDownMenuDelegate:SetAttribute("createframes", true);
 	UIDROPDOWNMENU_MENU_LEVEL = level;
 	UIDROPDOWNMENU_MENU_VALUE = value;
 	local listFrame = getglobal("DropDownList"..level);
@@ -622,9 +617,8 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 
 		-- Display stuff
 		-- Level specific stuff
-		if ( level == 1 ) then
-			assert(dropDownFrame);
-			UIDROPDOWNMENU_OPEN_MENU = dropDownFrame:GetName();
+		if ( level == 1 ) then	
+			UIDropDownMenuDelegate:SetAttribute("openmenu", dropDownFrame);
 			listFrame:ClearAllPoints();
 			-- If there's no specified anchorName then use left side of the dropdown menu
 			if ( not anchorName ) then
@@ -641,7 +635,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 				if ( dropDownFrame.relativeTo ) then
 					relativeTo = dropDownFrame.relativeTo;
 				else
-					relativeTo = UIDROPDOWNMENU_OPEN_MENU.."Left";
+					relativeTo = UIDROPDOWNMENU_OPEN_MENU:GetName().."Left";
 				end
 				if ( dropDownFrame.relativePoint ) then
 					relativePoint = dropDownFrame.relativePoint;
@@ -693,7 +687,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset);
 		else
 			if ( not dropDownFrame ) then
-				dropDownFrame = getglobal(UIDROPDOWNMENU_OPEN_MENU);
+				dropDownFrame = UIDROPDOWNMENU_OPEN_MENU;
 			end
 			listFrame:ClearAllPoints();
 			-- If this is a dropdown button, not the arrow anchor it to itself
@@ -836,7 +830,6 @@ function UIDropDownMenu_SetText(frame, text)
 end
 
 function UIDropDownMenu_GetText(frame)
-	assert(frame);
 	local filterText = getglobal(frame:GetName().."Text");
 	return filterText:GetText();
 end
@@ -883,13 +876,10 @@ end
 
 function UIDropDownMenu_GetCurrentDropDown()
 	if ( UIDROPDOWNMENU_OPEN_MENU ) then
-		return getglobal(UIDROPDOWNMENU_OPEN_MENU);
+		return UIDROPDOWNMENU_OPEN_MENU;
 	elseif ( UIDROPDOWNMENU_INIT_MENU ) then
-		return getglobal(UIDROPDOWNMENU_INIT_MENU);
+		return UIDROPDOWNMENU_INIT_MENU;
 	end
-	
-	-- If no dropdown then use this? NOOO~!
-	assert(false);
 end
 
 function UIDropDownMenuButton_GetChecked(self)

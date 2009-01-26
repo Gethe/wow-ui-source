@@ -87,6 +87,8 @@ local AnimDataTable = {
 function MainMenuBar_ToVehicleArt(self)
 	MainMenuBar.state = "vehicle";
 	
+	SetUpAnimation(VehicleMenuBar, AnimDataTable.MenuBar_Slide, nil, true);
+	
 	MultiBarLeft:Hide();
 	MultiBarRight:Hide();
 	MultiBarBottomLeft:Hide();
@@ -94,25 +96,31 @@ function MainMenuBar_ToVehicleArt(self)
 	
 	MainMenuBar:Hide();
 	VehicleMenuBar:SetPoint(MainMenuBar_GetAnimPos(VehicleMenuBar, 1))
-	VehicleMenuBar_SetSkin(VehicleMenuBar.skin, IsVehicleAimAngleAdjustable());
 	VehicleMenuBar:Show();
 	PossessBar_Update(true);
 	ShowBonusActionBar(true);	--Now, when we are switching to vehicle art we will ALWAYS be using the BonusActionBar
 	UIParent_ManageFramePositions();	--This is called in PossessBar_Update, but it doesn't actually do anything but change an attribute, so it is worth keeping	
 	
-	SetUpAnimation(VehicleMenuBar, AnimDataTable.MenuBar_Slide, nil, true);
+	VehicleMenuBar_SetSkin(VehicleMenuBar.skin, IsVehicleAimAngleAdjustable());
 end
 
 function MainMenuBar_ToPlayerArt(self)
 	MainMenuBar.state = "player";
 	
-	VehicleMenuBar_MoveMicroButtons();
+	MultiActionBar_Update();
+	
+	MultiBarRight:SetPoint(MainMenuBar_GetRightABPos(MultiBarRight, 1));
+	
+	SetUpAnimation(MainMenuBar, AnimDataTable.MenuBar_Slide, nil, true);
+	SetUpAnimation(MultiBarRight, AnimDataTable.ActionBar_Slide, MainMenuBar_UnlockAB, true);
+	SetUpAnimation(VehicleSeatIndicator, AnimDataTable.SeatIndicator_Slide, nil, true);
+	
+	
 	
 	VehicleMenuBar:Hide();
-	VehicleMenuBar_ReleaseSkins();
+	
 	
 	MainMenuBar:Show();
-	MultiActionBar_Update();
 
 	PossessBar_Update(true);
 	if ( GetBonusBarOffset() > 0 ) then
@@ -120,12 +128,11 @@ function MainMenuBar_ToPlayerArt(self)
 	else
 		HideBonusActionBar(true);
 	end
-	UIParent_ManageFramePositions()	--This is called in PossessBar_Update, but it doesn't actually do anything but change an attribute, so it is worth keeping	
+	--UIParent_ManageFramePositions()	--This is called in PossessBar_Update
 	MainMenuBarVehicleLeaveButton_Update();
-	SetUpAnimation(MainMenuBar, AnimDataTable.MenuBar_Slide, nil, true);
-	SetUpAnimation(MultiBarRight, AnimDataTable.ActionBar_Slide, MainMenuBar_UnlockAB, true);
-	SetUpAnimation(VehicleSeatIndicator, AnimDataTable.SeatIndicator_Slide, nil, true);
-	MultiBarRight:SetPoint(MainMenuBar_GetRightABPos(MultiBarRight, 1));
+	
+	VehicleMenuBar_MoveMicroButtons();
+	VehicleMenuBar_ReleaseSkins();
 end
 
 function MainMenuBarVehicleLeaveButton_Update()

@@ -19,17 +19,17 @@
 					<Color r="0" g="0" b="0" a=".4"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="OVERLAY">
 				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="700/700" justifyV="TOP">
-					<Size y="13" x="150"/>
+					<Size y="0" x="150"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="-2"/>
+						<Anchor point="CENTER">
+							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
 				</FontString>			
 			</Layer>
-			<Layer level="OVERLAY">
+			<Layer level="ARTWORK">
 				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -53,6 +53,7 @@
 				self:SetMinMaxValues(0, 100);
 				self:SetValue(0);
 				self.text = getglobal(self:GetName() .. "Text");
+				self:GetStatusBarTexture():SetDrawLayer("BORDER");
 			</OnLoad>
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>

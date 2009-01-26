@@ -1328,10 +1328,16 @@ SlashCmdList["COMBATLOG"] = function(msg)
 end
 
 SlashCmdList["INVITE"] = function(msg)
+	if(msg == "") then
+		msg = UnitName("target");
+	end
 	InviteUnit(msg);
 end
 
 SlashCmdList["UNINVITE"] = function(msg)
+	if(msg == "") then
+		msg = UnitName("target");
+	end
 	UninviteUnit(msg);
 end
 
@@ -1602,10 +1608,16 @@ SlashCmdList["TEAM_DISBAND"] = function(msg)
 end
 
 SlashCmdList["GUILD_INVITE"] = function(msg)
+	if(msg == "") then
+		msg = UnitName("target");
+	end
 	GuildInvite(msg);
 end
 
 SlashCmdList["GUILD_UNINVITE"] = function(msg)
+	if(msg == "") then
+		msg = UnitName("target");
+	end
 	GuildUninvite(msg);
 end
 
@@ -2314,6 +2326,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			local pflag;
 			if(strlen(arg6) > 0) then
 				if ( arg6 == "GM" ) then
+					--If it was a whisper, dispatch it to the GMChat addon.
+					if ( type == "WHISPER" ) then
+						return;
+					end
 					--Add Blizzard Icon, this was sent by a GM
 					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
 				else
@@ -2321,6 +2337,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 			else
 				pflag = "";
+			end
+			if ( type == "WHISPER_INFORM" and GMChatFrame_IsGM and GMChatFrame_IsGM(arg2) ) then
+				return;
 			end
 
 			local showLink = 1;

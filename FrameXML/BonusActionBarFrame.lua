@@ -263,7 +263,7 @@ function PossessBar_Update (override)
 end
 
 function PossessBar_UpdateState ()
-	local texture, name;
+	local texture, name, enabled;
 	local button, background, icon, cooldown;
 
 	for i=1, NUM_POSSESS_SLOTS do

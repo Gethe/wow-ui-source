@@ -376,7 +376,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 end
 
 function UnitPopup_HideButtons ()
-	local dropdownMenu = getglobal(UIDROPDOWNMENU_INIT_MENU);
+	local dropdownMenu = UIDROPDOWNMENU_INIT_MENU;
 	local inInstance, instanceType = IsInInstance();
 	local inParty = 0;
 	local inRaid = 0;
@@ -994,7 +994,7 @@ function UnitPopup_OnUpdate (elapsed)
 end
 
 function UnitPopup_OnClick (self)
-	local dropdownFrame = getglobal(UIDROPDOWNMENU_INIT_MENU);
+	local dropdownFrame = UIDROPDOWNMENU_INIT_MENU;
 	local button = self.value;
 	local unit = dropdownFrame.unit;
 	local name = dropdownFrame.name;
@@ -1039,13 +1039,9 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "DUEL" ) then
 		StartDuel(unit, 1);
 	elseif ( button == "INVITE" ) then
-		if ( unit ) then
-			InviteUnit(unit);
-		else
-			InviteUnit(name);
-		end
+		InviteUnit(name);
 	elseif ( button == "UNINVITE" ) then
-		UninviteUnit(unit);
+		UninviteUnit(name);
 	elseif ( button == "PROMOTE" ) then
 		PromoteToLeader(unit, 1);
 	elseif ( button == "GUILD_PROMOTE" ) then
@@ -1066,7 +1062,10 @@ function UnitPopup_OnClick (self)
 			dialog.data2 = name;
 		end
 	elseif ( button == "TEAM_LEAVE" ) then
-		StaticPopup_Show("CONFIRM_TEAM_LEAVE", GetArenaTeam(PVPTeamDetails.team) );
+		local dialog = StaticPopup_Show("CONFIRM_TEAM_LEAVE", GetArenaTeam(PVPTeamDetails.team) );
+		if ( dialog ) then
+			dialog.data = PVPTeamDetails.team;
+		end
 	elseif ( button == "LEAVE" ) then
 		LeaveParty();
 	elseif ( button == "PET_DISMISS" ) then

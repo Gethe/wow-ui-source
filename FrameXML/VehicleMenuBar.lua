@@ -815,11 +815,16 @@ function VehicleSeatIndicator_UnloadTextures()
 	
 	UIParent_ManageFramePositions();
 end
-local SeatIndicator_PulseTable;
 
 local function SeatIndicator_PulseFunc(self, elapsed)
 	return abs(sin(elapsed*360));
 end
+
+local SeatIndicator_PulseTable = {
+	totalTime = 2,
+	updateFunc = "SetAlpha",
+	getPosFunc = SeatIndicator_PulseFunc,
+}
 
 function SeatIndicator_Pulse(self, isPlayer)
 	self:Show();
@@ -834,12 +839,6 @@ function VehicleSeatIndicator_OnLoad(self)
 	self:RegisterEvent("VEHICLE_PASSENGERS_CHANGED");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	
-	SeatIndicator_PulseTable = {
-	totalTime = 2,
-	updateFunc = VehicleSeatIndicatorButton1PulseTexture.SetAlpha,
-	getPosFunc = SeatIndicator_PulseFunc,
-	}
 end
 
 function VehicleSeatIndicator_OnEvent(self, event, ...)

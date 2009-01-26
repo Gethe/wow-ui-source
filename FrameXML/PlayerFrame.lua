@@ -208,12 +208,16 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerFrame_UpdateArt(self);
 		end
 	elseif ( event == "UNIT_EXITING_VEHICLE" ) then
-		if ( self.state == "vehicle" ) then
-			PlayerFrame_AnimateOut(self);
+		if ( arg1 == "player" ) then
+			if ( self.state == "vehicle" ) then
+				PlayerFrame_AnimateOut(self);
+			end
 		end
 	elseif ( event == "UNIT_EXITED_VEHICLE" ) then
-		self.inSeat = true;
-		PlayerFrame_UpdateArt(self);
+		if ( arg1 == "player" ) then
+			self.inSeat = true;
+			PlayerFrame_UpdateArt(self);
+		end
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 		if ( IsPVPTimerRunning() ) then
 			PlayerPVPTimerText:Show();
@@ -248,8 +252,12 @@ end
 
 function PlayerFrame_UpdateArt(self)
 	if ( self.animFinished and self.inSeat and self.inSequence) then
-		PlayerFrame_ToVehicleArt(self, UnitVehicleSkin("player"));	--This will go to PlayerArt if it should
 		SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
+		if ( UnitHasVehicleUI("player") ) then
+			PlayerFrame_ToVehicleArt(self, UnitVehicleSkin("player"));
+		else
+			PlayerFrame_ToPlayerArt(self);
+		end
 	end
 end
 
@@ -259,13 +267,10 @@ function PlayerFrame_SequenceFinished(self)
 end
 
 function PlayerFrame_ToVehicleArt(self, vehicleType)
-	if ( not UnitHasVehicleUI("player") ) then
-		PlayerFrame_ToPlayerArt(self);
-		return;
-	end
-	
 	--Swap frame
 
+	PlayerFrame.state = "vehicle";
+	
 	UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
 	UnitFrame_SetUnit(PetFrame, "player", PetFrameHealthBar, PetFrameManaBar);
 	PetFrame_Update(PetFrame);
@@ -296,12 +301,12 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	
 	PlayerFrameBackground:SetWidth(114);
 	PlayerLevelText:Hide();
-	
-	PlayerFrame.state = "vehicle";
 end
 
 function PlayerFrame_ToPlayerArt(self)
 	--Unswap frame
+	
+	PlayerFrame.state = "player";
 	
 	UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
 	UnitFrame_SetUnit(PetFrame, "pet", PetFrameHealthBar, PetFrameManaBar);
@@ -322,8 +327,6 @@ function PlayerFrame_ToPlayerArt(self)
 	PlayerFrameManaBar:SetPoint("TOPLEFT",106,-52);
 	PlayerFrameBackground:SetWidth(119);
 	PlayerLevelText:Show();
-	
-	PlayerFrame.state = "player";
 end
 
 function PlayerFrame_UpdateVoiceStatus (status)

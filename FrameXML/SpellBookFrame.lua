@@ -322,8 +322,6 @@ end
 function SpellBookFrame_OnHide(self)
 	SpellBookFrame_PlayCloseSound();
 
-	UpdateMicroButtons();
-
 	-- Stop the flash frame from flashing if its still flashing.. flash flash flash
 	UIFrameFlashRemoveFrame(SpellBookTabFlashFrame);
 	-- Hide all the flashing textures
@@ -333,6 +331,9 @@ function SpellBookFrame_OnHide(self)
 
 	-- Hide multibar slots
 	MultiActionBar_HideAllGrids();
+	
+	-- Do this last, it can cause taint.
+	UpdateMicroButtons();
 end
 
 function SpellButton_OnLoad(self) 

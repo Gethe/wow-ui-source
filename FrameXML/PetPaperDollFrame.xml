@@ -685,6 +685,9 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<FontString name="CompanionSelectedName" inherits="DialogButtonNormalText">
+							<Size>
+								<AbsDimension x="290" y="13"/>
+							</Size>
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>

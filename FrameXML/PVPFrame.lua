@@ -212,6 +212,8 @@ function PVPTeam_Update()
 			-- Set button elements to variables 
 			buttonName = "PVPTeam"..buttonIndex;
 			data = buttonName.."Data";
+			
+			button:SetID(0);
 
 			-- Set standard type
 			local standardBanner = getglobal(buttonName.."StandardBanner");
@@ -435,7 +437,7 @@ function PVPTeamDetailsButton_OnClick(self, button)
 end
 
 function PVPDropDown_Initialize()
-	UnitPopup_ShowMenu(getglobal(UIDROPDOWNMENU_OPEN_MENU), "TEAM", nil, PVPDropDown.name);
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "TEAM", nil, PVPDropDown.name);
 end
 
 function PVPFrame_ShowDropdown(name, online)

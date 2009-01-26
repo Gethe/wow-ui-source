@@ -1702,39 +1702,6 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
-			<CheckButton name="$parentTargetEffects" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>				
-					<Anchor point="TOPRIGHT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-176" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "fctSpellMechanics";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentOtherTargetEffects" inherits="InterfaceOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTargetEffects" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="10" y="-2"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "fctSpellMechanicsOther";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelTargetEffects, self);
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
 			<CheckButton name="$parentEnableFCT" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHealing" relativePoint="BOTTOMLEFT">
@@ -2914,6 +2881,22 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
+			<CheckButton name="$parentUseEnglishAudio" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLocaleDropDown" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="48" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "useEnglishAudio";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>		
 		</Frames>
 		<Scripts>
 			<OnLoad>

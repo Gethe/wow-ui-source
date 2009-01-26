@@ -2881,6 +2881,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	local actionEvent = "ACTION_"..event;
 	local actionStr = _G[actionEvent];
 	local timestampStr = timestamp;
+	local powerTypeString = "";
 
 	-- If this ever succeeds, the event string is missing. 
 	--

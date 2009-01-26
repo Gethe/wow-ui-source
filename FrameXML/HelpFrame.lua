@@ -263,7 +263,7 @@ function TicketStatusFrame_OnEvent(self, event, ...)
 		GetGMTicket();
 	elseif ( event == "UPDATE_TICKET" ) then
 		local category = ...;
-		if ( category ) then
+		if ( category and (not GMChatStatusFrame or not GMChatStatusFrame:IsShown()) ) then
 			self:Show();
 			refreshTime = GMTICKET_CHECK_INTERVAL;
 		else

@@ -910,7 +910,9 @@
 				TemporaryEnchantFrame:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", -205, (-self:GetHeight()));
 			</OnShow>
 			<OnHide>
-				TemporaryEnchantFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -180, -13);
+				if( not GMChatStatusFrame or not GMChatStatusFrame:IsShown() ) then
+					TemporaryEnchantFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -180, -13);
+				end
 			</OnHide>
 		</Scripts>
 	</Frame>

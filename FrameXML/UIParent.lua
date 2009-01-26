@@ -215,6 +215,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GLYPHFRAME_OPEN");
 	
 	RegisterForSave("MISTER_SPARKLE");
+	
+	--Events for GMChatUI
+	self:RegisterEvent("CHAT_MSG_WHISPER");
 end
 
 function ToggleFrame(frame)
@@ -302,6 +305,17 @@ end
 
 function Calendar_LoadUI()
 	UIParentLoadAddOn("Blizzard_Calendar");
+end
+
+function GMChatFrame_LoadUI(...)
+	if ( IsAddOnLoaded("Blizzard_GMChatUI") ) then
+		return;
+	else
+		UIParentLoadAddOn("Blizzard_GMChatUI");
+		if ( select(1, ...) ) then
+			GMChatFrame_OnEvent(GMChatFrame, ...);
+		end
+	end
 end
 
 function ShowMacroFrame()
@@ -982,6 +996,10 @@ function UIParent_OnEvent(self, event, ...)
 	if ( event == "LEVEL_GRANT_PROPOSED" ) then
 		StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
 		return;
+	end
+	
+	if ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI
+		GMChatFrame_LoadUI(event, ...);
 	end
 end
 

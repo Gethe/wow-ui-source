@@ -318,7 +318,7 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (message)
 			playerName = string.match(message, str);
 			if ( playerName ) then
 				-- Trim realm names
-				playerName = string.match(playerName, "([%w]+)%-?.*");
+				playerName = string.match(playerName, "([^%-]+)%-?.*");
 				ADDED_PLAYERS[playerName] = true;
 				return true;
 			end
@@ -327,7 +327,7 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (message)
 		for i, str in next, FILTERED_BG_CHAT_SUBTRACT do
 			playerName = string.match(message, str);
 			if ( playerName ) then
-				playerName = string.match(playerName, "([%w]+)%-?.*");
+				playerName = string.match(playerName, "([^%-]+)%-?.*");
 				SUBTRACTED_PLAYERS[playerName] = true;
 				return true;
 			end

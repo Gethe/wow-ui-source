@@ -74,23 +74,20 @@ do
 end
 
 function IsFrameHandle(handle, protected)
-    local handle = LOCAL_FrameHandle_Protected_Frames[handle];
-    if ((handle == nil) and not protected) then
-        handle = LOCAL_FrameHandle_Other_Frames[handle];
+    local surrogate = LOCAL_FrameHandle_Protected_Frames[handle];
+    if ((surrogate == nil) and not protected) then
+        surrogate = LOCAL_FrameHandle_Other_Frames[handle];
     end
-    return (handle ~= nil);
+    return (surrogate ~= nil);
 end
 
 function GetFrameHandleFrame(handle, protected)
-    local handle = LOCAL_FrameHandle_Protected_Frames[handle];
-    if (handle ~= nil) then
-        return handle[1];
+    local surrogate = LOCAL_FrameHandle_Protected_Frames[handle];
+    if ((surrogate == nil) and (not protected or not InCombatLockdown())) then
+        surrogate = LOCAL_FrameHandle_Other_Frames[handle];
     end
-    if (not protected or not InCombatLockdown()) then
-        handle = LOCAL_FrameHandle_Other_Frames[handle];
-        if (handle ~= nil) then
-            return handle[1];
-        end
+    if (surrogate ~= nil) then
+        return surrogate[1];
     end
 end
 
@@ -163,16 +160,6 @@ end
 function HANDLE:GetName()   return GetUnprotectedHandleFrame(self):GetName() end
 
 function HANDLE:GetID()     return GetHandleFrame(self):GetID()     end
-function HANDLE:IsShown()   return GetHandleFrame(self):IsShown()   end
-function HANDLE:IsVisible() return GetHandleFrame(self):IsVisible() end
-function HANDLE:GetWidth()  return GetHandleFrame(self):GetWidth()  end
-function HANDLE:GetHeight() return GetHandleFrame(self):GetHeight() end
-function HANDLE:GetRect()   return GetHandleFrame(self):GetRect() end
-function HANDLE:GetScale()  return GetHandleFrame(self):GetScale()  end
-function HANDLE:GetEffectiveScale()
-    return GetHandleFrame(self):GetEffectiveScale()
-end
--- Cannot expose GetAlpha since alpha is not protected
 function HANDLE:GetFrameLevel()
     return GetHandleFrame(self):GetFrameLevel()  end
 function HANDLE:GetObjectType()

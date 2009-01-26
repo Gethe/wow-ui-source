@@ -351,8 +351,15 @@
 			</OnEvent>
 			<OnMouseDown>
 				if ( self.down ) then
-					self.down = nil;
+					self.down = nil; -- I'm pretty sure none of this should ever get run.
 					if ( not GameMenuFrame:IsShown() ) then
+						if ( VideoOptionsFrame:IsShown() ) then
+							VideoOptionsFrameCancel:Click();
+						elseif ( AudioOptionsFrame:IsShown() ) then
+							AudioOptionsFrameCancel:Click();
+						elseif ( InterfaceOptionsFrame:IsShown() ) then
+							InterfaceOptionsFrameCancel:Click();
+						end		
 						CloseMenus();
 						CloseAllWindows()
 						PlaySound("igMainMenuOpen");
@@ -361,9 +368,6 @@
 						PlaySound("igMainMenuQuit");
 						HideUIPanel(GameMenuFrame);
 						MainMenuMicroButton_SetNormal();
-					end
-					if ( InterfaceOptionsFrame:IsShown() ) then
-						InterfaceOptionsFrameCancel:Click();
 					end
 					return;
 				end
@@ -375,6 +379,13 @@
 					self.down = nil;
 					if ( MouseIsOver(self) ) then
 						if ( not GameMenuFrame:IsShown() ) then
+							if ( VideoOptionsFrame:IsShown() ) then
+								VideoOptionsFrameCancel:Click();
+							elseif ( AudioOptionsFrame:IsShown() ) then
+								AudioOptionsFrameCancel:Click();
+							elseif ( InterfaceOptionsFrame:IsShown() ) then
+								InterfaceOptionsFrameCancel:Click();
+							end						
 							CloseMenus();
 							CloseAllWindows()
 							PlaySound("igMainMenuOpen");
@@ -383,9 +394,6 @@
 							PlaySound("igMainMenuQuit");
 							HideUIPanel(GameMenuFrame);
 							MainMenuMicroButton_SetNormal();
-						end
-						if ( InterfaceOptionsFrame:IsShown() ) then
-							InterfaceOptionsFrameCancel:Click();
 						end
 					else
 						UpdateMicroButtons();

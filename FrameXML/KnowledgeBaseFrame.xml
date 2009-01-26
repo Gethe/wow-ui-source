@@ -146,6 +146,28 @@
 					</OnUpdate>
 				</Scripts>
 			</Button>
+			<Button name="GMChatOpenLog" inherits="GameMenuButtonTemplate" text="GM_CHAT_OPEN">
+				<Size>
+					<AbsDimension x="250" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="25" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetWidth(self:GetTextWidth()+40);
+						self:Disable()
+					</OnLoad>
+					<OnClick>
+						GMChatFrame_Show();
+						HideUIPanel(HelpFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Frame name="KnowledgeBaseMotdTextFrame">
 				<Size>
 					<AbsDimension x="0" y="0"/>

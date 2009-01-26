@@ -610,7 +610,6 @@ function RaidGroupButton_OnLoad(self)
 end
 
 function RaidGroupButton_OnDragStart(raidButton)
-	assert(raidButton);
 	if ( not IsRaidLeader() and not IsRaidOfficer() ) then
 		return;
 	end
@@ -623,7 +622,6 @@ function RaidGroupButton_OnDragStart(raidButton)
 end
 
 function RaidGroupButton_OnDragStop(raidButton)
-	assert(raidButton);
 	if ( not IsRaidLeader() and not IsRaidOfficer() ) then
 		return;
 	end
@@ -658,7 +656,7 @@ function RaidGroupButton_OnEnter(raidbutton)
 end
 
 function RaidFrameDropDown_Initialize(self)
-	UnitPopup_ShowMenu(_G[UIDROPDOWNMENU_OPEN_MENU], "RAID", self.unit, self.name, self.id);
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "RAID", self.unit, self.name, self.id);
 end
 
 function RaidButton_OnClick(self, button)
@@ -836,8 +834,6 @@ function RaidPullout_OnUpdate(self, elapsed)
 end
 
 function RaidPullout_Update(pullOutFrame)
-	assert(pullOutFrame);
-	
 	local id, single;
 	local filterID = pullOutFrame.filterID;
 	local numPulloutEntries = 0;
@@ -1321,10 +1317,10 @@ function RaidPulloutDropDown_OnLoad(self)
 end
 
 function RaidPulloutDropDown_Initialize()
-	if ( not UIDROPDOWNMENU_OPEN_MENU or not _G[UIDROPDOWNMENU_OPEN_MENU].raidPulloutDropDown ) then
+	if ( not UIDROPDOWNMENU_OPEN_MENU or not UIDROPDOWNMENU_OPEN_MENU.raidPulloutDropDown ) then
 		return;
 	end
-	local currentPullout = _G[UIDROPDOWNMENU_OPEN_MENU]:GetParent();
+	local currentPullout = UIDROPDOWNMENU_OPEN_MENU:GetParent();
 	local unit, voice, muted, silenced, pvpType;
 	local info = UIDropDownMenu_CreateInfo();
 

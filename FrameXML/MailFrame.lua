@@ -616,6 +616,8 @@ function OpenMail_Update()
 		end
 
 		OpenMailFrame.itemName = firstAttachName;
+	else
+		OpenMailFrame.itemName = nil;
 	end
 
 	-- Set COD

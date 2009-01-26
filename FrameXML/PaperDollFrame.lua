@@ -1429,7 +1429,7 @@ function PlayerStatFrameLeftDropDown_Initialize (self)
 end
 
 function PlayerStatFrameLeftDropDown_OnClick (self)
-	UIDropDownMenu_SetSelectedValue(getglobal(self.owner), self.value);
+	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
 	SetCVar("playerStatLeftDropdown", self.value);
 	UpdatePaperdollStats("PlayerStatFrameLeft", self.value);
 end
@@ -1461,7 +1461,7 @@ function PlayerStatFrameRightDropDown_Initialize (self)
 end
 
 function PlayerStatFrameRightDropDown_OnClick (self)
-	UIDropDownMenu_SetSelectedValue(getglobal(self.owner), self.value);
+	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
 	SetCVar("playerStatRightDropdown", self.value);
 	UpdatePaperdollStats("PlayerStatFrameRight", self.value);
 end
