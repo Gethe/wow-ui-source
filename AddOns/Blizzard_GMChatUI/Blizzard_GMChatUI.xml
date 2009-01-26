@@ -19,8 +19,7 @@
 				GMChatFrame_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnShow>
-				GMChatStatusFrame:Hide();
-				GMChatOpenLog:Disable();
+				GMChatFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
 				GMChatOpenLog:Enable();

@@ -65,8 +65,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Texture>
 			</Layer>
 		</Layers>
-		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-		<BarColor r="0" g="1" b="0"/>
 		<Frames>
 			<Button name="$parentButton">
 				<Anchors>
@@ -125,6 +123,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnLoad function="AchievementFrameSummaryCategory_OnLoad"/>
 			<OnShow function="AchievementFrameSummaryCategory_OnShow"/>
 		</Scripts>		
+		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+		<BarColor r="0" g="1" b="0"/>
 	</StatusBar>
 	<CheckButton name="AchievementCheckButtonTemplate" virtual="true">
 		<Size>

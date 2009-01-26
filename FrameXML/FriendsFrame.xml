@@ -951,7 +951,7 @@
 						<Scripts>
 							<OnClick>
 								if ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") ) then
-									AddFriend("target");
+									AddFriend(UnitName("target"));
 								else
 									StaticPopup_Show("ADD_FRIEND");
 								end
@@ -1248,7 +1248,7 @@
 							</OnLoad>
 							<OnClick>
 								if ( UnitCanCooperate("player", "target") ) then
-									AddIgnore("target");
+									AddIgnore(UnitName("target"));
 								else
 									StaticPopup_Show("ADD_IGNORE");
 								end

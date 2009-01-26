@@ -862,7 +862,7 @@ function UnitPopup_OnUpdate (elapsed)
 		end
 	end
 
-	local currentDropDown = getglobal(UIDROPDOWNMENU_OPEN_MENU);
+	local currentDropDown = UIDROPDOWNMENU_OPEN_MENU;
 
 	local inParty = 0;
 	if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then

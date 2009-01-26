@@ -14,6 +14,7 @@ function GMChatFrame_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_WHISPER");
 	self:RegisterEvent("CHAT_MSG_WHISPER_INFORM");
 	self.flashTimer = 0;
+	self.lastGM = {};
 end
 
 function GMChatFrame_OnEvent(self, event, ...)
@@ -42,8 +43,10 @@ function GMChatFrame_OnEvent(self, event, ...)
 		if ( not GMChatFrame:IsShown() ) then
 			GMChatStatusFrame:Show();
 			GMChatStatusFrame_Pulse();
+			table.insert(self.lastGM,arg2);
+		else
+			ChatEdit_SetLastTellTarget(arg2);
 		end
-		
 	elseif ( event == "CHAT_MSG_WHISPER_INFORM" and GMChatFrame_IsGM(arg2) ) then
 		local info = ChatTypeInfo["WHISPER_INFORM"];
 		
@@ -64,6 +67,15 @@ function GMChatFrame_OnEvent(self, event, ...)
 		
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
 	end
+end
+
+function GMChatFrame_OnShow(self)
+	GMChatStatusFrame:Hide();
+	GMChatOpenLog:Disable();
+	for _,gmName in pairs(self.lastGM) do
+		ChatEdit_SetLastTellTarget(gmName);
+	end
+	table.wipe(self.lastGM);
 end
 
 function GMChatFrame_Show()

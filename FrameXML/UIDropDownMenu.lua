@@ -355,7 +355,7 @@ function UIDropDownMenu_AddButton(info, level)
 	end
 
 	-- Adjust offset if displayMode is menu
-	local frame = getglobal(UIDROPDOWNMENU_OPEN_MENU);
+	local frame = UIDROPDOWNMENU_OPEN_MENU;
 	if ( frame and frame.displayMode == "MENU" ) then
 		if ( not info.notCheckable ) then
 			xPos = xPos - 6;
@@ -589,7 +589,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	else
 		tempFrame = dropDownFrame;
 	end
-	if ( listFrame:IsShown() and (UIDROPDOWNMENU_OPEN_MENU == tempFrame:GetName()) ) then
+	if ( listFrame:IsShown() and (UIDROPDOWNMENU_OPEN_MENU == tempFrame) ) then
 		listFrame:Hide();
 	else
 		-- Set the dropdownframe scale

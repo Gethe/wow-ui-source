@@ -958,7 +958,7 @@
 		<Scripts>
 			<OnClick>
 				if ( UnitCanCooperate("player", "target") ) then
-					InviteUnit("target");
+					InviteUnit(UnitName("target"));
 				else
 					StaticPopup_Show("ADD_RAIDMEMBER");
 				end

@@ -5,11 +5,11 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString name="$parentCount" inherits="GameFontNormal">
+					<Size x="0" y="13"/>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset x="0" y="0"/>
 						</Anchor>
-						<Size x="0" y="13"/>
 					</Anchors>
 				</FontString>
 			</Layer>

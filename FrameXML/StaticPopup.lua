@@ -847,9 +847,12 @@ StaticPopupDialogs["DEATH"] = {
 		if ( IsFalling() and (not IsOutOfBounds()) ) then
 			self.button1:Disable();
 			self.button2:Disable();
-		else
+		elseif ( HasSoulstone() ) then	--Bug ID 153643
 			self.button1:Enable();
 			self.button2:Enable();
+		else
+			self.button1:Enable();
+			self.button2:Disable();
 		end
 	end,
 	DisplayButton2 = function(self)

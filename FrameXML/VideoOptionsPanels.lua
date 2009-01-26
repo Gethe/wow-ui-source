@@ -532,3 +532,29 @@ function VideoOptionsEffectsPanel_FixupQualityLevels ()
 	end
 end
 
+--[[Stereo Options]]
+
+VideoStereoPanelOptions = {
+	gxStereoEnabled = { text = "ENABLE_STEREO_VIDEO" },
+	uiDepth = { text = "UI_DEPTH", minValue = 1, maxValue = 200, valueStep = 5,  tooltip = OPTION_UI_DEPTH},
+	gxStereoConvergence = { text = "DEPTH_CONVERGENCE", minValue = 0, maxValue = 100, valueStep = 1, tooltip = OPTION_STEREO_CONVERGENCE},
+	gxStereoSeparation= { text = "EYE_SEPARATION", minValue = 0, maxValue = 100, valueStep = 1, tooltip = OPTION_STEREO_SEPERATION},
+}
+
+function VideoOptionsStereoPanel_OnLoad (self)
+	self.name = STEREO_VIDEO_LABEL;
+	self.options = VideoStereoPanelOptions;
+	if ( IsStereoVideoAvailable() ) then
+		VideoOptionsPanel_OnLoad(self);
+	end
+end
+
+function VideoOptionsStereoPanel_Default(self)
+	RestoreVideoStereoDefaults();
+	for _, control in next, self.controls do
+		if ( control.defaultValue and control.value ~= control.defaultValue ) then
+			control:SetValue(control.defaultValue);
+		end
+		control.newValue = nil;
+	end
+end

@@ -598,6 +598,8 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 			local button = AchievementFrameAchievementsObjectives:GetParent();
 			AchievementFrameAchievementsObjectives.id = nil;
 			AchievementButton_DisplayObjectives(button, id, button.completed);
+		else
+			AchievementFrameAchievementsObjectives.id = nil; -- Force redraw
 		end
 	end
 	if ( not AchievementMicroButton:IsShown() ) then

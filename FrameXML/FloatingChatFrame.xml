@@ -120,7 +120,7 @@
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
-				getglobal(self:GetName().."DockRegionHighlight"):SetPoint("LEFT", self:GetName().."Right", "RIGHT", -16 , -3);
+				_G[self:GetName().."DockRegionHighlight"]:SetPoint("LEFT", self:GetName().."Right", "RIGHT", -16 , -3);
 			</OnLoad>
 			<OnClick>
 				FCF_Tab_OnClick(self, button);
@@ -139,7 +139,7 @@
 					return;
 				end
 
-				local chatFrame = getglobal("ChatFrame"..self:GetID());
+				local chatFrame = _G["ChatFrame"..self:GetID()];
 				if ( chatFrame == DEFAULT_CHAT_FRAME ) then
 					if (chatFrame.isLocked) then
 						return;
@@ -150,7 +150,7 @@
 				elseif ( chatFrame.isDocked ) then
 					FCF_UnDockFrame(chatFrame);
 					FCF_SetLocked(chatFrame, nil);
-					local chatTab = getglobal(chatFrame:GetName().."Tab");
+					local chatTab = _G[chatFrame:GetName().."Tab"];
 					local x,y = chatTab:GetCenter();
 					x = x - (chatTab:GetWidth()/2);
 					y = y - (chatTab:GetHeight()/2);
@@ -165,8 +165,7 @@
 				SELECTED_CHAT_FRAME = chatFrame;
 			</OnDragStart>
 			<OnDragStop>
-				local chatFrame = getglobal("ChatFrame"..self:GetID());
-				FCF_StopDragging(chatFrame);
+				FCF_StopDragging(_G["ChatFrame"..self:GetID()]);
 			</OnDragStop>
 		</Scripts>
 		<ButtonText name="$parentText">
@@ -657,7 +656,7 @@
 			<OnUpdate>
 				-- mschweitzer NOTE: per bug 93334, if the tab is not visible then the chat frame should not be allowed to drag
 				if ( self == MOVING_CHATFRAME ) then
-					local chatTab = getglobal("ChatFrame"..self:GetID().."Tab");
+					local chatTab = _G["ChatFrame"..self:GetID().."Tab"];
 					if ( not chatTab:IsShown() ) then
 						FCF_StopDragging(self);
 					end
@@ -665,16 +664,18 @@
 				ChatFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnShow>
-				getglobal(self:GetName().."BottomButton"):Show();
-				getglobal(self:GetName().."DownButton"):Show();
-				getglobal(self:GetName().."UpButton"):Show();
+				local name = self:GetName();
+				_G[name.."BottomButton"]:Show();
+				_G[name.."DownButton"]:Show();
+				_G[name.."UpButton"]:Show();
 				SetChatWindowShown(self:GetID(), 1);
 			</OnShow>
 			<OnHide>
 				if ( not self:IsShown() ) then
-					getglobal(self:GetName().."BottomButton"):Hide();
-					getglobal(self:GetName().."DownButton"):Hide();
-					getglobal(self:GetName().."UpButton"):Hide();
+					local name = self:GetName();
+					_G[name.."BottomButton"]:Hide();
+					_G[name.."DownButton"]:Hide();
+					_G[name.."UpButton"]:Hide();
 					SetChatWindowShown(self:GetID(), nil);
 				end
 			</OnHide>

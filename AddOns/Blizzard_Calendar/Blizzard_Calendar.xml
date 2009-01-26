@@ -4,11 +4,9 @@
 	<Include file="Blizzard_CalendarTemplates.xml"/>
 
 	<!-- CalendarFrame -->
-	<!-- This is the main Calendar frame. It should be the parent of all related Calendar frames. If we
-		 decide to allow the event frames to be viewable without looking at the Calendar then nevermind!
-	-->
+	<!-- This is the main Calendar frame, parent of all related Calendar frames. -->
 	<Frame name="CalendarFrame" toplevel="true" parent="UIParent" enableMouse="true" enableKeyboard="true" frameStrata="HIGH" hidden="true">
-		<Size x="655" y="624"/>
+		<Size x="659" y="624"/>
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset x="15" y="-80"/>
@@ -36,13 +34,13 @@
 					<TexCoords left="0.0" right="1.0" top="0.16796875" bottom="0.32421875"/>
 				</Texture>
 				<Texture name="$parentTopRightTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
-					<Size x="143" y="30"/>
+					<Size x="147" y="30"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTopMiddleTexture" relativePoint="TOPRIGHT">
 							<Offset x="0" y="-16"/>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.0" right="0.55859375" top="0.328125" bottom="0.4296875"/>
+					<TexCoords left="0.0" right="0.57421875" top="0.328125" bottom="0.4296875"/>
 				</Texture>
 				<!-- left side textures -->
 				<Texture name="$parentLeftTopTexture" file="Interface\Calendar\CalendarFrame_Sides">
@@ -77,7 +75,7 @@
 					<Size x="13" y="256"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightTexture" relativePoint="BOTTOMRIGHT">
-							<Offset x="1" y="0"/>
+							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.3984375" top="0.0" bottom="1.0"/>
@@ -105,7 +103,7 @@
 					<Size x="256" y="9"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLeftBottomTexture" relativePoint="BOTTOMLEFT">
-							<Offset x="-1" y="0"/>
+							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.43359375" bottom="0.46875"/>
@@ -120,43 +118,35 @@
 					<TexCoords left="0.0" right="1.0" top="0.46875" bottom="0.50390625"/>
 				</Texture>
 				<Texture name="$parentBottomRightTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
-					<Size x="143" y="9"/>
+					<Size x="145" y="9"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentBottomMiddleTexture" relativePoint="RIGHT">
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.0" right="0.55859375" top="0.50390625" bottom="0.5390625"/>
+					<TexCoords left="0.0" right="0.56640625" top="0.50390625" bottom="0.5390625"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<!--
-					HACK: 0.01 was subtracted from the bottom of all weekday background tex coords to prevent texture seams
-					the real bottom value is 0.8203125
-				-->
 				<Texture name="CalendarWeekday1Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLeftTopTexture" relativePoint="TOPRIGHT">
-							<!-- HACK: 1 pixel x offset is in here to prevent texture seams -->
-							<Offset x="-1" y="0"/>
+							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday2Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday1Background" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.35546875" right="0.70703125" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday3Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday2Background" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday4Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
@@ -165,28 +155,24 @@
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.35546875" right="0.70703125" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday5Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday4Background" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday6Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday5Background" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.35546875" right="0.70703125" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<Texture name="CalendarWeekday7Background" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday6Background" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0.0" right="0.35546875" top="0.7109375" bottom="0.8103125"/>
 				</Texture>
 				<FontString name="CalendarWeekday1Name" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>

@@ -6,18 +6,15 @@ READY_CHECK_AFK_TEXTURE = "Interface\\RaidFrame\\ReadyCheck-NotReady";
 
 function ShowReadyCheck(initiator, timeLeft)
 	ReadyCheckFrame:Show();
-	if ( initiator == UnitName("player") ) then
+	ReadyCheckFrame.initiator = initiator;
+	if ( UnitIsUnit("player", initiator) ) then
 		ReadyCheckFrame:SetScript("OnUpdate", ReadyCheckFrame_OnUpdateInitiator);
 		ReadyCheckListenerFrame:Hide();
 	else
-		ReadyCheckFrame:SetScript("OnUpdate", ReadyCheckFrame_OnUpdateListener);
+		ReadyCheckFrame:SetScript("OnUpdate", nil);
 		SetPortraitTexture(ReadyCheckPortrait, initiator);
 		ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE, initiator);
-		ReadyCheckFrame.timeLeft = timeLeft;
-		if ( not ReadyCheckListenerFrame:IsShown() ) then
-			ReadyCheckListenerFrame:Show();
-			PlaySound("ReadyCheck");
-		end
+		ReadyCheckListenerFrame:Show();
 	end
 end
 
@@ -31,11 +28,14 @@ function ReadyCheckFrame_OnEvent(self, event, ...)
 	if ( event == "READY_CHECK" ) then
 		ShowReadyCheck(...);
 	elseif ( event == "READY_CHECK_FINISHED" ) then
-		if ( self:IsShown() and ReadyCheckListenerFrame:IsShown() ) then
-			local info = ChatTypeInfo["SYSTEM"];
-			DEFAULT_CHAT_FRAME:AddMessage(READY_CHECK_YOU_WERE_AFK, info.r, info.g, info.b, info.id);
+		if ( self.initiator ) then
+			if ( not UnitIsUnit("player", self.initiator) ) then
+				local info = ChatTypeInfo["SYSTEM"];
+				DEFAULT_CHAT_FRAME:AddMessage(READY_CHECK_YOU_WERE_AFK, info.r, info.g, info.b, info.id);
+				ReadyCheckListenerFrame:Hide();
+			end
+			self:Hide();
 		end
-		self:Hide();
 	elseif ( event == "RAID_ROSTER_UPDATE" ) then
 		if ( GetNumRaidMembers() == 0 ) then
 			self:Hide();
@@ -43,26 +43,14 @@ function ReadyCheckFrame_OnEvent(self, event, ...)
 	end
 end
 
-function ReadyCheckFrame_OnUpdateInitiator(self, elapsed)
-	-- this OnUpdate gets called for the ready check initiator, so we can keep checking to see
-	-- if the ready check times out
-	CheckReadyCheckTime();
+function ReadyCheckFrame_OnHide(self)
+	self.initiator = nil;
 end
 
-function ReadyCheckFrame_OnUpdateListener(self, elapsed)
-	self.timeLeft = self.timeLeft - elapsed;
-	if ( self.timeLeft < 0 ) then
-		-- Timed out
-		local info = ChatTypeInfo["SYSTEM"];
-		DEFAULT_CHAT_FRAME:AddMessage(READY_CHECK_YOU_WERE_AFK, info.r, info.g, info.b, info.id);
-		self:Hide();
-	end
-
-	if ( GetReadyCheckTimeLeft() == 0 ) then
-		-- most likely the raid leadership changed, which resets the ready check
-		self:Hide();
-		return;
-	end
+function ReadyCheckFrame_OnUpdateInitiator(self, elapsed)
+	-- This OnUpdate gets called for the ready check initiator, so we can keep checking to see
+	-- if the ready check times out. This will also finish the ready check if the time is up.
+	CheckReadyCheckTime();
 end
 
 function ReadyCheck_Start(readyCheckFrame)

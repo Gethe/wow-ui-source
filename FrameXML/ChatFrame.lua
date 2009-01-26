@@ -843,14 +843,14 @@ function IsSecureCmd(command)
 
 	for index, value in pairs(SecureCmdList) do
 		local i = 1;
-		local cmdString = getglobal("SLASH_"..index..i);
+		local cmdString = _G["SLASH_"..index..i];
 		while ( cmdString ) do
 			cmdString = strupper(cmdString);
 			if ( cmdString == command ) then
 				return true;
 			end
 			i = i + 1;
-			cmdString = getglobal("SLASH_"..index..i);
+			cmdString = _G["SLASH_"..index..i];
 		end
 	end
 end
@@ -1289,12 +1289,12 @@ end
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
-	local cmdString = getglobal("SLASH_"..index..i);
+	local cmdString = _G["SLASH_"..index..i];
 	while ( cmdString ) do
 		cmdString = strupper(cmdString);
 		hash_SecureCmdList[cmdString] = value;	-- add to hash
 		i = i + 1;
-		cmdString = getglobal("SLASH_"..index..i);
+		cmdString = _G["SLASH_"..index..i];
 	end
 end
 
@@ -1882,7 +1882,7 @@ SlashCmdList["STOPWATCH"] = function(msg)
 				local i, compare;
 				i = 1;
 				repeat
-					compare = getglobal(param..i);
+					compare = _G[param..i];
 					if ( compare and compare == text ) then
 						return true;
 					end
@@ -2246,7 +2246,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		local channelLength = strlen(arg4);
 		if ( (strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER")) ) then
 			if ( arg1 == "WRONG_PASSWORD" ) then
-				local staticPopup = getglobal(StaticPopup_Visible("CHAT_CHANNEL_PASSWORD") or "");
+				local staticPopup = _G[StaticPopup_Visible("CHAT_CHANNEL_PASSWORD") or ""];
 				if ( staticPopup and staticPopup.data == arg9 ) then
 					-- Don't display invalid password messages if we're going to prompt for a password (bug 102312)
 					return;
@@ -2294,24 +2294,24 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(CHAT_RESTRICTED, info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
-				self:AddMessage(format(getglobal("CHAT_"..type.."_GET")..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
+				self:AddMessage(format(_G["CHAT_"..type.."_GET"]..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
 			else
 				self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 			end
 		elseif (type == "CHANNEL_NOTICE_USER") then
 			if(strlen(arg5) > 0) then
 				-- TWO users in this notice (E.G. x kicked y)
-				self:AddMessage(format(getglobal("CHAT_"..arg1.."_NOTICE"), arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
+				self:AddMessage(format(_G["CHAT_"..arg1.."_NOTICE"], arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
 			elseif ( arg1 == "INVITE" ) then
-				self:AddMessage(format(getglobal("CHAT_"..arg1.."_NOTICE"), arg4, arg2), info.r, info.g, info.b, info.id);
+				self:AddMessage(format(_G["CHAT_"..arg1.."_NOTICE"], arg4, arg2), info.r, info.g, info.b, info.id);
 			else
-				self:AddMessage(format(getglobal("CHAT_"..arg1.."_NOTICE"), arg8, arg4, arg2), info.r, info.g, info.b, info.id);
+				self:AddMessage(format(_G["CHAT_"..arg1.."_NOTICE"], arg8, arg4, arg2), info.r, info.g, info.b, info.id);
 			end
 		elseif (type == "CHANNEL_NOTICE") then
 			if ( arg10 > 0 ) then
 				arg4 = arg4.." "..arg10;
 			end
-			self:AddMessage(format(getglobal("CHAT_"..arg1.."_NOTICE"), arg8, arg4), info.r, info.g, info.b, info.id);
+			self:AddMessage(format(_G["CHAT_"..arg1.."_NOTICE"], arg8, arg4), info.r, info.g, info.b, info.id);
 		else
 			local body;
 
@@ -2333,7 +2333,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					--Add Blizzard Icon, this was sent by a GM
 					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
 				else
-					pflag = getglobal("CHAT_FLAG_"..arg6);
+					pflag = _G["CHAT_FLAG_"..arg6];
 				end
 			else
 				pflag = "";
@@ -2363,17 +2363,17 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= self.defaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (strlen(arg2) > 0) ) then
-					body = format(getglobal("CHAT_"..type.."_GET")..languageHeader..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
+					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
 				else
-					body = format(getglobal("CHAT_"..type.."_GET")..languageHeader..arg1, pflag..arg2);
+					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag..arg2);
 				end
 			else
 				if ( showLink and (strlen(arg2) > 0) and (type ~= "EMOTE") ) then
-					body = format(getglobal("CHAT_"..type.."_GET")..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
+					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
 				elseif ( showLink and (strlen(arg2) > 0) and (type == "EMOTE") ) then
-					body = format(getglobal("CHAT_"..type.."_GET")..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..arg2.."|h");
+					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..arg2.."|h");
 				else
-					body = format(getglobal("CHAT_"..type.."_GET")..arg1, pflag..arg2, arg2);
+					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
 				end
 			end
 
@@ -2438,7 +2438,7 @@ function ChatFrame_GetMessageEventFilters (event)
 end
 
 function ChatFrame_OnUpdate(self, elapsedSec)
-	local flash = getglobal(self:GetName().."BottomButtonFlash");
+	local flash = _G[self:GetName().."BottomButtonFlash"];
 	
 	if ( not flash ) then
 		return;
@@ -2609,11 +2609,11 @@ function ChatFrame_DisplayStartupText(frame)
 
 	local info = ChatTypeInfo["SYSTEM"];
 	local i = 1;
-	local text = getglobal("STARTUP_TEXT_LINE"..i);
+	local text = _G["STARTUP_TEXT_LINE"..i];
 	while text do
 		frame:AddMessage(text, info.r, info.g, info.b, info.id);
 		i = i + 1;
-		text = getglobal("STARTUP_TEXT_LINE"..i);
+		text = _G["STARTUP_TEXT_LINE"..i];
 	end
 
 end
@@ -2625,11 +2625,11 @@ function ChatFrame_DisplayHelpText(frame)
 
 	local info = ChatTypeInfo["SYSTEM"];
 	local i = 1;
-	local text = getglobal("HELP_TEXT_LINE"..i);
+	local text = _G["HELP_TEXT_LINE"..i];
 	while text do
 		frame:AddMessage(text, info.r, info.g, info.b, info.id);
 		i = i + 1;
-		text = getglobal("HELP_TEXT_LINE"..i);
+		text = _G["HELP_TEXT_LINE"..i];
 	end
 
 end
@@ -2641,11 +2641,11 @@ function ChatFrame_DisplayMacroHelpText(frame)
 
 	local info = ChatTypeInfo["SYSTEM"];
 	local i = 1;
-	local text = getglobal("MACRO_HELP_TEXT_LINE"..i);
+	local text = _G["MACRO_HELP_TEXT_LINE"..i];
 	while text do
 		frame:AddMessage(text, info.r, info.g, info.b, info.id);
 		i = i + 1;
-		text = getglobal("MACRO_HELP_TEXT_LINE"..i);
+		text = _G["MACRO_HELP_TEXT_LINE"..i];
 	end
 
 end
@@ -2657,7 +2657,7 @@ function ChatFrame_DisplayChatHelp(frame)
 
 	local info = ChatTypeInfo["SYSTEM"];
 	local i = 1;
-	local text = getglobal("CHAT_HELP_TEXT_LINE"..i);
+	local text = _G["CHAT_HELP_TEXT_LINE"..i];
 	while text do
 		frame:AddMessage(text, info.r, info.g, info.b, info.id);
 		i = i + 1;
@@ -2665,7 +2665,7 @@ function ChatFrame_DisplayChatHelp(frame)
 		if ( i == 15 ) then
 			i = i + 1;
 		end
-		text = getglobal("CHAT_HELP_TEXT_LINE"..i);
+		text = _G["CHAT_HELP_TEXT_LINE"..i];
 	end
 end
 
@@ -2676,11 +2676,11 @@ function ChatFrame_DisplayGuildHelp(frame)
 
 	local info = ChatTypeInfo["SYSTEM"];
 	local i = 1;
-	local text = getglobal("GUILD_HELP_TEXT_LINE"..i);
+	local text = _G["GUILD_HELP_TEXT_LINE"..i];
 	while text do
 		frame:AddMessage(text, info.r, info.g, info.b, info.id);
 		i = i + 1;
-		text = getglobal("GUILD_HELP_TEXT_LINE"..i);
+		text = _G["GUILD_HELP_TEXT_LINE"..i];
 	end
 end
 
@@ -2873,7 +2873,7 @@ function ChatEdit_UpdateHeader(editBox)
 	end
 
 	local info = ChatTypeInfo[type];
-	local header = getglobal(editBox:GetName().."Header");
+	local header = _G[editBox:GetName().."Header"];
 	if ( not header ) then
 		return;
 	end
@@ -2893,7 +2893,7 @@ function ChatEdit_UpdateHeader(editBox)
 			header:SetFormattedText(CHAT_CHANNEL_SEND, channel, channelName);
 		end
 	else
-		header:SetText(getglobal("CHAT_"..type.."_SEND"));
+		header:SetText(_G["CHAT_"..type.."_SEND"]);
 	end
 
 	header:SetTextColor(info.r, info.g, info.b);
@@ -2905,7 +2905,7 @@ end
 function ChatEdit_AddHistory(editBox)
 	local text = "";
 	local type = editBox:GetAttribute("chatType");
-	local header = getglobal("SLASH_"..type.."1");
+	local header = _G["SLASH_"..type.."1"];
 	if ( header ) then
 		text = header;
 	end
@@ -3000,7 +3000,7 @@ function ChatEdit_SecureTabPressed(self)
 
 	for index, value in pairs(ChatTypeInfo) do
 		local i = 1;
-		local cmdString = getglobal("SLASH_"..index..i);
+		local cmdString = _G["SLASH_"..index..i];
 		while ( cmdString ) do
 			if ( strfind(cmdString, command, 1, 1) ) then
 				tabCompleteIndex = tabCompleteIndex - 1;
@@ -3011,13 +3011,13 @@ function ChatEdit_SecureTabPressed(self)
 				end
 			end
 			i = i + 1;
-			cmdString = getglobal("SLASH_"..index..i);
+			cmdString = _G["SLASH_"..index..i];
 		end
 	end
 
 	for index, value in pairs(SecureCmdList) do
 		local i = 1;
-		local cmdString = getglobal("SLASH_"..index..i);
+		local cmdString = _G["SLASH_"..index..i];
 		while ( cmdString ) do
 			if ( strfind(cmdString, command, 1, 1) ) then
 				tabCompleteIndex = tabCompleteIndex - 1;
@@ -3028,12 +3028,12 @@ function ChatEdit_SecureTabPressed(self)
 				end
 			end
 			i = i + 1;
-			cmdString = getglobal("SLASH_"..index..i);
+			cmdString = _G["SLASH_"..index..i];
 		end
 	end
 	for index, value in pairs(SlashCmdList) do
 		local i = 1;
-		local cmdString = getglobal("SLASH_"..index..i);
+		local cmdString = _G["SLASH_"..index..i];
 		while ( cmdString ) do
 			if ( strfind(cmdString, command, 1, 1) ) then
 				tabCompleteIndex = tabCompleteIndex - 1;
@@ -3044,13 +3044,13 @@ function ChatEdit_SecureTabPressed(self)
 				end
 			end
 			i = i + 1;
-			cmdString = getglobal("SLASH_"..index..i);
+			cmdString = _G["SLASH_"..index..i];
 		end
 	end
 
 	local i = 1;
 	local j = 1;
-	local cmdString = getglobal("EMOTE"..i.."_CMD"..j);
+	local cmdString = _G["EMOTE"..i.."_CMD"..j];
 	while ( cmdString ) do
 		if ( strfind(cmdString, command, 1, 1) ) then
 			tabCompleteIndex = tabCompleteIndex - 1;
@@ -3061,11 +3061,11 @@ function ChatEdit_SecureTabPressed(self)
 			end
 		end
 		j = j + 1;
-		cmdString = getglobal("EMOTE"..i.."_CMD"..j);
+		cmdString = _G["EMOTE"..i.."_CMD"..j];
 		if ( not cmdString ) then
 			i = i + 1;
 			j = 1;
-			cmdString = getglobal("EMOTE"..i.."_CMD"..j);
+			cmdString = _G["EMOTE"..i.."_CMD"..j];
 		end
 	end
 
@@ -3093,8 +3093,8 @@ function ChatEdit_OnTextSet(self)
 end
 
 function ChatEdit_OnInputLanguageChanged(self)
-	local button = getglobal(self:GetName().."Language");
-	local variable = getglobal("INPUT_"..self:GetInputLanguage());
+	local button = _G[self:GetName().."Language"];
+	local variable = _G["INPUT_"..self:GetInputLanguage()];
 	button:SetText(variable);
 end
 
@@ -3144,7 +3144,7 @@ function ChatEdit_HandleChatType(editBox, msg, command, send)
 		end
 		for index, value in pairs(ChatTypeInfo) do
 			local i = 1;
-			local cmdString = getglobal("SLASH_"..index..i);
+			local cmdString = _G["SLASH_"..index..i];
 			while ( cmdString ) do
 				cmdString = strupper(cmdString);
 				if ( cmdString == command ) then
@@ -3153,7 +3153,7 @@ function ChatEdit_HandleChatType(editBox, msg, command, send)
 					return true;
 				end
 				i = i + 1;
-				cmdString = getglobal("SLASH_"..index..i);
+				cmdString = _G["SLASH_"..index..i];
 			end
 		end
 	end
@@ -3222,7 +3222,7 @@ function ChatEdit_ParseText(editBox, send)
 	-- If we didn't have the command in the hash tables, look for it the slow way...
 	for index, value in pairs(SlashCmdList) do
 		local i = 1;
-		local cmdString = getglobal("SLASH_"..index..i);
+		local cmdString = _G["SLASH_"..index..i];
 		while ( cmdString ) do
 			cmdString = strupper(cmdString);
 			if ( cmdString == command ) then
@@ -3234,16 +3234,16 @@ function ChatEdit_ParseText(editBox, send)
 				return;
 			end
 			i = i + 1;
-			cmdString = getglobal("SLASH_"..index..i);
+			cmdString = _G["SLASH_"..index..i];
 		end
 	end
 
 	local i = 1;
 	local j = 1;
-	local cmdString = getglobal("EMOTE"..i.."_CMD"..j);
+	local cmdString = _G["EMOTE"..i.."_CMD"..j];
 	while ( i <= MAXEMOTEINDEX ) do
 		if ( cmdString and strupper(cmdString) == command ) then
-			local token = getglobal("EMOTE"..i.."_TOKEN");
+			local token = _G["EMOTE"..i.."_TOKEN"];
 			-- if the code in here changes - change the corresponding code above
 			if ( token ) then
 				hash_EmoteTokenList[command] = token;	-- add to hash
@@ -3254,11 +3254,11 @@ function ChatEdit_ParseText(editBox, send)
 			return;
 		end
 		j = j + 1;
-		cmdString = getglobal("EMOTE"..i.."_CMD"..j);
+		cmdString = _G["EMOTE"..i.."_CMD"..j];
 		if ( not cmdString ) then
 			i = i + 1;
 			j = 1;
-			cmdString = getglobal("EMOTE"..i.."_CMD"..j);
+			cmdString = _G["EMOTE"..i.."_CMD"..j];
 		end
 	end
 
@@ -3393,22 +3393,22 @@ end
 function TextEmoteSort(token1, token2)
 	local i = 1;
 	local string1, string2;
-	local token = getglobal("EMOTE"..i.."_TOKEN");
+	local token = _G["EMOTE"..i.."_TOKEN"];
 	while ( token ) do
 		if ( token == token1 ) then
-			string1 = getglobal("EMOTE"..i.."_CMD1");
+			string1 = _G["EMOTE"..i.."_CMD1"];
 			if ( string2 ) then
 				break;
 			end
 		end
 		if ( token == token2 ) then
-			string2 = getglobal("EMOTE"..i.."_CMD1");
+			string2 = _G["EMOTE"..i.."_CMD1"];
 			if ( string1 ) then
 				break;
 			end
 		end
 		i = i + 1;
-		token = getglobal("EMOTE"..i.."_TOKEN");
+		token = _G["EMOTE"..i.."_TOKEN"];
 	end
 	return string1 < string2;
 end
@@ -3419,15 +3419,15 @@ function OnMenuLoad(self,list,func)
 	self.parentMenu = "ChatMenu";
 	for index, value in pairs(list) do
 		local i = 1;
-		local token = getglobal("EMOTE"..i.."_TOKEN");
+		local token = _G["EMOTE"..i.."_TOKEN"];
 		while ( token ) do
 			if ( token == value ) then
 				break;
 			end
 			i = i + 1;
-			token = getglobal("EMOTE"..i.."_TOKEN");
+			token = _G["EMOTE"..i.."_TOKEN"];
 		end
-		local label = getglobal("EMOTE"..i.."_CMD1");
+		local label = _G["EMOTE"..i.."_CMD1"];
 		if ( not label ) then
 			label = value;
 		end

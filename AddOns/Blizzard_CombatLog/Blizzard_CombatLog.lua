@@ -3425,31 +3425,31 @@ local function Blizzard_CombatLog_AdjustCombatLogHeight()
 	if ( SIMPLE_CHAT == "1" ) then
 		return;
 	end
-	
+
 	-- This prevents improper positioning of the frame due to the scale not yet being set.
-	-- This whole method of resizing the frame and extending the background to preserve visual continuity really screws with repositioning after 
+	-- This whole method of resizing the frame and extending the background to preserve visual continuity really screws with repositioning after
 	-- a reload. I'm not sure it's going to work well in the long run.
 	local uiScale = tonumber(GetCVar("uiScale"));
 	--if UIParent:GetScale() ~= uiScale then return end
-	
-	local heightChange = CombatLogQuickButtonFrame:GetHeight()*uiScale;
-	local yOffset = 3;
-	local xOffset = 2;
-	
-	local oldPoint,relativeTo,relativePoint,xOfs,yOfs;
-	for i=1, COMBATLOG:GetNumPoints() do
-		point,relativeTo,relativePoint,xOfs,yOfs = COMBATLOG:GetPoint(i)
-		if ( point == "TOPLEFT" ) then 
-			break;
-		end
-	end	
-	
+
+	local quickButtonHeight = CombatLogQuickButtonFrame:GetHeight();
+
 	if ( COMBATLOG.isDocked ) then
-		yOfs = 0;
-		COMBATLOG:SetPoint("TOPLEFT", relativeTo, relativePoint, xOfs/uiScale, (yOfs - heightChange)/uiScale );
+		local oldPoint,relativeTo,relativePoint,xOfs,yOfs;
+		for i=1, COMBATLOG:GetNumPoints() do
+			oldPoint,relativeTo,relativePoint,xOfs,yOfs = COMBATLOG:GetPoint(i);
+			if ( oldPoint == "TOPLEFT" ) then
+				break;
+			end
+		end
+		COMBATLOG:SetPoint("TOPLEFT", relativeTo, relativePoint, xOfs/uiScale, -quickButtonHeight);
 	end
-	_G[COMBATLOG:GetName().."Background"]:SetPoint("TOPLEFT", COMBATLOG, "TOPLEFT", (xOffset * -1)/uiScale, (yOffset + heightChange)/uiScale);
-	_G[COMBATLOG:GetName().."Background"]:SetPoint("TOPRIGHT", COMBATLOG, "TOPRIGHT", xOffset/uiScale, (yOffset + heightChange)/uiScale);
+
+	local yOffset = (3 + quickButtonHeight*uiScale) / uiScale;
+	local xOffset = 2 / uiScale;
+	local combatLogBackground = _G[COMBATLOG:GetName().."Background"];
+	combatLogBackground:SetPoint("TOPLEFT", COMBATLOG, "TOPLEFT", -xOffset, yOffset);
+	combatLogBackground:SetPoint("TOPRIGHT", COMBATLOG, "TOPRIGHT", xOffset, yOffset);
 end
 
 -- On Load

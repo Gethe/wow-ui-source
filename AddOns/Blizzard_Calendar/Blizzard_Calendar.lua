@@ -114,9 +114,15 @@ CALENDAR_FIRST_WEEKDAY			= 1;		-- 1=SUN 2=MON 3=TUE 4=WED 5=THU 6=FRI 7=SAT
 local CALENDAR_MAX_DAYS_PER_MONTH			= 42;		-- 6 weeks
 local CALENDAR_MAX_DARKDAYS_PER_MONTH		= 14;		-- max days from the previous and next months when viewing the current month
 
+-- Weekday constants
+local CALENDAR_WEEKDAY_NORMALIZED_TEX_LEFT		= 0.0;
+local CALENDAR_WEEKDAY_NORMALIZED_TEX_TOP		= 180 / 256;
+local CALENDAR_WEEKDAY_NORMALIZED_TEX_WIDTH		= 90 / 256 - 0.001; -- fudge factor to prevent texture seams
+local CALENDAR_WEEKDAY_NORMALIZED_TEX_HEIGHT	= 28 / 256 - 0.001; -- fudge factor to prevent texture seams
+
 -- DayButton constants
-local CALENDAR_DAYBUTTON_NORMALIZED_TEX_WIDTH	= 91 / 256 - 0.001; -- fudge factor to prevent texture seams
-local CALENDAR_DAYBUTTON_NORMALIZED_TEX_HEIGHT	= 91 / 256 - 0.001; -- fudge factor to prevent texture seams
+local CALENDAR_DAYBUTTON_NORMALIZED_TEX_WIDTH	= 90 / 256 - 0.001; -- fudge factor to prevent texture seams
+local CALENDAR_DAYBUTTON_NORMALIZED_TEX_HEIGHT	= 90 / 256 - 0.001; -- fudge factor to prevent texture seams
 local CALENDAR_DAYBUTTON_MAX_VISIBLE_EVENTS		= 4;
 local CALENDAR_DAYBUTTON_MAX_VISIBLE_BIGEVENTS	= 2;
 local CALENDAR_DAYBUTTON_MAX_TOOLTIP_EVENTS		= 30;
@@ -186,182 +192,182 @@ local DARKFLAG_NEXTMONTH_RIGHT				= DARKFLAG_NEXTMONTH + DARKFLAG_SIDE_RIGHT;
 -- the dark day tcoord tables simplify tex coord setup for dark days
 local DARKDAY_TOP_TCOORDS = {
 	[DARKFLAG_PREVMONTH_TOP] = {
-		left	= 91 / 512,
-		right	= 182 / 512,
+		left	= 90 / 512,
+		right	= 180 / 512,
 		top		= 0.0,
-		bottom	= 46 / 256,
+		bottom	= 45 / 256,
 	},
 	[DARKFLAG_PREVMONTH_TOPLEFT] = {
 		left	= 0.0,
-		right	= 91 / 512,
+		right	= 90 / 512,
 		top		= 0.0,
-		bottom	= 46 / 256 - 0.001,	-- fudge factor to prevent texture seams
+		bottom	= 45 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 	[DARKFLAG_PREVMONTH_TOPRIGHT] = {
-		left	= 91 / 512,
+		left	= 90 / 512,
 		right	= 0.0,
 		top		= 0.0,
-		bottom	= 46 / 256 - 0.001,	-- fudge factor to prevent texture seams
+		bottom	= 45 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 	[DARKFLAG_PREVMONTH_TOPLEFTRIGHT] = {
 		left	= 0.0,
-		right	= 91 / 512,
-		top		= 184 / 256,
-		bottom	= 230 / 256,
+		right	= 90 / 512,
+		top		= 180 / 256,
+		bottom	= 225 / 256,
 	},
 
 	-- next 3 are same as DARKDAY_BOTTOM_TCOORDS (blank, left, right--no difference between top & bottom)
 	[DARKFLAG_NEXTMONTH] = {	-- no drop shadowing
-		left	= 91 / 512,
-		right	= 182 / 512,
-		top		= 46 / 256,
-		bottom	= 92 / 256,
+		left	= 90 / 512,
+		right	= 180 / 512,
+		top		= 45 / 256,
+		bottom	= 90 / 256,
 	},
 	[DARKFLAG_NEXTMONTH_LEFT] = {
-		left	= 91 / 512,
+		left	= 90 / 512,
 		right	= 0.0,
-		top		= 92 / 256,
-		bottom	= 138 / 256,
+		top		= 90 / 256,
+		bottom	= 135 / 256,
 	},
 	[DARKFLAG_NEXTMONTH_RIGHT] = {
 		left	= 0.0,
-		right	= 91 / 512,
-		top		= 92 / 256,
-		bottom	= 138 / 256 - 0.001,	-- fudge factor to prevent texture seams
+		right	= 90 / 512,
+		top		= 90 / 256,
+		bottom	= 135 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 
 	[DARKFLAG_NEXTMONTH_TOP] = {
-		left	= 91 / 512,
-		right	= 182 / 512,
+		left	= 90 / 512,
+		right	= 180 / 512,
 		top		= 0.0,
-		bottom	= 46 / 256,
+		bottom	= 45 / 256,
 	},
 	[DARKFLAG_NEXTMONTH_TOPLEFT] = {
 		left	= 0.0,
-		right	= 91 / 512,
+		right	= 90 / 512,
 		top		= 0.0,
-		bottom	= 46 / 256 - 0.001,	-- fudge factor to prevent texture seams
+		bottom	= 45 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 	[DARKFLAG_NEXTMONTH_TOPRIGHT] = {
-		left	= 91 / 512,
+		left	= 90 / 512,
 		right	= 0.0,
 		top		= 0.0,
-		bottom	= 46 / 256 - 0.001,	-- fudge factor to prevent texture seams
+		bottom	= 45 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 
 	-- day 8 of next month
 	[DARKFLAG_NEXTMONTH_CORNER] = {
-		left	= 91 / 512,
-		right	= 182 / 512 - 0.001,	-- fudge factor to prevent texture seams
-		top		= 138 / 256,
-		bottom	= 184 / 256,
+		left	= 90 / 512,
+		right	= 180 / 512 - 0.001,	-- fudge factor to prevent texture seams
+		top		= 135 / 256,
+		bottom	= 180 / 256,
 	},
 	-- day 7 of next month
 	[DARKFLAG_NEXTMONTH_CORNER_TOP] = {
 		left	= 0.0,
-		right	= 91 / 512,
-		top		= 138 / 256,
-		bottom	= 184 / 256 - 0.001,	-- fudge factor to prevent texture seams
+		right	= 90 / 512,
+		top		= 135 / 256,
+		bottom	= 180 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 	-- day 8 of next month, index 42
 	[DARKFLAG_NEXTMONTH_CORNER_RIGHT] = {
-		left	= 182 / 512,
-		right	= 273 / 512 - 0.001,	-- fudge factor to prevent texture seams
-		top		= 46 / 256,
-		bottom	= 92 / 256 - 0.001,	-- fudge factor to prevent texture seams
+		left	= 180 / 512,
+		right	= 270 / 512 - 0.001,	-- fudge factor to prevent texture seams
+		top		= 45 / 256,
+		bottom	= 90 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 	-- day 1 of next month
 	[DARKFLAG_NEXTMONTH_CORNER_TOPLEFT] = {
 		left	= 0.0,
-		right	= 91 / 512,
-		top		= 46 / 256,
-		bottom	= 92 / 256,
+		right	= 90 / 512,
+		top		= 45 / 256,
+		bottom	= 90 / 256,
 	},
 	-- day 1 of next month, 7th day of the week
 	[DARKFLAG_NEXTMONTH_CORNER_TOPLEFTRIGHT] = {
-		left	= 182 / 512,
-		right	= 91 / 512,
-		top		= 230 / 256,
-		bottom	= 184 / 256,
+		left	= 180 / 512,
+		right	= 90 / 512,
+		top		= 225 / 256,
+		bottom	= 180 / 256,
 	},
 };
 local DARKDAY_BOTTOM_TCOORDS = {
 	[DARKFLAG_PREVMONTH_BOTTOM] = {
-		left	= 91 / 512,
-		right	= 182 / 512,
-		top		= 46 / 256,
+		left	= 90 / 512,
+		right	= 180 / 512,
+		top		= 45 / 256,
 		bottom	= 0.0,
 	},
 	[DARKFLAG_PREVMONTH_BOTTOMLEFT] = {
 		left	= 0.0,
-		right	= 91 / 512,
-		top		= 46 / 256 - 0.001,	-- fudge factor to prevent texture seams
+		right	= 90 / 512,
+		top		= 45 / 256 - 0.001,	-- fudge factor to prevent texture seams
 		bottom	= 0.0,
 	},
 	[DARKFLAG_PREVMONTH_BOTTOMRIGHT] = {
-		left	= 91 / 512,
+		left	= 90 / 512,
 		right	= 0.0,
-		top		= 92 / 256,
-		bottom	= 46 / 256,
+		top		= 90 / 256,
+		bottom	= 45 / 256,
 	},
 	[DARKFLAG_PREVMONTH_BOTTOMLEFTRIGHT] = {
-		left	= 91 / 512,
-		right	= 182 / 512,
-		top		= 184 / 256,
-		bottom	= 230 / 256,
+		left	= 90 / 512,
+		right	= 180 / 512,
+		top		= 180 / 256,
+		bottom	= 225 / 256,
 	},
 
 	-- next 3 are same as DARKDAY_TOP_TCOORDS (blank, left, right--no difference between top & bottom)
 	[DARKFLAG_NEXTMONTH] = {	-- no drop shadowing
-		left	= 91 / 512,
-		right	= 182 / 512,
-		top		= 46 / 256,
-		bottom	= 92 / 256,
+		left	= 90 / 512,
+		right	= 180 / 512,
+		top		= 45 / 256,
+		bottom	= 90 / 256,
 	},
 	[DARKFLAG_NEXTMONTH_LEFT] = {
-		left	= 91 / 512,
+		left	= 90 / 512,
 		right	= 0.0,
-		top		= 92 / 256,
-		bottom	= 138 / 256,
+		top		= 90 / 256,
+		bottom	= 135 / 256,
 	},
 	[DARKFLAG_NEXTMONTH_RIGHT] = {
 		left	= 0.0,
-		right	= 91 / 512,
-		top		= 92 / 256,
-		bottom	= 138 / 256,
+		right	= 90 / 512,
+		top		= 90 / 256,
+		bottom	= 135 / 256,
 	},
 
 	[DARKFLAG_NEXTMONTH_BOTTOM] = {
-		left	= 91 / 512,
-		right	= 182 / 512,
-		top		= 46 / 256,
+		left	= 90 / 512,
+		right	= 180 / 512,
+		top		= 45 / 256,
 		bottom	= 0.0,
 	},
 	[DARKFLAG_NEXTMONTH_BOTTOMLEFT] = {
 		left	= 0.0,
-		right	= 91 / 512,
-		top		= 46 / 256,
+		right	= 90 / 512,
+		top		= 45 / 256,
 		bottom	= 0.0,
 	},
 	[DARKFLAG_NEXTMONTH_BOTTOMRIGHT] = {
-		left	= 91 / 512,
+		left	= 90 / 512,
 		right	= 0.0,
-		top		= 46 / 256,
+		top		= 45 / 256,
 		bottom	= 0.0,
 	},
 	[DARKFLAG_NEXTMONTH_BOTTOMLEFTRIGHT] = {
 		left	= 0.0,
-		right	= 91 / 512,
-		top		= 230 / 256,
-		bottom	= 184 / 256,
+		right	= 90 / 512,
+		top		= 225 / 256,
+		bottom	= 180 / 256,
 	},
 
 	-- day 1 of next month, 7th day of the week, not index 42
 	[DARKFLAG_NEXTMONTH_LEFTRIGHT] = {
-		left	= 182 / 512,
-		right	= 273 / 512 - 0.001,	-- fudge factor to prevent texture seams
+		left	= 180 / 512,
+		right	= 270 / 512 - 0.001,	-- fudge factor to prevent texture seams
 		top		= 0.0,
-		bottom	= 46 / 256,
+		bottom	= 45 / 256,
 	},
 };
 
@@ -994,6 +1000,11 @@ function CalendarFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_OPEN_EVENT");
 	self:RegisterEvent("CALENDAR_UPDATE_ERROR");
 
+	-- initialize weekdays
+	for i = 1, 7 do
+		CalendarFrame_InitWeekday(i);
+	end
+
 	-- initialize day buttons
 	for i = 1, CALENDAR_MAX_DAYS_PER_MONTH do
 		CalendarDayButtons[i] = CreateFrame("Button", "CalendarDayButton"..i, self, "CalendarDayButtonTemplate");
@@ -1082,6 +1093,17 @@ function CalendarFrame_OnHide(self)
 	PlaySound("igSpellBookClose");
 end
 
+function CalendarFrame_InitWeekday(index)
+	local backgroundName = "CalendarWeekday"..index.."Background";
+	local background = _G[backgroundName];
+
+	local left = (bit_band(index, 1) * CALENDAR_WEEKDAY_NORMALIZED_TEX_WIDTH) + CALENDAR_WEEKDAY_NORMALIZED_TEX_LEFT;		-- mod(index, 2) * width
+	local right = left + CALENDAR_WEEKDAY_NORMALIZED_TEX_WIDTH;
+	local top = CALENDAR_WEEKDAY_NORMALIZED_TEX_TOP;
+	local bottom = top + CALENDAR_WEEKDAY_NORMALIZED_TEX_HEIGHT;
+	background:SetTexCoord(left, right, top, bottom);
+end
+
 function CalendarFrame_InitDay(buttonIndex)
 	local button = CalendarDayButtons[buttonIndex];
 	local buttonName = button:GetName();
@@ -1102,8 +1124,8 @@ function CalendarFrame_InitDay(buttonIndex)
 	local tex = button:GetNormalTexture();
 	tex:SetDrawLayer("BACKGROUND");
 	local texLeft = random(0,1) * CALENDAR_DAYBUTTON_NORMALIZED_TEX_WIDTH;
-	local texTop = random(0,1) * CALENDAR_DAYBUTTON_NORMALIZED_TEX_HEIGHT;
 	local texRight = texLeft + CALENDAR_DAYBUTTON_NORMALIZED_TEX_WIDTH;
+	local texTop = random(0,1) * CALENDAR_DAYBUTTON_NORMALIZED_TEX_HEIGHT;
 	local texBottom = texTop + CALENDAR_DAYBUTTON_NORMALIZED_TEX_HEIGHT;
 	tex:SetTexCoord(texLeft, texRight, texTop, texBottom);
 	-- adjust the highlight texture layer
@@ -4159,7 +4181,7 @@ function CalendarCreateEventRaidInviteButton_OnClick(self)
 				return;
 			end
 			--...and I'm NOT already in a party, then I need to form a party first (happens below),
-			-- then form a raid to fit everyone (happens as a response to the PARTY_MEMBERS_CHANGED event)
+			-- then form a raid to fit everyone (happens in response to the PARTY_CONVERTED_TO_RAID event)
 		end
 		maxInviteCount = MAX_PARTY_MEMBERS - realNumPartyMembers;
 	else

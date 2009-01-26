@@ -98,6 +98,11 @@
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnShow>
+						PlaySound("ReadyCheck");
+					</OnShow>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -107,6 +112,9 @@
 			<OnEvent>
 				ReadyCheckFrame_OnEvent(self, event, ...);
 			</OnEvent>
+			<OnHide>
+				ReadyCheckFrame_OnHide(self);
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

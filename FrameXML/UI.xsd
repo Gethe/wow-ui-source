@@ -194,63 +194,70 @@
 	<xs:complexType name="ScriptsType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
-				<xs:element name="OnLoad" type="xs:string"/>
-				<xs:element name="OnAttributeChanged" type="xs:string"/>
-				<xs:element name="OnSizeChanged" type="xs:string"/>
-				<xs:element name="OnEvent" type="xs:string"/>
-				<xs:element name="OnUpdate" type="xs:string"/>
-				<xs:element name="OnShow" type="xs:string"/>
-				<xs:element name="OnHide" type="xs:string"/>
-				<xs:element name="OnEnter" type="xs:string"/>
-				<xs:element name="OnLeave" type="xs:string"/>
-				<xs:element name="OnMouseDown" type="xs:string"/>
-				<xs:element name="OnMouseUp" type="xs:string"/>
-				<xs:element name="OnMouseWheel" type="xs:string"/>
-				<xs:element name="OnDragStart" type="xs:string"/>
-				<xs:element name="OnDragStop" type="xs:string"/>
-				<xs:element name="OnReceiveDrag" type="xs:string"/>
-				<xs:element name="PreClick" type="xs:string"/>
-				<xs:element name="OnClick" type="xs:string"/>
-				<xs:element name="PostClick" type="xs:string"/>
-				<xs:element name="OnDoubleClick" type="xs:string"/>
-				<xs:element name="OnValueChanged" type="xs:string"/>
-				<xs:element name="OnUpdateModel" type="xs:string"/>
-				<xs:element name="OnAnimFinished" type="xs:string"/>
-				<xs:element name="OnEnterPressed" type="xs:string"/>
-				<xs:element name="OnEscapePressed" type="xs:string"/>
-				<xs:element name="OnSpacePressed" type="xs:string"/>
-				<xs:element name="OnTabPressed" type="xs:string"/>
-				<xs:element name="OnTextChanged" type="xs:string"/>
-				<xs:element name="OnTextSet" type="xs:string"/>
-				<xs:element name="OnCursorChanged" type="xs:string"/>
-				<xs:element name="OnInputLanguageChanged" type="xs:string"/>
-				<xs:element name="OnEditFocusGained" type="xs:string"/>
-				<xs:element name="OnEditFocusLost" type="xs:string"/>
-				<xs:element name="OnHorizontalScroll" type="xs:string"/>
-				<xs:element name="OnVerticalScroll" type="xs:string"/>
-				<xs:element name="OnScrollRangeChanged" type="xs:string"/>
-				<xs:element name="OnCharComposition" type="xs:string"/>
-				<xs:element name="OnChar" type="xs:string"/>
-				<xs:element name="OnKeyDown" type="xs:string"/>
-				<xs:element name="OnKeyUp" type="xs:string"/>
-				<xs:element name="OnColorSelect" type="xs:string"/>
-				<xs:element name="OnHyperlinkEnter" type="xs:string"/>
-				<xs:element name="OnHyperlinkLeave" type="xs:string"/>
-				<xs:element name="OnHyperlinkClick" type="xs:string"/>
-				<xs:element name="OnMessageScrollChanged" type="xs:string"/>
-				<xs:element name="OnMovieFinished" type="xs:string"/>
-				<xs:element name="OnMovieShowSubtitle" type="xs:string"/>
-				<xs:element name="OnMovieHideSubtitle" type="xs:string"/>
-				<xs:element name="OnTooltipSetDefaultAnchor" type="xs:string"/>
-				<xs:element name="OnTooltipCleared" type="xs:string"/>
-				<xs:element name="OnTooltipAddMoney" type="xs:string"/>
-				<xs:element name="OnTooltipSetUnit" type="xs:string"/>
-				<xs:element name="OnTooltipSetItem" type="xs:string"/>
-				<xs:element name="OnTooltipSetSpell" type="xs:string"/>
-				<xs:element name="OnTooltipSetQuest" type="xs:string"/>
-        <xs:element name="OnTooltipSetAchievement" type="xs:string"/>
+				<xs:element name="OnLoad" type="ScriptType"/>
+				<xs:element name="OnAttributeChanged" type="ScriptType"/>
+				<xs:element name="OnSizeChanged" type="ScriptType"/>
+				<xs:element name="OnEvent" type="ScriptType"/>
+				<xs:element name="OnUpdate" type="ScriptType"/>
+				<xs:element name="OnShow" type="ScriptType"/>
+				<xs:element name="OnHide" type="ScriptType"/>
+				<xs:element name="OnEnter" type="ScriptType"/>
+				<xs:element name="OnLeave" type="ScriptType"/>
+				<xs:element name="OnMouseDown" type="ScriptType"/>
+				<xs:element name="OnMouseUp" type="ScriptType"/>
+				<xs:element name="OnMouseWheel" type="ScriptType"/>
+				<xs:element name="OnDragStart" type="ScriptType"/>
+				<xs:element name="OnDragStop" type="ScriptType"/>
+				<xs:element name="OnReceiveDrag" type="ScriptType"/>
+				<xs:element name="PreClick" type="ScriptType"/>
+				<xs:element name="OnClick" type="ScriptType"/>
+				<xs:element name="PostClick" type="ScriptType"/>
+				<xs:element name="OnDoubleClick" type="ScriptType"/>
+				<xs:element name="OnValueChanged" type="ScriptType"/>
+				<xs:element name="OnUpdateModel" type="ScriptType"/>
+				<xs:element name="OnAnimFinished" type="ScriptType"/>
+				<xs:element name="OnEnterPressed" type="ScriptType"/>
+				<xs:element name="OnEscapePressed" type="ScriptType"/>
+				<xs:element name="OnSpacePressed" type="ScriptType"/>
+				<xs:element name="OnTabPressed" type="ScriptType"/>
+				<xs:element name="OnTextChanged" type="ScriptType"/>
+				<xs:element name="OnTextSet" type="ScriptType"/>
+				<xs:element name="OnCursorChanged" type="ScriptType"/>
+				<xs:element name="OnInputLanguageChanged" type="ScriptType"/>
+				<xs:element name="OnEditFocusGained" type="ScriptType"/>
+				<xs:element name="OnEditFocusLost" type="ScriptType"/>
+				<xs:element name="OnHorizontalScroll" type="ScriptType"/>
+				<xs:element name="OnVerticalScroll" type="ScriptType"/>
+				<xs:element name="OnScrollRangeChanged" type="ScriptType"/>
+				<xs:element name="OnCharComposition" type="ScriptType"/>
+				<xs:element name="OnChar" type="ScriptType"/>
+				<xs:element name="OnKeyDown" type="ScriptType"/>
+				<xs:element name="OnKeyUp" type="ScriptType"/>
+				<xs:element name="OnColorSelect" type="ScriptType"/>
+				<xs:element name="OnHyperlinkEnter" type="ScriptType"/>
+				<xs:element name="OnHyperlinkLeave" type="ScriptType"/>
+				<xs:element name="OnHyperlinkClick" type="ScriptType"/>
+				<xs:element name="OnMessageScrollChanged" type="ScriptType"/>
+				<xs:element name="OnMovieFinished" type="ScriptType"/>
+				<xs:element name="OnMovieShowSubtitle" type="ScriptType"/>
+				<xs:element name="OnMovieHideSubtitle" type="ScriptType"/>
+				<xs:element name="OnTooltipSetDefaultAnchor" type="ScriptType"/>
+				<xs:element name="OnTooltipCleared" type="ScriptType"/>
+				<xs:element name="OnTooltipAddMoney" type="ScriptType"/>
+				<xs:element name="OnTooltipSetUnit" type="ScriptType"/>
+				<xs:element name="OnTooltipSetItem" type="ScriptType"/>
+				<xs:element name="OnTooltipSetSpell" type="ScriptType"/>
+				<xs:element name="OnTooltipSetQuest" type="ScriptType"/>
+		        <xs:element name="OnTooltipSetAchievement" type="ScriptType"/>
 			</xs:choice>
 		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ScriptType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="function" type="xs:string"/>
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 	<xs:complexType name="FontType">
 		<xs:sequence minOccurs="0">

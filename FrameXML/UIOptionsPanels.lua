@@ -542,9 +542,16 @@ function InterfaceOptionsDisplayPanel_OnEvent (self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		BuffButtons_UpdatePositions();
-		InterfaceOptionsDisplayPanelShowClock_SetFunc(GetCVar(InterfaceOptionsDisplayPanelShowClock.cvar));
-		Minimap_UpdateRotationSetting();
+		local control;
+
+		control = InterfaceOptionsDisplayPanelBuffDurations;
+		control.setFunc(GetCVar(control.cvar));
+
+		control = InterfaceOptionsDisplayPanelShowClock;
+		control.setFunc(GetCVar(control.cvar));
+
+		control = InterfaceOptionsDisplayPanelRotateMinimap;
+		control.setFunc(GetCVar(control.cvar));
 	end
 end
 
@@ -770,6 +777,7 @@ function InterfaceOptionsSocialPanel_OnLoad (self)
 	self.okay = function (self)
 		InterfaceOptionsPanel_Okay(self);
 
+		-- I guess it's ok if simple chat is the only option that gets applied on okay...it is destructive
 		if ( InterfaceOptionsSocialPanelSimpleChat:GetChecked() ) then
 			SIMPLE_CHAT = "1";
 			FCF_Set_SimpleChat();
@@ -786,10 +794,13 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		SIMPLE_CHAT = (GetCVar("useSimpleChat") == "1" and "1") or "0";
+		local control;
+
+		control = InterfaceOptionsSocialPanelChatHoverDelay;
+		control.setFunc(GetCVar(control.cvar));
+
 		-- bug 110191: The combat log overlaps the chat log after relogging with Simple Chat toggled.
-		-- to fix this, force the floating chat frames to simple chat mode so that the combat log is
-		-- correctly positioned and sized
+		-- force the floating chat frames to simple chat mode (if it is enabled) to fix position and size issues
 		if ( SIMPLE_CHAT == "1" ) then
 			FCF_Set_SimpleChat();
 		end
@@ -820,8 +831,10 @@ function InterfaceOptionsActionBarsPanel_OnEvent (self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		ALWAYS_SHOW_MULTIBARS = GetCVar("alwaysShowActionBars");
-		InterfaceOptionsActionBarsPanelAlwaysShowActionBars.setFunc();
+		local control;
+
+		control = InterfaceOptionsActionBarsPanelAlwaysShowActionBars;
+		control.setFunc(GetCVar(control.cvar));
 	end
 end
 

@@ -593,7 +593,7 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.text = getglobal(self:GetName().."Text");
+						self.text = _G[self:GetName().."Text"];
 						self.text:SetText(SHOW_CLOAK);
 						self.tooltipText = OPTION_TOOLTIP_SHOW_CLOAK;
 						self.defaultValue = "1";
@@ -632,7 +632,7 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.text = getglobal(self:GetName().."Text");
+						self.text = _G[self:GetName().."Text"];
 						self.text:SetText(SHOW_HELM);
 						self.tooltipText = OPTION_TOOLTIP_SHOW_HELM;
 						self.defaultValue = "1";
@@ -673,7 +673,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "buffDurations";
 						self.uvar = "SHOW_BUFF_DURATIONS";
-						self.setFunc = function () BuffButtons_UpdatePositions(); end;
+						self.setFunc = function (value) BuffButtons_UpdatePositions(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -690,7 +690,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "rotateMinimap";
-						self.setFunc = function () Minimap_UpdateRotationSetting(); end;
+						self.setFunc = function (value) Minimap_UpdateRotationSetting(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -813,7 +813,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "threatShowNumeric";
-						self.setFunc = function() InterfaceOptionsDisplayPanelShowAggroPercentage_SetFunc(); end;
+						self.setFunc = function (value) InterfaceOptionsDisplayPanelShowAggroPercentage_SetFunc(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1073,6 +1073,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "removeChatDelay";
 						self.uvar = "REMOVE_CHAT_DELAY";
+						self.setFunc = function (value) SetChatMouseOverDelay(value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1121,7 +1122,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showChatIcons";
-						self.setFunc = function (value) CHAT_SHOW_ICONS = value; end
+						self.setFunc = function (value) CHAT_SHOW_ICONS = value; end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1139,6 +1140,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "useSimpleChat";
 						self.uvar = "SIMPLE_CHAT";
+						-- we apply this option in a custom okay handler rather than a setFunc
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1313,7 +1315,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "alwaysShowActionBars";
 						self.uvar = "ALWAYS_SHOW_MULTIBARS";
-						self.setFunc = function() MultiActionBar_UpdateGridVisibility(); InterfaceOptions_UpdateMultiActionBars(); end;
+						self.setFunc = function (value) MultiActionBar_UpdateGridVisibility(); InterfaceOptions_UpdateMultiActionBars(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1720,7 +1722,7 @@
 								UIParentLoadAddOn("Blizzard_CombatText");
 							end
 							BlizzardOptionsPanel_UpdateCombatText();
-						end
+						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1887,7 +1889,7 @@
 								self:Disable();
 							end
 							BlizzardOptionsPanel_UpdateCombatText();
-						end
+						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
@@ -2173,7 +2175,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showPartyBackground";
 						self.uvar = "SHOW_PARTY_BACKGROUND";
-						self.setFunc = function () UpdatePartyMemberBackground(); end;
+						self.setFunc = function (value) UpdatePartyMemberBackground(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -2191,7 +2193,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "hidePartyInRaid";
 						self.uvar = "HIDE_PARTY_INTERFACE";
-						self.setFunc = function () RaidOptionsFrame_UpdatePartyFrames(); end;
+						self.setFunc = function (value) RaidOptionsFrame_UpdatePartyFrames(); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -2209,7 +2211,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showPartyPets";
 						self.uvar = "SHOW_PARTY_PETS";
-						self.setFunc = function() for i=1, MAX_PARTY_MEMBERS do PartyMemberFrame_UpdatePet("PartyMemberFrame" .. i, i); end end;
+						self.setFunc = function (value) for i=1, MAX_PARTY_MEMBERS do PartyMemberFrame_UpdatePet("PartyMemberFrame" .. i, i); end end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -2258,7 +2260,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.setFunc = function(value)
+						self.setFunc = function (value)
 							if ( value == "1") then
 								RaidFrame.showRange = 1;
 							else

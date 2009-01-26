@@ -844,5 +844,139 @@
 			</CheckButton>					
 		</Frames>
 	</Frame>	
+	<Frame name="VideoOptionsStereoPanel" parent="VideoOptionsFramePanelContainer" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="STEREO_VIDEO_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="STEREO_VIDEO_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				VideoOptionsStereoPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>	
+		<Frames>		
+			<CheckButton name="$parentEnabled" inherits="OptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="-64" y="-92"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "gxStereoEnabled";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Slider name="$parentUIDepth" inherits="OptionsSliderTemplate">
+				<Size x="270" y="17"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="TOP">
+						<Offset x="0" y="-150"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "uiDepth";
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsStereoPanelEnabled, self);
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = self:GetValue();
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetValue())
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentConvergence" inherits="OptionsSliderTemplate">
+				<Size x="270" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentUIDepth" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-70"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "gxStereoConvergence";
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsStereoPanelEnabled, self);
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = self:GetValue();
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetValue())
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentEyeSeparation" inherits="OptionsSliderTemplate">
+				<Size x="270" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentConvergence" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-70"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "gxStereoSeparation";
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsStereoPanelEnabled, self);
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = self:GetValue();
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetValue())
+					</OnValueChanged>
+				</Scripts>
+			</Slider>		
+		</Frames>
+	</Frame>
 </Ui>
 

@@ -16,6 +16,7 @@ end
 
 local function MainMenuBar_GetRightABPos(self, fraction)
 
+	local finaloffset;
 	if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 ) then
 		finaloffset = 100;
 	else
@@ -27,6 +28,7 @@ end
 
 local function MainMenuBar_GetSeatIndicatorPos(self, fraction)
 
+	local finaloffset;
 	if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 ) then
 		finaloffset = -100;
 	elseif ( SHOW_MULTI_ACTIONBAR_3 ) then

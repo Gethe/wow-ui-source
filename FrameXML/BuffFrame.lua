@@ -200,7 +200,7 @@ function BuffButton_OnUpdate (self, elapsed)
 	end
 
 	-- Update duration
-	BuffFrame_UpdateDuration(self, self.timeLeft);
+	securecall("BuffFrame_UpdateDuration", self, self.timeLeft); -- Taint issue with SecondsToTimeAbbrev 
 	self.timeLeft = max(self.timeLeft - elapsed, 0);
 
 	if ( BuffFrame.BuffFrameUpdateTime > 0 ) then
