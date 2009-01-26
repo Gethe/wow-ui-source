@@ -887,7 +887,8 @@ StaticPopupDialogs["RESURRECT"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	noCancelOnReuse = 1
 };
 StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	StartDelay = GetCorpseRecoveryDelay,
@@ -912,7 +913,8 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	noCancelOnReuse = 1
 };
 StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	text = RESURRECT_REQUEST_NO_SICKNESS,
@@ -935,7 +937,8 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	noCancelOnReuse = 1
 };
 StaticPopupDialogs["SKINNED"] = {
 	text = DEATH_CORPSE_SKINNED,
@@ -2350,9 +2353,11 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	-- Find an open dialog of the requested type
 	dialog = StaticPopup_FindVisible(which, data);
 	if ( dialog ) then
-		local OnCancel = StaticPopupDialogs[which].OnCancel;
-		if ( OnCancel ) then
-			OnCancel(dialog, dialog.data, "override");
+		if ( not StaticPopupDialogs[which].noCancelOnReuse ) then
+			local OnCancel = StaticPopupDialogs[which].OnCancel;
+			if ( OnCancel ) then
+				OnCancel(dialog, dialog.data, "override");
+			end
 		end
 		dialog:Hide();
 	end

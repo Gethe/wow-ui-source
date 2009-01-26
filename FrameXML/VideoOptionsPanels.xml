@@ -895,38 +895,11 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentUIDepth" inherits="OptionsSliderTemplate">
+			<Slider name="$parentConvergence" inherits="OptionsSliderTemplate">
 				<Size x="270" y="17"/>
 				<Anchors>
 					<Anchor point="TOP" relativePoint="TOP">
 						<Offset x="0" y="-150"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						local name = self:GetName();
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "uiDepth";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsStereoPanelEnabled, self);
-					</OnLoad>
-					<OnValueChanged>
-						self.newValue = self:GetValue();
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetValue())
-					</OnValueChanged>
-				</Scripts>
-			</Slider>
-			<Slider name="$parentConvergence" inherits="OptionsSliderTemplate">
-				<Size x="270" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentUIDepth" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-70"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>

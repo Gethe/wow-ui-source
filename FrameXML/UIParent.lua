@@ -220,12 +220,20 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_WHISPER");
 end
 
-function ToggleFrame(frame)
-	if ( frame:IsShown() ) then
-		HideUIPanel(frame);
-	else
-		ShowUIPanel(frame);
+
+-- Addons --
+
+local FailedAddOnLoad = {};
+
+function UIParentLoadAddOn(name)
+	local loaded, reason = LoadAddOn(name);
+	if ( not loaded ) then
+		if ( not FailedAddOnLoad[name] ) then
+			message(format(ADDON_LOAD_FAILED, name, getglobal("ADDON_"..reason)));
+			FailedAddOnLoad[name] = true;
+		end
 	end
+	return loaded;
 end
 
 function AuctionFrame_LoadUI()
@@ -380,6 +388,9 @@ function InspectUnit(unit)
 	end
 end
 
+
+-- UIParent_OnEvent --
+
 function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "VARIABLES_LOADED" ) then
@@ -426,13 +437,7 @@ function UIParent_OnEvent(self, event, ...)
 		return;
 	end
 	if ( event == "RESURRECT_REQUEST" ) then
-		if ( ResurrectHasSickness() ) then
-			StaticPopup_Show("RESURRECT", arg1);
-		elseif ( ResurrectHasTimer() ) then
-			StaticPopup_Show("RESURRECT_NO_SICKNESS", arg1);
-		else
-			StaticPopup_Show("RESURRECT_NO_TIMER", arg1);
-		end
+		ShowResurrectRequest(arg1);
 		return;
 	end
 	if ( event == "PLAYER_SKINNED" ) then
@@ -595,14 +600,14 @@ function UIParent_OnEvent(self, event, ...)
 
 		-- Close any windows that were previously open
 		CloseAllWindows(1);
-	
+
 		-- Until PVPFrame is checked in, this is placed here.
 		for i=1, MAX_ARENA_TEAMS do
 			GetArenaTeam(i);
 		end
 
 		VoiceChat_Toggle();
-		
+
 		-- Fix for Bug 124392
 		StaticPopup_Hide("LEVEL_GRANT_PROPOSED");
 		return;
@@ -1003,19 +1008,41 @@ function UIParent_OnEvent(self, event, ...)
 	end
 end
 
-local FailedAddOnLoad = {};
 
-function UIParentLoadAddOn(name)
-	local loaded, reason = LoadAddOn(name);
-	if ( not loaded ) then
-		if ( not FailedAddOnLoad[name] ) then
-			message(format(ADDON_LOAD_FAILED, name, getglobal("ADDON_"..reason)));
-			FailedAddOnLoad[name] = true;
+-- ToggleGameMenu --
+
+-- Function that handles the escape key functions
+function ToggleGameMenu()
+	if ( securecall("StaticPopup_EscapePressed") ) then
+	elseif ( GameMenuFrame:IsShown() ) then
+		PlaySound("igMainMenuQuit");
+		HideUIPanel(GameMenuFrame);
+	elseif ( HelpFrame:IsShown() ) then
+		if ( HelpFrame.back and HelpFrame.back.Click ) then
+			HelpFrame.back:Click();
 		end
+	elseif ( VideoOptionsFrame:IsShown() ) then
+		VideoOptionsFrameCancel:Click();
+	elseif ( AudioOptionsFrame:IsShown() ) then
+		AudioOptionsFrameCancel:Click();
+	elseif ( InterfaceOptionsFrame:IsShown() ) then
+		InterfaceOptionsFrameCancel:Click();
+	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
+		TimeManagerCloseButton:Click();
+	elseif ( securecall("CloseMenus") ) then
+	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
+	elseif ( SpellStopCasting() ) then
+	elseif ( SpellStopTargeting() ) then
+	elseif ( securecall("CloseAllWindows") ) then
+	elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
+	else
+		PlaySound("igMainMenuOpen");
+		ShowUIPanel(GameMenuFrame);
 	end
-	return loaded;
 end
 
+
+-- Frame Management --
 
 -- UIPARENT_MANAGED_FRAME_POSITIONS stores all the frames that have positioning dependencies based on other frames.  
 
@@ -1164,7 +1191,6 @@ function UIParent_ManageFramePosition(index, value, yOffsetFrames, xOffsetFrames
 		end
 	end
 end
-
 
 local function FramePositionDelegate_OnAttributeChanged(self, attribute)
 	if ( attribute == "panel-show" ) then
@@ -1770,6 +1796,20 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	updateContainerFrameAnchors();
 end
 
+-- Call this function to update the positions of all frames that can appear on the right side of the screen
+function UIParent_ManageFramePositions()
+	--Dispatch to secure code
+	FramePositionDelegate:SetAttribute("uiparent-manage", true);
+end
+
+function ToggleFrame(frame)
+	if ( frame:IsShown() ) then
+		HideUIPanel(frame);
+	else
+		ShowUIPanel(frame);
+	end
+end
+
 function ShowUIPanel(frame, force)	
 	if ( not frame or frame:IsShown() ) then
 		return;
@@ -2015,6 +2055,65 @@ function IsOptionFrameOpen()
 	end
 end
 
+function LowerFrameLevel(frame)
+	frame:SetFrameLevel(frame:GetFrameLevel()-1);
+end
+
+function RaiseFrameLevel(frame)
+	frame:SetFrameLevel(frame:GetFrameLevel()+1);
+end
+
+-- Function to reposition frames if they get dragged off screen
+function ValidateFramePosition(frame, offscreenPadding, returnOffscreen)
+	if ( not frame ) then
+		return;
+	end
+	local left = frame:GetLeft();
+	local right = frame:GetRight();
+	local top = frame:GetTop();
+	local bottom = frame:GetBottom();
+	local newAnchorX, newAnchorY;
+	if ( not offscreenPadding ) then
+		offscreenPadding = 15;
+	end
+	if ( bottom < (0 + MainMenuBar:GetHeight() + offscreenPadding)) then
+		-- Off the bottom of the screen
+		newAnchorY = MainMenuBar:GetHeight() + frame:GetHeight() - GetScreenHeight(); 
+	elseif ( top > GetScreenHeight() ) then
+		-- Off the top of the screen
+		newAnchorY =  0;
+	end
+	if ( left < 0 ) then
+		-- Off the left of the screen
+		newAnchorX = 0;
+	elseif ( right > GetScreenWidth() ) then
+		-- Off the right of the screen
+		newAnchorX = GetScreenWidth() - frame:GetWidth();
+	end
+	if ( newAnchorX or newAnchorY ) then
+		if ( returnOffscreen ) then
+			return 1;
+		else
+			if ( not newAnchorX ) then
+				newAnchorX = left;
+			elseif ( not newAnchorY ) then
+				newAnchorY = top - GetScreenHeight();
+			end
+			frame:ClearAllPoints();
+			frame:SetPoint("TOPLEFT", nil, "TOPLEFT", newAnchorX, newAnchorY);
+		end
+		
+		
+	else
+		if ( returnOffscreen ) then
+			return nil;
+		end
+	end
+end
+
+
+-- Time --
+
 function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount)
 	local time = "";
 	local count = 0;
@@ -2111,88 +2210,7 @@ function RecentTimeDate(year, month, day, hour)
 end
 
 
-function BuildListString(...)
-	local text = ...;
-	if ( not text ) then
-		return nil;
-	end
-	local string = text;
-	for i=2, select("#", ...) do
-		text = select(i, ...);
-		if ( text ) then
-			string = string..", "..text;
-		end
-	end
-	return string;
-end
-
-function BuildColoredListString(...)
-	if ( select("#", ...) == 0 ) then
-		return nil;
-	end
-
-	-- Takes input where odd items are the text and even items determine whether the arg should be colored or not
-	local text, normal = ...;
-	local string;
-	if ( normal ) then
-		string = text;
-	else
-		string = RED_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE;
-	end
-	for i=3, select("#", ...), 2 do
-		text, normal = select(i, ...);
-		if ( normal ) then
-			-- If meets the condition
-			string = string..", "..text;
-		else
-			-- If doesn't meet the condition
-			string = string..", "..RED_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE;
-		end
-	end
-
-	return string;
-end
-
-function BuildNewLineListString(...)
-	local text;
-	local index = 1;
-	for i=1, select("#", ...) do
-		text = select(i, ...);
-		index = index + 1;
-		if ( text ) then
-			break;
-		end
-	end
-	if ( not text ) then
-		return nil;
-	end
-	local string = text;
-	for i=index, select("#", ...) do
-		text = select(i, ...);
-		if ( text ) then
-			string = string.."\n"..text;
-		end
-	end
-	return string;
-end
-
-function BuildMultilineTooltip(globalStringName, tooltip, r, g, b)
-	if ( not tooltip ) then
-		tooltip = GameTooltip;
-	end
-	if ( not r ) then
-		r = 1.0;
-		g = 1.0;
-		b = 1.0;
-	end
-	local i = 1;
-	local string = getglobal(globalStringName..i);
-	while (string) do
-		tooltip:AddLine(string, "", r, g, b);
-		i = i + 1;
-		string = getglobal(globalStringName..i);
-	end
-end
+-- Frame fading and flashing --
 
 -- Generic fade function
 function UIFrameFade(frame, fadeInfo)
@@ -2470,7 +2488,92 @@ function ButtonPulse_StopPulse(button)
 	end
 end
 
--- Table Utility Functions
+
+-- Lua Helper functions --
+
+function BuildListString(...)
+	local text = ...;
+	if ( not text ) then
+		return nil;
+	end
+	local string = text;
+	for i=2, select("#", ...) do
+		text = select(i, ...);
+		if ( text ) then
+			string = string..", "..text;
+		end
+	end
+	return string;
+end
+
+function BuildColoredListString(...)
+	if ( select("#", ...) == 0 ) then
+		return nil;
+	end
+
+	-- Takes input where odd items are the text and even items determine whether the arg should be colored or not
+	local text, normal = ...;
+	local string;
+	if ( normal ) then
+		string = text;
+	else
+		string = RED_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE;
+	end
+	for i=3, select("#", ...), 2 do
+		text, normal = select(i, ...);
+		if ( normal ) then
+			-- If meets the condition
+			string = string..", "..text;
+		else
+			-- If doesn't meet the condition
+			string = string..", "..RED_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE;
+		end
+	end
+
+	return string;
+end
+
+function BuildNewLineListString(...)
+	local text;
+	local index = 1;
+	for i=1, select("#", ...) do
+		text = select(i, ...);
+		index = index + 1;
+		if ( text ) then
+			break;
+		end
+	end
+	if ( not text ) then
+		return nil;
+	end
+	local string = text;
+	for i=index, select("#", ...) do
+		text = select(i, ...);
+		if ( text ) then
+			string = string.."\n"..text;
+		end
+	end
+	return string;
+end
+
+function BuildMultilineTooltip(globalStringName, tooltip, r, g, b)
+	if ( not tooltip ) then
+		tooltip = GameTooltip;
+	end
+	if ( not r ) then
+		r = 1.0;
+		g = 1.0;
+		b = 1.0;
+	end
+	local i = 1;
+	local string = getglobal(globalStringName..i);
+	while (string) do
+		tooltip:AddLine(string, "", r, g, b);
+		i = i + 1;
+		string = getglobal(globalStringName..i);
+	end
+end
+
 function tDeleteItem(table, item)
 	local index = 1;
 	while table[index] do
@@ -2491,6 +2594,18 @@ function tContains(table, item)
 		index = index + 1;
 	end
 	return nil;
+end
+
+function CopyTable(settings)
+	local copy = {};
+	for k, v in pairs(settings) do
+		if ( type(v) == "table" ) then
+			copy[k] = CopyTable(v);
+		else
+			copy[k] = v;
+		end
+	end
+	return copy;
 end
 
 function MouseIsOver(frame, topOffset, bottomOffset, leftOffset, rightOffset)
@@ -2524,6 +2639,32 @@ function MouseIsOver(frame, topOffset, bottomOffset, leftOffset, rightOffset)
 		return nil;
 	end
 end
+
+-- Wrapper for the desaturation function
+function SetDesaturation(texture, desaturation)
+	local shaderSupported = texture:SetDesaturated(desaturation);
+	if ( not shaderSupported ) then
+		if ( desaturation ) then
+			texture:SetVertexColor(0.5, 0.5, 0.5);
+		else
+			texture:SetVertexColor(1.0, 1.0, 1.0);
+		end
+		
+	end
+end
+
+function GetMaterialTextColors(material)
+	local textColor = MATERIAL_TEXT_COLOR_TABLE[material];
+	local titleColor = MATERIAL_TITLETEXT_COLOR_TABLE[material];
+	if ( not(textColor and titleColor) ) then
+		textColor = MATERIAL_TEXT_COLOR_TABLE["Default"];
+		titleColor = MATERIAL_TITLETEXT_COLOR_TABLE["Default"];
+	end
+	return textColor, titleColor;
+end
+
+
+-- Model --
 
 -- Generic model rotation functions
 function Model_OnLoad (self)
@@ -2569,103 +2710,8 @@ function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 	end
 end
 
--- Function that handles the escape key functions
-function ToggleGameMenu()
-	if ( securecall("StaticPopup_EscapePressed") ) then
-	elseif ( GameMenuFrame:IsShown() ) then
-		PlaySound("igMainMenuQuit");
-		HideUIPanel(GameMenuFrame);
-	elseif ( HelpFrame:IsShown() ) then
-		if ( HelpFrame.back and HelpFrame.back.Click ) then
-			HelpFrame.back:Click();
-		end
-	elseif ( VideoOptionsFrame:IsShown() ) then
-		VideoOptionsFrameCancel:Click();
-	elseif ( AudioOptionsFrame:IsShown() ) then
-		AudioOptionsFrameCancel:Click();
-	elseif ( InterfaceOptionsFrame:IsShown() ) then
-		InterfaceOptionsFrameCancel:Click();
-	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
-		TimeManagerCloseButton:Click();
-	elseif ( securecall("CloseMenus") ) then
-	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
-	elseif ( SpellStopCasting() ) then
-	elseif ( SpellStopTargeting() ) then
-	elseif ( securecall("CloseAllWindows") ) then
-	elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
-	else
-		PlaySound("igMainMenuOpen");
-		ShowUIPanel(GameMenuFrame);
-	end
-end
 
--- Wrapper for the desaturation function
-function SetDesaturation(texture, desaturation)
-	local shaderSupported = texture:SetDesaturated(desaturation);
-	if ( not shaderSupported ) then
-		if ( desaturation ) then
-			texture:SetVertexColor(0.5, 0.5, 0.5);
-		else
-			texture:SetVertexColor(1.0, 1.0, 1.0);
-		end
-		
-	end
-end
-
--- Function to reposition frames if they get dragged off screen
-function ValidateFramePosition(frame, offscreenPadding, returnOffscreen)
-	if ( not frame ) then
-		return;
-	end
-	local left = frame:GetLeft();
-	local right = frame:GetRight();
-	local top = frame:GetTop();
-	local bottom = frame:GetBottom();
-	local newAnchorX, newAnchorY;
-	if ( not offscreenPadding ) then
-		offscreenPadding = 15;
-	end
-	if ( bottom < (0 + MainMenuBar:GetHeight() + offscreenPadding)) then
-		-- Off the bottom of the screen
-		newAnchorY = MainMenuBar:GetHeight() + frame:GetHeight() - GetScreenHeight(); 
-	elseif ( top > GetScreenHeight() ) then
-		-- Off the top of the screen
-		newAnchorY =  0;
-	end
-	if ( left < 0 ) then
-		-- Off the left of the screen
-		newAnchorX = 0;
-	elseif ( right > GetScreenWidth() ) then
-		-- Off the right of the screen
-		newAnchorX = GetScreenWidth() - frame:GetWidth();
-	end
-	if ( newAnchorX or newAnchorY ) then
-		if ( returnOffscreen ) then
-			return 1;
-		else
-			if ( not newAnchorX ) then
-				newAnchorX = left;
-			elseif ( not newAnchorY ) then
-				newAnchorY = top - GetScreenHeight();
-			end
-			frame:ClearAllPoints();
-			frame:SetPoint("TOPLEFT", nil, "TOPLEFT", newAnchorX, newAnchorY);
-		end
-		
-		
-	else
-		if ( returnOffscreen ) then
-			return nil;
-		end
-	end
-end
-
-
--- Call this function to update the positions of all frames that can appear on the right side of the screen
-function UIParent_ManageFramePositions()
-	--Dispatch to secure code
-	FramePositionDelegate:SetAttribute("uiparent-manage", true);
-end
+-- Visual Misc --
 
 function GetScreenHeightScale()
 	local screenHeight = 768;
@@ -2695,6 +2741,36 @@ function CursorOnUpdate(self)
 		CursorUpdate(self);
 	end
 end
+
+function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed)
+	if ( not texture.frame ) then
+		-- initialize everything
+		texture.frame = 1;
+		texture.numColumns = textureWidth/frameWidth;
+		texture.numRows = textureHeight/frameHeight;
+		texture.columnWidth = frameWidth/textureWidth;
+		texture.rowHeight = frameHeight/textureHeight;
+	end
+	local frame = texture.frame;
+	if ( not texture.throttle or texture.throttle > 0.1 ) then
+		texture.throttle = 0;
+		if ( frame > numFrames ) then
+			frame = 1;
+		end
+		local left = mod(frame-1, texture.numColumns)*texture.columnWidth;
+		local right = left + texture.columnWidth;
+		local bottom = ceil(frame/texture.numColumns)*texture.rowHeight;
+		local top = bottom - texture.rowHeight;
+		texture:SetTexCoord(left, right, top, bottom);
+
+		texture.frame = frame + 1;
+	else
+		texture.throttle = texture.throttle + elapsed;
+	end
+end
+
+
+-- Bindings --
 
 function GetBindingText(name, prefix, returnAbbr)
 	if ( not name ) then
@@ -2824,25 +2900,89 @@ function GetBindingFromClick(input)
 	return GetBindingByKey(fullInput);
 end
 
-function GetMaterialTextColors(material)
-	local textColor = MATERIAL_TEXT_COLOR_TABLE[material];
-	local titleColor = MATERIAL_TITLETEXT_COLOR_TABLE[material];
-	if ( not(textColor and titleColor) ) then
-		textColor = MATERIAL_TEXT_COLOR_TABLE["Default"];
-		titleColor = MATERIAL_TITLETEXT_COLOR_TABLE["Default"];
+
+-- Game Logic --
+
+function RealPartyIsFull()
+	if ( (GetRealNumPartyMembers() < MAX_PARTY_MEMBERS) or (GetRealNumRaidMembers() > 0 and (GetRealNumRaidMembers() < MAX_RAID_MEMBERS)) ) then
+		return false;
+	else
+		return true;
 	end
-	return textColor, titleColor;
 end
 
-function LowerFrameLevel(frame)
-	frame:SetFrameLevel(frame:GetFrameLevel()-1);
+function CanGroupInvite()
+	if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then
+		if ( IsPartyLeader() or IsRaidOfficer() ) then
+			return true;
+		else
+			return false;
+		end
+	else
+		return true;
+	end
 end
 
-function RaiseFrameLevel(frame)
-	frame:SetFrameLevel(frame:GetFrameLevel()+1);
+function UnitHasMana(unit)
+	local powerType, powerToken = UnitPowerType(unit);
+	if ( powerToken == "MANA" and UnitPowerMax(unit, powerType) > 0 ) then
+		return 1;
+	end
+	return nil;
 end
 
--- Animated shine stuff
+function PlayerNameAutocomplete(self)
+	local text = self:GetText();
+	local textlen = strlen(text);
+	local numFriends, name;
+
+	-- First check your friends list
+	numFriends = GetNumFriends();
+	if ( numFriends > 0 ) then
+		for i=1, numFriends do
+			name = GetFriendInfo(i);
+			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
+				self:SetText(name);
+				if ( self:IsInIMECompositionMode() ) then
+					self:HighlightText(textlen - strlen(arg1), -1);
+				else
+					self:HighlightText(textlen, -1);
+				end
+				return;
+			end
+		end
+	end
+
+	-- No match, check your guild list
+	numFriends = GetNumGuildMembers(true);	-- true to include offline members
+	if ( numFriends > 0 ) then
+		for i=1, numFriends do
+			name = GetGuildRosterInfo(i);
+			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
+				self:SetText(name);
+				if ( self:IsInIMECompositionMode() ) then
+					self:HighlightText(textlen - strlen(arg1), -1);
+				else
+					self:HighlightText(textlen, -1);
+				end
+				return;
+			end
+		end
+	end
+end
+
+function ShowResurrectRequest(offerer)
+	if ( ResurrectHasSickness() ) then
+		StaticPopup_Show("RESURRECT", offerer);
+	elseif ( ResurrectHasTimer() ) then
+		StaticPopup_Show("RESURRECT_NO_SICKNESS", offerer);
+	else
+		StaticPopup_Show("RESURRECT_NO_TIMER", offerer);
+	end
+end
+
+
+-- Animated shine stuff --
 
 function AnimatedShine_Start(shine, r, g, b)
 	if ( not tContains(SHINES_TO_ANIMATE, shine) ) then
@@ -2911,114 +3051,8 @@ function AnimatedShine_OnUpdate(elapsed)
 	end
 end
 
-function RealPartyIsFull()
-	if ( (GetRealNumPartyMembers() < MAX_PARTY_MEMBERS) or (GetRealNumRaidMembers() > 0 and (GetRealNumRaidMembers() < MAX_RAID_MEMBERS)) ) then
-		return false;
-	else
-		return true;
-	end
-end
 
-function CanGroupInvite()
-	if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then
-		if ( IsPartyLeader() or IsRaidOfficer() ) then
-			return true;
-		else
-			return false;
-		end
-	else
-		return true;
-	end
-end
-
-function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed)
-	if ( not texture.frame ) then
-		-- initialize everything
-		texture.frame = 1;
-		texture.numColumns = textureWidth/frameWidth;
-		texture.numRows = textureHeight/frameHeight;
-		texture.columnWidth = frameWidth/textureWidth;
-		texture.rowHeight = frameHeight/textureHeight;
-	end
-	local frame = texture.frame;
-	if ( not texture.throttle or texture.throttle > 0.1 ) then
-		texture.throttle = 0;
-		if ( frame > numFrames ) then
-			frame = 1;
-		end
-		local left = mod(frame-1, texture.numColumns)*texture.columnWidth;
-		local right = left + texture.columnWidth;
-		local bottom = ceil(frame/texture.numColumns)*texture.rowHeight;
-		local top = bottom - texture.rowHeight;
-		texture:SetTexCoord(left, right, top, bottom);
-
-		texture.frame = frame + 1;
-	else
-		texture.throttle = texture.throttle + elapsed;
-	end
-end
-
-function UnitHasMana(unit)
-	local powerType, powerToken = UnitPowerType(unit);
-	if ( powerToken == "MANA" and UnitPowerMax(unit, powerType) > 0 ) then
-		return 1;
-	end
-	return nil;
-end
-
-function CopyTable(settings)
-	local copy = {};
-	for k, v in pairs(settings) do
-		if ( type(v) == "table" ) then
-			copy[k] = CopyTable(v);
-		else
-			copy[k] = v;
-		end
-	end
-	return copy;
-end
-
-function PlayerNameAutocomplete(self)
-	local text = self:GetText();
-	local textlen = strlen(text);
-	local numFriends, name;
-
-	-- First check your friends list
-	numFriends = GetNumFriends();
-	if ( numFriends > 0 ) then
-		for i=1, numFriends do
-			name = GetFriendInfo(i);
-			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
-				self:SetText(name);
-				if ( self:IsInIMECompositionMode() ) then
-					self:HighlightText(textlen - strlen(arg1), -1);
-				else
-					self:HighlightText(textlen, -1);
-				end
-				return;
-			end
-		end
-	end
-
-	-- No match, check your guild list
-	numFriends = GetNumGuildMembers(true);	-- true to include offline members
-	if ( numFriends > 0 ) then
-		for i=1, numFriends do
-			name = GetGuildRosterInfo(i);
-			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
-				self:SetText(name);
-				if ( self:IsInIMECompositionMode() ) then
-					self:HighlightText(textlen - strlen(arg1), -1);
-				else
-					self:HighlightText(textlen, -1);
-				end
-				return;
-			end
-		end
-	end
-end
-
-
+-- Autocast shine stuff --
 
 AUTOCAST_SHINE_R = .95;
 AUTOCAST_SHINE_G = .95;
@@ -3026,7 +3060,6 @@ AUTOCAST_SHINE_B = .32;
 
 AUTOCAST_SHINE_SPEEDS = { 2, 4, 6, 8 };
 AUTOCAST_SHINE_TIMERS = { 0, 0, 0, 0 };
--- Animated shine stuff
 
 local AUTOCAST_SHINES = {};
 

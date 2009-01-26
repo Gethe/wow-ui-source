@@ -122,6 +122,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Scripts>
 			<OnLoad function="AchievementFrameSummaryCategory_OnLoad"/>
 			<OnShow function="AchievementFrameSummaryCategory_OnShow"/>
+			<OnHide function="AchievementFrameSummaryCategory_OnHide"/>
+			<OnEvent function="AchievementFrameSummaryCategory_OnEvent"/>
 		</Scripts>		
 		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 		<BarColor r="0" g="1" b="0"/>

@@ -536,9 +536,8 @@ end
 
 VideoStereoPanelOptions = {
 	gxStereoEnabled = { text = "ENABLE_STEREO_VIDEO" },
-	uiDepth = { text = "UI_DEPTH", minValue = 1, maxValue = 200, valueStep = 5,  tooltip = OPTION_UI_DEPTH},
-	gxStereoConvergence = { text = "DEPTH_CONVERGENCE", minValue = 0, maxValue = 100, valueStep = 1, tooltip = OPTION_STEREO_CONVERGENCE},
-	gxStereoSeparation= { text = "EYE_SEPARATION", minValue = 0, maxValue = 100, valueStep = 1, tooltip = OPTION_STEREO_SEPERATION},
+	gxStereoConvergence = { text = "DEPTH_CONVERGENCE", minValue = 0.2, maxValue = 50, valueStep = 0.1, tooltip = OPTION_STEREO_CONVERGENCE},
+	gxStereoSeparation = { text = "EYE_SEPARATION", minValue = 0, maxValue = 100, valueStep = 1, tooltip = OPTION_STEREO_SEPERATION},
 }
 
 function VideoOptionsStereoPanel_OnLoad (self)

@@ -13,6 +13,10 @@ function ToggleFramerate(benchmark)
 	WorldFrame.fpsTime = 0;
 end
 
+function WorldFrame_OnLoad(self)
+	self:IgnoreDepth(true);
+end
+
 function WorldFrame_OnUpdate(self, elapsed)
 	if ( FramerateText:IsShown() ) then
 		local timeLeft = self.fpsTime - elapsed
