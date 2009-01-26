@@ -543,6 +543,7 @@ end
 
 function PartyMemberBackground_SaveOpacity ()
 	PARTYBACKGROUND_OPACITY = OpacityFrameSlider:GetValue();
+	SetCVar("partyBackgroundOpacity", PARTYBACKGROUND_OPACITY);
 end
 
 function PartyMemberFrame_UpdateStatusBarText ()
