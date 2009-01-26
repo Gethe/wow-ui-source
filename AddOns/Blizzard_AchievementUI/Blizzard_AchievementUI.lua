@@ -1859,13 +1859,6 @@ function AchievementFrameSummaryAchievement_OnClick(self)
 		id = nextID;
 	end
 	
-	local _, _, _, achCompleted = GetAchievementInfo(id);
-	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then
-		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
-	elseif ( (not achCompleted) and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_COMPLETE].func) ) then
-		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
-	end
-	
 	AchievementFrame_SelectAchievement(id);
 end
 
@@ -1939,6 +1932,13 @@ function AchievementFrame_SelectAchievement(id)
 		return;
 	end
 	
+	local _, _, _, achCompleted = GetAchievementInfo(id);
+	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then
+		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
+	elseif ( (not achCompleted) and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_COMPLETE].func) ) then
+		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
+	end
+	
 	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 	AchievementFrameTab_OnClick(1);
 	AchievementFrameSummary:Hide();
@@ -1994,8 +1994,8 @@ function AchievementFrame_SelectAchievement(id)
 	end
 		
 	achievementFunctions.selectedCategory = category;
-	AchievementFrameCategories_Update();
 	AchievementFrameCategoriesContainerScrollBar:SetValue(0);
+	AchievementFrameCategories_Update();
 	
 	local shown, i = false, 1;
 	while ( not shown ) do
@@ -2022,9 +2022,9 @@ function AchievementFrame_SelectAchievement(id)
 	end		
 	
 	AchievementFrameAchievements_ClearSelection();	
-	AchievementFrameAchievements_Update();
 	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
-
+	AchievementFrameAchievements_Update();
+	
 	local shown = false;
 	while ( not shown ) do
 		for _, button in next, AchievementFrameAchievementsContainer.buttons do

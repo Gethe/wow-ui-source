@@ -3146,3 +3146,7 @@ function AutoCastShine_OnUpdate(self, elapsed)
 		end	
 	end
 end
+
+function ConsolePrint(...)
+	ConsoleAddMessage(strjoin(" ", tostringall(...)));
+end

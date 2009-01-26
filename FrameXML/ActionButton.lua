@@ -15,9 +15,9 @@ VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 function ActionButtonDown(id)
 	local button;
 	if ( BonusActionBarFrame:IsShown() ) then
-		button = getglobal("BonusActionButton"..id);
+		button = _G["BonusActionButton"..id];
 	else
-		button = getglobal("ActionButton"..id);
+		button = _G["ActionButton"..id];
 	end
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
@@ -27,9 +27,9 @@ end
 function ActionButtonUp(id)
 	local button;
 	if ( BonusActionBarFrame:IsShown() ) then
-		button = getglobal("BonusActionButton"..id);
+		button = _G["BonusActionButton"..id];
 	else
-		button = getglobal("ActionButton"..id);
+		button = _G["ActionButton"..id];
 	end
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
@@ -99,7 +99,7 @@ function ActionButton_UpdateHotkeys (self, actionButtonType)
         actionButtonType = "ACTIONBUTTON";
     end
 
-    local hotkey = getglobal(self:GetName().."HotKey");
+    local hotkey = _G[self:GetName().."HotKey"];
     local key = GetBindingKey(actionButtonType..self:GetID()) or
                 GetBindingKey("CLICK "..self:GetName()..":LeftButton");
 
@@ -157,8 +157,8 @@ function ActionButton_Update (self)
 	local name = self:GetName();
 
 	local action = self.action;
-	local icon = getglobal(name.."Icon");
-	local buttonCooldown = getglobal(name.."Cooldown");
+	local icon = _G[name.."Icon"];
+	local buttonCooldown = _G[name.."Cooldown"];
 	local texture = GetActionTexture(action);	
 	
 	if ( HasAction(action) ) then
@@ -214,7 +214,7 @@ function ActionButton_Update (self)
 	end
 
 	-- Add a green border if button is an equipped item
-	local border = getglobal(name.."Border");
+	local border = _G[name.."Border"];
 	if ( IsEquippedAction(action) ) then
 		border:SetVertexColor(0, 1.0, 0, 0.35);
 		border:Show();
@@ -223,7 +223,7 @@ function ActionButton_Update (self)
 	end
 
 	-- Update Macro Text
-	local macroName = getglobal(name.."Name");
+	local macroName = _G[name.."Name"];
 	if ( not IsConsumableAction(action) and not IsStackableAction(action) ) then
 		macroName:SetText(GetActionText(action));
 	else
@@ -241,7 +241,7 @@ function ActionButton_Update (self)
 		buttonCooldown:Hide();
 		self.rangeTimer = nil;
 		self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot");
-		local hotkey = getglobal(name.."HotKey");
+		local hotkey = _G[name.."HotKey"];
         if ( hotkey:GetText() == RANGE_INDICATOR ) then
 			hotkey:Hide();
 		else
@@ -265,7 +265,7 @@ function ActionButton_ShowGrid (button)
 		button:SetAttribute("showgrid", button:GetAttribute("showgrid") + 1);
 	end
 	
-	getglobal(button:GetName().."NormalTexture"):SetVertexColor(1.0, 1.0, 1.0, 0.5);
+	_G[button:GetName().."NormalTexture"]:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 
 	if ( button:GetAttribute("showgrid") >= 1 and not button:GetAttribute("statehidden") ) then
 		button:Show();
@@ -301,8 +301,8 @@ end
 
 function ActionButton_UpdateUsable (self)
 	local name = self:GetName();
-	local icon = getglobal(name.."Icon");
-	local normalTexture = getglobal(name.."NormalTexture");
+	local icon = _G[name.."Icon"];
+	local normalTexture = _G[name.."NormalTexture"];
 	local isUsable, notEnoughMana = IsUsableAction(self.action);
 	if ( isUsable ) then
 		icon:SetVertexColor(1.0, 1.0, 1.0);
@@ -317,7 +317,7 @@ function ActionButton_UpdateUsable (self)
 end
 
 function ActionButton_UpdateCount (self)
-	local text = getglobal(self:GetName().."Count");
+	local text = _G[self:GetName().."Count"];
 	local action = self.action;
 	if ( IsConsumableAction(action) or IsStackableAction(action) ) then
 		text:SetText(GetActionCount(action));
@@ -327,7 +327,7 @@ function ActionButton_UpdateCount (self)
 end
 
 function ActionButton_UpdateCooldown (self)
-	local cooldown = getglobal(self:GetName().."Cooldown");
+	local cooldown = _G[self:GetName().."Cooldown"];
 	local start, duration, enable = GetActionCooldown(self.action);
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 end
@@ -424,7 +424,7 @@ function ActionButton_OnUpdate (self, elapsed)
 			end
 			flashtime = ATTACK_BUTTON_FLASH_TIME - overtime;
 
-			local flashTexture = getglobal(self:GetName().."Flash");
+			local flashTexture = _G[self:GetName().."Flash"];
 			if ( flashTexture:IsShown() ) then
 				flashTexture:Hide();
 			else
@@ -441,7 +441,7 @@ function ActionButton_OnUpdate (self, elapsed)
 		rangeTimer = rangeTimer - elapsed;
 
 		if ( rangeTimer <= 0 ) then
-			local count = getglobal(self:GetName().."HotKey");
+			local count = _G[self:GetName().."HotKey"];
 			local valid = IsActionInRange(self.action);
 			if ( count:GetText() == RANGE_INDICATOR ) then
 				if ( valid == 0 ) then
@@ -488,7 +488,7 @@ end
 
 function ActionButton_StopFlash (self)
 	self.flashing = 0;
-	getglobal(self:GetName().."Flash"):Hide();
+	_G[self:GetName().."Flash"]:Hide();
 	ActionButton_UpdateState (self);
 end
 

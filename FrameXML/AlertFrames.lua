@@ -194,5 +194,13 @@ function AchievementAlertFrame_OnClick (self)
 	self.elapsed = 0;
 	CloseAllWindows();
 	ShowUIPanel(AchievementFrame);
+	
+	local _, _, _, achCompleted = GetAchievementInfo(id);
+	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then
+		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
+	elseif ( (not achCompleted) and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_COMPLETE].func) ) then
+		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
+	end
+	
 	AchievementFrame_SelectAchievement(id)
 end
