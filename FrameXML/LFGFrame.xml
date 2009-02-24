@@ -6,9 +6,25 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnClick>
 				if ( self.sortType ) then
 					SortLFG(self.sortType);
+					LFMFrame_CacheAndUpdate();
 				end
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="LFMFrameColumnHeaderRoleTemplate" inherits="LFMFrameColumnHeaderTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				self.checked = not self.checked;
+				LFMFrameColumnHeaderRole_OnClick(self);
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+			<OnMouseDown>
+				self.Icon:SetPoint("CENTER", 1, -2);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Icon:SetPoint("CENTER", 0, 0);
+			</OnMouseUp>
 		</Scripts>
 	</Button>
 	<Button name="LFMButtonTemplate" hidden="true" virtual="true">
@@ -29,24 +45,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentZone" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="117" y="14"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentLevel" inherits="GameFontHighlightSmall" justifyH="CENTER">
 					<Size>
 						<AbsDimension x="20" y="14"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentZone" relativePoint="RIGHT">
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
 							<Offset>
 								<AbsDimension x="2" y="0"/>
 							</Offset>
@@ -55,7 +59,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</FontString>
 				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="65" y="8"/>
+						<AbsDimension x="92" y="8"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
@@ -65,6 +69,70 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentMembers" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="MembersFontString">
+					<Size>
+						<AbsDimension x="85" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentClass" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentRoleDamageIcon" file="Interface\LFGFrame\LFGRole" hidden="false" parentKey="DamageIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentClass" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.25" right="0.5" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRoleTankIcon" file="Interface\LFGFrame\LFGRole" hidden="false" parentKey="TankIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRoleDamageIcon" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5" right="0.75" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRoleHealerIcon" file="Interface\LFGFrame\LFGRole" hidden="false" parentKey="HealerIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRoleTankIcon" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRoleLeaderIcon" file="Interface\LFGFrame\LFGRole" hidden="false" parentKey="LeaderIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRoleHealerIcon" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
+				</Texture>
 				<Texture name="$parentPartyIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
 					<Size>
 						<AbsDimension x="13" y="13"/>
@@ -83,16 +151,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
-			<OnClick>
-				LFMButton_OnClick(self, button);
-				PlaySound("igMainMenuOptionCheckBoxOn");
-			</OnClick>
-			<OnEnter>
-				LFMButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnClick function="LFMButton_OnClick"/>
+			<OnEnter function="LFMButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
 			<Size>
@@ -107,6 +168,195 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Anchors>
 		</HighlightTexture>
 	</Button>
+	<CheckButton name="LFGFrameRoleCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="26" y="26"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="-30" right="-5" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Frames>
+			<Button>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-30" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetParent():GetID()], nil, nil, nil, nil, 1);
+						if ( self:GetParent():IsEnabled() == 1 ) then
+							self:GetParent():LockHighlight();
+						end
+					</OnEnter>
+					<OnClick>
+						if ( self:GetParent():IsEnabled() == 1 ) then
+							self:GetParent():Click();
+						end
+					</OnClick>
+					<OnLeave>
+						GameTooltip:Hide();
+						self:GetParent():UnlockHighlight();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				end
+				LFGFrameRoleCheckButton_OnClick(self, button);
+			</OnClick>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+	 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+	</CheckButton>
+	<Frame name="LFMFrameRoleTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="70" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLabel" inherits="GameFontHighlight" justifyH="RIGHT" parentKey="Label">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="$parentEditBox" historyLines="0" letters="1" numeric="true" autoFocus="false" parentKey="EditBox">
+				<Size>
+					<AbsDimension x="25" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="10" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:GetParent().value = 0;
+						self:SetText(self:GetParent().value);
+					</OnLoad>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnEditFocusLost function="EditBox_ClearHighlight"/>
+					<OnEditFocusGained function="EditBox_HighlightText"/>
+					<OnTextChanged function="LFMFrameRolesEditBox_TextChanged"/>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+				<HitRectInsets>
+					<AbsInset left="0" right="7" top="0" bottom="0"/>
+				</HitRectInsets>
+			</EditBox>
+			<Button name="$parentUpButton" parentKey="UpButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEditBox" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-7" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFMFrameRoleUp_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\LFGFrame\Arrow-Up-Up"/>
+				<PushedTexture file="Interface\LFGFrame\Arrow-Up-Down"/>
+				<DisabledTexture file="Interface\LFGFrame\Arrow-Up-Disabled"/>
+			</Button>
+			<Button name="$parentDownButton" parentKey="DownButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentEditBox" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-7" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFMFrameRoleDown_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\LFGFrame\Arrow-Down-Up"/>
+				<PushedTexture file="Interface\LFGFrame\Arrow-Down-Down"/>
+				<DisabledTexture file="Interface\LFGFrame\Arrow-Down-Disabled"/>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="LFGFrameBorderTemplate" virtual="true">
+		<Backdrop edgeFile="Interface\LFGFrame\LFGBorder" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+	</Frame>
 	<Frame name="LFGParentFrame" toplevel="true" hidden="true" enableMouse="true" parent="UIParent">
 		<Size x="384" y="512"/>
 		<Anchors>
@@ -159,124 +409,25 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<AbsInset left="0" right="30" top="0" bottom="45"/>
 		</HitRectInsets>
 		<Frames>
-			<!-- Start LFGWizard Frame -->
-			<Frame name="LFGWizardFrame" setAllPoints="true" hidden="true">
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="LookingForGroupIcon" file="Interface\Icons\INV_Misc_GroupLooking">
-							<Size>
-								<AbsDimension x="37" y="37"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="33" y="-87"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<FontString inherits="GameFontNormal" text="LOOKING_FOR_GROUP">
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="LookingForGroupIcon" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="18" y="1"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="LookingForGroupText" inherits="GameFontHighlight" text="LOOKING_FOR_GROUP_TEXT" justifyH="LEFT">
-							<Size x="270" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="LookingForGroupIcon" relativePoint="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="-12"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<Texture name="LookingForMoreIcon" file="Interface\Icons\INV_Misc_GroupNeedMore">
-							<Size>
-								<AbsDimension x="37" y="37"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="LookingForGroupIcon" relativePoint="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="-135"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<FontString inherits="GameFontNormal" text="LOOKING_FOR_MORE">
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="LookingForMoreIcon" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="18" y="1"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString inherits="GameFontHighlight" text="LOOKING_FOR_MORE_TEXT" justifyH="LEFT">
-							<Size x="270" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="LookingForMoreIcon" relativePoint="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="-12"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button name="LFGWizardFrameLFGButton" inherits="UIPanelButtonTemplate2" text="LOOK_FOR_GROUP">
-						<Size>
-							<AbsDimension x="168" y="22"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOP">
-								<Offset>
-									<AbsDimension x="-3" y="-190"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								LFGParentFrameTab1_OnClick();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="LFGWizardFrameLFMButton" inherits="UIPanelButtonTemplate2" text="LOOK_FOR_MORE">
-						<Size>
-							<AbsDimension x="168" y="22"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOP" relativeTo="LFGWizardFrameLFGButton" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="-146"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								LFGParentFrameTab2_OnClick();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnShow>
-						LFGWizardFrame_OnShow();
-					</OnShow>
-					<OnHide>
-						PlaySound("igCharacterInfoClose");
-					</OnHide>
-				</Scripts>
-			</Frame>
-			<!-- End LFGWizard Frame -->
 			<!-- Start LFM Frame-->
 			<Frame name="LFMFrame" hidden="false" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">
+						<Texture name="LFMFrameRoleBackground" file="Interface\LFGFrame\UI-Frame-ThreeButton-Blank">
+							<Size>
+								<AbsDimension x="344" y="54"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="11" y="115"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.021484375" right="0.693359375" top="0.681640625" bottom="0.787109375"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
 						<FontString name="LFMFrameTotals" inherits="GameFontNormalSmall">
 							<Size>
 								<AbsDimension x="298" y="16"/>
@@ -284,7 +435,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							<Anchors>
 								<Anchor point="BOTTOM">
 									<Offset>
-										<AbsDimension x="-10" y="135"/>
+										<AbsDimension x="-10" y="115"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -393,9 +544,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 													GameTooltip:SetText(AUTO_ADD_TOOLTIP, nil, nil, nil, nil, 1);
 												end
 											</OnEnter>
-											<OnLeave>
-												GameTooltip:Hide();
-											</OnLeave>
+											<OnLeave function="GameTooltip_Hide"/>
 										</Scripts>
 									</Frame>
 								</Frames>
@@ -409,9 +558,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 										LFMFrame_UpdateAutoAdd(self:GetChecked());
 									</OnEvent>
 									<OnClick>
-										-- Included here to prevent the comment from being overridden
-										LFGFrame_SetLFGComment();
-
 										if ( self:GetChecked() ) then
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										else
@@ -423,9 +569,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetText(AUTO_ADD_TOOLTIP, nil, nil, nil, nil, 1);
 									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
+									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</CheckButton>
 						</Frames>
@@ -444,7 +588,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Anchor>
 						</Anchors>
 					</Frame>
-					<Button name="LFMFrameColumnHeader1" inherits="LFMFrameColumnHeaderTemplate" text="NAME">
+					<Button name="LFMFrameColumnHeader1" inherits="LFMFrameColumnHeaderTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -452,31 +596,35 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Frames>
+							<Frame name="LFMFrameDropDown1" inherits="UIDropDownMenuTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="-15" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad function="LFMFrameDropDown1_OnLoad"/>
+									<OnShow>
+										UIDropDownMenu_Initialize(self, LFMFrameDropDown1_Initialize);
+									</OnShow>
+									<OnMouseUp>
+									</OnMouseUp>
+								</Scripts>
+							</Frame>
+						</Frames>
 						<Scripts>
 							<OnLoad>
 								WhoFrameColumn_SetWidth(self, 101);
-								self.sortType = "name";
+								self:Disable();
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="LFMFrameColumnHeader2" inherits="LFMFrameColumnHeaderTemplate" text="ZONE">
+					<Button name="LFMFrameColumnHeader2" inherits="LFMFrameColumnHeaderTemplate" text="LEVEL_ABBR">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader1" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								WhoFrameColumn_SetWidth(self, 93);
-								self.sortType = "zone";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="LFMFrameColumnHeader3" inherits="LFMFrameColumnHeaderTemplate" text="LEVEL_ABBR">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader2" relativePoint="RIGHT">
 								<Offset>
 									<AbsDimension x="-2" y="0"/>
 								</Offset>
@@ -489,7 +637,22 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="LFMFrameColumnHeader4" inherits="LFMFrameColumnHeaderTemplate" text="CLASS">
+					<Button name="LFMFrameColumnHeader3" inherits="LFMFrameColumnHeaderTemplate" text="CLASS">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader2" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(self, 110);
+								self.sortType = "class";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameColumnHeader4Group" inherits="LFMFrameColumnHeaderTemplate" text="PLAYERS_IN_GROUP" hidden="true">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader3" relativePoint="RIGHT">
 								<Offset>
@@ -499,8 +662,136 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(self, 75);
-								self.sortType = "class";
+								WhoFrameColumn_SetWidth(self, 88);
+								self.sortType = "numPartyMembers";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameColumnHeader4" inherits="LFMFrameColumnHeaderRoleTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader3" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentIcon" file="Interface\LFGFrame\LFGRole" parentKey="Icon">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.25" right="0.5" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(self, 23);
+								self.filterType = "damage";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameColumnHeader5" inherits="LFMFrameColumnHeaderRoleTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader4" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentIcon" file="Interface\LFGFrame\LFGRole" parentKey="Icon">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.5" right="0.75" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(self, 23);
+								self.filterType = "tank";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameColumnHeader6" inherits="LFMFrameColumnHeaderRoleTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader5" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentIcon" file="Interface\LFGFrame\LFGRole" parentKey="Icon">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.75" right="1" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(self, 23);
+								self.filterType = "healer";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameColumnHeader7" inherits="LFMFrameColumnHeaderRoleTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader6" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentIcon" file="Interface\LFGFrame\LFGRole" parentKey="Icon">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(self, 23);
+								self.filterType = "leader";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -630,9 +921,18 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Anchor>
 						</Anchors>
 					</Button>
+					<Button name="LFMFrameButton15" inherits="LFMButtonTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton14" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
 					<ScrollFrame name="LFMListScrollFrame" inherits="FauxScrollFrameTemplate">
 						<Size>
-							<AbsDimension x="296" y="239"/>
+							<AbsDimension x="296" y="258"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="LFMFrame">
@@ -711,40 +1011,27 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="LFMFrameSearchButton" inherits="UIPanelButtonTemplate" text="REFRESH">
+					<Button name="LFMFrameCommentButton" inherits="UIPanelButtonTemplate" text="COMMENT">
 						<Size>
-							<AbsDimension x="88" y="22"/>
+							<AbsDimension x="85" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="LFMFrameSendMessageButton" relativePoint="LEFT">
 								<Offset>
-									<AbsDimension x="-1" y="0"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								LFMFrameSearchButton.refreshTimer = 0;
-							</OnLoad>
-							<OnClick>
-								LFMFrameSearchButton_OnClick();
-							</OnClick>
+							<OnClick function="LFGFrameCommentButton_OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						LFMFrame_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						LFMFrame_OnEvent(self, event, ...)
-					</OnEvent>
-					<OnShow>
-						LFMFrame_OnShow()
-					</OnShow>
-					<OnUpdate>
-						LFMFrame_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnLoad function="LFMFrame_OnLoad"/>
+					<OnEvent function="LFMFrame_OnEvent"/>
+					<OnShow function="LFMFrame_OnShow"/>
+					<OnUpdate function="LFMFrame_OnUpdate"/>
 				</Scripts>
 			</Frame>
 			<!-- End LFM Frame-->
@@ -752,11 +1039,20 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<Frame name="LFGFrame" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="BACKGROUND">
+						<FontString name="LFGRolesLabel" inherits="GameFontNormalMed3" text="LFG_ROLES_TITLE" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="40" y="-80"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
 						<FontString name="LFGLabel1" inherits="GameFontNormal" text="LOOKING_FOR_GROUP_LABEL" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="45" y="-85"/>
+										<AbsDimension x="45" y="-138"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -786,7 +1082,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							<Anchors>
 								<Anchor point="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="-44" y="-100"/>
+										<AbsDimension x="-44" y="-153"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -950,9 +1246,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 												GameTooltip:SetText(AUTO_JOIN_TOOLTIP, nil, nil, nil, nil, 1);
 											</OnEnter>
-											<OnLeave>
-												GameTooltip:Hide();
-											</OnLeave>
+											<OnLeave function="GameTooltip_Hide"/>
 										</Scripts>
 									</Frame>
 								</Frames>
@@ -966,9 +1260,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 										LFGFrame_UpdateAutoJoin();
 									</OnEvent>
 									<OnClick>
-										-- Included here to prevent the comment from being overridden
-										LFGFrame_SetLFGComment();
-
 										if ( self:GetChecked() ) then
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										else
@@ -980,9 +1271,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip:SetText(AUTO_JOIN_TOOLTIP, nil, nil, nil, nil, 1);
 									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
+									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</CheckButton>
 						</Frames>
@@ -997,6 +1286,30 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							<Anchor point="TOPRIGHT">
 								<Offset>
 									<AbsDimension x="-34" y="-33"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="LFGFrameRolesBorder" inherits="LFGFrameBorderTemplate">
+						<Size>
+							<AbsDimension x="332" y="74"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="20" y="-60"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="LFGFrameQueue1Border" inherits="LFGFrameBorderTemplate">
+						<Size>
+							<AbsDimension x="332" y="108"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFGLabel1" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-25" y="20"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1033,6 +1346,18 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</OnLoad>
 						</Scripts>
 					</Frame>
+					<Frame name="LFGFrameQueue2Border" inherits="LFGFrameBorderTemplate">
+						<Size>
+							<AbsDimension x="332" y="108"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFGLabel2" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-25" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
 					<Frame name="LFGFrameTypeDropDown2" inherits="UIDropDownMenuTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="LFGLabel2" relativePoint="BOTTOMLEFT">
@@ -1064,6 +1389,18 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								UIDropDownMenu_JustifyText(self, "LEFT");
 							</OnLoad>
 						</Scripts>
+					</Frame>
+					<Frame name="LFGFrameQueue3Border" inherits="LFGFrameBorderTemplate">
+						<Size>
+							<AbsDimension x="332" y="108"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFGLabel3" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-25" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
 					</Frame>
 					<Frame name="LFGFrameTypeDropDown3" inherits="UIDropDownMenuTemplate" id="3">
 						<Anchors>
@@ -1097,6 +1434,81 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</OnLoad>
 						</Scripts>
 					</Frame>
+					<CheckButton name="LFGFrameRoleButton1" inherits="LFGFrameRoleCheckButtonTemplate" id="1">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentLabel" inherits="GameFontHighlight" text="DAMAGER" justifyH="RIGHT" parentKey="Label"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.Label:ClearAllPoints();
+								self.Label:SetPoint("LEFT", self:GetParent(), "TOPLEFT", 39, -110);
+								self:SetPoint("LEFT", self.Label, "RIGHT", 0, 0);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="LFGFrameRoleButton2" inherits="LFGFrameRoleCheckButtonTemplate" id="2">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentLabel" inherits="GameFontHighlight" text="TANK" justifyH="LEFT" parentKey="Label"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.Label:ClearAllPoints();
+								self.Label:SetPoint("RIGHT", self:GetParent(), "TOP", 0, -110);
+								self:SetPoint("LEFT", self.Label, "RIGHT", 0, 0);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="LFGFrameRoleButton3" inherits="LFGFrameRoleCheckButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-45" y="-110"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentLabel" inherits="GameFontHighlight" text="HEALER" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</CheckButton>
+					<CheckButton name="LFGFrameLeaderCheckButton" inherits="OptionsSmallCheckButtonTemplate">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-115" y="-42"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								_G[self:GetName().."Text"]:SetText(LEADER);
+								self:RegisterEvent("VARIABLES_LOADED");
+							</OnLoad>
+							<OnEvent>
+								self:SetChecked(GetCVarBool("lfgAutoJoin"));
+							</OnEvent>
+							<OnClick function="LFGFrameRoleCheckButton_OnClick"/>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(LEADER_TOOLTIP, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</CheckButton>
 					<Button name="LFGFrameDoneButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 						<Size>
 							<AbsDimension x="104" y="22"/>
@@ -1114,7 +1526,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="LFGFrameClearAllButton" inherits="UIPanelButtonTemplate" text="CLEAR_ALL">
+					<Button name="LFGFrameClearAllButton" inherits="UIPanelButtonTemplate" text="LEAVE_ALL">
 						<Size>
 							<AbsDimension x="102" y="22"/>
 						</Size>
@@ -1126,28 +1538,63 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								LFGFrameClearAllButton_OnClick();
-							</OnClick>
+							<OnClick function="LFGFrameClearAllButton_OnClick"/>
 						</Scripts>
 					</Button>
+					<Button name="LFGFrameCommentButton" inherits="UIPanelButtonTemplate" text="COMMENT">
+						<Size>
+							<AbsDimension x="115" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="LFGFrameClearAllButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="LFGFrameCommentButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Frame name="LFGFrameNoRoleBackground" enableMouse="true" frameStrata="HIGH">
+						<Size>
+							<AbsDimension x="318" y="275"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="-6" y="-127"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentBlackFilter">
+									<Color r="0" b="0" g="0"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentLabel" inherits="GameFontNormalLarge" text="NO_ROLE_SELECTED" justifyH="CENTER">
+									<Size>
+										<AbsDimension x="300" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						LFGFrame_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						LFGFrame_OnEvent(self, event, ...);
-					</OnEvent>
-					<OnShow>
-						LFGFrame_OnShow();
-					</OnShow>
-					<OnHide>
-						LFGFrame_OnHide();
-					</OnHide>
-					<OnUpdate>
-						LFGFrame_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnLoad function="LFGFrame_OnLoad"/>
+					<OnEvent function="LFGFrame_OnEvent"/>
+					<OnShow function="LFGFrame_OnShow"/>
+					<OnUpdate function="LFGFrame_OnUpdate"/>
 				</Scripts>
 			</Frame>
 			<!-- End LFG Frame -->
@@ -1170,15 +1617,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						LFGParentFrameTab1_OnClick();
-					</OnClick>
+					<OnClick function="LFGParentFrameTab1_OnClick"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFG_TITLE, "TOGGLELFGTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFGTAB, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="LFGParentTooltipTab1" frameStrata="TOOLTIP" hidden="true">
@@ -1204,9 +1647,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							end
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="LFGParentFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="LFM_TITLE">
@@ -1218,75 +1659,41 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						LFGParentFrameTab2_OnClick();
-					</OnClick>
+					<OnClick function="LFGParentFrameTab2_OnClick"/>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFM_TITLE, "TOGGLELFMTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFMTAB, 1);
+						
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<EditBox name="LFGComment" autoFocus="false" letters="128">
-				<Size>
-					<AbsDimension x="280" y="16"/>
-				</Size>
+			<Button name="LFGParentTooltipTab2" frameStrata="TOOLTIP" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
+					<Anchor point="BOTTOMLEFT" relativeTo="LFGParentFrameTab2" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="43" y="124"/>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="LFGParentFrameTab2" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="LFGCommentLabel" inherits="GameFontNormal" text="COMMENT" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetText(CLICK_TO_ENTER_COMMENT);
-						self:SetCursorPosition(1);
-					</OnLoad>
-					<OnUpdate>
-						LFGComment_OnUpdate(self, elapsed);
-					</OnUpdate>
-					<OnEditFocusGained>
-						if ( self:GetText() == CLICK_TO_ENTER_COMMENT ) then
-							self:SetText("");
+					<OnEnter>
+						local _, _, _, _, _, _, _, _, _, _, lfgStatus = GetLookingForGroup();
+						if( (GetRealNumPartyMembers() == 0) and (GetRealNumRaidMembers() == 0) and (not lfgStatus) ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(LFM_DISABLED_LFG_TOOLTIP, nil, nil, nil, nil, 1);
 						end
-					</OnEditFocusGained>
-					<OnTextChanged>
-						self.sendTimer = 0;
-					</OnTextChanged> 
-					<OnEnterPressed>
-						LFGFrame_SetLFGComment();
-						self:ClearFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed> 
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<FontString inherits="ChatFontNormal" bytes="64"/>
-			</EditBox>
+			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				LFGParentFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				LFGParentFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="LFGParentFrame_OnLoad"/>
+			<OnEvent function="LFGParentFrame_OnEvent"/>
 			<OnShow>
 				UpdateMicroButtons();
 				SetPortraitTexture(LFGParentFrameIcon, "player");

@@ -44,6 +44,16 @@ ACHIEVEMENT_FILTER_INCOMPLETE = 3;
 
 local FEAT_OF_STRENGTH_ID = 81;
 
+local trackedAchievements = {};
+local function updateTrackedAchievements (...) 
+	local count = select("#", ...);
+	
+	for i = 1, count do
+		trackedAchievements[select(i, ...)] = true;
+	end
+end
+
+
 -- [[ AchievementFrame ]] --
 
 function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
@@ -594,6 +604,9 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 	if ( event == "ADDON_LOADED" ) then
 		self:RegisterEvent("ACHIEVEMENT_EARNED");
 		self:RegisterEvent("CRITERIA_UPDATE");
+		self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
+		
+		updateTrackedAchievements(GetTrackedAchievements());
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
 		local achievementID = ...;
 		AchievementFrameCategories_Update();
@@ -615,7 +628,14 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		else
 			AchievementFrameAchievementsObjectives.id = nil; -- Force redraw
 		end
+	elseif ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
+		for k, v in next, trackedAchievements do
+			trackedAchievements[k] = nil;
+		end
+		
+		updateTrackedAchievements(GetTrackedAchievements());
 	end
+	
 	if ( not AchievementMicroButton:IsShown() ) then
 		AchievementMicroButton_Update();
 	end
@@ -916,13 +936,32 @@ function AchievementButton_OnClick (self, ignoreModifiers)
 end
 
 function AchievementButton_ToggleTracking (id)
-	local currTrack = GetTrackedAchievement();
-	if ( currTrack == id ) then
-		SetTrackedAchievement(0);
-	else
-		SetTrackedAchievement(id);
+	if ( trackedAchievements[id] ) then
+		RemoveTrackedAchievement(id);
+		AchievementFrameAchievements_ForceUpdate();
+		WatchFrame_Update();
+		return;
 	end
+	
+	local count = GetNumTrackedAchievements();
+	
+	if ( WatchFrame_GetRemainingSpace() < WatchFrame_GetHeightNeededForAchievement(id) ) then
+		UIErrorsFrame:AddMessage(OBJECTIVES_WATCH_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
+		return
+	elseif ( count >= WATCHFRAME_MAXACHIEVEMENTS ) then
+		UIErrorsFrame:AddMessage(format(ACHIEVEMENT_WATCH_TOO_MANY, WATCHFRAME_MAXACHIEVEMENTS), 1.0, 0.1, 0.1, 1.0);
+		return;
+	end
+	
+	local _, _, _, completed = GetAchievementInfo(id)
+	if ( completed ) then
+		UIErrorsFrame:AddMessage(ERR_ACHIEVEMENT_WATCH_COMPLETED, 1.0, 0.1, 0.1, 1.0);
+		return;
+	end
+	
+	AddTrackedAchievement(id);
 	AchievementFrameAchievements_ForceUpdate();
+	WatchFrame_Update();
 end
 	
 function AchievementButton_DisplayAchievement (button, category, achievement, selectionID)
@@ -991,8 +1030,7 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 			end
 		end		
 		
-		local tracked = GetTrackedAchievement();
-		if ( tracked == id ) then
+		if ( trackedAchievements[id] ) then
 			button.check:Show();
 			button.label:SetWidth(button.label:GetStringWidth() + 4); -- This +4 here is to fudge around any string width issues that arize from resizing a string set to its string width. See bug 144418 for an example.
 			button.tracked:SetChecked(true);
@@ -1018,7 +1056,9 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		else
 			button:Expand(height);
 		end
-		button.tracked:Show();
+		if ( not completed ) then
+			button.tracked:Show();
+		end
 	elseif ( button.selected ) then
 		button.selected = nil;
 		if ( not MouseIsOver(button) ) then

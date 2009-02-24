@@ -84,12 +84,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnterPressed>
-						PetPopup_Confirm();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						PetPopup_Cancel();
-					</OnEscapePressed>
+					<OnEnterPressed function="PetPopup_Confirm"/>
+					<OnEscapePressed function="PetPopup_Cancel"/>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>			
@@ -102,9 +98,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						PetPopup_Confirm();
-					</OnClick>
+					<OnClick function="PetPopup_Confirm"/>
 				</Scripts>
 				<ButtonText text="ACCEPT"/>
 				<NormalFont style="GameFontNormalSmall"/>
@@ -119,9 +113,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						PetPopup_Cancel();
-					</OnClick>
+					<OnClick function="PetPopup_Cancel"/>
 				</Scripts>
 				<ButtonText text="CANCEL"/>
 				<NormalFont style="GameFontNormalSmall"/>

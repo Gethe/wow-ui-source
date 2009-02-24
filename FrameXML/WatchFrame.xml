@@ -1,0 +1,451 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	
+	<Script file="WatchFrame.lua"/>
+	
+	<StatusBar name="AchievementProgressBarTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="212" y="14"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBG">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".4"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="700/700" justifyV="TOP">
+					<Size y="0" x="150"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>			
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBorderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+					<Size x="16" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-6" y="5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="-6" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentBorderRight" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+					<Size x="16" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="6" y="5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="6" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.812" right="0.8745" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentBorderCenter" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+					<Size x="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBorderLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.812" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetStatusBarColor(0, .6, 0, 1);
+				self:SetMinMaxValues(0, 100);
+				self:SetValue(0);
+				self.text = _G[self:GetName() .. "Text"];
+				self:GetStatusBarTexture():SetDrawLayer("BORDER");
+			</OnLoad>
+		</Scripts>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+	</StatusBar>
+	
+	
+	<FontString name="WatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="TOP">
+		<Size>
+			<AbsDimension x="0" y="16"/>
+		</Size>
+	</FontString>
+	
+	<Button name="WatchFrameLinkButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad> self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); </OnLoad>
+			<OnClick function="WatchFrameLinkButtonTemplate_OnClick"/>
+			<OnDoubleClick function="WatchFrameLinkButtonTemplate_OnDoubleClick"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="WatchFrameItemButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT" text="RANGE_INDICATOR">
+					<Size>
+						<AbsDimension x="36" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-2" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnEvent function="WatchFrameItem_OnEvent"/>
+			<OnUpdate function="WatchFrameItem_OnUpdate"/>
+			<OnShow function="WatchFrameItem_OnShow"/>
+			<OnHide function="WatchFrameItem_OnHide"/>
+			<OnEnter function="WatchFrameItem_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick function="WatchFrameItem_OnClick"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="WatchFrameLineTemplate" virtual="true">
+		<Size x="0" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset x="-4" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="WatchFontTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" hidden="true">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="CENTER">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentStatusBar" inherits="AchievementProgressBarTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="10" y="0"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-16" y="0"/>
+					</Anchor>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad function="WatchFrameLineTemplate_OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="WatchFrame" movable="true" clampedToScreen="true" hidden="false" resizable="true">
+		<Size x="280" y="128"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
+				<Offset x="0" y="10"/>
+			</Anchor>
+		</Anchors>
+		<ResizeBounds>
+			<MinResize x="180" y="128"/>
+			<MaxResize x="360" y="600"/>
+		</ResizeBounds>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTitleBG" file="Interface\PaperDollInfoFrame\UI-GearManager-Title-Background">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="9" y="-6"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
+							<Offset x="-28" y="-24"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentDialogBG" file="Interface\Tooltips\UI-Tooltip-Background">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="8" y="-24"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="-6" y="8"/>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".75"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentTopLeft" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.501953125" right="0.625" top="0" bottom="1"/>
+				</Texture>			
+				<Texture name="$parentTopRight" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="0" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.25" right="0.369140625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBottomLeft" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.751953125" right="0.875" top="0" bottom="1"/>
+				</Texture>			
+				<Texture name="$parentBottomRight" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="0" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.376953125" right="0.498046875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentLeft" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.001953125" right="0.125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1171875" right="0.2421875" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentCollapsedBorderLeft" file="Interface\PaperDollInfoFrame\UI-GearManager-Collapsed">	
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="1" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentCollapsedBorderRight" file="Interface\PaperDollInfoFrame\UI-GearManager-Collapsed">
+					<Size x="48" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset x="2" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.625" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentCollapsedBorderCenter" file="Interface\PaperDollInfoFrame\UI-GearManager-Collapsed">
+					<Size x="0" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentCollapsedBorderLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentCollapsedBorderRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.125" right="0.625" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="OBJECTIVES_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="12" y="-8"/>
+						</Anchor>
+						<Anchor point="TOPRIGHT">
+							<Offset x="-32" y="-8"/>
+						</Anchor>
+					</Anchors>
+				</FontString>					
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCollapseExpandButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="2" y="1"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WatchFrame_CollapseExpandButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-CollapseButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-CollapseButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-Panel-CollapseButton-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Frame name="$parentTitleButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitleBG"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleBG"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnMouseUp function="WatchFrameTitle_OnMouseUp"/>
+					<OnDragStart>
+						local watchFrame = _G["WatchFrame"];
+						watchFrame.moving = true;
+						watchFrame:StartMoving();
+					</OnDragStart>
+					<OnDragStop>
+						local watchFrame = _G["WatchFrame"];
+						watchFrame.moving = nil;
+						watchFrame:StopMovingOrSizing();
+					</OnDragStop>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentMouseover">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCollapsedBorderLeft"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>		
+			<Button name="$parentRightResizeThumb">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-6" y="8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						local watchFrame = _G["WatchFrame"];
+						if ( not watchFrame.locked ) then
+							watchFrame.sizing = true;
+							watchFrame:StartSizing("BOTTOMRIGHT");
+						end
+					</OnDragStart>
+					<OnDragStop>
+						local watchFrame = _G["WatchFrame"];
+						watchFrame.sizing = nil;
+						watchFrame:StopMovingOrSizing();
+					</OnDragStop>
+				</Scripts>
+			</Button>
+			<Button name="$parentLeftResizeThumb">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="6" y="8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						local watchFrame = _G["WatchFrame"];
+						if ( not watchFrame.locked ) then
+							watchFrame.sizing = true;
+							watchFrame:StartSizing("BOTTOMLEFT");
+						end
+					</OnDragStart>
+					<OnDragStop>
+						local watchFrame = _G["WatchFrame"];
+						watchFrame.sizing = nil;
+						watchFrame:StopMovingOrSizing();
+					</OnDragStop>
+				</Scripts>
+			</Button>					
+			<Frame name="WatchFrameLines" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WatchFrame" relativePoint="TOPLEFT">
+						<Offset x="12" y="-30"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="WatchFrame" relativePoint="BOTTOMRIGHT">
+						<Offset x="-12" y="12"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetParent(UIParent) -- Freeedoom~!
+						self.updateFunctions = {};
+						self.numFunctions = 0;
+					</OnLoad>
+				</Scripts>
+			</Frame>			
+		</Frames>		
+		<Scripts>
+			<OnLoad function="WatchFrame_OnLoad"/>
+			<OnEvent function="WatchFrame_OnEvent"/>
+			<OnUpdate function="WatchFrame_OnUpdate"/>
+			<OnShow function="WatchFrame_OnShow"/>
+			<OnHide function="WatchFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="WatchFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Scripts>
+			<OnLoad function="WatchFrameDropDown_OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -31,15 +31,24 @@ local GLYPHFRAME_PULSEIN, GLYPHFRAME_PULSEOUT, GLYPHFRAME_FINISHED = .2, .2, 1.5
 local HIGHLIGHT_BASEALPHA = .4;
 
 
+function GlyphFrame_Open ()
+	TalentFrame_LoadUI();
+	if ( PlayerTalentFrame_OpenGlyphFrame ) then
+		local talentGroup = GetActiveTalentGroup();
+		PlayerTalentFrame_OpenGlyphFrame(talentGroup);
+	end
+end
+
+
 function GlyphFrameGlyph_OnLoad (self)
 	local name = self:GetName();
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	self.glyph = getglobal(name .. "Glyph");
-	self.setting = getglobal(name .. "Setting");
-	self.highlight = getglobal(name .. "Highlight");
-	self.background = getglobal(name .. "Background");
-	self.ring = getglobal(name .. "Ring");
-	self.shine = getglobal(name .. "Shine");
+	self.glyph = _G[name .. "Glyph"];
+	self.setting = _G[name .. "Setting"];
+	self.highlight = _G[name .. "Highlight"];
+	self.background = _G[name .. "Background"];
+	self.ring = _G[name .. "Ring"];
+	self.shine = _G[name .. "Shine"];
 	self.elapsed = 0;
 	self.tintElapsed = 0;
 	self.glyphType = nil;
@@ -47,8 +56,8 @@ end
 
 function GlyphFrameGlyph_UpdateSlot (self)
 	local id = self:GetID();
-	
-	local enabled, glyphType, glyphSpell, iconFilename = GetGlyphSocketInfo(id);
+	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
+	local enabled, glyphType, glyphSpell, iconFilename = GetGlyphSocketInfo(id, talentGroup);
 
 	local isMinor = glyphType == 2;
 	if ( isMinor ) then
@@ -210,16 +219,17 @@ end
 
 function GlyphFrameGlyph_OnClick (self, button)
 	local id = self:GetID();
+	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
 
 	if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
-		local link = GetGlyphLink(id);
+		local link = GetGlyphLink(id, talentGroup);
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end
 	elseif ( button == "RightButton" ) then
-		if ( IsShiftKeyDown() ) then
+		if ( IsShiftKeyDown() and talentGroup == GetActiveTalentGroup() ) then
 			local glyphName;
-			local _, _, glyphSpell = GetGlyphSocketInfo(id);
+			local _, _, glyphSpell = GetGlyphSocketInfo(id, talentGroup);
 			if ( glyphSpell ) then
 				glyphName = GetSpellInfo(glyphSpell);
 				local dialog = StaticPopup_Show("CONFIRM_REMOVE_GLYPH", glyphName);
@@ -229,21 +239,23 @@ function GlyphFrameGlyph_OnClick (self, button)
 	elseif ( self.glyph:IsShown() and GlyphMatchesSocket(id) ) then
 		local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", id);
 		dialog.data = id;
-	else
+	elseif ( talentGroup == GetActiveTalentGroup() ) then
 		PlaceGlyphInSocket(id);
 	end
 end
 
 function GlyphFrameGlyph_OnEnter (self)
+	self.hasCursor = true;
 	if ( self.background:IsShown() ) then
 		self.highlight:Show();
 	end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetGlyph(self:GetID());
+	GameTooltip:SetGlyph(self:GetID(), PlayerTalentFrame and PlayerTalentFrame.talentGroup);
 	GameTooltip:Show();
 end
 
 function GlyphFrameGlyph_OnLeave (self)
+	self.hasCursor = nil;
 	self.highlight:Hide();
 	GameTooltip:Hide();
 end
@@ -266,8 +278,8 @@ function GlyphFrame_OnUpdate (self, elapsed)
 		end
 	end
 	
-	for i = 1, 6 do
-		if ( not slotAnimations[i].started and slotAnimations[i].glyph ) then
+	for i = 1, #slotAnimations do
+		if ( not slotAnimations[i].started and slotAnimations[mod(i - 1, NUM_GLYPH_SLOTS) + 1].glyph ) then
 			local sparkleSize = math.random(GLYPH_SPARKLE_SIZES);
 			GlyphFrame_StartSlotAnimation(i, sparkleSize * GLYPH_DURATION_MODIFIERS[sparkleSize], sparkleSize);
 		end
@@ -286,13 +298,28 @@ function GlyphFrame_OnShow (self)
 end
 
 function GlyphFrame_OnLoad (self)
-	self.glow = getglobal(self:GetName() .. "Glow");
+	self.glow = _G[self:GetName() .. "Glow"];
 	self.sparkleFrame = SparkleFrame:New(self);
+	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("GLYPH_ADDED");
 	self:RegisterEvent("GLYPH_REMOVED");
 	self:RegisterEvent("GLYPH_UPDATED");
 	self:RegisterEvent("GLYPHFRAME_OPEN");
 	self:RegisterEvent("PLAYER_LEVEL_UP");
+
+	if ( USE_NEW_ANIM_SYSTEM ) then
+		local extraAnimSlotMultiplier = 100;
+		local numSlotAnimations = #slotAnimations;
+		for i = 1, (extraAnimSlotMultiplier - 1) do
+			local extraIndex = numSlotAnimations*i;
+			slotAnimations[TOPLEFT + extraIndex] = CopyTable(slotAnimations[TOPLEFT]);
+			slotAnimations[TOP + extraIndex] = CopyTable(slotAnimations[TOP]);
+			slotAnimations[TOPRIGHT + extraIndex] = CopyTable(slotAnimations[TOPRIGHT]);
+			slotAnimations[BOTTOM + extraIndex] = CopyTable(slotAnimations[BOTTOM]);
+			slotAnimations[BOTTOMLEFT + extraIndex] = CopyTable(slotAnimations[BOTTOMLEFT]);
+			slotAnimations[BOTTOMRIGHT + extraIndex] = CopyTable(slotAnimations[BOTTOMRIGHT]);
+		end
+	end
 end
 
 function GlyphFrame_OnEnter (self)
@@ -306,11 +333,22 @@ function GlyphFrame_OnLeave (self)
 end
 
 function GlyphFrame_OnEvent (self, event, ...)
-	if ( event == "GLYPHFRAME_OPEN" or event == "PLAYER_LEVEL_UP" ) then
+	if ( event == "ADDON_LOADED" ) then
+		local name = ...;
+		if ( name == "Blizzard_GlyphUI" and IsAddOnLoaded("Blizzard_TalentUI") or name == "Blizzard_TalentUI" ) then
+			self:ClearAllPoints();
+			self:SetParent(PlayerTalentFrame);
+			self:SetAllPoints();
+			-- make sure this shows up above the talent UI
+			local frameLevel = self:GetParent():GetFrameLevel() + 4;
+			self:SetFrameLevel(frameLevel);
+			PlayerTalentFrameCloseButton:SetFrameLevel(frameLevel + 1);
+		end
+	elseif ( event == "GLYPHFRAME_OPEN" or event == "PLAYER_LEVEL_UP" ) then
 		GlyphFrame_Update();
-	else
+	elseif ( event == "GLYPH_ADDED" or event == "GLYPH_REMOVED" or event == "GLYPH_UPDATED" ) then
 		local index = ...;
-		local glyph = getglobal("GlyphFrameGlyph" .. index);
+		local glyph = _G["GlyphFrameGlyph" .. index];
 		if ( glyph ) then
 			-- update the glyph
 			GlyphFrameGlyph_UpdateSlot(glyph);
@@ -333,15 +371,17 @@ function GlyphFrame_OnEvent (self, event, ...)
 				end
 			end
 		end
-		
+
 		--Refresh tooltip!
-		GlyphFrameGlyph_OnEnter(glyph);
+		if ( GameTooltip:IsOwned(glyph) ) then
+			GlyphFrameGlyph_OnEnter(glyph);
+		end
 	end
 end
 
 function GlyphFrame_Update ()
 	for i = 1, NUM_GLYPH_SLOTS do
-		GlyphFrameGlyph_UpdateSlot(getglobal("GlyphFrameGlyph" .. i));
+		GlyphFrameGlyph_UpdateSlot(_G["GlyphFrameGlyph" .. i]);
 	end
 end
 
@@ -356,7 +396,7 @@ function GlyphFrame_StartSlotAnimation (slotID, duration, size)
 	GlyphFrameSparkle:Show();
 	
 	local template;
-	
+
 	if ( size == 1 ) then
 		template = "SparkleTextureSmall";
 	elseif ( size == 2 ) then
@@ -364,9 +404,31 @@ function GlyphFrame_StartSlotAnimation (slotID, duration, size)
 	else
 		template = "SparkleTextureNormal";
 	end
-		
-	local sparkle = GlyphFrameSparkleFrame:StartAnimation(slotID, "LinearTranslate", template, false, animation.point, animation.xStart, animation.xStop, animation.yStart, animation.yStop, duration);		
-	sparkle:SetOnFinished(GlyphFrame_FinishAnimation);
+
+	if ( USE_NEW_ANIM_SYSTEM ) then
+		-- init texture to animate
+		local sparkleName = "GlyphFrameAnimSparkle"..slotID;
+		local sparkle = _G[sparkleName];
+		if ( sparkle ) then
+			local sparkleDim = SparkleDimensions[template];
+			sparkle:SetHeight(sparkleDim.height);
+			sparkle:SetWidth(sparkleDim.width);
+		else
+			sparkle = GlyphFrameSparkleFrame:CreateTexture(sparkleName, "ARTWORK", "GlyphAnim"..template);
+			sparkle.name = slotID;
+		end
+		sparkle:SetPoint("CENTER", GlyphFrameSparkleFrame, animation.point, animation.xStart, animation.yStart);
+		sparkle:Show();
+		-- init animation
+		local animGroupAnim = _G[sparkleName.."AnimGroupTranslate"];
+		local offsetX, offsetY = animation.xStop - animation.xStart, animation.yStop - animation.yStart;
+		animGroupAnim:SetOffset(offsetX, offsetY);
+		animGroupAnim:SetDuration(duration);
+		animGroupAnim:Play();
+	else
+		local sparkle = GlyphFrameSparkleFrame:StartAnimation(slotID, "LinearTranslate", template, false, animation.point, animation.xStart, animation.xStop, animation.yStart, animation.yStop, duration);		
+		sparkle:SetOnFinished(GlyphFrame_FinishAnimation);
+	end
 	animation.started = true;
 end
 

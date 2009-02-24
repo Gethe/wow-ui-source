@@ -114,7 +114,7 @@ function StackSplitFrame_OnKeyDown(self,key)
 		end
 	elseif ( key == "ENTER" ) then
 		StackSplitFrameOkay_Click();
-	elseif ( key == "ESCAPE" ) then
+	elseif ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
 		StackSplitFrameCancel_Click();
 	elseif ( key == "LEFT" or key == "DOWN" ) then
 		StackSplitFrameLeft_Click();

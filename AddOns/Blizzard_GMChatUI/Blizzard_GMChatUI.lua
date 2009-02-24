@@ -17,6 +17,8 @@ function GMChatFrame_OnLoad(self)
 	self.lastGM = {};
 	
 	GMChatOpenLog:Enable();
+	
+	self:SetClampRectInsets(-35, 0, 30, 0);
 end
 
 function GMChatFrame_OnEvent(self, event, ...)
@@ -37,7 +39,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 			end
 		end
 		
-		local body = format(CHAT_WHISPER_GET..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
+		local body = format(CHAT_WHISPER_GET, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
 		
 		ListOfGMs[strlower(arg2)] = true;
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
@@ -46,12 +48,13 @@ function GMChatFrame_OnEvent(self, event, ...)
 			GMChatStatusFrame:Show();
 			GMChatStatusFrame_Pulse();
 			table.insert(self.lastGM,arg2);
+			PlaySound("GM_ChatWarning");
 			
 			DEFAULT_CHAT_FRAME:AddMessage(pflag.."|HGMChat|h["..GM_CHAT_STATUS_READY_DESCRIPTION.."]|h", info.r, info.g, info.b);
 			DEFAULT_CHAT_FRAME:SetHyperlinksEnabled(true);
 			DEFAULT_CHAT_FRAME.overrideHyperlinksEnabled = true;
-			SetButtonPulse(HelpMicroButton, 3600, 0.2);
-			SetButtonPulse(GMChatOpenLog, 3600, 0.2);
+			SetButtonPulse(HelpMicroButton, 3600, 1.0);
+			SetButtonPulse(GMChatOpenLog, 3600, 1.0);
 		else
 			ChatEdit_SetLastTellTarget(arg2);
 		end
@@ -71,7 +74,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 			end
 		end
 		
-		local body = format(CHAT_WHISPER_INFORM_GET..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
+		local body = format(CHAT_WHISPER_INFORM_GET, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
 		
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
 	end

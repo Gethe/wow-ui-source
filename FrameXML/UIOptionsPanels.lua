@@ -1,4 +1,3 @@
-
 local next = next;
 local function SecureNext(elements, key)
 	return securecall(next, elements, key);
@@ -113,6 +112,7 @@ ControlsPanelOptions = {
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
 	autoLootDefault = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text = "AUTO_LOOT_KEY_TEXT", default = "NONE" },
+	equipmentManager = { text = "USE_EQUIPMENT_MANAGER" },
 }
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...)
@@ -149,6 +149,8 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, 
 		else
 			InterfaceOptionsControlsPanelAutoLootKeyDropDownLabel:SetText(AUTO_LOOT_KEY_TEXT);
 		end
+		
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -266,6 +268,8 @@ function InterfaceOptionsCombatPanelTOTDropDown_OnEvent (self, event, ...)
 				UIDropDownMenu_Initialize(self, InterfaceOptionsCombatPanelTOTDropDown_Initialize);
 				UIDropDownMenu_SetSelectedValue(self, self.value);
 			end
+			
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -367,6 +371,8 @@ function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent (self, event, ..
 				UIDropDownMenu_Initialize(self, InterfaceOptionsCombatPanelSelfCastKeyDropDown_Initialize);
 				UIDropDownMenu_SetSelectedValue(self, self.value);
 			end
+			
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -456,6 +462,8 @@ function InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnEvent (self, event, .
 				UIDropDownMenu_Initialize(self, InterfaceOptionsCombatPanelFocusCastKeyDropDown_Initialize);
 				UIDropDownMenu_SetSelectedValue(self, self.value);
 			end
+			
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -528,6 +536,8 @@ DisplayPanelOptions = {
 	showClock = { text = "SHOW_CLOCK" },
 	movieSubtitle = { text = "CINEMATIC_SUBTITLES" },
 	threatShowNumeric = { text = "SHOW_NUMERIC_THREAT" },
+	colorblindMode = { text = "USE_COLORBLIND_MODE" },
+	previewTalents = { text = "PREVIEW_TALENT_CHANGES" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -573,6 +583,12 @@ function InterfaceOptionsDisplayPanelShowAggroPercentage_SetFunc()
 	UnitFrame_Update(FocusFrame);
 end
 
+function InterfaceOptionsDisplayPanelPreviewTalentChanges_SetFunc()
+	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() and PlayerTalentFrame_Refresh ) then
+		PlayerTalentFrame_Refresh();
+	end
+end
+
 function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		self.cvar = "displayWorldPVPObjectives";
@@ -608,6 +624,8 @@ function InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_OnEvent(self, even
 				UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelWorldPVPObjectiveDisplay_Initialize);
 				UIDropDownMenu_SetSelectedValue(self, self.value);
 			end
+			
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -687,6 +705,8 @@ function InterfaceOptionsDisplayPanelAggroWarningDisplay_OnEvent (self, event, .
 				UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelAggroWarningDisplay_Initialize);
 				UIDropDownMenu_SetSelectedValue(self, self.value);
 			end
+			
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -747,12 +767,36 @@ function InterfaceOptionsDisplayPanelAggroWarningDisplay_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
--- [[ Quest Options Panel ]] --
+-- [[ Objectives Options Panel ]] --
 
-QuestPanelOptions = {
+ObjectivesPanelOptions = {
 	questFadingDisable = { text = "SHOW_QUEST_FADING_TEXT" },
 	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT" },
+	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
+	advancedWatchFrame = { text = "ADVANCED_OBJECTIVES_TEXT" },
+	watchFrameIgnoreCursor = { text = "OBJECTIVES_IGNORE_CURSOR_TEXT" },
+	
 }
+
+function InterfaceOptionsObjectivesPanel_OnLoad (self)
+	self.name = OBJECTIVES_LABEL;
+	self.options = ObjectivesPanelOptions;
+	InterfaceOptionsPanel_OnLoad(self);
+	
+	self:SetScript("OnEvent", InterfaceOptionsObjectivesPanel_OnEvent);
+end
+
+function InterfaceOptionsObjectivesPanel_OnEvent (self, event, ...)
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+	
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local control = InterfaceOptionsObjectivesPanelAdvancedWatchFrame;
+		control.setFunc(GetCVar(control.cvar));
+		
+		control = InterfaceOptionsObjectivesPanelIgnoreCursor;
+		control.setFunc(GetCVar(control.cvar));
+	end
+end
 
 -- [[ Social Options Panel ]] --
 
@@ -1015,7 +1059,7 @@ function InterfaceOptionsCombatTextPanelFCTDropDown_Initialize(self)
 
 	info.text = COMBAT_TEXT_SCROLL_UP;
 	info.func = InterfaceOptionsCombatTextPanelFCTDropDown_OnClick;
-	info.value = "1"
+	info.value = "1";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1027,7 +1071,7 @@ function InterfaceOptionsCombatTextPanelFCTDropDown_Initialize(self)
 
 	info.text = COMBAT_TEXT_SCROLL_DOWN;
 	info.func = InterfaceOptionsCombatTextPanelFCTDropDown_OnClick;
-	info.value = "2"
+	info.value = "2";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1039,7 +1083,7 @@ function InterfaceOptionsCombatTextPanelFCTDropDown_Initialize(self)
 
 	info.text = COMBAT_TEXT_SCROLL_ARC;
 	info.func = InterfaceOptionsCombatTextPanelFCTDropDown_OnClick;
-	info.value = "3"
+	info.value = "3";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1061,15 +1105,16 @@ StatusTextPanelOptions = {
 	statusTextPercentage = { text = "STATUS_TEXT_PERCENT" },
 }
 
--- [[ Party & Raid Options Panel ]] --
+-- [[ UnitFrame Options Panel ]] --
 
-PartyRaidPanelOptions = {
+UnitFramePanelOptions = {
 	showPartyBackground = { text = "SHOW_PARTY_BACKGROUND_TEXT" },
 	hidePartyInRaid = { text = "HIDE_PARTY_INTERFACE_TEXT" },
 	showPartyPets = { text = "SHOW_PARTY_PETS_TEXT" },
 	showDispelDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
 	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },
 	showRaidRange = { text = "SHOW_RAID_RANGE_TEXT" },
+	showArenaEnemyFrames = { text = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
 }
 
 function BlizzardOptionsPanel_UpdateRaidPullouts ()
@@ -1160,6 +1205,8 @@ function InterfaceOptionsCameraPanelStyleDropDown_OnEvent(self, event, ...)
 				UIDropDownMenu_Initialize(self, InterfaceOptionsCameraPanelStyleDropDown_Initialize);
 				UIDropDownMenu_SetSelectedValue(self, self.value);
 			end
+			
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -1173,7 +1220,7 @@ function InterfaceOptionsCameraPanelStyleDropDown_Initialize(self)
 
 	info.text = CAMERA_SMART;
 	info.func = InterfaceOptionsCameraPanelStyleDropDown_OnClick;
-	info.value = "1"
+	info.value = "1";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1185,7 +1232,7 @@ function InterfaceOptionsCameraPanelStyleDropDown_Initialize(self)
 
 	info.text = CAMERA_ALWAYS;
 	info.func = InterfaceOptionsCameraPanelStyleDropDown_OnClick;
-	info.value = "2"
+	info.value = "2";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1197,7 +1244,7 @@ function InterfaceOptionsCameraPanelStyleDropDown_Initialize(self)
 
 	info.text = CAMERA_NEVER;
 	info.func = InterfaceOptionsCameraPanelStyleDropDown_OnClick;
-	info.value = "0"
+	info.value = "0";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1257,6 +1304,8 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnEvent(self, event, .
 				UIDropDownMenu_Initialize(self, InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize);
 				UIDropDownMenu_SetSelectedValue(self, self.value);
 			end
+		
+		self:UnregisterEvent(event);
 	end
 end
 
@@ -1270,7 +1319,7 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
 
 	info.text = CAMERA_SMART;
 	info.func = InterfaceOptionsMousePanelClickMoveStyleDropDown_OnClick;
-	info.value = "1"
+	info.value = "1";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1282,7 +1331,7 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
 
 	info.text = CAMERA_LOCKED;
 	info.func = InterfaceOptionsMousePanelClickMoveStyleDropDown_OnClick;
-	info.value = "2"
+	info.value = "2";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1294,7 +1343,7 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
 
 	info.text = CAMERA_NEVER;
 	info.func = InterfaceOptionsMousePanelClickMoveStyleDropDown_OnClick;
-	info.value = "0"
+	info.value = "0";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1371,6 +1420,8 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_OnEvent (self, event, ...)
 				UIDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
 				UIDropDownMenu_SetSelectedValue(self, self.value);
 			end
+			
+		self:UnregisterEvent(event);
 	end
 end
 

@@ -92,9 +92,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(self.tooltip);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalFont style="GameFontHighlightSmallRight"/>
 				<PushedTextOffset>
@@ -161,9 +159,7 @@
 							InboxFrame_OnClick(self, self.index);
 						end
 					</OnClick>
-					<OnEnter>
-						InboxFrameItem_OnEnter(self);
-					</OnEnter>
+					<OnEnter function="InboxFrameItem_OnEnter"/>
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
 							InboxFrameItem_OnEnter(self);
@@ -241,9 +237,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnClick>
-				StationeryPopupButton_OnClick(self);
-			</OnClick>
+			<OnClick function="StationeryPopupButton_OnClick"/>
 		</Scripts>
 		<NormalTexture name="$parentIcon">
 			<Size>
@@ -293,30 +287,20 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				SendMailAttachmentButton_OnClick(self, button);
-			</OnClick>
-			<OnDragStart>
-				SendMailAttachmentButton_OnClick(self, "LeftButton");
-			</OnDragStart>
-			<OnReceiveDrag>
-				SendMailAttachmentButton_OnClick(self, "LeftButton");
-			</OnReceiveDrag>
+			<OnClick function="SendMailAttachmentButton_OnClick"/>
+			<OnDragStart function="SendMailAttachmentButton_OnClick"/>
+			<OnReceiveDrag function="SendMailAttachmentButton_OnClick"/>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnEnter>
-				SendMailAttachment_OnEnter(self);
-			</OnEnter>
+			<OnEnter function="SendMailAttachment_OnEnter"/>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
 					SendMailAttachment_OnEnter(self);
 				end
 			</OnUpdate>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 	</Button>
@@ -544,9 +528,7 @@
 							<OnLoad>
 								self:Disable();
 							</OnLoad>
-							<OnClick>
-								InboxPrevPage();
-							</OnClick>
+							<OnClick function="InboxPrevPage"/>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
@@ -577,9 +559,7 @@
 							<OnLoad>
 								self:Disable();
 							</OnLoad>
-							<OnClick>
-								InboxNextPage();
-							</OnClick>
+							<OnClick function="InboxNextPage"/>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
@@ -779,9 +759,7 @@
 											<OnTabPressed>
 												EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
 											</OnTabPressed>
-											<OnEscapePressed>
-												self:ClearFocus();
-											</OnEscapePressed>
+											<OnEscapePressed function="EditBox_ClearFocus"/>
 										</Scripts>
 										<FontString inherits="MailTextFontNormal"/>
 									</EditBox>
@@ -856,12 +834,8 @@
 							<OnTabPressed>
 								EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
 							</OnTabPressed>
-							<OnEditFocusLost>
-								self:HighlightText(0, 0);
-							</OnEditFocusLost>
-							<OnCharComposition>
-								PlayerNameAutocomplete(self);
-							</OnCharComposition>
+							<OnEditFocusLost function="EditBox_ClearHighlight"/>
+							<OnCharComposition function="PlayerNameAutocomplete"/>
 							<OnChar>
 								if ( not self:IsInIMECompositionMode() ) then
 									PlayerNameAutocomplete(self);
@@ -870,12 +844,8 @@
 							<OnEnterPressed>
 								SendMailSubjectEditBox:SetFocus();
 							</OnEnterPressed>
-							<OnEscapePressed>
-								SendMailNameEditBox:ClearFocus();
-							</OnEscapePressed>
-							<OnTextChanged>
-								SendMailFrame_CanSend();
-							</OnTextChanged>
+							<OnEscapePressed function="EditBox_ClearFocus"/>
+							<OnTextChanged function="SendMailFrame_CanSend"/>
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
@@ -970,12 +940,8 @@
 							<OnEnterPressed>
 								SendMailBodyEditBox:SetFocus();
 							</OnEnterPressed>
-							<OnEscapePressed>
-								SendMailSubjectEditBox:ClearFocus();
-							</OnEscapePressed>
-							<OnTextChanged>
-								SendMailFrame_CanSend();
-							</OnTextChanged>
+							<OnEscapePressed function="EditBox_ClearFocus"/>
+							<OnTextChanged function="SendMailFrame_CanSend"/>
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
@@ -1132,9 +1098,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								SendMailMailButton_OnClick(self, button);
-							</OnClick>
+							<OnClick function="SendMailMailButton_OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -1165,12 +1129,8 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel() + 1);
-					</OnLoad>
-					<OnClick>
-						HideUIPanel(MailFrame);
-					</OnClick>
+					<OnLoad function="RaiseFrameLevel"/>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<Button name="MailFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="INBOX">
@@ -1203,12 +1163,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				MailFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				MailFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="MailFrame_OnLoad"/>
+			<OnEvent function="MailFrame_OnEvent"/>
 			<OnHide>
 				CloseMail();
 				HideUIPanel(OpenMailFrame);
@@ -1219,9 +1175,6 @@
 				PlaySound("igCharacterInfoClose");
 				SetSendMailShowing(false);
 			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
 		</Scripts>
 	</Frame>
 <!-- Stationery Popup -->	
@@ -1374,9 +1327,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<Button name="StationeryPopupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
@@ -1391,16 +1342,12 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				StationeryPopupFrame_Update();
-			</OnShow>
+			<OnShow function="StationeryPopupFrame_Update"/>
 			<OnHide>
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
@@ -1574,9 +1521,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						OpenMail_ReportSpam();
-					</OnClick>
+					<OnClick function="OpenMail_ReportSpam"/>
 				</Scripts>
 			</Button>
 			<ScrollFrame name="OpenMailScrollFrame" inherits="UIPanelScrollFrameTemplate">
@@ -1875,9 +1820,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MAIL_LETTER_TOOLTIP);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 			</Button>
@@ -1924,9 +1867,7 @@
 							GameTooltip:Show();
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 			</Button>
@@ -1942,9 +1883,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(self:GetParent());
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<Button name="OpenMailDeleteButton" inherits="UIPanelButtonTemplate" text="DELETE">
@@ -1959,9 +1898,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						OpenMail_Delete();
-					</OnClick>
+					<OnClick function="OpenMail_Delete"/>
 				</Scripts>
 			</Button>
 			<Button name="OpenMailReplyButton" inherits="UIPanelButtonTemplate" text="REPLY_MESSAGE">
@@ -1976,9 +1913,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						OpenMail_Reply();
-					</OnClick>
+					<OnClick function="OpenMail_Reply"/>
 				</Scripts>
 			</Button>
 			<Button name="OpenMailCloseButton" inherits="UIPanelCloseButton">
@@ -1990,9 +1925,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(OpenMailFrame);
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -2001,12 +1934,7 @@
 				HideUIPanel(GetUIPanel("center"));
 				HideUIPanel(GetUIPanel("right"));
 			</OnShow>
-			<OnHide>
-				OpenMailFrame_OnHide();
-			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
+			<OnHide function="OpenMailFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

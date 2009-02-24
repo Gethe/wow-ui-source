@@ -61,9 +61,7 @@
 							GameTooltip:SetText(self.tooltip);
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentFlash">
@@ -98,9 +96,7 @@
 					GameTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
 	<Button name="WorldStateScoreColumnTemplate" enableMouse="true" virtual="true">
@@ -128,9 +124,7 @@
 				end
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	<Frame name="WorldStateScoreTemplate" virtual="true" hidden="true">
@@ -383,9 +377,7 @@
 							GameTooltip:SetText(self.tooltip);
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentName">
@@ -417,9 +409,7 @@
 							GameTooltip:Show();
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnMouseUp>
 						ScorePlayer_OnMouseUp(self, button);
 					</OnMouseUp>
@@ -505,9 +495,7 @@
 				PanelTemplates_TabResize(self, 0);
 				getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 30);
 			</OnShow>
-			<OnClick>
-				WorldStateScoreFrameTab_OnClick(self);
-			</OnClick>
+			<OnClick function="WorldStateScoreFrameTab_OnClick"/>
 		</Scripts>
 		<ButtonText name="$parentText">
 			<Anchors>
@@ -712,21 +700,15 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				WorldStateAlwaysUpFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				WorldStateAlwaysUpFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="WorldStateAlwaysUpFrame_OnLoad"/>
+			<OnEvent function="WorldStateAlwaysUpFrame_OnEvent"/>
 			<OnEnter>
 				if ( self.tooltip ) then
 					GameTooltip:SetOwner(self);
 					GameTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
 	<!-- Score Frame -->
@@ -1416,9 +1398,7 @@
                     </Anchor>
                 </Anchors>
 				<Scripts>
-					<OnClick>
-						WorldStateScoreFrameTab_OnClick(self);
-					</OnClick>
+					<OnClick function="WorldStateScoreFrameTab_OnClick"/>
 				</Scripts>
             </Button>
 			<Button name="WorldStateScoreFrameTab2" inherits="WorldStateScoreFrameTabButtonTemplate" id="2" text="FACTION_ALLIANCE">
@@ -1430,9 +1410,7 @@
                     </Anchor>
                 </Anchors>
 				<Scripts>
-					<OnClick>
-						WorldStateScoreFrameTab_OnClick(self);
-					</OnClick>
+					<OnClick function="WorldStateScoreFrameTab_OnClick"/>
 				</Scripts>
             </Button>
 			<Button name="WorldStateScoreFrameTab3" inherits="WorldStateScoreFrameTabButtonTemplate" id="3" text="FACTION_HORDE">
@@ -1444,9 +1422,7 @@
                     </Anchor>
                 </Anchors>
 				<Scripts>
-					<OnClick>
-						WorldStateScoreFrameTab_OnClick(self);
-					</OnClick>
+					<OnClick function="WorldStateScoreFrameTab_OnClick"/>
 				</Scripts>
             </Button>
 			<Button name="WorldStateScoreFrameLeaveButton" inherits="UIPanelButtonTemplate" text="LEAVE_BATTLEGROUND">
@@ -1461,9 +1437,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						LeaveBattlefield();
-					</OnClick>
+					<OnClick function="LeaveBattlefield"/>
 				</Scripts>
 			</Button>
 			<Frame name="WorldStateScoreWinnerFrame" hidden="true">
@@ -1532,9 +1506,7 @@
 			<AbsInset left="13" right="115" top="10" bottom="13"/>
 		</HitRectInsets>
 		<Scripts>
-			<OnLoad>
-				WorldStateScoreFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="WorldStateScoreFrame_OnLoad"/>
 			<OnEvent>
 				if	( event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES") then
 					if ( WorldStateScoreFrame:IsVisible() or GetBattlefieldWinner() ) then
@@ -1552,9 +1524,7 @@
 				WorldStateScoreFrame_Update();
 				WorldStateScoreFrameTab_OnClick(WorldStateScoreFrameTab1);
 			</OnShow>
-			<OnUpdate>
-				RequestBattlefieldScoreData();
-			</OnUpdate>
+			<OnUpdate function="RequestBattlefieldScoreData"/>
 		</Scripts>
 	</Frame>
 </Ui>

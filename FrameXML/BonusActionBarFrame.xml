@@ -33,9 +33,7 @@
 				end
 				GameTooltip:SetShapeshift(self:GetID());
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="PossessButtonTemplate" inherits="SecureFrameTemplate, ActionButtonTemplate" virtual="true">
@@ -43,15 +41,9 @@
 			<AbsDimension x="30" y="30"/>
 		</Size>
 		<Scripts>
-			<OnClick>
-				PossessButton_OnClick(self);
-			</OnClick>
-			<OnEnter>
-				PossessButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnClick function="PossessButton_OnClick"/>
+			<OnEnter function="PossessButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</CheckButton>
 
@@ -195,15 +187,9 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				BonusActionBar_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				BonusActionBar_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				BonusActionBar_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="BonusActionBar_OnLoad"/>
+			<OnEvent function="BonusActionBar_OnEvent"/>
+			<OnUpdate function="BonusActionBar_OnUpdate"/>
 		</Scripts>
 	</Frame>
 	<Frame name="ShapeshiftBarFrame" parent="MainMenuBar" enableMouse="true" hidden="true">
@@ -337,18 +323,10 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ShapeshiftBar_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				ShapeshiftBar_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				UIParent_ManageFramePositions();
-			</OnShow>
-			<OnHide>
-				UIParent_ManageFramePositions();
-			</OnHide>
+			<OnLoad function="ShapeshiftBar_OnLoad"/>
+			<OnEvent function="ShapeshiftBar_OnEvent"/>
+			<OnShow function="UIParent_ManageFramePositions"/>
+			<OnHide function="UIParent_ManageFramePositions"/>
 		</Scripts>
 	</Frame>
 	<Frame name="PossessBarFrame" parent="MainMenuBar" enableMouse="true" hidden="true">
@@ -403,18 +381,10 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				PossessBar_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				PossessBar_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				UIParent_ManageFramePositions();
-			</OnShow>
-			<OnHide>
-				UIParent_ManageFramePositions();
-			</OnHide>
+			<OnLoad function="PossessBar_OnLoad"/>
+			<OnEvent function="PossessBar_OnEvent"/>
+			<OnShow function="UIParent_ManageFramePositions"/>
+			<OnHide function="UIParent_ManageFramePositions"/>
 		</Scripts>
 	</Frame>
 </Ui>

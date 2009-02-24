@@ -3,6 +3,11 @@
 --PET_FLASH_OFF_TIME = 0.5;
 
 function PetFrame_OnLoad (self)
+	UnitFrame_Initialize(self, "pet", PetName, PetPortrait,
+						 PetFrameHealthBar, PetFrameHealthBarText, 
+						 PetFrameManaBar, PetFrameManaBarText,
+						 PetFrameFlash);
+
 	self.attackModeCounter = 0;
 	self.attackModeSign = -1;
 	--self.flashState = 1;
@@ -49,7 +54,7 @@ function PetFrame_Update (self, override)
 			PetAttackModeTexture:Hide();
 
 			PetFrame_SetHappiness(self);
-			RefreshBuffs(self, 0, self.unit);
+			RefreshAuras(self, 0, self.unit);
 		else
 			self:Hide();
 		end
@@ -75,7 +80,7 @@ function PetFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == self.unit ) then
-			RefreshBuffs(self, 0, self.unit);
+			RefreshAuras(self, 0, self.unit);
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);

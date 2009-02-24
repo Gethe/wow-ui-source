@@ -70,29 +70,15 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				GlyphFrameGlyph_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				GlyphFrameGlyph_UpdateSlot(self);
-			</OnShow>
-			<OnClick>
-				GlyphFrameGlyph_OnClick(self, button);
-			</OnClick>
-			<OnEnter>
-				self.hasCursor = true;
-				GlyphFrameGlyph_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				self.hasCursor = nil;
-				GlyphFrameGlyph_OnLeave(self);
-			</OnLeave>
-			<OnUpdate>
-				GlyphFrameGlyph_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="GlyphFrameGlyph_OnLoad"/>
+			<OnShow function="GlyphFrameGlyph_UpdateSlot"/>
+			<OnClick function="GlyphFrameGlyph_OnClick"/>
+			<OnEnter function="GlyphFrameGlyph_OnEnter"/>
+			<OnLeave function="GlyphFrameGlyph_OnLeave"/>
+			<OnUpdate function="GlyphFrameGlyph_OnUpdate"/>
 		</Scripts>
 	</Button>
-	<Frame name="GlyphFrame" parent="SpellBookFrame" hidden="true">
+	<Frame name="GlyphFrame" hidden="true">
 		<Size x="384" y="512"/>
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -103,16 +89,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<AbsInset left="0" right="30" top="0" bottom="70"/>
 		</HitRectInsets>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\Spellbook\Spellbook-Icon">
-					<Size x="58" y="58"/>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="10" y="-8"/>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\Spellbook\UI-GlyphFrame">
 					<Size x="352" y="441"/>
@@ -121,10 +97,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 					<TexCoords left="0" right="0.6875" top="0" bottom="0.861328125"/>
 				</Texture>
-				<FontString name="$parentTitleText" inherits="GameFontNormal" text="GLYPHS">
+				<FontString name="GlyphFrameTitleText" inherits="GameFontNormal" text="GLYPHS">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset x="6" y="230"/>
+						<Anchor point="TOP">
+							<Offset x="0" y="-17"/>
 						</Anchor>
 					</Anchors>
 				</FontString>	
@@ -200,24 +176,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				GlyphFrame_OnLoad(self)
-			</OnLoad>
-			<OnUpdate>
-				GlyphFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnShow>
-				GlyphFrame_OnShow(self)
-			</OnShow>
-			<OnEnter>
-				GlyphFrame_OnEnter(self)
-			</OnEnter>
-			<OnLeave>
-				GlyphFrame_OnLeave(self)
-			</OnLeave>
-			<OnEvent>
-				GlyphFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="GlyphFrame_OnLoad"/>
+			<OnUpdate function="GlyphFrame_OnUpdate"/>
+			<OnShow function="GlyphFrame_OnShow"/>
+			<OnEnter function="GlyphFrame_OnEnter"/>
+			<OnLeave function="GlyphFrame_OnLeave"/>
+			<OnEvent function="GlyphFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

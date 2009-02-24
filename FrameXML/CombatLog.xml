@@ -48,12 +48,8 @@
 					<Anchor point="BOTTOM" relativeTo="CombatLogBottomButton" relativePoint="TOP"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						MessageFrameScrollButton_OnLoad(self);
-					</OnLoad>
-					<OnUpdate>
-						MessageFrameScrollButton_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnLoad function="MessageFrameScrollButton_OnLoad"/>
+					<OnUpdate function="MessageFrameScrollButton_OnUpdate"/>
 					<OnClick>
 						if ( self:GetButtonState() == "PUSHED" ) then
 							self.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
@@ -76,12 +72,8 @@
 					<Anchor point="BOTTOM" relativeTo="CombatLogDownButton" relativePoint="TOP"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						MessageFrameScrollButton_OnLoad(self)					
-					</OnLoad>
-					<OnUpdate>
-						MessageFrameScrollButton_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnLoad function="MessageFrameScrollButton_OnLoad"/>
+					<OnUpdate function="MessageFrameScrollButton_OnUpdate"/>
 					<OnClick>
 						if ( self:GetButtonState() == "PUSHED" ) then
 							self.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;

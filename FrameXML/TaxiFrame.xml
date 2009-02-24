@@ -9,12 +9,8 @@
 			<Anchor point="BOTTOMRIGHT"/>
 		</Anchors>
 		<Scripts>
-            <OnEnter>
-				TaxiNodeOnButtonEnter(self);
-            </OnEnter>
-            <OnLeave>
-				GameTooltip:Hide();
-            </OnLeave>
+            <OnEnter function="TaxiNodeOnButtonEnter"/>
+            <OnLeave function="GameTooltip_Hide"/>
  			<OnClick>
 				TakeTaxiNode(self:GetID());
 			</OnClick>
@@ -153,12 +149,8 @@
 			</TaxiRouteFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TaxiFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				TaxiFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="TaxiFrame_OnLoad"/>
+			<OnEvent function="TaxiFrame_OnEvent"/>
 			<OnShow>
 				PlaySound("igMainMenuOpen");
 				DrawOneHopLines();

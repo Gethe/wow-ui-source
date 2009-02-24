@@ -3,12 +3,8 @@
     <Script file="InspectPaperDollFrame.lua"/>
     <Button name="InspectPaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
         <Scripts>
-            <OnLoad>
-                InspectPaperDollItemSlotButton_OnLoad(self);
-            </OnLoad>
-            <OnEvent>
-                InspectPaperDollItemSlotButton_OnEvent(self, event, ...);
-            </OnEvent>
+            <OnLoad function="InspectPaperDollItemSlotButton_OnLoad"/>
+            <OnEvent function="InspectPaperDollItemSlotButton_OnEvent"/>
             <OnClick>
 				HandleModifiedItemClick(GetInventoryItemLink(InspectFrame.unit, self:GetID()));
 			</OnClick>
@@ -18,13 +14,8 @@
 					InspectPaperDollItemSlotButton_OnEnter(self);
 				end
 			</OnUpdate>
-            <OnEnter>
-				InspectPaperDollItemSlotButton_OnEnter(self)
-			</OnEnter>
-            <OnLeave>
-                GameTooltip:Hide();
-				ResetCursor();
-            </OnLeave>
+            <OnEnter function="InspectPaperDollItemSlotButton_OnEnter"/>
+            <OnLeave function="GameTooltip_HideResetCursor"/>
         </Scripts>
 		<NormalTexture file="Interface\Buttons\UI-Quickslot2">
 			<Size>
@@ -128,16 +119,11 @@
                     </Anchor>
                 </Anchors>
                 <Scripts>
-                    <OnLoad>
-                        InspectModelFrame_OnLoad(self);
-						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-                    </OnLoad>
+                    <OnLoad function="InspectModelFrame_OnLoad"/>
 					<OnEvent>
 						self:RefreshUnit();
 					</OnEvent>
-                    <OnUpdate>
-                        InspectModelFrame_OnUpdate(self, elapsed);
-                    </OnUpdate>
+                    <OnUpdate function="InspectModelFrame_OnUpdate"/>
                 </Scripts>
 				<Frames>
 					<Button name="InspectModelRotateLeftButton">
@@ -151,9 +137,7 @@
 							<OnLoad>
 								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
-							<OnClick>
-								InspectModelRotateLeftButton_OnClick();
-							</OnClick>
+							<OnClick function="InspectModelRotateLeftButton_OnClick"/>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
@@ -170,9 +154,7 @@
 							<OnLoad>
 								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
-							<OnClick>
-								InspectModelRotateRightButton_OnClick();
-							</OnClick>
+							<OnClick function="InspectModelRotateRightButton_OnClick"/>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
@@ -353,15 +335,9 @@
             </Button>
         </Frames>
         <Scripts>
-            <OnLoad>
-                InspectPaperDollFrame_OnLoad(self);
-            </OnLoad>
-            <OnEvent>
-                InspectPaperDollFrame_OnEvent(self, event, ...);
-            </OnEvent>
-            <OnShow>
-                InspectPaperDollFrame_OnShow();
-            </OnShow>
+            <OnLoad function="InspectPaperDollFrame_OnLoad"/>
+            <OnEvent function="InspectPaperDollFrame_OnEvent"/>
+            <OnShow function="InspectPaperDollFrame_OnShow"/>
         </Scripts>
     </Frame>
 </Ui>

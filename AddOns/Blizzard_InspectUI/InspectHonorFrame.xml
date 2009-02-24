@@ -308,9 +308,7 @@
 						GameTooltip:AddLine(NEWBIE_TOOLTIP_RANK, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 						GameTooltip:Show();
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<StatusBar name="InspectHonorFrameProgressBar" drawLayer="BORDER" minValue="0" maxValue="1" defaultValue="0">
@@ -327,39 +325,27 @@
 				<Frames>
 					<Frame name="InspectHonorFrameProgressButton" enableMouse="true" setAllPoints="true">
 						<Scripts>
-							<OnLoad>
-								self:SetFrameLevel(self:GetFrameLevel() - 1);
-							</OnLoad>
+							<OnLoad function="LowerFrameLevel"/>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(RANK_POSITION, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 								GameTooltip:AddLine(NEWBIE_TOOLTIP_RANK_POSITION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 								GameTooltip:Show();
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel() - 1);
-					</OnLoad>
+					<OnLoad function="LowerFrameLevel"/>
 				</Scripts>
 				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
 			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				InspectHonorFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				InspectHonorFrame_OnShow();
-			</OnShow>
-			<OnEvent>
-				InspectHonorFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="InspectHonorFrame_OnLoad"/>
+			<OnShow function="InspectHonorFrame_OnShow"/>
+			<OnEvent function="InspectHonorFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

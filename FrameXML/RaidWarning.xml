@@ -26,15 +26,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				RaidWarningFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				RaidWarningFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				RaidNotice_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="RaidWarningFrame_OnLoad"/>
+			<OnEvent function="RaidWarningFrame_OnEvent"/>
+			<OnUpdate function="RaidNotice_OnUpdate"/>
 		</Scripts>
 	</Frame>
 
@@ -60,15 +54,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				RaidBossEmoteFrame_OnLoad(self)
-			</OnLoad>
-			<OnUpdate>
-				RaidNotice_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnEvent>
-				RaidBossEmoteFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="RaidBossEmoteFrame_OnLoad"/>
+			<OnUpdate function="RaidNotice_OnUpdate"/>
+			<OnEvent function="RaidBossEmoteFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 

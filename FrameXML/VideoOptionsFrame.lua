@@ -34,7 +34,7 @@ function VideoOptionsFrame_OnHide (self)
 	end
 end
 
-function VideoOptionsFrameOkay_OnClick (apply)
+function VideoOptionsFrameOkay_OnClick (self, button, apply)
 	OptionsFrameOkay_OnClick(VideoOptionsFrame, apply);
 
 	if ( VideoOptionsFrame.gxRestart ) then
@@ -47,7 +47,7 @@ function VideoOptionsFrameOkay_OnClick (apply)
 	end
 end
 
-function VideoOptionsFrameCancel_OnClick ()
+function VideoOptionsFrameCancel_OnClick (self, button)
 	OptionsFrameCancel_OnClick(VideoOptionsFrame);
 
 	if ( VideoOptionsFrame.gxRestart ) then
@@ -61,7 +61,7 @@ function VideoOptionsFrameCancel_OnClick ()
 	VideoOptionsFrame_Toggle();
 end
 
-function VideoOptionsFrameDefault_OnClick ()
+function VideoOptionsFrameDefault_OnClick (self, button)
 	OptionsFrameDefault_OnClick(VideoOptionsFrame);
 
 	StaticPopup_Show("CONFIRM_RESET_VIDEO_SETTINGS");

@@ -685,7 +685,7 @@ function RaidPullout_ReadyCheckFinished(pulloutFrame)
 end
 
 function RaidPullout_ReadyCheckFinishFunc(pulloutButton)
-	RefreshBuffs(pulloutButton, pulloutButton:GetParent().showBuffs, pulloutButton.unit);
+	RefreshAuras(pulloutButton, pulloutButton:GetParent().showBuffs, pulloutButton.unit);
 end
 
 function RaidPullout_GeneratePulloutFrame(fileName, class)
@@ -816,20 +816,20 @@ function RaidPullout_OnUpdate(self, elapsed)
 	end
 	if ( RaidFrame.showRange ) then
 		if ( UnitIsConnected(self.unit) and  not UnitInRange(self.unit) ) then
-			if ( self.healthBar:GetAlpha() == 1 ) then
+			if ( self.healthbar:GetAlpha() == 1 ) then
 				_G[self:GetName().."Name"]:SetAlpha(RAID_RANGE_ALPHA);
-				self.healthBar:SetAlpha(RAID_RANGE_ALPHA);
-				self.manaBar:SetAlpha(RAID_RANGE_ALPHA);
+				self.healthbar:SetAlpha(RAID_RANGE_ALPHA);
+				self.manabar:SetAlpha(RAID_RANGE_ALPHA);
 			end
 		else
 			_G[self:GetName().."Name"]:SetAlpha(1);
-			self.healthBar:SetAlpha(1);
-			self.manaBar:SetAlpha(1);
+			self.healthbar:SetAlpha(1);
+			self.manabar:SetAlpha(1);
 		end
-	elseif ( self.healthBar:GetAlpha() ~= 1 ) then
+	elseif ( self.healthbar:GetAlpha() ~= 1 ) then
 		_G[self:GetName().."Name"]:SetAlpha(1);
-		self.healthBar:SetAlpha(1);
-		self.manaBar:SetAlpha(1);
+		self.healthbar:SetAlpha(1);
+		self.manabar:SetAlpha(1);
 	end
 end
 
@@ -876,8 +876,8 @@ function RaidPullout_Update(pullOutFrame)
 		pulloutButton = pullOutFrame.buttons[i];
 		if ( i <= numPulloutEntries ) then
 			pulloutButtonName = pulloutButton.nameLabel;
-			pulloutHealthBar = pulloutButton.healthBar;
-			pulloutManaBar = pulloutButton.manaBar;
+			pulloutHealthBar = pulloutButton.healthbar;
+			pulloutManaBar = pulloutButton.manabar;
 			pulloutThreatIndicator = pulloutButton.threatIndicator;
 			if ( pulloutList ) then
 				id = pulloutList[i];
@@ -957,15 +957,15 @@ function RaidPullout_Update(pullOutFrame)
 					ReadyCheck_Start(_G[pulloutButton:GetName().."ReadyCheck"]);
 				end
 
-				-- hide buffs/debuffs while ready check is up
+				-- hide auras while ready check is up
 				for i=1, MAX_PARTY_DEBUFFS do
 					_G[pulloutButton:GetName().."Debuff"..i]:Hide();
 				end
 			else
 				_G[pulloutButton:GetName().."ReadyCheck"]:Hide();
 
-				-- Handle buffs/debuffs if ready check is hidden
-				RefreshBuffs(pulloutButton, pullOutFrame.showBuffs, unit);
+				-- Handle auras if ready check is hidden
+				RefreshAuras(pulloutButton, pullOutFrame.showBuffs, unit);
 			end
 
 			--Handle vehicle indicator
@@ -1031,7 +1031,7 @@ function RaidPulloutButton_OnEvent(self, event, ...)
 		-- suppress while ready check is up
 		local arg1 = ...;
 		if ( arg1 == self.unit and not _G[self:GetName().."ReadyCheck"]:IsShown() ) then
-			RefreshBuffs(self, self:GetParent().showBuffs, self.unit);
+			RefreshAuras(self, self:GetParent().showBuffs, self.unit);
 		end
 	elseif ( event == "VOICE_START") then
 		local arg1 = ...;
@@ -1081,11 +1081,11 @@ function RaidPulloutButton_UpdateSwapFrames(self, unit)
 		_G[self:GetName().."ClearButton"]:SetAttribute("unit", self.secondaryUnit);
 		self.secondaryUnit = nil;
 	end
-	securecall("UnitFrameHealthBar_Initialize", unit, self.healthBar, nil, true);
-	securecall("UnitFrameManaBar_Initialize", unit, self.manaBar, nil);
+	securecall("UnitFrameHealthBar_Initialize", unit, self.healthbar, nil, true);
+	securecall("UnitFrameManaBar_Initialize", unit, self.manabar, nil);
 	securecall("UnitFrameThreatIndicator_Initialize", unit, self);
-	securecall("UnitFrameHealthBar_Update", self.healthBar, unit);
-	securecall("UnitFrameManaBar_Update", self.manaBar, unit);
+	securecall("UnitFrameHealthBar_Update", self.healthbar, unit);
+	securecall("UnitFrameManaBar_Update", self.manabar, unit);
 	securecall("UnitFrame_UpdateThreatIndicator", self.threatIndicator, nil, unit);
 end
 

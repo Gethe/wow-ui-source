@@ -16,9 +16,7 @@
          virtual="true">
     <Size x="2" y="2"/>
     <Scripts>
-      <OnLoad>
-	SecureHandler_OnLoad(self);
-      </OnLoad>
+      <OnLoad function="SecureHandler_OnLoad"/>
     </Scripts>
   </Frame>
 
@@ -26,12 +24,8 @@
          virtual="true">
     <Size x="2" y="2"/>
     <Scripts>
-      <OnLoad>
-	SecureHandler_OnLoad(self);
-      </OnLoad>
-      <OnAttributeChanged>
-        SecureHandler_StateOnAttributeChanged(self, name, value);
-      </OnAttributeChanged>
+      <OnLoad function="SecureHandler_OnLoad"/>
+      <OnAttributeChanged function="SecureHandler_StateOnAttributeChanged"/>
     </Scripts>
   </Frame>
 
@@ -39,12 +33,8 @@
          virtual="true">
     <Size x="2" y="2"/>
     <Scripts>
-      <OnLoad>
-	SecureHandler_OnLoad(self);
-      </OnLoad>
-      <OnAttributeChanged>
-        SecureHandler_AttributeOnAttributeChanged(self, name, value);
-      </OnAttributeChanged>
+      <OnLoad function="SecureHandler_OnLoad"/>
+      <OnAttributeChanged function="SecureHandler_AttributeOnAttributeChanged"/>
     </Scripts>
   </Frame>
 
@@ -72,10 +62,10 @@
          inherits="SecureHandlerBaseTemplate" virtual="true">
     <Scripts>
       <OnDragStart>
-	SecureHandler_OnDragEvent("_ondragstart", self, button);
+	SecureHandler_OnDragEvent(self, "_ondragstart", button);
       </OnDragStart>
       <OnReceiveDrag>
-	SecureHandler_OnDragEvent("_onreceivedrag", self);
+	SecureHandler_OnDragEvent(self, "_onreceivedrag");
       </OnReceiveDrag>
     </Scripts>
   </Frame>
@@ -84,10 +74,10 @@
          inherits="SecureHandlerBaseTemplate" virtual="true">
     <Scripts>
       <OnMouseUp>
-	SecureHandler_OnMouseUpDown("_onmouseup", self, button);
+	SecureHandler_OnMouseUpDown(self, "_onmouseup", button);
       </OnMouseUp>
       <OnMouseDown>
-	SecureHandler_OnMouseUpDown("_onmousedown", self, button);
+	SecureHandler_OnMouseUpDown(self, "_onmousedown", button);
       </OnMouseDown>
     </Scripts>
   </Frame>
@@ -100,7 +90,7 @@
 	self:EnableMouseWheel();
       </OnLoad>
       <OnMouseWheel>
-	SecureHandler_OnMouseWheel("_onmousewheel", self, delta);
+	SecureHandler_OnMouseWheel(self, "_onmousewheel", delta);
       </OnMouseWheel>
     </Scripts>
   </Frame>

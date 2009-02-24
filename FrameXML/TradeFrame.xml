@@ -87,9 +87,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parent"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel() + 2);
-					</OnLoad>
+					<OnLoad function="RaiseFrameLevelByTwo"/>
 					<OnClick>
 						if ( IsModifiedClick() ) then
 							HandleModifiedItemClick(GetTradeTargetItemLink(self:GetParent():GetID()));
@@ -102,10 +100,7 @@
 						GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
 						CursorUpdate(self);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-						ResetCursor();
-					</OnLeave>
+					<OnLeave function="GameTooltip_HideResetCursor"/>
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -147,10 +142,7 @@
 						GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
 						CursorUpdate(self);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-						ResetCursor();
-					</OnLeave>
+					<OnLeave function="GameTooltip_HideResetCursor"/>
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -495,9 +487,7 @@
 							GameTooltip_AddNewbieTip(self, ENCHANT_SLOT, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ENCHANTSLOT, 1);
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Button name="TradeFrameTradeButton" inherits="UIPanelButtonTemplate" text="TRADE">
@@ -512,9 +502,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						AcceptTrade();
-					</OnClick>
+					<OnClick function="AcceptTrade"/>
 				</Scripts>
 				<ButtonText text="TRADE"/>
 				<NormalFont style="GameFontNormal"/>
@@ -533,9 +521,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						TradeFrameCancelButton_OnClick();
-					</OnClick>
+					<OnClick function="TradeFrameCancelButton_OnClick"/>
 				</Scripts>
 				<ButtonText text="CANCEL"/>
 				<NormalFont style="GameFontNormal"/>
@@ -566,9 +552,7 @@
 						self:RegisterEvent("PLAYER_TRADE_MONEY");
 					</OnLoad>
 					<OnEvent>
-						if ( event == "PLAYER_TRADE_MONEY" ) then
-							MoneyInputFrame_SetCopper(self, GetPlayerTradeMoney());
-						end
+						MoneyInputFrame_SetCopper(self, GetPlayerTradeMoney());
 					</OnEvent>
 				</Scripts>
 			</Frame>
@@ -589,9 +573,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEvent>
-				TradeFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="TradeFrame_OnEvent"/>
 			<OnShow>
 				TradeFrame_OnShow(self);
 				PlaySound("igCharacterInfoOpen");
@@ -600,12 +582,8 @@
 				TradeFrame_OnHide();
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
-			<OnLoad>
-				TradeFrame_OnLoad(self);
-			</OnLoad>
-			<OnMouseUp>
-				TradeFrame_OnMouseUp();
-			</OnMouseUp>
+			<OnLoad function="TradeFrame_OnLoad"/>
+			<OnMouseUp function="TradeFrame_OnMouseUp"/>
 		</Scripts>
 	</Frame>
 </Ui>

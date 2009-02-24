@@ -46,7 +46,7 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 		self.manabar.capNumericDisplay = true;
 	end
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
-	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player" or unit == "pet"));
+	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player" or unit == "pet" or unit == "vehicle"));
 	UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
 	UnitFrame_Update(self);
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -93,7 +93,9 @@ function UnitFrame_Update (self)
 end
 
 function UnitFramePortrait_Update (self)
-	SetPortraitTexture(self.portrait, self.unit);
+	if ( self.portrait ) then
+		SetPortraitTexture(self.portrait, self.unit);
+	end
 end
 
 function UnitFrame_OnEvent(self, event, ...)
@@ -109,8 +111,8 @@ function UnitFrame_OnEvent(self, event, ...)
 			UnitFramePortrait_Update(self);
 		end
 	elseif ( event == "UNIT_DISPLAYPOWER" ) then
-		if ( arg1 == unit ) then
-			UnitFrame_UpdateManaType(self);
+		if ( arg1 == unit and self.manabar ) then
+			UnitFrameManaBar_UpdateType(self.manabar);
 		end
 	end
 end
@@ -151,39 +153,41 @@ function UnitFrame_UpdateTooltip (self)
 	GameTooltipTextLeft1:SetTextColor(r, g, b);
 end
 
-function UnitFrame_UpdateManaType (unitFrame)
-	assert(unitFrame);
-	if ( not unitFrame.manabar ) then
-		if ( unitFrame.manaBar ) then
-			unitFrame.manabar = unitFrame.manaBar;
-		else
-			return;
-		end
+function UnitFrameManaBar_UpdateType (manaBar)
+	local unitFrame = manaBar:GetParent();
+	if ( not manaBar ) then
+		return;
 	end
-	local powerType, powerToken = UnitPowerType(unitFrame.unit);
+	local powerType, powerToken, altR, altG, altB = UnitPowerType(manaBar.unit);
 	local prefix = getglobal(powerToken);
 	local info = PowerBarColor[powerToken];
-	if ( not info ) then
-		-- couldn't find a power token entry...default to indexing by power type or just mana if we don't have that either
-		info = PowerBarColor[powerType] or PowerBarColor["MANA"];
+	if ( info ) then
+		manaBar:SetStatusBarColor(info.r, info.g, info.b);
+	else
+		if ( not altR) then
+			-- couldn't find a power token entry...default to indexing by power type or just mana if we don't have that either
+			info = PowerBarColor[powerType] or PowerBarColor["MANA"];
+		else
+			manaBar:SetStatusBarColor(altR, altG, altB);
+		end
 	end
-	unitFrame.manabar.powerType = powerType;
-	unitFrame.manabar:SetStatusBarColor(info.r, info.g, info.b);
+	manaBar.powerType = powerType;
+	
 	-- Update the manabar text
 	if ( not unitFrame.noTextPrefix ) then
-		SetTextStatusBarTextPrefix(unitFrame.manabar, prefix);
+		SetTextStatusBarTextPrefix(manaBar, prefix);
 	end
-	TextStatusBar_UpdateTextString(unitFrame.manabar);
+	TextStatusBar_UpdateTextString(manaBar);
 
 	-- Setup newbie tooltip
 	-- FIXME: Fix this to use powerToken instead of powerType
-	if ( unitFrame.unit ~= "pet" or powerToken == "HAPPINESS" ) then
+	if ( manaBar.unit ~= "pet" or powerToken == "HAPPINESS" ) then
 	    if ( unitFrame:GetName() == "PlayerFrame" ) then
-		    unitFrame.manabar.tooltipTitle = prefix;
-		    unitFrame.manabar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR_"..powerType);
+		    manaBar.tooltipTitle = prefix;
+		    manaBar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR_"..powerType);
 	    else
-		    unitFrame.manabar.tooltipTitle = nil;
-		    unitFrame.manabar.tooltipText = nil;
+		    manaBar.tooltipTitle = nil;
+		    manaBar.tooltipText = nil;
 	    end
 	end
 end
@@ -195,6 +199,11 @@ function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpd
 
 	statusbar.unit = unit;
 	SetTextStatusBarText(statusbar, statustext);
+	
+	statusbar.frequentUpdates = frequentUpdates;
+	if ( frequentUpdates ) then
+		statusbar:RegisterEvent("VARIABLES_LOADED");
+	end	
 	if ( GetCVarBool("predictedHealth") and frequentUpdates ) then
 		statusbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 	else
@@ -216,6 +225,15 @@ end
 function UnitFrameHealthBar_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
 		TextStatusBar_OnEvent(self, event, ...);
+	elseif ( event == "VARIABLES_LOADED" ) then
+		self:UnregisterEvent("VARIABLES_LOADED");
+		if ( GetCVarBool("predictedHealth") and self.frequentUpdates ) then
+			self:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
+			self:UnregisterEvent("UNIT_HEALTH");
+		else
+			self:RegisterEvent("UNIT_HEALTH");
+			self:SetScript("OnUpdate", nil);
+		end
 	else
 		UnitFrameHealthBar_Update(self, ...);
 	end
@@ -275,6 +293,11 @@ function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdat
 	end
 	statusbar.unit = unit;
 	SetTextStatusBarText(statusbar, statustext);
+	
+	statusbar.frequentUpdates = frequentUpdates;
+	if ( frequentUpdates ) then
+		statusbar:RegisterEvent("VARIABLES_LOADED");
+	end
 	if ( GetCVarBool("predictedPower") and frequentUpdates ) then
 		statusbar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
 	else
@@ -298,6 +321,25 @@ end
 function UnitFrameManaBar_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
 		TextStatusBar_OnEvent(self, event, ...);
+	elseif ( event == "VARIABLES_LOADED" ) then
+		self:UnregisterEvent("VARIABLES_LOADED");
+		if ( GetCVarBool("predictedPower") and self.frequentUpdates ) then
+			self:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
+			self:UnregisterEvent("UNIT_MANA");
+			self:UnregisterEvent("UNIT_RAGE");
+			self:UnregisterEvent("UNIT_FOCUS");
+			self:UnregisterEvent("UNIT_ENERGY");
+			self:UnregisterEvent("UNIT_HAPPINESS");
+			self:UnregisterEvent("UNIT_RUNIC_POWER");
+		else
+			self:RegisterEvent("UNIT_MANA");
+			self:RegisterEvent("UNIT_RAGE");
+			self:RegisterEvent("UNIT_FOCUS");
+			self:RegisterEvent("UNIT_ENERGY");
+			self:RegisterEvent("UNIT_HAPPINESS");
+			self:RegisterEvent("UNIT_RUNIC_POWER");
+			self:SetScript("OnUpdate", nil);
+		end
 	else
 		UnitFrameManaBar_Update(self, ...);
 	end
@@ -321,7 +363,7 @@ function UnitFrameManaBar_Update(statusbar, unit)
 
 	if ( unit == statusbar.unit ) then
 		-- be sure to update the power type before grabbing the max power!
-		UnitFrame_UpdateManaType(statusbar:GetParent());
+		UnitFrameManaBar_UpdateType(statusbar);
 
 		local maxValue = UnitPowerMax(unit, statusbar.powerType);
 
@@ -379,16 +421,24 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 			status = UnitThreatSituation(indicator.feedbackUnit);
 		end
 
-		if ( status > 0 and IsThreatWarningEnabled() ) then
-			indicator:SetVertexColor(GetThreatStatusColor(status));
-			indicator:Show();
+		if ( IsThreatWarningEnabled() ) then
+			if (status > 0) then
+				indicator:SetVertexColor(GetThreatStatusColor(status));
+				indicator:Show();
+			else
+				indicator:Hide();
+			end
 
 			if ( numericIndicator ) then
 				if ( ShowNumericThreat() ) then
 					local isTanking, status, percentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
-					numericIndicator.text:SetText(format("%d", percentage).."%");
-					numericIndicator.bg:SetVertexColor(GetThreatStatusColor(status));
-					numericIndicator:Show();
+					if ( percentage and percentage ~= 0 ) then
+						numericIndicator.text:SetText(format("%d", percentage).."%");
+						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(status));
+						numericIndicator:Show();
+					else
+						numericIndicator:Hide();
+					end
 				else
 					numericIndicator:Hide();
 				end

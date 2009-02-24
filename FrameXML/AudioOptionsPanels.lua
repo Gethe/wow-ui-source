@@ -106,6 +106,7 @@ SoundPanelOptions = {
 	Sound_EnableAllSound = { text = "ENABLE_SOUND" },
 	Sound_ListenerAtCharacter = { text = "ENABLE_SOUND_AT_CHARACTER" },
 	Sound_EnableEmoteSounds = { text = "ENABLE_EMOTE_SOUNDS" },
+	Sound_EnablePetSounds = { text = "ENABLE_PET_SOUNDS" },
 	Sound_ZoneMusicNoDelay = { text = "ENABLE_MUSIC_LOOPING" },
 	Sound_EnableSoundWhenGameIsInBG = { text = "ENABLE_BGSOUND" },
 	Sound_EnableReverb = { text = "ENABLE_REVERB" },
@@ -430,6 +431,20 @@ function AudioOptionsVoicePanelKeyBindingButton_OnKeyDown (self, button)
 
 end
 
+function AudioOptionsVoicePanelKeyBindingButton_CancelBinding ()
+	local self = AudioOptionsVoicePanelChatMode1KeyBindingButton;
+	self:UnlockHighlight();
+	self.buttonPressed = nil;
+	AudioOptionsVoicePanelBindingOutputText:SetText("");
+	self:SetScript("OnKeyDown", nil);
+	self:SetScript("OnKeyUp", nil);
+	AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0)
+	AudioOptionsVoicePanelBindingOutput.fade = 0;
+	UIFrameFadeIn(AudioOptionsVoicePanelBindingOutput, 0); 
+	PUSH_TO_TALK_BUTTON = "";
+	PUSH_TO_TALK_MODIFIER = "";
+end
+
 function AudioOptionsVoicePanelKeyBindingButton_OnClick (self, button)
 	if ( button == "UNKNOWN" ) then
 		return;
@@ -437,23 +452,19 @@ function AudioOptionsVoicePanelKeyBindingButton_OnClick (self, button)
 	if ( not IsShiftKeyDown() and not IsControlKeyDown() and not IsAltKeyDown() ) then
 		if ( button == "LeftButton" or button == "RightButton" ) then
 			if ( self.buttonPressed ) then
-				self:UnlockHighlight();
-				self.buttonPressed = nil;
-				AudioOptionsVoicePanelBindingOutputText:SetText("");
-				self:SetScript("OnKeyDown", nil);
-				self:SetScript("OnKeyUp", nil);
+				AudioOptionsVoicePanelKeyBindingButton_CancelBinding(self);
 			else
 				self:LockHighlight();
 				self.buttonPressed = 1;
 				AudioOptionsVoicePanelBindingOutputText:SetText(CAN_BIND_PTT);
 				self:SetScript("OnKeyDown", AudioOptionsVoicePanelKeyBindingButton_OnKeyDown);
 				self:SetScript("OnKeyUp", AudioOptionsVoicePanelKeyBindingButton_OnKeyUp);
+				AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0)
+				AudioOptionsVoicePanelBindingOutput.fade = 0;
+				UIFrameFadeIn(AudioOptionsVoicePanelBindingOutput, 0); 
+				PUSH_TO_TALK_BUTTON = "";
+				PUSH_TO_TALK_MODIFIER = "";
 			end
-			AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0)
-			AudioOptionsVoicePanelBindingOutput.fade = 0;
-			UIFrameFadeIn(AudioOptionsVoicePanelBindingOutput, 0); 
-			PUSH_TO_TALK_BUTTON = "";
-			PUSH_TO_TALK_MODIFIER = "";
 			return;
 		end
 	end

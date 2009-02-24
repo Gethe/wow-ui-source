@@ -273,9 +273,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				GameTooltip_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="GameTooltip_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Frame name="PartyMemberBackground" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="true">

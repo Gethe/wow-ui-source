@@ -242,9 +242,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel()+1);
-					</OnLoad>
+					<OnLoad function="RaiseFrameLevel"/>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
 				<BarColor r="0.25" g="0.75" b="0.25"/>
@@ -323,9 +321,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(ItemTextFrame);
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
@@ -333,15 +329,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ItemTextFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				ItemTextFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				ItemTextFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="ItemTextFrame_OnLoad"/>
+			<OnEvent function="ItemTextFrame_OnEvent"/>
+			<OnUpdate function="ItemTextFrame_OnUpdate"/>
 			<OnShow>
 				PlaySound("igMainMenuOpen");
 			</OnShow>

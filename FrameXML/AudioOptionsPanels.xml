@@ -99,7 +99,7 @@
 				</Scripts>
 			</CheckButton>	
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
-				<Size x="186" y="296"/>
+				<Size x="186" y="316"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-116"/>
@@ -156,10 +156,25 @@
 						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelSoundEffects, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
-			<CheckButton name="$parentMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
+			</CheckButton>
+			<CheckButton name="$parentPetSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentEmoteSounds" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnablePetSounds";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelSoundEffects, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPetSounds" relativePoint="BOTTOMLEFT">
 						<Offset x="-8" y="2"/>
 					</Anchor>
 				</Anchors>
@@ -278,8 +293,7 @@
 					</OnLoad>
 					<OnValueChanged>
 						local prevValue = self.value;
-						self.value = value;
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						BlizzardOptionsPanel_Slider_OnValueChanged(self, value);
 						if (self:GetParent():IsShown() and self.restart and prevValue and prevValue ~= value) then
 							AudioOptionsFrame_AudioRestart();
 						end
@@ -331,9 +345,7 @@
 						GameTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, 1);
 						GameTooltip:Show();
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Slider name="$parentSoundChannels" inherits="OptionsSliderTemplate">
@@ -471,10 +483,7 @@
 						self.cvar = "Sound_SFXVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.value = value;
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-					</OnValueChanged>
+					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
 				</Scripts>	
 			</Slider>				
 			<Slider name="$parentMusicVolume" inherits="OptionsSliderTemplate">
@@ -510,10 +519,7 @@
 						self.cvar = "Sound_MusicVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.value = value;
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-					</OnValueChanged>
+					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
 				</Scripts>	
 			</Slider>
 			<Slider name="$parentAmbienceVolume" inherits="OptionsSliderTemplate">
@@ -549,17 +555,12 @@
 						self.cvar = "Sound_AmbienceVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.value = value;
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-					</OnValueChanged>
+					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				AudioOptionsSoundPanel_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="AudioOptionsSoundPanel_OnLoad"/>
 		</Scripts>
 	</Frame>
 
@@ -688,9 +689,7 @@
 							GameTooltip:Show();
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>			
 			<Slider name="$parentMicrophoneVolume" inherits="OptionsSliderTemplate">
@@ -789,18 +788,13 @@
 								GameTooltip:SetText(VOICE_MIC_TEST_RECORD, nil, nil, nil, nil, 1);
 								_G[self:GetName().."Texture"]:SetVertexColor(1, 1, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
 							<OnClick>
 								_G[self:GetName().."Texture"]:SetVertexColor(0.5, 0.5, 0.5);								
 								PlaySound("gsTitleOptionExit");
 								VoiceChat_RecordLoopbackSound(5);
 								self.clicked = 1;
 							</OnClick>
-							<OnUpdate>
-								RecordLoopbackSoundButton_OnUpdate(self, elapsed);
-							</OnUpdate>
+							<OnUpdate function="RecordLoopbackSoundButton_OnUpdate"/>
 							<OnLeave>
 								_G[self:GetName().."Texture"]:SetVertexColor(1, 0, 0);
 								GameTooltip:Hide();
@@ -875,12 +869,8 @@
 									</Anchor>
 								</Anchors>
 								<Scripts>
-									<OnLoad>
-										LoopbackVUMeter_OnLoad(self);
-									</OnLoad>
-									<OnUpdate>
-										LoopbackVUMeter_OnUpdate(self, elapsed);
-									</OnUpdate>
+									<OnLoad function="LoopbackVUMeter_OnLoad"/>
+									<OnUpdate function="LoopbackVUMeter_OnUpdate"/>
 								</Scripts>
 								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 							</StatusBar>
@@ -930,9 +920,7 @@
 							GameTooltip:Show();
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<!-- Key Binding Selection -->
@@ -982,21 +970,11 @@
 								self:SetScript("OnKeyUp", nil);
 								self:SetScript("OnKeyDown", nil);
 							</OnLoad>
-							<OnEnter>
-								AudioOptionsVoicePanelKeyBindingButton_OnEnter(self);
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-							<OnClick>
-								AudioOptionsVoicePanelKeyBindingButton_OnClick(self, button);
-							</OnClick>
-							<OnKeyUp>
-								AudioOptionsVoicePanelKeyBindingButton_OnKeyUp(self, button)
-							</OnKeyUp>
-							<OnKeyDown>
-								AudioOptionsVoicePanelKeyBindingButton_OnKeyDown(self, button)
-							</OnKeyDown>
+							<OnEnter function="AudioOptionsVoicePanelKeyBindingButton_OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnClick function="AudioOptionsVoicePanelKeyBindingButton_OnClick"/>
+							<OnKeyUp function="AudioOptionsVoicePanelKeyBindingButton_OnKeyUp"/>
+							<OnKeyDown function="AudioOptionsVoicePanelKeyBindingButton_OnKeyDown"/>
 						</Scripts>
 					</Button>
 					<CheckButton name="AudioOptionsVoicePanelPushToTalkSound" inherits="AudioOptionsCheckButtonTemplate">
@@ -1030,9 +1008,7 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnUpdate>
-								AudioOptionsVoicePanelBindingOutput_OnUpdate(self, elapsed);
-							</OnUpdate>
+							<OnUpdate function="AudioOptionsVoicePanelBindingOutput_OnUpdate"/>
 						</Scripts>
 					</Frame>					
 				</Frames>
@@ -1114,9 +1090,7 @@
 							GameTooltip:Show();
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Slider name="$parentSpeakerVolume" inherits="OptionsSliderTemplate">
@@ -1255,10 +1229,7 @@
 						self.cvar = "ChatSoundVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());					
 					</OnLoad>
-					<OnValueChanged>
-						self.value = value;
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-					</OnValueChanged>
+					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
 			<Slider name="$parentMusicFade" inherits="OptionsSliderTemplate">
@@ -1296,10 +1267,7 @@
 						self.cvar = "ChatMusicVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());					
 					</OnLoad>
-					<OnValueChanged>
-						self.value = value;
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-					</OnValueChanged>
+					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
 			<Slider name="$parentAmbienceFade" inherits="OptionsSliderTemplate">
@@ -1337,17 +1305,13 @@
 						self.cvar = "ChatAmbienceVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());					
 					</OnLoad>
-					<OnValueChanged>
-						self.value = value;
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-					</OnValueChanged>
+					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
 		</Frames>		
 		<Scripts>
-			<OnLoad>
-				AudioOptionsVoicePanel_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="AudioOptionsVoicePanel_OnLoad"/>
+			<OnHide function="AudioOptionsVoicePanelKeyBindingButton_CancelBinding"/>
 		</Scripts>
 	</Frame>
 

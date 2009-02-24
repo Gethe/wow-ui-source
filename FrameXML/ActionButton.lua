@@ -14,7 +14,9 @@ VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 
 function ActionButtonDown(id)
 	local button;
-	if ( BonusActionBarFrame:IsShown() ) then
+	if ( VehicleMenuBar:IsShown() and id <= VEHICLE_MAX_ACTIONBUTTONS ) then
+		button = _G["VehicleMenuBarActionButton"..id];
+	elseif ( BonusActionBarFrame:IsShown() ) then
 		button = _G["BonusActionButton"..id];
 	else
 		button = _G["ActionButton"..id];
@@ -26,7 +28,9 @@ end
 
 function ActionButtonUp(id)
 	local button;
-	if ( BonusActionBarFrame:IsShown() ) then
+	if ( VehicleMenuBar:IsShown() and id <= VEHICLE_MAX_ACTIONBUTTONS ) then
+		button = _G["VehicleMenuBarActionButton"..id];
+	elseif ( BonusActionBarFrame:IsShown() ) then
 		button = _G["BonusActionButton"..id];
 	else
 		button = _G["ActionButton"..id];
@@ -222,12 +226,12 @@ function ActionButton_Update (self)
 		border:Hide();
 	end
 
-	-- Update Macro Text
-	local macroName = _G[name.."Name"];
+	-- Update Action Text
+	local actionName = _G[name.."Name"];
 	if ( not IsConsumableAction(action) and not IsStackableAction(action) ) then
-		macroName:SetText(GetActionText(action));
+		actionName:SetText(GetActionText(action));
 	else
-		macroName:SetText("");
+		actionName:SetText("");
 	end
 
 	-- Update icon and hotkey text
@@ -335,7 +339,7 @@ end
 function ActionButton_OnEvent (self, event, ...)
 	local arg1 = ...;
 	if ( event == "ACTIONBAR_SLOT_CHANGED" ) then
-		if ( arg1 == 0 or arg1 == self.action ) then
+		if ( arg1 == 0 or arg1 == tonumber(self.action) ) then
 			ActionButton_Update(self);
 		end
 		return;

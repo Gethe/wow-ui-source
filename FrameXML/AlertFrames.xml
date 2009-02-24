@@ -3,7 +3,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 
 <Script file="AlertFrames.lua"/>
 
-<Frame name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true">
+<Button name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true">
 	<Size>
 		<AbsDimension x="300" y="88"/>
 	</Size>
@@ -43,6 +43,30 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Size x="240" y="16"/>
 			</FontString>
 		</Layer>
+		<Layer level="OVERLAY">
+			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD">
+				<Size>
+					<AbsDimension x="400" y="171"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+			</Texture>
+			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD">
+				<Size>
+					<AbsDimension x="67" y="72"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+			</Texture>
+		</Layer>		
 	</Layers>
 	<Frames>
 		<Frame name="$parentIcon" inherits="AchievementIconFrameTemplate">
@@ -177,67 +201,20 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Layer>
 			</Layers>				
 			<Scripts>
-				<OnLoad>
-					AchievementShield_OnLoad(self);
-				</OnLoad>
+				<OnLoad function="AchievementShield_OnLoad"/>
 			</Scripts>
 		</Frame>
-		<Button name="$parentButton">
-			<Anchors>
-				<Anchor point="TOPLEFT"/>
-				<Anchor point="BOTTOMRIGHT"/>
-			</Anchors>
-			<Layers>
-				<Layer level="OVERLAY">
-					<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD">
-						<Size>
-							<AbsDimension x="400" y="171"/>
-						</Size>
-						<Anchors>
-							<Anchor point="CENTER">
-								<Offset x="0" y="0"/>
-							</Anchor>
-						</Anchors>
-						<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
-					</Texture>
-					<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD">
-						<Size>
-							<AbsDimension x="67" y="72"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="0" y="0"/>
-							</Anchor>
-						</Anchors>
-						<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
-					</Texture>
-				</Layer>
-			</Layers>
-			<Scripts>
-				<OnLoad>
-					self:RegisterForClicks("LeftButtonUp");
-				</OnLoad>
-				<OnClick>
-					AchievementAlertFrame_OnClick(self:GetParent());
-				</OnClick>
-			</Scripts>
-		</Button>
 	</Frames>
 	<Scripts>
-		<OnLoad>
-			AchievementAlertFrame_OnLoad(self)
-		</OnLoad>
+		<OnLoad function="AchievementAlertFrame_OnLoad"/>
+		<OnClick function="AchievementAlertFrame_OnClick"/>
 	</Scripts>
-</Frame>
+</Button>
 
 <Frame name="AlertFrame" parent="UIParent" hidden="true">
 	<Scripts>
-		<OnLoad>
-			AlertFrame_OnLoad(self);
-		</OnLoad>
-		<OnEvent>
-			AlertFrame_OnEvent(self, event, ...);
-		</OnEvent>
+		<OnLoad function="AlertFrame_OnLoad"/>
+		<OnEvent function="AlertFrame_OnEvent"/>
 	</Scripts>
 </Frame>
 

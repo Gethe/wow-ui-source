@@ -174,9 +174,7 @@
 							<OnLoad>
 								ClassTrainerExpandTabMiddle:SetWidth(self:GetTextWidth() + 24);
 							</OnLoad>
-							<OnClick>
-								ClassTrainerCollapseAllButton_OnClick(self);
-							</OnClick>
+							<OnClick function="ClassTrainerCollapseAllButton_OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -190,12 +188,8 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						ClassTrainerFrameFilterDropDown_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						ClassTrainerFrameFilterDropDown_OnLoad(self);
-					</OnShow>
+					<OnLoad function="ClassTrainerFrameFilterDropDown_OnLoad"/>
+					<OnShow function="ClassTrainerFrameFilterDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<Frame name="ClassTrainerSkillHighlightFrame" hidden="true">
@@ -326,13 +320,6 @@
 					<OnVerticalScroll>
 						FauxScrollFrame_OnVerticalScroll(self, offset, CLASS_TRAINER_SKILL_HEIGHT, ClassTrainerFrame_Update)
 					</OnVerticalScroll>
-					<OnScrollRangeChanged>
-						-- HACK!!
-						-- Derek, I put this in here to fix bug #38744
-						-- may be the right solution, maybe not...
-						-- This function was screwing everything up for some reason
-						--ScrollFrame_OnScrollRangeChanged(arg2);
-					</OnScrollRangeChanged>
 				</Scripts>
 			</ScrollFrame>
 			<Frame name="ClassTrainerMoneyFrame" inherits="SmallMoneyFrameTemplate">
@@ -455,9 +442,7 @@
 										GameTooltip:SetTrainerService(ClassTrainerFrame.selectedService);
 										GameTooltip:Show();
 									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
+									<OnLeave function="GameTooltip_Hide"/>
 									<OnClick>
 										HandleModifiedItemClick(GetTrainerServiceItemLink(ClassTrainerFrame.selectedService));
 									</OnClick>
@@ -482,7 +467,7 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button name="ClassTrainerTrainButton" inherits="UIPanelButtonTemplate" text="TRAIN">
+			<Button name="ClassTrainerTrainButton" inherits="UIPanelButtonTemplate" text="TRAIN" jumpNavigateStart="true">
 				<Size>
 					<AbsDimension x="80" y="22"/>
 				</Size>
@@ -494,9 +479,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						ClassTrainerTrainButton_OnClick(self, button);
-					</OnClick>
+					<OnClick function="ClassTrainerTrainButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="ClassTrainerCancelButton" inherits="UIPanelButtonTemplate" text="EXIT">
@@ -511,9 +494,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(self:GetParent());
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<Button name="ClassTrainerFrameCloseButton" inherits="UIPanelCloseButton">
@@ -527,9 +508,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ClassTrainerFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="ClassTrainerFrame_OnLoad"/>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
 			</OnShow>
@@ -541,12 +520,7 @@
 					StaticPopup_Hide("CONFIRM_PROFESSION");
 				end
 			</OnHide>
-			<OnEvent>
-				ClassTrainerFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnMouseWheel>
-				return;			
-			</OnMouseWheel>
+			<OnEvent function="ClassTrainerFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

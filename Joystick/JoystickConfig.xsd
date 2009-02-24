@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 sp2 U (http://www.altova.com) by Sam Lantinga (Blizzard Entertainment) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/" xmlns:ui="http://www.blizzard.com/wow/ui/" targetNamespace="http://www.blizzard.com/wow/ui/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="PlatformType">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="windows"/>
+			<xs:enumeration value="mac"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="Joysticks">
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded">
+				<xs:element ref="Joystick"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="JoystickType">
+		<xs:sequence>
+			<xs:element ref="Name" maxOccurs="unbounded"/>
+			<xs:element ref="Stick" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="Slider" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="Hat" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="Mouse" minOccurs="0"/>
+			<xs:element ref="DefaultBindings" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="platform" type="PlatformType" use="optional"/>
+	</xs:complexType>
+	<xs:element name="Joystick">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="JoystickType"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Name">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Stick">
+		<xs:complexType>
+			<xs:attribute name="index" type="xs:integer" use="required"/>
+			<xs:attribute name="axisX" type="xs:integer" use="required"/>
+			<xs:attribute name="axisY" type="xs:integer" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Slider">
+		<xs:complexType>
+			<xs:attribute name="axis" type="xs:integer" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Hat">
+		<xs:complexType>
+			<xs:attribute name="index" type="xs:integer" use="optional" default="1"/>
+			<xs:attribute name="button1" type="xs:integer" use="required"/>
+			<xs:attribute name="button2" type="xs:integer" use="required"/>
+			<xs:attribute name="button3" type="xs:integer" use="required"/>
+			<xs:attribute name="button4" type="xs:integer" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Mouse">
+		<xs:complexType>
+			<xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="stickIndex" type="xs:integer" use="optional" default="1"/>
+			<xs:attribute name="buttonLeft" type="xs:integer" use="optional" default="1"/>
+			<xs:attribute name="buttonRight" type="xs:integer" use="optional" default="2"/>
+			<xs:attribute name="speedScale" type="xs:float" use="optional" default="1.5"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="DefaultBindings"/>
+</xs:schema>

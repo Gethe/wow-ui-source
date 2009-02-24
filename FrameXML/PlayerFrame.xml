@@ -246,9 +246,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnUpdate>
-								VoiceChat_OnUpdate(self, elapsed);
-							</OnUpdate>
+							<OnUpdate function="VoiceChat_OnUpdate"/>
 						</Scripts>
 					</Button>
 					<Frame name="PlayerFrameReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
@@ -263,9 +261,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								self:SetFrameLevel(self:GetFrameLevel() + 2);
-							</OnLoad>
+							<OnLoad function="RaiseFrameLevelByTwo"/>
 						</Scripts>
 					</Frame>
 					<Frame name="PlayerPVPIconHitArea" enableMouse="true" hidden="true">
@@ -279,9 +275,7 @@
 							<OnEnter>
 								GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>							
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 					<Frame name="PlayerStatusGlow" hidden="true">
@@ -349,9 +343,7 @@
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 							</OnEnter>						
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -377,9 +369,7 @@
 					<OnMouseUp>
 						self:GetParent():Click(button);
 					</OnMouseUp>
-					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(self, value);
-					</OnValueChanged>
+					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
@@ -420,9 +410,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						PlayerFrameDropDown_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="PlayerFrameDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<Frame name="PlayerFrameGroupIndicator" hidden="true">
@@ -488,28 +476,12 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				UnitFrame_Initialize(self, "player", PlayerName, PlayerPortrait,
-									 PlayerFrameHealthBar, PlayerFrameHealthBarText, 
-									 PlayerFrameManaBar, PlayerFrameManaBarText,
-				                     PlayerFrameFlash);
-				PlayerFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				PlayerFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				PlayerFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnEnter>
-				UnitFrame_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				UnitFrame_OnLeave(self);
-			</OnLeave>
-			<OnReceiveDrag>
-				PlayerFrame_OnReceiveDrag(self);
-			</OnReceiveDrag>
+			<OnLoad function="PlayerFrame_OnLoad"/>
+			<OnEvent function="PlayerFrame_OnEvent"/>
+			<OnUpdate function="PlayerFrame_OnUpdate"/>
+			<OnEnter function="UnitFrame_OnEnter"/>
+			<OnLeave function="UnitFrame_OnLeave"/>
+			<OnReceiveDrag function="PlayerFrame_OnReceiveDrag"/>
 		</Scripts>
 	</Button>
 </Ui>

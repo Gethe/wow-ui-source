@@ -88,7 +88,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame enableMouse="true">
+			<Button enableMouse="true" parentKey="LinkButton">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentIcon">
 						<Offset x="0" y="0"/>
@@ -112,19 +112,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							GameTooltip:SetCurrencyToken(self:GetParent().index);
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick function="TokenButtonLinkButton_OnClick"/>
 				</Scripts>
-			</Frame>
+			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TokenButton_OnLoad(self);
-			</OnLoad>
-			<OnClick>
-				TokenButton_OnClick(self);
-			</OnClick>
+			<OnLoad function="TokenButton_OnLoad"/>
+			<OnClick function="TokenButton_OnClick"/>
 		</Scripts>
 		<ButtonText>
 			<Anchors>
@@ -266,12 +261,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
             </Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TokenFrame_OnLoad();
-			</OnLoad>
-			<OnShow>
-				TokenFrame_OnShow(self);
-			</OnShow>
+			<OnLoad function="TokenFrame_OnLoad"/>
+			<OnShow function="TokenFrame_OnShow"/>
 			<OnHide>
 				TokenFramePopup:Hide();
 			</OnHide>
@@ -335,6 +326,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							SetCurrencyUnused(TokenFrame.selectedID, 0);
 						end
 						TokenFrame_Update();
+						TokenFramePopup_CloseIfHidden();
 						BackpackTokenFrame_Update();
 						ManageBackpackTokenFrame();
 					</OnClick>
@@ -342,9 +334,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(TOKEN_MOVE_TO_UNUSED, nil, nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentBackpackCheckBox" inherits="OptionsSmallCheckButtonTemplate">
@@ -382,9 +372,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(TOKEN_SHOW_ON_BACKPACK, nil, nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</CheckButton>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
@@ -409,13 +397,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</EdgeSize>
 		</Backdrop>
 	</Frame>
-	<Frame name="BackpackTokenTemplate" hidden="true" virtual="true">
+	<Button name="BackpackTokenTemplate" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="50" y="12"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				
 				<FontString name="$parentCount" inherits="GameFontHighlightSmall" justifyH="RIGHT">
 					<Size x="38" y="10"/>
 					<Anchors>
@@ -456,11 +443,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					GameTooltip:SetBackpackToken(self:GetID());
 				end
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick function="BackpackTokenButton_OnClick"/>
 		</Scripts>
-	</Frame>
+	</Button>
 	<Frame name="BackpackTokenFrame" parent="UIParent">
 		<Size>
 			<AbsDimension x="183" y="32"/>
@@ -480,34 +466,27 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentToken1" inherits="BackpackTokenTemplate" id="1">
+			<Button name="$parentToken1" inherits="BackpackTokenTemplate" id="1">
 				<Anchors>
 					<Anchor point="LEFT">
 						<Offset x="13" y="0"/>
 					</Anchor>
 				</Anchors>
-			</Frame>
-			<Frame name="$parentToken2" inherits="BackpackTokenTemplate" id="2">
+			</Button>
+			<Button name="$parentToken2" inherits="BackpackTokenTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentToken1" relativePoint="RIGHT">
 						<Offset x="2" y="0"/>
 					</Anchor>
 				</Anchors>
-			</Frame>
-			<Frame name="$parentToken3" inherits="BackpackTokenTemplate" id="3">
+			</Button>
+			<Button name="$parentToken3" inherits="BackpackTokenTemplate" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentToken2" relativePoint="RIGHT">
 						<Offset x="2" y="0"/>
 					</Anchor>
 				</Anchors>
-			</Frame>
-			<!--<Frame name="$parentToken4" inherits="BackpackTokenTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentToken3" relativePoint="RIGHT">
-						<Offset x="2" y="0"/>
-					</Anchor>
-				</Anchors>
-			</Frame>-->
+			</Button>
 		</Frames>
 	</Frame>
 </Ui>

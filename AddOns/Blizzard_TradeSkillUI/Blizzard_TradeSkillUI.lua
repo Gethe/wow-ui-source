@@ -4,6 +4,14 @@ MAX_TRADE_SKILL_REAGENTS = 8;
 TRADE_SKILL_HEIGHT = 16;
 TRADE_SKILL_TEXT_WIDTH = 275;
 
+TradeSkillTypeSuffix = {
+["optimal"] = " [+++]",
+["medium"] = " [++]",
+["easy"] = " [+]",
+["trivial"] = "", 
+["header"] = "",
+}
+
 TradeSkillTypeColor = { };
 TradeSkillTypeColor["optimal"]	= { r = 1.00, g = 0.50, b = 0.25,	font = GameFontNormalLeftOrange };
 TradeSkillTypeColor["medium"]	= { r = 1.00, g = 1.00, b = 0.00,	font = GameFontNormalLeftYellow };
@@ -145,6 +153,10 @@ function TradeSkillFrame_Update()
 				skillButton.r = color.r;
 				skillButton.g = color.g;
 				skillButton.b = color.b;
+			end
+			
+			if ( ENABLE_COLORBLIND_MODE == "1" and skillName ) then
+				skillName = skillName .. (TradeSkillTypeSuffix[skillType] or "");
 			end
 			
 			skillButton:SetID(skillIndex);

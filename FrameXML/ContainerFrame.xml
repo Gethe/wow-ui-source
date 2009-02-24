@@ -28,27 +28,16 @@
 					ContainerFrameItemButton_OnClick(self, button);
 				end
 			</OnClick>
-			<OnLoad>
-				ContainerFrameItemButton_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				ContainerFrameItemButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
+			<OnLoad function="ContainerFrameItemButton_OnLoad"/>
+			<OnEnter function="ContainerFrameItemButton_OnEnter"/>
+			<OnLeave function="GameTooltip_HideResetCursor"/>
 			<OnHide>
 				if ( self.hasStackSplit and (self.hasStackSplit == 1) ) then
 					StackSplitFrame:Hide();
 				end
 			</OnHide>
-			<OnDragStart>
-				ContainerFrameItemButton_OnClick(self, "LeftButton");
-			</OnDragStart>
-			<OnReceiveDrag>
-				ContainerFrameItemButton_OnClick(self, "LeftButton");
-			</OnReceiveDrag>
+			<OnDragStart function="ContainerFrameItemButton_OnDrag"/>
+			<OnReceiveDrag function="ContainerFrameItemButton_OnDrag"/>
 		</Scripts>
 	</Button>
 	<Frame name="ContainerFrameTemplate" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
@@ -184,7 +173,7 @@
 			<Button name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
 			<Button name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
 
-			<Button name="$parentPortraitButton">
+			<Button name="$parentPortraitButton" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="40" y="40"/>
 				</Size>
@@ -215,9 +204,7 @@
 							end
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
@@ -236,18 +223,10 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnEvent>
-				ContainerFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnLoad>
-				ContainerFrame_OnLoad(self);
-			</OnLoad>
-			<OnHide>
-				ContainerFrame_OnHide(self);
-			</OnHide>
-			<OnShow>
-				ContainerFrame_OnShow(self);
-			</OnShow>
+			<OnEvent function="ContainerFrame_OnEvent"/>
+			<OnLoad function="ContainerFrame_OnLoad"/>
+			<OnHide function="ContainerFrame_OnHide"/>
+			<OnShow function="ContainerFrame_OnShow"/>
 		</Scripts>
 	</Frame>
 	<Frame name="ContainerFrame1" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>

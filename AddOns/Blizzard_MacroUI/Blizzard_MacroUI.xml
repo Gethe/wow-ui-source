@@ -6,9 +6,7 @@
 			<OnLoad>
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick>
-				MacroButton_OnClick(self, button);
-			</OnClick>
+			<OnClick function="MacroButton_OnClick"/>
 			<OnDragStart>
 				PickupMacro(MacroFrame.macroBase + self:GetID());
 			</OnDragStart>
@@ -16,9 +14,7 @@
 	</CheckButton>
 	<CheckButton name="MacroPopupButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick>
-				MacroPopupButton_OnClick(self, button);	
-			</OnClick>
+			<OnClick function="MacroPopupButton_OnClick"/>
 		</Scripts>
 	</CheckButton>
 	<Frame name="MacroFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
@@ -231,9 +227,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						ScrollFrame_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="ScrollFrame_OnLoad"/>
 				</Scripts>
 				<ScrollChild>
 					<Frame name="MacroButtonContainer">
@@ -242,9 +236,7 @@
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								MacroButtonContainer_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="MacroButtonContainer_OnLoad"/>
 						</Scripts>
 					</Frame>
 				</ScrollChild>
@@ -261,9 +253,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						MacroEditButton_OnClick(self, button);
-					</OnClick>
+					<OnClick function="MacroEditButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<ScrollFrame name="MacroFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
@@ -292,15 +282,11 @@
 
 								ScrollingEdit_OnTextChanged(self, self:GetParent());
 							</OnTextChanged>
-							<OnCursorChanged>
-								ScrollingEdit_OnCursorChanged(self, x, y, w, h);
-							</OnCursorChanged>
+							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 							<OnUpdate>
 								ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
 							</OnUpdate>
-							<OnEscapePressed>
-								self:ClearFocus();
-							</OnEscapePressed>
+							<OnEscapePressed function="EditBox_ClearFocus"/>
 						</Scripts>
 						<FontString inherits="GameFontHighlightSmall"/>
 					</EditBox>
@@ -425,9 +411,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						MacroNewButton_OnClick(self, button);
-					</OnClick>
+					<OnClick function="MacroNewButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="MacroExitButton" inherits="UIPanelButtonTemplate" text="EXIT">
@@ -442,9 +426,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(self:GetParent());
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<Button name="MacroFrameCloseButton" inherits="UIPanelCloseButton">
@@ -458,20 +440,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				MacroFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				MacroFrame_OnShow(self);
-				UpdateMicroButtons();
-			</OnShow>
-			<OnHide>
-				MacroFrame_OnHide(self);
-				UpdateMicroButtons();
-			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
+			<OnLoad function="MacroFrame_OnLoad"/>
+			<OnShow function="MacroFrame_OnShow"/>
+			<OnHide function="MacroFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Frame name="MacroPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
@@ -603,9 +574,7 @@
 						MacroPopupOkayButton_Update();
 						MacroFrameSelectedMacroName:SetText(self:GetText());
 					</OnTextChanged>
-					<OnEscapePressed>
-						MacroPopupFrame_CancelEdit();
-					</OnEscapePressed>
+					<OnEscapePressed function="MacroPopupFrame_CancelEdit"/>
 					<OnEnterPressed>
 						if ( MacroPopupOkayButton:IsEnabled() ~= 0 ) then
 							MacroPopupOkayButton_OnClick(MacroPopupOkayButton);
@@ -849,15 +818,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				MacroPopupFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				MacroPopupFrame_OnHide(self);
-			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
+			<OnShow function="MacroPopupFrame_OnShow"/>
+			<OnHide function="MacroPopupFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

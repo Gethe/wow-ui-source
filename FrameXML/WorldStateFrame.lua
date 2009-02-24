@@ -301,15 +301,17 @@ function WorldStateAlwaysUpFrame_StopBGChatFilter (self)
 	self:SetScript("OnUpdate", nil);
 end
 
-function WorldStateAlwaysUpFrame_FilterChatMsgSystem (message)
+function WorldStateAlwaysUpFrame_FilterChatMsgSystem (...)
 	local playerName;
+	
+	local message = ...;
 	
 	if ( GetBattlefieldWinner() ) then
 		-- Filter out leaving messages when the battleground is over.
 		for i, str in next, FILTERED_BG_CHAT_SUBTRACT do
 			playerName = string.match(message, str);
 			if ( playerName ) then
-				return true;
+				return true, ...;
 			end
 		end
 	elseif ( WORLDSTATEALWAYSUPFRAME_TIMESINCESTART < WORLDSTATEALWAYSUPFRAME_TIMETORUN ) then
@@ -320,7 +322,7 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (message)
 				-- Trim realm names
 				playerName = string.match(playerName, "([^%-]+)%-?.*");
 				ADDED_PLAYERS[playerName] = true;
-				return true;
+				return true, ...;
 			end
 		end
 		
@@ -329,24 +331,25 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (message)
 			if ( playerName ) then
 				playerName = string.match(playerName, "([^%-]+)%-?.*");
 				SUBTRACTED_PLAYERS[playerName] = true;
-				return true;
+				return true, ...;
 			end
 		end
 	end
-	return false;
+	return false, ...;
 end
 
 local matchString = string.gsub(LOOT_ITEM_CREATED_SELF, "%%s%.", ".+")
 
-function WorldStateAlwaysUpFrame_FilterChatMsgLoot (message)
+function WorldStateAlwaysUpFrame_FilterChatMsgLoot (...)
 	if ( GetBattlefieldWinner() ) then
+		local message = ...;
 		-- Suppress loot messages for other players at the end of battlefields and arenas
 		if ( not string.match(message, matchString) ) then
-			return true;
+			return true, ...;
 		end
 	end
 	
-	return false;
+	return false, ...;
 end
 
 function WorldStateFrame_ToggleBattlefieldMinimap()

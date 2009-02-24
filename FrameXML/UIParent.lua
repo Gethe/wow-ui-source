@@ -49,7 +49,7 @@ UIPanelWindows["MinigameFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["LFGParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["ArenaFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["ChatConfigFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["PVPFrame"] =			{ area = "left",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["PVPParentFrame"] =			{ area = "left",	pushable = 0,	whileDead = 1 };
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -161,7 +161,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("INSTANCE_BOOT_START");
 	self:RegisterEvent("INSTANCE_BOOT_STOP");
 	self:RegisterEvent("CONFIRM_TALENT_WIPE");
-	self:RegisterEvent("CONFIRM_PET_UNLEARN");
 	self:RegisterEvent("CONFIRM_BINDER");
 	self:RegisterEvent("CONFIRM_SUMMON");
 	self:RegisterEvent("CANCEL_SUMMON");
@@ -326,6 +325,10 @@ function GMChatFrame_LoadUI(...)
 	end
 end
 
+function Arena_LoadUI()
+	UIParentLoadAddOn("Blizzard_ArenaUI");
+end
+
 function ShowMacroFrame()
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
@@ -347,16 +350,24 @@ function ToggleAchievementFrame(stats)
 end
 
 function ToggleTalentFrame()
-	if ( MISTER_SPARKLE and MISTER_SPARKLE ~= 0 ) then
-		return;
-	end
-	if ( UnitLevel("player") < 10 ) then
+	if ( UnitLevel("player") < SHOW_TALENT_LEVEL ) then
 		return;
 	end
 
 	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_Toggle ) then
 		PlayerTalentFrame_Toggle();
+	end
+end
+
+function OpenGlyphFrame()
+	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL ) then
+		return;
+	end
+
+	GlyphFrame_LoadUI();
+	if ( GlyphFrame_Open ) then
+		GlyphFrame_Open();
 	end
 end
 
@@ -378,6 +389,58 @@ function ToggleCalendar()
 	Calendar_LoadUI();
 	if ( Calendar_Toggle ) then
 		Calendar_Toggle();
+	end
+end
+
+function ToggleLFGParentFrame(tab)
+	local hideLFGParent;
+	if ( LFGParentFrame:IsShown() and tab == LFGParentFrame.selectedTab and LFGParentFrameTab1:IsShown() ) then
+		hideLFGParent = 1;
+	end
+	if ( LFGParentFrame:IsShown() and not tab ) then
+		hideLFGParent = 1;
+	end
+
+	if ( hideLFGParent ) then
+		HideUIPanel(LFGParentFrame);
+	else
+		ShowUIPanel(LFGParentFrame);
+		-- Decide which subframe to show
+		if ( not LFGParentFrame_UpdateTabs() ) then
+			local _, _, _, _, _, _, _, _, _, queued, lfgStatus, lfmStatus = GetLookingForGroup();
+			if ( lfmStatus or lfgStatus or tab ) then
+				if ( tab ) then
+					if ( tab == 1 ) then
+						LFGParentFrameTab1_OnClick();
+					elseif ( tab == 2 ) then
+						LFGParentFrameTab2_OnClick();
+					end
+				else
+					if ( lfgStatus ) then
+						LFGParentFrameTab1_OnClick();
+					else
+						LFGParentFrameTab2_OnClick();
+					end
+				end
+			else
+				LFGFrame:Hide();
+				LFMFrame:Hide();
+				LFGParentFrameTab1:Hide();
+				LFGParentFrameTab2:Hide();
+			end
+		end
+	end
+	UpdateMicroButtons();
+end
+
+function ToggleHelpFrame()
+	if ( HelpFrame:IsShown() ) then
+		HideUIPanel(HelpFrame);
+	else
+		StaticPopup_Hide("HELP_TICKET");
+		StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
+		ShowUIPanel(HelpFrame);
+		HelpFrame_ShowFrame(HELPFRAME_START_PAGE);
 	end
 end
 
@@ -610,6 +673,11 @@ function UIParent_OnEvent(self, event, ...)
 
 		-- Fix for Bug 124392
 		StaticPopup_Hide("LEVEL_GRANT_PROPOSED");
+		
+		local _, instanceType = IsInInstance();
+		if ( instanceType == "arena" ) then
+			Arena_LoadUI();
+		end
 		return;
 	end
 	if ( event == "RAID_ROSTER_UPDATE" ) then
@@ -780,13 +848,12 @@ function UIParent_OnEvent(self, event, ...)
 		local dialog = StaticPopup_Show("CONFIRM_TALENT_WIPE");
 		if ( dialog ) then
 			MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg1);
-		end
-		return;
-	end
-	if ( event == "CONFIRM_PET_UNLEARN" ) then
-		local dialog = StaticPopup_Show("CONFIRM_PET_UNLEARN");
-		if ( dialog ) then
-			MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg1);
+			-- open the talent UI to the player's active talent group...just so the player knows
+			-- exactly which talent spec he is wiping
+			TalentFrame_LoadUI();
+			if ( PlayerTalentFrame_Open ) then
+				PlayerTalentFrame_Open(GetActiveTalentGroup());
+			end
 		end
 		return;
 	end
@@ -948,9 +1015,10 @@ function UIParent_OnEvent(self, event, ...)
 	
 	-- Events for Glyphs
 	if ( event == "GLYPHFRAME_OPEN" ) then
-		SpellBookFrame_OpenToGlyphFrame ();
+		OpenGlyphFrame();
+		return;
 	end
-	
+
 	-- Display instance reset info
 	if ( event == "RAID_INSTANCE_WELCOME" ) then
 		local message = format(RAID_INSTANCE_WELCOME, arg1, SecondsToTime(arg2, nil, 1));
@@ -1007,40 +1075,6 @@ function UIParent_OnEvent(self, event, ...)
 		GMChatFrame_LoadUI(event, ...);
 	end
 end
-
-
--- ToggleGameMenu --
-
--- Function that handles the escape key functions
-function ToggleGameMenu()
-	if ( securecall("StaticPopup_EscapePressed") ) then
-	elseif ( GameMenuFrame:IsShown() ) then
-		PlaySound("igMainMenuQuit");
-		HideUIPanel(GameMenuFrame);
-	elseif ( HelpFrame:IsShown() ) then
-		if ( HelpFrame.back and HelpFrame.back.Click ) then
-			HelpFrame.back:Click();
-		end
-	elseif ( VideoOptionsFrame:IsShown() ) then
-		VideoOptionsFrameCancel:Click();
-	elseif ( AudioOptionsFrame:IsShown() ) then
-		AudioOptionsFrameCancel:Click();
-	elseif ( InterfaceOptionsFrame:IsShown() ) then
-		InterfaceOptionsFrameCancel:Click();
-	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
-		TimeManagerCloseButton:Click();
-	elseif ( securecall("CloseMenus") ) then
-	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
-	elseif ( SpellStopCasting() ) then
-	elseif ( SpellStopTargeting() ) then
-	elseif ( securecall("CloseAllWindows") ) then
-	elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
-	else
-		PlaySound("igMainMenuOpen");
-		ShowUIPanel(GameMenuFrame);
-	end
-end
-
 
 -- Frame Management --
 
@@ -1408,10 +1442,12 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 	
 		if ( oldFrame ) then
 			oldFrame:Hide();
+			MouseEnableUI(false);
 		end
 	
 		if ( frame ) then
 			UIParent:Hide();
+			MouseEnableUI(true);
 			frame:Show();
 		else
 			UIParent:Show();
@@ -1427,14 +1463,17 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 		
 		if ( oldDoubleWide ) then
 			oldDoubleWide:Hide();
+			MouseEnableUI(false);
 		end
 		
 		if ( oldLeft ) then
 			oldLeft:Hide();
+			MouseEnableUI(false);
 		end
 		
 		if ( oldCenter ) then
 			oldCenter:Hide();
+			MouseEnableUI(false);
 		end
 	elseif ( key ~= "left" and key ~= "center" and key ~= "right" ) then
 		return;
@@ -1443,11 +1482,13 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 		self[key] = frame;
 		if ( oldFrame ) then
 			oldFrame:Hide();
+			MouseEnableUI(false);
 		else
 			if ( self.doublewide ) then
 				if ( key == "left" or key == "center" ) then
 					self.doublewide:Hide();
 					self.doublewide = nil;	
+					MouseEnableUI(false);
 				end
 			end
 		end
@@ -1458,6 +1499,7 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 	end
 	
 	if ( frame ) then
+		MouseEnableUI(true);
 		frame:Show();
 		-- Hide all child windows
 		securecall("CloseChildWindows");
@@ -1755,11 +1797,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		
 	end
 
-	-- Quest timers
-	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-	if ( QuestTimerFrame:IsShown() ) then
-		anchorY = anchorY - QuestTimerFrame:GetHeight();
-	end
 	-- Setup durability offset
 	if ( DurabilityFrame ) then
 		local durabilityOffset = 0;
@@ -1771,12 +1808,27 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			anchorY = anchorY - DurabilityFrame:GetHeight();
 		end
 	end
+
+	if ( ArenaEnemyFrames ) then
+		ArenaEnemyFrames:ClearAllPoints();
+		ArenaEnemyFrames:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+	end
+
+	if ( not WatchFrame:IsUserPlaced() ) then -- We're using Simple Quest Tracking, automagically size and position!
+		WatchFrame:ClearAllPoints();
+		WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
+		-- OnSizeChanged for WatchFrame handles its redraw
+	end
 	
+	--[[
 	if ( AchievementWatchFrame:IsShown() ) then
 		if ( AchievementWatchFrame:GetWidth() > QuestWatchFrame:GetWidth() or not QuestWatchFrame:IsShown() ) then
-			AchievementWatchFrame:ClearAllPoints();
 			QuestWatchFrame:ClearAllPoints();
-			AchievementWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY - 13); -- This -13 is here because the QuestWatchFrame has a built in 13 pixel offset that we have to fake.
+			if ( (not ArenaEnemyFrames) or (not ArenaEnemyFrames:IsShown()) ) then	--We don't want to adjust the position while the frame has been moved to deal with ArenaEnemy frames. We only have to manage this here as QuestWatchFrame will never be shown.
+				AchievementWatchFrame:ClearAllPoints();
+				AchievementWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY - 13); -- This -13 is here because the QuestWatchFrame has a built in 13 pixel offset that we have to fake.
+			end
  			AchievementWatchFrame:SetWidth(AchievementWatchFrame.desiredWidth);
 			QuestWatchFrame:SetPoint("TOPLEFT", "AchievementWatchFrame", "BOTTOMLEFT", 0, 0);
 		else
@@ -1790,7 +1842,16 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		QuestWatchFrame:ClearAllPoints();
 		QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	end
+	
 
+	
+	if ( not WatchFrame:IsUserPlaced() ) then
+		WatchFrame:ClearAllPoints();
+		WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+	end
+
+	]]--
+	
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
 	updateContainerFrameAnchors();
@@ -1839,6 +1900,10 @@ function HideUIPanel(frame, skipSetPoint)
 	FramePositionDelegate:SetAttribute("panel-frame", frame);
 	FramePositionDelegate:SetAttribute("panel-skipSetPoint", skipSetPoint);
 	FramePositionDelegate:SetAttribute("panel-hide", true);
+end
+
+function HideParentPanel(self)	
+	HideUIPanel(self:GetParent());
 end
 
 function GetUIPanel(key)
@@ -2212,6 +2277,8 @@ end
 
 -- Frame fading and flashing --
 
+local frameFadeManager = CreateFrame("FRAME");
+
 -- Generic fade function
 function UIFrameFade(frame, fadeInfo)
 	if (not frame) then
@@ -2252,6 +2319,7 @@ function UIFrameFade(frame, fadeInfo)
 		index = index + 1;
 	end
 	tinsert(FADEFRAMES, frame);
+	frameFadeManager:SetScript("OnUpdate", UIFrameFade_OnUpdate);
 end
 
 -- Convenience function to do a simple fade in
@@ -2295,7 +2363,8 @@ frame.finishedArg3 [ANYTHING]	Argument to the finishedFunc
 frame.finishedArg4 [ANYTHING]	Argument to the finishedFunc
 frame.fadeHoldTime [Num]	Time to hold the faded state
  ]]
-function UIFrameFadeUpdate(elapsed)
+ 
+function UIFrameFade_OnUpdate(self, elapsed)
 	local index = 1;
 	local frame, fadeInfo;
 	while FADEFRAMES[index] do
@@ -2331,6 +2400,10 @@ function UIFrameFadeUpdate(elapsed)
 		
 		index = index + 1;
 	end
+	
+	if ( #FADEFRAMES == 0 ) then
+		self:SetScript("OnUpdate", nil);
+	end
 end
 
 function UIFrameIsFading(frame)
@@ -2341,6 +2414,8 @@ function UIFrameIsFading(frame)
 	end
 	return nil;
 end
+
+local frameFlashManager = CreateFrame("FRAME");
 
 -- Function to start a frame flashing
 function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDone, flashInHoldTime, flashOutHoldTime)
@@ -2372,11 +2447,13 @@ function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDon
 		frame.flashOutHoldTime = flashOutHoldTime;
 		
 		tinsert(FLASHFRAMES, frame);
+		
+		frameFlashManager:SetScript("OnUpdate", UIFrameFlash_OnUpdate);
 	end
 end
 
 -- Called every frame to update flashing frames
-function UIFrameFlashUpdate(elapsed)
+function UIFrameFlash_OnUpdate(self, elapsed)
 	local frame;
 	local index = 1;
 	local fadeInfo;
@@ -2420,6 +2497,10 @@ function UIFrameFlashUpdate(elapsed)
 		end
 		
 		index = index + 1;
+	end
+	
+	if ( #FLASHFRAMES == 0 ) then
+		self:SetScript("OnUpdate", nil);
 	end
 end
 
@@ -2649,7 +2730,6 @@ function SetDesaturation(texture, desaturation)
 		else
 			texture:SetVertexColor(1.0, 1.0, 1.0);
 		end
-		
 	end
 end
 
@@ -2710,6 +2790,40 @@ function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 	end
 end
 
+-- Function that handles the escape key functions
+function ToggleGameMenu()
+	if ( not UIParent:IsShown() ) then
+		UIParent:Show();
+		SetUIVisibility(true);
+	elseif ( securecall("StaticPopup_EscapePressed") ) then
+	elseif ( GameMenuFrame:IsShown() ) then
+		PlaySound("igMainMenuQuit");
+		HideUIPanel(GameMenuFrame);
+	elseif ( HelpFrame:IsShown() ) then
+		if ( HelpFrame.back and HelpFrame.back.Click ) then
+			HelpFrame.back:Click();
+		end
+	elseif ( VideoOptionsFrame:IsShown() ) then
+		VideoOptionsFrameCancel:Click();
+	elseif ( AudioOptionsFrame:IsShown() ) then
+		AudioOptionsFrameCancel:Click();
+	elseif ( InterfaceOptionsFrame:IsShown() ) then
+		InterfaceOptionsFrameCancel:Click();
+	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
+		TimeManagerCloseButton:Click();
+	elseif ( securecall("CloseMenus") ) then
+	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
+	elseif ( SpellStopCasting() ) then
+	elseif ( SpellStopTargeting() ) then
+	elseif ( securecall("CloseAllWindows") ) then
+	elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
+	elseif ( OpacityFrame:IsShown() ) then
+		OpacityFrame:Hide();
+	else
+		PlaySound("igMainMenuOpen");
+		ShowUIPanel(GameMenuFrame);
+	end
+end
 
 -- Visual Misc --
 
@@ -2929,6 +3043,11 @@ function UnitHasMana(unit)
 		return 1;
 	end
 	return nil;
+end
+
+function RaiseFrameLevelByTwo(frame)
+	-- We do this enough that it saves closures.
+	frame:SetFrameLevel(frame:GetFrameLevel()+2);
 end
 
 function PlayerNameAutocomplete(self)

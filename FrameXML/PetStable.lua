@@ -37,7 +37,7 @@ end
 
 function PetStable_Update()
 	-- Set stablemaster portrait
-	SetPortraitTexture(PetStableFramePortrait, "npc");
+	SetPortraitTexture(PetStableFramePortrait, "player");
 	
 	-- So warlock pets don't show
 	local hasPetUI, isHunterPet = HasPetUI();

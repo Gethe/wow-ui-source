@@ -22,18 +22,14 @@
 			<OnLoad>
 				getglobal(self:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
 			</OnLoad>
-			<OnClick>
-				BattlefieldButton_OnClick(self:GetID());
-			</OnClick>
+			<OnClick function="BattlefieldButton_OnClick"/>
 			<OnEnter>
 				GameTooltip_SetDefaultAnchor(GameTooltip, self)
 				GameTooltip:SetText(self.title, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 				GameTooltip:Show();
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 		<ButtonText name="$parentText">
@@ -313,12 +309,10 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(self:GetParent());
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
-			<Button name="BattlefieldFrameJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_JOIN">
+			<Button name="BattlefieldFrameJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_JOIN" id="1">
 				<Size>
 					<AbsDimension x="109" y="22"/>
 				</Size>
@@ -330,12 +324,10 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						BattlefieldFrameJoinButton_OnClick();
-					</OnClick>
+					<OnClick function="BattlefieldFrameJoinButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="BattlefieldFrameGroupJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_GROUP_JOIN">
+			<Button name="BattlefieldFrameGroupJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_GROUP_JOIN" id="2">
 				<Size>
 					<AbsDimension x="136" y="22"/>
 				</Size>
@@ -347,21 +339,15 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						BattlefieldFrameJoinButton_OnClick(1);
-					</OnClick>
+					<OnClick function="BattlefieldFrameJoinButton_OnClick"/>
 					<OnEnter>
 						GameTooltip_SetDefaultAnchor(GameTooltip, self)
 						GameTooltip:SetText(BATTLEFIELD_GROUP_JOIN, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(NEWBIE_TOOLTIP_BATTLEFIELD_GROUP_JOIN, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 						GameTooltip:Show();
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnEvent>
-						BattlefieldFrame_OnEvent(self, event, ...);
-					</OnEvent>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnEvent function="BattlefieldFrame_OnEvent"/>
 				</Scripts>
 			</Button>
 			<Button name="BattlefieldFrameCloseButton" inherits="UIPanelCloseButton">
@@ -375,9 +361,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				BattlefieldFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="BattlefieldFrame_OnLoad"/>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
 				BattlefieldFrame_Update();
@@ -387,12 +371,7 @@
 				UpdateMicroButtons();
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
-			<OnEvent>
-				BattlefieldFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
+			<OnEvent function="BattlefieldFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 	<Frame name="BattlefieldTimerFrame"/>

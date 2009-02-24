@@ -83,7 +83,7 @@
 					</Layer>
 				</Layers>
 			</CheckButton>
-			<Button name="TutorialFrameOkayButton">
+			<Button name="TutorialFrameOkayButton" jumpNavigateStart="true">
 				<Size>
 					<AbsDimension x="76" y="21"/>
 				</Size>
@@ -95,9 +95,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 				<NormalTexture inherits="DialogButtonNormalTexture"/>
 				<PushedTexture inherits="DialogButtonPushedTexture"/>
@@ -112,9 +110,7 @@
 				self:RegisterEvent("TUTORIAL_TRIGGER");
 				self:RegisterEvent("CINEMATIC_STOP");
 			</OnLoad>
-			<OnHide>
-				TutorialFrame_OnHide();
-			</OnHide>
+			<OnHide function="TutorialFrame_OnHide"/>
 			<OnEvent>
 				local arg1 = ...;
 				if ( event == "TUTORIAL_TRIGGER" ) then
@@ -144,9 +140,7 @@
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 				GameTooltip:SetText(self.tooltip);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnClick>
 				TutorialFrame:Show();
 				self:ClearAllPoints();

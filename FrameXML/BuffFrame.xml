@@ -27,9 +27,7 @@
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 				GameTooltip:SetUnitAura(PlayerFrame.unit, self:GetID(), self.filter);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnShow>
 				if ( self.namePrefix ) then
 					AuraButton_Update(self.namePrefix, self:GetID(), self.filter);
@@ -39,12 +37,8 @@
 	</Button>
 	<Button name="BuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>
-				BuffButton_OnLoad(self);
-			</OnLoad>
-			<OnClick>
-				BuffButton_OnClick(self);
-			</OnClick>
+			<OnLoad function="BuffButton_OnLoad"/>
+			<OnClick function="BuffButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<Button name="DebuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
@@ -55,18 +49,14 @@
 						<AbsDimension x="33" y="32"/>
 					</Size>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 				</Texture>	
 			</Layer>
 		</Layers>
 	</Button>
-	<Button name="BuffButtonTempEnchant" inherits="AuraButtonTemplate" virtual="true">
+	<Button name="TempEnchantButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" file="Interface\Buttons\UI-TempEnchant-Border">
@@ -80,21 +70,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				BuffFrame_EnchantButton_OnLoad(self);
-			</OnLoad>
-			<OnUpdate>
-				BuffFrame_EnchantButton_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnClick>
-				BuffFrame_EnchantButton_OnClick(self, button);
-			</OnClick>
-			<OnEnter>
-				BuffFrame_EnchantButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad function="TempEnchantButton_OnLoad"/>
+			<OnUpdate function="TempEnchantButton_OnUpdate"/>
+			<OnClick function="TempEnchantButton_OnClick"/>
+			<OnEnter function="TempEnchantButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 
@@ -110,17 +90,12 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				BuffFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				BuffFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				BuffFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="BuffFrame_OnLoad"/>
+			<OnEvent function="BuffFrame_OnEvent"/>
+			<OnUpdate function="BuffFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
+
 	<Frame name="TemporaryEnchantFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
 		<Size>
 			<AbsDimension x="36" y="36"/>
@@ -133,7 +108,7 @@
 			</Anchor>
 		</Anchors>
 		<Frames>
-			<Button name="TempEnchant1" inherits="BuffButtonTempEnchant">
+			<Button name="TempEnchant1" inherits="TempEnchantButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
@@ -142,7 +117,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="TempEnchant2" inherits="BuffButtonTempEnchant">
+			<Button name="TempEnchant2" inherits="TempEnchantButtonTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="TempEnchant1" relativePoint="LEFT">
 						<Offset>
@@ -153,13 +128,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TempEnchant1Duration:SetPoint("TOP", "TempEnchant1", "BOTTOM", 0, 0);
-				TempEnchant2Duration:SetPoint("TOP", "TempEnchant2", "BOTTOM", 0, 0);
-			</OnLoad>
-			<OnUpdate>
-				BuffFrame_Enchant_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnUpdate function="TemporaryEnchantFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -13,12 +13,8 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				UIErrorsFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				UIErrorsFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="UIErrorsFrame_OnLoad"/>
+			<OnEvent function="UIErrorsFrame_OnEvent"/>
 		</Scripts>
 		<FontString inherits="ErrorFont" justifyH="CENTER"/>
 	</MessageFrame>

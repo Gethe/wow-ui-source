@@ -101,6 +101,13 @@ function ItemSocketingFrame_Update()
 					openBracket:SetTexCoord(gemInfo.OBLeft, gemInfo.OBRight, gemInfo.OBTop, gemInfo.OBBottom);
 					closedBracket:SetTexCoord(gemInfo.CBLeft, gemInfo.CBRight, gemInfo.CBTop, gemInfo.CBBottom);
 				end
+				if ( ENABLE_COLORBLIND_MODE == "1" ) then
+					gemColorText = _G[socketName.."Color"];
+					gemColorText:SetText(_G[strupper(gemColor) .. "_GEM"]);
+					gemColorText:Show();
+				else
+					_G[socketName.."Color"]:Hide();
+				end
 			else
 				gemBorder:Hide();
 			end

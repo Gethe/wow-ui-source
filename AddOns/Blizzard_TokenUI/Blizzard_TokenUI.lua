@@ -65,16 +65,7 @@ function TokenFrame_Update()
 	local button, index;
 	for i=1, numButtons do
 		index = offset+i;
-		name, isHeader, isExpanded, isUnused, isWatched, count, extraCurrencyType, icon = GetCurrencyListInfo(index);
-		--[[ TEST STUFF
-		name = "test"
-		isHeader = nil;
-		isExpanded = nil;
-		isUnused = nil;
-		isWatched = nil;
-		count = 23
-		icon = "";
-		]]
+		name, isHeader, isExpanded, isUnused, isWatched, count, extraCurrencyType, icon, itemID = GetCurrencyListInfo(index);
 
 		button = buttons[i];
 		button.check:Hide();
@@ -97,6 +88,8 @@ function TokenFrame_Update()
 				button.highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 2);
 				button:SetText(name);
 				button.name:SetText("");
+				button.itemID = nil;
+				button.LinkButton:Hide();
 			else
 				button.categoryLeft:Hide();
 				button.categoryRight:Hide();
@@ -135,6 +128,8 @@ function TokenFrame_Update()
 				end
 				button:SetText("");
 				button.name:SetText(name);
+				button.itemID = itemID;
+				button.LinkButton:Show();
 			end
 			--Manage highlight
 			if ( name == TokenFrame.selectedToken ) then
@@ -182,7 +177,7 @@ function BackpackTokenFrame_Update()
 	local watchButton;
 	local name, count, extraCurrencyType, icon;
 	for i=1, MAX_WATCHED_TOKENS do
-		name, count, extraCurrencyType, icon = GetBackpackCurrencyInfo(i);
+		name, count, extraCurrencyType, icon, itemID = GetBackpackCurrencyInfo(i);
 		-- Update watched tokens
 		if ( name ) then
 			watchButton = getglobal("BackpackTokenFrameToken"..i);
@@ -210,11 +205,13 @@ function BackpackTokenFrame_Update()
 			watchButton:Show();
 			BackpackTokenFrame.shouldShow = 1;
 			BackpackTokenFrame.numWatchedTokens = i;
+			watchButton.itemID = itemID;
 		else
 			getglobal("BackpackTokenFrameToken"..i):Hide();
 			if ( i == 1 ) then
 				BackpackTokenFrame.shouldShow = nil;
 			end
+			getglobal("BackpackTokenFrameToken"..i).itemID = nil;
 		end
 	end
 end
@@ -301,4 +298,16 @@ end
 function TokenFrame_UpdatePopup(button)
 	TokenFramePopupInactiveCheckBox:SetChecked(button.isUnused);
 	TokenFramePopupBackpackCheckBox:SetChecked(button.isWatched);
+end
+
+function TokenButtonLinkButton_OnClick(self, button)
+	if ( IsModifiedClick("CHATLINK") ) then
+		ChatEdit_InsertLink(select(2, GetItemInfo(self:GetParent().itemID)));
+	end
+end
+
+function BackpackTokenButton_OnClick(self, button)
+	if ( IsModifiedClick("CHATLINK") ) then
+		ChatEdit_InsertLink(select(2, GetItemInfo(self.itemID)));
+	end
 end

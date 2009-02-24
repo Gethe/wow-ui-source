@@ -17,12 +17,8 @@
 				self.firstTimeLoaded = 1;
 			</OnLoad>
 			<!-- Respond here to any events you want to monitor globally -->
-			<OnEvent>
-				UIParent_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="UIParent_OnEvent"/>
 			<OnUpdate>
-				UIFrameFadeUpdate(elapsed);
-				UIFrameFlashUpdate(elapsed);
 				FCF_OnUpdate(elapsed);
 				ButtonPulse_OnUpdate(elapsed);
 				UnitPopup_OnUpdate(elapsed);
@@ -37,9 +33,7 @@
 					self.firstTimeLoaded = nil;
 				end
 			</OnShow>
-			<OnAttributeChanged>
-				UpdateUIPanelPositions();
-			</OnAttributeChanged>
+			<OnAttributeChanged function="UpdateUIPanelPositions"/>
 		</Scripts>
 	</Frame>
 </Ui>

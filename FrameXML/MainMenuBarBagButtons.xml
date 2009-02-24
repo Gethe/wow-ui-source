@@ -3,15 +3,9 @@
 	<Script file="MainMenuBarBagButtons.lua"/>
 	<Model name="ItemAnimTemplate" file="Interface\ItemAnimations\ForcedBackpackItem.mdx" hidden="true" virtual="true">
 		<Scripts>
-			<OnLoad>
-				ItemAnim_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				ItemAnim_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnAnimFinished>
-				ItemAnim_OnAnimFinished(self);
-			</OnAnimFinished>
+			<OnLoad function="ItemAnim_OnLoad"/>
+			<OnEvent function="ItemAnim_OnEvent"/>
+			<OnAnimFinished function="ItemAnim_OnAnimFinished"/>
 		</Scripts>
 	</Model>
 	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
@@ -43,12 +37,8 @@
 					PaperDollItemSlotButton_OnEvent(self, event, ...);
 				end
 			</OnEvent>
-			<OnShow>
-				PaperDollItemSlotButton_OnShow(self);
-			</OnShow>
-			<OnHide>
-				PaperDollItemSlotButton_OnHide(self);
-			</OnHide>
+			<OnShow function="PaperDollItemSlotButton_OnShow"/>
+			<OnHide function="PaperDollItemSlotButton_OnHide"/>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					BagSlotButton_OnModifiedClick(self, button);
@@ -56,19 +46,10 @@
 					BagSlotButton_OnClick(self, button);
 				end
 			</OnClick>
-			<OnDragStart>
-				BagSlotButton_OnDrag(self);
-			</OnDragStart>
-			<OnReceiveDrag>
-				BagSlotButton_OnClick(self, button);
-			</OnReceiveDrag>
-			<OnEnter>
-				BagSlotButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
+			<OnDragStart function="BagSlotButton_OnDrag"/>
+			<OnReceiveDrag function="BagSlotButton_OnClick"/>
+			<OnEnter function="BagSlotButton_OnEnter"/>
+			<OnLeave function="GameTooltip_HideResetCursor"/>
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
@@ -109,9 +90,7 @@
 					BackpackButton_OnClick(self, button);
 				end
 			</OnClick>
-			<OnReceiveDrag>
-				BackpackButton_OnClick(self, button);
-			</OnReceiveDrag>
+			<OnReceiveDrag function="BackpackButton_OnClick"/>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 				GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
@@ -122,12 +101,8 @@
 				GameTooltip:AddLine(string.format(NUM_FREE_SLOTS, (self.freeSlots or 0)));
 				GameTooltip:Show();
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnEvent>
-				MainMenuBarBackpackButton_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnEvent function="MainMenuBarBackpackButton_OnEvent"/>
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
@@ -209,9 +184,7 @@
 				GameTooltip:SetText(KEYRING, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				GameTooltip:AddLine();
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-Button-KeyRing">
 			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>

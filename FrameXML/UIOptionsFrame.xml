@@ -16,7 +16,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="InterfaceOptionsFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
+	<Frame name="InterfaceOptionsFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
 		<Size>
 			<AbsDimension x="648" y="520"/>
 		</Size>
@@ -74,7 +74,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						InterfaceOptionsFrameOkay_OnClick(true);
+						InterfaceOptionsFrameOkay_OnClick(self, true);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -94,9 +94,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						InterfaceOptionsFrameCancel_OnClick();
-					</OnClick>
+					<OnClick function="InterfaceOptionsFrameCancel_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
@@ -107,9 +105,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						InterfaceOptionsFrameOkay_OnClick();
-					</OnClick>
+					<OnClick function="InterfaceOptionsFrameOkay_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentDefaults" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
@@ -124,9 +120,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						InterfaceOptionsFrameDefaults_OnClick();
-					</OnClick>
+					<OnClick function="InterfaceOptionsFrameDefaults_OnClick"/>
 				</Scripts>
 			</Button>
 			<Frame name="$parentCategories" inherits="OptionsFrameListTemplate">
@@ -285,18 +279,10 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				InterfaceOptionsFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				InterfaceOptionsFrame_OnHide(self);
-			</OnHide>
-			<OnLoad>
-				InterfaceOptionsFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				InterfaceOptionsFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnShow function="InterfaceOptionsFrame_OnShow"/>
+			<OnHide function="InterfaceOptionsFrame_OnHide"/>
+			<OnLoad function="InterfaceOptionsFrame_OnLoad"/>
+			<OnEvent function="InterfaceOptionsFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

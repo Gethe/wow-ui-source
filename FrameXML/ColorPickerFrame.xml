@@ -175,7 +175,7 @@
 				end
 			</OnColorSelect>
 			<OnKeyDown>
-				if (key == "ESCAPE") then
+				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
 					HideUIPanel(self);
 					if ( ColorPickerFrame.cancelFunc ) then
 						ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);

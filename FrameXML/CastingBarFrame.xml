@@ -73,15 +73,9 @@
 			<OnLoad>
 				CastingBarFrame_OnLoad(self, "player", true);
 			</OnLoad>
-			<OnEvent>
-				CastingBarFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				CastingBarFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnShow>
-				CastingBarFrame_OnShow(self);
-			</OnShow>
+			<OnEvent function="CastingBarFrame_OnEvent"/>
+			<OnUpdate function="CastingBarFrame_OnUpdate"/>
+			<OnShow function="CastingBarFrame_OnShow"/>
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>

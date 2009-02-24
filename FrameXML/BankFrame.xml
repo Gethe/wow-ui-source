@@ -6,16 +6,9 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				BankFrameItemButton_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				BankFrameItemButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
+			<OnLoad function="BankFrameItemButton_OnLoad"/>
+			<OnEnter function="BankFrameItemButton_OnEnter"/>
+			<OnLeave function="GameTooltip_HideResetCursor"/>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					BankFrameItemButtonGeneric_OnModifiedClick(self, button);
@@ -43,16 +36,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				BankFrameBagButton_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				BankFrameItemButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
+			<OnLoad function="BankFrameBagButton_OnLoad"/>
+			<OnEnter function="BankFrameItemButton_OnEnter"/>
+			<OnLeave function="GameTooltip_HideResetCursor"/>
 			<OnClick>
 				if ( IsModifiedClick("PICKUPACTION") ) then
 					BankFrameItemButtonBag_Pickup(self);
@@ -60,12 +46,8 @@
 					BankFrameItemButtonBag_OnClick(self, button);
 				end
 			</OnClick>
-	        <OnDragStart>
-				BankFrameItemButtonBag_Pickup(self);
-			</OnDragStart>
-	        <OnReceiveDrag>
-	            BankFrameItemButtonBag_OnClick(self);
-	        </OnReceiveDrag>
+	        <OnDragStart function="BankFrameItemButtonBag_Pickup"/>
+	        <OnReceiveDrag function="BankFrameItemButtonBag_OnClick"/>
 		</Scripts>
 	</Button>
 
@@ -550,18 +532,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				BankFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				BankFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				BankFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				BankFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="BankFrame_OnLoad"/>
+			<OnEvent function="BankFrame_OnEvent"/>
+			<OnShow function="BankFrame_OnShow"/>
+			<OnHide function="BankFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

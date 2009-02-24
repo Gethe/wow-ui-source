@@ -57,9 +57,7 @@
                     </Layer>
                 </Layers>
                 <Scripts>
-                     <OnLoad>
-                        self:SetFrameLevel(self:GetFrameLevel() + 1);
-                    </OnLoad>
+                     <OnLoad function="RaiseFrameLevel"/>
                 </Scripts>
             </Frame>
             <Button name="CharacterFrameCloseButton" inherits="UIPanelCloseButton">
@@ -89,9 +87,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(CHARACTER_INFO, "TOGGLECHARACTER0"), 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
             <Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PETS">
@@ -107,9 +103,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(PET, "TOGGLECHARACTER3"), 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
 			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="REPUTATION">
@@ -125,9 +119,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(REPUTATION, "TOGGLECHARACTER2"), 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
 			<Button name="CharacterFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="SKILLS">
@@ -143,9 +135,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(SKILLS, "TOGGLECHARACTER1"), 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
 			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="CURRENCY" hidden="true">
@@ -161,25 +151,15 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(CURRENCY, "TOGGLECURRENCY"), 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
         </Frames>
         <Scripts>
-			<OnLoad>
-				CharacterFrame_OnLoad(self);
-			</OnLoad>
-            <OnEvent>
-                CharacterFrame_OnEvent(self, event, ...);
-            </OnEvent>
-            <OnShow>
-                CharacterFrame_OnShow(self);
-            </OnShow>
-			<OnHide>
-				CharacterFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="CharacterFrame_OnLoad"/>
+            <OnEvent function="CharacterFrame_OnEvent"/>
+            <OnShow function="CharacterFrame_OnShow"/>
+			<OnHide function="CharacterFrame_OnHide"/>
         </Scripts>
     </Frame>
 </Ui>

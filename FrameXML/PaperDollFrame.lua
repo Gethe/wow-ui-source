@@ -70,6 +70,46 @@ PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_DEFENSES",
 };
 
+PDFITEMFLYOUT_MAXITEMS = 25;
+
+PDFITEMFLYOUT_NUMTEXTURES = 5;
+
+PDFITEMFLYOUT_ONESLOT_LEFT_COORDS = { 0, 0.09765625, 0.5546875, 0.77734375 }
+PDFITEMFLYOUT_ONESLOT_RIGHT_COORDS = { 0.41796875, 0.51171875, 0.5546875, 0.77734375 }
+
+PDFITEMFLYOUT_ONESLOT_LEFTWIDTH = 25;
+PDFITEMFLYOUT_ONESLOT_RIGHTWIDTH = 24;
+
+PDFITEMFLYOUT_ONESLOT_WIDTH = 49;
+PDFITEMFLYOUT_ONESLOT_HEIGHT = 54;
+
+PDFITEMFLYOUT_ONEROW_LEFT_COORDS = { 0, 0.16796875, 0.5546875, 0.77734375 }
+PDFITEMFLYOUT_ONEROW_CENTER_COORDS = { 0.16796875, 0.328125, 0.5546875, 0.77734375 }
+PDFITEMFLYOUT_ONEROW_RIGHT_COORDS = { 0.328125, 0.51171875, 0.5546875, 0.77734375 }
+
+PDFITEMFLYOUT_MULTIROW_TOP_COORDS = { 0, 0.8359375, 0, 0.19140625 }
+PDFITEMFLYOUT_MULTIROW_MIDDLE_COORDS = { 0, 0.8359375, 0.19140625, 0.35546875 }
+PDFITEMFLYOUT_MULTIROW_BOTTOM_COORDS = { 0, 0.8359375, 0.35546875, 0.546875 }
+
+PDFITEMFLYOUT_ONEROW_HEIGHT = 54;
+
+PDFITEMFLYOUT_ONEROW_LEFT_WIDTH = 43;
+PDFITEMFLYOUT_ONEROW_CENTER_WIDTH = 41;
+PDFITEMFLYOUT_ONEROW_RIGHT_WIDTH = 47;
+
+PDFITEMFLYOUT_MULTIROW_WIDTH = 214;
+
+PDFITEMFLYOUT_MULTIROW_TOP_HEIGHT = 49;
+PDFITEMFLYOUT_MULTIROW_MIDDLE_HEIGHT = 42;
+PDFITEMFLYOUT_MULTIROW_BOTTOM_HEIGHT = 49;
+
+PDFITEMFLYOUT_PLACEINBAGS_LOCATION = 0xFFFFFFFF;
+PDFITEMFLYOUT_IGNORESLOT_LOCATION = 0xFFFFFFFE;
+PDFITEMFLYOUT_UNIGNORESLOT_LOCATION = 0xFFFFFFFD;
+PDFITEMFLYOUT_FIRST_SPECIAL_LOCATION = PDFITEMFLYOUT_UNIGNORESLOT_LOCATION
+
+local itemSlotButtons = {};
+
 function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED");
@@ -190,7 +230,7 @@ function PaperDollFrame_SetStat(statFrame, statIndex)
 	label:SetText(statName..":");
 	
 	-- Set the tooltip text
-	local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..statName.." ";
+	local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, statName).." ";
 
 	if ( ( posBuff == 0 ) and ( negBuff == 0 ) ) then
 		text:SetText(effectiveStat);
@@ -271,7 +311,6 @@ function PaperDollFrame_SetStat(statFrame, statIndex)
 	statFrame:Show();
 end
 
-
 function PaperDollFrame_SetRating(statFrame, ratingIndex)
 	local label = getglobal(statFrame:GetName().."Label");
 	local text = getglobal(statFrame:GetName().."StatText");
@@ -282,7 +321,7 @@ function PaperDollFrame_SetRating(statFrame, ratingIndex)
 	text:SetText(rating);
 
 	-- Set the tooltip text
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..statName.." "..rating..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, statName).." "..rating..FONT_COLOR_CODE_CLOSE;
 	-- Can probably axe this if else tree if all rating tooltips follow the same format
 	if ( ratingIndex == CR_HIT_MELEE ) then
 		statFrame.tooltip2 = format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), ratingBonus, GetCombatRating(CR_ARMOR_PENETRATION), GetArmorPenetration());
@@ -332,7 +371,7 @@ function PaperDollFrame_SetResistances()
 		local petBonus = ComputePetBonus( "PET_BONUS_RES", resistance );
 
 		local resistanceName = getglobal("RESISTANCE"..(frame:GetID()).."_NAME");
-		frame.tooltip = resistanceName.." "..resistance;
+		frame.tooltip = format(PAPERDOLLFRAME_TOOLTIP_FORMAT, resistanceName).." "..resistance;
 
 		-- resistances can now be negative. Show Red if negative, Green if positive, white otherwise
 		if( abs(negative) > positive ) then
@@ -424,7 +463,7 @@ end
 function PaperDollFrame_SetDodge(statFrame)
 	local chance = GetDodgeChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_DODGE, chance, 1);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("DODGE_CHANCE").." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, DODGE_CHANCE).." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(CR_DODGE_TOOLTIP, GetCombatRating(CR_DODGE), GetCombatRatingBonus(CR_DODGE));
 	statFrame:Show();
 end
@@ -432,7 +471,7 @@ end
 function PaperDollFrame_SetBlock(statFrame)
 	local chance = GetBlockChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BLOCK, chance, 1);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("BLOCK_CHANCE").." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BLOCK_CHANCE).." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(CR_BLOCK_TOOLTIP, GetCombatRating(CR_BLOCK), GetCombatRatingBonus(CR_BLOCK), GetShieldBlock());
 	statFrame:Show();
 end
@@ -440,7 +479,7 @@ end
 function PaperDollFrame_SetParry(statFrame)
 	local chance = GetParryChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_PARRY, chance, 1);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("PARRY_CHANCE").." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, PARRY_CHANCE).." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(CR_PARRY_TOOLTIP, GetCombatRating(CR_PARRY), GetCombatRatingBonus(CR_PARRY));
 	statFrame:Show();
 end
@@ -474,7 +513,7 @@ function PaperDollFrame_SetResilience(statFrame)
 	local lowestRatingBonus = GetCombatRatingBonus(lowestRating);
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, minResilience);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..STAT_RESILIENCE.." "..minResilience..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..minResilience..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, lowestRatingBonus, min(lowestRatingBonus * RESILIENCE_CRIT_CHANCE_TO_DAMAGE_REDUCTION_MULTIPLIER, maxRatingBonus), lowestRatingBonus);
 	statFrame:Show();
 end
@@ -597,7 +636,7 @@ function PaperDollFrame_SetAttackSpeed(statFrame, unit)
 	end
 	PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, text);
 
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..ATTACK_SPEED.." "..text..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ATTACK_SPEED).." "..text..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(CR_HASTE_RATING_TOOLTIP, GetCombatRating(CR_HASTE_MELEE), GetCombatRatingBonus(CR_HASTE_MELEE));
 	
 	statFrame:Show();
@@ -704,14 +743,14 @@ function PaperDollFrame_SetRangedAttack(statFrame, unit)
 	
 	if( rangedAttackMod == 0 ) then
 		text:SetText(rangedAttackBase);
-		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..COMBAT_RATING_NAME1.." "..rangedAttackBase..FONT_COLOR_CODE_CLOSE;
+		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, COMBAT_RATING_NAME1).." "..rangedAttackBase..FONT_COLOR_CODE_CLOSE;
 	else
 		local color = RED_FONT_COLOR_CODE;
 		if( rangedAttackMod > 0 ) then
 	  		color = GREEN_FONT_COLOR_CODE;
-			statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..COMBAT_RATING_NAME1.." "..(rangedAttackBase + rangedAttackMod).." ("..rangedAttackBase..color.." +"..rangedAttackMod..FONT_COLOR_CODE_CLOSE..HIGHLIGHT_FONT_COLOR_CODE..")";
+			statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, COMBAT_RATING_NAME1).." "..(rangedAttackBase + rangedAttackMod).." ("..rangedAttackBase..color.." +"..rangedAttackMod..FONT_COLOR_CODE_CLOSE..HIGHLIGHT_FONT_COLOR_CODE..")";
 		else
-			statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..COMBAT_RATING_NAME1.." "..(rangedAttackBase + rangedAttackMod).." ("..rangedAttackBase..color.." "..rangedAttackMod..FONT_COLOR_CODE_CLOSE..HIGHLIGHT_FONT_COLOR_CODE..")";
+			statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, COMBAT_RATING_NAME1).." "..(rangedAttackBase + rangedAttackMod).." ("..rangedAttackBase..color.." "..rangedAttackMod..FONT_COLOR_CODE_CLOSE..HIGHLIGHT_FONT_COLOR_CODE..")";
 		end
 		text:SetText(color..(rangedAttackBase + rangedAttackMod)..FONT_COLOR_CODE_CLOSE);
 	end
@@ -835,7 +874,7 @@ function PaperDollFrame_SetRangedAttackSpeed(statFrame, unit)
 	else
 		text = UnitRangedDamage(unit);
 		text = format("%.2f", text);
-		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..ATTACK_SPEED.." "..text..FONT_COLOR_CODE_CLOSE;
+		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ATTACK_SPEED).." "..text..FONT_COLOR_CODE_CLOSE;
 	end
 	PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, text);
 	statFrame.tooltip2 = format(CR_HASTE_RATING_TOOLTIP, GetCombatRating(CR_HASTE_RANGED), GetCombatRatingBonus(CR_HASTE_RANGED));
@@ -913,7 +952,7 @@ function PaperDollFrame_SetMeleeCritChance(statFrame)
 	local critChance = GetCritChance();-- + GetCritChanceFromAgility();
 	critChance = format("%.2f%%", critChance);
 	text:SetText(critChance);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..MELEE_CRIT_CHANCE.." "..critChance..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, MELEE_CRIT_CHANCE).." "..critChance..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(CR_CRIT_MELEE_TOOLTIP, GetCombatRating(CR_CRIT_MELEE), GetCombatRatingBonus(CR_CRIT_MELEE));
 end
 
@@ -923,7 +962,7 @@ function PaperDollFrame_SetRangedCritChance(statFrame)
 	local critChance = GetRangedCritChance();-- + GetCritChanceFromAgility();
 	critChance = format("%.2f%%", critChance);
 	text:SetText(critChance);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..RANGED_CRIT_CHANCE.." "..critChance..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, RANGED_CRIT_CHANCE).." "..critChance..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(CR_CRIT_RANGED_TOOLTIP, GetCombatRating(CR_CRIT_RANGED), GetCombatRatingBonus(CR_CRIT_RANGED));
 end
 
@@ -941,7 +980,7 @@ function PaperDollFrame_SetSpellPenetration(statFrame)
 	getglobal(statFrame:GetName().."Label"):SetText(SPELL_PENETRATION..":");
 	local text = getglobal(statFrame:GetName().."StatText");
 	text:SetText(GetSpellPenetration());
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. SPELL_PENETRATION .. FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE ..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, SPELL_PENETRATION).. FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = SPELL_PENETRATION_TOOLTIP;
 	statFrame:Show();
 end
@@ -988,7 +1027,7 @@ function PaperDollFrame_SetExpertise(statFrame, unit)
 	end
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_EXPERTISE, text);
 	
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_EXPERTISE).." "..text..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, getglobal("COMBAT_RATING_NAME"..CR_EXPERTISE)).." "..text..FONT_COLOR_CODE_CLOSE;
 	
 	local expertisePercent, offhandExpertisePercent = GetExpertisePercent();
 	expertisePercent = format("%.2f", expertisePercent);
@@ -1005,7 +1044,7 @@ end
 
 function CharacterSpellBonusDamage_OnEnter (self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..BONUS_DAMAGE.." "..self.minModifier..FONT_COLOR_CODE_CLOSE);
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BONUS_DAMAGE).." "..self.minModifier..FONT_COLOR_CODE_CLOSE);
 	for i=2, MAX_SPELL_SCHOOLS do
 		GameTooltip:AddDoubleLine(getglobal("DAMAGE_SCHOOL"..i), self.bonusDamage[i], NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		GameTooltip:AddTexture("Interface\\PaperDollInfoFrame\\SpellSchoolIcon"..i);
@@ -1030,7 +1069,7 @@ end
 
 function CharacterSpellCritChance_OnEnter (self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..COMBAT_RATING_NAME11.." "..GetCombatRating(11)..FONT_COLOR_CODE_CLOSE);
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, COMBAT_RATING_NAME11).." "..GetCombatRating(11)..FONT_COLOR_CODE_CLOSE);
 	local spellCrit;
 	for i=2, MAX_SPELL_SCHOOLS do
 		spellCrit = format("%.2f", self.spellCrit[i]);
@@ -1067,7 +1106,7 @@ function PaperDollFrame_OnShow (self)
 end
  
 function PaperDollFrame_OnHide (self)
-
+	GearManagerDialog:Hide();
 end
 
 function PaperDollItemSlotButton_OnLoad (self)
@@ -1081,6 +1120,7 @@ function PaperDollItemSlotButton_OnLoad (self)
 	self.backgroundTextureName = textureName;
 	self.checkRelic = checkRelic;
 	self.UpdateTooltip = PaperDollItemSlotButton_OnEnter;
+	tinsert(itemSlotButtons, self);
 end
 
 function PaperDollItemSlotButton_OnShow (self)
@@ -1113,27 +1153,19 @@ function PaperDollItemSlotButton_OnEvent (self, event, ...)
 		if ( arg1 == "player" ) then
 			PaperDollItemSlotButton_Update(self);
 		end
-		return;
-	end
-	if ( event == "ITEM_LOCK_CHANGED" ) then
+	elseif ( event == "ITEM_LOCK_CHANGED" ) then
 		if ( not arg2 and arg1 == self:GetID() ) then
 			PaperDollItemSlotButton_UpdateLock(self);
 		end
-		return;
-	end
-	if ( event == "BAG_UPDATE_COOLDOWN" ) then
+	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
 		PaperDollItemSlotButton_Update(self);
-		return;
-	end
-	if ( event == "CURSOR_UPDATE" ) then
+	elseif ( event == "CURSOR_UPDATE" ) then
 		if ( CursorCanGoInSlot(self:GetID()) ) then
 			self:LockHighlight();
 		else
 			self:UnlockHighlight();
 		end
-		return;
-	end
-	if ( event == "SHOW_COMPARE_TOOLTIP" ) then
+	elseif ( event == "SHOW_COMPARE_TOOLTIP" ) then
 		if ( (arg1 ~= self:GetID()) or (arg2 > NUM_SHOPPING_TOOLTIPS) ) then
 			return;
 		end
@@ -1148,10 +1180,12 @@ function PaperDollItemSlotButton_OnEvent (self, event, ...)
 		if ( not hasItem ) then
 			tooltip:Hide();
 		end
-		return;
-	end
-	if ( event == "UPDATE_INVENTORY_ALERTS" ) then
+	elseif ( event == "UPDATE_INVENTORY_ALERTS" ) then
 		PaperDollItemSlotButton_Update(self);
+	elseif ( event == "MODIFIER_STATE_CHANGED" ) then
+		if ( IsModifiedClick("SHOWITEMFLYOUT") and MouseIsOver(self) ) then
+			PaperDollItemSlotButton_OnEnter(self);
+		end
 	end
 end
 
@@ -1209,6 +1243,16 @@ function PaperDollItemSlotButton_Update (self)
 		end
 		self.hasItem = nil;
 	end
+	
+	if ( not GearManagerDialog:IsShown() ) then
+		self.ignored = nil;
+	end
+	
+	if ( self.ignored and self.ignoreTexture ) then
+		self.ignoreTexture:Show();
+	elseif ( self.ignoreTexture ) then
+		self.ignoreTexture:Hide();
+	end
 
 	PaperDollItemSlotButton_UpdateLock(self);
 
@@ -1228,7 +1272,16 @@ function PaperDollItemSlotButton_UpdateLock (self)
 end
 
 function PaperDollItemSlotButton_OnEnter (self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	self:RegisterEvent("MODIFIER_STATE_CHANGED");
+	if ( IsModifiedClick("SHOWITEMFLYOUT") ) then
+		PaperDollFrameItemFlyout_Show(self);
+	end
+	
+	if ( PaperDollFrameItemFlyout:IsShown() ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 5);
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	end
 	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID());
 	if ( not hasItem ) then
 		local text = getglobal(strupper(strsub(self:GetName(), 10)));
@@ -1244,6 +1297,12 @@ function PaperDollItemSlotButton_OnEnter (self)
 	else
 		CursorUpdate(self);
 	end
+end
+
+function PaperDollItemSlotButton_OnLeave (self)
+	self:UnregisterEvent("MODIFIER_STATE_CHANGED");
+	GameTooltip:Hide();
+	ResetCursor();
 end
 
 function PaperDollStatTooltip (self, unit)
@@ -1303,7 +1362,7 @@ end
 
 function PaperDollFormatStat(name, base, posBuff, negBuff, frame, textString)
 	local effective = max(0,base + posBuff + negBuff);
-	local text = HIGHLIGHT_FONT_COLOR_CODE..name.." "..effective;
+	local text = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT,name).." "..effective;
 	if ( ( posBuff == 0 ) and ( negBuff == 0 ) ) then
 		text = text..FONT_COLOR_CODE_CLOSE;
 		textString:SetText(effective);
@@ -1611,3 +1670,633 @@ function ComputePetBonus(stat, value)
 	
 	return 0;
 end
+
+PDFITEMFLYOUT_ITEMS_PER_ROW = 5;
+
+PDFITEMFLYOUT_BORDERWIDTH = 3;
+
+PDFITEMFLYOUT_WIDTH = 43;
+PDFITEMFLYOUT_HEIGHT = 43;
+PDFITEM_WIDTH = 37;
+PDFITEM_HEIGHT = 37;
+PDFITEM_XOFFSET = 4;
+PDFITEM_YOFFSET = -6;
+
+local itemTable = {}; -- Used for items and locations
+local itemDisplayTable = {} -- Used for ordering items by location
+
+function PaperDollFrameItemFlyout_CreateButton ()
+	local buttons = PaperDollFrameItemFlyout.buttons;
+	local buttonAnchor = PaperDollFrameItemFlyoutButtons;	
+	local numButtons = #buttons;
+	
+	local button = CreateFrame("BUTTON", "PaperDollFrameItemFlyoutButtons" .. numButtons + 1, buttonAnchor, "PaperDollFrameItemFlyoutButtonTemplate");
+	
+	local pos = numButtons/PDFITEMFLYOUT_ITEMS_PER_ROW;
+	if ( math.floor(pos) == pos ) then
+		-- This is the first button in a row.
+		button:SetPoint("TOPLEFT", buttonAnchor, "TOPLEFT", PDFITEMFLYOUT_BORDERWIDTH, -PDFITEMFLYOUT_BORDERWIDTH - (PDFITEM_HEIGHT - PDFITEM_YOFFSET)* pos);
+	else
+		button:SetPoint("TOPLEFT", buttons[numButtons], "TOPRIGHT", PDFITEM_XOFFSET, 0);
+	end
+
+	tinsert(buttons, button);
+	return button
+end
+
+function PaperDollFrameItemFlyout_Hide ()
+	PaperDollFrameItemFlyout:Hide();
+end
+
+function PaperDollFrameItemFlyout_OnUpdate (self, elapsed)
+	if ( not IsAltKeyDown() ) then
+		self:Hide();
+		if ( self.button ) then
+			PaperDollItemSlotButton_OnEnter(self.button);
+		end
+	end
+end
+
+function PaperDollFrameItemFlyout_OnShow (self)
+	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
+end
+
+function PaperDollFrameItemFlyout_OnHide (self)
+	self.button = nil;
+	self:UnregisterEvent("BAG_UPDATE");
+	self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
+end
+
+function PaperDollFrameItemFlyout_OnEvent (self, event, ...)
+	if ( event == "BAG_UPDATE" ) then
+		-- This spams a lot, four times when we equip an item, but we need to use it. PaperDollFrameItemFlyout_Show needs to stay fast for this reason.
+		PaperDollFrameItemFlyout_Show(self.button);
+	elseif ( event == "UNIT_INVENTORY_CHANGED" ) then
+		local arg1 = ...;
+		if ( arg1 == "player" ) then
+			PaperDollFrameItemFlyout_Show(self.button);
+		end
+	end
+end
+
+function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
+	local id = paperDollItemSlot:GetID();
+	
+	local flyout = PaperDollFrameItemFlyout;
+	local buttons = flyout.buttons;
+	local buttonAnchor = flyout.buttonFrame;
+	
+	for k in next, itemDisplayTable do
+		itemDisplayTable[k] = nil;
+	end
+	
+	for k in next, itemTable do
+		itemTable[k] = nil;
+	end
+	
+	GetInventoryItemsForSlot(id, itemTable);
+	
+	for location, itemID in next, itemTable do
+		if ( location - id == ITEM_INVENTORY_LOCATION_PLAYER ) then -- Remove the currently equipped item from the list
+			itemTable[location] = nil;
+		else
+			tinsert(itemDisplayTable, location);
+		end
+	end
+		
+	table.sort(itemDisplayTable); -- Sort by location. This ends up as: inventory, backpack, bags, bank, and bank bags.
+	
+	local numItems = #itemDisplayTable;
+	
+	for i = PDFITEMFLYOUT_MAXITEMS + 1, numItems do
+		itemDisplayTable[i] = nil;
+	end
+	
+	if ( GearManagerDialog:IsShown() ) then 
+		if ( paperDollItemSlot.hasItem ) then
+			if ( numItems >= PDFITEMFLYOUT_MAXITEMS - 1 ) then
+				itemDisplayTable[PDFITEMFLYYOUT_MAXITEMS] = nil;
+				itemDisplayTable[PDFITEMFLYOUT_MAXITEMS-1] = nil;
+			else
+				numItems = numItems + 2;
+			end
+				
+			tinsert(itemDisplayTable, PDFITEMFLYOUT_PLACEINBAGS_LOCATION);
+		else
+			if ( numItems >= PDFITEMFLYOUT_MAXITEMS ) then
+				itemDisplayTable[PDFITEMFLYYOUT_MAXITEMS] = nil;
+			else
+				numItems = numItems + 1;
+			end
+		end
+		
+		if ( not paperDollItemSlot.ignored ) then
+			tinsert(itemDisplayTable, PDFITEMFLYOUT_IGNORESLOT_LOCATION);
+		else
+			tinsert(itemDisplayTable, PDFITEMFLYOUT_UNIGNORESLOT_LOCATION);
+		end
+	end
+	
+	while #buttons < numItems do -- Create any buttons we need.
+		PaperDollFrameItemFlyout_CreateButton();
+	end
+	
+	if ( numItems == 0 ) then
+		flyout:Hide();
+		return;
+	end
+	
+	for i, button in ipairs(buttons) do
+		if ( i <= numItems ) then
+			button.id = id;
+			button.location = itemDisplayTable[i];
+			button:Show();
+			
+			PaperDollFrameItemFlyout_DisplayButton(button, paperDollItemSlot);
+		else
+			button:Hide();
+		end
+	end
+	
+	flyout:ClearAllPoints();
+	flyout:SetFrameLevel(paperDollItemSlot:GetFrameLevel() - 1);
+	flyout.button = paperDollItemSlot;
+	flyout:SetPoint("TOPLEFT", paperDollItemSlot, "TOPLEFT", -PDFITEMFLYOUT_BORDERWIDTH, PDFITEMFLYOUT_BORDERWIDTH);
+	local horizontalItems = min(numItems, PDFITEMFLYOUT_ITEMS_PER_ROW);
+	buttonAnchor:SetWidth((horizontalItems * PDFITEM_WIDTH) + ((horizontalItems - 1) * PDFITEM_XOFFSET) + PDFITEMFLYOUT_BORDERWIDTH);
+	buttonAnchor:SetHeight(PDFITEMFLYOUT_HEIGHT + (math.floor(numItems/PDFITEMFLYOUT_ITEMS_PER_ROW) * (PDFITEM_HEIGHT - PDFITEM_YOFFSET)));
+	
+	
+	if ( flyout.numItems ~= numItems ) then
+		local texturesUsed = 0;
+		if ( numItems == 1 ) then
+			local bgTex, lastBGTex;
+			bgTex = buttonAnchor.bg1;
+			bgTex:ClearAllPoints();
+			bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_ONESLOT_LEFT_COORDS));
+			bgTex:SetWidth(PDFITEMFLYOUT_ONESLOT_LEFTWIDTH);
+			bgTex:SetHeight(PDFITEMFLYOUT_ONEROW_HEIGHT);
+			bgTex:SetPoint("TOPLEFT", -5, 4);
+			bgTex:Show();
+			texturesUsed = texturesUsed + 1;
+			lastBGTex = bgTex;
+			
+			bgTex = buttonAnchor.bg2;
+			bgTex:ClearAllPoints();
+			bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_ONESLOT_RIGHT_COORDS));
+			bgTex:SetWidth(PDFITEMFLYOUT_ONESLOT_RIGHTWIDTH);
+			bgTex:SetHeight(PDFITEMFLYOUT_ONEROW_HEIGHT);
+			bgTex:SetPoint("TOPLEFT", lastBGTex, "TOPRIGHT");
+			bgTex:Show();
+			texturesUsed = texturesUsed + 1;
+			lastBGTex = bgTex;
+		elseif ( numItems <= PDFITEMFLYOUT_ITEMS_PER_ROW ) then
+			local bgTex, lastBGTex;
+			bgTex = buttonAnchor.bg1;
+			bgTex:ClearAllPoints();
+			bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_ONEROW_LEFT_COORDS));
+			bgTex:SetWidth(PDFITEMFLYOUT_ONEROW_LEFT_WIDTH);
+			bgTex:SetHeight(PDFITEMFLYOUT_ONEROW_HEIGHT);
+			bgTex:SetPoint("TOPLEFT", -5, 4);
+			bgTex:Show();
+			texturesUsed = texturesUsed + 1;
+			lastBGTex = bgTex;
+			for i = texturesUsed + 1, numItems - 1 do
+				bgTex = buttonAnchor["bg"..i];
+				bgTex:ClearAllPoints();
+				bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_ONEROW_CENTER_COORDS));
+				bgTex:SetWidth(PDFITEMFLYOUT_ONEROW_CENTER_WIDTH);
+				bgTex:SetHeight(PDFITEMFLYOUT_ONEROW_HEIGHT);
+				bgTex:SetPoint("TOPLEFT", lastBGTex, "TOPRIGHT");
+				bgTex:Show();
+				texturesUsed = texturesUsed + 1;
+				lastBGTex = bgTex;
+			end
+			
+			bgTex = buttonAnchor["bg"..numItems];
+			bgTex:ClearAllPoints();
+			bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_ONEROW_RIGHT_COORDS));
+			bgTex:SetWidth(PDFITEMFLYOUT_ONEROW_RIGHT_WIDTH);
+			bgTex:SetHeight(PDFITEMFLYOUT_ONEROW_HEIGHT);
+			bgTex:SetPoint("TOPLEFT", lastBGTex, "TOPRIGHT");
+			bgTex:Show();
+			texturesUsed = texturesUsed + 1;
+		elseif ( numItems > PDFITEMFLYOUT_ITEMS_PER_ROW ) then
+			numRows = math.ceil(numItems/PDFITEMFLYOUT_ITEMS_PER_ROW);
+			local bgTex, lastBGTex;
+			bgTex = buttonAnchor.bg1;
+			bgTex:ClearAllPoints();
+			bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_MULTIROW_TOP_COORDS));
+			bgTex:SetWidth(PDFITEMFLYOUT_MULTIROW_WIDTH);
+			bgTex:SetHeight(PDFITEMFLYOUT_MULTIROW_TOP_HEIGHT);
+			bgTex:SetPoint("TOPLEFT", -5, 4);
+			bgTex:Show();
+			texturesUsed = texturesUsed + 1;
+			lastBGTex = bgTex;
+			for i = 2, numRows - 1 do -- Middle rows
+				bgTex = buttonAnchor["bg"..i];
+				bgTex:ClearAllPoints();
+				bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_MULTIROW_MIDDLE_COORDS));
+				bgTex:SetWidth(PDFITEMFLYOUT_MULTIROW_WIDTH);
+				bgTex:SetHeight(PDFITEMFLYOUT_MULTIROW_MIDDLE_HEIGHT);
+				bgTex:SetPoint("TOPLEFT", lastBGTex, "BOTTOMLEFT");
+				bgTex:Show();
+				texturesUsed = texturesUsed + 1;
+				lastBGTex = bgTex;
+			end
+			
+			bgTex = buttonAnchor["bg"..numRows];
+			bgTex:ClearAllPoints();
+			bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_MULTIROW_BOTTOM_COORDS));
+			bgTex:SetWidth(PDFITEMFLYOUT_MULTIROW_WIDTH);
+			bgTex:SetHeight(PDFITEMFLYOUT_MULTIROW_BOTTOM_HEIGHT);
+			bgTex:SetPoint("TOPLEFT", lastBGTex, "BOTTOMLEFT");
+			bgTex:Show();
+			texturesUsed = texturesUsed + 1;
+			lastBGTex = bgTex;
+		end
+		
+		for i = texturesUsed + 1, PDFITEMFLYOUT_NUMTEXTURES do
+			buttonAnchor["bg" .. i]:Hide();
+		end
+		flyout.numItems = numItems;
+	end
+	
+	flyout:Show();
+end
+
+function PaperDollFrameItemFlyout_DisplayButton (button, paperDollItemSlot)
+	local location = button.location;
+	if ( location >= PDFITEMFLYOUT_FIRST_SPECIAL_LOCATION ) then
+		PaperDollFrameItemFlyout_DisplaySpecialButton(button, paperDollItemSlot);
+		return;
+	end
+	
+	local id, name, textureName, count, durability, maxDurability, invType, start, duration, enable, setTooltip = EquipmentManager_GetItemInfoByLocation(location);
+	
+	local broken = ( maxDurability and durability == 0 );
+	if ( textureName ) then
+		SetItemButtonTexture(button, textureName);
+		SetItemButtonCount(button, count);
+		if ( broken ) then
+			SetItemButtonTextureVertexColor(button, 0.9, 0, 0);
+			SetItemButtonNormalTextureVertexColor(button, 0.9, 0, 0);
+		else
+			SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
+			SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
+		end
+		
+		CooldownFrame_SetTimer(button.cooldown, start, duration, enable);
+
+		button.UpdateTooltip = function () GameTooltip:SetOwner(button, "ANCHOR_RIGHT"); setTooltip(); end;
+	else
+		textureName = paperDollItemSlot.backgroundTextureName;
+		if ( paperDollItemSlot.checkRelic and UnitHasRelicSlot("player") ) then
+			textureName = "Interface\\Paperdoll\\UI-PaperDoll-Slot-Relic.blp";
+		end
+		SetItemButtonTexture(button, textureName);
+		SetItemButtonCount(button, 0);
+		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
+		SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
+		button.cooldown:Hide();
+		button.UpdateTooltip = nil;
+	end
+end
+
+function PaperDollFrameItemFlyout_DisplaySpecialButton (button, paperDollItemSlot)
+	local location = button.location;
+	if ( location == PDFITEMFLYOUT_IGNORESLOT_LOCATION ) then
+		SetItemButtonTexture(button, "Interface\\Buttons\\UI-GroupLoot-Pass-Up");
+		SetItemButtonCount(button, nil);
+		button.UpdateTooltip = 
+			function () 
+				GameTooltip:SetOwner(button, "ANCHOR_RIGHT"); 
+				GameTooltip:SetText(EQUIPMENT_MANAGER_IGNORE_SLOT, 1.0, 1.0, 1.0); 
+				if ( SHOW_NEWBIE_TIPS == "1" ) then
+					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_IGNORE_SLOT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				end
+				GameTooltip:Show();
+			end;
+		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
+		SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
+	elseif ( location == PDFITEMFLYOUT_UNIGNORESLOT_LOCATION ) then
+		SetItemButtonTexture(button, "Interface\\Icons\\Spell_ChargePositive");
+		SetItemButtonCount(button, nil);
+		button.UpdateTooltip = 
+			function () 
+				GameTooltip:SetOwner(button, "ANCHOR_RIGHT"); 
+				GameTooltip:SetText(EQUIPMENT_MANAGER_UNIGNORE_SLOT, 1.0, 1.0, 1.0); 
+				if ( SHOW_NEWBIE_TIPS == "1" ) then
+					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_UNIGNORE_SLOT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				end
+				GameTooltip:Show();
+			end;
+		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
+		SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);		
+	elseif ( location == PDFITEMFLYOUT_PLACEINBAGS_LOCATION ) then
+		SetItemButtonTexture(button, "Interface\\Icons\\INV_Misc_Bag_13");
+		SetItemButtonCount(button, nil);
+		button.UpdateTooltip = 
+			function () 
+				GameTooltip:SetOwner(button, "ANCHOR_RIGHT"); 
+				GameTooltip:SetText(EQUIPMENT_MANAGER_PLACE_IN_BAGS, 1.0, 1.0, 1.0); 
+				if ( SHOW_NEWBIE_TIPS == "1" ) then
+					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_PLACE_IN_BAGS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				end
+				GameTooltip:Show();
+			end;
+		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
+		SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);	
+	end
+end
+
+function PaperDollFrameItemFlyoutButton_OnEnter (self)
+	if ( self.UpdateTooltip ) then
+		self.UpdateTooltip(); -- This shows the tooltip, and gets called repeatedly thereafter by GameTooltip.
+	end
+end
+
+function PaperDollFrameItemFlyoutButton_OnClick (self)
+	if ( self.location == PDFITEMFLYOUT_IGNORESLOT_LOCATION ) then
+		local slot = PaperDollFrameItemFlyout.button;
+		EquipmentManagerIgnoreSlotForSave(slot:GetID());
+		slot.ignored = true;
+		PaperDollItemSlotButton_Update(slot);
+		PaperDollFrameItemFlyout_Show(slot);
+	elseif ( self.location == PDFITEMFLYOUT_UNIGNORESLOT_LOCATION ) then
+		local slot = PaperDollFrameItemFlyout.button;
+		EquipmentManagerUnignoreSlotForSave(slot:GetID());
+		slot.ignored = nil;
+		PaperDollItemSlotButton_Update(slot);
+		PaperDollFrameItemFlyout_Show(slot);
+	elseif ( self.location == PDFITEMFLYOUT_PLACEINBAGS_LOCATION ) then
+		EquipmentManager_UnequipItemInSlot(PaperDollFrameItemFlyout.button:GetID());
+	elseif ( self.location ) then
+		EquipmentManager_EquipItemByLocation(self.location, self.id);
+	end
+end
+
+NUM_GEARSETS_PER_ROW = 5;
+
+function GearManagerDialog_OnLoad (self)
+	self.title:SetText(EQUIPMENT_MANAGER);
+	self.buttons = {};
+	local name = self:GetName();
+	local button;
+	for i = 1, MAX_EQUIPMENT_SETS_PER_PLAYER do
+		button = CreateFrame("CheckButton", "GearSetButton" .. i, self, "GearSetButtonTemplate");
+		if ( i == 1 ) then
+			button:SetPoint("TOPLEFT", self, "TOPLEFT", 16, -32);
+		elseif ( mod(i, NUM_GEARSETS_PER_ROW) == 1 ) then
+			button:SetPoint("TOP", "GearSetButton"..(i-NUM_GEARSETS_PER_ROW), "BOTTOM", 0, -10);
+		else
+			button:SetPoint("LEFT", "GearSetButton"..(i-1), "RIGHT", 13, 0);
+		end
+		button.icon = _G["GearSetButton" .. i .. "Icon"];
+		button.text = _G["GearSetButton" .. i .. "Name"];
+		tinsert(self.buttons, button);
+	end
+	self:RegisterEvent("VARIABLES_LOADED");
+end
+
+function GearManagerDialog_OnShow (self)
+	if ( self.selectedSet ) then
+		self.selectedSet:SetChecked(0);
+		self.selectedSet = nil;
+	end
+	GearManagerDialog_Update();
+	self:RegisterEvent("EQUIPMENT_SETS_CHANGED");
+	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
+	EquipmentManagerClearIgnoredSlotsForSave();
+	PlaySound("igBackPackOpen");
+end
+
+function GearManagerDialog_OnHide (self)
+	GearManagerDialogPopup:Hide();
+	
+	if ( self.selectedSet ) then
+		self.selectedSet:SetChecked(0);
+		self.selectedSet = nil;
+	end
+	
+	self:UnregisterEvent("EQUIPMENT_SETS_CHANGED");
+	self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
+	PlaySound("igBackPackClose");
+	for k, button in next, itemSlotButtons do
+		if ( button.ignored ) then
+			button.ignored = nil;
+			PaperDollItemSlotButton_Update(button);
+		end
+	end
+end
+
+function GearManagerDialog_OnEvent (self, event, ...)
+	if ( event == "EQUIPMENT_SETS_CHANGED" ) then
+		if ( self.selectedSet ) then
+			self.selectedSet:SetChecked(0);
+			self.selectedSet = nil;
+		end
+		GearManagerDialog_Update();
+	elseif ( event == "UNIT_INVENTORY_CHANGED" ) then
+		-- if ( self.selectedSet ) then
+			-- self.selectedSet:SetChecked(0);
+			-- self.selectedSet = nil;
+		-- end
+	elseif ( event == "VARIABLES_LOADED" ) then
+		if ( GetCVarBool("equipmentManager") ) then
+			GearManagerToggleButton:Show();
+		end
+	end
+end
+
+function GearManagerDialog_Update ()
+	local numSets = GetNumEquipmentSets();
+	
+	local dialog = GearManagerDialog;
+	local buttons = dialog.buttons;
+	
+	local name, texture;
+	for i = 1, numSets do
+		name, texture = GetEquipmentSetInfo(i);
+		dialog.buttons[i]:Enable();
+		dialog.buttons[i].name = name;
+		dialog.buttons[i].text:SetText(name);
+		if (texture) then
+			dialog.buttons[i].icon:SetTexture(texture);
+		else
+			dialog.buttons[i].icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");
+		end
+	end
+	
+	for i = numSets + 1, MAX_EQUIPMENT_SETS_PER_PLAYER do
+		dialog.buttons[i]:Disable();
+		dialog.buttons[i].name = nil;
+		dialog.buttons[i].text:SetText("");		
+		dialog.buttons[i].icon:SetTexture("");
+	end
+end
+
+function GearManagerDialogDeleteSet_OnClick (self)
+	local selectedSet = GearManagerDialog.selectedSet;
+	if ( selectedSet ) then
+		local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", selectedSet.name);
+		dialog.data = selectedSet.name;
+	end
+end
+
+function GearManagerDialogSaveSet_OnClick (self)
+	local popup = GearManagerDialogPopup
+	local selectedSet = GearManagerDialog.selectedSet;
+	if ( selectedSet ) then
+		popup.selectedTexture = selectedSet.icon:GetTexture();
+		
+		local editBox = GearManagerDialogPopupEditBox;
+		editBox:SetText(selectedSet.name);
+		editBox:HighlightText(0);
+	end
+	
+	popup:Show();
+end
+
+function GearSetButton_OnClick (self)
+	if ( self.name and self.name ~= "" ) then
+		local dialog = GearManagerDialog;
+		dialog.selectedSet = self;
+		for i, button in pairs(dialog.buttons) do
+			if ( button ~= self ) then
+				button:SetChecked(0);
+			end
+		end
+		EquipmentManager_EquipSet(self.name);
+	else
+		self:SetChecked(0);
+	end
+end
+
+NUM_GEARSET_ICONS_SHOWN = 15;
+NUM_GEARSET_ICONS_PER_ROW = 5;
+NUM_GEARSET_ICON_ROWS = 3;
+GEARSET_ICON_ROW_HEIGHT = 36;
+
+function GearManagerDialogPopup_OnLoad (self)
+	self.buttons = {};
+	
+	local rows = 0;
+	
+	local button = CreateFrame("CheckButton", "GearManagerDialogPopupButton1", GearManagerDialogPopup, "GearSetPopupButtonTemplate");
+	button:SetPoint("TOPLEFT", 24, -85);
+	button:SetID(1);
+	tinsert(self.buttons, button);
+	
+	local lastPos;
+	for i = 2, NUM_GEARSET_ICONS_SHOWN do
+		button = CreateFrame("CheckButton", "GearManagerDialogPopupButton" .. i, GearManagerDialogPopup, "GearSetPopupButtonTemplate");
+		button:SetID(i);
+		
+		lastPos = (i - 1) / NUM_GEARSET_ICONS_PER_ROW;
+		if ( lastPos == math.floor(lastPos) ) then
+			button:SetPoint("TOPLEFT", self.buttons[i-NUM_GEARSET_ICONS_PER_ROW], "BOTTOMLEFT", 0, -8);
+		else
+			button:SetPoint("TOPLEFT", self.buttons[i-1], "TOPRIGHT", 10, 0);
+		end
+		tinsert(self.buttons, button);
+	end
+end
+
+function GearManagerDialogPopup_OnShow (self)
+	GearManagerDialogPopup_Update();
+end
+
+function GearManagerDialogPopup_OnHide (self)
+	local popup = GearManagerDialogPopup;
+	popup.name = nil;
+	popup.selectedIcon = nil;
+	popup.selectedTexture = nil;
+	
+	GearManagerDialogPopupEditBox:SetText("");
+end
+
+function GearManagerDialogPopup_Update ()
+	local popup = GearManagerDialogPopup;
+	local buttons = popup.buttons;
+	local numIcons = GetNumMacroIcons();
+	local offset = FauxScrollFrame_GetOffset(GearManagerDialogPopupScrollFrame) or 0;
+		
+	local button;
+	
+	-- Determine whether we're creating a new macro or editing an existing one
+	
+	-- Icon list
+	local texture, index, button;
+	for i=1, NUM_GEARSET_ICONS_SHOWN do
+		local button = buttons[i];
+		index = (offset * NUM_GEARSET_ICONS_PER_ROW) + i;
+		texture = GetMacroIconInfo(index);
+		if ( index <= numIcons ) then
+			button.icon:SetTexture(texture);
+			button:Show();
+		else
+			button.icon:SetTexture("");
+			button:Hide();
+		end
+		
+		if ( index == popup.selectedIcon ) then
+ 			button:SetChecked(1);
+		elseif ( texture == popup.selectedTexture ) then
+			button:SetChecked(1);
+			popup.selectedIcon = index;
+			popup.selectedTexture = nil;
+		else
+			button:SetChecked(nil);
+		end
+	end
+	
+	-- Scrollbar stuff
+	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(numIcons / NUM_GEARSET_ICONS_PER_ROW) , NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
+
+end
+
+function GearManagerDialogPopupOkay_Update ()
+	local popup = GearManagerDialogPopup;
+	local button = GearManagerDialogPopupOkay;
+	
+	if ( popup.selectedIcon and popup.name ) then
+		button:Enable();
+	else
+		button:Disable();
+	end
+end
+
+function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
+	local popup = GearManagerDialogPopup;
+	
+	if ( GetEquipmentSetInfoByName(popup.name) ) then	
+		local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name);
+		dialog.data = popup.name;
+		dialog.selectedIcon = popup.selectedIcon;
+		return;
+	elseif ( GetNumEquipmentSets() >= MAX_EQUIPMENT_SETS_PER_PLAYER ) then
+		UIErrorsFrame:AddMessage(EQUIPMENT_SETS_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
+		return
+	end
+	
+	SaveEquipmentSet(popup.name, popup.selectedIcon);
+	GearManagerDialogPopup:Hide();
+end
+
+function GearManagerDialogPopupCancel_OnClick ()
+	GearManagerDialogPopup:Hide();
+end
+
+function GearSetPopupButton_OnClick (self, button)
+	local popup = GearManagerDialogPopup;
+	local offset = FauxScrollFrame_GetOffset(GearManagerDialogPopupScrollFrame) or 0;
+	popup.selectedIcon = (offset * NUM_GEARSET_ICONS_PER_ROW) + self:GetID();
+ 	popup.selectedTexture = nil;
+	
+	GearManagerDialogPopup_Update();
+	GearManagerDialogPopupOkay_Update();
+end
+
+

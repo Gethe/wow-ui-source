@@ -125,6 +125,7 @@ UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_T
 UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_SILENCE", "CHAT_UNSILENCE", "CHAT_PROMOTE", "CHAT_DEMOTE", "CHAT_OWNER", "CANCEL"  };
 UnitPopupMenus["VEHICLE"] = { "SET_FOCUS", "RAID_TARGET_ICON", "VEHICLE_LEAVE", "CANCEL" };
 UnitPopupMenus["TARGET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "CANCEL" };
+UnitPopupMenus["ARENAENEMY"] = { "SET_FOCUS", "CANCEL" };
 UnitPopupMenus["FOCUS"] = { "CLEAR_FOCUS", "LOCK_FOCUS_FRAME", "UNLOCK_FOCUS_FRAME", "RAID_TARGET_ICON", "CANCEL" };
 
 -- Second level menus
@@ -855,7 +856,7 @@ function UnitPopup_OnUpdate (elapsed)
 
 	-- If none of the untipopup frames are visible then return
 	for index, value in ipairs(UnitPopupFrames) do
-		if ( UIDROPDOWNMENU_OPEN_MENU == value ) then
+		if ( UIDROPDOWNMENU_OPEN_MENU == _G[value] ) then
 			break;
 		elseif ( index == #UnitPopupFrames ) then
 			return;
@@ -1078,31 +1079,31 @@ function UnitPopup_OnClick (self)
 		StaticPopup_Show("RENAME_PET");
 	elseif ( button == "FREE_FOR_ALL" ) then
 		SetLootMethod("freeforall");
-		UIDropDownMenu_SetButtonText(1, 3, UnitPopupButtons[button].text);
+		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "ROUND_ROBIN" ) then
 		SetLootMethod("roundrobin");
-		UIDropDownMenu_SetButtonText(1, 3, UnitPopupButtons[button].text);
+		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "MASTER_LOOTER" ) then
 		SetLootMethod("master", name);
-		UIDropDownMenu_SetButtonText(1, 3, UnitPopupButtons[button].text);
+		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "GROUP_LOOT" ) then
 		SetLootMethod("group");
-		UIDropDownMenu_SetButtonText(1, 3, UnitPopupButtons[button].text);
+		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "NEED_BEFORE_GREED" ) then
 		SetLootMethod("needbeforegreed");
-		UIDropDownMenu_SetButtonText(1, 3, UnitPopupButtons[button].text);
+		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "OPT_OUT_LOOT_ENABLE" ) then
 		SetOptOutOfLoot(1);
-		UIDropDownMenu_SetButtonText(1, 5, format(OPT_OUT_LOOT_TITLE, UnitPopupButtons[button].text));
+		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "OPT_OUT_LOOT_DISABLE" ) then
 		SetOptOutOfLoot(nil);
-		UIDropDownMenu_SetButtonText(1, 5, format(OPT_OUT_LOOT_TITLE, UnitPopupButtons[button].text));
+		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( strsub(button, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(button) > 18) ) then
 		local dungeonDifficulty = tonumber( strsub(button,19,19) );
@@ -1153,7 +1154,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "ITEM_QUALITY2_DESC" or button == "ITEM_QUALITY3_DESC" or button == "ITEM_QUALITY4_DESC" ) then
 		local id = self:GetID()+1;
 		SetLootThreshold(id);
-		UIDropDownMenu_SetButtonText(1, 4, UnitPopupButtons[button].text, ITEM_QUALITY_COLORS[id].hex);
+		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 	elseif ( strsub(button, 1, 12) == "RAID_TARGET_" and button ~= "RAID_TARGET_ICON" ) then
 		local raidTargetIndex = strsub(button, 13);
 		if ( raidTargetIndex == "NONE" ) then

@@ -20,7 +20,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-
 			<Layer level="BORDER">
 				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
@@ -122,7 +121,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="InspectTalentFrameSpentPoints" inherits="GameFontNormalSmall" justifyH="CENTER">
+				<FontString name="InspectTalentFrameSpentPointsText" inherits="GameFontNormalSmall">
 					<Size>
 						<AbsDimension x="225" y="0"/>
 					</Size>
@@ -139,16 +138,12 @@
 		<Frames>
 			<Frame name="InspectTalentFrameSpentPointsMouseover">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameSpentPoints"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="InspectTalentFrameSpentPoints"/>
+					<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameSpentPointsText"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="InspectTalentFrameSpentPointsText"/>
 				</Anchors>
 				<Scripts>
-					<OnEnter>
-						InspectTalentFrameSpentPoints_OnEnter(self);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnEnter function="InspectTalentFrameSpentPoints_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Button name="$parentTab1" inherits="TabButtonTemplate" text="OK" id="1">
@@ -212,9 +207,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(InspectFrame);
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<ScrollFrame name="InspectTalentFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
@@ -401,15 +394,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				InspectTalentFrame_OnShow();
-			</OnShow>
-			<OnHide>
-				InspectTalentFrame_OnHide();
-			</OnHide>
-			<OnLoad>
-				InspectTalentFrame_OnLoad(self);
-			</OnLoad>
+			<OnShow function="InspectTalentFrame_OnShow"/>
+			<OnHide function="InspectTalentFrame_OnHide"/>
+			<OnLoad function="InspectTalentFrame_OnLoad"/>
 		</Scripts>
 	</Frame>
 </Ui>

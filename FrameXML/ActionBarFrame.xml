@@ -3,18 +3,10 @@
 	<Script file="ActionButton.lua"/>
 	<CheckButton name="ActionBarButtonTemplate" inherits="SecureActionButtonTemplate, ActionButtonTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>
-				ActionButton_OnLoad(self);
-			</OnLoad>
-			<OnAttributeChanged>
-				ActionButton_UpdateAction(self);
-			</OnAttributeChanged>
-			<OnEvent>
-				ActionButton_OnEvent(self, event, ...);
-			</OnEvent>
-			<PostClick>
-				ActionButton_UpdateState(self);
-			</PostClick>
+			<OnLoad function="ActionButton_OnLoad"/>
+			<OnAttributeChanged function="ActionButton_UpdateAction"/>
+			<OnEvent function="ActionButton_OnEvent"/>
+			<PostClick function="ActionButton_UpdateState"/> 
 			<OnDragStart>
 				if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION") ) then
 					PickupAction(self.action);
@@ -27,15 +19,9 @@
 				ActionButton_UpdateState(self);
 				ActionButton_UpdateFlash(self);
 			</OnReceiveDrag>
-			<OnEnter>
-				ActionButton_SetTooltip(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnUpdate>
-				ActionButton_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnEnter function="ActionButton_SetTooltip"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnUpdate function="ActionButton_OnUpdate"/>
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="ActionButton1" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="1">

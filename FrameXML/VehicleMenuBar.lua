@@ -1,9 +1,9 @@
-local MAX_OVERLAY = 3;
-local MAX_ARTWORK = 10;
-local MAX_BORDER = 7;
-local MAX_BACKGROUND = 1;
+local VEHICLE_MAX_OVERLAY = 4;
+local VEHICLE_MAX_ARTWORK = 10;
+local VEHICLE_MAX_BORDER = 7;
+local VEHICLE_MAX_BACKGROUND = 3;
 
-local MAX_ACTIONBUTTONS = 6;
+VEHICLE_MAX_ACTIONBUTTONS = 6;
 
 local SkinsData = {
 	["Mechanical"] = {
@@ -55,11 +55,11 @@ local SkinsData = {
 			yOfs = 15,
 		},
 		["PitchSlider"] = {
-			height = 78,
+			height = 80,
 			width = 31,
 			point = "BOTTOMLEFT",
 			xOfs = 192,
-			yOfs = 5,
+			yOfs = 3,
 			pitchHidden = 1,
 		},
 		["PitchSliderBG"] = {
@@ -77,8 +77,58 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
 			texCoord = { 0.46875, 0.50390625, 0.45, 0.55 },
 		},
+		["HealthBar"] = {
+			height = 72,
+			width = 33,
+			point = "BOTTOMLEFT",
+			xOfs = 96,
+			yOfs = 10,
+		},
+		["HealthBarBackground"] = {
+			height = 92,
+			width = 38,
+			point = "BOTTOMLEFT",
+			xOfs = -2,
+			yOfs = -9,
+			texture = [[Interface\Vehicles\UI-Vehicles-FuelTank]],
+			texCoord = { 0.5390625, 0.953125, 0.0, 1.0 },
+		},
+		["HealthBarOverlay"] = {
+			height = 92,
+			width = 44,
+			point = "BOTTOMLEFT",
+			xOfs = -5,
+			yOfs = -9,
+			texture = [[Interface\Vehicles\UI-Vehicles-FuelTank]],
+			texCoord = { 0.015625, 0.4921875, 0.0, 1.0 },
+		},
+		["PowerBar"] = {
+			height = 72,
+			width = 33,
+			point = "BOTTOMRIGHT",
+			xOfs = -98,
+			yOfs = 10,
+		},
+		["PowerBarBackground"] = {
+			height = 92,
+			width = 38,
+			point = "BOTTOMLEFT",
+			xOfs = -2,
+			yOfs = -9,
+			texture = [[Interface\Vehicles\UI-Vehicles-FuelTank]],
+			texCoord = { 0.5390625, 0.953125, 0.0, 1.0 },
+		},
+		["PowerBarOverlay"] = {
+			height = 92,
+			width = 44,
+			point = "BOTTOMLEFT",
+			xOfs = -5,
+			yOfs = -9,
+			texture = [[Interface\Vehicles\UI-Vehicles-FuelTank]],
+			texCoord = { 0.015625, 0.4921875, 0.0, 1.0 },
+		},
 		[1] = {	--Left end cap
-			layer = "BORDER",
+			layer = "BACKGROUND",
 			height = 74,
 			width = 141,
 			point = "BOTTOMLEFT",
@@ -86,34 +136,14 @@ local SkinsData = {
 			texCoord = { 0.0, 0.55078125, 0.0, 0.2890625 },
 		},
 		[2] = {	--Right end cap
-			layer = "BORDER",
+			layer = "BACKGROUND",
 			height = 74,
 			width = 141,
 			point = "BOTTOMRIGHT",
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
 			texCoord = { 0.55078125, 0.0, 0.0, 0.2890625 },
 		},
-		[3] = {	--Left pump
-			layer = "OVERLAY",
-			height = 77,
-			width = 58,
-			point = "BOTTOMLEFT",
-			xOfs = 92,
-			yOfs = 13,
-			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
-			texCoord = { 0.5546875, 0.78125, 0.0, 0.30078125 },
-		},
-		[4] = {	--Right pump
-			layer = "OVERLAY",
-			height = 77,
-			width = 58,
-			point = "BOTTOMRIGHT",
-			xOfs = -92,
-			yOfs = 13,
-			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
-			texCoord = { 0.78125, 0.5546875, 0.0, 0.30078125 },
-		},
-		[5] = {	--Left border
+		[3] = {	--Left border
 			layer = "ARTWORK",
 			height = 96,
 			width = 24,
@@ -123,7 +153,7 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
 			texCoord = { 0.50390625, 0.59765625, 0.30859375, 0.68359375 },
 		},
-		[6] = {	--Pitch Buttons Background
+		[4] = {	--Pitch Buttons Background
 			layer = "BORDER",
 			height = 92,
 			width = 44,
@@ -134,7 +164,7 @@ local SkinsData = {
 			texCoord = { 0.21484375, 0.38671875, 0.3203125, 0.6796875 },
 			pitchHidden = 1,
 		},
-		[7] = {	--Right border
+		[5] = {	--Right border
 			layer = "ARTWORK",
 			height = 96,
 			width = 24,
@@ -144,7 +174,7 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
 			texCoord = { 0.90625, 1.0, 0.30859375, 0.68359375 },
 		},
-		[8] = {	--Pitch Slider border
+		[6] = {	--Pitch Slider border
 			layer = "ARTWORK",
 			height = 96,
 			width = 52,
@@ -155,7 +185,7 @@ local SkinsData = {
 			texCoord = { 0.59765625, 0.80078125, 0.30859375, 0.68359375 },
 			pitchHidden = 1,
 		},
-		[9] = {	--Action buttons background
+		[7] = {	--Action buttons background
 			layer = "BORDER",
 			height = 85,
 			width = 533,
@@ -166,7 +196,7 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
 			texCoord = { 0.0, 2.08203125, 0.68359375, 1.0 },
 		},
-		[10] = {	--Leave button background
+		[8] = {	--Leave button background
 			layer = "BORDER",
 			height = 92,
 			width = 54,
@@ -176,7 +206,7 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
 			texCoord = { 0.0, 0.2109375, 0.3203125, 0.6796875 },
 		},
-		[11] = {	--Border between micro buttons and leave button
+		[9] = {	--Border between micro buttons and leave button
 			layer = "ARTWORK",
 			height = 96,
 			width = 26,
@@ -186,7 +216,7 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
 			texCoord = { 0.59765625, 0.69921875, 0.30859375, 0.68359375 },
 		},
-		[12] = {	--Border between micro buttons and action buttons
+		[10] = {	--Border between micro buttons and action buttons
 			layer = "ARTWORK",
 			height = 96,
 			width = 26,
@@ -196,7 +226,7 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
 			texCoord = { 0.80078125, 0.90234375, 0.30859375, 0.68359375 },
 		},
-		[13] = {	--Border above pitch buttons
+		[11] = {	--Border above pitch buttons
 			layer = "ARTWORK",
 			height = 16,
 			width = 30,
@@ -207,7 +237,7 @@ local SkinsData = {
 			texCoord = { 0.25, 0.71875, 0.0, 1.0 },
 			pitchHidden = 1,
 		},
-		[14] = {	--Border above action buttons
+		[12] = {	--Border above action buttons
 			layer = "ARTWORK",
 			height = 16,
 			width = 375,
@@ -218,7 +248,7 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicle-Frame-Border]],
 			texCoord = { 0.0, 5.859375, 0.0, 1.0 },
 		},
-		[15] = {	--Border below action buttons
+		[13] = {	--Border below action buttons
 			layer = "ARTWORK",
 			height = 16,
 			width = 375,
@@ -229,7 +259,7 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicle-Frame-Border]],
 			texCoord = { 0.0, 5.859375, 0.0, 1.0 },
 		},
-		[16] = {	--Border above leave button
+		[14] = {	--Border above leave button
 			layer = "ARTWORK",
 			height = 16,
 			width = 41,
@@ -239,7 +269,7 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicle-Frame-Border]],
 			texCoord = { 0.1796875, 0.8203125, 0.0, 1.0 },
 		},
-		[17] = {	--Border above micro buttons
+		[15] = {	--Border above micro buttons
 			layer = "ARTWORK",
 			height = 16,
 			width = 116,
@@ -250,7 +280,7 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicle-Frame-Border]],
 			texCoord = { 0.0, 1.8125, 0.0, 1.0 },
 		},
-		[18] = {	--Left border
+		[16] = {	--Left border
 			layer = "ARTWORK",
 			height = 50,
 			width = 24,
@@ -334,25 +364,77 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
 			texCoord = { 0.46875, 0.50390625, 0.45, 0.55 },
 		},
+		["HealthBar"] = {
+			height = 74,
+			width = 38,
+			point = "BOTTOMLEFT",
+			xOfs = 119,
+			yOfs = 3,
+		},
+		["HealthBarBackground"] = {
+			height = 83,
+			width = 40,
+			point = "BOTTOMLEFT",
+			xOfs = -2,
+			yOfs = -9,
+			texture = [[Interface\Tooltips\UI-Tooltip-Background]],
+			texCoord = { 0.0, 1.0, 0.0, 1.0 },
+			vertexColor = { TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b },
+		},
+		["HealthBarOverlay"] = {
+			height = 105,
+			width = 46,
+			point = "BOTTOMLEFT",
+			xOfs = -5,
+			yOfs = -9,
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Organic-bottle]],
+			texCoord = { 0.46484375, 0.66015625, 0.0390625, 0.9375 },
+		},
+		["PowerBar"] = {
+			height = 74,
+			width = 38,
+			point = "BOTTOMRIGHT",
+			xOfs = -119,
+			yOfs = 3,
+		},
+		["PowerBarBackground"] = {
+			height = 83,
+			width = 40,
+			point = "BOTTOMLEFT",
+			xOfs = -2,
+			yOfs = -9,
+			texture = [[Interface\Tooltips\UI-Tooltip-Background]],
+			texCoord = { 0.5390625, 0.953125, 0.0, 1.0 },
+			vertexColor = { TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b },
+		},
+		["PowerBarOverlay"] = {
+			height = 105,
+			width = 46,
+			point = "BOTTOMLEFT",
+			xOfs = -5,
+			yOfs = -9,
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Organic-bottle]],
+			texCoord = { 0.46484375, 0.66015625, 0.0390625, 0.9375 },
+		},
 		[1] = {	--Left end cap
 			layer = "OVERLAY",
 			height = 128,
-			width = 170,
+			width = 114,
 			point = "BOTTOMLEFT",
-			xOfs = 0,
+			xOfs = 5,
 			yOfs = -15,
-			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Organic]],
-			texCoord = { 0.0, 0.6640625, 0.0, 1.0 },
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Organic-bottle]],
+			texCoord = { 0.0, 0.4453125, 0.0, 1.0 },
 		},
 		[2] = {	--Right end cap
 			layer = "OVERLAY",
 			height = 128,
-			width = 170,
+			width = 114,
 			point = "BOTTOMRIGHT",
-			xOfs = 0,
+			xOfs = -6,
 			yOfs = -15,
-			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Organic]],
-			texCoord = { 0.6640625, 0.0, 0.0, 1.0 },
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Organic-bottle]],
+			texCoord = { 0.4453125, 0.0, 0.0, 1.0 },
 		},
 		[3] = {	--Top right buckle
 			layer = "ARTWORK",
@@ -388,7 +470,7 @@ local SkinsData = {
 		[6] = {	--Top border
 			layer = "BORDER",
 			height = 16,
-			width = 533,
+			width = 473,
 			tile = true,
 			point = "BOTTOMRIGHT",
 			xOfs = -237,
@@ -490,6 +572,26 @@ local SkinsData = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
 			texCoord = { 0.640625, 0.78125, 0.06640625, 0.15625 },
 		},
+		[16] = {	--Right vertical cap
+			layer = "OVERLAY",
+			height = 103,
+			width = 9,
+			point = "BOTTOMRIGHT",
+			xOfs = -158,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Organic-bottle]],
+			texCoord = { 0.71484375, 0.7578125, 0.0, 1.0 },
+		},
+		[17] = {	--Left vertical cap
+			layer = "OVERLAY",
+			height = 103,
+			width = 9,
+			point = "BOTTOMLEFT",
+			xOfs = 158,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Organic-bottle]],
+			texCoord = { 0.7578125, 0.71484375, 0.0, 1.0 },
+		},
 	},
 }
 
@@ -564,7 +666,13 @@ function VehicleMenuBar_SetSkin(skinName, pitchVisible)
 				frame:SetTexCoord( unpack(framedata.texCoord) );
 			end
 			
-		
+			if ( frame.SetVertexColor ) then
+				if ( framedata.vertexColor ) then
+					frame:SetVertexColor( unpack(framedata.vertexColor) );
+				else
+					frame:SetVertexColor( 1.0, 1.0, 1.0, 1.0 );
+				end
+			end
 			
 			if ( framedata.point ) then
 				frame:ClearAllPoints();
@@ -641,16 +749,16 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 end
 function VehicleMenuBar_ReleaseSkins()
 	VehicleMenuBar.currSkin = nil;
-	for i=1, MAX_BACKGROUND do
+	for i=1, VEHICLE_MAX_BACKGROUND do
 		getglobal("VehicleMenuBarArtFrameBACKGROUND"..i):SetTexture(nil);
 	end
-	for i=1, MAX_BORDER do
+	for i=1, VEHICLE_MAX_BORDER do
 		getglobal("VehicleMenuBarArtFrameBORDER"..i):SetTexture(nil);
 	end
-	for i=1, MAX_ARTWORK do
+	for i=1, VEHICLE_MAX_ARTWORK do
 		getglobal("VehicleMenuBarArtFrameARTWORK"..i):SetTexture(nil);
 	end
-	for i=1, MAX_OVERLAY do
+	for i=1, VEHICLE_MAX_OVERLAY do
 		getglobal("VehicleMenuBarArtFrameOVERLAY"..i):SetTexture(nil);
 	end
 	
@@ -667,7 +775,7 @@ end
 
 function VehicleMenuBar_UpdateActionBars()
 	local frame;
-	for i=1, MAX_ACTIONBUTTONS do
+	for i=1, VEHICLE_MAX_ACTIONBUTTONS do
 		frame = getglobal("VehicleMenuBarActionButton"..i);
 		frame:GetNormalTexture():SetHeight(105);
 		frame:GetNormalTexture():SetWidth(105);
@@ -677,8 +785,31 @@ function VehicleMenuBar_UpdateActionBars()
 	end
 end
 
+function VehicleActionButton_OnClick(self, button, down)
+	if ( IsModifiedClick("CHATLINK") ) then
+		local spellType, id, subType, spellID = GetActionInfo(self.action);
+		if ( spellType == "spell" ) then
+			if ( HandleModifiedItemClick(GetSpellLink(spellID)) ) then
+				return;
+			end
+		end
+	end
+	SecureActionButton_OnClick(self, button, down);
+end
+
 function VehicleMenuBar_OnLoad(self)
 	VehicleMenuBar_UpdateActionBars();
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_DISPLAYPOWER");
+end
+
+function VehicleMenuBar_OnEvent(self, event, ...)
+	if ( event == "UNIT_ENTERED_VEHICLE" ) then
+		UnitFrameHealthBar_Update(VehicleMenuBarHealthBar, "vehicle");
+		UnitFrameManaBar_Update(VehicleMenuBarPowerBar, "vehicle");
+	elseif ( event == "UNIT_DISPLAYPOWER" ) then	--For those crazy helicopter-cats that turn into bears
+		UnitFrameManaBar_Update(VehicleMenuBarPowerBar, "vehicle");
+	end
 end
 
 function VehicleMenuBarPitch_OnLoad(self)
@@ -705,6 +836,16 @@ end
 
 function VehicleMenuBarPitch_SetValue(pitch)
 	VehicleMenuBarPitchSliderMarker:SetPoint("CENTER",VehicleMenuBarPitchSlider, "BOTTOM", 0, pitch * (VehicleMenuBarPitchSlider:GetHeight() - 20) + 8 );
+end
+
+function VehicleMenuBarStatusBars_ShowTooltip(self)
+	if ( GetMouseFocus() == self ) then
+		local value = self:GetValue();
+		local _, valueMax = self:GetMinMaxValues();
+		local text = format("%s/%s (%s%%)", TextStatusBar_CapDisplayOfNumericValue(value), TextStatusBar_CapDisplayOfNumericValue(valueMax), tostring(math.ceil((value / valueMax) * 100)));
+		GameTooltip:SetOwner(self, self.tooltipAnchorPoint);
+		GameTooltip:SetText(text, 1.0,1.0,1.0 );
+	end
 end
 
 ----------Seat Indicator--------------
@@ -765,6 +906,32 @@ local SeatIndicatorSkinsData = {
 		[4] = {
 			xPos = -51,
 			yPos = -60,
+		},
+	},
+	["Mammoth"] = {
+		Overall = {
+			height = 128,
+			width = 128,
+			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Mammoth",
+		},
+		[1] = {
+			xPos = -30,
+			yPos = -84,
+		},
+		[2] = {
+			xPos = -75,
+			yPos = -84,
+		},
+	},
+	["Motorcycle"] = {
+		Overall = {
+			height = 128,
+			width = 128,
+			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Motorcycle",
+		},
+		[1] = {
+			xPos = -30,
+			yPos = -78,
 		},
 	},
 }
@@ -839,6 +1006,8 @@ function VehicleSeatIndicator_OnLoad(self)
 	self:RegisterEvent("VEHICLE_PASSENGERS_CHANGED");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+
+	UIDropDownMenu_Initialize( VehicleSeatIndicatorDropDown, VehicleSeatIndicatorDropDown_Initialize, "MENU");
 end
 
 function VehicleSeatIndicator_OnEvent(self, event, ...)
@@ -880,8 +1049,13 @@ function VehicleSeatIndicator_Update()
 	end
 end
 
-function VehicleSeatIndicatorButton_OnClick(self)
-	UnitSwitchToVehicleSeat("player", self:GetID());
+function VehicleSeatIndicatorButton_OnClick(self, button)
+	local seatIndex = self:GetID();
+	if ( button == "RightButton" and CanEjectPassengerFromSeat(seatIndex)) then
+		ToggleDropDownMenu(1, seatIndex, VehicleSeatIndicatorDropDown, self:GetName(), 0, -5);
+	else
+		UnitSwitchToVehicleSeat("player", seatIndex);
+	end
 end
 
 function VehicleSeatIndicatorButton_OnEnter(self)
@@ -927,4 +1101,16 @@ end
 function VehicleSeatIndicatorButton_OnLeave(self)
 	GameTooltip:Hide();
 	SetCursor(nil);
+end
+
+function VehicleSeatIndicatorDropDown_OnClick()
+	EjectPassengerFromSeat(UIDROPDOWNMENU_MENU_VALUE);
+	PlaySound("UChatScrollButton");
+end
+
+function VehicleSeatIndicatorDropDown_Initialize()
+	info = UIDropDownMenu_CreateInfo();
+	info.text = EJECT_PASSENGER;
+	info.func = VehicleSeatIndicatorDropDown_OnClick;
+	UIDropDownMenu_AddButton(info);
 end

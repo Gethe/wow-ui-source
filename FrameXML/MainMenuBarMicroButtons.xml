@@ -12,9 +12,7 @@
 			<OnEnter>
 				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
@@ -43,9 +41,7 @@
             </Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				CharacterMicroButton_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="CharacterMicroButton_OnLoad"/>
 			<OnMouseDown>
 				if ( self.down ) then
 					self.down = nil;
@@ -73,9 +69,7 @@
 					self.down = 1;
 				end
 			</OnMouseUp>
-			<OnEvent>
-				CharacterMicroButton_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="CharacterMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>
 	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
@@ -121,12 +115,8 @@
 				self:RegisterEvent("UNIT_LEVEL");
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			</OnLoad>
-			<OnClick>
-				ToggleTalentFrame();
-			</OnClick>
-			<OnEvent>
-				TalentMicroButton_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnClick function="ToggleTalentFrame"/>
+			<OnEvent function="TalentMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>
 	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
@@ -142,11 +132,8 @@
 				LoadMicroButtonTextures(self, "Achievement");
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			</OnLoad>
-			<OnEvent>
-				-- Put here to show/hide the achievement button
-				AchievementMicroButton_Update();
-			</OnEvent>
-			<OnClick>
+			<OnEvent function="AchievementMicroButton_Update"/>
+			<OnClick> 
 				ToggleAchievementFrame();
 			</OnClick>
 			<OnEnter>
@@ -244,7 +231,7 @@
 			<OnMouseDown>
 				if ( self.down ) then
 					self.down = nil;
-					ToggleFrame(PVPFrame);
+					ToggleFrame(PVPParentFrame);
 					return;
 				end
 				PVPMicroButton_SetPushed();
@@ -254,7 +241,7 @@
 				if ( self.down ) then
 					self.down = nil;
 					if ( MouseIsOver(self) ) then
-						ToggleFrame(PVPFrame);
+						ToggleFrame(PVPParentFrame);
 					else
 						UpdateMicroButtons();
 					end
@@ -433,9 +420,7 @@
 				self.tooltipText = HELP_BUTTON;
 				self.newbieText = NEWBIE_TOOLTIP_HELP;
 			</OnLoad>
-			<OnClick>
-				ToggleHelpFrame();
-			</OnClick>
+			<OnClick function="ToggleHelpFrame"/>
 		</Scripts>
 	</Button>
 </Ui>

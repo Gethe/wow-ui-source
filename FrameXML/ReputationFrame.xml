@@ -209,9 +209,7 @@
 				getglobal(self:GetName().."BottomLine"):SetHeight(0);
 				getglobal(self:GetName().."BottomLine"):SetPoint("TOP", self:GetName().."ExpandOrCollapseButton", "CENTER", 5, 0);
 			</OnLoad>
-			<OnClick>
-				ReputationBar_OnClick(self);
-			</OnClick>
+			<OnClick function="ReputationBar_OnClick"/>
 			<OnEnter>
 				if (self.tooltip) then
 					getglobal(self:GetName().."ReputationBarFactionStanding"):SetText(self.tooltip);
@@ -526,9 +524,7 @@
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, FACTION, 1.0, 1.0, 1.0, REPUTATION_FACTION_DESCRIPTION, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>		
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="StandingMouseOver">
@@ -540,9 +536,7 @@
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, STANDING, 1.0, 1.0, 1.0, REPUTATION_STANDING_DESCRIPTION, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="ReputationDetailFrame" enableMouse="true" hidden="true">
@@ -685,9 +679,7 @@
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(REPUTATION_AT_WAR_DESCRIPTION, nil, nil, nil, nil, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -737,9 +729,7 @@
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(REPUTATION_MOVE_TO_INACTIVE, nil, nil, nil, nil, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="ReputationDetailMainScreenCheckBox" inherits="OptionsSmallCheckButtonTemplate">
@@ -774,27 +764,17 @@
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(REPUTATION_SHOW_AS_XP, nil, nil, nil, nil, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
 				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ReputationFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				ReputationFrame_OnShow();
-			</OnShow>
-			<OnEvent>
-				ReputationFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
+			<OnLoad function="ReputationFrame_OnLoad"/>
+			<OnShow function="ReputationFrame_OnShow"/>
+			<OnEvent function="ReputationFrame_OnEvent"/>
+			<OnMouseWheel function=""/>
 		</Scripts>
 	</Frame>
 	<Frame name="ReputationWatchBar" enableMouse="true" parent="MainMenuBar" hidden="true">
@@ -953,9 +933,7 @@
 				end
 				UIParent_ManageFramePositions();
 			</OnShow>
-			<OnHide>
-				UIParent_ManageFramePositions();
-			</OnHide>
+			<OnHide function="UIParent_ManageFramePositions"/>
 			<OnEnter>
 				ReputationWatchStatusBarText:Show();
 			</OnEnter>

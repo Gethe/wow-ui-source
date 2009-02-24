@@ -95,9 +95,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				PVPStandard_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="PVPStandard_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Button name="PVPTeamBorderTemplate" virtual="true">
@@ -198,21 +196,12 @@
 			<OnLoad>
 				self:SetAlpha(0.4);
 			</OnLoad>
-			<OnEnter>
-				PVPTeam_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				PVPTeam_OnLeave(self);
-			</OnLeave>
-			<OnClick>
-				PVPTeam_OnClick(self, self:GetID());
-			</OnClick>
-			<OnMouseDown>
-				PVPTeam_OnMouseDown(self);
-			</OnMouseDown>
-			<OnMouseUp>
-				PVPTeam_OnMouseUp(self);
-			</OnMouseUp>
+			<OnEnter function="PVPTeam_OnEnter"/>
+			<OnLeave function="PVPTeam_OnLeave"/>
+			<OnClick function="PVPTeam_OnClick"/>
+			<OnMouseDown function="PVPTeam_OnMouseDown"/>
+			<OnMouseUp function="PVPTeam_OnMouseUp"/>
+			<OnShow function="PVPTeam_OnMouseUp"/>
 		</Scripts>
 	</Button>
 	<Frame name="PVPTeamDataTemplate" virtual="true">

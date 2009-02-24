@@ -19,33 +19,15 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				MovieFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				MovieFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				MovieFrame_OnHide(self);
-			</OnHide>
-			<OnEvent>
-				MovieFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				MovieFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnKeyUp>
-				MovieFrame_OnKeyUp(self, key);
-			</OnKeyUp>
-			<OnMovieFinished>
-				MovieFrame_OnMovieFinished(self);
-			</OnMovieFinished>
-			<OnMovieShowSubtitle>
-				MovieFrame_OnMovieShowSubtitle(self, text);
-			</OnMovieShowSubtitle>
-			<OnMovieHideSubtitle>
-				MovieFrame_OnMovieHideSubtitle(self);
-			</OnMovieHideSubtitle>
+			<OnLoad function="MovieFrame_OnLoad"/>
+			<OnShow function="MovieFrame_OnShow"/>
+			<OnHide function="MovieFrame_OnHide"/>
+			<OnEvent function="MovieFrame_OnEvent"/>
+			<OnUpdate function="MovieFrame_OnUpdate"/>
+			<OnKeyUp function="MovieFrame_OnKeyUp"/>
+			<OnMovieFinished function="MovieFrame_OnMovieFinished"/>
+			<OnMovieShowSubtitle function="MovieFrame_OnMovieShowSubtitle"/>
+			<OnMovieHideSubtitle function="MovieFrame_OnMovieHideSubtitle"/>
 		</Scripts>
 	</MovieFrame>
 </Ui>

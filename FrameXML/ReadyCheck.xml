@@ -106,12 +106,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ReadyCheckFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				ReadyCheckFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="ReadyCheckFrame_OnLoad"/>
+			<OnEvent function="ReadyCheckFrame_OnEvent"/>
 			<OnHide>
 				ReadyCheckFrame_OnHide(self);
 			</OnHide>

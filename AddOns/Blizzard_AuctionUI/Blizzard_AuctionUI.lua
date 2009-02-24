@@ -279,6 +279,9 @@ function AuctionFrame_Show()
 		FauxScrollFrame_SetOffset(AuctionsScrollFrame,0);
 		GetOwnerAuctionItems(AuctionFrameAuctions.page)
 
+		BrowsePrevPageButton.isEnabled = nil;
+		BrowseNextPageButton.isEnabled = nil;
+		
 		if ( not AuctionFrame:IsShown() ) then
 			CloseAuctionHouse();
 		end
@@ -292,16 +295,14 @@ end
 function AuctionFrame_OnShow (self)
 	self.gotAuctions = nil;
 	self.gotBids = nil;
-	AuctionFrameTab_OnClick(nil, 1);
+	AuctionFrameTab_OnClick(AuctionFrameTab1);
 	SetPortraitTexture(AuctionPortraitTexture,"npc");
 	BrowseNoResultsText:SetText(BROWSE_SEARCH_TEXT);
 	PlaySound("AuctionWindowOpen");
 end
 
 function AuctionFrameTab_OnClick(self, index)
-	if ( not index ) then
-		index = self:GetID();
-	end
+	local index = self:GetID();
 	PanelTemplates_SetTab(AuctionFrame, index);
 	AuctionFrameAuctions:Hide();
 	AuctionFrameBrowse:Hide();
@@ -857,34 +858,34 @@ function AuctionFrameBrowse_Update()
 	-- Update scrollFrame
 	-- If more than one page of auctions show the next and prev arrows when the scrollframe is scrolled all the way down
 	if ( totalAuctions > NUM_AUCTION_ITEMS_PER_PAGE ) then
+		if ( AuctionFrameBrowse.page == 0 ) then
+--			BrowsePrevPageButton:Disable();
+			BrowsePrevPageButton.isEnabled = nil;
+		else
+--			BrowsePrevPageButton:Enable();
+			BrowsePrevPageButton.isEnabled = 1;
+		end
+		if ( AuctionFrameBrowse.page == (ceil(totalAuctions/NUM_AUCTION_ITEMS_PER_PAGE) - 1) ) then
+--			BrowseNextPageButton:Disable();
+			BrowseNextPageButton.isEnabled = nil;
+		else
+--			BrowseNextPageButton:Enable();
+			BrowseNextPageButton.isEnabled = 1;
+		end
 		if ( isLastSlotEmpty ) then
-			BrowsePrevPageButton:Show();
-			BrowseNextPageButton:Show();
 			BrowseSearchCountText:Show();
 			local itemsMin = AuctionFrameBrowse.page * NUM_AUCTION_ITEMS_PER_PAGE + 1;
 			local itemsMax = itemsMin + numBatchAuctions - 1;
 			BrowseSearchCountText:SetFormattedText(NUMBER_OF_RESULTS_TEMPLATE, itemsMin, itemsMax, totalAuctions);
-			if ( AuctionFrameBrowse.page == 0 ) then
-				BrowsePrevPageButton.isEnabled = nil;
-			else
-				BrowsePrevPageButton.isEnabled = 1;
-			end
-			if ( AuctionFrameBrowse.page == (ceil(totalAuctions/NUM_AUCTION_ITEMS_PER_PAGE) - 1) ) then
-				BrowseNextPageButton.isEnabled = nil;
-			else
-				BrowseNextPageButton.isEnabled = 1;
-			end
 		else
-			BrowsePrevPageButton:Hide();
-			BrowseNextPageButton:Hide();
 			BrowseSearchCountText:Hide();
 		end
 		
 		-- Artifically inflate the number of results so the scrollbar scrolls one extra row
 		numBatchAuctions = numBatchAuctions + 1;
 	else
-		BrowsePrevPageButton:Hide();
-		BrowseNextPageButton:Hide();
+		BrowsePrevPageButton:Disable();
+		BrowseNextPageButton:Disable();
 		BrowseSearchCountText:Hide();
 	end
 	FauxScrollFrame_Update(BrowseScrollFrame, numBatchAuctions, NUM_BROWSE_TO_DISPLAY, AUCTIONS_BUTTON_HEIGHT);
@@ -1081,7 +1082,7 @@ function AuctionFrameAuctions_OnLoad(self)
 	-- set default sort
 	AuctionFrame_SetSort("owner", "duration", false);
 
-	AuctionsRadioButton_OnClick(2);
+	AuctionsRadioButton_OnClick(nil, 2);
 end
 
 function AuctionFrameAuctions_OnEvent(self, event, ...)
@@ -1304,7 +1305,13 @@ function AuctionsButton_OnClick(button)
 	AuctionFrameAuctions_Update();
 end
 
-function AuctionsRadioButton_OnClick(index)
+function AuctionsRadioButton_OnClick(self, index)
+	if ( self and not index ) then
+		index = self:GetID();
+	elseif ( not index ) then
+		assert(self);
+	end
+	
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	AuctionsShortAuctionButton:SetChecked(nil);
 	AuctionsMediumAuctionButton:SetChecked(nil);
@@ -1352,6 +1359,11 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 		end
 		UpdateDeposit();
 	end
+end
+
+function AuctionSellItemButton_OnClick(self, button)
+	ClickAuctionSellItemButton(self, button);
+	AuctionsFrameAuctions_ValidateAuction();
 end
 
 function AuctionsFrameAuctions_ValidateAuction()

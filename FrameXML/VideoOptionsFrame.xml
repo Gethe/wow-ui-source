@@ -20,7 +20,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						VideoOptionsFrameOkay_OnClick(true);
+						VideoOptionsFrameOkay_OnClick(self, button, true);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -32,9 +32,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentApply" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						VideoOptionsFrameCancel_OnClick();
-					</OnClick>
+					<OnClick function="VideoOptionsFrameCancel_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
@@ -45,9 +43,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						VideoOptionsFrameOkay_OnClick();
-					</OnClick>
+					<OnClick function="VideoOptionsFrameOkay_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentDefaults" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
@@ -64,18 +60,14 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOption");
-						VideoOptionsFrameDefault_OnClick();
+						VideoOptionsFrameDefault_OnClick(self, button);
 					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				VideoOptionsFrame_OnLoad(self);
-			</OnLoad>
-			<OnHide>
-				VideoOptionsFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="VideoOptionsFrame_OnLoad"/>
+			<OnHide function="VideoOptionsFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

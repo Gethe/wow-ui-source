@@ -391,8 +391,13 @@ function ExhaustionToolTipText()
 	if ( GetTimeToWellRested() ) then
 		exhaustionCountdown = GetTimeToWellRested() / 60;
 	end
+	
+	local currXP = UnitXP("player");
+	local nextXP = UnitXPMax("player");
+	local percentXP = math.ceil(currXP/nextXP*100);
 
-	local tooltipText = format(EXHAUST_TOOLTIP1, exhaustionStateName, exhaustionStateMultiplier);
+	local XPText = format( XP_TEXT, currXP, nextXP, percentXP );
+	local tooltipText = XPText..format(EXHAUST_TOOLTIP1, exhaustionStateName, exhaustionStateMultiplier);
 	local append = nil;
 	if ( IsResting() ) then
 		if ( exhaustionThreshold and exhaustionCountdown ) then

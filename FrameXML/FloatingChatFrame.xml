@@ -107,12 +107,8 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						FCFOptionsDropDown_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						FCFOptionsDropDown_OnLoad(self);
-					</OnShow>
+					<OnLoad function="FCFOptionsDropDown_OnLoad"/>
+					<OnShow function="FCFOptionsDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -129,9 +125,7 @@
 			<OnEnter>
 				GameTooltip_AddNewbieTip(self, CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnDragStart>
 				-- mschweitzer NOTE: part of a fix for bug 93334. if a tab is fading out, its frame shouldn't be draggable
 				-- because we can potentially get into a state where the tab disappears while we drag
@@ -248,7 +242,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentResizeTopLeft">
+			<Button name="$parentResizeTopLeft" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -273,18 +267,14 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel()-1);
-					</OnLoad>
+					<OnLoad function="LowerFrameLevel"/>
 					<OnMouseDown>
 						FCF_Resize(self, "TOPLEFT");
 					</OnMouseDown>
-					<OnMouseUp>
-						FCF_StopResize(self);
-					</OnMouseUp> 
+					<OnMouseUp function="FCF_StopResize"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeTopRight">
+			<Button name="$parentResizeTopRight" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -309,18 +299,14 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel()-1);
-					</OnLoad>
+					<OnLoad function="LowerFrameLevel"/>
 					<OnMouseDown>
 						FCF_Resize(self, "TOPRIGHT");
 					</OnMouseDown>
-					<OnMouseUp>
-						FCF_StopResize(self);
-					</OnMouseUp> 
+					<OnMouseUp function="FCF_StopResize"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeBottomLeft">
+			<Button name="$parentResizeBottomLeft" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -345,18 +331,14 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel()-1);
-					</OnLoad>
+					<OnLoad function="LowerFrameLevel"/>
 					<OnMouseDown>
 						FCF_Resize(self, "BOTTOMLEFT");
 					</OnMouseDown>
-					<OnMouseUp>
-						FCF_StopResize(self);
-					</OnMouseUp> 
+					<OnMouseUp function="FCF_StopResize"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeBottomRight">
+			<Button name="$parentResizeBottomRight" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -381,18 +363,14 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel()-1);
-					</OnLoad>
+					<OnLoad function="LowerFrameLevel"/>
 					<OnMouseDown>
 						FCF_Resize(self, "BOTTOMRIGHT");
 					</OnMouseDown>
-					<OnMouseUp>
-						FCF_StopResize(self);
-					</OnMouseUp> 
+					<OnMouseUp function="FCF_StopResize"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeTop">
+			<Button name="$parentResizeTop" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -423,18 +401,14 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel()-1);
-					</OnLoad>
+					<OnLoad function="LowerFrameLevel"/>
 					<OnMouseDown>
 						FCF_Resize(self, "TOP");
 					</OnMouseDown>
-					<OnMouseUp>
-						FCF_StopResize(self);
-					</OnMouseUp> 
+					<OnMouseUp function="FCF_StopResize"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeBottom">
+			<Button name="$parentResizeBottom" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -465,18 +439,14 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel()-1);
-					</OnLoad>
+					<OnLoad function="LowerFrameLevel"/>
 					<OnMouseDown>
 						FCF_Resize(self, "BOTTOM");
 					</OnMouseDown>
-					<OnMouseUp>
-						FCF_StopResize(self);
-					</OnMouseUp> 
+					<OnMouseUp function="FCF_StopResize"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeLeft">
+			<Button name="$parentResizeLeft" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -507,18 +477,14 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel()-1);
-					</OnLoad>
+					<OnLoad function="LowerFrameLevel"/>
 					<OnMouseDown>
 						FCF_Resize(self, "LEFT");
 					</OnMouseDown>
-					<OnMouseUp>
-						FCF_StopResize(self);
-					</OnMouseUp> 
+					<OnMouseUp function="FCF_StopResize"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeRight">
+			<Button name="$parentResizeRight" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -549,15 +515,11 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel()-1);
-					</OnLoad>
+					<OnLoad function="LowerFrameLevel"/>
 					<OnMouseDown>
 						FCF_Resize(self, "RIGHT");
 					</OnMouseDown>
-					<OnMouseUp>
-						FCF_StopResize(self);
-					</OnMouseUp> 
+					<OnMouseUp function="FCF_StopResize"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentBottomButton">
@@ -599,12 +561,8 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						MessageFrameScrollButton_OnLoad(self);
-					</OnLoad>
-					<OnUpdate>
-						MessageFrameScrollButton_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnLoad function="MessageFrameScrollButton_OnLoad"/>
+					<OnUpdate function="MessageFrameScrollButton_OnUpdate"/>
 					<OnClick>
 						if ( self:GetButtonState() == "PUSHED" ) then
 							self.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
@@ -627,12 +585,8 @@
 					<Anchor point="BOTTOM" relativeTo="$parentDownButton" relativePoint="TOP"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						MessageFrameScrollButton_OnLoad(self);
-					</OnLoad>
-					<OnUpdate>
-						MessageFrameScrollButton_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnLoad function="MessageFrameScrollButton_OnLoad"/>
+					<OnUpdate function="MessageFrameScrollButton_OnUpdate"/>
 					<OnClick>
 						if ( self:GetButtonState() == "PUSHED" ) then
 							self.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
@@ -763,9 +717,7 @@
 			<OnEnter>
 				GameTooltip_AddNewbieTip(self, CHAT_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATMENU, 1);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down"/>
@@ -777,39 +729,24 @@
 			<Anchor point="BOTTOMLEFT" relativeTo="ChatFrameMenuButton" relativePoint="TOPRIGHT"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				self.chatFrame = DEFAULT_CHAT_FRAME;
-				ChatMenu_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				ChatMenu_OnShow(self);
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnShow>
+			<OnLoad function="ChatMenu_OnLoad"/>
+			<OnShow function="ChatMenu_OnShow"/>
 		</Scripts>
 	</Frame>
 	<Frame name="EmoteMenu" inherits="UIMenuTemplate" hidden="true" parent="ChatMenu">
 		<Scripts>
-			<OnLoad>
-				EmoteMenu_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="EmoteMenu_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Frame name="LanguageMenu" inherits="UIMenuTemplate" hidden="true" parent="ChatMenu">
 		<Scripts>
-			<OnLoad>
-				LanguageMenu_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				LanguageMenu_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="LanguageMenu_OnLoad"/>
+			<OnEvent function="LanguageMenu_OnEvent"/>
 		</Scripts>
 	</Frame>
 	<Frame name="VoiceMacroMenu" inherits="UIMenuTemplate" hidden="true" parent="ChatMenu">
 		<Scripts>
-			<OnLoad>
-				VoiceMacroMenu_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="VoiceMacroMenu_OnLoad"/>
 		</Scripts>
 	</Frame>	
 	<Frame name="ChatFrame2TabDockRegion" inherits="DockRegionTemplate"/>

@@ -17,12 +17,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				StatsFrame_OnLoad(self);
-			</OnLoad>
-			<OnUpdate>
-				StatsFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="StatsFrame_OnLoad"/>
+			<OnUpdate function="StatsFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

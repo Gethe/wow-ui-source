@@ -125,9 +125,7 @@
 						GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1);
 						GameTooltip:Show();
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="InspectPVPFrameArena">
@@ -182,9 +180,7 @@
 						GameTooltip:AddLine(TOOLTIP_ARENA_POINTS, nil, nil, nil, 1);
 						GameTooltip:Show();
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 		<!-- Individual -->
@@ -475,15 +471,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				InspectPVPFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				InspectPVPFrame_OnShow();
-			</OnShow>
-			<OnEvent>
-				InspectPVPFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="InspectPVPFrame_OnLoad"/>
+			<OnShow function="InspectPVPFrame_OnShow"/>
+			<OnEvent function="InspectPVPFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

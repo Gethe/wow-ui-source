@@ -96,9 +96,7 @@
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, MOVIE_RECORDING_COMPRESSING_CANCEL_NEWBIE_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, MOVIE_RECORDING_COMPRESSING_CANCEL_TOOLTIP, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
@@ -109,22 +107,14 @@
 			<OnEnter>
 				GameTooltip_AddNewbieTip(self, MovieRecording_GetMovieFullPath());
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnLoad>
 				self:RegisterEvent("MOVIE_COMPRESSING_PROGRESS");
 			</OnLoad>
 			<OnEvent>
-				if ( event == "MOVIE_COMPRESSING_PROGRESS" ) then
-					MovieRecordingProgress_OnUpdate(self, elapsed);
-					self:Show();
-				end
+				self:Show();
 			</OnEvent>
-			<OnUpdate>
-				MovieRecordingProgress_OnUpdate(self, elapsed);
-			</OnUpdate>
-			
+			<OnUpdate function="MovieRecordingProgress_OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

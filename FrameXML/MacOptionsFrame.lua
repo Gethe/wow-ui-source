@@ -9,7 +9,9 @@ MacOptionsFrameCheckButtons["ITUNES_SHOW_FEEDBACK"] = { index = 7, cvar = "iTune
 MacOptionsFrameCheckButtons["ITUNES_SHOW_ALL_TRACK_CHANGES"] = { index = 8, cvar = "iTunesTrackDisplay", tooltipText = ITUNES_SHOW_ALL_TRACK_CHANGES_TOOLTIP};
 
 function MacOptionsFrame_OnLoad(self)
-	self:RegisterEvent("CVAR_UPDATE");
+	if(IsMacClient()) then
+		self:RegisterEvent("CVAR_UPDATE");
+	end
 end
 
 function MacOptionsFrame_OnEvent(self, event, ...)
@@ -100,6 +102,9 @@ function MacOptionsFrame_Cancel()
 end
 
 function MacOptionsFrameResolutionDropDown_OnLoad(self)
+	if ( not IsMacClient() ) then
+		return;
+	end
 	local ratio, width;
 	
 	UIDropDownMenu_Initialize(self, MacOptionsFrameResolutionDropDown_Initialize);
@@ -172,6 +177,10 @@ function MacOptionsFrameResolutionButton_OnClick(self)
 end
 
 function MacOptionsFrameFramerateDropDown_OnLoad(self)
+	if ( not IsMacClient() ) then
+		return;
+	end
+	
 	UIDropDownMenu_Initialize(self, MacOptionsFrameFramerateDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, GetCVar("MovieRecordingFramerate"));
 	UIDropDownMenu_SetWidth(self, 110);
@@ -213,6 +222,10 @@ function MacOptionsFrameCodecDropDown_OnClick(self)
 end
 
 function MacOptionsFrameCodecDropDown_OnLoad(self)
+	if ( not IsMacClient() ) then
+		return;
+	end
+	
 	UIDropDownMenu_Initialize(self, MacOptionsFrameCodecDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, tonumber(GetCVar("MovieRecordingCompression")));
 	UIDropDownMenu_SetWidth(self, 110);

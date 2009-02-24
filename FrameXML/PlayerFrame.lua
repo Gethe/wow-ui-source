@@ -1,6 +1,11 @@
 REQUIRED_REST_HOURS = 5;
 
 function PlayerFrame_OnLoad(self)
+	UnitFrame_Initialize(self, "player", PlayerName, PlayerPortrait,
+						 PlayerFrameHealthBar, PlayerFrameHealthBarText, 
+						 PlayerFrameManaBar, PlayerFrameManaBarText,
+						 PlayerFrameFlash);
+						 
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
@@ -158,9 +163,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 		self.onHateList = nil;
 		PlayerFrame_UpdateStatus();
 
-		if ( LowHealthFrame.flashing ) then
-			CombatFeedback_StopFullscreenStatus();
-		end
+		CombatFeedback_StopFullscreenStatus();
 	elseif ( event == "PLAYER_UPDATE_RESTING" ) then
 		PlayerFrame_UpdateStatus();
 	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then

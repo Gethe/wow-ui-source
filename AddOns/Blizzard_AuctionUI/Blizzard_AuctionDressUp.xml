@@ -69,12 +69,8 @@
 				</Anchor>
 			</Anchors>
                 <Scripts>
-                <OnLoad>
-                    Model_OnLoad(self);
-                </OnLoad>
-                <OnUpdate>
-					Model_OnUpdate(self, elapsed);
-                </OnUpdate>
+                <OnLoad function="Model_OnLoad"/>
+                <OnUpdate function="Model_OnUpdate"/>
             </Scripts>
 			<Frames>
 				<Button name="AuctionDressUpModelRotateLeftButton">
@@ -171,15 +167,9 @@
 		</DressUpModel>
 	</Frames>
 	<Scripts>
-		<OnLoad>
-			SetAuctionDressUpBackground();
-        </OnLoad>
-		<OnShow>
-			AuctionDressUpFrame_OnShow(self);
-		</OnShow>
-		<OnHide>
-			AuctionDressUpFrame_OnHide(self);
-		</OnHide>
+		<OnLoad function="SetAuctionDressUpBackground"/>
+		<OnShow function="AuctionDressUpFrame_OnShow"/>
+		<OnHide function="AuctionDressUpFrame_OnHide"/>
 	</Scripts>
 </Frame>
 </Ui>

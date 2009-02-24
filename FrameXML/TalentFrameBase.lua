@@ -1,4 +1,5 @@
-MAX_TALENT_TABS = 5;
+MAX_TALENT_GROUPS = 2;
+MAX_TALENT_TABS = 3;
 MAX_NUM_TALENT_TIERS = 15;
 NUM_TALENT_COLUMNS = 4;
 MAX_NUM_TALENTS = 40;
@@ -10,6 +11,8 @@ MAX_NUM_BRANCH_TEXTURES = 30;
 MAX_NUM_ARROW_TEXTURES = 30;
 INITIAL_TALENT_OFFSET_X = 35;
 INITIAL_TALENT_OFFSET_Y = 20;
+
+TALENT_HYBRID_ICON = "Interface\\Icons\\Ability_DualWieldSpecialization";
 
 TALENT_BRANCH_TEXTURECOORDS = {
 	up = {
@@ -70,6 +73,12 @@ TALENT_ARROW_TEXTURECOORDS = {
 };
 
 
+local min = min;
+local max = max;
+local huge = math.huge;
+local rshift = bit.rshift;
+
+
 function TalentFrame_Load(TalentFrame)
 	TalentFrame.TALENT_BRANCH_ARRAY={};
 	for i=1, MAX_NUM_TALENT_TIERS do
@@ -86,84 +95,116 @@ function TalentFrame_Update(TalentFrame)
 		TalentFrame.updateFunction();
 	end
 
+	local unspentPoints;
+	local isActiveTalentGroup;
 	if ( TalentFrame.inspect ) then
-		TalentFrame.talentPoints = 0;
+		unspentPoints = 0;
+		isActiveTalentGroup = true;
 	else
-		TalentFrame_UpdateTalentPoints(TalentFrame);
+		unspentPoints = TalentFrame_UpdateTalentPoints(TalentFrame);
+		isActiveTalentGroup = TalentFrame.pet or TalentFrame.talentGroup == GetActiveTalentGroup();
+		isActiveTalentGroup = TalentFrame.pet or TalentFrame.talentGroup == GetActiveTalentGroup();
 	end
+
+	local preview = GetCVarBool("previewTalents");
 
 	-- Setup Frame
 	local base;
-	local name, texture, points, fileName = GetTalentTabInfo(TalentFrame.currentSelectedTab, TalentFrame.inspect, TalentFrame.pet);
+	local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(TalentFrame.selectedTab, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
 	if ( name ) then
-		base = "Interface\\TalentFrame\\"..fileName.."-";
+		base = "Interface\\TalentFrame\\"..background.."-";
 	else
 		-- temporary default for classes without talents poor guys
 		base = "Interface\\TalentFrame\\MageFire-";
 	end
 	
-	getglobal(TalentFrame:GetName().."BackgroundTopLeft"):SetTexture(base.."TopLeft");
-	getglobal(TalentFrame:GetName().."BackgroundTopRight"):SetTexture(base.."TopRight");
-	getglobal(TalentFrame:GetName().."BackgroundBottomLeft"):SetTexture(base.."BottomLeft");
-	getglobal(TalentFrame:GetName().."BackgroundBottomRight"):SetTexture(base.."BottomRight");
-	
-	local numTalents = GetNumTalents(TalentFrame.currentSelectedTab, TalentFrame.inspect, TalentFrame.pet);
+	local talentFrameName = TalentFrame:GetName();
+
+	-- desaturate the background if this isn't the active talent group
+	local backgroundPiece = _G[talentFrameName.."BackgroundTopLeft"];
+	backgroundPiece:SetTexture(base.."TopLeft");
+	SetDesaturation(backgroundPiece, not isActiveTalentGroup);
+	backgroundPiece = _G[talentFrameName.."BackgroundTopRight"];
+	backgroundPiece:SetTexture(base.."TopRight");
+	SetDesaturation(backgroundPiece, not isActiveTalentGroup);
+	backgroundPiece = _G[talentFrameName.."BackgroundBottomLeft"];
+	backgroundPiece:SetTexture(base.."BottomLeft");
+	SetDesaturation(backgroundPiece, not isActiveTalentGroup);
+	backgroundPiece = _G[talentFrameName.."BackgroundBottomRight"];
+	backgroundPiece:SetTexture(base.."BottomRight");
+	SetDesaturation(backgroundPiece, not isActiveTalentGroup);
+
+	local numTalents = GetNumTalents(TalentFrame.selectedTab, TalentFrame.inspect, TalentFrame.pet);
 	-- Just a reminder error if there are more talents than available buttons
 	if ( numTalents > MAX_NUM_TALENTS ) then
 		message("Too many talents in talent frame!");
 	end
 
 	TalentFrame_ResetBranches(TalentFrame);
+	local talentFrameTalentName = talentFrameName.."Talent";
 	local tier, column, rank, maxRank, isExceptional, isLearnable;
 	local forceDesaturated, tierUnlocked;
 	for i=1, MAX_NUM_TALENTS do
-		local button = getglobal(TalentFrame:GetName().."Talent"..i);
+		local buttonName = talentFrameTalentName..i;
+		local button = _G[buttonName];
 		if ( i <= numTalents ) then
 			-- Set the button info
-			name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(TalentFrame.currentSelectedTab, i, TalentFrame.inspect, TalentFrame.pet);
+			local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq, previewRank, meetsPreviewPrereq =
+				GetTalentInfo(TalentFrame.selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
 			if ( name ) then
-				getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetText(rank);
+				local displayRank;
+				if ( preview ) then
+					displayRank = previewRank;
+				else
+					displayRank = rank;
+				end
+
+				_G[buttonName.."Rank"]:SetText(displayRank);
 				SetTalentButtonLocation(button, tier, column);
 				TalentFrame.TALENT_BRANCH_ARRAY[tier][column].id = button:GetID();
 			
-				-- If player has no talent points then show only talents with points in them
-				if ( (TalentFrame.talentPoints <= 0 and rank == 0)  ) then
+				-- If player has no talent points or this is the inactive talent group then show only talents with points in them
+				if ( (unspentPoints <= 0 or not isActiveTalentGroup) and displayRank == 0 ) then
 					forceDesaturated = 1;
 				else
 					forceDesaturated = nil;
 				end
 
-				-- If the player has spent at least 5 talent points in the previous tier as a player, or 3 talent points as a pet
-				if ( ( (tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= TalentFrame.pointsSpent ) ) then
+				local tabPointsSpent = TalentFrame.pointsSpent + TalentFrame.previewPointsSpent;
+				if ( ((tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent) ) then
 					tierUnlocked = 1;
 				else
 					tierUnlocked = nil;
 				end
+
 				SetItemButtonTexture(button, iconTexture);
 
 				-- Talent must meet prereqs or the player must have no points to spend
-				if ( TalentFrame_SetPrereqs(TalentFrame, tier, column, forceDesaturated, tierUnlocked, GetTalentPrereqs(TalentFrame.currentSelectedTab, i, TalentFrame.inspect, TalentFrame.pet)) and meetsPrereq ) then
+				local prereqsSet =
+					TalentFrame_SetPrereqs(TalentFrame, tier, column, forceDesaturated, tierUnlocked, preview,
+					GetTalentPrereqs(TalentFrame.selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
+				if ( prereqsSet and ((preview and meetsPreviewPrereq) or (not preview and meetsPrereq)) ) then
 					SetItemButtonDesaturated(button, nil);
-					
-					if ( rank < maxRank ) then
+
+					if ( displayRank < maxRank ) then
 						-- Rank is green if not maxed out
-						getglobal(TalentFrame:GetName().."Talent"..i.."Slot"):SetVertexColor(0.1, 1.0, 0.1);
-						getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+						_G[buttonName.."Slot"]:SetVertexColor(0.1, 1.0, 0.1);
+						_G[buttonName.."Rank"]:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 					else
-						getglobal(TalentFrame:GetName().."Talent"..i.."Slot"):SetVertexColor(1.0, 0.82, 0);
-						getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						_G[buttonName.."Slot"]:SetVertexColor(1.0, 0.82, 0);
+						_G[buttonName.."Rank"]:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 					end
-					getglobal(TalentFrame:GetName().."Talent"..i.."RankBorder"):Show();
-					getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):Show();
+					_G[buttonName.."RankBorder"]:Show();
+					_G[buttonName.."Rank"]:Show();
 				else
 					SetItemButtonDesaturated(button, 1, 0.65, 0.65, 0.65);
-					getglobal(TalentFrame:GetName().."Talent"..i.."Slot"):SetVertexColor(0.5, 0.5, 0.5);
+					_G[buttonName.."Slot"]:SetVertexColor(0.5, 0.5, 0.5);
 					if ( rank == 0 ) then
-						getglobal(TalentFrame:GetName().."Talent"..i.."RankBorder"):Hide();
-						getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):Hide();
+						_G[buttonName.."RankBorder"]:Hide();
+						_G[buttonName.."Rank"]:Hide();
 					else
-						getglobal(TalentFrame:GetName().."Talent"..i.."RankBorder"):SetVertexColor(0.5, 0.5, 0.5);
-						getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						_G[buttonName.."RankBorder"]:SetVertexColor(0.5, 0.5, 0.5);
+						_G[buttonName.."Rank"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					end
 				end
 				button:Show();
@@ -174,8 +215,8 @@ function TalentFrame_Update(TalentFrame)
 			button:Hide();
 		end
 	end
-	
-	-- Draw the prerq branches
+
+	-- Draw the prereq branches
 	local node;
 	local textureIndex = 1;
 	local xOffset, yOffset;
@@ -257,28 +298,31 @@ function TalentFrame_Update(TalentFrame)
 	end
 	-- Hide any unused branch textures
 	for i=TalentFrame_GetBranchTextureCount(TalentFrame), MAX_NUM_BRANCH_TEXTURES do
-		getglobal(TalentFrame:GetName().."Branch"..i):Hide();
+		_G[talentFrameName.."Branch"..i]:Hide();
 	end
 	-- Hide and unused arrowl textures
 	for i=TalentFrame_GetArrowTextureCount(TalentFrame), MAX_NUM_ARROW_TEXTURES do
-		getglobal(TalentFrame:GetName().."Arrow"..i):Hide();
+		_G[talentFrameName.."Arrow"..i]:Hide();
 	end
 end
 
 function TalentFrame_SetArrowTexture(tier, column, texCoords, xOffset, yOffset, TalentFrame)
+	local talentFrameName = TalentFrame:GetName();
 	local arrowTexture = TalentFrame_GetArrowTexture(TalentFrame);
 	arrowTexture:SetTexCoord(texCoords[1], texCoords[2], texCoords[3], texCoords[4]);
-	arrowTexture:SetPoint("TOPLEFT", TalentFrame:GetName().."ArrowFrame", "TOPLEFT", xOffset, yOffset);
+	arrowTexture:SetPoint("TOPLEFT", talentFrameName.."ArrowFrame", "TOPLEFT", xOffset, yOffset);
 end
 
 function TalentFrame_SetBranchTexture(tier, column, texCoords, xOffset, yOffset, TalentFrame)
+	local talentFrameName = TalentFrame:GetName();
 	local branchTexture = TalentFrame_GetBranchTexture(TalentFrame);
 	branchTexture:SetTexCoord(texCoords[1], texCoords[2], texCoords[3], texCoords[4]);
-	branchTexture:SetPoint("TOPLEFT", TalentFrame:GetName().."ScrollChildFrame", "TOPLEFT", xOffset, yOffset);
+	branchTexture:SetPoint("TOPLEFT", talentFrameName.."ScrollChildFrame", "TOPLEFT", xOffset, yOffset);
 end
 
 function TalentFrame_GetArrowTexture(TalentFrame)
-	local arrowTexture = getglobal(TalentFrame:GetName().."Arrow"..TalentFrame.arrowIndex);
+	local talentFrameName = TalentFrame:GetName();
+	local arrowTexture = _G[talentFrameName.."Arrow"..TalentFrame.arrowIndex];
 	TalentFrame.arrowIndex = TalentFrame.arrowIndex + 1;
 	if ( not arrowTexture ) then
 		message("Not enough arrow textures");
@@ -289,7 +333,8 @@ function TalentFrame_GetArrowTexture(TalentFrame)
 end
 
 function TalentFrame_GetBranchTexture(TalentFrame)
-	local branchTexture = getglobal(TalentFrame:GetName().."Branch"..TalentFrame.textureIndex);
+	local talentFrameName = TalentFrame:GetName();
+	local branchTexture = _G[talentFrameName.."Branch"..TalentFrame.textureIndex];
 	TalentFrame.textureIndex = TalentFrame.textureIndex + 1;
 	if ( not branchTexture ) then
 		--branchTexture = CreateTexture("TalentFrameBranch"..TalentFrame.textureIndex);
@@ -316,17 +361,13 @@ function TalentFrame_GetBranchTextureCount(TalentFrame)
 	return TalentFrame.textureIndex;
 end
 
-function TalentFrame_SetPrereqs(TalentFrame, buttonTier, buttonColumn, forceDesaturated, tierUnlocked, ...)
-	local tier, column, isLearnable;
-	local requirementsMet;
-	if ( tierUnlocked and not forceDesaturated ) then
-		requirementsMet = 1;
-	else
-		requirementsMet = nil;
-	end
-	for i=1, select("#", ...), 3 do
-		tier, column, isLearnable = select(i, ...);
-		if ( not isLearnable or forceDesaturated ) then
+function TalentFrame_SetPrereqs(TalentFrame, buttonTier, buttonColumn, forceDesaturated, tierUnlocked, preview, ...)
+	local requirementsMet = tierUnlocked and not forceDesaturated;
+	for i=1, select("#", ...), 4 do
+		local tier, column, isLearnable, isPreviewLearnable = select(i, ...);
+		if ( forceDesaturated or
+			 (preview and not isPreviewLearnable) or
+			 (not preview and not isLearnable) ) then
 			requirementsMet = nil;
 		end
 		TalentFrame_DrawLines(buttonTier, buttonColumn, tier, column, requirementsMet, TalentFrame);
@@ -471,16 +512,13 @@ end
 -- Helper functions
 
 function TalentFrame_UpdateTalentPoints(TalentFrame)
-	local cp1
-	if ( TalentFrame.pet ) then
-		cp1 = GetPetTalentPoints();
-	else
-		cp1 = UnitCharacterPoints(TalentFrame.unit);
-	end
-	getglobal(TalentFrame:GetName().."TalentPointsText"):SetText(cp1);
-	TalentFrame.talentPoints = cp1;
+	local talentPoints = GetUnspentTalentPoints(TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
+	local unspentPoints = talentPoints - GetPreviewTalentPointsSpent(TalentFrame.pet, TalentFrame.talentGroup);
+	local talentFrameName = TalentFrame:GetName();
+	_G[talentFrameName.."TalentPointsText"]:SetFormattedText(UNSPENT_TALENT_POINTS, HIGHLIGHT_FONT_COLOR_CODE..unspentPoints..FONT_COLOR_CODE_CLOSE);
 	TalentFrame_ResetBranches(TalentFrame);
-	getglobal(TalentFrame:GetName().."ScrollFrameScrollBarScrollDownButton"):SetScript("OnClick", getglobal(TalentFrame:GetName().."DownArrow_OnClick"));
+	_G[talentFrameName.."ScrollFrameScrollBarScrollDownButton"]:SetScript("OnClick", _G[talentFrameName.."DownArrow_OnClick"]);
+	return unspentPoints;
 end
 
 function SetTalentButtonLocation(button, tier, column)
@@ -500,6 +538,76 @@ function TalentFrame_ResetBranches(TalentFrame)
 			TalentFrame.TALENT_BRANCH_ARRAY[i][j].rightArrow = 0;
 			TalentFrame.TALENT_BRANCH_ARRAY[i][j].leftArrow = 0;
 			TalentFrame.TALENT_BRANCH_ARRAY[i][j].topArrow = 0;
+		end
+	end
+end
+
+local sortedTabPointsSpentBuf = { };
+function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
+	-- initialize some cache info
+	cache.primaryTabIndex = 0;
+	cache.totalPointsSpent = 0;
+
+	local preview = GetCVarBool("previewTalents");
+
+	local highPointsSpent = 0;
+	local highPointsSpentIndex;
+	local lowPointsSpent = huge;
+	local lowPointsSpentIndex;
+
+	local numTabs = GetNumTalentTabs(inspect, pet);
+	cache.numTabs = numTabs;
+	for i = 1, MAX_TALENT_TABS do
+		cache[i] = cache[i] or { };
+		if ( i <= numTabs ) then
+			local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i, inspect, pet, talentGroup);
+
+			local displayPointsSpent = pointsSpent + previewPointsSpent;
+
+			-- cache the info we care about
+			cache[i].name = name;
+			cache[i].pointsSpent = displayPointsSpent;
+			cache[i].icon = icon;
+
+			-- update total points
+			cache.totalPointsSpent = cache.totalPointsSpent + displayPointsSpent;
+
+			-- update the high and low points spent info
+			if ( displayPointsSpent > highPointsSpent ) then
+				highPointsSpent = displayPointsSpent;
+				highPointsSpentIndex = i;
+			elseif ( displayPointsSpent < lowPointsSpent ) then
+				lowPointsSpent = displayPointsSpent;
+				lowPointsSpentIndex = i;
+			end
+
+			-- initialize the points spent buffer element
+			sortedTabPointsSpentBuf[i] = 0;
+			-- insert the points spent into our buffer in ascending order
+			local insertIndex = i;
+			for j = 1, i, 1 do
+				local currPointsSpent = sortedTabPointsSpentBuf[j];
+				if ( currPointsSpent > displayPointsSpent ) then
+					insertIndex = j;
+					break;
+				end
+			end
+			for j = i, insertIndex + 1, -1 do
+				sortedTabPointsSpentBuf[j] = sortedTabPointsSpentBuf[j - 1];
+			end
+			sortedTabPointsSpentBuf[insertIndex] = displayPointsSpent;
+		else
+			cache[i].name = nil;
+		end
+	end
+
+	if ( highPointsSpentIndex and lowPointsSpentIndex ) then
+		-- now that our points spent buffer is filled, we can compute the mid points spent
+		local midPointsSpentIndex = rshift(numTabs, 1) + 1;
+		local midPointsSpent = sortedTabPointsSpentBuf[midPointsSpentIndex];
+		-- now let's use our crazy formula to determine which tab is the primary one
+		if ( 3*(midPointsSpent-lowPointsSpent) < 2*(highPointsSpent-lowPointsSpent) ) then
+			cache.primaryTabIndex = highPointsSpentIndex;
 		end
 	end
 end

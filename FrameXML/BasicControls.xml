@@ -156,6 +156,12 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						MouseEnableUI(true);
+					</OnShow>
+					<OnHide>
+						MouseEnableUI(false);
+					</OnHide>
 					<OnClick>
 						self:GetParent():Hide();
 					</OnClick>

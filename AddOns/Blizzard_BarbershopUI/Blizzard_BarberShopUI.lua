@@ -18,8 +18,7 @@ function BarberShop_OnShow(self)
 
 	PlaySound("BarberShop_Sit");
 	
-	QuestWatchFrame:Hide();
-	AchievementWatchFrame:Hide();
+	WatchFrame:Hide();
 
 	--load the texture
 	BarberShopFrameBackground:SetTexture("Interface\\Barbershop\\UI-Barbershop");
@@ -27,12 +26,11 @@ end
 
 function BarberShop_OnHide(self)
 	BarberShopBannerFrame:Hide();
-	QuestWatch_Update();
-	AchievementWatch_Update();
+
+	WatchFrame:Show();
 	
 	--unload the texture to save memory
 	BarberShopFrameBackground:SetTexture(nil);
-	
 end
 
 function BarberShop_OnEvent(self, event, ...)

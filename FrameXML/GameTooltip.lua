@@ -328,3 +328,13 @@ function GameTooltip_ShowStatusBar(self, min, max, value, text)
 	self.shownStatusBars = index;
 	self:SetMinimumWidth(140);
 end
+
+function GameTooltip_Hide()
+	-- Used for XML OnLeave handlers
+	GameTooltip:Hide();
+end
+
+function GameTooltip_HideResetCursor()
+	GameTooltip:Hide();
+	ResetCursor();
+end

@@ -52,9 +52,7 @@
 					<AbsInset left="0" right="0" top="7" bottom="7"/>
 				</HitRectInsets>
 				<Scripts>
-					<OnClick>
-						SkillBar_OnClick(self, button);				
-					</OnClick>
+					<OnClick function="SkillBar_OnClick"/>
 				</Scripts>
 				<NormalTexture name="$parentNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder"/>
 				<HighlightTexture name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorderHighlight"/>
@@ -655,9 +653,7 @@
 												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 												GameTooltip:SetText(CLICK_TO_LEARN)
 											</OnEnter>
-											<OnLeave>
-												GameTooltip:Hide();
-											</OnLeave>
+											<OnLeave function="GameTooltip_Hide"/>
 										</Scripts>
 									</Button>
 									<Button name="$parentLeftArrow">
@@ -727,9 +723,7 @@
 												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 												GameTooltip:SetText(UNLEARN_SKILL_TOOLTIP);
 											</OnEnter>
-											<OnLeave>
-												GameTooltip:Hide();						
-											</OnLeave>
+											<OnLeave function="GameTooltip_Hide"/>
 										</Scripts>
 										<NormalTexture file="Interface\Buttons\CancelButton-Up"/>
 										<PushedTexture file="Interface\Buttons\CancelButton-Down"/>
@@ -853,21 +847,11 @@
 			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				SkillFrame_OnShow(self);
-			</OnShow>
-			<OnLoad>
-				SkillFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				SkillFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnHide>
-				CancelSkillUps();
-			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
+			<OnShow function="SkillFrame_OnShow"/>
+			<OnLoad function="SkillFrame_OnLoad"/>
+			<OnEvent function="SkillFrame_OnEvent"/>
+			<OnHide function="CancelSkillUps"/>
+			<OnMouseWheel function=""/>
 		</Scripts>
 	</Frame>
 </Ui>

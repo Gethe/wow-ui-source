@@ -236,9 +236,7 @@
 						self:SetBackdropBorderColor(.6, .6, .6, .6);
 						ScrollFrame_OnLoad(self);
 					</OnLoad>
-					<OnMouseWheel>
-						ScrollFrameTemplate_OnMouseWheel(self, delta);
-					</OnMouseWheel>					
+					<OnMouseWheel function="ScrollFrameTemplate_OnMouseWheel"/>
 					<OnVerticalScroll>
 						FauxScrollFrame_OnVerticalScroll(self, offset, self:GetParent().buttonHeight, OptionsListScroll_Update);
 					</OnVerticalScroll>
@@ -268,9 +266,7 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				OptionsList_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="OptionsList_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Button name="OptionsListButtonTemplate" virtual="true">
@@ -305,9 +301,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				OptionsListButton_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="OptionsListButton_OnLoad"/>
 			<OnClick>
 				PlaySound("igMainMenuOptionCheckBoxOn");
 				OptionsListButton_OnClick(self, button);
@@ -340,7 +334,7 @@
 		</HighlightTexture>
 	</Button>
 
-	<Frame name="OptionsFrameTemplate" virtual="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
+	<Frame name="OptionsFrameTemplate" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH" virtual="true">
 		<Size>
 			<AbsDimension x="648" y="520"/>
 		</Size>
@@ -441,15 +435,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				OptionsFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				OptionsFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				OptionsFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="OptionsFrame_OnLoad"/>
+			<OnShow function="OptionsFrame_OnShow"/>
+			<OnHide function="OptionsFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

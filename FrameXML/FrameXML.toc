@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 30000
+## Interface: 30100
 GlobalStrings.lua
 Constants.lua
 Fonts.xml
@@ -55,6 +55,7 @@ Cooldown.xml
 ActionButtonTemplate.xml
 ActionBarFrame.xml
 MultiActionBars.xml
+##ActionWindow.xml
 BuffFrame.xml
 CombatFeedback.xml
 CastingBarFrame.xml
@@ -73,14 +74,15 @@ PetFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
 CharacterFrame.xml
+EquipmentManager.lua
 PaperDollFrame.xml
 PetPaperDollFrame.xml
 SkillFrame.xml
 ReputationFrame.xml
 HonorFrame.xml
 QuestFrame.xml
+WatchFrame.xml
 QuestLogFrame.xml
-QuestTimerFrame.xml
 MerchantFrame.xml
 TradeFrame.xml
 ContainerFrame.xml
@@ -114,6 +116,7 @@ DressUpFrame.xml
 RaidWarning.xml
 ClassTrainerFrameTemplates.xml
 PVPFrame.xml
+PVPBattlegroundFrame.xml
 ArenaFrame.xml
 ArenaRegistrarFrame.xml
 LFGFrame.xml
@@ -121,7 +124,7 @@ MovieRecordingProgress.xml
 MacOptionsFrame.xml
 RatingMenuFrame.xml
 TalentFrameBase.lua
-Blizzard_TalentUITemplates.xml
+TalentFrameTemplates.xml
 RuneFrame.xml
 EasyMenu.lua
 ChatConfigFrame.xml

@@ -57,9 +57,7 @@
                     </Layer>
                 </Layers>
                 <Scripts>
-                     <OnLoad>
-                        self:SetFrameLevel(self:GetFrameLevel() + 1);
-                    </OnLoad>
+                     <OnLoad function="RaiseFrameLevel"/>
                 </Scripts>
             </Frame>
             <Button name="InspectFrameCloseButton" inherits="UIPanelCloseButton">
@@ -71,9 +69,7 @@
                     </Anchor>
                 </Anchors>
                 <Scripts>
-                    <OnLoad>
-                        self:SetFrameLevel(self:GetFrameLevel() + 1);
-                    </OnLoad>
+                    <OnLoad function="RaiseFrameLevel"/>
                 </Scripts>
             </Button>
 			<Button name="InspectFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER">
@@ -85,16 +81,12 @@
                     </Anchor>
                 </Anchors>
                 <Scripts>
-					<OnClick>
-						InspectFrameTab_OnClick(self, button);
-					</OnClick>
+					<OnClick function="InspectFrameTab_OnClick"/>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(CHARACTER_INFO, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
 			</Button>
 			<Button name="InspectFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PVP">
@@ -106,16 +98,12 @@
                     </Anchor>
                 </Anchors>
                 <Scripts>
-					<OnClick>
-						InspectFrameTab_OnClick(self, button);
-					</OnClick>
+					<OnClick function="InspectFrameTab_OnClick"/>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(PLAYER_V_PLAYER, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
 			</Button>
 			<Button name="InspectFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="TALENTS">
@@ -127,35 +115,21 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						InspectFrameTab_OnClick(self, button);
-					</OnClick>
+					<OnClick function="InspectFrameTab_OnClick"/>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(TALENTS, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 		</Frames>
         <Scripts>
-			<OnLoad>
-				InspectFrame_OnLoad(self);
-			</OnLoad>
-            <OnEvent>
-                InspectFrame_OnEvent(self, event, ...);
-            </OnEvent>
-            <OnShow>
-                InspectFrame_OnShow(self);
-            </OnShow>
-			<OnHide>
-				InspectFrame_OnHide(self);
-			</OnHide>
-			<OnUpdate>
-				InspectFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="InspectFrame_OnLoad"/>
+            <OnEvent function="InspectFrame_OnEvent"/>
+            <OnShow function="InspectFrame_OnShow"/>
+			<OnHide function="InspectFrame_OnHide"/>
+			<OnUpdate function="InspectFrame_OnUpdate"/>
         </Scripts>
     </Frame>
 </Ui>

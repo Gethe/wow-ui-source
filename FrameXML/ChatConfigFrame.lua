@@ -1,8 +1,8 @@
 COMBATLOG_FILTERS_TO_DISPLAY = 4;
 CHATCONFIG_FILTER_HEIGHT = 16;
 GRAY_CHECKED = 1;
-CHECKED_NO_SUBTYPES = 2;
-UNCHECKED_NO_SUBTYPES = 3;
+UNCHECKED_ENABLED = 2;
+UNCHECKED_DISABLED = 3;
 CHATCONFIG_SELECTED_FILTER = nil;
 CHATCONFIG_SELECTED_FILTER_FILTERS = nil;
 CHATCONFIG_SELECTED_FILTER_COLORS = nil;
@@ -1196,15 +1196,10 @@ function ToggleMessageTypeGroup(checked, frame, index)
 	local eventList = CHATCONFIG_SELECTED_FILTER_FILTERS[1].eventList;
 	if ( subTypes ) then
 		local state;
-		local numChecked = 0;
 		if ( checked ) then
 			for k, v in ipairs(subTypes) do
 				state = GetMessageTypeState(v.type);
-				if ( state == true or state == GRAY_CHECKED ) then
-					numChecked = numChecked+1;
-				end
-				if ( state == GRAY_CHECKED ) then
-					
+				if ( state == GRAY_CHECKED or state == true ) then
 					if ( type(v.type) == "table" ) then
 						for k2, v2 in pairs(v.type) do
 							eventList[v2] = true;
@@ -1212,23 +1207,20 @@ function ToggleMessageTypeGroup(checked, frame, index)
 					else
 						eventList[v.type] = true;
 					end
-				end
-			end
-			if ( numChecked == 0 ) then
-				for k, v in ipairs(subTypes) do
+				else
 					if ( type(v.type) == "table" ) then
 						for k2, v2 in pairs(v.type) do
-							eventList[v2] = CHECKED_NO_SUBTYPES;
+							eventList[v2] = UNCHECKED_ENABLED;
 						end
 					else
-						eventList[v.type] = CHECKED_NO_SUBTYPES;
+						eventList[v.type] = UNCHECKED_ENABLED;
 					end
 				end
 			end
 		else
 			for k, v in ipairs(subTypes) do
 				state = GetMessageTypeState(v.type);
-				if ( state == true ) then
+				if ( state == true or state == GRAY_CHECKED) then
 					if ( type(v.type) == "table" ) then
 						for k2, v2 in pairs(v.type) do
 							eventList[v2] = GRAY_CHECKED;
@@ -1236,17 +1228,13 @@ function ToggleMessageTypeGroup(checked, frame, index)
 					else
 						eventList[v.type] = GRAY_CHECKED;
 					end
-					numChecked = numChecked+1;
-				end
-			end
-			if ( numChecked == 0 ) then
-				for k, v in ipairs(subTypes) do
+				else
 					if ( type(v.type) == "table" ) then
 						for k2, v2 in pairs(v.type) do
-							eventList[v2] = UNCHECKED_NO_SUBTYPES;
+							eventList[v2] = UNCHECKED_DISABLED;
 						end
 					else
-						eventList[v.type] = UNCHECKED_NO_SUBTYPES;
+						eventList[v.type] = UNCHECKED_DISABLED;
 					end
 				end
 			end
@@ -1643,21 +1631,13 @@ function HasMessageTypeGroup(checkBoxList, index)
 	local subTypes = checkBoxList[index].subTypes;
 	if ( subTypes ) then
 		local state;
-		local numChecked = 0;
 		for k, v in ipairs(subTypes) do
 			state = GetMessageTypeState(v.type);
-			if ( state == GRAY_CHECKED or state == UNCHECKED_NO_SUBTYPES ) then
+			if ( state == GRAY_CHECKED or state == UNCHECKED_DISABLED ) then
 				return false;
-			elseif ( state == CHECKED_NO_SUBTYPES ) then
+			elseif ( state ) then --also catches UNCHECKED_ENABLED
 				return true;
-			elseif ( state ) then
-				numChecked = numChecked + 1;
 			end
-		end
-		if ( numChecked > 0 ) then
-			return true;
-		else
-			return false;
 		end
 	end
 	return false;
@@ -1666,7 +1646,7 @@ end
 function HasMessageType(messageType)
 	-- Only look at the first messageType passed in since we're treating them as a unit
 	local isListening = GetMessageTypeState(messageType);
-	if ( isListening == CHECKED_NO_SUBTYPES or isListening == UNCHECKED_NO_SUBTYPES ) then
+	if ( isListening == UNCHECKED_ENABLED or isListening == UNCHECKED_DISABLED ) then
 		return false;
 	elseif ( isListening ) then
 		return true;

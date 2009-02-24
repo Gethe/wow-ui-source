@@ -1,26 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Button name="TalentTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("PLAYER_LEVEL_UP");	
-			</OnLoad>
-			<OnEvent>
-				if (UnitLevel("player") == 9 and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID()) then
-					SetButtonPulse(self, 60, 0.75);
-				end
-			</OnEvent>
-			<OnClick>
-				TalentFrameTab_OnClick(self);
-			</OnClick>
-			<OnEnter>
-				
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Button>
 	<Texture name="TalentBranchTemplate" file="Interface\TalentFrame\UI-TalentBranches" virtual="true">
 		<Size>
 			<AbsDimension x="32" y="32"/>
@@ -82,27 +61,13 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterEvent("CHARACTER_POINTS_CHANGED");
 				self:RegisterEvent("PET_TALENT_POINTS_CHANGED");
+				self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
+				self:RegisterEvent("PREVIEW_PET_TALENT_POINTS_CHANGED");
 			</OnLoad>
-			<OnEvent>
-				if (self.talentButton_OnEvent) then
-					self.talentButton_OnEvent(self, event, ...);
-				end
-			</OnEvent>
-			<OnEnter>
-				if (self.talentButton_OnEnter) then
-					self.talentButton_OnEnter(self);
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnClick>
-				if (self.talentButton_OnClick) then
-					self.talentButton_OnClick(self);
-				end
-			</OnClick>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 </Ui>

@@ -5,7 +5,7 @@
 			<AbsDimension x="192" y="28"/>
 		</Size>
 		<Frames>
-			<Button name="$parentCopperButton">
+			<Button name="$parentCopperButton" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -46,7 +46,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentSilverButton">
+			<Button name="$parentSilverButton" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -87,7 +87,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentGoldButton">
+			<Button name="$parentGoldButton" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -130,15 +130,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				MoneyFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				MoneyFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				MoneyFrame_UpdateMoney(self);
-			</OnShow>
+			<OnLoad function="MoneyFrame_OnLoad"/>
+			<OnEvent function="MoneyFrame_OnEvent"/>
+			<OnShow function="MoneyFrame_UpdateMoney"/>
 			<OnHide>
 				if ( self.hasPickup == 1 ) then
 					CoinPickupFrame:Hide();
@@ -152,7 +146,7 @@
 			<AbsDimension x="128" y="13"/>
 		</Size>
 		<Frames>
-			<Button name="$parentCopperButton">
+			<Button name="$parentCopperButton" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -193,7 +187,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentSilverButton">
+			<Button name="$parentSilverButton" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -234,7 +228,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentGoldButton">
+			<Button name="$parentGoldButton" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -277,15 +271,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				SmallMoneyFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				MoneyFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				MoneyFrame_UpdateMoney(self);
-			</OnShow>
+			<OnLoad function="SmallMoneyFrame_OnLoad"/>
+			<OnEvent function="MoneyFrame_OnEvent"/>
+			<OnShow function="MoneyFrame_UpdateMoney"/>
 			<OnHide>
 				if ( self.hasPickup == 1 ) then
 					CoinPickupFrame:Hide();
@@ -294,19 +282,16 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Button name="SmallDenominationTemplate" virtual="true">
+	<Button name="SmallDenominationTemplate" jumpNavigateEnabled="false" virtual="true">
 		<Size>
 			<AbsDimension x="32" y="13"/>
 		</Size>
 		<Scripts>
 			<OnEnter>
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetMerchantCostItem(self.index, self.item);
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetMerchantCostItem(self.index, self.item);
 			</OnEnter>
-			<OnLeave>
-					GameTooltip:Hide();
-					ResetCursor();
-			</OnLeave>
+			<OnLeave function="GameTooltip_HideResetCursor"/>
 		</Scripts>
 		<ButtonText name="$parentText">
 			<Anchors>
@@ -345,13 +330,10 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(HONOR_POINTS);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(HONOR_POINTS);
 					</OnEnter>
-					<OnLeave>
-							GameTooltip:Hide();
-							ResetCursor();
-					</OnLeave>
+					<OnLeave function="GameTooltip_HideResetCursor"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentArena" inherits="SmallDenominationTemplate" hidden="true">
@@ -364,13 +346,10 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(ARENA_POINTS);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(ARENA_POINTS);
 					</OnEnter>
-					<OnLeave>
-							GameTooltip:Hide();
-							ResetCursor();
-					</OnLeave>
+					<OnLeave function="GameTooltip_HideResetCursor"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentItem1" inherits="SmallDenominationTemplate" hidden="true">
@@ -401,10 +380,5 @@
 				</Anchors>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnEnter>
-				-- Tool tip for total cost
-			</OnEnter>
-		</Scripts>
 	</Frame>
 </Ui>

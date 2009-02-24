@@ -22,9 +22,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				AuctionFrameFilter_OnClick(self, button);
-			</OnClick>
+			<OnClick function="AuctionFrameFilter_OnClick"/>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
 			<TexCoords left="0" right="0.53125" top="0" bottom="0.625"/>
@@ -969,9 +967,7 @@
 	</Button>
 	<Button name="AuctionTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick>
-				AuctionFrameTab_OnClick(self);
-			</OnClick>
+			<OnClick function="AuctionFrameTab_OnClick"/>
 		</Scripts>
 	</Button>
 </Ui>

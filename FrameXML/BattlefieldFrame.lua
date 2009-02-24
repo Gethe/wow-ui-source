@@ -306,6 +306,10 @@ function BattlefieldFrame_Update()
 	local instanceID;
 	local mapName, mapDescription, minLevel, maxLevel, mapFull, levelMax, maxGroup = GetBattlefieldInfo();
 	
+	if ( not mapName ) then
+		return;
+	end
+
 	-- Set title text
 	BattlefieldFrameFrameLabel:SetText(mapName);
 	-- Set the Join as Group text based on the limits of which instances can join as group.
@@ -351,7 +355,7 @@ function BattlefieldFrame_Update()
 				elseif ( queueStatus == "confirm" ) then
 					buttonStatus:SetText(BATTLEFIELD_CONFIRM_STATUS);
 				end
-			elseif ( button.title == FIRST_AVAILABLE and queueMapName == mapName and GetNumBattlefields() == 0 ) then
+			elseif ( button.title == FIRST_AVAILABLE and queueMapName == mapName and queueInstanceID == 0 ) then
 				if ( queueStatus == "queued" ) then
 					buttonStatus:SetText(BATTLEFIELD_QUEUE_STATUS);
 				end
@@ -394,13 +398,16 @@ function BattlefieldFrame_Update()
 	FauxScrollFrame_Update(BattlefieldListScrollFrame, numBattlefields, BATTLEFIELD_ZONES_DISPLAYED, BATTLEFIELD_ZONES_HEIGHT, "BattlefieldZone", 293, 315);
 end
 
-function BattlefieldButton_OnClick(id)
+function BattlefieldButton_OnClick(self)
+	local id = self:GetID();
 	SetSelectedBattlefield(FauxScrollFrame_GetOffset(BattlefieldListScrollFrame) + id - 1);
 	BattlefieldFrame_Update();
 end
 
-function BattlefieldFrameJoinButton_OnClick(joinAsGroup)
-	if ( joinAsGroup ) then
+function BattlefieldFrameJoinButton_OnClick(self)
+	local GROUPJOIN_BUTTONID = 2;
+	local id = self:GetID();
+	if ( id == GROUPJOIN_BUTTONID ) then
 		JoinBattlefield(GetSelectedBattlefield(), 1);
 	else
 		JoinBattlefield(GetSelectedBattlefield());

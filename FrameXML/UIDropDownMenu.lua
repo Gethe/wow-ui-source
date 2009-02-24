@@ -692,9 +692,9 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame:ClearAllPoints();
 			-- If this is a dropdown button, not the arrow anchor it to itself
 			if ( strsub(button:GetParent():GetName(), 0,12) == "DropDownList" and strlen(button:GetParent():GetName()) == 13 ) then
-				anchorFrame = button:GetName();
+				anchorFrame = button;
 			else
-				anchorFrame = button:GetParent():GetName();
+				anchorFrame = button:GetParent();
 			end
 			point = "TOPLEFT";
 			relativePoint = "TOPRIGHT";
@@ -725,6 +725,9 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame:Hide();
 			return;
 		end
+
+		listFrame.onHide = dropDownFrame.onHide;
+		
 		-- Determine whether the menu is off the screen or not
 		local offscreenY, offscreenX;
 		if ( (y - listFrame:GetHeight()/2) < 0 ) then
@@ -779,6 +782,8 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			end
 			
 			listFrame:ClearAllPoints();
+			listFrame.parentLevel = tonumber(strmatch(anchorFrame:GetName(), "DropDownList(%d+)"));
+			listFrame.parentID = anchorFrame:GetID();
 			listFrame:SetPoint(point, anchorFrame, relativePoint, xOffset, yOffset);
 		end
 	end
@@ -795,6 +800,10 @@ end
 
 function UIDropDownMenu_OnHide(self)
 	local id = self:GetID()
+	if ( self.onHide ) then
+		self.onHide(id+1);
+		self.onHide = nil;
+	end
 	CloseDropDownMenus(id+1);
 	OPEN_DROPDOWNMENUS[id] = nil;
 end

@@ -80,25 +80,15 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								if(IsMacClient()) then
-									MacOptionsFrameResolutionDropDown_OnLoad(self);
-								end
-							</OnLoad>
-							<OnShow>
-								MacOptionsFrameResolutionDropDown_OnLoad(self);
-							</OnShow>
+							<OnLoad function="MacOptionsFrameResolutionDropDown_OnLoad"/>
+							<OnShow function="MacOptionsFrameResolutionDropDown_OnLoad"/>
 							<OnEnter>
 								if(UIDropDownMenu_IsEnabled(MacOptionsFrameResolutionDropDown)) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 									GameTooltip:SetText(MOVIE_RECORDING_RESOLUTION_TOOLTIP, nil, nil, nil, nil, 1);
 								end
 							</OnEnter>
-							<OnLeave>
-								if(UIDropDownMenu_IsEnabled(MacOptionsFrameResolutionDropDown)) then
-									GameTooltip:Hide();
-								end
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 					<Frame name="MacOptionsFrameFramerateDropDown" inherits="UIDropDownMenuTemplate" id="2">
@@ -123,25 +113,15 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								if(IsMacClient()) then
-									MacOptionsFrameFramerateDropDown_OnLoad(self);
-								end
-							</OnLoad>
-							<OnShow>
-								MacOptionsFrameFramerateDropDown_OnLoad(self);
-							</OnShow>
+							<OnLoad function="MacOptionsFrameFramerateDropDown_OnLoad"/>
+							<OnShow function="MacOptionsFrameFramerateDropDown_OnLoad"/>
 							<OnEnter>
 								if(UIDropDownMenu_IsEnabled(MacOptionsFrameFramerateDropDown)) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 									GameTooltip:SetText(MOVIE_RECORDING_FRAMERATE_TOOLTIP, nil, nil, nil, nil, 1);
 								end
 							</OnEnter>
-							<OnLeave>
-								if(UIDropDownMenu_IsEnabled(MacOptionsFrameFramerateDropDown)) then
-									GameTooltip:Hide();
-								end
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 					<Frame name="MacOptionsFrameCodecDropDown" inherits="UIDropDownMenuTemplate" id="2">
@@ -166,25 +146,15 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								if(IsMacClient()) then
-									MacOptionsFrameCodecDropDown_OnLoad(self);
-								end
-							</OnLoad>
-							<OnShow>
-								MacOptionsFrameCodecDropDown_OnLoad(self);
-							</OnShow>
+							<OnLoad function="MacOptionsFrameCodecDropDown_OnLoad"/>
+							<OnShow function="MacOptionsFrameCodecDropDown_OnLoad"/>
 							<OnEnter>
 								if(UIDropDownMenu_IsEnabled(MacOptionsFrameCodecDropDown)) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 									GameTooltip:SetText(MOVIE_RECORDING_CODEC_TOOLTIP, nil, nil, nil, nil, 1);
 								end
 							</OnEnter>
-							<OnLeave>
-								if(UIDropDownMenu_IsEnabled(MacOptionsFrameCodecDropDown)) then
-									GameTooltip:Hide();
-								end
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 					<Slider name="MacOptionsFrameQualitySlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="4" valueStep="1">
@@ -331,9 +301,7 @@
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 								GameTooltip:SetText(MOVIE_RECORDING_COMPRESS_TOOLTIP, nil, nil, nil, nil, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
 								PlaySound("igMainMenuOption");
 								MovieRecording_SearchUncompressedMovie(true);
@@ -356,9 +324,7 @@
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 								GameTooltip:SetText(MOVIE_RECORDING_TIME_TOOLTIP, nil, nil, nil, nil, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 					<Frame name="MovieRecordingFrameTextTooltip2">
@@ -377,9 +343,7 @@
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 								GameTooltip:SetText(MOVIE_RECORDING_DATA_RATE_TOOLTIP, nil, nil, nil, nil, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -545,22 +509,17 @@
 					<OnClick>
 						PlaySound("igMainMenuOption");
 						MacOptionsFrame_Save();
-						KeyBindingFrame_LoadUI();
 						HideUIPanel(MacOptionsFrame);
+						KeyBindingFrame_LoadUI();
+						KeyBindingFrame.mode = 1;
 						ShowUIPanel(KeyBindingFrame);
 					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				if(IsMacClient()) then
-					MacOptionsFrame_OnLoad(self);
-				end
-			</OnLoad>
-			<OnEvent>
-				MacOptionsFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="MacOptionsFrame_OnLoad"/>
+			<OnEvent function="MacOptionsFrame_OnEvent"/>
 			<OnShow>
 				MacOptionsFrame_Load();
 				UpdateMicroButtons();
@@ -573,7 +532,7 @@
 				ShowUIPanel(GameMenuFrame);
 			</OnHide>
 			<OnKeyDown>
-				if ( key == "ESCAPE" ) then
+				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
 					PlaySound("gsTitleOptionExit");
 					HideUIPanel(MacOptionsFrame);
 					MacOptionsFrame_Cancel();
@@ -658,7 +617,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="MacOptionsCompressFrameSkip" inherits="OptionsButtonTemplate" text="IGNORE">
+			<Button name="MacOptionsCompressFrameSkip" inherits="OptionsButtonTemplate" text="IGNORE_DIALOG">
 				<Size>
 					<AbsDimension x="100" y="21"/>
 				</Size>
@@ -820,9 +779,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				MacOptionsCancelFrame_OnShow();
-			</OnShow>
+			<OnShow function="MacOptionsCancelFrame_OnShow"/>
 		</Scripts>
 	</Frame>
 	<Frame name="FolderPicker" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent">
@@ -905,8 +862,5 @@
 				<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnShow>
-			</OnShow>
-		</Scripts>
-	</Frame></Ui>
+	</Frame>
+</Ui>

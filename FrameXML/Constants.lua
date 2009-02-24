@@ -4,6 +4,9 @@
 --
 
 
+-- 
+-- Class Constants
+--
 CLASS_SORT_ORDER = {
 	"WARRIOR",
 	"DEATHKNIGHT",
@@ -31,6 +34,49 @@ CLASS_ICON_TCOORDS = {
 	["DEATHKNIGHT"]	= {0.25, .5, 0.5, .75},
 };
 
+-- 
+-- Talent Constants
+-- 
+TALENT_SORT_ORDER = {
+	"spec1",
+	"spec2",
+	"petspec1",
+};
+
+--
+-- Spell Constants
+--
+
+-- Power Types
+SPELL_POWER_MANA = 0;
+SPELL_POWER_RAGE = 1;
+SPELL_POWER_FOCUS = 2;
+SPELL_POWER_ENERGY = 3;
+SPELL_POWER_HAPPINESS = 4;
+SPELL_POWER_RUNES = 5;
+SPELL_POWER_RUNIC_POWER = 6;
+
+-- Temporary
+SCHOOL_MASK_NONE	= 0x00;
+SCHOOL_MASK_PHYSICAL	= 0x01;
+SCHOOL_MASK_HOLY	= 0x02;
+SCHOOL_MASK_FIRE	= 0x04;
+SCHOOL_MASK_NATURE	= 0x08;
+SCHOOL_MASK_FROST	= 0x10;
+SCHOOL_MASK_SHADOW	= 0x20;
+SCHOOL_MASK_ARCANE	= 0x40;
+
+--
+-- Talent Constants
+--
+
+SHOW_TALENT_LEVEL = 10;
+
+--
+-- Glyph Constants
+--
+
+SHOW_INSCRIPTION_LEVEL = 15;
 
 --
 -- Achievement Constants
@@ -59,8 +105,52 @@ ITEM_QUALITY_UNCOMMON = 2;
 ITEM_QUALITY_RARE = 3;
 ITEM_QUALITY_EPIC = 4;
 
+ITEM_INVENTORY_LOCATION_PLAYER	= 0x00100000;
+ITEM_INVENTORY_LOCATION_BAGS	= 0x00200000;
+ITEM_INVENTORY_LOCATION_BANK	= 0x00400000;
+
+ITEM_INVENTORY_BAG_BIT_OFFSET 	= 8; -- Number of bits that the bag index in GetInventoryItemsForSlot gets shifted to the left.
+
+ITEM_INVENTORY_BANK_BAG_OFFSET	= 4; -- Number of bags before the first bank bag
+
+INVSLOT_HEAD 		= 1; INVSLOT_FIRST_EQUIPPED = INVSLOT_HEAD;
+INVSLOT_NECK		= 2;
+INVSLOT_SHOULDER	= 3;
+INVSLOT_BODY		= 4;
+INVSLOT_CHEST		= 5;
+INVSLOT_WAIST		= 6;
+INVSLOT_LEGS		= 7;
+INVSLOT_FEET		= 8;
+INVSLOT_WRIST		= 9;
+INVSLOT_HAND		= 10;
+INVSLOT_FINGER1		= 11;
+INVSLOT_FINGER2		= 12;
+INVSLOT_TRINKET1	= 13;
+INVSLOT_TRINKET2	= 14;
+INVSLOT_BACK		= 15;
+INVSLOT_MAINHAND	= 16;
+INVSLOT_OFFHAND		= 17;
+INVSLOT_RANGED		= 18;
+INVSLOT_TABARD		= 19;
+INVSLOT_LAST_EQUIPPED = INVSLOT_TABARD;
+
+CONTAINER_BAG_OFFSET = 19; -- Used for PutItemInBag
+
+BANK_CONTAINER = -1;
+NUM_BAG_SLOTS = 4;
+NUM_BANKGENERIC_SLOTS = 28;
+NUM_BANKBAGSLOTS = 7;
+
 --
--- Combat Log Global Constants and Helper Functions
+-- Equipment Set Constants
+--
+
+MAX_EQUIPMENT_SETS_PER_PLAYER = 10;
+EQUIPMENT_SET_EMPTY_SLOT = 0;
+EQUIPMENT_SET_ITEM_MISSING = -1;
+
+--
+-- Combat Log Constants
 -- 
 
 -- Affiliation
@@ -111,25 +201,6 @@ COMBATLOG_OBJECT_RAIDTARGET_MASK	= bit.bor(
 						COMBATLOG_OBJECT_RAIDTARGET7,
 						COMBATLOG_OBJECT_RAIDTARGET8
 						);
-
--- Power Types
-SPELL_POWER_MANA = 0;
-SPELL_POWER_RAGE = 1;
-SPELL_POWER_FOCUS = 2;
-SPELL_POWER_ENERGY = 3;
-SPELL_POWER_HAPPINESS = 4;
-SPELL_POWER_RUNES = 5;
-SPELL_POWER_RUNIC_POWER = 6;
-
--- Temporary
-SCHOOL_MASK_NONE	= 0x00;
-SCHOOL_MASK_PHYSICAL	= 0x01;
-SCHOOL_MASK_HOLY	= 0x02;
-SCHOOL_MASK_FIRE	= 0x04;
-SCHOOL_MASK_NATURE	= 0x08;
-SCHOOL_MASK_FROST	= 0x10;
-SCHOOL_MASK_SHADOW	= 0x20;
-SCHOOL_MASK_ARCANE	= 0x40;
 
 -- Object type constants
 COMBATLOG_FILTER_ME			= bit.bor(
@@ -209,36 +280,4 @@ COMBATLOG_FILTER_NEUTRAL_UNITS		= bit.bor(
 						);
 COMBATLOG_FILTER_UNKNOWN_UNITS		= COMBATLOG_OBJECT_NONE;
 COMBATLOG_FILTER_EVERYTHING =	0xFFFFFFFF;
-
--- 
--- Combat Log Global Functions
---
-
---[[
---  
---  Returns the correct {} code for the combat log bit
--- 
---  args:
--- 		bit - a bit exactly equal to a raid target icon.
---]]
-function CombatLog_BitToBraceCode(bit)
-	if ( bit == COMBATLOG_OBJECT_RAIDTARGET1 ) then
-		return "{"..strlower(RAID_TARGET_1).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET2 ) then
-		return "{"..strlower(RAID_TARGET_2).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET3 ) then
-		return "{"..strlower(RAID_TARGET_3).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET4 ) then
-		return "{"..strlower(RAID_TARGET_4).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET5 ) then
-		return "{"..strlower(RAID_TARGET_5).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET6 ) then
-		return "{"..strlower(RAID_TARGET_6).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET7 ) then
-		return "{"..strlower(RAID_TARGET_7).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET8 ) then
-		return "{"..strlower(RAID_TARGET_8).."}";
-	end
-	return "";
-end
 

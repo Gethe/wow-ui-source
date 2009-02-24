@@ -155,8 +155,6 @@ function HybridScrollFrame_SetOffset (self, offset)
 end
 
 function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, initialOffsetY, initialPoint, initialRelative, offsetX, offsetY, point, relativePoint)
-	assert(self and buttonTemplate);
-	
 	local scrollChild = self.scrollChild;
 	local button, buttonHeight, buttons, numButtons;
 	
@@ -182,9 +180,7 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 	
 	self.buttonHeight = round(buttonHeight);
 	
-	local numButtons = (self:GetHeight() / buttonHeight) + 1;
-	self.overflow = math.ceil(numButtons) - numButtons;
-	numButtons = math.ceil(numButtons);
+	local numButtons = math.ceil(self:GetHeight() / buttonHeight) + 1;
 	
 	for i = #buttons + 1, numButtons do
 		button = CreateFrame("BUTTON", buttonName .. i, scrollChild, buttonTemplate);

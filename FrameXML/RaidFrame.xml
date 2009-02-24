@@ -60,9 +60,7 @@
 							GameTooltip:SetText(text:GetText());
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -97,9 +95,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						ConvertToRaid();
-					</OnClick>
+					<OnClick function="ConvertToRaid"/>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
@@ -282,12 +278,8 @@
 							</Slider>
 						</Frames>
 						<Scripts>
-							<OnLoad>
-								ScrollFrame_OnLoad(self);
-							</OnLoad>
-							<OnScrollRangeChanged>
-								ScrollFrame_OnScrollRangeChanged(self, yrange);
-							</OnScrollRangeChanged>
+							<OnLoad function="ScrollFrame_OnLoad"/>
+							<OnScrollRangeChanged function="ScrollFrame_OnScrollRangeChanged"/>
 							<!--  The code to disable the ScrollDownButton is pretty hacked, but it works -->
 							<OnVerticalScroll>
 								local scrollbar = getglobal(self:GetName().."ScrollBar");
@@ -306,9 +298,7 @@
 									getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
 								end
 							</OnVerticalScroll>
-							<OnMouseWheel>
-								ScrollFrameTemplate_OnMouseWheel(self, delta);
-							</OnMouseWheel>
+							<OnMouseWheel function="ScrollFrameTemplate_OnMouseWheel"/>
 						</Scripts>
 						<ScrollChild>
 							<Frame name="RaidInfoScrollChildFrame" enableMouse="true">
@@ -343,16 +333,12 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				RaidFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="RaidFrame_OnLoad"/>
 			<OnShow>
 				RaidFrame_Update();
 				RequestRaidInfo();
 			</OnShow>
-			<OnEvent>
-				RaidFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="RaidFrame_OnEvent"/>
 		</Scripts>
 		<HitRectInsets>
 			<AbsInset left="0" right="100" top="0" bottom="100"/>

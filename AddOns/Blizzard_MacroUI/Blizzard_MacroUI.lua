@@ -21,6 +21,7 @@ end
 function MacroFrame_OnShow(self)
 	MacroFrame_Update();
 	PlaySound("igCharacterInfoOpen");
+	UpdateMicroButtons();
 end
 
 function MacroFrame_OnHide(self)
@@ -28,6 +29,7 @@ function MacroFrame_OnHide(self)
 	MacroFrame_SaveMacro();
 	--SaveMacros();
 	PlaySound("igCharacterInfoClose");
+	UpdateMicroButtons();
 end
 
 function MacroFrame_SetAccountMacros()
@@ -197,17 +199,17 @@ function MacroButtonContainer_OnLoad(self)
 end
 
 function MacroPopupFrame_OnShow(self)
-	if ( self.mode == "new" ) then
-		MacroFrameText:Hide();
-		MacroFrameSelectedMacroButtonIcon:SetTexture("");
-		MacroPopupFrame.selectedIcon = nil;
-	end
 	MacroPopupEditBox:SetFocus();
 
 	PlaySound("igCharacterInfoOpen");
 	MacroPopupFrame_Update(self);
 	MacroPopupOkayButton_Update();
 
+	if ( self.mode == "new" ) then
+		MacroFrameText:Hide();
+		MacroPopupButton_SelectTexture(1);
+	end
+	
 	-- Disable Buttons
 	MacroEditButton:Disable();
 	MacroDeleteButton:Disable();
@@ -298,8 +300,8 @@ function MacroPopupOkayButton_Update()
 	end
 end
 
-function MacroPopupButton_OnClick(self, button)
-	MacroPopupFrame.selectedIcon = self:GetID() + (FauxScrollFrame_GetOffset(MacroPopupScrollFrame) * NUM_ICONS_PER_ROW);
+function MacroPopupButton_SelectTexture(selectedIcon)
+	MacroPopupFrame.selectedIcon = selectedIcon;
 	-- Clear out selected texture
 	MacroPopupFrame.selectedIconTexture = nil;
 	MacroFrameSelectedMacroButtonIcon:SetTexture(GetMacroIconInfo(MacroPopupFrame.selectedIcon));
@@ -308,6 +310,10 @@ function MacroPopupButton_OnClick(self, button)
 	MacroPopupFrame.mode = nil;
 	MacroPopupFrame_Update(MacroPopupFrame);
 	MacroPopupFrame.mode = mode;
+end
+
+function MacroPopupButton_OnClick(self, button)
+	MacroPopupButton_SelectTexture(self:GetID() + (FauxScrollFrame_GetOffset(MacroPopupScrollFrame) * NUM_ICONS_PER_ROW));
 end
 
 function MacroPopupOkayButton_OnClick(self, button)

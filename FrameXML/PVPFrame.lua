@@ -466,7 +466,9 @@ function PVPStandard_OnLoad(self)
 	self:SetAlpha(0.1);
 end
 
-function PVPTeam_OnClick(self, id)
+function PVPTeam_OnClick(self)
+	local id = self:GetID();
+
 	local teamName, teamSize = GetArenaTeam(id);
 	if ( not teamName ) then
 		return;
@@ -483,13 +485,16 @@ function PVPTeam_OnClick(self, id)
 end
 
 function PVPTeam_OnMouseDown(self)
-	if ( GetArenaTeam(self:GetID()) ) then
+	if ( GetArenaTeam(self:GetID()) and (not self.isDown) ) then
+		self.isDown = true;
 		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint();
 		self:SetPoint(point, relativeTo, relativePoint, offsetX-2, offsetY-2);
 	end
 end
 function PVPTeam_OnMouseUp(self)
-	if ( GetArenaTeam(self:GetID()) ) then
+	--Note that this function is also called OnShow. Make sure it always checks if it was previously down.
+	if ( GetArenaTeam(self:GetID()) and (self.isDown) ) then
+		self.isDown = false;
 		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint();
 		self:SetPoint(point, relativeTo, relativePoint, offsetX+2, offsetY+2);
 	end

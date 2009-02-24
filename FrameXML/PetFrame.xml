@@ -57,9 +57,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						PetFrameDropDown_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="PetFrameDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<Frame setAllPoints="true">
@@ -153,9 +151,7 @@
 						self.cvar = "petStatusText";
 						self.cvarLabel = "STATUS_TEXT_PET";
 					</OnLoad>
-					<OnValueChanged>
-						UnitFrameHealthBar_OnValueChanged(self, value);
-					</OnValueChanged>
+					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
@@ -181,7 +177,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Button name="$parentDebuff1" inherits="PartyBuffButtonTemplate" id="1">
+			<Button name="$parentAura1" inherits="PartyBuffButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -196,9 +192,9 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentDebuff2" inherits="PartyBuffButtonTemplate" id="2">
+			<Button name="$parentAura2" inherits="PartyBuffButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
@@ -211,9 +207,9 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentDebuff3" inherits="PartyBuffButtonTemplate" id="3">
+			<Button name="$parentAura3" inherits="PartyBuffButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura2" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
@@ -226,9 +222,9 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentDebuff4" inherits="PartyBuffButtonTemplate" id="4">
+			<Button name="$parentAura4" inherits="PartyBuffButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
@@ -273,34 +269,20 @@
 							GameTooltip:Show();
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				UnitFrame_Initialize(self, "pet", PetName, PetPortrait,
-									 PetFrameHealthBar, PetFrameHealthBarText, 
-									 PetFrameManaBar, PetFrameManaBarText,
-				                     PetFrameFlash);
-				PetFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				PetFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="PetFrame_OnLoad"/>
+			<OnEvent function="PetFrame_OnEvent"/>
 			<OnShow>
 				UnitFrame_Update(self);
 				PetFrame_Update(self);
 				TotemFrame_Update(self);
 			</OnShow>
-			<OnHide>
-				TotemFrame_Update(self);
-			</OnHide>
-			<OnUpdate>
-				PetFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnHide function="TotemFrame_Update"/>
+			<OnUpdate function="PetFrame_OnUpdate"/>
 			<OnEnter>
 				UnitFrame_OnEnter(self);
 				PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 60, -35);
@@ -324,12 +306,8 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				PetCastingBarFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				PetCastingBarFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="PetCastingBarFrame_OnLoad"/>
+			<OnEvent function="PetCastingBarFrame_OnEvent"/>
 		</Scripts>
 	</StatusBar>
 </Ui>

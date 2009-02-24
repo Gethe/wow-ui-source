@@ -22,12 +22,8 @@
 			<OnLoad>
 				getglobal(self:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
 			</OnLoad>
-			<OnClick>
-				ArenaButton_OnClick(self:GetID());
-			</OnClick>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnClick function="ArenaButton_OnClick"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 		<ButtonText name="$parentText">
@@ -44,6 +40,7 @@
 		</ButtonText>
 		<NormalFont style="GameFontNormalLeft"/>
 		<HighlightFont style="GameFontHighlightLeft"/>
+		<DisabledFont style="GameFontDisable"/>
 	</Button>
 	<Frame name="ArenaFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>
@@ -229,12 +226,10 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(self:GetParent());
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
-			<Button name="ArenaFrameJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_JOIN">
+			<Button name="ArenaFrameJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_JOIN" id="1">
 				<Size>
 					<AbsDimension x="109" y="22"/>
 				</Size>
@@ -246,12 +241,10 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						ArenaFrameJoinButton_OnClick();
-					</OnClick>
+					<OnClick function="ArenaFrameJoinButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="ArenaFrameGroupJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_GROUP_JOIN">
+			<Button name="ArenaFrameGroupJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_GROUP_JOIN" id="2">
 				<Size>
 					<AbsDimension x="136" y="22"/>
 				</Size>
@@ -263,18 +256,14 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						ArenaFrameJoinButton_OnClick(1);
-					</OnClick>
+					<OnClick function="ArenaFrameJoinButton_OnClick"/>
 					<OnEnter>
 						GameTooltip_SetDefaultAnchor(GameTooltip, self)
 						GameTooltip:SetText(BATTLEFIELD_GROUP_JOIN, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(NEWBIE_TOOLTIP_BATTLEFIELD_GROUP_JOIN, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 						GameTooltip:Show();
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="ArenaFrameCloseButton" inherits="UIPanelCloseButton">
@@ -288,12 +277,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ArenaFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				ArenaFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="ArenaFrame_OnLoad"/>
+			<OnEvent function="ArenaFrame_OnEvent"/>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
 			</OnShow>
@@ -301,9 +286,6 @@
 				CloseBattlefield();
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
 		</Scripts>
 	</Frame>
 </Ui>

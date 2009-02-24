@@ -168,9 +168,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						ApplyBarberShopStyle();
-					</OnClick>
+					<OnClick function="ApplyBarberShopStyle"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="COINPICKUP_CANCEL">
@@ -214,18 +212,10 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				BarberShop_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				BarberShop_OnShow(self);
-			</OnShow>
-			<OnHide>
-				BarberShop_OnHide(self);
-			</OnHide>
-			<OnEvent>
-				BarberShop_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="BarberShop_OnLoad"/>
+			<OnShow function="BarberShop_OnShow"/>
+			<OnHide function="BarberShop_OnHide"/>
+			<OnEvent function="BarberShop_OnEvent"/>
 		</Scripts>
 	</Frame>
 	<Frame name="BarberShopBannerFrame" toplevel="true" parent="UIParent">

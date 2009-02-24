@@ -1286,6 +1286,12 @@ SecureCmdList["CLICK"] = function(msg)
 	end
 end
 
+SecureCmdList["EQUIP_SET"] = function(msg)
+	if ( msg and msg ~= "" ) then
+		EquipmentManager_EquipSet(msg);
+	end
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
@@ -1690,7 +1696,7 @@ end
 SlashCmdList["FRIENDS"] = function(msg)
 	local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 	if ( player ~= "" or UnitIsPlayer("target") ) then
-		AddFriend(player, note);
+		AddOrRemoveFriend(player, note);
 	else
 		ToggleFriendsPanel();
 	end
@@ -1824,17 +1830,7 @@ SlashCmdList["SAVEGUILDROSTER"] = function(msg)
 end
 
 SlashCmdList["LOOKINGFORGROUP"] = function(msg)
-	local updateType = LFGParentFrame_UpdateTabs();
-	if ( not updateType ) then
-		ToggleLFGParentFrame(1);
-	else
-		-- Send an error
-		if ( updateType == "inparty" ) then
-			UIErrorsFrame:AddMessage(ERR_CANT_DO_THAT_IN_A_GROUP, 1.0, 0.1, 0.1, 1.0);
-		else
-			UIErrorsFrame:AddMessage(ERR_CANT_DO_THAT_WHILE_LFM, 1.0, 0.1, 0.1, 1.0);
-		end
-	end
+	ToggleLFGParentFrame(1);
 end
 
 SlashCmdList["LOOKINGFORMORE"] = function(msg)
@@ -2232,11 +2228,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
 
-		local filter, newarg1 = false;
+		local filter = false;
 		if ( chatFilters[event] ) then
 			for _, filterFunc in next, chatFilters[event] do
-				filter, newarg1 = filterFunc(arg1);
-				arg1 = (newarg1 or arg1);
+				filter, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = filterFunc(...);
 				if ( filter ) then
 					return true;
 				end
@@ -3362,6 +3357,8 @@ function ChatMenu_VoiceMacro(self)
 end
 
 function ChatMenu_OnLoad(self)
+	self.chatFrame = DEFAULT_CHAT_FRAME;
+	
 	UIMenu_Initialize(self);
 	UIMenu_AddButton(self, SAY_MESSAGE, SLASH_SAY1, ChatMenu_Say);
 	UIMenu_AddButton(self, PARTY_MESSAGE, SLASH_PARTY1, ChatMenu_Party);
@@ -3383,6 +3380,9 @@ function ChatMenu_OnShow(self)
 	EmoteMenu:Hide();
 	LanguageMenu:Hide();
 	VoiceMacroMenu:Hide();
+	
+	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
 function EmoteMenu_Click(self)

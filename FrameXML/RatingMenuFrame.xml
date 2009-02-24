@@ -110,7 +110,7 @@
 				UpdateMicroButtons();
 			</OnHide>
 			<OnKeyDown>
-				if ( key == "ESCAPE" ) then
+				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
 					PlaySound("gsTitleOptionExit");
 					HideUIPanel(RatingMenuFrame);
 					MacOptionsFrame_Cancel();

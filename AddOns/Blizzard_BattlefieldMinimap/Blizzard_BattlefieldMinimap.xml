@@ -6,12 +6,8 @@
 		<AbsDimension x="12" y="12"/>
 	</Size>
 	<Scripts>
-		<OnEnter>
-			BattlefieldMinimapUnit_OnEnter(self);
-		</OnEnter>
-		<OnLeave>
-			GameTooltip:Hide();
-		</OnLeave>
+		<OnEnter function="BattlefieldMinimapUnit_OnEnter"/>
+		<OnLeave function="GameTooltip_Hide"/>
 		<OnMouseUp>
 			MapUnit_OnMouseUp(self, button, "BattlefieldMinimapRaid", "BattlefieldMinimapParty");
 		</OnMouseUp>
@@ -110,9 +106,7 @@
 		<OnEnter>
 			GameTooltip_AddNewbieTip(self, BATTLEFIELDMINIMAP_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_BATTLEFIELDMINIMAP_OPTIONS, 1);
 		</OnEnter>
-		<OnLeave>
-			GameTooltip:Hide();
-		</OnLeave>
+		<OnLeave function="GameTooltip_Hide"/>
 		<OnDragStart>
 			if ( BattlefieldMinimapOptions.locked ) then
 				return;
@@ -339,37 +333,6 @@
 		</Layer>
 	</Layers>
 	<Frames>
-		<!--
-		<Button name="BattlefieldMinimapResizeBottomRight">
-			<Size>
-				<AbsDimension x="16" y="16"/>
-			</Size>
-			<Anchors>
-				<Anchor point="BOTTOMRIGHT">
-					<Offset>
-						<AbsDimension x="2" y="-3"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture>
-						<Color r="0" g="1" b="0"/>
-					</Texture>
-				</Layer>
-			</Layers>
-			<Scripts>
-				<OnMouseDown>
-					BattlefieldMinimap:StartSizing("BOTTOMRIGHT");
-					BattlefieldMinimap.resizing = 1;
-				</OnMouseDown>
-				<OnMouseUp>
-					BattlefieldMinimap:StopMovingOrSizing();
-					BattlefieldMinimap.resizing = nil;
-				</OnMouseUp> 
-			</Scripts>
-		</Button>
-		-->
 		<Button name="BattlefieldMinimapCloseButton" inherits="UIPanelCloseButton">
 			<Anchors>
 				<Anchor point="TOPRIGHT">
@@ -446,9 +409,7 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad>
-			BattlefieldMinimap_OnLoad(self);
-		</OnLoad>
+		<OnLoad function="BattlefieldMinimap_OnLoad"/>
 		<OnShow>
 			SetMapToCurrentZone();
 			BattlefieldMinimap_Update();
@@ -459,12 +420,8 @@
 			BattlefieldMinimapTab:Hide();
 			BattlefieldMinimap_ClearTextures();
 		</OnHide>
-		<OnEvent>
-			BattlefieldMinimap_OnEvent(self, event, ...);
-		</OnEvent>
-		<OnUpdate>
-			BattlefieldMinimap_OnUpdate(self, elapsed);
-		</OnUpdate>
+		<OnEvent function="BattlefieldMinimap_OnEvent"/>
+		<OnUpdate function="BattlefieldMinimap_OnUpdate"/>
 	</Scripts>
 </Frame>
 </Ui>

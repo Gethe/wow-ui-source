@@ -59,7 +59,8 @@ function MoneyInputFrame_SetCopper(moneyFrame, money)
 	end
 end
 
-function MoneyInputFrame_OnTextChanged(self, moneyFrame)
+function MoneyInputFrame_OnTextChanged(self)
+	local moneyFrame = self:GetParent();
 	if ( moneyFrame.expectChanges ) then
 		if ( moneyFrame.expectChanges > 1 ) then
 			moneyFrame.expectChanges = moneyFrame.expectChanges - 1;

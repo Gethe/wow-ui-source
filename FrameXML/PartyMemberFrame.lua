@@ -129,7 +129,7 @@ function PartyMemberFrame_UpdateMember (self)
 		self:Hide();
 	end
 	PartyMemberFrame_UpdatePvPStatus(self);
-	RefreshBuffs(self, 0, "party"..id);
+	RefreshAuras(self, 0, "party"..id);
 	PartyMemberFrame_UpdateVoiceStatus(self);
 	PartyMemberFrame_UpdatePet(self);
 	PartyMemberFrame_UpdateReadyCheck(self);
@@ -322,7 +322,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 
 	if ( event =="UNIT_AURA" ) then
 		if ( arg1 == unit ) then
-			RefreshBuffs(self, 0, unit);
+			RefreshAuras(self, 0, unit);
 			if ( PartyMemberBuffTooltip:IsShown() and
 				selfID == PartyMemberBuffTooltip:GetID() ) then
 				PartyMemberBuffTooltip_Update(self);
@@ -407,7 +407,7 @@ function PartyMemberFrame_RefreshPetBuffs (self, id)
 	if ( not id ) then
 		id = self:GetID();
 	end
-	RefreshBuffs(getglobal("PartyMemberFrame"..id.."PetFrame"), 0, "partypet"..id)
+	RefreshAuras(getglobal("PartyMemberFrame"..id.."PetFrame"), 0, "partypet"..id)
 end
 
 function PartyMemberBuffTooltip_Update (self)
@@ -524,13 +524,20 @@ function UpdatePartyMemberBackground ()
 	end
 end
 
-function PartyMemberBackground_ToggleOpacity ()
+function PartyMemberBackground_ToggleOpacity (self)
+	if ( not self ) then
+		self = PartyMemberBackground;
+	end
 	if ( OpacityFrame:IsShown() ) then
 		OpacityFrame:Hide();
 		return;
 	end
 	OpacityFrame:ClearAllPoints();
-	OpacityFrame:SetPoint("TOPLEFT", "PartyMemberBackground", "TOPRIGHT", 0, 7);
+	if ( self == ArenaEnemyBackground ) then
+		OpacityFrame:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -7);
+	else
+		OpacityFrame:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 7);
+	end
 	OpacityFrame.opacityFunc = PartyMemberBackground_SetOpacity;
 	OpacityFrame.saveOpacityFunc = PartyMemberBackground_SaveOpacity;
 	OpacityFrame:Show();
@@ -539,6 +546,9 @@ end
 function PartyMemberBackground_SetOpacity ()
 	local alpha = 1.0 - OpacityFrameSlider:GetValue();
 	PartyMemberBackground:SetAlpha(alpha);
+	if ( ArenaEnemyBackground_SetOpacity ) then
+		ArenaEnemyBackground_SetOpacity();
+	end
 end
 
 function PartyMemberBackground_SaveOpacity ()

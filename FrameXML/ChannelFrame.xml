@@ -12,12 +12,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self:SetFrameLevel(self:GetFrameLevel() + 1);
-			</OnLoad>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad function="RaiseFrameLevel"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	<Button name="ChannelButtonTemplate" virtual="true">
@@ -48,9 +44,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnUpdate>
-						VoiceChat_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnUpdate function="VoiceChat_OnUpdate"/>
 					<OnClick>
 						SetActiveVoiceChannel(self:GetParent():GetID());
 					</OnClick>
@@ -62,23 +56,15 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick>
-				ChannelList_OnClick(self, button);
-			</OnClick>
-			<OnDragStart>
-				ChannelListButton_OnDragStart(self);
-			</OnDragStart>
-			<OnDragStop>
-				ChannelListButton_OnDragStop(self);
-			</OnDragStop>
+			<OnClick function="ChannelList_OnClick"/>
+			<OnDragStart function="ChannelListButton_OnDragStart"/>
+			<OnDragStop function="ChannelListButton_OnDragStop"/>
 			<OnEnter>
 				if ( self.voiceEnabled ) then
 					GameTooltip_AddNewbieTip(self, DISPLAY_CHANNEL_PULLOUT, 1.0, 1.0, 1.0, string.format(NEWBIE_TOOLTIP_DISPLAY_CHANNEL_PULLOUT, (self.name or UNKNOWN)), 1);
 				end
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
 			<TexCoords left="0" right="0.53125" top="0" bottom="0.625"/>
@@ -161,9 +147,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnUpdate>
-						VoiceChat_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnUpdate function="VoiceChat_OnUpdate"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -176,9 +160,7 @@
 					self:SetWidth(135);
 				end
 			</OnLoad>
-			<OnClick>
-				ChannelRoster_OnClick(self, button);
-			</OnClick>
+			<OnClick function="ChannelRoster_OnClick"/>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
@@ -285,9 +267,7 @@
 								GameTooltip_AddNewbieTip(self, AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
 								GameTooltip:Show();
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
 								SetCVar("autojoinPartyVoice", self:GetChecked());
 								if ( self:GetChecked() ) then
@@ -327,9 +307,7 @@
 								GameTooltip_AddNewbieTip(self, AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
 								GameTooltip:Show();
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
 								SetCVar("autojoinBGVoice", self:GetChecked());
 								if ( self:GetChecked() ) then
@@ -348,9 +326,7 @@
 						GameTooltip_AddNewbieTip(self, AUTO_JOIN_VOICE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_AUTO_JOIN_VOICE, 1);
 						GameTooltip:Show();
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Button name="$parentNewButton" inherits="UIPanelButtonTemplate" text="ADD">
@@ -365,9 +341,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						ChannelFrame_New_OnClick(self, button);
-					</OnClick>
+					<OnClick function="ChannelFrame_New_OnClick"/>
 				</Scripts>
 			</Button>
 <!-- Waiting for Chat System Changes
@@ -898,9 +872,7 @@
 									ChannelFrameDaughterFrame_Cancel(self);
 								end
 							</OnEnterPressed>
-							<OnEscapePressed>
-									ChannelFrameDaughterFrame_Cancel(self);
-							</OnEscapePressed>
+							<OnEscapePressed function="ChannelFrameDaughterFrame_Cancel"/>
 							<OnTabPressed>
 								EditBox_HandleTabbing(self, CHAT_CHANNEL_TABBING);
 							</OnTabPressed>
@@ -932,12 +904,8 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnEnterPressed>
-								ChannelFrameDaughterFrame_Okay();
-							</OnEnterPressed>
-							<OnEscapePressed>
-								ChannelFrameDaughterFrame_Cancel(self);
-							</OnEscapePressed>
+							<OnEnterPressed function="ChannelFrameDaughterFrame"/>
+							<OnEscapePressed function="ChannelFrameDaughterFrame_Cancel"/>
 							<OnTabPressed>
 								EditBox_HandleTabbing(self, CHAT_CHANNEL_TABBING);
 							</OnTabPressed>
@@ -982,9 +950,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								ChannelFrameDaughterFrame_Okay();
-							</OnClick>
+							<OnClick function="ChannelFrameDaughterFrame_Okay"/>
 						</Scripts>
 						<NormalFont style="GameFontNormalSmall"/>
 						<HighlightFont style="GameFontHighlightSmall"/>
@@ -1002,9 +968,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								ChannelFrameDaughterFrame_Cancel(self);
-							</OnClick>
+							<OnClick function="ChannelFrameDaughterFrame_Cancel"/>
 						</Scripts>
 						<NormalFont style="GameFontNormalSmall"/>
 						<HighlightFont style="GameFontHighlightSmall"/>
@@ -1012,26 +976,16 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnHide>
-						ChannelFrameDaughterFrame_OnHide();
-					</OnHide>
+					<OnHide function="ChannelFrameDaughterFrame_OnHide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="ChannelListDropDown" inherits="UIDropDownMenuTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ChannelFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				ChannelFrame_Update(self);
-			</OnShow>
-			<OnEvent>
-				ChannelFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				 ChannelFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="ChannelFrame_OnLoad"/>
+			<OnShow function="ChannelFrame_Update"/>
+			<OnEvent function="ChannelFrame_OnEvent"/>
+			<OnUpdate function="ChannelFrame_OnUpdate"/>
 			<OnHide>
 				if ( ChannelFrameDaughterFrame:IsShown() ) then
 					ChannelFrameDaughterFrame:Hide();		
@@ -1081,7 +1035,7 @@
 				self:SetScript("OnEvent", ChannelPulloutRosterButton_OnEvent);
 			</OnLoad>
 			<OnMouseWheel>
-				ChannelPulloutRoster_Scroll(self:GetParent(), -delta);
+				ChannelPulloutRoster_Scroll(self:GetParent(), delta);
 			</OnMouseWheel>
 		</Scripts>
 	</Button>
@@ -1180,9 +1134,7 @@
 			<OnEnter>
 				GameTooltip_AddNewbieTip(self, CHANNELPULLOUT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHANNELPULLOUT_OPTIONS, 1);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<ButtonText name="$parentText" text="Channel Roster">
 			<Size>
@@ -1224,12 +1176,8 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnUpdate>
-				ChannelPullout_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnLoad>
-				ChannelPullout_OnLoad(self);
-			</OnLoad>
+			<OnUpdate function="ChannelPullout_OnUpdate"/>
+			<OnLoad function="ChannelPullout_OnLoad"/>
 		</Scripts>		
 		<Frames>
 			<Frame name="$parentBackground" setAllPoints="true">
@@ -1263,9 +1211,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						ChannelPullout_ToggleDisplay();
-					</OnClick>
+					<OnClick function="ChannelPullout_ToggleDisplay"/>
 				</Scripts>
 				<NormalTexture file="Interface/BUTTONS/UI-Panel-MinimizeButton-Up"/>
 				<PushedTexture file="Interface/BUTTONS/UI-Panel-MinimizeButton-Down"/>
@@ -1292,12 +1238,8 @@
 						self.downArrow = getglobal(self:GetParent():GetName() .. "DownArrow");
 						self.upArrow = getglobal(self:GetParent():GetName() .. "UpArrow");						
 					</OnLoad>
-					<OnShow>
-						ChannelPulloutRoster_Update(self);
-					</OnShow>
-					<OnMouseWheel>
-						ChannelPulloutRoster_Scroll(self, -delta);
-					</OnMouseWheel>					
+					<OnShow function="ChannelPulloutRoster_Update"/>
+					<OnMouseWheel function="ChannelPulloutRoster_Scroll"/>
 				</Scripts>
 				<Frames>
 					<Frame name="$parentScroll">
@@ -1326,7 +1268,7 @@
 								</Anchors>		
 								<Scripts>
 									<OnClick>
-										ChannelPulloutRoster_Scroll(self:GetParent():GetParent(), -1);
+										ChannelPulloutRoster_Scroll(self:GetParent():GetParent(), 1);
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
@@ -1343,7 +1285,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										ChannelPulloutRoster_Scroll(self:GetParent():GetParent(), 1);
+										ChannelPulloutRoster_Scroll(self:GetParent():GetParent(), -1);
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>

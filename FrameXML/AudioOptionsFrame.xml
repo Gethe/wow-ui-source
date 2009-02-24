@@ -18,9 +18,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						AudioOptionsFrameCancel_OnClick();
-					</OnClick>
+					<OnClick function="AudioOptionsFrameCancel_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
@@ -31,9 +29,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						AudioOptionsFrameOkay_OnClick();
-					</OnClick>
+					<OnClick function="AudioOptionsFrameOkay_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentDefaults" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
@@ -50,21 +46,15 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOption");
-						AudioOptionsFrameDefault_OnClick();
+						AudioOptionsFrameDefault_OnClick(self, button);
 					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				AudioOptionsFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				AudioOptionsFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnHide>
-				AudioOptionsFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="AudioOptionsFrame_OnLoad"/>
+			<OnEvent function="AudioOptionsFrame_OnEvent"/>
+			<OnHide function="AudioOptionsFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

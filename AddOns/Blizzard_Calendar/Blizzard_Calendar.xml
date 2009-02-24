@@ -294,9 +294,7 @@
 						self.fadeTime = 1.5;
 						self.fadein = true;
 					</OnLoad>
-					<OnUpdate>
-						CalendarTodayFrame_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnUpdate function="CalendarTodayFrame_OnUpdate"/>
 				</Scripts>
 			</Frame>
 			<Button name="CalendarPrevMonthButton">
@@ -307,9 +305,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						CalendarPrevMonthButton_OnClick();
-					</OnClick>
+					<OnClick function="CalendarPrevMonthButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
@@ -324,9 +320,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						CalendarNextMonthButton_OnClick();
-					</OnClick>
+					<OnClick function="CalendarNextMonthButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
@@ -386,9 +380,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								CalendarFilterButton_OnClick(self);
-							</OnClick>
+							<OnClick function="CalendarFilterButton_OnClick"/>
 						</Scripts>
 						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 							<Size x="20" y="20"/>
@@ -427,9 +419,7 @@
 			</Frame>
 			<Frame name="CalendarFilterDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
 				<Scripts>
-					<OnLoad>
-						CalendarFilterDropDown_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="CalendarFilterDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<Button name="CalendarCloseButton" inherits="UIPanelCloseButton">
@@ -444,38 +434,22 @@
 			<!-- Context menus -->
 			<Frame name="CalendarContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" clampedToScreen="true" hidden="true">
 				<Scripts>
-					<OnLoad>
-						CalendarContextMenu_OnLoad(self);
-					</OnLoad>
-					<OnHide>
-						CalendarContextMenu_OnHide(self);
-					</OnHide>
+					<OnLoad function="CalendarContextMenu_OnLoad"/>
+					<OnHide function="CalendarContextMenu_OnHide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="CalendarArenaTeamContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" hidden="true" parent="CalendarContextMenu">
 				<Scripts>
-					<OnLoad>
-						CalendarArenaTeamContextMenu_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						CalendarArenaTeamContextMenu_OnShow(self);
-					</OnShow>
-					<OnEvent>
-						CalendarArenaTeamContextMenu_OnEvent(self, event, ...);
-					</OnEvent>
+					<OnLoad function="CalendarArenaTeamContextMenu_OnLoad"/>
+					<OnShow function="CalendarArenaTeamContextMenu_OnShow"/>
+					<OnEvent function="CalendarArenaTeamContextMenu_OnEvent"/>
 				</Scripts>
 			</Frame>
 			<Frame name="CalendarInviteStatusContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" hidden="true" parent="CalendarContextMenu">
 				<Scripts>
-					<OnLoad>
-						CalendarInviteStatusContextMenu_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						CalendarInviteStatusContextMenu_OnShow(self);
-					</OnShow>
-					<OnEvent>
-						CalendarInviteStatusContextMenu_OnEvent(self, event, ...);
-					</OnEvent>
+					<OnLoad function="CalendarInviteStatusContextMenu_OnLoad"/>
+					<OnShow function="CalendarInviteStatusContextMenu_OnShow"/>
+					<OnEvent function="CalendarInviteStatusContextMenu_OnEvent"/>
 				</Scripts>
 			</Frame>
 
@@ -502,12 +476,8 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnShow>
-								CalendarEventFrameBlocker_OnShow(self);
-							</OnShow>
-							<OnHide>
-								CalendarEventFrameBlocker_OnHide(self);
-							</OnHide>
+							<OnShow function="CalendarEventFrameBlocker_OnShow"/>
+							<OnHide function="CalendarEventFrameBlocker_OnHide"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -533,18 +503,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				CalendarFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				CalendarFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				CalendarFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="CalendarFrame_OnLoad"/>
+			<OnEvent function="CalendarFrame_OnEvent"/>
+			<OnShow function="CalendarFrame_OnShow"/>
+			<OnHide function="CalendarFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -641,15 +603,9 @@
 			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarViewHolidayFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				CalendarViewHolidayFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				CalendarViewHolidayFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="CalendarViewHolidayFrame_OnLoad"/>
+			<OnShow function="CalendarViewHolidayFrame_OnShow"/>
+			<OnHide function="CalendarViewHolidayFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -734,15 +690,9 @@
 			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarViewRaidFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				CalendarViewRaidFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				CalendarViewRaidFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="CalendarViewRaidFrame_OnLoad"/>
+			<OnShow function="CalendarViewRaidFrame_OnShow"/>
+			<OnHide function="CalendarViewRaidFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -861,9 +811,7 @@
 				<Frames>
 					<ScrollFrame name="CalendarViewEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
 						<Scripts>
-							<OnLoad>
-								CalendarViewEventDescriptionScrollFrame_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="CalendarViewEventDescriptionScrollFrame_OnLoad"/>
 						</Scripts>
 						<ScrollChild>
 							<Frame name="CalendarViewEventDescriptionScrollChild">
@@ -937,19 +885,17 @@
 						<Scripts>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-								GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, 1);
+								if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
+									GameTooltip:SetText(CALENDAR_TOOLTIP_SIGNUPBUTTON, nil, nil, nil, nil, 1);
+								else
+									GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, 1);
+								end
 								GameTooltip:Show();
 								--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_AVAILABLEBUTTON, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-							<OnUpdate>
-								CalendarViewEventAcceptButton_OnUpdate(self);
-							</OnUpdate>
-							<OnClick>
-								CalendarViewEventAcceptButton_OnClick(self);
-							</OnClick>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnUpdate function="CalendarViewEventRSVPButton_OnUpdate"/>
+							<OnClick function="CalendarViewEventAcceptButton_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button name="CalendarViewEventDeclineButton" inherits="CalendarEventButtonTemplate" text="DECLINE">
@@ -980,15 +926,9 @@
 								GameTooltip:Show();
 								--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_DECLINEBUTTON, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-							<OnUpdate>
-								CalendarViewEventDeclineButton_OnUpdate(self);
-							</OnUpdate>
-							<OnClick>
-								CalendarViewEventDeclineButton_OnClick(self);
-							</OnClick>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnUpdate function="CalendarViewEventRSVPButton_OnUpdate"/>
+							<OnClick function="CalendarViewEventDeclineButton_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button name="CalendarViewEventRemoveButton" inherits="CalendarEventButtonTemplate" text="CALENDAR_VIEW_EVENT_REMOVE">
@@ -1000,16 +940,16 @@
 						<Scripts>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-								GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, 1);
+								if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
+									GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVESIGNUPBUTTON, nil, nil, nil, nil, 1);
+								else
+									GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, 1);
+								end
 								GameTooltip:Show();
 								--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_REMOVEBUTTON, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-							<OnClick>
-								CalendarViewEventRemoveButton_OnClick(self);
-							</OnClick>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnClick function="CalendarViewEventRemoveButton_OnClick"/>
 						</Scripts>
 					</Button>
 					<Frame name="CalendarViewEventInviteList" inherits="CalendarEventInviteListTemplate">
@@ -1026,21 +966,11 @@
 			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarViewEventFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				CalendarViewEventFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				CalendarViewEventFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				CalendarViewEventFrame_OnHide(self);
-			</OnHide>
-			<OnUpdate>
-				CalendarViewEventFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="CalendarViewEventFrame_OnLoad"/>
+			<OnEvent function="CalendarViewEventFrame_OnEvent"/>
+			<OnShow function="CalendarViewEventFrame_OnShow"/>
+			<OnHide function="CalendarViewEventFrame_OnHide"/>
+			<OnUpdate function="CalendarViewEventFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
 
@@ -1146,21 +1076,14 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnTextChanged>
-						CalendarCreateEventTitleEdit_OnTextChanged(self);
-					</OnTextChanged>
-					<OnEnterPressed>
-						self:ClearFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
-					<OnEditFocusLost>
-						CalendarCreateEventTitleEdit_OnEditFocusLost(self);
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						self:HighlightText();
-					</OnEditFocusGained>
+					<OnTabPressed>
+						EditBox_HandleTabbing(self, CALENDAR_CREATEEVENTFRAME_TAB_LIST);
+					</OnTabPressed>
+					<OnTextChanged function="CalendarCreateEventTitleEdit_OnTextChanged"/>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnEditFocusLost function="CalendarCreateEventTitleEdit_OnEditFocusLost"/>
+					<OnEditFocusGained function="EditBox_HighlightText"/>
 				</Scripts>
 			</EditBox>
 			<Frame name="CalendarCreateEventTypeDropDown" inherits="UIDropDownMenuTemplate">
@@ -1228,9 +1151,7 @@
 							</Button>
 						</Frames>
 						<Scripts>
-							<OnLoad>
-								CalendarCreateEventDescriptionScrollFrame_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="CalendarCreateEventDescriptionScrollFrame_OnLoad"/>
 						</Scripts>
 						<ScrollChild>
 							<EditBox name="CalendarCreateEventDescriptionEdit" multiLine="true" letters="255" autoFocus="false">
@@ -1239,20 +1160,19 @@
 								</Anchors>
 								<Size x="263" y="1"/>
 								<Scripts>
+									<OnTabPressed>
+										EditBox_HandleTabbing(self, CALENDAR_CREATEEVENTFRAME_TAB_LIST);
+									</OnTabPressed>
 									<OnTextChanged>
 										ScrollingEdit_OnTextChanged(self, self:GetParent());
 										CalendarEventSetDescription(self:GetText());
 										CalendarCreateEventCreateButton_Update();
 									</OnTextChanged> 
-									<OnCursorChanged>
-										ScrollingEdit_OnCursorChanged(self, x, y, w, h);
-									</OnCursorChanged>
+									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 									<OnUpdate>
 										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
 									</OnUpdate>
-									<OnEscapePressed>
-										self:ClearFocus();
-									</OnEscapePressed>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
 									<OnEditFocusGained>
 										if ( self:GetText() == CALENDAR_EVENT_DESCRIPTION ) then
 											self:HighlightText();
@@ -1306,21 +1226,15 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								CalendarCreateEventAutoApproveCheck_OnLoad(self);
-							</OnLoad>
-							<OnClick>
-								CalendarCreateEventAutoApproveCheck_OnClick(self);
-							</OnClick>
+							<OnLoad function="CalendarCreateEventAutoApproveCheck_OnLoad"/>
+							<OnClick function="CalendarCreateEventAutoApproveCheck_OnClick"/>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 								GameTooltip:SetText(CALENDAR_TOOLTIP_AUTOAPPROVE, nil, nil, nil, nil, 1);
 								GameTooltip:Show();
 								--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_AUTOAPPROVE, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="CalendarCreateEventLockEventCheck" inherits="UICheckButtonTemplate">
@@ -1331,21 +1245,15 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								CalendarCreateEventLockEventCheck_OnLoad(self);
-							</OnLoad>
-							<OnClick>
-								CalendarCreateEventLockEventCheck_OnClick(self);
-							</OnClick>
+							<OnLoad function="CalendarCreateEventLockEventCheck_OnLoad"/>
+							<OnClick function="CalendarCreateEventLockEventCheck_OnClick"/>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 								GameTooltip:SetText(CALENDAR_TOOLTIP_LOCKEVENT, nil, nil, nil, nil, 1);
 								GameTooltip:Show();
 								--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_LOCKEVENT, 1);
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
 					<Frame name="CalendarCreateEventInviteList" inherits="CalendarEventInviteListTemplate">
@@ -1366,21 +1274,14 @@
 							<OnLoad>
 								self:SetText(CALENDAR_PLAYER_NAME);
 							</OnLoad>
-							<OnEnterPressed>
-								CalendarCreateEventInviteEdit_OnEnterPressed(self);
-							</OnEnterPressed>
-							<OnEscapePressed>
-								self:ClearFocus();
-							</OnEscapePressed>
-							<OnEditFocusLost>
-								CalendarCreateEventInviteEdit_OnEditFocusLost(self);
-							</OnEditFocusLost>
-							<OnEditFocusGained>
-								self:HighlightText();
-							</OnEditFocusGained>
-							<OnCharComposition>
-								PlayerNameAutocomplete(self);
-							</OnCharComposition>
+							<OnTabPressed>
+								EditBox_HandleTabbing(self, CALENDAR_CREATEEVENTFRAME_TAB_LIST);
+							</OnTabPressed>
+							<OnEnterPressed function="CalendarCreateEventInviteEdit_OnEnterPressed"/>
+							<OnEscapePressed function="EditBox_ClearFocus"/>
+							<OnEditFocusLost function="CalendarCreateEventInviteEdit_OnEditFocusLost"/>
+							<OnEditFocusGained function="EditBox_HighlightText"/>
+							<OnCharComposition function="PlayerNameAutocomplete"/>
 							<OnChar>
 								if ( not self:IsInIMECompositionMode() ) then
 									PlayerNameAutocomplete(self);
@@ -1398,12 +1299,8 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								CalendarCreateEventInviteButton_OnClick(self);
-							</OnClick>
-							<OnUpdate>
-								CalendarCreateEventInviteButton_OnUpdate(self);
-							</OnUpdate>
+							<OnClick function="CalendarCreateEventInviteButton_OnClick"/>
+							<OnUpdate function="CalendarCreateEventInviteButton_OnUpdate"/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -1434,21 +1331,15 @@
 					<OnLoad>
 						self:SetWidth(self:GetTextWidth() + 40);
 					</OnLoad>
-					<OnClick>
-						CalendarCreateEventMassInviteButton_OnClick();
-					</OnClick>
-					<OnUpdate>
-						CalendarCreateEventMassInviteButton_OnUpdate(self);
-					</OnUpdate>
+					<OnClick function="CalendarCreateEventMassInviteButton_OnClick"/>
+					<OnUpdate function="CalendarCreateEventMassInviteButton_OnUpdate"/>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						GameTooltip:SetText(CALENDAR_TOOLTIP_MASSINVITE, nil, nil, nil, nil, 1);
 						GameTooltip:Show();
 						--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_MASSINVITE, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="CalendarCreateEventRaidInviteButton" inherits="UIPanelButtonTemplate2" text="CALENDAR_INVITE_MEMBERS">
@@ -1474,21 +1365,11 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						CalendarCreateEventRaidInviteButton_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						CalendarCreateEventRaidInviteButton_OnEvent(self, event, ...);
-					</OnEvent>
-					<OnClick>
-						CalendarCreateEventRaidInviteButton_OnClick(self);
-					</OnClick>
-					<OnEnter>
-						CalendarCreateEventRaidInviteButton_OnEnter(self);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLoad function="CalendarCreateEventRaidInviteButton_OnLoad"/>
+					<OnEvent function="CalendarCreateEventRaidInviteButton_OnEvent"/>
+					<OnClick function="CalendarCreateEventRaidInviteButton_OnClick"/>
+					<OnEnter function="CalendarCreateEventRaidInviteButton_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="CalendarCreateEventCreateButton" inherits="CalendarEventButtonTemplate">
@@ -1514,12 +1395,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						CalendarCreateEventCreateButton_OnClick(self);
-					</OnClick>
-					<OnUpdate>
-						CalendarCreateEventCreateButton_OnUpdate(self);
-					</OnUpdate>
+					<OnClick function="CalendarCreateEventCreateButton_OnClick"/>
+					<OnUpdate function="CalendarCreateEventCreateButton_OnUpdate"/>
 				</Scripts>
 			</Button>
 			<Button name="CalendarCreateEventCloseButton" inherits="CalendarEventCloseButtonTemplate"/>
@@ -1527,18 +1404,10 @@
 			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarCreateEventFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				CalendarCreateEventFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				CalendarCreateEventFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				CalendarCreateEventFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="CalendarCreateEventFrame_OnLoad"/>
+			<OnEvent function="CalendarCreateEventFrame_OnEvent"/>
+			<OnShow function="CalendarCreateEventFrame_OnShow"/>
+			<OnHide function="CalendarCreateEventFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -1629,12 +1498,8 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnEnterPressed>
-						self:ClearFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
 					<OnEditFocusGained>
 						if ( not CanEditGuildEvent() ) then
 							self:ClearFocus();
@@ -1650,12 +1515,8 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnEnterPressed>
-						self:ClearFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
 					<OnEditFocusGained>
 						if ( not CanEditGuildEvent() ) then
 							self:ClearFocus();
@@ -1677,9 +1538,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						CalendarMassInviteGuildAcceptButton_OnClick(self);
-					</OnClick>
+					<OnClick function="CalendarMassInviteGuildAcceptButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="CalendarMassInviteArenaButton2" inherits="CalendarMassInviteArenaButtonTemplate" id="1">
@@ -1714,15 +1573,9 @@
 			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarMassInviteFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				CalendarMassInviteFrame_OnShow(self);
-			</OnShow>
-			<OnEvent>
-				CalendarMassInviteFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="CalendarMassInviteFrame_OnLoad"/>
+			<OnShow function="CalendarMassInviteFrame_OnShow"/>
+			<OnEvent function="CalendarMassInviteFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 
@@ -1782,9 +1635,7 @@
 					</Slider>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						CalendarEventPickerScrollFrame_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="CalendarEventPickerScrollFrame_OnLoad"/>
 				</Scripts>
 			</ScrollFrame>
 			<Button name="CalendarEventPickerCloseButton" inherits="CalendarEventButtonTemplate" text="CLOSE">
@@ -1810,19 +1661,13 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						CalendarEventPickerCloseButton_OnClick();
-					</OnClick>
+					<OnClick function="CalendarEventPickerCloseButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarEventPickerFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				CalendarEventPickerFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="CalendarEventPickerFrame_OnLoad"/>
+			<OnEvent function="CalendarEventPickerFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 
@@ -1881,9 +1726,7 @@
 					</Slider>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						CalendarTexturePickerScrollFrame_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="CalendarTexturePickerScrollFrame_OnLoad"/>
 				</Scripts>
 			</ScrollFrame>
 			<Button name="CalendarTexturePickerCancelButton" inherits="CalendarEventButtonTemplate" text="CANCEL">
@@ -1909,9 +1752,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						CalendarTexturePickerFrame_Hide();
-					</OnClick>
+					<OnClick function="CalendarTexturePickerFrame_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="CalendarTexturePickerAcceptButton" inherits="CalendarEventButtonTemplate" text="ACCEPT">
@@ -1937,16 +1778,12 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						CalendarTexturePickerAcceptButton_OnClick(self);
-					</OnClick>
+					<OnClick function="CalendarTexturePickerAcceptButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarTexturePickerFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="CalendarTexturePickerFrame_OnLoad"/>
 		</Scripts>
 	</Frame>
 
@@ -2000,67 +1837,14 @@
 						</FontString>
 					</Layer>
 				</Layers>
-<!--
-				<Frames>
-					<Frame name="CalendarClassTotalsButtonOnEnterDummy" enableMouse="true" setAllPoints="true">
-						<Scripts>
-							<OnEnter>
-								CalendarClassTotalsButtonOnEnterDummy_OnEnter(self);
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-					</Frame>
-				</Frames>
--->
 				<Scripts>
-<!--
-					<OnLoad>
-						CalendarClassTotalsButton_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						CalendarClassTotalsButton_OnEvent(self, event, ...);
-					</OnEvent>
-					<OnClick>
-						CalendarClassTotalsButton_OnClick(self);
-					</OnClick>
--->
-					<OnEnter>
-						CalendarClassTotalsButton_OnEnter(self);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnEnter function="CalendarClassTotalsButton_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-<!--
-				<ButtonText text="0">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</ButtonText>
-				<NormalFont style="GameFontGreenSmall"/>
-				<HighlightFont style="GameFontHighlightSmall"/>
-				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
--->
 			</Button>
-<!--
-			<Frame name="CalendarInviteToGroupDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="RIGHT" relativePoint="LEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						CalendarInviteToGroupDropDown_OnLoad(self);
-					</OnLoad>
-				</Scripts>
-			</Frame>
--->
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarClassButtonContainer_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="CalendarClassButtonContainer_OnLoad"/>
 		</Scripts>
 	</Frame>
 </Ui>

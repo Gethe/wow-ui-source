@@ -95,9 +95,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-                     <OnLoad>
-                        self:SetFrameLevel(self:GetFrameLevel() + 2);
-                    </OnLoad>
+                     <OnLoad function="RaiseFrameLevelByTwo"/>
                 </Scripts>
 			</Frame>
 			<Button name="ArenaRegistrarFrameCloseButton" inherits="UIPanelCloseButton">
@@ -177,9 +175,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								ArenaRegistrar_ShowPurchaseFrame(self, 2);
-							</OnClick>
+							<OnClick function="ArenaRegistrar_ShowPurchaseFrame"/>
 						</Scripts>
 					</Button>
 					<Button name="ArenaRegistrarButton2" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_3V3" id="2">
@@ -187,9 +183,7 @@
 							<Anchor point="TOPLEFT" relativeTo="ArenaRegistrarButton1" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								ArenaRegistrar_ShowPurchaseFrame(self, 3);
-							</OnClick>
+							<OnClick function="ArenaRegistrar_ShowPurchaseFrame"/>
 						</Scripts>
 					</Button>
 					<Button name="ArenaRegistrarButton3" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_5V5" id="3">
@@ -197,12 +191,10 @@
 							<Anchor point="TOPLEFT" relativeTo="ArenaRegistrarButton2" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								ArenaRegistrar_ShowPurchaseFrame(self, 5);
-							</OnClick>
+							<OnClick function="ArenaRegistrar_ShowPurchaseFrame"/>
 						</Scripts>
 					</Button>
-					<Button name="ArenaRegistrarButton4" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_2V2" hidden="true">
+					<Button name="ArenaRegistrarButton4" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_2V2" hidden="true" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="RegistrationText" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -211,29 +203,23 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								ArenaRegistrar_TurnInPetition(self, 2);
-							</OnClick>
+							<OnClick function="ArenaRegistrar_TurnInPetition"/>
 						</Scripts>
 					</Button>
-					<Button name="ArenaRegistrarButton5" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_3V3" hidden="true">
+					<Button name="ArenaRegistrarButton5" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_3V3" hidden="true" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="ArenaRegistrarButton4" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								ArenaRegistrar_TurnInPetition(self, 3);
-							</OnClick>
+							<OnClick function="ArenaRegistrar_TurnInPetition"/>
 						</Scripts>
 					</Button>
-					<Button name="ArenaRegistrarButton6" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_5V5" hidden="true">
+					<Button name="ArenaRegistrarButton6" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_5V5" hidden="true" id="3">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="ArenaRegistrarButton5" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								ArenaRegistrar_TurnInPetition(self, 5);
-							</OnClick>
+							<OnClick function="ArenaRegistrar_TurnInPetition"/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -374,16 +360,9 @@
 			</Frame>
  		</Frames>
 		<Scripts>
-			<OnLoad>
-				ArenaRegistrar_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				ArenaRegistrar_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				ArenaRegistrar_OnShow(self);
-				PlaySound("igQuestListOpen");
-			</OnShow>
+			<OnLoad function="ArenaRegistrar_OnLoad"/>
+			<OnEvent function="ArenaRegistrar_OnEvent"/>
+			<OnShow function="ArenaRegistrar_OnShow"/>
 			<OnHide>
 				PlaySound("igQuestListClose");
 				if ( not self.dontClose ) then
@@ -456,9 +435,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						PVPBannerCustomization_Left(self:GetParent():GetID());
-					</OnClick>
+					<OnClick function="PVPBannerCustomization_Left"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
@@ -477,9 +454,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						PVPBannerCustomization_Right(self:GetParent():GetID());
-					</OnClick>
+					<OnClick function="PVPBannerCustomization_Right"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
@@ -908,12 +883,8 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								self:SetFrameLevel(self:GetFrameLevel() + 1);
-							</OnLoad>
-							<OnClick>
-								HideUIPanel(self:GetParent());
-							</OnClick>
+							<OnLoad function="RaiseFrameLevel"/>
+							<OnClick function="HideParentPanel"/>
 						</Scripts>
 					</Button>
 					<Button name="PVPBannerFrameSaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
@@ -928,9 +899,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								
-							</OnClick>
+							<OnClick function=""/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -947,9 +916,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						PVPBannerFrame_SaveBanner(self);
-					</OnClick>
+					<OnClick function="PVPBannerFrame_SaveBanner"/>
 				</Scripts>
 			</Button>
 			<Button name="PVPBannerFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
@@ -964,9 +931,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>	
-						HideUIPanel(self:GetParent());
-					</OnClick>
+					<OnClick function="HideParentPanel"/>	
 				</Scripts>
 			</Button>
 			<Button name="PVPBannerFrameCloseButton" inherits="UIPanelCloseButton">
@@ -980,15 +945,13 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				PVPBannerFrame_OnShow(self);
-			</OnShow>
+			<OnShow function="PVPBannerFrame_OnShow"/>
 			<OnHide>
 				HideUIPanel(ColorPickerFrame);
 				ClosePetitionVendor();
 			</OnHide>
 			<OnKeyDown>
-				if (key == "ESCAPE") then
+				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
 					HideUIPanel(self);
 				end
 			</OnKeyDown>

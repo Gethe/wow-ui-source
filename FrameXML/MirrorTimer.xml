@@ -58,23 +58,15 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel() - 1)
-					</OnLoad>
+					<OnLoad function="LowerFrameLevel"/>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				MirrorTimerFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				MirrorTimerFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				MirrorTimerFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="MirrorTimerFrame_OnLoad"/>
+			<OnEvent function="MirrorTimerFrame_OnEvent"/>
+			<OnUpdate function="MirrorTimerFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
 	<Frame name="MirrorTimer1" inherits="MirrorTimerTemplate">

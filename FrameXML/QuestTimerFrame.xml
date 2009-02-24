@@ -20,12 +20,8 @@
 				GameTooltip:SetText(GetQuestLogTitle(GetQuestIndexForTimer(self:GetID())), 1.0, 1.0, 1.0);
 				GameTooltip:Show();
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnClick>
-				QuestTimerButton_OnClick(self, button);
-			</OnClick>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick function="QuestTimerButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<Frame name="QuestTimerFrame" toplevel="true" enableMouse="true" frameStrata="BACKGROUND" hidden="true" parent="UIParent">
@@ -303,21 +299,11 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				QuestTimerFrame_OnLoad(self);
-			</OnLoad>
-			<OnUpdate>
-				QuestTimerFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnEvent>
-				QuestTimerFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				QuestTimerFrame_OnShow();
-			</OnShow>
-			<OnHide>
-				QuestTimerFrame_OnHide();
-			</OnHide>
+			<OnLoad function="QuestTimerFrame_OnLoad"/>
+			<OnUpdate function="QuestTimerFrame_OnUpdate"/>
+			<OnEvent function="QuestTimerFrame_OnEvent"/>
+			<OnShow function="QuestTimerFrame_OnShow"/>
+			<OnHide function="QuestTimerFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

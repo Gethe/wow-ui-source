@@ -5,10 +5,9 @@ MAX_SPELL_PAGES = ceil(MAX_SPELLS / SPELLS_PER_PAGE);
 BOOKTYPE_SPELL = "spell";
 BOOKTYPE_PET = "pet";
 SPELLBOOK_PAGENUMBERS = {};
-SHOW_INSCRIPTION_LEVEL = 15;
 
 function ToggleSpellBook(bookType)
-	if ( ( bookType == INSCRIPTION and UnitLevel("player") < SHOW_INSCRIPTION_LEVEL ) or ( not HasPetSpells() and bookType == BOOKTYPE_PET ) ) then
+	if ( not HasPetSpells() and bookType == BOOKTYPE_PET ) then
 		return;
 	end
 	
@@ -124,35 +123,24 @@ function SpellBookFrame_Update(showing)
 	if ( hasPetSpells ) then
 		SpellBookFrame_SetTabType(SpellBookFrameTabButton1, BOOKTYPE_SPELL);
 		SpellBookFrame_SetTabType(SpellBookFrameTabButton2, BOOKTYPE_PET, petToken);
-		SpellBookFrame_SetTabType(SpellBookFrameTabButton3, INSCRIPTION);
 	else
 		SpellBookFrame_SetTabType(SpellBookFrameTabButton1, BOOKTYPE_SPELL);
-		
-		if ( UnitLevel("player") >= SHOW_INSCRIPTION_LEVEL ) then
-			SpellBookFrame_SetTabType(SpellBookFrameTabButton2, INSCRIPTION);
-		end
-		
+
 		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 			-- if has no pet spells but trying to show the pet spellbook close the window;
 			HideUIPanel(SpellBookFrame);
 			SpellBookFrame.bookType = BOOKTYPE_SPELL;
 		end
 	end
-	
+
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
 		SpellBookTitleText:SetText(SPELLBOOK);
 		SpellBookFrame_ShowSpells();
-		SpellBookFrame_HideGlyphFrame();
 		SpellBookFrame_UpdatePages();
 	elseif ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		SpellBookTitleText:SetText(SpellBookFrame.petTitle);
 		SpellBookFrame_ShowSpells();
-		SpellBookFrame_HideGlyphFrame();
 		SpellBookFrame_UpdatePages();
-	else
-		SpellBookTitleText:SetText(INSCRIPTION);
-		SpellBookFrame_HideSpells();
-		SpellBookFrame_ShowGlyphFrame();
 	end
 end
 
@@ -178,49 +166,6 @@ function SpellBookFrame_ShowSpells ()
 	SpellBookPrevPageButton:Show();
 	SpellBookNextPageButton:Show();
 	SpellBookPageText:Show();
-end
-
-function SpellBookFrame_OpenToGlyphFrame ()
-	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL ) then
-		return;
-	end
-	
-	if ( not GlyphFrame ) then
-		GlyphFrame_LoadUI();
-	end
-	
-	ShowUIPanel(SpellBookFrame);
-	if ( SpellBookFrameTabButton2.bookType == "Inscription" ) then
-		SpellBookFrameTabButton2:Click();
-	else
-		SpellBookFrameTabButton3:Click();
-	end
-end
-
-function SpellBookFrame_ShowGlyphFrame ()
-	if ( not GlyphFrame ) then
-		GlyphFrame_LoadUI();
-	end
-	
-	SpellBookFrameIcon:Hide();
-	SpellBookFrameTopLeft:Hide();
-	SpellBookFrameTopRight:Hide();
-	SpellBookFrameBotLeft:Hide();
-	SpellBookFrameBotRight:Hide();
-	GlyphFrame:Show();
-end
-
-function SpellBookFrame_HideGlyphFrame ()
-	if ( not GlyphFrame ) then
-		return;
-	end
-	
-	SpellBookFrameIcon:Show();
-	SpellBookFrameTopLeft:Show();
-	SpellBookFrameTopRight:Show();
-	SpellBookFrameBotLeft:Show();
-	SpellBookFrameBotRight:Show();
-	GlyphFrame:Hide();
 end
 
 function SpellBookFrame_UpdatePages()

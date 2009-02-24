@@ -24,6 +24,7 @@ end
 function InspectModelFrame_OnLoad(self)
 	self.rotation = 0.61;
 	InspectModelFrame:SetRotation(self.rotation);
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
 function InspectModelRotateLeftButton_OnClick()

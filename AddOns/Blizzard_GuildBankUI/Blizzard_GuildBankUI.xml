@@ -34,12 +34,8 @@
 					end
 				end
 			</OnClick>
-			<OnLoad>
-				GuildBankItemButton_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				GuildBankItemButton_OnEnter(self);
-			</OnEnter>
+			<OnLoad function="GuildBankItemButton_OnLoad"/>
+			<OnEnter function="GuildBankItemButton_OnEnter"/>
 			<OnLeave>
 				self.updateTooltip = nil;
 				GameTooltip:Hide();
@@ -238,9 +234,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
@@ -262,9 +256,7 @@
 	</Frame>
 	<CheckButton name="GuildBankPopupButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick>
-				GuildBankPopupButton_OnClick(self, button);	
-			</OnClick>
+			<OnClick function="GuildBankPopupButton_OnClick"/>
 		</Scripts>
 	</CheckButton>
 	<Frame name="GuildBankFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
@@ -717,9 +709,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
@@ -738,9 +728,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
@@ -759,9 +747,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
@@ -780,9 +766,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
@@ -899,9 +883,7 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						GuildBankFrame_UpdateTabBuyingInfo(self);
-					</OnShow>
+					<OnShow function="GuildBankFrame_UpdateTabBuyingInfo"/>
 				</Scripts>
 			</Frame>
 			<Frame name="GuildBankFrameLog">
@@ -1041,9 +1023,7 @@
 									<AbsDimension x="690" y="218"/>
 								</Size>
 								<Scripts>
-									<OnEscapePressed>
-										self:ClearFocus();
-									</OnEscapePressed>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
 									<OnTextChanged>
 										ScrollingEdit_OnTextChanged(self, self:GetParent());
 										local currentTab = GetCurrentGuildBankTab();
@@ -1075,15 +1055,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				GuildBankFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				GuildBankFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				GuildBankFrame_OnShow(self);
-			</OnShow>
+			<OnLoad function="GuildBankFrame_OnLoad"/>
+			<OnEvent function="GuildBankFrame_OnEvent"/>
+			<OnShow function="GuildBankFrame_OnShow"/>
 			<OnHide>
 				GuildBankPopupFrame:Hide();
 				StaticPopup_Hide("GUILDBANK_WITHDRAW");
@@ -1206,9 +1180,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEscapePressed>
-						GuildBankPopupFrame_CancelEdit(self);
-					</OnEscapePressed>
+					<OnEscapePressed function="GuildBankPopupFrame_CancelEdit"/>
 					<OnEnterPressed>
 						if ( GuildBankPopupOkayButton:IsEnabled() ~= 0 ) then
 							GuildBankPopupOkayButton_OnClick(self);
@@ -1381,15 +1353,10 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				GuildBankPopupFrame_OnShow(self);
-			</OnShow>
+			<OnShow function="GuildBankPopupFrame_OnShow"/>
 			<OnHide>
 				PlaySound("igCharacterInfoTab");
 			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
 		</Scripts>
 	</Frame>
 </Ui>

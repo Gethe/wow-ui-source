@@ -104,9 +104,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				GossipTitleButton_OnClick(self, button);
-			</OnClick>
+			<OnClick function="GossipTitleButton_OnClick"/>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 		<ButtonText>
@@ -189,9 +187,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-                     <OnLoad>
-                        self:SetFrameLevel(self:GetFrameLevel() + 2);
-                    </OnLoad>
+                     <OnLoad function="RaiseFrameLevelByTwo"/>
                 </Scripts>
 			</Frame>
 			<Button name="GossipFrameCloseButton" inherits="UIPanelCloseButton">
@@ -580,25 +576,19 @@
  			</Frame>
  		</Frames>
 		<Scripts>
-			<OnLoad>
-				GossipFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="GossipFrame_OnLoad"/>
 			<OnShow>
 				PlaySound("igQuestListOpen");
 				if ( StaticPopup_Visible("XP_LOSS") ) then
 					StaticPopup_Hide("XP_LOSS");
 				end
 			</OnShow>
-			<OnEvent>
-				GossipFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="GossipFrame_OnEvent"/>
 			<OnHide>
 				PlaySound("igQuestListClose");
 				CloseGossip();
 			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
+			<OnMouseWheel function=""/>
 		</Scripts>
  	</Frame>
  </Ui>

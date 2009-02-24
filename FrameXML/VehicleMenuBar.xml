@@ -15,6 +15,7 @@
 				local cooldown = getglobal(self:GetName().."Cooldown");
 				cooldown:SetFrameLevel(cooldown:GetFrameLevel() + 2);
 			</OnLoad>
+			<OnClick function="VehicleActionButton_OnClick"/>
 		</Scripts>
 	</CheckButton>
 	<Button name="VehicleSeatIndicatorButtonTemplate" virtual="true">
@@ -26,15 +27,9 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				_G[self:GetName().."Highlight"]:SetAlpha(0.5);
 			</OnLoad>
-			<OnClick>
-				VehicleSeatIndicatorButton_OnClick(self);
-			</OnClick>
-			<OnEnter>
-				VehicleSeatIndicatorButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				VehicleSeatIndicatorButton_OnLeave(self);
-			</OnLeave>
+			<OnClick function="VehicleSeatIndicatorButton_OnClick"/>
+			<OnEnter function="VehicleSeatIndicatorButton_OnEnter"/>
+			<OnLeave function="VehicleSeatIndicatorButton_OnLeave"/>
 		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -112,14 +107,11 @@
 			<Button name="$parentButton2" inherits="VehicleSeatIndicatorButtonTemplate" id="2"/>
 			<Button name="$parentButton3" inherits="VehicleSeatIndicatorButtonTemplate" id="3"/>
 			<Button name="$parentButton4" inherits="VehicleSeatIndicatorButtonTemplate" id="4"/>
+			<Frame name="VehicleSeatIndicatorDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				VehicleSeatIndicator_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				VehicleSeatIndicator_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="VehicleSeatIndicator_OnLoad"/>
+			<OnEvent function="VehicleSeatIndicator_OnEvent"/>
 		</Scripts>
 	</Frame>
 	<Frame name="VehicleMenuBar" toplevel="true" enableMouse="false" parent="UIParent" hidden="true">
@@ -135,18 +127,12 @@
 					<AbsDimension x="40" y="40"/>
 				</Size>
 				<Scripts>
-					<OnMouseDown>
-						VehicleAimUpStart();
-					</OnMouseDown>
-					<OnMouseUp>
-						VehicleAimUpStop();
-					</OnMouseUp>
+					<OnMouseDown function="VehicleAimUpStart"/>
+					<OnMouseUp function="VehicleAimUpStop"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, AIM_UP, 1.0, 1.0, 1.0, nil);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture/>
 				<PushedTexture/>
@@ -159,18 +145,12 @@
 					<AbsDimension x="40" y="40"/>
 				</Size>
 				<Scripts>
-					<OnMouseDown>
-						VehicleAimDownStart();
-					</OnMouseDown>
-					<OnMouseUp>
-						VehicleAimDownStop();
-					</OnMouseUp>
+					<OnMouseDown function="VehicleAimDownStart"/>
+					<OnMouseUp function="VehicleAimDownStop"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, AIM_DOWN, 1.0, 1.0, 1.0, nil);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture/>
 				<PushedTexture/>
@@ -183,15 +163,11 @@
 					<AbsDimension x="40" y="40"/>
 				</Size>
 				<Scripts>
-					<OnClick>
-						VehicleExit();
-					</OnClick>
+					<OnClick function="VehicleExit"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture/>
 				<PushedTexture/>
@@ -298,15 +274,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						VehicleMenuBarPitch_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						VehicleMenuBarPitch_OnEvent(self, event, ...);
-					</OnEvent>
-					<OnClick>
-						VehicleMenuBarPitch_OnClick(self);
-					</OnClick>
+					<OnLoad function="VehicleMenuBarPitch_OnLoad"/>
+					<OnEvent function="VehicleMenuBarPitch_OnEvent"/>
+					<OnClick function="VehicleMenuBarPitch_OnClick"/>
 				</Scripts>
 			</Button>
 			<Frame name="VehicleMenuBarArtFrame">
@@ -317,6 +287,16 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBACKGROUND1">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBACKGROUND2">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBACKGROUND3">
 							<Anchors>
 								<Anchor point="BOTTOM"/>
 							</Anchors>
@@ -427,16 +407,103 @@
 								<Anchor point="BOTTOM"/>
 							</Anchors>
 						</Texture>
+						<Texture name="$parentOVERLAY4">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						
-					</OnLoad>
-					<OnEvent>
-						
-					</OnEvent>
-				</Scripts>
+				<Frames>
+					<StatusBar name="VehicleMenuBarHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" orientation="VERTICAL" rotatesTexture="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBackground">
+									<Anchors>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentOverlay">
+									<Anchors>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+								</Texture>
+								<FontString name="$parentText" inherits="VehicleMenuBarStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								TextStatusBar_Initialize(self);
+								self.textLockable = 1;
+								self.cvar = "playerStatusText";
+								self.cvarLabel = "STATUS_TEXT_PLAYER";
+								self.showPercentage = true;
+								self.prefix = HEALTH;
+								self.tooltipAnchorPoint = "ANCHOR_LEFT";
+								UnitFrameHealthBar_Initialize("vehicle", self, VehicleMenuBarHealthBarText, true);
+								UnitFrameHealthBar_Update(self, "vehicle");
+							</OnLoad>
+							<OnValueChanged>
+								UnitFrameHealthBar_OnValueChanged(self, value);
+								VehicleMenuBarStatusBars_ShowTooltip(self);
+							</OnValueChanged>
+							<OnEnter function="VehicleMenuBarStatusBars_ShowTooltip"/>
+						</Scripts>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+					</StatusBar>
+					<StatusBar name="VehicleMenuBarPowerBar" drawLayer="ARTWORK" inherits="TextStatusBar" orientation="VERTICAL" rotatesTexture="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBackground">
+									<Anchors>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentOverlay">
+									<Anchors>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+								</Texture>
+								<FontString name="$parentText" inherits="VehicleMenuBarStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								TextStatusBar_Initialize(self);
+								self.textLockable = 1;
+								self.cvar = "playerStatusText";
+								self.cvarLabel = "STATUS_TEXT_PLAYER";
+								self.showPercentage = true;
+								self.tooltipAnchorPoint = "ANCHOR_RIGHT";
+								UnitFrameManaBar_Initialize ("vehicle", self, VehicleMenuBarPowerBarText, true);
+								UnitFrameManaBar_Update(self, "vehicle");
+							</OnLoad>
+							<OnValueChanged function="VehicleMenuBarStatusBars_ShowTooltip"/>
+							<OnEnter function="VehicleMenuBarStatusBars_ShowTooltip"/>
+						</Scripts>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+					</StatusBar>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -444,6 +511,7 @@
 				RaiseFrameLevel(VehicleMenuBarArtFrame);
 				VehicleMenuBar_OnLoad(self);
 			</OnLoad>
+			<OnEvent function="VehicleMenuBar_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

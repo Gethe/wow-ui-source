@@ -41,9 +41,7 @@
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetUnitDebuff("focus", self:GetID());
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	<Button name="FocusFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
@@ -182,9 +180,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						FocusFrameDropDown_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="FocusFrameDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<StatusBar name="FocusFrameHealthBar" inherits="TextStatusBar">
@@ -247,18 +243,12 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnShow>
-						Focus_Spellbar_AdjustPosition(self);
-					</OnShow>
-					<OnLoad>
-						Focus_Spellbar_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						Focus_Spellbar_OnEvent(self, event, ...);
-					</OnEvent>
+					<OnShow function="Focus_Spellbar_AdjustPosition"/>
+					<OnLoad function="Focus_Spellbar_OnLoad"/>
+					<OnEvent function="Focus_Spellbar_OnEvent"/>
 				</Scripts>
 			</StatusBar>
-			<Button name="$parentDebuff1" inherits="FocusDebuffButtonTemplate" id="1">
+			<Button name="$parentAura1" inherits="FocusDebuffButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
@@ -267,63 +257,63 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentDebuff2" inherits="FocusDebuffButtonTemplate" id="2">
+			<Button name="$parentAura2" inherits="FocusDebuffButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentDebuff3" inherits="FocusDebuffButtonTemplate" id="3">
+			<Button name="$parentAura3" inherits="FocusDebuffButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura2" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentDebuff4" inherits="FocusDebuffButtonTemplate" id="4">
+			<Button name="$parentAura4" inherits="FocusDebuffButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentDebuff5" inherits="FocusDebuffButtonTemplate" id="5">
+			<Button name="$parentAura5" inherits="FocusDebuffButtonTemplate" id="5">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentDebuff1" relativePoint="BOTTOM">
+					<Anchor point="TOP" relativeTo="$parentAura1" relativePoint="BOTTOM">
 						<Offset>
 							<AbsDimension x="0" y="-4"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentDebuff6" inherits="FocusDebuffButtonTemplate" id="6">
+			<Button name="$parentAura6" inherits="FocusDebuffButtonTemplate" id="6">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff5" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura5" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentDebuff7" inherits="FocusDebuffButtonTemplate" id="7">
+			<Button name="$parentAura7" inherits="FocusDebuffButtonTemplate" id="7">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff6" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura6" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentDebuff8" inherits="FocusDebuffButtonTemplate" id="8">
+			<Button name="$parentAura8" inherits="FocusDebuffButtonTemplate" id="8">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff7" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura7" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
@@ -384,28 +374,16 @@
 				self.noTextPrefix = true;
 				FocusFrame_OnLoad(self);
 			</OnLoad>
-			<OnEvent>
-				FocusFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="FocusFrame_OnEvent"/>
 			<OnUpdate>
 				FocusFrame_OnUpdate(self, elapsed);
 				FocusFrame_HealthUpdate(self, elapsed, "focus");
 			</OnUpdate>
-			<OnHide>
-				FocusFrame_OnHide(self);
-			</OnHide>
-			<OnDragStart>
-				FocusFrame_OnDragStart(self);
-			</OnDragStart>
-			<OnDragStop>
-				FocusFrame_OnDragStop(self);
-			</OnDragStop>
-			<OnEnter>
-				UnitFrame_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				UnitFrame_OnLeave(self);
-			</OnLeave>
+			<OnHide function="FocusFrame_OnHide"/>
+			<OnDragStart function="FocusFrame_OnDragStart"/>
+			<OnDragStop function="FocusFrame_OnDragStop"/>
+			<OnEnter function="UnitFrame_OnEnter"/>
+			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
 	<Button name="TargetofFocusFrame" movable="true" inherits="SecureUnitButtonTemplate" parent="FocusFrame" hidden="true">
@@ -481,9 +459,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						RaiseFrameLevel(self);
-					</OnLoad>
+					<OnLoad function="RaiseFrameLevel"/>
 				</Scripts>
 			</Frame>
 			<StatusBar name="TargetofFocusHealthBar" inherits="TextStatusBar">
@@ -498,9 +474,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnValueChanged>
-						TargetofFocusHealthCheck(self, value);
-					</OnValueChanged>
+					<OnValueChanged function="TargetofFocusHealthCheck"/>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="1.0" b="0"/>
@@ -519,7 +493,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Frame name="$parentDebuff1" inherits="TargetofTargetBuffButtonTemplate" id="1">
+			<Frame name="$parentAura1" inherits="TargetofTargetBuffButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 						<Offset>
@@ -528,27 +502,27 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentDebuff2" inherits="TargetofTargetBuffButtonTemplate" id="2">
+			<Frame name="$parentAura2" inherits="TargetofTargetBuffButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="1" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentDebuff3" inherits="TargetofTargetBuffButtonTemplate" id="3">
+			<Frame name="$parentAura3" inherits="TargetofTargetBuffButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentDebuff1" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentAura1" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-1"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentDebuff4" inherits="TargetofTargetBuffButtonTemplate" id="4">
+			<Frame name="$parentAura4" inherits="TargetofTargetBuffButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="1" y="0"/>
 						</Offset>
@@ -557,15 +531,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TargetofFocus_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				UnitFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				TargetofFocus_Update(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="TargetofFocus_OnLoad"/>
+			<OnEvent function="UnitFrame_OnEvent"/>
+			<OnUpdate function="TargetofFocus_Update"/>
 		</Scripts>
 	</Button>
 </Ui>

@@ -40,9 +40,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				VideoOptionsResolutionPanel_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="VideoOptionsResolutionPanel_OnLoad"/>
 		</Scripts>	
 		<Frames>
 			<Frame name="$parentResolutionDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
@@ -72,9 +70,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(OPTION_TOOLTIP_USE_RESOLUTION, nil, nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentRefreshDropDown" inherits="UIDropDownMenuTemplate" id="2">
@@ -104,9 +100,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(OPTION_TOOLTIP_USE_REFRESH, nil, nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentMultiSampleDropDown" inherits="UIDropDownMenuTemplate" id="4">
@@ -136,9 +130,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(OPTION_TOOLTIP_MULTISAMPLING, nil, nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<CheckButton name="$parentUseUIScale" inherits="OptionsSmallCheckButtonTemplate">
@@ -418,9 +410,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				VideoOptionsEffectsPanel_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="VideoOptionsEffectsPanel_OnLoad"/>
 		</Scripts>	
 		<Frames>
 			<Frame name="$parentQuality" inherits="OptionsBoxTemplate">
@@ -485,7 +475,8 @@
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
-						_G[name.."High"]:SetPoint("TOPRIGHT", "$parent", "BOTTOMRIGHT", -79, 3);
+						_G[name.."High"]:SetPoint("TOPRIGHT", "$parent", "BOTTOMRIGHT", -65, 3);
+						_G[name.."High"]:SetText(VIDEO_QUALITY_LABEL5);
 						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
 
 						self.type = CONTROLTYPE_SLIDER;
@@ -519,12 +510,7 @@
 						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
-						end
-					</OnValueChanged>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>		
 			<Slider name="$parentTerrainDetail" inherits="OptionsSliderTemplate">
@@ -547,15 +533,10 @@
 						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
-						end
-					</OnValueChanged>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>			
-			<Slider name="$parentSpellDetail" inherits="OptionsSliderTemplate">
+			<Slider name="$parentParticleDensity" inherits="OptionsSliderTemplate">
 				<Size x="112" y="17"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTerrainDetail" relativePoint="BOTTOMLEFT">
@@ -566,7 +547,7 @@
 					<OnLoad>
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "spellEffectLevel";
+						self.cvar = "particleDensity";
 						self.SetDisplayValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:SetDisplayValue(value);
@@ -575,14 +556,32 @@
 						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
-						end
-					</OnValueChanged>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>		
+			<Slider name="$parentShadowQuality" inherits="OptionsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentParticleDensity" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "extShadowQuality";
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
+				</Scripts>
+			</Slider>			
 			<Slider name="$parentEnvironmentDetail" inherits="OptionsSliderTemplate">
 				<Size x="112" y="17"/>
 				<Anchors>
@@ -602,12 +601,7 @@
 						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
-						end
-					</OnValueChanged>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>		
 			<Slider name="$parentClutterDensity" inherits="OptionsSliderTemplate">
@@ -629,12 +623,7 @@
 						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
-						end
-					</OnValueChanged>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>		
 			<Slider name="$parentClutterRadius" inherits="OptionsSliderTemplate">
@@ -656,42 +645,9 @@
 						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
-						end
-					</OnValueChanged>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>					
-			<Slider name="$parentShadowQuality" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentClutterRadius" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-24"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						local name = self:GetName();
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "extShadowQuality";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
-						end
-					</OnValueChanged>
-				</Scripts>
-			</Slider>			
 			<Slider name="$parentTextureResolution" inherits="OptionsSliderTemplate">
 				<Size x="112" y="17"/>
 				<Anchors>
@@ -717,12 +673,7 @@
 						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
-						end
-					</OnValueChanged>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>	
 			<Slider name="$parentTextureFiltering" inherits="OptionsSliderTemplate">
@@ -744,12 +695,7 @@
 						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
-						end
-					</OnValueChanged>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>				
 			<Slider name="$parentWeatherIntensity" inherits="OptionsSliderTemplate">
@@ -771,26 +717,44 @@
 						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
+				</Scripts>
+			</Slider>	
+			<Slider name="$parentPlayerTexture" inherits="OptionsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWeatherIntensity" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "componentTextureLevel";
+						self.SetDisplayValue = self.SetValue;
+						self.restart = true;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-					</OnValueChanged>
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>	
 			<Frame name="$parentShaders" inherits="OptionsBoxTemplate">
 				<Size x="380" y="76"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
-						<Offset x="16" y="16"/>
+						<Offset x="16" y="8"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
 						self:SetBackdropColor(0.15, 0.15, 0.15);
-						_G[self:GetName().."Title"]:SetText(OPTIONS_SHADERS);
+						_G[self:GetName().."Title"]:SetText("");
 					</OnLoad>
 				</Scripts>
 			</Frame>	
@@ -841,7 +805,22 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>					
+			</CheckButton>
+			<CheckButton name="$parentProjectedTextures" inherits="OptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDeathEffect" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "projectedTextures";
+						self.setFunc = VideoOptionsEffectsPanel_UpdateVideoQuality;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 	</Frame>	
 	<Frame name="VideoOptionsStereoPanel" parent="VideoOptionsFramePanelContainer" hidden="true">

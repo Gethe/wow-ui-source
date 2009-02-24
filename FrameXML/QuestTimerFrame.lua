@@ -6,14 +6,19 @@ function QuestTimerFrame_OnLoad(self)
 end
 
 function QuestTimerFrame_OnEvent(self, event, ...)
-	if ( event == "QUEST_LOG_UPDATE" or event == "PLAYER_ENTERING_WORLD" ) then
-		if ( not self.updating ) then
-			QuestTimerFrame_Update(self, GetQuestTimers());
-		end
-	end
+	-- if ( event == "QUEST_LOG_UPDATE" or event == "PLAYER_ENTERING_WORLD" ) then
+		-- if ( not self.updating ) then
+			-- QuestTimerFrame_Update(self, GetQuestTimers());
+		-- end
+	-- end
 end
 
 function QuestTimerFrame_Update(self, ...)
+	QuestTimerFrame:Hide();
+	if ( true ) then
+		return;
+	end
+	
 	self.updating = 1;
 	self.numTimers = select("#", ...);
 	for i=1, self.numTimers, 1 do

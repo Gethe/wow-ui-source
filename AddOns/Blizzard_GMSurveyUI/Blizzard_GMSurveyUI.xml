@@ -19,9 +19,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				GMSurveyRadioButton_OnClick(self);
-			</OnClick>
+			<OnClick function="GMSurveyRadioButton_OnClick"/>
 		</Scripts>
 	</CheckButton>
 	<Frame name="GMSurveyQuestionTemplate" virtual="true">
@@ -196,12 +194,8 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				GMSurveyQuestion_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				GMSurveyQuestion_OnShow(self);
-			</OnShow>
+			<OnLoad function="GMSurveyQuestion_OnLoad"/>
+			<OnShow function="GMSurveyQuestion_OnShow"/>
 		</Scripts>
 	</Frame>
 	<Frame name="GMSurveyFrame" toplevel="true" parent="UIParent" hidden="true">
@@ -466,12 +460,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						GMSurveyScrollFrame_OnLoad(self);
-					</OnLoad>
-					<OnScrollRangeChanged>
-						ScrollFrame_OnScrollRangeChanged(self, yrange);
-					</OnScrollRangeChanged>
+					<OnLoad function="GMSurveyScrollFrame_OnLoad"/>
+					<OnScrollRangeChanged function="ScrollFrame_OnScrollRangeChanged"/>
 				</Scripts>
 				<ScrollChild>
 					<Frame name="GMSurveyScrollChildFrame">
@@ -679,9 +669,7 @@
 											</Anchor>
 										</Anchors>
 										<Scripts>
-											<OnLoad>
-												GMSurveyCommentScrollFrame_OnLoad(self);
-											</OnLoad>
+											<OnLoad function="GMSurveyCommentScrollFrame_OnLoad"/>
 											<OnMouseDown>
 												GMSurveyFrameComment:SetFocus();
 											</OnMouseDown>
@@ -695,15 +683,11 @@
 													<AbsDimension x="530" y="60"/>
 												</Size>
 												<Scripts>
-													<OnEscapePressed>
-														self:ClearFocus();
-													</OnEscapePressed>
+													<OnEscapePressed function="EditBox_ClearFocus"/>
 													<OnTextChanged>
 														ScrollingEdit_OnTextChanged(self, self:GetParent());
 													</OnTextChanged>
-													<OnCursorChanged>
-														ScrollingEdit_OnCursorChanged(self, x, y, w, h);
-													</OnCursorChanged>
+													<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 													<OnUpdate>
 														ScrollingEdit_OnUpdate(self, 0, self:GetParent());
 													</OnUpdate>
@@ -771,9 +755,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						GMSurveySubmitButton_OnClick(self);
-					</OnClick>
+					<OnClick function="GMSurveySubmitButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>

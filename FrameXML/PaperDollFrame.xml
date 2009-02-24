@@ -2,22 +2,23 @@
 ..\FrameXML\UI.xsd">
     <Script file="PaperDollFrame.lua"/>
     <Button name="PaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ignoreTexture" file="Interface\Buttons\UI-GroupLoot-Pass-Up">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
         <Scripts>
-            <OnLoad>
-                PaperDollItemSlotButton_OnLoad(self);
-            </OnLoad>
-            <OnEvent>
-                PaperDollItemSlotButton_OnEvent(self, event, ...);
-            </OnEvent>
-			<OnShow>
-				PaperDollItemSlotButton_OnShow(self);
-			</OnShow>
-			<OnHide>
-				PaperDollItemSlotButton_OnHide(self);
-			</OnHide>
+            <OnLoad function="PaperDollItemSlotButton_OnLoad"/>
+            <OnEvent function="PaperDollItemSlotButton_OnEvent"/>
+			<OnShow function="PaperDollItemSlotButton_OnShow"/>
+			<OnHide function="PaperDollItemSlotButton_OnHide"/>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					PaperDollItemSlotButton_OnModifiedClick(self, button);
@@ -33,13 +34,48 @@
 			</OnReceiveDrag>
             <OnEnter>
 				PaperDollItemSlotButton_OnEnter(self);
-            </OnEnter>
+			</OnEnter>
             <OnLeave>
-                GameTooltip:Hide();
-				ResetCursor();
-            </OnLeave>
+				PaperDollItemSlotButton_OnLeave(self);
+			</OnLeave>
         </Scripts>
     </Button>
+	<Button name="PaperDollFrameItemFlyoutButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Frames>
+			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnEnter function="PaperDollFrameItemFlyoutButton_OnEnter"/>
+			<OnLeave function="GameTooltip_HideResetCursor"/>
+			<OnClick function="PaperDollFrameItemFlyoutButton_OnClick"/>
+		</Scripts>
+	</Button>
+	
+	<CheckButton name="GearSetButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnClick function="GearSetButton_OnClick"/>
+			<OnDragStart>
+				if ( self.name and self.name ~= "" ) then
+					PickupEquipmentSetByName(self.name);
+				end
+			</OnDragStart>
+		</Scripts>
+	</CheckButton>
+	
+	<CheckButton name="GearSetPopupButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				local name = self:GetName();
+				self.icon = _G[name .. "Icon"];
+				self.name = _G[name .. "Name"];
+			</OnLoad>
+			<OnClick function="GearSetPopupButton_OnClick"/>
+		</Scripts>
+	</CheckButton>	
+	
     <Frame name="StatFrameTemplate" virtual="true">
         <Size>
             <AbsDimension x="104" y="13"/>
@@ -76,9 +112,7 @@
 			<OnEnter>
 				PaperDollStatTooltip(self, "player");
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
     </Frame>
     <Frame name="MagicResistanceFrameTemplate" virtual="true">
@@ -94,9 +128,7 @@
 					GameTooltip:Show();
 				end
 			</OnEnter>
-			<OnLeave>
-                GameTooltip:Hide();
-            </OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
     </Frame>
     <Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" id="1">
@@ -188,9 +220,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						PlayerTitleDropDown_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="PlayerTitleDropDown_OnLoad"/>
 					<OnShow>
 						UIDropDownMenu_Initialize(self, PlayerTitleDropDown_Initialize);
 						UIDropDownMenu_SetSelectedValue(self,GetCurrentTitle());
@@ -216,15 +246,9 @@
 					<OnEvent>
 						self:RefreshUnit();
 					</OnEvent>
-                    <OnUpdate>
-						Model_OnUpdate(self, elapsed);
-                    </OnUpdate>
-					<OnMouseUp>
-						CharacterModelFrame_OnMouseUp(self, button);
-					</OnMouseUp>
-					<OnReceiveDrag>
-						CharacterModelFrame_OnMouseUp(self, "LeftButton");
-					</OnReceiveDrag>
+                    <OnUpdate function="Model_OnUpdate"/>
+					<OnMouseUp function="CharacterModelFrame_OnMouseUp"/>
+					<OnReceiveDrag function="CharacterModelFrame_OnMouseUp"/>
                 </Scripts>
 				<Frames>
 					<Button name="CharacterModelFrameRotateLeftButton">
@@ -478,12 +502,8 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								PlayerStatFrameLeftDropDown_OnLoad(self);
-							</OnLoad>
-							<OnShow>
-								PlayerStatFrameLeftDropDown_OnLoad(self);
-							</OnShow>
+							<OnLoad function="PlayerStatFrameLeftDropDown_OnLoad"/>
+							<OnShow function="PlayerStatFrameLeftDropDown_OnLoad"/>
 						</Scripts>
 					</Frame>
 					<Frame name="PlayerStatFrameRightDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
@@ -495,12 +515,8 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								PlayerStatFrameRightDropDown_OnLoad(self);
-							</OnLoad>
-							<OnShow>
-								PlayerStatFrameRightDropDown_OnLoad(self);
-							</OnShow>
+							<OnLoad function="PlayerStatFrameRightDropDown_OnLoad"/>
+							<OnShow function="PlayerStatFrameRightDropDown_OnLoad"/>
 						</Scripts>
 					</Frame>
                 </Frames>
@@ -795,7 +811,7 @@
                     </Anchor>
                 </Anchors>
             </Button>
-           <Button name="CharacterAmmoSlot">
+            <Button name="CharacterAmmoSlot">
 				<Size>
 					<AbsDimension x="27" y="27"/>
 				</Size>
@@ -863,9 +879,7 @@
 					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						PaperDollItemSlotButton_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="PaperDollItemSlotButton_OnLoad"/>
 					<OnEvent>
 						if ( event == "MERCHANT_UPDATE" ) then
 							-- update ammo amount shown in frame after selling ammo to a vendor
@@ -887,22 +901,15 @@
 						self:UnregisterEvent("MERCHANT_UPDATE");
 						self:UnregisterEvent("PLAYERBANKSLOTS_CHANGED");
 					</OnHide>
-					<OnClick>
-						PaperDollItemSlotButton_OnClick(self, button);
-					</OnClick>
+					<OnClick function="PaperDollItemSlotButton_OnClick"/>
 					<OnDragStart>
 						PaperDollItemSlotButton_OnClick(self, "LeftButton", 1);
 					</OnDragStart>
 					<OnReceiveDrag>
 						PaperDollItemSlotButton_OnClick(self, "LeftButton", 1);
 					</OnReceiveDrag>
-					<OnEnter>
-						PaperDollItemSlotButton_OnEnter(self);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-						ResetCursor();
-					</OnLeave>
+					<OnEnter function="PaperDollItemSlotButton_OnEnter"/>
+					<OnLeave function="GameTooltip_HideResetCursor"/>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
@@ -919,20 +926,307 @@
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
-        </Frames>
+			<Button name="GearManagerToggleButton" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-44" y="-38"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.icon = _G[self:GetName() .. "Icon"];
+					</OnLoad>
+					<OnClick>
+						if ( GearManagerDialog:IsShown() ) then
+							GearManagerDialog:Hide();
+						else
+							GearManagerDialog:Show();
+						end
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\PaperDollInfoFrame\UI-EquipmentManager-Toggle"/>
+				<HighlightTexture file="Interface\PaperDollInfoFrame\UI-EquipmentManager-Toggle-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
         <Scripts>
-            <OnLoad>
-                PaperDollFrame_OnLoad(self);
-            </OnLoad>
-            <OnEvent>
-                PaperDollFrame_OnEvent(self, event, ...);
-            </OnEvent>
-            <OnShow>
-                PaperDollFrame_OnShow(self);
-            </OnShow>
-			<OnHide>
-				PaperDollFrame_OnHide(self);
-			</OnHide>
+            <OnLoad function="PaperDollFrame_OnLoad"/>
+            <OnEvent function="PaperDollFrame_OnEvent"/>
+            <OnShow function="PaperDollFrame_OnShow"/>
+			<OnHide function="PaperDollFrame_OnHide"/>
         </Scripts>
     </Frame>
+	<Frame name="PaperDollFrameItemFlyout" hidden="true" enableMouse="false" frameStrata="HIGH">
+		<Size x="43" y="43"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-GearManager-ItemButton-Highlight">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="-4" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.78125" top="0" bottom="0.78125"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentButtons" frameStrata="HIGH" enableMouse="true" parentKey="buttonFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" hidden="true" parentKey="bg1">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="-5" y="4"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" hidden="true" parentKey="bg2"/>
+						<Texture file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" hidden="true" parentKey="bg3"/>
+						<Texture file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" hidden="true" parentKey="bg4"/>
+						<Texture file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" hidden="true" parentKey="bg5"/>
+					</Layer>					
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.buttons = {};
+			</OnLoad>
+			<OnUpdate function="PaperDollFrameItemFlyout_OnUpdate"/>
+			<OnShow function="PaperDollFrameItemFlyout_OnShow"/>
+			<OnHide function="PaperDollFrameItemFlyout_OnHide"/>
+			<OnEvent function="PaperDollFrameItemFlyout_OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="GearManagerDialog" enableMouse="true" parent="PaperDollFrame" inherits="UIPanelDialogTemplate" hidden="true" framestrata="MEDIUM">
+		<Size x="261" y="155"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+				<Offset x="-38" y="-10"/>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="SetContainer">
+			
+			</Frame>
+			<Button name="$parentDeleteSet" text="DELETE" inherits="UIPanelButtonGrayTemplate">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="11" y="12"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GearManagerDialogDeleteSet_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentSaveSet" text="SAVE" inherits="UIPanelButtonTemplate">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-8" y="12"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GearManagerDialogSaveSet_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentPopup" hidden="true">
+				<Size x="297" y="254"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-25"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
+							<Size x="256" y="212"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="0.828125"/>
+						</Texture>
+						<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
+							<Size x="64" y="212"/>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="256" y="0"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="0.828125"/>
+						</Texture>
+						<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
+							<Size x="256" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="0" y="-212"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="256" y="-212"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>	
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontHighlightSmall" text="GEARSETS_POPUP_TEXT">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="24" y="-21"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="24" y="-69"/>
+								</Anchor>
+							</Anchors>
+						</FontString>					
+					</Layer>
+				</Layers>
+				<Frames>
+					<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="296" y="151"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-39" y="-67"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+									<Size x="30" y="120"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset x="-3" y="2"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
+								</Texture>
+								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+									<Size x="30" y="79"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset x="-3" y="-2"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.53125" right="1.0" top="0.3828125" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(self, offset, GEARSET_ICON_ROW_HEIGHT, GearManagerDialogPopup_Update);
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>				
+					<EditBox name="$parentEditBox" letters="16" historyLines="0" autoFocus="true">
+						<Size x="200" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="29" y="-35"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="12" y="29"/>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset x="-11" y="0"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="175" y="29"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="12" y="29"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnTextChanged>
+								local text = self:GetText();
+								if ( text ~= "" ) then
+									GearManagerDialogPopup.name = text;
+								else
+									GearManagerDialogPopup.name = nil;
+								end
+								
+								GearManagerDialogPopupOkay_Update();
+							</OnTextChanged>
+							<OnEscapePressed function="GearManagerDialogPopupCancel_OnClick"/>
+							<OnEnterPressed>
+								if ( GearManagerDialogPopupOkay:IsEnabled() ~= 0 ) then
+									GearManagerDialogPopupOkay:Click();
+								end
+							</OnEnterPressed>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>	
+					<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset x="-11" y="13"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GearManagerDialogPopupCancel_OnClick"/>
+						</Scripts>
+					</Button>					
+					<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT">
+								<Offset x="-2" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GearManagerDialogPopupOkay_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad function="GearManagerDialogPopup_OnLoad"/>
+					<OnShow function="GearManagerDialogPopup_OnShow"/>
+					<OnHide function="GearManagerDialogPopup_OnHide"/>
+				</Scripts>				
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GearManagerDialog_OnLoad"/>
+			<OnShow function="GearManagerDialog_OnShow"/>
+			<OnHide function="GearManagerDialog_OnHide"/>
+			<OnEvent function="GearManagerDialog_OnEvent"/>
+		</Scripts>
+	</Frame>
 </Ui>

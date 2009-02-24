@@ -145,7 +145,7 @@ function CoinPickupFrame_OnKeyDown(self, key)
 		end
 	elseif ( key == "ENTER" ) then
 		CoinPickupFrameOkay_Click();
-	elseif ( key == "ESCAPE" ) then
+	elseif ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
 		CoinPickupFrameCancel_Click();
 	elseif ( key == "LEFT" or key == "DOWN" ) then
 		CoinPickupFrameLeft_Click();
@@ -218,4 +218,6 @@ function CoinPickupFrame_OnHide()
 		end
 		COINFRAME_BINDING_CACHE[key] = nil;
 	end
+	
+	PlaySound("MONEYFRAMECLOSE");
 end

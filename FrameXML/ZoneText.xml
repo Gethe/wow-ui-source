@@ -34,15 +34,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				ZoneText_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				ZoneText_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				FadingFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="ZoneText_OnLoad"/>
+			<OnEvent function="ZoneText_OnEvent"/>
+			<OnUpdate function="FadingFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
 	<Frame name="SubZoneTextFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
@@ -77,12 +71,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				SubZoneText_OnLoad(self);
-			</OnLoad>
-			<OnUpdate>
-				FadingFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="SubZoneText_OnLoad"/>
+			<OnUpdate function="FadingFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
 	<Frame name="AutoFollowStatus" parent="UIParent" setAllPoints="true" frameStrata="BACKGROUND" hidden="true">
@@ -103,15 +93,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				AutoFollowStatus_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				AutoFollowStatus_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				AutoFollowStatus_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="AutoFollowStatus_OnLoad"/>
+			<OnEvent function="AutoFollowStatus_OnEvent"/>
+			<OnUpdate function="AutoFollowStatus_OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -23,9 +23,7 @@
 				end
 				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), filter);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
 	<Button name="TargetDebuffButtonTemplate" virtual="true">
@@ -82,9 +80,7 @@
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
 				GameTooltip:SetUnitDebuff(self.unit, self:GetID());
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	<Button name="TargetBuffButtonTemplate" virtual="true">
@@ -142,9 +138,7 @@
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
 				GameTooltip:SetUnitBuff(self.unit, self:GetID());
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	<Button name="TargetFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
@@ -337,9 +331,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						TargetFrameDropDown_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="TargetFrameDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<StatusBar name="TargetFrameHealthBar" inherits="TextStatusBar">
@@ -402,15 +394,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnShow>
-						Target_Spellbar_AdjustPosition(self);
-					</OnShow>
-					<OnLoad>
-						Target_Spellbar_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						Target_Spellbar_OnEvent(self, event, ...);
-					</OnEvent>
+					<OnShow function="Target_Spellbar_AdjustPosition"/>
+					<OnLoad function="Target_Spellbar_OnLoad"/>
+					<OnEvent function="Target_Spellbar_OnEvent"/>
 				</Scripts>
 			</StatusBar>
 			<Frame name="TargetFrameBuffs" hidden="true">
@@ -477,22 +463,14 @@
 				self.noTextPrefix = true;
 				TargetFrame_OnLoad(self);
 			</OnLoad>
-			<OnEvent>
-				TargetFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="TargetFrame_OnEvent"/>
 			<OnUpdate>
 				TargetFrame_OnUpdate(self, elapsed);
 				TargetFrame_HealthUpdate(self, elapsed, "target");
 			</OnUpdate>
-			<OnHide>
-				TargetFrame_OnHide(self);
-			</OnHide>
-			<OnEnter>
-				UnitFrame_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				UnitFrame_OnLeave(self);
-			</OnLeave>
+			<OnHide function="TargetFrame_OnHide"/>
+			<OnEnter function="UnitFrame_OnEnter"/>
+			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
 	<Button name="TargetofTargetFrame" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="TargetFrame" hidden="true">
@@ -568,9 +546,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						RaiseFrameLevel(self);
-					</OnLoad>
+					<OnLoad function="RaiseFrameLevel"/>
 				</Scripts>
 			</Frame>
 			<StatusBar name="TargetofTargetHealthBar" inherits="TextStatusBar">
@@ -585,9 +561,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnValueChanged>
-						TargetofTargetHealthCheck(self, value);
-					</OnValueChanged>
+					<OnValueChanged function="TargetofTargetHealthCheck"/>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="1.0" b="0"/>
@@ -606,7 +580,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Frame name="$parentDebuff1" inherits="TargetofTargetBuffButtonTemplate" id="1">
+			<Frame name="$parentAura1" inherits="TargetofTargetBuffButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 						<Offset>
@@ -615,27 +589,27 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentDebuff2" inherits="TargetofTargetBuffButtonTemplate" id="2">
+			<Frame name="$parentAura2" inherits="TargetofTargetBuffButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="1" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentDebuff3" inherits="TargetofTargetBuffButtonTemplate" id="3">
+			<Frame name="$parentAura3" inherits="TargetofTargetBuffButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentDebuff1" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentAura1" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-1"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentDebuff4" inherits="TargetofTargetBuffButtonTemplate" id="4">
+			<Frame name="$parentAura4" inherits="TargetofTargetBuffButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="1" y="0"/>
 						</Offset>
@@ -644,21 +618,11 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TargetofTarget_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				TargetFrame_UpdateAuras(self);
-			</OnShow>
-			<OnHide>
-				TargetofTarget_OnHide(self);
-			</OnHide>
-			<OnEvent>
-				UnitFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				TargetofTarget_Update(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="TargetofTarget_OnLoad"/>
+			<OnShow function="TargetFrame_UpdateAuras"/>
+			<OnHide function="TargetofTarget_OnHide"/>
+			<OnEvent function="UnitFrame_OnEvent"/>
+			<OnUpdate function="TargetofTarget_Update"/>
 		</Scripts>
 	</Button>
 </Ui>

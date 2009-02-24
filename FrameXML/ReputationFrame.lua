@@ -64,6 +64,7 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 		factionRightTexture:SetHeight(21);
 		factionLeftTexture:SetTexCoord(0.7578125, 1.0, 0.0, 0.328125);
 		factionRightTexture:SetTexCoord(0.0, 0.1640625, 0.34375, 0.671875);
+		factionBar:SetWidth(101)
 	elseif ( rowType == 1 ) then --Child, not header
 		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 62, 0);
 		factionButton:Hide()
@@ -75,6 +76,7 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 		factionRightTexture:SetHeight(21);
 		factionLeftTexture:SetTexCoord(0.7578125, 1.0, 0.0, 0.328125);
 		factionRightTexture:SetTexCoord(0.0, 0.1640625, 0.34375, 0.671875);
+		factionBar:SetWidth(101)
 	elseif ( rowType == 2 ) then	--Header, not child
 		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 20, 0);
 		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);
@@ -89,11 +91,10 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 		factionRightTexture:SetWidth(39);
 		factionLeftTexture:SetTexCoord(0.765625, 1.0, 0.046875, 0.28125);
 		factionRightTexture:SetTexCoord(0.0, 0.15234375, 0.390625, 0.625);
-		factionLeftTexture:SetPoint("LEFT", factionBar, "LEFT", -2, 0);
-		factionBar:SetPoint("RIGHT", factionRow, "RIGHT", 2, 0);
+		factionBar:SetWidth(99);
 	elseif ( rowType == 3 ) then --Header and child
 		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 39, 0);
-		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);	--Change this
+		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);
 		factionButton:Show();
 		factionTitle:SetPoint("LEFT" ,factionButton, "RIGHT", 10, 0);
 		factionTitle:SetFontObject(GameFontNormalLeft);
@@ -105,8 +106,7 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 		factionRightTexture:SetWidth(39);
 		factionLeftTexture:SetTexCoord(0.765625, 1.0, 0.046875, 0.28125);
 		factionRightTexture:SetTexCoord(0.0, 0.15234375, 0.390625, 0.625);
-		factionLeftTexture:SetPoint("LEFT", factionBar, "LEFT", -2, 0);
-		factionBar:SetPoint("RIGHT", factionRow, "RIGHT", 2, 0);
+		factionBar:SetWidth(99);
 	end
 	
 	if ( (hasRep) or (rowType == 0) or (rowType == 1)) then

@@ -274,16 +274,49 @@ function MoneyFrame_Update(frameName, money)
 	end
 
 	-- Set values for each denomination
-	goldButton:SetText(gold);
-	goldButton:SetWidth(goldButton:GetTextWidth() + iconWidth);
-	goldButton:Show();
-	silverButton:SetText(silver);
-	silverButton:SetWidth(silverButton:GetTextWidth() + iconWidth);
-	silverButton:Show();
-	copperButton:SetText(copper);
-	copperButton:SetWidth(copperButton:GetTextWidth() + iconWidth);
-	copperButton:Show();
-
+	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+		if ( not frame.colorblind ) then
+			frame.colorblind = true;
+			frame.goldTexture = goldButton:GetNormalTexture();
+			frame.silverTexture = silverButton:GetNormalTexture();
+			frame.copperTexture = copperButton:GetNormalTexture();
+			goldButton:SetNormalTexture(nil);
+			silverButton:SetNormalTexture(nil);
+			copperButton:SetNormalTexture(nil);
+			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT");
+			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT");
+			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT");
+		end
+		goldButton:SetText(gold .. GOLD_AMOUNT_SYMBOL);
+		goldButton:SetWidth(goldButton:GetTextWidth());
+		goldButton:Show();
+		silverButton:SetText(silver .. SILVER_AMOUNT_SYMBOL);
+		silverButton:SetWidth(silverButton:GetTextWidth());
+		silverButton:Show();
+		copperButton:SetText(copper .. COPPER_AMOUNT_SYMBOL);
+		copperButton:SetWidth(copperButton:GetTextWidth());
+		copperButton:Show();
+	else
+		if ( frame.colorblind ) then
+			frame.colorblind = nil;
+			goldButton:SetNormalTexture(frame.goldTexture);
+			silverButton:SetNormalTexture(frame.silverTexture);
+			copperButton:SetNormalTexture(frame.copperTexture);
+			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT", -19, 0);
+			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", -19, 0);
+			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", -19, 0);
+		end
+		goldButton:SetText(gold);
+		goldButton:SetWidth(goldButton:GetTextWidth() + iconWidth);
+		goldButton:Show();
+		silverButton:SetText(silver);
+		silverButton:SetWidth(silverButton:GetTextWidth() + iconWidth);
+		silverButton:Show();
+		copperButton:SetText(copper);
+		copperButton:SetWidth(copperButton:GetTextWidth() + iconWidth);
+		copperButton:Show();
+	end
+		
 	-- Store how much money the frame is displaying
 	frame.staticMoney = money;
 

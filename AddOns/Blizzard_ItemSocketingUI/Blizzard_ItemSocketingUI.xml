@@ -72,6 +72,13 @@
 					</Anchors>
 				</Texture>-->
 			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentColor" inherits="TextStatusBarText" text="Color" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentShine" inherits="AnimatedShineTemplate">
@@ -121,9 +128,7 @@
 				self:RegisterForDrag("LeftButton");
 				self:RegisterEvent("SOCKET_INFO_UPDATE");
 			</OnLoad>
-			<OnEvent>
-				ItemSocketingSocketButton_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="ItemSocketingSocketButton_OnEvent"/>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					local link = GetNewSocketLink(self:GetID()) or
@@ -145,9 +150,7 @@
 				StaticPopup_Hide("DELETE_GOOD_ITEM");
 				ClickSocketButton(self:GetID());
 			</OnDragStart>
-			<OnEnter>
-				ItemSocketingSocketButton_OnEnter(self);
-			</OnEnter>
+			<OnEnter function="ItemSocketingSocketButton_OnEnter"/>
 			<OnLeave>
 				GameTooltip:Hide();
 				ShoppingTooltip1:Hide();
@@ -247,10 +250,10 @@
 					<OnLoad>
 						self.scrollBarHideable = 1;
 						ScrollFrame_OnLoad(self);
-						ScrollFrame_OnScrollRangeChanged(self, 0);
+						ScrollFrame_OnScrollRangeChanged(self, 0, 0);
 					</OnLoad>
 					<OnScrollRangeChanged>
-						ScrollFrame_OnScrollRangeChanged(self, yrange);
+						ScrollFrame_OnScrollRangeChanged(self, 0, yrange);
 						ItemSocketingSocketButton_OnScrollRangeChanged(self);
 					</OnScrollRangeChanged>
 				</Scripts>
@@ -432,15 +435,11 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ItemSocketingFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="ItemSocketingFrame_OnLoad"/>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
 			</OnShow>
-			<OnEvent>
-				ItemSocketingFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="ItemSocketingFrame_OnEvent"/>
 			<OnHide>
 				PlaySound("igCharacterInfoClose");
 				StaticPopup_Hide("CONFIRM_ACCEPT_SOCKETS");

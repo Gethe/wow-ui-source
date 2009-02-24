@@ -9,6 +9,8 @@ NUM_WORLDMAP_DEBUG_OBJECTS = 0;
 WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_WORLD_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
+WORLDMAP_NORTHREND_ID = 4;
+WORLDMAP_WINTERGRASP_ID = 10;
 
 BAD_BOY_UNITS = {};
 BAD_BOY_COUNT = 0;
@@ -138,6 +140,16 @@ function WorldMapFrame_Update()
 		WorldMapZoomOutButton:Disable();
 	else
 		WorldMapZoomOutButton:Enable();
+	end
+	
+	local nextBattleTime = GetWintergraspWaitTime();
+	if ( nextBattleTime and (GetCurrentMapContinent() == WORLDMAP_NORTHREND_ID) and (GetCurrentMapZone() == WORLDMAP_WINTERGRASP_ID)) then
+		local battleSec = mod( nextBattleTime, 60);
+		local battleMin = mod( floor( nextBattleTime / 60), 60);
+		local battleHour = floor( nextBattleTime / 60 / 60 );
+		WorldMapZoneInfo:SetFormattedText( NEXT_BATTLE, battleHour, battleMin, battleSec);
+	else
+		WorldMapZoneInfo:SetText("");
 	end
 
 	-- Setup the POI's
@@ -421,9 +433,13 @@ function WorldMapLevelDropDown_Update()
 	if ( (GetNumDungeonMapLevels() == 0) ) then
 		UIDropDownMenu_ClearAll(WorldMapLevelDropDown);
 		WorldMapLevelDropDown:Hide();
+		WorldMapLevelUpButton:Hide();
+		WorldMapLevelDownButton:Hide();
 	else
 		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, GetCurrentMapDungeonLevel());
 		WorldMapLevelDropDown:Show();
+		WorldMapLevelUpButton:Show();
+		WorldMapLevelDownButton:Show();
 	end
 end
 
@@ -446,6 +462,16 @@ end
 function WorldMapLevelButton_OnClick(self)
 	UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, self:GetID());
 	SetDungeonMapLevel(self:GetID());
+end
+
+function WorldMapLevelUp_OnClick(self)
+	SetDungeonMapLevel(GetCurrentMapDungeonLevel() - 1);
+	UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, GetCurrentMapDungeonLevel());
+end
+
+function WorldMapLevelDown_OnClick(self)
+	SetDungeonMapLevel(GetCurrentMapDungeonLevel() + 1);
+	UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, GetCurrentMapDungeonLevel());
 end
 
 function WorldMapZoneMinimapDropDown_Initialize()

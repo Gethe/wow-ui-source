@@ -1,60 +1,73 @@
-local tabInfo = {};
+
+local talentSpecInfoCache = {};
 
 function InspectTalentFrameSpentPoints_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:AddLine(TALENT_POINTS, 1, 1, 1);
-	for _, entry in ipairs(tabInfo) do
-		GameTooltip:AddDoubleLine(entry[1], entry[3], nil, nil, nil, 1, 1, 1);
+	GameTooltip:AddLine(TALENT_POINTS);
+	for index, info in ipairs(talentSpecInfoCache) do
+		if ( info.name ) then
+			local pointsColor;
+			if ( talentSpecInfoCache.primaryTabIndex == index ) then
+				pointsColor = GREEN_FONT_COLOR;
+			else
+				pointsColor = HIGHLIGHT_FONT_COLOR;
+			end
+			GameTooltip:AddDoubleLine(
+				info.name,
+				info.pointsSpent,
+				HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b,
+				pointsColor.r, pointsColor.g, pointsColor.b,
+				1
+			);
+		end
 	end
 	
 	GameTooltip:Show();
 end
 
-function InspectTalentFrameTalent_OnClick(self)
---	LearnTalent(InspectTalentFrame.currentSelectedTab, this:GetID());
-end
-
 function InspectTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetTalent(InspectTalentFrame.currentSelectedTab, self:GetID(), InspectTalentFrame.inspect);
+		GameTooltip:SetTalent(InspectTalentFrame.selectedTab, self:GetID(), InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 	end
 end
 
 function InspectTalentFrameTalent_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetTalent(InspectTalentFrame.currentSelectedTab, self:GetID(), InspectTalentFrame.inspect);
+	GameTooltip:SetTalent(InspectTalentFrame.selectedTab, self:GetID(), InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 end
 
 function InspectTalentFrame_SetupTabs()
-	local numTabs = GetNumTalentTabs(InspectTalentFrame.inspect);
-	for i=#tabInfo, 1, -1 do
-		tremove(tabInfo, i);
-	end
-	for i=1, MAX_TALENT_TABS do
-		tab = getglobal("InspectTalentFrameTab"..(i));
+	local numTabs = GetNumTalentTabs(InspectTalentFrame.inspect, InspectTalentFrame.pet);
+	local selectedTab = PanelTemplates_GetSelectedTab(InspectTalentFrame);
+	for i = 1, MAX_TALENT_TABS do
+		tab = _G["InspectTalentFrameTab"..i];
 		if ( tab ) then
+			talentSpecInfoCache[i] = talentSpecInfoCache[i] or { };
 			if ( i <= numTabs ) then
-				--GetTalentTabInfo return values: 1 - Tree name, 2 - Tree icon, 3 - Points Spent, 4 - Long Tree name
-				tabInfo[i] = {GetTalentTabInfo(i, InspectTalentFrame.inspect)};
-				if ( (i) == PanelTemplates_GetSelectedTab(InspectTalentFrame) ) then
+				local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+				if ( i == selectedTab ) then
 					-- If tab is the selected tab set the points spent info
-					getglobal("InspectTalentFrameSpentPoints"):SetText(format(MASTERY_POINTS_SPENT, tabInfo[i][1]).." "..HIGHLIGHT_FONT_COLOR_CODE..tabInfo[i][3]..FONT_COLOR_CODE_CLOSE);
-					InspectTalentFrame.pointsSpent = tabInfo[i][3];
+					local displayPointsSpent = pointsSpent + previewPointsSpent;
+					InspectTalentFrameSpentPointsText:SetFormattedText(MASTERY_POINTS_SPENT, name, HIGHLIGHT_FONT_COLOR_CODE..displayPointsSpent..FONT_COLOR_CODE_CLOSE);
+					InspectTalentFrame.pointsSpent = pointsSpent;
+					InspectTalentFrame.previewPointsSpent = previewPointsSpent;
 				end
-				tab:SetText(tabInfo[i][1]);
+				tab:SetText(name);
 				PanelTemplates_TabResize(tab, -10);
 				tab:Show();
 			else
 				tab:Hide();
+				talentSpecInfoCache[i].name = nil;
 			end
 		end
 	end
+	TalentFrame_UpdateSpecInfoCache(talentSpecInfoCache, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 end
 
 function InspectTalentFrame_Update()
 	InspectTalentFrame_SetupTabs();
 	PanelTemplates_UpdateTabs(InspectFrame);
-	InspectTalentFrame.currentSelectedTab = PanelTemplates_GetSelectedTab(InspectTalentFrame)
+	InspectTalentFrame.selectedTab = PanelTemplates_GetSelectedTab(InspectTalentFrame)
 end
 
 function InspectTalentFrame_Refresh()
@@ -65,19 +78,20 @@ end
 function InspectTalentFrame_OnLoad(self)
 	self.updateFunction = InspectTalentFrame_Update;
 	self.inspect = true;
+	self.pet = false;
+	self.talentGroup = 1;
 
 	TalentFrame_Load(InspectTalentFrame);
 
-	for i=1, MAX_NUM_TALENTS do
-		button = getglobal("InspectTalentFrameTalent"..i);
+	for i = 1, MAX_NUM_TALENTS do
+		button = _G["InspectTalentFrameTalent"..i];
 		if ( button ) then
-			button.talentButton_OnEvent = InspectTalentFrameTalent_OnEvent;
-			button.talentButton_OnClick = InspectTalentFrameTalent_OnClick;
-			button.talentButton_OnEnter = InspectTalentFrameTalent_OnEnter;
+			button:SetScript("OnEvent", InspectTalentFrameTalent_OnEvent);
+			button:SetScript("OnEnter", InspectTalentFrameTalent_OnEnter);
 		end
 	end
 	PanelTemplates_SetNumTabs(self, 3);
-	InspectTalentFrame.selectedTab = 1;
+	PanelTemplates_SetTab(InspectTalentFrame, 1);
 	PanelTemplates_UpdateTabs(self);
 	InspectTalentFrame:SetScript("OnEvent", InspectTalentFrame_OnEvent);
 end
@@ -89,6 +103,7 @@ end
 
 function  InspectTalentFrame_OnHide()
 	InspectTalentFrame:UnregisterEvent("INSPECT_TALENT_READY");
+	wipe(talentSpecInfoCache);
 end
 
 function InspectTalentFrame_OnEvent(self, event, ...)

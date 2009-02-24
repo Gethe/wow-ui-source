@@ -118,9 +118,7 @@
 				ComboPoint1Highlight:SetAlpha(0);
 				ComboPoint1Shine:SetAlpha(0);
 			</OnLoad>
-			<OnEvent>
-				ComboFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="ComboFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

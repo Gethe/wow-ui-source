@@ -131,6 +131,7 @@
 					<OnClick>
 						PlaySound("igMainMenuOption");
 						KeyBindingFrame_LoadUI();
+						KeyBindingFrame.mode = 1;
 						ShowUIPanel(KeyBindingFrame);
 					</OnClick>
 				</Scripts>

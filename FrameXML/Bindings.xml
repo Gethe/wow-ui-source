@@ -310,6 +310,52 @@
 			BonusActionButtonUp(10);
 		end
 	</Binding>
+<!--
+	<Binding name="ACTIONWINDOW1" joystick="true" runOnUp="true">
+		if ( keystate == "down" ) then
+			ActionButtonDown(ActionWindowOffset() + 1);
+		else
+			ActionButtonUp(ActionWindowOffset() + 1);
+		end
+	</Binding>
+	<Binding name="ACTIONWINDOW2" joystick="true" runOnUp="true">
+		if ( keystate == "down" ) then
+			ActionButtonDown(ActionWindowOffset() + 2);
+		else
+			ActionButtonUp(ActionWindowOffset() + 2);
+		end
+	</Binding>
+	<Binding name="ACTIONWINDOW3" joystick="true" runOnUp="true">
+		if ( keystate == "down" ) then
+			ActionButtonDown(ActionWindowOffset() + 3);
+		else
+			ActionButtonUp(ActionWindowOffset() + 3);
+		end
+	</Binding>
+	<Binding name="ACTIONWINDOW4" joystick="true" runOnUp="true">
+		if ( keystate == "down" ) then
+			ActionButtonDown(ActionWindowOffset() + 4);
+		else
+			ActionButtonUp(ActionWindowOffset() + 4);
+		end
+	</Binding>
+	<Binding name="ACTIONWINDOWMOVE" joystick="true" angle="true" runOnUp="true">
+		if ( keystate == "down" ) then
+			if ( pressure >= 0.25 and not ACTIONWINDOWMOVED ) then
+				ActionWindowMove(angle);
+				ACTIONWINDOWMOVED = true;
+			end
+		else
+			ACTIONWINDOWMOVED = false;
+		end
+	</Binding>
+	<Binding name="ACTIONWINDOWINCREMENT" joystick="true">
+		ActionWindowIncrement();
+	</Binding>
+	<Binding name="ACTIONWINDOWDECREMENT" joystick="true">
+		ActionWindowDecrement();
+	</Binding>
+-->
 	<Binding name="ACTIONPAGE1">
 		ChangeActionBarPage(1);
 	</Binding>
@@ -361,18 +407,26 @@
 	<Binding name="TARGETPREVIOUSFRIEND">
 		TargetNearestFriend(1);	-- 1 (or "true") means reverse!
 	</Binding>
-  <Binding name="TARGETNEARESTENEMYPLAYER">
-    TargetNearestEnemyPlayer();
-  </Binding>
-  <Binding name="TARGETPREVIOUSENEMYPLAYER">
-    TargetNearestEnemyPlayer(1);	-- 1 (or "true") means reverse!
-  </Binding>
-  <Binding name="TARGETNEARESTFRIENDPLAYER">
-    TargetNearestFriendPlayer();
-  </Binding>
-  <Binding name="TARGETPREVIOUSFRIENDPLAYER">
-    TargetNearestFriendPlayer(1);	-- 1 (or "true") means reverse!
-  </Binding>
+	<Binding name="TARGETNEARESTENEMYPLAYER">
+		TargetNearestEnemyPlayer();
+	</Binding>
+	<Binding name="TARGETPREVIOUSENEMYPLAYER">
+		TargetNearestEnemyPlayer(1);	-- 1 (or "true") means reverse!
+	</Binding>
+	<Binding name="TARGETNEARESTFRIENDPLAYER">
+		TargetNearestFriendPlayer();
+	</Binding>
+	<Binding name="TARGETPREVIOUSFRIENDPLAYER">
+		TargetNearestFriendPlayer(1);	-- 1 (or "true") means reverse!
+	</Binding>
+<!-- These didn't end up getting used, but might be useful at some point.
+	<Binding name="TARGETNEAREST">
+		TargetNearest();
+	</Binding>
+	<Binding name="TARGETPREVIOUS">
+		TargetNearest(1);
+	</Binding>
+-->
 	<Binding name="TARGETSELF">
 		if ( UnitIsUnit("player", "target") ) then
 			TargetUnit("pet");
@@ -429,9 +483,6 @@
 	<Binding name="TARGETLASTTARGET">
 		TargetLastTarget();
 	</Binding>
-	<Binding name="ASSISTTARGET">
-		AssistUnit("target");
-	</Binding>
 	<Binding name="NAMEPLATES">
 		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
 		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
@@ -463,6 +514,17 @@
 			SetCVar("nameplateShowFriends", 0);
 		end
 	</Binding>
+	<Binding name="INTERACTMOUSEOVER">
+		if ( not InteractUnit("mouseover") ) then
+			InteractUnit("target");
+		end
+	</Binding>
+	<Binding name="INTERACTTARGET">
+		InteractUnit("target");
+	</Binding>
+	<Binding name="ASSISTTARGET">
+		AssistUnit("target");
+	</Binding>
 	<Binding name="ATTACKTARGET">
 		AttackTarget();
 	</Binding>
@@ -475,11 +537,68 @@
 	<Binding name="TARGETFOCUS">
 		TargetUnit("focus");
 	</Binding>
+	<Binding name="TARGETMOUSEOVER">
+		TargetUnit("mouseover");
+	</Binding>
 	<Binding name="TARGETTALKER">
 		if ( #VOICECHAT_TALKERS > 0 ) then
 			VoiceChatTalkers.buttons[#VOICECHAT_TALKERS].button:Click();
 		end
 	</Binding>
+	<Binding name="TARGETENEMYDIRECTIONAL" joystick="true" angle="true" runOnUp="true">
+		if ( keystate == "down" ) then
+			if ( pressure >= 0.25 ) then
+				TargetDirectionEnemy(angle, precision);
+			end
+		else
+			TargetDirectionFinished();
+		end
+	</Binding>
+<!-- These didn't end up getting used, but might be useful at some point.
+	<Binding name="TARGETENEMYLEFT">
+		TargetDirectionEnemy(math.pi * 1.5);
+		TargetDirectionFinished();
+	</Binding>
+	<Binding name="TARGETENEMYRIGHT">
+		TargetDirectionEnemy(math.pi * 0.5);
+		TargetDirectionFinished();
+	</Binding>
+	<Binding name="TARGETENEMYFORWARD">
+		TargetDirectionEnemy(0);
+		TargetDirectionFinished();
+	</Binding>
+	<Binding name="TARGETENEMYBACKWARD">
+		TargetDirectionEnemy(math.pi);
+		TargetDirectionFinished();
+	</Binding>
+-->
+	<Binding name="TARGETFRIENDDIRECTIONAL" joystick="true" angle="true" runOnUp="true">
+		if ( keystate == "down" ) then
+			if ( pressure >= 0.25 ) then
+				TargetDirectionFriend(angle, precision);
+			end
+		else
+			TargetDirectionFinished();
+		end
+	</Binding>
+<!-- These didn't end up getting used, but might be useful at some point.
+	<Binding name="TARGETFRIENDLEFT">
+		TargetDirectionFriend(math.pi * 1.5);
+		TargetDirectionFinished();
+	</Binding>
+	<Binding name="TARGETFRIENDRIGHT">
+		TargetDirectionFriend(math.pi * 0.5);
+		TargetDirectionFinished();
+	</Binding>
+	<Binding name="TARGETFRIENDFORWARD">
+		TargetDirectionFriend(0);
+		TargetDirectionFinished();
+	</Binding>
+	<Binding name="TARGETFRIENDBACKWARD">
+		TargetDirectionFriend(math.pi);
+		TargetDirectionFinished();
+	</Binding>
+-->
 
 	<!-- UI Panels -->
 	<Binding name="TOGGLECHARACTER0" header="INTERFACE">
@@ -519,7 +638,7 @@
 		ToggleTalentFrame();
 	</Binding>
 	<Binding name="TOGGLECHARACTER4">
-		ToggleFrame(PVPFrame);
+		ToggleFrame(PVPParentFrame);
 	</Binding>
 	<Binding name="TOGGLECHARACTER3">
 		ToggleCharacter("PetPaperDollFrame");
@@ -541,9 +660,6 @@
 	</Binding>
 	<Binding name="TOGGLEWORLDMAP">
 		ToggleFrame(WorldMapFrame);
-	</Binding>
-	<Binding name="TOGGLECURRENCY">
-		ToggleCharacter("TokenFrame");
 	</Binding>
 	<Binding name="TOGGLESOCIAL">
 		ToggleFriendsFrame();
@@ -635,6 +751,7 @@
 			securecall("CloseAllWindows");
 			UIParent:Hide();
 			SetUIVisibility(false);
+			ActionStatus_DisplayMessage(format(UI_HIDDEN, GetBindingText(GetBindingKey("TOGGLEUI"), "KEY_")))
 		else
 			UIParent:Show();
 			SetUIVisibility(true);
@@ -682,6 +799,43 @@
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true">
 		ToggleCommentatorMode();
 	</Binding>
+	<Binding name="TOGGLEMOUSE" joystick="true">
+		if ( IsMouseEnabledTemporary() ) then
+			MouseEnableTemporary(false);
+		else
+			MouseEnableTemporary(true);
+		end
+	</Binding>
+	<Binding name="TOGGLEBINDINGMODE1" joystick="true">
+		EnableBindingMode(2, not BindingModeEnabled(2));
+	</Binding>
+	<Binding name="INVERTBINDINGMODE1" joystick="true" runOnUp="true">
+		if ( keystate == "down" ) then
+			InvertBindingMode(2, true);
+		else
+			InvertBindingMode(2, false);
+		end
+	</Binding>
+	<Binding name="TOGGLEBINDINGMODE2" joystick="true">
+		EnableBindingMode(3, not BindingModeEnabled(3));
+	</Binding>
+	<Binding name="INVERTBINDINGMODE2" joystick="true" runOnUp="true">
+		if ( keystate == "down" ) then
+			InvertBindingMode(3, true);
+		else
+			InvertBindingMode(3, false);
+		end
+	</Binding>
+	<Binding name="TOGGLEBINDINGMODE3" joystick="true">
+		EnableBindingMode(4, not BindingModeEnabled(4));
+	</Binding>
+	<Binding name="INVERTBINDINGMODE3" joystick="true" runOnUp="true">
+		if ( keystate == "down" ) then
+			InvertBindingMode(4, true);
+		else
+			InvertBindingMode(4, false);
+		end
+	</Binding>
 
 	<!-- Camera key bindings -->
 	<Binding name="NEXTVIEW" header="CAMERA">
@@ -696,45 +850,51 @@
 	<Binding name="CAMERAZOOMOUT">
 			CameraZoomOut(1.0);
 	</Binding>
-	<!-- 
-	<Binding name="MOVEVIEWIN" runOnUp="true">
+	<Binding name="SWINGCAMERA" joystick="true" angle="true" runOnUp="true">
+		JoystickSwingCamera(angle, pressure, false);
+	</Binding>
+	<Binding name="SWINGCAMERAANDPLAYER" joystick="true" angle="true" runOnUp="true">
+		JoystickSwingCamera(angle, pressure, true);
+	</Binding>
+	<Binding name="MOVEVIEWIN" joystick="true" pressure="true" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewInStart();
+			MoveViewInStart(2 * pressure);
 		else
 			MoveViewInStop();
 		end
 	</Binding>
-	<Binding name="MOVEVIEWOUT" runOnUp="true">
+	<Binding name="MOVEVIEWOUT" joystick="true" pressure="true" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewOutStart();
+			MoveViewOutStart(2 * pressure);
 		else
 			MoveViewOutStop();
 		end
 	</Binding>
-	<Binding name="MOVEVIEWLEFT" runOnUp="true">
+	<!--
+	<Binding name="MOVEVIEWLEFT" joystick="true" pressure="true" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewLeftStart();
+			MoveViewLeftStart(2 * pressure);
 		else
 			MoveViewLeftStop();
 		end
 	</Binding>
-	<Binding name="MOVEVIEWRIGHT" runOnUp="true">
+	<Binding name="MOVEVIEWRIGHT" joystick="true" pressure="true" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewRightStart();
+			MoveViewRightStart(2 * pressure);
 		else
 			MoveViewRightStop();
 		end
 	</Binding>
-	<Binding name="MOVEVIEWUP" runOnUp="true">
+	<Binding name="MOVEVIEWUP" joystick="true" pressure="true" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewUpStart();
+			MoveViewUpStart(2 * pressure);
 		else
 			MoveViewUpStop();
 		end
 	</Binding>
-	<Binding name="MOVEVIEWDOWN" runOnUp="true">
+	<Binding name="MOVEVIEWDOWN" joystick="true" pressure="true" runOnUp="true">
 		if ( keystate == "down" ) then
-			MoveViewDownStart();
+			MoveViewDownStart(2 * pressure);
 		else
 			MoveViewDownStop();
 		end
@@ -782,6 +942,7 @@
 	<Binding name="FLIPCAMERAYAW">
 		FlipCameraYaw(180);
 	</Binding>
+
 	<!-- MultiAction bar bindings -->
 	<Binding name="MULTIACTIONBAR1BUTTON1" runOnUp="true" header="MULTIACTIONBAR">
 		if ( keystate == "down" ) then
@@ -1247,4 +1408,5 @@
 	<ModifiedClick action="OPENALLBAGS" default="SHIFT"/>
 	<ModifiedClick action="QUESTWATCHTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="TOKENWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="SHOWITEMFLYOUT" default="ALT"/>
 </Bindings>

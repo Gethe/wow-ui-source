@@ -1,8 +1,6 @@
 
 -- if you change something here you probably want to change the glue version too
 
--- if you change something here you probably want to change the glue version too
-
 CONTROLTYPE_CHECKBOX = 1;
 CONTROLTYPE_DROPDOWN = 2;
 CONTROLTYPE_SLIDER = 3;
@@ -60,6 +58,11 @@ function BlizzardOptionsPanel_Slider_Refresh (slider)
 		end
 		slider.value = value;
 	end
+end
+
+function BlizzardOptionsPanel_Slider_OnValueChanged (self, value)
+	self.value = value;
+	BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 end
 
 -- [[ CheckButton functions ]] --

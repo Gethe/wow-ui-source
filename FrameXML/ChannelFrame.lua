@@ -1220,6 +1220,9 @@ function ChannelPulloutRoster_Scroll (roster, dir)
 		return;
 	end
 	
+	-- We need to invert the delta we receive from mousewheels, and this function is designed to be used by ChannelPulloutRoster's OnMouseWheel, so we're doing this here!
+	dir = -dir
+	
 	if ( ( rosterFrame.offset + dir ) >= 0 and ( rosterFrame.offset + dir ) <= ( #rosterFrame.members - #rosterFrame.buttons ) ) then
 		rosterFrame.offset = rosterFrame.offset + dir;
 	elseif ( rosterFrame.offset < 0 ) then

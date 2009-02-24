@@ -80,6 +80,9 @@
 			</OnShow>
 		</Scripts>
 		<ButtonText name="$parentText">
+			<Size>
+				<AbsDimension x="0" y="10"/>
+			</Size>
 			<Anchors>
 				<Anchor point="CENTER">
 					<Offset>

@@ -16,8 +16,9 @@ end
 
 -- [[ AchievementAlertFrame ]] --
 function AchievementAlertFrame_OnLoad (self)
-	self.glow = getglobal(self:GetName().."ButtonGlow");
-	self.shine = getglobal(self:GetName().."ButtonShine");
+	self:RegisterForClicks("LeftButtonUp");
+	self.glow = getglobal(self:GetName().."Glow");
+	self.shine = getglobal(self:GetName().."Shine");
 	-- Setup a continous timescale since the table values are offsets
 	self.fadeinDuration = 0.2;
 	self.flashDuration = 0.5;
@@ -91,7 +92,7 @@ function AchievementAlertFrame_GetAlertFrame()
 				return frame;
 			end
 		else
-			frame = CreateFrame("Frame", name, UIParent, "AchievementAlertFrameTemplate");
+			frame = CreateFrame("Button", name, UIParent, "AchievementAlertFrameTemplate");
 			if ( not previousFrame ) then
 				frame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
 			else

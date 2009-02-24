@@ -140,6 +140,8 @@ function ContainerFrame_OnHide(self)
 	else
 		PlaySound("igBackPackClose");
 	end
+
+	MouseEnableUI(false);
 end
 
 function ContainerFrame_OnShow(self)
@@ -171,6 +173,8 @@ function ContainerFrame_OnShow(self)
 	if ( ManageBackpackTokenFrame ) then
 		ManageBackpackTokenFrame();
 	end
+	
+	MouseEnableUI(true);
 end
 
 function OpenBag(id)
@@ -237,6 +241,8 @@ function OpenBackpack()
 	if ( not ContainerFrame1.backpackWasOpen ) then
 		ToggleBackpack();
 	end
+	
+	return ContainerFrame1.backpackWasOpen;
 end
 
 function CloseBackpack()
@@ -600,6 +606,10 @@ function ContainerFrameItemButton_OnLoad(self)
 		SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 	end
 	self.UpdateTooltip = ContainerFrameItemButton_OnEnter;
+end
+
+function ContainerFrameItemButton_OnDrag (self)
+	ContainerFrameItemButton_OnClick(self, "LeftButton");
 end
 
 function ContainerFrameItemButton_OnClick(self, button)

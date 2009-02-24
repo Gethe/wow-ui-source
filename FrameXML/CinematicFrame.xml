@@ -25,17 +25,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				CinematicFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				SetupFullscreenScale(self);
-			</OnShow>
-			<OnEvent>
-				CinematicFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="CinematicFrame_OnLoad"/>
+			<OnShow function="SetupFullscreenScale"/>
+			<OnEvent function="CinematicFrame_OnEvent"/>
 			<OnKeyDown>
-				if ( key == "ESCAPE" ) then
+				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
 					StopCinematic();
 				elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
 					RunBinding("SCREENSHOT");

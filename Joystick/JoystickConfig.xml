@@ -1,0 +1,178 @@
+<Joysticks xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\Joystick\JoystickConfig.xsd">
+<!--
+You are welcome to add or modify entries to suit your hardware and style.
+
+GamePad style controllers are set up as closely as possible with the following configuration:
+Normal State:
+	Start Button = menu
+	Left Thumbstick = move forward/backward/strafe
+	Left Thumbstick Button = jump
+	Right Thumbstick = swing camera and player facing
+	Right Thumbstick Button = flip camera
+	Button 1 = interact with highlighted unit
+	Button 2 = tab target
+	Button 3 = quest log
+	Button 4 = world map
+	Left Trigger = invert action state (hold to enable out of combat / disable in combat)
+	Right Trigger = enter targeting state (hold to target)
+	Right Trigger Button = toggle mouse mode
+Action State:
+	Face Buttons = actions
+	D-Pad Left/Right = slide action window left/right
+	D-Pad Up/Down = change action bars up/down
+Targeting State:
+	Left Thumbstick = select enemy unit
+	D-Pad = select friendly unit
+-->
+	<Joystick>
+		<Name name="XBOX 360 For Windows (Controller)"/>
+		<Name name="Controller (Xbox 360 Wireless Receiver for Windows)"/>
+		<Stick index="1" axisX="1" axisY="2"/>
+		<Stick index="2" axisX="4" axisY="5"/>
+		<Mouse stickIndex="1" buttonLeft="1" buttonRight="2"/>
+		<DefaultBindings>
+			BINDINGMODE 0
+			bind JOYBUTTON8 TOGGLEGAMEMENU
+			bind JOYAXIS2NEG MOVEFORWARD
+			bind JOYAXIS2POS MOVEBACKWARD
+			bind JOYAXIS1NEG STRAFELEFT
+			bind JOYAXIS1POS STRAFERIGHT
+			bind JOYBUTTON9 JUMP
+			bind JOYSTICK2 SWINGCAMERAANDPLAYER
+			bind JOYBUTTON10 FLIPCAMERAYAW
+			bind JOYBUTTON1 INTERACTMOUSEOVER
+			bind JOYBUTTON2 TARGETNEARESTENEMY
+			bind JOYBUTTON3 TOGGLEQUESTLOG
+			bind JOYBUTTON4 TOGGLEWORLDMAP
+			bind JOYAXIS3POS INVERTBINDINGMODE1
+			bind JOYAXIS3NEG INVERTBINDINGMODE2
+			bind JOYBUTTON6 TOGGLEMOUSE
+			BINDINGMODE 1
+			bind JOYBUTTON3 ACTIONWINDOW1
+			bind JOYBUTTON1 ACTIONWINDOW2
+			bind JOYBUTTON2 ACTIONWINDOW3
+			bind JOYBUTTON4 ACTIONWINDOW4
+			bind JOYHAT ACTIONWINDOWMOVE
+			BINDINGMODE 2
+			bind JOYSTICK1 TARGETENEMYDIRECTIONAL
+			bind JOYHAT TARGETFRIENDDIRECTIONAL
+		</DefaultBindings>
+	</Joystick>
+	<Joystick>
+		<!-- This is what the PS2 controller shows up as with a USB converter -->
+		<Name name="4 axis 16 button joystick"/>
+		<Stick index="1" axisX="1" axisY="2"/>
+		<Stick index="2" axisX="3" axisY="6"/>
+		<Hat index="1" button1="13" button2="14" button3="15" button4="16"/>
+		<Mouse stickIndex="1" buttonLeft="3" buttonRight="2"/>
+		<DefaultBindings>
+			BINDINGMODE 0
+			bind JOYBUTTON12 TOGGLEGAMEMENU
+			bind JOYAXIS2NEG MOVEFORWARD
+			bind JOYAXIS2POS MOVEBACKWARD
+			bind JOYAXIS1NEG STRAFELEFT
+			bind JOYAXIS1POS STRAFERIGHT
+			bind JOYBUTTON10 JUMP
+			bind JOYSTICK2 SWINGCAMERAANDPLAYER
+			bind JOYBUTTON11 FLIPCAMERAYAW
+			bind JOYBUTTON3 INTERACTMOUSEOVER
+			bind JOYBUTTON2 TARGETNEARESTENEMY
+			bind JOYBUTTON4 TOGGLEQUESTLOG
+			bind JOYBUTTON1 TOGGLEWORLDMAP
+			bind JOYBUTTON5 INVERTBINDINGMODE1
+			bind JOYBUTTON6 INVERTBINDINGMODE2
+			bind JOYBUTTON8 TOGGLEMOUSE
+			BINDINGMODE 1
+			bind JOYBUTTON4 ACTIONWINDOW1
+			bind JOYBUTTON3 ACTIONWINDOW2
+			bind JOYBUTTON2 ACTIONWINDOW3
+			bind JOYBUTTON1 ACTIONWINDOW4
+			bind JOYHAT ACTIONWINDOWMOVE
+			BINDINGMODE 2
+			bind JOYSTICK1 TARGETENEMYDIRECTIONAL
+			bind JOYHAT TARGETFRIENDDIRECTIONAL
+		</DefaultBindings>
+	</Joystick>
+	<Joystick>
+		<Name name="GameCube to USB box 1"/>
+		<Stick index="1" axisX="1" axisY="2"/>
+		<Stick index="2" axisX="3" axisY="6"/>
+		<Slider axis="7"/>
+		<Slider axis="8"/>
+		<Mouse stickIndex="1" buttonLeft="1" buttonRight="2"/>
+		<DefaultBindings>
+			BINDINGMODE 0
+			bind JOYBUTTON8 TOGGLEGAMEMENU
+			bind JOYAXIS2NEG MOVEFORWARD
+			bind JOYAXIS2POS MOVEBACKWARD
+			bind JOYAXIS1NEG STRAFELEFT
+			bind JOYAXIS1POS STRAFERIGHT
+			bind JOYSTICK2 SWINGCAMERAANDPLAYER
+			bind JOYBUTTON1 INTERACTMOUSEOVER
+			bind JOYBUTTON2 TARGETNEARESTENEMY
+			bind JOYBUTTON3 TOGGLEQUESTLOG
+			bind JOYBUTTON4 TOGGLEWORLDMAP
+			bind JOYAXIS8POS INVERTBINDINGMODE1
+			bind JOYAXIS7POS INVERTBINDINGMODE2
+			bind JOYBUTTON7 TOGGLEMOUSE
+			BINDINGMODE 1
+			bind JOYBUTTON2 ACTIONWINDOW1
+			bind JOYBUTTON1 ACTIONWINDOW2
+			bind JOYBUTTON3 ACTIONWINDOW3
+			bind JOYBUTTON4 ACTIONWINDOW4
+			bind JOYHAT ACTIONWINDOWMOVE
+			BINDINGMODE 2
+			bind JOYSTICK1 TARGETENEMYDIRECTIONAL
+			bind JOYHAT TARGETFRIENDDIRECTIONAL
+		</DefaultBindings>
+	</Joystick>
+	<Joystick>
+		<Name name="Logitech RumblePad 2 USB"/>
+		<Stick index="1" axisX="1" axisY="2"/>
+		<Stick index="2" axisX="3" axisY="6"/>
+		<Mouse stickIndex="1" buttonLeft="1" buttonRight="2"/>
+		<DefaultBindings>
+			BINDINGMODE 0
+			bind JOYBUTTON10 TOGGLEGAMEMENU
+			bind JOYAXIS2NEG MOVEFORWARD
+			bind JOYAXIS2POS MOVEBACKWARD
+			bind JOYAXIS1NEG STRAFELEFT
+			bind JOYAXIS1POS STRAFERIGHT
+			bind JOYBUTTON11 JUMP
+			bind JOYSTICK2 SWINGCAMERAANDPLAYER
+			bind JOYBUTTON12 FLIPCAMERAYAW
+			bind JOYBUTTON1 INTERACTMOUSEOVER
+			bind JOYBUTTON2 TARGETNEARESTENEMY
+			bind JOYBUTTON3 TOGGLEQUESTLOG
+			bind JOYBUTTON4 TOGGLEWORLDMAP
+			bind JOYBUTTON7 INVERTBINDINGMODE1
+			bind JOYBUTTON8 INVERTBINDINGMODE2
+			bind JOYBUTTON6 TOGGLEMOUSE
+			BINDINGMODE 1
+			bind JOYBUTTON1 ACTIONWINDOW1
+			bind JOYBUTTON2 ACTIONWINDOW2
+			bind JOYBUTTON3 ACTIONWINDOW3
+			bind JOYBUTTON4 ACTIONWINDOW4
+			bind JOYHAT ACTIONWINDOWMOVE
+			BINDINGMODE 2
+			bind JOYSTICK1 TARGETENEMYDIRECTIONAL
+			bind JOYHAT TARGETFRIENDDIRECTIONAL
+		</DefaultBindings>
+	</Joystick>
+	<Joystick>
+		<Name name="SpaceNavigator"/>
+		<Name name="SpaceNavigator for Notebooks"/>
+		<Stick index="1" axisX="1" axisY="2"/>
+		<Stick index="2" axisX="6" axisY="4"/>
+		<Mouse enabled="false"/>
+		<DefaultBindings>
+			BINDINGMODE 0
+			bind JOYAXIS2NEG MOVEFORWARD
+			bind JOYAXIS2POS MOVEBACKWARD
+			bind JOYAXIS1NEG STRAFELEFT
+			bind JOYAXIS1POS STRAFERIGHT
+			bind JOYAXIS3NEG JUMP
+			bind JOYSTICK2 SWINGCAMERAANDPLAYER
+		</DefaultBindings>
+	</Joystick>
+</Joysticks>

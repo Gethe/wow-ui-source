@@ -57,7 +57,7 @@ function DurabilityFrame_SetAlerts()
 		end
 	end
 
-	if ( numAlerts > 0 and not VehicleSeatIndicator:IsShown() ) then
+	if ( numAlerts > 0 and (not VehicleSeatIndicator:IsShown()) and ((not ArenaEnemyFrames) or (not ArenaEnemyFrames:IsShown())) ) then
 		DurabilityFrame:Show();
 	else
 		DurabilityFrame:Hide();

@@ -221,7 +221,7 @@ local function InterfaceOptionsFrame_RunRefreshForCategory (category)
 	pcall(category.refresh, category);
 end
 
-function InterfaceOptionsFrameOkay_OnClick (isApply)
+function InterfaceOptionsFrameOkay_OnClick (self, button, apply)
 	--Iterate through registered panels and run their okay methods in a taint-safe fashion
 
 	for _, category in SecureNext, blizzardCategories do
@@ -240,12 +240,12 @@ function InterfaceOptionsFrameOkay_OnClick (isApply)
 		InterfaceOptionsFrame.logout = nil;
 	end
 
-	if ( not isApply ) then
+	if ( not apply ) then
 		InterfaceOptionsFrame_Show();
 	end
 end
 
-function InterfaceOptionsFrameCancel_OnClick ()
+function InterfaceOptionsFrameCancel_OnClick (self, button)
 	--Iterate through registered panels and run their cancel methods in a taint-safe fashion
 
 	for _, category in SecureNext, blizzardCategories do
@@ -262,7 +262,7 @@ function InterfaceOptionsFrameCancel_OnClick ()
 	InterfaceOptionsFrame_Show();
 end
 
-function InterfaceOptionsFrameDefaults_OnClick ()
+function InterfaceOptionsFrameDefaults_OnClick (self, button)
 	StaticPopup_Show("CONFIRM_RESET_INTERFACE_SETTINGS");
 end
 
@@ -341,6 +341,7 @@ uvarInfo = {
 	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", },
 	["SHOW_CASTABLE_BUFFS"] = { default = "0", cvar = "showCastableBuffs", event = "SHOW_CASTABLE_BUFFS_TEXT" },
 	["SHOW_DISPELLABLE_DEBUFFS"] = { default = "1", cvar = "showDispelDebuffs", event = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
+	["SHOW_ARENA_ENEMY_FRAMES"] = { default = "1", cvar = "showArenaEnemyFrames", event = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
 }
 
 function InterfaceOptionsFrame_InitializeUVars ()

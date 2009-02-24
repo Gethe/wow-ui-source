@@ -14,7 +14,7 @@ StaticPopupDialogs["CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS"] = {
 	OnAccept = function(self)
 		SaveBindings(KeyBindingFrame.which);
 		KeyBindingFrameOutputText:SetText("");
-		KeyBindingFrame.selected = nil;
+		KeyBindingFrame_SetSelected(nil);
 		HideUIPanel(KeyBindingFrame);
 		CONFIRMED_DELETING_CHARACTER_SPECIFIC_BINDINGS = 1;
 	end,
@@ -45,7 +45,7 @@ StaticPopupDialogs["CONFIRM_LOSE_BINDING_CHANGES"] = {
 
 function KeyBindingFrame_OnLoad(self)
 	self:RegisterForClicks("AnyUp");
-	KeyBindingFrame.selected = nil;
+	KeyBindingFrame_SetSelected(nil);
 end
 
 function KeyBindingFrame_OnShow()
@@ -81,7 +81,7 @@ function KeyBindingFrame_Update()
 			keyBindingButton2 = getglobal("KeyBindingFrameBinding"..i.."Key2Button");
 			keyBindingDescription = getglobal("KeyBindingFrameBinding"..i.."Description");
 			-- Set binding text
-			commandName, binding1, binding2 = GetBinding(keyOffset);
+			commandName, binding1, binding2 = GetBinding(keyOffset, KeyBindingFrame.mode);
 			-- Handle header
 			local headerText = getglobal("KeyBindingFrameBinding"..i.."Header");
 			if ( strsub(commandName, 1, 6) == "HEADER" ) then
@@ -137,37 +137,81 @@ function KeyBindingFrame_Update()
 	KeyBindingFrame_UpdateUnbindKey();
 end
 
+function KeyBindingFrame_UnbindKey(keyPressed, ignoreRelated)
+	local oldAction = GetBindingAction(keyPressed, KeyBindingFrame.mode);
+	if ( oldAction ~= "" and oldAction ~= KeyBindingFrame.selected ) then
+		local key1, key2 = GetBindingKey(oldAction, KeyBindingFrame.mode);
+		if ( (not key1 or key1 == keyPressed) and (not key2 or key2 == keyPressed) ) then
+			--Error message
+			KeyBindingFrameOutputText:SetFormattedText(KEY_UNBOUND_ERROR, GetBindingText(oldAction, "BINDING_NAME_"));
+		end
+	end
+	SetBinding(keyPressed, nil, KeyBindingFrame.mode);
+	
+	-- Unbind related keys
+	if ( not ignoreRelated ) then
+		local prefix, word, index, suffix;
+
+		prefix, word, index = strmatch(keyPressed, "(.*)(JOYSTICK)(%d+)");
+		if ( word ) then
+			local axisX, axisY = JoystickGetAxesFromStick(1, index);
+			KeyBindingFrame_UnbindKey(prefix.."JOYAXIS"..axisX.."POS", true);
+			KeyBindingFrame_UnbindKey(prefix.."JOYAXIS"..axisX.."NEG", true);
+			KeyBindingFrame_UnbindKey(prefix.."JOYAXIS"..axisY.."POS", true);
+			KeyBindingFrame_UnbindKey(prefix.."JOYAXIS"..axisY.."NEG", true);
+		end
+
+		prefix, word, index, suffix = strmatch(keyPressed, "(.*)(JOYAXIS)(%d+)(.*)");
+		if ( word ) then
+			local stick = JoystickGetStickFromAxis(1, index);
+			if ( stick ) then
+				KeyBindingFrame_UnbindKey(prefix.."JOYSTICK"..stick, true);
+			end
+		end
+
+		prefix, word, suffix = strmatch(keyPressed, "(.*)(JOYHAT)(.*)");
+		if ( word ) then
+			if ( suffix ~= "" ) then
+				KeyBindingFrame_UnbindKey(prefix..word, true);
+			else
+				KeyBindingFrame_UnbindKey(prefix..word.."UP", true);
+				KeyBindingFrame_UnbindKey(prefix..word.."RIGHT", true);
+				KeyBindingFrame_UnbindKey(prefix..word.."DOWN", true);
+				KeyBindingFrame_UnbindKey(prefix..word.."LEFT", true);
+			end
+		end
+	end
+end
+
 function KeyBindingFrame_OnKeyDown(self, keyOrButton)
-	if ( GetBindingByKey(keyOrButton) == "SCREENSHOT" ) then
+	if ( GetBindingFromClick(keyOrButton) == "SCREENSHOT" ) then
 		RunBinding("SCREENSHOT");
 		return;
 	end
 
-	-- Convert the mouse button names
-	if ( keyOrButton == "LeftButton" ) then
-		keyOrButton = "BUTTON1";
-	elseif ( keyOrButton == "RightButton" ) then
-		keyOrButton = "BUTTON2";
-	elseif ( keyOrButton == "MiddleButton" ) then
-		keyOrButton = "BUTTON3";
-	elseif ( keyOrButton == "Button4" ) then
-		keyOrButton = "BUTTON4"
-	elseif ( keyOrButton == "Button5" ) then
-		keyOrButton = "BUTTON5"
-	end
 	if ( KeyBindingFrame.selected ) then
 		local keyPressed = keyOrButton;
-		if ( keyOrButton ) then
-			if ( keyOrButton == "BUTTON1" or keyOrButton == "BUTTON2" ) then
-				return;
-			end
-			keyPressed = keyOrButton;
-		else
-			keyPressed = keyOrButton;
-		end
+
 		if ( keyPressed == "UNKNOWN" ) then
 			return;
 		end
+
+		-- Convert the mouse button names
+		if ( keyPressed == "LeftButton" ) then
+			keyPressed = "BUTTON1";
+		elseif ( keyPressed == "RightButton" ) then
+			keyPressed = "BUTTON2";
+		elseif ( keyPressed == "MiddleButton" ) then
+			keyPressed = "BUTTON3";
+		elseif ( keyPressed == "Button4" ) then
+			keyPressed = "BUTTON4"
+		elseif ( keyOrButton == "Button5" ) then
+			keyPressed = "BUTTON5"
+		end
+		if ( keyPressed == "BUTTON1" or keyPressed == "BUTTON2" ) then
+			return;
+		end
+
 		if ( keyPressed == "LSHIFT" or
 		     keyPressed == "RSHIFT" or
 		     keyPressed == "LCTRL" or
@@ -185,29 +229,22 @@ function KeyBindingFrame_OnKeyDown(self, keyOrButton)
 		if ( IsAltKeyDown() ) then
 			keyPressed = "ALT-"..keyPressed;
 		end
-		local oldAction = GetBindingAction(keyPressed);
-		if ( oldAction ~= "" and oldAction ~= KeyBindingFrame.selected ) then
-			local key1, key2 = GetBindingKey(oldAction);
-			if ( (not key1 or key1 == keyPressed) and (not key2 or key2 == keyPressed) ) then
-				--Error message
-				KeyBindingFrameOutputText:SetFormattedText(KEY_UNBOUND_ERROR, GetBindingText(oldAction, "BINDING_NAME_"));
-			else
-				KeyBindingFrameOutputText:SetText(KEY_BOUND);
-			end
-		else
-			KeyBindingFrameOutputText:SetText(KEY_BOUND);
-		end
-		local key1, key2 = GetBindingKey(KeyBindingFrame.selected);
+
+		-- Unbind the current action
+		local key1, key2 = GetBindingKey(KeyBindingFrame.selected, KeyBindingFrame.mode);
 		if ( key1 ) then
-			SetBinding(key1);
+			SetBinding(key1, nil, KeyBindingFrame.mode);
 		end
 		if ( key2 ) then
-			SetBinding(key2);
+			SetBinding(key2, nil, KeyBindingFrame.mode);
 		end
+		-- Unbind the current key and rebind current action
+		KeyBindingFrameOutputText:SetText(KEY_BOUND);
+		KeyBindingFrame_UnbindKey(keyPressed);
 		if ( KeyBindingFrame.keyID == 1 ) then
 			KeyBindingFrame_SetBinding(keyPressed, KeyBindingFrame.selected, key1);
 			if ( key2 ) then
-				SetBinding(key2, KeyBindingFrame.selected);
+				SetBinding(key2, KeyBindingFrame.selected, KeyBindingFrame.mode);
 			end
 		else
 			if ( key1 ) then
@@ -217,16 +254,73 @@ function KeyBindingFrame_OnKeyDown(self, keyOrButton)
 		end
 		KeyBindingFrame_Update();
 		-- Button highlighting stuff
-		KeyBindingFrame.selected = nil;
+		KeyBindingFrame_SetSelected(nil);
 		KeyBindingFrame.buttonPressed:UnlockHighlight();
 		KeyBindingFrame.bindingsChanged = 1;
-	elseif ( keyOrButton == "ESCAPE" ) then
-			LoadBindings(GetCurrentBindingSet());
-			KeyBindingFrameOutputText:SetText("");
-			KeyBindingFrame.selected = nil;
-			HideUIPanel(self);
+	elseif ( GetBindingFromClick(keyOrButton) == "TOGGLEGAMEMENU" ) then
+		LoadBindings(GetCurrentBindingSet());
+		KeyBindingFrameOutputText:SetText("");
+		KeyBindingFrame_SetSelected(nil);
+		HideUIPanel(self);
 	end
 	KeyBindingFrame_UpdateUnbindKey();
+end
+
+function KeyBindingFrame_OnJoyStick(self, joystick, stick, angle, pressure)
+	if ( BindingCommandUsesAngle(KeyBindingFrame.selected) ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYSTICK"..stick);
+		return;
+	end
+
+	local axisX, axisY = JoystickGetAxesFromStick(stick);
+	local x = math.sin(angle) * pressure;
+	local y = -math.cos(angle) * pressure;
+	if ( x >= 0.5 ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axisX.."POS");
+	elseif ( x <= -0.5 ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axisX.."NEG");
+	elseif ( y >= 0.5 ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axisY.."POS");
+	elseif ( y <= -0.5 ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axisY.."NEG");
+	end
+end
+
+function KeyBindingFrame_OnJoyAxis(self, joystick, axis, value)
+	if ( BindingCommandUsesAngle(KeyBindingFrame.selected) ) then
+		return;
+	end
+
+	if ( value >= 0.5 ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axis.."POS");
+	elseif ( value <= -0.5 ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axis.."NEG");
+	end
+end
+
+function KeyBindingFrame_OnJoyButton(self, joystick, button)
+	if ( BindingCommandUsesAngle(KeyBindingFrame.selected) ) then
+		return;
+	end
+
+	KeyBindingFrame_OnKeyDown(self, "JOYBUTTON"..button);
+end
+
+function KeyBindingFrame_OnJoyHat(self, joystick, hat, state)
+	if ( BindingCommandUsesAngle(KeyBindingFrame.selected) ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYHAT");
+		return;
+	end
+
+	if ( state == 1 ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYHATUP");
+	elseif ( state == 3 ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYHATRIGHT");
+	elseif ( state == 5 ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYHATDOWN");
+	elseif ( state == 7 ) then
+		KeyBindingFrame_OnKeyDown(self, "JOYHATLEFT");
+	end
 end
 
 function KeyBindingButton_OnClick(self, button)
@@ -235,12 +329,12 @@ function KeyBindingButton_OnClick(self, button)
 		if ( button == "LeftButton" or button == "RightButton" ) then
 			-- Deselect button if it was the pressed previously pressed
 			if (KeyBindingFrame.buttonPressed == self) then
-				KeyBindingFrame.selected = nil;
+				KeyBindingFrame_SetSelected(nil);
 				KeyBindingFrameOutputText:SetText("");
 			else
 				-- Select a different button
 				KeyBindingFrame.buttonPressed = self;
-				KeyBindingFrame.selected = self.commandName;
+				KeyBindingFrame_SetSelected(self.commandName);
 				KeyBindingFrame.keyID = self:GetID();
 				KeyBindingFrameOutputText:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingText(self.commandName, "BINDING_NAME_"));
 			end
@@ -253,7 +347,7 @@ function KeyBindingButton_OnClick(self, button)
 			KeyBindingFrame.buttonPressed:UnlockHighlight();
 		end
 		KeyBindingFrame.buttonPressed = self;
-		KeyBindingFrame.selected = self.commandName;
+		KeyBindingFrame_SetSelected(self.commandName);
 		KeyBindingFrame.keyID = self:GetID();
 		KeyBindingFrameOutputText:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingText(self.commandName, "BINDING_NAME_"));
 		KeyBindingFrame_Update();
@@ -262,11 +356,11 @@ function KeyBindingButton_OnClick(self, button)
 end
 
 function KeyBindingFrame_SetBinding(key, selectedBinding, oldKey)
-	if ( SetBinding(key, selectedBinding) ) then
+	if ( SetBinding(key, selectedBinding, KeyBindingFrame.mode) ) then
 		return;
 	else
 		if ( oldKey ) then
-			SetBinding(oldKey, selectedBinding);
+			SetBinding(oldKey, selectedBinding, KeyBindingFrame.mode);
 		end
 		--Error message
 		KeyBindingFrameOutputText:SetText(KEYBINDINGFRAME_MOUSEWHEEL_ERROR);
@@ -290,6 +384,17 @@ function KeyBindingFrame_ChangeBindingProfile()
 		KeyBindingFrameHeaderText:SetText(KEY_BINDINGS);
 	end
 	KeyBindingFrameOutputText:SetText("");
-	KeyBindingFrame.selected = nil;
+	KeyBindingFrame_SetSelected(nil);
 	KeyBindingFrame_Update();
+end
+
+function KeyBindingFrame_SetSelected(value)
+	KeyBindingFrame.selected = value;
+
+	-- Turn off joystick mouse mode during binding selection so we can bind mouse axes
+	if ( value ) then
+		JoystickMouseDisable(true);
+	else
+		JoystickMouseDisable(false);
+	end
 end

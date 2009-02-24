@@ -20,9 +20,7 @@
 				self:RegisterEvent("START_MINIGAME");
 				self:RegisterEvent("MINIGAME_UPDATE");
 			</OnLoad>
-			<OnEvent>
-				MinigameFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent function="MinigameFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

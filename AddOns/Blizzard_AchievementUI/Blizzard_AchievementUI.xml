@@ -162,15 +162,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					GameTooltip:SetText(TRACK_ACHIEVEMENT_TOOLTIP, nil, nil, nil, nil, 1);
 				end
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnShow>
-				if ( GetTrackedAchievement() == self:GetParent().id ) then
-					self:SetChecked(true);
-				else
-					self:SetChecked(false);
-				end
+				self:SetChecked(IsTrackedAchievement(self:GetParent().id));
 			</OnShow>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
@@ -404,9 +398,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				end
 				GameTooltip:Show();
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
 
@@ -480,9 +472,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					GameTooltip:Show();
 				end
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnClick>
 				if ( self.id ) then
 					AchievementFrame_SelectAchievement(self.id);
@@ -607,12 +597,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				AchievementCategoryButton_OnLoad(self);
-			</OnLoad>
-			<OnClick>
-				AchievementCategoryButton_OnClick(self);
-			</OnClick>
+			<OnLoad function="AchievementCategoryButton_OnLoad"/>
+			<OnClick function="AchievementCategoryButton_OnClick"/>
 			<OnEnter>
 				if ( self.showTooltipFunc ) then
 					self.showTooltipFunc(self);
@@ -693,9 +679,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				AchievementIcon_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="AchievementIcon_OnLoad"/>
 		</Scripts>
 	</Frame>
 	
@@ -742,12 +726,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					self:GetParent():GetParent():Click();
 				end
 			</OnMouseUp>
-			<OnEnter>
-				
-			</OnEnter>
-			<OnLeave>
-				
-			</OnLeave>
 		</Scripts>
 	</Frame>	
 
@@ -776,8 +754,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchor>
 					</Anchors>
 				</Texture>						
-			</Layer>
-			
+			</Layer>			
 			<Layer level="BORDER">
 				<Texture name="$parentBottomLeftTsunami" file="Interface\AchievementFrame\UI-Achievement-Tsunami-Corners">
 					<Size>
@@ -1003,9 +980,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				AchievementButton_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="AchievementButton_OnLoad"/>
 			<OnClick>
 				AchievementButton_OnClick(self);
 			</OnClick>
@@ -1291,9 +1266,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>		
 		<Scripts>
-			<OnLoad>
-				AchievementComparisonPlayerButton_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="AchievementComparisonPlayerButton_OnLoad"/>
 		</Scripts>
 		<Frames>
 			<Frame name="$parentIcon">
@@ -1353,9 +1326,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						AchievementIcon_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="AchievementIcon_OnLoad"/>
 				</Scripts>				
 			</Frame>
 			<Frame name="$parentShield">
@@ -1401,9 +1372,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Layer>
 				</Layers>				
 				<Scripts>
-					<OnLoad>
-						AchievementShield_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="AchievementShield_OnLoad"/>
 				</Scripts>
 			</Frame>
 		</Frames>		
@@ -1499,15 +1468,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				AchievementFrameSummaryAchievement_OnLoad(self);
-			</OnLoad>
-			<OnClick>
-				AchievementFrameSummaryAchievement_OnClick(self);
-			</OnClick>
-			<OnEnter>
-				AchievementFrameSummaryAchievement_OnEnter(self);
-			</OnEnter>
+			<OnLoad function="AchievementFrameSummaryAchievement_OnLoad"/>
+			<OnClick function="AchievementFrameSummaryAchievement_OnClick"/>
+			<OnEnter function="AchievementFrameSummaryAchievement_OnEnter"/>
 			<OnLeave>
 				self.highlight:Hide();
 				GameTooltip:Hide();
@@ -1656,9 +1619,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								AchievementIcon_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="AchievementIcon_OnLoad"/>
 						</Scripts>				
 					</Frame>
 					<Frame name="$parentShield">
@@ -1704,16 +1665,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Layer>
 						</Layers>				
 						<Scripts>
-							<OnLoad>
-								AchievementShield_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="AchievementShield_OnLoad"/>
 						</Scripts>
 					</Frame>
 				</Frames>					
 				<Scripts>
-					<OnLoad>
-						AchievementComparisonFriendButton_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="AchievementComparisonFriendButton_OnLoad"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -1787,9 +1744,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnLoad>
 				AchievementStatButton_OnLoad(self, AchievementFrameStats);
 			</OnLoad>
-			<OnClick>
-				AchievementStatButton_OnClick(self);
-			</OnClick>
+			<OnClick function="AchievementStatButton_OnClick"/>
 		</Scripts>
 		<ButtonText>
 			<Size x="400" y="13"/>
@@ -1932,16 +1887,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							GameTooltip:SetText(tooltip, nil, nil, nil, nil, 1);
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				AchievementFrameComparisonStat_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="AchievementFrameComparisonStat_OnLoad"/>
 		</Scripts>
 	</Frame>
 	
@@ -1955,159 +1906,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Scripts>
 	</Button>
 
-<!-- 	
-	<Frame name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true">
-		<Size>
-			<AbsDimension x="300" y="88"/>
-		</Size>
-		<Anchors>
-			<Anchor point="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="128"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Alert-Background">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0" right=".605" top="0" bottom=".703"/>
-				</Texture>
-				<FontString name="$parentUnlocked" inherits="GameFontBlackTiny" text="ACHIEVEMENT_UNLOCKED">
-					<Size x="200" y="12"/>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="7" y="-23"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentName" inherits="GameFontHighlight" text="For the Alliance!">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="72" y="36"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-60" y="36"/>
-						</Anchor>
-					</Anchors>
-					<Size x="240" y="16"/>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentIcon" inherits="AchievementIconFrameTemplate">
-				<Size>
-					<AbsDimension x="124" y="124"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="-26" y="16"/>
-						</Offset>
-					</Anchor>
-				</Anchors>			
-			</Frame>
-			<Frame name="$parentShield">
-				<Size>
-					<AbsDimension x="64" y="64"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-10" y="-13"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentIcon" file="Interface\AchievementFrame\UI-Achievement-Shields">
-							<Size>
-								<AbsDimension x="52" y="48"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="1" y="-6"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right=".5" top="0" bottom=".9"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString name="$parentPoints" inherits="GameFontNormal">
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="7" y="2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<Size>
-								<AbsDimension x="64" y="64"/>
-							</Size>
-						</FontString>
-					</Layer>
-				</Layers>				
-				<Scripts>
-					<OnLoad>
-						AchievementShield_OnLoad(self);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Button name="$parentButton">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="400" y="171"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset x="0" y="0"/>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
-						</Texture>
-						<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="67" y="72"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="0" y="0"/>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForClicks("LeftButtonUp");
-					</OnLoad>
-					<OnClick>
-						AchievementAlertFrame_OnClick(self:GetParent());
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				AchievementAlertFrame_OnLoad(self)
-			</OnLoad>
-		</Scripts>
-	</Frame>	
-
--->
-	
 	<Frame name="AchievementFrame" toplevel="true" parent="UIParent" frameStrata="MEDIUM" hidden="true" enableMouse="true">
 		<Size>
 			<AbsDimension x="768" y="500"/>
@@ -2458,12 +2256,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</BackgroundInsets>
 				</Backdrop>		
 				<Scripts>
-					<OnLoad>
-						AchievementFrameCategories_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						AchievementFrameCategories_OnShow(self);
-					</OnShow>
+					<OnLoad function="AchievementFrameCategories_OnLoad"/>
+					<OnShow function="AchievementFrameCategories_OnShow"/>
 				</Scripts>
 				<Frames>
 					<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
@@ -2554,12 +2348,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						AchievementFrameAchievements_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						AchievementFrameAchievements_OnEvent(self, event, ...);
-					</OnEvent>
+					<OnLoad function="AchievementFrameAchievements_OnLoad"/>
+					<OnEvent function="AchievementFrameAchievements_OnEvent"/>
 					<OnShow>
 						AchievementFrameFilterDropDown:Show();
 						AchievementFrameHeaderRightDDLInset:Show();
@@ -2613,9 +2403,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</BackgroundInsets>
 						</Backdrop>	
 						<Scripts>
-							<OnLoad>
-								AchievementFrameAchievementsBackdrop_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
 						</Scripts>
 					</Frame>
 				</Frames>				
@@ -2633,12 +2421,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchor point="BOTTOM" relativeTo="$parentCategories" relativePoint="BOTTOM"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						AchievementFrameStats_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						AchievementFrameStats_OnEvent(self, event, ...);
-					</OnEvent>
+					<OnLoad function="AchievementFrameStats_OnLoad"/>
+					<OnEvent function="AchievementFrameStats_OnEvent"/>
 				</Scripts>
 				<Frames>
 					<Frame name="$parentBG">
@@ -2713,9 +2497,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</BackgroundInsets>
 						</Backdrop>	
 						<Scripts>
-							<OnLoad>
-								AchievementFrameAchievementsBackdrop_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
 						</Scripts>
 					</Frame>
 				</Frames>				
@@ -2760,9 +2542,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</BackgroundInsets>
 						</Backdrop>	
 						<Scripts>
-							<OnLoad>
-								AchievementFrameAchievementsBackdrop_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
 						</Scripts>
 					</Frame>
 					<Frame name="$parentAchievements">
@@ -3010,12 +2790,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<OnLoad>
 						self:RegisterEvent("ACHIEVEMENT_EARNED");
 					</OnLoad>
-					<OnEvent>
-						AchievementFrameSummary_Update();
-					</OnEvent>
-					<OnShow>
-						AchievementFrameSummary_OnShow();
-					</OnShow>
+					<OnEvent function="AchievementFrameSummary_Update"/>
+					<OnShow function="AchievementFrameSummary_OnShow"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentComparison" hidden="true">
@@ -3289,9 +3065,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</BackgroundInsets>
 						</Backdrop>	
 						<Scripts>
-							<OnLoad>
-								AchievementFrameAchievementsBackdrop_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -3338,19 +3112,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						AchievementFrameComparison_OnLoad(self)
-						self:RegisterEvent("ACHIEVEMENT_EARNED");
-					</OnLoad>
-					<OnEvent>
-						AchievementFrameComparison_OnEvent(self, event, ...);
-					</OnEvent>
-					<OnShow>
-						AchievementFrameComparison_OnShow();
-					</OnShow>
-					<OnHide>
-						AchievementFrameComparison_OnHide();
-					</OnHide>
+					<OnLoad function="AchievementFrameComparison_OnLoad"/>
+					<OnEvent function="AchievementFrameComparison_OnEvent"/>
+					<OnShow function="AchievementFrameComparison_OnShow"/>
+					<OnHide function="AchievementFrameComparison_OnHide"/>
 				</Scripts>
 			</Frame>			
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
@@ -3478,15 +3243,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				AchievementFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				AchievementFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				AchievementFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="AchievementFrame_OnLoad"/>
+			<OnShow function="AchievementFrame_OnShow"/>
+			<OnHide function="AchievementFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 		

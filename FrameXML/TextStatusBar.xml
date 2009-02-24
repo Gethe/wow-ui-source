@@ -2,12 +2,8 @@
 ..\FrameXML\UI.xsd">
 	<StatusBar name="TextStatusBar" virtual="true">
 		<Scripts>
-			<OnLoad>
-				TextStatusBar_Initialize(self);
-			</OnLoad>
-			<OnEvent>
-				TextStatusBar_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="TextStatusBar_Initialize"/>
+			<OnEvent function="TextStatusBar_OnEvent"/>
 			<OnEnter>
 				TextStatusBar_UpdateTextString(self);
 				ShowTextStatusBarText(self);
@@ -21,9 +17,7 @@
 				HideTextStatusBarText(self);
 				GameTooltip:Hide();
 			</OnLeave>
-			<OnValueChanged>
-				TextStatusBar_OnValueChanged(self, value);
-			</OnValueChanged>
+			<OnValueChanged function="TextStatusBar_OnValueChanged"/>
 		</Scripts>
 	</StatusBar>
 </Ui>

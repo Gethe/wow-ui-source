@@ -76,18 +76,10 @@
 					<OnEnterPressed>
 						getglobal(self:GetParent():GetName().."Silver"):SetFocus();
 					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
-					<OnTextChanged>
-						MoneyInputFrame_OnTextChanged(self, self:GetParent());
-					</OnTextChanged> 
-					<OnEditFocusLost>
-						self:HighlightText(0, 0);
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						self:HighlightText();
-					</OnEditFocusGained>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnTextChanged function="MoneyInputFrame_OnTextChanged"/>
+					<OnEditFocusLost function="EditBox_ClearHighlight"/>
+					<OnEditFocusGained function="EditBox_HighlightText"/>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
@@ -166,18 +158,10 @@
 					<OnEnterPressed>
 						getglobal(self:GetParent():GetName().."Copper"):SetFocus();
 					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
-					<OnTextChanged>
-						MoneyInputFrame_OnTextChanged(self, self:GetParent());
-					</OnTextChanged>
-					<OnEditFocusLost>
-						self:HighlightText(0, 0);
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						self:HighlightText();
-					</OnEditFocusGained>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnTextChanged function="MoneyInputFrame_OnTextChanged"/>
+					<OnEditFocusLost function="EditBox_ClearHighlight"/>
+					<OnEditFocusGained function="EditBox_HighlightText"/>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
@@ -264,18 +248,10 @@
 							self:ClearFocus();
 						end
 					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
-					<OnTextChanged>
-						MoneyInputFrame_OnTextChanged(self, self:GetParent());
-					</OnTextChanged>
-					<OnEditFocusLost>
-						self:HighlightText(0, 0);
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						self:HighlightText();
-					</OnEditFocusGained>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnTextChanged function="MoneyInputFrame_OnTextChanged"/>
+					<OnEditFocusLost function="EditBox_ClearHighlight"/>
+					<OnEditFocusGained function="EditBox_HighlightText"/>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>

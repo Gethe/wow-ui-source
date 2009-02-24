@@ -44,9 +44,7 @@
 			<OnLoad>
 				self:SetWidth(self:GetTextWidth() + 40);
 			</OnLoad>
-			<OnClick>
-				HelpFrame_PopFrame();
-			</OnClick>
+			<OnClick function="HelpFrame_PopFrame"/>
 		</Scripts>
 	</Button>
 	<Frame name="HelpFrameDividerTemplate" virtual="true">
@@ -634,18 +632,12 @@
 									<OnTextChanged>
 										ScrollingEdit_OnTextChanged(self, self:GetParent());
 									</OnTextChanged>
-									<OnCursorChanged>
-										ScrollingEdit_OnCursorChanged(self, x, y, w, h);
-									</OnCursorChanged>
+									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 									<OnUpdate>
 										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
 									</OnUpdate>
-									<OnEscapePressed>
-										self:ClearFocus();
-									</OnEscapePressed>
-									<OnShow>
-										self:SetFocus();
-									</OnShow>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
+									<OnShow function="EditBox_SetFocus"/>
 								</Scripts>
 								<FontString inherits="ChatFontNormal"/>
 							</EditBox>
@@ -653,9 +645,7 @@
 					</ScrollFrame>
 					<Button name="HelpFrameOpenTicketCancel" inherits="HelpFrameCancelButtonTemplate">
 						<Scripts>
-							<OnClick>
-								HelpFrameOpenTicketCancel_OnClick();
-							</OnClick>
+							<OnClick function="HelpFrameOpenTicketCancel_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button name="HelpFrameOpenTicketSubmit" inherits="GameMenuButtonTemplate" text="SUBMIT">
@@ -667,9 +657,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								HelpFrameOpenTicketSubmit_OnClick();
-							</OnClick>
+							<OnClick function="HelpFrameOpenTicketSubmit_OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -678,9 +666,7 @@
 						self:RegisterEvent("UPDATE_TICKET");
 						self:RegisterEvent("GMSURVEY_DISPLAY");
 					</OnLoad>
-					<OnEvent>
-						HelpFrameOpenTicket_OnEvent(self, event, ...);
-					</OnEvent>
+					<OnEvent function="HelpFrameOpenTicket_OnEvent"/>
 					<OnShow>
 						HelpFrame.back = HelpFrameOpenTicketCancel;
 					</OnShow>
@@ -778,18 +764,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				HelpFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				HelpFrame_OnShow();
-			</OnShow>
-			<OnEvent>
-				HelpFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnHide>
-				HelpFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="HelpFrame_OnLoad"/>
+			<OnShow function="HelpFrame_OnShow"/>
+			<OnEvent function="HelpFrame_OnEvent"/>
+			<OnHide function="HelpFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Frame name="TicketStatusFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
@@ -857,9 +835,7 @@
 						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 					</OnLoad>
-					<OnMouseUp>
-						TicketStatusFrame_OnMouseUp(TicketStatusFrame);
-					</OnMouseUp>
+					<OnMouseUp function="TicketStatusFrameChildren_OnMouseUp"/>
 				</Scripts>
 			</Frame>
 			<Button name="TicketStatusFrameButton">
@@ -890,22 +866,14 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						TicketStatusFrame_OnMouseUp(TicketStatusFrame);
-					</OnClick>
+					<OnClick function="TicketStatusFrameChildren_OnMouseUp"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TicketStatusFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				TicketStatusFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				TicketStatusFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="TicketStatusFrame_OnLoad"/>
+			<OnEvent function="TicketStatusFrame_OnEvent"/>
+			<OnUpdate function="TicketStatusFrame_OnUpdate"/>
 			<OnShow>
 				TemporaryEnchantFrame:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", -205, (-self:GetHeight()));
 			</OnShow>

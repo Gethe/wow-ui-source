@@ -2,63 +2,6 @@
 ..\FrameXML\UI.xsd">
 	<Script file="QuestLogFrame.lua"/>
 	
-	<StatusBar name="AchievementProgressBarTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="212" y="14"/>
-		</Size>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBG">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a=".4"/>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="700/700" justifyV="TOP">
-					<Size y="0" x="150"/>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset x="0" y="0"/>
-						</Anchor>
-					</Anchors>
-				</FontString>			
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-6" y="5"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="6" y="-5"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="0.8745" top="0" bottom="0.75"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:SetStatusBarColor(0, .6, 0, 1);
-				self:SetMinMaxValues(0, 100);
-				self:SetValue(0);
-				self.text = getglobal(self:GetName() .. "Text");
-				self:GetStatusBarTexture():SetDrawLayer("BORDER");
-			</OnLoad>
-		</Scripts>
-		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-	</StatusBar>
-	
 	<Button name="QuestLogTitleButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="300" y="16"/>
@@ -104,18 +47,10 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				QuestLogTitleButton_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				QuestLogTitleButton_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnClick>
-				QuestLogTitleButton_OnClick(self, button);
-			</OnClick>
-			<OnEnter>
-				QuestLogTitleButton_OnEnter(self);
-			</OnEnter>
+			<OnLoad function="QuestLogTitleButton_OnLoad"/>
+			<OnEvent function="QuestLogTitleButton_OnEvent"/>
+			<OnClick function="QuestLogTitleButton_OnClick"/>
+			<OnEnter function="QuestLogTitleButton_OnEnter"/>
 			<OnLeave>
 				if (self:GetID() ~= (QuestLogFrame.selectedButtonID - FauxScrollFrame_GetOffset(QuestLogListScrollFrame))) then
 					getglobal(self:GetName().."Tag"):SetTextColor(self.r, self.g, self.b);
@@ -331,15 +266,9 @@
 								QuestLogCollapseAllButtonNormalText:SetWidth(0);
 								QuestLogExpandTabMiddle:SetWidth(self:GetTextWidth() + 24);
 							</OnLoad>
-							<OnClick>
-								QuestLogCollapseAllButton_OnClick(self, button);
-							</OnClick>
-							<OnEnter>
-								--
-							</OnEnter>
-							<OnLeave>
-								--
-							</OnLeave>
+							<OnClick function="QuestLogCollapseAllButton_OnClick"/>
+							<OnEnter function=""/>
+							<OnLeave function=""/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -385,9 +314,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(QUEST_WATCH_TOOLTIP, nil,nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="EmptyQuestLogFrame" hidden="true">
@@ -595,9 +522,7 @@
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(format(QUEST_LOG_DAILY_TOOLTIP, GetMaxDailyQuests(), SecondsToTime(GetQuestResetTime(), nil, 1)));
 							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -637,9 +562,7 @@
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, ABANDON_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ABANDONQUEST, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="QuestFrameExitButton" inherits="UIPanelButtonTemplate" text="EXIT">
@@ -654,9 +577,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(QuestLogFrame);
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<Button name="QuestFramePushQuestButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST">
@@ -671,15 +592,11 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						QuestLogPushQuest();
-					</OnClick>
+					<OnClick function="QuestLogPushQuest"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, SHARE_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SHAREQUEST, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Frame name="QuestLogHighlightFrame" hidden="true">
@@ -1075,9 +992,7 @@
 									</Anchor>
 								</Anchors>
 								<Scripts>
-									<OnLoad>
-										QuestMoneyFrame_OnLoad(self);
-									</OnLoad>
+									<OnLoad function="QuestMoneyFrame_OnLoad"/>
 								</Scripts>
 							</Frame>
 							<Frame name="QuestLogHonorFrame" inherits="QuestHonorFrameTemplate">
@@ -1089,16 +1004,16 @@
 									</Anchor>
 								</Anchors>
 							</Frame>
-              <Frame name="QuestLogTalentFrame" inherits="QuestTalentFrameTemplate">
-                <Anchors>
-                  <Anchor point="TOPLEFT" relativeTo="QuestLogItemReceiveText" relativePoint="BOTTOMLEFT">
-                    <Offset>
-                      <AbsDimension x="0" y="-5"/>
-                    </Offset>
-                  </Anchor>
-                </Anchors>
-              </Frame>
-              <Frame name="QuestLogPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate">
+							<Frame name="QuestLogTalentFrame" inherits="QuestTalentFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="QuestLogItemReceiveText" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="QuestLogPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="QuestLogItemReceiveText" relativePoint="BOTTOMLEFT">
 										<Offset>
@@ -1140,417 +1055,12 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnEvent>
-				QuestLog_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnLoad>
-				QuestLog_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				QuestLog_OnShow();
-			</OnShow>
-			<OnHide>
-				QuestLog_OnHide();
-			</OnHide>
-			<OnUpdate>
-				QuestLog_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
-		</Scripts>
-	</Frame>
-	<FontString name="QuestWatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT">
-		<Size>
-			<AbsDimension x="0" y="13"/>
-		</Size>
-	</FontString>
-	<FontString name="AchievementWatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="TOP">
-		<Size>
-			<AbsDimension x="0" y="16"/>
-		</Size>
-		<Color r=".8" g=".8" b=".8" a="1"/>
-	</FontString>
-	<Frame name="AchievementWatchLineTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="200" y="15"/>
-		</Size>
-		<Anchors>
-			<Anchor point="LEFT"/>
-			<Anchor point="RIGHT"/>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString name="$parentText" inherits="AchievementWatchFontTemplate">
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset x="0" y="-1"/>
-						</Anchor>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<StatusBar name="$parentStatusBar" inherits="AchievementProgressBarTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="10" y="0"/>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-16" y="0"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnShow>
-						local parent = self:GetParent();
-						getglobal(parent:GetName() .. "Button"):Show();
-					</OnShow>
-					<OnHide>
-						local parent = self:GetParent();
-						getglobal(parent:GetName() .. "Button"):Hide();
-					</OnHide>
-				</Scripts>
-			</StatusBar>
-			<Button name="$parentButton">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentStatusBar"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentStatusBar"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local statusBar = getglobal(parent:GetName() .. "StatusBar");
-						if ( statusBar.OnClick ) then
-							statusBar.OnClick(statusBar);
-						end
-					</OnClick>
-				</Scripts>
-			</Button>		
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				local name = self:GetName();
-				self.text = getglobal(name .. "Text");
-				self.border = getglobal(name .. "Border");
-				self.icon = getglobal(name .. "Icon");
-				self.statusBar = getglobal(name .. "StatusBar");
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="QuestWatchFrame" toplevel="true" parent="UIParent" hidden="false">
-		<Size>
-			<AbsDimension x="280" y="20"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="10"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString name="QuestWatchQuestName" inherits="GameFontNormal" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="0" y="13"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine1" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchQuestName" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine2" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine1" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine3" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine2" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine4" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine3" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine5" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine4" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine6" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine5" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine7" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine6" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine8" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine7" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine9" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine8" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine10" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine9" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine11" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine10" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine12" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine11" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine13" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine12" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine14" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine13" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine15" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine14" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine16" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine15" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine17" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine16" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine18" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine17" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine19" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine18" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine20" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine19" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine21" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine20" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine22" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine21" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine23" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine22" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine24" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine23" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine25" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine24" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine26" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine25" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine27" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine26" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine28" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine27" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine29" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine28" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="QuestWatchLine30" inherits="QuestWatchFontTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestWatchLine29" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
-	<Frame name="AchievementWatchFrame" parent="UIParent" hidden="true">
-		<Size x="280" y="20"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="10"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Frames>
-			<Frame name="AchievementWatchLine1">
-				<Size>
-					<AbsDimension x="0" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="RIGHT"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentIcon" file="Interface\Icons\Spell_Misc_HellifrePVPHonorHoldFavor" hidden="true">
-							<Size>
-								<AbsDimension x="14" y="14"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT"/>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentText" inherits="AchievementWatchFontTemplate">
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT">
-									<Offset x="4" y="-1"/>
-								</Anchor>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" hidden="true">
-							<Size>
-								<AbsDimension x="22" y="22"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" relativeTo="$parentIcon">
-									<Offset x="0" y="-1"/>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button name="$parentButton">
-						<Size x="14" y="14"/>
-						<Anchors>
-							<Anchor point="LEFT"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								AchievementWatchButton_OnClick(self);
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						local name = self:GetName();
-						self.text = getglobal(name .. "Text");
-						self.border = getglobal(name .. "Border");
-						self.icon = getglobal(name .. "Icon");
-						self.statusBar = getglobal(name .. "StatusBar");
-					</OnLoad>
-				</Scripts>				
-			</Frame>
-			<Frame name="AchievementWatchLine2" inherits="AchievementWatchLineTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine1" relativePoint="BOTTOMLEFT">
-						<Offset x="-4" y="-4"/>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="AchievementWatchLine3" inherits="AchievementWatchLineTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine2" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="AchievementWatchLine4" inherits="AchievementWatchLineTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine3" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="AchievementWatchLine5" inherits="AchievementWatchLineTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine4" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="AchievementWatchLine6" inherits="AchievementWatchLineTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine5" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="AchievementWatchLine7" inherits="AchievementWatchLineTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine6" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="AchievementWatchLine8" inherits="AchievementWatchLineTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine7" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="AchievementWatchLine9" inherits="AchievementWatchLineTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine8" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="AchievementWatchLine10" inherits="AchievementWatchLineTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AchievementWatchLine9" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
-				self:RegisterEvent("PLAYER_ENTERING_WORLD");
-				self:RegisterEvent("ACHIEVEMENT_EARNED");
-				self.timers = {}
-			</OnLoad>
-			<OnEvent>
-				AchievementWatch_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				AchievementWatch_Update();
-				UIParent_ManageFramePositions();
-			</OnShow>
-			<OnHide>
-				UIParent_ManageFramePositions();
-			</OnHide>
+			<OnEvent function="QuestLog_OnEvent"/>
+			<OnLoad function="QuestLog_OnLoad"/>
+			<OnShow function="QuestLog_OnShow"/>
+			<OnHide function="QuestLog_OnHide"/>
+			<OnUpdate function="QuestLog_OnUpdate"/>
+			<OnMouseWheel function=""/>
 		</Scripts>
 	</Frame>
 </Ui>

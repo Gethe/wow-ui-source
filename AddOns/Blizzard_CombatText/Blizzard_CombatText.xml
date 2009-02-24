@@ -46,15 +46,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				CombatText_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				CombatText_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				CombatText_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="CombatText_OnLoad"/>
+			<OnEvent function="CombatText_OnEvent"/>
+			<OnUpdate function="CombatText_OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

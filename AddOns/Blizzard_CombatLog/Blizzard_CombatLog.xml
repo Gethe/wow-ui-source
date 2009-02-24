@@ -18,9 +18,7 @@
 					GameTooltip_AddNewbieTip(self, self.tooltip, 1.0, 1.0, 1.0, nil, 1);
 				end
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalFont style="GameFontDisable"/>
 		<HighlightFont style="GameFontHighlight"/>
@@ -89,9 +87,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip_AddNewbieTip(self, ADDITIONAL_FILTERS, 1.0, 1.0, 1.0);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
 				<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
@@ -100,15 +96,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				Blizzard_CombatLog_Update_QuickButtons();
-			</OnShow>
-			<OnLoad>
-				 Blizzard_CombatLog_QuickButtonFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				Blizzard_CombatLog_QuickButtonFrame_OnEvent(self, event, ...)
-			</OnEvent>
+			<OnShow function="Blizzard_CombatLog_Update_QuickButtons"/>
+			<OnLoad function="Blizzard_CombatLog_QuickButtonFrame_OnLoad"/>
+			<OnEvent function="Blizzard_CombatLog_QuickButtonFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

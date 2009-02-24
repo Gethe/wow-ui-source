@@ -55,7 +55,7 @@ function MovieFrame_OnUpdate(self, elapsed)
 end
 
 function MovieFrame_OnKeyUp(self, key)
-	if ( key == "ESCAPE" ) then
+	if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
 		self:Hide();
 	elseif ( key == "SPACE" or key == "ENTER" ) then
 		self:StopMovie();

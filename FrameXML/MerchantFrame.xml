@@ -58,15 +58,11 @@
 							MerchantItemButton_OnClick(self, button);
 						end
 					</OnClick>
-					<OnLoad>
-						MerchantItemButton_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="MerchantItemButton_OnLoad"/>
 					<OnDragStart>
 						MerchantItemButton_OnClick(self, "LeftButton");
 					</OnDragStart>
-					<OnEnter>
-						MerchantItemButton_OnEnter(self)
-					</OnEnter>
+					<OnEnter function="MerchantItemButton_OnEnter"/>
 					<OnLeave>
 						GameTooltip:Hide();
 						ResetCursor();
@@ -398,9 +394,7 @@
 						end
 						GameTooltip:Show();
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						RepairAllItems();
 						PlaySound("ITEM_REPAIR");
@@ -451,9 +445,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(REPAIR_AN_ITEM);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						if ( InRepairMode() ) then
 							MerchantFrame:UnregisterEvent("PLAYER_MONEY");
@@ -506,9 +498,7 @@
 							GameTooltip:Show();
 						end
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						--FIXME!!! Need actual amount of guild money left to withdraw
 						if(CanGuildBankRepair()) then
@@ -596,10 +586,7 @@
 							<Anchor point="TOPLEFT" relativeTo="$parent"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								MerchantItemBuybackButton_OnLoad(self);
-								self:RegisterEvent("MERCHANT_UPDATE");
-							</OnLoad>
+							<OnLoad function="MerchantItemBuybackButton_OnLoad"/>
 							<OnEvent>
 								if ( event == "MERCHANT_UPDATE" ) then
 									if ( GameTooltip:IsOwned(self) ) then
@@ -616,10 +603,7 @@
 								GameTooltip:SetBuybackItem(GetNumBuybackItems());
 								ShowMerchantSellCursor(self:GetID());
 							</OnEnter>
-							<OnLeave>  
-								GameTooltip:Hide();
-								ResetCursor();
-							</OnLeave>
+							<OnLeave function="GameTooltip_HideResetCursor"/>
 						</Scripts>
 					</Button>
 					<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
@@ -681,9 +665,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						MerchantPrevPageButton_OnClick();
-					</OnClick>
+					<OnClick function="MerchantPrevPageButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
@@ -727,9 +709,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						MerchantNextPageButton_OnClick();
-					</OnClick>
+					<OnClick function="MerchantNextPageButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
@@ -758,9 +738,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						PanelTemplates_SetTab(MerchantFrame, self:GetID());
 						MerchantFrame_Update();
@@ -780,9 +758,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						PanelTemplates_SetTab(MerchantFrame, self:GetID());
 						MerchantFrame_Update();
@@ -791,20 +767,10 @@
             </Button>
 		</Frames>
 		<Scripts>
-			<OnHide>
-				MerchantFrame_OnHide();
-				PlaySound("igCharacterInfoClose");
-			</OnHide>
-			<OnLoad>
-				MerchantFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				MerchantFrame_OnShow();
-				PlaySound("igCharacterInfoOpen");
-			</OnShow>
-			<OnEvent>
-				MerchantFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnHide function="MerchantFrame_OnHide"/>
+			<OnLoad function="MerchantFrame_OnLoad"/>
+			<OnShow function="MerchantFrame_OnShow"/>
+			<OnEvent function="MerchantFrame_OnEvent"/>
 			<OnUpdate>
 				if ( MerchantFrame.itemHover ) then
 					if ( IsModifiedClick("DRESSUP") ) then

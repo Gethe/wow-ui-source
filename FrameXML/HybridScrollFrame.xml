@@ -117,7 +117,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnLoad>
 				self:GetParent().scrollBar = self;
 			</OnLoad>
-			<OnValueChanged>
+			<OnValueChanged> 
 				HybridScrollFrame_OnValueChanged(self:GetParent(), value);
 			</OnValueChanged>
 		</Scripts>
@@ -131,19 +131,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 
 	<ScrollFrame name="HybridScrollFrameTemplate" virtual="true">			
 		<Scripts>
-			<OnLoad>
-				HybridScrollFrame_OnLoad(self);
-			</OnLoad>
-			<OnMouseWheel>
-				HybridScrollFrame_OnMouseWheel(self, delta);
-			</OnMouseWheel>
+			<OnLoad function="HybridScrollFrame_OnLoad"/>
+			<OnMouseWheel function="HybridScrollFrame_OnMouseWheel"/>
 		</Scripts>
 		<ScrollChild>
 			<Frame name="$parentScrollChild">
 				<Scripts>
-					<OnLoad>
-						HybridScrollFrameScrollChild_OnLoad(self)
-					</OnLoad>
+					<OnLoad function="HybridScrollFrameScrollChild_OnLoad"/>
 				</Scripts>
 			</Frame>
 		</ScrollChild>

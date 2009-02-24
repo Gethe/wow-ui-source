@@ -15,17 +15,6 @@ local refreshTime;
 
 PETITION_QUEUE_ACTIVE = 1;
 
-function ToggleHelpFrame()
-	if ( HelpFrame:IsShown() ) then
-		HideUIPanel(HelpFrame);
-	else
-		StaticPopup_Hide("HELP_TICKET");
-		StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
-		ShowUIPanel(HelpFrame);
-		HelpFrame_ShowFrame(HELPFRAME_START_PAGE);
-	end
-end
-
 function HelpFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_GM_STATUS");
 	self.back = HelpFrameGeneralCancel;
@@ -291,11 +280,12 @@ function TicketStatusFrame_OnUpdate(self, elapsed)
 	end
 end
 
-function TicketStatusFrame_OnMouseUp(self)
-	if ( self.hasGMSurvey ) then
+function TicketStatusFrameChildren_OnMouseUp()
+	local frame = TicketStatusFrame;
+	if ( frame.hasGMSurvey ) then
 		GMSurveyFrame_LoadUI();
 		ShowUIPanel(GMSurveyFrame);
-		self:Hide();
+		frame:Hide();
 	elseif ( StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") or StaticPopup_Visible("HELP_TICKET") ) then
 		StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
 		StaticPopup_Hide("HELP_TICKET");

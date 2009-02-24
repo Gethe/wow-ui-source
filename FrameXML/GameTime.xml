@@ -51,24 +51,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				GameTimeFrame_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				GameTimeFrame_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnEvent>
-				GameTimeFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				GameTimeFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnClick>
-				GameTimeFrame_OnClick(self);
-			</OnClick>
+			<OnLoad function="GameTimeFrame_OnLoad"/>
+			<OnEnter function="GameTimeFrame_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnEvent function="GameTimeFrame_OnEvent"/>
+			<OnUpdate function="GameTimeFrame_OnUpdate"/>
+			<OnClick function="GameTimeFrame_OnClick"/>
 		</Scripts>
 		<ButtonText>
 			<Anchors>

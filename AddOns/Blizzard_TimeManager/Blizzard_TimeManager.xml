@@ -90,9 +90,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						TimeManagerCloseButton_OnClick();
-					</OnClick>
+					<OnClick function="TimeManagerCloseButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Frame name="TimeManagerStopwatchFrame">
@@ -134,9 +132,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								TimeManagerStopwatchCheck_OnClick(self);
-							</OnClick>
+							<OnClick function="TimeManagerStopwatchCheck_OnClick"/>
 						</Scripts>
 						<NormalTexture file="Interface\Icons\INV_Misc_PocketWatch_01">
 							<Size x="28" y="28"/>
@@ -229,15 +225,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnEnterPressed>
-								TimeManagerAlarmMessageEditBox_OnEnterPressed(self);
-							</OnEnterPressed>
-							<OnEscapePressed>
-								TimeManagerAlarmMessageEditBox_OnEscapePressed(self);
-							</OnEscapePressed>
-							<OnEditFocusLost>
-								TimeManagerAlarmMessageEditBox_OnEditFocusLost(self);
-							</OnEditFocusLost>
+							<OnEnterPressed function="TimeManagerAlarmMessageEditBox_OnEnterPressed"/>
+							<OnEscapePressed function="TimeManagerAlarmMessageEditBox_OnEscapePressed"/>
+							<OnEditFocusLost function="TimeManagerAlarmMessageEditBox_OnEditFocusLost"/>
 						</Scripts>
 					</EditBox>
 				</Frames>
@@ -250,9 +240,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						TimeManagerAlarmEnabledButton_OnClick(self);
-					</OnClick>
+					<OnClick function="TimeManagerAlarmEnabledButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<CheckButton name="TimeManagerMilitaryTimeCheck" inherits="UICheckButtonTemplate">
@@ -269,9 +257,7 @@
 						TimeManagerMilitaryTimeCheckText:SetPoint("RIGHT", self, "RIGHT", -self:GetWidth(), 0);
 						TimeManagerMilitaryTimeCheckText:SetFontObject(GameFontHighlightSmall);
 					</OnLoad>
-					<OnClick>
-						TimeManagerMilitaryTimeCheck_OnClick(self);
-					</OnClick>
+					<OnClick function="TimeManagerMilitaryTimeCheck_OnClick"/>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="TimeManagerLocalTimeCheck" inherits="UICheckButtonTemplate">
@@ -288,25 +274,15 @@
 						TimeManagerLocalTimeCheckText:SetPoint("RIGHT", self, "RIGHT", -self:GetWidth(), 0);
 						TimeManagerLocalTimeCheckText:SetFontObject(GameFontHighlightSmall);
 					</OnLoad>
-					<OnClick>
-						TimeManagerLocalTimeCheck_OnClick(self);
-					</OnClick>
+					<OnClick function="TimeManagerLocalTimeCheck_OnClick"/>
 				</Scripts>
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TimeManagerFrame_OnLoad(self);
-			</OnLoad>
-			<OnUpdate>
-				TimeManagerFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnShow>
-				TimeManagerFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				TimeManagerFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="TimeManagerFrame_OnLoad"/>
+			<OnUpdate function="TimeManagerFrame_OnUpdate"/>
+			<OnShow function="TimeManagerFrame_OnShow"/>
+			<OnHide function="TimeManagerFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	<!-- Minimap button to access the TimeManagerButton -->
@@ -337,21 +313,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				TimeManagerClockButton_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				TimeManagerClockButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				TimeManagerClockButton_OnLeave(self);
-			</OnLeave>
-			<OnUpdate>
-				TimeManagerClockButton_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnClick>
-				TimeManagerClockButton_OnClick(self);
-			</OnClick>
+			<OnLoad function="TimeManagerClockButton_OnLoad"/>
+			<OnEnter function="TimeManagerClockButton_OnEnter"/>
+			<OnLeave function="TimeManagerClockButton_OnLeave"/>
+			<OnUpdate function="TimeManagerClockButton_OnUpdate"/>
+			<OnClick function="TimeManagerClockButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<!-- Stopwatch -->
@@ -482,9 +448,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								StopwatchCloseButton_OnClick();
-							</OnClick>
+							<OnClick function="StopwatchCloseButton_OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -500,12 +464,8 @@
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPWATCH_RESETBUTTON, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnClick>
-						StopwatchResetButton_OnClick();
-					</OnClick>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick function="StopwatchResetButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\TimeManager\ResetButton"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
@@ -521,45 +481,23 @@
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_STOPWATCH_PLAYPAUSEBUTTON, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnClick>
-						StopwatchPlayPauseButton_OnClick(self);
-					</OnClick>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick function="StopwatchPlayPauseButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				StopwatchFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				StopwatchFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				StopwatchFrame_OnUpdate(self);
-			</OnUpdate>
-			<OnShow>
-				StopwatchFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				StopwatchFrame_OnHide(self);
-			</OnHide>
-			<OnMouseDown>
-				StopwatchFrame_OnMouseDown(self);
-			</OnMouseDown>
-			<OnMouseUp>
-				StopwatchFrame_OnMouseUp(self);
-			</OnMouseUp>
-			<OnDragStart>
-				StopwatchFrame_OnDragStart(self);
-			</OnDragStart>
-			<OnDragStop>
-				StopwatchFrame_OnDragStop(self);
-			</OnDragStop>
+			<OnLoad function="StopwatchFrame_OnLoad"/>
+			<OnEvent function="StopwatchFrame_OnEvent"/>
+			<OnUpdate function="StopwatchFrame_OnUpdate"/>
+			<OnShow function="StopwatchFrame_OnShow"/>
+			<OnHide function="StopwatchFrame_OnHide"/>
+			<OnMouseDown function="StopwatchFrame_OnMouseDown"/>
+			<OnMouseUp function="StopwatchFrame_OnMouseUp"/>
+			<OnDragStart function="StopwatchFrame_OnDragStart"/>
+			<OnDragStop function="StopwatchFrame_OnDragStop"/>
 		</Scripts>
 	</Frame>
 </Ui>

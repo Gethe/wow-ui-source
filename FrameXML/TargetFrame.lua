@@ -627,7 +627,7 @@ function TargetofTarget_Update (self, elapsed)
 		UnitFrame_Update(self);
 		TargetofTarget_CheckDead();
 		TargetofTargetHealthCheck();
-		RefreshBuffs(TargetofTargetFrame, 0, "targettarget");
+		RefreshAuras(TargetofTargetFrame, 0, "targettarget");
 	else
 		if ( TargetofTargetFrame:IsShown() ) then
 			TargetofTargetFrame:Hide();

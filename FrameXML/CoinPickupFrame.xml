@@ -78,9 +78,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						CoinPickupFrameLeft_Click(self);
-					</OnClick>
+					<OnClick function="CoinPickupFrameLeft_Click"/>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\Arrow-Left-Up"/>
 				<PushedTexture file="Interface\MoneyFrame\Arrow-Left-Down"/>
@@ -98,9 +96,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						CoinPickupFrameRight_Click(self);
-					</OnClick>
+					<OnClick function="CoinPickupFrameRight_Click"/>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\Arrow-Right-Up"/>
 				<PushedTexture file="Interface\MoneyFrame\Arrow-Right-Down"/>
@@ -118,9 +114,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						CoinPickupFrameOkay_Click(self);
-					</OnClick>
+					<OnClick function="CoinPickupFrameOkay_Click"/>
 				</Scripts>
 			</Button>
 			<Button name="CoinPickupCancelButton" inherits="UIPanelButtonTemplate" text="COINPICKUP_CANCEL">
@@ -135,32 +129,19 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						CoinPickupFrameCancel_Click(self);
-					</OnClick>
+					<OnClick function="CoinPickupFrameCancel_Click"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				DropCursorMoney();
-			</OnLoad>
+			<OnLoad function="DropCursorMoney"/>
 			<OnShow>
 				PlaySound("MONEYFRAMEOPEN");
 			</OnShow>
-			<OnHide>
-				CoinPickupFrame_OnHide(self);
-				PlaySound("MONEYFRAMECLOSE");
-			</OnHide>
-			<OnChar>
-				CoinPickupFrame_OnChar(self, text);
-			</OnChar>
-			<OnKeyDown>
-				CoinPickupFrame_OnKeyDown(self, key);
-			</OnKeyDown>
-			<OnKeyUp>
-				CoinPickupFrame_OnKeyUp(self, key);
-			</OnKeyUp>
+			<OnHide function="CoinPickupFrame_OnHide"/>
+			<OnChar function="CoinPickupFrame_OnChar"/>
+			<OnKeyDown function="CoinPickupFrame_OnKeyDown"/>
+			<OnKeyUp function="CoinPickupFrame_OnKeyUp"/>
 		</Scripts>
 	</Frame>
 </Ui>

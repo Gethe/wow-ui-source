@@ -2,12 +2,41 @@ STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
 
+StaticPopupDialogs["CONFIRM_OVERWRITE_EQUIPMENT_SET"] = {
+	text = CONFIRM_OVERWRITE_EQUIPMENT_SET,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self) SaveEquipmentSet(self.data, self.selectedIcon); GearManagerDialogPopup:Hide(); end,
+	OnCancel = function (self) end,
+	OnHide = function (self) self.data = nil; self.selectedIcon = nil; end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+}
+
+StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
+	text = CONFIRM_DELETE_EQUIPMENT_SET,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self) DeleteEquipmentSet(self.data); end,
+	OnCancel = function (self) end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+}
+
 StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
 	text = CONFIRM_REMOVE_GLYPH,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) RemoveGlyphFromSocket(self.data); end,
-	OnCancel = function (self) end,
+	OnAccept = function (self)
+		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
+		if ( talentGroup == GetActiveTalentGroup() ) then
+			RemoveGlyphFromSocket(self.data);
+		end
+	end,
+	OnCancel = function (self)
+	end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
@@ -307,7 +336,7 @@ StaticPopupDialogs["MACRO_ACTION_FORBIDDEN"] = {
 StaticPopupDialogs["ADDON_ACTION_FORBIDDEN"] = {
 	text = ADDON_ACTION_FORBIDDEN,
 	button1 = DISABLE,
-	button2 = IGNORE,
+	button2 = IGNORE_DIALOG,
 	OnAccept = function(self, data)
 		DisableAddOn(data);
 		ReloadUI();
@@ -2025,20 +2054,9 @@ StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
 			self:Hide();
 		end
 	end,
-	hasMoneyFrame = 1,
-	timeout = 0,
-	hideOnEscape = 1
-};
-StaticPopupDialogs["CONFIRM_PET_UNLEARN"] = {
-	text = CONFIRM_PET_UNLEARN,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		ConfirmPetUnlearn();
-	end,
-	OnUpdate = function(self, elapsed)
-		if ( not CheckPetUntrainerDist() ) then
-			self:Hide();
+	OnCancel = function(self)
+		if ( PlayerTalentFrame ) then
+			HideUIPanel(PlayerTalentFrame);
 		end
 	end,
 	hasMoneyFrame = 1,
@@ -2071,9 +2089,6 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 		ConfirmSummon();
 	end,
 	OnCancel = function()
-		CancelSummon();
-	end,
-	OnHide = function()
 		CancelSummon();
 	end,
 	OnUpdate = function(self, elapsed)
@@ -2226,7 +2241,57 @@ StaticPopupDialogs["CONFIRM_COMBAT_FILTER_DEFAULTS"] = {
 	exclusive = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["CONFIRM_LFG_REMOVE_LAST_ROLE"] = {
+	text = CONFIRM_LFG_REMOVE_LAST_ROLE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		LFGFrameClearAllButton_OnClick();
+		LFGFrame_UpdateRolesChosen();
+	end,
+	OnCancel = function(self)
+		LFGFrame_UpdateRoleBoxes();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
 
+StaticPopupDialogs["SET_LFGNOTE"] = {
+	text = SET_COMMENT_LABEL,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 128,
+	hasWideEditBox = 1,
+	OnAccept = function(self)
+		SetLFGComment(self.wideEditBox:GetText());
+	end,
+	OnShow = function(self)
+		--Sets the text to the 7th return from GetGuildRosterInfo(GetGuildRosterSelection());
+		self.wideEditBox:SetText(select(9, GetLookingForGroup()));
+		self.wideEditBox:SetFocus();
+	end,
+	OnHide = function(self)
+		if ( ChatFrameEditBox:IsShown() ) then
+			ChatFrameEditBox:SetFocus();
+		end
+		self.wideEditBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent();
+		SetLFGComment(self.wideEditBox:GetText());
+		parent:Hide();
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+	
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
@@ -2665,9 +2730,9 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			timeleft = ceil(timeleft);
 			if ( which == "INSTANCE_BOOT" ) then
 				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, SECONDS);
+					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
 				else
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), ceil(timeleft / 60), MINUTES);
+					text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
 				end
 			elseif ( which == "CONFIRM_SUMMON" ) then
 				if ( timeleft < 60 ) then
@@ -2779,6 +2844,8 @@ function StaticPopup_OnShow(self)
 	if ( dialog.enterClicksFirstButton ) then
 		self:SetScript("OnKeyDown", StaticPopup_OnKeyDown);
 	end
+
+	MouseEnableUI(true);
 end
 
 function StaticPopup_OnHide(self)
@@ -2792,6 +2859,8 @@ function StaticPopup_OnHide(self)
 	if ( dialog.enterClicksFirstButton ) then
 		self:SetScript("OnKeyDown", nil);
 	end
+
+	MouseEnableUI(false);
 end
 
 function StaticPopup_OnClick(dialog, index)
@@ -2825,10 +2894,10 @@ end
 function StaticPopup_OnKeyDown(self, key)
 	-- previously, StaticPopup_EscapePressed() captured the escape key for dialogs, but now we need
 	-- to catch it here
-	if ( key == "ESCAPE" ) then
+	if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
 		return StaticPopup_EscapePressed();
-	elseif ( key == "PRINTSCREEN" ) then
-		RunBinding(GetBindingAction(key));
+	elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
+		RunBinding("SCREENSHOT");
 		return;
 	end
 

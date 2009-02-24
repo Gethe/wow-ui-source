@@ -303,9 +303,9 @@ function CombatText_OnEvent(self, event, ...)
 			message = nil;
 		end
 	else 
-		message = getglobal(messageType);
+		message = getglobal("COMBAT_TEXT_"..messageType);
 		if ( not message ) then
-			message = getglobal("COMBAT_TEXT_"..messageType);
+			message = getglobal(messageType);
 		end
 	end
 

@@ -161,9 +161,7 @@
 				</Anchor>
 			</Anchors>
 			<Scripts>
-				<OnClick>
-					HideUIPanel(self:GetParent());
-				</OnClick>
+				<OnClick function="HideParentPanel"/>
 			</Scripts>
 		</Button>
 		<Button name="DressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
@@ -196,12 +194,8 @@
 				</Anchor>
 			</Anchors>
 			<Scripts>
-                <OnLoad>
-                    Model_OnLoad(self);					
-                </OnLoad>
-                <OnUpdate>
-					Model_OnUpdate(self, elapsed);
-                </OnUpdate>
+                <OnLoad function="Model_OnLoad"/>
+                <OnUpdate function="Model_OnUpdate"/>
             </Scripts>
 			<Frames>
 				<Button name="DressUpModelRotateLeftButton">
@@ -250,9 +244,7 @@
 		</DressUpModel>
 	</Frames>
     <Scripts>
-        <OnLoad>
-			SetDressUpBackground();
-		</OnLoad>
+        <OnLoad function="SetDressUpBackground"/>
 		<OnShow>
 			SetPortraitTexture(DressUpFramePortrait, "player");
 			PlaySound("igCharacterInfoOpen");

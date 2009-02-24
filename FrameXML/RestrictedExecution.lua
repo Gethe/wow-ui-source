@@ -692,13 +692,14 @@ function LOCAL_Animation_Namespace.SetUpAnimation(frame, updateFunc, posBody,
         error("Unsupported secure animation function '" .. postFunc .. "'");
         return;
     end
-    SetUpAnimation(GetFrameHandleFrame(frame),
+    frame = GetFrameHandleFrame(frame)
+    SetUpAnimation(frame,
                    {
                        updateFunc = updateFunc;
                        getPosFunc = LOCAL_Animation_Closures[posBody];
                        totalTime = tonumber(totalTime) or 0;
                    },
-                   postFunc,
+                   frame[postFunc],
                    (reverse or nil) and true);
 end
 

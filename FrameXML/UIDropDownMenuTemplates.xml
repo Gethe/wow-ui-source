@@ -89,7 +89,11 @@
 						ToggleDropDownMenu(self:GetParent():GetParent():GetID() + 1, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
 					</OnClick>
 					<OnEnter>
-						ToggleDropDownMenu(self:GetParent():GetParent():GetID() + 1, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+						local level =  self:GetParent():GetParent():GetID() + 1;
+						local listFrame = getglobal("DropDownList"..level);
+						if ( not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+							ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+						end
 						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
 					</OnEnter>
 					<OnLeave>
@@ -120,12 +124,14 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnClick>
-				UIDropDownMenuButton_OnClick(self, button);
-			</OnClick>
+			<OnClick function="UIDropDownMenuButton_OnClick"/>
 			<OnEnter>
 				if ( self.hasArrow ) then
-					ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
+					local level =  self:GetParent():GetID() + 1;
+					local listFrame = getglobal("DropDownList"..level);
+					if ( not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+						ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
+					end
 				else
 					CloseDropDownMenus(self:GetParent():GetID() + 1);
 				end
@@ -199,15 +205,9 @@
 			<OnClick>
 				self:Hide();
 			</OnClick>
-			<OnEnter>
-				UIDropDownMenu_StopCounting(self);
-			</OnEnter>
-			<OnLeave>
-				UIDropDownMenu_StartCounting(self);
-			</OnLeave>
-			<OnUpdate>
-				UIDropDownMenu_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnEnter function="UIDropDownMenu_StopCounting"/>
+			<OnLeave function="UIDropDownMenu_StartCounting"/>
+			<OnUpdate function="UIDropDownMenu_OnUpdate"/>
 			<OnShow>
 				for i=1, UIDROPDOWNMENU_MAXBUTTONS do
 					if (not self.noResize) then
@@ -222,9 +222,7 @@
 					self.parent = getglobal("DropDownList"..(self:GetID() - 1));
 				end
 			</OnShow>
-			<OnHide>
-				UIDropDownMenu_OnHide(self);
-			</OnHide>
+			<OnHide function="UIDropDownMenu_OnHide"/>
 		</Scripts>
 	</Button>
 	<Frame name="UIDropDownMenuTemplate" virtual="true">

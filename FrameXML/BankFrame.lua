@@ -1,8 +1,3 @@
-BANK_CONTAINER = -1;
-NUM_BAG_SLOTS = 4;
-NUM_BANKGENERIC_SLOTS = 28;
-NUM_BANKBAGSLOTS = 7;
-
 function ButtonInventorySlot (self)
 	return BankButtonIDToInvSlotID(self:GetID(),self.isBag)
 end

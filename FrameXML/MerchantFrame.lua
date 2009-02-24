@@ -1,6 +1,7 @@
 MERCHANT_ITEMS_PER_PAGE = 10;
 BUYBACK_ITEMS_PER_PAGE = 12;
 MAX_ITEM_COST = 3;
+BACKPACK_WAS_OPEN = nil;
 
 function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_UPDATE");
@@ -36,20 +37,26 @@ function MerchantFrame_OnEvent(self, event, ...)
 end
 
 function MerchantFrame_OnShow()
-	OpenBackpack();
+	BACKPACK_WAS_OPEN = OpenBackpack();
+	
 	-- Update repair all button status
 	MerchantFrame_UpdateCanRepairAll();
 	MerchantFrame_UpdateGuildBankRepair();
 	PanelTemplates_SetTab(MerchantFrame, 1);
 	MerchantFrame_Update();
+	
+	PlaySound("igCharacterInfoOpen");
 end
 
 function MerchantFrame_OnHide()
 	CloseMerchant();
-	CloseBackpack();
+	if ( not BACKPACK_WAS_OPEN ) then
+		CloseBackpack();
+	end
 	ResetCursor();
 	
 	StaticPopup_Hide("CONFIRM_PURCHASE_TOKEN_ITEM");
+	PlaySound("igCharacterInfoClose");
 end
 
 function MerchantFrame_Update()
@@ -347,6 +354,7 @@ function MerchantNextPageButton_OnClick()
 end
 
 function MerchantItemBuybackButton_OnLoad(self)
+	self:RegisterEvent("MERCHANT_UPDATE");
 	self:RegisterForClicks("LeftButtonUp","RightButtonUp");
 	self:RegisterForDrag("LeftButton");
 	

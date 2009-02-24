@@ -37,9 +37,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						StackSplitFrameLeft_Click();
-					</OnClick>
+					<OnClick function="StackSplitFrameLeft_Click"/>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\Arrow-Left-Up"/>
 				<PushedTexture file="Interface\MoneyFrame\Arrow-Left-Down"/>
@@ -57,9 +55,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						StackSplitFrameRight_Click();
-					</OnClick>
+					<OnClick function="StackSplitFrameRight_Click"/>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\Arrow-Right-Up"/>
 				<PushedTexture file="Interface\MoneyFrame\Arrow-Right-Down"/>
@@ -77,9 +73,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						StackSplitFrameOkay_Click();
-					</OnClick>
+					<OnClick function="StackSplitFrameOkay_Click"/>
 				</Scripts>
 			</Button>
 			<Button name="StackSplitCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
@@ -94,25 +88,15 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						StackSplitFrameCancel_Click();
-					</OnClick>
+					<OnClick function="StackSplitFrameCancel_Click"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnHide>
-				StackSplitFrame_OnHide(self);
-			</OnHide>
-			<OnChar>
-				StackSplitFrame_OnChar(self,text);
-			</OnChar>
-			<OnKeyDown>
-				StackSplitFrame_OnKeyDown(self,key);
-			</OnKeyDown>
-			<OnKeyUp>
-				StackSplitFrame_OnKeyUp(self,key);
-			</OnKeyUp>
+			<OnHide function="StackSplitFrame_OnHide"/>
+			<OnChar function="StackSplitFrame_OnChar"/>
+			<OnKeyDown function="StackSplitFrame_OnKeyDown"/>
+			<OnKeyUp function="StackSplitFrame_OnKeyUp"/>
 		</Scripts>
 	</Frame>
 </Ui>

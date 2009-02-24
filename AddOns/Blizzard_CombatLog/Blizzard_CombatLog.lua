@@ -3491,6 +3491,38 @@ FCF_DockUpdate = function()
 	Blizzard_CombatLog_AdjustCombatLogHeight();
 end
 
+-- 
+-- Combat Log Global Functions
+--
+
+--[[
+--  
+--  Returns the correct {} code for the combat log bit
+-- 
+--  args:
+-- 		bit - a bit exactly equal to a raid target icon.
+--]]
+local function Blizzard_CombatLog_BitToBraceCode(bit)
+	if ( bit == COMBATLOG_OBJECT_RAIDTARGET1 ) then
+		return "{"..strlower(RAID_TARGET_1).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET2 ) then
+		return "{"..strlower(RAID_TARGET_2).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET3 ) then
+		return "{"..strlower(RAID_TARGET_3).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET4 ) then
+		return "{"..strlower(RAID_TARGET_4).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET5 ) then
+		return "{"..strlower(RAID_TARGET_5).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET6 ) then
+		return "{"..strlower(RAID_TARGET_6).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET7 ) then
+		return "{"..strlower(RAID_TARGET_7).."}";
+	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET8 ) then
+		return "{"..strlower(RAID_TARGET_8).."}";
+	end
+	return "";
+end
+
 -- Override Hyperlink Handlers
 -- The SetItemRef() function hook is to be moved out into the core FrameXML.
 -- It is currently in the Constants.lua stub file to simulate being moved out to the core.
@@ -3530,9 +3562,9 @@ function SetItemRef(link, text, button)
 		-- Show Popup Menu
 		if( button == "RightButton") then
 			-- need to fix this to be actual texture
-			EasyMenu(Blizzard_CombatLog_CreateUnitMenu(CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)), CombatLogDropDown, "cursor", nil, nil, "MENU");
+			EasyMenu(Blizzard_CombatLog_CreateUnitMenu(Blizzard_CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)), CombatLogDropDown, "cursor", nil, nil, "MENU");
 		elseif ( IsModifiedClick("CHATLINK") ) then
-			ChatEdit_InsertLink (CombatLog_BitToBraceCode(tonumber(bit)));
+			ChatEdit_InsertLink (Blizzard_CombatLog_BitToBraceCode(tonumber(bit)));
 		end
 		return;
 	elseif ( strsub(link, 1,5) == "spell" ) then 

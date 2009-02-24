@@ -74,18 +74,10 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						CalendarDayButtonMoreEventsButton_OnLoad(self);
-					</OnLoad>
-					<OnEnter>
-						CalendarDayButtonMoreEventsButton_OnEnter(self);
-					</OnEnter>
-					<OnLeave>
-						CalendarDayButtonMoreEventsButton_OnLeave(self);
-					</OnLeave>
-					<OnClick>
-						CalendarDayButtonMoreEventsButton_OnClick(self, button);
-					</OnClick>
+					<OnLoad function="CalendarDayButtonMoreEventsButton_OnLoad"/>
+					<OnEnter function="CalendarDayButtonMoreEventsButton_OnEnter"/>
+					<OnLeave function="CalendarDayButtonMoreEventsButton_OnLeave"/>
+					<OnClick function="CalendarDayButtonMoreEventsButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\Calendar\MoreArrow">
 					<TexCoords left="0.0" right="0.9375" top="0.0" bottom="0.6875"/>
@@ -115,25 +107,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
-					</OnLoad>
+					<OnLoad function="RaiseFrameLevel"/>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarDayButton_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				CalendarDayButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				CalendarDayButton_OnLeave(self);
-			</OnLeave>
-			<OnClick>
-				CalendarDayButton_OnClick(self, button);
-			</OnClick>
+			<OnLoad function="CalendarDayButton_OnLoad"/>
+			<OnEnter function="CalendarDayButton_OnEnter"/>
+			<OnLeave function="CalendarDayButton_OnLeave"/>
+			<OnClick function="CalendarDayButton_OnClick"/>
 		</Scripts>
 		<NormalTexture file="Interface\Calendar\CalendarBackground"/>
 		<HighlightTexture file="Interface\Calendar\Highlights" alphaMode="ADD">
@@ -147,21 +129,6 @@
 	<Button name="CalendarDayEventButtonTemplate" virtual="true" hidden="true">
 		<Size x="83" y="24"/>
 		<Layers>
-		<!--
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\Calendar\EventButtonBackdrop">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="-1" y="1"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="1" y="-1"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.0" right="0.65625" top="0.0" bottom="0.84375" />
-				</Texture>
-			</Layer>
-		-->
 			<Layer level="ARTWORK">
 				<Texture name="$parentBlack" file="Interface\Calendar\EventHighlight" hidden="true">
 					<Anchors>
@@ -195,18 +162,10 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				CalendarDayEventButton_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				CalendarDayEventButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				CalendarDayEventButton_OnLeave(self);
-			</OnLeave>
-			<OnClick>
-				CalendarDayEventButton_OnClick(self, button);
-			</OnClick>
+			<OnLoad function="CalendarDayEventButton_OnLoad"/>
+			<OnEnter function="CalendarDayEventButton_OnEnter"/>
+			<OnLeave function="CalendarDayEventButton_OnLeave"/>
+			<OnClick function="CalendarDayEventButton_OnClick"/>
 		</Scripts>
 		<HighlightTexture file="Interface\Calendar\EventHighlight" alphaMode="ADD">
 			<Anchors>
@@ -293,9 +252,7 @@
 	</Button>
 	<Button name="CalendarEventCloseButtonTemplate" inherits="CalendarCloseButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick>
-				CalendarEventCloseButton_OnClick(self);
-			</OnClick>
+			<OnClick function="CalendarEventCloseButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<ScrollFrame name="CalendarEventDescriptionScrollFrame" inherits="UIPanelScrollFrameTemplate" virtual="true">
@@ -308,9 +265,7 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				CalendarEventDescriptionScrollFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="CalendarEventDescriptionScrollFrame_OnLoad"/>
 		</Scripts>
 	</ScrollFrame>
 	<Button name="CalendarEventInviteSortButtonTemplate" virtual="true">
@@ -327,12 +282,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				CalendarEventInviteSortButton_OnLoad(self);
-			</OnLoad>
-			<OnClick>
-				CalendarEventInviteSortButton_OnClick(self);
-			</OnClick>
+			<OnLoad function="CalendarEventInviteSortButton_OnLoad"/>
+			<OnClick function="CalendarEventInviteSortButton_OnClick"/>
 		</Scripts>
 		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightFont style="GameFontNormalSmall"/>
@@ -430,9 +381,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CalendarEventInviteList_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="CalendarEventInviteList_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Button name="CalendarEventInviteListButtonTemplate" virtual="true">
@@ -477,6 +426,8 @@
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
+			<OnEnter function="CalendarEventInviteListButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
 	</Button>
@@ -484,46 +435,30 @@
 	<!-- Calendar View Event Templates -->
 	<Button name="CalendarViewEventInviteListButtonTemplate" inherits="CalendarEventInviteListButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick>
-				CalendarViewEventInviteListButton_OnClick(self, button);
-			</OnClick>
+			<OnClick function="CalendarViewEventInviteListButton_OnClick"/>
 		</Scripts>
 	</Button>
 
 	<!-- Calendar Create Event Templates -->
 	<Button name="CalendarCreateEventInviteListButtonTemplate" inherits="CalendarEventInviteListButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick>
-				CalendarCreateEventInviteListButton_OnClick(self, button);
-			</OnClick>
+			<OnClick function="CalendarCreateEventInviteListButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<Button name="CalendarMassInviteArenaButtonTemplate" inherits="CalendarEventButtonTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>
-				CalendarMassInviteArenaButton_OnLoad(self);
-			</OnLoad>
-			<OnClick>
-				CalendarMassInviteArenaButton_OnClick(self);
-			</OnClick>
-			<OnEnter>
-				CalendarMassInviteArenaButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+      <OnLoad function="CalendarMassInviteArenaButton_OnLoad"/>
+			<OnClick function="CalendarMassInviteArenaButton_OnClick"/>
+			<OnEnter function="CalendarMassInviteArenaButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 
 	<!-- Calendar Modal Dialog Templates -->
 	<Frame name="CalendarModalDialogTemplate" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" virtual="true">
 		<Scripts>
-			<OnShow>
-				CalendarFrame_PushModal(self);
-			</OnShow>
-			<OnHide>
-				CalendarFrame_PopModal();
-			</OnHide>
+			<OnShow function="CalendarFrame_PushModal"/>
+			<OnHide function="CalendarFrame_PopModal"/>
 		</Scripts>
 	</Frame>
 	<Frame name="CalendarModalEventOverlayTemplate" virtual="true">
@@ -579,15 +514,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				CalendarEventPickerButton_OnLoad(self);
-			</OnLoad>
-			<OnClick>
-				CalendarEventPickerButton_OnClick(self, button);
-			</OnClick>
-			<OnDoubleClick>
-				CalendarEventPickerCloseButton_OnClick();
-			</OnDoubleClick>
+			<OnLoad function="CalendarEventPickerButton_OnLoad"/>
+			<OnClick function="CalendarEventPickerButton_OnClick"/>
+			<OnDoubleClick function="CalendarEventPickerCloseButton_OnClick"/>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
 	</Button>
@@ -618,15 +547,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				CalendarTexturePickerButton_OnLoad(self);
-			</OnLoad>
-			<OnClick>
-				CalendarTexturePickerButton_OnClick(self, button);
-			</OnClick>
-			<OnDoubleClick>
-				CalendarTexturePickerButton_OnDoubleClick(self, button);
-			</OnDoubleClick>
+			<OnLoad function="CalendarTexturePickerButton_OnLoad"/>
+			<OnClick function="CalendarTexturePickerButton_OnClick"/>
+			<OnDoubleClick function="CalendarTexturePickerButton_OnDoubleClick"/>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
 	</Button>
@@ -657,15 +580,9 @@
 			</Layer>		
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				CalendarClassButton_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				CalendarClassButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad function="CalendarClassButton_OnLoad"/>
+			<OnEnter function="CalendarClassButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes"/>
     </Button>

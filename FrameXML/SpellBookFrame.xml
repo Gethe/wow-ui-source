@@ -34,9 +34,7 @@
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(self.tooltip);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalTexture/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
@@ -50,16 +48,12 @@
 			<AbsInset left="15" right="14" top="13" bottom="15"/>
 		</HitRectInsets>
 	  <Scripts>
-			<OnClick>
-				SpellBookFrameTabButton_OnClick(self);
-			</OnClick>
+			<OnClick function="SpellBookFrameTabButton_OnClick"/>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(MicroButtonTooltipText(self:GetText(), self.binding), 1.0,1.0,1.0 );
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<ButtonText>
 			<Anchors>
@@ -141,12 +135,8 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				SpellButton_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				SpellButton_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="SpellButton_OnLoad"/>
+			<OnEvent function="SpellButton_OnEvent"/>
 			<PreClick>
 				self:SetChecked(0);
 			</PreClick>
@@ -157,24 +147,12 @@
 					SpellButton_OnClick(self, button);
 				end
 			</OnClick>
-			<OnShow>
-				SpellButton_OnShow(self);
-			</OnShow>
-			<OnHide>
-				SpellButton_OnHide(self);
-			</OnHide>
-			<OnDragStart>
-				SpellButton_OnDrag(self);
-			</OnDragStart>
-			<OnReceiveDrag>
-				SpellButton_OnDrag(self);
-			</OnReceiveDrag>
-			<OnEnter>
-				SpellButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnShow function="SpellButton_OnShow"/>
+			<OnHide function="SpellButton_OnHide"/>
+			<OnDragStart function="SpellButton_OnDrag"/>
+			<OnReceiveDrag function="SpellButton_OnDrag"/>
+			<OnEnter function="SpellButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Size>
@@ -329,9 +307,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						SpellBookPrevPageButton_OnClick();
-					</OnClick>
+					<OnClick function="SpellBookPrevPageButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
@@ -359,9 +335,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						SpellBookNextPageButton_OnClick();
-					</OnClick>
+					<OnClick function="SpellBookNextPageButton_OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
@@ -376,13 +350,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel() + 1);
-					</OnLoad>
-				</Scripts>
 			</Button>
-			<CheckButton name="ShowAllSpellRanksCheckBox" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="ShowAllSpellRanksCheckBox" inherits="OptionsSmallCheckButtonTemplate" jumpNavigateEnabled="false">
 				<Size>
 					<AbsDimension x="26" y="26"/>
 				</Size>
@@ -672,18 +641,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				SpellBookFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				SpellBookFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				SpellBookFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				SpellBookFrame_OnHide(self);
-			</OnHide>
+			<OnLoad function="SpellBookFrame_OnLoad"/>
+			<OnEvent function="SpellBookFrame_OnEvent"/>
+			<OnShow function="SpellBookFrame_OnShow"/>
+			<OnHide function="SpellBookFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

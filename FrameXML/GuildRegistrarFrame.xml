@@ -95,9 +95,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-                     <OnLoad>
-                        self:SetFrameLevel(self:GetFrameLevel() + 2);
-                    </OnLoad>
+                     <OnLoad function="RaiseFrameLevelByTwo"/>
                 </Scripts>
 			</Frame>
 			<Button name="GuildRegistrarFrameCloseButton" inherits="UIPanelCloseButton">
@@ -165,9 +163,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								GuildRegistrar_ShowPurchaseFrame();
-							</OnClick>
+							<OnClick function="GuildRegistrar_ShowPurchaseFrame"/>
 						</Scripts>
 					</Button>
 					<Button name="GuildRegistrarButton2" inherits="QuestTitleButtonTemplate" text="GUILD_CHARTER_REGISTER">
@@ -175,9 +171,7 @@
 							<Anchor point="TOPLEFT" relativeTo="GuildRegistrarButton1" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								TurnInGuildCharter();
-							</OnClick>
+							<OnClick function="TurnInGuildCharter"/>
 						</Scripts>
 					</Button>
 <!--

@@ -9,9 +9,7 @@
 			<OnLoad>
 				getglobal(self:GetName().."Highlight"):SetVertexColor(0.11, 0.325, 0.48);
 			</OnLoad>
-			<OnClick>
-				ChatConfigCategory_OnClick(self);
-			</OnClick>
+			<OnClick function="ChatConfigCategory_OnClick"/>
 		</Scripts>
 		<ButtonText name="$parentNormalText">
 			<Size>
@@ -87,9 +85,7 @@
 					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 				end
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -200,9 +196,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						MessageTypeColor_OpenColorPicker(self);
-					</OnClick>
+					<OnClick function="MessageTypeColor_OpenColorPicker"/>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
@@ -261,9 +255,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						ChatUnitColor_OpenColorPicker(self);
-					</OnClick>
+					<OnClick function="ChatUnitColor_OpenColorPicker"/>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
@@ -321,11 +313,8 @@
 				PlaySound("UChatScrollButton");
 				ChatConfig_UpdateCombatTabs(self:GetID());
 			</OnClick>
-			<OnEnter>
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnEnter function=""/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<ButtonText name="$parentText">
 			<Size>
@@ -466,7 +455,7 @@
 							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton2, "BOTTOMLEFT", 0, -1);
 							ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton2, "BOTTOMRIGHT", 0, -1);
 							ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
-							ChatConfigFrame:SetHeight(575);
+							ChatConfigFrame:SetHeight(595);
 						else
 							ChatConfigCategoryFrameButton2:Hide();
 							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton1, "BOTTOMLEFT", 0, -1);
@@ -762,9 +751,7 @@
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip_AddNewbieTip(self, MOVE_FILTER_UP, 1.0, 1.0, 1.0);
 									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
+									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 								<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
 								<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Down"/>
@@ -794,9 +781,7 @@
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip_AddNewbieTip(self, MOVE_FILTER_DOWN, 1.0, 1.0, 1.0);
 									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
+									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 								<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
 								<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
@@ -1242,9 +1227,7 @@
 													</Layer>
 												</Layers>
 												<Scripts>
-													<OnClick>
-														SpellColor_OpenColorPicker(self);
-													</OnClick>
+													<OnClick function="SpellColor_OpenColorPicker"/>
 												</Scripts>
 												<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 											</Button>
@@ -1351,9 +1334,7 @@
 													</Layer>
 												</Layers>
 												<Scripts>
-													<OnClick>
-														DamageColor_OpenColorPicker(self);
-													</OnClick>
+													<OnClick function="DamageColor_OpenColorPicker"/>
 												</Scripts>
 												<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 											</Button>
@@ -1702,9 +1683,7 @@
 							</CheckButton>
 						</Frames>
 						<Scripts>
-							<OnShow>
-								CombatConfig_Formatting_Update();
-							</OnShow>
+							<OnShow function="CombatConfig_Formatting_Update"/>
 						</Scripts>
 					</Frame>
 					<Frame name="CombatConfigSettings">
@@ -1743,9 +1722,7 @@
 										CombatConfig_SetFilterName(self:GetText());
 										self:HighlightText(0, -1);
 									</OnEnterPressed>
-									<OnEditFocusGained>
-										self:HighlightText();
-									</OnEditFocusGained>
+									<OnEditFocusGained function="EditBox_HighlightText"/>
 								</Scripts>
 							</EditBox>
 							<Button name="$parentSaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
@@ -1865,20 +1842,15 @@
 								self:RegisterEvent("RAID_ROSTER_UPDATE");
 							</OnLoad>
 							<OnEvent>
-								if ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
-									Blizzard_CombatLog_Update_QuickButtons();
-								end
+								-- This needs to be broken out into a multiline handler because Blizzard_CombatLog_Update_QuickButtons is defined in an addon.
+								Blizzard_CombatLog_Update_QuickButtons(self, event, ...);
 							</OnEvent>
-							<OnShow>
-								CombatConfig_Settings_Update();	
-							</OnShow>
+							<OnShow function="CombatConfig_Settings_Update"/>
 						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						ChatConfigCombat_OnLoad();
-					</OnLoad>
+					<OnLoad function="ChatConfigCombat_OnLoad"/>
 					<OnShow>
 						ChatConfigBackgroundFrame:SetPoint("TOPLEFT", ChatConfigCategoryFrame, "TOPRIGHT", 1, -135);
 						ChatConfig_ShowCombatTabs();
@@ -1964,12 +1936,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ChatConfigFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				ChatConfigFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="ChatConfigFrame_OnLoad"/>
+			<OnEvent function="ChatConfigFrame_OnEvent"/>
 			<OnShow>
 				CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = CopyTable(Blizzard_CombatLog_Filters);
 			</OnShow>

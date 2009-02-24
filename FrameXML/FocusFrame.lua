@@ -1,4 +1,4 @@
-MAX_FOCUS_BUFFS = 8;
+MAX_FOCUS_DEBUFFS = 8;
 
 function FocusFrame_OnLoad (self)
 	self.statusCounter = 0;
@@ -44,7 +44,7 @@ function FocusFrame_Update (self)
 
 		UnitFrame_Update(self);
 		FocusFrame_CheckFaction(self);
-		FocusFrame_UpdateBuffs(self);
+		FocusFrame_UpdateAuras(self);
 		FocusPortrait:SetAlpha(1.0);
 	end
 end
@@ -76,7 +76,7 @@ function FocusFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == "focus" ) then
-			FocusFrame_UpdateBuffs(self);
+			FocusFrame_UpdateAuras(self);
 		end
 	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
 		TargetofFocus_Update();
@@ -107,8 +107,8 @@ function FocusFrame_OnUpdate (self, elapsed)
 	end
 end
 
-function FocusFrame_UpdateBuffs (self)
-	RefreshBuffs(self, 0, "focus", MAX_FOCUS_BUFFS);
+function FocusFrame_UpdateAuras (self)
+	RefreshAuras(self, 0, "focus", MAX_FOCUS_DEBUFFS);
 end
 
 function FocusFrame_HealthUpdate (self, elapsed, unit)
@@ -209,7 +209,7 @@ function TargetofFocus_Update (self, elapsed)
 		UnitFrame_Update(self);
 		TargetofFocus_CheckDead();
 		TargetofFocusHealthCheck();
-		RefreshBuffs(TargetofFocusFrame, 0, "focus-target");
+		RefreshAuras(TargetofFocusFrame, 0, "focus-target");
 	else
 		if ( TargetofFocusFrame:IsShown() ) then
 			TargetofFocusFrame:Hide();

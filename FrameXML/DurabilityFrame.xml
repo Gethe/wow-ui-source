@@ -178,12 +178,8 @@
 				DurabilityFrame_SetAlerts();
 				UIParent_ManageFramePositions();
 			</OnEvent>
-			<OnShow>
-				UIParent_ManageFramePositions();
-			</OnShow>
-			<OnHide>
-				UIParent_ManageFramePositions();
-			</OnHide>
+			<OnShow function="UIParent_ManageFramePositions"/>
+			<OnHide function="UIParent_ManageFramePositions"/>
 		</Scripts>
 	</Frame>
 </Ui>

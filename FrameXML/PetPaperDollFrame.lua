@@ -519,7 +519,7 @@ function PetPaperDollFrame_SetStats()
 		label:SetText(getglobal("SPELL_STAT"..i.."_NAME")..":");
 		stat, effectiveStat, posBuff, negBuff = UnitStat("pet", i);
 		-- Set the tooltip text
-		local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..getglobal("SPELL_STAT"..i.."_NAME").." ";
+		local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, getglobal("SPELL_STAT"..i.."_NAME")).." ";
 
 		if ( ( posBuff == 0 ) and ( negBuff == 0 ) ) then
 			text:SetText(effectiveStat);
@@ -608,7 +608,7 @@ function PetPaperDollFrame_SetSpellBonusDamage()
 	end
 
 	PetSpellDamageFrameStatText:SetText(spellDamageBonusText);
-	PetSpellDamageFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..SPELL_BONUS..FONT_COLOR_CODE_CLOSE.." "..spellDamageBonusText;
+	PetSpellDamageFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, SPELL_BONUS)..FONT_COLOR_CODE_CLOSE.." "..spellDamageBonusText;
 	PetSpellDamageFrame.tooltip2 = DEFAULT_STATSPELLBONUS_TOOLTIP;
 
 	PetSpellDamageFrame:Show();

@@ -28,6 +28,13 @@ function PanelTemplates_UpdateTabs(frame)
 	end
 end
 
+function PanelTemplates_GetTabWidth(tab)
+	local tabName = tab:GetName();
+
+	local sideWidths = 2 * _G[tabName.."Left"]:GetWidth();
+	return tab:GetTextWidth() + sideWidths;
+end
+
 function PanelTemplates_TabResize(tab, padding, absoluteSize, maxWidth, absoluteTextSize)
 	local tabName = tab:GetName();
 	
@@ -230,7 +237,9 @@ function FauxScrollFrame_OnVerticalScroll(self, value, itemHeight, updateFunctio
 	local scrollbar = getglobal(self:GetName().."ScrollBar");
 	scrollbar:SetValue(value);
 	self.offset = floor((value / itemHeight) + 0.5);
-	updateFunction(self);
+	if ( updateFunction ) then
+		updateFunction(self);
+	end
 end
 
 function FauxScrollFrame_GetOffset(frame)
@@ -252,19 +261,19 @@ function ScrollFrame_OnLoad(self)
 	self.offset = 0;
 end
 
-function ScrollFrame_OnScrollRangeChanged(self, scrollrange)
+function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 	local scrollbar = getglobal(self:GetName().."ScrollBar");
-	if ( not scrollrange ) then
-		scrollrange = self:GetVerticalScrollRange();
+	if ( not yrange ) then
+		yrange = self:GetVerticalScrollRange();
 	end
 	local value = scrollbar:GetValue();
-	if ( value > scrollrange ) then
-		value = scrollrange;
+	if ( value > yrange ) then
+		value = yrange;
 	end
-	scrollbar:SetMinMaxValues(0, scrollrange);
+	scrollbar:SetMinMaxValues(0, yrange);
 	scrollbar:SetValue(value);
-	if ( floor(scrollrange) == 0 ) then
-		if (self.scrollBarHideable ) then
+	if ( floor(yrange) == 0 ) then
+		if ( self.scrollBarHideable ) then
 			getglobal(self:GetName().."ScrollBar"):Hide();
 			getglobal(scrollbar:GetName().."ScrollDownButton"):Hide();
 			getglobal(scrollbar:GetName().."ScrollUpButton"):Hide();
@@ -287,7 +296,7 @@ function ScrollFrame_OnScrollRangeChanged(self, scrollrange)
 	local top = getglobal(self:GetName().."Top");
 	local bottom = getglobal(self:GetName().."Bottom");
 	local middle = getglobal(self:GetName().."Middle");
-	if ( top and bottom and self.scrollBarHideable) then
+	if ( top and bottom and self.scrollBarHideable ) then
 		if ( self:GetVerticalScrollRange() == 0 ) then
 			top:Hide();
 			bottom:Hide();
@@ -296,7 +305,7 @@ function ScrollFrame_OnScrollRangeChanged(self, scrollrange)
 			bottom:Show();
 		end
 	end
-	if ( middle and self.scrollBarHideable) then
+	if ( middle and self.scrollBarHideable ) then
 		if ( self:GetVerticalScrollRange() == 0 ) then
 			middle:Hide();
 		else
@@ -378,4 +387,76 @@ function EditBox_HandleTabbing(self, tabList)
 
 	local target = tabList[index];
 	getglobal(target):SetFocus();
+end
+
+function EditBox_ClearFocus (self)
+	self:ClearFocus();
+end
+
+function EditBox_SetFocus (self)
+	self:SetFocus();
+end
+
+function EditBox_HighlightText (self)
+	self:HighlightText();
+end
+
+function EditBox_ClearHighlight (self)
+	self:HighlightText(0, 0);
+end
+
+UIFrameCache = CreateFrame("FRAME");
+local caches = {};
+function UIFrameCache:New (frameType, baseName, parent, template)
+	if ( self ~= UIFrameCache ) then
+		error("Attempt to run factory method on class member");
+	end
+	
+	local frameCache = {};
+
+	setmetatable(frameCache, self);
+	self.__index = self;
+	
+	frameCache.frameType = frameType;
+	frameCache.baseName = baseName;
+	frameCache.parent = parent;
+	frameCache.template = template;
+	frameCache.frames = {};
+	frameCache.usedFrames = {};
+	frameCache.numFrames = 0;
+
+	tinsert(caches, frameCache);
+	
+	return frameCache;
+end
+
+function UIFrameCache:GetFrame ()
+	local frame = self.frames[1];
+	if ( frame ) then
+		tremove(self.frames, 1);
+		tinsert(self.usedFrames, frame);
+		return frame;
+	end
+	
+	frame = CreateFrame(self.frameType, self.baseName .. self.numFrames + 1, self.parent, self.template);
+	frame.frameCache = self;
+	self.numFrames = self.numFrames + 1;
+	tinsert(self.usedFrames, frame);
+	return frame;
+end
+
+function UIFrameCache:ReleaseFrame (frame)
+	for k, v in next, self.frames do
+		if ( v == frame ) then
+			return;
+		end
+	end
+	
+	for k, v in next, self.usedFrames do
+		if ( v == frame ) then
+			tinsert(self.frames, frame);
+			tremove(self.usedFrames, k);
+			break;
+		end
+	end	
 end

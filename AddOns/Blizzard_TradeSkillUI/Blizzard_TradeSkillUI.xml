@@ -42,13 +42,8 @@
 				GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill, self:GetID());
 				CursorUpdate(self);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
-			<OnUpdate>
-				CursorOnUpdate(self);
-			</OnUpdate>
+			<OnLeave function="GameTooltip_HideResetCursor"/>
+			<OnUpdate function="CursorOnUpdate"/>
 			<OnClick>
 				HandleModifiedItemClick(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
 			</OnClick>
@@ -188,9 +183,7 @@
 						GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, 1);
 						GameTooltip:Show();
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture file="Interface\TradeSkillFrame\UI-TradeSkill-LinkButton">
 					<TexCoords left="0" right="1.0" top="0" bottom="0.5"/>
@@ -221,9 +214,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						GameTooltip:SetText(CRAFT_IS_MAKEABLE_TOOLTIP, nil, nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<HitRectInsets>
 					<AbsInset left="0" right="-75" top="0" bottom="0"/>
@@ -277,11 +268,7 @@
 					<OnLoad>
 						self:RegisterEvent("SKILL_LINES_CHANGED");
 					</OnLoad>
-					<OnEvent>
-						if ( event == "SKILL_LINES_CHANGED" ) then
-							TradeSkillFrame_Update();
-						end
-					</OnEvent>
+					<OnEvent function="TradeSkillFrame_Update"/>
 				</Scripts>
 				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
 				<BarColor r="0.25" g="0.25" b="0.75" />
@@ -335,15 +322,9 @@
 					<OnShow>
 						self:SetText(SEARCH);
 					</OnShow>
-					<OnEnterPressed>
-						self:ClearFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
-					<OnTextChanged>
-						TradeSkillFilter_OnTextChanged(self);
-					</OnTextChanged>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnTextChanged function="TradeSkillFilter_OnTextChanged"/>
 					<OnEditFocusLost>
 						self:HighlightText(0, 0);
 						if ( self:GetText() == "" ) then
@@ -418,9 +399,7 @@
 							<OnLoad>
 								getglobal(self:GetName()):SetText(ALL);
 							</OnLoad>
-							<OnClick>
-								TradeSkillCollapseAllButton_OnClick(self);
-							</OnClick>
+							<OnClick function="TradeSkillCollapseAllButton_OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -434,9 +413,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						TradeSkillInvSlotDropDown_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="TradeSkillInvSlotDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<Frame name="TradeSkillSubClassDropDown" inherits="UIDropDownMenuTemplate" id="1">
@@ -448,9 +425,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						TradeSkillSubClassDropDown_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="TradeSkillSubClassDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			
@@ -706,13 +681,8 @@
 									<OnClick>
 										HandleModifiedItemClick(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
 									</OnClick>
-									<OnEnter>
-										TradeSkillItem_OnEnter(self);
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-										ResetCursor();
-									</OnLeave>
+									<OnEnter function="TradeSkillItem_OnEnter"/>
+									<OnLeave function="GameTooltip_HideResetCursor"/>
 									<OnUpdate>
 										if ( GameTooltip:IsOwned(self) ) then
 											TradeSkillItem_OnEnter(self);
@@ -817,11 +787,7 @@
 									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 								end
 							</OnEnter>
-							<OnLeave>
-								if (self.tooltip) then
-									GameTooltip:Hide();
-								end
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -846,9 +812,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(TradeSkillFrame);
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<Button name="TradeSkillCreateAllButton" inherits="UIPanelButtonTemplate" text="CREATE_ALL">
@@ -871,11 +835,7 @@
 									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 								end
 							</OnEnter>
-							<OnLeave>
-								if (self.tooltip) then
-									GameTooltip:Hide();
-								end
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -963,23 +923,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnterPressed>
-						self:ClearFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
 					<OnTextChanged>
 						if ( self:GetText() == "0" ) then
 							self:SetText("1");
 						end
 					</OnTextChanged> 
-					<OnEditFocusLost>
-						self:HighlightText(0, 0);
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						self:HighlightText();
-					</OnEditFocusGained>
+					<OnEditFocusLost function="EditBox_ClearHighlight"/>
+					<OnEditFocusGained function="EditBox_HighlightText"/>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
@@ -1016,12 +968,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TradeSkillFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				TradeSkillFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="TradeSkillFrame_OnLoad"/>
+			<OnEvent function="TradeSkillFrame_OnEvent"/>
 			<OnShow>
 				TradeSkillInputBox:SetNumber(1);                
 				PlaySound("igCharacterInfoOpen");
@@ -1030,12 +978,7 @@
 				CloseTradeSkill();
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
-			<OnUpdate>
-				TradeSkillFrame_PlaytimeUpdate();
-			</OnUpdate>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
+			<OnUpdate function="TradeSkillFrame_PlaytimeUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

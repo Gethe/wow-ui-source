@@ -206,6 +206,11 @@
 				<xs:element name="OnMouseDown" type="ScriptType"/>
 				<xs:element name="OnMouseUp" type="ScriptType"/>
 				<xs:element name="OnMouseWheel" type="ScriptType"/>
+				<xs:element name="OnJoystickStickMotion" type="ScriptType"/>
+				<xs:element name="OnJoystickAxisMotion" type="ScriptType"/>
+				<xs:element name="OnJoystickButtonDown" type="ScriptType"/>
+				<xs:element name="OnJoystickButtonUp" type="ScriptType"/>
+				<xs:element name="OnJoystickHatMotion" type="ScriptType"/>
 				<xs:element name="OnDragStart" type="ScriptType"/>
 				<xs:element name="OnDragStop" type="ScriptType"/>
 				<xs:element name="OnReceiveDrag" type="ScriptType"/>
@@ -248,7 +253,7 @@
 				<xs:element name="OnTooltipSetItem" type="ScriptType"/>
 				<xs:element name="OnTooltipSetSpell" type="ScriptType"/>
 				<xs:element name="OnTooltipSetQuest" type="ScriptType"/>
-		        <xs:element name="OnTooltipSetAchievement" type="ScriptType"/>
+				<xs:element name="OnTooltipSetAchievement" type="ScriptType"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -304,6 +309,13 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="Animations">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="AnimationGroup" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>
@@ -346,6 +358,7 @@
 				</xs:sequence>
 				<xs:attribute name="file" type="xs:string"/>
 				<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
+				<xs:attribute name="parentKey" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -377,6 +390,7 @@
 				<xs:attribute name="justifyH" type="JUSTIFYHTYPE" default="CENTER"/>
 				<xs:attribute name="maxLines" type="xs:unsignedInt" default="0"/>
 				<xs:attribute name="indented" type="xs:boolean" default="false"/>
+				<xs:attribute name="parentKey" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -439,6 +453,9 @@
 				<xs:attribute name="enableKeyboard" type="xs:boolean" default="false"/>
 				<xs:attribute name="clampedToScreen" type="xs:boolean" default="false"/>
 				<xs:attribute name="protected" type="xs:boolean" default="false"/>
+				<xs:attribute name="jumpNavigateEnabled" type="xs:boolean"/>
+				<xs:attribute name="jumpNavigateStart" type="xs:boolean" default="false"/>
+				<xs:attribute name="parentKey" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -694,6 +711,8 @@
 					</xs:element>
 					<xs:element ref="Font" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="LayoutFrame" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="Animation" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="AnimationGroup" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
@@ -757,4 +776,115 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="TaxiRouteFrame" type="TaxiRouteFrameType" substitutionGroup="ui:Frame"/>
+	<xs:simpleType name="ANIMLOOPTYPE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="NONE"/>
+			<xs:enumeration value="REPEAT"/>
+			<xs:enumeration value="BOUNCE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ANIMSMOOTHTYPE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="NONE"/>
+			<xs:enumeration value="IN"/>
+			<xs:enumeration value="OUT"/>
+			<xs:enumeration value="IN_OUT"/>
+			<xs:enumeration value="OUT_IN"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AnimOrderType">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="AnimScriptsType">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="OnLoad" type="ScriptType"/>
+				<xs:element name="OnPlay" type="ScriptType"/>
+				<xs:element name="OnPause" type="ScriptType"/>
+				<xs:element name="OnStop" type="ScriptType"/>
+				<xs:element name="OnUpdate" type="ScriptType"/>
+				<xs:element name="OnFinished" type="ScriptType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AnimOriginType">
+		<xs:sequence minOccurs="0">
+			<xs:element name="Offset" type="Dimension"/>
+		</xs:sequence>
+		<xs:attribute name="point" type="FRAMEPOINT" default="CENTER"/>
+	</xs:complexType>
+	<xs:complexType name="AnimationType">
+		<xs:sequence>
+			<xs:element name="Scripts" type="AnimScriptsType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="inherits" type="xs:string"/>
+		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
+		<xs:attribute name="startDelay" type="xs:float" default="0.0"/>
+		<xs:attribute name="endDelay" type="xs:float" default="0.0"/>
+		<xs:attribute name="duration" type="xs:float" use="required"/>
+		<xs:attribute name="maxFramerate" type="xs:float"/>
+		<xs:attribute name="smoothing" type="ANIMSMOOTHTYPE" default="NONE"/>
+		<xs:attribute name="order" type="AnimOrderType" default="1"/>
+		<xs:attribute name="parentKey" type="xs:string"/>
+	</xs:complexType>
+	<xs:element name="Animation" type="AnimationType"/>
+	<xs:complexType name="TranslationType">
+		<xs:complexContent>
+			<xs:extension base="AnimationType">
+				<xs:attribute name="offsetX" type="xs:float" default="0.0"/>
+				<xs:attribute name="offsetY" type="xs:float" default="0.0"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Translation" type="TranslationType" substitutionGroup="Animation"/>
+	<xs:complexType name="RotationType">
+		<xs:complexContent>
+			<xs:extension base="AnimationType">
+				<xs:sequence>
+					<xs:element name="Origin" type="AnimOriginType" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="degrees" type="xs:float" default="0.0"/>
+				<xs:attribute name="radians" type="xs:float" default="0.0"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Rotation" type="RotationType" substitutionGroup="Animation"/>
+	<xs:complexType name="ScaleType">
+		<xs:complexContent>
+			<xs:extension base="AnimationType">
+				<xs:sequence>
+					<xs:element name="Origin" type="AnimOriginType" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="scaleX" type="xs:float" default="1.0"/>
+				<xs:attribute name="scaleY" type="xs:float" default="1.0"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Scale" type="ScaleType" substitutionGroup="Animation"/>
+	<xs:complexType name="AlphaType">
+		<xs:complexContent>
+			<xs:extension base="AnimationType">
+				<xs:attribute name="change" type="xs:float" default="0.0"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Alpha" type="AlphaType" substitutionGroup="Animation"/>
+	<xs:complexType name="AnimationGroupType">
+		<xs:sequence minOccurs="0">
+			<xs:choice maxOccurs="unbounded">
+				<xs:element ref="Animation"/>
+				<xs:element name="Scripts" type="AnimScriptsType"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="inherits" type="xs:string"/>
+		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
+		<xs:attribute name="looping" type="ANIMLOOPTYPE" default="NONE"/>
+		<xs:attribute name="parentKey" type="xs:string"/>
+	</xs:complexType>
+	<xs:element name="AnimationGroup" type="AnimationGroupType"/>
 </xs:schema>

@@ -56,9 +56,7 @@
 					self:SetAlpha(0);
 				end
 			</OnLeave>
-			<OnEvent>
-				VoiceChatButton_OnEvent(self, event, ...)
-			</OnEvent>
+			<OnEvent function="VoiceChatButton_OnEvent"/>
 		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -133,12 +131,8 @@
 				self.moving = false;
 				MOVING_FRAME = nil;
 			</OnDragStop>
-			<OnEvent>
-				VoiceChatTalkers_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				VoiceChatTalkers_Update(self);
-			</OnShow>
+			<OnEvent function="VoiceChatTalkers_OnEvent"/>
+			<OnShow function="VoiceChatTalkers_Update"/>
 		</Scripts>
 		<Frames>
 			<Frame name="$parentSpeaker">
@@ -252,9 +246,7 @@
 			</Frame>
 			<Frame name="MiniMapVoiceChatDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
 				<Scripts>
-					<OnLoad>
-						MiniMapVoiceChatDropDown_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="MiniMapVoiceChatDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -294,15 +286,9 @@
 				end
 				GameTooltip_AddNewbieTip(self, text, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_VOICE_CHAT_SELECTOR);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnMouseUp>
-				MinimapButton_OnMouseUp(self);
-			</OnMouseUp> 
-			<OnMouseDown>
-				MinimapButton_OnMouseDown(self);
-			</OnMouseDown>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnMouseUp function="MinimapButton_OnMouseUp"/>
+			<OnMouseDown function="MinimapButton_OnMouseDown"/>
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 	</Button>

@@ -5,16 +5,15 @@
 	<Include file="GameTooltipTemplate.xml"/>
 	<GameTooltip name="GameTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
 		<Scripts>
-			<OnLoad>
-				GameTooltip_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="GameTooltip_OnLoad"/>
 			<OnTooltipSetUnit>
 				if ( self:IsUnit("mouseover") ) then
 					getglobal(self:GetName().."TextLeft1"):SetTextColor(GameTooltip_UnitColor("mouseover"));
 				end
 			</OnTooltipSetUnit>
 			<OnTooltipSetItem>
-				if ( IsModifiedClick("COMPAREITEMS") ) then
+				if ( IsModifiedClick("COMPAREITEMS") or
+				     (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) ) then
 					GameTooltip_ShowCompareItem(1);
 				end
 			</OnTooltipSetItem>
@@ -24,9 +23,7 @@
 				ShoppingTooltip2:Hide();
 				ShoppingTooltip3:Hide();
 			</OnHide>
-			<OnUpdate>
-				GameTooltip_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnUpdate function="GameTooltip_OnUpdate"/>
 		</Scripts>
 	</GameTooltip>
 	<GameTooltip name="ShoppingTooltip1" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>

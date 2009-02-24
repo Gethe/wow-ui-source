@@ -32,6 +32,8 @@ end
 function AudioOptionsFrame_OnLoad (self)
 	OptionsFrame_OnLoad(self);
 
+	AudioOptionsFrame:SetHeight(540);
+	AudioOptionsFrameCategoryFrame:SetHeight(449);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
@@ -55,7 +57,7 @@ function AudioOptionsFrame_OnHide (self)
 	end
 end
 
-function AudioOptionsFrameCancel_OnClick ()
+function AudioOptionsFrameCancel_OnClick (self, button)
 	OptionsFrameCancel_OnClick(AudioOptionsFrame);
 
 	if ( AudioOptionsFrame.audioRestart ) then
@@ -68,16 +70,14 @@ function AudioOptionsFrameCancel_OnClick ()
 	AudioOptionsFrame_Toggle();
 end
 
-function AudioOptionsFrameOkay_OnClick (apply)
-	OptionsFrameOkay_OnClick(AudioOptionsFrame, apply);
+function AudioOptionsFrameOkay_OnClick (self, button)
+	OptionsFrameOkay_OnClick(AudioOptionsFrame);
 
 	if ( AudioOptionsFrame.audioRestart ) then
 		AudioOptionsFrame_AudioRestart();
 	end
 
-	if ( not apply ) then
-		AudioOptionsFrame_Toggle();
-	end
+	AudioOptionsFrame_Toggle();
 end
 
 function AudioOptionsFrameDefault_OnClick ()

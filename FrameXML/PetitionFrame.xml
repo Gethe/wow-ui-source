@@ -279,9 +279,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-                     <OnLoad>
-                        self:SetFrameLevel(self:GetFrameLevel() + 2);
-                    </OnLoad>
+                     <OnLoad function="RaiseFrameLevelByTwo"/>
                 </Scripts>
 			</Frame>
 			<Button name="PetitionFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
@@ -296,9 +294,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(PetitionFrame);
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<Button name="PetitionFrameSignButton" inherits="UIPanelButtonTemplate" text="SIGN_CHARTER">
@@ -313,9 +309,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						SignPetition();
-					</OnClick>
+					<OnClick function="SignPetition"/>
 				</Scripts>
 			</Button>
 			<Button name="PetitionFrameRequestButton" inherits="UIPanelButtonTemplate" text="REQUEST_SIGNATURE">
@@ -330,9 +324,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						OfferPetition();
-					</OnClick>
+					<OnClick function="OfferPetition"/>
 				</Scripts>
 			</Button>
 			<Button name="PetitionFrameCloseButton" inherits="UIPanelCloseButton">
@@ -396,9 +388,6 @@
 				PlaySound("igQuestListClose");
 				ClosePetition();
 			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -211,10 +211,12 @@ local function PickupAny(kind, target, detail, ...)
         PickupSpell(target, detail)
     elseif kind == 'companion' then
         PickupCompanion(target, detail)
+	elseif kind == 'equipmentset' then
+		PickupEquipmentSet(target);
     end
 end
 
-function SecureHandler_OnDragEvent(snippetAttr, self, button)
+function SecureHandler_OnDragEvent(self, snippetAttr, button)
     local body = self:GetAttribute(snippetAttr);
     if (body) then
         PickupAny( SecureHandler_Self_Execute(self,
