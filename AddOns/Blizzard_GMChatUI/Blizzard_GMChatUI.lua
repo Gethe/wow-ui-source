@@ -15,6 +15,8 @@ function GMChatFrame_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_WHISPER_INFORM");
 	self.flashTimer = 0;
 	self.lastGM = {};
+	
+	GMChatOpenLog:Enable();
 end
 
 function GMChatFrame_OnEvent(self, event, ...)
@@ -44,6 +46,12 @@ function GMChatFrame_OnEvent(self, event, ...)
 			GMChatStatusFrame:Show();
 			GMChatStatusFrame_Pulse();
 			table.insert(self.lastGM,arg2);
+			
+			DEFAULT_CHAT_FRAME:AddMessage(pflag.."|HGMChat|h["..GM_CHAT_STATUS_READY_DESCRIPTION.."]|h", info.r, info.g, info.b);
+			DEFAULT_CHAT_FRAME:SetHyperlinksEnabled(true);
+			DEFAULT_CHAT_FRAME.overrideHyperlinksEnabled = true;
+			SetButtonPulse(HelpMicroButton, 3600, 0.2);
+			SetButtonPulse(GMChatOpenLog, 3600, 0.2);
 		else
 			ChatEdit_SetLastTellTarget(arg2);
 		end
@@ -76,6 +84,20 @@ function GMChatFrame_OnShow(self)
 		ChatEdit_SetLastTellTarget(gmName);
 	end
 	table.wipe(self.lastGM);
+	
+	SetButtonPulse(HelpMicroButton, 0, 1);	--Stop the buttons from pulsing.
+	SetButtonPulse(GMChatOpenLog, 0, 1);
+	
+	self:SetScript("OnUpdate", GMChatFrame_OnUpdate);
+end
+
+function GMChatFrame_OnUpdate(self, elapsed)
+	if ( DEFAULT_CHAT_FRAME.isUninteractable ) then
+		DEFAULT_CHAT_FRAME:SetHyperlinksEnabled(false);
+	end
+	DEFAULT_CHAT_FRAME.overrideHyperlinksEnabled = false;
+	
+	self:SetScript("OnUpdate", nil);
 end
 
 function GMChatFrame_Show()
@@ -91,11 +113,11 @@ function GMChatStatusFrame_OnClick()
 end
 
 local function GMChatStatusFrame_PulseFunc(self, elapsed)
-	return abs(sin(elapsed*180*10--[[<--Number of times to pulse here]]));
+	return abs(sin(elapsed*180*450--[[<--Number of times to pulse here]]));
 end
 
 local GMChatStatusFrame_PulseTable = {
-	totalTime = 20,
+	totalTime = 900,
 	updateFunc = "SetAlpha",
 	getPosFunc = GMChatStatusFrame_PulseFunc,
 }

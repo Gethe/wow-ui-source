@@ -667,7 +667,9 @@ end
 function FCF_SetUninteractable(chatFrame, isUninteractable)	--No, uninteractable is not really a word.
 	chatFrame.isUninteractable = isUninteractable;
 	SetChatWindowUninteractable(chatFrame:GetID(), isUninteractable);
-	chatFrame:SetHyperlinksEnabled(not isUninteractable);
+	if ( not chatFrame.overrideHyperlinksEnabled ) then
+		chatFrame:SetHyperlinksEnabled(not isUninteractable);
+	end
 	local chatFrameName = chatFrame:GetName();
 	if ( isUninteractable ) then
 		_G[chatFrameName.."ResizeTop"]:EnableMouse(false);

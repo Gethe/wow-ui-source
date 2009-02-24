@@ -135,7 +135,7 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Frame name="GMChatStatusFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="false">
+	<Frame name="GMChatStatusFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" frameStrata="FULLSCREEN">
 		<Size>
 			<AbsDimension x="208" y="75"/>
 		</Size>

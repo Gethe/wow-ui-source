@@ -74,6 +74,9 @@ function SetItemRef(link, text, button)
 			end
 		end
 		return;
+	elseif ( strsub(link, 1, 6) == "GMChat" ) then
+		GMChatStatusFrame_OnClick();
+		return;
     end
     
 	if ( IsModifiedClick() ) then
