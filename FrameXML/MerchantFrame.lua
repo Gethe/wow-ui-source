@@ -91,6 +91,7 @@ function MerchantFrame_UpdateMerchantInfo()
 			SetItemButtonTexture(itemButton, texture);
 			
 			if ( extendedCost and (price <= 0) ) then
+				itemButton.price = nil;
 				itemButton.extendedCost = true;
 				itemButton.link = GetMerchantItemLink(index);
 				itemButton.texture = texture;
@@ -100,6 +101,7 @@ function MerchantFrame_UpdateMerchantInfo()
 				merchantMoney:Hide();
 				merchantAltCurrency:Show();
 			elseif ( extendedCost and (price > 0) ) then
+				itemButton.price = price;
 				itemButton.extendedCost = true;
 				itemButton.link = GetMerchantItemLink(index);
 				itemButton.texture = texture;
@@ -110,6 +112,7 @@ function MerchantFrame_UpdateMerchantInfo()
 				merchantAltCurrency:Show();
 				merchantMoney:Show();
 			else
+				itemButton.price = price;
 				itemButton.extendedCost = nil;
 				MoneyFrame_Update(merchantMoney:GetName(), price);
 				merchantAltCurrency:Hide();
@@ -145,6 +148,7 @@ function MerchantFrame_UpdateMerchantInfo()
 				SetItemButtonNormalTextureVertexColor(itemButton, 1.0, 1.0, 1.0);
 			end
 		else
+			itemButton.price = nil;
 			itemButton.hasItem = nil;
 			itemButton:Hide();
 			SetItemButtonNameFrameVertexColor(merchantButton, 0.5, 0.5, 0.5);
@@ -294,21 +298,7 @@ function MerchantFrame_UpdateBuybackInfo()
 			MoneyFrame_Update("MerchantItem"..i.."MoneyFrame", buybackPrice);
 			itemButton:SetID(i);
 			itemButton:Show();
-			if ( numAvailable == 0 ) then
-				-- If not available and not usable
-				if ( not buybackIsUsable ) then
-					SetItemButtonNameFrameVertexColor(buybackButton, 0.5, 0, 0);
-					SetItemButtonSlotVertexColor(buybackButton, 0.5, 0, 0);
-					SetItemButtonTextureVertexColor(itemButton, 0.5, 0, 0);
-					SetItemButtonNormalTextureVertexColor(itemButton, 0.5, 0, 0);
-				else
-					SetItemButtonNameFrameVertexColor(buybackButton, 0.5, 0.5, 0.5);
-					SetItemButtonSlotVertexColor(buybackButton, 0.5, 0.5, 0.5);
-					SetItemButtonTextureVertexColor(itemButton, 0.5, 0.5, 0.5);
-					SetItemButtonNormalTextureVertexColor(itemButton,0.5, 0.5, 0.5);
-				end
-				
-			elseif ( not buybackIsUsable ) then
+			if ( not buybackIsUsable ) then
 				SetItemButtonNameFrameVertexColor(buybackButton, 1.0, 0, 0);
 				SetItemButtonSlotVertexColor(buybackButton, 1.0, 0, 0);
 				SetItemButtonTextureVertexColor(itemButton, 0.9, 0, 0);
@@ -412,8 +402,8 @@ function MerchantItemButton_OnModifiedClick(self, button)
 		if ( IsModifiedClick("SPLITSTACK") ) then
 			local maxStack = GetMerchantItemMaxStack(self:GetID());
 			if ( maxStack > 1 ) then
-				if ( price and (price > 0) ) then
-					local canAfford = floor(GetMoney() / price);
+				if ( self.price and (self.price > 0) ) then
+					local canAfford = floor(GetMoney() / self.price);
 					if ( canAfford < maxStack ) then
 						maxStack = canAfford;
 					end

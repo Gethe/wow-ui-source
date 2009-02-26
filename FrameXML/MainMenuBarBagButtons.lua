@@ -69,6 +69,7 @@ end
 
 function ItemAnim_OnEvent(self, event, ...)
 	if ( event == "ITEM_PUSH" ) then
+		local arg1, arg2 = ...;
 		local id = self:GetParent():GetID();
 		if ( id == arg1 ) then
 			self:ReplaceIconTexture(arg2);

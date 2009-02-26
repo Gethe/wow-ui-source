@@ -245,7 +245,7 @@ function CompanionButton_OnDrag(self)
 	elseif ( PetPaperDollFrameCompanionFrame.mode=="MOUNT" ) then
 		offset = (PetPaperDollFrameCompanionFrame.pageMount or 0)*NUM_COMPANIONS_PER_PAGE;
 	end
-	dragged = self:GetID() + offset;
+	local dragged = self:GetID() + offset;
 	PickupCompanion( PetPaperDollFrameCompanionFrame.mode, dragged );
 end
 

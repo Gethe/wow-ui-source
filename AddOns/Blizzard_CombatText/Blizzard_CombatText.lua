@@ -282,7 +282,7 @@ function CombatText_OnEvent(self, event, ...)
 	elseif ( messageType == "COMBO_POINTS" ) then
 		message = format(COMBAT_TEXT_COMBO_POINTS, data);
 	elseif ( messageType == "RUNE" ) then
-		if ( arg2 == true ) then
+		if ( data == true ) then
 			local runeType = GetRuneType(arg1);
 			message = COMBAT_TEXT_RUNE[runeType];
 			-- Alex Brazie had me use these values. Feel free to correct them

@@ -70,8 +70,11 @@ function MailFrame_OnEvent(self, event, ...)
 		SendMailMailButton:Enable();
 	elseif ( event == "MAIL_CLOSED" ) then
 		HideUIPanel(MailFrame);
-	elseif ( (event == "CLOSE_INBOX_ITEM") and (InboxFrame.openMailID == arg1) ) then
-		HideUIPanel(OpenMailFrame);
+	elseif ( (event == "CLOSE_INBOX_ITEM") ) then
+		local arg1 = ...;
+		if ( arg1 == InboxFrame.openMailID ) then
+			HideUIPanel(OpenMailFrame);
+		end
 	end
 end
 
@@ -1033,7 +1036,7 @@ function SendMailMoneyButton_OnClick()
 end
 
 function SendMailAttachmentButton_OnClick(self, button)
-	ClickSendMailItemButton(self:GetID(), arg1 == "RightButton");
+	ClickSendMailItemButton(self:GetID(), button == "RightButton");
 end
 
 function SendMailAttachmentButton_OnDropAny()

@@ -90,6 +90,9 @@ function TalentFrame_Load(TalentFrame)
 end
 
 function TalentFrame_Update(TalentFrame)
+	if ( not TalentFrame ) then
+		return;
+	end
 
 	if ( TalentFrame.updateFunction ) then
 		TalentFrame.updateFunction();
@@ -99,11 +102,11 @@ function TalentFrame_Update(TalentFrame)
 	local isActiveTalentGroup;
 	if ( TalentFrame.inspect ) then
 		unspentPoints = 0;
+		-- even though we have inspection data for more than one talent group, we're only showing one for now
 		isActiveTalentGroup = true;
 	else
 		unspentPoints = TalentFrame_UpdateTalentPoints(TalentFrame);
-		isActiveTalentGroup = TalentFrame.pet or TalentFrame.talentGroup == GetActiveTalentGroup();
-		isActiveTalentGroup = TalentFrame.pet or TalentFrame.talentGroup == GetActiveTalentGroup();
+		isActiveTalentGroup = TalentFrame.talentGroup == GetActiveTalentGroup(TalentFrame.inspect, TalentFrame.pet);
 	end
 
 	local preview = GetCVarBool("previewTalents");
@@ -140,6 +143,14 @@ function TalentFrame_Update(TalentFrame)
 		message("Too many talents in talent frame!");
 	end
 
+	-- compute tab points spent if any
+	local tabPointsSpent;
+	if ( TalentFrame.pointsSpent and TalentFrame.previewPointsSpent ) then
+		tabPointsSpent = TalentFrame.pointsSpent + TalentFrame.previewPointsSpent;
+	else
+		tabPointsSpent = 0;
+	end
+
 	TalentFrame_ResetBranches(TalentFrame);
 	local talentFrameTalentName = talentFrameName.."Talent";
 	local tier, column, rank, maxRank, isExceptional, isLearnable;
@@ -170,7 +181,7 @@ function TalentFrame_Update(TalentFrame)
 					forceDesaturated = nil;
 				end
 
-				local tabPointsSpent = TalentFrame.pointsSpent + TalentFrame.previewPointsSpent;
+				-- is this talent's tier unlocked?
 				if ( ((tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent) ) then
 					tierUnlocked = 1;
 				else
@@ -513,7 +524,7 @@ end
 
 function TalentFrame_UpdateTalentPoints(TalentFrame)
 	local talentPoints = GetUnspentTalentPoints(TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
-	local unspentPoints = talentPoints - GetPreviewTalentPointsSpent(TalentFrame.pet, TalentFrame.talentGroup);
+	local unspentPoints = talentPoints - GetGroupPreviewTalentPointsSpent(TalentFrame.pet, TalentFrame.talentGroup);
 	local talentFrameName = TalentFrame:GetName();
 	_G[talentFrameName.."TalentPointsText"]:SetFormattedText(UNSPENT_TALENT_POINTS, HIGHLIGHT_FONT_COLOR_CODE..unspentPoints..FONT_COLOR_CODE_CLOSE);
 	TalentFrame_ResetBranches(TalentFrame);

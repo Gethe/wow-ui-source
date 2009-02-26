@@ -204,7 +204,7 @@ function LowHealthFrame_OnUpdate(self, elapsed)
 		elseif ( self.flashMode == "OUT_HOLD" ) then
 			self:SetAlpha(LOWHEALTH_MIN_ALPHA);
 
-			self.flashTimer = self.flashTimer + elpased;
+			self.flashTimer = self.flashTimer + elapsed;
 			if ( self.flashTimer >= self.flashOutHoldTime ) then
 				self.flashMode = "IN";
 				self.flashTimer = 0;

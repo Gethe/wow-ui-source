@@ -485,7 +485,7 @@ function ApplyUnitButtonConfiguration( ... )
                 local unitWatch = frame:GetAttribute("initial-unitWatch");
                 if ( anchor ) then
                         local point, relPoint, xOffset, yOffset = strsplit(",", anchor);
-                        relpoint = relpoint or point;
+                        relPoint = relPoint or point;
                         xOffset = tonumber(xOffset) or 0;
                         yOffset = tonumber(yOffset) or 0;
                         frame:SetPoint(point, frame:GetParent(), relPoint, xOffset, yOffset);

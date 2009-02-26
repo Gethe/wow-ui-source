@@ -10,7 +10,7 @@ CHAT_SHOW_ICONS = "0";
 
 -- Table for event indexed chatFilters.
 -- Format ["CHAT_MSG_SYSTEM"] = { function1, function2, function3 }
--- filter, msg = function1 (msg); if filter then return true, msg; end
+-- filter, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = function1 (self, event, ...) if filter then return true end return false, ... end
 local chatFilters = {};
 
 -- These hash tables are to improve performance of common lookups
@@ -1820,7 +1820,7 @@ SlashCmdList["RAID_INFO"] = function(msg)
 end
 
 SlashCmdList["READYCHECK"] = function(msg)
-	if ( ((IsRaidLeader() or IsRaidOfficer()) and GetNumRaidMembers() > 0) or (IsPartyLeader() and GetNumPartyMembers()) ) then
+	if ( ((IsRaidLeader() or IsRaidOfficer()) and GetNumRaidMembers() > 0) or (IsPartyLeader() and GetNumPartyMembers() > 0) ) then
 		DoReadyCheck();
 	end
 end
@@ -2231,7 +2231,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		local filter = false;
 		if ( chatFilters[event] ) then
 			for _, filterFunc in next, chatFilters[event] do
-				filter, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = filterFunc(...);
+				filter, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = filterFunc(self, event, ...);
 				if ( filter ) then
 					return true;
 				end
@@ -3093,7 +3093,7 @@ function ChatEdit_OnInputLanguageChanged(self)
 	button:SetText(variable);
 end
 
-local function processChatType(editBox, msg, index)
+local function processChatType(editBox, msg, index, send)
 -- this is a special function for "ChatEdit_HandleChatType"
 	if ( index == "WHISPER" ) then
 		ChatEdit_ExtractTellTarget(editBox, msg);
@@ -3134,7 +3134,7 @@ function ChatEdit_HandleChatType(editBox, msg, command, send)
 	else
 		-- first check the hash table
 		if ( hash_ChatTypeInfoList[command] ) then
-			processChatType(editBox, msg, hash_ChatTypeInfoList[command]);
+			processChatType(editBox, msg, hash_ChatTypeInfoList[command], send);
 			return true;
 		end
 		for index, value in pairs(ChatTypeInfo) do
@@ -3144,7 +3144,7 @@ function ChatEdit_HandleChatType(editBox, msg, command, send)
 				cmdString = strupper(cmdString);
 				if ( cmdString == command ) then
 					hash_ChatTypeInfoList[command] = index;	-- add to hash table
-					processChatType(editBox, msg, index);
+					processChatType(editBox, msg, index, send);
 					return true;
 				end
 				i = i + 1;

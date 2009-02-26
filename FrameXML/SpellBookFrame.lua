@@ -575,7 +575,7 @@ function SpellBook_GetSpellID(id)
 	if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		return id + (SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET] - 1));
 	else
-		slot = id + SpellBookFrame.selectedSkillLineOffset + ( SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] - 1));
+		local slot = id + SpellBookFrame.selectedSkillLineOffset + ( SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] - 1));
 		if ( not GetCVarBool("ShowAllSpellRanks") ) then
 			return GetKnownSlotFromHighestRankSlot(slot), slot;
 		end

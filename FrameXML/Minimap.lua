@@ -264,7 +264,7 @@ function ToggleMiniMapRotation()
 end
 
 function MinimapMailFrameUpdate()
-	sender1,sender2,sender3 = GetLatestThreeSenders();
+	local sender1,sender2,sender3 = GetLatestThreeSenders();
 	
 	if( sender1 or sender2 or sender3 ) then
 		toolText = HAVE_MAIL_FROM;
@@ -304,6 +304,7 @@ function MiniMapTrackingDropDown_Initialize()
 	local name, texture, active, category;
 	local anyActive, checked;
 	local count = GetNumTrackingTypes();
+	local info;
 	for id=1, count do
 		name, texture, active, category  = GetTrackingInfo(id);
 

@@ -301,7 +301,7 @@ function WorldStateAlwaysUpFrame_StopBGChatFilter (self)
 	self:SetScript("OnUpdate", nil);
 end
 
-function WorldStateAlwaysUpFrame_FilterChatMsgSystem (...)
+function WorldStateAlwaysUpFrame_FilterChatMsgSystem (self, event, ...)
 	local playerName;
 	
 	local message = ...;
@@ -340,7 +340,7 @@ end
 
 local matchString = string.gsub(LOOT_ITEM_CREATED_SELF, "%%s%.", ".+")
 
-function WorldStateAlwaysUpFrame_FilterChatMsgLoot (...)
+function WorldStateAlwaysUpFrame_FilterChatMsgLoot (self, event, ...)
 	if ( GetBattlefieldWinner() ) then
 		local message = ...;
 		-- Suppress loot messages for other players at the end of battlefields and arenas
@@ -849,7 +849,7 @@ function WorldStateScoreFrame_Resize(width)
 	WorldStateScoreScrollFrame:SetWidth(WorldStateScoreFrame.scrollBarButtonWidth);
 
 	-- Position Column data horizontally
-	local buttonTeam, buttonKills, buttonDeaths, buttonDamage, buttonHealing, buttonHonorGained, buttonReturnedIcon, buttonCapturedIcon;
+	local buttonTeam, buttonKills, buttonKillingBlows, buttonDeaths, buttonDamage, buttonHealing, buttonHonorGained, buttonReturnedIcon, buttonCapturedIcon;
 	for i=1, MAX_WORLDSTATE_SCORE_BUTTONS do
 		if ( isRegistered ) then
 			buttonTeam = getglobal("WorldStateScoreButton"..i.."Team");
@@ -941,7 +941,7 @@ function ScorePlayerDropDown_Cancel()
 end
 
 function ScorePlayerDropDown_Initialize()
-	info = UIDropDownMenu_CreateInfo();
+	local info = UIDropDownMenu_CreateInfo();
 	info.text = PVP_REPORT_AFK;
 	info.func = ScorePlayerDropDown_OnClick;
 	UIDropDownMenu_AddButton(info);

@@ -102,7 +102,7 @@ function PVPTeam_Update()
 	-- Display Elements
 	local button, buttonName, highlight, data, standard, emblem, border;
 	-- Data Elements
-	local teamName, teamSize, teamRating, teamPlayed, teamWins, teamLoss,  seasonTeamPlayed, seasonTeamWins, playerPlayed, playerPlayedPct, teamRank, playerRating;
+	local teamName, teamSize, teamRating, teamPlayed, teamWins, teamLoss,  seasonTeamPlayed, seasonTeamWins, playerPlayed, seasonPlayerPlayed, playerPlayedPct, teamRank, playerRating;
 	local played, wins, loss;
 	local background = {};
 	local borderColor = {};

@@ -298,7 +298,9 @@ function GlyphFrame_OnShow (self)
 end
 
 function GlyphFrame_OnLoad (self)
-	self.glow = _G[self:GetName() .. "Glow"];
+	local name = self:GetName();
+	self.glow = _G[name .. "Glow"];
+	self.background = _G[name .. "Background"];
 	self.sparkleFrame = SparkleFrame:New(self);
 	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("GLYPH_ADDED");
@@ -380,6 +382,11 @@ function GlyphFrame_OnEvent (self, event, ...)
 end
 
 function GlyphFrame_Update ()
+	local isActiveTalentGroup =
+		PlayerTalentFrame and not PlayerTalentFrame.pet and
+		PlayerTalentFrame.talentGroup == GetActiveTalentGroup(PlayerTalentFrame.pet);
+	SetDesaturation(GlyphFrame.background, not isActiveTalentGroup);
+
 	for i = 1, NUM_GLYPH_SLOTS do
 		GlyphFrameGlyph_UpdateSlot(_G["GlyphFrameGlyph" .. i]);
 	end

@@ -802,10 +802,11 @@ local function _CalendarFrame_IsSignUpEvent(calendarType, inviteType)
 	return calendarType == "GUILD_EVENT" and inviteType == CALENDAR_INVITETYPE_SIGNUP;
 end
 
-local function _CalendarFrame_CanRemoveEvent(calendarType, inviteType)
+local function _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType)
 	return
-		calendarType == "PLAYER" or
-		(calendarType == "GUILD_EVENT" and inviteType == CALENDAR_INVITETYPE_NORMAL);
+		modStatus ~= "CREATOR" and
+		(calendarType == "PLAYER" or
+		(calendarType == "GUILD_EVENT" and inviteType == CALENDAR_INVITETYPE_NORMAL));
 end
 
 local function _CalendarFrame_CacheEventTextures_Internal(...)
@@ -2174,7 +2175,7 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 					end
 					needSpacer = false;
 				end
-				if ( modStatus ~= "CREATOR" and _CalendarFrame_CanRemoveEvent(calendarType, inviteType) ) then
+				if ( _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType) ) then
 					-- spacer
 					if ( needSpacer ) then
 						UIMenu_AddButton(menu, "");

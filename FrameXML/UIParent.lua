@@ -160,6 +160,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CONFIRM_LOOT_ROLL");
 	self:RegisterEvent("INSTANCE_BOOT_START");
 	self:RegisterEvent("INSTANCE_BOOT_STOP");
+	self:RegisterEvent("INSTANCE_LOCK_START");
+	self:RegisterEvent("INSTANCE_LOCK_STOP");
 	self:RegisterEvent("CONFIRM_TALENT_WIPE");
 	self:RegisterEvent("CONFIRM_BINDER");
 	self:RegisterEvent("CONFIRM_SUMMON");
@@ -469,6 +471,14 @@ function UIParent_OnEvent(self, event, ...)
 			-- even if the clock is not shown. WorldFrame_OnUpdate handles alarm checking while the clock
 			-- is hidden.
 			TimeManager_LoadUI();
+		end
+		local lastTalkedToGM = GetCVar("lastTalkedToGM");
+		if ( lastTalkedToGM ~= "" ) then
+			GMChatFrame_LoadUI();
+			GMChatFrame:Show()
+			local info = ChatTypeInfo["WHISPER"];
+			GMChatFrame:AddMessage(format(GM_CHAT_LAST_SESSION, "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t "..
+			"|Hplayer:"..lastTalkedToGM.."|h".."["..lastTalkedToGM.."]".."|h"), info.r, info.g, info.b, info.id);
 		end
 		return;
 	end
@@ -844,6 +854,14 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("INSTANCE_BOOT");
 		return;
 	end
+	if ( event == "INSTANCE_LOCK_START" ) then
+		StaticPopup_Show("INSTANCE_LOCK");
+		return;
+	end
+	if ( event == "INSTANCE_LOCK_STOP" ) then
+		StaticPopup_Hide("INSTANCE_LOCK");
+		return;
+	end
 	if ( event == "CONFIRM_TALENT_WIPE" ) then
 		local dialog = StaticPopup_Show("CONFIRM_TALENT_WIPE");
 		if ( dialog ) then
@@ -852,7 +870,7 @@ function UIParent_OnEvent(self, event, ...)
 			-- exactly which talent spec he is wiping
 			TalentFrame_LoadUI();
 			if ( PlayerTalentFrame_Open ) then
-				PlayerTalentFrame_Open(GetActiveTalentGroup());
+				PlayerTalentFrame_Open(false, GetActiveTalentGroup());
 			end
 		end
 		return;
@@ -1814,43 +1832,17 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		ArenaEnemyFrames:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	end
 
-	if ( not WatchFrame:IsUserPlaced() ) then -- We're using Simple Quest Tracking, automagically size and position!
+	local numArenaOpponents = GetNumArenaOpponents();
+	if ( not WatchFrame:IsUserPlaced() and ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
+		WatchFrame:ClearAllPoints();
+		WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
+	elseif ( not WatchFrame:IsUserPlaced() ) then -- We're using Simple Quest Tracking, automagically size and position!
 		WatchFrame:ClearAllPoints();
 		WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 		-- OnSizeChanged for WatchFrame handles its redraw
 	end
-	
-	--[[
-	if ( AchievementWatchFrame:IsShown() ) then
-		if ( AchievementWatchFrame:GetWidth() > QuestWatchFrame:GetWidth() or not QuestWatchFrame:IsShown() ) then
-			QuestWatchFrame:ClearAllPoints();
-			if ( (not ArenaEnemyFrames) or (not ArenaEnemyFrames:IsShown()) ) then	--We don't want to adjust the position while the frame has been moved to deal with ArenaEnemy frames. We only have to manage this here as QuestWatchFrame will never be shown.
-				AchievementWatchFrame:ClearAllPoints();
-				AchievementWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY - 13); -- This -13 is here because the QuestWatchFrame has a built in 13 pixel offset that we have to fake.
-			end
- 			AchievementWatchFrame:SetWidth(AchievementWatchFrame.desiredWidth);
-			QuestWatchFrame:SetPoint("TOPLEFT", "AchievementWatchFrame", "BOTTOMLEFT", 0, 0);
-		else
-			AchievementWatchFrame:ClearAllPoints();
-			QuestWatchFrame:ClearAllPoints();
-			QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY - AchievementWatchFrame:GetHeight());
-			AchievementWatchFrame:SetPoint("BOTTOMLEFT", "QuestWatchFrame", "TOPLEFT", 0, 0);
-			AchievementWatchFrame:SetWidth(QuestWatchFrame:GetWidth());
-		end
-	else
-		QuestWatchFrame:ClearAllPoints();
-		QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-	end
-	
-
-	
-	if ( not WatchFrame:IsUserPlaced() ) then
-		WatchFrame:ClearAllPoints();
-		WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-	end
-
-	]]--
 	
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
@@ -3050,11 +3042,10 @@ function RaiseFrameLevelByTwo(frame)
 	frame:SetFrameLevel(frame:GetFrameLevel()+2);
 end
 
-function PlayerNameAutocomplete(self)
+function PlayerNameAutocomplete(self, char)
 	local text = self:GetText();
 	local textlen = strlen(text);
 	local numFriends, name;
-
 	-- First check your friends list
 	numFriends = GetNumFriends();
 	if ( numFriends > 0 ) then
@@ -3063,7 +3054,7 @@ function PlayerNameAutocomplete(self)
 			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
 				self:SetText(name);
 				if ( self:IsInIMECompositionMode() ) then
-					self:HighlightText(textlen - strlen(arg1), -1);
+					self:HighlightText(textlen - strlen(char), -1);
 				else
 					self:HighlightText(textlen, -1);
 				end
@@ -3080,7 +3071,7 @@ function PlayerNameAutocomplete(self)
 			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
 				self:SetText(name);
 				if ( self:IsInIMECompositionMode() ) then
-					self:HighlightText(textlen - strlen(arg1), -1);
+					self:HighlightText(textlen - strlen(char), -1);
 				else
 					self:HighlightText(textlen, -1);
 				end

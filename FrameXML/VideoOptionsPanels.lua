@@ -377,7 +377,7 @@ end
 
 EffectsPanelOptions = {
 	farclip = { text = "FARCLIP", minValue = OPTIONS_FARCLIP_MIN, maxValue = OPTIONS_FARCLIP_MAX, valueStep = (OPTIONS_FARCLIP_MAX - OPTIONS_FARCLIP_MIN)/10},
-	TerrainMip = { text = "TERRAIN_MIP", minValue = 0, maxValue = 1, valueStep = 1, gameRestart = 1, tooltip = OPTION_TOOLTIP_TERRAIN_TEXTURE, tooltipRequirement = OPTION_RESTART_REQUIREMENT, },
+	TerrainMip = { text = "TERRAIN_MIP", minValue = 0, maxValue = 1, valueStep = 1, logout = 1, tooltip = OPTION_TOOLTIP_TERRAIN_TEXTURE, tooltipRequirement = OPTION_LOGOUT_REQUIREMENT,},
 	particleDensity = { text = "PARTICLE_DENSITY", minValue = 0.1, maxValue = 1.0, valueStep = 0.1},
 	environmentDetail = { text = "ENVIRONMENT_DETAIL", minValue = 0.5, maxValue = 1.5, valueStep = .25},
 	groundEffectDensity = { text = "GROUND_DENSITY", minValue = 16, maxValue = 64, valueStep = 8},
@@ -386,7 +386,7 @@ EffectsPanelOptions = {
 	extShadowQuality = { text = "SHADOW_QUALITY", minValue = 0, maxValue = 4, valueStep = 1 },
 	textureFilteringMode = { text = "ANISOTROPIC", minValue = 0, maxValue = 5, valueStep = 1, gameRestart = 1, tooltipOwnerPoint = "TOPLEFT", tooltipRequirement = OPTION_RESTART_REQUIREMENT, },
 	weatherDensity = { text = "WEATHER_DETAIL", minValue = 0, maxValue = 3, valueStep = 1, tooltipOwnerPoint = "TOPLEFT", },
-	componentTextureLevel = { text = "PLAYER_DETAIL", minValue = 8, maxValue = 9, valueStep = 1, tooltipPoint = "BOTTOMRIGHT", tooltipOwnerPoint = "TOPLEFT", },
+	componentTextureLevel = { text = "PLAYER_DETAIL", minValue = 8, maxValue = 9, valueStep = 1, tooltipPoint = "BOTTOMRIGHT", tooltipOwnerPoint = "TOPLEFT", gameRestart = 1, tooltipRequirement = OPTION_RESTART_REQUIREMENT, },
 	specular = { text = "TERRAIN_HIGHLIGHTS", logout = 1, tooltipRequirement = OPTION_LOGOUT_REQUIREMENT, },
 	ffxGlow = { text = "FULL_SCREEN_GLOW", },
 	ffxDeath = { text = "DEATH_EFFECT", },
@@ -549,7 +549,8 @@ end
 VideoStereoPanelOptions = {
 	gxStereoEnabled = { text = "ENABLE_STEREO_VIDEO" },
 	gxStereoConvergence = { text = "DEPTH_CONVERGENCE", minValue = 0.2, maxValue = 50, valueStep = 0.1, tooltip = OPTION_STEREO_CONVERGENCE},
-	gxStereoSeparation = { text = "EYE_SEPARATION", minValue = 0, maxValue = 100, valueStep = 1, tooltip = OPTION_STEREO_SEPERATION},
+	gxStereoSeparation = { text = "EYE_SEPARATION", minValue = 0, maxValue = 100, valueStep = 1, tooltip = OPTION_STEREO_SEPARATION},
+	gxCursor = { text = "STEREO_HARDWARE_CURSOR" },
 }
 
 function VideoOptionsStereoPanel_OnLoad (self)
@@ -558,6 +559,8 @@ function VideoOptionsStereoPanel_OnLoad (self)
 	if ( IsStereoVideoAvailable() ) then
 		VideoOptionsPanel_OnLoad(self);
 	end
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:SetScript("OnEvent", VideoOptionsStereoPanel_OnEvent);
 end
 
 function VideoOptionsStereoPanel_Default(self)
@@ -567,5 +570,37 @@ function VideoOptionsStereoPanel_Default(self)
 			control:SetValue(control.defaultValue);
 		end
 		control.newValue = nil;
+	end
+end
+
+function VideoOptionsStereoPanel_OnEvent(self, event, ...)
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+	
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		-- don't allow systems that don't support features to enable them
+		local anisotropic, pixelShaders, vertexShaders, trilinear, buffering, maxAnisotropy, hardwareCursor = GetVideoCaps();
+		if ( not hardwareCursor ) then
+			VideoOptionsStereoPanelHardwareCursor:SetChecked(false);
+			VideoOptionsStereoPanelHardwareCursor:Disable();
+		end
+		VideoOptionsStereoPanelHardwareCursor.SetChecked =
+			function (self, checked)
+				local anisotropic, pixelShaders, vertexShaders, trilinear, buffering, maxAnisotropy, hardwareCursor = GetVideoCaps();
+				if ( not hardwareCursor ) then
+					checked = false;
+				end
+				getmetatable(self).__index.SetChecked(self, checked);
+			end
+		VideoOptionsStereoPanelHardwareCursor.Enable =
+			function (self)
+				local anisotropic, pixelShaders, vertexShaders, trilinear, buffering, maxAnisotropy, hardwareCursor = GetVideoCaps();
+				if ( not hardwareCursor ) then
+					return;
+				end
+				getmetatable(self).__index.Enable(self);
+				local text = _G[self:GetName().."Text"];
+				local fontObject = text:GetFontObject();
+				_G[self:GetName().."Text"]:SetTextColor(fontObject:GetTextColor());
+			end
 	end
 end

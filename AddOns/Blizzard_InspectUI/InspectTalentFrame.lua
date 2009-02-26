@@ -71,6 +71,7 @@ function InspectTalentFrame_Update()
 end
 
 function InspectTalentFrame_Refresh()
+	InspectTalentFrame.talentGroup = GetActiveTalentGroup(InspectTalentFrame.inspect);
 	InspectTalentFrame.unit = InspectFrame.unit;
 	TalentFrame_Update(InspectTalentFrame);
 end

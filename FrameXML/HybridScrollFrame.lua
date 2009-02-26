@@ -19,13 +19,11 @@ function HybridScrollFrame_OnValueChanged (self, value)
 		if ( self.scrollDown ) then
 			self.scrollDown:Disable()
 		end
-		val = maxVal;
 	end
 	if ( value <= minVal ) then
 		if ( self.scrollUp ) then
 			self.scrollUp:Disable();
 		end
-		val = minVal;
 	end
 end
 
@@ -173,7 +171,7 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 	else
 		button = CreateFrame("BUTTON", buttonName .. 1, scrollChild, buttonTemplate);
 		buttonHeight = button:GetHeight();
-		button:SetPoint(initialPoint, scrollChild, initialRelative, initialOffsetX, initalOffsetY);
+		button:SetPoint(initialPoint, scrollChild, initialRelative, initialOffsetX, initialOffsetY);
 		buttons = {}
 		tinsert(buttons, button);
 	end
@@ -194,7 +192,7 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 	self:UpdateScrollChildRect();
 	
 	self.buttons = buttons;
-	scrollBar = self.scrollBar;	
+	local scrollBar = self.scrollBar;	
 	scrollBar:SetMinMaxValues(0, numButtons * buttonHeight)
 	scrollBar:SetValueStep(.005);
 	scrollBar:SetValue(0);

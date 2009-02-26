@@ -1235,7 +1235,7 @@ function AchievementButton_GetMeta (index)
 end
 
 function AchievementButton_GetProgressivePoints(achievementID)
-	local progressivePoints;
+	local points;
 	local _, _, progressivePoints, completed = GetAchievementInfo(achievementID);
 
 	while GetPreviousAchievement(achievementID) do
@@ -1243,10 +1243,11 @@ function AchievementButton_GetProgressivePoints(achievementID)
 		_, _, points, completed = GetAchievementInfo(achievementID);
 		progressivePoints = progressivePoints+points;
 	end
-	if ( progressivePoints > 0 ) then
+	
+	if ( progressivePoints ) then
 		return progressivePoints;
 	else
-		return nil;
+		return 0;
 	end
 end
 
@@ -1776,7 +1777,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 	local numAchievements = select("#", ...);
 	local id, name, points, completed, month, day, year, description, flags, icon;
 	local buttons = AchievementFrameSummaryAchievements.buttons;
-	local button, achievementID;
+	local button, anchorTo, achievementID;
 	local defaultAchievementCount = 1;
 
 	for i=1, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
@@ -2016,7 +2017,6 @@ function AchievementFrame_SelectAchievement(id)
 	local categoryIndex, parent, hidden = 0;
 	for i, entry in next, ACHIEVEMENTUI_CATEGORIES do
 		if ( entry.id == category ) then
-			index = i;
 			parent = entry.parent;
 		end
 	end
@@ -2110,7 +2110,6 @@ function AchievementFrame_SelectSummaryStatistic (criteriaId)
 	local categoryIndex, parent, hidden = 0;
 	for i, entry in next, ACHIEVEMENTUI_CATEGORIES do
 		if ( entry.id == category ) then
-			index = i;
 			parent = entry.parent;
 		end
 	end

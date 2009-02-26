@@ -218,6 +218,19 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
+				<Texture name="$parentBackground">
+					<Size>
+						<AbsDimension x="72" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="45" y="-11"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

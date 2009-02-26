@@ -235,6 +235,8 @@ function FriendsList_Update()
 	
 	local friendOffset = FauxScrollFrame_GetOffset(FriendsFrameFriendsScrollFrame);
 	local friendIndex;
+	local nameText, LocationText, noteIcon, classFileName;
+	
 	for i=1, FRIENDS_TO_DISPLAY, 1 do
 		friendIndex = friendOffset + i;
 		name, level, class, area, connected, status, note, RAF = GetFriendInfo(friendIndex);
@@ -797,7 +799,6 @@ function WhoFrameDropDown_Initialize()
 	for i=1, getn(WHOFRAME_DROPDOWN_LIST), 1 do
 		info.text = WHOFRAME_DROPDOWN_LIST[i].name;
 		info.func = WhoFrameDropDownButton_OnClick;
-		info.checked = checked;
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -1200,7 +1201,7 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 	--Only show available tabs
 	local tab;
 	local numTabs = GetNumGuildBankTabs();
-	local name;
+	local name, permissionsTabBackground, permissionsText;
 	for i=1, MAX_GUILDBANK_TABS do
 		name = GetGuildBankTabInfo(i);
 		tab = getglobal("GuildBankTabPermissionsTab"..i);
@@ -1273,7 +1274,6 @@ function GuildControlPopupFrameDropDown_Initialize()
 	for i=1, GuildControlGetNumRanks(), 1 do
 		info.text = GuildControlGetRankName(i);
 		info.func = GuildControlPopupFrameDropDownButton_OnClick;
-		info.checked = checked;
 		UIDropDownMenu_AddButton(info);
 	end
 end

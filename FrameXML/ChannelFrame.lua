@@ -10,6 +10,8 @@ CHAT_CHANNEL_TABBING = {};
 CHAT_CHANNEL_TABBING[1] = "ChannelFrameDaughterFrameChannelPassword";
 CHAT_CHANNEL_TABBING[2] = "ChannelFrameDaughterFrameChannelName";
 
+local rosterFrame;
+
 function ChannelFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
@@ -66,8 +68,9 @@ function ChannelFrame_OnUpdate(self, elapsed)
 end
 
 function ChannelFrame_UpdateJoin()
-	if ( GetSelectedDisplayChannel() ) then
-		local name, header, collapsed, channelNumber, count, active, category, voiceEnabled, voiceActive = GetChannelDisplayInfo(i);
+	local id = GetSelectedDisplayChannel();
+	if ( id ) then
+		local name, header, collapsed, channelNumber, count, active, category, voiceEnabled, voiceActive = GetChannelDisplayInfo(id);
 		if ( category == "CHANNEL_CATEGORY_WORLD" and not active ) then
 			ChannelFrameJoinButton:Enable();
 		end
@@ -149,7 +152,7 @@ end
 function ChannelList_Update()
 	-- Scroll Bar Handling --
 	local frameHeight = ChannelListScrollChildFrame:GetHeight();
-	local button, buttonName, buttonLines, buttonSpeaker, hideVoice;
+	local button, buttonName, buttonLines, buttonCollapsed, buttonSpeaker, hideVoice;
 	local name, header, collapsed, channelNumber, active, count, category, voiceEnabled, voiceActive;
 	local channelCount = GetNumDisplayChannels();
 	for i=1, MAX_CHANNEL_BUTTONS, 1 do
@@ -403,6 +406,7 @@ function ChannelListDropDown_Initialize()
 	if ( not ChannelListDropDown.global ) then
 		if ( IsVoiceChatEnabled() ) then
 			-- Enable Voice Chat option if Voice Chat is enabled.
+			local info;
 			if ( not ChannelListDropDown.voice and IsDisplayChannelOwner() ) then
 				info = UIDropDownMenu_CreateInfo();
 				info.text = CHAT_VOICE_ON;
@@ -708,7 +712,7 @@ end
 --[ Utility Functions ]--
 function ChannelFrame_Desaturate(texture, desaturate, r, g, b, a)
 	local shaderSupported = texture:SetDesaturated(desaturate);
-	if ( not desaturated ) then
+	if ( not desaturate ) then
 		r = 1.0;
 		g = 1.0;
 		b = 1.0;
@@ -737,7 +741,6 @@ CHANNELPULLOUT_ROSTERFRAME_OFFSETY = 4;
 CHANNELPULLOUT_ROSTERPARENT_YPADDING = 14;
 
 CHANNELPULLOUT_FADEFRAMES = { "ChannelPulloutBackground", "ChannelPulloutCloseButton", "ChannelPulloutRosterScroll" };
-local rosterFrame;
 
 function ChannelPullout_OnLoad (self)
 	self:RegisterEvent("VARIABLES_LOADED");

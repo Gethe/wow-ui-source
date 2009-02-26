@@ -3,11 +3,19 @@ MAX_ARENA_ENEMIES = 5;
 function ArenaEnemyFrames_OnLoad(self)
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	
 	if ( GetCVarBool("showArenaEnemyFrames") ) then
 		ArenaEnemyFrames_Enable(self);
 	else
 		ArenaEnemyFrames_Disable(self);
+	end
+	local showCastbars = GetCVarBool("showArenaEnemyCastbar");
+	local castFrame;
+	for i = 1, MAX_ARENA_ENEMIES do
+		castFrame = _G["ArenaEnemyFrame"..i.."CastingBar"];
+		castFrame.showCastbar = showCastbars;
+		CastingBarFrame_UpdateIsShown(castFrame);
 	end
 	
 	UpdateArenaEnemyBackground(GetCVarBool("showPartyBackground"));
@@ -28,43 +36,57 @@ function ArenaEnemyFrames_OnEvent(self, event, ...)
 		else
 			ArenaEnemyFrames_Disable(self);
 		end
+		local showCastbars = GetCVarBool("showArenaEnemyCastbar");
+		local castFrame;
+		for i = 1, MAX_ARENA_ENEMIES do
+			castFrame = _G["ArenaEnemyFrame"..i.."CastingBar"];
+			castFrame.showCastbar = showCastbars;
+			CastingBarFrame_UpdateIsShown(castFrame);
+		end
+		for i=1, MAX_ARENA_ENEMIES do
+			ArenaEnemyFrame_UpdatePet(_G["ArenaEnemyFrame"..i], i, true);
+		end
 		UpdateArenaEnemyBackground(GetCVarBool("showPartyBackground"));
 		ArenaEnemyBackground_SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		ArenaEnemyFrames_UpdateVisible();
 	end
 end
 
 function ArenaEnemyFrames_OnShow(self)
 	--Set it up to hide stuff we don't want shown in an arena.
-
-	WatchFrame_RemoveObjectiveHandler(WatchFrame_HandleDisplayQuestTimers);
-	WatchFrame_RemoveObjectiveHandler(WatchFrame_HandleDisplayTrackedAchievements);
-	WatchFrame_RemoveObjectiveHandler(WatchFrame_DisplayTrackedQuests);
-	
-	WatchFrameLines:Hide();
-	WatchFrame:Hide();
-	
-	ArenaEnemyFrames_MoveAchievements();
+	ArenaEnemyFrames_UpdateWatchFrame();
 	
 	DurabilityFrame_SetAlerts();
 	UIParent_ManageFramePositions();
 end
 
-function ArenaEnemyFrames_MoveAchievements()
-	return;	--Changeme. Need to set up a system to still allow PvP achivements to be shown in Arena with the new WatchFrame system.
-	--[[if ( ArenaEnemyFrames:IsShown() ) then
-		AchievementWatchFrame:ClearAllPoints();
-		AchievementWatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..GetNumArenaOpponents(), "BOTTOMRIGHT", 0, -35);
-	end]]
+function ArenaEnemyFrames_UpdateWatchFrame()
+	local ArenaEnemyFrames = ArenaEnemyFrames;
+	if ( not WatchFrame:IsUserPlaced() ) then
+		if ( ArenaEnemyFrames:IsShown() ) then
+			if ( WatchFrame_RemoveObjectiveHandler(WatchFrame_DisplayTrackedQuests) ) then
+				ArenaEnemyFrames.hidWatchedQuests = true;
+			end
+		else
+			if ( ArenaEnemyFrames.hidWatchedQuests ) then
+				WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
+				ArenaEnemyFrames.hidWatchedQuests = false;
+			end
+		end
+		WatchFrame_ClearDisplay();
+		WatchFrame_Update();
+	elseif ( ArenaEnemyFrames.hidWatchedQuests ) then
+		WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
+		ArenaEnemyFrames.hidWatchedQuests = false;
+		WatchFrame_ClearDisplay();
+		WatchFrame_Update();
+	end
 end
 
 function ArenaEnemyFrames_OnHide(self)
 	--Make the stuff that needs to be shown shown again.
-	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayQuestTimers);
-	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayTrackedAchievements);
-	WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
-	
-	WatchFrameLines:Show();
-	WatchFrame:Show();
+	ArenaEnemyFrames_UpdateWatchFrame();
 	
 	DurabilityFrame_SetAlerts();
 	UIParent_ManageFramePositions();
@@ -81,7 +103,8 @@ function ArenaEnemyFrames_Disable(self)
 end
 
 function ArenaEnemyFrames_UpdateVisible()
-	if ( GetNumArenaOpponents() > 0 and ArenaEnemyFrames.show ) then
+	local _, instanceType = IsInInstance();
+	if ( ArenaEnemyFrames.show and (instanceType == "arena")) then
 		ArenaEnemyFrames:Show();
 	else
 		ArenaEnemyFrames:Hide();
@@ -94,10 +117,12 @@ function ArenaEnemyFrame_OnLoad(self)
 	self.unitHPPercent = 1;
 	
 	self.classPortrait = _G[self:GetName().."ClassPortrait"];
-	ArenaEnemyFrame_UpdatePlayer(self);
+	ArenaEnemyFrame_UpdatePlayer(self, true);
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
+	
+	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyDropDown_Initialize, "MENU");
 	
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, getglobal("ArenaEnemyFrame"..self:GetID().."DropDown"), self:GetName(), 47, 15);
@@ -105,7 +130,7 @@ function ArenaEnemyFrame_OnLoad(self)
 	SecureUnitButton_OnLoad(self, "arena"..self:GetID(), showmenu);
 end
 
-function ArenaEnemyFrame_UpdatePlayer(self)
+function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need to use CVars instead of UVars even though UVars are faster.
 	local id = self:GetID();
 	if ( UnitExists(self.unit) ) then
 		self:Show();
@@ -114,7 +139,7 @@ function ArenaEnemyFrame_UpdatePlayer(self)
 		local _, class = UnitClass(self.unit);
 		self.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
 		
-		ArenaEnemyFrame_UpdatePet(self);
+		ArenaEnemyFrame_UpdatePet(self, id, useCVars);
 	else
 		self:Hide();
 	end
@@ -126,7 +151,7 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1)
 	if ( event == "ARENA_OPPONENT_UPDATE" and arg1 == self.unit ) then
 		ArenaEnemyFrame_UpdatePlayer(self);
 		UpdateArenaEnemyBackground();
-		ArenaEnemyFrames_MoveAchievements();
+		UIParent_ManageFramePositions();
 	elseif ( event == "UNIT_PET" and arg1 == self.unit ) then
 		ArenaEnemyFrame_UpdatePet(self);
 	elseif ( event == "UNIT_NAME_UPDATE" and arg1 == self.unit ) then
@@ -134,7 +159,7 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1)
 	end
 end
 
-function ArenaEnemyFrame_UpdatePet(self, id)
+function ArenaEnemyFrame_UpdatePet(self, id, useCVars)	--At some points, we need to use CVars instead of UVars even though UVars are faster.
 	if ( not id ) then
 		id = self:GetID();
 	end
@@ -142,17 +167,18 @@ function ArenaEnemyFrame_UpdatePet(self, id)
 	local unitFrame = _G["ArenaEnemyFrame"..id];
 	local petFrame = _G["ArenaEnemyFrame"..id.."PetFrame"];
 	
-	if ( UnitIsConnected(unitFrame.unit) and UnitExists(petFrame.unit) ) then
+	local showArenaEnemyPets = (SHOW_ARENA_ENEMY_PETS == "1");
+	if ( useCVars ) then
+		showArenaEnemyPets = GetCVarBool("showArenaEnemyPets");
+	end
+	
+	if ( UnitIsConnected(unitFrame.unit) and UnitExists(petFrame.unit) and showArenaEnemyPets) then
 		petFrame:Show();
 	else
 		petFrame:Hide();
 	end
 	
 	UnitFrame_Update(petFrame);
-end
-
-function ArenaEnemyDropDown_OnLoad (self)
-	--UIDropDownMenu_Initialize(self, ArenaEnemyDropDown_Initialize, "MENU");
 end
 
 function ArenaEnemyDropDown_Initialize (self)

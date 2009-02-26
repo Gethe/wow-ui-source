@@ -225,12 +225,12 @@ end
 -- HACK: unfortunately, CVars have this funny quirk where they are returned as strings, even if they are numbers,
 -- which makes things complicated for sliders...things get even more complicated when you have a mix of regular
 -- Get/SetCVar calls with the following (typesafe) BlizzardOptionsPanel_Get/SetCVarSafe calls... so to avoid
--- comparing numbers to strings, we are going to convert anything that needs comparing into a string first!
+-- comparing numbers to strings, we are going to convert anything that needs comparing into a number first!
 
 function BlizzardOptionsPanel_SetCVarSafe (cvar, value, event)
 	local oldValue = GetCVar(cvar);
-	oldValueNum = tonumber(oldValue);
-	valueNum = tonumber(value);
+	local oldValueNum = tonumber(oldValue);
+	local valueNum = tonumber(value);
 	if ( oldValueNum or valueNum ) then
 		if ( oldValueNum ~= valueNum ) then
 			SetCVar(cvar, value, event);

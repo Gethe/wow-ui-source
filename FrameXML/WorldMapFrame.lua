@@ -154,7 +154,7 @@ function WorldMapFrame_Update()
 
 	-- Setup the POI's
 	local numPOIs = GetNumMapLandmarks();
-	local name, description, textureIndex, x, y;
+	local name, description, textureIndex, x, y, mapLinkID;
 	local worldMapPOI;
 	local x1, x2, y1, y2;
 
@@ -821,6 +821,7 @@ function GetMapVehicleTexture(vehicleType, isPossessed)
 end
 
 function MapUnit_IsInactive(unit)
+	local name;
 	for i=1, MAX_TARGET_DEBUFFS do
 		name = UnitDebuff(unit, i);
 		if (name == "Inactive") then
@@ -972,6 +973,7 @@ function MapUnit_OnMouseUp( self, mouseButton, RaidUnitPrefix, PartyUnitPrefix)
 
 		if ( instanceType == "pvp" ) then
 			--Check Raid
+			local unitButton;
 			for i=1, MAX_RAID_MEMBERS do
 				unitButton = getglobal(RaidUnitPrefix..i);
 				if ( unitButton:IsVisible() and MouseIsOver(unitButton) and

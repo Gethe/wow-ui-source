@@ -732,7 +732,6 @@
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "componentTextureLevel";
 						self.SetDisplayValue = self.SetValue;
-						self.restart = true;
 						self.SetValue = function (self, value)
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
@@ -768,7 +767,6 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "specular";
-						self.restart = true;
 						self.setFunc = VideoOptionsEffectsPanel_UpdateVideoQuality;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
@@ -784,7 +782,6 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "ffxGlow";
-						self.restart = true;
 						self.setFunc = VideoOptionsEffectsPanel_UpdateVideoQuality;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
@@ -800,7 +797,6 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "ffxDeath";
-						self.restart = true;
 						self.setFunc = VideoOptionsEffectsPanel_UpdateVideoQuality;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
@@ -863,13 +859,30 @@
 			<CheckButton name="$parentEnabled" inherits="OptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOP">
-						<Offset x="-64" y="-92"/>
+						<Offset x="-125" y="-92"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "gxStereoEnabled";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentHardwareCursor" inherits="OptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentEnabled" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="135" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "gxCursor";
+						self.restart = true;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>

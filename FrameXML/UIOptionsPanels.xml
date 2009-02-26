@@ -2386,10 +2386,64 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showArenaEnemyFrames";
+						self.uvar = "SHOW_ARENA_ENEMY_FRAMES";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
+			<CheckButton name="$parentArenaEnemyCastBar" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentArenaEnemyFrames" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showArenaEnemyCastbar";
+						self.uvar = "SHOW_ARENA_ENEMY_CASTINGBAR";
+						self.setFunc = function (value)
+							if ( ArenaEnemyFrames ) then
+								local frame;
+								for i=1, MAX_ARENA_ENEMIES do
+									frame = _G["ArenaEnemyFrame" .. i .. "CastingBar"];
+									frame.showCastbar = (value == "1");
+									CastingBarFrame_UpdateIsShown(frame);
+								end
+							end 
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsUnitFramePanelArenaEnemyFrames, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentArenaEnemyPets" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentArenaEnemyCastBar" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showArenaEnemyPets";
+						self.uvar = "SHOW_ARENA_ENEMY_PETS";
+						self.setFunc = function (value)
+							if ( ArenaEnemyFrames ) then
+								for i=1, MAX_ARENA_ENEMIES do
+									ArenaEnemyFrame_UpdatePet(_G["ArenaEnemyFrame" .. i], i);
+								end
+							end 
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsUnitFramePanelArenaEnemyFrames, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>

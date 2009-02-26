@@ -1115,6 +1115,8 @@ UnitFramePanelOptions = {
 	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },
 	showRaidRange = { text = "SHOW_RAID_RANGE_TEXT" },
 	showArenaEnemyFrames = { text = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
+	showArenaEnemyCastbar = { text = "SHOW_ARENA_ENEMY_CASTBAR_TEXT" },
+	showArenaEnemyPets = { text = "SHOW_ARENA_ENEMY_PETS_TEXT" },
 }
 
 function BlizzardOptionsPanel_UpdateRaidPullouts ()

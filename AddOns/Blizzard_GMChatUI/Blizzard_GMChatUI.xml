@@ -12,18 +12,10 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				GMChatFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				GMChatFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				GMChatFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				GMChatOpenLog:Enable();
-			</OnHide>
+			<OnLoad function="GMChatFrame_OnLoad"/>
+			<OnEvent function="GMChatFrame_OnEvent"/>
+			<OnShow function="GMChatFrame_OnShow"/>
+			<OnHide function="GMChatFrame_OnHide"/>
 		</Scripts>
 	</ScrollingMessageFrame>
 	<Frame name="GMChatTab" frameStrata="LOW" parent="GMChatFrame">

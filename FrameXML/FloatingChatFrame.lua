@@ -481,6 +481,7 @@ end
 function FCF_GetNumActiveChatFrames()
 	local temp, shown
 	local count = 0;
+	local chatFrame;
 	for i=1, NUM_CHAT_WINDOWS do
 		temp, temp, temp, temp, temp, temp, shown, temp = GetChatWindowInfo(i);
 		chatFrame = _G["ChatFrame"..i];
@@ -596,6 +597,9 @@ function FCF_SetChatWindowFontSize(self, chatFrame, fontSize)
 	end
 	local fontFile, unused, fontFlags = chatFrame:GetFont();
 	chatFrame:SetFont(fontFile, fontSize, fontFlags);
+	if ( GMChatFrame and chatFrame == DEFAULT_CHAT_FRAME ) then
+		GMChatFrame:SetFont(fontFile, fontSize, fontFlags);
+	end
 	SetChatWindowSize(chatFrame:GetID(), fontSize);
 end
 

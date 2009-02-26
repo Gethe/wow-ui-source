@@ -1284,7 +1284,7 @@
 							<OnCharComposition function="PlayerNameAutocomplete"/>
 							<OnChar>
 								if ( not self:IsInIMECompositionMode() ) then
-									PlayerNameAutocomplete(self);
+									PlayerNameAutocomplete(self, text);
 								end
 							</OnChar>
 						</Scripts>

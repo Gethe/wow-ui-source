@@ -140,6 +140,7 @@ end
 
 local LFMReturnValues = {};
 local LFMNumReturnResults = 0;
+local LFMCacheZoneName = "";
 
 function LFMFrame_CacheAndUpdate()
 	local name, level, zone, class, criteria1, criteria2, criteria3, comment, numPartyMembers, isLFM;
@@ -190,9 +191,19 @@ function LFMFrame_CacheAndUpdate()
 		end
 	end
 	LFMNumReturnResults = currIndex;
+	if ( selectedLFMName and selectedLFMType ) then
+		LFMCacheZoneName = select(selectedLFMName*2-1, GetLFGTypeEntries(selectedLFMType));
+	else
+		LFMCacheZoneName = "";
+	end
+	
 	LFMFrame_Update();	--We include this in here to enforce good practice; You should never update the cached data without updating the screen. That can lead to some wacky stuff.
 end
-		
+
+function GetLFGCacheSourceInfo()
+	return LFMCacheZoneName;	--More to come?
+end
+
 function GetLFGResultsProxy(resultIndex)
 	if ( resultIndex <= LFMNumReturnResults ) then
 		return unpack(LFMReturnValues[resultIndex]);
@@ -325,6 +336,9 @@ function LFMFrame_Update()
 				button.isLFM = isLFM;
 				button.nameLine = format(LFM_NAME_TEMPLATE, name, level, class);
 				button.criteria = BuildNewLineListString(criteria1, criteria2, criteria3);
+				if ( not button.criteria ) then
+					button.criteria = GetLFGCacheSourceInfo();
+				end
 				button.comment = comment;
 				button.partyMembers = numPartyMembers;
 				button.willBeLeader = willBeLeader;

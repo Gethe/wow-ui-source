@@ -255,6 +255,7 @@ end
 function MiniMapVoiceChatDropDown_Initialize()
 	local name, active, checked;
 	local count = GetNumVoiceSessions();
+	local info;
 	for id=1, count do
 		name, active = GetVoiceSessionInfo(id);
 

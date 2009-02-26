@@ -2209,6 +2209,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	local itemEnabled = false;
 	local extraSpellEnabled = false;
 	local valueIsItem = false;
+	local schoolEnabled = true;
 
 	-- Get the initial string
 	local schoolString;

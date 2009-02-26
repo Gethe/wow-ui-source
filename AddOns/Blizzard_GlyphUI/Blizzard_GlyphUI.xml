@@ -90,14 +90,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\Spellbook\UI-GlyphFrame">
+				<Texture name="$parentBackground" file="Interface\Spellbook\UI-GlyphFrame">
 					<Size x="352" y="441"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.6875" top="0" bottom="0.861328125"/>
 				</Texture>
-				<FontString name="GlyphFrameTitleText" inherits="GameFontNormal" text="GLYPHS">
+				<FontString name="$parentTitleText" inherits="GameFontNormal" text="GLYPHS">
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset x="0" y="-17"/>

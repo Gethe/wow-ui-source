@@ -132,7 +132,7 @@ function SkillFrame_SetStatusBar(statusBarID, skillIndex, numSkills, adjustedSki
 		-- If skill is too high level
 		if ( UnitLevel("player") < minLevel ) then
 			statusBar:SetValue(0);
-			statusBarSkillRank:SetFormattedText(LEVEL_GAINED,skillLevel);
+			statusBarSkillRank:SetFormattedText(LEVEL_GAINED,minLevel);
 			statusBarSkillRank:ClearAllPoints();
 			statusBarSkillRank:SetPoint("RIGHT", "SkillDetailStatusBar", "RIGHT",-13, 0);
 			statusBarSkillRank:SetJustifyH("RIGHT");
@@ -221,7 +221,7 @@ function SkillDetailFrame_SetStatusBar(skillIndex, adjustedSkillPoints)
 	if ( isAbandonable ) then
 		statusBarUnlearnButton:Show();
 		statusBarUnlearnButton.skillName = skillName;
-		statusBarUnlearnButton.index = index;
+		statusBarUnlearnButton.index = skillIndex;
 	else
 		statusBarUnlearnButton:Hide();
 	end
@@ -297,7 +297,7 @@ function SkillDetailFrame_SetStatusBar(skillIndex, adjustedSkillPoints)
 		-- If skill is too high level
 		if ( UnitLevel("player") < minLevel ) then
 			statusBar:SetValue(0);
-			statusBarSkillRank:SetFormattedText(LEVEL_GAINED,skillLevel);
+			statusBarSkillRank:SetFormattedText(LEVEL_GAINED,minLevel);
 			statusBarSkillRank:ClearAllPoints();
 			statusBarSkillRank:SetPoint("RIGHT", "SkillDetailStatusBar", "RIGHT",-13, 0);
 			statusBarSkillRank:SetJustifyH("RIGHT");

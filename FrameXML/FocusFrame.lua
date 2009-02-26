@@ -158,7 +158,7 @@ function FocusFrameDropDown_OnLoad (self)
 end
 
 function FocusFrameDropDown_Initialize (self)
-	UnitPopup_ShowMenu(self, "FOCUS", "focus",SET_FOCUS, id);
+	UnitPopup_ShowMenu(self, "FOCUS", "focus", SET_FOCUS);
 end
 
 function FocusFrame_UpdateRaidTargetIcon (self)

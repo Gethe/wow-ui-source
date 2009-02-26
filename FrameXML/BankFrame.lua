@@ -172,10 +172,12 @@ function BankFrame_OnShow (self)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 
+	local button;
 	for i=1, NUM_BANKGENERIC_SLOTS, 1 do
 		button = getglobal("BankFrameItem"..i);
 		BankFrameItemButton_Update(button);
 	end
+	
 	for i=1, NUM_BANKBAGSLOTS, 1 do
 		button = getglobal("BankFrameBag"..i);
 		BankFrameItemButton_Update(button);

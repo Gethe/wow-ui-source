@@ -254,10 +254,10 @@ function TimeManagerAlarmHourDropDown_OnClick(self)
 	_TimeManager_Setting_SetTime();
 end
 
-function TimeManagerAlarmMinuteDropDown_OnClick()
-	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmMinuteDropDown, this.value);
+function TimeManagerAlarmMinuteDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmMinuteDropDown, self.value);
 	local oldValue = Settings.alarmMinute;
-	Settings.alarmMinute = this.value;
+	Settings.alarmMinute = self.value;
 	if ( Settings.alarmMinute ~= oldValue ) then
 		TimeManager_StartCheckingAlarm();
 	end

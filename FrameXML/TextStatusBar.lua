@@ -78,7 +78,11 @@ function TextStatusBar_UpdateTextString(textStatusBar)
 		else
 			textString:Hide();
 			textString:SetText("");
-			textStatusBar:Hide();
+			if ( not textStatusBar.alwaysShow ) then
+				textStatusBar:Hide();
+			else
+				textStatusBar:SetValue(0);
+			end
 		end
 	end
 end

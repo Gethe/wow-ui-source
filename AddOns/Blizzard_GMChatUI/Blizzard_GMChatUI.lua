@@ -13,6 +13,8 @@ function GMChatFrame_OnLoad(self)
 	
 	self:RegisterEvent("CHAT_MSG_WHISPER");
 	self:RegisterEvent("CHAT_MSG_WHISPER_INFORM");
+	self:RegisterEvent("UPDATE_CHAT_COLOR");
+	self:RegisterEvent("UPDATE_CHAT_WINDOWS");
 	self.flashTimer = 0;
 	self.lastGM = {};
 	
@@ -44,13 +46,18 @@ function GMChatFrame_OnEvent(self, event, ...)
 		ListOfGMs[strlower(arg2)] = true;
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
 		
+		if ( self.lastGMForCVar ~= arg2 and GMChatFrame:IsShown() ) then
+			SetCVar("lastTalkedToGM", arg2);
+		end
+		self.lastGMForCVar = arg2;
+		
 		if ( not GMChatFrame:IsShown() ) then
 			GMChatStatusFrame:Show();
 			GMChatStatusFrame_Pulse();
 			table.insert(self.lastGM,arg2);
 			PlaySound("GM_ChatWarning");
 			
-			DEFAULT_CHAT_FRAME:AddMessage(pflag.."|HGMChat|h["..GM_CHAT_STATUS_READY_DESCRIPTION.."]|h", info.r, info.g, info.b);
+			DEFAULT_CHAT_FRAME:AddMessage(pflag.."|HGMChat|h["..GM_CHAT_STATUS_READY_DESCRIPTION.."]|h", info.r, info.g, info.b, info.id);
 			DEFAULT_CHAT_FRAME:SetHyperlinksEnabled(true);
 			DEFAULT_CHAT_FRAME.overrideHyperlinksEnabled = true;
 			SetButtonPulse(HelpMicroButton, 3600, 1.0);
@@ -77,21 +84,54 @@ function GMChatFrame_OnEvent(self, event, ...)
 		local body = format(CHAT_WHISPER_INFORM_GET, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
 		
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
+	elseif ( event == "UPDATE_CHAT_COLOR" ) then
+		local arg1, arg2, arg3, arg4 = ...
+		local info = ChatTypeInfo[strupper(arg1)];
+		if ( info ) then
+			info.r = arg2;
+			info.g = arg3;
+			info.b = arg4;
+			self:UpdateColorByID(info.id, info.r, info.g, info.b);
+
+			if ( strupper(arg1) == "WHISPER" ) then
+				info = ChatTypeInfo["REPLY"];
+				if ( info ) then
+					info.r = arg2;
+					info.g = arg3;
+					info.b = arg4;
+					self:UpdateColorByID(info.id, info.r, info.g, info.b);
+				end
+			end
+		end
+	elseif ( event == "UPDATE_CHAT_WINDOWS" ) then
+		local _, fontSize= GetChatWindowInfo(1);
+		if ( fontSize > 0 ) then
+			local fontFile, unused, fontFlags = DEFAULT_CHAT_FRAME:GetFont();
+			self:SetFont(fontFile, fontSize, fontFlags);
+		end
 	end
 end
 
 function GMChatFrame_OnShow(self)
 	GMChatStatusFrame:Hide();
 	GMChatOpenLog:Disable();
-	for _,gmName in pairs(self.lastGM) do
+	for _,gmName in ipairs(self.lastGM) do
 		ChatEdit_SetLastTellTarget(gmName);
 	end
 	table.wipe(self.lastGM);
+	if ( self.lastGMForCVar ) then
+		SetCVar("lastTalkedToGM", self.lastGMForCVar);
+	end
 	
 	SetButtonPulse(HelpMicroButton, 0, 1);	--Stop the buttons from pulsing.
 	SetButtonPulse(GMChatOpenLog, 0, 1);
 	
 	self:SetScript("OnUpdate", GMChatFrame_OnUpdate);
+end
+
+function GMChatFrame_OnHide(self)
+	GMChatOpenLog:Enable();
+	SetCVar("lastTalkedToGM", "");
 end
 
 function GMChatFrame_OnUpdate(self, elapsed)

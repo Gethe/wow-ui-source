@@ -53,7 +53,7 @@
           virtual="true">
     <Scripts>
       <OnDoubleClick>
-        SecureHandler_OnClick(self, "_ondoubleclick", button, down);
+        SecureHandler_OnClick(self, "_ondoubleclick", button);
       </OnDoubleClick>
     </Scripts>
   </Button>

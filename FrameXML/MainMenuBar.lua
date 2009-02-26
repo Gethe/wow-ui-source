@@ -477,7 +477,7 @@ end
 
 function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	local string = "";
-	local i=0; j=0; k=0;
+	local i, j, k = 0, 0, 0;
 
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	
@@ -541,6 +541,8 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 		if ( SHOW_NEWBIE_TIPS == "1" ) then
 			GameTooltip:AddLine(NEWBIE_TOOLTIP_MEMORY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 		end
+		
+		local size;
 		for i=1, NUM_ADDONS_TO_DISPLAY, 1 do
 			if ( topAddOns[i].value == 0 ) then
 				break;

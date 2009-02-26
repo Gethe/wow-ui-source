@@ -5,6 +5,17 @@
 		<Size>
 			<AbsDimension x="12" y="12"/>
 		</Size>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true" drawEdge="true" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				local border = getglobal(self:GetName().."Border");

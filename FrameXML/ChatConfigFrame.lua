@@ -417,12 +417,12 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 				func = function (self, checked) 
 					if ( checked ) then
 						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs = false;
-						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELl_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
+						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 					else
 						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs = true;
 						-- Only stop listening for the messages if hideDebuffs is also true
 						if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs ) then
-							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELl_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
+							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 						end
 					end
 				end;
@@ -430,9 +430,9 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 			},
 			[3] = {
 				text = DISPELS,
-				type = {"SPELL_DISPELLED_AURA","SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"};
-				checked = function () return HasMessageType("SPELL_DISPELLED_AURA", "SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"); end;
-				func = function (self, checked) ToggleMessageType(checked, "SPELL_DISPELLED_AURA", "SPELL_STOLEN_AURA", "SPELL_DISPEL_FAILED"); end;
+				type = {"SPELL_STOLEN", "SPELL_DISPEL_FAILED", "SPELL_DISPEL"};
+				checked = function () return HasMessageType("SPELL_STOLEN", "SPELL_DISPEL_FAILED", "SPELL_DISPEL"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_STOLEN", "SPELL_DISPEL_FAILED", "SPELL_DISPEL"); end;
 				tooltip = DISPEL_AURA_COMBATLOG_TOOLTIP;
 			},
 			[4] = {
@@ -951,10 +951,10 @@ function ChatConfig_UpdateSwatches(frame)
 	local checkBoxName, checkBox, baseName, colorSwatch;
 	for index, value in ipairs(table) do
 		baseName = nameString..index;
-		swatch = getglobal(baseName.."ColorSwatch");
-		if ( swatch ) then
+		colorSwatch = getglobal(baseName.."ColorSwatch");
+		if ( colorSwatch ) then
 			getglobal(baseName.."ColorSwatchNormalTexture"):SetVertexColor(GetChatUnitColor(value.type));
-			swatch.type = value.type;
+			colorSwatch.type = value.type;
 		end
 	end
 end

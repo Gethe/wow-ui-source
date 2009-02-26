@@ -65,6 +65,7 @@ local SkinsData = {
 		["PitchSliderBG"] = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
 			texCoord = { 0.46875, 0.50390625, 0.31640625, 0.62109375 },
+			vertexColor = { 0, 0.85, 0.99 },
 		},
 		["PitchSliderOverlayThing"] = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
@@ -76,6 +77,7 @@ local SkinsData = {
 			point = "CENTER",
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
 			texCoord = { 0.46875, 0.50390625, 0.45, 0.55 },
+			vertexColor = { 1, 0, 0 },
 		},
 		["HealthBar"] = {
 			height = 72,
@@ -352,10 +354,12 @@ local SkinsData = {
 		["PitchSliderBG"] = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
 			texCoord = { 0.46875, 0.50390625, 0.31640625, 0.62109375 },
+			vertexColor = { 0, 0.85, 0.99 },
 		},
 		["PitchSliderOverlayThing"] = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
 			texCoord = { 0.38671875, 0.46484375, 0.31640625, 0.62109375 },
+			vertexColor = { 1, 0, 0 },
 		},
 		["PitchSliderMarker"] = {
 			height = 15,
@@ -813,8 +817,6 @@ function VehicleMenuBar_OnEvent(self, event, ...)
 end
 
 function VehicleMenuBarPitch_OnLoad(self)
-	VehicleMenuBarPitchSliderBG:SetVertexColor(0.0, 0.85, 0.99);
-	VehicleMenuBarPitchSliderMarker:SetVertexColor(1.0, 0, 0);
 	self:RegisterEvent("VEHICLE_ANGLE_UPDATE");
 
 	self:RegisterForClicks("LeftButtonUp")
@@ -827,7 +829,7 @@ function VehicleMenuBarPitch_OnClick(self)
 end
 
 function VehicleMenuBarPitch_OnEvent(self, event, ...)
-	arg1 = ...;
+	local arg1 = ...;
 	if ( event == "VEHICLE_ANGLE_UPDATE" ) then
 		VehicleMenuBarPitch_SetValue(arg1);
 
@@ -842,9 +844,15 @@ function VehicleMenuBarStatusBars_ShowTooltip(self)
 	if ( GetMouseFocus() == self ) then
 		local value = self:GetValue();
 		local _, valueMax = self:GetMinMaxValues();
-		local text = format("%s/%s (%s%%)", TextStatusBar_CapDisplayOfNumericValue(value), TextStatusBar_CapDisplayOfNumericValue(valueMax), tostring(math.ceil((value / valueMax) * 100)));
-		GameTooltip:SetOwner(self, self.tooltipAnchorPoint);
-		GameTooltip:SetText(text, 1.0,1.0,1.0 );
+		if ( valueMax > 0 ) then
+			local text = format("%s/%s (%s%%)", TextStatusBar_CapDisplayOfNumericValue(value), TextStatusBar_CapDisplayOfNumericValue(valueMax), tostring(math.ceil((value / valueMax) * 100)));
+			GameTooltip:SetOwner(self, self.tooltipAnchorPoint);
+			if ( self.prefix ) then
+				GameTooltip:AddLine(self.prefix);
+			end
+			GameTooltip:AddLine(text, 1.0,1.0,1.0 );
+			GameTooltip:Show();
+		end
 	end
 end
 
@@ -915,11 +923,11 @@ local SeatIndicatorSkinsData = {
 			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Mammoth",
 		},
 		[1] = {
-			xPos = -30,
+			xPos = -75,
 			yPos = -84,
 		},
 		[2] = {
-			xPos = -75,
+			xPos = -30,
 			yPos = -84,
 		},
 	},

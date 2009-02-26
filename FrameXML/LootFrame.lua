@@ -70,7 +70,7 @@ function LootFrame_Update()
 	if ( numLootItems > LOOTFRAME_NUMBUTTONS ) then
 		numLootToShow = numLootToShow - 1;
 	end
-	local texture, item, quantity, quality;
+	local texture, item, quantity, quality, locked;
 	local button, countString, color;
 	for index = 1, LOOTFRAME_NUMBUTTONS do
 		button = getglobal("LootButton"..index);

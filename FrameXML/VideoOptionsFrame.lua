@@ -50,10 +50,7 @@ end
 function VideoOptionsFrameCancel_OnClick (self, button)
 	OptionsFrameCancel_OnClick(VideoOptionsFrame);
 
-	if ( VideoOptionsFrame.gxRestart ) then
-		VideoOptionsFrame.gxRestart = nil;
-		RestartGx();
-	end
+	VideoOptionsFrame.gxRestart = nil;
 
 	VideoOptionsFrame.logout = nil;
 	VideoOptionsFrame.gameRestart = nil;

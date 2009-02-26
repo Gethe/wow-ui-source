@@ -515,7 +515,10 @@ function QuestLogTitleButton_OnClick(self, button)
 				end
 				-- Set an error message if trying to show too many quests
 				
-				if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then -- Check this first though it's less likely, otherwise they could make the frame bigger and be disappointed
+				if ( (not WatchFrame:IsUserPlaced()) and ArenaEnemyFrames and ArenaEnemyFrames:IsShown() ) then
+					UIErrorsFrame:AddMessage(OBJECTIVES_WATCH_QUESTS_ARENA, 1.0, 0.1, 0.1, 1.0);
+					return;
+				elseif ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then -- Check this first though it's less likely, otherwise they could make the frame bigger and be disappointed
 					UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
 					return;
 				elseif ( WatchFrame_GetRemainingSpace() < WatchFrame_GetHeightNeededForQuest(questIndex) ) then

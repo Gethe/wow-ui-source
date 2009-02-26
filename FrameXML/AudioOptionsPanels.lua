@@ -390,27 +390,27 @@ function AudioOptionsVoicePanelKeyBindingButton_OnEnter (self)
 	end
 end
 
-function AudioOptionsVoicePanelKeyBindingButton_OnKeyUp (self, button)
+function AudioOptionsVoicePanelKeyBindingButton_OnKeyUp (self, key)
 	if ( self.buttonPressed ) then
 		AudioOptionsVoicePanelKeyBindingButton_BindButton(self);
 	end
 end
 
-function AudioOptionsVoicePanelKeyBindingButton_OnKeyDown (self, button)
-	if ( GetBindingFromClick(button) == "SCREENSHOT" ) then
+function AudioOptionsVoicePanelKeyBindingButton_OnKeyDown (self, key)
+	if ( GetBindingFromClick(key) == "SCREENSHOT" ) then
 		RunBinding("SCREENSHOT");
 		return;
 	end
 	if ( self.buttonPressed ) then
-		if ( button == "UNKNOWN" ) then
+		if ( key == "UNKNOWN" ) then
 			return;
 		end
 
-		if ( button == "LSHIFT" or button == "RSHIFT" or button == "LCTRL" or button == "RCTRL" or button == "LALT" or button == "RALT" ) then
+		if ( key == "LSHIFT" or key == "RSHIFT" or key == "LCTRL" or key == "RCTRL" or key == "LALT" or key == "RALT" ) then
 			if ( PUSH_TO_TALK_MODIFIER == "" ) then
-				PUSH_TO_TALK_MODIFIER = button;
+				PUSH_TO_TALK_MODIFIER = key;
 			else
-				PUSH_TO_TALK_MODIFIER = PUSH_TO_TALK_MODIFIER.."-"..button;
+				PUSH_TO_TALK_MODIFIER = PUSH_TO_TALK_MODIFIER.."-"..key;
 			end
 			return;
 		elseif ( PUSH_TO_TALK_BUTTON ~= "" ) then
@@ -423,9 +423,9 @@ function AudioOptionsVoicePanelKeyBindingButton_OnKeyDown (self, button)
 		end
 
 		if ( PUSH_TO_TALK_MODIFIER == "" ) then
-			PUSH_TO_TALK_BUTTON = button;
+			PUSH_TO_TALK_BUTTON = key;
 		else
-			PUSH_TO_TALK_BUTTON = PUSH_TO_TALK_MODIFIER.."-"..button;
+			PUSH_TO_TALK_BUTTON = PUSH_TO_TALK_MODIFIER.."-"..key;
 		end
 	end
 
@@ -738,8 +738,8 @@ function AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad (self)
 	local selectedDriverIndex = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 
 	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
-	self.value = selectedOutputDriverIndex;
-	self.nextValue = selectedOutputDriverIndex;
+	self.value = selectedDriverIndex;
+	self.nextValue = selectedDriverIndex;
 	self.restart = true;
 
 	UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);

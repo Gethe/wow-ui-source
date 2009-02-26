@@ -154,10 +154,10 @@ function UnitFrame_UpdateTooltip (self)
 end
 
 function UnitFrameManaBar_UpdateType (manaBar)
-	local unitFrame = manaBar:GetParent();
 	if ( not manaBar ) then
 		return;
 	end
+	local unitFrame = manaBar:GetParent();
 	local powerType, powerToken, altR, altG, altB = UnitPowerType(manaBar.unit);
 	local prefix = getglobal(powerToken);
 	local info = PowerBarColor[powerToken];

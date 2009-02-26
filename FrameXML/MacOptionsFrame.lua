@@ -24,11 +24,18 @@ function MacOptionsFrame_OnEvent(self, event, ...)
 	end
 end
 
+function MacOptionsFrame_DisableText(text)
+	text:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+end
+
 function MacOptionsFrame_DisableSlider(slider)
 	local name = slider:GetName();
 	local value = getglobal(name.."Value");
 	getglobal(name.."Thumb"):Hide();
-	getglobal(name.."Text"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	MacOptionsFrame_DisableText( getglobal(name.."Text") );
+	MacOptionsFrame_DisableText( getglobal(name.."Low") );
+	MacOptionsFrame_DisableText( getglobal(name.."High") );
+	slider:Disable();
 	if ( value ) then
 		value:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
@@ -57,6 +64,13 @@ function MacOptionsFrame_Load()
 		UIDropDownMenu_DisableDropDown(MacOptionsFrameCodecDropDown);
 		MacOptionsFrame_DisableSlider(MacOptionsFrameQualitySlider);
 		MacOptionsButtonCompress:Disable();
+
+		-- disable frame text
+		MacOptionsFrame_DisableText(MacOptionsFrameText1);
+		MacOptionsFrame_DisableText(MacOptionsFrameText2);
+		MacOptionsFrame_DisableText(MacOptionsFrameText3);
+		MacOptionsFrame_DisableText(MacOptionsFrameText4);
+ 
 	else
 		MacOptionsFrameQualitySlider:SetValue(GetCVar("MovieRecordingQuality"));
 		if GetCVar("MovieRecordingGUI") then
@@ -115,9 +129,11 @@ function MacOptionsFrameResolutionDropDown_OnLoad(self)
 	UIDropDownMenu_SetWidth(MacOptionsFrameResolutionDropDown, 110);
 end
 
+local function greaterThanTableSort(a, b) return a > b end 
+
 function MacOptionsFrameResolutionDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
-	local width, height, ratio, halfWidth, quarterWidth;
+	local width, height, ratio, halfWidth, quarterWidth, oldWidth;
 		
 	ratio = MovieRecording_GetAspectRatio();
 	width = MovieRecording_GetViewportWidth();
@@ -147,8 +163,8 @@ function MacOptionsFrameResolutionDropDown_Initialize()
 			table.insert(resWidth, tonumber(quarterWidth));
 		end
 	end
-	function greater(a, b) return a > b end 
-	table.sort(resWidth, greater);
+	
+	table.sort(resWidth, greaterThanTableSort);
 	
 	local lastWidth = width;
 	for index, value in pairs(resWidth) do

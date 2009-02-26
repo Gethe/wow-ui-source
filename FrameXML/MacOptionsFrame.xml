@@ -321,8 +321,10 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-								GameTooltip:SetText(MOVIE_RECORDING_TIME_TOOLTIP, nil, nil, nil, nil, 1);
+								if ( MovieRecording_IsSupported() ) then
+									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+									GameTooltip:SetText(MOVIE_RECORDING_TIME_TOOLTIP, nil, nil, nil, nil, 1);
+								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -340,8 +342,10 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-								GameTooltip:SetText(MOVIE_RECORDING_DATA_RATE_TOOLTIP, nil, nil, nil, nil, 1);
+								if ( MovieRecording_IsSupported() ) then
+									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+									GameTooltip:SetText(MOVIE_RECORDING_DATA_RATE_TOOLTIP, nil, nil, nil, nil, 1);
+								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>

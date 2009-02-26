@@ -30,7 +30,7 @@ StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function (self)
-		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
+		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
 		if ( talentGroup == GetActiveTalentGroup() ) then
 			RemoveGlyphFromSocket(self.data);
 		end
@@ -2042,6 +2042,33 @@ StaticPopupDialogs["INSTANCE_BOOT"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1
 };
+
+StaticPopupDialogs["INSTANCE_LOCK"] = {
+	text = INSTANCE_LOCK_TIMER,
+	button1 = ACCEPT,
+	button2 = INSTANCE_LEAVE,
+	OnShow = function(self)
+		self.timeleft = GetInstanceLockTimeRemaining();
+		if ( self.timeleft <= 0 ) then
+			StaticPopup_Hide("INSTANCE_LOCK");
+		end
+	end,
+	OnAccept = function(self)
+		RespondInstanceLock(1);
+	end,
+	OnCancel = function(self, data, reason)
+		if ( reason == "timeout" ) then
+			StaticPopup_Hide("INSTANCE_LOCK");
+			return;
+		end
+		RespondInstanceLock(0);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	interruptCinematic = 1,
+	notClosableByLogout = 1
+};
+
 StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
 	text = CONFIRM_TALENT_WIPE,
 	button1 = ACCEPT,
@@ -2468,6 +2495,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		 (which == "RESURRECT") or
 		 (which == "RESURRECT_NO_SICKNESS") or
 		 (which == "INSTANCE_BOOT") or
+		 (which == "INSTANCE_LOCK") or
 		 (which == "CONFIRM_SUMMON") or
 		 (which == "AREA_SPIRIT_HEAL") ) then
 		text:SetText(" ");	-- The text will be filled in later.
@@ -2721,14 +2749,15 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "DUEL_OUTOFBOUNDS") or
 			 (which == "INSTANCE_BOOT") or
 			 (which == "CONFIRM_SUMMON") or
-			 (which == "AREA_SPIRIT_HEAL") ) then
+			 (which == "AREA_SPIRIT_HEAL") or
+			 (which == "INSTANCE_LOCK")) then
 			local text = getglobal(dialog:GetName().."Text");
 			local hasText = nil;
 			if ( text:GetText() ~= " " ) then
 				hasText = 1;
 			end
 			timeleft = ceil(timeleft);
-			if ( which == "INSTANCE_BOOT" ) then
+			if ( which == "INSTANCE_BOOT" or which == "INSTANCE_LOCK") then
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
 				else

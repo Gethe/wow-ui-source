@@ -286,3 +286,11 @@ function CastingBarFrame_FinishSpell (self, barSpark, barFlash)
 	self.casting = nil;
 	self.channeling = nil;
 end
+
+function CastingBarFrame_UpdateIsShown(self)
+	if ( self.casting and self.showCastbar ) then
+		CastingBarFrame_OnEvent(self, "PLAYER_ENTERING_WORLD")
+	else
+		self:Hide();
+	end
+end

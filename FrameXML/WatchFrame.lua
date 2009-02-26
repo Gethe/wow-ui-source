@@ -47,6 +47,8 @@ WATCHFRAME_LINKBUTTONS = {};
 
 WATCHFRAME_FLAGS = { ["locked"] = 0x01, ["collapsed"] = 0x02 }
 
+WATCHFRAME_ACHIEVEMENT_ARENA_CATEGORY = 165;
+
 local watchFrameTestLine;
 
 local function WatchFrame_UpdateStateCVar ()	
@@ -192,11 +194,15 @@ function WatchFrame_ToggleSimpleWatch ()
 		WatchFrame:SetScript("OnUpdate", nil);
 	elseif ( WatchFrame.simpleMode ) then -- We were at simple mode in some point, we need to undo some stuff...
 		WatchFrame.simpleMode = nil;
+		WatchFrame:SetUserPlaced(true);
 		WatchFrame_Unlock(WatchFrame);
 		WatchFrameTitleButton:EnableMouse(true);
 		WatchFrameCollapseExpandButton:Enable();
 		WatchFrame_Update();
 		WatchFrame:SetScript("OnUpdate", WatchFrame_OnUpdate);
+	end
+	if ( ArenaEnemyFrames_UpdateWatchFrame ) then
+		ArenaEnemyFrames_UpdateWatchFrame();
 	end
 end
 
@@ -236,6 +242,8 @@ function WatchFrame_OnEvent (self, event, ...)
 		-- Setup window appearance and behaviors		
 		self.baseAlpha = tonumber(GetCVar("watchFrameBaseAlpha"));		
 		WatchFrame:SetAlpha(self.baseAlpha);
+		
+		WatchFrame:SetUserPlaced(true);
 		
 		local flags = tonumber(GetCVar("watchFrameState"));
 		for value, bitflag in next, WATCHFRAME_FLAGS do
@@ -427,6 +435,7 @@ function WatchFrameTitle_OnMouseUp (self, button)
 end
 
 function WatchFrame_OnSizeChanged (self, width, height)
+	WatchFrame_ClearDisplay();
 	WatchFrame_Update(self)
 end
 
@@ -453,6 +462,18 @@ function WatchFrame_GetRemainingSpace ()
 	end
 	
 	return (watchFrame:GetTop() - watchFrame:GetBottom() - WATCHFRAMELINES_YOFFSET) - math.abs(watchFrame.nextOffset);
+end
+
+function WatchFrame_ClearDisplay ()
+	for _, timerLine in pairs(WATCHFRAME_TIMERLINES) do
+		timerLine:Reset();
+	end
+	for _, achievementLine in pairs(WATCHFRAME_ACHIEVEMENTLINES) do
+		achievementLine:Reset();
+	end
+	for _, questLine in pairs(WATCHFRAME_QUESTLINES) do
+		questLine:Reset();
+	end
 end
 
 function WatchFrame_Update (self)
@@ -523,6 +544,7 @@ function WatchFrame_AddObjectiveHandler (func)
 	end
 	
 	tinsert(WATCHFRAME_OBJECTIVEHANDLERS, func);
+	return true;
 end
 
 function WatchFrame_RemoveObjectiveHandler (func)
@@ -530,7 +552,7 @@ function WatchFrame_RemoveObjectiveHandler (func)
 	for i = 1, numFunctions do
 		if ( WATCHFRAME_OBJECTIVEHANDLERS[i] == func ) then
 			tremove(WATCHFRAME_OBJECTIVEHANDLERS, i);
-			return;
+			return true;
 		end
 	end
 end
@@ -755,171 +777,176 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 	local nextXOffset = 0;
 		
 	local numCriteria, criteriaDisplayed;
-	local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID;
+	local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, achievementCategory;
+
+	local displayOnlyArena = (not WatchFrame:IsUserPlaced()) and ArenaEnemyFrames and ArenaEnemyFrames:IsShown();
 	for i = 1, numTrackedAchievements do
 		achievementID = select(i, ...);
-		_, achievementName, _, completed, _, _, _, description, _, icon = GetAchievementInfo(achievementID);
-		
-		local heightNeeded = WatchFrame_GetHeightNeededForAchievement(achievementID);
-		if ( heightNeeded > maxHeight + (initialOffset - heightUsed) ) then
-			return heightUsed, maxWidth; -- We ran out of space to draw achievements, stop.
-		else
-			heightUsed = heightUsed + heightNeeded;
-		end
-		
-		line = WatchFrame_GetAchievementLine();
-		achievementTitle = line;
-		line.text:SetText(achievementName);
-		if ( completed ) then
-			line.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		else
-			line.text:SetTextColor(0.75, 0.61, 0);
-		end
-		line:Show()
-		line.icon:SetTexture(icon);
-		line.icon:Show();
-		line.border:Show();
-		local lineWidth = line.text:GetStringWidth() + WATCHFRAME_ICONXOFFSET
-		maxWidth = max(maxWidth, lineWidth)
-		if ( previousLine ) then -- If this isn't the first displayed title, our position is relative to the last displayed line.
-			local yOffset = -5;
-			if ( previousLine.icon:IsShown() or previousLine.statusBar:IsShown() ) then
-				yOffset = -10
-			end
+		achievementCategory = GetAchievementCategory(achievementID);
+		if ( (not displayOnlyArena) or achievementCategory == WATCHFRAME_ACHIEVEMENT_ARENA_CATEGORY ) then
+			_, achievementName, _, completed, _, _, _, description, _, icon = GetAchievementInfo(achievementID);
 			
-			line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
-			line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", 22 + nextXOffset, yOffset);
-		else
-			line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset - 5); -- 5 is the difference between the top of line.text and line.border
-			line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 22, initialOffset - 5);
-		end
-		if ( not self.disableButtons ) then
-			linkButton = WatchFrame_GetLinkButton();
-			linkButton:SetPoint("TOPLEFT", line.icon);
-			linkButton:SetPoint("BOTTOMLEFT", line.icon);
-			linkButton:SetWidth(lineWidth + WATCHFRAME_ICONXOFFSET);
-			linkButton.type = "ACHIEVEMENT"
-			linkButton.index = achievementID;
-			linkButton:Show();
-		end
-		nextXOffset = -22;
-		previousLine = line;
-		numCriteria = GetAchievementNumCriteria(achievementID);
-		if ( numCriteria > 0 ) then
-			criteriaDisplayed = 0;
-			for j = 1, numCriteria do
-				criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID = GetAchievementCriteriaInfo(achievementID, j);
-				if ( criteriaCompleted or ( criteriaDisplayed > WATCHFRAME_CRITERIA_PER_ACHIEVEMENT and not criteriaCompleted ) ) then
-					-- Don't do anything
-				elseif ( criteriaDisplayed == WATCHFRAME_CRITERIA_PER_ACHIEVEMENT ) then
-					-- We ran out of space to display incomplete criteria >_<
-					line = WatchFrame_GetAchievementLine();
-					line.text:SetText(" - ");
-					local dashWidth = line.text:GetStringWidth();
-					nextXOffset = nextXOffset + dashWidth -- Offset as if there were a dash
-					line.text:SetText("...");
-					line.text:SetTextColor(0.8, 0.8, 0.8);
-					line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, 3);
-					line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, 3);
-					line:Show();
-					maxWidth = max(maxWidth, line.text:GetStringWidth()); -- I can't imagine this happening anytime soon really
-					criteriaDisplayed = criteriaDisplayed + 1;
-					previousLine = line;
-					nextXOffset = -dashWidth;
-				else
-					if ( WATCHFRAME_TIMEDCRITERIA[criteriaID] ) then
-						local timedCriteria = WATCHFRAME_TIMEDCRITERIA[criteriaID]
-						line = WatchFrame_GetAchievementLine();
-						line.criteriaID = criteriaID;
-						line.duration = timedCriteria.duration;
-						line.startTime = timedCriteria.startTime;
-						
-						local yOffset = WATCHFRAMELINES_FONTSPACING;
-						if ( previousLine.icon:IsShown() or previousLine.statusBar:IsShown() ) then
-							yOffset = yOffset - 5;
-						end
-						line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
-						line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
-						line:Show()
-						criteriaDisplayed = criteriaDisplayed + 1;
-						previousLine = line;
-						nextXOffset = 0;
-						WatchFrameLines_AddUpdateFunction(WatchFrame_UpdateTimedAchievements);
-					end
-					if ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
-						line = WatchFrame_GetAchievementLine();
-						line.statusBar:Show();
-						line.statusBar:GetStatusBarTexture():SetVertexColor(0, 0.6, 0, 1);
-						line.statusBar:SetMinMaxValues(0, totalQuantity);
-						line.statusBar:SetValue(quantity);
-						line.statusBar.text:SetText(quantityString);
-						
-						local yOffset = -5;
-						if ( previousLine.icon:IsShown() or previousLine.statusBar:IsShown() ) then
-							yOffset = -10;
-						end
-						
-						line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
-						line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);					
-						line:Show();
-						maxWidth = max(maxWidth, 200);
-						criteriaDisplayed = criteriaDisplayed + 2;
-						nextXOffset = 0;
-						previousLine = line;
-					else
-						line = WatchFrame_GetAchievementLine();
-						line.text:SetText(" - " .. criteriaString);
-						line.text:SetTextColor(0.8, 0.8, 0.8);
-						local yOffset = WATCHFRAMELINES_FONTSPACING;
-						if ( previousLine.icon:IsShown() or previousLine.statusBar:IsShown() ) then
-							yOffset = yOffset - 5;
-						end
-						
-						line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
-						line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
-						line:Show();
-						maxWidth = max(maxWidth, line.text:GetStringWidth());
-						criteriaDisplayed = criteriaDisplayed + 1;
-						nextXOffset = 0;
-						previousLine = line;
-					end
-				end
+			local heightNeeded = WatchFrame_GetHeightNeededForAchievement(achievementID);
+			if ( heightNeeded > maxHeight + (initialOffset - heightUsed) ) then
+				return heightUsed, maxWidth; -- We ran out of space to draw achievements, stop.
+			else
+				heightUsed = heightUsed + heightNeeded;
 			end
-		else
-			local dash = WatchFrame_GetAchievementLine();
-			dash.text:SetText(" - ");
-			dash.text:SetTextColor(0.8, 0.8, 0.8);
-			local yOffset = WATCHFRAMELINES_FONTSPACING;
-			if ( previousLine.icon:IsShown() or previousLine.statusBar:IsShown() ) then
-				yOffset = yOffset - 5;
-			end
-			
-			local dashWidth = dash.text:GetStringWidth();
-			
-			dash:SetWidth(dashWidth);
-			dash:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
-			dash:Show();
 			
 			line = WatchFrame_GetAchievementLine();
-			line.text:SetText(description);
-			line.text:SetTextColor(0.8, 0.8, 0.8);
-			
-			local stringWidth = line.text:GetStringWidth();
-			local desiredWidth = math.ceil(stringWidth + dashWidth); -- This is how long we want the line to be with no wrapping
-			
-			if ( desiredWidth > maxWidth ) then
-				maxWidth = min(desiredWidth, frameWidth);
+			achievementTitle = line;
+			line.text:SetText(achievementName);
+			if ( completed ) then
+				line.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			else
+				line.text:SetTextColor(0.75, 0.61, 0);
 			end
-			
-			local linesNeeded = math.ceil(stringWidth / (maxWidth - dashWidth));
-			
-			line:SetPoint("TOPLEFT", dash, "TOPRIGHT");
-			line:SetPoint("TOPRIGHT", previousLine, "TOPRIGHT", 0, yOffset);
-			line:SetHeight((WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTSPACING) + (WATCHFRAMELINES_FONTHEIGHT * (linesNeeded - 1)));
-			line:Show();
-			
-			nextXOffset = -dashWidth;
-			previousLine = line;		
+			line:Show()
+			line.icon:SetTexture(icon);
+			line.icon:Show();
+			line.border:Show();
+			local lineWidth = line.text:GetStringWidth() + WATCHFRAME_ICONXOFFSET
+			maxWidth = max(maxWidth, lineWidth)
+			if ( previousLine ) then -- If this isn't the first displayed title, our position is relative to the last displayed line.
+				local yOffset = -5;
+				if ( previousLine.icon:IsShown() or previousLine.statusBar:IsShown() ) then
+					yOffset = -10
+				end
+				
+				line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
+				line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", 22 + nextXOffset, yOffset);
+			else
+				line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset - 5); -- 5 is the difference between the top of line.text and line.border
+				line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 22, initialOffset - 5);
+			end
+			if ( not self.disableButtons ) then
+				linkButton = WatchFrame_GetLinkButton();
+				linkButton:SetPoint("TOPLEFT", line.icon);
+				linkButton:SetPoint("BOTTOMLEFT", line.icon);
+				linkButton:SetWidth(lineWidth + WATCHFRAME_ICONXOFFSET);
+				linkButton.type = "ACHIEVEMENT"
+				linkButton.index = achievementID;
+				linkButton:Show();
+			end
+			nextXOffset = -22;
+			previousLine = line;
+			numCriteria = GetAchievementNumCriteria(achievementID);
+			if ( numCriteria > 0 ) then
+				criteriaDisplayed = 0;
+				for j = 1, numCriteria do
+					criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID = GetAchievementCriteriaInfo(achievementID, j);
+					if ( criteriaCompleted or ( criteriaDisplayed > WATCHFRAME_CRITERIA_PER_ACHIEVEMENT and not criteriaCompleted ) ) then
+						-- Don't do anything
+					elseif ( criteriaDisplayed == WATCHFRAME_CRITERIA_PER_ACHIEVEMENT ) then
+						-- We ran out of space to display incomplete criteria >_<
+						line = WatchFrame_GetAchievementLine();
+						line.text:SetText(" - ");
+						local dashWidth = line.text:GetStringWidth();
+						nextXOffset = nextXOffset + dashWidth -- Offset as if there were a dash
+						line.text:SetText("...");
+						line.text:SetTextColor(0.8, 0.8, 0.8);
+						line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, 3);
+						line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, 3);
+						line:Show();
+						maxWidth = max(maxWidth, line.text:GetStringWidth()); -- I can't imagine this happening anytime soon really
+						criteriaDisplayed = criteriaDisplayed + 1;
+						previousLine = line;
+						nextXOffset = -dashWidth;
+					else
+						if ( WATCHFRAME_TIMEDCRITERIA[criteriaID] ) then
+							local timedCriteria = WATCHFRAME_TIMEDCRITERIA[criteriaID]
+							line = WatchFrame_GetAchievementLine();
+							line.criteriaID = criteriaID;
+							line.duration = timedCriteria.duration;
+							line.startTime = timedCriteria.startTime;
+							
+							local yOffset = WATCHFRAMELINES_FONTSPACING;
+							if ( previousLine.icon:IsShown() or previousLine.statusBar:IsShown() ) then
+								yOffset = yOffset - 5;
+							end
+							line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
+							line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
+							line:Show()
+							criteriaDisplayed = criteriaDisplayed + 1;
+							previousLine = line;
+							nextXOffset = 0;
+							WatchFrameLines_AddUpdateFunction(WatchFrame_UpdateTimedAchievements);
+						end
+						if ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
+							line = WatchFrame_GetAchievementLine();
+							line.statusBar:Show();
+							line.statusBar:GetStatusBarTexture():SetVertexColor(0, 0.6, 0, 1);
+							line.statusBar:SetMinMaxValues(0, totalQuantity);
+							line.statusBar:SetValue(quantity);
+							line.statusBar.text:SetText(quantityString);
+							
+							local yOffset = -5;
+							if ( previousLine.icon:IsShown() or previousLine.statusBar:IsShown() ) then
+								yOffset = -10;
+							end
+							
+							line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
+							line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);					
+							line:Show();
+							maxWidth = max(maxWidth, 200);
+							criteriaDisplayed = criteriaDisplayed + 2;
+							nextXOffset = 0;
+							previousLine = line;
+						else
+							line = WatchFrame_GetAchievementLine();
+							line.text:SetText(" - " .. criteriaString);
+							line.text:SetTextColor(0.8, 0.8, 0.8);
+							local yOffset = WATCHFRAMELINES_FONTSPACING;
+							if ( previousLine.icon:IsShown() or previousLine.statusBar:IsShown() ) then
+								yOffset = yOffset - 5;
+							end
+							
+							line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
+							line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
+							line:Show();
+							maxWidth = max(maxWidth, line.text:GetStringWidth());
+							criteriaDisplayed = criteriaDisplayed + 1;
+							nextXOffset = 0;
+							previousLine = line;
+						end
+					end
+				end
+			else
+				local dash = WatchFrame_GetAchievementLine();
+				dash.text:SetText(" - ");
+				dash.text:SetTextColor(0.8, 0.8, 0.8);
+				local yOffset = WATCHFRAMELINES_FONTSPACING;
+				if ( previousLine.icon:IsShown() or previousLine.statusBar:IsShown() ) then
+					yOffset = yOffset - 5;
+				end
+				
+				local dashWidth = dash.text:GetStringWidth();
+				
+				dash:SetWidth(dashWidth);
+				dash:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
+				dash:Show();
+				
+				line = WatchFrame_GetAchievementLine();
+				line.text:SetText(description);
+				line.text:SetTextColor(0.8, 0.8, 0.8);
+				
+				local stringWidth = line.text:GetStringWidth();
+				local desiredWidth = math.ceil(stringWidth + dashWidth); -- This is how long we want the line to be with no wrapping
+				
+				if ( desiredWidth > maxWidth ) then
+					maxWidth = min(desiredWidth, frameWidth);
+				end
+				
+				local linesNeeded = math.ceil(stringWidth / (maxWidth - dashWidth));
+				
+				line:SetPoint("TOPLEFT", dash, "TOPRIGHT");
+				line:SetPoint("TOPRIGHT", previousLine, "TOPRIGHT", 0, yOffset);
+				line:SetHeight((WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTSPACING) + (WATCHFRAMELINES_FONTHEIGHT * (linesNeeded - 1)));
+				line:Show();
+				
+				nextXOffset = -dashWidth;
+				previousLine = line;		
+			end
 		end
 	end
 
