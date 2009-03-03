@@ -58,6 +58,10 @@ function MacOptionsFrame_Load()
 			MacOptionsFrame_EnableCheckBox(button);
 		end
 	end
+
+
+	
+
 	if(not MovieRecording_IsSupported()) then
 		UIDropDownMenu_DisableDropDown(MacOptionsFrameResolutionDropDown);
 		UIDropDownMenu_DisableDropDown(MacOptionsFrameFramerateDropDown);
@@ -84,6 +88,13 @@ function MacOptionsFrame_Load()
 		button:SetChecked(0);
 		MacOptionsFrame_DisableCheckBox(button);
 	end
+
+	-- make sure that if UI recording is not enabled, that we disable cursor recording (it's part of the UI)
+	if ( not MacOptionsFrameCheckButton1:GetChecked() ) then
+		MacOptionsFrameCheckButton3:SetChecked(0);
+		MacOptionsFrame_DisableCheckBox(MacOptionsFrameCheckButton3);		
+	end
+
 end
 
 function MacOptionsFrame_Save()

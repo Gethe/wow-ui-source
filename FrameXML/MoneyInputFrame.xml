@@ -5,7 +5,7 @@
 			<AbsDimension x="176" y="18"/>
 		</Size>
 		<Frames>
-			<EditBox name="$parentGold" historyLines="0" numeric="true" autoFocus="false">
+			<EditBox parentKey="gold" name="$parentGold" historyLines="0" numeric="true" autoFocus="false">
 				<Size>
 					<AbsDimension x="58" y="20"/>
 				</Size>
@@ -50,7 +50,7 @@
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture file="Interface\MoneyFrame\UI-MoneyIcons">
+						<Texture parentKey="texture" file="Interface\MoneyFrame\UI-MoneyIcons">
 							<Size>
 								<AbsDimension x="13" y="13"/>
 							</Size>
@@ -63,6 +63,14 @@
 							</Anchors>
 							<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 						</Texture>
+						<FontString parentKey="label" font="GameFontHighlight" text="GOLD_AMOUNT_SYMBOL" hidden="true">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset x="2" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -83,7 +91,7 @@
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
-			<EditBox name="$parentSilver" letters="2" historyLines="0" numeric="true" autoFocus="false">
+			<EditBox parentKey="silver" name="$parentSilver" letters="2" historyLines="0" numeric="true" autoFocus="false">
 				<Size>
 					<AbsDimension x="30" y="20"/>
 				</Size>
@@ -132,7 +140,7 @@
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture file="Interface\MoneyFrame\UI-MoneyIcons">
+						<Texture parentKey="texture" file="Interface\MoneyFrame\UI-MoneyIcons">
 							<Size>
 								<AbsDimension x="13" y="13"/>
 							</Size>
@@ -145,6 +153,14 @@
 							</Anchors>
 							<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 						</Texture>
+						<FontString parentKey="label" font="GameFontHighlight" text="SILVER_AMOUNT_SYMBOL" hidden="true">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset x="-8" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>						
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -165,7 +181,7 @@
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
-			<EditBox name="$parentCopper" letters="2" historyLines="0" numeric="true" autoFocus="false">
+			<EditBox parentKey="copper" name="$parentCopper" letters="2" historyLines="0" numeric="true" autoFocus="false">
 				<Size>
 					<AbsDimension x="30" y="20"/>
 				</Size>
@@ -214,7 +230,7 @@
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture file="Interface\MoneyFrame\UI-MoneyIcons">
+						<Texture parentKey="texture" file="Interface\MoneyFrame\UI-MoneyIcons">
 							<Size>
 								<AbsDimension x="13" y="13"/>
 							</Size>
@@ -227,6 +243,14 @@
 							</Anchors>
 							<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 						</Texture>
+						<FontString parentKey="label" font="GameFontHighlight" text="COPPER_AMOUNT_SYMBOL" hidden="true">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset x="-8" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -256,5 +280,10 @@
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
 		</Frames>
+		<Scripts>
+			<OnShow>
+				MoneyInputFrame_OnShow(self);
+			</OnShow>
+		</Scripts>
 	</Frame>
 </Ui>

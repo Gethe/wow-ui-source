@@ -140,7 +140,6 @@ end
 function PVPBannerCustomization_Left (self)
 	local id = self:GetParent():GetID();
 
-
 	local texture;
 	if ( id == 1 ) then
 		texture = PVPBannerFrameStandardEmblem;
@@ -163,7 +162,9 @@ function PVPBannerCustomization_Left (self)
 	PlaySound("gsCharacterCreationLook");
 end
 
-function PVPBannerCustomization_Right (id)
+function PVPBannerCustomization_Right (self)
+	local id = self:GetParent():GetID();
+
 	local texture;
 	if ( id == 1 ) then
 		texture = PVPBannerFrameStandardEmblem;
@@ -178,7 +179,7 @@ function PVPBannerCustomization_Right (id)
 		texture = PVPBannerFrameStandardBorder;
 		if ( texture.id == MAX_TEAM_BORDERS ) then 
 			texture.id = 1;
-		else 
+		else
 			texture.id = texture.id + 1;
 		end
 		texture:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..PVPBannerFrame.teamSize.."-Border-"..texture.id);

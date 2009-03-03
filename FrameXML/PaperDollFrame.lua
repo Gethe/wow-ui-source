@@ -1933,7 +1933,7 @@ function PaperDollFrameItemFlyout_DisplayButton (button, paperDollItemSlot)
 		return;
 	end
 	
-	local id, name, textureName, count, durability, maxDurability, invType, start, duration, enable, setTooltip = EquipmentManager_GetItemInfoByLocation(location);
+	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip = EquipmentManager_GetItemInfoByLocation(location);
 	
 	local broken = ( maxDurability and durability == 0 );
 	if ( textureName ) then
@@ -2169,6 +2169,7 @@ function GearSetButton_OnClick (self)
 			end
 		end
 		EquipmentManager_EquipSet(self.name);
+		self:SetChecked(1);
 	else
 		self:SetChecked(0);
 	end

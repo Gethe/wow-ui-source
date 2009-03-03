@@ -114,6 +114,8 @@ function MerchantFrame_UpdateMerchantInfo()
 			else
 				itemButton.price = price;
 				itemButton.extendedCost = nil;
+				itemButton.link = GetMerchantItemLink(index);
+				itemButton.texture = texture;
 				MoneyFrame_Update(merchantMoney:GetName(), price);
 				merchantAltCurrency:Hide();
 				merchantMoney:Show();
@@ -370,6 +372,8 @@ function MerchantItemButton_OnLoad(self)
 	self.UpdateTooltip = MerchantItemButton_OnEnter;
 end
 
+MERCHANT_HIGH_PRICE_COST = 1500000;
+
 function MerchantItemButton_OnClick(self, button)
 	MerchantFrame.extendedCost = nil;
 	
@@ -383,6 +387,8 @@ function MerchantItemButton_OnClick(self, button)
 		else
 			if ( self.extendedCost ) then
 				MerchantFrame_ConfirmExtendedItemCost(self);
+			elseif ( self.price and self.price >= MERCHANT_HIGH_PRICE_COST ) then
+				MerchantFrame_ConfirmHighCostItem(self);
 			else
 				BuyMerchantItem(self:GetID());
 			end
@@ -490,6 +496,17 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 	local itemName, _, itemQuality = GetItemInfo(itemButton.link);
 	local r, g, b = GetItemQualityColor(itemQuality);
 	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index, ["count"] = count * quantity});
+end
+
+function MerchantFrame_ConfirmHighCostItem(itemButton, quantity)
+	quantity = (quantity or 1);
+	local index = itemButton:GetID();
+
+	MerchantFrame.itemIndex = index;
+	MerchantFrame.count = quantity;
+	MerchantFrame.price = itemButton.price;
+	
+	StaticPopup_Show("CONFIRM_HIGH_COST_ITEM", itemButton.link);
 end
 
 function MerchantFrame_UpdateCanRepairAll()

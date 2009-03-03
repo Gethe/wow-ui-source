@@ -885,7 +885,7 @@
 				self:StartMoving();
 			</OnDragStart>
 			<OnDragStop>
-				RaidPulloutStopMoving();
+				RaidPulloutStopMoving(self);
 			</OnDragStop>
 			<OnClick>
 				if (button == "RightButton") then

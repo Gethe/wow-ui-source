@@ -309,9 +309,9 @@
 				<Scripts>
 					<OnClick function="WorldMapLevelUp_OnClick"/>
 				</Scripts>
-				<NormalTexture file="Interface\LFGFrame\Arrow-Up-Up"/>
-				<PushedTexture file="Interface\LFGFrame\Arrow-Up-Down"/>
-				<DisabledTexture file="Interface\LFGFrame\Arrow-Up-Disabled"/>
+				<NormalTexture file="Interface\Buttons\Arrow-Up-Up"/>
+				<PushedTexture file="Interface\Buttons\Arrow-Up-Down"/>
+				<DisabledTexture file="Interface\Buttons\Arrow-Up-Disabled"/>
 			</Button>
 			<Button name="WorldMapLevelDownButton">
 				<Size>
@@ -327,9 +327,9 @@
 				<Scripts>
 					<OnClick function="WorldMapLevelDown_OnClick"/>
 				</Scripts>
-				<NormalTexture file="Interface\LFGFrame\Arrow-Down-Up"/>
-				<PushedTexture file="Interface\LFGFrame\Arrow-Down-Down"/>
-				<DisabledTexture file="Interface\LFGFrame\Arrow-Down-Disabled"/>
+				<NormalTexture file="Interface\Buttons\Arrow-Down-Up"/>
+				<PushedTexture file="Interface\Buttons\Arrow-Down-Down"/>
+				<DisabledTexture file="Interface\Buttons\Arrow-Down-Disabled"/>
 			</Button>
 			<Button name="WorldMapMagnifyingGlassButton">
 				<Size>

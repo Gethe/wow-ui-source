@@ -4248,15 +4248,15 @@ function CalendarInviteStatusContextMenu_Initialize(menu)
 	local calendarType = CalendarEventGetCalendarType();
 	local isGuildEvent = calendarType == "GUILD_EVENT";
 
-	for index, info in ipairs(CALENDAR_INVITESTATUS_INFO) do
-		if ( index ~= inviteStatus and								-- an invite can never be changed to the current status
-			 index ~= CALENDAR_INVITESTATUS_INVITED and				-- an invite can never be changed to one of these statuses
-			 index ~= CALENDAR_INVITESTATUS_SIGNEDUP and
-			 index ~= CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
+	for i, info in ipairs(CALENDAR_INVITESTATUS_INFO) do
+		if ( i ~= inviteStatus and									-- an invite can never be changed to the current status
+			 i ~= CALENDAR_INVITESTATUS_INVITED and					-- an invite can never be changed to one of these statuses
+			 i ~= CALENDAR_INVITESTATUS_SIGNEDUP and
+			 i ~= CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
 			if ( not isGuildEvent or								-- if this is not a guild event then this status is ok otherwise...
 				 inviteType ~= CALENDAR_INVITETYPE_SIGNUP or		-- if this is not a SIGNUP invite type then this status is ok otherwise...
-				 (index ~= CALENDAR_INVITESTATUS_ACCEPTED and		-- the invite cannot be changed to one of these statuses
-				  index ~= CALENDAR_INVITESTATUS_DECLINED) ) then
+				 (i ~= CALENDAR_INVITESTATUS_ACCEPTED and			-- the invite cannot be changed to one of these statuses
+				  i ~= CALENDAR_INVITESTATUS_DECLINED) ) then
 				UIMenu_AddButton(
 					menu,													-- menu
 					info.name,												-- text

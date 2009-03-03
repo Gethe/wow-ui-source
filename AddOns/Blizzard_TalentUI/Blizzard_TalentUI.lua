@@ -53,9 +53,10 @@ local specs = {
 		glyphName = TALENT_SPEC_SECONDARY_GLYPH,
 	},
 	["petspec1"] = {
+		name = TALENT_SPEC_PET_PRIMARY,
 		talentGroup = 1,
 		unit = "pet",
-		tooltip = PET,
+		tooltip = TALENT_SPEC_PET_PRIMARY,
 		pet = true,
 		portraitUnit = "pet",
 		defaultSpecTexture = nil,
@@ -277,8 +278,8 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 		if ( summoner == "player" ) then
 			if ( selectedSpec and specs[selectedSpec].pet ) then
 				-- if the selected spec is a pet spec...
-				local hasUI, isHunterPet = HasPetUI();
-				if ( not isHunterPet ) then
+				local numTalentGroups = GetNumTalentGroups(false, true);
+				if ( numTalentGroups == 0 ) then
 					--...and a pet spec is not available, select the default spec
 					PlayerSpecTab_OnClick(activeSpec and specTabs[activeSpec] or specTabs[DEFAULT_SPEC]);
 					return;
@@ -305,12 +306,11 @@ function PlayerTalentFrame_Refresh()
 end
 
 function PlayerTalentFrame_Update(playerLevel)
-	local activeTalentGroup = GetActiveTalentGroup();
-	local numTalentGroups = GetNumTalentGroups();
-	local hasUI, isHunterPet = HasPetUI();
+	local activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, false), GetNumTalentGroups(false, false);
+	local activePetTalentGroup, numPetTalentGroups = GetActiveTalentGroup(false, true), GetNumTalentGroups(false, true);
 
 	-- update specs
-	if ( not PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, hasUI, isHunterPet) ) then
+	if ( not PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, activePetTalentGroup, numPetTalentGroups) ) then
 		-- the current spec is not selectable any more, discontinue updates
 		return;
 	end
@@ -344,7 +344,7 @@ function PlayerTalentFrame_UpdateActiveSpec(activeTalentGroup, numTalentGroups)
 	local spec = selectedSpec and specs[selectedSpec];
 
 	local hasMultipleTalentGroups = numTalentGroups > 1;
-	if ( spec and not spec.pet and hasMultipleTalentGroups ) then
+	if ( spec and hasMultipleTalentGroups ) then
 		PlayerTalentFrameTitleText:SetText(spec.name);
 	else
 		PlayerTalentFrameTitleText:SetText(TALENTS);
@@ -407,7 +407,8 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 
 	-- show the activate button if we have more than one talent group available
 --	local showActivateButton = GetNumTalentGroups() > 1 and spec.talentGroup;
-	local showActivateButton = GetNumTalentGroups(false, spec.pet) > 1 and not isActiveSpec;
+	local showStatusFrame = spec.pet or numTalentGroups == 1;
+	local showActivateButton = not showStatusFrame and not isActiveSpec;
 	if ( showActivateButton ) then
 		PlayerTalentFrameActivateButton:Show();
 		PlayerTalentFrameStatusFrame:Hide();
@@ -424,7 +425,7 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 --		adjustUnspentPointsBar = true;
 	else
 		PlayerTalentFrameActivateButton:Hide();
-		if ( spec.pet or numTalentGroups == 1 ) then
+		if ( showStatusFrame ) then
 			-- don't show the status frame if this is a pet spec or we only have one talent group
 			PlayerTalentFrameStatusFrame:Hide();
 		else
@@ -436,7 +437,7 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 
 	-- enable the control bar if this is the active spec, preview is enabled, and preview points were spent
 	local talentPoints = GetUnspentTalentPoints(false, spec.pet, spec.talentGroup);
-	if ( isActiveSpec and talentPoints > 0 and preview ) then
+	if ( (spec.pet or isActiveSpec) and talentPoints > 0 and preview ) then
 		PlayerTalentFramePreviewBar:Show();
 		-- enable accept/cancel buttons if preview talent points were spent
 		if ( GetGroupPreviewTalentPointsSpent(spec.pet, spec.talentGroup) > 0 ) then
@@ -672,7 +673,7 @@ end
 -- PlayerTalentFrame_UpdateSpecs is a helper function for PlayerTalentFrame_Update.
 -- Returns true on a successful update, false otherwise. An update may fail if the currently
 -- selected tab is no longer selectable. In this case, the first selectable tab will be selected.
-function PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, hasUI, isHunterPet)
+function PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, activePetTalentGroup, numPetTalentGroups)
 	-- set the active spec highlight to be hidden initially, if a spec is the active one then it will
 	-- be shown in PlayerSpecTab_Update
 	PlayerTalentFrameActiveSpecTabHighlight:Hide();
@@ -685,7 +686,7 @@ function PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, hasUI
 		local frame = _G["PlayerSpecTab"..i];
 		local specIndex = frame.specIndex;
 		local spec = specs[specIndex];
-		if ( PlayerSpecTab_Update(frame, activeTalentGroup, numTalentGroups, hasUI, isHunterPet) ) then
+		if ( PlayerSpecTab_Update(frame, activeTalentGroup, numTalentGroups, activePetTalentGroup, numPetTalentGroups) ) then
 			firstShownTab = firstShownTab or frame;
 			numShown = numShown + 1;
 			frame:ClearAllPoints();
@@ -730,7 +731,7 @@ function PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, hasUI
 end
 
 function PlayerSpecTab_Update(self, ...)
-	local activeTalentGroup, numTalentGroups, hasUI, isHunterPet = ...;
+	local activeTalentGroup, numTalentGroups, activePetTalentGroup, numPetTalentGroups = ...;
 
 	local specIndex = self.specIndex;
 	local spec = specs[specIndex];
@@ -738,10 +739,9 @@ function PlayerSpecTab_Update(self, ...)
 	-- determine whether or not we need to hide the tab
 	local canShow;
 	if ( spec.pet ) then
-		canShow = hasUI and isHunterPet;
+		canShow = numPetTalentGroups > 0 and spec.talentGroup <= numTalentGroups;
 	else
-		local id = self:GetID();
-		canShow = id <= numTalentGroups;
+		canShow = spec.talentGroup <= numTalentGroups;
 	end
 	if ( not canShow ) then
 		self:Hide();
@@ -875,9 +875,9 @@ function PlayerSpecTab_Load(self, specIndex)
 		checkedTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight");
 	end
 
-	local activeTalentGroup = GetActiveTalentGroup(false, spec.pet);
-	local numTalentGroups = GetNumTalentGroups(false, spec.pet);
-	PlayerSpecTab_Update(self, activeTalentGroup, numTalentGroups);
+	local activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, false), GetNumTalentGroups(false, false);
+	local activePetTalentGroup, numPetTalentGroups = GetActiveTalentGroup(false, true), GetNumTalentGroups(false, true);
+	PlayerSpecTab_Update(self, activeTalentGroup, numTalentGroups, activePetTalentGroup, numPetTalentGroups);
 end
 
 function PlayerSpecTab_OnClick(self)
@@ -921,7 +921,7 @@ function PlayerSpecTab_OnEnter(self)
 	if ( spec.tooltip ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		-- name
-		if ( GetNumTalentGroups(false, spec.pet) == 1 ) then
+		if ( GetNumTalentGroups(false, true) <= 1 and GetNumTalentGroups(false, false) <= 1 ) then
 			-- set the tooltip to be the unit's name
 			GameTooltip:AddLine(UnitName(spec.unit), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		else

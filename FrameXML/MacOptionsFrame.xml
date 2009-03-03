@@ -188,6 +188,7 @@
 									MacOptionsFrame_EnableCheckBox(MacOptionsFrameCheckButton3);
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
+									MacOptionsFrameCheckButton3:SetChecked(0);
 									MacOptionsFrame_DisableCheckBox(MacOptionsFrameCheckButton3);
 								end
 							</OnClick>	
@@ -197,7 +198,7 @@
 						<Anchors>
 							<Anchor point="TOP" relativeTo="MacOptionsFrameCheckButton1" relativePoint="BOTTOM">
 								<Offset>
-									<AbsDimension x="0" y="5"/>
+									<AbsDimension x="23" y="5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -215,7 +216,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCheckButton3" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="5"/>
+									<AbsDimension x="-23" y="5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

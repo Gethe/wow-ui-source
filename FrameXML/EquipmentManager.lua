@@ -1,14 +1,15 @@
-local msg = function() end;
-EQUIPMENTMANAGER_EQUIPMENTSETS = {};
-
 EQUIPMENTMANAGER_PENDINGEQUIPS = {};
 EQUIPMENTMANAGER_PENDINGUNEQUIPS = {};
 
-EQUIPMENTMANAGER_LOCKEDSLOTS = {};
+EQUIPMENTMANAGER_INVENTORYSLOTS = {};
+EQUIPMENTMANAGER_BAGSLOTS = {};
 
-EQUIPMENTMANAGER_BAGSPACE = {}
+local SLOT_LOCKED = 1;
+local SLOT_EMPTY = 2;
 
-RegisterForSavePerCharacter("EQUIPMENTMANAGER_EQUIPMENTSETS");
+for i = 0, NUM_BAG_SLOTS + GetNumBankSlots() do
+	EQUIPMENTMANAGER_BAGSLOTS[i] = {};
+end
 
 EquipmentManager = CreateFrame("FRAME");
 
@@ -32,67 +33,80 @@ NON_DEFAULT_INVSLOTS = {
 [INVSLOT_OFFHAND] = true,
 }
 
-local function EquipmentManager_UpdateFreeBagSpace()
-	for i = 0, NUM_BAG_SLOTS do
-		EQUIPMENTMANAGER_BAGSPACE[i] = GetContainerNumFreeSlots(i);
+local bagSpaceTable = {};
+function EquipmentManager_UpdateFreeBagSpace ()
+	local bagSlots = EQUIPMENTMANAGER_BAGSLOTS;
+	for i = 0, NUM_BAG_SLOTS + GetNumBankSlots() do
+		for k, v in next, bagSpaceTable do
+			bagSpaceTable[k] = nil;
+		end
+		if ( GetContainerFreeSlots(i, bagSpaceTable) ) then
+			for index, slot in next, bagSpaceTable do
+				if ( not bagSlots[i][slot] ) then -- Don't overwrite locked slots, don't reset empty slots to empty
+					bagSlots[i][slot] = SLOT_EMPTY;
+				end
+			end
+		end
 	end
 end
 
 function EquipmentManager_OnEvent (self, event, ...)
 	if ( event == "PLAYER_REGEN_ENABLED" ) then
-		EquipmentManager_UpdateFreeBagSpace();
 		for slot, info in next, EQUIPMENTMANAGER_PENDINGEQUIPS do
-			if ( not EQUIPMENTMANAGER_LOCKEDSLOTS[slot] ) then
-				EQUIPMENTMANAGER_PENDINGEQUIPS[slot] = nil;
-				EquipmentManager_FindAndEquipItem(info[1], slot, info[2]); -- 1 = itemID, 2 = location
-			end
+			EQUIPMENTMANAGER_PENDINGEQUIPS[slot] = nil;
+			EquipmentManager_FindAndEquipItem(info[1], slot, info[2]); -- 1 = itemID, 2 = location
 		end
 		for slot in next, EQUIPMENTMANAGER_PENDINGUNEQUIPS do
-			if ( not EQUIPMENTMANAGER_LOCKEDSLOTS[slot] ) then
-				EQUIPMENTMANAGER_PENDINGUNEQUIPS[slot] = nil;
-				EquipmentManager_UnequipItemInSlot(slot);
-			end
-		end
-		self:UnregisterEvent(event);
-	elseif ( event == "WEAR_EQUIPMENT_SET" ) then
-		local setName = ...;
-		EquipmentManager_EquipSet(setName);
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then	
-		EquipmentManager_UpdateFreeBagSpace();
-	elseif ( event == "PLAYER_EQUIPMENT_CHANGED" ) then
-		local slot = ...;
-		msg("Equipment Changed in slot " .. slot)
-		msg("Unlocked slot");
-		EQUIPMENTMANAGER_LOCKEDSLOTS[slot] = nil;
-		if ( EQUIPMENTMANAGER_PENDINGEQUIPS[slot] ) then
-			EquipmentManager_UpdateFreeBagSpace();
-			local info = EQUIPMENTMANAGER_PENDINGEQUIPS[slot];
-			EQUIPMENTMANAGER_PENDINGEQUIPS[slot] = nil;
-			msg(info);
-			EquipmentManager_FindAndEquipItem(info[1], slot, info[2]); -- 1 = itemID, 2 = location
-		elseif ( EQUIPMENTMANAGER_PENDINGUNEQUIPS[slot] ) then
-			EquipmentManager_UpdateFreeBagSpace();
 			EQUIPMENTMANAGER_PENDINGUNEQUIPS[slot] = nil;
 			EquipmentManager_UnequipItemInSlot(slot);
 		end
+	elseif ( event == "PLAYERBANKBAGSLOTS_CHANGED" ) then
+		for i = #EQUIPMENTMANAGER_BAGSLOTS + 1, NUM_BAG_SLOTS + GetNumBankSlots() do
+			EQUIPMENTMANAGER_BAGSLOTS[i] = {};
+		end
+	elseif ( event == "WEAR_EQUIPMENT_SET" ) then
+		local setName = ...;
+		EquipmentManager_EquipSet(setName);
+	elseif ( event == "PLAYER_EQUIPMENT_CHANGED" ) then
+		local slot = ...;
+		if ( EQUIPMENTMANAGER_PENDINGEQUIPS[slot] ) then
+			local info = EQUIPMENTMANAGER_PENDINGEQUIPS[slot];
+			EQUIPMENTMANAGER_PENDINGEQUIPS[slot] = nil;
+			EquipmentManager_FindAndEquipItem(info[1], slot, info[2]); -- 1 = itemID, 2 = location
+		elseif ( EQUIPMENTMANAGER_PENDINGUNEQUIPS[slot] ) then
+			EQUIPMENTMANAGER_PENDINGUNEQUIPS[slot] = nil;
+			EquipmentManager_UnequipItemInSlot(slot);
+		end	
+	elseif ( event == "ITEM_UNLOCKED" ) then
+		local arg1, arg2 = ...; -- inventory slot or bag and slot
+		if ( not arg2 ) then
+			EQUIPMENTMANAGER_INVENTORYSLOTS[arg1] = nil;
+		else
+			EQUIPMENTMANAGER_BAGSLOTS[arg1][arg2] = nil;
+		end			
 	end
 end
 
 EquipmentManager:SetScript("OnEvent", EquipmentManager_OnEvent);
 EquipmentManager:RegisterEvent("PLAYER_ENTERING_WORLD");
+EquipmentManager:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
 EquipmentManager:RegisterEvent("PLAYER_REGEN_ENABLED");
 EquipmentManager:RegisterEvent("BAG_UPDATE");
 EquipmentManager:RegisterEvent("WEAR_EQUIPMENT_SET");
 EquipmentManager:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
+EquipmentManager:RegisterEvent("ITEM_UNLOCKED");
 
 function EquipmentManager_EquipItemByLocation (location, invSlot)
-	msg("Equipping item " .. invSlot);
-	local player, bank, bags, slot, bag = EquipmentManager_UnpackLocation(location); -- Fourth return is bag or location
+	local player, bank, bags, slot, bag = EquipmentManager_UnpackLocation(location);
 		
-	ClearCursor(); -- Or hillarity may ensue, and nobody wants to get ensued.
+	ClearCursor();	
 	
+	if ( not bags and slot == invSlot ) then --We're trying to reequip an equipped item in the same spot, ignore it.		
+		return;
+	end
+		
 	local id, _, _, _, _, _, invType, locked = EquipmentManager_GetItemInfoByLocation(location);
-	if ( EQUIPMENTMANAGER_LOCKEDSLOTS[invSlot] ) then
+	if ( EQUIPMENTMANAGER_INVENTORYSLOTS[invSlot] == SLOT_LOCKED ) then
 		EquipmentManager_AddPendingEquip(id, invSlot, location);
 		return;
 	elseif ( UnitAffectingCombat("player") ) then
@@ -101,55 +115,50 @@ function EquipmentManager_EquipItemByLocation (location, invSlot)
 			return;
 		end
 	end	
+		
+	local currentItemID = GetInventoryItemID("player", invSlot);
 	
-	if ( not bags and slot == invSlot ) then -- If the slot is locked, we might be trying to re-equip something we have equipped that is about to be unequipped.
-		msg("Item in slot, abort!")
-		--We're trying to reequip an equipped item in the same spot, ignore it.
-		return;
-	end
-	
-	msg("Slot locked");
-	EQUIPMENTMANAGER_LOCKEDSLOTS[invSlot] = true;
-	if ( not bags ) then -- We're wearing this or it's in our main bank
-		if ( not bank or NON_DEFAULT_INVSLOTS[invSlot] ) then
-			msg(string.format("Switching gear from %d to %d", slot, invSlot));
-			
-			PickupInventoryItem(slot);
-			if ( not CursorHasItem() ) then
-				EQUIPMENTMANAGER_LOCKEDSLOTS[invSlot] = nil;
-				msg("Swap failed");
-				return;
-			end
-			PickupInventoryItem(invSlot);
-		else
-			UseInventoryItem(slot);
-		end
-	elseif ( NON_DEFAULT_INVSLOTS[invSlot] ) then
-		msg(string.format("Equipping item in bag %d slot %d to inventory slot %d", bag, slot, invSlot));
-		if ( locked ) then
-			EQUIPMENTMANAGER_LOCKEDSLOTS[invSlot] = nil;
-			msg("Warning: item locked");
-			return;
-		end
-		PickupContainerItem(bag, slot); -- Something new!
-		if ( not CursorHasItem() ) then
-			EQUIPMENTMANAGER_LOCKEDSLOTS[invSlot] = nil;
-			msg("Failed to pickup item from bag");
-			return;
-		end
-		PickupInventoryItem(invSlot); -- Put it in the new spot!
+	if ( bank ) then 
+		UseInventoryItem(slot);
+		EQUIPMENTMANAGER_INVENTORYSLOTS[invSlot] = SLOT_LOCKED;
+	elseif ( not bags ) then
+		EquipmentManager_EquipInventoryItem(slot, invSlot);
 	else
-		msg(string.format("Equipping via use container item from bag %d slot %d", bag, slot));
-		if ( locked ) then
-			EQUIPMENTMANAGER_LOCKEDSLOTS[invSlot] = nil;
-			msg("Warning: item locked");
-			return;
+		EquipmentManager_EquipContainerItem(bag, slot, invSlot);
+		
+		if ( not currentItemID ) then -- This is going to result in a free bag space
+			EQUIPMENTMANAGER_BAGSLOTS[bag][slot] = SLOT_EMPTY;
 		end
-		UseContainerItem(bag, slot);
 	end
 end
 
-function EquipmentManager_UnpackLocation (location)
+function EquipmentManager_EquipContainerItem (bag, slot, invSlot)
+	ClearCursor();
+		
+	if ( NON_DEFAULT_INVSLOTS[invSlot] ) then
+		PickupContainerItem(bag, slot);
+		if ( not CursorHasItem() ) then
+			return;
+		end
+		PickupInventoryItem(invSlot);
+	else
+		UseContainerItem(bag, slot);
+	end
+	EQUIPMENTMANAGER_INVENTORYSLOTS[invSlot] = SLOT_LOCKED;
+end
+
+function EquipmentManager_EquipInventoryItem (oldSlot, newSlot)
+	ClearCursor();
+	PickupInventoryItem(oldSlot);
+	if ( not CursorHasItem() ) then
+		return;
+	end
+	PickupInventoryItem(newSlot);
+	EQUIPMENTMANAGER_INVENTORYSLOTS[oldSlot] = SLOT_LOCKED;
+	EQUIPMENTMANAGER_INVENTORYSLOTS[newSlot] = SLOT_LOCKED;
+end
+
+function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to be used.
 	local player = (bit.band(location, ITEM_INVENTORY_LOCATION_PLAYER) ~= 0);
 	local bank = (bit.band(location, ITEM_INVENTORY_LOCATION_BANK) ~= 0);
 	local bags = (bit.band(location, ITEM_INVENTORY_LOCATION_BAGS) ~= 0);
@@ -175,7 +184,6 @@ function EquipmentManager_UnpackLocation (location)
 end
 
 function EquipmentManager_FindAndEquipItem (soughtItem, invSlot, location)
-	msg(string.format("Find and equip item %d in slot %d (location %d)", soughtItem, invSlot, location))
 	if ( location ) then -- They passed in a location, so try and equip whatever's there, if it's what we're looking for.
 		local player, bank, bags, slot, bag = EquipmentManager_UnpackLocation(location);
 
@@ -191,10 +199,8 @@ function EquipmentManager_FindAndEquipItem (soughtItem, invSlot, location)
 			return;
 		end
 	end
-
-	msg("Location was wrong!");
+	
 	for location, itemID in next, GetInventoryItemsForSlot(invSlot) do
-		msg(string.format("Found item %d for slot %d (location %d)", itemID, invSlot, location));
 		if ( itemID == soughtItem ) then
 			EquipmentManager_EquipItemByLocation(location, invSlot);
 			return;
@@ -203,9 +209,7 @@ function EquipmentManager_FindAndEquipItem (soughtItem, invSlot, location)
 end
 
 function EquipmentManager_UnequipItemInSlot (slot)	
-	msg(string.format("Unequipping %d", slot));
-	
-	if ( EQUIPMENTMANAGER_LOCKEDSLOTS[slot] ) then
+	if ( EQUIPMENTMANAGER_INVENTORYSLOTS[slot] == SLOT_LOCKED ) then
 		EquipmentManager_AddPendingUnequip(slot);
 		return;
 	end
@@ -216,60 +220,66 @@ function EquipmentManager_UnequipItemInSlot (slot)
 	end
 	
 	if ( UnitAffectingCombat("player") ) then
-		msg("Unequip - Slot locked")
 		local _, _, _, _, _, _, _, _, invType = GetItemInfo(itemID);
 		if ( not INVTYPES_EQUIPPABLE_IN_COMBAT[invType] ) then
 			EquipmentManager_AddPendingUnequip(slot);
 			return;
 		end
 	end 
-	
-	msg("Unequip - Locked slot");
-	EQUIPMENTMANAGER_LOCKEDSLOTS[slot] = true;
 	PickupInventoryItem(slot);
 	if ( not EquipmentManager_PutItemInInventory() ) then
-		msg("Unequip failed - Unlocked slot");
-		EQUIPMENTMANAGER_LOCKEDSLOTS[slot] = nil; -- We didn't try and put it anywhere, don't lock anything after all.
 		ClearCursor();
 	end
 end
 
 function EquipmentManager_PutItemInInventory ()
 	if ( not CursorHasItem() ) then
-		msg("No item to put in inventory");
 		return;
 	end
 	
-	local freeSlots = EQUIPMENTMANAGER_BAGSPACE[0]
-	if ( freeSlots > 0 ) then
+	EquipmentManager_UpdateFreeBagSpace();
+	
+	local bagSlots = EQUIPMENTMANAGER_BAGSLOTS;
+	
+	local firstSlot;
+	for slot, flag in next, bagSlots[0] do
+		if ( flag == SLOT_EMPTY ) then
+			firstSlot = min(firstSlot or slot, slot);
+		end
+	end
+	
+	if ( firstSlot ) then
+		bagSlots[0][firstSlot] = SLOT_LOCKED;
 		PutItemInBackpack();
-		EQUIPMENTMANAGER_BAGSPACE[0] = freeSlots - 1;
 		return true;
 	end
 	
 	for bag = 1, NUM_BAG_SLOTS do
-		freeSlots = EQUIPMENTMANAGER_BAGSPACE[bag]
-		if ( freeSlots > 0 ) then
-			PutItemInBag(bag + CONTAINER_BAG_OFFSET);
-			EQUIPMENTMANAGER_BAGSPACE[bag] = freeSlots - 1;
-			return true;
+		if ( bagSlots[bag] ) then
+			for slot, flag in next, bagSlots[bag] do
+				if ( flag == SLOT_EMPTY ) then
+					firstSlot = min(firstSlot or slot, slot);
+				end
+			end
+			if ( firstSlot ) then
+				bagSlots[bag][firstSlot] = SLOT_LOCKED;
+				PutItemInBag(bag + CONTAINER_BAG_OFFSET);
+				return true;
+			end
 		end
 	end
-	
-	msg("No space?");
 end
 
 function EquipmentManager_AddPendingEquip (itemID, inventorySlot, location)
-	msg("Add pending equip for " .. inventorySlot);
+	EQUIPMENTMANAGER_PENDINGUNEQUIPS[inventorySlot] = nil;
 	local equip = EQUIPMENTMANAGER_PENDINGEQUIPS[inventorySlot] or {};
 	equip[1] = itemID;
 	equip[2] = location;
-	msg(equip);
 	EQUIPMENTMANAGER_PENDINGEQUIPS[inventorySlot] = equip;
-	msg(EQUIPMENTMANAGER_PENDINGEQUIPS[inventorySlot]);
 end
 
 function EquipmentManager_AddPendingUnequip (slotID)
+	EQUIPMENTMANAGER_PENDINGEQUIPS[slot] = nil;
 	EQUIPMENTMANAGER_PENDINGUNEQUIPS[slotID] = true;
 end
 
@@ -302,14 +312,10 @@ function EquipmentManager_GetItemInfoByLocation (location)
 end
 
 function EquipmentManager_EquipSet (name)
-	EquipmentManager_UpdateFreeBagSpace();
-
-	msg("Equipping set " .. name);
-	
-	for slot in next, EQUIPMENTMANAGER_LOCKEDSLOTS do
-		msg(slot)
+	if ( EquipmentSetContainsLockedItems(name) ) then
+		return;
 	end
-	
+
 	local set = GetEquipmentSetItemLocations(name);
 	for slot = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
 		if ( not set[slot] ) then
@@ -322,20 +328,5 @@ function EquipmentManager_EquipSet (name)
 			EquipmentManager_EquipItemByLocation(set[slot], slot);
 		end
 	end
-end
-
-function EquipmentManager_SetContainsItem(name, itemID, slot)
-	
-	if ( slot ) then
-		return set[slot] == itemID;
-	else
-		for slot, item in next, set do
-			if ( itemID == item ) then
-				return true;
-			end
-		end
-	end
-	
-	return false;
 end
 

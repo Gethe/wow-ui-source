@@ -1030,10 +1030,11 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 			end
 		end		
 		
-		if ( trackedAchievements[id] ) then
+		if ( IsTrackedAchievement(id) ) then
 			button.check:Show();
 			button.label:SetWidth(button.label:GetStringWidth() + 4); -- This +4 here is to fudge around any string width issues that arize from resizing a string set to its string width. See bug 144418 for an example.
 			button.tracked:SetChecked(true);
+			button.tracked:Show();
 		else
 			button.check:Hide();
 			button.tracked:SetChecked(false);
@@ -1065,7 +1066,6 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 			button.highlight:Hide();
 		end
 		button:Collapse();
-		button.tracked:Hide();
 	end
 	
 	return id;

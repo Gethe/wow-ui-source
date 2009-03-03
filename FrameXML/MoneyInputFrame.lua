@@ -94,3 +94,21 @@ end
 function MoneyInputFrame_SetOnValueChangedFunc(moneyFrame, func)
 	moneyFrame.onValueChangedFunc = func;
 end
+
+function MoneyInputFrame_OnShow(moneyFrame)
+	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+		moneyFrame.copper.texture:Hide();
+		moneyFrame.gold.texture:Hide();
+		moneyFrame.silver.texture:Hide();
+		moneyFrame.copper.label:Show();
+		moneyFrame.gold.label:Show();
+		moneyFrame.silver.label:Show();
+	else
+		moneyFrame.copper.texture:Show();
+		moneyFrame.gold.texture:Show();
+		moneyFrame.silver.texture:Show();
+		moneyFrame.copper.label:Hide();
+		moneyFrame.gold.label:Hide();
+		moneyFrame.silver.label:Hide();
+	end
+end

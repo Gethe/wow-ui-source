@@ -130,6 +130,49 @@ StaticPopupDialogs["CONFIRM_PURCHASE_TOKEN_ITEM"] = {
 	hasItemFrame = 1,
 }
 
+StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
+	text = CONFIRM_REFUND_TOKEN_ITEM,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		StackSplitFrame:Hide();
+	end,
+	OnCancel = function()
+	
+	end,
+	OnShow = function()
+	
+	end,
+	OnHide = function()
+	
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	hasItemFrame = 1,
+}
+
+StaticPopupDialogs["CONFIRM_HIGH_COST_ITEM"] = {
+	text = CONFIRM_HIGH_COST_ITEM,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		BuyMerchantItem(MerchantFrame.itemIndex, MerchantFrame.count);
+	end,
+	OnCancel = function()
+	
+	end,
+	OnShow = function(self)
+		MoneyFrame_Update(self.moneyFrame, MerchantFrame.price*MerchantFrame.count);
+	end,
+	OnHide = function()
+	
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	hasMoneyFrame = 1,
+}
+
 StaticPopupDialogs["CONFIRM_COMPLETE_EXPENSIVE_QUEST"] = {
 	text = CONFIRM_COMPLETE_EXPENSIVE_QUEST,
 	button1 = COMPLETE_QUEST,
@@ -2307,7 +2350,7 @@ StaticPopupDialogs["SET_LFGNOTE"] = {
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		SetLFGComment(self.wideEditBox:GetText());
+		SetLFGComment(self:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)

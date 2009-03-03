@@ -86,7 +86,7 @@
 	</StatusBar>
 	
 	
-	<FontString name="WatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="TOP">
+	<FontString name="WatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="MIDDLE">
 		<Size>
 			<AbsDimension x="0" y="16"/>
 		</Size>
@@ -100,7 +100,8 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="WatchFrameItemButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+	<Button name="WatchFrameItemButtonTemplate" virtual="true">
+		<Size x="29" y="30"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT" text="RANGE_INDICATOR">
@@ -116,6 +117,27 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture"/>
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>			
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
@@ -129,7 +151,15 @@
 			<OnLeave function="GameTooltip_Hide"/>
 			<OnClick function="WatchFrameItem_OnClick"/>
 		</Scripts>
-	</Frame>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Size x="48" y="48"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>		
+	</Button>
 	
 	<Frame name="WatchFrameLineTemplate" virtual="true">
 		<Size x="0" y="16"/>
@@ -139,7 +169,7 @@
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativePoint="LEFT">
-							<Offset x="-4" y="0"/>
+							<Offset x="-3" y="-1"/>
 						</Anchor>
 					</Anchors>
 				</Texture>
@@ -179,15 +209,15 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="WatchFrame" movable="true" clampedToScreen="true" hidden="false" resizable="true">
-		<Size x="280" y="128"/>
+	<Frame name="WatchFrame" parent="UIParent" movable="true" clampedToScreen="true" hidden="false" resizable="true">
+		<Size x="280" y="140"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
 				<Offset x="0" y="10"/>
 			</Anchor>
 		</Anchors>
 		<ResizeBounds>
-			<MinResize x="180" y="128"/>
+			<MinResize x="220" y="128"/>
 			<MaxResize x="360" y="600"/>
 		</ResizeBounds>
 		<Layers>

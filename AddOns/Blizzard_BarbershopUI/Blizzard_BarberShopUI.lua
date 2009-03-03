@@ -60,9 +60,9 @@ end
 
 function BarberShop_Update(self)
 	BarberShop_UpdateCost();
-	BarberShop_UpdateSelector(BarberShopFrameSelector1);
-	BarberShop_UpdateSelector(BarberShopFrameSelector2);
 	BarberShop_UpdateSelector(BarberShopFrameSelector3);
+	BarberShop_UpdateSelector(BarberShopFrameSelector2);
+	BarberShop_UpdateSelector(BarberShopFrameSelector1);
 end
 
 function BarberShop_UpdateSelector(self)

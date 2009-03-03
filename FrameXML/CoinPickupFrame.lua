@@ -21,30 +21,55 @@ function OpenCoinPickupFrame(multiplier, maxMoney, parent)
 		return;
 	end
 
+	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+		if ( not CoinPickupFrame.colorBlind ) then
+			CoinPickupCopperIcon:Hide();
+			CoinPickupSilverIcon:Hide();
+			CoinPickupGoldIcon:Hide();
+			CoinPickupText:SetPoint("RIGHT", -38, 18);
+			CoinPickupFrame.colorBlind = true;
+		end
+		
+		if ( multiplier == 1 ) then
+			CoinPickupFrame.symbol = COPPER_AMOUNT_SYMBOL;
+		elseif ( multiplier == COPPER_PER_SILVER ) then
+			CoinPickupFrame.symbol = SILVER_AMOUNT_SYMBOL;
+		elseif ( multiplier == COPPER_PER_GOLD ) then
+			CoinPickupFrame.symbol = GOLD_AMOUNT_SYMBOL;
+		end
+	else
+		CoinPickupFrame.symbol = "";
+		if ( CoinPickupFrame.colorBlind ) then
+			CoinPickupText:SetPoint("RIGHT", -38, 18);
+			CoinPickupFrame.colorBlind = nil;
+		end
+		
+		
+		if ( multiplier == 1 ) then
+			CoinPickupCopperIcon:Show();
+		else
+			CoinPickupCopperIcon:Hide();
+		end
+
+		if ( multiplier == COPPER_PER_SILVER ) then
+			CoinPickupSilverIcon:Show();
+		else
+			CoinPickupSilverIcon:Hide();
+		end
+
+		if ( multiplier == (COPPER_PER_GOLD) ) then
+			CoinPickupGoldIcon:Show();
+		else
+			CoinPickupGoldIcon:Hide();
+		end
+	end
+	
 	CoinPickupFrame.owner = parent;
 	CoinPickupFrame.money = 1;
 	CoinPickupFrame.typing = 0;
-	CoinPickupText:SetText(CoinPickupFrame.money);
+	CoinPickupText:SetText(CoinPickupFrame.money .. CoinPickupFrame.symbol);
 	CoinPickupLeftButton:Disable();
 	CoinPickupRightButton:Enable();
-
-	if ( multiplier == 1 ) then
-		CoinPickupCopperIcon:Show();
-	else
-		CoinPickupCopperIcon:Hide();
-	end
-
-	if ( multiplier == COPPER_PER_SILVER ) then
-		CoinPickupSilverIcon:Show();
-	else
-		CoinPickupSilverIcon:Hide();
-	end
-
-	if ( multiplier == (COPPER_PER_GOLD) ) then
-		CoinPickupGoldIcon:Show();
-	else
-		CoinPickupGoldIcon:Hide();
-	end
 
 	CoinPickupFrame:SetPoint("BOTTOMRIGHT", parent, "TOPRIGHT", 0, 0);
 	CoinPickupFrame:Show();
@@ -71,7 +96,7 @@ function UpdateCoinPickupFrame(maxMoney)
 
 	if ( CoinPickupFrame.money > CoinPickupFrame.maxMoney ) then
 		CoinPickupFrame.money = CoinPickupFrame.maxMoney;
-		CoinPickupText:SetText(CoinPickupFrame.money);
+		CoinPickupText:SetText(CoinPickupFrame.money .. CoinPickupFrame.symbol);
 	end
 
 	if ( CoinPickupFrame.money == CoinPickupFrame.maxMoney ) then
@@ -107,7 +132,7 @@ function CoinPickupFrame_OnChar(self, text)
 
 	if ( money <= self.maxMoney ) then
 		self.money = money;
-		CoinPickupText:SetText(money);
+		CoinPickupText:SetText(money .. CoinPickupFrame.symbol);
 		if ( money == self.maxMoney ) then
 			CoinPickupRightButton:Disable();
 		else
@@ -137,7 +162,7 @@ function CoinPickupFrame_OnKeyDown(self, key)
 		else
 			CoinPickupLeftButton:Enable();
 		end
-		CoinPickupText:SetText(self.money);
+		CoinPickupText:SetText(self.money .. self.symbol);
 		if ( self.money == self.maxMoney ) then
 			CoinPickupRightButton:Disable();
 		else
@@ -174,7 +199,7 @@ function CoinPickupFrameLeft_Click()
 	end
 
 	CoinPickupFrame.money = CoinPickupFrame.money - 1;
-	CoinPickupText:SetText(CoinPickupFrame.money);
+	CoinPickupText:SetText(CoinPickupFrame.money .. CoinPickupFrame.symbol);
 	if ( CoinPickupFrame.money == 1 ) then
 		CoinPickupLeftButton:Disable();
 	end
@@ -187,7 +212,7 @@ function CoinPickupFrameRight_Click()
 	end
 
 	CoinPickupFrame.money = CoinPickupFrame.money + 1;
-	CoinPickupText:SetText(CoinPickupFrame.money);
+	CoinPickupText:SetText(CoinPickupFrame.money .. CoinPickupFrame.symbol);
 	if ( CoinPickupFrame.money == CoinPickupFrame.maxMoney ) then
 		CoinPickupRightButton:Disable();
 	end

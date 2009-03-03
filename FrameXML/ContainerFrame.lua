@@ -597,7 +597,6 @@ function updateContainerFrameAnchors()
 	end
 end
 
-
 function ContainerFrameItemButton_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterForDrag("LeftButton");
@@ -610,6 +609,63 @@ end
 
 function ContainerFrameItemButton_OnDrag (self)
 	ContainerFrameItemButton_OnClick(self, "LeftButton");
+end
+
+function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
+	quantity = (quantity or 1);
+	local slot = itemButton:GetID();
+	local bag = itemButton:GetParent():GetID();
+
+	local money, honorPoints, arenaPoints, itemCount, refundSec, purchaseTime = GetContainerItemPurchaseInfo(bag, slot);
+	if ( (honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0) ) then
+		return false;
+	end
+	
+	local count = itemButton.count or 1;
+	honorPoints, arenaPoints, itemCount = (honorPoints or 0) * quantity, (arenaPoints or 0) * quantity, (itemCount or 0) * quantity;
+	
+	if ( honorPoints and honorPoints ~= 0 ) then
+		local factionGroup = UnitFactionGroup("player");
+		if ( factionGroup ) then	
+			pointsTexture = "Interface\\PVPFrame\\PVP-Currency-"..factionGroup;
+			itemsString = " |T" .. pointsTexture .. ":0:0:0:-1|t" ..  honorPoints .. " " .. HONOR_POINTS;
+		end
+	end
+	if ( arenaPoints and arenaPoints ~= 0 ) then
+		if ( itemsString ) then
+			-- adding an extra space here because it looks nicer
+			itemsString = itemsString .. "  |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
+		else
+			itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
+		end
+	end
+	
+	local maxQuality = 0;
+	for i=1, itemCount, 1 do
+		local itemTexture, itemQuantity, itemLink = GetContainerItemPurchaseItem(bag, slot, i);
+		if ( itemLink ) then
+			local _, _, itemQuality = GetItemInfo(itemLink);
+			maxQuality = math.max(itemQuality, maxQuality);
+			if ( itemsString ) then
+				itemsString = itemsString .. ", " .. format(ITEM_QUANTITY_TEMPLATE, (itemQuantity or 0) * quantity, itemLink);
+			else
+				itemsString = format(ITEM_QUANTITY_TEMPLATE, (itemQuantity or 0) * quantity, itemLink);
+			end
+		end
+	end
+	
+	if ( honorPoints == 0 and arenaPoints == 0 and maxQuality <= ITEM_QUALITY_UNCOMMON ) then
+		return false;
+	end
+	
+	MerchantFrame.refundBag = bag;
+	MerchantFrame.refundSlot = slot;
+	
+	local refundItemTexture, _, _, _, _, _, refundItemLink = GetContainerItemInfo(bag, slot);
+	local itemName, _, itemQuality = GetItemInfo(refundItemLink);
+	local r, g, b = GetItemQualityColor(itemQuality);
+	StaticPopup_Show("CONFIRM_REFUND_TOKEN_ITEM", itemsString, "", {["texture"] = refundItemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = refundItemLink, ["index"] = index, ["count"] = count * quantity});
+	return true;
 end
 
 function ContainerFrameItemButton_OnClick(self, button)
@@ -627,6 +683,8 @@ function ContainerFrameItemButton_OnClick(self, button)
 		elseif ( type == "merchant" ) then
 			if ( MerchantFrame.extendedCost ) then
 				MerchantFrame_ConfirmExtendedItemCost(MerchantFrame.extendedCost);
+			elseif ( MerchantFrame.price and MerchantFrame.price >= MERCHANT_HIGH_PRICE_COST ) then
+				MerchantFrame_ConfirmHighCostItem(self);
 			else
 				PickupContainerItem(self:GetParent():GetID(), self:GetID());
 			end
@@ -635,9 +693,15 @@ function ContainerFrameItemButton_OnClick(self, button)
 		end
 		StackSplitFrame:Hide();
 	else
-		if ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 2 ) then
-			-- Don't sell the item if the buyback tab is selected
-			return;
+		if ( MerchantFrame:IsShown() ) then
+			if ( MerchantFrame.selectedTab == 2 ) then
+				-- Don't sell the item if the buyback tab is selected
+				return;
+			end
+			if ( ContainerFrame_GetExtendedPriceString(self)) then
+				-- a confirmation dialog has been shown
+				return;
+			end
 		end
 		UseContainerItem(self:GetParent():GetID(), self:GetID());
 		StackSplitFrame:Hide();

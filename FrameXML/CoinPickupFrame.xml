@@ -54,6 +54,14 @@
 					</Anchors>
 					<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 				</Texture>
+				<FontString name="CoinPickupLabel" text="COPPER_AMOUNT_SYMBOL" font="GameFontHighlight" hidden="true">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="-32" y="19"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
 				<FontString name="CoinPickupText" inherits="GameFontHighlight" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="RIGHT">
