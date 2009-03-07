@@ -646,64 +646,6 @@ local function CreateRestrictedEnvironment(base)
 end
 
 ---------------------------------------------------------------------------
--- ANIMATION SUPPORT
-
-local LOCAL_Animation_SandBox_Meta = {
-    __index = {
-        math = math;
-        string = string;
-    };
-
-    __newindex = function ()
-                     error("Secure animation functions cannot store globals.")
-                 end;
-
-    __environment = {
-        math = math;
-        string = string;
-    };
-
-    __metatable = false;
-}
-local LOCAL_Animation_SandBox = setmetatable({}, LOCAL_Animation_SandBox_Meta);
-
-local LOCAL_Animation_Closures =
-    CreateClosureFactory(LOCAL_Animation_SandBox, "self,elapsedFraction");
-
-local LOCAL_Animation_Methods = {
-    Show = true;
-    Hide = true;
-    SetPoint = true;
-    SetScale = true;
-    SetHeight = true;
-    SetWidth = true;
-    SetAlpha = true;
-};
-
-local LOCAL_Animation_Namespace = {};
-
-function LOCAL_Animation_Namespace.SetUpAnimation(frame, updateFunc, posBody,
-                                                  totalTime, postFunc, reverse)
-    if ((updateFunc ~= nil) and not LOCAL_Animation_Methods[updateFunc]) then
-        error("Unsupported secure animation function '" .. updateFunc .. "'");
-        return;
-    end
-    if ((postFunc ~= nil) and not LOCAL_Animation_Methods[postFunc]) then
-        error("Unsupported secure animation function '" .. postFunc .. "'");
-        return;
-    end
-    frame = GetFrameHandleFrame(frame)
-    SetUpAnimation(frame,
-                   {
-                       updateFunc = updateFunc;
-                       getPosFunc = LOCAL_Animation_Closures[posBody];
-                       totalTime = tonumber(totalTime) or 0;
-                   },
-                   frame[postFunc],
-                   (reverse or nil) and true);
-end
-
----------------------------------------------------------------------------
 -- AVAILABLE FUNCTIONS
 --
 -- The current implementation has a single set of functions (aka a single
@@ -774,8 +716,6 @@ if (RESTRICTED_FUNCTIONS_SCOPE) then
 end
 
 PopulateGlobalFunctions(LOCAL_Table_Namespace,
-                        LOCAL_Restricted_Global_Functions);
-PopulateGlobalFunctions(LOCAL_Animation_Namespace,
                         LOCAL_Restricted_Global_Functions);
 
 -- Create the environment
@@ -884,3 +824,4 @@ function CallRestrictedClosure(signature, workingEnv, ctrlHandle, body, ...)
     LOCAL_Function_Environment_Manager(true, workingEnv, ctrlHandle);
     return ReleaseAndReturn(workingEnv, ctrlHandle, pcall( closure, ... ) );
 end
+

@@ -3,7 +3,9 @@
 	<Script file="Blizzard_BindingUI.lua"/>
 	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
 		<Scripts>
-			<OnClick function="KeyBindingButton_OnClick"/>
+			<OnClick>
+				KeyBindingButton_OnClick(self, button, down);
+			</OnClick>
 			<OnLoad>
 				self:RegisterForClicks("AnyUp");
 			</OnLoad>

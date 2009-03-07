@@ -143,7 +143,7 @@ end
 
 function UnitFrame_UpdateTooltip (self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
-	if ( GameTooltip:SetUnit(self.unit) ) then
+	if ( GameTooltip:SetUnit(self.unit, self.hideStatusOnTooltip) ) then
 		self.UpdateTooltip = UnitFrame_UpdateTooltip;
 	else
 		self.UpdateTooltip = nil;
@@ -240,7 +240,7 @@ function UnitFrameHealthBar_OnEvent(self, event, ...)
 end
 
 function UnitFrameHealthBar_OnUpdate(self)
-	if ( not self.disconnected ) then
+	if ( not self.disconnected and not self.lockValues) then
 		local currValue = UnitHealth(self.unit);
 		if ( currValue ~= self.currValue ) then
 			self:SetValue(currValue);
@@ -251,7 +251,7 @@ function UnitFrameHealthBar_OnUpdate(self)
 end
 
 function UnitFrameHealthBar_Update(statusbar, unit)
-	if ( not statusbar ) then
+	if ( not statusbar or statusbar.lockValues) then
 		return;
 	end
 	
@@ -346,7 +346,7 @@ function UnitFrameManaBar_OnEvent(self, event, ...)
 end
 
 function UnitFrameManaBar_OnUpdate(self)
-	if ( not self.disconnected ) then
+	if ( not self.disconnected or statusbar.lockValues ) then
 		local currValue = UnitPower(self.unit, self.powerType);
 		if ( currValue ~= self.currValue ) then
 			self:SetValue(currValue);
@@ -357,7 +357,7 @@ function UnitFrameManaBar_OnUpdate(self)
 end
 
 function UnitFrameManaBar_Update(statusbar, unit)
-	if ( not statusbar ) then
+	if ( not statusbar or statusbar.lockValues) then
 		return;
 	end
 

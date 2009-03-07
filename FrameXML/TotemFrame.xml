@@ -62,7 +62,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnClick function="TotemButton_OnClick"/>
+			<OnClick>
+				TotemButton_OnClick(self, button, down);
+			</OnClick>
 			<OnLoad>
 				TotemButton_OnLoad(self);
 			</OnLoad>
@@ -70,7 +72,9 @@
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 				GameTooltip:SetTotem(self.slot);
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Frame name="TotemFrame" toplevel="true" parent="PlayerFrame" hidden="true">

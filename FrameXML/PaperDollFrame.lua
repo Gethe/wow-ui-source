@@ -128,6 +128,7 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
+	self:RegisterEvent("KNOWN_TITLES_UPDATE");
 end
 
 function PaperDoll_IsEquippedSlot (slot)
@@ -168,6 +169,8 @@ function PaperDollFrame_OnEvent (self, event, ...)
 			end
 		end
 		PaperDollFrame_UpdateStats(self);
+	elseif ( event == "KNOWN_TITLES_UPDATE" ) then
+		PlayerTitleDropDown:Show();
 	end
 	
 	if ( not self:IsVisible() ) then
@@ -1462,10 +1465,16 @@ end
 
 -- Paperdoll stat selection functions
 function PlayerStatFrameLeftDropDown_OnLoad (self)
+	RaiseFrameLevel(self);
 	UIDropDownMenu_Initialize(self, PlayerStatFrameLeftDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, GetCVar("playerStatLeftDropdown"));
 	UIDropDownMenu_SetWidth(self, 99);
 	UIDropDownMenu_JustifyText(self, "LEFT");
+end
+
+function PlayerStatFrameLeftDropDown_OnShow (self)
+	UIDropDownMenu_Initialize(self, PlayerStatFrameLeftDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, GetCVar("playerStatLeftDropdown"));
 end
 
 function PlayerStatFrameLeftDropDown_Initialize (self)
@@ -1498,6 +1507,11 @@ function PlayerStatFrameRightDropDown_OnLoad (self)
 	UIDropDownMenu_SetSelectedValue(self, GetCVar("playerStatRightDropdown"));
 	UIDropDownMenu_SetWidth(self, 99);
 	UIDropDownMenu_JustifyText(self, "LEFT");
+end
+
+function PlayerStatFrameRightDropDown_OnShow (self)
+	UIDropDownMenu_Initialize(self, PlayerStatFrameRightDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, GetCVar("playerStatRightDropdown"));
 end
 
 function PlayerStatFrameRightDropDown_Initialize (self)
@@ -1709,7 +1723,7 @@ function PaperDollFrameItemFlyout_Hide ()
 end
 
 function PaperDollFrameItemFlyout_OnUpdate (self, elapsed)
-	if ( not IsAltKeyDown() ) then
+	if ( not IsModifiedClick("SHOWITEMFLYOUT") ) then
 		self:Hide();
 		if ( self.button ) then
 			PaperDollItemSlotButton_OnEnter(self.button);
@@ -1967,7 +1981,7 @@ end
 function PaperDollFrameItemFlyout_DisplaySpecialButton (button, paperDollItemSlot)
 	local location = button.location;
 	if ( location == PDFITEMFLYOUT_IGNORESLOT_LOCATION ) then
-		SetItemButtonTexture(button, "Interface\\Buttons\\UI-GroupLoot-Pass-Up");
+		SetItemButtonTexture(button, "Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Opaque");
 		SetItemButtonCount(button, nil);
 		button.UpdateTooltip = 
 			function () 
@@ -1981,7 +1995,7 @@ function PaperDollFrameItemFlyout_DisplaySpecialButton (button, paperDollItemSlo
 		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
 		SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
 	elseif ( location == PDFITEMFLYOUT_UNIGNORESLOT_LOCATION ) then
-		SetItemButtonTexture(button, "Interface\\Icons\\Spell_ChargePositive");
+		SetItemButtonTexture(button, "Interface\\PaperDollInfoFrame\\UI-GearManager-Undo");
 		SetItemButtonCount(button, nil);
 		button.UpdateTooltip = 
 			function () 
@@ -1995,7 +2009,7 @@ function PaperDollFrameItemFlyout_DisplaySpecialButton (button, paperDollItemSlo
 		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
 		SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);		
 	elseif ( location == PDFITEMFLYOUT_PLACEINBAGS_LOCATION ) then
-		SetItemButtonTexture(button, "Interface\\Icons\\INV_Misc_Bag_13");
+		SetItemButtonTexture(button, "Interface\\PaperDollInfoFrame\\UI-GearManager-ItemIntoBag");
 		SetItemButtonCount(button, nil);
 		button.UpdateTooltip = 
 			function () 
@@ -2065,6 +2079,7 @@ function GearManagerDialog_OnShow (self)
 		self.selectedSet:SetChecked(0);
 		self.selectedSet = nil;
 	end
+	GearManagerToggleButton:SetButtonState("PUSHED", 1);
 	GearManagerDialog_Update();
 	self:RegisterEvent("EQUIPMENT_SETS_CHANGED");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
@@ -2079,7 +2094,7 @@ function GearManagerDialog_OnHide (self)
 		self.selectedSet:SetChecked(0);
 		self.selectedSet = nil;
 	end
-	
+	GearManagerToggleButton:SetButtonState("NORMAL");
 	self:UnregisterEvent("EQUIPMENT_SETS_CHANGED");
 	self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
 	PlaySound("igBackPackClose");

@@ -128,9 +128,15 @@
 								normalTexture:SetWidth(40);
 								normalTexture:SetHeight(40);
 							</OnLoad>
-							<OnEvent function="FriendsFrame_SummonButton_OnEvent"/>
-							<OnShow function="FriendsFrame_SummonButton_OnShow"/>
-							<OnClick function="FriendsFrame_ClickSummonButton"/>
+							<OnEvent>
+								FriendsFrame_SummonButton_OnEvent(self, event, ...);
+							</OnEvent>
+							<OnShow>
+								FriendsFrame_SummonButton_OnShow(self);
+							</OnShow>
+							<OnClick>
+								FriendsFrame_ClickSummonButton(self, button, down);
+							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, 1);
@@ -142,7 +148,9 @@
 								end
 								GameTooltip:Show();
 							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
 						</Scripts>
 					</Button>					
 					<Button name="$parentNote">
@@ -485,11 +493,15 @@
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
-			<OnClick function="FriendsFrameGuildStatusButton_OnClick"/>
+			<OnClick>
+				FriendsFrameGuildStatusButton_OnClick(self, button, down);
+			</OnClick>
 			<OnEnter>
 				GameTooltip_AddNewbieTip(self, GUILD_MEMBER_OPTIONS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_MEMBER_OPTIONS, 1);
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
 			<Size>
@@ -564,7 +576,9 @@
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
-			<OnClick function="FriendsFrameGuildStatusButton_OnClick"/>
+			<OnClick>
+				FriendsFrameGuildStatusButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
 			<Size>
@@ -705,7 +719,9 @@
 					GameTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<ButtonText name="$parentText">
 			<Size>

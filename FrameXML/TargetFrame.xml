@@ -34,7 +34,9 @@
 				end
 				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), filter);
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Frame>
 	<Button name="TargetDebuffButtonTemplate" virtual="true">
@@ -91,7 +93,9 @@
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
 				GameTooltip:SetUnitDebuff(self.unit, self:GetID());
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="TargetBuffButtonTemplate" virtual="true">
@@ -149,7 +153,9 @@
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
 				GameTooltip:SetUnitBuff(self.unit, self:GetID());
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="TargetFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">

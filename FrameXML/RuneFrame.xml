@@ -31,7 +31,9 @@
 				</Layer>
 			</Layers>
 			<Scripts>
-				<OnLoad function="RaiseFrameLevel"/>
+				<OnLoad>	
+					RaiseFrameLevel(self);
+				</OnLoad>
 			</Scripts>
 		</Frame>
 		<Frame frameStrata="MEDIUM" setAllPoints="true" name="$parentShine">
@@ -67,9 +69,15 @@
 		</Layer>
     </Layers>
     <Scripts>
-		<OnLoad function="RuneButton_OnLoad"/>
-		<OnEnter function="RuneButton_OnEnter"/>
-		<OnLeave function="RuneButton_OnLeave"/>
+		<OnLoad>
+			RuneButton_OnLoad(self);
+		</OnLoad>
+		<OnEnter>
+			RuneButton_OnEnter(self, motion);
+		</OnEnter>
+		<OnLeave>
+			RuneButton_OnLeave(self, motion);
+		</OnLeave>
     </Scripts>
   </Button>
 	

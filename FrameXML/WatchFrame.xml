@@ -95,8 +95,8 @@
 	<Button name="WatchFrameLinkButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad> self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); </OnLoad>
-			<OnClick function="WatchFrameLinkButtonTemplate_OnClick"/>
-			<OnDoubleClick function="WatchFrameLinkButtonTemplate_OnDoubleClick"/>
+			<OnClick> WatchFrameLinkButtonTemplate_OnClick(self, button, down); </OnClick>
+			<OnDoubleClick> WatchFrameLinkButtonTemplate_OnDoubleClick(self, button); </OnDoubleClick>
 		</Scripts>
 	</Button>
 	
@@ -143,13 +143,27 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnEvent function="WatchFrameItem_OnEvent"/>
-			<OnUpdate function="WatchFrameItem_OnUpdate"/>
-			<OnShow function="WatchFrameItem_OnShow"/>
-			<OnHide function="WatchFrameItem_OnHide"/>
-			<OnEnter function="WatchFrameItem_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
-			<OnClick function="WatchFrameItem_OnClick"/>
+			<OnEvent>
+				WatchFrameItem_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				WatchFrameItem_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnShow>
+				WatchFrameItem_OnShow(self);
+			</OnShow>
+			<OnHide>
+				WatchFrameItem_OnHide(self);
+			</OnHide>
+			<OnEnter>
+				WatchFrameItem_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				WatchFrameItem_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Size x="48" y="48"/>
@@ -205,7 +219,9 @@
 			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnLoad function="WatchFrameLineTemplate_OnLoad"/>
+			<OnLoad>
+				WatchFrameLineTemplate_OnLoad(self);
+			</OnLoad>
 		</Scripts>
 	</Frame>
 	

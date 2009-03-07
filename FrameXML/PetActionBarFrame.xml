@@ -36,8 +36,12 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="PetActionButton_OnLoad"/>
-			<OnEvent function="PetActionButton_OnEvent"/>
+			<OnLoad>
+				PetActionButton_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				PetActionButton_OnEvent(self, event, ...);
+			</OnEvent>
 			<PreClick>
 				self:SetChecked(0);
 			</PreClick>
@@ -48,10 +52,18 @@
 					PetActionButton_OnClick(self, button);
 				end
 			</OnClick>
-			<OnDragStart function="PetActionButton_OnDragStart"/>
-			<OnReceiveDrag function="PetActionButton_OnReceiveDrag"/>
-			<OnEnter function="PetActionButton_OnEnter"/>
-			<OnLeave function="PetActionButton_OnLeave"/>
+			<OnDragStart>
+				PetActionButton_OnDragStart(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				PetActionButton_OnReceiveDrag(self);
+			</OnReceiveDrag>
+			<OnEnter>
+				PetActionButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				PetActionButton_OnLeave(self, motion);
+			</OnLeave>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
 			<Size>

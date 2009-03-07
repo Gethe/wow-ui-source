@@ -799,6 +799,7 @@ function WhoFrameDropDown_Initialize()
 	for i=1, getn(WHOFRAME_DROPDOWN_LIST), 1 do
 		info.text = WHOFRAME_DROPDOWN_LIST[i].name;
 		info.func = WhoFrameDropDownButton_OnClick;
+		info.checked = nil;
 		UIDropDownMenu_AddButton(info);
 	end
 end

@@ -228,19 +228,29 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnValueChanged function="HealthBar_OnValueChanged"/>
+					<OnValueChanged>
+						HealthBar_OnValueChanged(self, value);
+					</OnValueChanged>
 				</Scripts>
 				<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
 			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GameTooltip_OnLoad"/>
-			<OnHide function="GameTooltip_OnHide"/>
+			<OnLoad>
+				GameTooltip_OnLoad(self);
+			</OnLoad>
+			<OnHide>
+				GameTooltip_OnHide(self);
+			</OnHide>
 			<OnTooltipSetDefaultAnchor>
 				GameTooltip_SetDefaultAnchor(self, UIParent);
 			</OnTooltipSetDefaultAnchor>
-			<OnTooltipAddMoney function="SetTooltipMoney"/>
-			<OnTooltipCleared function="GameTooltip_ClearMoney"/>
+			<OnTooltipAddMoney>
+				SetTooltipMoney(self, cost);
+			</OnTooltipAddMoney>
+			<OnTooltipCleared>
+				GameTooltip_ClearMoney(self);
+			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>
 	<GameTooltip name="ShoppingTooltipTemplate" frameStrata="TOOLTIP" hidden="true" virtual="true">
@@ -347,7 +357,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="GameTooltip_OnLoad"/>
+			<OnLoad>
+				GameTooltip_OnLoad(self);
+			</OnLoad>
 		</Scripts>
 	</GameTooltip>
 	<Frame name="TooltipMoneyFrameTemplate" inherits="SmallMoneyFrameTemplate" virtual="true">
@@ -377,7 +389,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="SmallMoneyFrame_OnLoad"/>
+			<OnLoad>
+				SmallMoneyFrame_OnLoad(self);
+			</OnLoad>
 		</Scripts>
 	</Frame>
 	<StatusBar name="TooltipStatusBarTemplate" virtual="true">

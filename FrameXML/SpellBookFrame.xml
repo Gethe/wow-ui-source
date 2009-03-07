@@ -34,7 +34,9 @@
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(self.tooltip);
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
@@ -48,12 +50,16 @@
 			<AbsInset left="15" right="14" top="13" bottom="15"/>
 		</HitRectInsets>
 	  <Scripts>
-			<OnClick function="SpellBookFrameTabButton_OnClick"/>
+			<OnClick>
+				SpellBookFrameTabButton_OnClick(self, button, down);
+			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(MicroButtonTooltipText(self:GetText(), self.binding), 1.0,1.0,1.0 );
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<ButtonText>
 			<Anchors>
@@ -135,8 +141,12 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnLoad function="SpellButton_OnLoad"/>
-			<OnEvent function="SpellButton_OnEvent"/>
+			<OnLoad>
+				SpellButton_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				SpellButton_OnEvent(self, event, ...);
+			</OnEvent>
 			<PreClick>
 				self:SetChecked(0);
 			</PreClick>
@@ -147,12 +157,24 @@
 					SpellButton_OnClick(self, button);
 				end
 			</OnClick>
-			<OnShow function="SpellButton_OnShow"/>
-			<OnHide function="SpellButton_OnHide"/>
-			<OnDragStart function="SpellButton_OnDrag"/>
-			<OnReceiveDrag function="SpellButton_OnDrag"/>
-			<OnEnter function="SpellButton_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnShow>
+				SpellButton_OnShow(self);
+			</OnShow>
+			<OnHide>
+				SpellButton_OnHide(self);
+			</OnHide>
+			<OnDragStart>
+				SpellButton_OnDrag(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				SpellButton_OnDrag(self);
+			</OnReceiveDrag>
+			<OnEnter>
+				SpellButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Size>

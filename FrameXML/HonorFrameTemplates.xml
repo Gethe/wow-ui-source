@@ -11,7 +11,9 @@
 				GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 				GameTooltip:Show();
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Frame>
 	<Frame name="HonorFrameHKButtonTemplate" inherits="HonorFrameTextButtonTemplate" virtual="true">

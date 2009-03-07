@@ -12,7 +12,9 @@
 			<OnEnter>
 				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">

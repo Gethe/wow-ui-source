@@ -541,7 +541,9 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="MultiActionBarFrame_OnLoad"/>
+			<OnLoad>
+				MultiActionBarFrame_OnLoad(self);
+			</OnLoad>
 		</Scripts>
 	</Frame>
 </Ui>

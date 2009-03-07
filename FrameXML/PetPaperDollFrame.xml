@@ -14,7 +14,9 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnLoad function="CompanionButton_OnLoad"/>
+			<OnLoad>
+				CompanionButton_OnLoad(self);
+			</OnLoad>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					CompanionButton_OnModifiedClick(self, button);
@@ -23,10 +25,18 @@
 				end
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
-			<OnDragStart function="CompanionButton_OnDrag"/>
-			<OnReceiveDrag function="CompanionButton_OnDrag"/>
-			<OnEnter function="CompanionButton_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnDragStart>
+				CompanionButton_OnDrag(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				CompanionButton_OnDrag(self);
+			</OnReceiveDrag>
+			<OnEnter>
+				CompanionButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<DisabledTexture file="Interface\PetPaperDollFrame\UI-PetFrame-Slots-Mounts">
 			<TexCoords left="0.203125" right="0.765625" top="0.203125" bottom="0.7625625"/>

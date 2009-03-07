@@ -6,9 +6,16 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnLoad function="BankFrameItemButton_OnLoad"/>
-			<OnEnter function="BankFrameItemButton_OnEnter"/>
-			<OnLeave function="GameTooltip_HideResetCursor"/>
+			<OnLoad>
+				BankFrameItemButton_OnLoad(self);
+			</OnLoad>
+			<OnEnter>
+				BankFrameItemButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					BankFrameItemButtonGeneric_OnModifiedClick(self, button);
@@ -36,9 +43,16 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="BankFrameBagButton_OnLoad"/>
-			<OnEnter function="BankFrameItemButton_OnEnter"/>
-			<OnLeave function="GameTooltip_HideResetCursor"/>
+			<OnLoad>
+				BankFrameBagButton_OnLoad(self);
+			</OnLoad>				
+			<OnEnter>
+				BankFrameItemButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
 			<OnClick>
 				if ( IsModifiedClick("PICKUPACTION") ) then
 					BankFrameItemButtonBag_Pickup(self);
@@ -46,8 +60,12 @@
 					BankFrameItemButtonBag_OnClick(self, button);
 				end
 			</OnClick>
-	        <OnDragStart function="BankFrameItemButtonBag_Pickup"/>
-	        <OnReceiveDrag function="BankFrameItemButtonBag_OnClick"/>
+	        <OnDragStart>
+				BankFrameItemButtonBag_Pickup(self, button);
+			</OnDragStart>
+	        <OnReceiveDrag>
+				BankFrameItemButtonBag_OnClick(self, nil);
+			</OnReceiveDrag>
 		</Scripts>
 	</Button>
 

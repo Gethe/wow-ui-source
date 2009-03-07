@@ -22,8 +22,12 @@
 			<OnLoad>
 				getglobal(self:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
 			</OnLoad>
-			<OnClick function="ArenaButton_OnClick"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick>
+				ArenaButton_OnClick(self, button, down);
+			</OnClick>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 		<ButtonText name="$parentText">

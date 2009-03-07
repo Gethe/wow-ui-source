@@ -22,14 +22,18 @@
 			<OnLoad>
 				getglobal(self:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
 			</OnLoad>
-			<OnClick function="BattlefieldButton_OnClick"/>
+			<OnClick>
+				BattlefieldButton_OnClick(self, button, down);
+			</OnClick>
 			<OnEnter>
 				GameTooltip_SetDefaultAnchor(GameTooltip, self)
 				GameTooltip:SetText(self.title, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 				GameTooltip:Show();
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 		<ButtonText name="$parentText">

@@ -24,9 +24,15 @@
 				self.highlight = _G[self:GetName().."Highlight"];
 				self.title = _G[self:GetName().."Text"];
 			</OnLoad>
-			<OnEnter function="PVPBattlegroundButton_OnEnter"/>
-			<OnClick function="PVPBattlegroundButton_OnClick"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnEnter>
+				PVPBattlegroundButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnClick>
+				PVPBattlegroundButton_OnClick(self, button, down);
+			</OnClick>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 		<ButtonText name="$parentText">
@@ -68,9 +74,15 @@
 				self.title = _G[self:GetName().."Text"];
 				self.status = _G[self:GetName().."Status"];
 			</OnLoad>
-			<OnEnter function="PVPBattlegroundInstanceButton_OnEnter"/>
-			<OnClick function="PVPBattlegroundInstanceButton_OnClick"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnEnter>
+				PVPBattlegroundInstanceButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnClick>
+				PVPBattlegroundInstanceButton_OnClick(self, button, down);
+			</OnClick>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 		<ButtonText name="$parentText">

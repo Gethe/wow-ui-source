@@ -44,7 +44,9 @@
 			<OnLoad>
 				self:SetWidth(self:GetTextWidth() + 40);
 			</OnLoad>
-			<OnClick function="HelpFrame_PopFrame"/>
+			<OnClick>
+				HelpFrame_PopFrame(self, button, down);
+			</OnClick>
 		</Scripts>
 	</Button>
 	<Frame name="HelpFrameDividerTemplate" virtual="true">

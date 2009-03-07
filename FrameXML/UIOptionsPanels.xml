@@ -831,6 +831,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "colorblindMode";
 						self.uvar = "ENABLE_COLORBLIND_MODE";
+						self.setFunc = function() if ( IsAddOnLoaded("Blizzard_AchievementUI") ) then AchievementFrame_ForceUpdate(); end end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>

@@ -1,7 +1,14 @@
 
 function SetItemRef(link, text, button)
 	if ( strsub(link, 1, 6) == "player" ) then
-		local namelink = strsub(link, 8);
+		local namelink, isGMLink;
+		if ( strsub(link, 7, 8) == "GM" ) then
+			namelink = strsub(link, 10);
+			isGMLink = true;
+		else
+			namelink = strsub(link, 8);
+		end
+		
 		local name, lineid = strsplit(":", namelink);
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
@@ -55,7 +62,7 @@ function SetItemRef(link, text, button)
 					SendWho(WHO_TAG_NAME..name);					
 				end
 				
-			elseif ( button == "RightButton" ) then
+			elseif ( button == "RightButton" and (not isGMLink) ) then
 				FriendsFrame_ShowDropdown(name, 1, lineid);
 			else
 				ChatFrame_SendTell(name);

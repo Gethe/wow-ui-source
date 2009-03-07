@@ -124,7 +124,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnClick function="UIDropDownMenuButton_OnClick"/>
+			<OnClick>
+				UIDropDownMenuButton_OnClick(self, button, down);
+			</OnClick>
 			<OnEnter>
 				if ( self.hasArrow ) then
 					local level =  self:GetParent():GetID() + 1;
@@ -205,9 +207,15 @@
 			<OnClick>
 				self:Hide();
 			</OnClick>
-			<OnEnter function="UIDropDownMenu_StopCounting"/>
-			<OnLeave function="UIDropDownMenu_StartCounting"/>
-			<OnUpdate function="UIDropDownMenu_OnUpdate"/>
+			<OnEnter>
+				UIDropDownMenu_StopCounting(self, motion);
+			</OnEnter>
+			<OnLeave>
+				UIDropDownMenu_StartCounting(self, motion);
+			</OnLeave>
+			<OnUpdate>
+				UIDropDownMenu_OnUpdate(self, elapsed);
+			</OnUpdate>
 			<OnShow>
 				for i=1, UIDROPDOWNMENU_MAXBUTTONS do
 					if (not self.noResize) then
@@ -222,7 +230,9 @@
 					self.parent = getglobal("DropDownList"..(self:GetID() - 1));
 				end
 			</OnShow>
-			<OnHide function="UIDropDownMenu_OnHide"/>
+			<OnHide>
+				UIDropDownMenu_OnHide(self);
+			</OnHide>
 		</Scripts>
 	</Button>
 	<Frame name="UIDropDownMenuTemplate" virtual="true">

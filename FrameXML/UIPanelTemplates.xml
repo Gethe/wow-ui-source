@@ -94,7 +94,9 @@
 			<AbsDimension x="32" y="32"/>
 		</Size>
 		<Scripts>
-			<OnClick function="HideParentPanel"/>
+			<OnClick>
+				HideParentPanel(self);
+			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
@@ -252,8 +254,12 @@
 			</Slider>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ScrollFrame_OnLoad"/>
-			<OnScrollRangeChanged function="ScrollFrame_OnScrollRangeChanged"/>
+			<OnLoad>
+				ScrollFrame_OnLoad(self);
+			</OnLoad>
+			<OnScrollRangeChanged>
+				ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);
+			</OnScrollRangeChanged>
 			<!--  The code to disable the ScrollDownButton is pretty hacked, but it works -->
 			<OnVerticalScroll>
 				local scrollbar = getglobal(self:GetName().."ScrollBar");
@@ -272,7 +278,9 @@
 					getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
 				end
 			</OnVerticalScroll>
-			<OnMouseWheel function="ScrollFrameTemplate_OnMouseWheel"/>
+			<OnMouseWheel>
+				ScrollFrameTemplate_OnMouseWheel(self, delta);
+			</OnMouseWheel>
 		</Scripts>
 	</ScrollFrame>
 	<ScrollFrame name="UIPanelScrollFrameTemplate2" inherits="UIPanelScrollFrameTemplate" virtual="true">
@@ -336,7 +344,9 @@
 			</Slider>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ScrollFrame_OnLoad"/>
+			<OnLoad>
+				ScrollFrame_OnLoad(self);
+			</OnLoad>
 			<OnScrollRangeChanged function=""/>
 			<OnVerticalScroll>
 				local scrollbar = getglobal(self:GetName().."ScrollBar");
@@ -355,7 +365,9 @@
 					getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
 				end
 			</OnVerticalScroll>
-			<OnMouseWheel function="ScrollFrameTemplate_OnMouseWheel"/>
+			<OnMouseWheel>
+				ScrollFrameTemplate_OnMouseWheel(self, delta);
+			</OnMouseWheel>
 		</Scripts>
 		<ScrollChild>
 			<Frame name="$parentScrollChildFrame">
@@ -407,9 +419,15 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEscapePressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost function="EditBox_ClearHighlight"/>
-			<OnEditFocusGained function="EditBox_HighlightText"/>
+			<OnEscapePressed>
+				EditBox_ClearFocus(self);
+			</OnEscapePressed>
+			<OnEditFocusLost>
+				EditBox_ClearHighlight(self);
+			</OnEditFocusLost>
+			<OnEditFocusGained>
+				EditBox_HighlightText(self);
+			</OnEditFocusGained>
 		</Scripts>
 		<FontString inherits="ChatFontNormal"/>
 	</EditBox>
@@ -856,7 +874,9 @@
 			</Layer>
 		</Layers>				
 		<Scripts>
-			<OnLoad function="AutoCastShine_OnLoad"/>
+			<OnLoad>
+				AutoCastShine_OnLoad(self);
+			</OnLoad>
 		</Scripts>
 	</Frame>		
 	<Frame name="UIPanelDialogTemplate" virtual="true">

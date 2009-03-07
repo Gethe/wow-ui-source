@@ -237,12 +237,12 @@ function TargetFrame_UpdateAuras (self)
 	local button, buttonName;
 	local buttonIcon, buttonCount, buttonCooldown, buttonStealable, buttonBorder;
 
-	local name, rank, icon, count, debuffType, duration, expirationTime, isMine, isStealable;
-	local playerIsTarget = UnitIsUnit("player", "target");
+	local name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable;
+	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, "target");
 
 	local numBuffs = 0;
 	for i=1, MAX_TARGET_BUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, isMine, isStealable = UnitBuff("target", i);
+		name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = UnitBuff("target", i);
 		buttonName = "TargetFrameBuff"..i;
 		button = _G[buttonName];
 		if ( not button ) then
@@ -278,7 +278,7 @@ function TargetFrame_UpdateAuras (self)
 				buttonCooldown:Hide();
 			end
 
-			-- Show stealable frame if the target is not a player, the buff is stealable.
+			-- Show stealable frame if the target is not a player and the buff is stealable.
 			buttonStealable = _G[buttonName.."Stealable"];
 			if ( not playerIsTarget and isStealable ) then
 				buttonStealable:Show();
@@ -286,8 +286,8 @@ function TargetFrame_UpdateAuras (self)
 				buttonStealable:Hide();
 			end
 
-			-- Set the buff to be big if the buff is cast by the player and the target is not the player
-			largeBuffList[i] = (isMine and not playerIsTarget and not UnitIsEnemy("target", "player"));
+			-- set the buff to be big if the target is not the player and the buff is cast by the player or his pet
+			largeBuffList[i] = (not playerIsTarget and (caster == PlayerFrame.unit or caster == PetFrame.unit));
 
 			numBuffs = numBuffs + 1;
 
@@ -301,7 +301,7 @@ function TargetFrame_UpdateAuras (self)
 	local color;
 	local numDebuffs = 0;
 	for i=1, MAX_TARGET_DEBUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, isMine = UnitDebuff("target", i);
+		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff("target", i);
 		buttonName = "TargetFrameDebuff"..i;
 		button = _G[buttonName];
 		if ( not button ) then
@@ -346,8 +346,8 @@ function TargetFrame_UpdateAuras (self)
 			buttonBorder = _G[buttonName.."Border"];
 			buttonBorder:SetVertexColor(color.r, color.g, color.b);
 
-			-- Set the buff to be big if the buff is cast by the player
-			largeDebuffList[i] = isMine;
+			-- set the debuff to be big if the buff is cast by the player or his pet
+			largeDebuffList[i] = (caster == PlayerFrame.unit or caster == PetFrame.unit);
 
 			numDebuffs = numDebuffs + 1;
 

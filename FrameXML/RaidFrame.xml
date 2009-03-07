@@ -60,7 +60,9 @@
 							GameTooltip:SetText(text:GetText());
 						end
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Frame>
 		</Frames>

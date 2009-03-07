@@ -130,9 +130,15 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="MoneyFrame_OnLoad"/>
-			<OnEvent function="MoneyFrame_OnEvent"/>
-			<OnShow function="MoneyFrame_UpdateMoney"/>
+			<OnLoad>
+				MoneyFrame_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				MoneyFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnShow>
+				MoneyFrame_UpdateMoney(self);
+			</OnShow>
 			<OnHide>
 				if ( self.hasPickup == 1 ) then
 					CoinPickupFrame:Hide();
@@ -271,9 +277,15 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="SmallMoneyFrame_OnLoad"/>
-			<OnEvent function="MoneyFrame_OnEvent"/>
-			<OnShow function="MoneyFrame_UpdateMoney"/>
+			<OnLoad>
+				SmallMoneyFrame_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				MoneyFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnShow>
+				MoneyFrame_UpdateMoney(self);
+			</OnShow>
 			<OnHide>
 				if ( self.hasPickup == 1 ) then
 					CoinPickupFrame:Hide();
@@ -291,7 +303,10 @@
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetMerchantCostItem(self.index, self.item);
 			</OnEnter>
-			<OnLeave function="GameTooltip_HideResetCursor"/>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
 		</Scripts>
 		<ButtonText name="$parentText">
 			<Anchors>
@@ -333,7 +348,10 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(HONOR_POINTS);
 					</OnEnter>
-					<OnLeave function="GameTooltip_HideResetCursor"/>
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Button name="$parentArena" inherits="SmallDenominationTemplate" hidden="true">
@@ -349,7 +367,10 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(ARENA_POINTS);
 					</OnEnter>
-					<OnLeave function="GameTooltip_HideResetCursor"/>
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Button name="$parentItem1" inherits="SmallDenominationTemplate" hidden="true">

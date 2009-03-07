@@ -76,6 +76,8 @@ local function SecureStateDriverManager_UpdateUnitWatch(frame, doState)
     end
 end
 
+local pairs = pairs;
+
 local function SecureStateDriverManager_OnUpdate(self,elapsed)
     timer = timer - elapsed;
     if ( timer <= 0 ) then

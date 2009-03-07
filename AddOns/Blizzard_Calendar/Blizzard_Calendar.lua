@@ -802,11 +802,12 @@ local function _CalendarFrame_IsSignUpEvent(calendarType, inviteType)
 	return calendarType == "GUILD_EVENT" and inviteType == CALENDAR_INVITETYPE_SIGNUP;
 end
 
-local function _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType)
+local function _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType, inviteStatus)
 	return
 		modStatus ~= "CREATOR" and
 		(calendarType == "PLAYER" or
-		(calendarType == "GUILD_EVENT" and inviteType == CALENDAR_INVITETYPE_NORMAL));
+		(calendarType == "GUILD_EVENT" and 
+		(inviteType == CALENDAR_INVITETYPE_NORMAL or inviteType == CALENDAR_INVITETYPE_SIGNUP and inviteStatus ~= CALENDAR_INVITESTATUS_NOT_SIGNEDUP)));
 end
 
 local function _CalendarFrame_CacheEventTextures_Internal(...)
@@ -2151,19 +2152,25 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 			if ( calendarType ~= "GUILD_ANNOUNCEMENT" ) then
 				if ( validCreationDate and _CalendarFrame_CanInviteeRSVP(inviteStatus) ) then
 					-- spacer
-					if ( needSpacer ) then
-						UIMenu_AddButton(menu, "");
-					end
 					if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
 						-- sign up
 						if ( inviteStatus ~= CALENDAR_INVITESTATUS_SIGNEDUP ) then
+							if ( needSpacer ) then
+								UIMenu_AddButton(menu, "");
+							end
 							UIMenu_AddButton(menu, CALENDAR_SIGNUP, nil, CalendarDayContextMenu_SignUp);
 						end
 						-- cancel sign up
-						if ( inviteStatus ~= CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
+						if ( _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType, inviteStatus) ) then
+							if ( needSpacer ) then
+								UIMenu_AddButton(menu, "");
+							end
 							UIMenu_AddButton(menu, CALENDAR_REMOVE_SIGNUP, nil, CalendarDayContextMenu_RemoveInvite);
 						end
 					else
+						if ( needSpacer ) then
+							UIMenu_AddButton(menu, "");
+						end
 						-- accept invitation
 						if ( inviteStatus ~= CALENDAR_INVITESTATUS_ACCEPTED ) then
 							UIMenu_AddButton(menu, CALENDAR_ACCEPT_INVITATION, nil, CalendarDayContextMenu_AcceptInvite);
@@ -2175,7 +2182,7 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 					end
 					needSpacer = false;
 				end
-				if ( _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType) ) then
+				if ( _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType, inviteStatus) ) then
 					-- spacer
 					if ( needSpacer ) then
 						UIMenu_AddButton(menu, "");

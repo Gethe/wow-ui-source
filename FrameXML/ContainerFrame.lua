@@ -623,7 +623,8 @@ function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
 	
 	local count = itemButton.count or 1;
 	honorPoints, arenaPoints, itemCount = (honorPoints or 0) * quantity, (arenaPoints or 0) * quantity, (itemCount or 0) * quantity;
-	
+	local itemsString;
+
 	if ( honorPoints and honorPoints ~= 0 ) then
 		local factionGroup = UnitFactionGroup("player");
 		if ( factionGroup ) then	

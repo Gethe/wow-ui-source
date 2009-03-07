@@ -1286,12 +1286,6 @@ SecureCmdList["CLICK"] = function(msg)
 	end
 end
 
-SecureCmdList["EQUIP_SET"] = function(msg)
-	if ( msg and msg ~= "" ) then
-		EquipmentManager_EquipSet(msg);
-	end
-end
-
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
@@ -1927,6 +1921,29 @@ SlashCmdList["ACHIEVEMENTUI"] = function(msg)
 	ToggleAchievementFrame();
 end
 
+SlashCmdList["EQUIP_SET"] = function(msg)
+	if ( msg and msg ~= "" ) then
+		EquipmentManager_EquipSet(msg);
+	end
+end
+
+SlashCmdList["USE_TALENT_SPEC"] = function(msg)
+	local group = tonumber(msg);
+	if ( group ) then
+		SetActiveTalentGroup(group);
+	end
+end
+
+-- easier method to turn on/off errors for macros
+SlashCmdList["UI_ERRORS_OFF"] = function(msg)
+	UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE");
+	SetCVar("Sound_EnableSFX", "0");
+end
+
+SlashCmdList["UI_ERRORS_ON"] = function(msg)
+	UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE");
+	SetCVar("Sound_EnableSFX", "1");
+end
 
 -- ChatFrame functions
 function ChatFrame_OnLoad(self)
@@ -2230,10 +2247,13 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 
 		local filter = false;
 		if ( chatFilters[event] ) then
+			local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11;
 			for _, filterFunc in next, chatFilters[event] do
-				filter, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = filterFunc(self, event, ...);
+				filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11 = filterFunc(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
 				if ( filter ) then
 					return true;
+				elseif ( newarg1 ) then
+					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11;
 				end
 			end
 		end

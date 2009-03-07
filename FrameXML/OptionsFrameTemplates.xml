@@ -266,7 +266,9 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="OptionsList_OnLoad"/>
+			<OnLoad>
+				OptionsList_OnLoad(self);
+			</OnLoad>
 		</Scripts>
 	</Frame>
 	<Button name="OptionsListButtonTemplate" virtual="true">
@@ -301,7 +303,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="OptionsListButton_OnLoad"/>
+			<OnLoad>
+				OptionsListButton_OnLoad(self);
+			</OnLoad>
 			<OnClick>
 				PlaySound("igMainMenuOptionCheckBoxOn");
 				OptionsListButton_OnClick(self, button);
@@ -435,9 +439,15 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="OptionsFrame_OnLoad"/>
-			<OnShow function="OptionsFrame_OnShow"/>
-			<OnHide function="OptionsFrame_OnHide"/>
+			<OnLoad>
+				OptionsFrame_OnLoad(self);
+			</OnLoad>
+			<OnShow>
+				OptionsFrame_OnShow(self);
+			</OnShow>
+			<OnHide>
+				OptionsFrame_OnHide(self);
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

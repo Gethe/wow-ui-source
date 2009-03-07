@@ -58,11 +58,15 @@
 							MerchantItemButton_OnClick(self, button);
 						end
 					</OnClick>
-					<OnLoad function="MerchantItemButton_OnLoad"/>
+					<OnLoad>
+						MerchantItemButton_OnLoad(self);
+					</OnLoad>
 					<OnDragStart>
 						MerchantItemButton_OnClick(self, "LeftButton");
 					</OnDragStart>
-					<OnEnter function="MerchantItemButton_OnEnter"/>
+					<OnEnter>
+						MerchantItemButton_OnEnter(self, motion);
+					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 						ResetCursor();

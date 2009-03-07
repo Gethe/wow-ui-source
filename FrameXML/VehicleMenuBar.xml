@@ -15,7 +15,9 @@
 				local cooldown = getglobal(self:GetName().."Cooldown");
 				cooldown:SetFrameLevel(cooldown:GetFrameLevel() + 2);
 			</OnLoad>
-			<OnClick function="VehicleActionButton_OnClick"/>
+			<OnClick>
+				VehicleActionButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 	</CheckButton>
 	<Button name="VehicleSeatIndicatorButtonTemplate" virtual="true">
@@ -27,9 +29,15 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				_G[self:GetName().."Highlight"]:SetAlpha(0.5);
 			</OnLoad>
-			<OnClick function="VehicleSeatIndicatorButton_OnClick"/>
-			<OnEnter function="VehicleSeatIndicatorButton_OnEnter"/>
-			<OnLeave function="VehicleSeatIndicatorButton_OnLeave"/>
+			<OnClick>
+				VehicleSeatIndicatorButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				VehicleSeatIndicatorButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				VehicleSeatIndicatorButton_OnLeave(self, motion);
+			</OnLeave>
 		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">

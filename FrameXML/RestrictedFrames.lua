@@ -160,6 +160,18 @@ end
 function HANDLE:GetName()   return GetUnprotectedHandleFrame(self):GetName() end
 
 function HANDLE:GetID()     return GetHandleFrame(self):GetID()     end
+function HANDLE:IsShown()   return GetHandleFrame(self):IsShown()   end
+function HANDLE:IsVisible() return GetHandleFrame(self):IsVisible() end
+function HANDLE:GetWidth()  return GetHandleFrame(self):GetWidth()  end
+function HANDLE:GetHeight() return GetHandleFrame(self):GetHeight() end
+function HANDLE:GetRect()   return GetHandleFrame(self):GetRect() end
+function HANDLE:GetScale()  return GetHandleFrame(self):GetScale()  end
+function HANDLE:GetEffectiveScale()
+    return GetHandleFrame(self):GetEffectiveScale()
+end
+
+-- Cannot expose GetAlpha since alpha is not protected
+
 function HANDLE:GetFrameLevel()
     return GetHandleFrame(self):GetFrameLevel()  end
 function HANDLE:GetObjectType()
@@ -599,6 +611,29 @@ function HANDLE:SetParent(handle)
     end
 
     GetHandleFrame(self):SetParent(parent);
+end
+
+function HANDLE:RegisterAutoHide(duration)
+    RegisterAutoHide(GetHandleFrame(self), tonumber(duration));
+end
+
+function HANDLE:UnregisterAutoHide()
+    UnregisterAutoHide(GetHandleFrame(self));
+end
+
+function HANDLE:AddToAutoHide(handle)
+    if (type(handle) ~= "userdata") then
+        error("Invalid frame handle for AddToAutoHide");
+        return;
+    end
+
+    local child = LOCAL_FrameHandle_Protected_Frames[handle];
+    if (not child) then
+        error("Invalid frame handle for AddToAutoHide");
+        return;
+    end
+
+    AddToAutoHide(GetHandleFrame(self), child);
 end
 
 ---------------------------------------------------------------------------

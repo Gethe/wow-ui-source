@@ -7,7 +7,6 @@
   <Script file="RestrictedFrames.lua"/>
   <Script file="RestrictedExecution.lua"/>
   <Script file="SecureHandlers.lua"/>
-  
 
   <!-- Templates for the common handler actions, use Wrap to
        enable less common features -->
@@ -67,6 +66,18 @@
       <OnReceiveDrag>
 	SecureHandler_OnDragEvent(self, "_onreceivedrag");
       </OnReceiveDrag>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerShowHideTemplate"
+         inherits="SecureHandlerBaseTemplate" virtual="true">
+    <Scripts>
+      <OnShow>
+        SecureHandler_OnSimpleEvent(self, "_onshow");
+      </OnShow>
+      <OnHide>
+        SecureHandler_OnSimpleEvent(self, "_onhide");
+      </OnHide>
     </Scripts>
   </Frame>
 

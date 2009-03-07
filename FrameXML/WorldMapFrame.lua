@@ -9,8 +9,7 @@ NUM_WORLDMAP_DEBUG_OBJECTS = 0;
 WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_WORLD_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
-WORLDMAP_NORTHREND_ID = 4;
-WORLDMAP_WINTERGRASP_ID = 10;
+WORLDMAP_WINTERGRASP_ID = 502;
 
 BAD_BOY_UNITS = {};
 BAD_BOY_COUNT = 0;
@@ -143,7 +142,7 @@ function WorldMapFrame_Update()
 	end
 	
 	local nextBattleTime = GetWintergraspWaitTime();
-	if ( nextBattleTime and (GetCurrentMapContinent() == WORLDMAP_NORTHREND_ID) and (GetCurrentMapZone() == WORLDMAP_WINTERGRASP_ID)) then
+	if ( nextBattleTime and (GetCurrentMapAreaID() == WORLDMAP_WINTERGRASP_ID)) then
 		local battleSec = mod( nextBattleTime, 60);
 		local battleMin = mod( floor( nextBattleTime / 60), 60);
 		local battleHour = floor( nextBattleTime / 60 / 60 );

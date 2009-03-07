@@ -6,7 +6,9 @@
 			<OnLoad>
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick function="MacroButton_OnClick"/>
+			<OnClick>
+				MacroButton_OnClick(self, button, down);
+			</OnClick>
 			<OnDragStart>
 				PickupMacro(MacroFrame.macroBase + self:GetID());
 			</OnDragStart>
@@ -14,7 +16,9 @@
 	</CheckButton>
 	<CheckButton name="MacroPopupButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick function="MacroPopupButton_OnClick"/>
+			<OnClick>
+				MacroPopupButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 	</CheckButton>
 	<Frame name="MacroFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">

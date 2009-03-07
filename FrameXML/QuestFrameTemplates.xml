@@ -153,8 +153,13 @@
 				end
 				CursorUpdate(self);
 			</OnEnter>
-			<OnLeave function="GameTooltip_HideResetCursor"/>
-			<OnUpdate function="CursorOnUpdate"/>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate(self, elapsed);
+			</OnUpdate>
 			<OnClick>
 				if ( self.rewardType == "spell" ) then
 					if ( IsModifiedClick("CHATLINK") ) then
@@ -204,7 +209,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="QuestTitleButton_OnClick"/>
+			<OnClick>
+				QuestTitleButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 		<ButtonText>

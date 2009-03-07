@@ -16,9 +16,15 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="PlayerSpecTab_OnClick"/>
-			<OnEnter function="PlayerSpecTab_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick>
+				PlayerSpecTab_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				PlayerSpecTab_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
@@ -26,20 +32,40 @@
 	</CheckButton>
 	<Button name="PlayerTalentTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
-			<OnLoad function="PlayerTalentTab_OnLoad"/>
-			<OnEvent function="PlayerTalentTab_OnEvent"/>
-			<OnClick function="PlayerTalentTab_OnClick"/>
-			<OnEnter function="PlayerTalentFrameTab_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLoad>
+				PlayerTalentTab_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				PlayerTalentTab_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnClick>
+				PlayerTalentTab_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				PlayerTalentFrameTab_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="PlayerGlyphTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
-			<OnLoad function="PlayerGlyphTab_OnLoad"/>
-			<OnEvent function="PlayerGlyphTab_OnEvent"/>
-			<OnClick function="PlayerGlyphTab_OnClick"/>
-			<OnEnter function="PlayerTalentFrameTab_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLoad>
+				PlayerGlyphTab_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				PlayerGlyphTab_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnClick>
+				PlayerGlyphTab_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				PlayerTalentFrameTab_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 

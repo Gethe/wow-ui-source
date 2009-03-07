@@ -23,8 +23,12 @@
 					MinimapButton_OnMouseUp(self);
 				end
 			</OnHide>
-			<OnMouseDown function="MinimapButton_OnMouseDown"/>
-			<OnMouseUp function="MinimapButton_OnMouseUp"/>
+			<OnMouseDown>
+				MinimapButton_OnMouseDown(self, button);
+			</OnMouseDown>
+			<OnMouseUp>
+				MinimapButton_OnMouseUp(self, button);
+			</OnMouseUp>
 		</Scripts>
 	</Button>
 	<Frame name="MinimapCluster" frameStrata="BACKGROUND" enableMouse="true" parent="UIParent">
@@ -234,6 +238,7 @@
 										</Anchor>
 									</Anchors>
 									<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
+									<Color r="1" g="1" b="1" a="0"/>
 								</Texture>
 							</Layer>
 						</Layers>

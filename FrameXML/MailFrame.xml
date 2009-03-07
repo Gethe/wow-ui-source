@@ -92,7 +92,9 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(self.tooltip);
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
 				</Scripts>
 				<NormalFont style="GameFontHighlightSmallRight"/>
 				<PushedTextOffset>
@@ -159,7 +161,9 @@
 							InboxFrame_OnClick(self, self.index);
 						end
 					</OnClick>
-					<OnEnter function="InboxFrameItem_OnEnter"/>
+					<OnEnter>
+						InboxFrameItem_OnEnter(self, motion);
+					</OnEnter>
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
 							InboxFrameItem_OnEnter(self);
@@ -237,7 +241,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnClick function="StationeryPopupButton_OnClick"/>
+			<OnClick>
+				StationeryPopupButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 		<NormalTexture name="$parentIcon">
 			<Size>
@@ -287,20 +293,30 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="SendMailAttachmentButton_OnClick"/>
-			<OnDragStart function="SendMailAttachmentButton_OnClick"/>
-			<OnReceiveDrag function="SendMailAttachmentButton_OnClick"/>
+			<OnClick>
+				SendMailAttachmentButton_OnClick(self, button, down);
+			</OnClick>
+			<OnDragStart>
+				SendMailAttachmentButton_OnClick(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				SendMailAttachmentButton_OnClick(self);
+			</OnReceiveDrag>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnEnter function="SendMailAttachment_OnEnter"/>
+			<OnEnter>
+				SendMailAttachment_OnEnter(self, motion);
+			</OnEnter>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
 					SendMailAttachment_OnEnter(self);
 				end
 			</OnUpdate>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 	</Button>

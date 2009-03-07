@@ -67,7 +67,9 @@
 				self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
 				self:RegisterEvent("PREVIEW_PET_TALENT_POINTS_CHANGED");
 			</OnLoad>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 </Ui>

@@ -27,7 +27,9 @@
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 				GameTooltip:SetUnitAura(PlayerFrame.unit, self:GetID(), self.filter);
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 			<OnShow>
 				if ( self.namePrefix ) then
 					AuraButton_Update(self.namePrefix, self:GetID(), self.filter);
@@ -37,8 +39,12 @@
 	</Button>
 	<Button name="BuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
 		<Scripts>
-			<OnLoad function="BuffButton_OnLoad"/>
-			<OnClick function="BuffButton_OnClick"/>
+			<OnLoad>
+				BuffButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				BuffButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 	</Button>
 	<Button name="DebuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
@@ -70,11 +76,21 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="TempEnchantButton_OnLoad"/>
-			<OnUpdate function="TempEnchantButton_OnUpdate"/>
-			<OnClick function="TempEnchantButton_OnClick"/>
-			<OnEnter function="TempEnchantButton_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLoad>
+				TempEnchantButton_OnLoad(self);
+			</OnLoad>
+			<OnUpdate>
+				TempEnchantButton_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnClick>
+				TempEnchantButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				TempEnchantButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 

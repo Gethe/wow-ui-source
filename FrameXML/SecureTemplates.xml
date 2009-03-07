@@ -5,6 +5,7 @@
 	
 	<Script file="SecureTemplates.lua"/>
 	<Script file="SecureStateDriver.lua"/>
+	<Script file="SecureHoverDriver.lua"/>
 
 	<!-- A button template for click-cast style action buttons -->
 	<Button name="SecureActionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">

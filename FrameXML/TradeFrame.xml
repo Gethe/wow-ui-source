@@ -87,7 +87,9 @@
 					<Anchor point="TOPLEFT" relativeTo="$parent"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="RaiseFrameLevelByTwo"/>
+					<OnLoad>
+						RaiseFrameLevelByTwo(self);
+					</OnLoad>
 					<OnClick>
 						if ( IsModifiedClick() ) then
 							HandleModifiedItemClick(GetTradeTargetItemLink(self:GetParent():GetID()));
@@ -100,7 +102,10 @@
 						GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
 						CursorUpdate(self);
 					</OnEnter>
-					<OnLeave function="GameTooltip_HideResetCursor"/>
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+					</OnLeave>
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -142,7 +147,10 @@
 						GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
 						CursorUpdate(self);
 					</OnEnter>
-					<OnLeave function="GameTooltip_HideResetCursor"/>
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+					</OnLeave>
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

@@ -211,8 +211,8 @@ local function PickupAny(kind, target, detail, ...)
         PickupSpell(target, detail)
     elseif kind == 'companion' then
         PickupCompanion(target, detail)
-	elseif kind == 'equipmentset' then
-		PickupEquipmentSet(target);
+        elseif kind == 'equipmentset' then
+                PickupEquipmentSet(target);
     end
 end
 
@@ -497,8 +497,8 @@ local LOCAL_Wrap_Handlers = {
     OnEnter = Wrapped_OnEnter;
     OnLeave = Wrapped_OnLeave;
 
-    --OnShow = Wrapped_ShowHide;
-    --OnHide = Wrapped_ShowHide;
+    OnShow = Wrapped_ShowHide;
+    OnHide = Wrapped_ShowHide;
 
     OnDragStart = Wrapped_Drag;
     OnReceiveDrag = Wrapped_Drag;

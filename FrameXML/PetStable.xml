@@ -36,7 +36,9 @@
 					GameTooltip:Show();
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 			<OnClick>
 				if ( ClickStablePet(self:GetID()) ) then
 					PetStable_Update();

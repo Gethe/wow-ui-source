@@ -34,8 +34,12 @@
 					end
 				end
 			</OnClick>
-			<OnLoad function="GuildBankItemButton_OnLoad"/>
-			<OnEnter function="GuildBankItemButton_OnEnter"/>
+			<OnLoad>
+				GuildBankItemButton_OnLoad(self);
+			</OnLoad>
+			<OnEnter>
+				GuildBankItemButton_OnEnter(self, motion);
+			</OnEnter>
 			<OnLeave>
 				self.updateTooltip = nil;
 				GameTooltip:Hide();
@@ -234,7 +238,9 @@
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
@@ -256,7 +262,9 @@
 	</Frame>
 	<CheckButton name="GuildBankPopupButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick function="GuildBankPopupButton_OnClick"/>
+			<OnClick>
+				GuildBankPopupButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 	</CheckButton>
 	<Frame name="GuildBankFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">

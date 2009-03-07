@@ -128,7 +128,9 @@
 				self:RegisterForDrag("LeftButton");
 				self:RegisterEvent("SOCKET_INFO_UPDATE");
 			</OnLoad>
-			<OnEvent function="ItemSocketingSocketButton_OnEvent"/>
+			<OnEvent>
+				ItemSocketingSocketButton_OnEvent(self, event, ...);
+			</OnEvent>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					local link = GetNewSocketLink(self:GetID()) or
@@ -150,7 +152,9 @@
 				StaticPopup_Hide("DELETE_GOOD_ITEM");
 				ClickSocketButton(self:GetID());
 			</OnDragStart>
-			<OnEnter function="ItemSocketingSocketButton_OnEnter"/>
+			<OnEnter>
+				ItemSocketingSocketButton_OnEnter(self, motion);
+			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 				ShoppingTooltip1:Hide();

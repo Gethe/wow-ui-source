@@ -41,7 +41,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 			end
 		end
 		
-		local body = format(CHAT_WHISPER_GET, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
+		local body = format(CHAT_WHISPER_GET, pflag.."|HplayerGM:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
 		
 		ListOfGMs[strlower(arg2)] = true;
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
@@ -81,7 +81,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 			end
 		end
 		
-		local body = format(CHAT_WHISPER_INFORM_GET, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
+		local body = format(CHAT_WHISPER_INFORM_GET, pflag.."|HplayerGM:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
 		
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
 	elseif ( event == "UPDATE_CHAT_COLOR" ) then

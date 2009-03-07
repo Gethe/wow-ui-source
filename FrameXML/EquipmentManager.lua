@@ -7,7 +7,7 @@ EQUIPMENTMANAGER_BAGSLOTS = {};
 local SLOT_LOCKED = 1;
 local SLOT_EMPTY = 2;
 
-for i = 0, NUM_BAG_SLOTS + GetNumBankSlots() do
+for i = -1, NUM_BAG_SLOTS + GetNumBankSlots() do
 	EQUIPMENTMANAGER_BAGSLOTS[i] = {};
 end
 
@@ -317,15 +317,17 @@ function EquipmentManager_EquipSet (name)
 	end
 
 	local set = GetEquipmentSetItemLocations(name);
-	for slot = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
-		if ( not set[slot] ) then
-			-- Ignore this slot
-		elseif ( set[slot] == EQUIPMENT_SET_EMPTY_SLOT ) then
-			EquipmentManager_UnequipItemInSlot(slot);
-		elseif ( set[slot] == EQUIPMENT_SET_ITEM_MISSING ) then
-			-- Missing item =/
-		else
-			EquipmentManager_EquipItemByLocation(set[slot], slot);
+	if ( set ) then
+		for slot = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+			if ( not set[slot] ) then
+				-- Ignore this slot
+			elseif ( set[slot] == EQUIPMENT_SET_EMPTY_SLOT ) then
+				EquipmentManager_UnequipItemInSlot(slot);
+			elseif ( set[slot] == EQUIPMENT_SET_ITEM_MISSING ) then
+				-- Missing item =/
+			else
+				EquipmentManager_EquipItemByLocation(set[slot], slot);
+			end
 		end
 	end
 end

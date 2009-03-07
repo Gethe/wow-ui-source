@@ -251,10 +251,12 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_TALENT_UPDATE" or event == "PET_TALENT_UPDATE" ) then
 		PlayerTalentFrame_Refresh();
 	elseif ( event == "PREVIEW_TALENT_POINTS_CHANGED" ) then
+		--local talentIndex, tabIndex, groupIndex, points = ...;
 		if ( selectedSpec and not specs[selectedSpec].pet ) then
 			PlayerTalentFrame_Refresh();
 		end
 	elseif ( event == "PREVIEW_PET_TALENT_POINTS_CHANGED" ) then
+		--local talentIndex, tabIndex, groupIndex, points = ...;
 		if ( selectedSpec and specs[selectedSpec].pet ) then
 			PlayerTalentFrame_Refresh();
 		end
@@ -488,9 +490,7 @@ function PlayerTalentFrameResetButton_OnEnter(self)
 end
 
 function PlayerTalentFrameResetButton_OnClick(self)
-	if ( selectedSpec ) then
-		ResetGroupPreviewTalentPoints(specs[selectedSpec].pet);
-	end
+	ResetGroupPreviewTalentPoints(PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 end
 
 function PlayerTalentFrameLearnButton_OnEnter(self)
@@ -739,7 +739,7 @@ function PlayerSpecTab_Update(self, ...)
 	-- determine whether or not we need to hide the tab
 	local canShow;
 	if ( spec.pet ) then
-		canShow = numPetTalentGroups > 0 and spec.talentGroup <= numTalentGroups;
+		canShow = spec.talentGroup <= numPetTalentGroups;
 	else
 		canShow = spec.talentGroup <= numTalentGroups;
 	end

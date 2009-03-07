@@ -60,13 +60,19 @@ function QuestLog_OnEvent(self, event, ...)
 			QuestLog_UpdateQuestDetails(1);
 		end
 	elseif ( event == "QUEST_ACCEPTED" ) then
-		if ( AUTO_QUEST_WATCH == "1" and GetNumQuestLeaderBoards(arg1) > 0 ) then
+		if ( AUTO_QUEST_WATCH == "1" and 
+			 GetNumQuestLeaderBoards(arg1) > 0 and 
+			 GetNumQuestWatches() < MAX_WATCHABLE_QUESTS and 
+			 WatchFrame_GetRemainingSpace() >= WatchFrame_GetHeightNeededForQuest(arg1) ) then
 			AddQuestWatch(arg1);
 			QuestLog_Update();
 			WatchFrame_Update();
 		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
-		if ( AUTO_QUEST_PROGRESS == "1" and GetNumQuestLeaderBoards(arg1) > 0 ) then
+		if ( AUTO_QUEST_PROGRESS == "1" and 
+			 GetNumQuestLeaderBoards(arg1) > 0 and 
+			 GetNumQuestWatches() < MAX_WATCHABLE_QUESTS and 
+			 WatchFrame_GetRemainingSpace() >= WatchFrame_GetHeightNeededForQuest(arg1) ) then
 			AddQuestWatch(arg1,MAX_QUEST_WATCH_TIME);
 			QuestLog_Update();
 			WatchFrame_Update();

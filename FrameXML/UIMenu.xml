@@ -6,10 +6,18 @@
 			<AbsDimension x="128" y="16"/>
 		</Size>
 		<Scripts>
-			<OnLoad function="UIMenuButton_OnLoad"/>
-			<OnClick function="UIMenuButton_OnClick"/>
-			<OnEnter function="UIMenuButton_OnEnter"/>
-			<OnLeave function="UIMenuButton_OnLeave"/>
+			<OnLoad>
+				UIMenuButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				UIMenuButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				UIMenuButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				UIMenuButton_OnLeave(self, motion);
+			</OnLeave>
 		</Scripts>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -71,7 +79,9 @@
 			<Button name="$parentButton32" inherits="UIMenuButtonTemplate" id="32"/>
 		</Frames>
 		<Scripts>
-			<OnUpdate function="UIMenu_OnUpdate"/>
+			<OnUpdate>
+				UIMenu_OnUpdate(self, elapsed);
+			</OnUpdate>
 			<OnShow>
 				UIMenu_OnShow(self);
 				PlaySound("UChatScrollButton");

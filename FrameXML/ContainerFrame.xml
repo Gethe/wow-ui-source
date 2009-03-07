@@ -28,16 +28,27 @@
 					ContainerFrameItemButton_OnClick(self, button);
 				end
 			</OnClick>
-			<OnLoad function="ContainerFrameItemButton_OnLoad"/>
-			<OnEnter function="ContainerFrameItemButton_OnEnter"/>
-			<OnLeave function="GameTooltip_HideResetCursor"/>
+			<OnLoad>
+				ContainerFrameItemButton_OnLoad(self);
+			</OnLoad>
+			<OnEnter>
+				ContainerFrameItemButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
 			<OnHide>
 				if ( self.hasStackSplit and (self.hasStackSplit == 1) ) then
 					StackSplitFrame:Hide();
 				end
 			</OnHide>
-			<OnDragStart function="ContainerFrameItemButton_OnDrag"/>
-			<OnReceiveDrag function="ContainerFrameItemButton_OnDrag"/>
+			<OnDragStart>
+				ContainerFrameItemButton_OnDrag(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				ContainerFrameItemButton_OnDrag(self);
+			</OnReceiveDrag>
 		</Scripts>
 	</Button>
 	<Frame name="ContainerFrameTemplate" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
@@ -204,7 +215,9 @@
 							end
 						end
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
@@ -223,10 +236,18 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnEvent function="ContainerFrame_OnEvent"/>
-			<OnLoad function="ContainerFrame_OnLoad"/>
-			<OnHide function="ContainerFrame_OnHide"/>
-			<OnShow function="ContainerFrame_OnShow"/>
+			<OnEvent>
+				ContainerFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnLoad>
+				ContainerFrame_OnLoad(self);
+			</OnLoad>
+			<OnHide>
+				ContainerFrame_OnHide(self);
+			</OnHide>
+			<OnShow>
+				ContainerFrame_OnShow(self);
+			</OnShow>
 		</Scripts>
 	</Frame>
 	<Frame name="ContainerFrame1" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>

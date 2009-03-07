@@ -41,9 +41,15 @@
 			<AbsDimension x="30" y="30"/>
 		</Size>
 		<Scripts>
-			<OnClick function="PossessButton_OnClick"/>
-			<OnEnter function="PossessButton_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick>
+				PossessButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				PossessButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</CheckButton>
 

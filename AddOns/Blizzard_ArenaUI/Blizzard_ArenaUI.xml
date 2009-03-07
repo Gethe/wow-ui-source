@@ -65,14 +65,20 @@
 				CastingBarFrame_OnLoad(self, "arena"..self:GetParent():GetID(), false);
 				_G[self:GetName().."Icon"]:Show();
 			</OnLoad>
-			<OnEvent function="CastingBarFrame_OnEvent"/>
-			<OnUpdate function="CastingBarFrame_OnUpdate"/>
-			<OnShow function="CastingBarFrame_OnShow"/>
+			<OnEvent>
+				CastingBarFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				CastingBarFrame_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnShow>
+				CastingBarFrame_OnShow(self);
+			</OnShow>
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
-	<Button name="ArenaEnemyPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true" scale="1.3">
+	<Button name="ArenaEnemyPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true" scale="1.3" hidden="true">
 		<Size>
 			<AbsDimension x="77" y="31"/>
 		</Size>
@@ -156,9 +162,16 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
+					<OnValueChanged>
+						UnitFrameHealthBar_OnValueChanged(self, value);
+					</OnValueChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnMouseUp>
+						self:GetParent():Click(button);
+					</OnMouseUp>
+				</Scripts>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
 				<Size>
@@ -172,6 +185,11 @@
 					</Anchor>
 				</Anchors>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnMouseUp>
+						self:GetParent():Click(button);
+					</OnMouseUp>
+				</Scripts>
 			</StatusBar>
 		</Frames>
 		<Scripts>
@@ -184,11 +202,20 @@
 				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
 				getglobal(prefix.."Name"):Hide();
 				SecureUnitButton_OnLoad(self, unit);
+				ArenaEnemyPetFrame_OnLoad(self);
 			</OnLoad>
-			<OnShow function="UnitFrame_Update"/>
-			<OnEvent function="UnitFrame_OnEvent"/>
-			<OnEnter function="UnitFrame_OnEnter"/>
-			<OnLeave function="UnitFrame_OnLeave"/>
+			<OnShow>
+				UnitFrame_Update(self);
+			</OnShow>
+			<OnEvent>
+				ArenaEnemyPetFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnEnter>
+				UnitFrame_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				UnitFrame_OnLeave(self, motion);
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="ArenaEnemyFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="SecureUnitButtonTemplate" virtual="true">
@@ -350,7 +377,6 @@
 						self:GetParent():Click(button);
 					</OnMouseUp>
 					<OnValueChanged>
-						--PartyMemberHealthCheck(self, value);
 						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 				</Scripts>
@@ -445,15 +471,14 @@
 			<OnShow>
 				self:SetFrameLevel(2);
 			</OnShow>
-			<OnEvent function="ArenaEnemyFrame_OnEvent"/>
+			<OnEvent>
+				ArenaEnemyFrame_OnEvent(self, event, ...);
+			</OnEvent>
 			<OnEnter>
 				UnitFrame_OnEnter(self);
-				--PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 47, -30);
-				--PartyMemberBuffTooltip_Update(self);
 			</OnEnter>
 			<OnLeave>
 				UnitFrame_OnLeave(self);
-				--PartyMemberBuffTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Button>

@@ -51,13 +51,21 @@
 			</Layer>		
 		</Layers>
 		<Scripts>
-			<OnLoad function="RaidClassButton_OnLoad"/>
+			<OnLoad>
+				RaidClassButton_OnLoad(self);
+			</OnLoad>
 			<OnDragStart>
 				RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.fileName, self.class));
 			</OnDragStart>
-			<OnDragStop function="RaidPulloutStopMoving"/>
-			<OnEnter function="RaidClassButton_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnDragStop>
+				RaidPulloutStopMoving(self);
+			</OnDragStop>
+			<OnEnter>
+				RaidClassButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
@@ -87,7 +95,9 @@
 				self:SetFrameLevel(self:GetFrameLevel() + 1);
 				RaidGroupButton_OnLoad(self:GetParent());
 			</OnLoad>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="RaidGroupButtonTemplate" parent="RaidFrame" movable="true" inherits="SecureUnitButtonTemplate" clampedToScreen="true" virtual="true">
@@ -220,7 +230,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="RaiseFrameLevelByTwo"/>
+					<OnLoad>	
+						RaiseFrameLevelByTwo(self);
+					</OnLoad>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -272,7 +284,9 @@
 					GameTooltip:Show();
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton">
 			<TexCoords left="0" right="0.640625" top="0" bottom="0.4375"/>
@@ -432,7 +446,9 @@
 				end
 				GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), filter);
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Frame>
 	<Frame name="RaidPulloutButtonTemplate" hidden="true" virtual="true">
@@ -717,11 +733,15 @@
 			</StatusBar>
 			<Button name="$parentClearButton" setAllPoints="true" inherits="SecureUnitButtonTemplate">
 				<Scripts>
-					<OnLoad function="RaidPulloutButton_OnLoad"/>
+					<OnLoad>
+						RaidPulloutButton_OnLoad(self);
+					</OnLoad>
 					<OnEnter>
 						RaidGroupButton_OnEnter(self:GetParent());
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Button name="$parentSpeaker" inherits="VoiceChatSpeakerTemplate" hidden="true">
@@ -736,7 +756,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnUpdate function="VoiceChat_OnUpdate"/>
+					<OnUpdate>
+						VoiceChat_OnUpdate(self, elapsed);
+					</OnUpdate>
 				</Scripts>
 			</Button>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
@@ -751,7 +773,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="RaiseFrameLevelByTwo"/>
+					<OnLoad>
+						RaiseFrameLevelByTwo(self);
+					</OnLoad>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentAura1" inherits="RaidBuffButtonTemplate" id="1">
@@ -792,7 +816,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEvent function="RaidPulloutButton_OnEvent"/>
+			<OnEvent>
+				RaidPulloutButton_OnEvent(self, event, ...);
+			</OnEvent>
 			<OnLoad>
 				local prefix = self:GetName();
 				self.healthbar = _G[prefix.."HealthBar"];
@@ -839,7 +865,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="RaidPulloutDropDown_OnLoad"/>
+					<OnLoad>
+						RaidPulloutDropDown_OnLoad(self);
+					</OnLoad>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentMenuBackdrop" setAllPoints="true">
@@ -879,7 +907,9 @@
 				self.label = _G[self:GetName() .. "Name"];
 				self.buttons = {};
 			</OnLoad>
-			<OnEvent function="RaidPullout_OnEvent"/>
+			<OnEvent>
+				RaidPullout_OnEvent(self, event, ...);
+			</OnEvent>
 			<OnDragStart>
 				self:SetFrameStrata("DIALOG");
 				self:StartMoving();

@@ -52,7 +52,9 @@
 					<AbsInset left="0" right="0" top="7" bottom="7"/>
 				</HitRectInsets>
 				<Scripts>
-					<OnClick function="SkillBar_OnClick"/>
+					<OnClick>
+						SkillBar_OnClick(self, button, down);
+					</OnClick>
 				</Scripts>
 				<NormalTexture name="$parentNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder"/>
 				<HighlightTexture name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorderHighlight"/>

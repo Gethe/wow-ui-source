@@ -435,7 +435,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick function="PVPBannerCustomization_Left"/>
+					<OnClick>
+						PVPBannerCustomization_Left(self, button, down);
+					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
@@ -454,7 +456,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick function="PVPBannerCustomization_Right"/>
+					<OnClick>
+						PVPBannerCustomization_Right(self, button, down);
+					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>

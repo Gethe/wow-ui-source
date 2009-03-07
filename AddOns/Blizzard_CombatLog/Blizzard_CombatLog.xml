@@ -18,7 +18,9 @@
 					GameTooltip_AddNewbieTip(self, self.tooltip, 1.0, 1.0, 1.0, nil, 1);
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalFont style="GameFontDisable"/>
 		<HighlightFont style="GameFontHighlight"/>

@@ -12,8 +12,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="RaiseFrameLevel"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLoad>
+				RaiseFrameLevel(self);
+			</OnLoad>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="ChannelButtonTemplate" virtual="true">
@@ -44,7 +48,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnUpdate function="VoiceChat_OnUpdate"/>
+					<OnUpdate>
+						VoiceChat_OnUpdate(self, elapsed);
+					</OnUpdate>
 					<OnClick>
 						SetActiveVoiceChannel(self:GetParent():GetID());
 					</OnClick>
@@ -56,15 +62,23 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick function="ChannelList_OnClick"/>
-			<OnDragStart function="ChannelListButton_OnDragStart"/>
-			<OnDragStop function="ChannelListButton_OnDragStop"/>
+			<OnClick>
+				ChannelList_OnClick(self, button, down);
+			</OnClick>
+			<OnDragStart>
+				ChannelListButton_OnDragStart(self, button);
+			</OnDragStart>
+			<OnDragStop>
+				ChannelListButton_OnDragStop(self);
+			</OnDragStop>
 			<OnEnter>
 				if ( self.voiceEnabled ) then
 					GameTooltip_AddNewbieTip(self, DISPLAY_CHANNEL_PULLOUT, 1.0, 1.0, 1.0, string.format(NEWBIE_TOOLTIP_DISPLAY_CHANNEL_PULLOUT, (self.name or UNKNOWN)), 1);
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
 			<TexCoords left="0" right="0.53125" top="0" bottom="0.625"/>
@@ -147,7 +161,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnUpdate function="VoiceChat_OnUpdate"/>
+					<OnUpdate>
+						VoiceChat_OnUpdate(self, elapsed);
+					</OnUpdate>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -160,7 +176,9 @@
 					self:SetWidth(135);
 				end
 			</OnLoad>
-			<OnClick function="ChannelRoster_OnClick"/>
+			<OnClick>
+				ChannelRoster_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>

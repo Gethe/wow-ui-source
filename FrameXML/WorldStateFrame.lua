@@ -311,7 +311,7 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (self, event, ...)
 		for i, str in next, FILTERED_BG_CHAT_SUBTRACT do
 			playerName = string.match(message, str);
 			if ( playerName ) then
-				return true, ...;
+				return true;
 			end
 		end
 	elseif ( WORLDSTATEALWAYSUPFRAME_TIMESINCESTART < WORLDSTATEALWAYSUPFRAME_TIMETORUN ) then
@@ -322,7 +322,7 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (self, event, ...)
 				-- Trim realm names
 				playerName = string.match(playerName, "([^%-]+)%-?.*");
 				ADDED_PLAYERS[playerName] = true;
-				return true, ...;
+				return true;
 			end
 		end
 		
@@ -331,11 +331,11 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (self, event, ...)
 			if ( playerName ) then
 				playerName = string.match(playerName, "([^%-]+)%-?.*");
 				SUBTRACTED_PLAYERS[playerName] = true;
-				return true, ...;
+				return true;
 			end
 		end
 	end
-	return false, ...;
+	return false;
 end
 
 local matchString = string.gsub(LOOT_ITEM_CREATED_SELF, "%%s%.", ".+")
@@ -345,11 +345,11 @@ function WorldStateAlwaysUpFrame_FilterChatMsgLoot (self, event, ...)
 		local message = ...;
 		-- Suppress loot messages for other players at the end of battlefields and arenas
 		if ( not string.match(message, matchString) ) then
-			return true, ...;
+			return true;
 		end
 	end
 	
-	return false, ...;
+	return false;
 end
 
 function WorldStateFrame_ToggleBattlefieldMinimap()

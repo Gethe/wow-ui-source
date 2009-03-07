@@ -104,7 +104,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="GossipTitleButton_OnClick"/>
+			<OnClick>
+				GossipTitleButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 		<ButtonText>

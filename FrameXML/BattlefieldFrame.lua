@@ -11,6 +11,7 @@ MAX_BATTLEFIELD_QUEUES = 3;
 CURRENT_BATTLEFIELD_QUEUES = {};
 PREVIOUS_BATTLEFIELD_QUEUES = {};
 
+local BATTLEFIELD_FRAME_FADE_TIME = 0.15
 
 function BattlefieldFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -165,7 +166,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 	if ( CanHearthAndResurrectFromArea() ) then
 		if ( not MiniMapBattlefieldFrame.inWorldPVPArea ) then
 			MiniMapBattlefieldFrame.inWorldPVPArea = true;
-			UIFrameFadeIn(MiniMapBattlefieldFrame, CHAT_FRAME_FADE_TIME);
+			UIFrameFadeIn(MiniMapBattlefieldFrame, BATTLEFIELD_FRAME_FADE_TIME);
 			BattlegroundShineFadeIn();
 		end
 	else
@@ -210,7 +211,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 				
 				if ( not tooltipOnly ) then
 					if ( not IsAlreadyInQueue(mapName) ) then
-						UIFrameFadeIn(MiniMapBattlefieldFrame, CHAT_FRAME_FADE_TIME);
+						UIFrameFadeIn(MiniMapBattlefieldFrame, BATTLEFIELD_FRAME_FADE_TIME);
 						BattlegroundShineFadeIn();
 						PlaySound("PVPENTERQUEUE");
 					end

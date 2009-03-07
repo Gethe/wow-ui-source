@@ -140,7 +140,9 @@
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 				GameTooltip:SetText(self.tooltip);
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 			<OnClick>
 				TutorialFrame:Show();
 				self:ClearAllPoints();

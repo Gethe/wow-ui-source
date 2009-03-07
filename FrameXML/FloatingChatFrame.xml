@@ -125,7 +125,9 @@
 			<OnEnter>
 				GameTooltip_AddNewbieTip(self, CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 			<OnDragStart>
 				-- mschweitzer NOTE: part of a fix for bug 93334. if a tab is fading out, its frame shouldn't be draggable
 				-- because we can potentially get into a state where the tab disappears while we drag
@@ -267,11 +269,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="LowerFrameLevel"/>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
 					<OnMouseDown>
 						FCF_Resize(self, "TOPLEFT");
 					</OnMouseDown>
-					<OnMouseUp function="FCF_StopResize"/>
+					<OnMouseUp>
+						FCF_StopResize(self);
+					</OnMouseUp>
 				</Scripts>
 			</Button>
 			<Button name="$parentResizeTopRight" jumpNavigateEnabled="false">
@@ -299,11 +305,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="LowerFrameLevel"/>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
 					<OnMouseDown>
 						FCF_Resize(self, "TOPRIGHT");
 					</OnMouseDown>
-					<OnMouseUp function="FCF_StopResize"/>
+					<OnMouseUp>
+						FCF_StopResize(self);
+					</OnMouseUp>
 				</Scripts>
 			</Button>
 			<Button name="$parentResizeBottomLeft" jumpNavigateEnabled="false">
@@ -331,11 +341,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="LowerFrameLevel"/>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
 					<OnMouseDown>
 						FCF_Resize(self, "BOTTOMLEFT");
 					</OnMouseDown>
-					<OnMouseUp function="FCF_StopResize"/>
+					<OnMouseUp>
+						FCF_StopResize(self);
+					</OnMouseUp>
 				</Scripts>
 			</Button>
 			<Button name="$parentResizeBottomRight" jumpNavigateEnabled="false">
@@ -363,11 +377,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="LowerFrameLevel"/>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
 					<OnMouseDown>
 						FCF_Resize(self, "BOTTOMRIGHT");
 					</OnMouseDown>
-					<OnMouseUp function="FCF_StopResize"/>
+					<OnMouseUp>
+						FCF_StopResize(self);
+					</OnMouseUp>
 				</Scripts>
 			</Button>
 			<Button name="$parentResizeTop" jumpNavigateEnabled="false">
@@ -401,11 +419,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="LowerFrameLevel"/>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
 					<OnMouseDown>
 						FCF_Resize(self, "TOP");
 					</OnMouseDown>
-					<OnMouseUp function="FCF_StopResize"/>
+					<OnMouseUp>
+						FCF_StopResize(self);
+					</OnMouseUp>
 				</Scripts>
 			</Button>
 			<Button name="$parentResizeBottom" jumpNavigateEnabled="false">
@@ -439,11 +461,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="LowerFrameLevel"/>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
 					<OnMouseDown>
 						FCF_Resize(self, "BOTTOM");
 					</OnMouseDown>
-					<OnMouseUp function="FCF_StopResize"/>
+					<OnMouseUp>
+						FCF_StopResize(self);
+					</OnMouseUp>
 				</Scripts>
 			</Button>
 			<Button name="$parentResizeLeft" jumpNavigateEnabled="false">
@@ -477,11 +503,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="LowerFrameLevel"/>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
 					<OnMouseDown>
 						FCF_Resize(self, "LEFT");
 					</OnMouseDown>
-					<OnMouseUp function="FCF_StopResize"/>
+					<OnMouseUp>
+						FCF_StopResize(self);
+					</OnMouseUp>
 				</Scripts>
 			</Button>
 			<Button name="$parentResizeRight" jumpNavigateEnabled="false">
@@ -515,11 +545,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="LowerFrameLevel"/>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
 					<OnMouseDown>
 						FCF_Resize(self, "RIGHT");
 					</OnMouseDown>
-					<OnMouseUp function="FCF_StopResize"/>
+					<OnMouseUp>
+						FCF_StopResize(self);
+					</OnMouseUp>
 				</Scripts>
 			</Button>
 			<Button name="$parentBottomButton">
@@ -561,8 +595,12 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="MessageFrameScrollButton_OnLoad"/>
-					<OnUpdate function="MessageFrameScrollButton_OnUpdate"/>
+					<OnLoad>
+						MessageFrameScrollButton_OnLoad(self);
+					</OnLoad>
+					<OnUpdate>
+						MessageFrameScrollButton_OnUpdate(self, elapsed);
+					</OnUpdate>
 					<OnClick>
 						if ( self:GetButtonState() == "PUSHED" ) then
 							self.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
@@ -585,8 +623,12 @@
 					<Anchor point="BOTTOM" relativeTo="$parentDownButton" relativePoint="TOP"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="MessageFrameScrollButton_OnLoad"/>
-					<OnUpdate function="MessageFrameScrollButton_OnUpdate"/>
+					<OnLoad>
+						MessageFrameScrollButton_OnLoad(self);
+					</OnLoad>
+					<OnUpdate>
+						MessageFrameScrollButton_OnUpdate(self, elapsed);
+					</OnUpdate>
 					<OnClick>
 						if ( self:GetButtonState() == "PUSHED" ) then
 							self.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;

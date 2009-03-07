@@ -3,9 +3,15 @@
 	<Script file="MainMenuBarBagButtons.lua"/>
 	<Model name="ItemAnimTemplate" file="Interface\ItemAnimations\ForcedBackpackItem.mdx" hidden="true" virtual="true">
 		<Scripts>
-			<OnLoad function="ItemAnim_OnLoad"/>
-			<OnEvent function="ItemAnim_OnEvent"/>
-			<OnAnimFinished function="ItemAnim_OnAnimFinished"/>
+			<OnLoad>
+				ItemAnim_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				ItemAnim_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnAnimFinished>
+				ItemAnim_OnAnimFinished(self);
+			</OnAnimFinished>
 		</Scripts>
 	</Model>
 	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
@@ -37,8 +43,12 @@
 					PaperDollItemSlotButton_OnEvent(self, event, ...);
 				end
 			</OnEvent>
-			<OnShow function="PaperDollItemSlotButton_OnShow"/>
-			<OnHide function="PaperDollItemSlotButton_OnHide"/>
+			<OnShow>
+				PaperDollItemSlotButton_OnShow(self);
+			</OnShow>
+			<OnHide>
+				PaperDollItemSlotButton_OnHide(self);
+			</OnHide>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					BagSlotButton_OnModifiedClick(self, button);
@@ -46,10 +56,19 @@
 					BagSlotButton_OnClick(self, button);
 				end
 			</OnClick>
-			<OnDragStart function="BagSlotButton_OnDrag"/>
-			<OnReceiveDrag function="BagSlotButton_OnClick"/>
-			<OnEnter function="BagSlotButton_OnEnter"/>
-			<OnLeave function="GameTooltip_HideResetCursor"/>
+			<OnDragStart>
+				BagSlotButton_OnDrag(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				BagSlotButton_OnClick(self);
+			</OnReceiveDrag>
+			<OnEnter>
+				BagSlotButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>

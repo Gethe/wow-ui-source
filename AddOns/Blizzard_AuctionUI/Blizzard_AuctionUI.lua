@@ -1082,7 +1082,7 @@ function AuctionFrameAuctions_OnLoad(self)
 	-- set default sort
 	AuctionFrame_SetSort("owner", "duration", false);
 
-	AuctionsRadioButton_OnClick(nil, 2);
+	AuctionsRadioButton_OnClick(nil, nil, nil, 2);
 end
 
 function AuctionFrameAuctions_OnEvent(self, event, ...)
@@ -1305,11 +1305,9 @@ function AuctionsButton_OnClick(button)
 	AuctionFrameAuctions_Update();
 end
 
-function AuctionsRadioButton_OnClick(self, index)
+function AuctionsRadioButton_OnClick(self, pushed, down, index)
 	if ( self and not index ) then
 		index = self:GetID();
-	elseif ( not index ) then
-		assert(self);
 	end
 	
 	PlaySound("igMainMenuOptionCheckBoxOn");

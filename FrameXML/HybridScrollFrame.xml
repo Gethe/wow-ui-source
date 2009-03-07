@@ -80,7 +80,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						self:RegisterForClicks("LeftButtonUp", "LeftButtonDown");
 						self.direction = 1;
 					</OnLoad>
-					<OnClick function="HybridScrollFrameScrollButton_OnClick"/>
+					<OnClick>
+						HybridScrollFrameScrollButton_OnClick(self, button, down);
+					</OnClick>
 				</Scripts>
 				<NormalTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
 				<PushedTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
@@ -105,7 +107,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						self:RegisterForClicks("LeftButtonUp", "LeftButtonDown");
 						self.direction = -1;
 					</OnLoad>
-					<OnClick function="HybridScrollFrameScrollButton_OnClick"/>
+					<OnClick>
+						HybridScrollFrameScrollButton_OnClick(self, button, down);
+					</OnClick>
 				</Scripts>
 				<NormalTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
 				<PushedTexture inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
@@ -131,13 +135,19 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 
 	<ScrollFrame name="HybridScrollFrameTemplate" virtual="true">			
 		<Scripts>
-			<OnLoad function="HybridScrollFrame_OnLoad"/>
-			<OnMouseWheel function="HybridScrollFrame_OnMouseWheel"/>
+			<OnLoad>
+				HybridScrollFrame_OnLoad(self);
+			</OnLoad>
+			<OnMouseWheel>
+				HybridScrollFrame_OnMouseWheel(self, delta);
+			</OnMouseWheel>
 		</Scripts>
 		<ScrollChild>
 			<Frame name="$parentScrollChild">
 				<Scripts>
-					<OnLoad function="HybridScrollFrameScrollChild_OnLoad"/>
+					<OnLoad>
+						HybridScrollFrameScrollChild_OnLoad(self);
+					</OnLoad>
 				</Scripts>
 			</Frame>
 		</ScrollChild>

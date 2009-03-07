@@ -112,14 +112,22 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							GameTooltip:SetCurrencyToken(self:GetParent().index);
 						end
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-					<OnClick function="TokenButtonLinkButton_OnClick"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						TokenButtonLinkButton_OnClick(self, button, down);
+					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="TokenButton_OnLoad"/>
-			<OnClick function="TokenButton_OnClick"/>
+			<OnLoad>
+				TokenButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				TokenButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 		<ButtonText>
 			<Anchors>
@@ -443,8 +451,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					GameTooltip:SetBackpackToken(self:GetID());
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
-			<OnClick function="BackpackTokenButton_OnClick"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				BackpackTokenButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 	</Button>
 	<Frame name="BackpackTokenFrame" parent="UIParent">

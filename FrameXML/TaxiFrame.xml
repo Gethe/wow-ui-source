@@ -9,8 +9,12 @@
 			<Anchor point="BOTTOMRIGHT"/>
 		</Anchors>
 		<Scripts>
-            <OnEnter function="TaxiNodeOnButtonEnter"/>
-            <OnLeave function="GameTooltip_Hide"/>
+            <OnEnter>
+				TaxiNodeOnButtonEnter(self, motion);
+			</OnEnter>
+            <OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
  			<OnClick>
 				TakeTaxiNode(self:GetID());
 			</OnClick>

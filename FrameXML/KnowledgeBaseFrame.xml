@@ -58,10 +58,18 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="KnowledgeBaseArticleListItem_OnClick"/>
-			<OnEnter function="KnowledgeBaseArticleListItem_OnEnter"/>
-			<OnLeave function="KnowledgeBaseArticleListItem_OnLeave"/>
-			<OnUpdate function="KnowledgeBaseArticleListItem_OnUpdate"/>
+			<OnClick>
+				KnowledgeBaseArticleListItem_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				KnowledgeBaseArticleListItem_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				KnowledgeBaseArticleListItem_OnLeave(self, motion);
+			</OnLeave>
+			<OnUpdate>
+				KnowledgeBaseArticleListItem_OnUpdate(self, elapsed);
+			</OnUpdate>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>

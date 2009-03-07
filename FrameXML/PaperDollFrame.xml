@@ -4,7 +4,8 @@
     <Button name="PaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="ignoreTexture" file="Interface\Buttons\UI-GroupLoot-Pass-Up">
+				<Texture parentKey="ignoreTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent">
+					<Size x="40" y="40"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -15,10 +16,18 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
         <Scripts>
-            <OnLoad function="PaperDollItemSlotButton_OnLoad"/>
-            <OnEvent function="PaperDollItemSlotButton_OnEvent"/>
-			<OnShow function="PaperDollItemSlotButton_OnShow"/>
-			<OnHide function="PaperDollItemSlotButton_OnHide"/>
+            <OnLoad>
+				PaperDollItemSlotButton_OnLoad(self);
+			</OnLoad>
+            <OnEvent>
+				PaperDollItemSlotButton_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnShow>
+				PaperDollItemSlotButton_OnShow(self);
+			</OnShow>
+			<OnHide>
+				PaperDollItemSlotButton_OnHide(self);
+			</OnHide>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					PaperDollItemSlotButton_OnModifiedClick(self, button);
@@ -33,10 +42,10 @@
 				PaperDollItemSlotButton_OnClick(self, "LeftButton");
 			</OnReceiveDrag>
             <OnEnter>
-				PaperDollItemSlotButton_OnEnter(self);
+				PaperDollItemSlotButton_OnEnter(self, motion);
 			</OnEnter>
             <OnLeave>
-				PaperDollItemSlotButton_OnLeave(self);
+				PaperDollItemSlotButton_OnLeave(self, motion);
 			</OnLeave>
         </Scripts>
     </Button>
@@ -45,9 +54,16 @@
 			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnEnter function="PaperDollFrameItemFlyoutButton_OnEnter"/>
-			<OnLeave function="GameTooltip_HideResetCursor"/>
-			<OnClick function="PaperDollFrameItemFlyoutButton_OnClick"/>
+			<OnEnter>
+				PaperDollFrameItemFlyoutButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnClick>
+				PaperDollFrameItemFlyoutButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 	</Button>
 	
@@ -56,7 +72,9 @@
 			<OnLoad>
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick function="GearSetButton_OnClick"/>
+			<OnClick>
+				GearSetButton_OnClick(self, button, down);
+			</OnClick>
 			<OnDragStart>
 				if ( self.name and self.name ~= "" ) then
 					PickupEquipmentSetByName(self.name);
@@ -72,7 +90,9 @@
 				self.icon = _G[name .. "Icon"];
 				self.name = _G[name .. "Name"];
 			</OnLoad>
-			<OnClick function="GearSetPopupButton_OnClick"/>
+			<OnClick>
+				GearSetPopupButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 	</CheckButton>	
 	
@@ -112,7 +132,9 @@
 			<OnEnter>
 				PaperDollStatTooltip(self, "player");
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
     </Frame>
     <Frame name="MagicResistanceFrameTemplate" virtual="true">
@@ -128,7 +150,9 @@
 					GameTooltip:Show();
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
     </Frame>
     <Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" id="1">
@@ -503,7 +527,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad function="PlayerStatFrameLeftDropDown_OnLoad"/>
-							<OnShow function="PlayerStatFrameLeftDropDown_OnLoad"/>
+							<OnShow function="PlayerStatFrameLeftDropDown_OnShow"/>
 						</Scripts>
 					</Frame>
 					<Frame name="PlayerStatFrameRightDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
@@ -516,7 +540,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad function="PlayerStatFrameRightDropDown_OnLoad"/>
-							<OnShow function="PlayerStatFrameRightDropDown_OnLoad"/>
+							<OnShow function="PlayerStatFrameRightDropDown_OnShow"/>
 						</Scripts>
 					</Frame>
                 </Frames>
@@ -930,10 +954,14 @@
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT">
-						<Offset x="-44" y="-38"/>
+						<Offset x="-44" y="-39"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, EQUIPMENT_MANAGER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_EQUIPMENT_MANAGER);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnLoad>
 						self.icon = _G[self:GetName() .. "Icon"];
 					</OnLoad>
@@ -945,8 +973,11 @@
 						end
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\PaperDollInfoFrame\UI-EquipmentManager-Toggle"/>
-				<HighlightTexture file="Interface\PaperDollInfoFrame\UI-EquipmentManager-Toggle-Highlight" alphaMode="ADD"/>
+				<NormalTexture file="Interface\PaperDollInfoFrame\UI-GearManager-Button"/>
+				<PushedTexture file="Interface\PaperDollInfoFrame\UI-GearManager-Button-Pushed"/>
+				<HighlightTexture file="Interface\Buttons\UI-MicroButton-Hilight" alphaMode="ADD">
+					<TexCoords left="0" right="1" top="0.390625" bottom="0.96875"/>
+				</HighlightTexture>
 			</Button>
 		</Frames>
         <Scripts>
@@ -956,7 +987,7 @@
 			<OnHide function="PaperDollFrame_OnHide"/>
         </Scripts>
     </Frame>
-	<Frame name="PaperDollFrameItemFlyout" hidden="true" enableMouse="false" frameStrata="HIGH">
+	<Frame name="PaperDollFrameItemFlyout" parent="PaperDollFrame" hidden="true" enableMouse="false" frameStrata="HIGH">
 		<Size x="43" y="43"/>
 		<Layers>
 			<Layer level="OVERLAY">

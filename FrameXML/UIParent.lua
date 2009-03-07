@@ -478,7 +478,7 @@ function UIParent_OnEvent(self, event, ...)
 			GMChatFrame:Show()
 			local info = ChatTypeInfo["WHISPER"];
 			GMChatFrame:AddMessage(format(GM_CHAT_LAST_SESSION, "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t "..
-			"|Hplayer:"..lastTalkedToGM.."|h".."["..lastTalkedToGM.."]".."|h"), info.r, info.g, info.b, info.id);
+			"|HplayerGM:"..lastTalkedToGM.."|h".."["..lastTalkedToGM.."]".."|h"), info.r, info.g, info.b, info.id);
 		end
 		return;
 	end
@@ -3042,40 +3042,45 @@ function RaiseFrameLevelByTwo(frame)
 	frame:SetFrameLevel(frame:GetFrameLevel()+2);
 end
 
-function PlayerNameAutocomplete(self, char)
+function PlayerNameAutocomplete(self, char, skipFriends, skipGuild)
 	local text = self:GetText();
 	local textlen = strlen(text);
 	local numFriends, name;
+
 	-- First check your friends list
-	numFriends = GetNumFriends();
-	if ( numFriends > 0 ) then
-		for i=1, numFriends do
-			name = GetFriendInfo(i);
-			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
-				self:SetText(name);
-				if ( self:IsInIMECompositionMode() ) then
-					self:HighlightText(textlen - strlen(char), -1);
-				else
-					self:HighlightText(textlen, -1);
+	if ( not skipFriends ) then
+		numFriends = GetNumFriends();
+		if ( numFriends > 0 ) then
+			for i=1, numFriends do
+				name = GetFriendInfo(i);
+				if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
+					self:SetText(name);
+					if ( self:IsInIMECompositionMode() ) then
+						self:HighlightText(textlen - strlen(char), -1);
+					else
+						self:HighlightText(textlen, -1);
+					end
+					return;
 				end
-				return;
 			end
 		end
 	end
 
 	-- No match, check your guild list
-	numFriends = GetNumGuildMembers(true);	-- true to include offline members
-	if ( numFriends > 0 ) then
-		for i=1, numFriends do
-			name = GetGuildRosterInfo(i);
-			if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
-				self:SetText(name);
-				if ( self:IsInIMECompositionMode() ) then
-					self:HighlightText(textlen - strlen(char), -1);
-				else
-					self:HighlightText(textlen, -1);
+	if ( not skipGuild ) then
+		numFriends = GetNumGuildMembers(true);	-- true to include offline members
+		if ( numFriends > 0 ) then
+			for i=1, numFriends do
+				name = GetGuildRosterInfo(i);
+				if ( name and text and (strfind(strupper(name), strupper(text), 1, 1) == 1) ) then
+					self:SetText(name);
+					if ( self:IsInIMECompositionMode() ) then
+						self:HighlightText(textlen - strlen(char), -1);
+					else
+						self:HighlightText(textlen, -1);
+					end
+					return;
 				end
-				return;
 			end
 		end
 	end

@@ -19,7 +19,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="GMSurveyRadioButton_OnClick"/>
+			<OnClick>
+				GMSurveyRadioButton_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 	</CheckButton>
 	<Frame name="GMSurveyQuestionTemplate" virtual="true">
@@ -194,8 +196,12 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GMSurveyQuestion_OnLoad"/>
-			<OnShow function="GMSurveyQuestion_OnShow"/>
+			<OnLoad>
+				GMSurveyQuestion_OnLoad(self);
+			</OnLoad>
+			<OnShow>
+				GMSurveyQuestion_OnShow(self);
+			</OnShow>
 		</Scripts>
 	</Frame>
 	<Frame name="GMSurveyFrame" toplevel="true" parent="UIParent" hidden="true">

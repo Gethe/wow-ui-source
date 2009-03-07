@@ -42,8 +42,13 @@
 				GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill, self:GetID());
 				CursorUpdate(self);
 			</OnEnter>
-			<OnLeave function="GameTooltip_HideResetCursor"/>
-			<OnUpdate function="CursorOnUpdate"/>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate(self, elapsed);
+			</OnUpdate>
 			<OnClick>
 				HandleModifiedItemClick(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
 			</OnClick>

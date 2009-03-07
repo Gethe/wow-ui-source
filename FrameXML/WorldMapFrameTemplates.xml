@@ -18,14 +18,18 @@
 				self.unit = "party"..self:GetID();
 				getglobal(self:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
 			</OnLoad>
-			<OnEnter function="WorldMapUnit_OnEnter"/>
+			<OnEnter>	
+				WorldMapUnit_OnEnter(self, motion);
+			</OnEnter>
 			<OnLeave>
 				WorldMapTooltip:Hide();
 			</OnLeave>
 			<OnMouseUp>
 				MapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
 			</OnMouseUp>
-			<OnUpdate function="MapUnit_OnUpdate"/>
+			<OnUpdate>
+				MapUnit_OnUpdate(self, elapsed);
+			</OnUpdate>
 		</Scripts>
 	</Frame>
 	<Frame name="WorldMapRaidUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
@@ -49,7 +53,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="RaiseFrameLevelByTwo"/>
+			<OnLoad>
+				RaiseFrameLevelByTwo(self);
+			</OnLoad>
 		</Scripts>
 	</Frame>
 	<Frame name="WorldMapVehicleTemplate" hidden="true" virtual="true">
@@ -68,8 +74,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="RaiseFrameLevelByTwo"/>
-			<OnEnter function="WorldMapUnit_OnEnter"/>
+			<OnLoad>
+				RaiseFrameLevelByTwo(self);
+			</OnLoad>
+			<OnEnter>
+				WorldMapUnit_OnEnter(self, motion);
+			</OnEnter>
 			<OnLeave>
 				WorldMapTooltip:Hide();
 			</OnLeave>
@@ -90,7 +100,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="RaiseFrameLevel"/>
+			<OnLoad>
+				RaiseFrameLevel(self);
+			</OnLoad>
 			<OnEnter>
 				local x, y = self:GetCenter();
 				local parentX, parentY = self:GetParent():GetCenter();

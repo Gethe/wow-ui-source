@@ -209,7 +209,9 @@
 				getglobal(self:GetName().."BottomLine"):SetHeight(0);
 				getglobal(self:GetName().."BottomLine"):SetPoint("TOP", self:GetName().."ExpandOrCollapseButton", "CENTER", 5, 0);
 			</OnLoad>
-			<OnClick function="ReputationBar_OnClick"/>
+			<OnClick>
+				ReputationBar_OnClick(self, button, down);
+			</OnClick>
 			<OnEnter>
 				if (self.tooltip) then
 					getglobal(self:GetName().."ReputationBarFactionStanding"):SetText(self.tooltip);

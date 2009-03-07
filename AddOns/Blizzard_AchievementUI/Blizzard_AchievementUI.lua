@@ -109,6 +109,16 @@ function AchievementFrame_OnHide (self)
 	AchievementFrame_ClearTextures();
 end
 
+function AchievementFrame_ForceUpdate ()
+	if ( AchievementFrameAchievements:IsShown() ) then
+		AchievementFrameAchievements_ForceUpdate();
+	elseif ( AchievementFrameStats:IsShown() ) then
+		AchievementFrameStats_Update();
+	elseif ( AchievementFrameComparison:IsShown() ) then
+		AchievementFrameComparison_ForceUpdate();
+	end
+end
+
 function AchievementFrameBaseTab_OnClick (id)
 	PanelTemplates_Tab_OnClick(getglobal("AchievementFrameTab"..id), AchievementFrame);
 	
@@ -500,6 +510,13 @@ function AchievementFrameCategories_SelectButton (button)
 		elseif ( achievementFunctions == ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
 			AchievementFrameAchievementsContainerScrollBar:SetValue(0);
+			if ( id == FEAT_OF_STRENGTH_ID ) then
+				AchievementFrameFilterDropDown:Hide();
+				AchievementFrameHeaderRightDDLInset:Hide();
+			else
+				AchievementFrameFilterDropDown:Show();
+				AchievementFrameHeaderRightDDLInset:Show();
+			end
 		elseif ( achievementFunctions == COMPARISON_ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparisonContainer);
 			AchievementFrameComparisonContainerScrollBar:SetValue(0);

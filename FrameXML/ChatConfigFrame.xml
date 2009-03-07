@@ -9,7 +9,9 @@
 			<OnLoad>
 				getglobal(self:GetName().."Highlight"):SetVertexColor(0.11, 0.325, 0.48);
 			</OnLoad>
-			<OnClick function="ChatConfigCategory_OnClick"/>
+			<OnClick>
+				ChatConfigCategory_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 		<ButtonText name="$parentNormalText">
 			<Size>
@@ -85,7 +87,9 @@
 					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -196,7 +200,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick function="MessageTypeColor_OpenColorPicker"/>
+					<OnClick>
+						MessageTypeColor_OpenColorPicker(self, button, down);
+					</OnClick>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
@@ -255,7 +261,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick function="ChatUnitColor_OpenColorPicker"/>
+					<OnClick>
+						ChatUnitColor_OpenColorPicker(self, button, down);
+					</OnClick>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
@@ -313,8 +321,9 @@
 				PlaySound("UChatScrollButton");
 				ChatConfig_UpdateCombatTabs(self:GetID());
 			</OnClick>
-			<OnEnter function=""/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<ButtonText name="$parentText">
 			<Size>

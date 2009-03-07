@@ -201,13 +201,19 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Layer>
 			</Layers>				
 			<Scripts>
-				<OnLoad function="AchievementShield_OnLoad"/>
+				<OnLoad>
+					AchievementShield_OnLoad(self);
+				</OnLoad>
 			</Scripts>
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad function="AchievementAlertFrame_OnLoad"/>
-		<OnClick function="AchievementAlertFrame_OnClick"/>
+		<OnLoad>
+			AchievementAlertFrame_OnLoad(self);
+		</OnLoad>
+		<OnClick>
+			AchievementAlertFrame_OnClick(self, button, down);
+		</OnClick>
 	</Scripts>
 </Button>
 

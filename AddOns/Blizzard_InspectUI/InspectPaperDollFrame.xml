@@ -3,8 +3,12 @@
     <Script file="InspectPaperDollFrame.lua"/>
     <Button name="InspectPaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
         <Scripts>
-            <OnLoad function="InspectPaperDollItemSlotButton_OnLoad"/>
-            <OnEvent function="InspectPaperDollItemSlotButton_OnEvent"/>
+            <OnLoad>
+				InspectPaperDollItemSlotButton_OnLoad(self);
+			</OnLoad>
+            <OnEvent>
+				InspectPaperDollItemSlotButton_OnEvent(self, event, ...);
+			</OnEvent>
             <OnClick>
 				HandleModifiedItemClick(GetInventoryItemLink(InspectFrame.unit, self:GetID()));
 			</OnClick>
@@ -14,8 +18,13 @@
 					InspectPaperDollItemSlotButton_OnEnter(self);
 				end
 			</OnUpdate>
-            <OnEnter function="InspectPaperDollItemSlotButton_OnEnter"/>
-            <OnLeave function="GameTooltip_HideResetCursor"/>
+            <OnEnter>
+				InspectPaperDollItemSlotButton_OnEnter(self, motion);
+			</OnEnter>
+            <OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
         </Scripts>
 		<NormalTexture file="Interface\Buttons\UI-Quickslot2">
 			<Size>

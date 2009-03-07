@@ -6,8 +6,12 @@
 		<AbsDimension x="12" y="12"/>
 	</Size>
 	<Scripts>
-		<OnEnter function="BattlefieldMinimapUnit_OnEnter"/>
-		<OnLeave function="GameTooltip_Hide"/>
+		<OnEnter>
+			BattlefieldMinimapUnit_OnEnter(self, motion);
+		</OnEnter>
+		<OnLeave>
+			GameTooltip:Hide();
+		</OnLeave>
 		<OnMouseUp>
 			MapUnit_OnMouseUp(self, button, "BattlefieldMinimapRaid", "BattlefieldMinimapParty");
 		</OnMouseUp>

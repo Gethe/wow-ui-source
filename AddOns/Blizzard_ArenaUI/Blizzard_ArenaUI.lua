@@ -138,20 +138,39 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 		
 		local _, class = UnitClass(self.unit);
 		self.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
-		
-		ArenaEnemyFrame_UpdatePet(self, id, useCVars);
-	else
-		self:Hide();
 	end
 
 	ArenaEnemyFrames_UpdateVisible();
 end
 
-function ArenaEnemyFrame_OnEvent(self, event, arg1)
+function ArenaEnemyFrame_Lock(self)
+	self.healthbar:SetStatusBarColor(0.5, 0.5, 0.5);
+	self.healthbar.lockValues = true;
+	self.manabar:SetStatusBarColor(0.5, 0.5, 0.5);
+	self.manabar.lockValue = true;
+	self.hideStatusOnTooltip = true;
+end
+
+function ArenaEnemyFrame_Unlock(self)
+	self.healthbar.lockValues = false;
+	self.manabar.lockValues = false;
+	self.hideStatusOnTooltip = false;
+end
+
+function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 	if ( event == "ARENA_OPPONENT_UPDATE" and arg1 == self.unit ) then
-		ArenaEnemyFrame_UpdatePlayer(self);
-		UpdateArenaEnemyBackground();
-		UIParent_ManageFramePositions();
+		if ( arg2 == "seen" or arg2 == "destroyed") then
+			ArenaEnemyFrame_Unlock(self);
+			ArenaEnemyFrame_UpdatePlayer(self);
+			UpdateArenaEnemyBackground();
+			UIParent_ManageFramePositions();
+		elseif ( arg2 == "unseen" ) then
+			ArenaEnemyFrame_Lock(self);
+		elseif ( arg2 == "cleared" ) then
+			ArenaEnemyFrame_Unlock(self);
+			self:Hide();
+			ArenaEnemyFrames_UpdateVisible();
+		end
 	elseif ( event == "UNIT_PET" and arg1 == self.unit ) then
 		ArenaEnemyFrame_UpdatePet(self);
 	elseif ( event == "UNIT_NAME_UPDATE" and arg1 == self.unit ) then
@@ -172,7 +191,7 @@ function ArenaEnemyFrame_UpdatePet(self, id, useCVars)	--At some points, we need
 		showArenaEnemyPets = GetCVarBool("showArenaEnemyPets");
 	end
 	
-	if ( UnitIsConnected(unitFrame.unit) and UnitExists(petFrame.unit) and showArenaEnemyPets) then
+	if ( UnitExists(petFrame.unit) and showArenaEnemyPets) then
 		petFrame:Show();
 	else
 		petFrame:Hide();
@@ -181,14 +200,33 @@ function ArenaEnemyFrame_UpdatePet(self, id, useCVars)	--At some points, we need
 	UnitFrame_Update(petFrame);
 end
 
-function ArenaEnemyDropDown_Initialize (self)
-	local dropdown;
-	if ( UIDROPDOWNMENU_OPEN_MENU ) then
-		dropdown = UIDROPDOWNMENU_OPEN_MENU;
-	else
-		dropdown = self;
+function ArenaEnemyPetFrame_OnLoad(self)
+	local id = self:GetParent():GetID();
+	self:SetID(id);
+	self:SetParent(ArenaEnemyFrames);
+	ArenaEnemyFrame_UpdatePet(self, id, true);
+	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
+end
+
+function ArenaEnemyPetFrame_OnEvent(self, event, ...)
+	local arg1, arg2 = ...;
+	if ( event == "ARENA_OPPONENT_UPDATE" and arg1 == self.unit ) then
+		if ( arg2 == "seen" or arg2 == "destroyed") then
+			ArenaEnemyFrame_Unlock(self);
+			ArenaEnemyFrame_UpdatePet(self);
+			UpdateArenaEnemyBackground();
+		elseif ( arg2 == "unseen" ) then
+			ArenaEnemyFrame_Lock(self);
+		elseif ( arg2 == "cleared" ) then
+			ArenaEnemyFrame_Unlock(self);
+			self:Hide()
+		end
 	end
-	UnitPopup_ShowMenu(dropdown, "ARENAENEMY", "arena"..dropdown:GetParent():GetID());
+	UnitFrame_OnEvent(self, event, ...);
+end
+
+function ArenaEnemyDropDown_Initialize (self)
+	UnitPopup_ShowMenu(self, "ARENAENEMY", "arena"..self:GetParent():GetID());
 end
 
 function UpdateArenaEnemyBackground(force)
@@ -197,6 +235,8 @@ function UpdateArenaEnemyBackground(force)
 		local numOpps = GetNumArenaOpponents();
 		if ( numOpps > 0 ) then
 			ArenaEnemyBackground:SetPoint("BOTTOMLEFT", "ArenaEnemyFrame"..numOpps.."PetFrame", "BOTTOMLEFT", -15, -10);
+		else
+			ArenaEnemyBackground:Hide();
 		end
 	else
 		ArenaEnemyBackground:Hide();

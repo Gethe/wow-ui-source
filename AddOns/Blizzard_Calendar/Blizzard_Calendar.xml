@@ -1281,10 +1281,14 @@
 							<OnEscapePressed function="EditBox_ClearFocus"/>
 							<OnEditFocusLost function="CalendarCreateEventInviteEdit_OnEditFocusLost"/>
 							<OnEditFocusGained function="EditBox_HighlightText"/>
-							<OnCharComposition function="PlayerNameAutocomplete"/>
+							<OnCharComposition>
+								local isGuildEvent = CalendarEventGetCalendarType() == "GUILD_EVENT";
+								PlayerNameAutocomplete(self, text, false, isGuildEvent);
+							</OnCharComposition>
 							<OnChar>
 								if ( not self:IsInIMECompositionMode() ) then
-									PlayerNameAutocomplete(self, text);
+									local isGuildEvent = CalendarEventGetCalendarType() == "GUILD_EVENT";
+									PlayerNameAutocomplete(self, text, false, isGuildEvent);
 								end
 							</OnChar>
 						</Scripts>

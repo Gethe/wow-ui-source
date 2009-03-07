@@ -56,7 +56,9 @@
 					self:SetAlpha(0);
 				end
 			</OnLeave>
-			<OnEvent function="VoiceChatButton_OnEvent"/>
+			<OnEvent>
+				VoiceChatButton_OnEvent(self, event, ...);
+			</OnEvent>
 		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">

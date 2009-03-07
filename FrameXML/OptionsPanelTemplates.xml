@@ -33,7 +33,9 @@
 					GameTooltip:Show();
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -129,7 +131,9 @@
 					end
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
 			<Size>

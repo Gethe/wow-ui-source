@@ -61,7 +61,9 @@
 							GameTooltip:SetText(self.tooltip);
 						end
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentFlash">
@@ -96,7 +98,9 @@
 					GameTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Frame>
 	<Button name="WorldStateScoreColumnTemplate" enableMouse="true" virtual="true">
@@ -124,7 +128,9 @@
 				end
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Frame name="WorldStateScoreTemplate" virtual="true" hidden="true">
@@ -377,7 +383,9 @@
 							GameTooltip:SetText(self.tooltip);
 						end
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentName">
@@ -409,7 +417,9 @@
 							GameTooltip:Show();
 						end
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 					<OnMouseUp>
 						ScorePlayer_OnMouseUp(self, button);
 					</OnMouseUp>
@@ -495,7 +505,9 @@
 				PanelTemplates_TabResize(self, 0);
 				getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 30);
 			</OnShow>
-			<OnClick function="WorldStateScoreFrameTab_OnClick"/>
+			<OnClick>
+				WorldStateScoreFrameTab_OnClick(self, button, down);
+			</OnClick>
 		</Scripts>
 		<ButtonText name="$parentText">
 			<Anchors>

@@ -310,52 +310,6 @@
 			BonusActionButtonUp(10);
 		end
 	</Binding>
-<!--
-	<Binding name="ACTIONWINDOW1" joystick="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(ActionWindowOffset() + 1);
-		else
-			ActionButtonUp(ActionWindowOffset() + 1);
-		end
-	</Binding>
-	<Binding name="ACTIONWINDOW2" joystick="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(ActionWindowOffset() + 2);
-		else
-			ActionButtonUp(ActionWindowOffset() + 2);
-		end
-	</Binding>
-	<Binding name="ACTIONWINDOW3" joystick="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(ActionWindowOffset() + 3);
-		else
-			ActionButtonUp(ActionWindowOffset() + 3);
-		end
-	</Binding>
-	<Binding name="ACTIONWINDOW4" joystick="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			ActionButtonDown(ActionWindowOffset() + 4);
-		else
-			ActionButtonUp(ActionWindowOffset() + 4);
-		end
-	</Binding>
-	<Binding name="ACTIONWINDOWMOVE" joystick="true" angle="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			if ( pressure >= 0.25 and not ACTIONWINDOWMOVED ) then
-				ActionWindowMove(angle);
-				ACTIONWINDOWMOVED = true;
-			end
-		else
-			ACTIONWINDOWMOVED = false;
-		end
-	</Binding>
-	<Binding name="ACTIONWINDOWINCREMENT" joystick="true">
-		ActionWindowIncrement();
-	</Binding>
-	<Binding name="ACTIONWINDOWDECREMENT" joystick="true">
-		ActionWindowDecrement();
-	</Binding>
--->
 	<Binding name="ACTIONPAGE1">
 		ChangeActionBarPage(1);
 	</Binding>
@@ -870,36 +824,6 @@
 			MoveViewOutStop();
 		end
 	</Binding>
-	<!--
-	<Binding name="MOVEVIEWLEFT" joystick="true" pressure="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			MoveViewLeftStart(2 * pressure);
-		else
-			MoveViewLeftStop();
-		end
-	</Binding>
-	<Binding name="MOVEVIEWRIGHT" joystick="true" pressure="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			MoveViewRightStart(2 * pressure);
-		else
-			MoveViewRightStop();
-		end
-	</Binding>
-	<Binding name="MOVEVIEWUP" joystick="true" pressure="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			MoveViewUpStart(2 * pressure);
-		else
-			MoveViewUpStop();
-		end
-	</Binding>
-	<Binding name="MOVEVIEWDOWN" joystick="true" pressure="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			MoveViewDownStart(2 * pressure);
-		else
-			MoveViewDownStop();
-		end
-	</Binding>
-	-->
 	<Binding name="SETVIEW1">
 		SetView(1);
 	</Binding>

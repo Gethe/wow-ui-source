@@ -47,10 +47,18 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="QuestLogTitleButton_OnLoad"/>
-			<OnEvent function="QuestLogTitleButton_OnEvent"/>
-			<OnClick function="QuestLogTitleButton_OnClick"/>
-			<OnEnter function="QuestLogTitleButton_OnEnter"/>
+			<OnLoad>
+				QuestLogTitleButton_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				QuestLogTitleButton_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnClick>
+				QuestLogTitleButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				QuestLogTitleButton_OnEnter(self, motion);
+			</OnEnter>
 			<OnLeave>
 				if (self:GetID() ~= (QuestLogFrame.selectedButtonID - FauxScrollFrame_GetOffset(QuestLogListScrollFrame))) then
 					getglobal(self:GetName().."Tag"):SetTextColor(self.r, self.g, self.b);
