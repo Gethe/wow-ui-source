@@ -1037,7 +1037,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="GearManagerDialog" enableMouse="true" parent="PaperDollFrame" inherits="UIPanelDialogTemplate" hidden="true" framestrata="MEDIUM">
+	<Frame name="GearManagerDialog" enableMouse="true" parent="PaperDollFrame" inherits="UIPanelDialogTemplate" hidden="true" frameStrata="MEDIUM">
 		<Size x="261" y="155"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">

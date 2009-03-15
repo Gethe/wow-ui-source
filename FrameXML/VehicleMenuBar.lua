@@ -1008,25 +1008,30 @@ function SeatIndicator_Pulse(self, isPlayer)
 end
 
 function VehicleSeatIndicator_OnLoad(self)
-	--VehicleSeatIndicator_SetUpVehicle("Demolisher");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("PLAYER_GAINS_VEHICLE_DATA");
 	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
 	self:RegisterEvent("VEHICLE_PASSENGERS_CHANGED");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+	self:RegisterEvent("PLAYER_LOSES_VEHICLE_DATA");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 	UIDropDownMenu_Initialize( VehicleSeatIndicatorDropDown, VehicleSeatIndicatorDropDown_Initialize, "MENU");
 end
 
 function VehicleSeatIndicator_OnEvent(self, event, ...)
-	local arg1, _, _, _, _, indicatorType = ...;
+	local arg1, arg2, _, _, _, arg6 = ...;
 	if ( event == "UNIT_ENTERED_VEHICLE" and arg1 == "player" ) then
-		VehicleSeatIndicator_SetUpVehicle(indicatorType);
+		VehicleSeatIndicator_SetUpVehicle(arg6);
+	elseif ( event == "PLAYER_GAINS_VEHICLE_DATA" and arg1 == "player" ) then
+		VehicleSeatIndicator_SetUpVehicle(arg2);
 	elseif ( event == "UNIT_ENTERING_VEHICLE" and arg1 == "player" ) then
 		self.hasPulsedPlayer = false;
 	elseif ( event == "VEHICLE_PASSENGERS_CHANGED" ) then
 		VehicleSeatIndicator_Update();
-	elseif ( (event == "UNIT_EXITED_VEHICLE" and arg1 == "player") or (event == "PLAYER_ENTERING_WORLD") ) then
+	elseif ( (event == "UNIT_EXITED_VEHICLE" and arg1 == "player") or
+	(event == "PLAYER_ENTERING_WORLD") or
+	(event == "PLAYER_LOSES_VEHICLE_DATA" and arg1 == "player") ) then
 		VehicleSeatIndicator_UnloadTextures();
 	end
 end

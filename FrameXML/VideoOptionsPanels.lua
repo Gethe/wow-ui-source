@@ -315,7 +315,7 @@ function VideoOptionsResolutionPanelMultiSampleDropDown_OnLoad(self)
 	self.restart = true;
 
 	UIDropDownMenu_SetWidth(self, 160);
-	UIDropDownMenu_SetAnchor(self, -200, 23, "TOPRIGHT", "VideoOptionsResolutionPanelMultiSampleDropDownRight", "BOTTOMRIGHT");
+	UIDropDownMenu_SetAnchor(self, 0, 23, "TOPRIGHT", "VideoOptionsResolutionPanelMultiSampleDropDownRight", "BOTTOMRIGHT");
 	UIDropDownMenu_Initialize(self, VideoOptionsResolutionPanelMultiSampleDropDown_Initialize);
 	UIDropDownMenu_SetSelectedID(self, value);
 

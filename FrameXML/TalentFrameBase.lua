@@ -6,6 +6,9 @@ MAX_NUM_TALENTS = 40;
 PLAYER_TALENTS_PER_TIER = 5;
 PET_TALENTS_PER_TIER = 3;
 
+DEFAULT_TALENT_SPEC = "spec1";
+DEFAULT_TALENT_TAB = 1;
+
 TALENT_BUTTON_SIZE = 32;
 MAX_NUM_BRANCH_TEXTURES = 30;
 MAX_NUM_ARROW_TEXTURES = 30;
@@ -98,31 +101,27 @@ function TalentFrame_Update(TalentFrame)
 		TalentFrame.updateFunction();
 	end
 
-	local unspentPoints;
+	local talentFrameName = TalentFrame:GetName();
+	local selectedTab = PanelTemplates_GetSelectedTab(TalentFrame);
+	local preview = GetCVarBool("previewTalents");
+
+	-- get active talent group
 	local isActiveTalentGroup;
 	if ( TalentFrame.inspect ) then
-		unspentPoints = 0;
 		-- even though we have inspection data for more than one talent group, we're only showing one for now
 		isActiveTalentGroup = true;
 	else
-		unspentPoints = TalentFrame_UpdateTalentPoints(TalentFrame);
 		isActiveTalentGroup = TalentFrame.talentGroup == GetActiveTalentGroup(TalentFrame.inspect, TalentFrame.pet);
 	end
-
-	local preview = GetCVarBool("previewTalents");
-
 	-- Setup Frame
 	local base;
-	local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(TalentFrame.selectedTab, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
+	local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
 	if ( name ) then
 		base = "Interface\\TalentFrame\\"..background.."-";
 	else
 		-- temporary default for classes without talents poor guys
 		base = "Interface\\TalentFrame\\MageFire-";
 	end
-	
-	local talentFrameName = TalentFrame:GetName();
-
 	-- desaturate the background if this isn't the active talent group
 	local backgroundPiece = _G[talentFrameName.."BackgroundTopLeft"];
 	backgroundPiece:SetTexture(base.."TopLeft");
@@ -137,12 +136,13 @@ function TalentFrame_Update(TalentFrame)
 	backgroundPiece:SetTexture(base.."BottomRight");
 	SetDesaturation(backgroundPiece, not isActiveTalentGroup);
 
-	local numTalents = GetNumTalents(TalentFrame.selectedTab, TalentFrame.inspect, TalentFrame.pet);
+	local numTalents = GetNumTalents(selectedTab, TalentFrame.inspect, TalentFrame.pet);
 	-- Just a reminder error if there are more talents than available buttons
 	if ( numTalents > MAX_NUM_TALENTS ) then
 		message("Too many talents in talent frame!");
 	end
-
+	-- get unspent talent points
+	local unspentPoints = TalentFrame_UpdateTalentPoints(TalentFrame);
 	-- compute tab points spent if any
 	local tabPointsSpent;
 	if ( TalentFrame.pointsSpent and TalentFrame.previewPointsSpent ) then
@@ -161,7 +161,7 @@ function TalentFrame_Update(TalentFrame)
 		if ( i <= numTalents ) then
 			-- Set the button info
 			local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq, previewRank, meetsPreviewPrereq =
-				GetTalentInfo(TalentFrame.selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
+				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
 			if ( name ) then
 				local displayRank;
 				if ( preview ) then
@@ -193,7 +193,7 @@ function TalentFrame_Update(TalentFrame)
 				-- Talent must meet prereqs or the player must have no points to spend
 				local prereqsSet =
 					TalentFrame_SetPrereqs(TalentFrame, tier, column, forceDesaturated, tierUnlocked, preview,
-					GetTalentPrereqs(TalentFrame.selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
+					GetTalentPrereqs(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
 				if ( prereqsSet and ((preview and meetsPreviewPrereq) or (not preview and meetsPrereq)) ) then
 					SetItemButtonDesaturated(button, nil);
 

@@ -26,13 +26,13 @@ local FRAME_INDEX = BOUNDING_INDEX + 4;
 -- Create a new set, possibly re-using an existing array
 local function RectSet_Create(l, r, b, t, TTL, S)
     if (S) then
-        S[1] = false;
+        S[1] = "new";
         S[2] = tonumber(TTL) or 0; -- ttl
         S[3] = 1; -- count
         S[4] = l; S[5] = r; S[6] = b; S[7] = t;
         S[8] = l; S[9] = r; S[10] = b; S[11] = t;
     else
-        S = { false, tonumber(TTL) or 0, 1, l, r, b, t,  l, r, b, t }
+        S = { "new", tonumber(TTL) or 0, 1, l, r, b, t,  l, r, b, t }
     end
     return S;
 end
@@ -98,7 +98,7 @@ local function GetScreenFrameRect(frame)
     local es = frame:GetEffectiveScale();
     local l, b, w, h = frame:GetRect();
     if (not (l and b)) then return 0, 0, 0, 0; end
-    return l * es, b * es, (l + w) * es, (b + h) * es;
+    return l * es, (l + w) * es, b * es, (b + h) * es;
 end
 
 ---------------------------------------------------------------------------
@@ -251,7 +251,7 @@ local function SecureHoverDriverManager_OnAttributeChanged(self, name, value)
     end
 end
 
-LOCAL_UpdateFrame:SetScript("OnAttributeCHanged", SecureHoverDriverManager_OnAttributeChanged);
+LOCAL_UpdateFrame:SetScript("OnAttributeChanged", SecureHoverDriverManager_OnAttributeChanged);
 
 -- Register a frame for auto-hiding
 --

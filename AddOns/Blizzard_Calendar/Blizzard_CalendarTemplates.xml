@@ -99,14 +99,14 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture name="$parentTop" file="Interface\Calendar\CalendarShadows">
-							<Size x="91" y="45.5"/>
+							<Size x="91" y="45"/>
 							<Anchors>
 								<Anchor point="TOP"/>
 							</Anchors>
 							<Color r="1.0" g="1.0" b="1.0" a="0.9"/>
 						</Texture>
 						<Texture name="$parentBottom" file="Interface\Calendar\CalendarShadows">
-							<Size x="91" y="45.5"/>
+							<Size x="91" y="46"/>
 							<Anchors>
 								<Anchor point="BOTTOM"/>
 							</Anchors>

@@ -422,7 +422,7 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 		end
 
 		if ( IsThreatWarningEnabled() ) then
-			if (status > 0) then
+			if (status and status > 0) then
 				indicator:SetVertexColor(GetThreatStatusColor(status));
 				indicator:Show();
 			else

@@ -77,6 +77,7 @@ UIChildWindows = {
 	"GuildInfoFrame",
 	"PVPTeamDetails",
 	"GuildBankPopupFrame",
+	"GearManagerDialog",
 };
 
 UISpecialFrames = {
@@ -1039,7 +1040,26 @@ function UIParent_OnEvent(self, event, ...)
 
 	-- Display instance reset info
 	if ( event == "RAID_INSTANCE_WELCOME" ) then
-		local message = format(RAID_INSTANCE_WELCOME, arg1, SecondsToTime(arg2, nil, 1));
+		local dungeonName = arg1;
+		local lockExpireTime = arg2;
+		local locked = arg3;
+		local extended = arg4;
+		local message;
+
+		if ( locked == 0 ) then
+			message = format(RAID_INSTANCE_WELCOME, dungeonName, SecondsToTime(lockExpireTime, nil, 1))
+		else
+			if ( lockExpireTime == 0 ) then
+				message = format(RAID_INSTANCE_WELCOME_EXTENDED, dungeonName);
+			else
+				if ( extended == 0 ) then
+					message = format(RAID_INSTANCE_WELCOME_LOCKED, dungeonName, SecondsToTime(lockExpireTime, nil, 1));
+				else
+					message = format(RAID_INSTANCE_WELCOME_LOCKED_EXTENDED, dungeonName, SecondsToTime(lockExpireTime, nil, 1));
+				end
+			end
+		end
+
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
 		return;

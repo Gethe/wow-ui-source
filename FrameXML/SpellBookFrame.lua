@@ -6,6 +6,11 @@ BOOKTYPE_SPELL = "spell";
 BOOKTYPE_PET = "pet";
 SPELLBOOK_PAGENUMBERS = {};
 
+local ceil = ceil;
+local strlen = strlen;
+local tinsert = tinsert;
+local tremove = tremove;
+
 function ToggleSpellBook(bookType)
 	if ( not HasPetSpells() and bookType == BOOKTYPE_PET ) then
 		return;
@@ -56,7 +61,7 @@ function SpellBookFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
 		local arg1 = ...;
-		local flashFrame = getglobal("SpellBookSkillLineTab"..arg1.."Flash");
+		local flashFrame = _G["SpellBookSkillLineTab"..arg1.."Flash"];
 		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 			return;
 		else
@@ -99,7 +104,7 @@ function SpellBookFrame_Update(showing)
 	local name, texture, offset, numSpells;
 	local skillLineTab;
 	for i=1, MAX_SKILLLINE_TABS do
-		skillLineTab = getglobal("SpellBookSkillLineTab"..i);
+		skillLineTab = _G["SpellBookSkillLineTab"..i];
 		if ( i <= numSkillLineTabs and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
 			name, texture = GetSpellTabInfo(i);
 			skillLineTab:SetNormalTexture(texture);
@@ -113,6 +118,7 @@ function SpellBookFrame_Update(showing)
 				skillLineTab:SetChecked(nil);
 			end
 		else
+			_G["SpellBookSkillLineTab"..i.."Flash"]:Hide();
 			skillLineTab:Hide();
 		end
 	end
@@ -146,11 +152,11 @@ end
 
 function SpellBookFrame_HideSpells ()
 	for i = 1, SPELLS_PER_PAGE do
-		getglobal("SpellButton" .. i):Hide();
+		_G["SpellButton" .. i]:Hide();
 	end
 	
 	for i = 1, MAX_SKILLLINE_TABS do
-		getglobal("SpellBookSkillLineTab" .. i):Hide();
+		_G["SpellBookSkillLineTab" .. i]:Hide();
 	end
 	
 	SpellBookPrevPageButton:Hide();
@@ -160,7 +166,7 @@ end
 
 function SpellBookFrame_ShowSpells ()
 	for i = 1, SPELLS_PER_PAGE do
-		getglobal("SpellButton" .. i):Show();
+		_G["SpellButton" .. i]:Show();
 	end
 	
 	SpellBookPrevPageButton:Show();
@@ -224,10 +230,10 @@ function SpellBookFrame_SetTabType(tabButton, bookType, token)
 		tabButton.binding = "TOGGLESPELLBOOK";
 	elseif ( bookType == BOOKTYPE_PET ) then
 		tabButton.bookType = BOOKTYPE_PET;
-		tabButton:SetText(getglobal("PET_TYPE_"..token));
+		tabButton:SetText(_G["PET_TYPE_"..token]);
 		tabButton:SetFrameLevel(SpellBookFrame:GetFrameLevel() + 1);
 		tabButton.binding = "TOGGLEPETBOOK";
-		SpellBookFrame.petTitle = getglobal("PET_TYPE_"..token);
+		SpellBookFrame.petTitle = _G["PET_TYPE_"..token];
 	else
 		tabButton.bookType = INSCRIPTION;
 		tabButton:SetText(GLYPHS);
@@ -271,7 +277,7 @@ function SpellBookFrame_OnHide(self)
 	UIFrameFlashRemoveFrame(SpellBookTabFlashFrame);
 	-- Hide all the flashing textures
 	for i=1, MAX_SKILLLINE_TABS do
-		getglobal("SpellBookSkillLineTab"..i.."Flash"):Hide();
+		_G["SpellBookSkillLineTab"..i.."Flash"]:Hide();
 	end
 
 	-- Hide multibar slots
@@ -377,7 +383,7 @@ end
 
 function SpellButton_OnDrag(self) 
 	local id = SpellBook_GetSpellID(self:GetID());
-	if ( id > MAX_SPELLS or not getglobal(self:GetName().."IconTexture"):IsShown() ) then
+	if ( id > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() ) then
 		return;
 	end
 	self:SetChecked(0);
@@ -409,11 +415,11 @@ function SpellButton_UpdateButton(self)
 
 	local id, displayID = SpellBook_GetSpellID(self:GetID());
 	local name = self:GetName();
-	local iconTexture = getglobal(name.."IconTexture");
-	local spellString = getglobal(name.."SpellName");
-	local subSpellString = getglobal(name.."SubSpellName");
-	local cooldown = getglobal(name.."Cooldown");
-	local autoCastableTexture = getglobal(name.."AutoCastable");
+	local iconTexture = _G[name.."IconTexture"];
+	local spellString = _G[name.."SpellName"];
+	local subSpellString = _G[name.."SubSpellName"];
+	local cooldown = _G[name.."Cooldown"];
+	local autoCastableTexture = _G[name.."AutoCastable"];
 
 	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and (not displayID or displayID > (offset + numSpells)) ) then
 		self:Disable();
@@ -425,14 +431,15 @@ function SpellButton_UpdateButton(self)
 		SpellBook_ReleaseAutoCastShine(self.shine)
 		self.shine = nil;
 		self:SetChecked(0);
-		getglobal(name.."NormalTexture"):SetVertexColor(1.0, 1.0, 1.0);
+		_G[name.."NormalTexture"]:SetVertexColor(1.0, 1.0, 1.0);
 		return;
 	else
 		self:Enable();
 	end
+
 	local texture = GetSpellTexture(id, SpellBookFrame.bookType);
-	local highlightTexture = getglobal(name.."Highlight");
-	local normalTexture = getglobal(name.."NormalTexture");
+	local highlightTexture = _G[name.."Highlight"];
+	local normalTexture = _G[name.."NormalTexture"];
 	-- If no spell, hide everything and return
 	if ( not texture or (strlen(texture) == 0) ) then
 		iconTexture:Hide();
@@ -440,14 +447,14 @@ function SpellButton_UpdateButton(self)
 		subSpellString:Hide();
 		cooldown:Hide();
 		autoCastableTexture:Hide();
-		SpellBook_ReleaseAutoCastShine(self.shine)
+		SpellBook_ReleaseAutoCastShine(self.shine);
 		self.shine = nil;
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
 		self:SetChecked(0);
 		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
 		return;
 	end
-	
+
 	local start, duration, enable = GetSpellCooldown(id, SpellBookFrame.bookType);
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 	if ( enable == 1 ) then
@@ -557,7 +564,7 @@ function SpellBookSkillLineTab_OnClick(self, id)
 	end
 	-- Stop tab flashing
 	if ( self ) then
-		local tabFlash = getglobal(self:GetName().."Flash");
+		local tabFlash = _G[self:GetName().."Flash"];
 		if ( tabFlash ) then
 			tabFlash:Hide();
 		end

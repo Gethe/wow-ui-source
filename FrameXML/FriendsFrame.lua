@@ -1037,6 +1037,7 @@ function GuildControlPopupFrame_Initialize()
 	if ( GuildControlPopupFrame.initialized ) then
 		return;
 	end
+	UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
 	GuildControlSetRank(1);
 	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, 1);
 	UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, GuildControlGetRankName(1));
@@ -1049,11 +1050,12 @@ function GuildControlPopupFrame_Initialize()
 end
 
 function GuildControlPopupFrame_OnShow()
+	FriendsFrame:SetAttribute("UIPanelLayout-defined", nil);
 	FriendsFrame.guildControlShow = 1;
 	GuildControlPopupAcceptButton:Disable();
 	-- Update popup
 	GuildControlPopupframe_Update();
-
+	
 	UIPanelWindows["FriendsFrame"].width = FriendsFrame:GetWidth() + GuildControlPopupFrame:GetWidth();
 	UpdateUIPanelPositions(FriendsFrame);
 	--GuildControlPopupFrame:RegisterEvent("GUILD_ROSTER_UPDATE"); --It was decided that having a risk of conflict when two people are editing the guild permissions at once is better than resetting whenever someone joins the guild or changes ranks.
@@ -1078,6 +1080,7 @@ function GuildControlPopupFrame_OnEvent (self, event, ...)
 end
 
 function GuildControlPopupFrame_OnHide()
+	FriendsFrame:SetAttribute("UIPanelLayout-defined", nil);
 	FriendsFrame.guildControlShow = 0;
 
 	UIPanelWindows["FriendsFrame"].width = FriendsFrame:GetWidth();
@@ -1264,7 +1267,6 @@ function GuildControlPopupAcceptButton_OnClick()
 end
 
 function GuildControlPopupFrameDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
 	UIDropDownMenu_SetWidth(self, 160);
 	UIDropDownMenu_SetButtonWidth(self, 54);
 	UIDropDownMenu_JustifyText(GuildControlPopupFrameDropDown, "LEFT");
@@ -1272,9 +1274,10 @@ end
 
 function GuildControlPopupFrameDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
-	for i=1, GuildControlGetNumRanks(), 1 do
+	for i=1, GuildControlGetNumRanks() do
 		info.text = GuildControlGetRankName(i);
 		info.func = GuildControlPopupFrameDropDownButton_OnClick;
+		info.checked = nil;
 		UIDropDownMenu_AddButton(info);
 	end
 end

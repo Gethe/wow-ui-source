@@ -13,10 +13,6 @@ CONTAINER_OFFSET_X = 0;
 CONTAINER_SCALE = 0.75;
 BACKPACK_HEIGHT = 240;
 
-BACKPACK_CONTAINER = 0;
-BANK_CONTAINER = -1;
-KEYRING_CONTAINER = -2;
-
 function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("BAG_OPEN");
 	self:RegisterEvent("BAG_CLOSED");

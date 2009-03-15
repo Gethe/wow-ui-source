@@ -476,9 +476,13 @@ function WorldStateScoreFrame_Update()
 			WorldStateScoreFrameHonorGainedText:SetText(SCORE_RATING_CHANGE);
 			WorldStateScoreFrameHonorGained.sortType = "team";
 			WorldStateScoreFrameHonorGained.tooltip = RATING_CHANGE_TOOLTIP;
+			WorldStateScoreFrameTeamSkillText:SetText(SCORE_TEAM_SKILL);
+			WorldStateScoreFrameTeamSkill.sortType = "team";
+			WorldStateScoreFrameTeamSkill.tooltip = TEAM_SKILL_TOOLTIP;
 			WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameTeam", "RIGHT", -10, 0);
 		else
 			WorldStateScoreFrameHonorGained:Hide();
+			WorldStateScoreFrameTeamSkill:Hide();
 			WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameName", "RIGHT", 4, 0);
 		end
 	else
@@ -488,6 +492,7 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameTab3:Show();
 		
 		WorldStateScoreFrameTeam:Hide();
+		WorldStateScoreFrameTeamSkill:Hide();
 		WorldStateScoreFrameDeaths:Show();
 		WorldStateScoreFrameHK:Show();
 		WorldStateScoreFrameHonorGained.sortType = "cp";
@@ -518,10 +523,9 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameTimer:Show();
 
 		-- Show winner
-		local teamName, teamRating, newTeamRating;
 		if ( isArena ) then
 			if ( isRegistered ) then
-				teamName, teamRating, newTeamRating = GetBattlefieldTeamInfo(battlefieldWinner);
+				local teamName = GetBattlefieldTeamInfo(battlefieldWinner);
 				if ( teamName ) then
 					WorldStateScoreWinnerFrameText:SetFormattedText(VICTORY_TEXT_ARENA_WINS, teamName);			
 				else
@@ -566,9 +570,9 @@ function WorldStateScoreFrame_Update()
 	-- Update buttons
 	local numScores = GetNumBattlefieldScores();
 
-	local scoreButton, buttonIcon, buttonClass, buttonName, buttonNameText, nameButton, buttonKills, buttonKillingBlows, buttonDeaths, buttonHonorGained, buttonFaction, columnButtonText, columnButtonIcon, buttonFactionLeft, buttonFactionRight, buttonDamage, buttonHealing, buttonTeam;
+	local scoreButton, buttonIcon, buttonClass, buttonName, buttonNameText, nameButton, buttonKills, buttonKillingBlows, buttonDeaths, buttonHonorGained, buttonTeamSkill, buttonFaction, columnButtonText, columnButtonIcon, buttonFactionLeft, buttonFactionRight, buttonDamage, buttonHealing, buttonTeam;
 	local name, kills, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone;
-	local teamName, teamRating, newTeamRating;
+	local teamName, teamRating, newTeamRating, teamSkill;
 	local index;
 	local columnData;
 
@@ -615,6 +619,11 @@ function WorldStateScoreFrame_Update()
 		end
 	end
 	
+	if ( isArena and isRegistered ) then
+		WorldStateScoreFrameTeamSkill:SetPoint("LEFT", honorGainedAnchorFrame, "RIGHT", -5, 0);
+		honorGainedAnchorFrame = "WorldStateScoreFrameTeamSkill";
+	end
+	
 	-- Anchor the bonus honor gained to the last column shown
 	WorldStateScoreFrameHonorGained:SetPoint("LEFT", honorGainedAnchorFrame, "RIGHT", -5, 0);
 	
@@ -624,13 +633,13 @@ function WorldStateScoreFrame_Update()
 
 	if ( isArena ) then
 		for i=0, 1 do
-			teamName, teamRating, newTeamRating = GetBattlefieldTeamInfo(i);
+			teamName, teamRating = GetBattlefieldTeamInfo(i);
 			if ( teamRating < 0 ) then
 				teamDataFailed = 1;
 			end
 		end
 		if ( isRegistered ) then
-			teamName, teamRating, newTeamRating = GetBattlefieldTeamInfo(battlefieldWinner);
+			teamName = GetBattlefieldTeamInfo(battlefieldWinner);
 			if ( not teamName ) then
 				teamDataFailed = 1;
 			end
@@ -656,6 +665,7 @@ function WorldStateScoreFrame_Update()
 			buttonDeaths = getglobal("WorldStateScoreButton"..i.."Deaths");
 			buttonDamage = getglobal("WorldStateScoreButton"..i.."Damage");
 			buttonHealing = getglobal("WorldStateScoreButton"..i.."Healing");
+			buttonTeamSkill = getglobal("WorldStateScoreButton"..i.."TeamSkill");
 			buttonHonorGained = getglobal("WorldStateScoreButton"..i.."HonorGained");
 			buttonFactionLeft = getglobal("WorldStateScoreButton"..i.."FactionLeft");
 			buttonFactionRight = getglobal("WorldStateScoreButton"..i.."FactionRight");
@@ -683,11 +693,13 @@ function WorldStateScoreFrame_Update()
 			buttonKillingBlows:SetText(killingBlows);
 			buttonDamage:SetText(damageDone);
 			buttonHealing:SetText(healingDone);
-			teamName, teamRating, newTeamRating = GetBattlefieldTeamInfo(faction);
+			teamName, teamRating, newTeamRating, teamSkill = GetBattlefieldTeamInfo(faction);
 			if ( isArena ) then
 				if ( isRegistered ) then
 					buttonTeam:SetText(teamName);
 					buttonTeam:Show();
+					buttonTeamSkill:SetText(teamSkill);
+					buttonTeamSkill:Show();
 					if ( teamDataFailed ) then
 						buttonHonorGained:SetText("-------");
 					else
@@ -695,6 +707,7 @@ function WorldStateScoreFrame_Update()
 					end
 					buttonHonorGained:Show();
 				else
+					buttonTeamSkill:Hide();
 					buttonHonorGained:Hide();
 					buttonTeam:Hide();
 				end
@@ -705,6 +718,7 @@ function WorldStateScoreFrame_Update()
 				buttonDeaths:SetText(deaths);
 				buttonHonorGained:SetText(honorGained);
 				buttonTeam:Hide();
+				buttonTeamSkill:Hide();
 				buttonKills:Show();
 				buttonDeaths:Show();
 				buttonHonorGained:Show();
@@ -824,7 +838,7 @@ function WorldStateScoreFrame_Resize(width)
 		if ( isArena ) then
 			columns = 3;
 			if ( isRegistered ) then
-				columns = 4;
+				columns = 5;
 				width = width + WorldStateScoreFrameTeam:GetWidth();
 			else
 				width = width + 43;
@@ -849,10 +863,11 @@ function WorldStateScoreFrame_Resize(width)
 	WorldStateScoreScrollFrame:SetWidth(WorldStateScoreFrame.scrollBarButtonWidth);
 
 	-- Position Column data horizontally
-	local buttonTeam, buttonKills, buttonKillingBlows, buttonDeaths, buttonDamage, buttonHealing, buttonHonorGained, buttonReturnedIcon, buttonCapturedIcon;
+	local buttonTeam, buttonTeamSkill, buttonKills, buttonKillingBlows, buttonDeaths, buttonDamage, buttonHealing, buttonHonorGained, buttonReturnedIcon, buttonCapturedIcon;
 	for i=1, MAX_WORLDSTATE_SCORE_BUTTONS do
 		if ( isRegistered ) then
 			buttonTeam = getglobal("WorldStateScoreButton"..i.."Team");
+			buttonTeamSkill = getglobal("WorldStateScoreButton"..i.."TeamSkill");
 		end
 		
 		buttonKills = getglobal("WorldStateScoreButton"..i.."HonorableKills");
@@ -864,6 +879,7 @@ function WorldStateScoreFrame_Resize(width)
 		if ( i == 1 ) then
 			if ( isRegistered ) then
 				buttonTeam:SetPoint("LEFT", "WorldStateScoreFrameTeam", "LEFT", 0, WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET);
+				buttonTeamSkill:SetPoint("CENTER", "WorldStateScoreFrameTeamSkill", "CENTER", 0, WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET);
 			end
 			buttonKills:SetPoint("CENTER", "WorldStateScoreFrameHK", "CENTER", 0, WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET);
 			buttonKillingBlows:SetPoint("CENTER", "WorldStateScoreFrameKB", "CENTER", 0, WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET);
@@ -877,6 +893,7 @@ function WorldStateScoreFrame_Resize(width)
 		else
 			if ( isRegistered ) then
 				buttonTeam:SetPoint("LEFT", "WorldStateScoreButton"..(i-1).."Team", "LEFT", 0,  -16);
+				buttonTeamSkill:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."TeamSkill", "CENTER", 0, -16);
 			end
 			buttonKills:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorableKills", "CENTER", 0, -16);
 			buttonKillingBlows:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."KillingBlows", "CENTER", 0, -16);

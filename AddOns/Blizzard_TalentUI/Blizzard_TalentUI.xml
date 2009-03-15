@@ -156,7 +156,7 @@
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="-17"/>
+								<AbsDimension x="0" y="-18"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -253,7 +253,7 @@
 					<OnClick function="PlayerTalentFrameActivateButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Frame name="PlayerTalentFrameUnspentPointsBar">
+			<Frame name="PlayerTalentFramePointsBar">
 				<Size x="331" y="26"/>
 				<Anchors>
 					<Anchor point="LEFT">
@@ -313,7 +313,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString name="PlayerTalentFrameSpentPointsText" inherits="GameFontNormalSmall" justifyV="CENTER" justifyH="LEFT">
+						<FontString name="PlayerTalentFrameSpentPointsText" inherits="GameFontNormalSmall" justifyH="LEFT">
 							<Size x="0" y="15"/>
 							<Anchors>
 								<Anchor point="LEFT">
@@ -321,7 +321,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="PlayerTalentFrameTalentPointsText" inherits="GameFontNormalSmall" justifyV="CENTER" justifyH="RIGHT">
+						<FontString name="PlayerTalentFrameTalentPointsText" inherits="GameFontNormalSmall" justifyH="RIGHT">
 							<Size x="0" y="15"/>
 							<Anchors>
 								<Anchor point="RIGHT">
@@ -431,7 +431,7 @@
 							<AbsDimension x="-65" y="-77"/>
 						</Offset>
 					</Anchor>
-					<Anchor point="BOTTOM" relativeTo="PlayerTalentFrameUnspentPointsBar" relativePoint="TOP">
+					<Anchor point="BOTTOM" relativeTo="PlayerTalentFramePointsBar" relativePoint="TOP">
 						<Offset x="0" y="0"/>
 					</Anchor>
 				</Anchors>
@@ -507,6 +507,14 @@
 				<Frames>
 					<Frame name="PlayerTalentFrameActiveTalentGroupFrame" hidden="true">
 						<Size x="0" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="-2" y="4"/>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset x="2" y="-4"/>
+							</Anchor>
+						</Anchors>
 						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 							<BorderColor r="1.0" g="0.82" b="0.0" a="1.0"/>
 							<Color r="0.0" g="0.0" b="0.0" a="0.0"/>
@@ -517,14 +525,6 @@
 								<AbsValue val="16"/>
 							</TileSize>
 						</Backdrop>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="-2" y="4"/>
-							</Anchor>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset x="2" y="-4"/>
-							</Anchor>
-						</Anchors>
 					</Frame>
 				</Frames>
 				<ScrollChild>

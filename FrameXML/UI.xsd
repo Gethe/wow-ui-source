@@ -512,6 +512,7 @@
 				<xs:attribute name="maxValue" type="xs:float"/>
 				<xs:attribute name="defaultValue" type="xs:float"/>
 				<xs:attribute name="orientation" type="ui:ORIENTATION" default="HORIZONTAL"/>
+				<xs:attribute name="rotatesTexture" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -825,10 +826,10 @@
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
 		<xs:attribute name="startDelay" type="xs:float" default="0.0"/>
 		<xs:attribute name="endDelay" type="xs:float" default="0.0"/>
-		<xs:attribute name="duration" type="xs:float" use="required"/>
+		<xs:attribute name="duration" type="xs:float"/>
 		<xs:attribute name="maxFramerate" type="xs:float"/>
 		<xs:attribute name="smoothing" type="ANIMSMOOTHTYPE" default="NONE"/>
-		<xs:attribute name="order" type="AnimOrderType" default="1"/>
+		<xs:attribute name="order" type="AnimOrderType"/>
 		<xs:attribute name="parentKey" type="xs:string"/>
 	</xs:complexType>
 	<xs:element name="Animation" type="AnimationType"/>

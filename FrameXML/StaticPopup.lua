@@ -1496,7 +1496,7 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	maxLetters = 12,
+	maxLetters = 12 + 1 + 64,
 	OnAccept = function(self)
 		AddFriend(self.editBox:GetText());
 	end,
@@ -2162,7 +2162,7 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 		CancelSummon();
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( UnitAffectingCombat("player") ) then
+		if ( UnitAffectingCombat("player") or (not PlayerCanPerformActions()) ) then
 			self.button1:Disable();
 		else
 			self.button1:Enable();

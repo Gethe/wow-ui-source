@@ -4,12 +4,12 @@ MAX_TRADE_SKILL_REAGENTS = 8;
 TRADE_SKILL_HEIGHT = 16;
 TRADE_SKILL_TEXT_WIDTH = 275;
 
-TradeSkillTypeSuffix = {
-["optimal"] = " [+++]",
-["medium"] = " [++]",
-["easy"] = " [+]",
-["trivial"] = "", 
-["header"] = "",
+TradeSkillTypePrefix = {
+["optimal"] = " [+++] ",
+["medium"] = " [++] ",
+["easy"] = " [+] ",
+["trivial"] = " ", 
+["header"] = " ",
 }
 
 TradeSkillTypeColor = { };
@@ -54,6 +54,7 @@ end
 
 function TradeSkillFrame_OnLoad(self)
 	self:RegisterEvent("TRADE_SKILL_UPDATE");
+	self:RegisterEvent("TRADE_SKILL_FILTER_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("UPDATE_TRADESKILL_RECAST");
 end
@@ -62,10 +63,10 @@ function TradeSkillFrame_OnEvent(self, event, ...)
 	if ( not TradeSkillFrame:IsShown() ) then
 		return;
 	end
-	if ( event == "TRADE_SKILL_UPDATE" ) then
+	if ( event == "TRADE_SKILL_UPDATE" or event == "TRADE_SKILL_FILTER_UPDATE" ) then
 		TradeSkillCreateButton:Disable();
 		TradeSkillCreateAllButton:Disable();
-		if ( GetTradeSkillSelectionIndex() > 1 and GetTradeSkillSelectionIndex() <= GetNumTradeSkills() ) then
+		if ( (event ~= "TRADE_SKILL_FILTER_UPDATE") and (GetTradeSkillSelectionIndex() > 1) and (GetTradeSkillSelectionIndex() <= GetNumTradeSkills()) ) then
 			TradeSkillFrame_SetSelection(GetTradeSkillSelectionIndex());
 		else
 			TradeSkillFrame_SetSelection(GetFirstTradeSkill());
@@ -133,6 +134,8 @@ function TradeSkillFrame_Update()
 	local skillName, skillType, numAvailable, isExpanded, altVerb;
 	local skillIndex, skillButton, skillButtonText, skillButtonCount;
 	local nameWidth, countWidth;
+	
+	local skillNamePrefix = " ";
 	for i=1, TRADE_SKILLS_DISPLAYED, 1 do
 		skillIndex = i + skillOffset;
 		skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(skillIndex);
@@ -155,8 +158,8 @@ function TradeSkillFrame_Update()
 				skillButton.b = color.b;
 			end
 			
-			if ( ENABLE_COLORBLIND_MODE == "1" and skillName ) then
-				skillName = skillName .. (TradeSkillTypeSuffix[skillType] or "");
+			if ( ENABLE_COLORBLIND_MODE == "1" ) then
+				skillNamePrefix = TradeSkillTypePrefix[skillType] or " ";
 			end
 			
 			skillButton:SetID(skillIndex);
@@ -180,11 +183,11 @@ function TradeSkillFrame_Update()
 				skillButton:SetNormalTexture("");
 				getglobal("TradeSkillSkill"..i.."Highlight"):SetTexture("");
 				if ( numAvailable <= 0 ) then
-					skillButton:SetText(" "..skillName);
+					skillButton:SetText(skillNamePrefix..skillName);
 					skillButtonText:SetWidth(TRADE_SKILL_TEXT_WIDTH);
-					skillButtonCount:SetText("");
+					skillButtonCount:SetText(skillCountPrefix);
 				else
-					skillName = " "..skillName;
+					skillName = skillNamePrefix..skillName;
 					skillButtonCount:SetText("["..numAvailable.."]");
 					TradeSkillFrameDummyString:SetText(skillName);
 					nameWidth = TradeSkillFrameDummyString:GetWidth();

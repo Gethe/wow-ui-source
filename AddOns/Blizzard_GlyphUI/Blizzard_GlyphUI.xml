@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
-	<Script file="GlyphFrame.lua"/>
+	<Script file="Blizzard_GlyphUI.lua"/>
+
 	<Button name="GlyphTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="72" y="72"/>
@@ -90,6 +91,20 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</OnUpdate>
 		</Scripts>
 	</Button>
+
+	<Texture name="GlyphSparkleTexture" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true" virtual="true">
+		<Size x="13" y="13"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup name="$parentAnimGroup" parentKey="animGroup">
+				<Translation name="$parentTranslate" parentKey="translate"/>
+			</AnimationGroup>
+		</Animations>
+		<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+	</Texture>
+
 	<Frame name="GlyphFrame" hidden="true">
 		<Size x="384" y="512"/>
 		<Anchors>
@@ -112,28 +127,35 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<FontString name="$parentTitleText" inherits="GameFontNormal" text="GLYPHS">
 					<Anchors>
 						<Anchor point="TOP">
-							<Offset x="0" y="-17"/>
+							<Offset x="0" y="-18"/>
 						</Anchor>
 					</Anchors>
 				</FontString>	
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentGlow" file="Interface\Spellbook\UI-GlyphFrame-Glow" hidden="true">
+				<Texture name="$parentGlow" parentKey="glow" file="Interface\Spellbook\UI-GlyphFrame-Glow" hidden="true">
 					<Size x="352" y="441"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="-9" y="-38"/>
 						</Anchor>
 					</Anchors>
+					<Animations>
+						<AnimationGroup name="$parentPulse" parentKey="pulse">
+							<Alpha name="$parentIn" change="1" duration="0.1"/>
+							<Alpha name="$parentOut" change="-1" duration="1.5"/>
+							<Scripts>
+								<OnStop>
+									self:GetParent():Hide();
+								</OnStop>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
 					<TexCoords left="0" right="0.6875" top="0" bottom="0.861328125"/>
-				</Texture>
-				<Texture name="$parentSparkle" inherits="SparkleTextureNormal">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset x="-12" y="17"/>
-						</Anchor>
-					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="0.0"/>
 				</Texture>
 			</Layer>
 		</Layers>

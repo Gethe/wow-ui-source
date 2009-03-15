@@ -26,7 +26,7 @@ CALENDAR_INVITETYPE_SIGNUP = 2;
 
 -- static popups
 StaticPopupDialogs["CALENDAR_DELETE_EVENT"] = {
-	text = CALENDAR_DELETE_EVENT_CONFIRM,
+	text = "%s",
 	button1 = OKAY,
 	button2 = CANCEL,
 	whileDead = 1,
@@ -227,7 +227,7 @@ local DARKDAY_TOP_TCOORDS = {
 		left	= 0.0,
 		right	= 90 / 512,
 		top		= 180 / 256,
-		bottom	= 225 / 256,
+		bottom	= 225 / 256 - 0.001,	-- fudge factor to prevent texture seams
 	},
 
 	-- next 3 are same as DARKDAY_BOTTOM_TCOORDS (blank, left, right--no difference between top & bottom)
@@ -360,13 +360,13 @@ local DARKDAY_BOTTOM_TCOORDS = {
 	[DARKFLAG_NEXTMONTH_BOTTOMLEFT] = {
 		left	= 0.0,
 		right	= 90 / 512,
-		top		= 45 / 256,
+		top		= 45 / 256 - 0.001,		-- fudge factor to prevent texture seams
 		bottom	= 0.0,
 	},
 	[DARKFLAG_NEXTMONTH_BOTTOMRIGHT] = {
 		left	= 90 / 512,
 		right	= 0.0,
-		top		= 45 / 256,
+		top		= 45 / 256 - 0.001,		-- fudge factor to prevent texture seams
 		bottom	= 0.0,
 	},
 	[DARKFLAG_NEXTMONTH_BOTTOMLEFTRIGHT] = {
@@ -805,9 +805,7 @@ end
 local function _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType, inviteStatus)
 	return
 		modStatus ~= "CREATOR" and
-		(calendarType == "PLAYER" or
-		(calendarType == "GUILD_EVENT" and 
-		(inviteType == CALENDAR_INVITETYPE_NORMAL or inviteType == CALENDAR_INVITETYPE_SIGNUP and inviteStatus ~= CALENDAR_INVITESTATUS_NOT_SIGNEDUP)));
+		(calendarType == "PLAYER" or (calendarType == "GUILD_EVENT" and inviteType == CALENDAR_INVITETYPE_NORMAL));
 end
 
 local function _CalendarFrame_CacheEventTextures_Internal(...)
@@ -2038,13 +2036,14 @@ end
 
 function CalendarContextMenu_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
 function CalendarContextMenu_OnEvent(self, event, ...)
-	if ( event == "GUILD_ROSTER_UPDATE" ) then
+	if ( event == "GUILD_ROSTER_UPDATE" or event == "PLAYER_GUILD_UPDATE" ) then
 		CalendarDayContextMenu_RefreshEvent();
 	end
 end
@@ -2153,15 +2152,14 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 				if ( validCreationDate and _CalendarFrame_CanInviteeRSVP(inviteStatus) ) then
 					-- spacer
 					if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
-						-- sign up
-						if ( inviteStatus ~= CALENDAR_INVITESTATUS_SIGNEDUP ) then
+						if ( inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
+							-- sign up
 							if ( needSpacer ) then
 								UIMenu_AddButton(menu, "");
 							end
 							UIMenu_AddButton(menu, CALENDAR_SIGNUP, nil, CalendarDayContextMenu_SignUp);
-						end
-						-- cancel sign up
-						if ( _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType, inviteStatus) ) then
+						else
+							-- cancel sign up
 							if ( needSpacer ) then
 								UIMenu_AddButton(menu, "");
 							end
@@ -2971,6 +2969,7 @@ function CalendarViewEventFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_UPDATE_INVITE_LIST");
 	self:RegisterEvent("CALENDAR_CLOSE_EVENT");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 --	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 
 	self.update = CalendarViewEventFrame_Update;
@@ -3005,7 +3004,7 @@ function CalendarViewEventFrame_OnEvent(self, event, ...)
 			end
 		elseif ( event == "CALENDAR_CLOSE_EVENT" ) then
 			CalendarFrame_HideEventFrame(CalendarViewEventFrame);
-		elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		elseif ( event == "GUILD_ROSTER_UPDATE" or event == "PLAYER_GUILD_UPDATE" ) then
 			if ( CalendarEventCanEdit() ) then
 				-- our permissions changed and we can now edit this event
 				CalendarCreateEventFrame.mode = "edit";
@@ -3099,7 +3098,7 @@ function CalendarViewEventFrame_Update()
 		--CalendarViewEventTimeLabel:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		CalendarViewEventDescription:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
-	if ( calendarType == "GULID_ANNOUNCEMENT" ) then
+	if ( calendarType == "GUILD_ANNOUNCEMENT" ) then
 		CalendarTitleFrame_SetText(CalendarViewEventTitleFrame, CALENDAR_VIEW_ANNOUNCEMENT);
 		-- guild wide events don't have invite lists, auto approval, or event locks
 		CalendarViewEventInviteListSection:Hide();
@@ -3174,7 +3173,7 @@ function CalendarViewEventRSVP_Update()
 		CalendarViewEventDeclineButton:Hide();
 		-- update shown buttons
 		if ( isTodayOrLater ) then
-			if ( inviteStatus ~= CALENDAR_INVITESTATUS_SIGNEDUP ) then
+			if ( inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
 				CalendarViewEventAcceptButton:Enable();
 				CalendarViewEventRemoveButton:Disable();
 			else
@@ -3403,6 +3402,7 @@ function CalendarCreateEventFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_CLOSE_EVENT");
 --	self:RegisterEvent("CALENDAR_ACTION_PENDING");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 --	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 
 	-- used to update the frame when it is shown via CalendarFrame_ShowEventFrame
@@ -3467,7 +3467,7 @@ function CalendarCreateEventFrame_OnEvent(self, event, ...)
 			CalendarCreateEventInviteButton_Update();
 			CalendarCreateEventCreateButton_Update();
 --]]
-		elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		elseif ( event == "GUILD_ROSTER_UPDATE" or event == "PLAYER_GUILD_UPDATE" ) then
 			if ( CalendarEventCanEdit() ) then
 				if ( CalendarCreateEventFrame.mode == "edit" ) then
 					CalendarCreateEventFrame_Update();
@@ -4467,6 +4467,7 @@ end
 function CalendarMassInviteFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_ACTION_PENDING");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_UPDATE");
 
 	local minLevel, maxLevel = CalendarDefaultGuildFilter();
@@ -4474,11 +4475,11 @@ function CalendarMassInviteFrame_OnLoad(self)
 	CalendarMassInviteGuildMaxLevelEdit:SetNumber(maxLevel);
 	UIDropDownMenu_SetWidth(CalendarMassInviteGuildRankMenu, 100);
 
-	-- try to fire off a guild roster event so we can properly update our guild options and...
+	-- try to fire off a guild roster event so we can properly update our guild options
 	if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
 		GuildRoster();
 	end
-	--...do the same for arena teams
+	-- do the same for arena teams
 	for i = 1, MAX_ARENA_TEAMS do
 		ArenaTeamRoster(i);
 	end
@@ -4493,6 +4494,12 @@ function CalendarMassInviteFrame_OnShow(self)
 end
 
 function CalendarMassInviteFrame_OnEvent(self, event, ...)
+	if ( event == "GUILD_ROSTER_UPDATE" ) then
+		local arg1 = ...;
+		if ( arg1 ) then
+			GuildRoster();
+		end
+	end
 	if ( self:IsShown() ) then
 		if ( not CanEditGuildEvent() and not IsInArenaTeam() ) then
 			-- if we are no longer in a guild OR an arena team, we can't mass invite
@@ -4502,7 +4509,7 @@ function CalendarMassInviteFrame_OnEvent(self, event, ...)
 			if ( event == "CALENDAR_ACTION_PENDING" ) then
 				CalendarMassInviteGuild_Update();
 				CalendarMassInviteArena_Update();
-			elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+			elseif ( event == "GUILD_ROSTER_UPDATE" or event == "PLAYER_GUILD_UPDATE" ) then
 				CalendarMassInviteGuild_Update();
 			elseif ( event == "ARENA_TEAM_UPDATE" ) then
 				CalendarMassInviteArena_Update();

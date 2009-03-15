@@ -220,6 +220,15 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentTeamSkill" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 				<FontString name="$parentDamage" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="CENTER">
@@ -912,7 +921,7 @@
 			</Button>
 			<Button name="WorldStateScoreFrameName" inherits="WorldStateScoreColumnTemplate">
 				<Size>
-					<AbsDimension x="215" y="16"/>
+					<AbsDimension x="175" y="16"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="WorldStateScoreFrameClass">
@@ -1014,6 +1023,25 @@
 						self.tooltip = HEALING_DONE_TOOLTIP;
 						self.sortType = "healing";
 					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="WorldStateScoreFrameTeamSkill" inherits="WorldStateScoreColumnTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="WorldStateScoreFrameHealingDone" relativePoint="RIGHT">
+						<Offset x="-5" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WorldStateScoreFrameTeamSkillText:SetText(SCORE_TEAM_SKILL);
+						self.tooltip = TEAM_SKILL_TOOLTIP;
+						self.sortType = "team";
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
+						GameTooltip:Show();
+					</OnEnter>
 				</Scripts>
 			</Button>
 			<Button name="WorldStateScoreFrameHonorGained" inherits="WorldStateScoreColumnTemplate">

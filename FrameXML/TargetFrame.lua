@@ -12,6 +12,12 @@ local AURA_ROW_WIDTH = 122;
 local TOT_AURA_ROW_WIDTH = 101;
 local NUM_TOT_AURA_ROWS = 2;	-- TODO: replace with TOT_AURA_ROW_HEIGHT functionality if this becomes a problem
 
+local PLAYER_UNITS = {
+	player = true,
+	vehicle = true,
+	pet = true,
+};
+
 function TargetFrame_OnLoad (self)
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -155,7 +161,7 @@ function TargetFrame_CheckLevel (self)
 end
 
 function TargetFrame_CheckFaction (self)
-	if ( not UnitPlayerControlled("target") and UnitIsTapped("target") and not UnitIsTappedByPlayer("target") ) then
+	if ( not UnitPlayerControlled("target") and UnitIsTapped("target") and not UnitIsTappedByPlayer("target") and not UnitIsTappedByAllThreatList("target") ) then
 		TargetFrameNameBackground:SetVertexColor(0.5, 0.5, 0.5);
 		TargetPortrait:SetVertexColor(0.5, 0.5, 0.5);
 	else
@@ -287,7 +293,7 @@ function TargetFrame_UpdateAuras (self)
 			end
 
 			-- set the buff to be big if the target is not the player and the buff is cast by the player or his pet
-			largeBuffList[i] = (not playerIsTarget and (caster == PlayerFrame.unit or caster == PetFrame.unit));
+			largeBuffList[i] = (not playerIsTarget and PLAYER_UNITS[caster]);
 
 			numBuffs = numBuffs + 1;
 
@@ -347,7 +353,7 @@ function TargetFrame_UpdateAuras (self)
 			buttonBorder:SetVertexColor(color.r, color.g, color.b);
 
 			-- set the debuff to be big if the buff is cast by the player or his pet
-			largeDebuffList[i] = (caster == PlayerFrame.unit or caster == PetFrame.unit);
+			largeDebuffList[i] = (PLAYER_UNITS[caster]);
 
 			numDebuffs = numDebuffs + 1;
 

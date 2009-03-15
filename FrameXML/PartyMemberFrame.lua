@@ -339,6 +339,9 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		if ( arg1 == unit ) then
 			PartyMemberFrame_UpdatePet(self);
 		end
+		if ( UnitHasVehicleUI("party"..selfID) ) then
+			PartyMemberFrame_ToVehicleArt(self, UnitVehicleSkin("party"..selfID));
+		end
 		return;
 	end
 

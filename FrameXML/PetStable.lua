@@ -189,20 +189,24 @@ function PetStable_Update()
 	
 	-- Enable, disable, or hide purchase button
 	PetStablePurchaseButton:Show();
-	if ( GetNumStableSlots() == NUM_PET_STABLE_SLOTS ) then
+	if ( GetNumStableSlots() == NUM_PET_STABLE_SLOTS or (not IsAtStableMaster())) then
 		PetStablePurchaseButton:Hide();
 		PetStableCostLabel:Hide();
 		PetStableCostMoneyFrame:Hide();
 		PetStableSlotText:Hide();
 	elseif ( GetMoney() >= GetNextStableSlotCost() ) then
+		PetStablePurchaseButton:Show();
 		PetStablePurchaseButton:Enable();
 		PetStableCostLabel:Show();
 		PetStableCostMoneyFrame:Show();
+		PetStableSlotText:Show();
 		SetMoneyFrameColor("PetStableCostMoneyFrame", "white");
 	else
+		PetStablePurchaseButton:Show();
 		PetStablePurchaseButton:Disable();
 		PetStableCostLabel:Show();
 		PetStableCostMoneyFrame:Show();
+		PetStableSlotText:Show();
 		SetMoneyFrameColor("PetStableCostMoneyFrame", "red");
 	end
 end

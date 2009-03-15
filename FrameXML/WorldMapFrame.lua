@@ -767,7 +767,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	
 	-- position vehicles
 	local numVehicles;
-	if ( GetCurrentMapContinent() == WORLDMAP_WORLD_ID or GetCurrentMapZone() == 0 ) then
+	if ( GetCurrentMapContinent() == WORLDMAP_WORLD_ID or (GetCurrentMapContinent() ~= -1 and GetCurrentMapZone() == 0) ) then
 		-- Hide vehicles on the worldmap and continent maps
 		numVehicles = 0;
 	else
@@ -780,17 +780,18 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			MAP_VEHICLES[i] = CreateFrame("FRAME", "WorldMapVehicle"..i, WorldMapButton, "WorldMapVehicleTemplate");
 			MAP_VEHICLES[i].texture = getglobal("WorldMapVehicle"..i.."Texture");
 		end
-		local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer = GetBattlefieldVehicleInfo(i);
-		if ( vehicleX and not isPlayer ) then
+		local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(i);
+		if ( vehicleX and isAlive and not isPlayer and VEHICLE_TEXTURES[vehicleType]) then
+			local mapVehicleFrame = MAP_VEHICLES[i];
 			vehicleX = vehicleX * WorldMapDetailFrame:GetWidth();
 			vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight();
-			MAP_VEHICLES[i].texture:SetRotation(orientation);
-			MAP_VEHICLES[i].texture:SetTexture(GetMapVehicleTexture(vehicleType, isPossessed));
-			MAP_VEHICLES[i]:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);
-			MAP_VEHICLES[i]:SetWidth(VEHICLE_TEXTURES[vehicleType].width);
-			MAP_VEHICLES[i]:SetHeight(VEHICLE_TEXTURES[vehicleType].height);
-			MAP_VEHICLES[i].name = unitName;
-			MAP_VEHICLES[i]:Show();
+			mapVehicleFrame.texture:SetRotation(orientation);
+			mapVehicleFrame.texture:SetTexture(GetMapVehicleTexture(vehicleType, isPossessed));
+			mapVehicleFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);
+			mapVehicleFrame:SetWidth(VEHICLE_TEXTURES[vehicleType].width);
+			mapVehicleFrame:SetHeight(VEHICLE_TEXTURES[vehicleType].height);
+			mapVehicleFrame.name = unitName;
+			mapVehicleFrame:Show();
 			index = i;	-- save for later
 		else
 			MAP_VEHICLES[i]:Hide();

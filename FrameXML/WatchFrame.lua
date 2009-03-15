@@ -21,6 +21,8 @@ WATCHFRAME_INITIAL_OFFSET = 0;
 WATCHFRAME_TYPE_OFFSET = 5;
 WATCHFRAME_QUEST_OFFSET = 10;
 
+WATCHFRAME_ITEM_WIDTH = 33;
+
 WATCHFRAMELINES_FONTSPACING = 0;
 WATCHFRAMELINES_FONTHEIGHT = 0;
 WATCHFRAMELINES_YOFFSET = 42;
@@ -202,6 +204,7 @@ function WatchFrame_ToggleSimpleWatch ()
 		WatchFrameCollapseExpandButton:Enable();
 		WatchFrame_Update();
 		WatchFrame:SetScript("OnUpdate", WatchFrame_OnUpdate);
+		WatchFrame_ToggleIgnoreCursor(); -- Update cursor settings
 	end
 	if ( ArenaEnemyFrames_UpdateWatchFrame ) then
 		ArenaEnemyFrames_UpdateWatchFrame();
@@ -323,18 +326,6 @@ function WatchFrame_OnUpdate (self, elapsed)
 			WatchFrame_Update(self);
 		end
 	end
-end
-
-function WatchFrame_OnLeave (self)
-
-end
-
-function WatchFrame_OnShow (self) 
-	WatchFrameLines:Show();
-end
-
-function WatchFrame_OnHide (self)
-	WatchFrameLines:Hide();
 end
 
 function WatchFrame_ToggleLock ()
@@ -1059,17 +1050,15 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 					SetItemButtonCount(itemButton, charges);
 					WatchFrameItem_UpdateCooldown(itemButton);
 					itemButton.rangeTimer = -1;
-					itemButton:SetPoint("TOPRIGHT", line, "TOPRIGHT", 0, -WATCHFRAMELINES_FONTSPACING);
 					line.text.clear = true;
 					line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
-					-- if ( not self.keepLeft ) then
-						-- itemButton:SetPoint("TOPRIGHT", line, "TOPLEFT", -4, -WATCHFRAMELINES_FONTSPACING);
-						-- itemButton:Show();
-					-- end
 					iconHeightLeft = WATCHFRAME_QUEST_WITH_ITEM_HEIGHT;
+					itemButton.maxStringWidth = stringWidth;
+					questWidth = max(stringWidth + WATCHFRAME_ITEM_WIDTH, questWidth);
+				else
+					questWidth = max(stringWidth, questWidth);
 				end
 				
-				questWidth = max(stringWidth, questWidth);
 				lastLine = line;
 				objectivesCompleted = 0;
 				for j = 1, numObjectives do
@@ -1085,13 +1074,17 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 					line:SetPoint("TOPRIGHT", lastLine, "BOTTOMRIGHT", 0, WATCHFRAMELINES_FONTSPACING);
 					line:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, WATCHFRAMELINES_FONTSPACING);
 					line:Show();
-					questWidth = max(line.text:GetStringWidth(), questWidth);
-					lastLine = line;
-					iconHeightLeft = iconHeightLeft - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING;
+					stringWidth = line.text:GetStringWidth();
 					if ( iconHeightLeft > 0 ) then
 						line.text.clear = true;
 						line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
+						itemButton.maxStringWidth = max(stringWidth, itemButton.maxStringWidth)
+						questWidth = max(stringWidth + WATCHFRAME_ITEM_WIDTH, questWidth);
+					else
+						questWidth = max(stringWidth, questWidth);
 					end
+					lastLine = line;
+					iconHeightLeft = iconHeightLeft - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING;
 				end
 				
 				if ( objectivesCompleted == numObjectives ) then
@@ -1101,12 +1094,19 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				end			
 			end
 			
-			if ( self.keepLeft and itemButton ) then
-				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", questWidth + 8, -WATCHFRAMELINES_FONTSPACING);
+			if ( itemButton ) then
+				line = WatchFrame_GetQuestLine();
+				line:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 0, -WATCHFRAMELINES_FONTSPACING);
+				itemButton:SetPoint("TOPRIGHT", line, "TOPLEFT", 0, 0);
+				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", itemButton.maxStringWidth + 8, -WATCHFRAMELINES_FONTSPACING);
 				itemButton:Show();
 			end
 			
-			maxWidth = max(questWidth, maxWidth);
+			if ( itemButton ) then
+				maxWidth = max(questWidth + WATCHFRAME_ITEM_WIDTH, maxWidth);
+			else
+				maxWidth = max(questWidth, maxWidth);
+			end
 		end
 	end
 	

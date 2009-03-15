@@ -389,7 +389,7 @@
 				</HitRectInsets>
 				<Scripts>
 					<OnLoad>
-						getglobal(self:GetName().."Text"):SetText(SHOW_ALL_SPELL_RANKS);
+						_G[self:GetName().."Text"]:SetText(SHOW_ALL_SPELL_RANKS);
 					</OnLoad>
 					<OnShow>
 						self:SetChecked( GetCVarBool("ShowAllSpellRanks") );

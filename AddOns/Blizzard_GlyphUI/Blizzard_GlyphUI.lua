@@ -6,28 +6,27 @@ GLYPH_MAJOR = { r = 1, g = 0.25, b = 0};
 
 GLYPH_SLOTS = {};
 -- Empty Texture
-GLYPH_SLOTS[0] = { left = 0.78125; right = 0.91015625; top = 0.69921875; bottom = 0.828125;}
+GLYPH_SLOTS[0] = { left = 0.78125, right = 0.91015625, top = 0.69921875, bottom = 0.828125 };
 -- Major Glyphs
-GLYPH_SLOTS[3] = { left = 0.392578125; right = 0.521484375; top = 0.87109375; bottom = 1;}
-GLYPH_SLOTS[1] = { left = 0; right = 0.12890625; top = 0.87109375; bottom = 1;}
-GLYPH_SLOTS[5] = { left = 0.26171875; right = 0.390625; top = 0.87109375; bottom = 1;}
+GLYPH_SLOTS[3] = { left = 0.392578125, right = 0.521484375, top = 0.87109375, bottom = 1 };
+GLYPH_SLOTS[1] = { left = 0, right = 0.12890625, top = 0.87109375, bottom = 1 };
+GLYPH_SLOTS[5] = { left = 0.26171875, right = 0.390625, top = 0.87109375, bottom = 1 };
 -- Minor Glyphs
-GLYPH_SLOTS[2] = { left = 0.130859375; right = 0.259765625; top = 0.87109375; bottom = 1;}
-GLYPH_SLOTS[6] = { left = 0.654296875; right = 0.783203125; top = 0.87109375; bottom = 1;}
-GLYPH_SLOTS[4] = { left = 0.5234375; right = 0.65234375; top = 0.87109375; bottom = 1;}
+GLYPH_SLOTS[2] = { left = 0.130859375, right = 0.259765625, top = 0.87109375, bottom = 1 };
+GLYPH_SLOTS[6] = { left = 0.654296875, right = 0.783203125, top = 0.87109375, bottom = 1 };
+GLYPH_SLOTS[4] = { left = 0.5234375, right = 0.65234375, top = 0.87109375, bottom = 1 };
 
-NUM_GLYPH_SLOTS = 6
+NUM_GLYPH_SLOTS = 6;
 
-local slotAnimations = {}
-local TOPLEFT, TOP, TOPRIGHT, BOTTOMRIGHT, BOTTOM, BOTTOMLEFT = 3, 1, 5, 4, 2, 6
+local slotAnimations = {};
+local TOPLEFT, TOP, TOPRIGHT, BOTTOMRIGHT, BOTTOM, BOTTOMLEFT = 3, 1, 5, 4, 2, 6;
 slotAnimations[TOPLEFT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = -85, ["yStart"] = 17, ["yStop"] = 60};
 slotAnimations[TOP] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = -13, ["yStart"] = 17, ["yStop"] = 100};
-slotAnimations[TOPRIGHT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = 59, ["yStart"] = 17, ["yStop"] = 60}
-slotAnimations[BOTTOM] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = -13, ["yStart"] = 17, ["yStop"] = -64}
-slotAnimations[BOTTOMLEFT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = -87, ["yStart"] = 18, ["yStop"] = -27}
-slotAnimations[BOTTOMRIGHT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = 61, ["yStart"] = 18, ["yStop"] = -27}
+slotAnimations[TOPRIGHT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = 59, ["yStart"] = 17, ["yStop"] = 60};
+slotAnimations[BOTTOM] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = -13, ["yStart"] = 17, ["yStop"] = -64};
+slotAnimations[BOTTOMLEFT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = -87, ["yStart"] = 18, ["yStop"] = -27};
+slotAnimations[BOTTOMRIGHT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = 61, ["yStart"] = 18, ["yStop"] = -27};
 
-local GLYPHFRAME_PULSEIN, GLYPHFRAME_PULSEOUT, GLYPHFRAME_FINISHED = .2, .2, 1.5;
 local HIGHLIGHT_BASEALPHA = .4;
 
 
@@ -264,22 +263,9 @@ local GLYPH_SPARKLE_SIZES = 3;
 local GLYPH_DURATION_MODIFIERS = { 1.25, 1.5, 1.8 };
 
 function GlyphFrame_OnUpdate (self, elapsed)
-	if ( self.pulseElapsed ) then
-		self.pulseElapsed = self.pulseElapsed + elapsed;
-		local pulseElapsed = self.pulseElapsed;
-		if ( pulseElapsed >= GLYPHFRAME_FINISHED ) then
-			self.glow:Hide();
-			self.glow:SetAlpha(0);
-			self.pulseElapsed = nil;
-		elseif ( pulseElapsed <= GLYPHFRAME_PULSEIN ) then
-			self.glow:SetAlpha(pulseElapsed/GLYPHFRAME_PULSEIN);
-		elseif ( pulseElapsed >= GLYPHFRAME_PULSEOUT ) then
-			self.glow:SetAlpha(1 - ( (pulseElapsed - GLYPHFRAME_PULSEOUT) / (GLYPHFRAME_FINISHED - GLYPHFRAME_PULSEOUT) ) );
-		end
-	end
-	
 	for i = 1, #slotAnimations do
-		if ( not slotAnimations[i].started and slotAnimations[mod(i - 1, NUM_GLYPH_SLOTS) + 1].glyph ) then
+		local animation = slotAnimations[i];
+		if ( animation.glyph and not (animation.sparkle and animation.sparkle.animGroup:IsPlaying()) ) then
 			local sparkleSize = math.random(GLYPH_SPARKLE_SIZES);
 			GlyphFrame_StartSlotAnimation(i, sparkleSize * GLYPH_DURATION_MODIFIERS[sparkleSize], sparkleSize);
 		end
@@ -287,10 +273,8 @@ function GlyphFrame_OnUpdate (self, elapsed)
 end
 
 function GlyphFrame_PulseGlow ()
-	local frame = GlyphFrame;
-	frame.pulseElapsed = 0;
-	frame.glow:Show();
-	frame:SetScript("OnUpdate", GlyphFrame_OnUpdate);
+	GlyphFrame.glow:Show();
+	GlyphFrame.glow.pulse:Play();
 end
 
 function GlyphFrame_OnShow (self)
@@ -299,7 +283,6 @@ end
 
 function GlyphFrame_OnLoad (self)
 	local name = self:GetName();
-	self.glow = _G[name .. "Glow"];
 	self.background = _G[name .. "Background"];
 	self.sparkleFrame = SparkleFrame:New(self);
 	self:RegisterEvent("ADDON_LOADED");
@@ -308,20 +291,6 @@ function GlyphFrame_OnLoad (self)
 	self:RegisterEvent("GLYPH_UPDATED");
 	self:RegisterEvent("GLYPHFRAME_OPEN");
 	self:RegisterEvent("PLAYER_LEVEL_UP");
-
-	if ( USE_NEW_ANIM_SYSTEM ) then
-		local extraAnimSlotMultiplier = 100;
-		local numSlotAnimations = #slotAnimations;
-		for i = 1, (extraAnimSlotMultiplier - 1) do
-			local extraIndex = numSlotAnimations*i;
-			slotAnimations[TOPLEFT + extraIndex] = CopyTable(slotAnimations[TOPLEFT]);
-			slotAnimations[TOP + extraIndex] = CopyTable(slotAnimations[TOP]);
-			slotAnimations[TOPRIGHT + extraIndex] = CopyTable(slotAnimations[TOPRIGHT]);
-			slotAnimations[BOTTOM + extraIndex] = CopyTable(slotAnimations[BOTTOM]);
-			slotAnimations[BOTTOMLEFT + extraIndex] = CopyTable(slotAnimations[BOTTOMLEFT]);
-			slotAnimations[BOTTOMRIGHT + extraIndex] = CopyTable(slotAnimations[BOTTOMRIGHT]);
-		end
-	end
 end
 
 function GlyphFrame_OnEnter (self)
@@ -355,13 +324,12 @@ function GlyphFrame_OnEvent (self, event, ...)
 			-- update the glyph
 			GlyphFrameGlyph_UpdateSlot(glyph);
 			-- play effects based on the event and glyph type
+			GlyphFrame_PulseGlow();
 			local glyphType = glyph.glyphType;
 			if ( event == "GLYPH_ADDED" or event == "GLYPH_UPDATED" ) then
 				if ( glyphType == GLYPHTYPE_MINOR ) then
-					GlyphFrame_PulseGlow();
 					PlaySound("Glyph_MinorCreate");
 				elseif ( glyphType == GLYPHTYPE_MAJOR ) then
-					GlyphFrame_PulseGlow();
 					PlaySound("Glyph_MajorCreate");
 				end
 			elseif ( event == "GLYPH_REMOVED" ) then
@@ -388,61 +356,56 @@ function GlyphFrame_Update ()
 	SetDesaturation(GlyphFrame.background, not isActiveTalentGroup);
 
 	for i = 1, NUM_GLYPH_SLOTS do
-		GlyphFrameGlyph_UpdateSlot(_G["GlyphFrameGlyph" .. i]);
-	end
-end
-
-function GlyphFrame_FinishAnimation (sparkle)
-	if ( sparkle.name and slotAnimations[sparkle.name] ) then
-		slotAnimations[sparkle.name].started = false;
+		GlyphFrameGlyph_UpdateSlot(_G["GlyphFrameGlyph"..i]);
 	end
 end
 
 function GlyphFrame_StartSlotAnimation (slotID, duration, size)
 	local animation = slotAnimations[slotID];
-	GlyphFrameSparkle:Show();
-	
-	local template;
 
-	if ( size == 1 ) then
-		template = "SparkleTextureSmall";
-	elseif ( size == 2 ) then
-		template = "SparkleTextureKindaSmall";
-	else
-		template = "SparkleTextureNormal";
-	end
+	local sparkleName = "GlyphFrameSparkle"..slotID;
+	local sparkle = _G[sparkleName];
+	if ( sparkle and sparkle.wait ) then
+		-- width and height resize is done
+		sparkle.wait = false;
 
-	if ( USE_NEW_ANIM_SYSTEM ) then
-		-- init texture to animate
-		local sparkleName = "GlyphFrameAnimSparkle"..slotID;
-		local sparkle = _G[sparkleName];
-		if ( sparkle ) then
-			local sparkleDim = SparkleDimensions[template];
-			sparkle:SetHeight(sparkleDim.height);
-			sparkle:SetWidth(sparkleDim.width);
-		else
-			sparkle = GlyphFrameSparkleFrame:CreateTexture(sparkleName, "ARTWORK", "GlyphAnim"..template);
-			sparkle.name = slotID;
-		end
-		sparkle:SetPoint("CENTER", GlyphFrameSparkleFrame, animation.point, animation.xStart, animation.yStart);
-		sparkle:Show();
 		-- init animation
-		local animGroupAnim = _G[sparkleName.."AnimGroupTranslate"];
 		local offsetX, offsetY = animation.xStop - animation.xStart, animation.yStop - animation.yStart;
+		local animGroupAnim = sparkle.animGroup.translate;
 		animGroupAnim:SetOffset(offsetX, offsetY);
 		animGroupAnim:SetDuration(duration);
 		animGroupAnim:Play();
 	else
-		local sparkle = GlyphFrameSparkleFrame:StartAnimation(slotID, "LinearTranslate", template, false, animation.point, animation.xStart, animation.xStop, animation.yStart, animation.yStop, duration);		
-		sparkle:SetOnFinished(GlyphFrame_FinishAnimation);
+		-- init texture to animate
+		if ( not sparkle ) then
+			sparkle = GlyphFrame:CreateTexture(sparkleName, "OVERLAY", "GlyphSparkleTexture");
+			sparkle.slotID = slotID;
+		end
+		-- we need to wait a tick for the width and height resize to take effect
+		sparkle.wait = true;
+		local template;
+		if ( size == 1 ) then
+			template = "SparkleTextureSmall";
+		elseif ( size == 2 ) then
+			template = "SparkleTextureKindaSmall";
+		else
+			template = "SparkleTextureNormal";
+		end
+		local sparkleDim = SparkleDimensions[template];
+		sparkle:SetHeight(sparkleDim.height);
+		sparkle:SetWidth(sparkleDim.width);
+		sparkle:SetPoint("CENTER", GlyphFrame, animation.point, animation.xStart, animation.yStart);
+		sparkle:Show();
 	end
-	animation.started = true;
+
+	animation.sparkle = sparkle;
 end
 
 function GlyphFrame_StopSlotAnimation (slotID)
 	local animation = slotAnimations[slotID];
-	if ( animation.started ) then
-		GlyphFrameSparkleFrame:EndAnimation(slotID);
-		animation.started = nil;
+	if ( animation.sparkle ) then
+		animation.sparkle.animGroup:Stop();
+		animation.sparkle:Hide();
+		animation.sparkle = nil;
 	end
 end

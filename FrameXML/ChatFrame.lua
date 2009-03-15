@@ -8,6 +8,8 @@ NUM_REMEMBERED_TELLS = 10;
 
 CHAT_SHOW_ICONS = "0";
 
+MAX_CHARACTER_NAME_BYTES = 48;
+
 -- Table for event indexed chatFilters.
 -- Format ["CHAT_MSG_SYSTEM"] = { function1, function2, function3 }
 -- filter, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = function1 (self, event, ...) if filter then return true end return false, ... end
@@ -1331,6 +1333,10 @@ SlashCmdList["INVITE"] = function(msg)
 	if(msg == "") then
 		msg = UnitName("target");
 	end
+	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
 	InviteUnit(msg);
 end
 
@@ -1450,6 +1456,10 @@ SlashCmdList["CHAT_OWNER"] =
 	function(msg)
 		local channel = gsub(msg, "%s*([^%s]+).*", "%1");
 		local newowner = gsub(msg, "%s*([^%s]+)%s*(.*)", "%2");
+		if( strlen(newowner) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		if(strlen(channel) > 0) then
 			if(strlen(newowner) > 0) then
 				SetChannelOwner(channel, newowner);
@@ -1461,7 +1471,11 @@ SlashCmdList["CHAT_OWNER"] =
 
 SlashCmdList["CHAT_MODERATOR"] = 
 	function(msg)
-	local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		if ( channel and player ) then
 			ChannelModerator(channel, player);
 		end
@@ -1470,6 +1484,10 @@ SlashCmdList["CHAT_MODERATOR"] =
 SlashCmdList["CHAT_UNMODERATOR"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		if ( channel and player ) then
 			ChannelUnmoderator(channel, player);
 		end
@@ -1478,6 +1496,10 @@ SlashCmdList["CHAT_UNMODERATOR"] =
 SlashCmdList["CHAT_MUTE"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		if ( channel and player ) then
 			ChannelMute(channel, player);
 		end
@@ -1486,6 +1508,10 @@ SlashCmdList["CHAT_MUTE"] =
 SlashCmdList["CHAT_UNMUTE"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		if ( channel and player ) then
 			ChannelUnmute(channel, player);
 		end
@@ -1494,6 +1520,10 @@ SlashCmdList["CHAT_UNMUTE"] =
 SlashCmdList["CHAT_CINVITE"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		if ( channel and player ) then
 			ChannelInvite(channel, player);
 		end
@@ -1502,6 +1532,10 @@ SlashCmdList["CHAT_CINVITE"] =
 SlashCmdList["CHAT_KICK"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		if ( channel and player ) then
 			ChannelKick(channel, player);
 		end
@@ -1510,6 +1544,10 @@ SlashCmdList["CHAT_KICK"] =
 SlashCmdList["CHAT_BAN"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		if ( channel and player ) then
 			ChannelBan(channel, player);
 		end
@@ -1518,6 +1556,10 @@ SlashCmdList["CHAT_BAN"] =
 SlashCmdList["CHAT_UNBAN"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		if ( channel and player ) then
 			ChannelUnban(channel, player);
 		end
@@ -1535,6 +1577,10 @@ SlashCmdList["TEAM_INVITE"] =
 	function(msg)
 		if ( msg ~= "" ) then
 			local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
+			if( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+				return;
+			end
 			team = tonumber(team);
 			if ( team and name ) then
 				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
@@ -1565,6 +1611,10 @@ end
 SlashCmdList["TEAM_UNINVITE"] = function(msg)
 	if ( msg ~= "" ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
+		if( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		team = tonumber(team);
 		if ( team and name ) then
 			local teamsizeID = ArenaTeam_GetTeamSizeID(team);
@@ -1580,6 +1630,10 @@ end
 SlashCmdList["TEAM_CAPTAIN"] = function(msg)
 	if ( msg ~= "" ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
+		if( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			return;
+		end
 		team = tonumber(team);
 		if ( team and name ) then
 			local teamsizeID = ArenaTeam_GetTeamSizeID(team);
@@ -1611,6 +1665,10 @@ SlashCmdList["GUILD_INVITE"] = function(msg)
 	if(msg == "") then
 		msg = UnitName("target");
 	end
+	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
 	GuildInvite(msg);
 end
 
@@ -1618,18 +1676,34 @@ SlashCmdList["GUILD_UNINVITE"] = function(msg)
 	if(msg == "") then
 		msg = UnitName("target");
 	end
+	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
 	GuildUninvite(msg);
 end
 
 SlashCmdList["GUILD_PROMOTE"] = function(msg)
+	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
 	GuildPromote(msg);
 end
 
 SlashCmdList["GUILD_DEMOTE"] = function(msg)
+	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
 	GuildDemote(msg);
 end
 
 SlashCmdList["GUILD_LEADER"] = function(msg)
+	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
 	GuildSetLeader(msg);
 end
 
@@ -1674,9 +1748,6 @@ end
 SlashCmdList["WHO"] = function(msg)
 	if ( msg == "" ) then
 		msg = WhoFrame_GetDefaultWhoCommand();
-		ShowWhoPanel();
-	elseif ( msg == "cheat" ) then
-		-- Remove the "cheat" part later!
 		ShowWhoPanel();
 	end
 	WhoFrameEditBox:SetText(msg);
@@ -2378,17 +2449,17 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= self.defaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (strlen(arg2) > 0) ) then
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
+					body = format(_G["CHAT_"..type.."_GET"], pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..languageHeader..arg1;
 				else
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag..arg2);
+					body = format(_G["CHAT_"..type.."_GET"], pflag..arg2)..languageHeader..arg1;
 				end
 			else
 				if ( showLink and (strlen(arg2) > 0) and (type ~= "EMOTE") ) then
-					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
+					body = format(_G["CHAT_"..type.."_GET"], pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
 				elseif ( showLink and (strlen(arg2) > 0) and (type == "EMOTE") ) then
-					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..arg2.."|h");
+					body = format(_G["CHAT_"..type.."_GET"], pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..arg2.."|h")..arg1;
 				else
-					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
+					body = format(_G["CHAT_"..type.."_GET"], pflag..arg2, arg2)..arg1;
 				end
 			end
 

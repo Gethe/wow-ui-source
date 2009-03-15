@@ -115,7 +115,7 @@ function RaidInfoFrame_Update()
 		for i=1, MAX_RAID_INFOS do
 			local frame = _G["RaidInfoInstance"..i];
 			if ( i <=  savedInstances) then
-				instanceName, instanceID, instanceReset, instanceDifficulty = GetSavedInstanceInfo(i);
+				instanceName, instanceID, instanceReset, instanceDifficulty, extend = GetSavedInstanceInfo(i);
 				 
 				if ( not frame ) then
 					local name =  "RaidInfoInstance"..i;
@@ -134,7 +134,15 @@ function RaidInfoFrame_Update()
 					frameNameText:SetText(instanceName);
 				end
 				frameID:SetText(instanceID);
-				frameReset:SetText(RESETS_IN.." "..SecondsToTime(instanceReset, nil, nil, 3));
+				if (extend) then
+					if (instanceReset == 0) then
+						frameReset:SetFormattedText(RAID_INSTANCE_EXPIRES_EXPIRED);
+					else
+						frameReset:SetFormattedText(RAID_INSTANCE_EXPIRES_EXTENDED, SecondsToTime(instanceReset, nil, nil, 3));
+					end
+				else
+					frameReset:SetFormattedText(RAID_INSTANCE_EXPIRES, SecondsToTime(instanceReset, nil, nil, 3));
+				end
 				if ( RaidInfoFrame.scrolling ) then
 					frameName:SetWidth(170);
 				else

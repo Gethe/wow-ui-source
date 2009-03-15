@@ -49,7 +49,7 @@ function Sparkle:Free ()
 	tinsert(sparkleFrame.freeSparkles, self);
 end
 
-local SparkleDimensions = 
+SparkleDimensions = 
 {
 	["SparkleTextureNormal"] = { height = 13, width = 13 },
 	["SparkleTextureKindaSmall"] = { height = 10, width = 10 },
@@ -186,6 +186,7 @@ function SparkleFrame:New (parent)
 
 	sparkleFrame.timeSinceLast = 0;
 	sparkleFrame.updateTime = 0.0334 -- Roughly 30 frames per second.
+--	sparkleFrame.updateTime = 0
 	sparkleFrame.numSparkles = 0;
 	sparkleFrame.freeSparkles = {};
 	sparkleFrame.sparkles = {};	

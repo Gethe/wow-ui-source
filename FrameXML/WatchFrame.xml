@@ -96,7 +96,6 @@
 		<Scripts>
 			<OnLoad> self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); </OnLoad>
 			<OnClick> WatchFrameLinkButtonTemplate_OnClick(self, button, down); </OnClick>
-			<OnDoubleClick> WatchFrameLinkButtonTemplate_OnDoubleClick(self, button); </OnDoubleClick>
 		</Scripts>
 	</Button>
 	
@@ -233,8 +232,8 @@
 			</Anchor>
 		</Anchors>
 		<ResizeBounds>
-			<MinResize x="220" y="128"/>
-			<MaxResize x="360" y="600"/>
+			<minResize x="220" y="128"/>
+			<maxResize x="360" y="600"/>
 		</ResizeBounds>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -481,8 +480,6 @@
 			<OnLoad function="WatchFrame_OnLoad"/>
 			<OnEvent function="WatchFrame_OnEvent"/>
 			<OnUpdate function="WatchFrame_OnUpdate"/>
-			<OnShow function="WatchFrame_OnShow"/>
-			<OnHide function="WatchFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	

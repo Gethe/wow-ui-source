@@ -92,7 +92,7 @@ function FocusFrame_OnHide (self)
 end
 
 function FocusFrame_CheckFaction (self)
-	if ( not UnitPlayerControlled("focus") and UnitIsTapped("focus") and not UnitIsTappedByPlayer("focus") ) then
+	if ( not UnitPlayerControlled("focus") and UnitIsTapped("focus") and not UnitIsTappedByPlayer("focus") and not UnitIsTappedByAllThreatList("focus") ) then
 		FocusFrameNameBackground:SetVertexColor(0.5, 0.5, 0.5);
 		FocusPortrait:SetVertexColor(0.5, 0.5, 0.5);
 	else

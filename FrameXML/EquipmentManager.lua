@@ -7,7 +7,7 @@ EQUIPMENTMANAGER_BAGSLOTS = {};
 local SLOT_LOCKED = 1;
 local SLOT_EMPTY = 2;
 
-for i = -1, NUM_BAG_SLOTS + GetNumBankSlots() do
+for i = KEYRING_CONTAINER, NUM_BAG_SLOTS + GetNumBankSlots() do
 	EQUIPMENTMANAGER_BAGSLOTS[i] = {};
 end
 
@@ -50,6 +50,25 @@ function EquipmentManager_UpdateFreeBagSpace ()
 	end
 end
 
+local pendingSet = "";
+
+local combatSwapError;
+local bagsFullError;
+
+local function EquipmentManager_CombatError()
+	if ( not combatSwapError ) then
+		combatSwapError = true;
+		UIErrorsFrame:AddMessage(string.format(EQUIPMENT_MANAGER_COMBAT_SWAP, pendingSet), 1.0, 0.1, 0.1, 1.0);
+	end
+end
+
+local function EquipmentManager_BagsFullError()
+	if ( not bagsFullError ) then
+		bagsFullError = true;
+		UIErrorsFrame:AddMessage(string.format(EQUIPMENT_MANAGER_BAGS_FULL), 1.0, 0.1, 0.1, 1.0);
+	end
+end
+
 function EquipmentManager_OnEvent (self, event, ...)
 	if ( event == "PLAYER_REGEN_ENABLED" ) then
 		for slot, info in next, EQUIPMENTMANAGER_PENDINGEQUIPS do
@@ -60,6 +79,8 @@ function EquipmentManager_OnEvent (self, event, ...)
 			EQUIPMENTMANAGER_PENDINGUNEQUIPS[slot] = nil;
 			EquipmentManager_UnequipItemInSlot(slot);
 		end
+		pendingSet = "";
+		combatSwapError = nil;
 	elseif ( event == "PLAYERBANKBAGSLOTS_CHANGED" ) then
 		for i = #EQUIPMENTMANAGER_BAGSLOTS + 1, NUM_BAG_SLOTS + GetNumBankSlots() do
 			EQUIPMENTMANAGER_BAGSLOTS[i] = {};
@@ -111,6 +132,7 @@ function EquipmentManager_EquipItemByLocation (location, invSlot)
 		return;
 	elseif ( UnitAffectingCombat("player") ) then
 		if ( not INVTYPES_EQUIPPABLE_IN_COMBAT[invType] ) then
+			EquipmentManager_CombatError();
 			EquipmentManager_AddPendingEquip(id, invSlot, location);
 			return;
 		end
@@ -122,9 +144,9 @@ function EquipmentManager_EquipItemByLocation (location, invSlot)
 		UseInventoryItem(slot);
 		EQUIPMENTMANAGER_INVENTORYSLOTS[invSlot] = SLOT_LOCKED;
 	elseif ( not bags ) then
-		EquipmentManager_EquipInventoryItem(slot, invSlot);
+		EquipmentManager_EquipInventoryItem(slot, invSlot, id, location);
 	else
-		EquipmentManager_EquipContainerItem(bag, slot, invSlot);
+		EquipmentManager_EquipContainerItem(bag, slot, invSlot, id, location);
 		
 		if ( not currentItemID ) then -- This is going to result in a free bag space
 			EQUIPMENTMANAGER_BAGSLOTS[bag][slot] = SLOT_EMPTY;
@@ -132,7 +154,7 @@ function EquipmentManager_EquipItemByLocation (location, invSlot)
 	end
 end
 
-function EquipmentManager_EquipContainerItem (bag, slot, invSlot)
+function EquipmentManager_EquipContainerItem (bag, slot, invSlot, id, location)
 	ClearCursor();
 		
 	if ( NON_DEFAULT_INVSLOTS[invSlot] ) then
@@ -147,7 +169,7 @@ function EquipmentManager_EquipContainerItem (bag, slot, invSlot)
 	EQUIPMENTMANAGER_INVENTORYSLOTS[invSlot] = SLOT_LOCKED;
 end
 
-function EquipmentManager_EquipInventoryItem (oldSlot, newSlot)
+function EquipmentManager_EquipInventoryItem (oldSlot, newSlot, id, location)
 	ClearCursor();
 	PickupInventoryItem(oldSlot);
 	if ( not CursorHasItem() ) then
@@ -222,6 +244,7 @@ function EquipmentManager_UnequipItemInSlot (slot)
 	if ( UnitAffectingCombat("player") ) then
 		local _, _, _, _, _, _, _, _, invType = GetItemInfo(itemID);
 		if ( not INVTYPES_EQUIPPABLE_IN_COMBAT[invType] ) then
+			EquipmentManager_CombatError();
 			EquipmentManager_AddPendingUnequip(slot);
 			return;
 		end
@@ -268,6 +291,8 @@ function EquipmentManager_PutItemInInventory ()
 			end
 		end
 	end
+	
+	EquipmentManager_BagsFullError();
 end
 
 function EquipmentManager_AddPendingEquip (itemID, inventorySlot, location)
@@ -279,7 +304,7 @@ function EquipmentManager_AddPendingEquip (itemID, inventorySlot, location)
 end
 
 function EquipmentManager_AddPendingUnequip (slotID)
-	EQUIPMENTMANAGER_PENDINGEQUIPS[slot] = nil;
+	EQUIPMENTMANAGER_PENDINGEQUIPS[slotID] = nil;
 	EQUIPMENTMANAGER_PENDINGUNEQUIPS[slotID] = true;
 end
 
@@ -318,6 +343,9 @@ function EquipmentManager_EquipSet (name)
 
 	local set = GetEquipmentSetItemLocations(name);
 	if ( set ) then
+		pendingSet = name;
+		combatSwapError = nil;
+		bagsFullError = nil;
 		for slot = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
 			if ( not set[slot] ) then
 				-- Ignore this slot

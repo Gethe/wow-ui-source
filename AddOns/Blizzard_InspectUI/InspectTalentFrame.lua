@@ -1,42 +1,20 @@
 
 local talentSpecInfoCache = {};
 
-function InspectTalentFrameSpentPoints_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:AddLine(TALENT_POINTS);
-	for index, info in ipairs(talentSpecInfoCache) do
-		if ( info.name ) then
-			local pointsColor;
-			if ( talentSpecInfoCache.primaryTabIndex == index ) then
-				pointsColor = GREEN_FONT_COLOR;
-			else
-				pointsColor = HIGHLIGHT_FONT_COLOR;
-			end
-			GameTooltip:AddDoubleLine(
-				info.name,
-				info.pointsSpent,
-				HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b,
-				pointsColor.r, pointsColor.g, pointsColor.b,
-				1
-			);
-		end
-	end
-	
-	GameTooltip:Show();
-end
-
 function InspectTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetTalent(InspectTalentFrame.selectedTab, self:GetID(), InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+		GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
+			InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 	end
 end
 
 function InspectTalentFrameTalent_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetTalent(InspectTalentFrame.selectedTab, self:GetID(), InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+	GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
+		InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 end
 
-function InspectTalentFrame_SetupTabs()
+function InspectTalentFrame_UpdateTabs()
 	local numTabs = GetNumTalentTabs(InspectTalentFrame.inspect, InspectTalentFrame.pet);
 	local selectedTab = PanelTemplates_GetSelectedTab(InspectTalentFrame);
 	for i = 1, MAX_TALENT_TABS do
@@ -61,13 +39,27 @@ function InspectTalentFrame_SetupTabs()
 			end
 		end
 	end
-	TalentFrame_UpdateSpecInfoCache(talentSpecInfoCache, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 end
 
 function InspectTalentFrame_Update()
-	InspectTalentFrame_SetupTabs();
+	-- update spec info first
+	TalentFrame_UpdateSpecInfoCache(talentSpecInfoCache, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+
+	-- update tabs
+
+	-- select a tab if one is not already selected
+	if ( not PanelTemplates_GetSelectedTab(InspectTalentFrame) ) then
+		-- if there is a primary tab then we'll prefer that one
+		if ( talentSpecInfoCache.primaryTabIndex > 0 ) then
+			PanelTemplates_SetTab(InspectTalentFrame, talentSpecInfoCache.primaryTabIndex);
+		else
+			PanelTemplates_SetTab(InspectTalentFrame, DEFAULT_TALENT_TAB);
+		end
+	end
+	InspectTalentFrame_UpdateTabs();
+
+	-- update parent tabs
 	PanelTemplates_UpdateTabs(InspectFrame);
-	InspectTalentFrame.selectedTab = PanelTemplates_GetSelectedTab(InspectTalentFrame)
 end
 
 function InspectTalentFrame_Refresh()
@@ -82,7 +74,7 @@ function InspectTalentFrame_OnLoad(self)
 	self.pet = false;
 	self.talentGroup = 1;
 
-	TalentFrame_Load(InspectTalentFrame);
+	TalentFrame_Load(self);
 
 	for i = 1, MAX_NUM_TALENTS do
 		button = _G["InspectTalentFrameTalent"..i];
@@ -91,18 +83,18 @@ function InspectTalentFrame_OnLoad(self)
 			button:SetScript("OnEnter", InspectTalentFrameTalent_OnEnter);
 		end
 	end
-	PanelTemplates_SetNumTabs(self, 3);
-	PanelTemplates_SetTab(InspectTalentFrame, 1);
+
+	-- setup tabs
+	PanelTemplates_SetNumTabs(self, MAX_TALENT_TABS);
 	PanelTemplates_UpdateTabs(self);
-	InspectTalentFrame:SetScript("OnEvent", InspectTalentFrame_OnEvent);
 end
 
-function  InspectTalentFrame_OnShow()
+function InspectTalentFrame_OnShow()
 	InspectTalentFrame:RegisterEvent("INSPECT_TALENT_READY");
 	InspectTalentFrame_Refresh();
 end
 
-function  InspectTalentFrame_OnHide()
+function InspectTalentFrame_OnHide()
 	InspectTalentFrame:UnregisterEvent("INSPECT_TALENT_READY");
 	wipe(talentSpecInfoCache);
 end
@@ -120,4 +112,27 @@ function InspectTalentFrameDownArrow_OnClick(self)
 	UIFrameFlashStop(InspectTalentFrameScrollButtonOverlay);
 end
 
+function InspectTalentFramePointsBar_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:AddLine(TALENT_POINTS);
+	for index, info in ipairs(talentSpecInfoCache) do
+		if ( info.name ) then
+			local pointsColor;
+			if ( talentSpecInfoCache.primaryTabIndex == index ) then
+				pointsColor = GREEN_FONT_COLOR;
+			else
+				pointsColor = HIGHLIGHT_FONT_COLOR;
+			end
+			GameTooltip:AddDoubleLine(
+				info.name,
+				info.pointsSpent,
+				HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b,
+				pointsColor.r, pointsColor.g, pointsColor.b,
+				1
+			);
+		end
+	end
+	
+	GameTooltip:Show();
+end
 

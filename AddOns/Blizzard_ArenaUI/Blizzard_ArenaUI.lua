@@ -128,6 +128,14 @@ function ArenaEnemyFrame_OnLoad(self)
 		ToggleDropDownMenu(1, nil, getglobal("ArenaEnemyFrame"..self:GetID().."DropDown"), self:GetName(), 47, 15);
 	end
 	SecureUnitButton_OnLoad(self, "arena"..self:GetID(), showmenu);
+	
+	local id = self:GetID();
+	if ( UnitClass("arena"..id) and (not UnitExists("arena"..id))) then	--It is possible for the unit itself to no longer exist on the client, but some of the information to remain (after reloading the UI)
+		self:Show();
+		ArenaEnemyFrame_Lock(self);
+	elseif ( UnitExists("arenapet"..id) and ( not UnitClass("arena"..id) ) ) then	--We use UnitClass because even if the unit doesn't exist on the client, we may still have enough info to populate the frame.
+		ArenaEnemyFrame_SetMysteryPlayer(self);
+	end
 end
 
 function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need to use CVars instead of UVars even though UVars are faster.
@@ -135,8 +143,12 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 	if ( UnitExists(self.unit) ) then
 		self:Show();
 		UnitFrame_Update(self);
+	end
 		
-		local _, class = UnitClass(self.unit);
+	local _, class = UnitClass(self.unit);
+	
+	if( class ) then
+		self.classPortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 		self.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
 	end
 
@@ -153,8 +165,24 @@ end
 
 function ArenaEnemyFrame_Unlock(self)
 	self.healthbar.lockValues = false;
+	self.healthbar.forceHideText = false;
 	self.manabar.lockValues = false;
+	self.manabar.forceHideText = false;
 	self.hideStatusOnTooltip = false;
+end
+
+function ArenaEnemyFrame_SetMysteryPlayer(self)
+	self.healthbar:SetMinMaxValues(0,100);
+	self.healthbar:SetValue(100);
+	self.healthbar.forceHideText = true;
+	self.manabar:SetMinMaxValues(0,100);
+	self.manabar:SetValue(100);
+	self.manabar.forceHideText = true;
+	self.classPortrait:SetTexture("Interface\\CharacterFrame\\TempPortrait");
+	self.classPortrait:SetTexCoord(0, 1, 0, 1);
+	self.name:SetText("");
+	ArenaEnemyFrame_Lock(self);
+	self:Show();
 end
 
 function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
@@ -215,6 +243,11 @@ function ArenaEnemyPetFrame_OnEvent(self, event, ...)
 			ArenaEnemyFrame_Unlock(self);
 			ArenaEnemyFrame_UpdatePet(self);
 			UpdateArenaEnemyBackground();
+			local ownerFrame = _G["ArenaEnemyFrame"..self:GetID()];
+			if ( not ownerFrame:IsShown() ) then
+				ArenaEnemyFrame_SetMysteryPlayer(ownerFrame);
+				ownerFrame:Show();
+			end
 		elseif ( arg2 == "unseen" ) then
 			ArenaEnemyFrame_Lock(self);
 		elseif ( arg2 == "cleared" ) then

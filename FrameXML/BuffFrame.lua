@@ -18,6 +18,11 @@ DebuffTypeColor["Disease"]	= { r = 0.60, g = 0.40, b = 0 };
 DebuffTypeColor["Poison"]	= { r = 0.00, g = 0.60, b = 0 };
 DebuffTypeColor[""]	= DebuffTypeColor["none"];
 
+DebuffTypeSymbol = { };
+DebuffTypeSymbol["Magic"] = DEBUFF_SYMBOL_MAGIC;
+DebuffTypeSymbol["Curse"] = DEBUFF_SYMBOL_CURSE;
+DebuffTypeSymbol["Disease"] = DEBUFF_SYMBOL_DISEASE;
+DebuffTypeSymbol["Poison"] = DEBUFF_SYMBOL_POISON;
 
 function BuffFrame_OnLoad(self)
 	self.BuffFrameUpdateTime = 0;
@@ -144,7 +149,14 @@ function AuraButton_Update(buttonName, index, filter)
 				local color;
 				if ( debuffType ) then
 					color = DebuffTypeColor[debuffType];
+					if ( ENABLE_COLORBLIND_MODE == "1" ) then
+						buff.symbol:Show();
+						buff.symbol:SetText(DebuffTypeSymbol[debuffType] or "");
+					else
+						buff.symbol:Hide();
+					end
 				else
+					buff.symbol:Hide();
 					color = DebuffTypeColor["none"];
 				end
 				debuffSlot:SetVertexColor(color.r, color.g, color.b);

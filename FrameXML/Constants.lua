@@ -34,15 +34,6 @@ CLASS_ICON_TCOORDS = {
 	["DEATHKNIGHT"]	= {0.25, .5, 0.5, .75},
 };
 
--- 
--- Talent Constants
--- 
-TALENT_SORT_ORDER = {
-	"spec1",
-	"spec2",
-	"petspec1",
-};
-
 --
 -- Spell Constants
 --
@@ -66,9 +57,14 @@ SCHOOL_MASK_FROST	= 0x10;
 SCHOOL_MASK_SHADOW	= 0x20;
 SCHOOL_MASK_ARCANE	= 0x40;
 
---
+-- 
 -- Talent Constants
---
+-- 
+TALENT_SORT_ORDER = {
+	"spec1",
+	"spec2",
+	"petspec1",
+};
 
 SHOW_TALENT_LEVEL = 10;
 
@@ -136,7 +132,10 @@ INVSLOT_LAST_EQUIPPED = INVSLOT_TABARD;
 
 CONTAINER_BAG_OFFSET = 19; -- Used for PutItemInBag
 
+BACKPACK_CONTAINER = 0;
 BANK_CONTAINER = -1;
+KEYRING_CONTAINER = -2;
+
 NUM_BAG_SLOTS = 4;
 NUM_BANKGENERIC_SLOTS = 28;
 NUM_BANKBAGSLOTS = 7;

@@ -2075,6 +2075,7 @@ function GearManagerDialog_OnLoad (self)
 end
 
 function GearManagerDialog_OnShow (self)
+	CharacterFrame:SetAttribute("UIPanelLayout-defined", nil);
 	if ( self.selectedSet ) then
 		self.selectedSet:SetChecked(0);
 		self.selectedSet = nil;
@@ -2085,9 +2086,13 @@ function GearManagerDialog_OnShow (self)
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 	EquipmentManagerClearIgnoredSlotsForSave();
 	PlaySound("igBackPackOpen");
+	
+	UIPanelWindows["CharacterFrame"].width = CharacterFrame:GetWidth() + GearManagerDialog:GetWidth();
+	UpdateUIPanelPositions(CharacterFrame);
 end
 
 function GearManagerDialog_OnHide (self)
+	CharacterFrame:SetAttribute("UIPanelLayout-defined", nil);
 	GearManagerDialogPopup:Hide();
 	
 	if ( self.selectedSet ) then
@@ -2104,6 +2109,9 @@ function GearManagerDialog_OnHide (self)
 			PaperDollItemSlotButton_Update(button);
 		end
 	end
+	
+	UIPanelWindows["CharacterFrame"].width = CharacterFrame:GetWidth();
+	UpdateUIPanelPositions();
 end
 
 function GearManagerDialog_OnEvent (self, event, ...)
@@ -2233,22 +2241,48 @@ function GearManagerDialogPopup_OnHide (self)
 	GearManagerDialogPopupEditBox:SetText("");
 end
 
+local _equippedItems = {};
+local _numItems;
+function RefreshEquipmentSetIconInfo ()
+	_numItems = 0;
+	for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+		if ( GetInventoryItemTexture("player", i) ) then
+			_equippedItems[i] = true;
+			_numItems = _numItems + 1;
+		else
+			_equippedItems[i] = nil;
+		end
+	end
+end
+
+function GetEquipmentSetIconInfo(index)
+	for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+		if (_equippedItems[i]) then
+			index = index - 1;
+			if ( index == 0 ) then
+				return GetInventoryItemTexture("player", i), -i;
+			end
+		end
+	end
+
+	return GetMacroIconInfo(index), index;
+end
+
 function GearManagerDialogPopup_Update ()
+	RefreshEquipmentSetIconInfo();
+
 	local popup = GearManagerDialogPopup;
 	local buttons = popup.buttons;
-	local numIcons = GetNumMacroIcons();
+	local numIcons = GetNumMacroIcons() + _numItems;
 	local offset = FauxScrollFrame_GetOffset(GearManagerDialogPopupScrollFrame) or 0;
 		
-	local button;
-	
-	-- Determine whether we're creating a new macro or editing an existing one
-	
+	local button;	
 	-- Icon list
 	local texture, index, button;
 	for i=1, NUM_GEARSET_ICONS_SHOWN do
 		local button = buttons[i];
 		index = (offset * NUM_GEARSET_ICONS_PER_ROW) + i;
-		texture = GetMacroIconInfo(index);
+		texture, realIndex = GetEquipmentSetIconInfo(index);
 		if ( index <= numIcons ) then
 			button.icon:SetTexture(texture);
 			button:Show();
@@ -2270,7 +2304,6 @@ function GearManagerDialogPopup_Update ()
 	
 	-- Scrollbar stuff
 	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(numIcons / NUM_GEARSET_ICONS_PER_ROW) , NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
-
 end
 
 function GearManagerDialogPopupOkay_Update ()
@@ -2287,17 +2320,19 @@ end
 function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 	local popup = GearManagerDialogPopup;
 	
+	local _, iconIndex = GetEquipmentSetIconInfo(popup.selectedIcon);
+	
 	if ( GetEquipmentSetInfoByName(popup.name) ) then	
 		local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name);
 		dialog.data = popup.name;
-		dialog.selectedIcon = popup.selectedIcon;
+		dialog.selectedIcon = iconIndex;
 		return;
 	elseif ( GetNumEquipmentSets() >= MAX_EQUIPMENT_SETS_PER_PLAYER ) then
 		UIErrorsFrame:AddMessage(EQUIPMENT_SETS_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
 		return
 	end
 	
-	SaveEquipmentSet(popup.name, popup.selectedIcon);
+	SaveEquipmentSet(popup.name, iconIndex);
 	GearManagerDialogPopup:Hide();
 end
 

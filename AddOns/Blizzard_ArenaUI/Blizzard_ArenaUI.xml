@@ -78,7 +78,7 @@
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
-	<Button name="ArenaEnemyPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true" scale="1.3" hidden="true">
+	<Button name="ArenaEnemyPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="77" y="31"/>
 		</Size>
@@ -165,13 +165,11 @@
 					<OnValueChanged>
 						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
-				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-				<Scripts>
 					<OnMouseUp>
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
 				<Size>
@@ -184,12 +182,12 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<Scripts>
 					<OnMouseUp>
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 		</Frames>
 		<Scripts>
@@ -294,7 +292,7 @@
 									</Anchors>
 									<TexCoords left="0.0" right="0.796" top="0.0" bottom="0.5"/>
 								</Texture>
-								<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+								<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="name">
 									<Anchors>
 										<Anchor point="BOTTOMLEFT">
 											<Offset>
@@ -443,7 +441,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentPetFrame" inherits="ArenaEnemyPetFrameTemplate"/>
+			<Button name="$parentPetFrame" inherits="ArenaEnemyPetFrameTemplate" parentKey="petFrame"/>
 			<StatusBar name="$parentCastingBar" inherits="ArenaCastingBarFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="LEFT">

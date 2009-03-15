@@ -3033,7 +3033,7 @@
 							<Anchors>
 								<Anchor point="TOP">
 									<Offset>
-										<AbsDimension x="0" y="-106"/>
+										<AbsDimension x="-10" y="-106"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -3122,7 +3122,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT">
 										<Offset>
-											<AbsDimension x="25" y="-123"/>
+											<AbsDimension x="21" y="-123"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3244,7 +3244,7 @@
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="GuildControlPopupFrameCheckbox1" relativePoint="RIGHT">
 										<Offset>
-											<AbsDimension x="115" y="1"/>
+											<AbsDimension x="117" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>

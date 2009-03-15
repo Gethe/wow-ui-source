@@ -25,8 +25,11 @@ function ComboFrame_Update()
 			UIFrameFadeIn(ComboFrame, COMBOFRAME_FADE_IN);
 		end
 
-		local fadeInfo = {};
+		
 		for i=1, MAX_COMBO_POINTS do
+			local fadeInfo = {};
+			comboPoint = getglobal("ComboPoint" .. i);
+			comboPoint:Show();
 			comboPointHighlight = getglobal("ComboPoint"..i.."Highlight");
 			comboPointShine = getglobal("ComboPoint"..i.."Shine");
 			if ( i <= comboPoints ) then
@@ -39,6 +42,9 @@ function ComboFrame_Update()
 					UIFrameFade(comboPointHighlight, fadeInfo);
 				end
 			else
+				if ( ENABLE_COLORBLIND_MODE == "1" ) then
+					comboPoint:Hide();
+				end
 				comboPointHighlight:SetAlpha(0);
 				comboPointShine:SetAlpha(0);
 			end

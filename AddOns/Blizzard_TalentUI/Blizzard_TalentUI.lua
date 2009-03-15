@@ -24,10 +24,6 @@ GLYPH_TALENT_TAB = 4;
 local next = next;
 local ipairs = ipairs;
 
--- local constants
-local DEFAULT_SPEC					= "spec1";
-local DEFAULT_TALENT_TAB			= 1;
-
 -- local data
 local specs = {
 	["spec1"] = {
@@ -178,7 +174,7 @@ function PlayerTalentFrame_OnLoad(self)
 	self.talentGroup = 1;
 	self.updateFunction = PlayerTalentFrame_Update;
 
-	TalentFrame_Load(PlayerTalentFrame);
+	TalentFrame_Load(self);
 
 	-- setup talent buttons
 	for i = 1, MAX_NUM_TALENTS do
@@ -191,7 +187,7 @@ function PlayerTalentFrame_OnLoad(self)
 	end
 
 	-- setup tabs
-	PanelTemplates_SetNumTabs(PlayerTalentFrame, MAX_TALENT_TABS + 1);	-- add one for the GLYPH_TALENT_TAB
+	PanelTemplates_SetNumTabs(self, MAX_TALENT_TABS + 1);	-- add one for the GLYPH_TALENT_TAB
 
 	-- initialize active spec as a fail safe
 	local activeTalentGroup = GetActiveTalentGroup();
@@ -224,7 +220,7 @@ function PlayerTalentFrame_OnShow(self)
 
 	if ( not selectedSpec ) then
 		-- if no spec was selected, try to select the active one
-		PlayerSpecTab_OnClick(activeSpec and specTabs[activeSpec] or specTabs[DEFAULT_SPEC]);
+		PlayerSpecTab_OnClick(activeSpec and specTabs[activeSpec] or specTabs[DEFAULT_TALENT_SPEC]);
 	else
 		PlayerTalentFrame_Refresh();
 	end
@@ -283,7 +279,7 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 				local numTalentGroups = GetNumTalentGroups(false, true);
 				if ( numTalentGroups == 0 ) then
 					--...and a pet spec is not available, select the default spec
-					PlayerSpecTab_OnClick(activeSpec and specTabs[activeSpec] or specTabs[DEFAULT_SPEC]);
+					PlayerSpecTab_OnClick(activeSpec and specTabs[activeSpec] or specTabs[DEFAULT_TALENT_SPEC]);
 					return;
 				end
 			end
@@ -335,7 +331,7 @@ end
 
 function PlayerTalentFrame_UpdateActiveSpec(activeTalentGroup, numTalentGroups)
 	-- set the active spec
-	activeSpec = DEFAULT_SPEC;
+	activeSpec = DEFAULT_TALENT_SPEC;
 	for index, spec in next, specs do
 		if ( not spec.pet and spec.talentGroup == activeTalentGroup ) then
 			activeSpec = index;
@@ -364,7 +360,8 @@ end
 
 function PlayerTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local link = GetTalentLink(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+		local link = GetTalentLink(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(),
+			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end
@@ -386,13 +383,15 @@ end
 
 function PlayerTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetTalent(PlayerTalentFrame.selectedTab, self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+		GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(),
+			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
 	end
 end
 
 function PlayerTalentFrameTalent_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetTalent(PlayerTalentFrame.selectedTab, self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+	GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(),
+		PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
 end
 
 
@@ -450,14 +449,14 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 			PlayerTalentFrameResetButton:Disable();
 		end
 		-- squish all frames to make room for this bar
-		PlayerTalentFrameUnspentPointsBar:SetPoint("BOTTOM", PlayerTalentFramePreviewBar, "TOP", 0, -4);
+		PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFramePreviewBar, "TOP", 0, -4);
 		-- mark which bars need to accomodate the activate button
 --		adjustUnspentPointsBar = false;
 --		adjustMultiLearnBar = showActivateButton;
 	else
 		PlayerTalentFramePreviewBar:Hide();
 		-- unsquish frames since the bar is now hidden
-		PlayerTalentFrameUnspentPointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
+		PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
 	end
 
 	-- readjust bars to accomodate the activate button
@@ -469,9 +468,9 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 
 	-- readjust bars to accomodate the activate button
 	if ( adjustUnspentPointsBar ) then
-		PlayerTalentFrameUnspentPointsBar:SetPoint("LEFT", PlayerTalentFrameActivateButton, "RIGHT", 0, 0);
+		PlayerTalentFramePointsBar:SetPoint("LEFT", PlayerTalentFrameActivateButton, "RIGHT", 0, 0);
 	else
-		PlayerTalentFrameUnspentPointsBar:SetPoint("LEFT", PlayerTalentFrame, "LEFT", 16, 0);
+		PlayerTalentFramePointsBar:SetPoint("LEFT", PlayerTalentFrame, "LEFT", 16, 0);
 	end
 end
 

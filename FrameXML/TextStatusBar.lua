@@ -70,7 +70,7 @@ function TextStatusBar_UpdateTextString(textStatusBar)
 			
 			if ( (textStatusBar.cvar and GetCVar(textStatusBar.cvar) == "1" and textStatusBar.textLockable) or textStatusBar.forceShow ) then
 				textString:Show();
-			elseif ( textStatusBar.lockShow > 0 ) then
+			elseif ( textStatusBar.lockShow > 0 and (not textStatusBar.forceHideText) ) then
 				textString:Show();
 			else
 				textString:Hide();

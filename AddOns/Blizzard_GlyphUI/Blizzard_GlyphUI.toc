@@ -5,6 +5,5 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
-Blizzard_GlyphUI.lua
 Blizzard_GlyphUI.xml
 Localization.lua
