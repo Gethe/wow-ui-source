@@ -769,20 +769,24 @@ end
 
 function AudioOptionsVoicePanelOutputDeviceDropDown_Initialize(self)
 	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
-	local num = Sound_ChatSystem_GetNumOutputDrivers();
+	local num = Sound_ChatSystem_GetNumOutputDrivers();	
 	local info = UIDropDownMenu_CreateInfo();
-	for index=0,num-1,1 do
-		info.text = Sound_ChatSystem_GetOutputDriverNameByIndex(index);
-		info.value = index;
-        if (selectedValue and index == selectedValue) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(self, info.text);
-		else
-			info.checked = nil;
-		end
-		info.func = AudioOptionsVoicePanelOutputDeviceDropDown_OnClick;
+	if ( num == 0 ) then
+		UIDropDownMenu_SetText(self, "");
+	else
+		for index=0,num-1,1 do
+			info.text = Sound_ChatSystem_GetOutputDriverNameByIndex(index);
+			info.value = index;
+	        if (selectedValue and index == selectedValue) then
+				info.checked = 1;
+				UIDropDownMenu_SetText(self, info.text);
+			else
+				info.checked = nil;
+			end
+			info.func = AudioOptionsVoicePanelOutputDeviceDropDown_OnClick;
 
-		UIDropDownMenu_AddButton(info);
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 end
 
@@ -793,3 +797,8 @@ function AudioOptionsVoicePanelOutputDeviceDropDown_OnClick(self)
 	dropdown:SetValue(value);
 end
 
+function AudioOptionsVoicePanelOutputDeviceDropDown_OnEvent(self, event, ...)
+	if ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
+		UIDropDownMenu_Initialize(self, AudioOptionsVoicePanelOutputDeviceDropDown_Initialize);
+	end
+end

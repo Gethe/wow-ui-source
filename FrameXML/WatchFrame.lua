@@ -1044,6 +1044,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 						WATCHFRAME_NUM_ITEMS = watchItemIndex;
 						itemButton = CreateFrame("BUTTON", "WatchFrameItem" .. watchItemIndex, lineFrame, "WatchFrameItemButtonTemplate");
 					end
+					itemButton:Show();
 					itemButton:ClearAllPoints();
 					itemButton:SetID(questIndex);
 					SetItemButtonTexture(itemButton, item);
@@ -1098,7 +1099,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				line = WatchFrame_GetQuestLine();
 				line:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 0, -WATCHFRAMELINES_FONTSPACING);
 				itemButton:SetPoint("TOPRIGHT", line, "TOPLEFT", 0, 0);
-				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", itemButton.maxStringWidth + 8, -WATCHFRAMELINES_FONTSPACING);
+				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", min(frameWidth - WATCHFRAME_ITEM_WIDTH, itemButton.maxStringWidth + 8), -WATCHFRAMELINES_FONTSPACING);
 				itemButton:Show();
 			end
 			

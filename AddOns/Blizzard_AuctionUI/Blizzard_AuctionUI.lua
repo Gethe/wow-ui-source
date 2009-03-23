@@ -836,7 +836,7 @@ function AuctionFrameBrowse_Update()
 							canBuyout = nil;
 						end
 					end
-					if ( canBuyout ) then
+					if ( canBuyout and (owner ~= UnitName("player")) ) then
 						BrowseBuyoutButton:Enable();
 						AuctionFrame.buyoutPrice = buyoutPrice;
 					end

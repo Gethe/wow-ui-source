@@ -600,7 +600,10 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick function="QuestLogPushQuest"/>
+					<OnClick>
+						QuestLogPushQuest();
+						PlaySound("igQuestLogOpen");
+					</OnClick>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, SHARE_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SHAREQUEST, 1);
 					</OnEnter>

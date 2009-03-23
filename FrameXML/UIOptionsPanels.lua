@@ -7,6 +7,20 @@ end
 -- [[ Generic Interface Options Panel ]] --
 
 function InterfaceOptionsPanel_CheckButton_OnClick (checkButton)
+	if ( checkButton:GetChecked() and checkButton.interruptCheck ) then
+		checkButton.interruptCheck(checkButton);
+		checkButton:SetChecked(false);	--Make it look like the button wasn't changed, but after the interrupt function has had a chance to look at what it was set to.
+		return;
+	elseif ( not checkButton:GetChecked() and checkButton.interruptUncheck ) then
+		checkButton.interruptUncheck(checkButton);
+		checkButton:SetChecked(true);	--Make it look like the button wasn't changed, but after the interrupt function has had a chance to look at what it was set to.
+		return;
+	end
+	
+	InterfaceOptionsPanel_CheckButton_Update(checkButton);
+end
+	
+function InterfaceOptionsPanel_CheckButton_Update (checkButton)
 	local setting = "0";
 	if ( checkButton:GetChecked() ) then
 		if ( not checkButton.invert ) then
@@ -798,6 +812,16 @@ function InterfaceOptionsObjectivesPanel_OnEvent (self, event, ...)
 	end
 end
 
+function InterfaceOptionsObjectivesPanelAdvancedWatchFrame_UncheckInterrupt(self)
+	StaticPopup_Show("ADVANCED_WATCHFRAME_OPTION_ENABLE_INTERRUPT");
+end
+
+function InterfaceOptionsObjectivesPanelAdvancedWatchFrame_ConfirmUncheck()
+	local checkButton = InterfaceOptionsObjectivesPanelAdvancedWatchFrame;
+	checkButton:SetChecked(false);
+	InterfaceOptionsPanel_CheckButton_Update(checkButton);
+end
+
 -- [[ Social Options Panel ]] --
 
 SocialPanelOptions = {
@@ -849,6 +873,16 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 			FCF_Set_SimpleChat();
 		end
 	end
+end
+
+function InterfaceOptionsSocialPanelSimpleChat_CheckInterrupt(self)
+	StaticPopup_Show("SIMPLE_CHAT_OPTION_ENABLE_INTERRUPT");
+end
+
+function InterfaceOptionsSocialPanelSimpleChat_ConfirmCheck()
+	local checkButton = InterfaceOptionsSocialPanelSimpleChat;
+	checkButton:SetChecked(true);
+	InterfaceOptionsPanel_CheckButton_Update(checkButton);
 end
 
 -- [[ ActionBars Options Panel ]] --

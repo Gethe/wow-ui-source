@@ -162,7 +162,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				else
 					PlaySound("igMainMenuOptionCheckBoxOff");
 				end
-				AchievementButton_ToggleTracking(self:GetParent().id);
+				local tracked = AchievementButton_ToggleTracking(self:GetParent().id);
+				if ( not tracked ) then
+					self:SetChecked(0);
+				end
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -603,10 +606,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="$parentLabel" text="This is a Category" inherits="GameFontNormalLeftBottom">
-					<Size x="145" y="14"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT">
 							<Offset x="16" y="4"/> 
+						</Anchor>
+						<Anchor point="TOPRIGHT">
+							<Offset x="-8" y="-4"/> 
 						</Anchor>
 					</Anchors>					
 				</FontString>

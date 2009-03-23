@@ -586,7 +586,7 @@
 		ToggleSpellBook(BOOKTYPE_PET);
 	</Binding>
 	<Binding name="TOGGLEINSCRIPTION">
-		ToggleSpellBook(INSCRIPTION);
+		ToggleGlyphFrame();
 	</Binding>
 	<Binding name="TOGGLETALENTS">
 		ToggleTalentFrame();

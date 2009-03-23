@@ -136,8 +136,6 @@ function ContainerFrame_OnHide(self)
 	else
 		PlaySound("igBackPackClose");
 	end
-
-	MouseEnableUI(false);
 end
 
 function ContainerFrame_OnShow(self)
@@ -169,8 +167,6 @@ function ContainerFrame_OnShow(self)
 	if ( ManageBackpackTokenFrame ) then
 		ManageBackpackTokenFrame();
 	end
-	
-	MouseEnableUI(true);
 end
 
 function OpenBag(id)
@@ -613,7 +609,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
 	local bag = itemButton:GetParent():GetID();
 
 	local money, honorPoints, arenaPoints, itemCount, refundSec, purchaseTime = GetContainerItemPurchaseInfo(bag, slot);
-	if ( (honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0) ) then
+	if ( not refundSec or ((honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0)) ) then
 		return false;
 	end
 	
@@ -649,10 +645,6 @@ function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
 				itemsString = format(ITEM_QUANTITY_TEMPLATE, (itemQuantity or 0) * quantity, itemLink);
 			end
 		end
-	end
-	
-	if ( honorPoints == 0 and arenaPoints == 0 and maxQuality <= ITEM_QUALITY_UNCOMMON ) then
-		return false;
 	end
 	
 	MerchantFrame.refundBag = bag;

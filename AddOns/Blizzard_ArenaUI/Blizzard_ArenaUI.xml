@@ -189,17 +189,21 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true" parentKey="DropDown">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-20" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				local id = self:GetParent():GetID();
-				local prefix = "ArenaEnemyFrame"..id.."PetFrame";
-				local unit = "arenapet"..id;
-				UnitFrame_Initialize(self, unit,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
-					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"), getglobal(prefix.."ManaBar"), getglobal(prefix.."ManaBarText"));
-				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
-				getglobal(prefix.."Name"):Hide();
-				SecureUnitButton_OnLoad(self, unit);
 				ArenaEnemyPetFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>

@@ -1993,13 +1993,14 @@ SlashCmdList["ACHIEVEMENTUI"] = function(msg)
 end
 
 SlashCmdList["EQUIP_SET"] = function(msg)
-	if ( msg and msg ~= "" ) then
-		EquipmentManager_EquipSet(msg);
+	local set = SecureCmdOptionParse(msg);
+	if ( set and set ~= "" ) then
+		EquipmentManager_EquipSet(set);
 	end
 end
 
 SlashCmdList["USE_TALENT_SPEC"] = function(msg)
-	local group = tonumber(msg);
+	local group = tonumber(SecureCmdOptionParse(msg));
 	if ( group ) then
 		SetActiveTalentGroup(group);
 	end
@@ -2449,17 +2450,17 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= self.defaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (strlen(arg2) > 0) ) then
-					body = format(_G["CHAT_"..type.."_GET"], pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..languageHeader..arg1;
+					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
 				else
-					body = format(_G["CHAT_"..type.."_GET"], pflag..arg2)..languageHeader..arg1;
+					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag..arg2);
 				end
 			else
 				if ( showLink and (strlen(arg2) > 0) and (type ~= "EMOTE") ) then
-					body = format(_G["CHAT_"..type.."_GET"], pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
+					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
 				elseif ( showLink and (strlen(arg2) > 0) and (type == "EMOTE") ) then
-					body = format(_G["CHAT_"..type.."_GET"], pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..arg2.."|h")..arg1;
+					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..arg2.."|h");
 				else
-					body = format(_G["CHAT_"..type.."_GET"], pflag..arg2, arg2)..arg1;
+					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
 				end
 			end
 

@@ -502,7 +502,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString name="WorldMapZoneInfo" inherits="SubZoneTextFont" justifyH="CENTER" >
+						<FontString name="WorldMapZoneInfo" inherits="SubZoneTextFont" justifyH="CENTER" hidden="true">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="BOTTOM">
 									<Offset>
@@ -538,22 +538,24 @@
 								self.unit = "player";
 								self:SetFrameLevel(self:GetFrameLevel()+1);
 							</OnLoad>
-							<OnEnter function="WorldMapUnit_OnEnter"/>
+							<OnEnter>
+								WorldMapUnit_OnEnter(self, motion);
+							</OnEnter>
 							<OnLeave>
 								WorldMapTooltip:Hide();
 							</OnLeave>
 							<OnMouseUp>
-								MapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
+								WorldMapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
 							</OnMouseUp>
 						</Scripts>
 					</Frame>
-					<!-- Unit drop down for the Notify AFK -->
-					<Frame name="MapGroupDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
 
-					<Frame name="WorldMapParty1" inherits="WorldMapUnitTemplate" id="1"/>
-					<Frame name="WorldMapParty2" inherits="WorldMapUnitTemplate" id="2"/>
-					<Frame name="WorldMapParty3" inherits="WorldMapUnitTemplate" id="3"/>
-					<Frame name="WorldMapParty4" inherits="WorldMapUnitTemplate" id="4"/>
+					<Frame name="WorldMapUnitDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true"/>
+
+					<Frame name="WorldMapParty1" inherits="WorldMapPartyUnitTemplate" id="1"/>
+					<Frame name="WorldMapParty2" inherits="WorldMapPartyUnitTemplate" id="2"/>
+					<Frame name="WorldMapParty3" inherits="WorldMapPartyUnitTemplate" id="3"/>
+					<Frame name="WorldMapParty4" inherits="WorldMapPartyUnitTemplate" id="4"/>
 					<Frame name="WorldMapRaid1" inherits="WorldMapRaidUnitTemplate" id="1"/>
 					<Frame name="WorldMapRaid2" inherits="WorldMapRaidUnitTemplate" id="2"/>
 					<Frame name="WorldMapRaid3" inherits="WorldMapRaidUnitTemplate" id="3"/>
@@ -724,32 +726,11 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="WorldMapFrame_OnLoad"/>
-			<OnShow>
-				SetupFullscreenScale(self);
-				UpdateMicroButtons();
-				SetMapToCurrentZone();
-				PlaySound("igQuestLogOpen");
-				CloseDropDownMenus();
-				WorldMapFrame_PingPlayerPosition();
-				WorldMap_LoadTextures();
-			</OnShow>
-			<OnHide>
-				UpdateMicroButtons();
-				PlaySound("igQuestLogClose");
-				WorldMap_ClearTextures();
-			</OnHide>
+			<OnShow function="WorldMapFrame_OnShow"/>
+			<OnHide function="WorldMapFrame_OnHide"/>
 			<OnEvent function="WorldMapFrame_OnEvent"/>
 			<OnUpdate function="RequestBattlefieldPositions"/>
-			<OnKeyDown>
-				local binding = GetBindingFromClick(key)
-				if ((binding == "TOGGLEWORLDMAP") or (binding == "TOGGLEGAMEMENU")) then
-					RunBinding("TOGGLEWORLDMAP");
-				elseif ( binding == "SCREENSHOT" ) then
-					RunBinding("SCREENSHOT");
-				elseif ( binding == "MOVIE_RECORDING_STARTSTOP" ) then
-					RunBinding("MOVIE_RECORDING_STARTSTOP");
-				end
-			</OnKeyDown>
+			<OnKeyDown function="WorldMapFrame_OnKeyDown"/>
 		</Scripts>
 	</Frame>
 	<GameTooltip name="WorldMapTooltip" frameStrata="TOOLTIP" hidden="true" parent="WorldMapFrame" inherits="GameTooltipTemplate">

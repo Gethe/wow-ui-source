@@ -95,20 +95,25 @@ NUM_ACHIEVEMENT_CRITERIA_FLAGS			= 2;
 --
 -- Inventory Constants
 --
+
+-- General item constants
+ITEM_UNIQUE_EQUIPPED = -1;
+MAX_NUM_SOCKETS = 3;
+
+-- Item quality
 ITEM_QUALITY_POOR = 0;
 ITEM_QUALITY_COMMON = 1;
 ITEM_QUALITY_UNCOMMON = 2;
 ITEM_QUALITY_RARE = 3;
 ITEM_QUALITY_EPIC = 4;
 
+-- Item location bitflags
 ITEM_INVENTORY_LOCATION_PLAYER	= 0x00100000;
 ITEM_INVENTORY_LOCATION_BAGS	= 0x00200000;
 ITEM_INVENTORY_LOCATION_BANK	= 0x00400000;
-
 ITEM_INVENTORY_BAG_BIT_OFFSET 	= 8; -- Number of bits that the bag index in GetInventoryItemsForSlot gets shifted to the left.
 
-ITEM_INVENTORY_BANK_BAG_OFFSET	= 4; -- Number of bags before the first bank bag
-
+-- Inventory slots
 INVSLOT_HEAD 		= 1; INVSLOT_FIRST_EQUIPPED = INVSLOT_HEAD;
 INVSLOT_NECK		= 2;
 INVSLOT_SHOULDER	= 3;
@@ -130,10 +135,13 @@ INVSLOT_RANGED		= 18;
 INVSLOT_TABARD		= 19;
 INVSLOT_LAST_EQUIPPED = INVSLOT_TABARD;
 
+-- Container constants
+ITEM_INVENTORY_BANK_BAG_OFFSET	= 4; -- Number of bags before the first bank bag
 CONTAINER_BAG_OFFSET = 19; -- Used for PutItemInBag
 
 BACKPACK_CONTAINER = 0;
 BANK_CONTAINER = -1;
+BANK_CONTAINER_INVENTORY_OFFSET = 39; -- Used for PickupInventoryItem
 KEYRING_CONTAINER = -2;
 
 NUM_BAG_SLOTS = 4;

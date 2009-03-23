@@ -3672,6 +3672,7 @@ function Blizzard_CombatLog_QuickButton_OnClick(id)
 		Blizzard_CombatLog_Refilter();
 	end
 	Blizzard_CombatLog_Update_QuickButtons();
+	PlaySound("UChatScrollButton");
 end
 
 function ShowQuickButton(filter)

@@ -639,7 +639,7 @@ function UnitPopup_HideButtons ()
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				elseif ( not UnitInBattleground(dropdownMenu.unit) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				elseif ( (MapUnit_IsInactive and MapUnit_IsInactive(dropdownMenu.unit)) ) then
+				elseif ( (PlayerIsPVPInactive(dropdownMenu.unit)) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			elseif ( dropdownMenu.name ) then

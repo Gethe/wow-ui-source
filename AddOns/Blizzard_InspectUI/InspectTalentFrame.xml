@@ -135,6 +135,7 @@
 						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update();
 						TalentFrame_Update(InspectTalentFrame);
+						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -147,6 +148,7 @@
 						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update();
 						TalentFrame_Update(InspectTalentFrame);
+						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -159,6 +161,7 @@
 						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update();
 						TalentFrame_Update(InspectTalentFrame);
+						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>
 			</Button>

@@ -908,17 +908,20 @@ function FriendsFrame_UnIgnore()
 	local name;
 	name = GetIgnoreName(FriendsFrame.selectedIgnore);
 	DelIgnore(name);
+	PlaySound("UChatScrollButton");
 end
 
 function FriendsFrame_UnMute()
 	local name;
 	name = GetMuteName(FriendsFrame.selectedMute);
 	DelMute(name);
+	PlaySound("UChatScrollButton");
 end
 
 function FriendsFrame_RemoveFriend()
 	if ( FriendsFrame.selectedFriend ) then
 		RemoveFriend(FriendsFrame.selectedFriend);
+		PlaySound("UChatScrollButton");
 	end
 end
 
@@ -930,11 +933,13 @@ function FriendsFrame_SendMessage()
 		ChatFrameEditBox:SetText("/w "..name.." ");
 	end
 	ChatEdit_ParseText(ChatFrame1.editBox, 0);
+	PlaySound("UChatScrollButton");
 end
 
 function FriendsFrame_GroupInvite()
 	local name = GetFriendInfo(FriendsFrame.selectedFriend);
 	InviteUnit(name);
+	PlaySound("UChatScrollButton");
 end
 
 function ToggleFriendsFrame(tab)

@@ -153,7 +153,6 @@ function TalentFrame_Update(TalentFrame)
 
 	TalentFrame_ResetBranches(TalentFrame);
 	local talentFrameTalentName = talentFrameName.."Talent";
-	local tier, column, rank, maxRank, isExceptional, isLearnable;
 	local forceDesaturated, tierUnlocked;
 	for i=1, MAX_NUM_TALENTS do
 		local buttonName = talentFrameTalentName..i;

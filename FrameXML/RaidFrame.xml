@@ -330,7 +330,11 @@
 						else
 							RaidInfoFrame:SetPoint("TOPLEFT", "RaidFrame", "TOPRIGHT", -33, -28);
 						end
+						PlaySound("UChatScrollButton");
 					</OnShow>
+					<OnHide>
+						PlaySound("UChatScrollButton");
+					</OnHide>
 				</Scripts>
 			</Frame>
 		</Frames>

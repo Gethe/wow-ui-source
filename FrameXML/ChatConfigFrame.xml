@@ -1851,8 +1851,9 @@
 								self:RegisterEvent("RAID_ROSTER_UPDATE");
 							</OnLoad>
 							<OnEvent>
-								-- This needs to be broken out into a multiline handler because Blizzard_CombatLog_Update_QuickButtons is defined in an addon.
-								Blizzard_CombatLog_Update_QuickButtons(self, event, ...);
+								if ( Blizzard_CombatLog_Update_QuickButtons ) then	--The function is in an AddOn, so we want to make sure it is loaded before calling it.
+									Blizzard_CombatLog_Update_QuickButtons();
+								end
 							</OnEvent>
 							<OnShow function="CombatConfig_Settings_Update"/>
 						</Scripts>

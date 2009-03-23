@@ -13,16 +13,23 @@
 			GameTooltip:Hide();
 		</OnLeave>
 		<OnMouseUp>
-			MapUnit_OnMouseUp(self, button, "BattlefieldMinimapRaid", "BattlefieldMinimapParty");
+			WorldMapUnit_OnMouseUp(self, button, "BattlefieldMinimapRaid", "BattlefieldMinimapParty");
 		</OnMouseUp>
+	</Scripts>
+</Frame>
+<Frame name="BattlefieldMinimapPartyUnitTemplate" inherits="BattlefieldMinimapUnitTemplate" virtual="true">
+	<Scripts>
+		<OnLoad>
+			WorldMapUnit_OnLoad(self);
+			self.unit = "party"..self:GetID();
+		</OnLoad>
 	</Scripts>
 </Frame>
 <Frame name="BattlefieldMinimapRaidUnitTemplate" inherits="BattlefieldMinimapUnitTemplate" virtual="true">
 	<Scripts>
 		<OnLoad>
-			self:SetFrameLevel(self:GetFrameLevel() + 1);
+			WorldMapUnit_OnLoad(self);
 			self.unit = "raid"..self:GetID();
-			getglobal(self:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
 		</OnLoad>
 	</Scripts>
 </Frame>
@@ -105,7 +112,6 @@
 		</OnShow>
 		<OnClick>
 			BattlefieldMinimapTab_OnClick(self, button);
-			PlaySound("UChatScrollButton");
 		</OnClick>
 		<OnEnter>
 			GameTooltip_AddNewbieTip(self, BATTLEFIELDMINIMAP_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_BATTLEFIELDMINIMAP_OPTIONS, 1);
@@ -353,13 +359,11 @@
 				</OnClick>
 			</Scripts>
 		</Button>
-		<!-- Unit drop down for the Notify AFK -->
-		<Frame name="MapGroupDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
 
-		<Frame name="BattlefieldMinimapParty1" inherits="BattlefieldMinimapUnitTemplate" id="1"/>
-		<Frame name="BattlefieldMinimapParty2" inherits="BattlefieldMinimapUnitTemplate" id="2"/>
-		<Frame name="BattlefieldMinimapParty3" inherits="BattlefieldMinimapUnitTemplate" id="3"/>
-		<Frame name="BattlefieldMinimapParty4" inherits="BattlefieldMinimapUnitTemplate" id="4"/>
+		<Frame name="BattlefieldMinimapParty1" inherits="BattlefieldMinimapPartyUnitTemplate" id="1"/>
+		<Frame name="BattlefieldMinimapParty2" inherits="BattlefieldMinimapPartyUnitTemplate" id="2"/>
+		<Frame name="BattlefieldMinimapParty3" inherits="BattlefieldMinimapPartyUnitTemplate" id="3"/>
+		<Frame name="BattlefieldMinimapParty4" inherits="BattlefieldMinimapPartyUnitTemplate" id="4"/>
 		<Frame name="BattlefieldMinimapRaid1" inherits="BattlefieldMinimapRaidUnitTemplate" id="1"/>
 		<Frame name="BattlefieldMinimapRaid2" inherits="BattlefieldMinimapRaidUnitTemplate" id="2"/>
 		<Frame name="BattlefieldMinimapRaid3" inherits="BattlefieldMinimapRaidUnitTemplate" id="3"/>
@@ -414,16 +418,8 @@
 	</Frames>
 	<Scripts>
 		<OnLoad function="BattlefieldMinimap_OnLoad"/>
-		<OnShow>
-			SetMapToCurrentZone();
-			BattlefieldMinimap_Update();
-			BattlefieldMinimap_SetOpacity(BattlefieldMinimapOptions.opacity);
-			BattlefieldMinimapTab:Show();
-		</OnShow>
-		<OnHide>
-			BattlefieldMinimapTab:Hide();
-			BattlefieldMinimap_ClearTextures();
-		</OnHide>
+		<OnShow function="BattlefieldMinimap_OnShow"/>
+		<OnHide function="BattlefieldMinimap_OnHide"/>
 		<OnEvent function="BattlefieldMinimap_OnEvent"/>
 		<OnUpdate function="BattlefieldMinimap_OnUpdate"/>
 	</Scripts>

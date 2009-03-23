@@ -435,12 +435,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								<Scripts>
 									<OnLoad>
 										_G[self:GetName().."Text"]:SetText(AUTO_ADD_MEMBERS);
-										self:RegisterEvent("VARIABLES_LOADED");
 									</OnLoad>
-									<OnEvent>
-										self:SetChecked(GetCVarBool("lfgAutoFill"));
-										LFMFrame_UpdateAutoAdd(self:GetChecked());
-									</OnEvent>
 									<OnClick>
 										if ( self:GetChecked() ) then
 											PlaySound("igMainMenuOptionCheckBoxOn");
@@ -1137,19 +1132,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								<Scripts>
 									<OnLoad>
 										_G[self:GetName().."Text"]:SetText(AUTO_JOIN);
-										self:RegisterEvent("VARIABLES_LOADED");
 									</OnLoad>
-									<OnEvent>
-										self:SetChecked(GetCVarBool("lfgAutoJoin"));
-										LFGFrame_UpdateAutoJoin();
-									</OnEvent>
 									<OnClick>
 										if ( self:GetChecked() ) then
 											PlaySound("igMainMenuOptionCheckBoxOn");
 										else
 											PlaySound("igMainMenuOptionCheckBoxOff");
 										end
-										LFGFrame_Update();
+										LFGFrame_UpdateAutoJoin();
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1380,11 +1370,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<Scripts>
 							<OnLoad>
 								_G[self:GetName().."Text"]:SetText(LEADER);
-								self:RegisterEvent("VARIABLES_LOADED");
 							</OnLoad>
-							<OnEvent>
-								self:SetChecked(GetCVarBool("lfgAutoJoin"));
-							</OnEvent>
 							<OnClick function="LFGFrameRoleCheckButton_OnClick"/>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

@@ -17,6 +17,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
+				PlaySound("igCharacterInfoTab");
 				PlayerSpecTab_OnClick(self, button, down);
 			</OnClick>
 			<OnEnter>

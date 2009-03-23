@@ -3468,6 +3468,12 @@ function CalendarCreateEventFrame_OnEvent(self, event, ...)
 			CalendarCreateEventCreateButton_Update();
 --]]
 		elseif ( event == "GUILD_ROSTER_UPDATE" or event == "PLAYER_GUILD_UPDATE" ) then
+			if ( event == "GUILD_ROSTER_UPDATE" ) then
+				local arg1 = ...;
+				if ( arg1 ) then
+					GuildRoster();
+				end
+			end
 			if ( CalendarEventCanEdit() ) then
 				if ( CalendarCreateEventFrame.mode == "edit" ) then
 					CalendarCreateEventFrame_Update();

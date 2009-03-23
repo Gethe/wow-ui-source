@@ -4,7 +4,7 @@ MAX_WORLDSTATE_SCORE_BUTTONS = 20;
 MAX_NUM_STAT_COLUMNS = 7;
 WORLDSTATESCOREFRAME_BASE_COLUMNS = 6;
 WORLDSTATESCOREFRAME_PADDING = 35;
-WORLDSTATESCOREFRAME_COLUMN_SPACING = 66;
+WORLDSTATESCOREFRAME_COLUMN_SPACING = 76;
 WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET = -30;
 
 WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = -25;
@@ -473,9 +473,11 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", "WorldStateScoreFrameKB", "RIGHT", -5, 0);
 		if ( isRegistered ) then
 			WorldStateScoreFrameTeam:Show();
+			WorldStateScoreFrameHonorGained:Show();
 			WorldStateScoreFrameHonorGainedText:SetText(SCORE_RATING_CHANGE);
 			WorldStateScoreFrameHonorGained.sortType = "team";
 			WorldStateScoreFrameHonorGained.tooltip = RATING_CHANGE_TOOLTIP;
+			WorldStateScoreFrameTeamSkill:Show();
 			WorldStateScoreFrameTeamSkillText:SetText(SCORE_TEAM_SKILL);
 			WorldStateScoreFrameTeamSkill.sortType = "team";
 			WorldStateScoreFrameTeamSkill.tooltip = TEAM_SKILL_TOOLTIP;
@@ -620,12 +622,12 @@ function WorldStateScoreFrame_Update()
 	end
 	
 	if ( isArena and isRegistered ) then
-		WorldStateScoreFrameTeamSkill:SetPoint("LEFT", honorGainedAnchorFrame, "RIGHT", -5, 0);
+		WorldStateScoreFrameTeamSkill:SetPoint("LEFT", honorGainedAnchorFrame, "RIGHT", 10, 0);
 		honorGainedAnchorFrame = "WorldStateScoreFrameTeamSkill";
 	end
 	
 	-- Anchor the bonus honor gained to the last column shown
-	WorldStateScoreFrameHonorGained:SetPoint("LEFT", honorGainedAnchorFrame, "RIGHT", -5, 0);
+	WorldStateScoreFrameHonorGained:SetPoint("LEFT", honorGainedAnchorFrame, "RIGHT", 5, 0);
 	
 	-- Last button shown is what the player count anchors to
 	local lastButtonShown = "WorldStateScoreButton1";
@@ -935,7 +937,7 @@ function ToggleWorldStateScoreFrame()
 end
 
 -- Report AFK feature
-AFK_PLAYER_CLICKED = nil;
+local AFK_PLAYER_CLICKED = nil;
 
 function ScorePlayer_OnMouseUp(self, mouseButton)
 	if ( mouseButton == "RightButton" ) then

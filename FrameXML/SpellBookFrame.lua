@@ -17,7 +17,7 @@ function ToggleSpellBook(bookType)
 	end
 	
 	local isShown = SpellBookFrame:IsShown();
-	if ( isShown ) then
+	if ( isShown and (SpellBookFrame.bookType ~= bookType) ) then
 		SpellBookFrame.suppressCloseSound = true;
 	end
 	
@@ -551,6 +551,9 @@ function SpellBookSkillLineTab_OnClick(self, id)
 	if ( not id ) then
 		update = 1;
 		id = self:GetID();
+	end
+	if ( SpellBookFrame.selectedSkillLine ~= id ) then
+		PlaySound("igAbiliityPageTurn");
 	end
 	SpellBookFrame.selectedSkillLine = id;
 	local name, texture, offset, numSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);

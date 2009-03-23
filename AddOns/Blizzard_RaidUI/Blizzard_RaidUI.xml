@@ -943,6 +943,7 @@
 			<OnClick>
 				if ( UnitCanCooperate("player", "target") ) then
 					InviteUnit(UnitName("target"));
+					PlaySound("UChatScrollButton");
 				else
 					StaticPopup_Show("ADD_RAIDMEMBER");
 				end
@@ -964,7 +965,10 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnClick function="DoReadyCheck"/>
+			<OnClick>
+				DoReadyCheck();
+				PlaySound("UChatScrollButton");
+			</OnClick>
 		</Scripts>
 		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>

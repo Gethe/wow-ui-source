@@ -979,6 +979,8 @@ function AchievementButton_ToggleTracking (id)
 	AddTrackedAchievement(id);
 	AchievementFrameAchievements_ForceUpdate();
 	WatchFrame_Update();
+	
+	return true;
 end
 	
 function AchievementButton_DisplayAchievement (button, category, achievement, selectionID)
@@ -2424,7 +2426,7 @@ function AchievementFrameComparison_UpdateStats ()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local headerHeight = 24;
-	local statHeight = 23;
+	local statHeight = 24;
 	local totalHeight = 0;	
 	local numStats, numCompleted = GetCategoryNumAchievements(category);
 

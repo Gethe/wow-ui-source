@@ -904,6 +904,7 @@
 								FriendsFrame.showFriendsList = nil;
 								FriendsFrame.showMutedList = nil;
 								FriendsFrame_Update();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -921,6 +922,7 @@
 								FriendsFrame.showFriendsList = nil;
 								FriendsFrame.showMutedList = 1;
 								FriendsFrame_Update();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -939,6 +941,7 @@
 							<OnClick>
 								if ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") ) then
 									AddFriend(UnitName("target"));
+									PlaySound("UChatScrollButton");
 								else
 									StaticPopup_Show("ADD_FRIEND");
 								end
@@ -1164,6 +1167,7 @@
 								FriendsFrame.showFriendsList = 1;
 								FriendsFrame.showMutedList = nil;
 								FriendsFrame_Update();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1197,6 +1201,7 @@
 								FriendsFrame.showFriendsList = nil;
 								FriendsFrame.showMutedList = 1;
 								FriendsFrame_Update();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1218,6 +1223,7 @@
 							<OnClick>
 								if ( UnitCanCooperate("player", "target") ) then
 									AddIgnore(UnitName("target"));
+									PlaySound("UChatScrollButton");
 								else
 									StaticPopup_Show("ADD_IGNORE");
 								end
@@ -1495,6 +1501,7 @@
 								FriendsFrame.showMutedList = nil;
 								FriendsFrame.showFriendsList = 1;
 								FriendsFrame_Update();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1512,6 +1519,7 @@
 								FriendsFrame.showMutedList = nil;
 								FriendsFrame.showFriendsList = nil;
 								FriendsFrame_Update();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1549,6 +1557,7 @@
 							<OnClick>
 								if ( UnitCanCooperate("player", "target") ) then
 									AddMute(UnitName("target"));
+									PlaySound("UChatScrollButton");
 								else
 									StaticPopup_Show("ADD_MUTE");
 								end
@@ -1893,6 +1902,7 @@
 									<OnMouseUp>
 										if ( WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType ) then
 											SortWho(WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType);
+											PlaySound("igMainMenuOptionCheckBoxOn");
 										end
 									</OnMouseUp>
 								</Scripts>
@@ -2153,6 +2163,7 @@
 							<OnClick>
 								WhoFrameEditBox_OnEnterPressed(WhoFrameEditBox);
 								WhoFrame.selectedWho = nil;
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>

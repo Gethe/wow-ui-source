@@ -392,7 +392,7 @@ end
 
 function LFMFrame_UpdateDropDowns()
 	-- Update the search dropdowns
-	local _, _, _, _, _, _, lfmType, lfmName, _, queued, lfgStatus, lfmStatus, autoaddStatus = GetLookingForGroup();
+	local _, _, _, _, _, _, lfmType, lfmName, _, queued, lfgStatus, lfmStatus = GetLookingForGroup();
 	-- Set LFM settings
 	-- Set the LFM Type DropDown
 	UIDropDownMenu_Initialize(LFMFrameTypeDropDown, LFMFrameTypeDropDown_Initialize);
@@ -446,7 +446,7 @@ function LFMFrame_OnUpdate(self, elapsed)
 
 		--If your party is full you can't autoadd
 		local _, _, _, _, _, _, _, _, _, queued, lfgStatus, lfmStatus = GetLookingForGroup();
-		if ( (queued and lfgStatus) or RealPartyIsFull() or (((GetRealNumPartyMembers() > 0) and not IsRealPartyLeader()) or ((GetRealNumRaidMembers() > 0) and not IsRealRaidLeader())) or not LFMFrame_CanAutoAdd() ) then
+		if ( (queued and lfgStatus) or RealPartyIsFull() or (not IsRealPartyLeader()) or (not IsRealRaidLeader()) or not LFMFrame_CanAutoAdd() ) then
 			LFMFrame_DisableAutoAdd();
 		else
 			LFMFrame_EnableAutoAdd();
@@ -481,7 +481,6 @@ function LFMFrame_UpdateAutoAdd(autoaddStatus, setCheckbox)
 	if ( setCheckbox ) then
 		AutoAddMembersCheckButton:SetChecked(autoaddStatus);
 	end
-	SetCVar("lfgAutoFill", autoaddStatus);
 end
 
 function LFMButton_OnClick(self, button)
@@ -655,7 +654,6 @@ end
 
 ----------------------------- LFG Functions -----------------------------
 function LFGFrame_OnLoad(self)
-	self.firstTimeShown = 1;
 	self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("MEETINGSTONE_CHANGED");
 	self:RegisterEvent("PLAYER_LEVEL_UP");
@@ -702,7 +700,7 @@ function LFGFrame_OnUpdate(self, elapsed)
 end
 
 function LFGFrame_Update()
-	local type1, name1, type2, name2, type3, name3, lfmType, lfmName, comment, queued, lfgStatus, lfmStatus, autoaddStatus = GetLookingForGroup();
+	local type1, name1, type2, name2, type3, name3, lfmType, lfmName, comment, queued, lfgStatus, lfmStatus = GetLookingForGroup();
 	-- Set LFG settings
 	if ( type1 ) then
 		UIDropDownMenu_Initialize(LFGFrameTypeDropDown1, LFGFrameTypeDropDown_Initialize);
@@ -723,31 +721,17 @@ function LFGFrame_Update()
 		SetLFGNameCriteria(LFGFrameNameDropDown3, name3, UIDropDownMenu_GetValue(name3), 1);
 	end
 
-	LFGFrame_UpdateAutoJoin();
 	-- Show/Hide Eye
 	if ( queued and lfgStatus ) then
 		LFGEye:Show();
 	else
 		LFGEye:Hide();
 	end
-	LFMFrame_UpdateAutoAdd(autoaddStatus, true);
+	LFMFrame_UpdateAutoAdd(queued, true);
+	LFGFrame_UpdateAutoJoinButton(queued);
 end
 
-function LFGFrame_UpdateDropDowns()
-	if ( UIDropDownMenu_GetSelectedID(LFGFrameNameDropDown1) ~= 0 ) then
-		LFGFrame.firstTimeShown = nil;
-	end
-	if ( LFGFrame.firstTimeShown ) then
-		LFGLabel2:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		UIDropDownMenu_DisableDropDown(LFGFrameTypeDropDown2);
-		UIDropDownMenu_DisableDropDown(LFGFrameNameDropDown2);
-		LFGLabel3:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		UIDropDownMenu_DisableDropDown(LFGFrameTypeDropDown3);
-		UIDropDownMenu_DisableDropDown(LFGFrameNameDropDown3);
-		LFGFrame.firstTimeShown = nil;
-		return;
-	end
-	
+function LFGFrame_UpdateDropDowns()	
 	local _, _, type2, _, type3 = GetLookingForGroup();
 	
 	-- If a type is selected then enable the name dropdown
@@ -784,7 +768,10 @@ function LFGFrame_UpdateAutoJoin()
 	else
 		ClearLFGAutojoin();
 	end
-	SetCVar("lfgAutoFill", AutoJoinCheckButton:GetChecked());
+end
+
+function LFGFrame_UpdateAutoJoinButton(autojoinStatus)
+	AutoJoinCheckButton:SetChecked(autojoinStatus);
 end
 
 function LFGFrame_DisableAutoJoin()
@@ -846,7 +833,6 @@ function SetLFGTypeCriteria(dropdown, id)
 		UIDropDownMenu_ClearAll(nameDropDown);
 		getglobal("LFGSearchIcon"..dropdownID):SetTexture("");
 	end
-	SetLFGType(dropdown:GetID(), id);
 end
 
 -- Entryname Dropdown stuff
@@ -949,6 +935,7 @@ end
 function LFGFrameClearAllButton_OnClick()
 	ClearLookingForGroup();
 	LFGFrame_Update();
+	LFGParentFrame_UpdateTabs();
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 

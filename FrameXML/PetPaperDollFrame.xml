@@ -926,6 +926,9 @@
 						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
 					</OnLoad>
 					<OnClick>
+						if ( PetPaperDollFrame.selectedTab ~= 1 ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						end
 						PetPaperDollFrame_SetTab(1);
 					</OnClick>
 				</Scripts>
@@ -945,6 +948,9 @@
 						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
 					</OnLoad>
 					<OnClick>
+						if ( PetPaperDollFrame.selectedTab ~= 2 ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						end
 						PetPaperDollFrame_SetTab(2);
 					</OnClick>
 				</Scripts>
@@ -964,6 +970,9 @@
 						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
 					</OnLoad>
 					<OnClick>
+						if ( PetPaperDollFrame.selectedTab ~= 3 ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						end
 						PetPaperDollFrame_SetTab(3);
 					</OnClick>
 				</Scripts>

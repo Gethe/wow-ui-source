@@ -90,6 +90,7 @@ function ChannelFrame_New_OnClick()
 		--ChannelFrameDaughterFrameVoiceChat:SetChecked(1);
 		--ChannelFrameDaughterFrameVoiceChat:Show();
 		ChannelFrameDaughterFrame:Show();
+		PlaySound("UChatScrollButton");
 	end
 end
 
@@ -146,6 +147,7 @@ end
 function ChannelFrameDaughterFrame_OnHide()
 	ChannelFrameDaughterFrameChannelName:SetText("");
 	ChannelFrameDaughterFrameChannelPassword:SetText("");
+	PlaySound("UChatScrollButton");
 end
 
 --[ Channel List Functions ]--

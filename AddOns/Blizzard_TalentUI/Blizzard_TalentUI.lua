@@ -95,11 +95,41 @@ end
 
 -- PlayerTalentFrame
 
-function PlayerTalentFrame_Toggle()
-	if ( PlayerTalentFrame:IsShown() ) then
-		HideUIPanel(PlayerTalentFrame);
-	else
+function PlayerTalentFrame_Toggle(pet, suggestedTalentGroup)
+	local hidden;
+	local talentTabSelected = PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= GLYPH_TALENT_TAB;
+	if ( not PlayerTalentFrame:IsShown() ) then
 		ShowUIPanel(PlayerTalentFrame);
+		hidden = false;
+	else
+		local spec = selectedSpec and specs[selectedSpec];
+		if ( spec and talentTabSelected ) then
+			-- if a talent tab is selected then toggle the frame off
+			HideUIPanel(PlayerTalentFrame);
+			hidden = true;
+		else
+			hidden = false;
+		end
+	end
+	if ( not hidden ) then
+		-- open the spec with the requested talent group (or the current talent group if the selected
+		-- spec has one)
+		if ( selectedSpec ) then
+			local spec = specs[selectedSpec];
+			if ( spec.pet == pet ) then
+				suggestedTalentGroup = spec.talentGroup;
+			end
+		end
+		for _, index in ipairs(TALENT_SORT_ORDER) do
+			local spec = specs[index];
+			if ( spec.pet == pet and spec.talentGroup == suggestedTalentGroup ) then
+				PlayerSpecTab_OnClick(specTabs[index]);
+				if ( not talentTabSelected ) then
+					PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PlayerTalentTab_GetBestDefaultTab(index)]);
+				end
+				break;
+			end
+		end
 	end
 end
 
@@ -110,6 +140,45 @@ function PlayerTalentFrame_Open(pet, talentGroup)
 		if ( spec.pet == pet and spec.talentGroup == talentGroup ) then
 			PlayerSpecTab_OnClick(specTabs[index]);
 			break;
+		end
+	end
+end
+
+function PlayerTalentFrame_ToggleGlyphFrame(suggestedTalentGroup)
+	GlyphFrame_LoadUI();
+	if ( GlyphFrame ) then
+		local hidden;
+		if ( not PlayerTalentFrame:IsShown() ) then
+			ShowUIPanel(PlayerTalentFrame);
+			hidden = false;
+		else
+			local spec = selectedSpec and specs[selectedSpec];
+			if ( spec and spec.hasGlyphs and
+				 PanelTemplates_GetSelectedTab(PlayerTalentFrame) == GLYPH_TALENT_TAB ) then
+				-- if the glyph tab is selected then toggle the frame off
+				HideUIPanel(PlayerTalentFrame);
+				hidden = true;
+			else
+				hidden = false;
+			end
+		end
+		if ( not hidden ) then
+			-- open the spec with the requested talent group (or the current talent group if the selected
+			-- spec has one)
+			if ( selectedSpec ) then
+				local spec = specs[selectedSpec];
+				if ( spec.hasGlyphs ) then
+					suggestedTalentGroup = spec.talentGroup;
+				end
+			end
+			for _, index in ipairs(TALENT_SORT_ORDER) do
+				local spec = specs[index];
+				if ( spec.hasGlyphs and spec.talentGroup == suggestedTalentGroup ) then
+					PlayerSpecTab_OnClick(specTabs[index]);
+					PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..GLYPH_TALENT_TAB]);
+					break;
+				end
+			end
 		end
 	end
 end
@@ -512,7 +581,7 @@ function PlayerTalentFrameDownArrow_OnClick(self, button)
 end
 
 
--- TalentFrameTabs
+-- PlayerTalentFrameTab
 
 function PlayerTalentFrame_UpdateTabs(playerLevel)
 	local totalTabWidth = 0;
@@ -626,6 +695,8 @@ function PlayerTalentFrameTab_OnEnter(self)
 end
 
 
+-- PlayerTalentTab
+
 function PlayerTalentTab_OnLoad(self)
 	PlayerTalentFrameTab_OnLoad(self);
 
@@ -645,6 +716,27 @@ function PlayerTalentTab_OnEvent(self, event, ...)
 	end
 end
 
+function PlayerTalentTab_GetBestDefaultTab(specIndex)
+	if ( not specIndex ) then
+		return DEFAULT_TALENT_TAB;
+	end
+
+	local spec = specs[specIndex];
+	if ( not spec ) then
+		return DEFAULT_TALENT_TAB;
+	end
+
+	local specInfoCache = talentSpecInfoCache[specIndex];
+	TalentFrame_UpdateSpecInfoCache(specInfoCache, false, spec.pet, spec.talentGroup);
+	if ( specInfoCache.primaryTabIndex > 0 ) then
+		return talentSpecInfoCache[specIndex].primaryTabIndex;
+	else
+		return DEFAULT_TALENT_TAB;
+	end
+end
+
+
+-- PlayerGlyphTab
 
 function PlayerGlyphTab_OnLoad(self)
 	PlayerTalentFrameTab_OnLoad(self);
@@ -900,14 +992,7 @@ function PlayerSpecTab_OnClick(self)
 
 	-- select a tab if one is not already selected
 	if ( not PanelTemplates_GetSelectedTab(PlayerTalentFrame) ) then
-		-- if there is a primary tab then we'll prefer that one
-		local specInfoCache = talentSpecInfoCache[specIndex];
-		TalentFrame_UpdateSpecInfoCache(specInfoCache, false, spec.pet, spec.talentGroup);
-		if ( specInfoCache.primaryTabIndex > 0 ) then
-			PanelTemplates_SetTab(PlayerTalentFrame, talentSpecInfoCache[specIndex].primaryTabIndex);
-		else
-			PanelTemplates_SetTab(PlayerTalentFrame, DEFAULT_TALENT_TAB);
-		end
+		PanelTemplates_SetTab(PlayerTalentFrame, PlayerTalentTab_GetBestDefaultTab(specIndex));
 	end
 
 	-- update the talent frame

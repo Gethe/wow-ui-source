@@ -1364,7 +1364,7 @@ StaticPopupDialogs["DELETE_ITEM"] = {
 	end,
 	OnUpdate = function (self)
 		if ( not CursorHasItem() ) then
-			StaticPopup_Hide("DELETE_ITEM");
+			self:Hide();
 		end
 	end,
 	timeout = 0,
@@ -1385,7 +1385,7 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 	end,
 	OnUpdate = function (self)
 		if ( not CursorHasItem() ) then
-			StaticPopup_Hide("DELETE_GOOD_ITEM");
+			self:Hide();
 		end
 	end,
 	timeout = 0,
@@ -2077,7 +2077,7 @@ StaticPopupDialogs["INSTANCE_BOOT"] = {
 	OnShow = function(self)
 		self.timeleft = GetInstanceBootTimeRemaining();
 		if ( self.timeleft <= 0 ) then
-			StaticPopup_Hide("INSTANCE_BOOT");
+			self:Hide();
 		end
 	end,
 	timeout = 0,
@@ -2087,29 +2087,60 @@ StaticPopupDialogs["INSTANCE_BOOT"] = {
 };
 
 StaticPopupDialogs["INSTANCE_LOCK"] = {
+	-- we use a custom timer called lockTimeleft in here to avoid special casing the static popup code
+	-- if you use timeout or timeleft then you will go through the StaticPopup system's standard OnUpdate
+	-- code which we don't want for this dialog
 	text = INSTANCE_LOCK_TIMER,
 	button1 = ACCEPT,
 	button2 = INSTANCE_LEAVE,
 	OnShow = function(self)
-		self.timeleft = GetInstanceLockTimeRemaining();
-		if ( self.timeleft <= 0 ) then
-			StaticPopup_Hide("INSTANCE_LOCK");
+		local lockTimeleft = GetInstanceLockTimeRemaining();
+		if ( lockTimeleft <= 0 ) then
+			self:Hide();
+			return;
 		end
+		self.lockTimeleft = lockTimeleft;
+
+		local name, type, difficulty = GetInstanceInfo();
+		self.name, self.difficulty = name, difficulty;
+	end,
+	OnHide = function(self)
+		self.name, self.difficulty = nil, nil;
+		self.lockTimeleft = nil;
+	end,
+	OnUpdate = function(self, elapsed)
+		local lockTimeleft = self.lockTimeleft - elapsed;
+		if ( lockTimeleft <= 0 ) then
+			local OnCancel = StaticPopupDialogs["INSTANCE_LOCK"].OnCancel;
+			if ( OnCancel ) then
+				OnCancel(self, self.data, "timeout");
+			end
+			self:Hide();
+			return;
+		end
+		self.lockTimeleft = lockTimeleft;
+
+		local text = _G[self:GetName().."Text"];
+		local name = NORMAL_FONT_COLOR_CODE..(self.name or "")..FONT_COLOR_CODE_CLOSE;
+		local difficulty = NORMAL_FONT_COLOR_CODE..((self.difficulty > 0 and _G["DUNGEON_DIFFICULTY"..self.difficulty]) or "")..FONT_COLOR_CODE_CLOSE;
+		text:SetFormattedText(INSTANCE_LOCK_TIMER, name, difficulty, SecondsToTime(ceil(lockTimeleft), nil, 1));
+		StaticPopup_Resize(self, "INSTANCE_LOCK");
 	end,
 	OnAccept = function(self)
-		RespondInstanceLock(1);
+		RespondInstanceLock(true);
 	end,
 	OnCancel = function(self, data, reason)
 		if ( reason == "timeout" ) then
-			StaticPopup_Hide("INSTANCE_LOCK");
+			self:Hide();
 			return;
 		end
-		RespondInstanceLock(0);
+		RespondInstanceLock(false);
 	end,
 	timeout = 0,
+	showAlert = 1,
 	whileDead = 1,
 	interruptCinematic = 1,
-	notClosableByLogout = 1
+	notClosableByLogout = 1,
 };
 
 StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
@@ -2358,6 +2389,30 @@ StaticPopupDialogs["SET_LFGNOTE"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["SIMPLE_CHAT_OPTION_ENABLE_INTERRUPT"] = {
+	text = SIMPLE_CHAT_OPTION_ENABLE_INTERRUPT,
+	button1 = YES,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		InterfaceOptionsSocialPanelSimpleChat_ConfirmCheck();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["ADVANCED_WATCHFRAME_OPTION_ENABLE_INTERRUPT"] = {
+	text = ADVANCED_WATCHFRAME_OPTION_ENABLE_INTERRUPT,
+	button1 = YES,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		InterfaceOptionsObjectivesPanelAdvancedWatchFrame_ConfirmUncheck();
+	end,
+	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1
 };
@@ -2792,15 +2847,14 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "DUEL_OUTOFBOUNDS") or
 			 (which == "INSTANCE_BOOT") or
 			 (which == "CONFIRM_SUMMON") or
-			 (which == "AREA_SPIRIT_HEAL") or
-			 (which == "INSTANCE_LOCK")) then
+			 (which == "AREA_SPIRIT_HEAL")) then
 			local text = getglobal(dialog:GetName().."Text");
 			local hasText = nil;
 			if ( text:GetText() ~= " " ) then
 				hasText = 1;
 			end
 			timeleft = ceil(timeleft);
-			if ( which == "INSTANCE_BOOT" or which == "INSTANCE_LOCK") then
+			if ( which == "INSTANCE_BOOT" ) then
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
 				else
@@ -2916,8 +2970,6 @@ function StaticPopup_OnShow(self)
 	if ( dialog.enterClicksFirstButton ) then
 		self:SetScript("OnKeyDown", StaticPopup_OnKeyDown);
 	end
-
-	MouseEnableUI(true);
 end
 
 function StaticPopup_OnHide(self)
@@ -2931,8 +2983,6 @@ function StaticPopup_OnHide(self)
 	if ( dialog.enterClicksFirstButton ) then
 		self:SetScript("OnKeyDown", nil);
 	end
-
-	MouseEnableUI(false);
 end
 
 function StaticPopup_OnClick(dialog, index)

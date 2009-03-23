@@ -12,7 +12,6 @@ INVENTORY_ALERT_STATUS_SLOTS[10] = {slot ="Shield", showSeparate = 1};
 INVENTORY_ALERT_STATUS_SLOTS[11] = {slot ="Ranged", showSeparate = 1};
 
 INVENTORY_ALERT_COLORS = {};
-INVENTORY_ALERT_COLORS[0] = nil;
 INVENTORY_ALERT_COLORS[1] = {r = 1, g = 0.82, b = 0.18};
 INVENTORY_ALERT_COLORS[2] = {r = 0.93, g = 0.07, b = 0.07};
 

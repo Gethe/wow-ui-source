@@ -7,7 +7,7 @@ BATTLEFIELD_MINIMAP_UPDATE_RATE = 0.1;
 NUM_BATTLEFIELDMAP_POIS = 0;
 NUM_BATTLEFIELDMAP_OVERLAYS = 0;
 
-BattlefieldMinimapDefaults = {
+local BattlefieldMinimapDefaults = {
 	opacity = 0.7,
 	locked = true,
 	showPlayers = true,
@@ -43,6 +43,8 @@ function BattlefieldMinimap_OnLoad (self)
 	self:RegisterEvent("PLAYER_LOGOUT");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("RAID_ROSTER_UPDATE");
 
 	CreateMiniWorldMapArrowFrame(BattlefieldMinimap);
 
@@ -50,6 +52,19 @@ function BattlefieldMinimap_OnLoad (self)
 	-- PlayerMiniArrowEffectFrame is created in code: CWorldMap::CreateMiniPlayerArrowFrame()
 	PlayerMiniArrowEffectFrame:SetFrameLevel(WorldMapParty1:GetFrameLevel() + 1);
 	PlayerMiniArrowEffectFrame:SetAlpha(0.65);
+end
+
+function BattlefieldMinimap_OnShow(self)
+	SetMapToCurrentZone();
+	BattlefieldMinimap_Update();
+	BattlefieldMinimap_UpdateOpacity(BattlefieldMinimapOptions.opacity);
+	BattlefieldMinimapTab:Show();
+	WorldMapFrame_UpdateUnits("BattlefieldMinimapRaid", "BattlefieldMinimapParty");
+end
+
+function BattlefieldMinimap_OnHide(self)
+	BattlefieldMinimapTab:Hide();
+	BattlefieldMinimap_ClearTextures();
 end
 
 function BattlefieldMinimap_OnEvent(self, event, ...)
@@ -67,10 +82,10 @@ function BattlefieldMinimap_OnEvent(self, event, ...)
 				BattlefieldMinimapTab:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMRIGHT", -225-CONTAINER_OFFSET_X, BATTLEFIELD_TAB_OFFSET_Y);
 			end
 
-			UIDropDownMenu_Initialize(BattlefieldMinimapTabDropDown, BattlefieldMinimapDropDown_Initialize, "MENU");
+			UIDropDownMenu_Initialize(BattlefieldMinimapTabDropDown, BattlefieldMinimapTabDropDown_Initialize, "MENU");
 
 			OpacityFrameSlider:SetValue(BattlefieldMinimapOptions.opacity);
-			BattlefieldMinimap_SetOpacity();
+			BattlefieldMinimap_UpdateOpacity();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA") then
 		if ( BattlefieldMinimap:IsShown() ) then
@@ -91,6 +106,10 @@ function BattlefieldMinimap_OnEvent(self, event, ...)
 		if ( BattlefieldMinimap:IsVisible() ) then
 			BattlefieldMinimap_Update();
 		end
+	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
+		if ( self:IsShown() ) then
+			WorldMapFrame_UpdateUnits("BattlefieldMinimapRaid", "BattlefieldMinimapParty");
+		end
 	end
 end
 
@@ -109,27 +128,25 @@ function BattlefieldMinimap_Update()
 		else
 			texName = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i;
 		end
-		getglobal("BattlefieldMinimap"..i):SetTexture(texName);
+		_G["BattlefieldMinimap"..i]:SetTexture(texName);
 	end
 
 	-- Setup the POI's
 	local numPOIs = GetNumMapLandmarks();
-	local name, description, textureIndex, x, y, maplinkID,showInBattleMap;
-	local battlefieldPOI;
-	local x1, x2, y1, y2;
 	if ( NUM_BATTLEFIELDMAP_POIS < numPOIs ) then
 		for i=NUM_BATTLEFIELDMAP_POIS+1, numPOIs do
 			BattlefieldMinimap_CreatePOI(i);
 		end
 		NUM_BATTLEFIELDMAP_POIS = numPOIs;
 	end
-	for i=1, NUM_BATTLEFIELDMAP_POIS, 1 do
-		battlefieldPOI = getglobal("BattlefieldMinimapPOI"..i);
+	for i=1, NUM_BATTLEFIELDMAP_POIS do
+		local battlefieldPOIName = "BattlefieldMinimapPOI"..i;
+		local battlefieldPOI = _G[battlefieldPOIName];
 		if ( i <= numPOIs ) then
-			name, description, textureIndex, x, y, maplinkID,showInBattleMap = GetMapLandmarkInfo(i);
+			local name, description, textureIndex, x, y, maplinkID, showInBattleMap = GetMapLandmarkInfo(i);
 			if ( showInBattleMap ) then
-				x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
-				getglobal(battlefieldPOI:GetName().."Texture"):SetTexCoord(x1, x2, y1, y2);
+				local x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
+				_G[battlefieldPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
 				x = x * BattlefieldMinimap:GetWidth();
 				y = -y * BattlefieldMinimap:GetHeight();
 				battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y );
@@ -146,25 +163,22 @@ function BattlefieldMinimap_Update()
 
 	-- Setup the overlays
 	local numOverlays = GetNumMapOverlays();
-	local textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY;
-	local textureCount = 0, neededTextures;
-	local texture;
-	local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;
-	local numTexturesWide, numTexturesTall;
+	local textureCount = 0;
 	-- Use this value to scale the texture sizes and offsets
 	local battlefieldMinimapScale = BattlefieldMinimap1:GetWidth()/256;
 	for i=1, numOverlays do
-		textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY = GetMapOverlayInfo(i);
+		local textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY = GetMapOverlayInfo(i);
 		if (textureName ~= "" or textureWidth == 0 or textureHeight == 0) then
-			numTexturesWide = ceil(textureWidth/256);
-			numTexturesTall = ceil(textureHeight/256);
-			neededTextures = textureCount + (numTexturesWide * numTexturesTall);
+			local numTexturesWide = ceil(textureWidth/256);
+			local numTexturesTall = ceil(textureHeight/256);
+			local neededTextures = textureCount + (numTexturesWide * numTexturesTall);
 			if ( neededTextures > NUM_BATTLEFIELDMAP_OVERLAYS ) then
 				for j=NUM_BATTLEFIELDMAP_OVERLAYS+1, neededTextures do
 					BattlefieldMinimap:CreateTexture("BattlefieldMinimapOverlay"..j, "ARTWORK");
 				end
 				NUM_BATTLEFIELDMAP_OVERLAYS = neededTextures;
 			end
+			local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;
 			for j=1, numTexturesTall do
 				if ( j < numTexturesTall ) then
 					texturePixelHeight = 256;
@@ -181,7 +195,7 @@ function BattlefieldMinimap_Update()
 				end
 				for k=1, numTexturesWide do
 					textureCount = textureCount + 1;
-					texture = getglobal("BattlefieldMinimapOverlay"..textureCount);
+					local texture = _G["BattlefieldMinimapOverlay"..textureCount];
 					if ( k < numTexturesWide ) then
 						texturePixelWidth = 256;
 						textureFileWidth = 256;
@@ -207,7 +221,16 @@ function BattlefieldMinimap_Update()
 		end
 	end
 	for i=textureCount+1, NUM_BATTLEFIELDMAP_OVERLAYS do
-		getglobal("BattlefieldMinimapOverlay"..i):Hide();
+		_G["BattlefieldMinimapOverlay"..i]:Hide();
+	end
+end
+
+function BattlefieldMinimap_ClearTextures()
+	for i=1, NUM_BATTLEFIELDMAP_OVERLAYS do
+		_G["BattlefieldMinimapOverlay"..i]:SetTexture(nil);
+	end
+	for i=1, NUM_WORLDMAP_DETAIL_TILES do
+		_G["BattlefieldMinimap"..i]:SetTexture(nil);
 	end
 end
 
@@ -250,22 +273,19 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		local sizeUnit = BattlefieldMinimap:GetWidth()/4;
 		local mapPiece;
 		for i=1, NUM_WORLDMAP_DETAIL_TILES do
-			mapPiece = getglobal("BattlefieldMinimap"..i);
+			mapPiece = _G["BattlefieldMinimap"..i];
 			mapPiece:SetWidth(sizeUnit);
 			mapPiece:SetHeight(sizeUnit);
 		end
 		local numPOIs = GetNumMapLandmarks();
-		local name, description, textureIndex, x, y, maplinkID, showInBattleMap;
-		local battlefieldPOI;
-		local x1, x2, y1, y2;
-		local battlefieldPOI;
 		for i=1, NUM_BATTLEFIELDMAP_POIS, 1 do
-			battlefieldPOI = getglobal("BattlefieldMinimapPOI"..i);
+			local battlefieldPOIName = "BattlefieldMinimapPOI"..i;
+			local battlefieldPOI = _G[battlefieldPOIName];
 			if ( i <= numPOIs ) then
-				name, description, textureIndex, x, y, maplinkID,showInBattleMap = GetMapLandmarkInfo(i);
+				local name, description, textureIndex, x, y, maplinkID,showInBattleMap = GetMapLandmarkInfo(i);
 				if ( showInBattleMap ) then
-					x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
-					getglobal(battlefieldPOI:GetName().."Texture"):SetTexCoord(x1, x2, y1, y2);
+					local x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
+					_G[battlefieldPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
 					x = x * BattlefieldMinimap:GetWidth();
 					y = -y * BattlefieldMinimap:GetHeight();
 					battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y );
@@ -281,37 +301,38 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 
 	if ( not BattlefieldMinimapOptions.showPlayers ) then
 		for i=1, MAX_PARTY_MEMBERS do
-			getglobal("BattlefieldMinimapParty"..i):Hide();
+			_G["BattlefieldMinimapParty"..i]:Hide();
 		end
 		for i=1, MAX_RAID_MEMBERS do
-			getglobal("BattlefieldMinimapRaid"..i):Hide();
+			_G["BattlefieldMinimapRaid"..i]:Hide();
 		end
 		wipe(BG_VEHICLES);
 	else
 		--Position groupmates
-		local partyX, partyY, partyMemberFrame;
 		local playerCount = 0;
 		if ( GetNumRaidMembers() > 0 ) then
 			for i=1, MAX_PARTY_MEMBERS do
-				partyMemberFrame = getglobal("BattlefieldMinimapParty"..i);
+				local partyMemberFrame = _G["BattlefieldMinimapParty"..i];
 				partyMemberFrame:Hide();
 			end
 			for i=1, MAX_RAID_MEMBERS do
-				partyX, partyY = GetPlayerMapPosition("raid"..i);
-				partyMemberFrame = getglobal("BattlefieldMinimapRaid"..playerCount + 1);
+				local unit = "raid"..i;
+				local partyX, partyY = GetPlayerMapPosition(unit);
+				local partyMemberFrame = _G["BattlefieldMinimapRaid"..(playerCount + 1)];
 				if ( (partyX ~= 0 or partyY ~= 0) and not UnitIsUnit("raid"..i, "player") ) then
 					partyX = partyX * BattlefieldMinimap:GetWidth();
 					partyY = -partyY * BattlefieldMinimap:GetHeight();
 					partyMemberFrame:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", partyX, partyY);
 					partyMemberFrame.name = nil;
+					partyMemberFrame.unit = unit;
 					partyMemberFrame:Show();
 					playerCount = playerCount + 1;
 				end
 			end
 		else
 			for i=1, MAX_PARTY_MEMBERS do
-				partyX, partyY = GetPlayerMapPosition("party"..i);
-				partyMemberFrame = getglobal("BattlefieldMinimapParty"..i);
+				local partyX, partyY = GetPlayerMapPosition("party"..i);
+				local partyMemberFrame = _G["BattlefieldMinimapParty"..i];
 				if ( partyX == 0 and partyY == 0 ) then
 					partyMemberFrame:Hide();
 				else
@@ -325,8 +346,8 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		-- Position Team Members
 		local numTeamMembers = GetNumBattlefieldPositions();
 		for i=playerCount+1, MAX_RAID_MEMBERS do
-			partyX, partyY, name = GetBattlefieldPosition(i - playerCount);
-			partyMemberFrame = getglobal("BattlefieldMinimapRaid"..i);
+			local partyX, partyY, name = GetBattlefieldPosition(i - playerCount);
+			local partyMemberFrame = _G["BattlefieldMinimapRaid"..i];
 			if ( partyX == 0 and partyY == 0 ) then
 				partyMemberFrame:Hide();
 			else
@@ -334,24 +355,26 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 				partyY = -partyY * BattlefieldMinimap:GetHeight();
 				partyMemberFrame:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", partyX, partyY);
 				partyMemberFrame.name = name;
+				partyMemberFrame.unit = nil;
 				partyMemberFrame:Show();
 			end
 		end
 
 		-- Position flags
-		local flagX, flagY, flagToken, flagFrame, flagTexture;
 		local numFlags = GetNumBattlefieldFlagPositions();
 		for i=1, NUM_WORLDMAP_FLAGS do
-			flagFrame = getglobal("BattlefieldMinimapFlag"..i);
+			local flagFrameName = "BattlefieldMinimapFlag"..i;
+			local flagFrame = _G[flagFrameName];
 			if ( i <= numFlags ) then
-				flagX, flagY, flagToken = GetBattlefieldFlagPosition(i);
-				flagTexture = getglobal("BattlefieldMinimapFlag"..i.."Texture");
+				local flagX, flagY, flagToken = GetBattlefieldFlagPosition(i);
+				local flagTexture = _G[flagName.."Texture"];
 				if ( flagX == 0 and flagY == 0 ) then
 					flagFrame:Hide();
 				else
 					flagX = flagX * BattlefieldMinimap:GetWidth();
 					flagY = -flagY * BattlefieldMinimap:GetHeight();
 					flagFrame:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", flagX, flagY);
+					local flagTexture = _G[flagFrameName.."Texture"];
 					flagTexture:SetTexture("Interface\\WorldStateFrame\\"..flagToken);
 					flagFrame:Show();
 				end
@@ -359,15 +382,16 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 				flagFrame:Hide();
 			end
 		end
-		
+
 		-- position vehicles
 		local numVehicles = GetNumBattlefieldVehicles();
 		local totalVehicles = #BG_VEHICLES;
 		local index = 0;
 		for i=1, numVehicles do
 			if (i > totalVehicles) then
-				BG_VEHICLES[i] = CreateFrame("FRAME", "BattlefieldMinimap"..i, BattlefieldMinimap, "WorldMapVehicleTemplate");
-				BG_VEHICLES[i].texture = getglobal("BattlefieldMinimap"..i.."Texture");
+				local vehicleName = "BattlefieldMinimap"..i;
+				BG_VEHICLES[i] = CreateFrame("FRAME", vehicleName, BattlefieldMinimap, "WorldMapVehicleTemplate");
+				BG_VEHICLES[i].texture = _G[vehicleName.."Texture"];
 				BG_VEHICLES[i]:SetWidth(30 * GetBattlefieldMapIconScale());
 				BG_VEHICLES[i]:SetHeight(30 * GetBattlefieldMapIconScale());
 			end
@@ -376,7 +400,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			if ( vehicleX and not isPlayer)  then
 				vehicleX = vehicleX * BattlefieldMinimap:GetWidth();
 				vehicleY = -vehicleY * BattlefieldMinimap:GetHeight();
-				BG_VEHICLES[i].texture:SetTexture(GetMapVehicleTexture(vehicleType, isPossessed));
+				BG_VEHICLES[i].texture:SetTexture(WorldMap_GetVehicleTexture(vehicleType, isPossessed));
 				BG_VEHICLES[i].texture:SetRotation( orientation );
 				BG_VEHICLES[i]:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", vehicleX, vehicleY);
 				BG_VEHICLES[i]:Show();
@@ -431,57 +455,13 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			BattlefieldMinimap.hasBeenFaded = nil;
 		end
 		BattlefieldMinimap.hoverTime = 0;
-	end	
-end
-
-function BattlefieldMinimap_ShowOpacity()
-	OpacityFrame:ClearAllPoints();
-	OpacityFrame:SetPoint("TOPRIGHT", "BattlefieldMinimap", "TOPLEFT", 0, 7);
-	OpacityFrame.opacityFunc = BattlefieldMinimap_SetOpacity;
-	OpacityFrame:Show();
-	OpacityFrameSlider:SetValue(BattlefieldMinimapOptions.opacity);
-end
-
-function BattlefieldMinimap_SetOpacity (opacity)
-	BattlefieldMinimapOptions.opacity = opacity or OpacityFrameSlider:GetValue();
-	local alpha = 1.0 - BattlefieldMinimapOptions.opacity;
-	BattlefieldMinimapBackground:SetAlpha(alpha);
-	for i=1, NUM_WORLDMAP_DETAIL_TILES do
-		getglobal("BattlefieldMinimap"..i):SetAlpha(alpha);
 	end
-	if ( alpha >= 0.15 ) then
-		alpha = alpha - 0.15;
-	end
-	for i=1, NUM_BATTLEFIELDMAP_OVERLAYS do
-		getglobal("BattlefieldMinimapOverlay"..i):SetAlpha(alpha);
-	end
-	BattlefieldMinimapCloseButton:SetAlpha(alpha);
-	BattlefieldMinimapCorner:SetAlpha(alpha);
 end
 
-function BattlefieldMinimapDropDown_Initialize()
-	local checked;
-	local info = UIDropDownMenu_CreateInfo();
-	-- Show battlefield players
-	info.text = SHOW_BATTLEFIELDMINIMAP_PLAYERS;
-	info.func = BattlefieldMinimap_TogglePlayers;
-	info.checked = BattlefieldMinimapOptions.showPlayers;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-	
-	-- Battlefield minimap lock
-	info.text = LOCK_BATTLEFIELDMINIMAP;
-	info.func = BattlefieldMinimap_ToggleLock;
-	info.checked = BattlefieldMinimapOptions.locked;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-	-- Opacity
-	info.text = BATTLEFIELDMINIMAP_OPACITY_LABEL;
-	info.func = BattlefieldMinimap_ShowOpacity;
-	info.checked = nil;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-end
 
 function BattlefieldMinimapTab_OnClick(self, button)
+	PlaySound("UChatScrollButton");
+
 	-- If Rightclick bring up the options menu
 	if ( button == "RightButton" ) then
 		ToggleDropDownMenu(1, nil, BattlefieldMinimapTabDropDown, self:GetName(), 0, 0);
@@ -505,15 +485,63 @@ function BattlefieldMinimapTab_OnClick(self, button)
 	ValidateFramePosition(BattlefieldMinimapTab);
 end
 
-function BattlefieldMinimap_ToggleLock()
-	BattlefieldMinimapOptions.locked = not BattlefieldMinimapOptions.locked;
+function BattlefieldMinimapTabDropDown_Initialize()
+	local checked;
+	local info = UIDropDownMenu_CreateInfo();
+	-- Show battlefield players
+	info.text = SHOW_BATTLEFIELDMINIMAP_PLAYERS;
+	info.func = BattlefieldMinimapTabDropDown_TogglePlayers;
+	info.checked = BattlefieldMinimapOptions.showPlayers;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+
+	-- Battlefield minimap lock
+	info.text = LOCK_BATTLEFIELDMINIMAP;
+	info.func = BattlefieldMinimapTabDropDown_ToggleLock;
+	info.checked = BattlefieldMinimapOptions.locked;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+
+	-- Opacity
+	info.text = BATTLEFIELDMINIMAP_OPACITY_LABEL;
+	info.func = BattlefieldMinimapTabDropDown_ShowOpacity;
+	info.checked = nil;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 end
 
-function BattlefieldMinimap_TogglePlayers()
+function BattlefieldMinimapTabDropDown_TogglePlayers()
 	BattlefieldMinimapOptions.showPlayers = not BattlefieldMinimapOptions.showPlayers;
 end
 
-function BattlefieldMinimapUnit_OnEnter(self)
+function BattlefieldMinimapTabDropDown_ToggleLock()
+	BattlefieldMinimapOptions.locked = not BattlefieldMinimapOptions.locked;
+end
+
+function BattlefieldMinimapTabDropDown_ShowOpacity()
+	OpacityFrame:ClearAllPoints();
+	OpacityFrame:SetPoint("TOPRIGHT", "BattlefieldMinimap", "TOPLEFT", 0, 7);
+	OpacityFrame.opacityFunc = BattlefieldMinimap_UpdateOpacity;
+	OpacityFrame:Show();
+	OpacityFrameSlider:SetValue(BattlefieldMinimapOptions.opacity);
+end
+
+function BattlefieldMinimap_UpdateOpacity(opacity)
+	BattlefieldMinimapOptions.opacity = opacity or OpacityFrameSlider:GetValue();
+	local alpha = 1.0 - BattlefieldMinimapOptions.opacity;
+	BattlefieldMinimapBackground:SetAlpha(alpha);
+	for i=1, NUM_WORLDMAP_DETAIL_TILES do
+		_G["BattlefieldMinimap"..i]:SetAlpha(alpha);
+	end
+	if ( alpha >= 0.15 ) then
+		alpha = alpha - 0.15;
+	end
+	for i=1, NUM_BATTLEFIELDMAP_OVERLAYS do
+		_G["BattlefieldMinimapOverlay"..i]:SetAlpha(alpha);
+	end
+	BattlefieldMinimapCloseButton:SetAlpha(alpha);
+	BattlefieldMinimapCorner:SetAlpha(alpha);
+end
+
+
+function BattlefieldMinimapUnit_OnEnter(self, motion)
 	-- Adjust the tooltip based on which side the unit button is on
 	local x, y = self:GetCenter();
 	local parentX, parentY = self:GetParent():GetCenter();
@@ -530,9 +558,9 @@ function BattlefieldMinimapUnit_OnEnter(self)
 	
 	-- Check party
 	for i=1, MAX_PARTY_MEMBERS do
-		unitButton = getglobal("BattlefieldMinimapParty"..i);
+		unitButton = _G["BattlefieldMinimapParty"..i];
 		if ( unitButton:IsVisible() and MouseIsOver(unitButton) ) then
-			if ( MapUnit_IsInactive(unitButton.unit) ) then
+			if ( PlayerIsPVPInactive(unitButton.unit) ) then
 				tooltipText = tooltipText..newLineString..format(PLAYER_IS_PVP_AFK, UnitName(unitButton.unit));
 			else
 				tooltipText = tooltipText..newLineString..UnitName(unitButton.unit);
@@ -542,17 +570,17 @@ function BattlefieldMinimapUnit_OnEnter(self)
 	end
 	--Check Raid
 	for i=1, MAX_RAID_MEMBERS do
-		unitButton = getglobal("BattlefieldMinimapRaid"..i);
+		unitButton = _G["BattlefieldMinimapRaid"..i];
 		if ( unitButton:IsVisible() and MouseIsOver(unitButton) ) then
 			-- Handle players not in your raid or party, but on your team
 			if ( unitButton.name ) then
-				if ( MapUnit_IsInactive(unitButton.name) ) then
+				if ( PlayerIsPVPInactive(unitButton.name) ) then
 					tooltipText = tooltipText..newLineString..format(PLAYER_IS_PVP_AFK, unitButton.name);
 				else
 					tooltipText = tooltipText..newLineString..unitButton.name;		
 				end
 			else
-				if ( MapUnit_IsInactive(unitButton.unit) ) then
+				if ( PlayerIsPVPInactive(unitButton.unit) ) then
 					tooltipText = tooltipText..newLineString..format(PLAYER_IS_PVP_AFK, UnitName(unitButton.unit));
 				else
 					tooltipText = tooltipText..newLineString..UnitName(unitButton.unit);
@@ -563,13 +591,4 @@ function BattlefieldMinimapUnit_OnEnter(self)
 	end
 	GameTooltip:SetText(tooltipText);
 	GameTooltip:Show();
-end
-
-function BattlefieldMinimap_ClearTextures()
-	for i=1, NUM_BATTLEFIELDMAP_OVERLAYS do
-		getglobal("BattlefieldMinimapOverlay"..i):SetTexture(nil);
-	end
-	for i=1, NUM_WORLDMAP_DETAIL_TILES do
-		getglobal("BattlefieldMinimap"..i):SetTexture(nil);
-	end
 end

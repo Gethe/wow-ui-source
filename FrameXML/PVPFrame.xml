@@ -1010,11 +1010,12 @@
 						PVPFrame:Show();
 						PVPBattlegroundFrame:Hide();
 						PanelTemplates_Tab_OnClick(self, PVPParentFrame);
+						PlaySound("igCharacterInfoTab");
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-            <Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="BATTLEGROUND">
+            <Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="BATTLEGROUNDS">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
                         <Offset>
@@ -1031,6 +1032,7 @@
 						PVPFrame:Hide();
 						PVPBattlegroundFrame:Show();
 						PanelTemplates_Tab_OnClick(self, PVPParentFrame);
+						PlaySound("igCharacterInfoTab");
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>

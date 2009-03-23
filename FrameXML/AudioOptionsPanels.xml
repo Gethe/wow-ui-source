@@ -1082,6 +1082,7 @@
 						self.type = CONTROLTYPE_DROPDOWN;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());						
 						AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad(self);
+						self:RegisterEvent("VOICE_CHAT_ENABLED_UPDATE");
 					</OnLoad>
 					<OnEnter>
 						if ( UIDropDownMenu_IsEnabled(self) ) then
@@ -1090,6 +1091,7 @@
 							GameTooltip:Show();
 						end
 					</OnEnter>
+					<OnEvent function="AudioOptionsVoicePanelOutputDeviceDropDown_OnEvent"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>

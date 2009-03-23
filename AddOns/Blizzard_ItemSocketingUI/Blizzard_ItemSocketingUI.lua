@@ -1,4 +1,3 @@
-MAX_NUM_SOCKETS = 3;
 UIPanelWindows["ItemSocketingFrame"] =		{ area = "left",	pushable = 0 };
 
 GEM_TYPE_INFO = {};

@@ -30,11 +30,17 @@ slotAnimations[BOTTOMRIGHT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"]
 local HIGHLIGHT_BASEALPHA = .4;
 
 
+function GlyphFrame_Toggle ()
+	TalentFrame_LoadUI();
+	if ( PlayerTalentFrame_ToggleGlyphFrame ) then
+		PlayerTalentFrame_ToggleGlyphFrame(GetActiveTalentGroup());
+	end
+end
+
 function GlyphFrame_Open ()
 	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_OpenGlyphFrame ) then
-		local talentGroup = GetActiveTalentGroup();
-		PlayerTalentFrame_OpenGlyphFrame(talentGroup);
+		PlayerTalentFrame_OpenGlyphFrame(GetActiveTalentGroup());
 	end
 end
 

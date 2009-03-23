@@ -2045,9 +2045,11 @@ function PaperDollFrameItemFlyoutButton_OnClick (self)
 		PaperDollItemSlotButton_Update(slot);
 		PaperDollFrameItemFlyout_Show(slot);
 	elseif ( self.location == PDFITEMFLYOUT_PLACEINBAGS_LOCATION ) then
-		EquipmentManager_UnequipItemInSlot(PaperDollFrameItemFlyout.button:GetID());
+		local action = EquipmentManager_UnequipItemInSlot(PaperDollFrameItemFlyout.button:GetID());
+		EquipmentManager_RunAction(action);
 	elseif ( self.location ) then
-		EquipmentManager_EquipItemByLocation(self.location, self.id);
+		local action = EquipmentManager_EquipItemByLocation(self.location, self.id);
+		EquipmentManager_RunAction(action);
 	end
 end
 

@@ -224,7 +224,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="WatchFrame" parent="UIParent" movable="true" clampedToScreen="true" hidden="false" resizable="true">
+	<Frame name="WatchFrame" parent="UIParent" movable="true" clampedToScreen="true" hidden="false" resizable="true" frameStrata="LOW">
 		<Size x="280" y="140"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
@@ -458,7 +458,7 @@
 					</OnDragStop>
 				</Scripts>
 			</Button>					
-			<Frame name="WatchFrameLines" hidden="false">
+			<Frame name="WatchFrameLines" hidden="false" frameStrata="LOW">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="WatchFrame" relativePoint="TOPLEFT">
 						<Offset x="12" y="-30"/>

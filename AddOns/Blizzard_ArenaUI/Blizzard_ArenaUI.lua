@@ -230,10 +230,25 @@ end
 
 function ArenaEnemyPetFrame_OnLoad(self)
 	local id = self:GetParent():GetID();
+	local prefix = "ArenaEnemyFrame"..id.."PetFrame";
+	local unit = "arenapet"..id;
+	UnitFrame_Initialize(self, unit,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
+		   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"), getglobal(prefix.."ManaBar"), getglobal(prefix.."ManaBarText"));
+	SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
+	getglobal(prefix.."Name"):Hide();
+	SecureUnitButton_OnLoad(self, unit);
 	self:SetID(id);
 	self:SetParent(ArenaEnemyFrames);
 	ArenaEnemyFrame_UpdatePet(self, id, true);
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
+	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
+	
+	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyPetDropDown_Initialize, "MENU");
+	
+	local showmenu = function()
+		ToggleDropDownMenu(1, nil, getglobal("ArenaEnemyFrame"..self:GetID().."PetFrameDropDown"), self:GetName(), 47, 15);
+	end
+	SecureUnitButton_OnLoad(self, "arenapet"..self:GetID(), showmenu);
 end
 
 function ArenaEnemyPetFrame_OnEvent(self, event, ...)
@@ -254,12 +269,18 @@ function ArenaEnemyPetFrame_OnEvent(self, event, ...)
 			ArenaEnemyFrame_Unlock(self);
 			self:Hide()
 		end
+	elseif ( event == "UNIT_CLASSIFICATION_CHANGED" and arg1 == self.unit ) then
+		UnitFrame_Update(self);
 	end
 	UnitFrame_OnEvent(self, event, ...);
 end
 
-function ArenaEnemyDropDown_Initialize (self)
+function ArenaEnemyDropDown_Initialize(self)
 	UnitPopup_ShowMenu(self, "ARENAENEMY", "arena"..self:GetParent():GetID());
+end
+
+function ArenaEnemyPetDropDown_Initialize(self)
+	UnitPopup_ShowMenu(self, "ARENAENEMY", "arenapet"..self:GetParent():GetID());
 end
 
 function UpdateArenaEnemyBackground(force)

@@ -359,7 +359,18 @@ function ToggleTalentFrame()
 
 	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_Toggle ) then
-		PlayerTalentFrame_Toggle();
+		PlayerTalentFrame_Toggle(false, GetActiveTalentGroup());
+	end
+end
+
+function ToggleGlyphFrame()
+	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL ) then
+		return;
+	end
+
+	GlyphFrame_LoadUI();
+	if ( GlyphFrame_Toggle ) then
+		GlyphFrame_Toggle();
 	end
 end
 
@@ -1480,12 +1491,10 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 	
 		if ( oldFrame ) then
 			oldFrame:Hide();
-			MouseEnableUI(false);
 		end
 	
 		if ( frame ) then
 			UIParent:Hide();
-			MouseEnableUI(true);
 			frame:Show();
 		else
 			UIParent:Show();
@@ -1501,17 +1510,14 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 		
 		if ( oldDoubleWide ) then
 			oldDoubleWide:Hide();
-			MouseEnableUI(false);
 		end
 		
 		if ( oldLeft ) then
 			oldLeft:Hide();
-			MouseEnableUI(false);
 		end
 		
 		if ( oldCenter ) then
 			oldCenter:Hide();
-			MouseEnableUI(false);
 		end
 	elseif ( key ~= "left" and key ~= "center" and key ~= "right" ) then
 		return;
@@ -1520,13 +1526,11 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 		self[key] = frame;
 		if ( oldFrame ) then
 			oldFrame:Hide();
-			MouseEnableUI(false);
 		else
 			if ( self.doublewide ) then
 				if ( key == "left" or key == "center" ) then
 					self.doublewide:Hide();
 					self.doublewide = nil;	
-					MouseEnableUI(false);
 				end
 			end
 		end
@@ -1537,7 +1541,6 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 	end
 	
 	if ( frame ) then
-		MouseEnableUI(true);
 		frame:Show();
 		-- Hide all child windows
 		securecall("CloseChildWindows");

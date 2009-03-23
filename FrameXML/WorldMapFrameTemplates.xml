@@ -9,34 +9,46 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" setAllPoints="true"/>
+				<Texture name="$parentIcon" file="Interface\WorldMap\WorldMapPartyIcon" setAllPoints="true" parentKey="icon"/>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:SetFrameLevel(self:GetFrameLevel() + 1);
-				self.unit = "party"..self:GetID();
-				getglobal(self:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+				WorldMapUnit_OnLoad(self);
 			</OnLoad>
-			<OnEnter>	
+			<OnEnter>
 				WorldMapUnit_OnEnter(self, motion);
 			</OnEnter>
 			<OnLeave>
-				WorldMapTooltip:Hide();
+				WorldMapUnit_OnLeave(self, motion);
 			</OnLeave>
+			<OnEvent>
+				WorldMapUnit_OnEvent(self, event, ...);
+			</OnEvent>
 			<OnMouseUp>
-				MapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
+				WorldMapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
 			</OnMouseUp>
-			<OnUpdate>
-				MapUnit_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnShow>
+				WorldMapUnit_OnShow(self);
+			</OnShow>
+			<OnHide>
+				WorldMapUnit_OnHide(self);
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="WorldMapPartyUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				WorldMapUnit_OnLoad(self);
+				self.unit = "party"..self:GetID();
+			</OnLoad>
 		</Scripts>
 	</Frame>
 	<Frame name="WorldMapRaidUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				self:SetFrameLevel(self:GetFrameLevel() + 1);
-				getglobal(self:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+				WorldMapUnit_OnLoad(self);
+				self.unit = "raid"..self:GetID();
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -129,9 +141,11 @@
 			<OnLoad>
 				self.texture = self:GetRegions();
 			</OnLoad>
-			<OnEnter function="WorldMapUnit_OnEnter"/>
+			<OnEnter>
+				WorldMapUnit_OnEnter(self, motion);
+			</OnEnter>
 			<OnLeave>
-				WorldMapTooltip:Hide();
+				WorldMapUnit_OnLeave(self, motion);
 			</OnLeave>
 			<OnMouseUp>
 				if ( IsModifierKeyDown("CTRL") ) then

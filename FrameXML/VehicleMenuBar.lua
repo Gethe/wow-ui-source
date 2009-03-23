@@ -1078,6 +1078,17 @@ function VehicleSeatIndicatorButton_OnEnter(self)
 	
 	local controlType, occupantName = UnitVehicleSeatInfo("player", self:GetID());
 	local highlight = _G[self:GetName().."Highlight"]
+	
+	if ( not UnitInVehicle("player") ) then
+		highlight:Hide();
+		if ( occupantName ) then
+			GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(occupantName);
+		end
+		return;
+	end
+	
 	if ( controlType == "None" ) then
 		if ( occupantName ) then
 			highlight:Hide();

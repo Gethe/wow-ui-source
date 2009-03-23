@@ -105,13 +105,13 @@
 	</Frame>
 	<Button name="WorldStateScoreColumnTemplate" enableMouse="true" virtual="true">
 		<Size>
-			<AbsDimension x="65" y="30"/>
+			<AbsDimension x="75" y="30"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentText" inherits="GameFontHighlightSmall">
 					<Size>
-						<AbsDimension x="65" y="24"/>
+						<AbsDimension x="85" y="24"/>
 					</Size>
 				</FontString>
 			</Layer>
