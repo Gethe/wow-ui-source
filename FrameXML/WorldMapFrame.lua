@@ -821,7 +821,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	local index = 0;
 	for i=1, numVehicles do
 		if (i > totalVehicles) then
-			local vehicleName = "BattlefieldMinimap"..i;
+			local vehicleName = "WorldMapVehicles"..i;
 			MAP_VEHICLES[i] = CreateFrame("FRAME", vehicleName, WorldMapButton, "WorldMapVehicleTemplate");
 			MAP_VEHICLES[i].texture = _G[vehicleName.."Texture"];
 		end

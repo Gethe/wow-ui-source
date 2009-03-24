@@ -124,26 +124,47 @@ function SecureButton_GetAttribute(frame, name)
 end
 
 function SecureButton_GetModifiedUnit(self, button)
-    local unit = SecureButton_GetModifiedAttribute(self, "unit", button);
-    if ( unit ) then
-        local unitsuffix = SecureButton_GetModifiedAttribute(self, "unitsuffix", button);
-        if ( unitsuffix ) then
-            unit = unit .. unitsuffix;
-            -- map raid1pet to raidpet1
-            unit = gsub(unit, "^([^%d]+)([%d]+)[pP][eE][tT]", "%1pet%2");
-        end
-        return unit;
-    end
-    if ( SecureButton_GetModifiedAttribute(self, "checkselfcast", button) ) then
-        if ( IsModifiedClick("SELFCAST") ) then
-            return "player";
-        end
-    end
-    if ( SecureButton_GetModifiedAttribute(self, "checkfocuscast", button) ) then
-        if ( IsModifiedClick("FOCUSCAST") ) then
-            return "focus";
-        end
-    end
+	local unit = SecureButton_GetModifiedAttribute(self, "unit", button);
+	if ( unit ) then
+		local unitsuffix = SecureButton_GetModifiedAttribute(self, "unitsuffix", button);
+		if ( unitsuffix ) then
+			unit = unit .. unitsuffix;
+			-- map raid1pet to raidpet1
+			unit = gsub(unit, "^([^%d]+)([%d]+)[pP][eE][tT]", "%1pet%2");
+		end
+		
+		local noPet, hadPet = unit:gsub("[pP][eE][tT](%d)", "%1");
+		if ( hadPet == 0 ) then
+			noPet, hadPet = unit:gsub("^[pP][eE][tT]", "player");
+		end
+		local noPetNoTarget, hadTarget = noPet:gsub("[tT][aA][rR][gG][eE][tT]", "");
+		if ( UnitHasVehicleUI(noPetNoTarget) and 
+				SecureButton_GetModifiedAttribute(self, "toggleForVehicle", button) and
+				(noPetNoTarget == noPetNoTarget:gsub("^[mM][oO][uU][sS][eE][oO][vV][eE][rR]", "")
+				                               :gsub("^[fF][oO][cC][uU][sS]", "")
+				                               :gsub("^[aA][rR][eE][nN][aA]%d", ""))
+				-- NOTE: using these 3 gsubs is faster than a :lower() call and a table lookup
+				-- "target" is not included in the above check because it is already filtered out earlier on
+				) then
+			if ( hadPet ~= 0 ) then
+				unit = noPet;
+			elseif ( (hadTarget == 0) or SecureButton_GetModifiedAttribute(self, "allowVehicleTarget", button) ) then
+				unit = unit:gsub("^[pP][lL][aA][yY][eE][rR]", "pet"):gsub("^([%a]+)([%d]+)", "%1pet%2");
+			end
+		end
+		
+		return unit;
+	end
+	if ( SecureButton_GetModifiedAttribute(self, "checkselfcast", button) ) then
+		if ( IsModifiedClick("SELFCAST") ) then
+			return "player";
+		end
+	end
+	if ( SecureButton_GetModifiedAttribute(self, "checkfocuscast", button) ) then
+		if ( IsModifiedClick("FOCUSCAST") ) then
+			return "focus";
+		end
+	end
 end
 function SecureButton_GetUnit(self)
     local unit = SecureButton_GetAttribute(self, "unit");

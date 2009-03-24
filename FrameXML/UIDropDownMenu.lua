@@ -212,14 +212,16 @@ function UIDropDownMenu_AddButton(info, level)
 		level = 1;
 	end
 	
-	local listFrame = getglobal("DropDownList"..level);
-	local listFrameName = listFrame:GetName();
-	local index = listFrame.numButtons + 1;
+	local listFrame = _G["DropDownList"..level];
+	local index = listFrame and (listFrame.numButtons + 1) or 1;
 	local width;
 
 	UIDropDownMenuDelegate:SetAttribute("createframes-level", level);
 	UIDropDownMenuDelegate:SetAttribute("createframes-index", index);
 	UIDropDownMenuDelegate:SetAttribute("createframes", true);
+	
+	listFrame = listFrame or _G["DropDownList"..level];
+	local listFrameName = listFrame:GetName();
 	
 	-- Set the number of buttons in the listframe
 	listFrame.numButtons = index;

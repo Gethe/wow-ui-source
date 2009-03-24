@@ -271,12 +271,12 @@
 				</Texture>
 				<Texture name="TabardFrameEmblemTopRight" alphaMode="ADD">
 					<Size>
-						<AbsDimension x="128" y="128"/>
+						<AbsDimension x="100" y="119"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="TabardFrameOuterFrameTopRight">
 							<Offset>
-								<AbsDimension x="35" y="20"/>
+								<AbsDimension x="9" y="6"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -284,7 +284,7 @@
 				</Texture>
 				<Texture name="TabardFrameEmblemBottomRight" alphaMode="ADD">
 					<Size>
-						<AbsDimension x="128" y="64"/>
+						<AbsDimension x="100" y="74"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="TabardFrameEmblemTopRight" relativePoint="BOTTOM"/>
@@ -293,7 +293,7 @@
 				</Texture>
 				<Texture name="TabardFrameEmblemTopLeft" alphaMode="ADD">
 					<Size>
-						<AbsDimension x="128" y="128"/>
+						<AbsDimension x="100" y="119"/>
 					</Size>
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="TabardFrameEmblemTopRight" relativePoint="LEFT">
@@ -306,7 +306,7 @@
 				</Texture>
 				<Texture name="TabardFrameEmblemBottomLeft" alphaMode="ADD">
 					<Size>
-						<AbsDimension x="128" y="64"/>
+						<AbsDimension x="100" y="74"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="TabardFrameEmblemTopLeft" relativePoint="BOTTOM"/>

@@ -381,7 +381,7 @@ function MoneyFrame_Update(frameName, money)
 		
 		width = width + copperButton:GetWidth();
 		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "LEFT", spacing, 0);
-		if ( silverButton:IsShown() ) then
+		if ( silverButton:IsShown() or goldButton:IsShown() ) then
 			width = width - spacing;
 		end
 	else

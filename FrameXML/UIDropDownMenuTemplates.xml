@@ -91,7 +91,7 @@
 					<OnEnter>
 						local level =  self:GetParent():GetParent():GetID() + 1;
 						local listFrame = getglobal("DropDownList"..level);
-						if ( not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+						if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
 							ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
 						end
 						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
@@ -131,7 +131,7 @@
 				if ( self.hasArrow ) then
 					local level =  self:GetParent():GetID() + 1;
 					local listFrame = getglobal("DropDownList"..level);
-					if ( not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+					if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
 						ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
 					end
 				else

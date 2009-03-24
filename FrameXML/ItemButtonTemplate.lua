@@ -10,7 +10,7 @@ function SetItemButtonCount(button, count)
 
 	button.count = count;
 	if ( count > 1 or (button.isBag and count > 0) ) then
-		if ( count > 999 ) then
+		if ( count > 1999 ) then
 			count = "*";
 		end
 		getglobal(button:GetName().."Count"):SetText(count);

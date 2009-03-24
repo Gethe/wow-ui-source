@@ -70,12 +70,17 @@ function GlyphFrameGlyph_UpdateSlot (self)
 	else
 		GlyphFrameGlyph_SetGlyphType(self, GLYPHTYPE_MAJOR);
 	end
-	
+
 	self.elapsed = 0;
 	self.tintElapsed = 0;
-	
+
+	local slotAnimation = slotAnimations[id];
 	if ( not enabled ) then
-		slotAnimations[id].glyph = nil;
+		slotAnimation.glyph = nil;
+		if ( slotAnimation.sparkle ) then
+			slotAnimation.sparkle:StopAnimating();
+			slotAnimation.sparkle:Hide();
+		end
 		self.shine:Hide();
 		self.background:Hide();
 		self.glyph:Hide();
@@ -83,7 +88,11 @@ function GlyphFrameGlyph_UpdateSlot (self)
 		self.setting:SetTexture("Interface\\Spellbook\\UI-GlyphFrame-Locked");
 		self.setting:SetTexCoord(.1, .9, .1, .9);
 	elseif ( not glyphSpell ) then
-		slotAnimations[id].glyph = nil;	
+		slotAnimation.glyph = nil;	
+		if ( slotAnimation.sparkle ) then
+			slotAnimation.sparkle:StopAnimating();
+			slotAnimation.sparkle:Hide();
+		end
 		self.spell = nil;
 		self.shine:Show();
 		self.background:Show();
@@ -94,7 +103,7 @@ function GlyphFrameGlyph_UpdateSlot (self)
 		self.glyph:Hide();
 		self.ring:Show();
 	else
-		slotAnimations[id].glyph = true;
+		slotAnimation.glyph = true;
 		self.spell = glyphSpell;
 		self.shine:Show();
 		self.background:Show();
@@ -369,40 +378,33 @@ end
 function GlyphFrame_StartSlotAnimation (slotID, duration, size)
 	local animation = slotAnimations[slotID];
 
+	-- init texture to animate
 	local sparkleName = "GlyphFrameSparkle"..slotID;
 	local sparkle = _G[sparkleName];
-	if ( sparkle and sparkle.wait ) then
-		-- width and height resize is done
-		sparkle.wait = false;
-
-		-- init animation
-		local offsetX, offsetY = animation.xStop - animation.xStart, animation.yStop - animation.yStart;
-		local animGroupAnim = sparkle.animGroup.translate;
-		animGroupAnim:SetOffset(offsetX, offsetY);
-		animGroupAnim:SetDuration(duration);
-		animGroupAnim:Play();
-	else
-		-- init texture to animate
-		if ( not sparkle ) then
-			sparkle = GlyphFrame:CreateTexture(sparkleName, "OVERLAY", "GlyphSparkleTexture");
-			sparkle.slotID = slotID;
-		end
-		-- we need to wait a tick for the width and height resize to take effect
-		sparkle.wait = true;
-		local template;
-		if ( size == 1 ) then
-			template = "SparkleTextureSmall";
-		elseif ( size == 2 ) then
-			template = "SparkleTextureKindaSmall";
-		else
-			template = "SparkleTextureNormal";
-		end
-		local sparkleDim = SparkleDimensions[template];
-		sparkle:SetHeight(sparkleDim.height);
-		sparkle:SetWidth(sparkleDim.width);
-		sparkle:SetPoint("CENTER", GlyphFrame, animation.point, animation.xStart, animation.yStart);
-		sparkle:Show();
+	if ( not sparkle ) then
+		sparkle = GlyphFrame:CreateTexture(sparkleName, "OVERLAY", "GlyphSparkleTexture");
+		sparkle.slotID = slotID;
 	end
+	local template;
+	if ( size == 1 ) then
+		template = "SparkleTextureSmall";
+	elseif ( size == 2 ) then
+		template = "SparkleTextureKindaSmall";
+	else
+		template = "SparkleTextureNormal";
+	end
+	local sparkleDim = SparkleDimensions[template];
+	sparkle:SetHeight(sparkleDim.height);
+	sparkle:SetWidth(sparkleDim.width);
+	sparkle:SetPoint("CENTER", GlyphFrame, animation.point, animation.xStart, animation.yStart);
+	sparkle:Show();
+
+	-- init animation
+	local offsetX, offsetY = animation.xStop - animation.xStart, animation.yStop - animation.yStart;
+	local animGroupAnim = sparkle.animGroup.translate;
+	animGroupAnim:SetOffset(offsetX, offsetY);
+	animGroupAnim:SetDuration(duration);
+	animGroupAnim:Play();
 
 	animation.sparkle = sparkle;
 end

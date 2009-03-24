@@ -167,7 +167,8 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
 };
 
 local OTHER_SAFE_FUNCTION_NAMES = {
-    "GetBindingKey",
+    "GetBindingKey", "HasAction",
+    "IsHarmfulSpell", "IsHarmfulItem", "IsHelpfulSpell", "IsHelpfulItem"
 };
 
 -- Copy the direct functions into the table
@@ -206,6 +207,14 @@ end
 function ENV.PlayerInGroup()
     return ( GetNumRaidMembers() > 0 and "raid" )
         or ( GetNumPartyMembers() > 0 and "party" )
+end
+
+function ENV.UnitHasVehicleUI(unit)
+	return UnitCanAssist("player", unit) and UnitHasVehicleUI(unit)
+end
+
+function ENV.RegisterStateDriver(frameHandle, ...)
+	return RegisterStateDriver(GetFrameHandleFrame(frameHandle), ...)
 end
 
 ENV = nil;

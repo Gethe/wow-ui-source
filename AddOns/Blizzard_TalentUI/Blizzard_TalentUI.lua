@@ -213,6 +213,8 @@ function PlayerTalentFrame_ShowGlyphFrame()
 		else
 			GlyphFrame:Show();
 		end
+		-- don't forget to hide the scroll button overlay or it may show up on top of the GlyphFrame!
+		UIFrameFlashStop(PlayerTalentFrameScrollButtonOverlay);
 	end
 end
 

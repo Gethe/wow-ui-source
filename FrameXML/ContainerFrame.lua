@@ -649,6 +649,8 @@ function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
 	
 	MerchantFrame.refundBag = bag;
 	MerchantFrame.refundSlot = slot;
+	MerchantFrame.honorPoints = honorPoints;
+	MerchantFrame.arenaPoints = arenaPoints;
 	
 	local refundItemTexture, _, _, _, _, _, refundItemLink = GetContainerItemInfo(bag, slot);
 	local itemName, _, itemQuality = GetItemInfo(refundItemLink);

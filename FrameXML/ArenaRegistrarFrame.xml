@@ -954,11 +954,6 @@
 				HideUIPanel(ColorPickerFrame);
 				ClosePetitionVendor();
 			</OnHide>
-			<OnKeyDown>
-				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
-					HideUIPanel(self);
-				end
-			</OnKeyDown>
 	</Scripts>
 	</Frame>
 </Ui>

@@ -135,7 +135,17 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		local currentHonor, maxHonor = GetHonorCurrency();
+		if ( MerchantFrame.honorPoints and (MerchantFrame.honorPoints + currentHonor > maxHonor) ) then
+			StaticPopup_Show("CONFIRM_REFUND_MAX_HONOR", (MerchantFrame.honorPoints + currentHonor - maxHonor) )
+		else
+			local currentArenaPoints, maxArenaPoints = GetArenaCurrency();
+			if ( MerchantFrame.arenaPoints and (MerchantFrame.arenaPoints + currentArenaPoints > maxArenaPoints) ) then
+				StaticPopup_Show("CONFIRM_REFUND_MAX_ARENA_POINTS", (MerchantFrame.arenaPoints + currentArenaPoints - maxArenaPoints))
+			else
+				ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+			end
+		end
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -151,6 +161,49 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	hideOnEscape = 1,
 	hasItemFrame = 1,
 }
+
+StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR"] = {
+	text = CONFIRM_REFUND_MAX_HONOR,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		StackSplitFrame:Hide();
+	end,
+	OnCancel = function()
+	
+	end,
+	OnShow = function()
+	
+	end,
+	OnHide = function()
+	
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+}
+
+StaticPopupDialogs["CONFIRM_REFUND_MAX_ARENA_POINTS"] = {
+	text = CONFIRM_REFUND_MAX_ARENA_POINTS,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		StackSplitFrame:Hide();
+	end,
+	OnCancel = function()
+	
+	end,
+	OnShow = function()
+	
+	end,
+	OnHide = function()
+	
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+}
+
 
 StaticPopupDialogs["CONFIRM_HIGH_COST_ITEM"] = {
 	text = CONFIRM_HIGH_COST_ITEM,
@@ -2104,16 +2157,12 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		local name, type, difficulty = GetInstanceInfo();
 		self.name, self.difficulty = name, difficulty;
 	end,
-	OnHide = function(self)
-		self.name, self.difficulty = nil, nil;
-		self.lockTimeleft = nil;
-	end,
 	OnUpdate = function(self, elapsed)
 		local lockTimeleft = self.lockTimeleft - elapsed;
 		if ( lockTimeleft <= 0 ) then
 			local OnCancel = StaticPopupDialogs["INSTANCE_LOCK"].OnCancel;
 			if ( OnCancel ) then
-				OnCancel(self, self.data, "timeout");
+				OnCancel(self, "timeout");
 			end
 			self:Hide();
 			return;
@@ -2128,13 +2177,17 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 	end,
 	OnAccept = function(self)
 		RespondInstanceLock(true);
+		self.name, self.difficulty = nil, nil;
+		self.lockTimeleft = nil;
 	end,
-	OnCancel = function(self, data, reason)
+	OnCancel = function(self, reason)
 		if ( reason == "timeout" ) then
 			self:Hide();
 			return;
 		end
 		RespondInstanceLock(false);
+		self.name, self.difficulty = nil, nil;
+		self.lockTimeleft = nil;
 	end,
 	timeout = 0,
 	showAlert = 1,

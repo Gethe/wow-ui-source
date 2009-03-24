@@ -27,7 +27,7 @@ function BattlefieldMinimap_Toggle()
 			SetCVar("showBattlefieldMinimap", "1");
 			BattlefieldMinimap:Show();
 			WorldMapZoneMinimapDropDown_Update();
-		elseif ( instanceType == "none" ) then
+		elseif ( instanceType ~= "arena" ) then
 			SetCVar("showBattlefieldMinimap", "2");
 			BattlefieldMinimap:Show();
 			WorldMapZoneMinimapDropDown_Update();
