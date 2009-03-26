@@ -25,6 +25,18 @@ function ToggleMinimap()
 	UpdateUIPanelPositions();
 end
 
+function Minimap_OnShow (self)
+	MinimapToggleButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Up");
+	MinimapToggleButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Down");
+	MinimapToggleButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Disabled");
+end
+
+function Minimap_OnHide (self)
+	MinimapToggleButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Up");
+	MinimapToggleButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Down");
+	MinimapToggleButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Disabled");
+end
+
 function Minimap_Update()
 	MinimapZoneText:SetText(GetMinimapZoneText());
 

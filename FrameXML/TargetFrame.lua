@@ -240,56 +240,57 @@ local largeBuffList = {};
 local largeDebuffList = {};
 
 function TargetFrame_UpdateAuras (self)
-	local button, buttonName;
-	local buttonIcon, buttonCount, buttonCooldown, buttonStealable, buttonBorder;
+	local frame, frameName;
+	local frameIcon, frameCount, frameCooldown;
 
 	local name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable;
 	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, "target");
 
+	local frameStealable;
 	local numBuffs = 0;
 	for i=1, MAX_TARGET_BUFFS do
 		name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = UnitBuff("target", i);
-		buttonName = "TargetFrameBuff"..i;
-		button = _G[buttonName];
-		if ( not button ) then
+		frameName = "TargetFrameBuff"..i;
+		frame = _G[frameName];
+		if ( not frame ) then
 			if ( not icon ) then
 				break;
 			else
-				button = CreateFrame("Button", buttonName, TargetFrame, "TargetBuffButtonTemplate");
-				button.unit = "target";
+				frame = CreateFrame("Button", frameName, TargetFrame, "TargetBuffFrameTemplate");
+				frame.unit = "target";
 			end
 		end
 		if ( icon ) then
-			button:SetID(i);
+			frame:SetID(i);
 
 			-- set the icon
-			buttonIcon = _G[buttonName.."Icon"];
-			buttonIcon:SetTexture(icon);
+			frameIcon = _G[frameName.."Icon"];
+			frameIcon:SetTexture(icon);
 
 			-- set the count
-			buttonCount = _G[buttonName.."Count"];
+			frameCount = _G[frameName.."Count"];
 			if ( count > 1 ) then
-				buttonCount:SetText(count);
-				buttonCount:Show();
+				frameCount:SetText(count);
+				frameCount:Show();
 			else
-				buttonCount:Hide();
+				frameCount:Hide();
 			end
 
 			-- Handle cooldowns
-			buttonCooldown = _G[buttonName.."Cooldown"];
+			frameCooldown = _G[frameName.."Cooldown"];
 			if ( duration > 0 ) then
-				buttonCooldown:Show();
-				CooldownFrame_SetTimer(buttonCooldown, expirationTime - duration, duration, 1);
+				frameCooldown:Show();
+				CooldownFrame_SetTimer(frameCooldown, expirationTime - duration, duration, 1);
 			else
-				buttonCooldown:Hide();
+				frameCooldown:Hide();
 			end
 
 			-- Show stealable frame if the target is not a player and the buff is stealable.
-			buttonStealable = _G[buttonName.."Stealable"];
+			frameStealable = _G[frameName.."Stealable"];
 			if ( not playerIsTarget and isStealable ) then
-				buttonStealable:Show();
+				frameStealable:Show();
 			else
-				buttonStealable:Hide();
+				frameStealable:Hide();
 			end
 
 			-- set the buff to be big if the target is not the player and the buff is cast by the player or his pet
@@ -297,50 +298,51 @@ function TargetFrame_UpdateAuras (self)
 
 			numBuffs = numBuffs + 1;
 
-			button:ClearAllPoints();
-			button:Show();
+			frame:ClearAllPoints();
+			frame:Show();
 		else
-			button:Hide();
+			frame:Hide();
 		end
 	end
 
 	local color;
+	local frameBorder;
 	local numDebuffs = 0;
 	for i=1, MAX_TARGET_DEBUFFS do
 		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff("target", i);
-		buttonName = "TargetFrameDebuff"..i;
-		button = _G[buttonName];
-		if ( not button ) then
+		frameName = "TargetFrameDebuff"..i;
+		frame = _G[frameName];
+		if ( not frame ) then
 			if ( not icon ) then
 				break;
 			else
-				button = CreateFrame("Button", buttonName, TargetFrame, "TargetDebuffButtonTemplate");
-				button.unit = "target";
+				frame = CreateFrame("Button", frameName, TargetFrame, "TargetDebuffFrameTemplate");
+				frame.unit = "target";
 			end
 		end
 		if ( icon ) then
-			button:SetID(i);
+			frame:SetID(i);
 
 			-- set the icon
-			buttonIcon = _G[buttonName.."Icon"];
-			buttonIcon:SetTexture(icon);
+			frameIcon = _G[frameName.."Icon"];
+			frameIcon:SetTexture(icon);
 
 			-- set the count
-			buttonCount = _G[buttonName.."Count"];
+			frameCount = _G[frameName.."Count"];
 			if ( count > 1 ) then
-				buttonCount:SetText(count);
-				buttonCount:Show();
+				frameCount:SetText(count);
+				frameCount:Show();
 			else
-				buttonCount:Hide();
+				frameCount:Hide();
 			end
 
 			-- Handle cooldowns
-			buttonCooldown = _G[buttonName.."Cooldown"];
+			frameCooldown = _G[frameName.."Cooldown"];
 			if ( duration > 0 ) then
-				buttonCooldown:Show();
-				CooldownFrame_SetTimer(buttonCooldown, expirationTime - duration, duration, 1);
+				frameCooldown:Show();
+				CooldownFrame_SetTimer(frameCooldown, expirationTime - duration, duration, 1);
 			else
-				buttonCooldown:Hide();
+				frameCooldown:Hide();
 			end
 
 			-- set debuff type color
@@ -349,18 +351,18 @@ function TargetFrame_UpdateAuras (self)
 			else
 				color = DebuffTypeColor["none"];
 			end
-			buttonBorder = _G[buttonName.."Border"];
-			buttonBorder:SetVertexColor(color.r, color.g, color.b);
+			frameBorder = _G[frameName.."Border"];
+			frameBorder:SetVertexColor(color.r, color.g, color.b);
 
 			-- set the debuff to be big if the buff is cast by the player or his pet
 			largeDebuffList[i] = (PLAYER_UNITS[caster]);
 
 			numDebuffs = numDebuffs + 1;
 
-			button:ClearAllPoints();
-			button:Show();
+			frame:ClearAllPoints();
+			frame:Show();
 		else
-			button:Hide();
+			frame:Hide();
 		end
 	end
 
@@ -633,7 +635,7 @@ function TargetofTarget_Update (self, elapsed)
 		UnitFrame_Update(self);
 		TargetofTarget_CheckDead();
 		TargetofTargetHealthCheck();
-		RefreshAuras(TargetofTargetFrame, 0, "targettarget");
+		RefreshDebuffs(TargetofTargetFrame, "targettarget");
 	else
 		if ( TargetofTargetFrame:IsShown() ) then
 			TargetofTargetFrame:Hide();

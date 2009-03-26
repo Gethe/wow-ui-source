@@ -26,5 +26,7 @@ function HealthBar_OnValueChanged(self, value, smooth)
 		g = 1.0;
 	end
 	b = 0.0;
-	self:SetStatusBarColor(r, g, b);
+	if ( not self.lockColor ) then
+		self:SetStatusBarColor(r, g, b);
+	end
 end

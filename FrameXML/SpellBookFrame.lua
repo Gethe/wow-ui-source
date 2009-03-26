@@ -293,7 +293,8 @@ function SpellButton_OnLoad(self)
 end
 
 function SpellButton_OnEvent(self, event, ...)
-	if ( event == "SPELLS_CHANGED" or event == "SPELL_UPDATE_COOLDOWN" ) then
+	if ( event == "SPELLS_CHANGED" or event == "SPELL_UPDATE_COOLDOWN" or event == "UPDATE_SHAPESHIFT_FORM" ) then
+		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
 		SpellButton_UpdateButton(self);
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		SpellButton_UpdateSelection(self);
@@ -309,6 +310,7 @@ end
 function SpellButton_OnShow(self)
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
@@ -320,6 +322,7 @@ end
 function SpellButton_OnHide(self)
 	self:UnregisterEvent("SPELLS_CHANGED");
 	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:UnregisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:UnregisterEvent("TRADE_SKILL_SHOW");
 	self:UnregisterEvent("TRADE_SKILL_CLOSE");

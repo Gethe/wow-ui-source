@@ -660,6 +660,8 @@ function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
 end
 
 function ContainerFrameItemButton_OnClick(self, button)
+	MerchantFrame.refundItem = nil;
+
 	if ( button == "LeftButton" ) then
 		local type, money = GetCursorInfo();
 		if ( SpellCanTargetItem() ) then
@@ -679,8 +681,11 @@ function ContainerFrameItemButton_OnClick(self, button)
 			else
 				PickupContainerItem(self:GetParent():GetID(), self:GetID());
 			end
-		else			
+		else
 			PickupContainerItem(self:GetParent():GetID(), self:GetID());
+			if ( CursorHasItem() ) then
+				MerchantFrame.refundItem = self;
+			end
 		end
 		StackSplitFrame:Hide();
 	else

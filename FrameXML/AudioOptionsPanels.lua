@@ -256,6 +256,19 @@ function AudioOptionsVoicePanel_OnEvent (self, event, ...)
 	end
 end
 
+function AudioOptionsVoicePanel_OnShow (self)
+	VoiceChatTalkers:SetAlpha(1);
+	VoiceChatTalkers.optionsLock = true;
+end
+
+function AudioOptionsVoicePanel_OnHide (self)
+	AudioOptionsVoicePanelKeyBindingButton_CancelBinding();
+	VoiceChatTalkers.optionsLock = nil;
+	if ( VoiceChatTalkers_CanHide() ) then
+		VoiceChatTalkers_FadeOut();
+	end
+end
+
 function AudioOptionsVoicePanelEnableVoice_UpdateControls (value)
 	local voiceChatEnabled = value == "1";
 	if ( VoiceIsDisabledByClient() ) then

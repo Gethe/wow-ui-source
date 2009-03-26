@@ -110,8 +110,9 @@
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<NormalTexture file="Interface\Buttons\UI-Panel-CollapseButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-CollapseButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-Panel-CollapseButton-Disabled"/>
 				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight"/>
 			</Button>
 			<Minimap name="Minimap" enableMouse="true" minimapPlayerModel="Interface\Minimap\MinimapArrow.mdx" minimapArrowModel="Interface\Minimap\Rotating-MinimapArrow.mdl">
@@ -693,6 +694,8 @@
 					</Frame>
 				</Frames>
 				<Scripts>
+					<OnShow function="Minimap_OnShow"/>
+					<OnHide function="Minimap_OnHide"/>
 					<OnMouseUp function="Minimap_OnClick"/>
 				</Scripts>
 			</Minimap>

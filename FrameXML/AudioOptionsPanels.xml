@@ -566,7 +566,7 @@
 
 	<!-- Voice Panel -->
 
-	<Frame name="AudioOptionsVoicePanel" hidden="false" parent="AudioOptionsFramePanelContainer">
+	<Frame name="AudioOptionsVoicePanel" hidden="true" parent="AudioOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" text="VOICE_LABEL" inherits="GameFontNormalLargeLeftTop">
@@ -1313,7 +1313,8 @@
 		</Frames>		
 		<Scripts>
 			<OnLoad function="AudioOptionsVoicePanel_OnLoad"/>
-			<OnHide function="AudioOptionsVoicePanelKeyBindingButton_CancelBinding"/>
+			<OnShow function="AudioOptionsVoicePanel_OnShow"/>
+			<OnHide function="AudioOptionsVoicePanel_OnHide"/>
 		</Scripts>
 	</Frame>
 

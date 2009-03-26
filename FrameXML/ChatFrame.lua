@@ -1455,14 +1455,18 @@ SlashCmdList["CHAT_PASSWORD"] =
 SlashCmdList["CHAT_OWNER"] =
 	function(msg)
 		local channel = gsub(msg, "%s*([^%s]+).*", "%1");
-		local newowner = gsub(msg, "%s*([^%s]+)%s*(.*)", "%2");
-		if( strlen(newowner) > MAX_CHARACTER_NAME_BYTES ) then
+		local newOwner = gsub(msg, "%s*([^%s]+)%s*(.*)", "%2");
+		if ( not channel or not newOwner ) then
+			return;
+		end
+		local newOwnerLen = strlen(newOwner);
+		if ( newOwnerLen > MAX_CHARACTER_NAME_BYTES ) then
 			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 			return;
 		end
-		if(strlen(channel) > 0) then
-			if(strlen(newowner) > 0) then
-				SetChannelOwner(channel, newowner);
+		if ( strlen(channel) > 0 ) then
+			if ( newOwnerLen > 0 ) then
+				SetChannelOwner(channel, newOwner);
 			else
 				DisplayChannelOwner(channel);
 			end
@@ -1472,19 +1476,23 @@ SlashCmdList["CHAT_OWNER"] =
 SlashCmdList["CHAT_MODERATOR"] = 
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+		if ( not channel or not player ) then
+			return;
+		end
+		if ( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
 			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 			return;
 		end
-		if ( channel and player ) then
-			ChannelModerator(channel, player);
-		end
+		ChannelModerator(channel, player);
 	end
 
 SlashCmdList["CHAT_UNMODERATOR"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+		if ( not channel or not player ) then
+			return;
+		end
+		if ( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
 			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 			return;
 		end
@@ -1496,7 +1504,10 @@ SlashCmdList["CHAT_UNMODERATOR"] =
 SlashCmdList["CHAT_MUTE"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+		if ( not channel or not player ) then
+			return;
+		end
+		if ( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
 			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 			return;
 		end
@@ -1508,7 +1519,10 @@ SlashCmdList["CHAT_MUTE"] =
 SlashCmdList["CHAT_UNMUTE"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+		if ( not channel or not player ) then
+			return;
+		end
+		if ( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
 			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 			return;
 		end
@@ -1520,7 +1534,10 @@ SlashCmdList["CHAT_UNMUTE"] =
 SlashCmdList["CHAT_CINVITE"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+		if ( not channel or not player ) then
+			return;
+		end
+		if ( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
 			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 			return;
 		end
@@ -1532,7 +1549,10 @@ SlashCmdList["CHAT_CINVITE"] =
 SlashCmdList["CHAT_KICK"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+		if ( not channel or not player ) then
+			return;
+		end
+		if ( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
 			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 			return;
 		end
@@ -1544,7 +1564,10 @@ SlashCmdList["CHAT_KICK"] =
 SlashCmdList["CHAT_BAN"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+		if ( not channel or not player ) then
+			return;
+		end
+		if ( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
 			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 			return;
 		end
@@ -1556,7 +1579,10 @@ SlashCmdList["CHAT_BAN"] =
 SlashCmdList["CHAT_UNBAN"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
+		if ( not channel or not player ) then
+			return;
+		end
+		if ( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
 			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 			return;
 		end
@@ -1573,16 +1599,16 @@ SlashCmdList["CHAT_ANNOUNCE"] =
 		end
 	end
 
-SlashCmdList["TEAM_INVITE"] =
-	function(msg)
-		if ( msg ~= "" ) then
-			local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
-			if( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+SlashCmdList["TEAM_INVITE"] = function(msg)
+	if ( msg ~= "" ) then
+		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
+		if ( team and name ) then
+			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
 				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 				return;
 			end
 			team = tonumber(team);
-			if ( team and name ) then
+			if ( team ) then
 				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
 				if ( teamsizeID ) then
 					ArenaTeamInviteByName(teamsizeID, name);
@@ -1590,19 +1616,22 @@ SlashCmdList["TEAM_INVITE"] =
 				return;
 			end
 		end
-		ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_INVITE);
 	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_INVITE);
+end
 
 SlashCmdList["TEAM_QUIT"] = function(msg)
 	if ( msg ~= "" ) then
 		local team = strmatch(msg, "^(%d+)[%w+%d+]*");
-		team = tonumber(team);
 		if ( team ) then
-			local teamsizeID = ArenaTeam_GetTeamSizeID(team);
-			if ( teamsizeID ) then
-				ArenaTeamLeave(teamsizeID);
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamLeave(teamsizeID);
+				end
+				return;
 			end
-			return;
 		end
 	end
 	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_QUIT);
@@ -1611,17 +1640,19 @@ end
 SlashCmdList["TEAM_UNINVITE"] = function(msg)
 	if ( msg ~= "" ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
-		if( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
-			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-			return;
-		end
-		team = tonumber(team);
 		if ( team and name ) then
-			local teamsizeID = ArenaTeam_GetTeamSizeID(team);
-			if ( teamsizeID ) then
-				ArenaTeamUninviteByName(teamsizeID, name);
+			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+				return;
 			end
-			return;
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamUninviteByName(teamsizeID, name);
+				end
+				return;
+			end
 		end
 	end
 	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_UNINVITE);
@@ -1630,17 +1661,19 @@ end
 SlashCmdList["TEAM_CAPTAIN"] = function(msg)
 	if ( msg ~= "" ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
-		if( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
-			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-			return;
-		end
-		team = tonumber(team);
 		if ( team and name ) then
-			local teamsizeID = ArenaTeam_GetTeamSizeID(team);
-			if ( teamsizeID ) then
-				ArenaTeamSetLeaderByName(teamsizeID, name);
+			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+				return;
 			end
-			return;
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamSetLeaderByName(teamsizeID, name);
+				end
+				return;
+			end
 		end
 	end
 	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_CAPTAIN);
@@ -1649,13 +1682,15 @@ end
 SlashCmdList["TEAM_DISBAND"] = function(msg)
 	if ( msg ~= "" ) then
 		local team = strmatch(msg, "^(%d+)[%w+%d+]*");
-		team = tonumber(team);
 		if ( team ) then
-			local teamsizeID = ArenaTeam_GetTeamSizeID(team);
-			if ( teamsizeID ) then
-				ArenaTeamDisband(teamsizeID);
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamDisband(teamsizeID);
+				end
+				return;
 			end
-			return;
 		end
 	end
 	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_DISBAND);

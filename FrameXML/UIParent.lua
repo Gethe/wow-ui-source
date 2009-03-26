@@ -212,12 +212,10 @@ function UIParent_OnLoad(self)
 
 	-- Events for Achievements!
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
-	
+
 	-- Events for Glyphs!
-	self:RegisterEvent("GLYPHFRAME_OPEN");
-	
-	RegisterForSave("MISTER_SPARKLE");
-	
+	self:RegisterEvent("USE_GLYPH");
+
 	--Events for GMChatUI
 	self:RegisterEvent("CHAT_MSG_WHISPER");
 end
@@ -1044,7 +1042,7 @@ function UIParent_OnEvent(self, event, ...)
 	end
 	
 	-- Events for Glyphs
-	if ( event == "GLYPHFRAME_OPEN" ) then
+	if ( event == "USE_GLYPH" ) then
 		OpenGlyphFrame();
 		return;
 	end
@@ -3116,6 +3114,119 @@ function ShowResurrectRequest(offerer)
 		StaticPopup_Show("RESURRECT_NO_SICKNESS", offerer);
 	else
 		StaticPopup_Show("RESURRECT_NO_TIMER", offerer);
+	end
+end
+
+function RefreshAuras(frame, unit, numAuras, suffix, checkCVar, showBuffs)
+	if ( showBuffs ) then
+		RefreshBuffs(frame, unit, numAuras, suffix, checkCVar);
+	else
+		RefreshDebuffs(frame, unit, numAuras, suffix, checkCVar);
+	end
+end
+
+function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
+	local frameName = frame:GetName();
+
+	frame.hasDispellable = nil;
+
+	numBuffs = numBuffs or MAX_PARTY_BUFFS;
+	suffix = suffix or "Buff";
+
+	local unitStatus, statusColor;
+	local debuffTotal = 0;
+	local name, rank, icon, count, debuffType, duration, expirationTime;
+	for i=1, numBuffs do
+		local filter;
+		if ( checkCVar and GetCVarBool("showCastableBuffs") ) then
+			filter = "RAID";
+		end
+		name, rank, icon, count, debuffType, duration, expirationTime = UnitBuff(unit, i, filter);
+
+		local buffName = frameName..suffix..i;
+		if ( icon ) then
+			-- if we have an icon to show then proceed with setting up the aura
+
+			-- set the icon
+			local buffIcon = _G[buffName.."Icon"];
+			buffIcon:SetTexture(icon);
+
+			-- setup the cooldown
+			local coolDown = _G[buffName.."Cooldown"];
+			if ( coolDown ) then
+				CooldownFrame_SetTimer(coolDown, expirationTime - duration, duration, 1);
+			end
+
+			-- show the aura
+			_G[buffName]:Show();
+		else
+			-- no icon, hide the aura
+			_G[buffName]:Hide();
+		end
+	end
+end
+
+function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
+	local frameName = frame:GetName();
+
+	frame.hasDispellable = nil;
+
+	numDebuffs = numDebuffs or MAX_PARTY_DEBUFFS;
+	suffix = suffix or "Debuff";
+
+	local unitStatus, statusColor;
+	local debuffTotal = 0;
+	local name, rank, icon, count, debuffType, duration, expirationTime;
+	for i=1, numDebuffs do
+		if ( unit == "party"..i ) then
+			unitStatus = _G[frameName.."Status"];
+		end
+
+		local filter;
+		if ( checkCVar and GetCVarBool("showDispelDebuffs") ) then
+			filter = "RAID";
+		end
+		name, rank, icon, count, debuffType, duration, expirationTime = UnitDebuff(unit, i, filter);
+
+		local debuffName = frameName..suffix..i;
+		if ( icon ) then
+			-- if we have an icon to show then proceed with setting up the aura
+
+			-- set the icon
+			local debuffIcon = _G[debuffName.."Icon"];
+			debuffIcon:SetTexture(icon);
+
+			-- setup the border
+			local debuffBorder = _G[debuffName.."Border"];
+			local debuffColor = DebuffTypeColor[debuffType] or DebuffTypeColor["none"];
+			debuffBorder:SetVertexColor(debuffColor.r, debuffColor.g, debuffColor.b);
+
+			-- record interesting data for the aura button
+			statusColor = debuffColor;
+			frame.hasDispellable = 1;
+			debuffTotal = debuffTotal + 1;
+
+			-- setup the cooldown
+			local coolDown = _G[debuffName.."Cooldown"];
+			if ( coolDown ) then
+				CooldownFrame_SetTimer(coolDown, expirationTime - duration, duration, 1);
+			end
+
+			-- show the aura
+			_G[debuffName]:Show();
+		else
+			-- no icon, hide the aura
+			_G[debuffName]:Hide();
+		end
+	end
+
+	frame.debuffTotal = debuffTotal;
+	-- Reset unitStatus overlay graphic timer
+	if ( frame.numDebuffs and debuffTotal >= frame.numDebuffs ) then
+		frame.debuffCountdown = 30;
+	end
+	if ( unitStatus and statusColor ) then
+		unitStatus:SetVertexColor(statusColor.r, statusColor.g, statusColor.b);
 	end
 end
 

@@ -41,9 +41,12 @@ INVSLOTS_EQUIPABLE_IN_COMBAT = {
 }
 
 NON_DEFAULT_INVSLOTS = {
-[INVSLOT_FINGER2] = true,
-[INVSLOT_TRINKET2] = true,
-[INVSLOT_OFFHAND] = true,
+[INVSLOT_FINGER1] = INVSLOT_FINGER2,
+[INVSLOT_FINGER2] = INVSLOT_FINGER1,
+[INVSLOT_TRINKET1] = INVSLOT_TRINKET2,
+[INVSLOT_TRINKET2] = INVSLOT_TRINKET1,
+[INVSLOT_MAINHAND] = INVSLOT_OFFHAND,
+[INVSLOT_OFFHAND] = INVSLOT_MAINHAND,
 }
 
 MAINHAND_TYPES = {
@@ -88,7 +91,7 @@ end
 local function _EquipmentManager_BagsFullError()
 	if ( not _bagsFullError ) then
 		_bagsFullError = true;
-		UIErrorsFrame:AddMessage(string.format(EQUIPMENT_MANAGER_BAGS_FULL), 1.0, 0.1, 0.1, 1.0);
+		UIErrorsFrame:AddMessage(EQUIPMENT_MANAGER_BAGS_FULL, 1.0, 0.1, 0.1, 1.0);
 	end
 end
 
@@ -111,8 +114,6 @@ function EquipmentManager_OnEvent (self, event, ...)
 	elseif ( event == "WEAR_EQUIPMENT_SET" ) then
 		local setName = ...;
 		EquipmentManager_EquipSet(setName);
-	elseif ( event == "PLAYER_EQUIPMENT_CHANGED" ) then -- These are successful changes
-
 	elseif ( event == "ITEM_UNLOCKED" ) then
 		local arg1, arg2 = ...; -- inventory slot or bag and slot
 		
@@ -128,15 +129,13 @@ function EquipmentManager_OnEvent (self, event, ...)
 		local index;
 		for i, action in ipairs(EQUIPMENTMANAGER_EQUIPMENTACTIONS) do
 			if ( action.run ) then
-				if ( action.type == EQUIP_ITEM and action.invSlot == arg1 and not arg2 and action.id == id ) then
-					action.completed = true;
+				if ( (action.type == EQUIP_ITEM or action.type == SWAP_ITEM) and action.invSlot == arg1 and not arg2 and action.id == id ) then
 					index = i;
 					break;
 				elseif ( action.type == UNEQUIP_ITEM and action.bag == arg1 and action.slot == arg2 and action.id == id ) then
-					action.completed = true;
 					index = i;
 					break;
-				elseif ( (action.type == SWAP_ITEM or action.type == EQUIP_ITEM) and action.bag == arg1 and action.slot == arg2 ) then
+				elseif ( (action.type == SWAP_ITEM or action.type == EQUIP_ITEM) and action.bag == arg1 and action.slot == arg2 and action.id == id ) then
 					index = i;
 					break;
 				elseif ( (action.type == SWAP_ITEM or action.type == EQUIP_ITEM) and
@@ -152,10 +151,18 @@ function EquipmentManager_OnEvent (self, event, ...)
 		end
 		
 		if ( index ) then
-			_ReleaseTable(tremove(EQUIPMENTMANAGER_EQUIPMENTACTIONS, index));
+			local action = tremove(EQUIPMENTMANAGER_EQUIPMENTACTIONS, index);
+			for i = index + 1, #EQUIPMENTMANAGER_EQUIPMENTACTIONS do
+				local actionTwo = EQUIPMENTMANAGER_EQUIPMENTACTIONS[i];
+				if ( action.invSlot == actionTwo.waitForSlot and action.set == actionTwo.set ) then
+					actionTwo.waitForSlot = nil;
+				elseif ( action.invSlot == actionTwo.invSlot ) then -- Tooo far!
+					break;
+				end
+			end
+			_ReleaseTable(action);
+			EquipmentManager_ProcessActions();
 		end
-		
-		EquipmentManager_ProcessActions();
 	elseif ( event == "BANKFRAME_OPENED" ) then
 		_isAtBank = true;
 	elseif ( event == "BANKFRAME_CLOSED" ) then
@@ -167,9 +174,7 @@ EquipmentManager:SetScript("OnEvent", EquipmentManager_OnEvent);
 EquipmentManager:RegisterEvent("PLAYER_ENTERING_WORLD");
 EquipmentManager:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
 EquipmentManager:RegisterEvent("PLAYER_REGEN_ENABLED");
-EquipmentManager:RegisterEvent("BAG_UPDATE");
 EquipmentManager:RegisterEvent("WEAR_EQUIPMENT_SET");
-EquipmentManager:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 EquipmentManager:RegisterEvent("ITEM_UNLOCKED");
 EquipmentManager:RegisterEvent("BANKFRAME_OPENED");
 EquipmentManager:RegisterEvent("BANKFRAME_CLOSED");
@@ -182,10 +187,12 @@ function EquipmentManager_EquipItemByLocation (location, invSlot)
 	if ( not bags and slot == invSlot ) then --We're trying to reequip an equipped item in the same spot, ignore it.		
 		return nil;
 	end
-
-	local slotHasPendingAction = false;
-	for i, action in next, EQUIPMENTMANAGER_EQUIPMENTACTIONS do
-		if ( not action.run and action.invSlot == invSlot ) then
+	
+	for i = #EQUIPMENTMANAGER_EQUIPMENTACTIONS, 1, -1 do
+		local action = EQUIPMENTMANAGER_EQUIPMENTACTIONS[i];
+		if ( action and action.invSlot == invSlot and action.run ) then
+			return nil; -- Slot has pending action
+		elseif ( action and action.invSlot == invSlot ) then
 			_ReleaseTable(tremove(EQUIPMENTMANAGER_EQUIPMENTACTIONS, i));
 		end
 	end
@@ -220,6 +227,7 @@ end
 
 function EquipmentManager_EquipContainerItem (action)
 	ClearCursor();
+	
 	PickupContainerItem(action.bag, action.slot);
 	
 	if ( not CursorHasItem() ) then
@@ -228,7 +236,10 @@ function EquipmentManager_EquipContainerItem (action)
 	
 	if ( not CursorCanGoInSlot(action.invSlot) ) then
 		return false;
+	elseif ( IsInventoryItemLocked(action.invSlot) ) then
+		return false;
 	end
+	
 	PickupInventoryItem(action.invSlot);
 	
 	EQUIPMENTMANAGER_BAGSLOTS[action.bag][action.slot] = action.invSlot;
@@ -241,6 +252,8 @@ function EquipmentManager_EquipInventoryItem (action)
 	ClearCursor();
 	PickupInventoryItem(action.slot);
 	if ( not CursorCanGoInSlot(action.invSlot) ) then
+		return false;
+	elseif ( IsInventoryItemLocked(action.invSlot) ) then
 		return false;
 	end
 	PickupInventoryItem(action.invSlot);
@@ -300,18 +313,19 @@ function EquipmentManager_FindAndEquipItem (soughtItem, invSlot, location)
 	end	
 end
 
-function EquipmentManager_UnequipItemInSlot (invSlot)	
-	local slotHasPendingAction = false;
-	for i, action in next, EQUIPMENTMANAGER_EQUIPMENTACTIONS do
-		if ( action.run and action.invSlot == invSlot ) then
-			slotHasPendingAction = true;
-		elseif ( action.invSlot == invSlot ) then
+function EquipmentManager_UnequipItemInSlot (invSlot)		
+	for i = #EQUIPMENTMANAGER_EQUIPMENTACTIONS, 1, -1 do
+		local action = EQUIPMENTMANAGER_EQUIPMENTACTIONS[i];
+		if ( action and action.invSlot == invSlot and action.run ) then
+			return nil;
+		elseif ( action and action.invSlot == invSlot ) then
+			local action = EQUIPMENTMANAGER_EQUIPMENTACTIONS[i];
 			_ReleaseTable(tremove(EQUIPMENTMANAGER_EQUIPMENTACTIONS, i));
 		end
 	end
 	
 	local itemID = GetInventoryItemID("player", invSlot);
-	if ( not itemID and not slotHasPendingAction ) then
+	if ( not itemID ) then
 		return nil; -- Slot was empty already;
 	end
 	
@@ -416,6 +430,7 @@ function EquipmentManager_PutItemInInventory (action)
 		end
 	end
 	
+	ClearCursor();
 	_EquipmentManager_BagsFullError();
 end
 
@@ -463,7 +478,8 @@ function EquipmentManager_GetItemInfoByLocation (location)
 end
 
 function EquipmentManager_EquipSet (name)
-	if ( EquipmentSetContainsLockedItems(name) ) then
+	if ( EquipmentSetContainsLockedItems(name) or UnitOnTaxi("player") ) then
+		UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
 
@@ -526,7 +542,7 @@ local function _addWaitForSlot (action, slot, workTable)
 		action.waitForSlot = slot;
 		return;
 	else
-		for k, v in next, workTable do
+		for k, v in ipairs(workTable) do
 			if ( v.invSlot == action.waitForSlot ) then
 				_addWaitForSlot(v, slot, workTable);
 			end
@@ -537,90 +553,78 @@ end
 function EquipmentManager_SortActions (actions)
 	local workTable = _GetTable();
 
-	local mainHand, offHand;
+	local nonDefaultActions = _GetTable();
+	
 	for i, action in ipairs(actions) do
-		for k, v in next, EQUIPMENTMANAGER_EQUIPMENTACTIONS do
-			if ( not v.run and v.invSlot == action.invSlot ) then
-				tremove(EQUIPMENTMANAGER_EQUIPMENTACTIONS, k);
+		local invSlot = action.invSlot;
+		for i = #EQUIPMENTMANAGER_EQUIPMENTACTIONS, 1, -1 do
+			local staleAction = EQUIPMENTMANAGER_EQUIPMENTACTIONS[i];
+			if ( staleAction and not staleAction.run and staleAction.invSlot == invSlot ) then
+				_ReleaseTable(tremove(EQUIPMENTMANAGER_EQUIPMENTACTIONS, i));
 			end
 		end
-		if ( action.invSlot == INVSLOT_MAINHAND ) then
-			mainHand = action;
-		elseif ( action.invSlot == INVSLOT_OFFHAND ) then
-			offHand = action;
+
+		if ( NON_DEFAULT_INVSLOTS[action.invSlot] ) then
+			nonDefaultActions[action.invSlot] = action;
 		else
 			tinsert(workTable, action);
 		end
 	end
-	
-	if (mainHand and (not mainHand.bags and mainHand.slot == INVSLOT_OFFHAND)) then
-		local id = GetInventoryItemID("player", INVSLOT_MAINHAND);
-		if ( id ) then	
-			if ( offHand and not offHand.bags and offHand.slot == INVSLOT_MAINHAND ) then
-				-- Only need one action for this swap
-				_ReleaseTable(offHand);
-				offHand = nil;
-				tinsert(workTable, mainHand);
-				mainHand = nil;
-			elseif ( offHand and offHand.type == SWAP_ITEM ) then
-				mainHand.waitForSlot = INVSLOT_OFFHAND;
-				mainHand.player = offHand.player;
-				mainHand.bank = offHand.bank
-				mainHand.bags = offHand.bags
-				mainHand.bag = offHand.bag
-				mainHand.slot = offHand.slot
-				tinsert(workTable, offHand);
-				tinsert(workTable, mainHand);
-				offHand = nil;
-				mainHand = nil;
-			elseif ( offHand and offHand.type == UNEQUIP_ITEM ) then
-				-- What we really want to do here is unequip our mainhand and move our offhand into the mainhand slot.
-				offHand.invSlot = INVSLOT_MAINHAND;
-				mainHand.type = EQUIP_ITEM;
-				mainHand.waitForSlot = INVSLOT_MAINHAND;
-				tinsert(workTable, offHand);
-				tinsert(workTable, mainHand);
-				offHand = nil;
-				mainHand = nil;
+
+	for slotOne = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+		local actionOne = nonDefaultActions[slotOne];
+		local slotTwo = NON_DEFAULT_INVSLOTS[slotOne];
+		local actionTwo = slotTwo and nonDefaultActions[slotTwo];
+		if ( actionOne and actionTwo and not actionOne.bags and actionOne.slot == slotTwo ) then
+			local idOne = GetInventoryItemID("player", slotOne);
+			local idTwo = GetInventoryItemID("player", slotTwo);
+			if ( idOne ) then -- If we have an item in the slot we're going to be equipping to and
+				if ( not actionTwo.bags and actionTwo.slot == slotOne ) then --If we're swapping two items in our inventory
+					-- We only need one action for this swap
+					tinsert(workTable, actionOne);
+					_ReleaseTable(actionTwo);
+					nonDefaultActions[slotTwo] = false;
+					nonDefaultActions[slotOne] = false;
+				elseif ( actionTwo.type == SWAP_ITEM ) then -- If we're swapping one item and moving an inventory item into the slot it came from
+					actionOne.waitForSlot = slotTwo;
+					actionOne.player = actionTwo.player;
+					actionOne.bank = actionTwo.bank;
+					actionOne.bags = actionTwo.bags;
+					actionOne.bag = actionTwo.bag;
+					actionOne.slot = actionTwo.slot;
+					tinsert(workTable, actionTwo); -- Action two needs to run first
+					tinsert(workTable, actionOne);
+					nonDefaultActions[slotOne] = false;
+					nonDefaultActions[slotTwo] = false;
+				elseif ( actionTwo.type == UNEQUIP_ITEM ) then -- We really want to unequip item one, and then move item two into item one's slot.
+					actionTwo.invSlot = slotOne; -- So action two needs to unequip action one's slot
+					actionOne.type = EQUIP_ITEM;
+					actionOne.waitForSlot = slotOne; -- and action one needs to wait for action two
+					tinsert(workTable, actionTwo);
+					tinsert(workTable, actionOne);
+					nonDefaultActions[slotOne] = false;
+					nonDefaultActions[slotTwo] = false;
+				end
+			elseif ( actionTwo and actionTwo.type == SWAP_ITEM ) then
+				actionTwo.type = EQUIP_ITEM;
+				actionTwo.waitForSlot = slotOne;
+				tinsert(workTable, actionOne);
+				tinsert(workTable, actionTwo);
+				nonDefaultActions[slotOne] = false;
+				nonDefaultActions[slotTwo] = false;
 			end
-		end
-	elseif (offHand and (not offHand.bags and offHand.slot == INVSLOT_MAINHAND)) then
-		local id = GetInventoryItemID("player", INVSLOT_OFFHAND);
-		if ( id ) then
-			if ( mainHand and mainHand.type == SWAP_ITEM and (mainHand.bags or mainHand.slot ~= INVSLOT_OFFHAND) ) then
-				offHand.waitForSlot = INVSLOT_MAINHAND;				
-				offHand.player = mainHand.player;
-				offHand.bank = mainHand.bank;
-				offHand.bags = mainHand.bags;
-				offHand.bag = mainHand.bag;
-				offHand.slot = mainHand.slot;
-				tinsert(workTable, mainHand);
-				tinsert(workTable, offHand);
-				mainHand = nil;
-				offHand = nil;
-			elseif ( mainHand and mainHand.type == UNEQUIP_ITEM ) then
-				-- Probably a rare occurance
-				mainHand.invSlot = INVSLOT_OFFHAND;
-				offHand.waitForSlot = INVSLOT_OFFHAND
-				tinsert(workTable, mainHand);
-				tinsert(workTable, offHand);
-				mainHand = nil;
-				offHand = nil;
-			end
-		elseif ( mainHand and mainHand.type == SWAP_ITEM ) then
-			-- We need to wait on equipping the main hand item until we've moved this to the offhand slot.
-			mainHand.type = EQUIP_ITEM;
-			mainHand.waitForSlot = INVSLOT_OFFHAND;
-			tinsert(workTable, offHand);
-			tinsert(workTable, mainHand);
-			mainHand = nil;
-			offHand = nil;
 		end
 	end
 	
-	tinsert(workTable, mainHand);
-	tinsert(workTable, offHand);
+	for invSlot, action in next, nonDefaultActions do	
+		if ( action ) then
+			tinsert(workTable, action);
+			nonDefaultActions[invSlot] = false;
+		end
+	end
 	
+	_ReleaseTable(nonDefaultActions);
+
 	local uniqueItemsInInventory = _GetTable();
 	for i, action in next, workTable do
 		for gem = 1, MAX_NUM_SOCKETS do
@@ -644,7 +648,7 @@ function EquipmentManager_SortActions (actions)
 			if ( family == ITEM_UNIQUE_EQUIPPED ) then
 				for gemID, invSlot in next, invSlots do
 					if ( uniqueItemsInInventory[ITEM_UNIQUE_EQUIPPED][gemID] ) then
-						for index, action in next, workTable do
+						for index, action in ipairs(workTable) do
 							if ( action.invSlot == invSlot ) then
 								_addWaitForSlot(action, uniqueItemsInInventory[ITEM_UNIQUE_EQUIPPED][gemID], workTable);
 							end
@@ -655,7 +659,7 @@ function EquipmentManager_SortActions (actions)
 				local firstInventory, lastInventory;
 				for invSlot, count in next, uniqueItemsInInventory[family] do
 					if ( tonumber(invSlot) and ( not uniqueItemsInSet[family][invSlot] or uniqueItemsInSet[family][invSlot] <= count ) ) then
-						for index, action in next, workTable do
+						for index, action in ipairs(workTable) do
 							if ( action.invSlot == invSlot and not action.waitForSlot ) then
 								tinsert(workTable, 1, tremove(workTable, index));
 								_addWaitForSlot(action, lastInventory, workTable);
@@ -667,7 +671,7 @@ function EquipmentManager_SortActions (actions)
 					end
 				end
 				
-				for index, action in next, workTable do
+				for index, action in ipairs(workTable) do
 					if ( invSlots[action.invSlot] and not action.waitForSlot ) then
 						_addWaitForSlot(action, firstInventory, workTable);
 					end
@@ -681,7 +685,7 @@ function EquipmentManager_SortActions (actions)
 	
 	wipe(actions);
 
-	for k, v in next, workTable do
+	for k, v in ipairs(workTable) do
 		tinsert(actions, v);
 	end
 	
@@ -692,33 +696,40 @@ end
 
 local _processing = false
 function EquipmentManager_ProcessActions ()
-	if ( _processing ) then
+	if ( _processing or #EQUIPMENTMANAGER_EQUIPMENTACTIONS == 0 ) then
 		return;
 	end
 	
 	_processing = true;
 	local workTable = _GetTable();
-	
+		
 	local pendingSlots = _GetTable();
-	for i, action in ipairs(EQUIPMENTMANAGER_EQUIPMENTACTIONS) do
-		if ( not action.invSlot ) then
-			workTable[i] = true;
-		elseif ( not action.run and not (action.waitForSlot and pendingSlots[action.waitForSlot]) ) then
-			local pending = EquipmentManager_RunAction(action);
-			if ( not pending ) then
-
-				_ReleaseTable(action);
-				workTable[i] = true;
-			else
+	for i = 1, #EQUIPMENTMANAGER_EQUIPMENTACTIONS do
+		local action = EQUIPMENTMANAGER_EQUIPMENTACTIONS[i];
+		if ( action.invSlot and not action.run and not action.waitForSlot ) then
+			if ( EquipmentManager_RunAction(action) ) then 
+				action.run = true;
 				pendingSlots[action.invSlot] = true;
+			else
+				workTable[i] = true;
+				for j = i+1, #EQUIPMENTMANAGER_EQUIPMENTACTIONS do
+					local actionTwo = EQUIPMENTMANAGER_EQUIPMENTACTIONS[j];
+					if ( action.invSlot == actionTwo.waitForSlot and action.set == actionTwo.set ) then
+						actionTwo.waitForSlot = nil;
+					elseif ( action.set ~= actionTwo.set ) then
+						break;
+					end
+				end
 			end
-		elseif ( action.run ) then
-			pendingSlots[action.invSlot] = true;
+		elseif ( not action.invSlot ) then -- bad action
+			workTable[i] = true;
 		end
 	end
 	
-	for k in next, workTable do
-		tremove(EQUIPMENTMANAGER_EQUIPMENTACTIONS, k);
+	for i = #EQUIPMENTMANAGER_EQUIPMENTACTIONS, 1, -1 do
+		if ( workTable[i] ) then
+			_ReleaseTable(tremove(EQUIPMENTMANAGER_EQUIPMENTACTIONS, i));
+		end
 	end
 	
 	_ReleaseTable(workTable);
@@ -731,26 +742,27 @@ function EquipmentManager_RunAction (action)
 		return true;
 	end
 	
-	action.run = true; -- No matter what happens, we only try once?
-	
-	local pending = true;
 	if ( action.type == EQUIP_ITEM or action.type == SWAP_ITEM ) then
 		if ( not action.bags ) then
-			pending = EquipmentManager_EquipInventoryItem(action);
+			return EquipmentManager_EquipInventoryItem(action);
 		else
-			pending = EquipmentManager_EquipContainerItem(action);
+			local hasItem = action.invSlot and GetInventoryItemID("player", action.invSlot);
+			local pending = EquipmentManager_EquipContainerItem(action);
 			
-			if ( pending and not GetInventoryItemID("player", action.invSlot) ) then -- This is going to result in a free bag space
+			if ( pending and not hasItem ) then -- This is going to result in a free bag space
 				EQUIPMENTMANAGER_BAGSLOTS[action.bag][action.slot] = SLOT_EMPTY;
 			end
+			
+			return pending;
 		end
 	elseif ( action.type == UNEQUIP_ITEM ) then
-		PickupInventoryItem(action.invSlot);
-		if ( not EquipmentManager_PutItemInInventory(action) ) then
-			ClearCursor();
-			pending = false;
+		ClearCursor();
+		
+		if ( IsInventoryItemLocked(action.invSlot) ) then
+			return;
+		else
+			PickupInventoryItem(action.invSlot);
+			return EquipmentManager_PutItemInInventory(action);
 		end
 	end
-	
-	return pending;
 end

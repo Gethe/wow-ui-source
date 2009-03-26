@@ -137,7 +137,7 @@ function KeyBindingFrame_Update()
 	KeyBindingFrame_UpdateUnbindKey();
 end
 
-function KeyBindingFrame_UnbindKey(keyPressed, ignoreRelated)
+function KeyBindingFrame_UnbindKey(keyPressed)
 	local oldAction = GetBindingAction(keyPressed, KeyBindingFrame.mode);
 	if ( oldAction ~= "" and oldAction ~= KeyBindingFrame.selected ) then
 		local key1, key2 = GetBindingKey(oldAction, KeyBindingFrame.mode);
@@ -147,40 +147,6 @@ function KeyBindingFrame_UnbindKey(keyPressed, ignoreRelated)
 		end
 	end
 	SetBinding(keyPressed, nil, KeyBindingFrame.mode);
-	
-	-- Unbind related keys
-	if ( not ignoreRelated ) then
-		local prefix, word, index, suffix;
-
-		prefix, word, index = strmatch(keyPressed, "(.*)(JOYSTICK)(%d+)");
-		if ( word ) then
-			local axisX, axisY = JoystickGetAxesFromStick(1, index);
-			KeyBindingFrame_UnbindKey(prefix.."JOYAXIS"..axisX.."POS", true);
-			KeyBindingFrame_UnbindKey(prefix.."JOYAXIS"..axisX.."NEG", true);
-			KeyBindingFrame_UnbindKey(prefix.."JOYAXIS"..axisY.."POS", true);
-			KeyBindingFrame_UnbindKey(prefix.."JOYAXIS"..axisY.."NEG", true);
-		end
-
-		prefix, word, index, suffix = strmatch(keyPressed, "(.*)(JOYAXIS)(%d+)(.*)");
-		if ( word ) then
-			local stick = JoystickGetStickFromAxis(1, index);
-			if ( stick ) then
-				KeyBindingFrame_UnbindKey(prefix.."JOYSTICK"..stick, true);
-			end
-		end
-
-		prefix, word, suffix = strmatch(keyPressed, "(.*)(JOYHAT)(.*)");
-		if ( word ) then
-			if ( suffix ~= "" ) then
-				KeyBindingFrame_UnbindKey(prefix..word, true);
-			else
-				KeyBindingFrame_UnbindKey(prefix..word.."UP", true);
-				KeyBindingFrame_UnbindKey(prefix..word.."RIGHT", true);
-				KeyBindingFrame_UnbindKey(prefix..word.."DOWN", true);
-				KeyBindingFrame_UnbindKey(prefix..word.."LEFT", true);
-			end
-		end
-	end
 end
 
 function KeyBindingFrame_OnKeyDown(self, keyOrButton)
@@ -266,63 +232,6 @@ function KeyBindingFrame_OnKeyDown(self, keyOrButton)
 	KeyBindingFrame_UpdateUnbindKey();
 end
 
-function KeyBindingFrame_OnJoyStick(self, joystick, stick, angle, pressure)
-	if ( BindingCommandUsesAngle(KeyBindingFrame.selected) ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYSTICK"..stick);
-		return;
-	end
-
-	local axisX, axisY = JoystickGetAxesFromStick(stick);
-	local x = math.sin(angle) * pressure;
-	local y = -math.cos(angle) * pressure;
-	if ( x >= 0.5 ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axisX.."POS");
-	elseif ( x <= -0.5 ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axisX.."NEG");
-	elseif ( y >= 0.5 ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axisY.."POS");
-	elseif ( y <= -0.5 ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axisY.."NEG");
-	end
-end
-
-function KeyBindingFrame_OnJoyAxis(self, joystick, axis, value)
-	if ( BindingCommandUsesAngle(KeyBindingFrame.selected) ) then
-		return;
-	end
-
-	if ( value >= 0.5 ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axis.."POS");
-	elseif ( value <= -0.5 ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYAXIS"..axis.."NEG");
-	end
-end
-
-function KeyBindingFrame_OnJoyButton(self, joystick, button)
-	if ( BindingCommandUsesAngle(KeyBindingFrame.selected) ) then
-		return;
-	end
-
-	KeyBindingFrame_OnKeyDown(self, "JOYBUTTON"..button);
-end
-
-function KeyBindingFrame_OnJoyHat(self, joystick, hat, state)
-	if ( BindingCommandUsesAngle(KeyBindingFrame.selected) ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYHAT");
-		return;
-	end
-
-	if ( state == 1 ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYHATUP");
-	elseif ( state == 3 ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYHATRIGHT");
-	elseif ( state == 5 ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYHATDOWN");
-	elseif ( state == 7 ) then
-		KeyBindingFrame_OnKeyDown(self, "JOYHATLEFT");
-	end
-end
-
 function KeyBindingButton_OnClick(self, button)
 	if ( KeyBindingFrame.selected ) then
 		-- Code to be able to deselect or select another key to bind
@@ -390,11 +299,4 @@ end
 
 function KeyBindingFrame_SetSelected(value)
 	KeyBindingFrame.selected = value;
-
-	-- Turn off joystick mouse mode during binding selection so we can bind mouse axes
-	if ( value ) then
-		JoystickMouseDisable(true);
-	else
-		JoystickMouseDisable(false);
-	end
 end

@@ -177,7 +177,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Button name="$parentAura1" inherits="PartyBuffButtonTemplate" id="1">
+			<Button name="$parentDebuff1" inherits="PartyDebuffFrameTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -192,9 +192,9 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentAura2" inherits="PartyBuffButtonTemplate" id="2">
+			<Button name="$parentDebuff2" inherits="PartyDebuffFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
@@ -207,9 +207,9 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentAura3" inherits="PartyBuffButtonTemplate" id="3">
+			<Button name="$parentDebuff3" inherits="PartyDebuffFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
@@ -222,9 +222,9 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentAura4" inherits="PartyBuffButtonTemplate" id="4">
+			<Button name="$parentDebuff4" inherits="PartyDebuffFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>

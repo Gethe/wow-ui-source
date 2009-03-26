@@ -140,7 +140,7 @@ end
 
 function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need to use CVars instead of UVars even though UVars are faster.
 	local id = self:GetID();
-	if ( UnitExists(self.unit) ) then
+	if ( UnitGUID(self.unit) ) then	--Use UnitGUID instead of UnitExists in case the unit is a remote update.
 		self:Show();
 		UnitFrame_Update(self);
 	end
@@ -157,16 +157,16 @@ end
 
 function ArenaEnemyFrame_Lock(self)
 	self.healthbar:SetStatusBarColor(0.5, 0.5, 0.5);
-	self.healthbar.lockValues = true;
+	self.healthbar.lockColor = true;
 	self.manabar:SetStatusBarColor(0.5, 0.5, 0.5);
-	self.manabar.lockValue = true;
+	self.manabar.lockColor = true;
 	self.hideStatusOnTooltip = true;
 end
 
 function ArenaEnemyFrame_Unlock(self)
-	self.healthbar.lockValues = false;
+	self.healthbar.lockColor = false;
 	self.healthbar.forceHideText = false;
-	self.manabar.lockValues = false;
+	self.manabar.lockColor = false;
 	self.manabar.forceHideText = false;
 	self.hideStatusOnTooltip = false;
 end
@@ -190,10 +190,24 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 		if ( arg2 == "seen" or arg2 == "destroyed") then
 			ArenaEnemyFrame_Unlock(self);
 			ArenaEnemyFrame_UpdatePlayer(self);
+			
+			if ( self.healthbar.frequentUpdates and GetCVarBool("predictedHealth") ) then
+				self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
+				self.healthbar:UnregisterEvent("UNIT_HEALTH");
+			end
+			if ( self.manabar.frequentUpdates and GetCVarBool("predictedPower") ) then
+				self.manabar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
+				UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
+			end
 			UpdateArenaEnemyBackground();
 			UIParent_ManageFramePositions();
 		elseif ( arg2 == "unseen" ) then
 			ArenaEnemyFrame_Lock(self);
+			
+			self.healthbar:RegisterEvent("UNIT_HEALTH");
+			self.healthbar:SetScript("OnUpdate", nil);
+			UnitFrameManaBar_RegisterDefaultEvents(self.manabar);
+			self.manabar:SetScript("OnUpdate", nil);
 		elseif ( arg2 == "cleared" ) then
 			ArenaEnemyFrame_Unlock(self);
 			self:Hide();

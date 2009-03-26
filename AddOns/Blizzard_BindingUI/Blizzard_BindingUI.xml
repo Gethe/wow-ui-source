@@ -536,10 +536,6 @@
 		<Scripts>
 			<OnClick function="KeyBindingFrame_OnKeyDown"/>
 			<OnKeyDown function="KeyBindingFrame_OnKeyDown"/>
-			<OnJoystickStickMotion function="KeyBindingFrame_OnJoyStick"/>
-			<OnJoystickAxisMotion function="KeyBindingFrame_OnJoyAxis"/>
-			<OnJoystickButtonDown function="KeyBindingFrame_OnJoyButton"/>
-			<OnJoystickHatMotion function="KeyBindingFrame_OnJoyHat"/>
 			<OnLoad function="KeyBindingFrame_OnLoad"/>
 			<OnShow>
 				KeyBindingFrame_OnShow(self);

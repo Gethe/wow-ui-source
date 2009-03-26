@@ -149,13 +149,13 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
-	
+		ClearCursor();
 	end,
 	OnShow = function()
 	
 	end,
 	OnHide = function()
-	
+		MerchantFrame.refundItem = nil;	
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -171,13 +171,13 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR"] = {
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
-	
+		ClearCursor();
 	end,
 	OnShow = function()
 	
 	end,
 	OnHide = function()
-	
+		MerchantFrame.refundItem = nil;
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -192,13 +192,13 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_ARENA_POINTS"] = {
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
-	
+		ClearCursor();
 	end,
 	OnShow = function()
 	
 	end,
 	OnHide = function()
-	
+		MerchantFrame.refundItem = nil;
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -1420,6 +1420,9 @@ StaticPopupDialogs["DELETE_ITEM"] = {
 			self:Hide();
 		end
 	end,
+	OnHide = function()
+		MerchantFrame.refundItem = nil;
+	end,
 	timeout = 0,
 	whileDead = 1,
 	exclusive = 1,
@@ -1458,6 +1461,7 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 			ChatFrameEditBox:SetFocus();
 		end
 		self.editBox:SetText("");
+		MerchantFrame.refundItem = nil;
 	end,
 	EditBoxOnEnterPressed = function(self)
 		if ( self:GetParent().button1:IsEnabled() == 1 ) then
@@ -2416,7 +2420,7 @@ StaticPopupDialogs["SET_LFGNOTE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	maxLetters = 128,
+	maxLetters = 63,
 	hasWideEditBox = 1,
 	OnAccept = function(self)
 		SetLFGComment(self.wideEditBox:GetText());

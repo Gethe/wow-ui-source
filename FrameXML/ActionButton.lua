@@ -94,6 +94,7 @@ function ActionButton_OnLoad (self)
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	ActionButton_UpdateAction(self);
 	ActionButton_UpdateHotkeys(self, self.buttonType);
 end
@@ -344,7 +345,8 @@ function ActionButton_OnEvent (self, event, ...)
 		end
 		return;
 	end
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
+	if ( event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_SHAPESHIFT_FORM" ) then
+		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
 		ActionButton_Update(self);
 		return;
 	end

@@ -409,42 +409,6 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Button name="$parentDebuff1" inherits="PartyBuffButtonTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="48" y="-32"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentDebuff2" inherits="PartyBuffButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentDebuff3" inherits="PartyBuffButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentDebuff4" inherits="PartyBuffButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 			<Button name="$parentPetFrame" inherits="ArenaEnemyPetFrameTemplate" parentKey="petFrame"/>
 			<StatusBar name="$parentCastingBar" inherits="ArenaCastingBarFrameTemplate">
 				<Anchors>

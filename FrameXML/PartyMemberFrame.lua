@@ -1,4 +1,5 @@
 MAX_PARTY_MEMBERS = 4;
+MAX_PARTY_BUFFS = 4;
 MAX_PARTY_DEBUFFS = 4;
 MAX_PARTY_TOOLTIP_BUFFS = 16;
 MAX_PARTY_TOOLTIP_DEBUFFS = 8;
@@ -129,7 +130,7 @@ function PartyMemberFrame_UpdateMember (self)
 		self:Hide();
 	end
 	PartyMemberFrame_UpdatePvPStatus(self);
-	RefreshAuras(self, 0, "party"..id);
+	RefreshDebuffs(self, "party"..id);
 	PartyMemberFrame_UpdateVoiceStatus(self);
 	PartyMemberFrame_UpdatePet(self);
 	PartyMemberFrame_UpdateReadyCheck(self);
@@ -153,7 +154,7 @@ function PartyMemberFrame_UpdatePet (self, id)
 		petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -27);
 	end
 	
-	PartyMemberFrame_RefreshPetBuffs(self, id);
+	PartyMemberFrame_RefreshPetDebuffs(self, id);
 	UpdatePartyMemberBackground();
 end
 
@@ -322,14 +323,14 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 
 	if ( event =="UNIT_AURA" ) then
 		if ( arg1 == unit ) then
-			RefreshAuras(self, 0, unit);
+			RefreshDebuffs(self, unit);
 			if ( PartyMemberBuffTooltip:IsShown() and
 				selfID == PartyMemberBuffTooltip:GetID() ) then
 				PartyMemberBuffTooltip_Update(self);
 			end
 		else
 			if ( arg1 == unitPet ) then
-				PartyMemberFrame_RefreshPetBuffs(self);
+				PartyMemberFrame_RefreshPetDebuffs(self);
 			end
 		end
 		return;
@@ -406,11 +407,11 @@ function PartyMemberFrame_OnUpdate (self, elapsed)
 	end
 end
 
-function PartyMemberFrame_RefreshPetBuffs (self, id)
+function PartyMemberFrame_RefreshPetDebuffs (self, id)
 	if ( not id ) then
 		id = self:GetID();
 	end
-	RefreshAuras(getglobal("PartyMemberFrame"..id.."PetFrame"), 0, "partypet"..id)
+	RefreshDebuffs(getglobal("PartyMemberFrame"..id.."PetFrame"), "partypet"..id)
 end
 
 function PartyMemberBuffTooltip_Update (self)
@@ -425,7 +426,6 @@ function PartyMemberBuffTooltip_Update (self)
 		name, rank, icon = UnitBuff(self.unit, i);
 		if ( icon ) then
 			getglobal("PartyMemberBuffTooltipBuff"..index.."Icon"):SetTexture(icon);
-			getglobal("PartyMemberBuffTooltipBuff"..index.."Border"):Hide();
 			getglobal("PartyMemberBuffTooltipBuff"..index):Show();
 			index = index + 1;
 			numBuffs = numBuffs + 1;

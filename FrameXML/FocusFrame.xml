@@ -1,51 +1,19 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="FocusFrame.lua"/>
-	<Button name="FocusDebuffButtonTemplate" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="15" y="15"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" setAllPoints="true"/>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
-					<Size>
-						<AbsDimension x="17" y="17"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
-				</Texture>	
-			</Layer>
-		</Layers>
-		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true" drawEdge="true" hidden="true">
-				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Cooldown>
-		</Frames>
+	<Frame name="FocusDebuffFrameTemplate" inherits="PartyDebuffFrameTemplate" virtual="true" hidden="true">
 		<Scripts>
+			<OnUpdate>
+				if ( GameTooltip:IsOwned(self) ) then
+					GameTooltip:SetUnitDebuff("focus", self:GetID());
+				end
+			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetUnitDebuff("focus", self:GetID());
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
 		</Scripts>
-	</Button>
+	</Frame>
 	<Button name="FocusFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
 		<Size>
 			<AbsDimension x="160" y="80"/>
@@ -250,7 +218,7 @@
 					<OnEvent function="Focus_Spellbar_OnEvent"/>
 				</Scripts>
 			</StatusBar>
-			<Button name="$parentAura1" inherits="FocusDebuffButtonTemplate" id="1">
+			<Button name="$parentDebuff1" inherits="FocusDebuffFrameTemplate" id="1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
@@ -259,63 +227,63 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura2" inherits="FocusDebuffButtonTemplate" id="2">
+			<Button name="$parentDebuff2" inherits="FocusDebuffFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura3" inherits="FocusDebuffButtonTemplate" id="3">
+			<Button name="$parentDebuff3" inherits="FocusDebuffFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura4" inherits="FocusDebuffButtonTemplate" id="4">
+			<Button name="$parentDebuff4" inherits="FocusDebuffFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura5" inherits="FocusDebuffButtonTemplate" id="5">
+			<Button name="$parentDebuff5" inherits="FocusDebuffFrameTemplate" id="5">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentAura1" relativePoint="BOTTOM">
+					<Anchor point="TOP" relativeTo="$parentDebuff1" relativePoint="BOTTOM">
 						<Offset>
 							<AbsDimension x="0" y="-4"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura6" inherits="FocusDebuffButtonTemplate" id="6">
+			<Button name="$parentDebuff6" inherits="FocusDebuffFrameTemplate" id="6">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura5" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff5" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura7" inherits="FocusDebuffButtonTemplate" id="7">
+			<Button name="$parentDebuff7" inherits="FocusDebuffFrameTemplate" id="7">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura6" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff6" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura8" inherits="FocusDebuffButtonTemplate" id="8">
+			<Button name="$parentDebuff8" inherits="FocusDebuffFrameTemplate" id="8">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura7" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff7" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
@@ -495,7 +463,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Frame name="$parentAura1" inherits="TargetofTargetBuffButtonTemplate" id="1">
+			<Frame name="$parentDebuff1" inherits="TargetofTargetDebuffFrameTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 						<Offset>
@@ -504,27 +472,27 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentAura2" inherits="TargetofTargetBuffButtonTemplate" id="2">
+			<Frame name="$parentDebuff2" inherits="TargetofTargetDebuffFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="1" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentAura3" inherits="TargetofTargetBuffButtonTemplate" id="3">
+			<Frame name="$parentDebuff3" inherits="TargetofTargetDebuffFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAura1" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentDebuff1" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-1"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentAura4" inherits="TargetofTargetBuffButtonTemplate" id="4">
+			<Frame name="$parentDebuff4" inherits="TargetofTargetDebuffFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="1" y="0"/>
 						</Offset>

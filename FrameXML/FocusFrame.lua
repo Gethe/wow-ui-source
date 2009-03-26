@@ -108,7 +108,7 @@ function FocusFrame_OnUpdate (self, elapsed)
 end
 
 function FocusFrame_UpdateAuras (self)
-	RefreshAuras(self, 0, "focus", MAX_FOCUS_DEBUFFS);
+	RefreshDebuffs(self, "focus", MAX_FOCUS_DEBUFFS);
 end
 
 function FocusFrame_HealthUpdate (self, elapsed, unit)
@@ -209,7 +209,7 @@ function TargetofFocus_Update (self, elapsed)
 		UnitFrame_Update(self);
 		TargetofFocus_CheckDead();
 		TargetofFocusHealthCheck();
-		RefreshAuras(TargetofFocusFrame, 0, "focus-target");
+		RefreshDebuffs(TargetofFocusFrame, "focus-target", MAX_FOCUS_DEBUFFS);
 	else
 		if ( TargetofFocusFrame:IsShown() ) then
 			TargetofFocusFrame:Hide();

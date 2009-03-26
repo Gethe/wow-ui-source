@@ -90,6 +90,21 @@ function VoiceChatTalkers_OnUpdate(self, elapsed)
 	end
 end
 
+function VoiceChatTalkers_FadeOut()
+	local fadeInfo = {};
+	fadeInfo.mode = "OUT";
+	fadeInfo.timeToFade = .35;
+	fadeInfo.startAlpha = 1;
+	fadeInfo.endAlpha = 0;
+	fadeInfo.finishedFunc = function() if ( #VOICECHAT_TALKERS > 0 ) then return end VoiceChatTalkers.buttons[1].button:SetAttribute("name", nil); VoiceChatTalkers.buttons[1]:Hide() VoiceChatTalkersSpeaker:Show() end;
+	UIFrameFade(VoiceChatTalkers, fadeInfo);
+	VoiceChatTalkers.visible = 0;
+end
+
+function VoiceChatTalkers_CanHide()
+	return (#VOICECHAT_TALKERS == 0) and (not VoiceChatTalkers.speakerLock) and (not VoiceChatTalkers.optionsLock) and (not VoiceChatTalkers.mouseoverLock);
+end
+
 function VoiceChatTalkers_Update()
 	local visibleButtons = 0;
 
@@ -101,18 +116,11 @@ function VoiceChatTalkers_Update()
 			VoiceChatTalkers.buttons[i]:Hide();
 		end
 		VoiceChatTalkers_ResizeFrame(1);
-		VoiceChatTalkers.show = nil;
+		VoiceChatTalkers.speakerLock = nil;
 		
-		if ( VoiceChatTalkers.visible > 0 ) then
+		if ( VoiceChatTalkers.visible > 0 and VoiceChatTalkers_CanHide() ) then
 			--Only run this if we're actually changing from a number of talkers greater than zero to zero.
-			local fadeInfo = {};
-			fadeInfo.mode = "OUT";
-			fadeInfo.timeToFade = .35;
-			fadeInfo.startAlpha = 1;
-			fadeInfo.endAlpha = 0;
-			fadeInfo.finishedFunc = function() if ( #VOICECHAT_TALKERS > 0 ) then return end VoiceChatTalkers.buttons[1].button:SetAttribute("name", nil); VoiceChatTalkers.buttons[1]:Hide() VoiceChatTalkersSpeaker:Show() end;
-			UIFrameFade(VoiceChatTalkers, fadeInfo);
-			VoiceChatTalkers.visible = 0;
+			VoiceChatTalkers_FadeOut();
 		end
 		return;
 	end
@@ -130,7 +138,7 @@ function VoiceChatTalkers_Update()
 	end
 	
 	VoiceChatTalkersSpeaker:Hide();
-	VoiceChatTalkers.show = true;
+	VoiceChatTalkers.speakerLock = true;
 	VoiceChatTalkers:SetAlpha(1);
 	VoiceChatTalkers.visible = visibleButtons;
 	VoiceChatTalkers_ResizeFrame(visibleButtons);

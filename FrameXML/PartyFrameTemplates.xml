@@ -1,6 +1,30 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Button name="PartyBuffButtonTemplate" virtual="true" hidden="true">
+	<Frame name="PartyBuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="15" y="15"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate>
+				if ( GameTooltip:IsOwned(self) ) then
+					GameTooltip:SetUnitBuff("party"..self:GetParent():GetID(), self:GetID());
+				end
+			</OnUpdate>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetUnitBuff("party"..self:GetParent():GetID(), self:GetID());
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="PartyDebuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
 		<Size>
 			<AbsDimension x="15" y="15"/>
 		</Size>
@@ -14,10 +38,11 @@
 						<AbsDimension x="17" y="17"/>
 					</Size>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
+						<Anchor point="TOPLEFT">
+							<Offset x="-1" y="1"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="1" y="-1"/>
 						</Anchor>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
@@ -25,6 +50,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnUpdate>
+				if ( GameTooltip:IsOwned(self) ) then
+					GameTooltip:SetUnitDebuff("party"..self:GetParent():GetID(), self:GetID());
+				end
+			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetUnitDebuff("party"..self:GetParent():GetID(), self:GetID());
@@ -33,15 +63,20 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-	</Button>
-	<Button name="PartyPetBuffButtonTemplate" inherits="PartyBuffButtonTemplate" virtual="true" hidden="true">
+	</Frame>
+	<Frame name="PartyPetDebuffFrameTemplate" inherits="PartyDebuffFrameTemplate" virtual="true" hidden="true">
 		<Scripts>
+			<OnUpdate>
+				if ( GameTooltip:IsOwned(self) ) then
+					GameTooltip:SetUnitDebuff("partypet"..self:GetParent():GetID(), self:GetID());
+				end
+			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetUnitDebuff("partypet"..self:GetParent():GetParent():GetID(), self:GetID());
 			</OnEnter>
 		</Scripts>
-	</Button>
+	</Frame>
 	<Button name="PartyMemberPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="64" y="26"/>
@@ -134,7 +169,7 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<Button name="$parentAura1" inherits="PartyPetBuffButtonTemplate" id="1">
+			<Button name="$parentDebuff1" inherits="PartyPetDebuffFrameTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -143,27 +178,27 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura2" inherits="PartyPetBuffButtonTemplate" id="2">
+			<Button name="$parentDebuff2" inherits="PartyPetDebuffFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura3" inherits="PartyPetBuffButtonTemplate" id="3">
+			<Button name="$parentDebuff3" inherits="PartyPetDebuffFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura4" inherits="PartyPetBuffButtonTemplate" id="4">
+			<Button name="$parentDebuff4" inherits="PartyPetDebuffFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
@@ -486,7 +521,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Button name="$parentAura1" inherits="PartyBuffButtonTemplate" id="1">
+			<Button name="$parentDebuff1" inherits="PartyDebuffFrameTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -495,27 +530,27 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura2" inherits="PartyBuffButtonTemplate" id="2">
+			<Button name="$parentDebuff2" inherits="PartyDebuffFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura3" inherits="PartyBuffButtonTemplate" id="3">
+			<Button name="$parentDebuff3" inherits="PartyDebuffFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentAura4" inherits="PartyBuffButtonTemplate" id="4">
+			<Button name="$parentDebuff4" inherits="PartyDebuffFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="2" y="0"/>
 						</Offset>

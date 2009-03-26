@@ -54,7 +54,7 @@ function PetFrame_Update (self, override)
 			PetAttackModeTexture:Hide();
 
 			PetFrame_SetHappiness(self);
-			RefreshAuras(self, 0, self.unit);
+			RefreshDebuffs(self, self.unit);
 		else
 			self:Hide();
 		end
@@ -80,7 +80,7 @@ function PetFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == self.unit ) then
-			RefreshAuras(self, 0, self.unit);
+			RefreshDebuffs(self, self.unit);
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);

@@ -44,7 +44,14 @@ end
 
 function LFGParentFrame_OnEvent(self, event, ...)
 	if ( self:IsShown() ) then
-		LFGParentFrame_UpdateTabs();
+		if ( event == "UPDATE_LFG_LIST" or event == "MEETINGSTONE_CHANGED" ) then
+			local becauseJoinedGroup = ...;
+			if ( not becauseJoinedGroup or IsRealPartyLeader() or GetRealNumPartyMembers() > 0 ) then	--We are being kicked out of LFG due to joining a party. Don't update stuff if we haven't gotten the party update yet.
+				LFGParentFrame_UpdateTabs();
+			end
+		else
+			LFGParentFrame_UpdateTabs();
+		end
 	end
 	if ( event == "PARTY_MEMBERS_CHANGED" and (not UnitInBattleground("player")) ) then
 		SendLFGQuery();
@@ -70,7 +77,7 @@ end
 -- Disable the LFG tab if the player is in a party
 function LFGParentFrame_UpdateTabs()
 	local _, _, _, _, _, _, _, _, _, _, lfgStatus, lfmStatus = GetLookingForGroup();
-	if ( (GetRealNumPartyMembers() > 0) or (GetRealNumRaidMembers() > 0) or lfmStatus ) then
+	if ( IsRealPartyLeader() or IsRealRaidLeader() or (GetRealNumPartyMembers() > 0) or (GetRealNumRaidMembers() > 0) or lfmStatus ) then
 		LFGParentFrameTab2_OnClick();
 		PanelTemplates_DisableTab(LFGParentFrame, 1);
 		LFGParentTooltipTab1:Show();
@@ -126,7 +133,7 @@ function LFMFrame_OnEvent(self, event, ...)
 	elseif ( event == "UPDATE_LFG_LIST" ) then
 		LFMFrame_CacheAndUpdate();
 	elseif ( event == "PARTY_LEADER_CHANGED" and (not UnitInBattleground("player"))) then
-		if ( IsRealPartyLeader() and ((GetRealNumPartyMembers() > 0) or (GetRealNumRaidMembers() > 0)) ) then
+		if ( IsRealPartyLeader() ) then
 			LFGFrame.loaded = nil;
 			LFMFrame_CacheAndUpdate();
 			SendLFGQuery();
@@ -396,10 +403,10 @@ function LFMFrame_UpdateDropDowns()
 	-- Set LFM settings
 	-- Set the LFM Type DropDown
 	UIDropDownMenu_Initialize(LFMFrameTypeDropDown, LFMFrameTypeDropDown_Initialize);
-	if ( (GetRealNumPartyMembers() > 0 and IsRealPartyLeader() and AutoAddMembersCheckButton:GetChecked() and AutoAddMembersCheckButton:IsEnabled()) or not LFGFrame.loaded ) then
+	if ( (IsRealPartyLeader() and AutoAddMembersCheckButton:GetChecked() and AutoAddMembersCheckButton:IsEnabled()) or not LFGFrame.loaded ) then
 		SetLFMTypeCriteria(lfmType);
 	end
-	if ( lfmStatus and ((GetRealNumPartyMembers() == 0) or IsRealPartyLeader())) then
+	if ( lfmStatus and IsRealPartyLeader()) then
 		-- Set the LFM Name DropDown
 		UIDropDownMenu_Initialize(LFMFrameNameDropDown, LFMFrameNameDropDown_Initialize);
 		if ( lfmType ~= 1 ) then
@@ -413,7 +420,7 @@ function LFMFrame_UpdateDropDowns()
 			LFMEye:Hide();
 		end
 		
-	elseif ( (GetRealNumPartyMembers() == 0) or not LFGFrame.loaded) then
+	elseif ( (GetRealNumPartyMembers() == 0) or IsRealPartyLeader() or not LFGFrame.loaded) then
 		if ( queued and lfmStatus ) then
 			LFMEye:Show();
 		else

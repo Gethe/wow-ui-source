@@ -304,7 +304,7 @@ function GlyphFrame_OnLoad (self)
 	self:RegisterEvent("GLYPH_ADDED");
 	self:RegisterEvent("GLYPH_REMOVED");
 	self:RegisterEvent("GLYPH_UPDATED");
-	self:RegisterEvent("GLYPHFRAME_OPEN");
+	self:RegisterEvent("USE_GLYPH");
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 end
 
@@ -330,7 +330,7 @@ function GlyphFrame_OnEvent (self, event, ...)
 			self:SetFrameLevel(frameLevel);
 			PlayerTalentFrameCloseButton:SetFrameLevel(frameLevel + 1);
 		end
-	elseif ( event == "GLYPHFRAME_OPEN" or event == "PLAYER_LEVEL_UP" ) then
+	elseif ( event == "USE_GLYPH" or event == "PLAYER_LEVEL_UP" ) then
 		GlyphFrame_Update();
 	elseif ( event == "GLYPH_ADDED" or event == "GLYPH_REMOVED" or event == "GLYPH_UPDATED" ) then
 		local index = ...;

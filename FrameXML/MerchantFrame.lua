@@ -56,6 +56,9 @@ function MerchantFrame_OnHide()
 	ResetCursor();
 	
 	StaticPopup_Hide("CONFIRM_PURCHASE_TOKEN_ITEM");
+	StaticPopup_Hide("CONFIRM_REFUND_TOKEN_ITEM");
+	StaticPopup_Hide("CONFIRM_REFUND_MAX_HONOR");
+	StaticPopup_Hide("CONFIRM_REFUND_MAX_ARENA_POINTS");
 	PlaySound("igCharacterInfoClose");
 end
 
@@ -380,6 +383,13 @@ function MerchantItemButton_OnClick(self, button)
 	if ( MerchantFrame.selectedTab == 1 ) then
 		-- Is merchant frame
 		if ( button == "LeftButton" ) then
+			if ( MerchantFrame.refundItem ) then
+				if ( ContainerFrame_GetExtendedPriceString(MerchantFrame.refundItem)) then
+					-- a confirmation dialog has been shown
+					return;
+				end
+			end
+			
 			PickupMerchantItem(self:GetID());
 			if ( self.extendedCost ) then
 				MerchantFrame.extendedCost = self;

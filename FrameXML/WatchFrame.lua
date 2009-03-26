@@ -286,6 +286,7 @@ function WatchFrame_OnEvent (self, event, ...)
 			WATCHFRAME_TIMEDCRITERIA[criteriaID] = nil;
 		else		
 			local timedCriteria = WATCHFRAME_TIMEDCRITERIA[criteriaID] or {};
+			timedCriteria.achievementID = achievementID;
 			timedCriteria.startTime = GetTime() - elapsed;
 			timedCriteria.duration = duration;
 			WATCHFRAME_TIMEDCRITERIA[criteriaID] = timedCriteria;
@@ -371,6 +372,7 @@ function WatchFrame_Collapse (self)
 	WatchFrameMouseover:SetPoint("BOTTOMRIGHT", WatchFrameCollapsedBorderRight, "BOTTOMRIGHT");
 	WatchFrameDialogBG:Hide();
 	WatchFrame_UpdateStateCVar();
+	PlaySound("igMiniMapClose");
 end
 
 function WatchFrame_Expand (self)
@@ -388,6 +390,7 @@ function WatchFrame_Expand (self)
 	WatchFrameDialogBG:Show();
 	WatchFrame_Update(self);
 	WatchFrame_UpdateStateCVar();
+	PlaySound("igMiniMapOpen");
 end
 
 function WatchFrame_ShowOpacityFrameBaseAlpha ()
@@ -696,6 +699,13 @@ function WatchFrame_GetHeightNeededForAchievement (achievementID)
 		
 		local linesNeeded = math.ceil(stringWidth / (maxWidth - dashWidth));
 		heightUsed = heightUsed + (WATCHFRAMELINES_FONTHEIGHT * linesNeeded);
+		
+		for criteriaID, timedCriteria in next, WATCHFRAME_TIMEDCRITERIA do
+			if ( timedCriteria.achievementID == achievementID ) then
+				heightUsed = heightUsed + lineHeight;
+			end
+		end
+		
 		return heightUsed;
 	end
 	
@@ -738,7 +748,7 @@ function WatchFrame_UpdateTimedAchievements (elapsed)
 			timeNow = timeNow or GetTime();
 			timeLeft = math.floor(line.startTime + line.duration - timeNow);
 			if ( timeLeft <= 0 ) then
-				line.text:SetText(string.format(" - " .. SECONDS_ABBR, 0));
+				line.text:SetText(string.format(" - %d" .. SECONDS_ABBR, 0));
 				line.text:SetTextColor(1, 0, 0, 1);
 			else
 				line.text:SetText(" - " .. SecondsToTime(timeLeft));
@@ -939,7 +949,27 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 				line:Show();
 				
 				nextXOffset = -dashWidth;
-				previousLine = line;		
+				previousLine = line;	
+				
+				for criteriaID, timedCriteria in next, WATCHFRAME_TIMEDCRITERIA do
+					if ( timedCriteria.achievementID == achievementID ) then
+						line = WatchFrame_GetAchievementLine();
+						line.criteriaID = criteriaID;
+						line.duration = timedCriteria.duration;
+						line.startTime = timedCriteria.startTime;
+						
+						local yOffset = WATCHFRAMELINES_FONTSPACING;
+						if ( previousLine.statusBar:IsShown() ) then
+							yOffset = yOffset - 5;
+						end
+						line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
+						line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
+						line:Show()
+						previousLine = line;
+						nextXOffset = 0;
+						WatchFrameLines_AddUpdateFunction(WatchFrame_UpdateTimedAchievements);
+					end
+				end					
 			end
 		end
 	end

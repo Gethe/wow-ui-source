@@ -55,7 +55,7 @@
 			</BackgroundInsets>
 		</Backdrop>
 		<Frames>
-			<Button name="$parentBuff1" inherits="PartyBuffButtonTemplate">
+			<Frame name="$parentBuff1" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -63,8 +63,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff2" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff2" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff1" relativePoint="RIGHT">
 						<Offset>
@@ -72,8 +72,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff3" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff3" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff2" relativePoint="RIGHT">
 						<Offset>
@@ -81,8 +81,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff4" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff4" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff3" relativePoint="RIGHT">
 						<Offset>
@@ -90,8 +90,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff5" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff5" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff4" relativePoint="RIGHT">
 						<Offset>
@@ -99,8 +99,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff6" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff6" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff5" relativePoint="RIGHT">
 						<Offset>
@@ -108,8 +108,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff7" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff7" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff6" relativePoint="RIGHT">
 						<Offset>
@@ -117,8 +117,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff8" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff8" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff7" relativePoint="RIGHT">
 						<Offset>
@@ -126,8 +126,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff9" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff9" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentBuff1" relativePoint="BOTTOM">
 						<Offset>
@@ -135,8 +135,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff10" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff10" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff9" relativePoint="RIGHT">
 						<Offset>
@@ -144,8 +144,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff11" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff11" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff10" relativePoint="RIGHT">
 						<Offset>
@@ -153,8 +153,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff12" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff12" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff11" relativePoint="RIGHT">
 						<Offset>
@@ -162,8 +162,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff13" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff13" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff12" relativePoint="RIGHT">
 						<Offset>
@@ -171,8 +171,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff14" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff14" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff13" relativePoint="RIGHT">
 						<Offset>
@@ -180,8 +180,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff15" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff15" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff14" relativePoint="RIGHT">
 						<Offset>
@@ -189,8 +189,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentBuff16" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentBuff16" inherits="PartyBuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBuff15" relativePoint="RIGHT">
 						<Offset>
@@ -198,8 +198,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff1" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentDebuff1" inherits="PartyDebuffFrameTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentBuff9" relativePoint="BOTTOM">
 						<Offset>
@@ -207,8 +207,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff2" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentDebuff2" inherits="PartyDebuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
 						<Offset>
@@ -216,8 +216,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff3" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentDebuff3" inherits="PartyDebuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
 						<Offset>
@@ -225,8 +225,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff4" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentDebuff4" inherits="PartyDebuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
 						<Offset>
@@ -234,8 +234,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff5" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentDebuff5" inherits="PartyDebuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff4" relativePoint="RIGHT">
 						<Offset>
@@ -243,8 +243,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff6" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentDebuff6" inherits="PartyDebuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff5" relativePoint="RIGHT">
 						<Offset>
@@ -252,8 +252,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff7" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentDebuff7" inherits="PartyDebuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff6" relativePoint="RIGHT">
 						<Offset>
@@ -261,8 +261,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
-			<Button name="$parentDebuff8" inherits="PartyBuffButtonTemplate">
+			</Frame>
+			<Frame name="$parentDebuff8" inherits="PartyDebuffFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff7" relativePoint="RIGHT">
 						<Offset>
@@ -270,7 +270,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Button>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="GameTooltip_OnLoad"/>

@@ -499,60 +499,6 @@
 			VoiceChatTalkers.buttons[#VOICECHAT_TALKERS].button:Click();
 		end
 	</Binding>
-	<Binding name="TARGETENEMYDIRECTIONAL" joystick="true" angle="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			if ( pressure >= 0.25 ) then
-				TargetDirectionEnemy(angle, precision);
-			end
-		else
-			TargetDirectionFinished();
-		end
-	</Binding>
-<!-- These didn't end up getting used, but might be useful at some point.
-	<Binding name="TARGETENEMYLEFT">
-		TargetDirectionEnemy(math.pi * 1.5);
-		TargetDirectionFinished();
-	</Binding>
-	<Binding name="TARGETENEMYRIGHT">
-		TargetDirectionEnemy(math.pi * 0.5);
-		TargetDirectionFinished();
-	</Binding>
-	<Binding name="TARGETENEMYFORWARD">
-		TargetDirectionEnemy(0);
-		TargetDirectionFinished();
-	</Binding>
-	<Binding name="TARGETENEMYBACKWARD">
-		TargetDirectionEnemy(math.pi);
-		TargetDirectionFinished();
-	</Binding>
--->
-	<Binding name="TARGETFRIENDDIRECTIONAL" joystick="true" angle="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			if ( pressure >= 0.25 ) then
-				TargetDirectionFriend(angle, precision);
-			end
-		else
-			TargetDirectionFinished();
-		end
-	</Binding>
-<!-- These didn't end up getting used, but might be useful at some point.
-	<Binding name="TARGETFRIENDLEFT">
-		TargetDirectionFriend(math.pi * 1.5);
-		TargetDirectionFinished();
-	</Binding>
-	<Binding name="TARGETFRIENDRIGHT">
-		TargetDirectionFriend(math.pi * 0.5);
-		TargetDirectionFinished();
-	</Binding>
-	<Binding name="TARGETFRIENDFORWARD">
-		TargetDirectionFriend(0);
-		TargetDirectionFinished();
-	</Binding>
-	<Binding name="TARGETFRIENDBACKWARD">
-		TargetDirectionFriend(math.pi);
-		TargetDirectionFinished();
-	</Binding>
--->
 
 	<!-- UI Panels -->
 	<Binding name="TOGGLECHARACTER0" header="INTERFACE">
@@ -753,43 +699,6 @@
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true">
 		ToggleCommentatorMode();
 	</Binding>
-	<Binding name="TOGGLEMOUSE" joystick="true">
-		if ( IsMouseEnabledTemporary() ) then
-			MouseEnableTemporary(false);
-		else
-			MouseEnableTemporary(true);
-		end
-	</Binding>
-	<Binding name="TOGGLEBINDINGMODE1" joystick="true">
-		EnableBindingMode(2, not BindingModeEnabled(2));
-	</Binding>
-	<Binding name="INVERTBINDINGMODE1" joystick="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			InvertBindingMode(2, true);
-		else
-			InvertBindingMode(2, false);
-		end
-	</Binding>
-	<Binding name="TOGGLEBINDINGMODE2" joystick="true">
-		EnableBindingMode(3, not BindingModeEnabled(3));
-	</Binding>
-	<Binding name="INVERTBINDINGMODE2" joystick="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			InvertBindingMode(3, true);
-		else
-			InvertBindingMode(3, false);
-		end
-	</Binding>
-	<Binding name="TOGGLEBINDINGMODE3" joystick="true">
-		EnableBindingMode(4, not BindingModeEnabled(4));
-	</Binding>
-	<Binding name="INVERTBINDINGMODE3" joystick="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			InvertBindingMode(4, true);
-		else
-			InvertBindingMode(4, false);
-		end
-	</Binding>
 
 	<!-- Camera key bindings -->
 	<Binding name="NEXTVIEW" header="CAMERA">
@@ -803,26 +712,6 @@
 	</Binding>
 	<Binding name="CAMERAZOOMOUT">
 			CameraZoomOut(1.0);
-	</Binding>
-	<Binding name="SWINGCAMERA" joystick="true" angle="true" runOnUp="true">
-		JoystickSwingCamera(angle, pressure, false);
-	</Binding>
-	<Binding name="SWINGCAMERAANDPLAYER" joystick="true" angle="true" runOnUp="true">
-		JoystickSwingCamera(angle, pressure, true);
-	</Binding>
-	<Binding name="MOVEVIEWIN" joystick="true" pressure="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			MoveViewInStart(2 * pressure);
-		else
-			MoveViewInStop();
-		end
-	</Binding>
-	<Binding name="MOVEVIEWOUT" joystick="true" pressure="true" runOnUp="true">
-		if ( keystate == "down" ) then
-			MoveViewOutStart(2 * pressure);
-		else
-			MoveViewOutStop();
-		end
 	</Binding>
 	<Binding name="SETVIEW1">
 		SetView(1);

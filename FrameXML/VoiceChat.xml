@@ -109,13 +109,16 @@
 			</OnLoad>
 			<OnEnter>
 				self:SetAlpha(1.0);
+				self.mouseoverLock = true;
 			</OnEnter>
 			<OnLeave>
-				if ( #VOICECHAT_TALKERS > 0 or MouseIsOver(self) ) then
+				if ( MouseIsOver(self) ) then
 					return;
 				end
 				
-				if ( not self.show ) then
+				self.mouseoverLock = nil;
+				
+				if ( VoiceChatTalkers_CanHide() ) then
 					self:SetAlpha(0);
 				end
 			</OnLeave>

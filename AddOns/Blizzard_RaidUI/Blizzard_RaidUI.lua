@@ -8,6 +8,7 @@ RAID_PULLOUT_BUTTON_HEIGHT = 33;
 MOVING_RAID_PULLOUT = nil;
 RAID_PULLOUT_POSITIONS = {};
 RAID_SINGLE_POSITIONS = {};
+MAX_RAID_AURAS = 4;
 
 RAID_CLASS_BUTTONS = { };
 do
@@ -685,7 +686,7 @@ function RaidPullout_ReadyCheckFinished(pulloutFrame)
 end
 
 function RaidPullout_ReadyCheckFinishFunc(pulloutButton)
-	RefreshAuras(pulloutButton, pulloutButton:GetParent().showBuffs, pulloutButton.unit);
+	RefreshAuras(pulloutButton, pulloutButton.unit, MAX_RAID_AURAS, "Aura", true, pulloutButton:GetParent().showBuffs);
 end
 
 function RaidPullout_GeneratePulloutFrame(fileName, class)
@@ -958,14 +959,14 @@ function RaidPullout_Update(pullOutFrame)
 				end
 
 				-- hide auras while ready check is up
-				for i=1, MAX_PARTY_DEBUFFS do
-					_G[pulloutButton:GetName().."Debuff"..i]:Hide();
+				for i=1, MAX_RAID_AURAS do
+					_G[pulloutButton:GetName().."Aura"..i]:Hide();
 				end
 			else
 				_G[pulloutButton:GetName().."ReadyCheck"]:Hide();
 
 				-- Handle auras if ready check is hidden
-				RefreshAuras(pulloutButton, pullOutFrame.showBuffs, unit);
+				RefreshAuras(pulloutButton, pulloutButton.unit, MAX_RAID_AURAS, "Aura", true, pullOutFrame.showBuffs);
 			end
 
 			--Handle vehicle indicator
@@ -1030,8 +1031,10 @@ function RaidPulloutButton_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_AURA" ) then
 		-- suppress while ready check is up
 		local arg1 = ...;
-		if ( arg1 == self.unit and not _G[self:GetName().."ReadyCheck"]:IsShown() ) then
-			RefreshAuras(self, self:GetParent().showBuffs, self.unit);
+		if ( arg1 == self.unit ) then
+			if ( not _G[self:GetName().."ReadyCheck"]:IsShown() ) then
+				RefreshAuras(self, self.unit, MAX_RAID_AURAS, "Aura", true, self:GetParent().showBuffs);
+			end
 		end
 	elseif ( event == "VOICE_START") then
 		local arg1 = ...;

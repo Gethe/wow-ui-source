@@ -414,15 +414,32 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="RaidBuffButtonTemplate" inherits="PartyBuffButtonTemplate" virtual="true" hidden="true">
+	<Frame name="RaidAuraFrameTemplate" enableMouse="true" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="12" y="12"/>
 		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Size>
+						<AbsDimension x="13" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="-1" y="1"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="1" y="-1"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+				</Texture>	
+			</Layer>
+		</Layers>
 		<Scripts>
-			<OnLoad>
-				_G[self:GetName().."Border"]:SetWidth(13);
-				_G[self:GetName().."Border"]:SetHeight(13);
-			</OnLoad>
 			<OnEnter>
 				if ( self:GetCenter() > GetScreenWidth()/2 ) then
 					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -778,7 +795,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentAura1" inherits="RaidBuffButtonTemplate" id="1">
+			<Frame name="$parentAura1" inherits="RaidAuraFrameTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 						<Offset>
@@ -787,7 +804,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentAura2" inherits="RaidBuffButtonTemplate" id="2">
+			<Frame name="$parentAura2" inherits="RaidAuraFrameTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
 						<Offset>
@@ -796,7 +813,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentAura3" inherits="RaidBuffButtonTemplate" id="3">
+			<Frame name="$parentAura3" inherits="RaidAuraFrameTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAura1" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -805,7 +822,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentAura4" inherits="RaidBuffButtonTemplate" id="4">
+			<Frame name="$parentAura4" inherits="RaidAuraFrameTemplate" id="4">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
 						<Offset>
