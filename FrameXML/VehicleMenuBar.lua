@@ -1133,7 +1133,7 @@ function VehicleSeatIndicatorDropDown_OnClick()
 end
 
 function VehicleSeatIndicatorDropDown_Initialize()
-	info = UIDropDownMenu_CreateInfo();
+	local info = UIDropDownMenu_CreateInfo();
 	info.text = EJECT_PASSENGER;
 	info.func = VehicleSeatIndicatorDropDown_OnClick;
 	UIDropDownMenu_AddButton(info);

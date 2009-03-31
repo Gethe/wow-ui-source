@@ -220,37 +220,15 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button name="PlayerTalentFrameActivateButton" inherits="UIPanelButtonTemplate2" text="ACTIVATE">
+			<Button name="PlayerTalentFrameActivateButton" inherits="UIPanelButtonTemplate2" text="TALENT_SPEC_ACTIVATE">
 				<Size x="80" y="22"/>
 				<Anchors>
-				<!--
-					<Anchor point="BOTTOMLEFT">
-						<Offset x="18" y="83"/>
-					</Anchor>
-				-->
 					<Anchor point="TOP">
 						<Offset x="10" y="-45"/>
 					</Anchor>
 				</Anchors>
-				<!--
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\Buttons\UI-Button-Borders2">
-							<Size x="82" y="26"/>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-2" y="2"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="2" y="-2"/>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.0" right="0.16015625" top="0.0" bottom="0.203125"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				-->
 				<Scripts>
+					<OnLoad function="PlayerTalentFrameActivateButton_OnLoad"/>
 					<OnClick function="PlayerTalentFrameActivateButton_OnClick"/>
 				</Scripts>
 			</Button>

@@ -30,6 +30,7 @@ LFG_DISABLED_DROPDOWN_NAMES = {};
 LFG_DISABLED_DROPDOWN_NAMES[1] = {};
 LFG_DISABLED_DROPDOWN_NAMES[2] = {};
 LFG_DISABLED_DROPDOWN_NAMES[3] = {};
+LFG_TYPE_NONE_ID = 1;
 
 ----------------------------- LFG Parent Functions -----------------------------
 function LFGParentFrame_OnLoad(self)
@@ -710,20 +711,26 @@ function LFGFrame_Update()
 	local type1, name1, type2, name2, type3, name3, lfmType, lfmName, comment, queued, lfgStatus, lfmStatus = GetLookingForGroup();
 	-- Set LFG settings
 	if ( type1 ) then
-		UIDropDownMenu_Initialize(LFGFrameTypeDropDown1, LFGFrameTypeDropDown_Initialize);
-		SetLFGTypeCriteria(LFGFrameTypeDropDown1, type1);
+		if ( type1 ~= LFG_TYPE_NONE_ID or (UIDropDownMenu_GetSelectedName(LFGFrameNameDropDown1)) or (not LFGFrameTypeDropDown1Text:GetText()) ) then
+			UIDropDownMenu_Initialize(LFGFrameTypeDropDown1, LFGFrameTypeDropDown_Initialize);
+			SetLFGTypeCriteria(LFGFrameTypeDropDown1, type1, true);
+		end
 		UIDropDownMenu_Initialize(LFGFrameNameDropDown1, LFGFrameNameDropDown1_Initialize);
 		SetLFGNameCriteria(LFGFrameNameDropDown1, name1, UIDropDownMenu_GetValue(name1), 1);
 	end
 	if ( type2 ) then
-		UIDropDownMenu_Initialize(LFGFrameTypeDropDown2, LFGFrameTypeDropDown_Initialize);
-		SetLFGTypeCriteria(LFGFrameTypeDropDown2, type2);
+		if ( type2 ~= LFG_TYPE_NONE_ID or (UIDropDownMenu_GetSelectedName(LFGFrameNameDropDown2)) or (not LFGFrameTypeDropDown2Text:GetText()) ) then
+			UIDropDownMenu_Initialize(LFGFrameTypeDropDown2, LFGFrameTypeDropDown_Initialize);
+			SetLFGTypeCriteria(LFGFrameTypeDropDown2, type2, true);
+		end
 		UIDropDownMenu_Initialize(LFGFrameNameDropDown2, LFGFrameNameDropDown2_Initialize);
 		SetLFGNameCriteria(LFGFrameNameDropDown2, name2, UIDropDownMenu_GetValue(name2), 1);
 	end
 	if ( type3 ) then
-		UIDropDownMenu_Initialize(LFGFrameTypeDropDown3, LFGFrameTypeDropDown_Initialize);
-		SetLFGTypeCriteria(LFGFrameTypeDropDown3, type3);
+		if ( type3 ~= LFG_TYPE_NONE_ID or (UIDropDownMenu_GetSelectedName(LFGFrameNameDropDown3)) or (not LFGFrameTypeDropDown3Text:GetText()) ) then
+			UIDropDownMenu_Initialize(LFGFrameTypeDropDown3, LFGFrameTypeDropDown_Initialize);
+			SetLFGTypeCriteria(LFGFrameTypeDropDown3, type3, true);
+		end
 		UIDropDownMenu_Initialize(LFGFrameNameDropDown3, LFGFrameNameDropDown3_Initialize);
 		SetLFGNameCriteria(LFGFrameNameDropDown3, name3, UIDropDownMenu_GetValue(name3), 1);
 	end
@@ -820,15 +827,15 @@ function Dropdown_GetLFGTypes(...)
 end
 
 function LFGTypeButton_OnClick(self)
-	SetLFGTypeCriteria(self.owner, self:GetID());
+	SetLFGTypeCriteria(self.owner, self:GetID(), false);
 	LFGFrame_UpdateDropDowns();
 end
 
 -- Function to set the type criteria for the lfg frame
-function SetLFGTypeCriteria(dropdown, id)
+function SetLFGTypeCriteria(dropdown, id, doNotSetLookingForGroup)
 	-- If the selected type is "none" then clear out the looking for group
-	if ( id == 1 ) then
-		SetLookingForGroup(dropdown:GetID(), 1, 0, LFGFrameLeaderCheckButton:GetChecked(), LFGFrameRoleButton2:GetChecked(), LFGFrameRoleButton3:GetChecked(), LFGFrameRoleButton1:GetChecked());
+	if ( not doNotSetLookingForGroup ) then
+		SetLookingForGroup(dropdown:GetID(), id, 0, LFGFrameLeaderCheckButton:GetChecked(), LFGFrameRoleButton2:GetChecked(), LFGFrameRoleButton3:GetChecked(), LFGFrameRoleButton1:GetChecked());
 	end
 	
 	UIDropDownMenu_SetSelectedID(dropdown, id);
@@ -983,8 +990,7 @@ end
 
 function LFGFrame_AreRolesChosen()
 	for i=1,NUM_ROLES do
-		frame = _G["LFGFrameRoleButton"..i];
-		if ( frame:GetChecked() ) then
+		if ( _G["LFGFrameRoleButton"..i]:GetChecked() ) then
 			return true;
 		end
 	end

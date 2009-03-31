@@ -36,11 +36,11 @@ function ItemSocketingFrame_Update()
 	ItemSocketingFrame.destroyingGem = nil;
 
 	local numSockets = GetNumSockets();
-	local name, icon, quality; 
+	local name, icon, quality, gemMatchesSocket; 
 	local socket, socketName;
 	local numNewGems = numSockets;
 	local closedBracket, openBracket;
-	local bracketsOpen, gemColor, gemBorder, gemInfo;
+	local bracketsOpen, gemColor, gemBorder, gemColorText, gemInfo;
 	local numMatches = 0;
 	for i=1, MAX_NUM_SOCKETS do
 		socket = getglobal("ItemSocketingSocket"..i);

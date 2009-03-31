@@ -17,6 +17,7 @@ end
 function InspectTalentFrame_UpdateTabs()
 	local numTabs = GetNumTalentTabs(InspectTalentFrame.inspect, InspectTalentFrame.pet);
 	local selectedTab = PanelTemplates_GetSelectedTab(InspectTalentFrame);
+	local tab;
 	for i = 1, MAX_TALENT_TABS do
 		tab = _G["InspectTalentFrameTab"..i];
 		if ( tab ) then
@@ -76,6 +77,7 @@ function InspectTalentFrame_OnLoad(self)
 
 	TalentFrame_Load(self);
 
+	local button;
 	for i = 1, MAX_NUM_TALENTS do
 		button = _G["InspectTalentFrameTalent"..i];
 		if ( button ) then
@@ -115,9 +117,9 @@ end
 function InspectTalentFramePointsBar_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:AddLine(TALENT_POINTS);
+	local pointsColor;
 	for index, info in ipairs(talentSpecInfoCache) do
 		if ( info.name ) then
-			local pointsColor;
 			if ( talentSpecInfoCache.primaryTabIndex == index ) then
 				pointsColor = GREEN_FONT_COLOR;
 			else

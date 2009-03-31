@@ -248,8 +248,9 @@ function PlayerTalentFrame_OnLoad(self)
 	TalentFrame_Load(self);
 
 	-- setup talent buttons
+	local button;
 	for i = 1, MAX_NUM_TALENTS do
-		local button = _G["PlayerTalentFrameTalent"..i];
+		button = _G["PlayerTalentFrameTalent"..i];
 		if ( button ) then
 			button:SetScript("OnEvent", PlayerTalentFrameTalent_OnEvent);
 			button:SetScript("OnClick", PlayerTalentFrameTalent_OnClick);
@@ -471,37 +472,21 @@ end
 function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 	local spec = selectedSpec and specs[selectedSpec];
 
-	-- keep track of which bars have to adjust to accomodate the activate button
-	local adjustUnspentPointsBar = false;
-	local adjustMultiLearnBar = false;
-
 	local isActiveSpec = selectedSpec == activeSpec;
 
-	-- show the activate button if we have more than one talent group available
---	local showActivateButton = GetNumTalentGroups() > 1 and spec.talentGroup;
-	local showStatusFrame = spec.pet or numTalentGroups == 1;
-	local showActivateButton = not showStatusFrame and not isActiveSpec;
+	-- show the multi-spec status frame if this is not a pet spec or we have more than one talent group
+	local showStatusFrame = not spec.pet and numTalentGroups > 1;
+	-- show the activate button if we were going to show the status frame but this is not the active spec
+	local showActivateButton = showStatusFrame and not isActiveSpec;
 	if ( showActivateButton ) then
 		PlayerTalentFrameActivateButton:Show();
 		PlayerTalentFrameStatusFrame:Hide();
-		-- set activate button text
-		PlayerTalentFrameActivateButton:SetFormattedText(TALENT_SPEC_ACTIVATE, spec.name);
-		PlayerTalentFrameActivateButton:SetWidth(PlayerTalentFrameActivateButton:GetTextWidth() + 40);
-		-- enable the activate button if the current spec is not the active spec
-		if ( selectedSpec ~= activeSpec ) then
-			PlayerTalentFrameActivateButton:Enable();
-		else
-			PlayerTalentFrameActivateButton:Disable();
-		end
-		-- mark which bars need to accomodate the activate button
---		adjustUnspentPointsBar = true;
 	else
 		PlayerTalentFrameActivateButton:Hide();
 		if ( showStatusFrame ) then
-			-- don't show the status frame if this is a pet spec or we only have one talent group
-			PlayerTalentFrameStatusFrame:Hide();
-		else
 			PlayerTalentFrameStatusFrame:Show();
+		else
+			PlayerTalentFrameStatusFrame:Hide();
 		end
 	end
 
@@ -521,28 +506,15 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 		end
 		-- squish all frames to make room for this bar
 		PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFramePreviewBar, "TOP", 0, -4);
-		-- mark which bars need to accomodate the activate button
---		adjustUnspentPointsBar = false;
---		adjustMultiLearnBar = showActivateButton;
 	else
 		PlayerTalentFramePreviewBar:Hide();
 		-- unsquish frames since the bar is now hidden
 		PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
 	end
+end
 
-	-- readjust bars to accomodate the activate button
-	if ( adjustMultiLearnBar ) then
-		PlayerTalentFramePreviewBar:SetPoint("LEFT", PlayerTalentFrameActivateButton, "RIGHT", 0, 0);
-	else
-		PlayerTalentFramePreviewBar:SetPoint("LEFT", PlayerTalentFrame, "LEFT", 18, 0);
-	end
-
-	-- readjust bars to accomodate the activate button
-	if ( adjustUnspentPointsBar ) then
-		PlayerTalentFramePointsBar:SetPoint("LEFT", PlayerTalentFrameActivateButton, "RIGHT", 0, 0);
-	else
-		PlayerTalentFramePointsBar:SetPoint("LEFT", PlayerTalentFrame, "LEFT", 16, 0);
-	end
+function PlayerTalentFrameActivateButton_OnLoad(self)
+	self:SetWidth(self:GetTextWidth() + 40);
 end
 
 function PlayerTalentFrameActivateButton_OnClick(self)
@@ -1019,10 +991,10 @@ function PlayerSpecTab_OnEnter(self)
 			end
 		end
 		-- points spent
+		local pointsColor;
 		for index, info in ipairs(talentSpecInfoCache[specIndex]) do
 			if ( info.name ) then
 				-- assign a special color to a tab that surpasses the max points spent threshold
-				local pointsColor;
 				if ( talentSpecInfoCache[specIndex].primaryTabIndex == index ) then
 					pointsColor = GREEN_FONT_COLOR;
 				else

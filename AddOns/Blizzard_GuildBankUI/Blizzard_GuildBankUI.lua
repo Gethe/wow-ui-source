@@ -634,7 +634,7 @@ function IsTabViewable(tab)
 	GuildBankFrame.nextAvailableTab = nil;
 	local view = false;
 	for i=1, MAX_GUILDBANK_TABS do
-		_, _, isViewable = GetGuildBankTabInfo(i);
+		local _, _, isViewable = GetGuildBankTabInfo(i);
 		if ( isViewable ) then
 			if ( not GuildBankFrame.nextAvailableTab ) then
 				GuildBankFrame.nextAvailableTab = i;

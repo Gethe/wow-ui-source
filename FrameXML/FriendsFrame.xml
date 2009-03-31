@@ -4435,7 +4435,9 @@
 			<OnLoad function="FriendsFrame_OnLoad"/>
 			<OnShow function="FriendsFrame_OnShow"/>
 			<OnHide function="FriendsFrame_OnHide"/>
-			<OnEvent function="FriendsFrame_OnEvent"/>
+			<OnEvent>	
+				FriendsFrame_OnEvent(self, event, ...);
+			</OnEvent>
 			<OnMouseWheel function=""/>
 		</Scripts>
 	</Frame>

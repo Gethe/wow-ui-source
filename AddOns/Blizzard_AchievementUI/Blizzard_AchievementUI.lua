@@ -431,7 +431,8 @@ function AchievementFrameCategory_FeatOfStrengthTooltip(self)
 end
 
 function AchievementFrameCategories_UpdateTooltip()
-	if ( not AchievementFrameCategoriesContainer.buttons ) then
+	local container = AchievementFrameCategoriesContainer;
+	if ( not container:IsVisible() or not container.buttons ) then
 		return;
 	end
 	
@@ -688,7 +689,8 @@ function AchievementFrameAchievements_Update ()
 	end
 	
 	local extraHeight = scrollFrame.largeButtonHeight or ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT
-	
+
+	local achievementIndex;
 	local displayedHeight = 0;
 	for i = 1, numButtons do
 		achievementIndex = i + offset + completedOffset;
@@ -1502,6 +1504,17 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				criteria:SetPoint("TOPLEFT", criteriaTable[textStrings-1], "BOTTOMLEFT", 0, 0);
 			end
 			
+			if ( objectivesFrame.completed and completed ) then
+				criteria.name:SetTextColor(0, 0, 0, 1);
+				criteria.name:SetShadowOffset(0, 0);
+			elseif ( completed ) then
+				criteria.name:SetTextColor(0, 1, 0, 1);
+				criteria.name:SetShadowOffset(1, -1);
+			else
+				criteria.name:SetTextColor(.6, .6, .6, 1);
+				criteria.name:SetShadowOffset(1, -1);
+			end
+			
 			if ( completed ) then
 				criteria.check:SetPoint("LEFT", 18, -3);
 				criteria.name:SetPoint("LEFT", criteria.check, "RIGHT", 0, 2);
@@ -1512,17 +1525,6 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				criteria.name:SetPoint("LEFT", criteria.check, "RIGHT", 5, 2);
 				criteria.check:Hide();
 				criteria.name:SetText("- "..criteriaString);
-			end
-			
-			if ( objectivesFrame.completed and completed ) then
-				criteria.name:SetTextColor(0, 0, 0, 1);
-				criteria.name:SetShadowOffset(0, 0);
-			elseif ( completed ) then
-				criteria.name:SetTextColor(0, 1, 0, 1);
-				criteria.name:SetShadowOffset(1, -1);
-			else
-				criteria.name:SetTextColor(.6, .6, .6, 1);
-				criteria.name:SetShadowOffset(1, -1);
 			end
 				
 			criteria:SetParent(objectivesFrame);
@@ -1613,7 +1615,7 @@ function AchievementFrameStats_Update ()
 	
 	local numStats, numCompleted = GetCategoryNumAchievements(category);
 	
-	categories = ACHIEVEMENTUI_CATEGORIES;
+	local categories = ACHIEVEMENTUI_CATEGORIES;
 	-- clear out table
 	if ( achievementFunctions.lastCategory ~= category ) then
 		local statCat;
@@ -2338,7 +2340,8 @@ function AchievementFrameComparison_Update ()
 	local buttons = scrollFrame.buttons;
 	local numAchievements, numCompleted = GetCategoryNumAchievements(category);
 	local numButtons = #buttons;
-		
+
+	local achievementIndex;
 	local buttonHeight = buttons[1]:GetHeight();
 	for i = 1, numButtons do
 		achievementIndex = i + offset;
@@ -2430,7 +2433,7 @@ function AchievementFrameComparison_UpdateStats ()
 	local totalHeight = 0;	
 	local numStats, numCompleted = GetCategoryNumAchievements(category);
 
-	categories = ACHIEVEMENTUI_CATEGORIES;
+	local categories = ACHIEVEMENTUI_CATEGORIES;
 	-- clear out table
 	if ( achievementFunctions.lastCategory ~= category ) then
 		local statCat;

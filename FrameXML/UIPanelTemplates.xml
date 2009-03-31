@@ -63,15 +63,24 @@
 		</Layers>
 		<Scripts>
 			<OnMouseDown>
-				getglobal(self:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-				getglobal(self:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-				getglobal(self:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+				local name = self:GetName();
+				_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+				_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+				_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
 			</OnMouseDown>
 			<OnMouseUp>
-				getglobal(self:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				getglobal(self:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				getglobal(self:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				local name = self:GetName();
+				_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 			</OnMouseUp>
+			<OnShow>
+				-- we need to reset our textures just in case we were hidden before a mouse up fired
+				local name = self:GetName();
+				_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+			</OnShow>
 		</Scripts>
 		<ButtonText name="$parentText"/>
 		<NormalFont style="GameFontNormal"/>

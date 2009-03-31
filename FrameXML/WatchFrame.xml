@@ -381,6 +381,17 @@
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Frame name="$parentTitleButton">
+				<Frames>
+					<Frame name="$parentHighlight" setAllPoints="true" hidden="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture file="Interface\Buttons\UI-ListBox-Highlight" setAllPoints="true">
+									<Color r="1" g="1" b="1" a="0.4"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTitleBG"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleBG"/>
@@ -458,7 +469,7 @@
 					</OnDragStop>
 				</Scripts>
 			</Button>					
-			<Frame name="WatchFrameLines" hidden="false" frameStrata="LOW">
+			<Frame name="WatchFrameLines" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="WatchFrame" relativePoint="TOPLEFT">
 						<Offset x="12" y="-30"/>
@@ -470,6 +481,7 @@
 				<Scripts>
 					<OnLoad>
 						self:SetParent(UIParent) -- Freeedoom~!
+						self:SetFrameStrata("LOW");
 						self.updateFunctions = {};
 						self.numFunctions = 0;
 					</OnLoad>

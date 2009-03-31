@@ -6,9 +6,10 @@ WATCHFRAME_HOVERALPHA = 1;
 
 WATCHFRAME_BORDERHEIGHT = 38;
 
-WATCHFRAME_DEFAULTWIDTH = 280;
 WATCHFRAME_MINIMUMWIDTH = 220;
 WATCHFRAME_COLLAPSEDWIDTH = 178;
+WATCHFRAME_LASTWIDTH = 0;
+RegisterForSave("WATCHFRAME_LASTWIDTH");
 
 WATCHFRAME_MINIMUMHEIGHT = 128;
 
@@ -227,11 +228,13 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
+	self:RegisterEvent("ITEM_PUSH");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
 	watchFrameTestLine = self.lineCache:GetFrame();
-	_, WATCHFRAMELINES_FONTHEIGHT = watchFrameTestLine.text:GetFont();
+	local _, fontHeight = watchFrameTestLine.text:GetFont();
+	WATCHFRAMELINES_FONTHEIGHT = fontHeight;
 	WATCHFRAMELINES_FONTSPACING = (WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTHEIGHT) / 2
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayQuestTimers);
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayTrackedAchievements);
@@ -257,9 +260,11 @@ function WatchFrame_OnEvent (self, event, ...)
 			end
 		end
 
+		local lastWidth = WATCHFRAME_LASTWIDTH;
 		if ( self.collapsed ) then
 			WatchFrame_Collapse(self);
 		end
+		WATCHFRAME_LASTWIDTH = lastWidth;
 		
 		if ( self.locked ) then
 			WatchFrame_Lock(self);
@@ -274,8 +279,8 @@ function WatchFrame_OnEvent (self, event, ...)
 		WatchFrame_Update(self);
 	elseif ( event == "QUEST_LOG_UPDATE" and not self.updating ) then -- May as well check here too and save some time
 		WatchFrame_Update(self);
-		if ( self.collapsed and self.highlightWhileCollapsed ) then
-			
+		if ( self.collapsed ) then
+			UIFrameFlash(WatchFrameTitleButtonHighlight, .5, .5, 5, false);
 		end
 	elseif ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
 		local achievementID, criteriaID, elapsed, duration = ...;
@@ -292,6 +297,12 @@ function WatchFrame_OnEvent (self, event, ...)
 			WATCHFRAME_TIMEDCRITERIA[criteriaID] = timedCriteria;
 		end
 		
+		if ( self.collapsed ) then
+			UIFrameFlash(WatchFrameTitleButtonHighlight, .5, .5, 5, false);
+		end
+		
+		WatchFrame_Update();
+	elseif ( event == "ITEM_PUSH" ) then
 		WatchFrame_Update();
 	end
 end
@@ -360,7 +371,7 @@ end
 
 function WatchFrame_Collapse (self)
 	self.collapsed = true;
-	self.lastWidth = WatchFrame:GetWidth();
+	WATCHFRAME_LASTWIDTH = WatchFrame:GetWidth();
 	self:SetWidth(WATCHFRAME_COLLAPSEDWIDTH);
 	WatchFrameLines:Hide();
 	local button = WatchFrameCollapseExpandButton;
@@ -372,13 +383,12 @@ function WatchFrame_Collapse (self)
 	WatchFrameMouseover:SetPoint("BOTTOMRIGHT", WatchFrameCollapsedBorderRight, "BOTTOMRIGHT");
 	WatchFrameDialogBG:Hide();
 	WatchFrame_UpdateStateCVar();
-	PlaySound("igMiniMapClose");
 end
 
 function WatchFrame_Expand (self)
 	self.collapsed = nil;
-	self:SetWidth(self.lastWidth or WATCHFRAME_DEFAULTWIDTH);
-	self.lastWidth = nil;
+	self:SetWidth(max(WATCHFRAME_LASTWIDTH, WATCHFRAME_MINIMUMWIDTH));
+	WATCHFRAME_LASTWIDTH = nil;
 	WatchFrameLines:Show();
 	local button = WatchFrameCollapseExpandButton;
 	button:SetNormalTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Up");
@@ -390,7 +400,6 @@ function WatchFrame_Expand (self)
 	WatchFrameDialogBG:Show();
 	WatchFrame_Update(self);
 	WatchFrame_UpdateStateCVar();
-	PlaySound("igMiniMapOpen");
 end
 
 function WatchFrame_ShowOpacityFrameBaseAlpha ()
@@ -748,7 +757,7 @@ function WatchFrame_UpdateTimedAchievements (elapsed)
 			timeNow = timeNow or GetTime();
 			timeLeft = math.floor(line.startTime + line.duration - timeNow);
 			if ( timeLeft <= 0 ) then
-				line.text:SetText(string.format(" - %d" .. SECONDS_ABBR, 0));
+				line.text:SetText(string.format(" - " .. SECONDS_ABBR, 0));
 				line.text:SetTextColor(1, 0, 0, 1);
 			else
 				line.text:SetText(" - " .. SecondsToTime(timeLeft));
@@ -764,7 +773,7 @@ function WatchFrame_UpdateTimedAchievements (elapsed)
 end
 
 function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHeight, frameWidth, ...)
-	-- Do something here
+	local _; -- Doing this here thanks to IBLJerry!
 	local self = WatchFrame;
 	local numTrackedAchievements = select("#", ...);
 	
@@ -782,6 +791,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 	local achievementTitle;
 	local previousLine;
 	local nextXOffset = 0;
+	local linkButton;
 		
 	local numCriteria, criteriaDisplayed;
 	local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, achievementCategory;
@@ -1000,6 +1010,7 @@ function WatchFrame_GetHeightNeededForQuest (questIndex)
 end
 
 function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, frameWidth)
+	local _;
 	local self = WatchFrame;
 	local numObjectives;
 	local text, finished;
@@ -1014,6 +1025,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	local lastLine;
 	local HIGHLIGHT_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
 	local NORMAL_FONT_COLOR = NORMAL_FONT_COLOR;
+	local linkButton;
 	
 	local heightNeeded = 0;
 	local heightUsed = 0;
@@ -1341,8 +1353,10 @@ function WatchFrame_CollapseExpandButton_OnClick (self)
 	local WatchFrame = WatchFrame;
 	if ( WatchFrame.collapsed ) then
 		WatchFrame_Expand(WatchFrame);
+		PlaySound("igMiniMapOpen");
 	else
 		WatchFrame_Collapse(WatchFrame);
+		PlaySound("igMiniMapClose");
 	end
 end
 
@@ -1393,8 +1407,11 @@ function WatchFrameItem_OnUpdate (self, elapsed)
 	local rangeTimer = self.rangeTimer;
 	if ( rangeTimer ) then
 		rangeTimer = rangeTimer - elapsed;
-
 		if ( rangeTimer <= 0 ) then
+			if ( not GetQuestLogSpecialItemInfo(self:GetID()) ) then
+				WatchFrame_Update();
+				return;
+			end
 			local count = getglobal(self:GetName().."HotKey");
 			local valid = IsQuestLogSpecialItemInRange(self:GetID());
 			if ( valid == 0 ) then

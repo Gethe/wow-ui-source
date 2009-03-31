@@ -75,6 +75,12 @@
 			<OnClick>
 				GearSetButton_OnClick(self, button, down);
 			</OnClick>
+			<OnEnter>
+				GearSetButton_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 			<OnDragStart>
 				if ( self.name and self.name ~= "" ) then
 					PickupEquipmentSetByName(self.name);

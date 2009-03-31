@@ -19,7 +19,7 @@ local _pendingSet = "";
 local _combatSwapError;
 local _bagsFullError;
 local _missingItemError;
-_isAtBank = false;
+local _isAtBank = false;
 
 local SLOT_LOCKED = -1;
 local SLOT_EMPTY = -2;
@@ -264,6 +264,10 @@ function EquipmentManager_EquipInventoryItem (action)
 end
 
 function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to be used.
+	if ( location < 0 ) then -- Thanks Seerah!
+		return false, false, false, 0;
+	end
+	
 	local player = (bit.band(location, ITEM_INVENTORY_LOCATION_PLAYER) ~= 0);
 	local bank = (bit.band(location, ITEM_INVENTORY_LOCATION_BANK) ~= 0);
 	local bags = (bit.band(location, ITEM_INVENTORY_LOCATION_BAGS) ~= 0);
@@ -449,7 +453,10 @@ end
 
 function EquipmentManager_GetItemInfoByLocation (location)
 	local player, bank, bags, slot, bag = EquipmentManager_UnpackLocation(location);
-	
+	if ( not player and not bank and not bags ) then -- Invalid location
+		return;
+	end
+		
 	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3;
 	if ( not bags ) then -- and (player or bank) 
 		id = GetInventoryItemID("player", slot);
@@ -478,7 +485,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 end
 
 function EquipmentManager_EquipSet (name)
-	if ( EquipmentSetContainsLockedItems(name) or UnitOnTaxi("player") ) then
+	if ( EquipmentSetContainsLockedItems(name) or UnitOnTaxi("player") or UnitCastingInfo("player") ) then
 		UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end

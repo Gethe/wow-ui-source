@@ -209,7 +209,7 @@ function TargetofFocus_Update (self, elapsed)
 		UnitFrame_Update(self);
 		TargetofFocus_CheckDead();
 		TargetofFocusHealthCheck();
-		RefreshDebuffs(TargetofFocusFrame, "focus-target", MAX_FOCUS_DEBUFFS);
+		RefreshDebuffs(TargetofFocusFrame, "focus-target");
 	else
 		if ( TargetofFocusFrame:IsShown() ) then
 			TargetofFocusFrame:Hide();

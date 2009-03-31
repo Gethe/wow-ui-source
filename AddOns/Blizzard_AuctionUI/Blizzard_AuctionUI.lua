@@ -696,11 +696,11 @@ end
 
 function AuctionFrameBrowse_Update()
 	local numBatchAuctions, totalAuctions = GetNumAuctionItems("list");
-	local button, buttonName, iconTexture, itemName, color, itemCount, moneyFrame, buyoutFrame, buyoutMoney, buttonHighlight;
+	local button, buttonName, buttonHighlight, iconTexture, itemName, color, itemCount, moneyFrame, yourBidText, buyoutFrame, buyoutMoney;
 	local offset = FauxScrollFrame_GetOffset(BrowseScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
+	local name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
 	local displayedPrice, requiredBid;
 	BrowseBidButton:Disable();
 	BrowseBuyoutButton:Disable();
@@ -917,11 +917,11 @@ end
 
 function AuctionFrameBid_Update()
 	local numBatchAuctions, totalAuctions = GetNumAuctionItems("bidder");
-	local button, buttonName, iconTexture, itemName, color, itemCount;
+	local button, buttonName, buttonHighlight, iconTexture, itemName, color, itemCount;
 	local offset = FauxScrollFrame_GetOffset(BidScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, buttonHighlight;
+	local name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
 	BidBidButton:Disable();
 	BidBuyoutButton:Disable();
 	-- Update sort arrows
@@ -1108,14 +1108,13 @@ function AuctionFrameAuctions_Update()
 	local numBatchAuctions, totalAuctions = GetNumAuctionItems("owner");
 	local offset = FauxScrollFrame_GetOffset(AuctionsScrollFrame);
 	local index;
-	local name, texture, count, quality, canUse, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, saleStatus;
 	local isLastSlotEmpty;
-
-	local auction, button, buttonName, iconTexture, itemName, color, itemCount;
+	local auction, button, buttonName, buttonHighlight, iconTexture, itemName, color, itemCount;
 	local highBidderFrame;
 	local closingTimeFrame, closingTimeText;
 	local buttonBuyoutFrame, buttonBuyoutMoney;
 	local bidAmountMoneyFrame, bidAmountMoneyFrameLabel;
+	local name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, saleStatus;
 
 	-- Update sort arrows
 	SortButton_UpdateArrow(AuctionsQualitySort, "owner", "quality");

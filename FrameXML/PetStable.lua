@@ -38,7 +38,7 @@ end
 function PetStable_Update()
 	-- Set stablemaster portrait
 	SetPortraitTexture(PetStableFramePortrait, "player");
-	
+
 	-- So warlock pets don't show
 	local hasPetUI, isHunterPet = HasPetUI();
 	if ( UnitExists("pet") and hasPetUI and not isHunterPet ) then
@@ -48,7 +48,7 @@ function PetStable_Update()
 	else
 		PetStableCurrentPet:Enable();
 	end
-	
+
 	-- If no selected pet try to set one
 	local selectedPet = GetSelectedStablePet();
 	if ( selectedPet == -1 ) then
@@ -72,7 +72,7 @@ function PetStable_Update()
 	-- Set slot statuseses
 	local numSlots = GetNumStableSlots();
 	local numPets = GetNumStablePets();
-	
+
 	local button;
 	local background
 	local icon, name, level, family, talent;
@@ -112,11 +112,11 @@ function PetStable_Update()
 			if ( GameTooltip:IsOwned(button) ) then
 				GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 				GameTooltip:SetText(button.tooltip);
-				GameTooltip:AddLine(button.tooltipSubtext, "", 1.0, 1.0, 1.0);
+				GameTooltip:AddLine(button.tooltipSubtext, 1.0, 1.0, 1.0);
 				GameTooltip:Show();
 			end
 		else
-			background:SetVertexColor(1.0,0.1,0.1);
+			background:SetVertexColor(1.0, 0.1, 0.1);
 			button:Disable();
 		end
 	end
@@ -125,11 +125,11 @@ function PetStable_Update()
 	if ( selectedPet == 0 ) then
 		if ( UnitExists("pet") and hasPetUI ) then
 			PetStableCurrentPet:SetChecked(1);
-			local family = UnitCreatureFamily("pet");
-			if ( not family ) then
-				family = "";
-			end
-			PetStableLevelText:SetText(UnitName("pet").." "..format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..family.."|n"..GetPetTalentTree());
+			name = UnitName("pet") or "";
+			level = UnitLevel("pet");
+			family = UnitCreatureFamily("pet") or "";
+			talent = GetPetTalentTree() or "";
+			PetStableLevelText:SetText(name.." "..format(UNIT_LEVEL_TEMPLATE, level).." "..family.."|n"..talent);
 			SetPetStablePaperdoll(PetStableModel);
 			if ( not PetStableModel:IsShown() ) then
 				PetStableModel:Show();
@@ -157,11 +157,16 @@ function PetStable_Update()
 	else
 		PetStableCurrentPet:SetChecked(nil);
 	end
+
 	-- Set tooltip and icon info
 	if ( GetPetIcon() and UnitCreatureFamily("pet") ) then
 		SetItemButtonTexture(PetStableCurrentPet, GetPetIcon());
-		PetStableCurrentPet.tooltip = UnitName("pet");
-		PetStableCurrentPet.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..UnitCreatureFamily("pet").."|n"..GetPetTalentTree();
+		name = UnitName("pet") or "";
+		level = UnitLevel("pet");
+		family = UnitCreatureFamily("pet") or "";
+		talent = GetPetTalentTree() or "";
+		PetStableCurrentPet.tooltip = name;
+		PetStableCurrentPet.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE, level).." "..family.."|n"..talent;
 	elseif ( GetStablePetInfo(0) ) then
 		icon, name, level, family, talent = GetStablePetInfo(0);
 		SetItemButtonTexture(PetStableCurrentPet, icon);
@@ -176,17 +181,17 @@ function PetStable_Update()
 	if ( GameTooltip:IsOwned(PetStableCurrentPet) ) then
 		GameTooltip:SetOwner(PetStableCurrentPet, "ANCHOR_RIGHT");
 		GameTooltip:SetText(PetStableCurrentPet.tooltip);
-		GameTooltip:AddLine(PetStableCurrentPet.tooltipSubtext, "", 1.0, 1.0, 1.0);
+		GameTooltip:AddLine(PetStableCurrentPet.tooltipSubtext, 1.0, 1.0, 1.0);
 		GameTooltip:Show();
 	end
-	
+
 	-- If no selected pet clear everything out
  	if ( selectedPet == -1 ) then
  		-- no pet
  		PetStableModel:Hide();
  		PetStableLevelText:SetText("");
  	end
-	
+
 	-- Enable, disable, or hide purchase button
 	PetStablePurchaseButton:Show();
 	if ( GetNumStableSlots() == NUM_PET_STABLE_SLOTS or (not IsAtStableMaster())) then

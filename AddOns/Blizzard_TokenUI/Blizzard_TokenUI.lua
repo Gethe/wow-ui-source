@@ -61,7 +61,7 @@ function TokenFrame_Update()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local numTokenTypes = GetCurrencyListSize();
-	local name, isHeader, isExpanded, isUnused, isWatched, count, icon, extraCurrencyType;
+	local name, isHeader, isExpanded, isUnused, isWatched, count, extraCurrencyType, icon, itemID;
 	local button, index;
 	for i=1, numButtons do
 		index = offset+i;

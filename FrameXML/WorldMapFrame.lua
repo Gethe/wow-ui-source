@@ -1098,7 +1098,7 @@ function WorldMapUnit_Update(self)
 end
 
 function WorldMapUnitDropDown_Initialize()
-	info = UIDropDownMenu_CreateInfo();
+	local info = UIDropDownMenu_CreateInfo();
 	info.text = PVP_REPORT_AFK;
 	info.notClickable = 1;
 	info.isTitle = 1;

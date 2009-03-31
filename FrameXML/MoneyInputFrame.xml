@@ -63,8 +63,8 @@
 							</Anchors>
 							<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 						</Texture>
-						<FontString parentKey="label" font="GameFontHighlight" text="GOLD_AMOUNT_SYMBOL" hidden="true">
-							<Size x="14" y="14"/>
+						<FontString parentKey="label" font="GameFontHighlightLeft" text="GOLD_AMOUNT_SYMBOL" hidden="true">
+							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT">
 									<Offset x="2" y="0"/>
@@ -161,8 +161,8 @@
 							</Anchors>
 							<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 						</Texture>
-						<FontString parentKey="label" font="GameFontHighlight" text="SILVER_AMOUNT_SYMBOL" hidden="true">
-							<Size x="14" y="14"/>
+						<FontString parentKey="label" font="GameFontHighlightLeft" text="SILVER_AMOUNT_SYMBOL" hidden="true">
+							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT">
 									<Offset x="-8" y="0"/>
@@ -259,8 +259,8 @@
 							</Anchors>
 							<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 						</Texture>
-						<FontString parentKey="label" font="GameFontHighlight" text="COPPER_AMOUNT_SYMBOL" hidden="true">
-							<Size x="14" y="14"/>
+						<FontString parentKey="label" font="GameFontHighlightLeft" text="COPPER_AMOUNT_SYMBOL" hidden="true">
+							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT">
 									<Offset x="-8" y="0"/>

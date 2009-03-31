@@ -1897,7 +1897,7 @@ function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
 			bgTex:Show();
 			texturesUsed = texturesUsed + 1;
 		elseif ( numItems > PDFITEMFLYOUT_ITEMS_PER_ROW ) then
-			numRows = math.ceil(numItems/PDFITEMFLYOUT_ITEMS_PER_ROW);
+			local numRows = math.ceil(numItems/PDFITEMFLYOUT_ITEMS_PER_ROW);
 			local bgTex, lastBGTex;
 			bgTex = buttonAnchor.bg1;
 			bgTex:ClearAllPoints();
@@ -2200,6 +2200,13 @@ function GearSetButton_OnClick (self)
 	end
 end
 
+function GearSetButton_OnEnter (self)
+	if ( self.name and self.name ~= "" ) then
+		GameTooltip_SetDefaultAnchor(GameTooltip, self);
+		GameTooltip:SetEquipmentSet(self.name);
+	end
+end
+
 NUM_GEARSET_ICONS_SHOWN = 15;
 NUM_GEARSET_ICONS_PER_ROW = 5;
 NUM_GEARSET_ICON_ROWS = 3;
@@ -2280,7 +2287,7 @@ function GearManagerDialogPopup_Update ()
 		
 	local button;	
 	-- Icon list
-	local texture, index, button;
+	local texture, index, button, realIndex;
 	for i=1, NUM_GEARSET_ICONS_SHOWN do
 		local button = buttons[i];
 		index = (offset * NUM_GEARSET_ICONS_PER_ROW) + i;

@@ -288,8 +288,10 @@ function GlyphFrame_OnUpdate (self, elapsed)
 end
 
 function GlyphFrame_PulseGlow ()
-	GlyphFrame.glow:Show();
-	GlyphFrame.glow.pulse:Play();
+	if ( GlyphFrame:IsShown() ) then
+		GlyphFrame.glow:Show();
+		GlyphFrame.glow.pulse:Play();
+	end
 end
 
 function GlyphFrame_OnShow (self)

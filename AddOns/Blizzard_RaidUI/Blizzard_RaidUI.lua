@@ -542,6 +542,7 @@ function RaidGroupFrame_UpdateHealth(id)
 	local buttonClass = _G["RaidGroupButton"..id.."Class"];
 	local buttonLevel = _G["RaidGroupButton"..id.."Level"];
 
+	local color;
 	if ( online ) then
 		if ( isDead ) then
 			buttonName:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);

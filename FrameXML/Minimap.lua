@@ -277,6 +277,7 @@ end
 
 function MinimapMailFrameUpdate()
 	local sender1,sender2,sender3 = GetLatestThreeSenders();
+	local toolText;
 	
 	if( sender1 or sender2 or sender3 ) then
 		toolText = HAVE_MAIL_FROM;

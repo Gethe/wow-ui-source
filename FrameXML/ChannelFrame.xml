@@ -922,7 +922,7 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnEnterPressed function="ChannelFrameDaughterFrame"/>
+							<OnEnterPressed function="ChannelFrameDaughterFrame_Okay"/>
 							<OnEscapePressed function="ChannelFrameDaughterFrame_Cancel"/>
 							<OnTabPressed>
 								EditBox_HandleTabbing(self, CHAT_CHANNEL_TABBING);

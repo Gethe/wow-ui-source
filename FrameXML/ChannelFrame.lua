@@ -405,10 +405,10 @@ end
 --[ DropDown Functions ]--
 function ChannelListDropDown_Initialize()
 	local count = 0;
+	local info;
 	if ( not ChannelListDropDown.global ) then
 		if ( IsVoiceChatEnabled() ) then
 			-- Enable Voice Chat option if Voice Chat is enabled.
-			local info;
 			if ( not ChannelListDropDown.voice and IsDisplayChannelOwner() ) then
 				info = UIDropDownMenu_CreateInfo();
 				info.text = CHAT_VOICE_ON;

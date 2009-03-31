@@ -493,7 +493,7 @@ function GuildStatus_Update()
 	FriendsFrame.playersInBotRank = 0;
 
 	local numGuildMembers = GetNumGuildMembers();
-	local name, rank, rankIndex, level, class, zone, note, officernote, online, status;
+	local name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName;
 	local guildName, guildRankName, guildRankIndex = GetGuildInfo("player");
 	local maxRankIndex = GuildControlGetNumRanks() - 1;
 	local button, buttonText, classTextColor;

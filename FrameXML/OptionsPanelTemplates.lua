@@ -429,7 +429,7 @@ function BlizzardOptionsPanel_SetupControl (control)
 			end
 		elseif ( control.GetValue ) then
 			if ( control.type == CONTROLTYPE_CHECKBOX ) then
-				value = control:GetValue();
+				local value = control:GetValue();
 				if ( value ) then
 					control.value = tostring(value);
 				else

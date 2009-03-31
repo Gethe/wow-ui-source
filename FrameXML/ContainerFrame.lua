@@ -620,7 +620,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
 	if ( honorPoints and honorPoints ~= 0 ) then
 		local factionGroup = UnitFactionGroup("player");
 		if ( factionGroup ) then	
-			pointsTexture = "Interface\\PVPFrame\\PVP-Currency-"..factionGroup;
+			local pointsTexture = "Interface\\PVPFrame\\PVP-Currency-"..factionGroup;
 			itemsString = " |T" .. pointsTexture .. ":0:0:0:-1|t" ..  honorPoints .. " " .. HONOR_POINTS;
 		end
 	end

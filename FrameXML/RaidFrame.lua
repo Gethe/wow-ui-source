@@ -96,7 +96,7 @@ end
 -- Populates Raid Info Data
 function RaidInfoFrame_Update()
 	local savedInstances = GetNumSavedInstances();
-	local instanceName, instanceID, instanceReset, instanceDifficulty, width;
+	local instanceName, instanceID, instanceReset, instanceDifficulty, extend, width;
 	local frameName, frameNameText, frameID, frameReset;
 	if ( savedInstances > 0 ) then
 		if ( savedInstances > MAX_RAID_INFOS_DISPLAYED ) then

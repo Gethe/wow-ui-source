@@ -11,7 +11,7 @@ UIPanelWindows["GMSurveyFrame"] = { area = "center", pushable = 0, whileDead = 1
 function GMSurveyFrame_Update()
 	GMSurveyFrame.numQuestions = 0;
 	local surveyQuestion;
-	local questionFrame;
+	local questionFrame, questionFrameText;
 	for i=1, MAX_SURVEY_QUESTIONS do
 		surveyQuestion = GMSurveyQuestion(i);
 		questionFrame = _G["GMSurveyQuestion"..i];
@@ -153,6 +153,7 @@ function GMSurveyRadioButton_OnClick(self)
 		owner.selectedRadioButton = id;
 	end
 	local radioButtons = owner.radioButtons;
+	local radioButton;
 	for i=0, #radioButtons do
 		radioButton = radioButtons[i];
 		if ( i == owner.selectedRadioButton ) then

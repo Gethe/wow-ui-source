@@ -2166,7 +2166,7 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		if ( lockTimeleft <= 0 ) then
 			local OnCancel = StaticPopupDialogs["INSTANCE_LOCK"].OnCancel;
 			if ( OnCancel ) then
-				OnCancel(self, "timeout");
+				OnCancel(self, nil, "timeout");
 			end
 			self:Hide();
 			return;
@@ -2184,7 +2184,7 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		self.name, self.difficulty = nil, nil;
 		self.lockTimeleft = nil;
 	end,
-	OnCancel = function(self, reason)
+	OnCancel = function(self, data, reason)
 		if ( reason == "timeout" ) then
 			self:Hide();
 			return;
@@ -2198,6 +2198,7 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 	whileDead = 1,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
+	noCancelOnReuse = 1,
 };
 
 StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
