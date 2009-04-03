@@ -388,7 +388,7 @@ end
 function WatchFrame_Expand (self)
 	self.collapsed = nil;
 	self:SetWidth(max(WATCHFRAME_LASTWIDTH, WATCHFRAME_MINIMUMWIDTH));
-	WATCHFRAME_LASTWIDTH = nil;
+	WATCHFRAME_LASTWIDTH = 0;
 	WatchFrameLines:Show();
 	local button = WatchFrameCollapseExpandButton;
 	button:SetNormalTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Up");

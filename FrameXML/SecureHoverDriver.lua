@@ -53,7 +53,7 @@ local function RectSet_Add(S, NL, NR, NB, NT)
     -- if it's wholly contained by, or wholly contains, them.
 
     local MAXIDX = (N - 1) * 4 + FRAME_INDEX;
-    for i = FRAME_INDEX, MAXIDX do
+    for i = FRAME_INDEX, MAXIDX, 4 do
         SL, SR, SB, ST = S[i], S[i+1], S[i+2], S[i+3];
 
         if ((NL >= SL) and (NR <= SR) and (NB >= SB) and (NT <= ST)) then
@@ -80,7 +80,7 @@ end
 local function RectSet_IsOver(S, X, Y)
     local N = S[COUNT_INDEX];
     local MAXIDX = N * 4 + BOUNDING_INDEX;
-    for i = BOUNDING_INDEX, MAXIDX do
+    for i = BOUNDING_INDEX, MAXIDX, 4 do
         local R = (X >= S[i]) and (X <= S[i+1]) and
             (Y >= S[i+2]) and (Y <= S[i+3]);
 

@@ -1333,7 +1333,7 @@ SlashCmdList["INVITE"] = function(msg)
 	if(msg == "") then
 		msg = UnitName("target");
 	end
-	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
@@ -1700,7 +1700,7 @@ SlashCmdList["GUILD_INVITE"] = function(msg)
 	if(msg == "") then
 		msg = UnitName("target");
 	end
-	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
@@ -1711,7 +1711,7 @@ SlashCmdList["GUILD_UNINVITE"] = function(msg)
 	if(msg == "") then
 		msg = UnitName("target");
 	end
-	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
@@ -1719,7 +1719,7 @@ SlashCmdList["GUILD_UNINVITE"] = function(msg)
 end
 
 SlashCmdList["GUILD_PROMOTE"] = function(msg)
-	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
@@ -1727,7 +1727,7 @@ SlashCmdList["GUILD_PROMOTE"] = function(msg)
 end
 
 SlashCmdList["GUILD_DEMOTE"] = function(msg)
-	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
@@ -1735,7 +1735,7 @@ SlashCmdList["GUILD_DEMOTE"] = function(msg)
 end
 
 SlashCmdList["GUILD_LEADER"] = function(msg)
-	if( strlen(msg) > MAX_CHARACTER_NAME_BYTES ) then
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end

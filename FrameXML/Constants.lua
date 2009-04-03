@@ -114,6 +114,7 @@ ITEM_INVENTORY_LOCATION_BANK	= 0x00400000;
 ITEM_INVENTORY_BAG_BIT_OFFSET 	= 8; -- Number of bits that the bag index in GetInventoryItemsForSlot gets shifted to the left.
 
 -- Inventory slots
+INVSLOT_AMMO		= 0;
 INVSLOT_HEAD 		= 1; INVSLOT_FIRST_EQUIPPED = INVSLOT_HEAD;
 INVSLOT_NECK		= 2;
 INVSLOT_SHOULDER	= 3;

@@ -70,9 +70,7 @@ PLAYERSTAT_DROPDOWN_OPTIONS = {
 	"PLAYERSTAT_DEFENSES",
 };
 
-PDFITEMFLYOUT_MAXITEMS = 25;
-
-PDFITEMFLYOUT_NUMTEXTURES = 5;
+PDFITEMFLYOUT_MAXITEMS = 23;
 
 PDFITEMFLYOUT_ONESLOT_LEFT_COORDS = { 0, 0.09765625, 0.5546875, 0.77734375 }
 PDFITEMFLYOUT_ONESLOT_RIGHT_COORDS = { 0.41796875, 0.51171875, 0.5546875, 0.77734375 }
@@ -1276,7 +1274,7 @@ end
 
 function PaperDollItemSlotButton_OnEnter (self)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED");
-	if ( IsModifiedClick("SHOWITEMFLYOUT") ) then
+	if ( IsModifiedClick("SHOWITEMFLYOUT") and self:GetID() ~= INVSLOT_AMMO ) then
 		PaperDollFrameItemFlyout_Show(self);
 	end
 	
@@ -1694,7 +1692,7 @@ PDFITEMFLYOUT_HEIGHT = 43;
 PDFITEM_WIDTH = 37;
 PDFITEM_HEIGHT = 37;
 PDFITEM_XOFFSET = 4;
-PDFITEM_YOFFSET = -6;
+PDFITEM_YOFFSET = -5;
 
 local itemTable = {}; -- Used for items and locations
 local itemDisplayTable = {} -- Used for ordering items by location
@@ -1754,6 +1752,15 @@ function PaperDollFrameItemFlyout_OnEvent (self, event, ...)
 	end
 end
 
+local function _createFlyoutBG (buttonAnchor)
+	local numBGs = buttonAnchor["numBGs"];
+	numBGs = numBGs + 1;
+	local texture = buttonAnchor:CreateTexture(nil, nil, "PaperDollFrameFlyoutTexture");
+	buttonAnchor["bg" .. numBGs] = texture;
+	buttonAnchor["numBGs"] = numBGs;
+	return texture;
+end
+
 function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
 	local id = paperDollItemSlot:GetID();
 	
@@ -1787,29 +1794,20 @@ function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
 		itemDisplayTable[i] = nil;
 	end
 	
+	numItems = min(numItems, PDFITEMFLYOUT_MAXITEMS);
+	
+	if ( paperDollItemSlot.hasItem ) then
+		tinsert(itemDisplayTable, PDFITEMFLYOUT_PLACEINBAGS_LOCATION);
+		numItems = numItems + 1;
+	end
+	
 	if ( GearManagerDialog:IsShown() ) then 
-		if ( paperDollItemSlot.hasItem ) then
-			if ( numItems >= PDFITEMFLYOUT_MAXITEMS - 1 ) then
-				itemDisplayTable[PDFITEMFLYYOUT_MAXITEMS] = nil;
-				itemDisplayTable[PDFITEMFLYOUT_MAXITEMS-1] = nil;
-			else
-				numItems = numItems + 2;
-			end
-				
-			tinsert(itemDisplayTable, PDFITEMFLYOUT_PLACEINBAGS_LOCATION);
-		else
-			if ( numItems >= PDFITEMFLYOUT_MAXITEMS ) then
-				itemDisplayTable[PDFITEMFLYYOUT_MAXITEMS] = nil;
-			else
-				numItems = numItems + 1;
-			end
-		end
-		
 		if ( not paperDollItemSlot.ignored ) then
 			tinsert(itemDisplayTable, PDFITEMFLYOUT_IGNORESLOT_LOCATION);
 		else
 			tinsert(itemDisplayTable, PDFITEMFLYOUT_UNIGNORESLOT_LOCATION);
 		end
+		numItems = numItems + 1;
 	end
 	
 	while #buttons < numItems do -- Create any buttons we need.
@@ -1856,7 +1854,7 @@ function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
 			texturesUsed = texturesUsed + 1;
 			lastBGTex = bgTex;
 			
-			bgTex = buttonAnchor.bg2;
+			bgTex = buttonAnchor.bg2 or _createFlyoutBG(buttonAnchor);
 			bgTex:ClearAllPoints();
 			bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_ONESLOT_RIGHT_COORDS));
 			bgTex:SetWidth(PDFITEMFLYOUT_ONESLOT_RIGHTWIDTH);
@@ -1877,7 +1875,7 @@ function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
 			texturesUsed = texturesUsed + 1;
 			lastBGTex = bgTex;
 			for i = texturesUsed + 1, numItems - 1 do
-				bgTex = buttonAnchor["bg"..i];
+				bgTex = buttonAnchor["bg"..i] or _createFlyoutBG(buttonAnchor);
 				bgTex:ClearAllPoints();
 				bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_ONEROW_CENTER_COORDS));
 				bgTex:SetWidth(PDFITEMFLYOUT_ONEROW_CENTER_WIDTH);
@@ -1888,7 +1886,7 @@ function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
 				lastBGTex = bgTex;
 			end
 			
-			bgTex = buttonAnchor["bg"..numItems];
+			bgTex = buttonAnchor["bg"..numItems] or _createFlyoutBG(buttonAnchor);
 			bgTex:ClearAllPoints();
 			bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_ONEROW_RIGHT_COORDS));
 			bgTex:SetWidth(PDFITEMFLYOUT_ONEROW_RIGHT_WIDTH);
@@ -1909,7 +1907,7 @@ function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
 			texturesUsed = texturesUsed + 1;
 			lastBGTex = bgTex;
 			for i = 2, numRows - 1 do -- Middle rows
-				bgTex = buttonAnchor["bg"..i];
+				bgTex = buttonAnchor["bg"..i] or _createFlyoutBG(buttonAnchor);
 				bgTex:ClearAllPoints();
 				bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_MULTIROW_MIDDLE_COORDS));
 				bgTex:SetWidth(PDFITEMFLYOUT_MULTIROW_WIDTH);
@@ -1920,7 +1918,7 @@ function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
 				lastBGTex = bgTex;
 			end
 			
-			bgTex = buttonAnchor["bg"..numRows];
+			bgTex = buttonAnchor["bg"..numRows] or _createFlyoutBG(buttonAnchor);
 			bgTex:ClearAllPoints();
 			bgTex:SetTexCoord(unpack(PDFITEMFLYOUT_MULTIROW_BOTTOM_COORDS));
 			bgTex:SetWidth(PDFITEMFLYOUT_MULTIROW_WIDTH);
@@ -1931,7 +1929,7 @@ function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
 			lastBGTex = bgTex;
 		end
 		
-		for i = texturesUsed + 1, PDFITEMFLYOUT_NUMTEXTURES do
+		for i = texturesUsed + 1, buttonAnchor["numBGs"] do
 			buttonAnchor["bg" .. i]:Hide();
 		end
 		flyout.numItems = numItems;
@@ -1942,6 +1940,7 @@ end
 
 function PaperDollFrameItemFlyout_DisplayButton (button, paperDollItemSlot)
 	local location = button.location;
+	if ( not location ) then debugbreak() return; end
 	if ( location >= PDFITEMFLYOUT_FIRST_SPECIAL_LOCATION ) then
 		PaperDollFrameItemFlyout_DisplaySpecialButton(button, paperDollItemSlot);
 		return;
