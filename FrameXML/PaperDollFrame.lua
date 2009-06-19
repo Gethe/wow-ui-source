@@ -2111,8 +2111,8 @@ function GearManagerDialog_OnShow (self)
 	EquipmentManagerClearIgnoredSlotsForSave();
 	PlaySound("igBackPackOpen");
 	
-	UIPanelWindows["CharacterFrame"].width = CharacterFrame:GetWidth() + GearManagerDialog:GetWidth();
 	UpdateUIPanelPositions(CharacterFrame);
+	GearManagerDialog:Raise();
 end
 
 function GearManagerDialog_OnHide (self)
@@ -2134,7 +2134,6 @@ function GearManagerDialog_OnHide (self)
 		end
 	end
 	
-	UIPanelWindows["CharacterFrame"].width = CharacterFrame:GetWidth();
 	UpdateUIPanelPositions();
 end
 
