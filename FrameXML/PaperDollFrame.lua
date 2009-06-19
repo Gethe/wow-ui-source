@@ -2187,7 +2187,11 @@ function GearManagerDialogDeleteSet_OnClick (self)
 	local selectedSet = GearManagerDialog.selectedSet;
 	if ( selectedSet ) then
 		local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", selectedSet.name);
-		dialog.data = selectedSet.name;
+		if ( dialog ) then
+			dialog.data = selectedSet.name;
+		else
+			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+		end
 	end
 end
 
