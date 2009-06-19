@@ -58,7 +58,8 @@
 				RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.fileName, self.class));
 			</OnDragStart>
 			<OnDragStop>
-				RaidPulloutStopMoving(self);
+				--Do not pass self here. We want to stop the currently moving frame and not the class frame (which isn't actually moving)
+				RaidPulloutStopMoving();
 			</OnDragStop>
 			<OnEnter>
 				RaidClassButton_OnEnter(self, motion);

@@ -367,7 +367,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			local flagFrame = _G[flagFrameName];
 			if ( i <= numFlags ) then
 				local flagX, flagY, flagToken = GetBattlefieldFlagPosition(i);
-				local flagTexture = _G[flagName.."Texture"];
+				local flagTexture = _G[flagFrameName.."Texture"];
 				if ( flagX == 0 and flagY == 0 ) then
 					flagFrame:Hide();
 				else

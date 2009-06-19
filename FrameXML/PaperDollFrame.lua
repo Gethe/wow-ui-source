@@ -2044,9 +2044,17 @@ function PaperDollFrameItemFlyoutButton_OnClick (self)
 		PaperDollItemSlotButton_Update(slot);
 		PaperDollFrameItemFlyout_Show(slot);
 	elseif ( self.location == PDFITEMFLYOUT_PLACEINBAGS_LOCATION ) then
+		if ( UnitAffectingCombat("player") and not INVSLOTS_EQUIPABLE_IN_COMBAT[PaperDollFrameItemFlyout.button:GetID()] ) then
+			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+			return;
+		end
 		local action = EquipmentManager_UnequipItemInSlot(PaperDollFrameItemFlyout.button:GetID());
 		EquipmentManager_RunAction(action);
 	elseif ( self.location ) then
+		if ( UnitAffectingCombat("player") and not INVSLOTS_EQUIPABLE_IN_COMBAT[PaperDollFrameItemFlyout.button:GetID()] ) then
+			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+			return;
+		end
 		local action = EquipmentManager_EquipItemByLocation(self.location, self.id);
 		EquipmentManager_RunAction(action);
 	end
@@ -2127,10 +2135,6 @@ function GearManagerDialog_OnEvent (self, event, ...)
 			-- self.selectedSet:SetChecked(0);
 			-- self.selectedSet = nil;
 		-- end
-	elseif ( event == "VARIABLES_LOADED" ) then
-		if ( GetCVarBool("equipmentManager") ) then
-			GearManagerToggleButton:Show();
-		end
 	end
 end
 

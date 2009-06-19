@@ -715,7 +715,6 @@ function EquipmentManager_ProcessActions ()
 		local action = EQUIPMENTMANAGER_EQUIPMENTACTIONS[i];
 		if ( action.invSlot and not action.run and not action.waitForSlot ) then
 			if ( EquipmentManager_RunAction(action) ) then 
-				action.run = true;
 				pendingSlots[action.invSlot] = true;
 			else
 				workTable[i] = true;
@@ -748,7 +747,7 @@ function EquipmentManager_RunAction (action)
 	if ( UnitAffectingCombat("player") and not INVSLOTS_EQUIPABLE_IN_COMBAT[action.invSlot] ) then
 		return true;
 	end
-	
+	action.run = true;
 	if ( action.type == EQUIP_ITEM or action.type == SWAP_ITEM ) then
 		if ( not action.bags ) then
 			return EquipmentManager_EquipInventoryItem(action);

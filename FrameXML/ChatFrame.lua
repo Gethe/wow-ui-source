@@ -2027,13 +2027,6 @@ SlashCmdList["ACHIEVEMENTUI"] = function(msg)
 	ToggleAchievementFrame();
 end
 
-SlashCmdList["EQUIP_SET"] = function(msg)
-	local set = SecureCmdOptionParse(msg);
-	if ( set and set ~= "" ) then
-		EquipmentManager_EquipSet(set);
-	end
-end
-
 SlashCmdList["USE_TALENT_SPEC"] = function(msg)
 	local group = tonumber(SecureCmdOptionParse(msg));
 	if ( group ) then

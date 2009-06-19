@@ -209,7 +209,7 @@ function ChannelList_Update()
 					channelNumber = channelNumber..". ";
 				end
 				if ( active ) then
-					if ( count and category ~= "CHANNEL_CATEGORY_WORLD" ) then
+					if ( count and category == "CHANNEL_CATEGORY_GROUP" ) then
 						buttonName:SetText(HIGHLIGHT_FONT_COLOR_CODE..channelNumber..name.." ("..count..")"..FONT_COLOR_CODE_CLOSE);
 					else
 						buttonName:SetText(HIGHLIGHT_FONT_COLOR_CODE..channelNumber..name..FONT_COLOR_CODE_CLOSE);
@@ -266,7 +266,7 @@ end
 function ChannelList_CountUpdate(id, count)
 	local button = getglobal("ChannelButton"..id);
 	local name, header, collapsed, channelNumber, count, active, category, voiceEnabled, voiceActive = GetChannelDisplayInfo(id);
-	if ( category ~= "CHANNEL_CATEGORY_WORLD" ) then
+	if ( category == "CHANNEL_CATEGORY_GROUP" ) then
 		if ( count ) then
 			button:SetText(HIGHLIGHT_FONT_COLOR_CODE..channelNumber..". "..name.." ("..count..")"..FONT_COLOR_CODE_CLOSE);
 		end	
@@ -581,7 +581,7 @@ function ChannelRoster_Update(id)
 	local button, buttonName, buttonRank, buttonRankTexture, buttonVoice, buttonVoiceMuted, newWidth, nameWidth;
 
 	if ( count ) then
-		if ( category ~= "CHANNEL_CATEGORY_WORLD" ) then
+		if ( category == "CHANNEL_CATEGORY_GROUP" ) then
 			ChannelRosterChannelCount:SetText("("..count..")");
 		else
 			ChannelRosterChannelCount:SetText("");
