@@ -9,15 +9,16 @@ WATCHFRAME_BORDERHEIGHT = 38;
 WATCHFRAME_MINIMUMWIDTH = 220;
 WATCHFRAME_COLLAPSEDWIDTH = 178;
 WATCHFRAME_LASTWIDTH = 0;
+MAX_LONG_CRITERIA_WIDTH = 260;
 RegisterForSave("WATCHFRAME_LASTWIDTH");
 
 WATCHFRAME_MINIMUMHEIGHT = 128;
 
 WATCHFRAME_LINEHEIGHT = 16;
-WATCHFRAME_LINEHEIGHT_WITHICON = 26;
+WATCHFRAME_LINEHEIGHT_PROGRESSBAR = 28;
 WATCHFRAME_ICONXOFFSET = 24;
 WATCHFRAME_QUESTTIMER_HEIGHT = 37;
-WATCHFRAME_QUEST_WITH_ITEM_HEIGHT = 39;
+WATCHFRAME_QUEST_WITH_ITEM_HEIGHT = 28;
 WATCHFRAME_INITIAL_OFFSET = 0;
 WATCHFRAME_TYPE_OFFSET = 5;
 WATCHFRAME_QUEST_OFFSET = 10;
@@ -114,7 +115,8 @@ end
 function WatchFrameLinkButtonTemplate_OnLeftClick (self)
 	CloseDropDownMenus();
 	if ( self.type == "QUEST" ) then
-		QuestLog_OpenToQuestIndex(self.index);
+		ExpandQuestHeader(0);
+		QuestLog_OpenToQuestIndex(GetQuestIndexForWatch(self.index));
 		return;
 	elseif ( self.type == "ACHIEVEMENT" ) then
 		if ( not AchievementFrame ) then
@@ -192,8 +194,8 @@ function WatchFrame_ToggleSimpleWatch ()
 		WatchFrame:SetAlpha(0);
 		WatchFrame_Expand(WatchFrame);
 		WatchFrame_Lock(WatchFrame);
-		WatchFrameTitleButton:EnableMouse(false);
-		WatchFrameCollapseExpandButton:Disable();
+		WatchFrameTitleButton:Hide();
+		WatchFrameCollapseExpandButton:Hide();
 		WatchFrame_Update();
 		UIParent_ManageFramePositions();
 		WatchFrame:SetScript("OnUpdate", nil);
@@ -201,8 +203,8 @@ function WatchFrame_ToggleSimpleWatch ()
 		WatchFrame.simpleMode = nil;
 		WatchFrame:SetUserPlaced(true);
 		WatchFrame_Unlock(WatchFrame);
-		WatchFrameTitleButton:EnableMouse(true);
-		WatchFrameCollapseExpandButton:Enable();
+		WatchFrameTitleButton:Show();
+		WatchFrameCollapseExpandButton:Show();
 		WatchFrame_Update();
 		WatchFrame:SetScript("OnUpdate", WatchFrame_OnUpdate);
 		WatchFrame_ToggleIgnoreCursor(); -- Update cursor settings
@@ -215,11 +217,11 @@ end
 function WatchFrame_ToggleIgnoreCursor ()
 	local WatchFrame = WatchFrame;
 	if ( WATCHFRAME_IGNORECURSOR == "1" ) then
-		WatchFrameTitleButton:EnableMouse(false);
+		WatchFrameTitleButton:Disable();
 		WatchFrameCollapseExpandButton:Disable();
 		WatchFrame_Lock(WatchFrame);
 	else
-		WatchFrameTitleButton:EnableMouse(true);
+		WatchFrameTitleButton:Enable();
 		WatchFrameCollapseExpandButton:Enable();
 	end
 end
@@ -420,23 +422,22 @@ function WatchFrame_SetBaseAlpha (alpha)
 	end
 end
 
-function WatchFrameTitle_OnMouseUp (self, button)
-	if ( button == "RightButton" ) then
-		local watchFrame = WatchFrame;
-		local dropDown = WatchFrameDropDown;
-		if ( watchFrame.dropDownOpen and dropDown.type == "CONFIG" ) then
-			dropDown.type = nil;
-			CloseDropDownMenus();
-			return;
-		end
+function WatchFrameTitleButton_OnClick (self, button, down)
+	local watchFrame = WatchFrame;
+	local dropDown = WatchFrameDropDown;
+	if ( watchFrame.dropDownOpen and dropDown.type == "CONFIG" ) then
+		dropDown.type = nil;
 		CloseDropDownMenus();
-		dropDown.type = "CONFIG";
-		watchFrame.dropDownOpen = true;
-		if ( WatchFrameLines:IsShown() ) then
-			UIFrameFadeOut(WatchFrameLines, WATCHFRAME_FADETIME, WatchFrameLines:GetAlpha(), .5);
-		end
-		ToggleDropDownMenu(1, nil, dropDown, self:GetName(), 0, 0);
+		return;
 	end
+	
+	CloseDropDownMenus();
+	dropDown.type = "CONFIG";
+	watchFrame.dropDownOpen = true;
+	if ( WatchFrameLines:IsShown() ) then
+		UIFrameFadeOut(WatchFrameLines, WATCHFRAME_FADETIME, WatchFrameLines:GetAlpha(), .5);
+	end
+	ToggleDropDownMenu(1, nil, dropDown, self:GetName(), 0, 0);
 end
 
 function WatchFrame_OnSizeChanged (self, width, height)
@@ -495,7 +496,13 @@ function WatchFrame_Update (self)
 	local lineFrame = WatchFrameLines;
 	local maxHeight = (WatchFrame:GetTop() - WatchFrame:GetBottom()); -- Can't use lineFrame:GetHeight() because it could be an invalid rectangle (width of 0)
 	
-	local maxFrameWidth = self:GetWidth() - WATCHFRAMELINES_XOFFSET;
+	local maxFrameWidth;
+	if ( self.simpleMode ) then
+		maxFrameWidth = 1024; -- Effectively meaningless number
+	else
+		maxFrameWidth = self:GetWidth() - WATCHFRAMELINES_XOFFSET;
+	end
+	
 	local maxWidth = 0;
 	local maxLineWidth;
 	
@@ -732,7 +739,7 @@ function WatchFrame_GetHeightNeededForAchievement (achievementID)
 			if ( WATCHFRAME_TIMEDCRITERIA[criteriaID] ) then
 				heightUsed = heightUsed + lineHeight;
 			end
-			heightUsed = heightUsed + WATCHFRAME_LINEHEIGHT_WITHICON;
+			heightUsed = heightUsed + WATCHFRAME_LINEHEIGHT_PROGRESSBAR;
 			criteriaDisplayed = criteriaDisplayed + 2;
 		else
 			if ( WATCHFRAME_TIMEDCRITERIA[criteriaID] ) then
@@ -822,9 +829,9 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 			local lineWidth = line.text:GetStringWidth() + WATCHFRAME_ICONXOFFSET
 			maxWidth = max(maxWidth, lineWidth)
 			if ( previousLine ) then -- If this isn't the first displayed title, our position is relative to the last displayed line.
-				local yOffset = -5;
+				local yOffset = 0;
 				if ( previousLine.statusBar:IsShown() ) then
-					yOffset = -10
+					yOffset = -5
 				end
 				
 				line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset - WATCHFRAME_QUEST_OFFSET);
@@ -948,7 +955,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 				local desiredWidth = math.ceil(stringWidth + dashWidth); -- This is how long we want the line to be with no wrapping
 				
 				if ( desiredWidth > maxWidth ) then
-					maxWidth = min(desiredWidth, frameWidth);
+					maxWidth = min(desiredWidth, MAX_LONG_CRITERIA_WIDTH);
 				end
 				
 				local linesNeeded = math.ceil(stringWidth / (maxWidth - dashWidth));
@@ -991,7 +998,7 @@ end
 
 function WatchFrame_GetHeightNeededForQuest (questIndex)
 	local numObjectives = GetNumQuestLeaderBoards(questIndex);
-	
+
 	if ( numObjectives == 0 ) then
 		return 0;
 	else		
@@ -999,7 +1006,7 @@ function WatchFrame_GetHeightNeededForQuest (questIndex)
 		if ( GetQuestLogSpecialItemInfo(questIndex) ) then
 			height = max(height, WATCHFRAME_QUEST_WITH_ITEM_HEIGHT);
 		end
-		
+				
 		local numWatches = GetNumQuestWatches();
 		if ( numWatches > 1 ) then
 			height = height + WATCHFRAME_QUEST_OFFSET;
@@ -1072,9 +1079,9 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 					linkButton = WatchFrame_GetLinkButton();
 					linkButton:SetPoint("TOPLEFT", line);
 					linkButton:SetPoint("BOTTOMLEFT", line);
-					linkButton:SetWidth(stringWidth);
+					linkButton:SetPoint("RIGHT", line.text);
 					linkButton.type = "QUEST"
-					linkButton.index = questIndex;
+					linkButton.index = i; -- We want the Watch index, we'll get the quest index later with GetQuestIndexForWatch(i);
 					linkButton:Show();
 				end
 				
@@ -1095,7 +1102,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 					itemButton.rangeTimer = -1;
 					line.text.clear = true;
 					line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
-					iconHeightLeft = WATCHFRAME_QUEST_WITH_ITEM_HEIGHT;
+					iconHeightLeft = WATCHFRAME_QUEST_WITH_ITEM_HEIGHT - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING; -- We've already displayed a line for this
 					itemButton.maxStringWidth = stringWidth;
 					questWidth = max(stringWidth + WATCHFRAME_ITEM_WIDTH, questWidth);
 				else
@@ -1138,10 +1145,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 			end
 			
 			if ( itemButton ) then
-				line = WatchFrame_GetQuestLine();
-				line:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 0, -WATCHFRAMELINES_FONTSPACING);
-				itemButton:SetPoint("TOPRIGHT", line, "TOPLEFT", 0, 0);
-				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", min(frameWidth - WATCHFRAME_ITEM_WIDTH, itemButton.maxStringWidth + 8), -WATCHFRAMELINES_FONTSPACING);
+				itemButton:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 0, -WATCHFRAMELINES_FONTSPACING);
 				itemButton:Show();
 			end
 			
@@ -1202,13 +1206,14 @@ function WatchFrameLines_RemoveUpdateFunction (func)
 end
 
 function WatchFrame_OpenQuestLog (button, arg1, arg2, checked)
-	QuestLog_OpenToQuestIndex(arg1);
+	ExpandQuestHeader(0);
+	QuestLog_OpenToQuestIndex(GetQuestIndexForWatch(arg1));
 end
 
 function WatchFrame_AbandonQuest (button, arg1, arg2, checked)
 	local lastQuest = GetQuestLogSelection();
 	local lastNumQuests = GetNumQuestLogEntries();
-	SelectQuestLogEntry(arg1); -- More or less QuestLogFrameAbandonButton_OnClick, may want to consolidate
+	SelectQuestLogEntry(GetQuestIndexForWatch(arg1)); -- More or less QuestLogFrameAbandonButton_OnClick, may want to consolidate
 	SetAbandonQuest();
 	
 	local items = GetAbandonQuestItems();
@@ -1223,11 +1228,11 @@ function WatchFrame_AbandonQuest (button, arg1, arg2, checked)
 end
 
 function WatchFrame_ShareQuest (button, arg1, arg2, checked)
-	QuestLogPushQuest(arg1);
+	QuestLogPushQuest(GetQuestIndexForWatch(arg1));
 end
 
 function WatchFrame_StopTrackingQuest (button, arg1, arg2, checked)
-	RemoveQuestWatch(arg1);
+	RemoveQuestWatch(GetQuestIndexForWatch(arg1));
 	WatchFrame_Update();
 end
 
@@ -1276,7 +1281,7 @@ end
 function WatchFrameDropDown_Initialize (self)
 	if ( self.type == "QUEST" ) then
 		local info = UIDropDownMenu_CreateInfo();
-		info.text = GetQuestLogTitle(self.index)
+		info.text = GetQuestLogTitle(GetQuestIndexForWatch(self.index))
 		info.isTitle = 1;
 		info.notCheckable = 1;
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
@@ -1296,7 +1301,7 @@ function WatchFrameDropDown_Initialize (self)
 		info.checked = false;
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		
-		if ( GetQuestLogPushable(self.index) ) then
+		if ( GetQuestLogPushable(GetQuestIndexForWatch(self.index)) ) then
 			info.text = SHARE_QUEST;
 			info.func = WatchFrame_ShareQuest;
 			info.arg1 = self.index;
@@ -1445,6 +1450,6 @@ function WatchFrameItem_OnEnter (self)
 	GameTooltip:SetQuestLogSpecialItem(self:GetID());
 end
 		
-function WatchFrameItem_OnClick (self)
+function WatchFrameItem_OnClick (self, button, down)
 	UseQuestLogSpecialItem(self:GetID());
 end

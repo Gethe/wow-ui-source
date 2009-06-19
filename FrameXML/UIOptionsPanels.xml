@@ -216,6 +216,23 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
+			<CheckButton name="$parentEquipmentManager" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-64"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "equipmentManager";
+						self.setFunc = function(value) if ( value == "1" ) then GearManagerToggleButton:Show() else GearManagerToggleButton:Hide() end end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>						
 		</Frames>
 		<Scripts>
 			<OnLoad>

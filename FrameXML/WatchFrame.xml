@@ -142,6 +142,9 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
 			<OnEvent>
 				WatchFrameItem_OnEvent(self, event, ...);
 			</OnEvent>
@@ -380,7 +383,7 @@
 				<DisabledTexture file="Interface\Buttons\UI-Panel-CollapseButton-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
-			<Frame name="$parentTitleButton">
+			<Button name="$parentTitleButton">
 				<Frames>
 					<Frame name="$parentHighlight" setAllPoints="true" hidden="true">
 						<Layers>
@@ -398,9 +401,10 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						self:RegisterForClicks("RightButtonUp");
 						self:RegisterForDrag("LeftButton");
 					</OnLoad>
-					<OnMouseUp function="WatchFrameTitle_OnMouseUp"/>
+					<OnMouseUp function="WatchFrameTitleButton_OnClick"/>
 					<OnDragStart>
 						local watchFrame = _G["WatchFrame"];
 						watchFrame.moving = true;
@@ -412,7 +416,7 @@
 						watchFrame:StopMovingOrSizing();
 					</OnDragStop>
 				</Scripts>
-			</Frame>
+			</Button>
 			<Frame name="$parentMouseover">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCollapsedBorderLeft"/>
@@ -420,10 +424,10 @@
 				</Anchors>
 			</Frame>		
 			<Button name="$parentRightResizeThumb">
-				<Size x="24" y="24"/>
+				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-6" y="8"/>
+						<Offset x="-4" y="4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -445,10 +449,10 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentLeftResizeThumb">
-				<Size x="24" y="24"/>
+				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
-						<Offset x="6" y="8"/>
+						<Offset x="4" y="4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>

@@ -434,8 +434,8 @@ local CALENDAR_INVITESTATUS_INFO = {
 		color		= GREEN_FONT_COLOR,
 	},
 	[CALENDAR_INVITESTATUS_NOT_SIGNEDUP] = {
-		name		= nil,
-		color		= nil,
+		name		= UNKNOWN,					-- this shouldn't be displayed
+		color		= NORMAL_FONT_COLOR,
 	},
 };
 
@@ -888,11 +888,11 @@ local function _CalendarFrame_GetTextureFile(textureName, calendarType, sequence
 end
 
 local function _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus)
-	if ( calendarType == "PLAYER" or calendarType == "GUILD" ) then
+	if ( calendarType == "PLAYER" or calendarType == "GUILD_ANNOUNCEMENT" or calendarType == "GUILD_EVENT" ) then
 		if ( modStatus == "MODERATOR" or modStatus == "CREATOR" ) then
 			return CALENDAR_EVENTCOLOR_MODERATOR;
-		elseif ( inviteStatus ) then
-			return CALENDAR_INVITESTATUS_INFO[inviteStatus] and CALENDAR_INVITESTATUS_INFO[inviteStatus].color;
+		elseif ( inviteStatus and CALENDAR_INVITESTATUS_INFO[inviteStatus] ) then
+			return CALENDAR_INVITESTATUS_INFO[inviteStatus].color;
 		end
 	elseif ( CALENDAR_CALENDARTYPE_COLORS[calendarType] ) then
 		return CALENDAR_CALENDARTYPE_COLORS[calendarType];
@@ -3269,7 +3269,7 @@ function CalendarViewEventInviteListScrollFrame_Update()
 			local inviteStatusColor;
 			if ( inviteStatusInfo ) then
 				inviteStatusName = inviteStatusInfo.name;
-				inviteStatusColor = inviteStatusInfo.color or NORMAL_FONT_COLOR;
+				inviteStatusColor = inviteStatusInfo.color;
 			else
 				inviteStatusName = UNKNOWN;
 				inviteStatusColor = NORMAL_FONT_COLOR;
@@ -4039,7 +4039,7 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 			local inviteStatusColor;
 			if ( inviteStatusInfo ) then
 				inviteStatusName = inviteStatusInfo.name;
-				inviteStatusColor = inviteStatusInfo.color or NORMAL_FONT_COLOR;
+				inviteStatusColor = inviteStatusInfo.color;
 			else
 				inviteStatusName = UNKNOWN;
 				inviteStatusColor = NORMAL_FONT_COLOR;

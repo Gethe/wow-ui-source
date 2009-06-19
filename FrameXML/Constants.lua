@@ -136,6 +136,12 @@ INVSLOT_RANGED		= 18;
 INVSLOT_TABARD		= 19;
 INVSLOT_LAST_EQUIPPED = INVSLOT_TABARD;
 
+INVSLOTS_EQUIPABLE_IN_COMBAT = {
+[INVSLOT_MAINHAND] = true,
+[INVSLOT_OFFHAND] = true,
+[INVSLOT_RANGED] = true,
+}
+
 -- Container constants
 ITEM_INVENTORY_BANK_BAG_OFFSET	= 4; -- Number of bags before the first bank bag
 CONTAINER_BAG_OFFSET = 19; -- Used for PutItemInBag

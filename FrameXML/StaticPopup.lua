@@ -1793,6 +1793,7 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 	maxLetters = 15,
 	OnAccept = function(self)
 		GuildControlAddRank(self.editBox:GetText());
+		UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
 		GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
 		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
 		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
@@ -1811,6 +1812,7 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
 		GuildControlAddRank(parent.editBox:GetText());
+		UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
 		GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
 		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
 		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
@@ -2251,7 +2253,7 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 		CancelSummon();
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( UnitAffectingCombat("player") or (not PlayerCanPerformActions()) ) then
+		if ( UnitAffectingCombat("player") or (not PlayerCanTeleport()) ) then
 			self.button1:Disable();
 		else
 			self.button1:Enable();

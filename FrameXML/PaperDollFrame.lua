@@ -106,6 +106,8 @@ PDFITEMFLYOUT_IGNORESLOT_LOCATION = 0xFFFFFFFE;
 PDFITEMFLYOUT_UNIGNORESLOT_LOCATION = 0xFFFFFFFD;
 PDFITEMFLYOUT_FIRST_SPECIAL_LOCATION = PDFITEMFLYOUT_UNIGNORESLOT_LOCATION
 
+local VERTICAL_FLYOUTS = { [16] = true, [17] = true, [18] = true }
+
 local itemSlotButtons = {};
 
 function PaperDollFrame_OnLoad (self)
@@ -1122,6 +1124,7 @@ function PaperDollItemSlotButton_OnLoad (self)
 	self.checkRelic = checkRelic;
 	self.UpdateTooltip = PaperDollItemSlotButton_OnEnter;
 	tinsert(itemSlotButtons, self);
+	self.verticalFlyout = VERTICAL_FLYOUTS[id];
 end
 
 function PaperDollItemSlotButton_OnShow (self)
@@ -1274,12 +1277,12 @@ end
 
 function PaperDollItemSlotButton_OnEnter (self)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED");
-	if ( IsModifiedClick("SHOWITEMFLYOUT") and self:GetID() ~= INVSLOT_AMMO ) then
+	if ( IsModifiedClick("SHOWITEMFLYOUT") and self:GetID() ~= INVSLOT_AMMO and not (PaperDollFrameItemFlyout:IsVisible() and PaperDollFrameItemFlyout.button == self)) then
 		PaperDollFrameItemFlyout_Show(self);
 	end
 	
 	if ( PaperDollFrameItemFlyout:IsShown() ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 5);
+		GameTooltip:SetOwner(PaperDollFrameItemFlyoutButtons, "ANCHOR_RIGHT", 6, -PaperDollFrameItemFlyoutButtons:GetHeight() - 6);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
@@ -1722,9 +1725,10 @@ end
 
 function PaperDollFrameItemFlyout_OnUpdate (self, elapsed)
 	if ( not IsModifiedClick("SHOWITEMFLYOUT") ) then
+		local button = self.button;
 		self:Hide();
-		if ( self.button ) then
-			PaperDollItemSlotButton_OnEnter(self.button);
+		if ( button and MouseIsOver(button)) then
+			PaperDollItemSlotButton_OnEnter(button);
 		end
 	end
 end
@@ -1836,8 +1840,13 @@ function PaperDollFrameItemFlyout_Show (paperDollItemSlot)
 	flyout.button = paperDollItemSlot;
 	flyout:SetPoint("TOPLEFT", paperDollItemSlot, "TOPLEFT", -PDFITEMFLYOUT_BORDERWIDTH, PDFITEMFLYOUT_BORDERWIDTH);
 	local horizontalItems = min(numItems, PDFITEMFLYOUT_ITEMS_PER_ROW);
+	if ( paperDollItemSlot.verticalFlyout ) then
+		buttonAnchor:SetPoint("TOPLEFT", flyout, "BOTTOMLEFT", 0, -PDFITEMFLYOUT_BORDERWIDTH);
+	else
+		buttonAnchor:SetPoint("TOPLEFT", flyout, "TOPRIGHT", 0, 0);
+	end
 	buttonAnchor:SetWidth((horizontalItems * PDFITEM_WIDTH) + ((horizontalItems - 1) * PDFITEM_XOFFSET) + PDFITEMFLYOUT_BORDERWIDTH);
-	buttonAnchor:SetHeight(PDFITEMFLYOUT_HEIGHT + (math.floor(numItems/PDFITEMFLYOUT_ITEMS_PER_ROW) * (PDFITEM_HEIGHT - PDFITEM_YOFFSET)));
+	buttonAnchor:SetHeight(PDFITEMFLYOUT_HEIGHT + (math.floor((numItems - 1)/PDFITEMFLYOUT_ITEMS_PER_ROW) * (PDFITEM_HEIGHT - PDFITEM_YOFFSET)));
 	
 	
 	if ( flyout.numItems ~= numItems ) then
@@ -1962,7 +1971,10 @@ function PaperDollFrameItemFlyout_DisplayButton (button, paperDollItemSlot)
 		
 		CooldownFrame_SetTimer(button.cooldown, start, duration, enable);
 
-		button.UpdateTooltip = function () GameTooltip:SetOwner(button, "ANCHOR_RIGHT"); setTooltip(); end;
+		button.UpdateTooltip = function () GameTooltip:SetOwner(PaperDollFrameItemFlyoutButtons, "ANCHOR_RIGHT", 6, -PaperDollFrameItemFlyoutButtons:GetHeight() - 6); setTooltip(); end;
+		if ( MouseIsOver(button) ) then
+			button.UpdateTooltip();
+		end
 	else
 		textureName = paperDollItemSlot.backgroundTextureName;
 		if ( paperDollItemSlot.checkRelic and UnitHasRelicSlot("player") ) then
@@ -1984,7 +1996,7 @@ function PaperDollFrameItemFlyout_DisplaySpecialButton (button, paperDollItemSlo
 		SetItemButtonCount(button, nil);
 		button.UpdateTooltip = 
 			function () 
-				GameTooltip:SetOwner(button, "ANCHOR_RIGHT"); 
+				GameTooltip:SetOwner(PaperDollFrameItemFlyoutButtons, "ANCHOR_RIGHT", 6, -PaperDollFrameItemFlyoutButtons:GetHeight() - 6);
 				GameTooltip:SetText(EQUIPMENT_MANAGER_IGNORE_SLOT, 1.0, 1.0, 1.0); 
 				if ( SHOW_NEWBIE_TIPS == "1" ) then
 					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_IGNORE_SLOT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
@@ -1998,7 +2010,7 @@ function PaperDollFrameItemFlyout_DisplaySpecialButton (button, paperDollItemSlo
 		SetItemButtonCount(button, nil);
 		button.UpdateTooltip = 
 			function () 
-				GameTooltip:SetOwner(button, "ANCHOR_RIGHT"); 
+				GameTooltip:SetOwner(PaperDollFrameItemFlyoutButtons, "ANCHOR_RIGHT", 6, -PaperDollFrameItemFlyoutButtons:GetHeight() - 6); 
 				GameTooltip:SetText(EQUIPMENT_MANAGER_UNIGNORE_SLOT, 1.0, 1.0, 1.0); 
 				if ( SHOW_NEWBIE_TIPS == "1" ) then
 					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_UNIGNORE_SLOT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
@@ -2012,7 +2024,7 @@ function PaperDollFrameItemFlyout_DisplaySpecialButton (button, paperDollItemSlo
 		SetItemButtonCount(button, nil);
 		button.UpdateTooltip = 
 			function () 
-				GameTooltip:SetOwner(button, "ANCHOR_RIGHT"); 
+				GameTooltip:SetOwner(PaperDollFrameItemFlyoutButtons, "ANCHOR_RIGHT", 6, -PaperDollFrameItemFlyoutButtons:GetHeight() - 6);
 				GameTooltip:SetText(EQUIPMENT_MANAGER_PLACE_IN_BAGS, 1.0, 1.0, 1.0); 
 				if ( SHOW_NEWBIE_TIPS == "1" ) then
 					GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER_PLACE_IN_BAGS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
@@ -2021,6 +2033,9 @@ function PaperDollFrameItemFlyout_DisplaySpecialButton (button, paperDollItemSlo
 			end;
 		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
 		SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);	
+	end
+	if ( MouseIsOver(button) and button.UpdateTooltip ) then
+		button.UpdateTooltip();
 	end
 end
 
@@ -2135,6 +2150,10 @@ function GearManagerDialog_OnEvent (self, event, ...)
 			-- self.selectedSet:SetChecked(0);
 			-- self.selectedSet = nil;
 		-- end
+	elseif ( event == "VARIABLES_LOADED" ) then
+		if ( GetCVarBool("equipmentManager") ) then
+			GearManagerToggleButton:Show();
+		end		
 	end
 end
 
@@ -2190,6 +2209,16 @@ end
 function GearSetButton_OnClick (self)
 	if ( self.name and self.name ~= "" ) then
 		local dialog = GearManagerDialog;
+		if ( EquipmentSetContainsLockedItems(self.name) or UnitOnTaxi("player") or UnitCastingInfo("player") ) then
+			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+			for i, button in pairs(dialog.buttons) do
+				button:SetChecked(0);
+			end
+			dialog.selectedSet = nil
+			return;
+		end
+		
+		
 		dialog.selectedSet = self;
 		for i, button in pairs(dialog.buttons) do
 			if ( button ~= self ) then

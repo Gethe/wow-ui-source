@@ -357,7 +357,7 @@ function UnitFrameManaBar_OnEvent(self, event, ...)
 end
 
 function UnitFrameManaBar_OnUpdate(self)
-	if ( not self.disconnected or statusbar.lockValues ) then
+	if ( not self.disconnected and not self.lockValues ) then
 		local currValue = UnitPower(self.unit, self.powerType);
 		if ( currValue ~= self.currValue ) then
 			self:SetValue(currValue);

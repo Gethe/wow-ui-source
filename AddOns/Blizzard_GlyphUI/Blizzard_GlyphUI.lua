@@ -250,11 +250,13 @@ function GlyphFrameGlyph_OnClick (self, button)
 				dialog.data = id;
 			end
 		end
-	elseif ( self.glyph:IsShown() and GlyphMatchesSocket(id) ) then
-		local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", id);
-		dialog.data = id;
 	elseif ( talentGroup == GetActiveTalentGroup() ) then
-		PlaceGlyphInSocket(id);
+		if ( self.glyph:IsShown() and GlyphMatchesSocket(id) ) then
+			local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", id);
+			dialog.data = id;
+		else
+			PlaceGlyphInSocket(id);
+		end
 	end
 end
 

@@ -957,6 +957,35 @@
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
+			<Button name="GearManagerToggleButton" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-44" y="-39"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, EQUIPMENT_MANAGER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_EQUIPMENT_MANAGER);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnLoad>
+						self.icon = _G[self:GetName() .. "Icon"];
+					</OnLoad>
+					<OnClick>
+						if ( GearManagerDialog:IsShown() ) then
+							GearManagerDialog:Hide();
+						else
+							GearManagerDialog:Show();
+						end
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\PaperDollInfoFrame\UI-GearManager-Button"/>
+				<PushedTexture file="Interface\PaperDollInfoFrame\UI-GearManager-Button-Pushed"/>
+				<HighlightTexture file="Interface\Buttons\UI-MicroButton-Hilight" alphaMode="ADD">
+					<TexCoords left="0" right="1" top="0.390625" bottom="0.96875"/>
+				</HighlightTexture>
+			</Button>			
 		</Frames>
         <Scripts>
             <OnLoad function="PaperDollFrame_OnLoad"/>
