@@ -1,17 +1,20 @@
-h1. Patch 3.2.0
+h1. World of Warcraft PTR Patch 3.2.0
+
+* The latest test realm patch notes can always be found at http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html
+* The latest patch notes can always be found at http://www.worldofwarcraft.com/patchnotes/
 
 h2. General
 
-* Construction of the Crusaders' Coliseum is complete. Testing not yet available. New raid normal and heroic modes for the Crusaders' Coliseum can be toggled using the Dungeon Difficulty setting. This applies to 10 and 25 player versions. 10 player (normal), 25 player (normal), 10 player (heroic) and 25 player (heroic) all share separate raid lockout timers.
+* Construction of the Crusaders' Coliseum is complete. Testing not yet available. New raid Normal and Heroic modes for the Crusaders' Coliseum can be toggled using the Dungeon Difficulty setting. This applies to 10 and 25-player versions. 10-player (Normal), 25-player (Normal), 10-player (Heroic) and 25-player (Heroic) all share separate raid lockout timers.
 ** Trial of the Champion
-*** 5 player (normal and heroic mode) dungeon.
-*** Daily quest added to the heroic daily dungeon quest giver.
+*** 5-player (Normal and Heroic mode) dungeon.
+*** Daily quest added to the Heroic daily dungeon quest giver.
 ** Trial of the Crusader
-*** 10 and 25 player (normal mode) raid dungeon.
-*** Trial of the Grand Crusader
-*** 10 and 25 player (heroic mode) raid dungeon.
-*** Crusaders' Tribute: Active on heroic difficulty only, the tribute system will limit players on the number of attempts the raid is allotted each week. Additional rewards can be earned depending on the number of attempts left in the tribute run each week when the final boss is defeated.
-** Isle of Conquest, the new 40 vs. 40 player siege-style battleground is now available for testing.
+*** 10 and 25-player (Normal mode) raid dungeon.
+** Trial of the Grand Crusader
+*** 10 and 25-player (Heroic mode) raid dungeon.
+*** Crusaders' Tribute: Active on Heroic difficulty only, the tribute system will limit players on the number of attempts the raid is allotted each week. Additional rewards can be earned depending on the number of attempts left in the tribute run each week when the final boss is defeated.
+** Isle of Conquest, the new 40 vs. 40-player siege-style battleground is now available for testing.
 *** Two level brackets are available: 71-79 and 80.
 *** Defend the walls of your keep and protect your general by killing enemy players and destroying their siege vehicles.
 *** Capture the Docks, Airship Hangar, or Siege Workshop for access to destructive siege vehicles or strategic attacks on your enemy's base.
@@ -20,11 +23,11 @@ h2. General
 * The Argent Tournament Expands
 ** All new Argent Crusader daily quests and rewards have been added for players with the Crusader title. Rewards include a new Argent Crusader banner and tabard (which can port players to the tournament grounds), a mounted squire (can periodically run bank, mail or vendor errands for the player), a paladin-exclusive Argent Crusader Charger mount, and new heirloom items.
 ** All new Silver Covenant and Sunreaver daily quests and rewards have been added for players exalted with these factions. Rewards include tabards, new ground and flying mounts, and a new pet.
-** The Black Knight returns. Follow the continued story line as the saga unfolds before you.
+** Just when you thought you had seen the last of the Black Knight, he makes his astonishing return to the tournament. Wait, didnt you kill him?
 * New druid art for cat and bear forms has been added. There are now five unique color schemes for each form and faction. Changing hair color (night elves) or skin tone (tauren) via the barbershop will change the look of one's cat and bear forms.
 * Portals from Orgrimmar and Stormwind have been added leading players to the Stair of Destiny at the Dark Portal. Once there, players can access a flight path directly from the Stair of Destiny to Shattrath.
 * A new zeppelin docking ramp has been added to Thunder Bluff allowing Horde players easier transport to and from Orgrimmar.
-* The local Postal Service has grown tired of walking so far each day to collect mail and have decided to install a large number of new mailboxes to Stormwind, Undercity, Darnassus and Orgrimmar.
+* The local Postal Service has grown tired of walking so far each day to collect mail and has decided to install a large number of new mailboxes to Stormwind, Undercity, Darnassus and Orgrimmar.
 * Northrend Children's Week has arrived in Dalaran! Players can find out more by visiting the Eventide District.
 * Copied Test Realm characters will no longer be copied with their achievement history in order to better facilitate the character copy process.
 
@@ -32,7 +35,7 @@ h2. PvP
 
 h3. Arenas
 
-* The newest season of Arena gear can only be purchased if you meet the requirements with your 3 or 5 player team rating. Rating requirements from 2 player teams can still be used to purchase the previous season of gear.
+* The newest season of Arena gear can only be purchased if you meet the requirements with your 3 or 5-player team rating. Rating requirements from 2-player teams can still be used to purchase the previous season of gear.
 
 h4.  Dalaran Sewers
 
@@ -53,7 +56,7 @@ h3. Battlegrounds
 ** Players who do not wish to gain experience through PvP can visit Behsten in Stormwind or Slahtz in Orgrimmar - both located near the Battlemasters in either city - and turn off all experience accumulation for the cost of 10 gold.
 ** Disabling experience gains will prevent a player from gaining experience through any means available in the game.
 ** Players with experience gains turned off who compete in Battlegrounds will face off only against other players with experience gains turned off.
-** Behsten and Slahtz can reinstate experience gains for players, for a 10 gold fee of course. Any experience that would've been accumulated if experience gains were not turned off cannot be recovered.
+** Behsten and Slahtz can reinstate experience gains for players, for a 10 gold fee of course. Any experience that would've been accumulated if experience gains were enabled cannot be recovered.
 * Battlemasters in major cities affiliated with specific Battlegrounds have been replaced with a Battlemaster for each faction that will allow players to queue for any Battleground. Battlemasters for specific Battlegrounds will still be seen around the cities during corresponding Battleground holiday weekends.
 * When standing at a capture point that you control, you will gain a buff called Honorable Defender. This buff grants +50% honor gained from kills. This currently affects Arathi Basin, Eye of the Storm and Isle of Conquest.
 
@@ -73,7 +76,17 @@ h4. Strand of the Ancients
 
 h4. Warsong Gulch
 
-* There is a now a 20 minute timer on this battleground. After that time, the team with the most flag captures wins. If this would result in a tie, the team that captured the first flag wins. If neither side has captured a flag, then the game ends in a tie.
+* There is a now a 20-minute timer on this Battleground. After that time, the team with the most flag captures wins. If this would result in a tie, the team that captured the first flag wins. If neither side has captured a flag, then the game ends in a tie.
+
+h4. Wintergrasp
+
+* To provide players with a more transparent notification of when Wintergrasp battles occur, as well as better control zone population and stability, several changes have been made.
+* Players now have the option to queue for Wintergrasp from a Wintergrasp Battlemaster in any capital city or by simply entering the Wintergrasp zone.
+* Queuing will begin 15 minutes before each battle. If chosen, you will automatically be teleported to the zone. Any players in the zone who have not been chosen from the queue will be teleported out when the battle begins.
+* The queue system remains active for the entire battle. As soon as a player leaves, a new one will be chosen from the queue.
+* Trying to enter Wintergrasp during an active battle for which you have not been chosen will teleport you out. Please note that, as you are now able to fly over Wintergrasp, you will only be teleported out if you try to land and join the battle.
+* Level 80 players get higher priority in the queue than lower level players. In addition, a random selection of queued players will be taken from both the Battlemasters and the zone itself.
+* The queue will accept up to 100 players from each faction, resulting in a maximum battle of 200 players at a time.
 
 h2. Races: General
 
@@ -83,15 +96,15 @@ h2. Races: General
 h2. Items: General
 
 * Block Value: The amount of bonus block value on all items has been doubled. This does not affect the base block value on shields or block value derived from strength.
-* On-Use Block Value Items: All items and set bonuses that trigger temporary increases to block value have been modified. Instead of increasing their block value amount by 100% like other items, they have all had their effect durations doubled. This applies to Glyph of Deflection, Gnomeregan Autoblocker, Coren's Lucky Coin, Lavanthor's Talisman, Libram of Obstruction, Tome of the Lightbringer, Libram of the Sacred Shield, the tier 8 paladin Shield of Righteousness bonus, the tier 5 paladin Holy Shield bonus, and the tier 5 warrior Shield Block bonus.
+* On-Use Block Value Items: All items and set bonuses that trigger temporary increases to block value have been modified. Instead of increasing their block value amount by 100% like other items, they have all had their effect durations doubled. This applies to Glyph of Deflection, Gnomeregan Autoblocker, Coren's Lucky Coin, Lavanthor's Talisman, Libram of Obstruction, Tome of the Lightbringer, Libram of the Sacred Shield, the tier-8 paladin Shield of Righteousness bonus, the tier-5 paladin Holy Shield bonus, and the tier-5 warrior Shield Block bonus.
 * Mana Regeneration: All items that provide "X mana per five seconds" have had the amount of mana they regenerate increased by approximately 25%.
-* Resilience: No longer reduces the amount of damage done by damage over time spells, but instead reduces the amount of all damage done by players by the same proportion. The other effects of resilience (reducing critical chance, critical damage and mana drain effects) have not changed.
+* Resilience: No longer reduces the amount of damage done by damage-over-time spells, but instead reduces the amount of all damage done by players by the same proportion. The other effects of resilience (reducing critical chance, critical damage and mana drain effects) have not changed.
 
 h3. Emblem System Changes
 
-* Both the 10 and 25 player instances of the Crusaders' Coliseum drop a new Emblem of Triumph.
+* Both the 10 and 25-player instances of the Crusaders' Coliseum drop a new Emblem of Triumph.
 * Any dungeons that previously dropped Emblems of Heroism or Valor, such as Naxxramas or Heroic Halls of Stone, will now drop Emblems of Conquest instead. Emblems of Conquest can still be converted to Valor or Heroism.
-* The heroic dungeon daily quest will now reward 2 Emblems of Triumph and the normal daily dungeon quest will reward 1 Emblem of Triumph.
+* The Heroic dungeon daily quest will now reward 2 Emblems of Triumph and the normal daily dungeon quest will reward 1 Emblem of Triumph.
 * The existing achievements to collect 1, 25, 50, etc. Emblems of Heroism, Valor, and Conquest have been converted to Feats of Strength since Heroism and Valor Emblems are no longer attainable.
 * New achievements have been added to collect various amounts of any combination of emblems.
 
@@ -109,7 +122,7 @@ h2. Classes: General
 
 * All pets now receive 40% of their master's resilience and 100% of their master's spell penetration. In addition, if a player is at their appropriate spell hit chance or hit chance maximum, their pet will be at the maximum for spell hit chance, hit chance, and expertise. If they are below the maximum, their pet will be proportionately below those maximums.
 * Replenishment: This buff now grants 1% of the target's maximum mana over 5 seconds instead of 0.25% per second. This applies to all 5 sources of Replenishment (Vampiric Touch, Judgements of the Wise, Hunting Party, Enduring Winter Frostbolts and Soul Leech).
-* Silence, Strangulate, Silencing Shot, and Arcane Torrent: These abilities will also apply a 3 second interrupt effect against non-player controlled targets, making them more versatile against creatures immune to silencing effects.
+* Silence, Strangulate, Silencing Shot, and Arcane Torrent: These abilities will also apply a 3-second interrupt effect against non-player controlled targets, making them more versatile against creatures immune to silencing effects.
 
 h2. Death Knights
 
@@ -160,7 +173,7 @@ h3. Talents
 h4. Balance
 
 * Balance of Power: Now reduces all spell damage taken by 3/6%, rather than reducing the chance to be hit by spells by 2/4%.
-* Eclipse: The Starfire and Wrath buffs from this talent are now on separate 30 second. cooldowns. In addition, it is not possible to have both buffs active simultaneously.
+* Eclipse: The Starfire and Wrath buffs from this talent are now on separate 30-second cooldowns. In addition, it is not possible to have both buffs active simultaneously.
 * Owlkin Frenzy: Now also restores 2% base mana every 2 seconds for the duration (10 seconds) in addition to its current effects.
 
 h4. Restoration
@@ -173,7 +186,7 @@ h2. Hunters
 * Aspect of the Cheetah: Can now be learned at level 16.
 * Deterrence now has a new visual spell effect.
 * The time that traps will exist in the world after being put down has been reduced to 30 seconds, down from 1 minute.
-* Traps now have separate 30 second cooldown categories: Fire (Immolation Trap, Explosive Trap and Black Arrow), Frost (Freezing Trap, Frost Trap) and Nature (Snake Trap). A hunter can have one trap of each category placed at one time.
+* Traps now have separate 30-second cooldown categories: Fire (Immolation Trap, Explosive Trap and Black Arrow), Frost (Freezing Trap, Frost Trap) and Nature (Snake Trap). A hunter can have one trap of each category placed at one time.
 
 h3. Talents
 
@@ -184,7 +197,7 @@ h4. Beast Mastery
 h4. Survival
 
 * Entrapment: This talent no longer works with Immolation Trap or Explosive Trap.
-* Lock and Load: Now has a 22 second cooldown. The Lock and Load effect cannot be obtained on targets immune to snare effects when Frost Trap is used.
+* Lock and Load: Now has a 22-second cooldown. The Lock and Load effect cannot be obtained on targets immune to snare effects when Frost Trap is used.
 
 h3. Pets
 
@@ -193,7 +206,7 @@ h3. Pets
 h2. Mages
 
 * Arcane Blast: Mana cost reduced by 12%.
-* Invisibility: Can no longer be interrupted by a hostile action or damage done during the 3 second fade time, however an invisible mage can still be stunned or silenced.
+* Invisibility: Can no longer be interrupted by a hostile action or damage done during the 3-second fade time, however an invisible mage can still be stunned or silenced.
 
 h3. Talents
 
@@ -206,11 +219,11 @@ h2. Paladins
 * Blessing of Sanctuary: This blessing now also increases stamina by 10%. This effect is not cumulative with Blessing of Kings.
 * Charger: Can now be learned at level 40.
 * Exorcism: Now has a 1.5 second cast time, but can once again be used on players.
-* Hand of Reckoning: Redesigned. Now does damage only when target does not currently have the caster targeted, but damage done increased to 50% of attack power, occurring after the taunt effect is applied.
+* Hand of Reckoning: Redesigned. Now does damage only when the target does not currently have the caster targeted, but damage done increased to 50% of attack power, occurring after the taunt effect is applied.
 * Judgement of Light: Now heals for 2% of the attacker's maximum health instead of a variable amount based on the spell power and attack power of the judging paladin.
 * Lay on Hands: The buff from this ability now reduces the physical damage taken by the target by 10/20% instead of increasing the target's armor.
 * Righteous Fury: No longer has a duration or mana cost, remaining until cancelled or death. Also cancelled when a Paladin activates a different talent specialization.
-* Sacred Shield: When a paladin casts Flash of Light on a target with this buff, they also now place a heal over time effect on the target, healing that target for 100% of the Flash of Light amount over 12 seconds.
+* Sacred Shield: When a paladin casts Flash of Light on a target with this buff, they also now place a heal-over-time effect on the target, healing that target for 100% of the Flash of Light amount over 12 seconds.
 * Seal of Blood: This ability has been removed.
 * Seal of the Martyr: This ability has been removed.
 * Seal of Vengeance and Seal of Corruption: These seals have been redesigned to deal substantially more damage. Now, once a paladin has 5 copies of the debuff from these seals on his or her target, on each swing the paladin will deal 33% weapon damage as Holy, with critical strikes dealing double damage.
@@ -232,7 +245,7 @@ h4. Protection
 h4. Retribution
 
 * Art of War: Now only applies to melee critical hits, but will make your next Flash of Light or Exorcism instant.
-* Crusader Strike: Damage reduced to 75% weapon damage to match the new 4 second cooldown.
+* Crusader Strike: Damage reduced to 75% weapon damage to match the new 4-second cooldown.
 * Seal of Command: Redesigned. This seal now deals 36% weapon damage on every swing, and deals substantially less judgement damage.
 * Vindication: Redesigned. Now lowers target attack power, is consistent and does not stack with Demoralizing Shout.
 
@@ -266,7 +279,7 @@ h4. Subtlety
 
 h2. Shaman
 
-* A customizable totem bar will now be available for shaman allowing the storing of 4 different totems. These totems can be placed on the ground at once in one global cooldown for the combined mana cost of all 4 totems.
+* A customizable totem bar will now be available for shamans allowing the storing of 4 different totems. These totems can be placed on the ground at once in one global cooldown for the combined mana cost of all 4 totems.
 * All Shocks now have a default range of 25 yards, up from 20 yards.
 * Base health increased by approximately 7% to correct for shamans having lower health than other classes.
 * Chain Heal: Jump distance increased to 10 yards. In addition, the amount of healing now decreases by 40% as it jumps to each new target, instead of 50%.
@@ -285,14 +298,14 @@ h4. Restoration
 * Earth Shield: Dispel effects will now remove charges of Earth Shield rather than the entire aura.
 * Healing Way: Redesigned. Rather than providing a chance of increasing Healing Wave spells on a friendly target, this talent now innately increases the effectiveness of the shaman's Healing Wave by 8/16/25%.
 * Mana Tide Totem: Totem health now equal to 10% of the shaman's health.
-* Nature's Guardian: Redesigned. Now has a fixed 100% proc rate, has a 30 second internal cooldown, and increases the shaman's maximum health by 3/6/9/12/15% for 10 seconds.
+* Nature's Guardian: Redesigned. Now has a fixed 100% proc rate, has a 30-second internal cooldown and increases the shaman's maximum health by 3/6/9/12/15% for 10 seconds.
 * Nature's Swiftness: Cooldown is now 2 minutes, down from 3 minutes.
 * Tidal Waves: No longer reduces the cast time of Lesser Healing Wave by 30%. It instead now provides +25% critical strike chance to Lesser Healing Wave, along with the previous 30% cast time benefit to Healing Wave.
 * Improved Water Shield: This talent now has a 10/20/30% chance to be triggered by Chain Heal, and the charges of Water Shield are no longer consumed by this talent.
 
 h2. Warlocks
 
-* Banish: Effect will now be canceled if Banish is recast on a banished target.
+* Banish: Effect will now be cancelled if Banish is recast on a banished target.
 * Dreadsteed: Can now be learned at level 40.
 * Felsteed: Can now be learned at level 20.
 * Soulshatter cooldown reduced to 3 minutes, down from 5 minutes
@@ -326,6 +339,7 @@ h2. User Interface
 * Character names can now be colorized according to class in the chat frame through an interface option in the Development settings.
 * Casting bars under a target's portrait will now indicate whether or not the cast can be interrupted.
 * Druids will now be able to see their mana bars when shape-shifted.
+* The framerate for those with Shadow Effects enabled under the Ultra Video settings has been improved.
 * Item Comparisons: Holding the shift key while hovering over an item will now display the stat differences with the item currently equipped in the relevant slot.
 * Macros and scripts will no longer be able to target totems by name.
 * Quest creatures and objects will now show on the player's world map.
@@ -347,7 +361,7 @@ h2. Professions
 h3. Alchemy
 
 * All stackable potions now stack to 20.
-* Added a new pattern for Flask of the North, usable by players with a high alchemy skill. The recipe is purchased from Northrend trainers. Flask of the North increases your spell power, attack power or Strength for 1 hour and is usable in arenas. It is not consumed when used.
+* Added a new pattern for Flask of the North, usable by players with a high alchemy skill. The recipe is purchased from Northrend trainers. Flask of the North increases your spell power, attack power or strength for 1 hour and is usable in Arenas. It is not consumed when used.
 * Endless Healing Potion and Endless Mana Potion no longer usable in arenas. Amount of health and mana has been increased, and the cooldown reduced.
 * Five new epic gem transmute recipes are available from the Northrend trainer. The recipe for transmuting a Cardinal Ruby can be learned from a quest, given by Linzy Blackbolt in Dalaran.
 * The Mixology benefits from Northrend elixirs and flasks have been increased.
@@ -359,7 +373,7 @@ h3. Cooking
 * Chef's Hat is now superior quality and allows the chef to cook faster.
 * Increased the drop rate for recipes from the Outland Daily Cooking quests.
 * Increased the chance to get a bonus Dalaran Cooking Token from the Spice Bag.
-* The recipe for Captain Rumsey's Lager can now be randomly found in the quest reward crate, barrel, or spice bag from the cooking dailies.
+* The recipe for Captain Rumsey's Lager can now be randomly found in the quest reward Crate, Barrel, or Spice Bag from the cooking dailies.
 
 h3. Enchanting
 
@@ -380,7 +394,7 @@ h3. Engineering
 * Significantly reduced the cooldown on MOLL-E.
 * Spynocular belt enchantment changed to a Brassbolt Rebreather, allowing engineers to breathe underwater.
 * Transporter devices are no longer classified as trinkets and can be used directly from your inventory.
-* Reduced the materials to create all engineering Dragonlings, and reduced their cooldowns, although they still cannot be used in Arenas.
+* Reduced the materials needed to create all engineering Dragonlings, and reduced their cooldowns, although they still cannot be used in Arenas.
 
 h3. Fishing
 
@@ -404,7 +418,7 @@ h3. Jewelcrafting
 * Raw epic gems can be obtained via the following means:
 ** Prospecting Titanium Ore
 ** Alchemy transmutations
-** Purchased with Honor
+** Purchased with honor
 ** Purchased with Emblems of Heroism
 
 h3. Leatherworking
@@ -426,7 +440,7 @@ h3. Tailoring
 
 h2. Items
 
-* Feral Druid PvP Gloves (seasons 3 and 4): Maim bonus changed from the interrupt bonus used in The Burning Crusade arena seasons to the cost reduction used in Wrath of the Lich King arena seasons.
+* Feral Druid PvP Gloves (seasons 3 and 4): Maim bonus changed from the interrupt bonus used in The Burning Crusade Arena seasons to the cost reduction used in Wrath of the Lich King Arena seasons.
 * Idol of the Corruptor: The agility buff from this idol is now exclusive with the agility buff from Idol of Terror.
 * Non-Combat Pets: 8 new pets have been added (not including Argent Tournament rewards). Raptor Hatchlings can be found on rare and elite raptors throughout the game world. In addition, an Obsidian Raptor Hatchling can be purchased from Breanni in Dalaran.
 
@@ -456,19 +470,23 @@ h4. Warlocks
 
 h2. Dungeons and Raids
 
-* 25 player raids will no longer be referred to as heroic versions of a raid, as there is a new distinction between normal and heroic modes for both 10 and 25 player versions of the Crusaders' Coliseum.
-* The Nexus: The Oculus & The Eye of Eternity
-** Vehicles (drakes) used in these instances now scale with item level.
-* Ulduar
-** Players can now use Blink, Shadowstep, and Demonic Teleport while participating in the illusion events in the Yogg-Saron encounter.
-** Ominous Clouds in the Yogg-Saron encounter are now more vocal about touching players.
-** Winter Jormungars will no longer put everyone in the zone in combat when they emerge from a Snow Mound. Additionally, Snow Mounds will now disappear when all their jormungars have emerged.
+* 25-player raids will no longer be referred to as heroic versions of a raid, as there is a new distinction between normal and heroic modes for both 10 and 25 player versions of the Crusaders' Coliseum.
+
+h3. The Nexus: The Oculus & The Eye of Eternity
+
+* Vehicles (drakes) used in these instances now scale with item level.
+
+h3. Ulduar
+
+* Players can now use Blink, Shadowstep, and Demonic Teleport while participating in the illusion events in the Yogg-Saron encounter.
+* Ominous Clouds in the Yogg-Saron encounter are now more vocal about touching players.
+* Winter Jormungars will no longer put everyone in the zone in combat when they emerge from a Snow Mound. Additionally, Snow Mounds will now disappear when all their jormungars have emerged.
 
 h2. Bug Fixes
 
 * Corrected a tooltip issue with Pandora's Plea.
 * Randomly generated uncommon (green) and rare (blue) quality items in Wrath of the Lich King had stat values that were lower than intended. All Wrath of the Lich King uncommon and rare items with random suffixes ("of the Bear") have had their stat values increased significantly.
-* The leatherworking item Guardian Gloves is now correctly marked as "Good" quality.
+* The leatherworking item Guardian Gloves is now correctly marked as uncommon quality.
 
 h3. Hunter
 
@@ -483,7 +501,7 @@ h3. Priest
 * The heal from Glyph of Power Word: Shield can now cause Divine Aegis.
 * Mana Burn: Fixed a bug where Mana Burn did not cause fear effects to break when the fear victim had an absorb shield on.
 
-h3. Shaman
+h3. Shamans
 
 * Fixed a bug where Frostbrand Weapon (Rank 9) was not scaling properly with a shaman's spell power.
 
