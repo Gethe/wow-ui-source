@@ -113,7 +113,7 @@ function ClassTrainerFrame_Update()
 	-- Fill in the skill buttons
 	for i=1, CLASS_TRAINER_SKILLS_DISPLAYED, 1 do
 		local skillIndex = i + skillOffset;
-		local skillButton = getglobal("ClassTrainerSkill"..i); 
+		local skillButton = _G["ClassTrainerSkill"..i]; 
 		local serviceName, serviceSubText, serviceType, isExpanded;
 		local moneyCost, cpCost1, cpCost2;
 		if ( skillIndex <= numTrainerServices ) then	
@@ -127,8 +127,8 @@ function ClassTrainerFrame_Update()
 			else
 				skillButton:SetWidth(313);
 			end
-			local skillSubText = getglobal("ClassTrainerSkill"..i.."SubText");
-			local skillText = getglobal("ClassTrainerSkill"..i.."Text");
+			local skillSubText = _G["ClassTrainerSkill"..i.."SubText"];
+			local skillText = _G["ClassTrainerSkill"..i.."Text"];
 			-- Type stuff
 			if ( serviceType == "header" ) then
 				skillButton:SetText(serviceName);
@@ -140,10 +140,10 @@ function ClassTrainerFrame_Update()
 				else
 					skillButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
 				end
-				getglobal("ClassTrainerSkill"..i.."Highlight"):SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
+				_G["ClassTrainerSkill"..i.."Highlight"]:SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
 			else
 				skillButton:SetNormalTexture("");
-				getglobal("ClassTrainerSkill"..i.."Highlight"):SetTexture("");
+				_G["ClassTrainerSkill"..i.."Highlight"]:SetTexture("");
 				skillButton:SetText("  "..serviceName);
 				if ( serviceSubText and serviceSubText ~= "" ) then
 					skillSubText:SetFormattedText(PARENS_TEMPLATE, serviceSubText);
@@ -408,7 +408,7 @@ function ClassTrainer_SetSubTextColor(button, r, g, b)
 	button.r = r;
 	button.g = g;
 	button.b = b;
-	getglobal(button:GetName().."SubText"):SetTextColor(r, g, b);
+	_G[button:GetName().."SubText"]:SetTextColor(r, g, b);
 end
 
 function ClassTrainerCollapseAllButton_OnClick(self)

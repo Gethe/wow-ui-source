@@ -239,6 +239,7 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PET_TALENT_UPDATE");
+	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 	self.unit = "player";
 	self.inspect = false;
 	self.pet = false;
@@ -362,6 +363,8 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 			local level = ...;
 			PlayerTalentFrame_Update(level);
 		end
+	elseif ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
+		MainMenuBar_ToPlayerArt(MainMenuBarArtFrame);
 	end
 end
 

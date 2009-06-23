@@ -44,12 +44,12 @@ function UIDropDownMenu_InitializeHelper (frame)
 	-- Hide all the buttons
 	local button, dropDownList;
 	for i = 1, UIDROPDOWNMENU_MAXLEVELS, 1 do
-		dropDownList = getglobal("DropDownList"..i);
+		dropDownList = _G["DropDownList"..i];
 		if ( i >= UIDROPDOWNMENU_MENU_LEVEL or frame ~= UIDROPDOWNMENU_OPEN_MENU ) then
 			dropDownList.numButtons = 0;
 			dropDownList.maxWidth = 0;
 			for j=1, UIDROPDOWNMENU_MAXBUTTONS, 1 do
-				button = getglobal("DropDownList"..i.."Button"..j);
+				button = _G["DropDownList"..i.."Button"..j];
 				button:Hide();
 			end
 			dropDownList:Hide();
@@ -72,16 +72,16 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 	-- Change appearance based on the displayMode
 	if ( displayMode == "MENU" ) then
 		local name = frame:GetName();
-		getglobal(name.."Left"):Hide();
-		getglobal(name.."Middle"):Hide();
-		getglobal(name.."Right"):Hide();
-		getglobal(name.."ButtonNormalTexture"):SetTexture("");
-		getglobal(name.."ButtonDisabledTexture"):SetTexture("");
-		getglobal(name.."ButtonPushedTexture"):SetTexture("");
-		getglobal(name.."ButtonHighlightTexture"):SetTexture("");
-		getglobal(name.."Button"):ClearAllPoints();
-		getglobal(name.."Button"):SetPoint("LEFT", name.."Text", "LEFT", -9, 0);
-		getglobal(name.."Button"):SetPoint("RIGHT", name.."Text", "RIGHT", 6, 0);
+		_G[name.."Left"]:Hide();
+		_G[name.."Middle"]:Hide();
+		_G[name.."Right"]:Hide();
+		_G[name.."ButtonNormalTexture"]:SetTexture("");
+		_G[name.."ButtonDisabledTexture"]:SetTexture("");
+		_G[name.."ButtonPushedTexture"]:SetTexture("");
+		_G[name.."ButtonHighlightTexture"]:SetTexture("");
+		_G[name.."Button"]:ClearAllPoints();
+		_G[name.."Button"]:SetPoint("LEFT", name.."Text", "LEFT", -9, 0);
+		_G[name.."Button"]:SetPoint("RIGHT", name.."Text", "RIGHT", 6, 0);
 		frame.displayMode = "MENU";
 	end
 
@@ -195,7 +195,7 @@ function UIDropDownMenu_CreateFrames(level, index)
 	while ( index > UIDROPDOWNMENU_MAXBUTTONS ) do
 		UIDROPDOWNMENU_MAXBUTTONS = UIDROPDOWNMENU_MAXBUTTONS + 1;
 		for i=1, UIDROPDOWNMENU_MAXLEVELS do
-			local newButton = CreateFrame("Button", "DropDownList"..i.."Button"..UIDROPDOWNMENU_MAXBUTTONS, getglobal("DropDownList"..i), "UIDropDownMenuButtonTemplate");
+			local newButton = CreateFrame("Button", "DropDownList"..i.."Button"..UIDROPDOWNMENU_MAXBUTTONS, _G["DropDownList"..i], "UIDropDownMenuButtonTemplate");
 			newButton:SetID(UIDROPDOWNMENU_MAXBUTTONS);
 		end
 	end
@@ -226,12 +226,12 @@ function UIDropDownMenu_AddButton(info, level)
 	-- Set the number of buttons in the listframe
 	listFrame.numButtons = index;
 	
-	local button = getglobal(listFrameName.."Button"..index);
-	local normalText = getglobal(button:GetName().."NormalText");
-	local icon = getglobal(button:GetName().."Icon");
+	local button = _G[listFrameName.."Button"..index];
+	local normalText = _G[button:GetName().."NormalText"];
+	local icon = _G[button:GetName().."Icon"];
 	-- This button is used to capture the mouse OnEnter/OnLeave events if the dropdown button is disabled, since a disabled button doesn't receive any events
 	-- This is used specifically for drop down menu time outs
-	local invisibleButton = getglobal(button:GetName().."InvisibleButton");
+	local invisibleButton = _G[button:GetName().."InvisibleButton"];
 	
 	-- Default settings
 	button:SetDisabledFontObject(GameFontDisableSmallLeft);
@@ -333,9 +333,9 @@ function UIDropDownMenu_AddButton(info, level)
 	
 	-- Show the expand arrow if it has one
 	if ( info.hasArrow ) then
-		getglobal(listFrameName.."Button"..index.."ExpandArrow"):Show();
+		_G[listFrameName.."Button"..index.."ExpandArrow"]:Show();
 	else
-		getglobal(listFrameName.."Button"..index.."ExpandArrow"):Hide();
+		_G[listFrameName.."Button"..index.."ExpandArrow"]:Hide();
 	end
 	button.hasArrow = info.hasArrow;
 	
@@ -395,17 +395,17 @@ function UIDropDownMenu_AddButton(info, level)
 	-- Show the check if checked
 	if ( checked ) then
 		button:LockHighlight();
-		getglobal(listFrameName.."Button"..index.."Check"):Show();
+		_G[listFrameName.."Button"..index.."Check"]:Show();
 	else
 		button:UnlockHighlight();
-		getglobal(listFrameName.."Button"..index.."Check"):Hide();
+		_G[listFrameName.."Button"..index.."Check"]:Hide();
 	end
 	button.checked = info.checked;
 
 	-- If has a colorswatch, show it and vertex color it
-	local colorSwatch = getglobal(listFrameName.."Button"..index.."ColorSwatch");
+	local colorSwatch = _G[listFrameName.."Button"..index.."ColorSwatch"];
 	if ( info.hasColorSwatch ) then
-		getglobal("DropDownList"..level.."Button"..index.."ColorSwatch".."NormalTexture"):SetVertexColor(info.r, info.g, info.b);
+		_G["DropDownList"..level.."Button"..index.."ColorSwatch".."NormalTexture"]:SetVertexColor(info.r, info.g, info.b);
 		button.r = info.r;
 		button.g = info.g;
 		button.b = info.b;
@@ -429,7 +429,7 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	
 	-- Just redraws the existing menu
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-		button = getglobal("DropDownList"..dropdownLevel.."Button"..i);
+		button = _G["DropDownList"..dropdownLevel.."Button"..i];
 		checked = nil;
 		-- See if checked or not
 		if ( UIDropDownMenu_GetSelectedName(frame) ) then
@@ -447,7 +447,7 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 		end
 
 		-- If checked show check image
-		checkImage = getglobal("DropDownList"..dropdownLevel.."Button"..i.."Check");
+		checkImage = _G["DropDownList"..dropdownLevel.."Button"..i.."Check"];
 		if ( checked ) then
 			if ( useValue ) then
 				UIDropDownMenu_SetText(frame, button.value);
@@ -462,7 +462,7 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 		end
 
 		if ( button:IsShown() ) then
-			normalText = getglobal(button:GetName().."NormalText");
+			normalText = _G[button:GetName().."NormalText"];
 			-- Determine the maximum width of a button
 			width = normalText:GetWidth() + 40;
 			-- Add padding if has and expand arrow or color swatch
@@ -478,10 +478,10 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 		end
 	end
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-		button = getglobal("DropDownList"..dropdownLevel.."Button"..i);
+		button = _G["DropDownList"..dropdownLevel.."Button"..i];
 		button:SetWidth(maxWidth);
 	end
-	getglobal("DropDownList"..dropdownLevel):SetWidth(maxWidth+15);
+	_G["DropDownList"..dropdownLevel]:SetWidth(maxWidth+15);
 end
 
 function UIDropDownMenu_SetSelectedName(frame, name, useValue)
@@ -517,7 +517,7 @@ function UIDropDownMenu_GetSelectedID(frame)
 		-- If no explicit selectedID then try to send the id of a selected value or name
 		local button;
 		for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-			button = getglobal("DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i);
+			button = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i];
 			-- See if checked or not
 			if ( UIDropDownMenu_GetSelectedName(frame) ) then
 				if ( button:GetText() == UIDropDownMenu_GetSelectedName(frame) ) then
@@ -544,10 +544,10 @@ function UIDropDownMenuButton_OnClick(self)
 
 	if ( self.keepShownOnClick ) then
 		if ( checked ) then
-			getglobal(self:GetName().."Check"):Hide();
+			_G[self:GetName().."Check"]:Hide();
 			checked = false;
 		else
-			getglobal(self:GetName().."Check"):Show();
+			_G[self:GetName().."Check"]:Show();
 			checked = true;
 		end
 	else
@@ -569,7 +569,7 @@ function UIDropDownMenuButton_OnClick(self)
 end
 
 function HideDropDownMenu(level)
-	local listFrame = getglobal("DropDownList"..level);
+	local listFrame = _G["DropDownList"..level];
 	listFrame:Hide();
 end
 
@@ -582,7 +582,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	UIDropDownMenuDelegate:SetAttribute("createframes", true);
 	UIDROPDOWNMENU_MENU_LEVEL = level;
 	UIDROPDOWNMENU_MENU_VALUE = value;
-	local listFrame = getglobal("DropDownList"..level);
+	local listFrame = _G["DropDownList"..level];
 	local listFrameName = "DropDownList"..level;
 	local tempFrame;
 	local point, relativePoint, relativeTo;
@@ -705,11 +705,11 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		
 		-- Change list box appearance depending on display mode
 		if ( dropDownFrame and dropDownFrame.displayMode == "MENU" ) then
-			getglobal(listFrameName.."Backdrop"):Hide();
-			getglobal(listFrameName.."MenuBackdrop"):Show();
+			_G[listFrameName.."Backdrop"]:Hide();
+			_G[listFrameName.."MenuBackdrop"]:Show();
 		else
-			getglobal(listFrameName.."Backdrop"):Show();
-			getglobal(listFrameName.."MenuBackdrop"):Hide();
+			_G[listFrameName.."Backdrop"]:Show();
+			_G[listFrameName.."MenuBackdrop"]:Hide();
 		end
 		dropDownFrame.menuList = menuList;
 		UIDropDownMenu_Initialize(dropDownFrame, dropDownFrame.initialize, nil, level, menuList);
@@ -796,7 +796,7 @@ function CloseDropDownMenus(level)
 		level = 1;
 	end
 	for i=level, UIDROPDOWNMENU_MAXLEVELS do
-		getglobal("DropDownList"..i):Hide();
+		_G["DropDownList"..i]:Hide();
 	end
 end
 
@@ -811,7 +811,7 @@ function UIDropDownMenu_OnHide(self)
 end
 
 function UIDropDownMenu_SetWidth(frame, width, padding)
-	getglobal(frame:GetName().."Middle"):SetWidth(width);
+	_G[frame:GetName().."Middle"]:SetWidth(width);
 	local defaultPadding = 25;
 	if ( padding ) then
 		frame:SetWidth(width + padding);
@@ -819,29 +819,29 @@ function UIDropDownMenu_SetWidth(frame, width, padding)
 		frame:SetWidth(width + defaultPadding + defaultPadding);
 	end
 	if ( padding ) then
-		getglobal(frame:GetName().."Text"):SetWidth(width);
+		_G[frame:GetName().."Text"]:SetWidth(width);
 	else
-		getglobal(frame:GetName().."Text"):SetWidth(width - defaultPadding);
+		_G[frame:GetName().."Text"]:SetWidth(width - defaultPadding);
 	end
 	frame.noResize = 1;
 end
 
 function UIDropDownMenu_SetButtonWidth(frame, width)
 	if ( width == "TEXT" ) then
-		width = getglobal(frame:GetName().."Text"):GetWidth();
+		width = _G[frame:GetName().."Text"]:GetWidth();
 	end
 	
-	getglobal(frame:GetName().."Button"):SetWidth(width);
+	_G[frame:GetName().."Button"]:SetWidth(width);
 	frame.noResize = 1;
 end
 
 function UIDropDownMenu_SetText(frame, text)
-	local filterText = getglobal(frame:GetName().."Text");
+	local filterText = _G[frame:GetName().."Text"];
 	filterText:SetText(text);
 end
 
 function UIDropDownMenu_GetText(frame)
-	local filterText = getglobal(frame:GetName().."Text");
+	local filterText = _G[frame:GetName().."Text"];
 	return filterText:GetText();
 end
 
@@ -854,16 +854,16 @@ function UIDropDownMenu_ClearAll(frame)
 
 	local button, checkImage;
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-		button = getglobal("DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i);
+		button = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i];
 		button:UnlockHighlight();
 
-		checkImage = getglobal("DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."Check");
+		checkImage = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."Check"];
 		checkImage:Hide();
 	end
 end
 
 function UIDropDownMenu_JustifyText(frame, justification)
-	local text = getglobal(frame:GetName().."Text");
+	local text = _G[frame:GetName().."Text"];
 	text:ClearAllPoints();
 	if ( justification == "LEFT" ) then
 		text:SetPoint("LEFT", frame:GetName().."Left", "LEFT", 27, 2);
@@ -894,11 +894,11 @@ function UIDropDownMenu_GetCurrentDropDown()
 end
 
 function UIDropDownMenuButton_GetChecked(self)
-	return getglobal(self:GetName().."Check"):IsShown();
+	return _G[self:GetName().."Check"]:IsShown();
 end
 
 function UIDropDownMenuButton_GetName(self)
-	return getglobal(self:GetName().."NormalText"):GetText();
+	return _G[self:GetName().."NormalText"]:GetText();
 end
 
 function UIDropDownMenuButton_OpenColorPicker(self, button)
@@ -911,15 +911,15 @@ function UIDropDownMenuButton_OpenColorPicker(self, button)
 end
 
 function UIDropDownMenu_DisableButton(level, id)
-	getglobal("DropDownList"..level.."Button"..id):Disable();
+	_G["DropDownList"..level.."Button"..id]:Disable();
 end
 
 function UIDropDownMenu_EnableButton(level, id)
-	getglobal("DropDownList"..level.."Button"..id):Enable();
+	_G["DropDownList"..level.."Button"..id]:Enable();
 end
 
 function UIDropDownMenu_SetButtonText(level, id, text, colorCode)
-	local button = getglobal("DropDownList"..level.."Button"..id);
+	local button = _G["DropDownList"..level.."Button"..id];
 	if ( colorCode) then
 		button:SetText(colorCode..text.."|r");
 	else
@@ -928,22 +928,22 @@ function UIDropDownMenu_SetButtonText(level, id, text, colorCode)
 end
 
 function UIDropDownMenu_DisableDropDown(dropDown)
-	local label = getglobal(dropDown:GetName().."Label");
+	local label = _G[dropDown:GetName().."Label"];
 	if ( label ) then
 		label:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
-	getglobal(dropDown:GetName().."Text"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	getglobal(dropDown:GetName().."Button"):Disable();
+	_G[dropDown:GetName().."Text"]:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	_G[dropDown:GetName().."Button"]:Disable();
 	dropDown.isDisabled = 1;
 end
 
 function UIDropDownMenu_EnableDropDown(dropDown)
-	local label = getglobal(dropDown:GetName().."Label");
+	local label = _G[dropDown:GetName().."Label"];
 	if ( label ) then
 		label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
-	getglobal(dropDown:GetName().."Text"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	getglobal(dropDown:GetName().."Button"):Enable();
+	_G[dropDown:GetName().."Text"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	_G[dropDown:GetName().."Button"]:Enable();
 	dropDown.isDisabled = nil;
 end
 
@@ -953,9 +953,9 @@ end
 
 function UIDropDownMenu_GetValue(id)
 	--Only works if the dropdown has just been initialized, lame, I know =(
-	local button = getglobal("DropDownList1Button"..id);
+	local button = _G["DropDownList1Button"..id];
 	if ( button ) then
-		return getglobal("DropDownList1Button"..id).value;
+		return _G["DropDownList1Button"..id].value;
 	else
 		return nil;
 	end

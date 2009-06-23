@@ -125,7 +125,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				HybridScrollFrame_OnValueChanged(self:GetParent(), value);
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
 			<Size>
 				<AbsDimension x="16" y="24"/>
 			</Size>

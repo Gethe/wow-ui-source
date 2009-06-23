@@ -63,6 +63,7 @@ end
 
 function PVPFrame_OnHide()
 	PVPTeamDetails:Hide();
+	PVPFrame_SetJustBG(false);
 	PVPMicroButton_SetNormal();
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoClose");
@@ -120,7 +121,7 @@ function PVPTeam_Update()
 	-- fill out data
 	for index, value in pairs(ARENA_TEAMS) do
 		buttonIndex = buttonIndex + 1;
-		button = getglobal("PVPTeam"..buttonIndex);
+		button = _G["PVPTeam"..buttonIndex];
 		if ( value.index ) then
 			-- Pull Values
 			teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, playerRating, background.r, background.g, background.b, emblem, emblemColor.r, emblemColor.g, emblemColor.b, border, borderColor.r, borderColor.g, borderColor.b = GetArenaTeam(value.index);
@@ -134,13 +135,13 @@ function PVPTeam_Update()
 			
 			
 			if ( PVPFrame.seasonStats ) then
-				getglobal(data.."TypeLabel"):SetText(ARENA_THIS_SEASON);
+				_G[data.."TypeLabel"]:SetText(ARENA_THIS_SEASON);
 				PVPFrameToggleButton:SetText(ARENA_THIS_WEEK_TOGGLE);
 				played = seasonTeamPlayed;
 				wins = seasonTeamWins;
 				playerPlayed = seasonPlayerPlayed;
 			else
-				getglobal(data.."TypeLabel"):SetText(ARENA_THIS_WEEK);
+				_G[data.."TypeLabel"]:SetText(ARENA_THIS_WEEK);
 				PVPFrameToggleButton:SetText(ARENA_THIS_SEASON_TOGGLE);
 				played = teamPlayed;
 				wins = teamWins;
@@ -155,53 +156,53 @@ function PVPTeam_Update()
 			end
 
 			-- Populate Data
-			getglobal(data.."Name"):SetText(teamName);
-			getglobal(data.."Rating"):SetText(teamRating);
-			getglobal(data.."Games"):SetText(played);
-			getglobal(data.."Wins"):SetText(wins);
-			getglobal(data.."Loss"):SetText(loss);
+			_G[data.."Name"]:SetText(teamName);
+			_G[data.."Rating"]:SetText(teamRating);
+			_G[data.."Games"]:SetText(played);
+			_G[data.."Wins"]:SetText(wins);
+			_G[data.."Loss"]:SetText(loss);
 			
 			if ( PVPFrame.seasonStats ) then
-				getglobal(data.."Played"):SetText(playerRating);
-				getglobal(data.."Played"):SetVertexColor(1.0, 1.0, 1.0);
-				getglobal(data.."PlayedLabel"):SetText(PVP_YOUR_RATING);
+				_G[data.."Played"]:SetText(playerRating);
+				_G[data.."Played"]:SetVertexColor(1.0, 1.0, 1.0);
+				_G[data.."PlayedLabel"]:SetText(PVP_YOUR_RATING);
 			else
 				-- played %
 				if ( playerPlayedPct < 10 ) then
-					getglobal(data.."Played"):SetVertexColor(1.0, 0, 0);
+					_G[data.."Played"]:SetVertexColor(1.0, 0, 0);
 				else
-					getglobal(data.."Played"):SetVertexColor(1.0, 1.0, 1.0);
+					_G[data.."Played"]:SetVertexColor(1.0, 1.0, 1.0);
 				end
 				-- FIXME: Turn this into a localized format string
 				playerPlayedPct = format("%d", playerPlayedPct);
-				getglobal(data.."Played"):SetText(playerPlayed.." ("..playerPlayedPct.."%)");
-				getglobal(data.."PlayedLabel"):SetText(PLAYED);
+				_G[data.."Played"]:SetText(playerPlayed.." ("..playerPlayedPct.."%)");
+				_G[data.."PlayedLabel"]:SetText(PLAYED);
 			end
 			
 
 			-- Set TeamSize Banner
-			getglobal(standard.."Banner"):SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize);
-			getglobal(standard.."Banner"):SetVertexColor(background.r, background.g, background.b);
-			getglobal(standard.."Border"):SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
-			getglobal(standard.."Emblem"):SetVertexColor(emblemColor.r, emblemColor.g, emblemColor.b);
+			_G[standard.."Banner"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize);
+			_G[standard.."Banner"]:SetVertexColor(background.r, background.g, background.b);
+			_G[standard.."Border"]:SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
+			_G[standard.."Emblem"]:SetVertexColor(emblemColor.r, emblemColor.g, emblemColor.b);
 			if ( border ~= -1 ) then
-				getglobal(standard.."Border"):SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize.."-Border-"..border);
+				_G[standard.."Border"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize.."-Border-"..border);
 			end
 			if ( emblem ~= -1 ) then
-				getglobal(standard.."Emblem"):SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
+				_G[standard.."Emblem"]:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
 			end
 
 			-- Set visual elements
-			getglobal(data):Show();
+			_G[data]:Show();
 			button:SetAlpha(1);
-			getglobal(buttonName.."Highlight"):SetAlpha(1);
-			getglobal(buttonName.."Highlight"):SetBackdropBorderColor(1.0, 0.82, 0);
-			getglobal(standard):SetAlpha(1);
-			getglobal(standard.."Border"):Show();
-			getglobal(standard.."Emblem"):Show();
-			getglobal(buttonName.."Background"):SetVertexColor(0, 0, 0);
-			getglobal(buttonName.."Background"):SetAlpha(1);
-			getglobal(buttonName.."TeamType"):Hide();
+			_G[buttonName.."Highlight"]:SetAlpha(1);
+			_G[buttonName.."Highlight"]:SetBackdropBorderColor(1.0, 0.82, 0);
+			_G[standard]:SetAlpha(1);
+			_G[standard.."Border"]:Show();
+			_G[standard.."Emblem"]:Show();
+			_G[buttonName.."Background"]:SetVertexColor(0, 0, 0);
+			_G[buttonName.."Background"]:SetAlpha(1);
+			_G[buttonName.."TeamType"]:Hide();
 		else
 			-- Set button elements to variables 
 			buttonName = "PVPTeam"..buttonIndex;
@@ -210,19 +211,19 @@ function PVPTeam_Update()
 			button:SetID(0);
 
 			-- Set standard type
-			local standardBanner = getglobal(buttonName.."StandardBanner");
+			local standardBanner = _G[buttonName.."StandardBanner"];
 			standardBanner:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..value.size);
 			standardBanner:SetVertexColor(1, 1, 1);
 
 			-- Hide or Show items
 			button:SetAlpha(0.4);
-			getglobal(data):Hide();
-			getglobal(buttonName.."Background"):SetVertexColor(0, 0, 0);
-			getglobal(buttonName.."Standard"):SetAlpha(0.1);
-			getglobal(buttonName.."StandardBorder"):Hide();
-			getglobal(buttonName.."StandardEmblem"):Hide();
-			getglobal(buttonName.."TeamType"):SetFormattedText(PVP_TEAMSIZE, value.size, value.size);
-			getglobal(buttonName.."TeamType"):Show();		end
+			_G[data]:Hide();
+			_G[buttonName.."Background"]:SetVertexColor(0, 0, 0);
+			_G[buttonName.."Standard"]:SetAlpha(0.1);
+			_G[buttonName.."StandardBorder"]:Hide();
+			_G[buttonName.."StandardEmblem"]:Hide();
+			_G[buttonName.."TeamType"]:SetFormattedText(PVP_TEAMSIZE, value.size, value.size);
+			_G[buttonName.."TeamType"]:Show();		end
 			count = count +1;
 	end
 	if ( count == 3 ) then
@@ -235,7 +236,7 @@ end
 
 function PVPTeam_OnEnter(self)
 	if ( GetArenaTeam(self:GetID() ) ) then
-		getglobal(self:GetName().."Highlight"):Show();
+		_G[self:GetName().."Highlight"]:Show();
 		GameTooltip_AddNewbieTip(self, ARENA_TEAM, 1.0, 1.0, 1.0, CLICK_FOR_DETAILS, 1);
 	else
 		GameTooltip_AddNewbieTip(self, ARENA_TEAM, 1.0, 1.0, 1.0, ARENA_TEAM_LEAD_IN, 1);
@@ -243,7 +244,7 @@ function PVPTeam_OnEnter(self)
 end
 
 function PVPTeam_OnLeave(self)
-	getglobal(self:GetName().."Highlight"):Hide();	
+	_G[self:GetName().."Highlight"]:Hide();	
 	GameTooltip:Hide();
 end
 
@@ -293,7 +294,7 @@ function PVPTeamDetails_Update(id)
 	-- Display Team Member Specific Info
 	local playedValue, winValue, lossValue, playedPct;
 	for i=1, MAX_ARENA_TEAM_MEMBERS, 1 do
-		button = getglobal("PVPTeamDetailsButton"..i);
+		button = _G["PVPTeamDetailsButton"..i];
 		if ( i > numMembers ) then
 			button:Hide();
 		else
@@ -329,27 +330,27 @@ function PVPTeamDetails_Update(id)
 			end
 
 			if ( playedPct < 10 ) then
-				getglobal("PVPTeamDetailsButton"..i.."PlayedText"):SetVertexColor(1.0, 0, 0);
+				_G["PVPTeamDetailsButton"..i.."PlayedText"]:SetVertexColor(1.0, 0, 0);
 			else
-				getglobal("PVPTeamDetailsButton"..i.."PlayedText"):SetVertexColor(1.0, 1.0, 1.0);
+				_G["PVPTeamDetailsButton"..i.."PlayedText"]:SetVertexColor(1.0, 1.0, 1.0);
 			end
 			
 			playedPct = format("%d", playedPct);
 
-			getglobal("PVPTeamDetailsButton"..i.."Played").tooltip = playedPct.."%";
+			_G["PVPTeamDetailsButton"..i.."Played"].tooltip = playedPct.."%";
 
-			nameText = getglobal("PVPTeamDetailsButton"..i.."NameText");
-			classText = getglobal("PVPTeamDetailsButton"..i.."ClassText");
-			playedText = getglobal("PVPTeamDetailsButton"..i.."PlayedText")
-			winLossWin = getglobal("PVPTeamDetailsButton"..i.."WinLossWin");
-			winLossLoss = getglobal("PVPTeamDetailsButton"..i.."WinLossLoss");
-			ratingText = getglobal("PVPTeamDetailsButton"..i.."RatingText");
+			nameText = _G["PVPTeamDetailsButton"..i.."NameText"];
+			classText = _G["PVPTeamDetailsButton"..i.."ClassText"];
+			playedText = _G["PVPTeamDetailsButton"..i.."PlayedText"]
+			winLossWin = _G["PVPTeamDetailsButton"..i.."WinLossWin"];
+			winLossLoss = _G["PVPTeamDetailsButton"..i.."WinLossLoss"];
+			ratingText = _G["PVPTeamDetailsButton"..i.."RatingText"];
 
 			--- Not needed after Arena Season 3 change.
-			nameButton = getglobal("PVPTeamDetailsButton"..i.."Name");
-			classButton = getglobal("PVPTeamDetailsButton"..i.."Class");
-			playedButton = getglobal("PVPTeamDetailsButton"..i.."Played")
-			winLossButton = getglobal("PVPTeamDetailsButton"..i.."WinLoss");
+			nameButton = _G["PVPTeamDetailsButton"..i.."Name"];
+			classButton = _G["PVPTeamDetailsButton"..i.."Class"];
+			playedButton = _G["PVPTeamDetailsButton"..i.."Played"]
+			winLossButton = _G["PVPTeamDetailsButton"..i.."WinLoss"];
 
 			nameText:SetText(name);
 			classText:SetText(class);
@@ -380,7 +381,7 @@ function PVPTeamDetails_Update(id)
 			classText:SetTextColor(r, g, b);
 			playedText:SetTextColor(r, g, b);
 			winLossWin:SetTextColor(r, g, b);
-			getglobal("PVPTeamDetailsButton"..i.."WinLoss-"):SetTextColor(r, g, b);
+			_G["PVPTeamDetailsButton"..i.."WinLoss-"]:SetTextColor(r, g, b);
 			winLossLoss:SetTextColor(r, g, b);
 			ratingText:SetTextColor(r, g, b);
 
@@ -551,4 +552,37 @@ function PVPFrame_SetToInSeason()
 	PVPFrameBlackFilter:Hide();
 	
 	PVPFrameOffSeason:Hide();
+end
+
+function TogglePVPFrame()
+	if ( PVPFrame_IsJustBG() ) then
+		PVPFrame_SetJustBG(false);
+	else
+		ToggleFrame(PVPParentFrame);
+	end
+end
+
+function PVPFrame_IsJustBG()
+	return PVPParentFrame.justBG;
+end
+
+function PVPFrame_SetJustBG(justBG)
+	local pvpParentFrame = PVPParentFrame;
+	if ( justBG ) then
+		pvpParentFrame.justBG = true;
+		pvpParentFrame.savedSelectedTab = PanelTemplates_GetSelectedTab(pvpParentFrame);
+		PVPParentFrameTab2:Click();
+		PVPParentFrameTab1:Hide();
+		PVPParentFrameTab2:Hide();
+		UpdateMicroButtons();
+	else
+		pvpParentFrame.justBG = false;
+		if ( pvpParentFrame.savedSelectedTab ) then
+			_G["PVPParentFrameTab"..pvpParentFrame.savedSelectedTab]:Click();
+			pvpParentFrame.savedSelectedTab = nil;
+		end
+		CloseBattlefield();
+		PVPBattlegroundFrame_UpdateVisible();
+		UpdateMicroButtons();
+	end
 end

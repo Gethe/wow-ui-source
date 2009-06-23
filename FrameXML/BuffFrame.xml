@@ -5,7 +5,7 @@
 		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon"/>
+				<Texture name="$parentIcon" nonBlocking="true"/>
 				<FontString name="$parentCount" inherits="NumberFontNormal">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT">

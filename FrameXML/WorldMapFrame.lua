@@ -1,4 +1,3 @@
-NUM_WORLDMAP_DETAIL_TILES = 12;
 NUM_WORLDMAP_POIS = 0;
 NUM_WORLDMAP_POI_COLUMNS = 16;
 WORLDMAP_POI_TEXTURE_WIDTH = 256;
@@ -10,6 +9,22 @@ WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_WORLD_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
 WORLDMAP_WINTERGRASP_ID = 502;
+
+local QUEST_ICON_KILL			= 0;
+local QUEST_ICON_KILL_COLLECT	= 1;
+local QUEST_ICON_INTERACT		= 2;
+local QUEST_ICON_TURN_IN		= 3;
+local QUEST_ICON_CHAT			= 4;
+local QUEST_ICON_X_MARK			= 5;
+
+local QuestIconTextures = {};
+QuestIconTextures[QUEST_ICON_KILL]			= "Interface\\WorldMap\\Skull_64"
+QuestIconTextures[QUEST_ICON_KILL_COLLECT]	= "Interface\\WorldMap\\GlowSkull_64"
+QuestIconTextures[QUEST_ICON_INTERACT]		= "Interface\\WorldMap\\Gear_64"
+QuestIconTextures[QUEST_ICON_TURN_IN]		= "Interface\\WorldMap\\QuestionMark_Gold_64"
+QuestIconTextures[QUEST_ICON_CHAT]			= "Interface\\WorldMap\\ChatBubble_64"
+QuestIconTextures[QUEST_ICON_X_MARK]		= "Interface\\WorldMap\\X_Mark_64"
+
 
 BAD_BOY_UNITS = {};
 BAD_BOY_COUNT = 0;
@@ -40,6 +55,8 @@ VEHICLE_TEXTURES["Airship Alliance"] = {
 	width=64,
 	height=64,
 };
+
+QUEST_MAP_POI = {};
 
 WORLDMAP_DEBUG_ICON_INFO = {};
 WORLDMAP_DEBUG_ICON_INFO[1] = { size =  6, r = 0.0, g = 1.0, b = 0.0 };
@@ -127,6 +144,21 @@ function WorldMapFrame_OnEvent(self, event, ...)
 	end
 end
 
+function WorldMapFrame_OnUpdate(self)
+	RequestBattlefieldPositions();
+
+	local nextBattleTime = GetWintergraspWaitTime();
+	if ( nextBattleTime and (GetCurrentMapAreaID() == WORLDMAP_WINTERGRASP_ID) ) then
+		local battleSec = mod(nextBattleTime, 60);
+		local battleMin = mod(floor(nextBattleTime / 60), 60);
+		local battleHour = floor(nextBattleTime / 3600);
+		WorldMapZoneInfo:SetFormattedText(NEXT_BATTLE, battleHour, battleMin, battleSec);
+		WorldMapZoneInfo:Show();
+	else
+		WorldMapZoneInfo:Hide();
+	end
+end
+
 function WorldMapFrame_OnKeyDown(self, key)
 	local binding = GetBindingFromClick(key)
 	if ((binding == "TOGGLEWORLDMAP") or (binding == "TOGGLEGAMEMENU")) then
@@ -158,12 +190,17 @@ function WorldMapFrame_Update()
 
 	local texName;
 	local dungeonLevel = GetCurrentMapDungeonLevel();
+	if (DungeonUsesTerrainMap()) then
+		dungeonLevel = dungeonLevel - 1;
+	end
+	local completeMapFileName;
+	if ( dungeonLevel > 0 ) then
+		completeMapFileName = mapFileName..dungeonLevel.."_";
+	else
+		completeMapFileName = mapFileName;
+	end
 	for i=1, NUM_WORLDMAP_DETAIL_TILES do
-		if ( dungeonLevel > 0 ) then
-			texName = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..dungeonLevel.."_"..i;
-		else
-			texName = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i;
-		end
+		texName = "Interface\\WorldMap\\"..mapFileName.."\\"..completeMapFileName..i;
 		_G["WorldMapDetailTile"..i]:SetTexture(texName);
 	end		
 	--WorldMapHighlight:Hide();
@@ -173,17 +210,6 @@ function WorldMapFrame_Update()
 		WorldMapZoomOutButton:Disable();
 	else
 		WorldMapZoomOutButton:Enable();
-	end
-
-	local nextBattleTime = GetWintergraspWaitTime();
-	if ( nextBattleTime and (GetCurrentMapAreaID() == WORLDMAP_WINTERGRASP_ID) ) then
-		local battleSec = mod(nextBattleTime, 60);
-		local battleMin = mod(floor(nextBattleTime / 60), 60);
-		local battleHour = floor(nextBattleTime / 3600);
-		WorldMapZoneInfo:SetFormattedText(NEXT_BATTLE, battleHour, battleMin, battleSec);
-		WorldMapZoneInfo:Show();
-	else
-		WorldMapZoneInfo:Hide();
 	end
 
 	-- Setup the POI's
@@ -491,8 +517,14 @@ function WorldMapLevelDropDown_Initialize()
 	
 	local mapname = strupper(GetMapInfo() or "");
 	
+	local usesTerrainMap = DungeonUsesTerrainMap();
+
 	for i=1, GetNumDungeonMapLevels() do
-		local floorname =_G["DUNGEON_FLOOR_" .. mapname .. i];
+		local floorNum = i;
+		if (usesTerrainMap) then
+			floorNum = i - 1;
+		end
+		local floorname =_G["DUNGEON_FLOOR_" .. mapname .. floorNum];
 		info.text = floorname or string.format(FLOOR_NUMBER, i);
 		info.func = WorldMapLevelButton_OnClick;
 		info.checked = (i == level);
@@ -848,6 +880,8 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			MAP_VEHICLES[i]:Hide();
 		end
 	end	
+
+	UpdateQuestMapPOI();
 end
 
 function WorldMapFrame_PingPlayerPosition()
@@ -1137,3 +1171,87 @@ function WorldMapUnitDropDown_ReportAll_OnClick()
 		end
 	end
 end
+
+function UpdateQuestMapPOI()
+	local index = 1;
+	if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
+		for i=1, MAX_QUESTS do
+			local numPOI = QuestMapUpdateQuest(i);
+			if(numPOI) then
+				local questName = QuestMapGetQuestName(i);
+				for j=1, numPOI do
+					local mapID, x, y, icon, text = QuestMapGetPOIInfoForQuest(i, j);
+					if(mapID and x and y and icon) then
+						if ( not QUEST_MAP_POI[index] ) then
+							local mapPOIName = "QuestMapPOI"..index;
+							QUEST_MAP_POI[index] = CreateFrame("FRAME", mapPOIName, WorldMapButton, "WorldMapQuestPOITemplate");
+						end
+					
+						local POIFrame = QUEST_MAP_POI[index];
+						x = x * WorldMapDetailFrame:GetWidth();
+						y = -y * WorldMapDetailFrame:GetHeight();
+						POIFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x, y);
+						if(icon == QUEST_ICON_TURN_IN) then
+							POIFrame.icon:SetTexture("Interface\\WorldMap\\QuestionMark_Gold_64"); 
+							POIFrame.text = TURN_IN_QUEST;
+						elseif(icon == QUEST_ICON_KILL) then
+							POIFrame.icon:SetTexture("Interface\\WorldMap\\Skull_64Grey"); 
+							POIFrame.text = text;
+						elseif(icon == QUEST_ICON_KILL_COLLECT) then
+							POIFrame.icon:SetTexture("Interface\\WorldMap\\Skull_64"); 
+							POIFrame.text = text;
+						elseif(icon == QUEST_ICON_INTERACT) then
+							POIFrame.icon:SetTexture("Interface\\WorldMap\\TreasureChest_64"); 
+							POIFrame.text = text;
+						end
+						POIFrame:Show();
+						POIFrame.questName = questName;
+						index = index + 1;	-- save for later
+					end
+				end
+			end
+		end
+	end
+	-- hide the unused map POI
+	for i=index, #QUEST_MAP_POI do
+		QUEST_MAP_POI[i]:Hide();
+	end
+end
+
+function WorldMapQuestPOI_OnLoad(self)
+	self:SetFrameLevel(self:GetFrameLevel() + 1);
+end
+
+function WorldMapQuestPOI_UpdateTooltip(tooltip)
+	tooltip:ClearLines();
+	local lastQuestName, overSomething;
+	for i=1, #QUEST_MAP_POI do
+		local POIFrame = QUEST_MAP_POI[i];
+		if ( POIFrame:IsShown() and MouseIsOver(POIFrame) ) then
+			if ( not overSomething ) then
+				tooltip:AddLine(QUEST_OBJECTIVES);
+				tooltip:AddLine(" ");
+				overSomething = true;
+			end
+			if ( lastQuestName ~= POIFrame.questName ) then	--We can do this because the objectives of a single quest are always grouped together.
+				lastQuestName = POIFrame.questName;
+				tooltip:AddLine(lastQuestName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			end
+			tooltip:AddLine(" - "..POIFrame.text, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		end
+	end
+	if ( not overSomething ) then
+		tooltip:Hide();
+	end
+end
+function WorldMapQuestPOI_OnEnter(self, motion)
+	GameTooltip_SetDefaultAnchor(WorldMapTooltip, self);
+	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
+	WorldMapTooltip:Show();
+end
+
+--[[function WorldMapQuestPOI_OnLeave(self, motion)
+	WorldMapTooltip:Hide();
+end]]
+WorldMapQuestPOI_OnLeave = WorldMapQuestPOI_OnEnter;

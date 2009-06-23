@@ -81,7 +81,7 @@ function InspectPVPTeam_Update()
 			end
 
 			-- Set button elements to variables 
-			button = getglobal("InspectPVPTeam"..buttonIndex);
+			button = _G["InspectPVPTeam"..buttonIndex];
 			buttonName = "InspectPVPTeam"..buttonIndex;
 			data = buttonName.."Data";
 			standard = buttonName.."Standard";
@@ -89,40 +89,40 @@ function InspectPVPTeam_Update()
 			button:SetID(value.index);
 
 			-- Populate Data
-			getglobal(data.."TypeLabel"):SetText(ARENA_THIS_SEASON);
-			getglobal(data.."Name"):SetText(teamName);
-			getglobal(data.."Rating"):SetText(teamRating);
-			getglobal(data.."Games"):SetText(teamPlayed);
-			getglobal(data.."Wins"):SetText(teamWins);
-			getglobal(data.."Loss"):SetText(teamLoss);
+			_G[data.."TypeLabel"]:SetText(ARENA_THIS_SEASON);
+			_G[data.."Name"]:SetText(teamName);
+			_G[data.."Rating"]:SetText(teamRating);
+			_G[data.."Games"]:SetText(teamPlayed);
+			_G[data.."Wins"]:SetText(teamWins);
+			_G[data.."Loss"]:SetText(teamLoss);
 			
-			getglobal(data.."Played"):SetText(playerRating);
-			getglobal(data.."Played"):SetVertexColor(1.0, 1.0, 1.0);
-			getglobal(data.."PlayedLabel"):SetText(RATING);
+			_G[data.."Played"]:SetText(playerRating);
+			_G[data.."Played"]:SetVertexColor(1.0, 1.0, 1.0);
+			_G[data.."PlayedLabel"]:SetText(RATING);
 
 			-- Set TeamSize Banner
-			getglobal(standard.."Banner"):SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize);
-			getglobal(standard.."Banner"):SetVertexColor(background.r, background.g, background.b);
-			getglobal(standard.."Border"):SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
-			getglobal(standard.."Emblem"):SetVertexColor(emblemColor.r, emblemColor.g, emblemColor.b);
+			_G[standard.."Banner"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize);
+			_G[standard.."Banner"]:SetVertexColor(background.r, background.g, background.b);
+			_G[standard.."Border"]:SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
+			_G[standard.."Emblem"]:SetVertexColor(emblemColor.r, emblemColor.g, emblemColor.b);
 			if ( border ~= -1 ) then
-				getglobal(standard.."Border"):SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize.."-Border-"..border);
+				_G[standard.."Border"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize.."-Border-"..border);
 			end
 			if ( emblem ~= -1 ) then
-				getglobal(standard.."Emblem"):SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
+				_G[standard.."Emblem"]:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
 			end
 
 			-- Set visual elements
-			getglobal(data):Show();
+			_G[data]:Show();
 			button:SetAlpha(1);
-			getglobal(buttonName.."Highlight"):SetAlpha(1);
-			getglobal(buttonName.."Highlight"):SetBackdropBorderColor(1.0, 0.82, 0);
-			getglobal(standard):SetAlpha(1);
-			getglobal(standard.."Border"):Show();
-			getglobal(standard.."Emblem"):Show();
-			getglobal(buttonName.."Background"):SetVertexColor(0, 0, 0);
-			getglobal(buttonName.."Background"):SetAlpha(1);
-			getglobal(buttonName.."TeamType"):Hide();
+			_G[buttonName.."Highlight"]:SetAlpha(1);
+			_G[buttonName.."Highlight"]:SetBackdropBorderColor(1.0, 0.82, 0);
+			_G[standard]:SetAlpha(1);
+			_G[standard.."Border"]:Show();
+			_G[standard.."Emblem"]:Show();
+			_G[buttonName.."Background"]:SetVertexColor(0, 0, 0);
+			_G[buttonName.."Background"]:SetAlpha(1);
+			_G[buttonName.."TeamType"]:Hide();
 			
 		end
 	end
@@ -132,22 +132,22 @@ function InspectPVPTeam_Update()
 		if ( not value.index ) then
 			-- Set button elements to variables 
 			buttonIndex = buttonIndex + 1;
-			button = getglobal("InspectPVPTeam"..buttonIndex);
+			button = _G["InspectPVPTeam"..buttonIndex];
 			buttonName = "InspectPVPTeam"..buttonIndex;
 			data = buttonName.."Data";
 
 			-- Set standard type
-			getglobal(buttonName.."StandardBanner"):SetTexture("Interface\\PVPFrame\\PVP-Banner-"..value.size);
+			_G[buttonName.."StandardBanner"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..value.size);
 
 			-- Hide or Show items
 			button:SetAlpha(0.4);
-			getglobal(data):Hide();
-			getglobal(buttonName.."Background"):SetVertexColor(0, 0, 0);
-			getglobal(buttonName.."Standard"):SetAlpha(0.1);
-			getglobal(buttonName.."StandardBorder"):Hide();
-			getglobal(buttonName.."StandardEmblem"):Hide();
-			getglobal(buttonName.."TeamType"):SetFormattedText(PVP_TEAMSIZE, value.size, value.size);
-			getglobal(buttonName.."TeamType"):Show();
+			_G[data]:Hide();
+			_G[buttonName.."Background"]:SetVertexColor(0, 0, 0);
+			_G[buttonName.."Standard"]:SetAlpha(0.1);
+			_G[buttonName.."StandardBorder"]:Hide();
+			_G[buttonName.."StandardEmblem"]:Hide();
+			_G[buttonName.."TeamType"]:SetFormattedText(PVP_TEAMSIZE, value.size, value.size);
+			_G[buttonName.."TeamType"]:Show();
 		end
 	end
 end

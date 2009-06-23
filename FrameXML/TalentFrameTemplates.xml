@@ -60,13 +60,6 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				self:RegisterEvent("CHARACTER_POINTS_CHANGED");
-				self:RegisterEvent("PET_TALENT_POINTS_CHANGED");
-				self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
-				self:RegisterEvent("PREVIEW_PET_TALENT_POINTS_CHANGED");
-			</OnLoad>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>

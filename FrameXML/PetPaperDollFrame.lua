@@ -177,7 +177,7 @@ function PetPaperDollFrame_SetTab(id)
 		PetPaperDollFrameCompanionFrame:Show();
 		PetPaperDollFrame_SetCompanionPage(PetPaperDollFrameCompanionFrame.pageCritter);
 		for i=1,NUM_COMPANIONS_PER_PAGE do
-			getglobal("CompanionButton"..i):SetDisabledTexture([[Interface\PetPaperDollFrame\UI-PetFrame-Slots-Companions]])
+			_G["CompanionButton"..i]:SetDisabledTexture([[Interface\PetPaperDollFrame\UI-PetFrame-Slots-Companions]])
 		end
 		PetPaperDollFrame_UpdateCompanions();
 		PetPaperDollFrame_UpdateCompanionPreview();
@@ -189,7 +189,7 @@ function PetPaperDollFrame_SetTab(id)
 		PetPaperDollFrameCompanionFrame:Show();
 		PetPaperDollFrame_SetCompanionPage(PetPaperDollFrameCompanionFrame.pageMount);
 		for i=1,NUM_COMPANIONS_PER_PAGE do
-			getglobal("CompanionButton"..i):SetDisabledTexture([[Interface\PetPaperDollFrame\UI-PetFrame-Slots-Mounts]]);
+			_G["CompanionButton"..i]:SetDisabledTexture([[Interface\PetPaperDollFrame\UI-PetFrame-Slots-Mounts]]);
 		end
 		PetPaperDollFrame_UpdateCompanions();
 		PetPaperDollFrame_UpdateCompanionPreview();
@@ -198,9 +198,9 @@ function PetPaperDollFrame_SetTab(id)
 	
 	for i=1,3 do
 		if ( i == id ) then
-			PanelTemplates_SelectTab(getglobal("PetPaperDollFrameTab"..i));
+			PanelTemplates_SelectTab(_G["PetPaperDollFrameTab"..i]);
 		else
-			PanelTemplates_DeselectTab(getglobal("PetPaperDollFrameTab"..i));
+			PanelTemplates_DeselectTab(_G["PetPaperDollFrameTab"..i]);
 		end
 	end
 end
@@ -477,12 +477,12 @@ function PetPaperDollFrame_SetResistances()
 		if ( i == NUM_PET_RESISTANCE_TYPES ) then
 			index = 1;
 		end
-		text = getglobal("PetMagicResText"..i);
-		frame = getglobal("PetMagicResFrame"..i);
+		text = _G["PetMagicResText"..i];
+		frame = _G["PetMagicResFrame"..i];
 		
 		base, resistance, positive, negative = UnitResistance("pet", frame:GetID());
 
-		frame.tooltip = getglobal("RESISTANCE"..frame:GetID().."_NAME");
+		frame.tooltip = _G["RESISTANCE"..frame:GetID().."_NAME"];
 	
 		-- resistances can now be negative. Show Red if negative, Green if positive, white otherwise
 		if( resistance < 0 ) then
@@ -509,17 +509,17 @@ end
 
 function PetPaperDollFrame_SetStats()
 	for i=1, NUM_PET_STATS, 1 do
-		local label = getglobal("PetStatFrame"..i.."Label");
-		local text = getglobal("PetStatFrame"..i.."StatText");
-		local frame = getglobal("PetStatFrame"..i);
+		local label = _G["PetStatFrame"..i.."Label"];
+		local text = _G["PetStatFrame"..i.."StatText"];
+		local frame = _G["PetStatFrame"..i];
 		local stat;
 		local effectiveStat;
 		local posBuff;
 		local negBuff;
-		label:SetText(getglobal("SPELL_STAT"..i.."_NAME")..":");
+		label:SetText(_G["SPELL_STAT"..i.."_NAME"]..":");
 		stat, effectiveStat, posBuff, negBuff = UnitStat("pet", i);
 		-- Set the tooltip text
-		local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, getglobal("SPELL_STAT"..i.."_NAME")).." ";
+		local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, _G["SPELL_STAT"..i.."_NAME"]).." ";
 
 		if ( ( posBuff == 0 ) and ( negBuff == 0 ) ) then
 			text:SetText(effectiveStat);
@@ -550,7 +550,7 @@ function PetPaperDollFrame_SetStats()
 		end
 		
 		-- Second tooltip line
-		frame.tooltip2 = getglobal("DEFAULT_STAT"..i.."_TOOLTIP");
+		frame.tooltip2 = _G["DEFAULT_STAT"..i.."_TOOLTIP"];
 		if ( i == 1 ) then
 			local attackPower = 2*effectiveStat-20;
 			frame.tooltip2 = format(frame.tooltip2, attackPower);

@@ -99,7 +99,7 @@ function PlayerFrame_UpdatePvPStatus()
 
 		-- Setup newbie tooltip
 		PlayerPVPIconHitArea.tooltipTitle = factionName;
-		PlayerPVPIconHitArea.tooltipText = getglobal("NEWBIE_TOOLTIP_"..strupper(factionGroup));
+		PlayerPVPIconHitArea.tooltipText = _G["NEWBIE_TOOLTIP_"..strupper(factionGroup)];
 		PlayerPVPIconHitArea:Show();
 	else
 		PlayerPVPIcon:Hide();

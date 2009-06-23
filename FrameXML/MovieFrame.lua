@@ -27,7 +27,7 @@ function MovieFrame_OnShow(self)
 	WorldFrame:Hide();
 	self.uiParentShown = UIParent:IsShown();
 	UIParent:Hide();
-	self:EnableSubtitles(GetMovieSubtitles());
+	self:EnableSubtitles(GetCVarBool("movieSubtitle"));
 end
 
 function MovieFrame_OnHide(self)

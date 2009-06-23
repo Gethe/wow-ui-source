@@ -125,7 +125,7 @@ function ArenaEnemyFrame_OnLoad(self)
 	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyDropDown_Initialize, "MENU");
 	
 	local showmenu = function()
-		ToggleDropDownMenu(1, nil, getglobal("ArenaEnemyFrame"..self:GetID().."DropDown"), self:GetName(), 47, 15);
+		ToggleDropDownMenu(1, nil, _G["ArenaEnemyFrame"..self:GetID().."DropDown"], self:GetName(), 47, 15);
 	end
 	SecureUnitButton_OnLoad(self, "arena"..self:GetID(), showmenu);
 	
@@ -246,10 +246,10 @@ function ArenaEnemyPetFrame_OnLoad(self)
 	local id = self:GetParent():GetID();
 	local prefix = "ArenaEnemyFrame"..id.."PetFrame";
 	local unit = "arenapet"..id;
-	UnitFrame_Initialize(self, unit,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
-		   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"), getglobal(prefix.."ManaBar"), getglobal(prefix.."ManaBarText"));
-	SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
-	getglobal(prefix.."Name"):Hide();
+	UnitFrame_Initialize(self, unit,  _G[prefix.."Name"], _G[prefix.."Portrait"],
+		   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"]);
+	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
+	_G[prefix.."Name"]:Hide();
 	SecureUnitButton_OnLoad(self, unit);
 	self:SetID(id);
 	self:SetParent(ArenaEnemyFrames);
@@ -260,7 +260,7 @@ function ArenaEnemyPetFrame_OnLoad(self)
 	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyPetDropDown_Initialize, "MENU");
 	
 	local showmenu = function()
-		ToggleDropDownMenu(1, nil, getglobal("ArenaEnemyFrame"..self:GetID().."PetFrameDropDown"), self:GetName(), 47, 15);
+		ToggleDropDownMenu(1, nil, _G["ArenaEnemyFrame"..self:GetID().."PetFrameDropDown"], self:GetName(), 47, 15);
 	end
 	SecureUnitButton_OnLoad(self, "arenapet"..self:GetID(), showmenu);
 end

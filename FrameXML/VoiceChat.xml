@@ -45,8 +45,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				self.text = getglobal(self:GetName() .. "Text");
-				self.button = getglobal(self:GetName() .. "SecureButton");
+				self.text = _G[self:GetName() .. "Text"];
+				self.button = _G[self:GetName() .. "SecureButton"];
 			</OnLoad>
 			<OnEnter>
 				self:SetAlpha(1.0);

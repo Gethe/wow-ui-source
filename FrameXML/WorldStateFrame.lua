@@ -57,6 +57,8 @@ function WorldStateAlwaysUpFrame_OnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED_INDOORS");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND");
+
+	self:RegisterEvent("WORLD_STATE_UI_TIMER_UPDATE");
 		
 	FILTERED_BG_CHAT_ADD = {};
 	FILTERED_BG_CHAT_SUBTRACT = {};
@@ -64,7 +66,7 @@ function WorldStateAlwaysUpFrame_OnLoad(self)
 	
 	local chatString;
 	for _, str in next, FILTERED_BG_CHAT_ADD_GLOBALS do	
-		chatString = getglobal(str);
+		chatString = _G[str];
 		if ( chatString ) then
 			chatString = string.gsub(chatString, "%[", "%%[");
 			chatString = string.gsub(chatString, "%]", "%%]");
@@ -75,7 +77,7 @@ function WorldStateAlwaysUpFrame_OnLoad(self)
 	
 	local chatString;
 	for _, str in next, FILTERED_BG_CHAT_SUBTRACT_GLOBALS do	
-		chatString = getglobal(str);
+		chatString = _G[str];
 		if ( chatString ) then
 			chatString = string.gsub(chatString, "%[", "%%[");
 			chatString = string.gsub(chatString, "%]", "%%]");
@@ -85,7 +87,7 @@ function WorldStateAlwaysUpFrame_OnLoad(self)
 	end
 	
 	for _, str in next, FILTERED_BG_CHAT_END_GLOBALS do
-		chatString = getglobal(str);
+		chatString = _G[str];
 		if ( chatString ) then
 			chatString = string.gsub(chatString, "%[", "%%[");
 			chatString = string.gsub(chatString, "%]", "%%]");
@@ -128,7 +130,7 @@ function WorldStateAlwaysUpFrame_Update()
 						frame = uiInfo.create(extendedUIShown);
 						NUM_EXTENDED_UI_FRAMES = extendedUIShown;
 					else
-						frame = getglobal(name);
+						frame = _G[name];
 					end
 					uiInfo.update(extendedUIShown, extendedUIState1, extendedUIState2, extendedUIState3);
 					frame:Show();
@@ -140,20 +142,20 @@ function WorldStateAlwaysUpFrame_Update()
 						frame = CreateFrame("Frame", name, WorldStateAlwaysUpFrame, "WorldStateAlwaysUpTemplate");
 						NUM_ALWAYS_UP_UI_FRAMES = alwaysUpShown;
 					else
-						frame = getglobal(name);
+						frame = _G[name];
 					end
 					if ( alwaysUpShown == 1 ) then
 						frame:SetPoint("TOP", WorldStateAlwaysUpFrame, -23 , -20);
 					else
-						relative = getglobal("AlwaysUpFrame"..(alwaysUpShown - 1));
+						relative = _G["AlwaysUpFrame"..(alwaysUpShown - 1)];
 						frame:SetPoint("TOP", relative, "BOTTOM");
 					end
-					frameText = getglobal(name.."Text");
-					frameIcon = getglobal(name.."Icon");
-					frameDynamicIcon = getglobal(name.."DynamicIconButtonIcon");
-					frameFlash = getglobal(name.."Flash");
-					flashTexture = getglobal(name.."FlashTexture");
-					frameDynamicButton = getglobal(name.."DynamicIconButton");
+					frameText = _G[name.."Text"];
+					frameIcon = _G[name.."Icon"];
+					frameDynamicIcon = _G[name.."DynamicIconButtonIcon"];
+					frameFlash = _G[name.."Flash"];
+					flashTexture = _G[name.."FlashTexture"];
+					frameDynamicButton = _G[name.."DynamicIconButton"];
 
 					frameText:SetText(text);
 					frameIcon:SetTexture(icon);
@@ -186,11 +188,11 @@ function WorldStateAlwaysUpFrame_Update()
 		end
 	end
 	for i=alwaysUpShown, NUM_ALWAYS_UP_UI_FRAMES do
-		frame = getglobal("AlwaysUpFrame"..i);
+		frame = _G["AlwaysUpFrame"..i];
 		frame:Hide();
 	end
 	for i=extendedUIShown, NUM_EXTENDED_UI_FRAMES do
-		frame = getglobal("WorldStateCaptureBar"..i);
+		frame = _G["WorldStateCaptureBar"..i];
 		if ( frame ) then
 			frame:Hide();
 		end
@@ -391,36 +393,36 @@ end
 
 function CaptureBar_Update(id, value, neutralPercent)
 	local position = 25 + 124*(1 - value/100);
-	local bar = getglobal("WorldStateCaptureBar"..id);
+	local bar = _G["WorldStateCaptureBar"..id];
 	local barSize = 121;
 	if ( not bar.oldValue ) then
 		bar.oldValue = position;
 	end
 	-- Show an arrow in the direction the bar is moving
 	if ( position < bar.oldValue ) then
-		getglobal("WorldStateCaptureBar"..id.."IndicatorLeft"):Show();
-		getglobal("WorldStateCaptureBar"..id.."IndicatorRight"):Hide();
+		_G["WorldStateCaptureBar"..id.."IndicatorLeft"]:Show();
+		_G["WorldStateCaptureBar"..id.."IndicatorRight"]:Hide();
 	elseif ( position > bar.oldValue ) then
-		getglobal("WorldStateCaptureBar"..id.."IndicatorLeft"):Hide();
-		getglobal("WorldStateCaptureBar"..id.."IndicatorRight"):Show();
+		_G["WorldStateCaptureBar"..id.."IndicatorLeft"]:Hide();
+		_G["WorldStateCaptureBar"..id.."IndicatorRight"]:Show();
 	else
-		getglobal("WorldStateCaptureBar"..id.."IndicatorLeft"):Hide();
-		getglobal("WorldStateCaptureBar"..id.."IndicatorRight"):Hide();
+		_G["WorldStateCaptureBar"..id.."IndicatorLeft"]:Hide();
+		_G["WorldStateCaptureBar"..id.."IndicatorRight"]:Hide();
 	end
 	-- Figure out if the ticker is in neutral territory or on a faction's side
 	if ( value > (50 + neutralPercent/2) ) then
-		getglobal("WorldStateCaptureBar"..id.."LeftIconHighlight"):Show();
-		getglobal("WorldStateCaptureBar"..id.."RightIconHighlight"):Hide();
+		_G["WorldStateCaptureBar"..id.."LeftIconHighlight"]:Show();
+		_G["WorldStateCaptureBar"..id.."RightIconHighlight"]:Hide();
 	elseif ( value < (50 - neutralPercent/2) ) then
-		getglobal("WorldStateCaptureBar"..id.."LeftIconHighlight"):Hide();
-		getglobal("WorldStateCaptureBar"..id.."RightIconHighlight"):Show();
+		_G["WorldStateCaptureBar"..id.."LeftIconHighlight"]:Hide();
+		_G["WorldStateCaptureBar"..id.."RightIconHighlight"]:Show();
 	else
-		getglobal("WorldStateCaptureBar"..id.."LeftIconHighlight"):Hide();
-		getglobal("WorldStateCaptureBar"..id.."RightIconHighlight"):Hide();
+		_G["WorldStateCaptureBar"..id.."LeftIconHighlight"]:Hide();
+		_G["WorldStateCaptureBar"..id.."RightIconHighlight"]:Hide();
 	end
 	-- Setup the size of the neutral bar
-	local middleBar = getglobal("WorldStateCaptureBar"..id.."MiddleBar");
-	local leftLine = getglobal("WorldStateCaptureBar"..id.."LeftLine");
+	local middleBar = _G["WorldStateCaptureBar"..id.."MiddleBar"];
+	local leftLine = _G["WorldStateCaptureBar"..id.."LeftLine"];
 	if ( neutralPercent == 0 ) then
 		middleBar:SetWidth(1);
 		leftLine:Hide();
@@ -430,7 +432,7 @@ function CaptureBar_Update(id, value, neutralPercent)
 	end
 
 	bar.oldValue = position;
-	getglobal("WorldStateCaptureBar"..id.."Indicator"):SetPoint("CENTER", "WorldStateCaptureBar"..id, "LEFT", position, 0);
+	_G["WorldStateCaptureBar"..id.."Indicator"]:SetPoint("CENTER", "WorldStateCaptureBar"..id, "LEFT", position, 0);
 end
 
 
@@ -534,7 +536,7 @@ function WorldStateScoreFrame_Update()
 					WorldStateScoreWinnerFrameText:SetText(VICTORY_TEXT_ARENA_DRAW);							
 				end
 			else
-				WorldStateScoreWinnerFrameText:SetText(getglobal("VICTORY_TEXT_ARENA"..battlefieldWinner));
+				WorldStateScoreWinnerFrameText:SetText(_G["VICTORY_TEXT_ARENA"..battlefieldWinner]);
 			end
 			if ( battlefieldWinner == 0 ) then
 				-- Green Team won
@@ -548,7 +550,7 @@ function WorldStateScoreFrame_Update()
 				WorldStateScoreWinnerFrameText:SetVertexColor(1, 0.82, 0);	
 			end
 		else
-			WorldStateScoreWinnerFrameText:SetText(getglobal("VICTORY_TEXT"..battlefieldWinner));
+			WorldStateScoreWinnerFrameText:SetText(_G["VICTORY_TEXT"..battlefieldWinner]);
 			if ( battlefieldWinner == 0 ) then
 				-- Horde won
 				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.52, 0.075, 0.18);
@@ -596,13 +598,13 @@ function WorldStateScoreFrame_Update()
 	for i=1, MAX_NUM_STAT_COLUMNS do
 		if ( i <= numStatColumns ) then
 			text, icon, tooltip = GetBattlefieldStatInfo(i);
-			columnButton = getglobal("WorldStateScoreColumn"..i);
-			columnButtonText = getglobal("WorldStateScoreColumn"..i.."Text");
+			columnButton = _G["WorldStateScoreColumn"..i];
+			columnButtonText = _G["WorldStateScoreColumn"..i.."Text"];
 			columnButtonText:SetText(text);
 			columnButton.icon = icon;
 			columnButton.tooltip = tooltip;
 			
-			columnTextButton = getglobal("WorldStateScoreButton1Column"..i.."Text");
+			columnTextButton = _G["WorldStateScoreButton1Column"..i.."Text"];
 
 			if ( icon ~= "" ) then
 				columnTextButton:SetPoint("CENTER", "WorldStateScoreColumn"..i, "CENTER", 6, WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET);
@@ -615,9 +617,9 @@ function WorldStateScoreFrame_Update()
 				honorGainedAnchorFrame = "WorldStateScoreColumn"..i;
 			end
 		
-			getglobal("WorldStateScoreColumn"..i):Show();
+			_G["WorldStateScoreColumn"..i]:Show();
 		else
-			getglobal("WorldStateScoreColumn"..i):Hide();
+			_G["WorldStateScoreColumn"..i]:Hide();
 		end
 	end
 	
@@ -633,44 +635,29 @@ function WorldStateScoreFrame_Update()
 	local lastButtonShown = "WorldStateScoreButton1";
 	local teamDataFailed, coords;
 
-	if ( isArena ) then
-		for i=0, 1 do
-			teamName, teamRating = GetBattlefieldTeamInfo(i);
-			if ( teamRating < 0 ) then
-				teamDataFailed = 1;
-			end
-		end
-		if ( isRegistered ) then
-			teamName = GetBattlefieldTeamInfo(battlefieldWinner);
-			if ( not teamName ) then
-				teamDataFailed = 1;
-			end
-		end
-	end
-	
 	for i=1, MAX_WORLDSTATE_SCORE_BUTTONS do
 		-- Need to create an index adjusted by the scrollframe offset
 		index = FauxScrollFrame_GetOffset(WorldStateScoreScrollFrame) + i;
-		scoreButton = getglobal("WorldStateScoreButton"..i);
+		scoreButton = _G["WorldStateScoreButton"..i];
 		if ( hasScrollBar ) then
 			scoreButton:SetWidth(WorldStateScoreFrame.scrollBarButtonWidth);
 		else
 			scoreButton:SetWidth(WorldStateScoreFrame.buttonWidth);
 		end
 		if ( index <= numScores ) then
-			buttonClass = getglobal("WorldStateScoreButton"..i.."ClassButtonIcon");
-			buttonName = getglobal("WorldStateScoreButton"..i.."Name");
-			buttonNameText = getglobal("WorldStateScoreButton"..i.."NameText");
-			buttonTeam =  getglobal("WorldStateScoreButton"..i.."Team");
-			buttonKills = getglobal("WorldStateScoreButton"..i.."HonorableKills");
-			buttonKillingBlows = getglobal("WorldStateScoreButton"..i.."KillingBlows");
-			buttonDeaths = getglobal("WorldStateScoreButton"..i.."Deaths");
-			buttonDamage = getglobal("WorldStateScoreButton"..i.."Damage");
-			buttonHealing = getglobal("WorldStateScoreButton"..i.."Healing");
-			buttonTeamSkill = getglobal("WorldStateScoreButton"..i.."TeamSkill");
-			buttonHonorGained = getglobal("WorldStateScoreButton"..i.."HonorGained");
-			buttonFactionLeft = getglobal("WorldStateScoreButton"..i.."FactionLeft");
-			buttonFactionRight = getglobal("WorldStateScoreButton"..i.."FactionRight");
+			buttonClass = _G["WorldStateScoreButton"..i.."ClassButtonIcon"];
+			buttonName = _G["WorldStateScoreButton"..i.."Name"];
+			buttonNameText = _G["WorldStateScoreButton"..i.."NameText"];
+			buttonTeam =  _G["WorldStateScoreButton"..i.."Team"];
+			buttonKills = _G["WorldStateScoreButton"..i.."HonorableKills"];
+			buttonKillingBlows = _G["WorldStateScoreButton"..i.."KillingBlows"];
+			buttonDeaths = _G["WorldStateScoreButton"..i.."Deaths"];
+			buttonDamage = _G["WorldStateScoreButton"..i.."Damage"];
+			buttonHealing = _G["WorldStateScoreButton"..i.."Healing"];
+			buttonTeamSkill = _G["WorldStateScoreButton"..i.."TeamSkill"];
+			buttonHonorGained = _G["WorldStateScoreButton"..i.."HonorGained"];
+			buttonFactionLeft = _G["WorldStateScoreButton"..i.."FactionLeft"];
+			buttonFactionRight = _G["WorldStateScoreButton"..i.."FactionRight"];
 			
 			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone = GetBattlefieldScore(index);
 			if ( classToken ) then
@@ -691,18 +678,28 @@ function WorldStateScoreFrame_Update()
 			end
 			buttonName.name = name;
 			buttonName.tooltip = race.." "..class;
-			getglobal("WorldStateScoreButton"..i.."ClassButton").tooltip = class;
+			_G["WorldStateScoreButton"..i.."ClassButton"].tooltip = class;
 			buttonKillingBlows:SetText(killingBlows);
 			buttonDamage:SetText(damageDone);
 			buttonHealing:SetText(healingDone);
+			teamDataFailed = 0;
 			teamName, teamRating, newTeamRating, teamSkill = GetBattlefieldTeamInfo(faction);
+
+			if ( not teamRating ) then
+				teamDataFailed = 1;
+			end
+			
+			if ( not newTeamRating ) then
+				teamDataFailed = 1;
+			end
+
 			if ( isArena ) then
 				if ( isRegistered ) then
 					buttonTeam:SetText(teamName);
 					buttonTeam:Show();
 					buttonTeamSkill:SetText(teamSkill);
 					buttonTeamSkill:Show();
-					if ( teamDataFailed ) then
+					if ( teamDataFailed == 1 ) then
 						buttonHonorGained:SetText("-------");
 					else
 						buttonHonorGained:SetText(tostring(newTeamRating - teamRating));
@@ -727,15 +724,15 @@ function WorldStateScoreFrame_Update()
 			end
 			
 			for j=1, MAX_NUM_STAT_COLUMNS do
-				columnButtonText = getglobal("WorldStateScoreButton"..i.."Column"..j.."Text");
-				columnButtonIcon = getglobal("WorldStateScoreButton"..i.."Column"..j.."Icon");
+				columnButtonText = _G["WorldStateScoreButton"..i.."Column"..j.."Text"];
+				columnButtonIcon = _G["WorldStateScoreButton"..i.."Column"..j.."Icon"];
 				if ( j <= numStatColumns ) then
 					-- If there's an icon then move the icon left and format the text with an "x" in front
 					columnData = GetBattlefieldStatData(index, j);
-					if ( getglobal("WorldStateScoreColumn"..j).icon ~= "" ) then
+					if ( _G["WorldStateScoreColumn"..j].icon ~= "" ) then
 						if ( columnData > 0 ) then
 							columnButtonText:SetFormattedText(FLAG_COUNT_TEMPLATE, columnData);
-							columnButtonIcon:SetTexture(getglobal("WorldStateScoreColumn"..j).icon..faction);
+							columnButtonIcon:SetTexture(_G["WorldStateScoreColumn"..j].icon..faction);
 							columnButtonIcon:Show();
 						else
 							columnButtonText:SetText("");
@@ -868,16 +865,16 @@ function WorldStateScoreFrame_Resize(width)
 	local buttonTeam, buttonTeamSkill, buttonKills, buttonKillingBlows, buttonDeaths, buttonDamage, buttonHealing, buttonHonorGained, buttonReturnedIcon, buttonCapturedIcon;
 	for i=1, MAX_WORLDSTATE_SCORE_BUTTONS do
 		if ( isRegistered ) then
-			buttonTeam = getglobal("WorldStateScoreButton"..i.."Team");
-			buttonTeamSkill = getglobal("WorldStateScoreButton"..i.."TeamSkill");
+			buttonTeam = _G["WorldStateScoreButton"..i.."Team"];
+			buttonTeamSkill = _G["WorldStateScoreButton"..i.."TeamSkill"];
 		end
 		
-		buttonKills = getglobal("WorldStateScoreButton"..i.."HonorableKills");
-		buttonKillingBlows = getglobal("WorldStateScoreButton"..i.."KillingBlows");
-		buttonDeaths = getglobal("WorldStateScoreButton"..i.."Deaths");
-		buttonDamage = getglobal("WorldStateScoreButton"..i.."Damage");
-		buttonHealing = getglobal("WorldStateScoreButton"..i.."Healing");
-		buttonHonorGained = getglobal("WorldStateScoreButton"..i.."HonorGained");
+		buttonKills = _G["WorldStateScoreButton"..i.."HonorableKills"];
+		buttonKillingBlows = _G["WorldStateScoreButton"..i.."KillingBlows"];
+		buttonDeaths = _G["WorldStateScoreButton"..i.."Deaths"];
+		buttonDamage = _G["WorldStateScoreButton"..i.."Damage"];
+		buttonHealing = _G["WorldStateScoreButton"..i.."Healing"];
+		buttonHonorGained = _G["WorldStateScoreButton"..i.."HonorGained"];
 		if ( i == 1 ) then
 			if ( isRegistered ) then
 				buttonTeam:SetPoint("LEFT", "WorldStateScoreFrameTeam", "LEFT", 0, WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET);
@@ -890,7 +887,7 @@ function WorldStateScoreFrame_Resize(width)
 			buttonHealing:SetPoint("CENTER", "WorldStateScoreFrameHealingDone", "CENTER", 0, WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET);
 			buttonHonorGained:SetPoint("CENTER", "WorldStateScoreFrameHonorGained", "CENTER", 0, WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET);
 			for j=1, MAX_NUM_STAT_COLUMNS do
-				getglobal("WorldStateScoreButton"..i.."Column"..j.."Text"):SetPoint("CENTER", getglobal("WorldStateScoreColumn"..j), "CENTER", 0,  WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET);
+				_G["WorldStateScoreButton"..i.."Column"..j.."Text"]:SetPoint("CENTER", _G["WorldStateScoreColumn"..j], "CENTER", 0,  WORLDSTATECOREFRAME_BUTTON_TEXT_OFFSET);
 			end
 		else
 			if ( isRegistered ) then
@@ -904,7 +901,7 @@ function WorldStateScoreFrame_Resize(width)
 			buttonHealing:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Healing", "CENTER", 0, -16);
 			buttonHonorGained:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorGained", "CENTER", 0, -16);
 			for j=1, MAX_NUM_STAT_COLUMNS do
-				getglobal("WorldStateScoreButton"..i.."Column"..j.."Text"):SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Column"..j.."Text", "CENTER", 0, -16);
+				_G["WorldStateScoreButton"..i.."Column"..j.."Text"]:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Column"..j.."Text", "CENTER", 0, -16);
 			end
 		end
 	end

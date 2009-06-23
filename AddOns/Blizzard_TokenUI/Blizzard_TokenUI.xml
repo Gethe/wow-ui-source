@@ -323,7 +323,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Scripts>
 					<OnLoad>
 						_G[self:GetName().."Text"]:SetText(UNUSED);
-						getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						_G[self:GetName().."Text"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					</OnLoad>
 					<OnClick>
 						if ( self:GetChecked() ) then
@@ -357,7 +357,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Scripts>
 					<OnLoad>
 						_G[self:GetName().."Text"]:SetText(SHOW_ON_BACKPACK);
-						getglobal(self:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						_G[self:GetName().."Text"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					</OnLoad>
 					<OnClick>
 						if ( self:GetChecked() ) then
@@ -434,8 +434,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Scripts>
 			<OnLoad>
 				local name = self:GetName();
-				self.icon = getglobal(name.."Icon");
-				self.count = getglobal(name.."Count");
+				self.icon = _G[name.."Icon"];
+				self.count = _G[name.."Count"];
 			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

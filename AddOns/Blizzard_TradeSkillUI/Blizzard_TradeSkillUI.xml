@@ -402,7 +402,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(self:GetName()):SetText(ALL);
+								_G[self:GetName()]:SetText(ALL);
 							</OnLoad>
 							<OnClick function="TradeSkillCollapseAllButton_OnClick"/>
 						</Scripts>

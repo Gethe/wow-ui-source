@@ -20,7 +20,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				getglobal(self:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
+				_G[self:GetName().."Highlight"]:SetVertexColor(1.0, 0.82, 0);
 			</OnLoad>
 			<OnClick>
 				ArenaButton_OnClick(self, button, down);

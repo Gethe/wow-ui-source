@@ -94,29 +94,36 @@ local function WatchFrame_ReleaseUnusedLinkButtons ()
 end
 
 function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
-	if ( button ~= "RightButton" ) then
+	if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
+		local questLink = GetQuestLink(GetQuestIndexForWatch(self.index));
+		if ( questLink ) then
+			ChatEdit_InsertLink(questLink);
+		end
+	elseif ( button ~= "RightButton" ) then
 		WatchFrameLinkButtonTemplate_OnLeftClick(self);
-		return;
+	else
+		local dropDown = WatchFrameDropDown;
+		if ( WatchFrame.lastLinkButton ~= self ) then
+			CloseDropDownMenus();
+		end
+
+		dropDown.type = self.type;
+		dropDown.index = self.index;
+		UIFrameFadeOut(WatchFrameLines, WATCHFRAME_FADETIME, WatchFrameLines:GetAlpha(), .5);
+		WatchFrame.dropDownOpen = true;
+		WatchFrame.lastLinkButton = self;
+		ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3)
+--		self:Disable();
 	end
-	
-	local dropDown = WatchFrameDropDown;
-	
-	CloseDropDownMenus();
-	
-	dropDown.type = self.type;
-	dropDown.index = self.index;
-	UIFrameFadeOut(WatchFrameLines, WATCHFRAME_FADETIME, WatchFrameLines:GetAlpha(), .5);
-	WatchFrame.dropDownOpen = true;
-	WatchFrame.lastLinkButton = self;
-	ToggleDropDownMenu(1, nil, dropDown, "cursor")
-	self:Disable();
 end
 
 function WatchFrameLinkButtonTemplate_OnLeftClick (self)
 	CloseDropDownMenus();
 	if ( self.type == "QUEST" ) then
+		-- if you don't call ExpandQuestHeader(0) prior to calling GetQuestIndexForWatch, you may get a strange index since all
+		-- of the quests in collapsed headers get pushed to the end of the quest list
 		ExpandQuestHeader(0);
-		QuestLog_OpenToQuestIndex(GetQuestIndexForWatch(self.index));
+		QuestLog_OpenToQuest(GetQuestIndexForWatch(self.index));
 		return;
 	elseif ( self.type == "ACHIEVEMENT" ) then
 		if ( not AchievementFrame ) then
@@ -190,7 +197,7 @@ function WatchFrame_ToggleSimpleWatch ()
 	if ( ADVANCED_WATCH_FRAME == "0" ) then
 		WatchFrame.simpleMode = true;
 		WatchFrame:SetUserPlaced(false);
-		WatchFrame_SetBaseAlpha(0);
+		WatchFrame_SetBaseAlpha(1);
 		WatchFrame:SetAlpha(0);
 		WatchFrame_Expand(WatchFrame);
 		WatchFrame_Lock(WatchFrame);
@@ -251,7 +258,7 @@ function WatchFrame_OnEvent (self, event, ...)
 			
 		-- Setup window appearance and behaviors		
 		self.baseAlpha = tonumber(GetCVar("watchFrameBaseAlpha"));		
-		WatchFrame:SetAlpha(self.baseAlpha);
+		WatchFrame_SetBaseAlpha(self.baseAlpha);
 		
 		WatchFrame:SetUserPlaced(true);
 		
@@ -317,7 +324,7 @@ function WatchFrame_OnUpdate (self, elapsed)
 			self.timeLeft = GetTime();
 		elseif ( self.timeLeft and self.timeLeft + WATCHFRAME_FADEDELAY <= GetTime() ) then
 			self.timeLeft = nil;
-			UIFrameFadeOut(WatchFrame, WATCHFRAME_FADETIME, WatchFrame:GetAlpha(), self.baseAlpha);
+			UIFrameFadeOut(WatchFrame, WATCHFRAME_FADETIME, WatchFrame:GetAlpha(), 1 - self.baseAlpha);
 		end			
 	elseif ( not self.timeEntered ) then
 		self.timeEntered = GetTime();
@@ -409,14 +416,15 @@ function WatchFrame_ShowOpacityFrameBaseAlpha ()
 	OpacityFrame:SetPoint("TOPRIGHT", "WatchFrame", "TOPLEFT", 0, 7);
 	OpacityFrame.opacityFunc = WatchFrame_SetBaseAlpha;
 	OpacityFrame:Show();
-	OpacityFrameSlider:SetValue(1 - WatchFrame.baseAlpha);
+	OpacityFrameSlider:SetValue(WatchFrame.baseAlpha);
 end
 
 function WatchFrame_SetBaseAlpha (alpha)
 	local watchFrame = WatchFrame;
-	alpha = alpha or (1 - OpacityFrameSlider:GetValue()) -- This is so terrible
-	watchFrame.baseAlpha = alpha;
+	alpha = alpha or OpacityFrameSlider:GetValue() or 0;
 	SetCVar("watchFrameBaseAlpha", alpha);
+	watchFrame.baseAlpha = alpha;
+	alpha = 1 - alpha;
 	if ( not MouseIsOver(watchFrame) or OpacityFrame:IsShown() ) then -- We should be setting the current opacity
 		WatchFrame:SetAlpha(alpha)	
 	end
@@ -999,9 +1007,9 @@ end
 function WatchFrame_GetHeightNeededForQuest (questIndex)
 	local numObjectives = GetNumQuestLeaderBoards(questIndex);
 
-	if ( numObjectives == 0 ) then
-		return 0;
-	else		
+--	if ( numObjectives == 0 ) then
+--		return 0;
+--	else		
 		local height = (WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTSPACING) * (numObjectives + 1); -- +1 for the title line
 		if ( GetQuestLogSpecialItemInfo(questIndex) ) then
 			height = max(height, WATCHFRAME_QUEST_WITH_ITEM_HEIGHT);
@@ -1013,13 +1021,12 @@ function WatchFrame_GetHeightNeededForQuest (questIndex)
 		end
 		
 		return height;
-	end
+--	end
 end
 
 function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, frameWidth)
 	local _;
 	local self = WatchFrame;
-	local numObjectives;
 	local text, finished;
 	local questTitle;
 	local watchItemIndex = 0;
@@ -1041,114 +1048,114 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	local iconHeightLeft = 0;
 	
 	local numQuestWatches = GetNumQuestWatches();
+	local numObjectives;
+	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily;
 	for i = 1, numQuestWatches do
-		local questWidth = 0;
 		questIndex = GetQuestIndexForWatch(i);
+		title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(questIndex);
 		if ( questIndex ) then
-		
 			local heightNeeded = WatchFrame_GetHeightNeededForQuest(questIndex);
 			if ( heightNeeded > maxHeight + (initialOffset - heightUsed) ) then
 				return heightUsed, maxWidth; -- We ran out of space to draw quests, stop.
 			else
 				heightUsed = heightUsed + heightNeeded;
 			end
-			
-			local itemButton;
-			
-			numObjectives = GetNumQuestLeaderBoards(questIndex);
-			if ( numObjectives > 0 ) then -- How did a quest with 0 objectives end up getting tracked again? Might as well still check it.
-				line = WatchFrame_GetQuestLine();
-				questTitle = line;
-				line.text:SetText(GetQuestLogTitle(questIndex));
-				line:Show();
-				if ( not lastLine ) then -- First line
-					line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
-					line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
-				else
-					local yOffset = 0;
-					if ( iconHeightLeft > 0 ) then
-						yOffset = -iconHeightLeft;
-					end
-					
-					line:SetPoint("TOPRIGHT", lastLine, "BOTTOMRIGHT", 0, yOffset - WATCHFRAME_QUEST_OFFSET);
-					line:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, yOffset - WATCHFRAME_QUEST_OFFSET);
-				end
-				iconHeightLeft = 0;
-				local stringWidth = line.text:GetStringWidth();
-				if ( not self.disableButtons ) then
-					linkButton = WatchFrame_GetLinkButton();
-					linkButton:SetPoint("TOPLEFT", line);
-					linkButton:SetPoint("BOTTOMLEFT", line);
-					linkButton:SetPoint("RIGHT", line.text);
-					linkButton.type = "QUEST"
-					linkButton.index = i; -- We want the Watch index, we'll get the quest index later with GetQuestIndexForWatch(i);
-					linkButton:Show();
+
+			line = WatchFrame_GetQuestLine();
+			questTitle = line;
+			line.text:SetText(title);
+			line:Show();
+			if ( not lastLine ) then -- First line
+				line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
+				line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
+			else
+				local yOffset = 0;
+				if ( iconHeightLeft > 0 ) then
+					yOffset = -iconHeightLeft;
 				end
 				
-				local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
-				if ( item ) then
-					watchItemIndex = watchItemIndex + 1;
-					itemButton = _G["WatchFrameItem"..watchItemIndex];
-					if ( not itemButton ) then
-						WATCHFRAME_NUM_ITEMS = watchItemIndex;
-						itemButton = CreateFrame("BUTTON", "WatchFrameItem" .. watchItemIndex, lineFrame, "WatchFrameItemButtonTemplate");
-					end
-					itemButton:Show();
-					itemButton:ClearAllPoints();
-					itemButton:SetID(questIndex);
-					SetItemButtonTexture(itemButton, item);
-					SetItemButtonCount(itemButton, charges);
-					WatchFrameItem_UpdateCooldown(itemButton);
-					itemButton.rangeTimer = -1;
+				line:SetPoint("TOPRIGHT", lastLine, "BOTTOMRIGHT", 0, yOffset - WATCHFRAME_QUEST_OFFSET);
+				line:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, yOffset - WATCHFRAME_QUEST_OFFSET);
+			end
+			iconHeightLeft = 0;
+			local stringWidth = line.text:GetStringWidth();
+			if ( not self.disableButtons ) then
+				linkButton = WatchFrame_GetLinkButton();
+				linkButton:SetPoint("TOPLEFT", line);
+				linkButton:SetPoint("BOTTOMLEFT", line);
+				linkButton:SetPoint("RIGHT", line.text);
+				linkButton.type = "QUEST"
+				linkButton.index = i; -- We want the Watch index, we'll get the quest index later with GetQuestIndexForWatch(i);
+				linkButton:Show();
+			end
+
+			local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
+			local questWidth = 0;
+			local itemButton;
+			if ( item ) then
+				watchItemIndex = watchItemIndex + 1;
+				itemButton = _G["WatchFrameItem"..watchItemIndex];
+				if ( not itemButton ) then
+					WATCHFRAME_NUM_ITEMS = watchItemIndex;
+					itemButton = CreateFrame("BUTTON", "WatchFrameItem" .. watchItemIndex, lineFrame, "WatchFrameItemButtonTemplate");
+				end
+				itemButton:Show();
+				itemButton:ClearAllPoints();
+				itemButton:SetID(questIndex);
+				SetItemButtonTexture(itemButton, item);
+				SetItemButtonCount(itemButton, charges);
+				WatchFrameItem_UpdateCooldown(itemButton);
+				itemButton.rangeTimer = -1;
+				line.text.clear = true;
+				line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
+				iconHeightLeft = WATCHFRAME_QUEST_WITH_ITEM_HEIGHT - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING; -- We've already displayed a line for this
+				itemButton.maxStringWidth = stringWidth;
+			end
+			questWidth = max(stringWidth, questWidth);
+
+			lastLine = line;
+			objectivesCompleted = 0;
+			numObjectives = GetNumQuestLeaderBoards(questIndex);
+			for j = 1, numObjectives do
+				text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
+				line = WatchFrame_GetQuestLine();
+				line.text:SetText(" - " .. text);
+				if ( finished ) then
+					line.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					objectivesCompleted = objectivesCompleted + 1;
+				else
+					line.text:SetTextColor(0.8, 0.8, 0.8);
+				end
+				line:SetPoint("TOPRIGHT", lastLine, "BOTTOMRIGHT", 0, WATCHFRAMELINES_FONTSPACING);
+				line:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, WATCHFRAMELINES_FONTSPACING);
+				line:Show();
+				stringWidth = line.text:GetStringWidth();
+				if ( iconHeightLeft > 0 ) then
 					line.text.clear = true;
 					line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
-					iconHeightLeft = WATCHFRAME_QUEST_WITH_ITEM_HEIGHT - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING; -- We've already displayed a line for this
-					itemButton.maxStringWidth = stringWidth;
-					questWidth = max(stringWidth + WATCHFRAME_ITEM_WIDTH, questWidth);
-				else
-					questWidth = max(stringWidth, questWidth);
+					itemButton.maxStringWidth = max(stringWidth, itemButton.maxStringWidth)
 				end
-				
+				questWidth = max(stringWidth, questWidth);
 				lastLine = line;
-				objectivesCompleted = 0;
-				for j = 1, numObjectives do
-					text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
-					line = WatchFrame_GetQuestLine();
-					line.text:SetText(" - " .. text);
-					if ( finished ) then
-						line.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-						objectivesCompleted = objectivesCompleted + 1;
-					else
-						line.text:SetTextColor(0.8, 0.8, 0.8);
-					end
-					line:SetPoint("TOPRIGHT", lastLine, "BOTTOMRIGHT", 0, WATCHFRAMELINES_FONTSPACING);
-					line:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, WATCHFRAMELINES_FONTSPACING);
-					line:Show();
-					stringWidth = line.text:GetStringWidth();
-					if ( iconHeightLeft > 0 ) then
-						line.text.clear = true;
-						line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
-						itemButton.maxStringWidth = max(stringWidth, itemButton.maxStringWidth)
-						questWidth = max(stringWidth + WATCHFRAME_ITEM_WIDTH, questWidth);
-					else
-						questWidth = max(stringWidth, questWidth);
-					end
-					lastLine = line;
-					iconHeightLeft = iconHeightLeft - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING;
-				end
-				
-				if ( objectivesCompleted == numObjectives ) then
-					questTitle.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				else
-					questTitle.text:SetTextColor(0.75, 0.61, 0);
-				end			
+				iconHeightLeft = iconHeightLeft - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING;
 			end
-			
+
+			-- NOTE: we're missing something to display required money for a quest...that should probably be added at some point
+
+			if ( isComplete ) then
+				questTitle.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			else
+				questTitle.text:SetTextColor(0.75, 0.61, 0);
+			end
+
 			if ( itemButton ) then
-				itemButton:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 0, -WATCHFRAMELINES_FONTSPACING);
+				line = WatchFrame_GetQuestLine();
+				line:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 0, -WATCHFRAMELINES_FONTSPACING);
+				itemButton:SetPoint("TOPRIGHT", line, "TOPLEFT", 0, 0);
+				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", min(frameWidth - WATCHFRAME_ITEM_WIDTH, itemButton.maxStringWidth + 8), -WATCHFRAMELINES_FONTSPACING);
 				itemButton:Show();
 			end
-			
+
 			if ( itemButton ) then
 				maxWidth = max(questWidth + WATCHFRAME_ITEM_WIDTH, maxWidth);
 			else
@@ -1156,13 +1163,13 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 			end
 		end
 	end
-	
+
 	for i = watchItemIndex + 1, WATCHFRAME_NUM_ITEMS do
 		_G["WatchFrameItem" .. i]:Hide();
 	end
-	
+
 	WatchFrame_ReleaseUnusedQuestLines();
-	
+
 	return heightUsed, maxWidth;	
 end
 
@@ -1206,8 +1213,10 @@ function WatchFrameLines_RemoveUpdateFunction (func)
 end
 
 function WatchFrame_OpenQuestLog (button, arg1, arg2, checked)
+	-- if you don't call ExpandQuestHeader(0) prior to calling GetQuestIndexForWatch, you may get a strange index since all
+	-- of the quests in collapsed headers get pushed to the end of the quest list
 	ExpandQuestHeader(0);
-	QuestLog_OpenToQuestIndex(GetQuestIndexForWatch(arg1));
+	QuestLog_OpenToQuest(GetQuestIndexForWatch(arg1));
 end
 
 function WatchFrame_AbandonQuest (button, arg1, arg2, checked)
@@ -1398,6 +1407,10 @@ function WatchFrameItem_UpdateCooldown (self)
 		SetItemButtonTextureVertexColor(self, 1, 1, 1);
 	end
 end
+		
+function WatchFrameItem_OnLoad (self)
+	self:RegisterForClicks("AnyUp");
+end
 
 function WatchFrameItem_OnEvent (self, event, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
@@ -1417,7 +1430,7 @@ function WatchFrameItem_OnUpdate (self, elapsed)
 				WatchFrame_Update();
 				return;
 			end
-			local count = getglobal(self:GetName().."HotKey");
+			local count = _G[self:GetName().."HotKey"];
 			local valid = IsQuestLogSpecialItemInRange(self:GetID());
 			if ( valid == 0 ) then
 				count:Show();
@@ -1451,5 +1464,13 @@ function WatchFrameItem_OnEnter (self)
 end
 		
 function WatchFrameItem_OnClick (self, button, down)
-	UseQuestLogSpecialItem(self:GetID());
+	local questIndex = self:GetID();
+	if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
+		local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
+		if ( link ) then
+			ChatEdit_InsertLink(link);
+		end
+	else
+		UseQuestLogSpecialItem(questIndex);
+	end
 end

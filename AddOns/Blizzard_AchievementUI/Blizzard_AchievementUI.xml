@@ -113,10 +113,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						AchievementFrameSummaryCategoryButton_OnClick(self, button, down);
 					</OnClick>
 					<OnEnter>
-						getglobal(self:GetName().."Highlight"):Show();
+						_G[self:GetName().."Highlight"]:Show();
 					</OnEnter>
 					<OnLeave>
-						getglobal(self:GetName().."Highlight"):Hide();
+						_G[self:GetName().."Highlight"]:Hide();
 					</OnLeave>
 				</Scripts>
 			</Button>
@@ -290,14 +290,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Scripts>
 			<OnLoad>
 				local name = self:GetName();
-				getglobal(name.."Left"):SetVertexColor(0.6, 0.6, 0.6);
-				getglobal(name.."Middle"):SetVertexColor(0.6, 0.6, 0.6);
-				getglobal(name.."Right"):SetVertexColor(0.6, 0.6, 0.6);
-				getglobal(name.."LeftDisabled"):SetPoint("TOPLEFT", 0, 2);
-				self.leftHighlight = getglobal(name.."LeftHighlight");
-				self.middleHighlight = getglobal(name.."MiddleHighlight");
-				self.rightHighlight = getglobal(name.."RightHighlight");
-				self.text = getglobal(name.."Text");
+				_G[name.."Left"]:SetVertexColor(0.6, 0.6, 0.6);
+				_G[name.."Middle"]:SetVertexColor(0.6, 0.6, 0.6);
+				_G[name.."Right"]:SetVertexColor(0.6, 0.6, 0.6);
+				_G[name.."LeftDisabled"]:SetPoint("TOPLEFT", 0, 2);
+				self.leftHighlight = _G[name.."LeftHighlight"];
+				self.middleHighlight = _G[name.."MiddleHighlight"];
+				self.rightHighlight = _G[name.."RightHighlight"];
+				self.text = _G[name.."Text"];
 			</OnLoad>
 			<OnEnter>
 				self.leftHighlight:Show();
@@ -395,8 +395,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Scripts>
 			<OnLoad>
 				local name = self:GetName();
-				self.points = getglobal(name .. "Points");
-				self.icon = getglobal(name .. "Icon");
+				self.points = _G[name .. "Points"];
+				self.icon = _G[name .. "Icon"];
 			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -477,10 +477,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Scripts>
 			<OnLoad>
 				local name = self:GetName();
-				self.icon = getglobal(name .. "Icon");
-				self.label = getglobal(name .. "Label");
-				self.check = getglobal(name .. "Check");
-				self.border = getglobal(name .. "Border");
+				self.icon = _G[name .. "Icon"];
+				self.label = _G[name .. "Label"];
+				self.check = _G[name .. "Check"];
+				self.border = _G[name .. "Border"];
 			</OnLoad>
 			<OnEnter>
 				if ( self.date ) then
@@ -581,8 +581,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Scripts>
 			<OnLoad>
 				local name = self:GetName();
-				self.title = getglobal(name .. "Title");
-				self.text = getglobal(name .. "Text");
+				self.title = _G[name .. "Title"];
+				self.text = _G[name .. "Text"];
 			</OnLoad>
 		</Scripts>
 		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
@@ -745,8 +745,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Scripts>
 			<OnLoad>
 				local name = self:GetName();
-				self.name = getglobal(name .. "Name");
-				self.check = getglobal(name .. "Check");
+				self.name = _G[name .. "Name"];
+				self.check = _G[name .. "Check"];
 			</OnLoad>
 			<OnMouseUp>
 				if ( button == "LeftButton" ) then
@@ -1722,8 +1722,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Scripts>
 			<OnLoad>
 				local name = self:GetName();
-				self.player = getglobal(name .. "Player");
-				self.friend = getglobal(name .. "Friend");
+				self.player = _G[name .. "Player"];
+				self.friend = _G[name .. "Friend"];
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -2914,7 +2914,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<Scripts>
 							<OnShow>
 								--Temporaries
-								SetPortraitTexture(getglobal(self:GetName().."Portrait"), "player");
+								SetPortraitTexture(_G[self:GetName().."Portrait"], "player");
 								self:SetFrameLevel(self:GetParent():GetFrameLevel() + 4);
 							</OnShow>
 						</Scripts>
@@ -2974,7 +2974,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								<Scripts>
 									<OnLoad>
 										self:SetBackdropBorderColor(0.4, 0.2, 0, 1);
-										self.statusBar = getglobal(self:GetName().."StatusBar");
+										self.statusBar = _G[self:GetName().."StatusBar"];
 									</OnLoad>
 								</Scripts>
 							</Frame>
@@ -3015,7 +3015,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								<Scripts>
 									<OnLoad>
 										self:SetBackdropBorderColor(0.4, 0.2, 0, 1);
-										self.statusBar = getglobal(self:GetName().."StatusBar");
+										self.statusBar = _G[self:GetName().."StatusBar"];
 										self.statusBar.title:Hide();
 									</OnLoad>
 								</Scripts>
@@ -3052,13 +3052,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<Scripts>
 							<OnShow>
 								local parentName = self:GetParent():GetName();
-								getglobal(parentName .. "Summary"):Show();
-								getglobal(parentName .. "Watermark"):Hide();
-								getglobal(parentName .. "Dark"):Show();
+								_G[parentName .. "Summary"]:Show();
+								_G[parentName .. "Watermark"]:Hide();
+								_G[parentName .. "Dark"]:Show();
 							</OnShow>
 							<OnHide>
 								local parentName = self:GetParent():GetName();
-								getglobal(parentName .. "Summary"):Hide();
+								_G[parentName .. "Summary"]:Hide();
 							</OnHide>
 						</Scripts>
 					</ScrollFrame>
@@ -3094,8 +3094,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<Scripts>
 							<OnShow>
 								local parentName = self:GetParent():GetName();
-								getglobal(parentName .. "Watermark"):Show();
-								getglobal(parentName .. "Dark"):Hide();
+								_G[parentName .. "Watermark"]:Show();
+								_G[parentName .. "Dark"]:Hide();
 							</OnShow>
 						</Scripts>
 					</ScrollFrame>

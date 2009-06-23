@@ -3,7 +3,7 @@
 	<Script file="PVPBattlegroundFrame.lua"/>
 	<Button name="PVPBattlegroundButtonTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="315" y="16"/>
+			<AbsDimension x="295" y="16"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -310,6 +310,55 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<ScrollFrame name="$parentTypeScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlegroundType1">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="BattlegroundType5">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+							<Size>
+								<AbsDimension x="30" y="84"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-3" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.46875" top="0.0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+							<Size>
+								<AbsDimension x="30" y="84"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-3" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.53125" right="1.0" top="0.0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(self, offset, 16, PVPBattleground_UpdateBattlegrounds)
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>	
 			<ScrollFrame name="$parentInstanceScrollFrame" inherits="FauxScrollFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BattlegroundInstance1">
@@ -418,6 +467,7 @@
 			<OnLoad function="PVPBattlegroundFrame_OnLoad"/>
 			<OnEvent function="PVPBattlegroundFrame_OnEvent"/>
 			<OnShow function="PVPBattlegroundFrame_OnShow"/>
+			<OnHide function="PVPBattlegroundFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

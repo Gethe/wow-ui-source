@@ -112,7 +112,7 @@ function TradeSkillFrame_Update()
 		TradeSkillRequirementText:SetText("");
 		TradeSkillCollapseAllButton:Disable();
 		for i=1, MAX_TRADE_SKILL_REAGENTS, 1 do
-			getglobal("TradeSkillReagent"..i):Hide();
+			_G["TradeSkillReagent"..i]:Hide();
 		end
 	else
 		TradeSkillSkillName:Show();
@@ -174,14 +174,14 @@ function TradeSkillFrame_Update()
 				else
 					skillButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
 				end
-				getglobal("TradeSkillSkill"..i.."Highlight"):SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
-				getglobal("TradeSkillSkill"..i):UnlockHighlight();
+				_G["TradeSkillSkill"..i.."Highlight"]:SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
+				_G["TradeSkillSkill"..i]:UnlockHighlight();
 			else
 				if ( not skillName ) then
 					return;
 				end
 				skillButton:SetNormalTexture("");
-				getglobal("TradeSkillSkill"..i.."Highlight"):SetTexture("");
+				_G["TradeSkillSkill"..i.."Highlight"]:SetTexture("");
 				if ( numAvailable <= 0 ) then
 					skillButton:SetText(skillNamePrefix..skillName);
 					skillButtonText:SetWidth(TRADE_SKILL_TEXT_WIDTH);
@@ -311,9 +311,9 @@ function TradeSkillFrame_SetSelection(id)
 	end
 	for i=1, numReagents, 1 do
 		local reagentName, reagentTexture, reagentCount, playerReagentCount = GetTradeSkillReagentInfo(id, i);
-		local reagent = getglobal("TradeSkillReagent"..i)
-		local name = getglobal("TradeSkillReagent"..i.."Name");
-		local count = getglobal("TradeSkillReagent"..i.."Count");
+		local reagent = _G["TradeSkillReagent"..i]
+		local name = _G["TradeSkillReagent"..i.."Name"];
+		local count = _G["TradeSkillReagent"..i.."Count"];
 		if ( not reagentName or not reagentTexture ) then
 			reagent:Hide();
 		else
@@ -342,7 +342,7 @@ function TradeSkillFrame_SetSelection(id)
 	end
 	
 	for i=numReagents + 1, MAX_TRADE_SKILL_REAGENTS, 1 do
-		getglobal("TradeSkillReagent"..i):Hide();
+		_G["TradeSkillReagent"..i]:Hide();
 	end
 
 	local spellFocus = BuildColoredListString(GetTradeSkillTools(id));

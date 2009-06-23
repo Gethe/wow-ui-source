@@ -219,7 +219,7 @@ function GMSurveySubmitButton_OnClick()
 	end
 	GMSurveyCommentSubmit(GMSurveyFrameComment:GetText());
 	GMSurveySubmit();
-	TicketStatusFrame.hasGMSurvey = nil;
+	TicketStatusFrame.hasGMSurvey = false;
 	HideUIPanel(GMSurveyFrame);
 	UIErrorsFrame:AddMessage(GMSURVEY_SUBMITTED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1.0);
 end

@@ -349,7 +349,7 @@ uvarInfo = {
 function InterfaceOptionsFrame_InitializeUVars ()
 	-- Setup UVars that keep settings
 	for uvar, setting in SecureNext, uvarInfo do
-		setglobal(uvar, setting.default);
+		_G[uvar] = setting.default;
 	end
 end
 

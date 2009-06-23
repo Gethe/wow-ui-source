@@ -7,7 +7,7 @@ function TicTacToe_UpdateGameState(...)
 	local button;
 	for i=1, select("#", ...) do
 		player = select(i, ...);
-		button = getglobal("TicTacToeFrameButton"..i);
+		button = _G["TicTacToeFrameButton"..i];
 		if ( player == 1 ) then
 			button:SetDisabledTexture("Interface\\TicTacToeFrame\\TicTacToe-X");
 			button:Disable();

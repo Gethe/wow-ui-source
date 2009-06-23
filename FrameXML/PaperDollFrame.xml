@@ -15,6 +15,24 @@
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+			<Button name="$parentPopoutButton" parentKey="popoutButton" hidden="true">
+				<Size>
+					<AbsDimension x="16" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT"/>
+				</Anchors>
+				<NormalTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
+				<HighlightTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
+				<Scripts>
+					<OnLoad>
+						PaperDollFrameItemPopoutButton_OnLoad(self);
+					</OnLoad>
+					<OnClick>
+						PaperDollFrameItemPopoutButton_OnClick(self);
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
         <Scripts>
             <OnLoad>
@@ -90,7 +108,21 @@
 		</Scripts>
 	</CheckButton>
 	
-	<CheckButton name="GearSetPopupButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
+	<CheckButton name="GearSetPopupButtonTemplate" inherits="SimplePopupButtonTemplate" virtual="true">
+		<NormalTexture name="$parentIcon" nonBlocking="true">
+			<Size>
+				<AbsDimension x="36" y="36"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 		<Scripts>
 			<OnLoad>
 				local name = self:GetName();
@@ -910,7 +942,10 @@
 					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 				</Frames>
 				<Scripts>
-					<OnLoad function="PaperDollItemSlotButton_OnLoad"/>
+					<OnLoad>
+						self.maxDisplayCount = 999;
+						PaperDollItemSlotButton_OnLoad(self);
+					</OnLoad>
 					<OnEvent>
 						if ( event == "MERCHANT_UPDATE" ) then
 							-- update ammo amount shown in frame after selling ammo to a vendor

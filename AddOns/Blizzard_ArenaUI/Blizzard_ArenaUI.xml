@@ -427,11 +427,11 @@
 				self.numDebuffs = 0;
 				self.noTextPrefix = 1;
 				local prefix = "ArenaEnemyFrame"..id;
-				UnitFrame_Initialize(self, "arena"..id,  getglobal(prefix.."Name"), nil,
-					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"), 
-					   getglobal(prefix.."ManaBar"), getglobal(prefix.."ManaBarText"),
-				       getglobal(prefix.."Flash"));
-				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
+				UnitFrame_Initialize(self, "arena"..id,  _G[prefix.."Name"], nil,
+					   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
+					   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"],
+				       _G[prefix.."Flash"]);
+				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 				ArenaEnemyFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>

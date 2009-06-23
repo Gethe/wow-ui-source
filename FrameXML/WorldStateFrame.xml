@@ -512,7 +512,7 @@
 			</OnLoad>
 			<OnShow>
 				PanelTemplates_TabResize(self, 0);
-				getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 30);
+				_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 30);
 			</OnShow>
 			<OnClick>
 				WorldStateScoreFrameTab_OnClick(self, button, down);

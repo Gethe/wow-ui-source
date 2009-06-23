@@ -113,7 +113,7 @@
 				ChatEdit_OnTabPressed(self);
 			</OnTabPressed>
 			<OnTextChanged>
-				ChatEdit_OnTextChanged(self);
+				ChatEdit_OnTextChanged(self, userInput);
 			</OnTextChanged>
 			<OnTextSet>
 				ChatEdit_OnTextSet(self);

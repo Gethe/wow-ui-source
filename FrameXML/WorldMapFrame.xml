@@ -729,7 +729,7 @@
 			<OnShow function="WorldMapFrame_OnShow"/>
 			<OnHide function="WorldMapFrame_OnHide"/>
 			<OnEvent function="WorldMapFrame_OnEvent"/>
-			<OnUpdate function="RequestBattlefieldPositions"/>
+			<OnUpdate function="WorldMapFrame_OnUpdate"/>
 			<OnKeyDown function="WorldMapFrame_OnKeyDown"/>
 		</Scripts>
 	</Frame>

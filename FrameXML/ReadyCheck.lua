@@ -56,7 +56,7 @@ end
 function ReadyCheck_Start(readyCheckFrame)
 	readyCheckFrame:SetScript("OnUpdate", nil);
 
-	getglobal(readyCheckFrame:GetName().."Texture"):SetTexture(READY_CHECK_WAITING_TEXTURE);
+	_G[readyCheckFrame:GetName().."Texture"]:SetTexture(READY_CHECK_WAITING_TEXTURE);
 	readyCheckFrame.state = "waiting";
 	readyCheckFrame:SetAlpha(1);
 	readyCheckFrame:Show();
@@ -66,10 +66,10 @@ function ReadyCheck_Confirm(readyCheckFrame, ready)
 	readyCheckFrame:SetScript("OnUpdate", nil);
 
 	if ( ready == 1 ) then
-		getglobal(readyCheckFrame:GetName().."Texture"):SetTexture(READY_CHECK_READY_TEXTURE);
+		_G[readyCheckFrame:GetName().."Texture"]:SetTexture(READY_CHECK_READY_TEXTURE);
 		readyCheckFrame.state = "ready";
 	else
-		getglobal(readyCheckFrame:GetName().."Texture"):SetTexture(READY_CHECK_NOT_READY_TEXTURE);
+		_G[readyCheckFrame:GetName().."Texture"]:SetTexture(READY_CHECK_NOT_READY_TEXTURE);
 		readyCheckFrame.state = "notready";
 	end
 	readyCheckFrame:SetAlpha(1);
@@ -78,7 +78,7 @@ end
 
 function ReadyCheck_Finish(readyCheckFrame, fadeTime, onFinishFunc, onFinishFuncArg)
 	if ( readyCheckFrame.state == "waiting" ) then
-		getglobal(readyCheckFrame:GetName().."Texture"):SetTexture(READY_CHECK_AFK_TEXTURE);
+		_G[readyCheckFrame:GetName().."Texture"]:SetTexture(READY_CHECK_AFK_TEXTURE);
 		readyCheckFrame.state = "afk";
 	end
 

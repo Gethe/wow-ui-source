@@ -43,7 +43,7 @@
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 	</Button>
-	<CheckButton name="PopupButtonTemplate" virtual="true">
+	<CheckButton name="SimplePopupButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="36" y="36"/>
 		</Size>
@@ -78,6 +78,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
+	</CheckButton>
+	<CheckButton name="PopupButtonTemplate" virtual="true" inherits="SimplePopupButtonTemplate">
 		<NormalTexture name="$parentIcon">
 			<Size>
 				<AbsDimension x="36" y="36"/>

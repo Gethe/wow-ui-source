@@ -1,7 +1,7 @@
 CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame", "TokenFrame" };
 local NUM_CHARACTERFRAME_TABS = 5;
 function ToggleCharacter (tab)
-	local subFrame = getglobal(tab);
+	local subFrame = _G[tab];
 	if ( subFrame ) then
 		if (not subFrame.hidden) then
 			PanelTemplates_SetTab(CharacterFrame, subFrame:GetID());
@@ -23,9 +23,9 @@ end
 function CharacterFrame_ShowSubFrame (frameName)
 	for index, value in pairs(CHARACTERFRAME_SUBFRAMES) do
 		if ( value == frameName ) then
-			getglobal(value):Show()
+			_G[value]:Show()
 		else
-			getglobal(value):Hide();	
+			_G[value]:Hide();	
 		end	
 	end 
 end
@@ -87,8 +87,15 @@ function CharacterFrame_OnShow (self)
 	SetPortraitTexture(CharacterFramePortrait, "player");
 	CharacterNameText:SetText(UnitPVPName("player"));
 	UpdateMicroButtons();
+	PlayerFrameHealthBar.showNumeric = true;
+	PlayerFrameManaBar.showNumeric = true;
+	PlayerFrameAlternateManaBar.showNumeric = true;
+	MainMenuExpBar.showNumeric = true;
+	PetFrameHealthBar.showNumeric = true;
+	PetFrameManaBar.showNumeric = true;
 	ShowTextStatusBarText(PlayerFrameHealthBar);
 	ShowTextStatusBarText(PlayerFrameManaBar);
+	ShowTextStatusBarText(PlayerFrameAlternateManaBar);
 	ShowTextStatusBarText(MainMenuExpBar);
 	ShowTextStatusBarText(PetFrameHealthBar);
 	ShowTextStatusBarText(PetFrameManaBar);
@@ -100,8 +107,15 @@ end
 function CharacterFrame_OnHide (self)
 	PlaySound("igCharacterInfoClose");
 	UpdateMicroButtons();
+	PlayerFrameHealthBar.showNumeric = nil;
+	PlayerFrameManaBar.showNumeric = nil;
+	PlayerFrameAlternateManaBar.showNumeric = nil;
+	MainMenuExpBar.showNumeric =nil;
+	PetFrameHealthBar.showNumeric = nil;
+	PetFrameManaBar.showNumeric = nil;
 	HideTextStatusBarText(PlayerFrameHealthBar);
 	HideTextStatusBarText(PlayerFrameManaBar);
+	HideTextStatusBarText(PlayerFrameAlternateManaBar);
 	HideTextStatusBarText(MainMenuExpBar);
 	HideTextStatusBarText(PetFrameHealthBar);
 	HideTextStatusBarText(PetFrameManaBar);

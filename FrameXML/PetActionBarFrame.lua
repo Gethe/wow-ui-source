@@ -61,7 +61,7 @@ function PetActionBar_OnEvent (self, event, ...)
 end
 
 function PetActionBarFrame_IsAboveShapeshift(ignoreShowing)
-	return ( ((ShapeshiftBarFrame and GetNumShapeshiftForms() > 0) or
+	return ( ((ShapeshiftBarFrame and GetNumShapeshiftForms() > 0) or (MultiCastActionBarFrame and HasMultiCastActionBar()) or
 		(MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown())) and
 		(not MultiBarBottomLeft:IsShown() and MultiBarBottomRight:IsShown()) and
 		(ignoreShowing or (PetActionBarFrame and PetActionBarFrame:IsShown())))
@@ -110,8 +110,8 @@ function PetActionBar_Update (self)
 			petActionIcon:SetTexture(texture);
 			petActionButton.tooltipName = name;
 		else
-			petActionIcon:SetTexture(getglobal(texture));
-			petActionButton.tooltipName = getglobal(name);
+			petActionIcon:SetTexture(_G[texture]);
+			petActionButton.tooltipName = _G[name];
 		end
 		petActionButton.isToken = isToken;
 		petActionButton.tooltipSubtext = subtext;
@@ -160,7 +160,7 @@ end
 function PetActionBar_UpdateCooldowns()
 	local cooldown;
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
-		cooldown = getglobal("PetActionButton"..i.."Cooldown");
+		cooldown = _G["PetActionButton"..i.."Cooldown"];
 		local start, duration, enable = GetPetActionCooldown(i);
 		CooldownFrame_SetTimer(cooldown, start, duration, enable);
 	end
@@ -172,11 +172,14 @@ function PetActionBar_UpdatePositionValues()
 	elseif ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
 		PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
 	elseif ( ShapeshiftBarFrame and GetNumShapeshiftForms() > 0 ) then
-		PETACTIONBAR_XPOS = getglobal("ShapeshiftButton"..GetNumShapeshiftForms()):GetRight() + 20;
+		PETACTIONBAR_XPOS = _G["ShapeshiftButton"..GetNumShapeshiftForms()]:GetRight() + 20;
+	elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
+		PETACTIONBAR_XPOS = MultiCastActionBarFrame:GetRight() + 20;
 	else
-		PETACTIONBAR_XPOS = 36
+		PETACTIONBAR_XPOS = 36;
 	end
 end
+
 function ShowPetActionBar(doNotSlide)
 	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and (not PetActionBarFrame.locked or doNotSlide) and not PetActionBarFrame.ctrlPressed ) then
 		PetActionBar_UpdatePositionValues();
@@ -219,8 +222,8 @@ end
 function PetActionBar_ShowGrid()
 	ShowPetActionBar();
 	PetActionBarFrame.showgrid = PetActionBarFrame.showgrid + 1;
-	for i=1, NUM_PET_ACTION_SLOTS, 1 do
-		getglobal("PetActionButton"..i):Show();
+	for i=1, NUM_PET_ACTION_SLOTS do
+		_G["PetActionButton"..i]:Show();
 	end
 end
 
@@ -234,23 +237,21 @@ function PetActionBar_HideGrid()
 		for i=1, NUM_PET_ACTION_SLOTS, 1 do
 			name = GetPetActionInfo(i);
 			if ( not name ) then
-				getglobal("PetActionButton"..i):Hide();
+				_G["PetActionButton"..i]:Hide();
 			end
-			
 		end
 	end
-	
 end
 
 function PetActionButtonDown(id)
-	local button = getglobal("PetActionButton"..id);
+	local button = _G["PetActionButton"..id];
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
 end
 
 function PetActionButtonUp (id)
-	local button = getglobal("PetActionButton"..id);
+	local button = _G["PetActionButton"..id];
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
 		CastPetAction(id);
@@ -259,12 +260,12 @@ end
 
 function PetActionButton_OnLoad (self)
 	self:RegisterForDrag("LeftButton", "RightButton");
-	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
-	getglobal(self:GetName().."Cooldown"):ClearAllPoints();
-	getglobal(self:GetName().."Cooldown"):SetWidth(33);
-	getglobal(self:GetName().."Cooldown"):SetHeight(33);
-	getglobal(self:GetName().."Cooldown"):SetPoint("CENTER", self, "CENTER", -2, -1);
+	_G[self:GetName().."Cooldown"]:ClearAllPoints();
+	_G[self:GetName().."Cooldown"]:SetWidth(33);
+	_G[self:GetName().."Cooldown"]:SetHeight(33);
+	_G[self:GetName().."Cooldown"]:SetPoint("CENTER", self, "CENTER", -2, -1);
 	PetActionButton_SetHotkeys(self);
 end
 
@@ -339,24 +340,12 @@ end
 function PetActionButton_SetHotkeys (self)
 	local binding = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), 1);
 	local bindingSuffix = gsub(binding, ".*%-", "");
-	local hotkey = getglobal(self:GetName().."HotKey");
+	local hotkey = _G[self:GetName().."HotKey"];
 	if ( bindingSuffix == self:GetID() ) then
 		hotkey:SetText(self:GetID());
 	else
 		hotkey:SetText("");
 	end
-end
-
-function PetActionButton_StartFlash (self)
-	self.flashing = 1;
-	self.flashtime = 0;
-	ActionButton_UpdateState(self);
-end
-
-function PetActionButton_StopFlash (self)
-	self.flashing = 0;
-	getglobal(self:GetName().."Flash"):Hide();
-	ActionButton_UpdateState(self);
 end
 
 function LockPetActionBar()

@@ -268,7 +268,7 @@
 						</HitRectInsets>
 						<Scripts>
 							<OnLoad>
-								local text = getglobal(self:GetName().."Text");
+								local text = _G[self:GetName().."Text"];
 								text:SetText(VOICE_CHAT_PARTY_RAID);
 								text:SetPoint("LEFT", self, "RIGHT", 2, 1);
 
@@ -308,7 +308,7 @@
 						</HitRectInsets>
 						<Scripts>
 							<OnLoad>
-								local text = getglobal(self:GetName().."Text");
+								local text = _G[self:GetName().."Text"];
 								text:SetText(VOICE_CHAT_BATTLEGROUND);
 								text:SetPoint("LEFT", self, "RIGHT", 2, 1);
 
@@ -943,7 +943,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								local text = getglobal(self:GetName().."Text");
+								local text = _G[self:GetName().."Text"];
 								text:SetText(ENABLE_VOICECHAT);
 								text:SetPoint("LEFT", self, "RIGHT", 2, 2);
 							</OnLoad>
@@ -1044,8 +1044,8 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self.speaker = getglobal(self:GetName() .. "Speaker");
-				self.name = getglobal(self:GetName() .. "Name");
+				self.speaker = _G[self:GetName() .. "Speaker"];
+				self.name = _G[self:GetName() .. "Name"];
 				self.name:SetPoint("TOPLEFT", "$parentSpeaker", "TOPRIGHT", 8, -1);
 				self:EnableMouseWheel();
 				self:RegisterEvent("VOICE_PLATE_START");
@@ -1139,7 +1139,7 @@
 				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
 				self:SetAlpha(0);
-				UIDropDownMenu_Initialize(getglobal(self:GetName().."DropDown"), ChannelPulloutTabDropDown_Initialize, "MENU");
+				UIDropDownMenu_Initialize(_G[self:GetName().."DropDown"], ChannelPulloutTabDropDown_Initialize, "MENU");
 			</OnLoad>
 			<OnShow>
 				PanelTemplates_TabResize(self, 0);
@@ -1253,8 +1253,8 @@
 					<OnLoad>
 						ChannelPulloutRoster_OnLoad(self);
 						self:EnableMouseWheel();
-						self.downArrow = getglobal(self:GetParent():GetName() .. "DownArrow");
-						self.upArrow = getglobal(self:GetParent():GetName() .. "UpArrow");						
+						self.downArrow = _G[self:GetParent():GetName() .. "DownArrow"];
+						self.upArrow = _G[self:GetParent():GetName() .. "UpArrow"];						
 					</OnLoad>
 					<OnShow function="ChannelPulloutRoster_Update"/>
 					<OnMouseWheel function="ChannelPulloutRoster_Scroll"/>

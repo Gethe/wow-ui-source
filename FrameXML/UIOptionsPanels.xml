@@ -215,24 +215,7 @@
 					<OnEvent function="InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-			</Frame>
-			<CheckButton name="$parentEquipmentManager" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-64"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "equipmentManager";
-						self.setFunc = function(value) if ( value == "1" ) then GearManagerToggleButton:Show() else GearManagerToggleButton:Hide() end end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>						
+			</Frame>					
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -836,7 +819,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentPreviewTalentChanges" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowItemLevel" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentColorblindMode" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -847,8 +830,7 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "previewTalents";
-						self.setFunc = function (value) InterfaceOptionsDisplayPanelPreviewTalentChanges_SetFunc(); end;
+						self.cvar = "showItemLevel";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1034,7 +1016,24 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsObjectivesPanelAdvancedWatchFrame, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
+			<CheckButton name="$parentShowQuestObjectivesOnMap" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentIgnoreCursor" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-8" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showQuestObjectivesOnMap";
+						self.uvar = "SHOW_QUEST_OBJECTIVES_ON_MAP";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>			
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsObjectivesPanel_OnLoad"/>
@@ -2827,6 +2826,115 @@
 		</Scripts>	
 	</Frame>
 	
+	<!-- Features panel -->
+	<Frame name="InterfaceOptionsFeaturesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="FEATURES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="FEATURES_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentEquipmentManager" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentDescription" inherits="GameFontDisable" text="OPTION_USE_EQUIPMENT_MANAGER_DESCRIPTION" justifyH="LEFT" justifyV="TOP">
+							<Size>
+								<AbsDimension x="350" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="35" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "equipmentManager";
+						self.setFunc = function(value) if ( value == "1" ) then GearManagerToggleButton:Show() else GearManagerToggleButton:Hide() end end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentPreviewTalentChanges" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEquipmentManagerDescription" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-35" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentDescription" inherits="GameFontDisable" text="OPTION_PREVIEW_TALENT_CHANGES_DESCRIPTION" justifyH="LEFT" justifyV="TOP">
+							<Size>
+								<AbsDimension x="350" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="35" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "previewTalents";
+						self.setFunc = function (value) InterfaceOptionsDisplayPanelPreviewTalentChanges_SetFunc(); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = FEATURES_LABEL;
+				self.options = FeaturesPanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
 	<!-- Help panel -->
 	
 	<Frame name="InterfaceOptionsHelpPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
@@ -3080,5 +3188,4 @@
 			</OnLoad>
 		</Scripts>		
 	</Frame>
-	
 </Ui>

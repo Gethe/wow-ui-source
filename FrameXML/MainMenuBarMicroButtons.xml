@@ -90,11 +90,7 @@
 				ToggleSpellBook(BOOKTYPE_SPELL);
 			</OnClick>
 			<OnEnter>
-				if (PlayerHasSpells()) then
-					self.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
-				else
-					self.tooltipText = MicroButtonTooltipText(ABILITYBOOK_BUTTON, "TOGGLEABILITYBOOK");
-				end
+				self.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
 				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SPELLBOOK);
 			</OnEnter>
 		</Scripts>
@@ -221,7 +217,7 @@
 				self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
 				local factionGroup = UnitFactionGroup("player");
 				if ( factionGroup ) then
-					getglobal(self:GetName().."Texture"):SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
 				end
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLEPVP");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
@@ -233,7 +229,7 @@
 			<OnMouseDown>
 				if ( self.down ) then
 					self.down = nil;
-					ToggleFrame(PVPParentFrame);
+					TogglePVPFrame();
 					return;
 				end
 				PVPMicroButton_SetPushed();
@@ -243,7 +239,7 @@
 				if ( self.down ) then
 					self.down = nil;
 					if ( MouseIsOver(self) ) then
-						ToggleFrame(PVPParentFrame);
+						TogglePVPFrame();
 					else
 						UpdateMicroButtons();
 					end

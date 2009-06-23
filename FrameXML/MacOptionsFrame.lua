@@ -30,11 +30,11 @@ end
 
 function MacOptionsFrame_DisableSlider(slider)
 	local name = slider:GetName();
-	local value = getglobal(name.."Value");
-	getglobal(name.."Thumb"):Hide();
-	MacOptionsFrame_DisableText( getglobal(name.."Text") );
-	MacOptionsFrame_DisableText( getglobal(name.."Low") );
-	MacOptionsFrame_DisableText( getglobal(name.."High") );
+	local value = _G[name.."Value"];
+	_G[name.."Thumb"]:Hide();
+	MacOptionsFrame_DisableText( _G[name.."Text"] );
+	MacOptionsFrame_DisableText( _G[name.."Low"] );
+	MacOptionsFrame_DisableText( _G[name.."High"] );
 	slider:Disable();
 	if ( value ) then
 		value:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
@@ -43,13 +43,13 @@ end
 
 function MacOptionsFrame_Load()
 	for index, value in pairs(MacOptionsFrameCheckButtons) do
-		local button = getglobal("MacOptionsFrameCheckButton"..value.index);
-		local string = getglobal("MacOptionsFrameCheckButton"..value.index.."Text");
+		local button = _G["MacOptionsFrameCheckButton"..value.index];
+		local string = _G["MacOptionsFrameCheckButton"..value.index.."Text"];
 		local checked = 0;
 		checked = GetCVar(value.cvar);
 		button:SetChecked(checked);
 		
-		string:SetText(getglobal(index));
+		string:SetText(_G[index]);
 		button.tooltipText = value.tooltipText;
 		
 		if(not MovieRecording_IsSupported() and (value.index < 7)) then
@@ -78,13 +78,13 @@ function MacOptionsFrame_Load()
 	else
 		MacOptionsFrameQualitySlider:SetValue(GetCVar("MovieRecordingQuality"));
 		if GetCVar("MovieRecordingGUI") then
-			MacOptionsFrame_EnableCheckBox(getglobal("MacOptionsFrameCheckButton3"));
+			MacOptionsFrame_EnableCheckBox(_G["MacOptionsFrameCheckButton3"]);
 		else
-			MacOptionsFrame_DisableCheckBox(getglobal("MacOptionsFrameCheckButton3"));
+			MacOptionsFrame_DisableCheckBox(_G["MacOptionsFrameCheckButton3"]);
 		end
 	end
 	if(not MovieRecording_IsCursorRecordingSupported()) then
-		local button = getglobal("MacOptionsFrameCheckButton3");
+		local button = _G["MacOptionsFrameCheckButton3"];
 		button:SetChecked(0);
 		MacOptionsFrame_DisableCheckBox(button);
 	end
@@ -99,7 +99,7 @@ end
 
 function MacOptionsFrame_Save()
 	for index, value in pairs(MacOptionsFrameCheckButtons) do
-		local button = getglobal("MacOptionsFrameCheckButton"..value.index);
+		local button = _G["MacOptionsFrameCheckButton"..value.index];
 		if ( button:GetChecked() ) then
 			value.value = "1";
 		else
@@ -296,15 +296,15 @@ end
 function MacOptionsFrame_SetDefaults()
 	local checkButton, slider;
 	for index, value in pairs(MacOptionsFrameCheckButtons) do
-		checkButton = getglobal("MacOptionsFrameCheckButton"..value.index);
+		checkButton = _G["MacOptionsFrameCheckButton"..value.index];
 		checkButton:SetChecked(GetCVarDefault(value.cvar));
 	end
 	if(not MovieRecording_IsCursorRecordingSupported()) then
-		local button = getglobal("MacOptionsFrameCheckButton3");
+		local button = _G["MacOptionsFrameCheckButton3"];
 		button:SetChecked(0);
 		MacOptionsFrame_DisableCheckBox(button);
 	else
-		local button = getglobal("MacOptionsFrameCheckButton3");
+		local button = _G["MacOptionsFrameCheckButton3"];
 		MacOptionsFrame_EnableCheckBox(button);
 	end
 
@@ -323,7 +323,7 @@ end
 function MacOptionsFrame_DisableCheckBox(checkBox)
 	--checkBox:SetChecked(0);
 	checkBox:Disable();
-	getglobal(checkBox:GetName().."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	_G[checkBox:GetName().."Text"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 end
 
 function MacOptionsFrame_EnableCheckBox(checkBox, setChecked, checked, isWhite)
@@ -332,9 +332,9 @@ function MacOptionsFrame_EnableCheckBox(checkBox, setChecked, checked, isWhite)
 	end
 	checkBox:Enable();
 	if ( isWhite ) then
-		getglobal(checkBox:GetName().."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		_G[checkBox:GetName().."Text"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	else
-		getglobal(checkBox:GetName().."Text"):SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		_G[checkBox:GetName().."Text"]:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 	
 end

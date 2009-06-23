@@ -119,19 +119,21 @@ function BattlefieldMinimap_Update()
 	if ( not mapFileName ) then
 		return;
 	end
-	local iconSize = DEFAULT_POI_ICON_SIZE * GetBattlefieldMapIconScale();
 	local texName;
 	local dungeonLevel = GetCurrentMapDungeonLevel();
+	local completeMapFileName;
+	if ( dungeonLevel > 0 ) then
+		completeMapFileName = mapFileName..dungeonLevel.."_";
+	else
+		completeMapFileName = mapFileName;
+	end
 	for i=1, NUM_WORLDMAP_DETAIL_TILES do
-		if ( dungeonLevel > 0 ) then
-			texName = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..dungeonLevel.."_"..i;
-		else
-			texName = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i;
-		end
+		texName = "Interface\\WorldMap\\"..mapFileName.."\\"..completeMapFileName..i;
 		_G["BattlefieldMinimap"..i]:SetTexture(texName);
 	end
 
 	-- Setup the POI's
+	local iconSize = DEFAULT_POI_ICON_SIZE * GetBattlefieldMapIconScale();
 	local numPOIs = GetNumMapLandmarks();
 	if ( NUM_BATTLEFIELDMAP_POIS < numPOIs ) then
 		for i=NUM_BATTLEFIELDMAP_POIS+1, numPOIs do

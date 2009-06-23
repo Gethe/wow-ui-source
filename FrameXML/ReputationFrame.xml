@@ -198,32 +198,32 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				getglobal(self:GetName().."ReputationBarHighlight1"):SetPoint("TOPLEFT",self,"TOPLEFT",-2, 4);
-				getglobal(self:GetName().."ReputationBarHighlight1"):SetPoint("BOTTOMRIGHT",self,"BOTTOMRIGHT",-10, -4);
-				getglobal(self:GetName().."ReputationBarAtWarHighlight1"):SetPoint("TOPLEFT",self,"TOPLEFT",3,-2);
-				getglobal(self:GetName().."ReputationBarAtWarHighlight2"):SetPoint("TOPRIGHT",self,"TOPRIGHT",-1,-2);
-				getglobal(self:GetName().."ReputationBarAtWarHighlight1"):SetAlpha(0.2);
-				getglobal(self:GetName().."ReputationBarAtWarHighlight2"):SetAlpha(0.2);
-				getglobal(self:GetName().."Background"):SetPoint("TOPRIGHT", self:GetName().."ReputationBarLeftTexture", "TOPLEFT", 0, 0);
-				getglobal(self:GetName().."LeftLine"):SetWidth(0);
-				getglobal(self:GetName().."BottomLine"):SetHeight(0);
-				getglobal(self:GetName().."BottomLine"):SetPoint("TOP", self:GetName().."ExpandOrCollapseButton", "CENTER", 5, 0);
+				_G[self:GetName().."ReputationBarHighlight1"]:SetPoint("TOPLEFT",self,"TOPLEFT",-2, 4);
+				_G[self:GetName().."ReputationBarHighlight1"]:SetPoint("BOTTOMRIGHT",self,"BOTTOMRIGHT",-10, -4);
+				_G[self:GetName().."ReputationBarAtWarHighlight1"]:SetPoint("TOPLEFT",self,"TOPLEFT",3,-2);
+				_G[self:GetName().."ReputationBarAtWarHighlight2"]:SetPoint("TOPRIGHT",self,"TOPRIGHT",-1,-2);
+				_G[self:GetName().."ReputationBarAtWarHighlight1"]:SetAlpha(0.2);
+				_G[self:GetName().."ReputationBarAtWarHighlight2"]:SetAlpha(0.2);
+				_G[self:GetName().."Background"]:SetPoint("TOPRIGHT", self:GetName().."ReputationBarLeftTexture", "TOPLEFT", 0, 0);
+				_G[self:GetName().."LeftLine"]:SetWidth(0);
+				_G[self:GetName().."BottomLine"]:SetHeight(0);
+				_G[self:GetName().."BottomLine"]:SetPoint("TOP", self:GetName().."ExpandOrCollapseButton", "CENTER", 5, 0);
 			</OnLoad>
 			<OnClick>
 				ReputationBar_OnClick(self, button, down);
 			</OnClick>
 			<OnEnter>
 				if (self.tooltip) then
-					getglobal(self:GetName().."ReputationBarFactionStanding"):SetText(self.tooltip);
+					_G[self:GetName().."ReputationBarFactionStanding"]:SetText(self.tooltip);
 				end
-				getglobal(self:GetName().."ReputationBarHighlight1"):Show();
-				getglobal(self:GetName().."ReputationBarHighlight2"):Show();
+				_G[self:GetName().."ReputationBarHighlight1"]:Show();
+				_G[self:GetName().."ReputationBarHighlight2"]:Show();
 			</OnEnter>
 			<OnLeave>
-				getglobal(self:GetName().."ReputationBarFactionStanding"):SetText(self.standingText);
+				_G[self:GetName().."ReputationBarFactionStanding"]:SetText(self.standingText);
 				if ((GetSelectedFaction() ~= self.index) or (not ReputationDetailFrame:IsShown())) then
-					getglobal(self:GetName().."ReputationBarHighlight1"):Hide();
-					getglobal(self:GetName().."ReputationBarHighlight2"):Hide();
+					_G[self:GetName().."ReputationBarHighlight1"]:Hide();
+					_G[self:GetName().."ReputationBarHighlight2"]:Hide();
 				end
 			</OnLeave>
 		</Scripts>
@@ -665,8 +665,8 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								getglobal(self:GetName().."Text"):SetText(AT_WAR);
-								getglobal(self:GetName().."Text"):SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+								_G[self:GetName().."Text"]:SetText(AT_WAR);
+								_G[self:GetName().."Text"]:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 							</OnLoad>
 							<OnClick>
 								FactionToggleAtWar(GetSelectedFaction());
@@ -716,7 +716,7 @@
 						</HitRectInsets>
 						<Scripts>
 							<OnLoad>
-								getglobal(self:GetName().."Text"):SetText(MOVE_TO_INACTIVE);
+								_G[self:GetName().."Text"]:SetText(MOVE_TO_INACTIVE);
 							</OnLoad>
 							<OnClick>
 								if ( self:GetChecked() ) then
@@ -750,7 +750,7 @@
 						</HitRectInsets>
 						<Scripts>
 							<OnLoad>
-								getglobal(self:GetName().."Text"):SetText(SHOW_FACTION_ON_MAINSCREEN);
+								_G[self:GetName().."Text"]:SetText(SHOW_FACTION_ON_MAINSCREEN);
 							</OnLoad>
 							<OnClick>
 								if ( self:GetChecked() ) then

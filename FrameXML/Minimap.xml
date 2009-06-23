@@ -12,7 +12,7 @@
 		</Layers>
 		<Scripts>
 			<OnUpdate>
-				AnimateTexCoords(getglobal(self:GetName().."Texture"), 512, 256, 64, 64, 29, elapsed)
+				AnimateTexCoords(_G[self:GetName().."Texture"], 512, 256, 64, 64, 29, elapsed)
 			</OnUpdate>
 		</Scripts>
 	</Frame>
@@ -215,6 +215,20 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
+
+								<FontString name="BattlefieldIconText" inherits="GameFontNormal" nonspacewrap="true">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture name="MiniMapBattlefieldBorder" file="Interface\Minimap\MiniMap-TrackingBorder">

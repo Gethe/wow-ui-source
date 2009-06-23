@@ -17,8 +17,8 @@ end
 -- [[ AchievementAlertFrame ]] --
 function AchievementAlertFrame_OnLoad (self)
 	self:RegisterForClicks("LeftButtonUp");
-	self.glow = getglobal(self:GetName().."Glow");
-	self.shine = getglobal(self:GetName().."Shine");
+	self.glow = _G[self:GetName().."Glow"];
+	self.shine = _G[self:GetName().."Shine"];
 	-- Setup a continous timescale since the table values are offsets
 	self.fadeinDuration = 0.2;
 	self.flashDuration = 0.5;
@@ -38,7 +38,7 @@ function AchievementAlertFrame_FixAnchors ()
 	
 	local lastVisibleLootFrame;
 	for i=1, NUM_GROUP_LOOT_FRAMES do
-		local frame = getglobal("GroupLootFrame"..i);
+		local frame = _G["GroupLootFrame"..i];
 		if ( frame and frame:IsShown() ) then
 			lastVisibleLootFrame = frame;
 		end
@@ -61,9 +61,9 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 
 	AchievementAlertFrame_FixAnchors();
 
-	getglobal(frame:GetName() .. "Name"):SetText(name);
+	_G[frame:GetName() .. "Name"]:SetText(name);
 	
-	local shield = getglobal(frame:GetName() .. "Shield");
+	local shield = _G[frame:GetName() .. "Shield"];
 	AchievementShield_SetPoints(points, shield.points, GameFontNormal, GameFontNormalSmall);
 	if ( points == 0 ) then
 		shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
@@ -71,7 +71,7 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 		shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
 	end
 	
-	getglobal(frame:GetName() .. "IconTexture"):SetTexture(icon);
+	_G[frame:GetName() .. "IconTexture"]:SetTexture(icon);
 	frame.elapsed = 0;
 	frame.state = nil;
 	frame:SetAlpha(0);
@@ -86,7 +86,7 @@ function AchievementAlertFrame_GetAlertFrame()
 	local name, frame, previousFrame;
 	for i=1, maxAlerts do
 		name = "AchievementAlertFrame"..i;
-		frame = getglobal(name);
+		frame = _G[name];
 		if ( frame ) then
 			if ( not frame:IsShown() ) then
 				return frame;

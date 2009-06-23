@@ -82,7 +82,7 @@
 			<Button name="$parentButton1" inherits="StaticPopupButtonTemplate" id="1"/>
 			<Button name="$parentButton2" inherits="StaticPopupButtonTemplate" id="2"/>
 			<Button name="$parentButton3" inherits="StaticPopupButtonTemplate" id="3"/>
-			<EditBox name="$parentEditBox" historyLines="1" hidden="true">
+			<EditBox name="$parentEditBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate">
 				<Size>
 					<AbsDimension x="130" y="32"/>
 				</Size>
@@ -131,7 +131,7 @@
 						StaticPopup_EditBoxOnEscapePressed(self);
 					</OnEscapePressed>
 					<OnTextChanged>
-						StaticPopup_EditBoxOnTextChanged(self);
+						StaticPopup_EditBoxOnTextChanged(self, userInput);
 					</OnTextChanged>
 					<OnLoad>
 						self:GetParent().editBox = self;
@@ -139,7 +139,7 @@
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
-			<EditBox name="$parentWideEditBox" historyLines="1" hidden="true">
+			<EditBox name="$parentWideEditBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate">
 				<Size>
 					<AbsDimension x="350" y="64"/>
 				</Size>
@@ -304,12 +304,12 @@
 			</OnHide>
 			<OnLoad>
 				local name = self:GetName();
-				self.button1 = getglobal(name .. "Button1");
-				self.button2 = getglobal(name .. "Button2");
-				self.button3 = getglobal(name .. "Button3");
-				self.text = getglobal(name .. "Text");
-				self.icon = getglobal(name .. "AlertIcon");
-				self.moneyInputFrame = getglobal(name .. "MoneyInputFrame");
+				self.button1 = _G[name .. "Button1"];
+				self.button2 = _G[name .. "Button2"];
+				self.button3 = _G[name .. "Button3"];
+				self.text = _G[name .. "Text"];
+				self.icon = _G[name .. "AlertIcon"];
+				self.moneyInputFrame = _G[name .. "MoneyInputFrame"];
 			</OnLoad>
 		</Scripts>
 	</Frame>

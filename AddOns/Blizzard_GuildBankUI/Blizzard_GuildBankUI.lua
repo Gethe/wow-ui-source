@@ -102,7 +102,7 @@ function GuildBankFrame_OnLoad(self)
 			index = NUM_SLOTS_PER_GUILDBANK_GROUP;
 		end
 		column = ceil((i-0.5)/NUM_SLOTS_PER_GUILDBANK_GROUP);
-		button = getglobal("GuildBankColumn"..column.."Button"..index);
+		button = _G["GuildBankColumn"..column.."Button"..index];
 		button:SetID(i);
 	end
 	GuildBankFrame.mode = "bank";
@@ -162,7 +162,7 @@ function GuildBankFrame_SelectAvailableTab()
 		GuildBankFrame_Update();
 	else
 		if ( GuildBankFrame.nextAvailableTab ) then
-			GuildBankTab_OnClick(getglobal("GuildBankTab" .. GuildBankFrame.nextAvailableTab), "LeftButton", GuildBankFrame.nextAvailableTab);
+			GuildBankTab_OnClick(_G["GuildBankTab" .. GuildBankFrame.nextAvailableTab], "LeftButton", GuildBankFrame.nextAvailableTab);
 		else
 			GuildBankFrame_UpdateTabs();
 			GuildBankFrame_Update();
@@ -222,7 +222,7 @@ function GuildBankFrame_Update()
 				index = NUM_SLOTS_PER_GUILDBANK_GROUP;
 			end
 			column = ceil((i-0.5)/NUM_SLOTS_PER_GUILDBANK_GROUP);
-			button = getglobal("GuildBankColumn"..column.."Button"..index);
+			button = _G["GuildBankColumn"..column.."Button"..index];
 			button:SetID(i);
 			texture, itemCount, locked = GetGuildBankItemInfo(tab, i);
 			SetItemButtonTexture(button, texture);
@@ -314,7 +314,7 @@ function GuildBankFrame_UpdateTabBuyingInfo()
 			SetMoneyFrameColor("GuildBankFrameTabCostMoneyFrame", "red");
 			GuildBankFramePurchaseButton:Disable();
 		end
-		GuildBankTab_OnClick(getglobal("GuildBankTab" .. numTabs+1), "LeftButton", numTabs+1);
+		GuildBankTab_OnClick(_G["GuildBankTab" .. numTabs+1], "LeftButton", numTabs+1);
 		MoneyFrame_Update("GuildBankFrameTabCostMoneyFrame", tabCost);
 	end
 end
@@ -335,10 +335,10 @@ function GuildBankFrame_UpdateTabs()
 		disableAll = 1;
 	end
 	for i=1, MAX_GUILDBANK_TABS do
-		tab = getglobal("GuildBankTab"..i);
-		tabButton = getglobal("GuildBankTab"..i.."Button");
+		tab = _G["GuildBankTab"..i];
+		tabButton = _G["GuildBankTab"..i.."Button"];
 		name, icon, isViewable, canDeposit, numWithdrawals, remainingWithdrawals = GetGuildBankTabInfo(i);
-		iconTexture = getglobal("GuildBankTab"..i.."ButtonIconTexture");
+		iconTexture = _G["GuildBankTab"..i.."ButtonIconTexture"];
 		if ( not name or name == "" ) then
 			name = format(GUILDBANK_TAB_NUMBER, i);
 		end
@@ -524,7 +524,7 @@ function GuildBankFrame_HideColumns()
 		return;
 	end
 	for i=1, NUM_GUILDBANK_COLUMNS do
-		getglobal("GuildBankColumn"..i):Hide();
+		_G["GuildBankColumn"..i]:Hide();
 	end
 end
 
@@ -533,13 +533,13 @@ function GuildBankFrame_ShowColumns()
 		return;
 	end
 	for i=1, NUM_GUILDBANK_COLUMNS do
-		getglobal("GuildBankColumn"..i):Show();
+		_G["GuildBankColumn"..i]:Show();
 	end
 end
 
 function GuildBankFrame_DesaturateColumns(isDesaturated)
 	for i=1, NUM_GUILDBANK_COLUMNS do
-		SetDesaturation(getglobal("GuildBankColumn"..i.."Background"), isDesaturated);
+		SetDesaturation(_G["GuildBankColumn"..i.."Background"], isDesaturated);
 	end
 end
 
@@ -549,6 +549,7 @@ function GuildBankItemButton_OnLoad(self)
 	self.SplitStack = function(button, split)
 		SplitGuildBankItem(GetCurrentGuildBankTab(), button:GetID(), split);
 	end
+	self.UpdateTooltip = GuildBankItemButton_OnEnter;
 end
 
 function GuildBankItemButton_OnEnter(self)
@@ -711,8 +712,8 @@ function GuildBankPopupFrame_Update(tab)
 	-- Icon list
 	local texture;
 	for i=1, NUM_GUILDBANK_ICONS_SHOWN do
-		guildBankPopupIcon = getglobal("GuildBankPopupButton"..i.."Icon");
-		guildBankPopupButton = getglobal("GuildBankPopupButton"..i);
+		guildBankPopupIcon = _G["GuildBankPopupButton"..i.."Icon"];
+		guildBankPopupButton = _G["GuildBankPopupButton"..i];
 		index = (guildBankPopupOffset * NUM_GUILDBANK_ICONS_PER_ROW) + i;
 		texture = GetMacroItemIconInfo(index);
 		if ( index <= numguildBankIcons ) then

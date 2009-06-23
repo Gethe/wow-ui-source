@@ -401,25 +401,30 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						if ( not ItemSocketingFrame.destroyingGem ) then
-							AcceptSockets();
-							PlaySound("JewelcraftingFinalize");
-						else
-							StaticPopup_Show("CONFIRM_ACCEPT_SOCKETS");
-						end
-					</OnClick>
+            if( ItemSocketingFrame.itemIsRefundable) then
+                local dialog = StaticPopup_Show("END_REFUND");
+                if(dialog) then
+                  dialog.data = 2;
+                 end
+            elseif ( ItemSocketingFrame.destroyingGem ) then
+                StaticPopup_Show("CONFIRM_ACCEPT_SOCKETS");
+            else
+                AcceptSockets();
+                PlaySound("JewelcraftingFinalize");
+            end
+          </OnClick>
 					<OnMouseDown>
 						if ( not self.disabled ) then
-							getglobal(self:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-							getglobal(self:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-							getglobal(self:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+							_G[self:GetName().."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+							_G[self:GetName().."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+							_G[self:GetName().."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
 						end
 					</OnMouseDown>
 					<OnMouseUp>
 						if ( not self.disabled ) then
-							getglobal(self:GetName().."Left"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-							getglobal(self:GetName().."Middle"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-							getglobal(self:GetName().."Right"):SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+							_G[self:GetName().."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+							_G[self:GetName().."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+							_G[self:GetName().."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 						end
 					</OnMouseUp>
 				</Scripts>

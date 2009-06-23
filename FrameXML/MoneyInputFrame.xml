@@ -78,11 +78,11 @@
 						if ( IsShiftKeyDown() and self:GetParent().previousFocus ) then
 							self:GetParent().previousFocus:SetFocus();
 						else
-							getglobal(self:GetParent():GetName().."Silver"):SetFocus();
+							_G[self:GetParent():GetName().."Silver"]:SetFocus();
 						end
 					</OnTabPressed>
 					<OnEnterPressed>
-						getglobal(self:GetParent():GetName().."Silver"):SetFocus();
+						_G[self:GetParent():GetName().."Silver"]:SetFocus();
 					</OnEnterPressed>
 					<OnEscapePressed>
 						EditBox_ClearFocus(self);
@@ -174,13 +174,13 @@
 				<Scripts>
 					<OnTabPressed>
 						if ( IsShiftKeyDown() ) then
-							getglobal(self:GetParent():GetName().."Gold"):SetFocus();
+							_G[self:GetParent():GetName().."Gold"]:SetFocus();
 						else
-							getglobal(self:GetParent():GetName().."Copper"):SetFocus();
+							_G[self:GetParent():GetName().."Copper"]:SetFocus();
 						end
 					</OnTabPressed>
 					<OnEnterPressed>
-						getglobal(self:GetParent():GetName().."Copper"):SetFocus();
+						_G[self:GetParent():GetName().."Copper"]:SetFocus();
 					</OnEnterPressed>
 					<OnEscapePressed>
 						EditBox_ClearFocus(self);
@@ -272,7 +272,7 @@
 				<Scripts>
 					<OnTabPressed>
 						if ( IsShiftKeyDown() ) then
-							getglobal(self:GetParent():GetName().."Silver"):SetFocus();
+							_G[self:GetParent():GetName().."Silver"]:SetFocus();
 						else
 							if ( self:GetParent().nextFocus ) then
 								self:GetParent().nextFocus:SetFocus();

@@ -37,7 +37,7 @@ function TextStatusBar_UpdateTextString(textStatusBar)
 
 		if ( ( tonumber(valueMax) ~= valueMax or valueMax > 0 ) and not ( textStatusBar.pauseUpdates ) ) then
 			textStatusBar:Show();
-			if ( value and valueMax > 0 and ( GetCVarBool("statusTextPercentage") or textStatusBar.showPercentage ) ) then
+			if ( value and valueMax > 0 and ( GetCVarBool("statusTextPercentage") or textStatusBar.showPercentage ) and not textStatusBar.showNumeric) then
 				if ( value == 0 and textStatusBar.zeroText ) then
 					textString:SetText(textStatusBar.zeroText);
 					textStatusBar.isZero = 1;
@@ -123,6 +123,7 @@ function ShowTextStatusBarText(bar)
 			bar.TextString:Show();
 		end
 		bar.lockShow = bar.lockShow + 1;
+		TextStatusBar_UpdateTextString(bar);
 	end
 end
 
@@ -141,5 +142,6 @@ function HideTextStatusBarText(bar)
 		else
 			bar.TextString:Hide();
 		end
+		TextStatusBar_UpdateTextString(bar);
 	end
 end

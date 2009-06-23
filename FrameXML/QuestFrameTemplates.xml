@@ -146,7 +146,7 @@
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					if ( self.rewardType == "item" ) then
 						GameTooltip:SetQuestItem(self.type, self:GetID());
-						GameTooltip_ShowCompareItem();
+						GameTooltip_ShowCompareItem(GameTooltip);
 					elseif ( self.rewardType == "spell" ) then
 						GameTooltip:SetQuestRewardSpell();
 					end

@@ -45,7 +45,7 @@
 				self:SetWidth(self:GetTextWidth() + 40);
 			</OnLoad>
 			<OnClick>
-				HelpFrame_PopFrame(self, button, down);
+				HelpFrame_PopFrame();
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -196,7 +196,6 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<!-- Individual frames for each tab -->
 			<!-- Talk to a GM Frame -->
 			<Frame name="HelpFrameGMTalk" setAllPoints="true" hidden="true">
 				<Layers>
@@ -347,10 +346,7 @@
 					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						HelpFrame.needResponse = true;
-						HelpFrame.back = HelpFrameGMTalkCancel;
-					</OnShow>
+					<OnShow function="HelpFrameGMTalk_OnShow"/>
 				</Scripts>
 			</Frame>
 			<!-- Report Issue Frame -->
@@ -460,10 +456,7 @@
 					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						HelpFrame.needResponse = false;
-						HelpFrame.back = HelpFrameReportIssueCancel;
-					</OnShow>
+					<OnShow function="HelpFrameReportIssue_OnShow"/>
 				</Scripts>
 			</Frame>
 			<!-- Stuck Frame -->
@@ -535,10 +528,7 @@
 					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						HelpFrame.needResponse = true;
-						HelpFrame.back = HelpFrameStuckCancel;
-					</OnShow>
+					<OnShow function="HelpFrameStuck_OnShow"/>
 				</Scripts>
 			</Frame>
 			<!-- Open Ticket Frame -->
@@ -663,16 +653,6 @@
 						</Scripts>
 					</Button>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:RegisterEvent("UPDATE_TICKET");
-						self:RegisterEvent("GMSURVEY_DISPLAY");
-					</OnLoad>
-					<OnEvent function="HelpFrameOpenTicket_OnEvent"/>
-					<OnShow>
-						HelpFrame.back = HelpFrameOpenTicketCancel;
-					</OnShow>
-				</Scripts>
 			</Frame>
 			<!-- Welcome Frame -->
 			<Frame name="HelpFrameWelcome" setAllPoints="true" hidden="true">
@@ -758,11 +738,6 @@
 					</Button>
 					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
 				</Frames>
-				<Scripts>
-					<OnShow>
-						HelpFrame.back = HelpFrameWelcomeCancel;
-					</OnShow>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -772,7 +747,10 @@
 			<OnHide function="HelpFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="TicketStatusFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+
+	<!-- Ticket Status -->
+	<!-- It might be a good idea to put this in a separate file and convert the HelpFrame stuff into an addon -->
+	<Frame name="TicketStatusFrame" toplevel="true" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="208" y="75"/>
 		</Size>
@@ -783,36 +761,44 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="TicketStatusTitleText" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="168" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="TicketStatusTime" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="168" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="TicketStatusFrameIcon" file="Interface\HelpFrame\OpenTicketIcon">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
-			<!-- this frame helps us size a backdrop frame according to the size of the title and text
-			and prevents the backdrop frame from drawing on top of the text-->
-			<Frame setAllPoints="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="TicketStatusTitleText" inherits="GameFontNormalSmall" justifyH="LEFT">
-							<Size x="168" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="10" y="-8"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="TicketStatusTime" inherits="GameFontHighlightSmall" justifyH="LEFT">
-							<Size x="168" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Frame enableMouse="true">
+			<Button name="TicketStatusFrameButton">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText">
 						<Offset x="-8" y="8"/>
@@ -833,42 +819,8 @@
 					</BackgroundInsets>
 				</Backdrop>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-					</OnLoad>
-					<OnMouseUp function="TicketStatusFrameChildren_OnMouseUp"/>
-				</Scripts>
-			</Frame>
-			<Button name="TicketStatusFrameButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-3" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\HelpFrame\OpenTicketIcon">
-							<Size>
-								<AbsDimension x="32" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick function="TicketStatusFrameChildren_OnMouseUp"/>
+					<OnLoad function="TicketStatusFrameButton_OnLoad"/>
+					<OnClick function="TicketStatusFrameButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -876,14 +828,8 @@
 			<OnLoad function="TicketStatusFrame_OnLoad"/>
 			<OnEvent function="TicketStatusFrame_OnEvent"/>
 			<OnUpdate function="TicketStatusFrame_OnUpdate"/>
-			<OnShow>
-				TemporaryEnchantFrame:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", -205, (-self:GetHeight()));
-			</OnShow>
-			<OnHide>
-				if( not GMChatStatusFrame or not GMChatStatusFrame:IsShown() ) then
-					TemporaryEnchantFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -180, -13);
-				end
-			</OnHide>
+			<OnShow function="TicketStatusFrame_OnShow"/>
+			<OnHide function="TicketStatusFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -358,6 +358,7 @@
 				</xs:sequence>
 				<xs:attribute name="file" type="xs:string"/>
 				<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
+				<xs:attribute name="nonBlocking" type="xs:boolean" default="false"/>
 				<xs:attribute name="parentKey" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>

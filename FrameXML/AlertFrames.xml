@@ -138,9 +138,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<Scripts>
 				<OnLoad>
 					local name = self:GetName();
-					self.bling = getglobal(name .. "Bling");
-					self.texture = getglobal(name .. "Texture");
-					self.frame = getglobal(name .. "Overlay");
+					self.bling = _G[name .. "Bling"];
+					self.texture = _G[name .. "Texture"];
+					self.frame = _G[name .. "Overlay"];
 					
 					self.Desaturate = 
 						function (self) 

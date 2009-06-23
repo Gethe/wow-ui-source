@@ -130,7 +130,7 @@ function RaidBossEmoteFrame_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
 	if ( strsub(event,10,18) == "RAID_BOSS" ) then
 		local mtype = strsub(event,10);
-		local body = format(getglobal("CHAT_"..mtype.."_GET")..arg1, arg2, arg2);	--No need for pflag, monsters can't be afk, dnd, or GMs.
+		local body = format(_G["CHAT_"..mtype.."_GET"]..arg1, arg2, arg2);	--No need for pflag, monsters can't be afk, dnd, or GMs.
 		local info = ChatTypeInfo[mtype];
 		RaidNotice_AddMessage( RaidBossEmoteFrame, body, info );
 --		RaidNotice_AddMessage( RaidBossEmoteFrame, "This is a TEST of the MESSAGE!", ChatTypeInfo["RAID_BOSS_EMOTE"] );

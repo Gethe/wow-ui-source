@@ -30,7 +30,7 @@ function WorldFrame_OnUpdate(self, elapsed)
 	-- Process dialog onUpdates if the map is up or the ui is hidden
 	local dialog;
 	for i = 1, STATICPOPUP_NUMDIALOGS, 1 do
-		dialog = getglobal("StaticPopup"..i);
+		dialog = _G["StaticPopup"..i];
 		if ( dialog and dialog:IsShown() and not dialog:IsVisible() ) then
 			StaticPopup_OnUpdate(dialog, elapsed);
 		end
@@ -39,7 +39,7 @@ function WorldFrame_OnUpdate(self, elapsed)
 	-- Process breathbar onUpdates if the map is up or the ui is hidden
 	local bar;
 	for i=1, MIRRORTIMER_NUMTIMERS do
-		bar = getglobal("MirrorTimer"..i);
+		bar = _G["MirrorTimer"..i];
 		if ( bar and bar:IsShown() and not bar:IsVisible() ) then
 			MirrorTimerFrame_OnUpdate(bar, elapsed);
 		end

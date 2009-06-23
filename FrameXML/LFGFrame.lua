@@ -37,10 +37,12 @@ function LFGParentFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
 	LFGParentFrame.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
+	SetPortraitTexture(LFGParentFrameIcon, "player");
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("UPDATE_LFG_LIST");
 	self:RegisterEvent("MEETINGSTONE_CHANGED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 end
 
 function LFGParentFrame_OnEvent(self, event, ...)
@@ -58,6 +60,11 @@ function LFGParentFrame_OnEvent(self, event, ...)
 		SendLFGQuery();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		LFGFrame_UpdateRoles();
+	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		local unit = ...;
+		if ( unit == "player" ) then
+			SetPortraitTexture(LFGParentFrameIcon, unit);
+		end
 	end
 end
 
@@ -262,7 +269,7 @@ function LFMFrame_Update()
 	LFMFrameTotals:SetText(format(WHO_FRAME_TOTAL_TEMPLATE, numResults));
 	for i=1, LFGS_TO_DISPLAY, 1 do
 		resultIndex = scrollOffset + i;
-		button = getglobal("LFMFrameButton"..i);
+		button = _G["LFMFrameButton"..i];
 		button.lfgIndex = resultIndex;
 		if ( resultIndex <= numResults ) then
 			name, level, zone, class, criteria1, criteria2, criteria3, comment, numPartyMembers, isLFM, classFileName, willBeLeader, willBeTank, willBeHealer, willBeDPS = GetLFGResultsProxy(resultIndex);
@@ -272,20 +279,20 @@ function LFMFrame_Update()
 				else
 					classTextColor = NORMAL_FONT_COLOR;
 				end
-				buttonText = getglobal("LFMFrameButton"..i.."Name");
+				buttonText = _G["LFMFrameButton"..i.."Name"];
 				buttonText:SetText(name);
 				buttonText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				buttonText = getglobal("LFMFrameButton"..i.."Level");
+				buttonText = _G["LFMFrameButton"..i.."Level"];
 				buttonText:SetText(level);
-				classText = getglobal("LFMFrameButton"..i.."Class");
+				classText = _G["LFMFrameButton"..i.."Class"];
 				classText:SetText(class);
 				classText:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
 					
 				-- Show the party leader icon if necessary
 				if ( numPartyMembers > 0 ) then
-					getglobal("LFMFrameButton"..i.."PartyIcon"):Show();
+					_G["LFMFrameButton"..i.."PartyIcon"]:Show();
 				else	
-					getglobal("LFMFrameButton"..i.."PartyIcon"):Hide();
+					_G["LFMFrameButton"..i.."PartyIcon"]:Hide();
 				end
 				
 				if ( numPartyMembers > 0 ) then
@@ -493,8 +500,8 @@ end
 
 function LFMButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		LFMFrame.selectedLFM = getglobal("LFMFrameButton"..self:GetID()).lfgIndex;
-		LFMFrame.selectedName = getglobal("LFMFrameButton"..self:GetID().."Name"):GetText();
+		LFMFrame.selectedLFM = _G["LFMFrameButton"..self:GetID()].lfgIndex;
+		LFMFrame.selectedName = _G["LFMFrameButton"..self:GetID().."Name"]:GetText();
 		LFMFrame_UpdateDropDowns();
 		LFMFrame_CacheAndUpdate();
 		PlaySound("igMainMenuOptionCheckBoxOn");
@@ -840,12 +847,12 @@ function SetLFGTypeCriteria(dropdown, id, doNotSetLookingForGroup)
 	
 	UIDropDownMenu_SetSelectedID(dropdown, id);
 	local dropdownID = dropdown:GetID();
-	local nameDropDown = getglobal("LFGFrameNameDropDown"..dropdownID);
+	local nameDropDown = _G["LFGFrameNameDropDown"..dropdownID];
 	LFG_DISABLED_DROPDOWN_NAMES[dropdownID].type = id;
 	nameDropDown.selectedType = id
 	if ( UIDropDownMenu_GetSelectedID(nameDropDown)) then
 		UIDropDownMenu_ClearAll(nameDropDown);
-		getglobal("LFGSearchIcon"..dropdownID):SetTexture("");
+		_G["LFGSearchIcon"..dropdownID]:SetTexture("");
 	end
 end
 
@@ -912,11 +919,11 @@ function SetLFGNameCriteria(dropdown, id, icon, doNotSetLookingForGroup)
 	UIDropDownMenu_SetSelectedID(dropdown, id);
 	LFG_DISABLED_DROPDOWN_NAMES[dropdownID].name = id;
 
-	local iconTexture = getglobal("LFGSearchIcon"..dropdownID);
+	local iconTexture = _G["LFGSearchIcon"..dropdownID];
 	local iconPath = "Interface\\LFGFrame\\LFGIcon-";
 	local selectedText = "";
-	local typeDropdown = getglobal("LFGFrameTypeDropDown"..dropdownID);
-	if ( UIDropDownMenu_GetText(getglobal("LFGFrameNameDropDown"..dropdownID)) ) then
+	local typeDropdown = _G["LFGFrameTypeDropDown"..dropdownID];
+	if ( UIDropDownMenu_GetText(_G["LFGFrameNameDropDown"..dropdownID]) ) then
 		selectedText = UIDropDownMenu_GetText(typeDropdown);
 	end
 	if ( icon and icon ~= "" ) then

@@ -7,8 +7,8 @@ end
 function GMChatFrame_OnLoad(self)
 	local name = self:GetName();
 	for index, value in pairs(CHAT_FRAME_TEXTURES) do
-		getglobal(name..value):SetAlpha(0.4);
-		getglobal(name..value):SetVertexColor(0,0,0);
+		_G[name..value]:SetAlpha(0.4);
+		_G[name..value]:SetVertexColor(0,0,0);
 	end
 	
 	self:RegisterEvent("CHAT_MSG_WHISPER");
@@ -21,6 +21,8 @@ function GMChatFrame_OnLoad(self)
 	GMChatOpenLog:Enable();
 	
 	self:SetClampRectInsets(-35, 0, 30, 0);
+	
+	self:SetFont(DEFAULT_CHAT_FRAME:GetFont());
 end
 
 function GMChatFrame_OnEvent(self, event, ...)

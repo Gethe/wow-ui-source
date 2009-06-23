@@ -28,10 +28,10 @@ function ComboFrame_Update()
 		
 		for i=1, MAX_COMBO_POINTS do
 			local fadeInfo = {};
-			comboPoint = getglobal("ComboPoint" .. i);
+			comboPoint = _G["ComboPoint" .. i];
 			comboPoint:Show();
-			comboPointHighlight = getglobal("ComboPoint"..i.."Highlight");
-			comboPointShine = getglobal("ComboPoint"..i.."Shine");
+			comboPointHighlight = _G["ComboPoint"..i.."Highlight"];
+			comboPointShine = _G["ComboPoint"..i.."Shine"];
 			if ( i <= comboPoints ) then
 				if ( i > COMBO_FRAME_LAST_NUM_POINTS ) then
 					-- Fade in the highlight and set a function that triggers when it is done fading

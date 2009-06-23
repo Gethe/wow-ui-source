@@ -63,11 +63,11 @@
 					</OnClick>
 					<OnEnter>
 						CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
-						getglobal(self:GetName().."SwatchBg"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						_G[self:GetName().."SwatchBg"]:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
 					</OnEnter>
 					<OnLeave>
-						getglobal(self:GetName().."SwatchBg"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						_G[self:GetName().."SwatchBg"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						UIDropDownMenu_StartCounting(self:GetParent():GetParent());
 					</OnLeave>
 				</Scripts>
@@ -90,7 +90,7 @@
 					</OnClick>
 					<OnEnter>
 						local level =  self:GetParent():GetParent():GetID() + 1;
-						local listFrame = getglobal("DropDownList"..level);
+						local listFrame = _G["DropDownList"..level];
 						if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
 							ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
 						end
@@ -130,21 +130,21 @@
 			<OnEnter>
 				if ( self.hasArrow ) then
 					local level =  self:GetParent():GetID() + 1;
-					local listFrame = getglobal("DropDownList"..level);
+					local listFrame = _G["DropDownList"..level];
 					if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
 						ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
 					end
 				else
 					CloseDropDownMenus(self:GetParent():GetID() + 1);
 				end
-				getglobal(self:GetName().."Highlight"):Show();
+				_G[self:GetName().."Highlight"]:Show();
 				UIDropDownMenu_StopCounting(self:GetParent());
 				if ( self.tooltipTitle ) then
 					GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 				end
 			</OnEnter>
 			<OnLeave>
-				getglobal(self:GetName().."Highlight"):Hide();
+				_G[self:GetName().."Highlight"]:Hide();
 				UIDropDownMenu_StartCounting(self:GetParent());
 				GameTooltip:Hide();
 			</OnLeave>
@@ -219,7 +219,7 @@
 			<OnShow>
 				for i=1, UIDROPDOWNMENU_MAXBUTTONS do
 					if (not self.noResize) then
-						getglobal(self:GetName().."Button"..i):SetWidth(self.maxWidth);
+						_G[self:GetName().."Button"..i]:SetWidth(self.maxWidth);
 					end
 				end
 				if (not self.noResize) then
@@ -227,7 +227,7 @@
 				end
 				self.showTime = nil;
 				if ( self:GetID() > 1 ) then
-					self.parent = getglobal("DropDownList"..(self:GetID() - 1));
+					self.parent = _G["DropDownList"..(self:GetID() - 1)];
 				end
 			</OnShow>
 			<OnHide>

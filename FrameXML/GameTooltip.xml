@@ -3,18 +3,24 @@
 	<Script file="HealthBar.lua"/>
 	<Script file="GameTooltip.lua"/>
 	<Include file="GameTooltipTemplate.xml"/>
+	<GameTooltip name="ShoppingTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="ShoppingTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="ShoppingTooltip3" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<GameTooltip name="GameTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
 		<Scripts>
-			<OnLoad function="GameTooltip_OnLoad"/>
+			<OnLoad>
+				GameTooltip_OnLoad(self);
+				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2, ShoppingTooltip3 };
+			</OnLoad>
 			<OnTooltipSetUnit>
 				if ( self:IsUnit("mouseover") ) then
-					getglobal(self:GetName().."TextLeft1"):SetTextColor(GameTooltip_UnitColor("mouseover"));
+					_G[self:GetName().."TextLeft1"]:SetTextColor(GameTooltip_UnitColor("mouseover"));
 				end
 			</OnTooltipSetUnit>
 			<OnTooltipSetItem>
 				if ( IsModifiedClick("COMPAREITEMS") or
 				     (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) ) then
-					GameTooltip_ShowCompareItem(1);
+					GameTooltip_ShowCompareItem(self, 1);
 				end
 			</OnTooltipSetItem>
 			<OnHide>
@@ -26,9 +32,6 @@
 			<OnUpdate function="GameTooltip_OnUpdate"/>
 		</Scripts>
 	</GameTooltip>
-	<GameTooltip name="ShoppingTooltip1" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
-	<GameTooltip name="ShoppingTooltip2" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
-	<GameTooltip name="ShoppingTooltip3" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<Frame name="SmallTextTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="10" y="32"/>

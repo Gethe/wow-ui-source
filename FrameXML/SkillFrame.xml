@@ -226,7 +226,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						local text = getglobal(self:GetName().."Text");
+						local text = _G[self:GetName().."Text"];
 						text:SetText("Show Known Skills Only");
 						text:SetTextColor(1.0, 1.0, 1.0);
 					</OnLoad>

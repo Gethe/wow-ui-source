@@ -46,12 +46,12 @@ function PetitionFrame_Update(self)
 	local numNames = GetNumPetitionNames();
 	if ( self.minSignatures ) then
 		for i=1, self.minSignatures, 1 do
-			memberText = getglobal("PetitionFrameMemberName"..i);
+			memberText = _G["PetitionFrameMemberName"..i];
 			memberText:Hide();
 		end
 	end
 	for i=1, minSignatures do
-		memberText = getglobal("PetitionFrameMemberName"..i);
+		memberText = _G["PetitionFrameMemberName"..i];
 		if ( i <= numNames ) then
 			memberText:SetText(GetPetitionNameInfo(i));
 		else			

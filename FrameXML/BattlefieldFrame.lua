@@ -21,7 +21,13 @@ function BattlefieldFrame_OnLoad (self)
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	
+
+	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE");
+	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_INVITE");
+	self:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE");
+	self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
+	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
+		
 	BattlefieldFrame.timerDelay = 0;
 end
 
@@ -49,46 +55,58 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 		local arg1 = ...
 		BattlefieldFrame_UpdateStatus(false, arg1);
 		BattlefieldFrame_Update();
+	elseif ( event == "BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE" ) then
+		local arg1, arg2 = ...;
+		if(arg2) then
+			StaticPopup_Show("BFMGR_CONFIRM_WORLD_PVP_QUEUED", "Wintergrasp", nil, arg1);
+		else
+			StaticPopup_Show("BFMGR_DENY_WORLD_PVP_QUEUED", "Wintergrasp", nil, arg1);
+		end
+	elseif ( event == "BATTLEFIELD_MGR_EJECT_PENDING" ) then
+		local arg1 = ...;
+		local dialog = StaticPopup_Show("BFMGR_EJECT_PENDING", "Wintergrasp", nil, arg1);
+	elseif ( event == "BATTLEFIELD_MGR_EJECTED" ) then
+		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
+		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
+		StaticPopup_Hide("BFMGR_EJECT_PENDING");
+	elseif ( event == "BATTLEFIELD_MGR_QUEUE_INVITE" ) then
+		local arg1 = ...;
+		local dialog = StaticPopup_Show("BFMGR_INVITED_TO_QUEUE", "Wintergrasp", nil, arg1);
+		StaticPopup_Hide("BFMGR_EJECT_PENDING");
+	elseif ( event == "BATTLEFIELD_MGR_ENTRY_INVITE" ) then
+		local arg1 = ...;
+		local dialog = StaticPopup_Show("BFMGR_INVITED_TO_ENTER", "Wintergrasp", nil, arg1);
+		StaticPopup_Hide("BFMGR_EJECT_PENDING");
 	end
+	
 	if ( event == "PARTY_LEADER_CHANGED" ) then
 		BattlefieldFrame_Update();
 	end
 end
 
-local QUEUE_LAST_UPDATED = {}
-
 function BattlefieldTimerFrame_OnUpdate(self, elapsed)
 	local keepUpdating = false;
 	if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
 		keepUpdating = true;
+		BattlefieldIconText:Hide();
 	else
+		local lowestExpiration = 0;
 		for i = 1, MAX_BATTLEFIELD_QUEUES do
-			local expiration = GetBattlefieldPortExpiration(i)/1000;
-			if 	(	( expiration > 0 and expiration <= 10 ) and 
-					( not QUEUE_LAST_UPDATED[i] or QUEUE_LAST_UPDATED[i] and QUEUE_LAST_UPDATED[i] + 10 < GetTime() ) ) then 
-				QUEUE_LAST_UPDATED[i] = GetTime();
-				local _, mapName, instanceID, _, _, teamSize, registeredMatch = GetBattlefieldStatus(i);
-				if ( mapName ) then
-					if ( instanceID ~= 0 ) then
-						mapName = mapName.." "..instanceID;
-					end
-					if ( teamSize ~= 0 ) then
-						if ( registeredMatch ) then
-							mapName = ARENA_RATED_MATCH.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
-						else
-							mapName = ARENA_CASUAL.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
-						end
-					end
+			local expiration = GetBattlefieldPortExpiration(i);
+			if ( expiration > 0 ) then
+				if( expiration < lowestExpiration or lowestExpiration == 0 ) then
+					lowestExpiration = expiration;
 				end
-				local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
-				if ( dialog ) then
-					dialog.data = i;
-				end
-				PlaySound("PVPTHROUGHQUEUE");
-				keepUpdating = true;
-			elseif ( expiration > 10 ) then
+	
 				keepUpdating = true;
 			end
+		end
+
+		if( lowestExpiration > 0 and lowestExpiration <= 10 ) then
+			BattlefieldIconText:SetText(lowestExpiration);
+			BattlefieldIconText:Show();
+		else
+			BattlefieldIconText:Hide();
 		end
 	end
 	
@@ -220,7 +238,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 				showRightClickText = 1;
 			elseif ( status == "confirm" ) then
 				-- Have been accepted show enter battleground dialog
-				local seconds = SecondsToTime(GetBattlefieldPortExpiration(i)/1000);
+				local seconds = SecondsToTime(GetBattlefieldPortExpiration(i));
 				if ( seconds ~= "" ) then
 					tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, seconds);
 				else
@@ -324,8 +342,8 @@ function BattlefieldFrame_Update()
 	local numBattlefields = GetNumBattlefields() + 1;
 	for i=1, BATTLEFIELD_ZONES_DISPLAYED, 1 do
 		zoneIndex = zoneOffset + i;
-		button = getglobal("BattlefieldZone"..i);
-		buttonStatus = getglobal("BattlefieldZone"..i.."Status");
+		button = _G["BattlefieldZone"..i];
+		buttonStatus = _G["BattlefieldZone"..i.."Status"];
 
 		if ( zoneIndex == 1 ) then
 			-- The first entry in the list is always "first available"

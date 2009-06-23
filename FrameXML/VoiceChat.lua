@@ -197,9 +197,9 @@ end
 function VoiceChat_Animate(frame, animate)
 	local frameName = frame:GetName();
 	if ( animate ) then
-		UIFrameFlash(getglobal(frameName.."Flash"), 0.35, 0.35, -1);
+		UIFrameFlash(_G[frameName.."Flash"], 0.35, 0.35, -1);
 	else
-		UIFrameFlashStop(getglobal(frameName.."Flash"));
+		UIFrameFlashStop(_G[frameName.."Flash"]);
 		frame:Hide();
 	end
 end

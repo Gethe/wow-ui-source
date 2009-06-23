@@ -45,7 +45,7 @@ end
 
 function ArenaButton_OnClick(self)
 	local id = self:GetID();
-	getglobal("ArenaZone"..id):LockHighlight();
+	_G["ArenaZone"..id]:LockHighlight();
 	ArenaFrame.selection = id;
 	ArenaFrame_Update();
 end
@@ -59,7 +59,7 @@ function ArenaFrame_Update (self)
 	local button, battleType, teamSize;
 	
 	for i=1, MAX_ARENA_BATTLES, 1 do
-		button = getglobal("ArenaZone"..i);
+		button = _G["ArenaZone"..i];
 		battleType = ARENA_RATED;
 		teamSize = i;
 		-- if buttons begin a second set of buttons for casual games, change text elements.

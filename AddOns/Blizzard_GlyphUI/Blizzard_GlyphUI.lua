@@ -290,10 +290,8 @@ function GlyphFrame_OnUpdate (self, elapsed)
 end
 
 function GlyphFrame_PulseGlow ()
-	if ( GlyphFrame:IsShown() ) then
-		GlyphFrame.glow:Show();
-		GlyphFrame.glow.pulse:Play();
-	end
+	GlyphFrame.glow:Show();
+	GlyphFrame.glow.pulse:Play();
 end
 
 function GlyphFrame_OnShow (self)
@@ -339,7 +337,7 @@ function GlyphFrame_OnEvent (self, event, ...)
 	elseif ( event == "GLYPH_ADDED" or event == "GLYPH_REMOVED" or event == "GLYPH_UPDATED" ) then
 		local index = ...;
 		local glyph = _G["GlyphFrameGlyph" .. index];
-		if ( glyph ) then
+		if ( glyph and self:IsVisible() ) then
 			-- update the glyph
 			GlyphFrameGlyph_UpdateSlot(glyph);
 			-- play effects based on the event and glyph type

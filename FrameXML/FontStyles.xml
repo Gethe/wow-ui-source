@@ -80,6 +80,8 @@
 	<Font name="GameFontNormalMed3" inherits="SystemFont_Shadow_Med3" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+	<Font name="GameFontNormalRight" inherits="GameFontNormal" justifyH="RIGHT" virtual="true"/>
+	<Font name="GameFontNormalCenter" inherits="GameFontNormal" justifyH="CENTER" virtual="true"/>
 	<Font name="GameFontHighlightLeft" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontHighlightCenter" inherits="GameFontHighlight" justifyH="CENTER" virtual="true"/>
 	<Font name="GameFontHighlightRight" inherits="GameFontHighlight" justifyH="RIGHT" virtual="true"/>
@@ -225,7 +227,7 @@
 	<Font name="QuestDifficulty_Impossible" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
-	<Font name="QuestDifficulty_Verydifficult" inherits="GameFontNormalLeft" virtual="true">
+	<Font name="QuestDifficulty_VeryDifficult" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="1.0" g="0.5" b="0.25"/>
 	</Font>
 	<Font name="QuestDifficulty_Difficult" inherits="GameFontNormalLeft" virtual="true">

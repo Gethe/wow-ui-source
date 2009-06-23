@@ -125,9 +125,9 @@ function KnowledgeBaseFrame_OnEvent(self, event, ...)
 		KnowledgeBaseFrame_ShowErrorFrame();
 	end
 
-	if ( event ==  "UPDATE_GM_STATUS" ) then
+	if ( event == "UPDATE_GM_STATUS" ) then
 		local status = ...;
-		if ( status == 1 ) then
+		if ( status == GMTICKET_QUEUE_STATUS_ENABLED ) then
 			GetGMTicket();
 		else
 			KnowledgeBaseFrameGMTalk:Disable();
@@ -208,13 +208,13 @@ end
 
 function DisablePagingButton(button)
 	button:Disable();
-	local buttonText = getglobal(button:GetName() .. "Text");
+	local buttonText = _G[button:GetName() .. "Text"];
 	buttonText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 end
 
 function EnablePagingButton(button)
 	button:Enable();
-	local buttonText = getglobal(button:GetName() .. "Text");
+	local buttonText = _G[button:GetName() .. "Text"];
 	buttonText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 end
 
@@ -374,7 +374,7 @@ end
 
 function KnowledgeBaseArticleListFrame_HideArticleList()
 	for i=1, KBASE_NUM_ARTICLES_PER_PAGE do
-		local frame = getglobal("KnowledgeBaseArticleListItem" .. i);
+		local frame = _G["KnowledgeBaseArticleListItem" .. i];
 		frame:Hide();
 	end
 end
@@ -383,7 +383,7 @@ function KnowledgeBaseArticleListFrame_PopulateArticleList(articleCount, totalAr
 	KnowledgeBaseArticleListFrame_HideArticleList();
 	for i=1, articleCount do
 		local articleId, articleHeader, isArticleHot, isArticleUpdated =   dataFunc(i);
-		local frame = getglobal("KnowledgeBaseArticleListItem" .. i);
+		local frame = _G["KnowledgeBaseArticleListItem" .. i];
 		frame.number = i + ((KBASE_CURRENT_PAGE -1) * KBASE_NUM_ARTICLES_PER_PAGE);
 		frame.articleId = articleId;
 		frame.articleHeader = articleHeader;
@@ -401,10 +401,10 @@ function KnowledgeBaseArticleListFrame_PopulateArticleList(articleCount, totalAr
 end
 
 function KnowledgeBaseArticleListItem_Update(frame)
-	local numberText = getglobal(frame:GetName() .. "Number");
+	local numberText = _G[frame:GetName() .. "Number"];
 	numberText:SetText(frame.number .. ".");
 
-	local updatedIcon = getglobal(frame:GetName() .. "UpdatedIcon");
+	local updatedIcon = _G[frame:GetName() .. "UpdatedIcon"];
 
 	if ( frame.isArticleUpdated ) then
 		updatedIcon:Show();
@@ -412,14 +412,14 @@ function KnowledgeBaseArticleListItem_Update(frame)
 		updatedIcon:Hide();
 	end
 
-	local hotIcon = getglobal(frame:GetName() .. "HotIcon");
+	local hotIcon = _G[frame:GetName() .. "HotIcon"];
 	if ( frame.isArticleHot ) then
 		hotIcon:Show();
 	else
 		hotIcon:Hide();
 	end
 
-	local titleText = getglobal(frame:GetName() .. "Title");
+	local titleText = _G[frame:GetName() .. "Title"];
 	titleText:SetText(frame.articleHeader);
 end
 

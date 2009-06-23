@@ -22,7 +22,7 @@ function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
 	if ( not dialog ) then
 		-- Find an open dialog of the requested type
 		for index = 1, MIRRORTIMER_NUMTIMERS, 1 do
-			local frame = getglobal("MirrorTimer"..index);
+			local frame = _G["MirrorTimer"..index];
 			if ( frame:IsShown() and (frame.timer == timer) ) then
 				dialog = frame;
 				break;
@@ -32,7 +32,7 @@ function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
 	if ( not dialog ) then
 		-- Find a free dialog
 		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
-			local frame = getglobal("MirrorTimer"..index);
+			local frame = _G["MirrorTimer"..index];
 			if ( not frame:IsShown() ) then
 				dialog = frame;
 				break;
@@ -53,11 +53,11 @@ function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
 	end
 
 	-- Set the text of the dialog
-	local text = getglobal(dialog:GetName().."Text");
+	local text = _G[dialog:GetName().."Text"];
 	text:SetText(label);
 
 	-- Set the status bar of the dialog
-	local statusbar = getglobal(dialog:GetName().."StatusBar");
+	local statusbar = _G[dialog:GetName().."StatusBar"];
 	local color = MirrorTimerColors[timer];
 	statusbar:SetMinMaxValues(0, (maxvalue / 1000));
 	statusbar:SetValue(dialog.value);
@@ -111,7 +111,7 @@ function MirrorTimerFrame_OnUpdate(frame, elapsed)
 	if ( frame.paused ) then
 		return;
 	end
-	local statusbar = getglobal(frame:GetName().."StatusBar");
+	local statusbar = _G[frame:GetName().."StatusBar"];
 	frame.value = GetMirrorTimerProgress(frame.timer)  / 1000;
 	statusbar:SetValue(frame.value);
 end

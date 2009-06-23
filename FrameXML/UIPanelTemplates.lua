@@ -16,7 +16,7 @@ function PanelTemplates_UpdateTabs(frame)
 	if ( frame.selectedTab ) then
 		local tab;
 		for i=1, frame.numTabs, 1 do
-			tab = getglobal(frame:GetName().."Tab"..i);
+			tab = _G[frame:GetName().."Tab"..i];
 			if ( tab.isDisabled ) then
 				PanelTemplates_SetDisabledTabState(tab);
 			elseif ( i == frame.selectedTab ) then
@@ -38,10 +38,10 @@ end
 function PanelTemplates_TabResize(tab, padding, absoluteSize, maxWidth, absoluteTextSize)
 	local tabName = tab:GetName();
 	
-	local buttonMiddle = getglobal(tabName.."Middle");
-	local buttonMiddleDisabled = getglobal(tabName.."MiddleDisabled");
-	local sideWidths = 2 * getglobal(tabName.."Left"):GetWidth();
-	local tabText = getglobal(tab:GetName().."Text");
+	local buttonMiddle = _G[tabName.."Middle"];
+	local buttonMiddleDisabled = _G[tabName.."MiddleDisabled"];
+	local sideWidths = 2 * _G[tabName.."Left"]:GetWidth();
+	local tabText = _G[tab:GetName().."Text"];
 	local width, tabWidth;
 	local textWidth;
 	if ( absoluteTextSize ) then
@@ -88,7 +88,7 @@ function PanelTemplates_TabResize(tab, padding, absoluteSize, maxWidth, absolute
 	end
 	
 	tab:SetWidth(tabWidth);
-	local highlightTexture = getglobal(tabName.."HighlightTexture");
+	local highlightTexture = _G[tabName.."HighlightTexture"];
 	if ( highlightTexture ) then
 		highlightTexture:SetWidth(tabWidth);
 	end
@@ -99,12 +99,12 @@ function PanelTemplates_SetNumTabs(frame, numTabs)
 end
 
 function PanelTemplates_DisableTab(frame, index)
-	getglobal(frame:GetName().."Tab"..index).isDisabled = 1;
+	_G[frame:GetName().."Tab"..index].isDisabled = 1;
 	PanelTemplates_UpdateTabs(frame);
 end
 
 function PanelTemplates_EnableTab(frame, index)
-	local tab = getglobal(frame:GetName().."Tab"..index);
+	local tab = _G[frame:GetName().."Tab"..index];
 	tab.isDisabled = nil;
 	-- Reset text color
 	tab:SetDisabledFontObject(GameFontHighlightSmall);
@@ -113,27 +113,27 @@ end
 
 function PanelTemplates_DeselectTab(tab)
 	local name = tab:GetName();
-	getglobal(name.."Left"):Show();
-	getglobal(name.."Middle"):Show();
-	getglobal(name.."Right"):Show();
+	_G[name.."Left"]:Show();
+	_G[name.."Middle"]:Show();
+	_G[name.."Right"]:Show();
 	--tab:UnlockHighlight();
 	tab:Enable();
-	getglobal(name.."LeftDisabled"):Hide();
-	getglobal(name.."MiddleDisabled"):Hide();
-	getglobal(name.."RightDisabled"):Hide();
+	_G[name.."LeftDisabled"]:Hide();
+	_G[name.."MiddleDisabled"]:Hide();
+	_G[name.."RightDisabled"]:Hide();
 end
 
 function PanelTemplates_SelectTab(tab)
 	local name = tab:GetName();
-	getglobal(name.."Left"):Hide();
-	getglobal(name.."Middle"):Hide();
-	getglobal(name.."Right"):Hide();
+	_G[name.."Left"]:Hide();
+	_G[name.."Middle"]:Hide();
+	_G[name.."Right"]:Hide();
 	--tab:LockHighlight();
 	tab:Disable();
 	tab:SetDisabledFontObject(GameFontHighlightSmall);
-	getglobal(name.."LeftDisabled"):Show();
-	getglobal(name.."MiddleDisabled"):Show();
-	getglobal(name.."RightDisabled"):Show();
+	_G[name.."LeftDisabled"]:Show();
+	_G[name.."MiddleDisabled"]:Show();
+	_G[name.."RightDisabled"]:Show();
 	
 	if ( GameTooltip:IsOwned(tab) ) then
 		GameTooltip:Hide();
@@ -142,21 +142,21 @@ end
 
 function PanelTemplates_SetDisabledTabState(tab)
 	local name = tab:GetName();
-	getglobal(name.."Left"):Show();
-	getglobal(name.."Middle"):Show();
-	getglobal(name.."Right"):Show();
+	_G[name.."Left"]:Show();
+	_G[name.."Middle"]:Show();
+	_G[name.."Right"]:Show();
 	--tab:UnlockHighlight();
 	tab:Disable();
 	tab.text = tab:GetText();
 	-- Gray out text
 	tab:SetDisabledFontObject(GameFontDisableSmall);
-	getglobal(name.."LeftDisabled"):Hide();
-	getglobal(name.."MiddleDisabled"):Hide();
-	getglobal(name.."RightDisabled"):Hide();
+	_G[name.."LeftDisabled"]:Hide();
+	_G[name.."MiddleDisabled"]:Hide();
+	_G[name.."RightDisabled"]:Hide();
 end
 
 function ScrollFrameTemplate_OnMouseWheel(self, value, scrollBar)
-	scrollBar = scrollBar or getglobal(self:GetName() .. "ScrollBar");
+	scrollBar = scrollBar or _G[self:GetName() .. "ScrollBar"];
 	if ( value > 0 ) then
 		scrollBar:SetValue(scrollBar:GetValue() - (scrollBar:GetHeight() / 2));
 	else
@@ -168,7 +168,7 @@ end
 function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button, smallWidth, bigWidth, highlightFrame, smallHighlightWidth, bigHighlightWidth, alwaysShowScrollBar )
 	-- If more than one screen full of skills then show the scrollbar
 	local frameName = frame:GetName();
-	local scrollBar = getglobal( frameName.."ScrollBar" );
+	local scrollBar = _G[ frameName.."ScrollBar" ];
 	local showScrollBar;
 	if ( numItems > numToDisplay or alwaysShowScrollBar ) then
 		frame:Show();
@@ -178,9 +178,9 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button
 		frame:Hide();
 	end
 	if ( frame:IsShown() ) then
-		local scrollChildFrame = getglobal( frameName.."ScrollChildFrame" );
-		local scrollUpButton = getglobal( frameName.."ScrollBarScrollUpButton" );
-		local scrollDownButton = getglobal( frameName.."ScrollBarScrollDownButton" );
+		local scrollChildFrame = _G[ frameName.."ScrollChildFrame" ];
+		local scrollUpButton = _G[ frameName.."ScrollBarScrollUpButton" ];
+		local scrollDownButton = _G[ frameName.."ScrollBarScrollDownButton" ];
 		local scrollFrameHeight = 0;
 		local scrollChildHeight = 0;
 
@@ -216,7 +216,7 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button
 		end
 		if ( button ) then
 			for i=1, numToDisplay do
-				getglobal(button..i):SetWidth(smallWidth);
+				_G[button..i]:SetWidth(smallWidth);
 			end
 		end
 	else
@@ -226,7 +226,7 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button
 		end
 		if ( button ) then
 			for i=1, numToDisplay do
-				getglobal(button..i):SetWidth(bigWidth);
+				_G[button..i]:SetWidth(bigWidth);
 			end
 		end
 	end
@@ -234,7 +234,7 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button
 end
 
 function FauxScrollFrame_OnVerticalScroll(self, value, itemHeight, updateFunction)
-	local scrollbar = getglobal(self:GetName().."ScrollBar");
+	local scrollbar = _G[self:GetName().."ScrollBar"];
 	scrollbar:SetValue(value);
 	self.offset = floor((value / itemHeight) + 0.5);
 	if ( updateFunction ) then
@@ -252,17 +252,17 @@ end
 
 -- Scrollframe functions
 function ScrollFrame_OnLoad(self)
-	getglobal(self:GetName().."ScrollBarScrollDownButton"):Disable();
-	getglobal(self:GetName().."ScrollBarScrollUpButton"):Disable();
+	_G[self:GetName().."ScrollBarScrollDownButton"]:Disable();
+	_G[self:GetName().."ScrollBarScrollUpButton"]:Disable();
 
-	local scrollbar = getglobal(self:GetName().."ScrollBar");
+	local scrollbar = _G[self:GetName().."ScrollBar"];
 	scrollbar:SetMinMaxValues(0, 0);
 	scrollbar:SetValue(0);
 	self.offset = 0;
 end
 
 function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
-	local scrollbar = getglobal(self:GetName().."ScrollBar");
+	local scrollbar = _G[self:GetName().."ScrollBar"];
 	if ( not yrange ) then
 		yrange = self:GetVerticalScrollRange();
 	end
@@ -274,28 +274,28 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 	scrollbar:SetValue(value);
 	if ( floor(yrange) == 0 ) then
 		if ( self.scrollBarHideable ) then
-			getglobal(self:GetName().."ScrollBar"):Hide();
-			getglobal(scrollbar:GetName().."ScrollDownButton"):Hide();
-			getglobal(scrollbar:GetName().."ScrollUpButton"):Hide();
+			_G[self:GetName().."ScrollBar"]:Hide();
+			_G[scrollbar:GetName().."ScrollDownButton"]:Hide();
+			_G[scrollbar:GetName().."ScrollUpButton"]:Hide();
 		else
-			getglobal(scrollbar:GetName().."ScrollDownButton"):Disable();
-			getglobal(scrollbar:GetName().."ScrollUpButton"):Disable();
-			getglobal(scrollbar:GetName().."ScrollDownButton"):Show();
-			getglobal(scrollbar:GetName().."ScrollUpButton"):Show();
+			_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
+			_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
+			_G[scrollbar:GetName().."ScrollDownButton"]:Show();
+			_G[scrollbar:GetName().."ScrollUpButton"]:Show();
 		end
-		getglobal(scrollbar:GetName().."ThumbTexture"):Hide();
+		_G[scrollbar:GetName().."ThumbTexture"]:Hide();
 	else
-		getglobal(scrollbar:GetName().."ScrollDownButton"):Show();
-		getglobal(scrollbar:GetName().."ScrollUpButton"):Show();
-		getglobal(self:GetName().."ScrollBar"):Show();
-		getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
-		getglobal(scrollbar:GetName().."ThumbTexture"):Show();
+		_G[scrollbar:GetName().."ScrollDownButton"]:Show();
+		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
+		_G[self:GetName().."ScrollBar"]:Show();
+		_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
+		_G[scrollbar:GetName().."ThumbTexture"]:Show();
 	end
 	
 	-- Hide/show scrollframe borders
-	local top = getglobal(self:GetName().."Top");
-	local bottom = getglobal(self:GetName().."Bottom");
-	local middle = getglobal(self:GetName().."Middle");
+	local top = _G[self:GetName().."Top"];
+	local bottom = _G[self:GetName().."Bottom"];
+	local middle = _G[self:GetName().."Middle"];
 	if ( top and bottom and self.scrollBarHideable ) then
 		if ( self:GetVerticalScrollRange() == 0 ) then
 			top:Hide();
@@ -326,7 +326,11 @@ function ScrollingEdit_OnCursorChanged(self, x, y, w, h)
 	self.handleCursorChange = true;
 end
 
---Declaring local variables in OnUpdate code makes the GC cry.
+-- Declaring local variables in OnUpdate code makes the GC cry.
+-- NOTE: If your edit box never shows partial lines of text, then this function will not work when you use
+-- your mouse to move the edit cursor. You need the edit box to cut lines of text so that you can use your
+-- mouse to highlight those partially-seen lines; otherwise you won't be able to use the mouse to move the
+-- cursor above or below the current scroll area of the edit box.
 local height, range, scroll, size, cursorOffset;
 function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
 	if ( self.handleCursorChange ) then
@@ -386,7 +390,7 @@ function EditBox_HandleTabbing(self, tabList)
 	end
 
 	local target = tabList[index];
-	getglobal(target):SetFocus();
+	_G[target]:SetFocus();
 end
 
 function EditBox_ClearFocus (self)

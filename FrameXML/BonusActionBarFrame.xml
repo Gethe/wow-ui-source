@@ -11,7 +11,7 @@
 				ActionButton_OnLoad(self);
 				self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 				self:SetFrameLevel(self:GetFrameLevel() + 2);
-				local cooldown = getglobal(self:GetName().."Cooldown");
+				local cooldown = _G[self:GetName().."Cooldown"];
 				cooldown:SetFrameLevel(cooldown:GetFrameLevel() + 2);
 			</OnLoad>
 		</Scripts>
@@ -26,7 +26,7 @@
 				ShapeshiftBar_ChangeForm(self:GetID());
 			</OnClick>
 			<OnEnter>
-				if ( GetCVar("UberTooltips") == "1" ) then
+				if ( GetCVarBool("UberTooltips") ) then
 					GameTooltip_SetDefaultAnchor(GameTooltip, self);
 				else
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -53,7 +53,7 @@
 		</Scripts>
 	</CheckButton>
 
-  <Frame name="BonusActionBarFrame" frameStrata="HIGH" parent="MainMenuBar" enableMouse="true" toplevel="true" hidden="true">
+	<Frame name="BonusActionBarFrame" frameStrata="HIGH" parent="MainMenuBar" enableMouse="true" toplevel="true" hidden="true">
 		<Size>
 			<AbsDimension x="505" y="43"/>
 		</Size>

@@ -100,12 +100,20 @@ function ActionButton_OnLoad (self)
 end
 
 function ActionButton_UpdateHotkeys (self, actionButtonType)
+	local id;
     if ( not actionButtonType ) then
         actionButtonType = "ACTIONBUTTON";
+		id = self:GetID();
+	else
+		if ( actionButtonType == "MULTICASTACTIONBUTTON" ) then
+			id = self.buttonIndex;
+		else
+			id = self:GetID();
+		end
     end
 
     local hotkey = _G[self:GetName().."HotKey"];
-    local key = GetBindingKey(actionButtonType..self:GetID()) or
+    local key = GetBindingKey(actionButtonType..id) or
                 GetBindingKey("CLICK "..self:GetName()..":LeftButton");
 
 	local text = GetBindingText(key, "KEY_", 1);
@@ -134,6 +142,8 @@ function ActionButton_CalculateAction (self, button)
 					offset = BonusActionBarFrame.lastBonusBar;
 				end
 				page = NUM_ACTIONBAR_PAGES + offset;
+			elseif ( self.buttonType == "MULTICASTACTIONBUTTON" ) then
+				page = NUM_ACTIONBAR_PAGES + GetMultiCastBarOffset();
 			end
 		end
 		return (self:GetID() + ((page - 1) * NUM_ACTIONBAR_BUTTONS));
@@ -151,21 +161,13 @@ function ActionButton_UpdateAction (self)
 end
 
 function ActionButton_Update (self)
-	-- Special case code for bonus bar buttons
-	-- Prevents the button from updating if the bonusbar is still in an animation transition
-	if ( self.isBonus and self.inTransition ) then
-		self.needsUpdate = true;
-		ActionButton_UpdateUsable(self);
-		return;
-	end
-	
 	local name = self:GetName();
 
 	local action = self.action;
 	local icon = _G[name.."Icon"];
 	local buttonCooldown = _G[name.."Cooldown"];
 	local texture = GetActionTexture(action);	
-	
+
 	if ( HasAction(action) ) then
 		if ( not self.eventsRegistered ) then
 			self:RegisterEvent("ACTIONBAR_UPDATE_STATE");
@@ -254,7 +256,7 @@ function ActionButton_Update (self)
 		end
 	end
 	ActionButton_UpdateCount(self);	
-	
+
 	-- Update tooltip
 	if ( GameTooltip:GetOwner() == self ) then
 		ActionButton_SetTooltip(self);
@@ -265,11 +267,11 @@ end
 
 function ActionButton_ShowGrid (button)
 	assert(button);
-	
+
 	if ( issecure() ) then
 		button:SetAttribute("showgrid", button:GetAttribute("showgrid") + 1);
 	end
-	
+
 	_G[button:GetName().."NormalTexture"]:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 
 	if ( button:GetAttribute("showgrid") >= 1 and not button:GetAttribute("statehidden") ) then
@@ -325,7 +327,12 @@ function ActionButton_UpdateCount (self)
 	local text = _G[self:GetName().."Count"];
 	local action = self.action;
 	if ( IsConsumableAction(action) or IsStackableAction(action) ) then
-		text:SetText(GetActionCount(action));
+		local count = GetActionCount(action);
+		if ( count > (self.maxDisplayCount or 9999 ) ) then
+			text:SetText("*");
+		else
+			text:SetText(count);
+		end
 	else
 		text:SetText("");
 	end

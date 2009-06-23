@@ -8,22 +8,22 @@ SlashCmdList["TOKENUI"] = function() ToggleCharacter("TokenFrame"); end;
 
 function TokenButton_OnLoad(self)
 	local name = self:GetName();
-	self.count = getglobal(name.."Count");
-	self.name = getglobal(name.."Name");
-	self.icon = getglobal(name.."Icon");
-	self.check = getglobal(name.."Check");
-	self.expandIcon = getglobal(name.."ExpandIcon");
-	self.categoryLeft = getglobal(name.."CategoryLeft");
-	self.categoryRight = getglobal(name.."CategoryRight");
-	self.highlight = getglobal(name.."Highlight");
-	self.stripe = getglobal(name.."Stripe");
+	self.count = _G[name.."Count"];
+	self.name = _G[name.."Name"];
+	self.icon = _G[name.."Icon"];
+	self.check = _G[name.."Check"];
+	self.expandIcon = _G[name.."ExpandIcon"];
+	self.categoryLeft = _G[name.."CategoryLeft"];
+	self.categoryRight = _G[name.."CategoryRight"];
+	self.highlight = _G[name.."Highlight"];
+	self.stripe = _G[name.."Stripe"];
 end
 
 function TokenFrame_OnLoad()
 	TokenFrameContainerScrollBar.Show = 
 		function (self)
 			TokenFrameContainer:SetWidth(299);
-			for _, button in next, getglobal("TokenFrameContainer").buttons do
+			for _, button in next, _G["TokenFrameContainer"].buttons do
 				button:SetWidth(295);
 			end
 			getmetatable(self).__index.Show(self);
@@ -180,7 +180,7 @@ function BackpackTokenFrame_Update()
 		name, count, extraCurrencyType, icon, itemID = GetBackpackCurrencyInfo(i);
 		-- Update watched tokens
 		if ( name ) then
-			watchButton = getglobal("BackpackTokenFrameToken"..i);
+			watchButton = _G["BackpackTokenFrameToken"..i];
 			watchButton.extraCurrencyType = extraCurrencyType;
 			if ( extraCurrencyType == 1 ) then	--Arena points
 				watchButton.icon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
@@ -207,11 +207,11 @@ function BackpackTokenFrame_Update()
 			BackpackTokenFrame.numWatchedTokens = i;
 			watchButton.itemID = itemID;
 		else
-			getglobal("BackpackTokenFrameToken"..i):Hide();
+			_G["BackpackTokenFrameToken"..i]:Hide();
 			if ( i == 1 ) then
 				BackpackTokenFrame.shouldShow = nil;
 			end
-			getglobal("BackpackTokenFrameToken"..i).itemID = nil;
+			_G["BackpackTokenFrameToken"..i].itemID = nil;
 		end
 	end
 end

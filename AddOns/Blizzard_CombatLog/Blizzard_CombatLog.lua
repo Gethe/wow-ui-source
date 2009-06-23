@@ -171,6 +171,7 @@ COMBATLOG_EVENT_LIST = {
 	["UNIT_DESTROYED"] = true,
 	["SPELL_BUILDING_DAMAGE"] = true,
 	["SPELL_BUILDING_HEAL"] = true,
+	["UNIT_DISSIPATES"] = true,
 };
 
 COMBATLOG_FLAG_LIST = {
@@ -464,7 +465,8 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      --["DAMAGE_SPLIT"] = true,
 					      ["PARTY_KILL"] = true,
 					      ["UNIT_DIED"] = true,
-					      ["UNIT_DESTROYED"] = true
+					      ["UNIT_DESTROYED"] = true,
+					      ["UNIT_DISSIPATES"] = true
 					};
 					sourceFlags = {
 						[COMBATLOG_FILTER_MINE] = true,
@@ -513,7 +515,8 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      --["DAMAGE_SPLIT"] = true,
 					      ["PARTY_KILL"] = true,
 					      ["UNIT_DIED"] = true,
-					      ["UNIT_DESTROYED"] = true
+					      ["UNIT_DESTROYED"] = true,
+					      ["UNIT_DISSIPATES"] = true
 					};
 					sourceFlags = nil;
 					destFlags = {
@@ -614,7 +617,8 @@ Blizzard_CombatLog_Filter_Defaults = {
 					eventList = {
 						["PARTY_KILL"] = true,
 						["UNIT_DIED"] = true,
-						["UNIT_DESTROYED"] = true
+						["UNIT_DESTROYED"] = true,
+						["UNIT_DISSIPATES"] = true
 					};
 					sourceFlags = Blizzard_CombatLog_GenerateFullFlagList(true);
 					destFlags = nil;
@@ -623,7 +627,8 @@ Blizzard_CombatLog_Filter_Defaults = {
 					eventList = {
 						["PARTY_KILL"] = true,
 						["UNIT_DIED"] = true,
-						["UNIT_DESTROYED"] = true
+						["UNIT_DESTROYED"] = true,
+						["UNIT_DISSIPATES"] = true
 					};
 					sourceFlags = nil;
 					destFlags = Blizzard_CombatLog_GenerateFullFlagList(true);
@@ -1161,10 +1166,10 @@ do
 			[6] = {
 				text = "Other";
 				hasArrow = true;
-				checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "PARTY_KILL", "UNIT_DIED", "UNIT_DESTROYED", "DAMAGE_SPLIT", "ENVIRONMENTAL_DAMAGE" ); end;
+				checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "PARTY_KILL", "UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES", "DAMAGE_SPLIT", "ENVIRONMENTAL_DAMAGE" ); end;
 				keepShownOnClick = true;
 				func = function ( self, arg1, arg2, checked )
-					Blizzard_CombatLog_MenuHelper ( checked, "PARTY_KILL", "UNIT_DIED", "UNIT_DESTROYED", "DAMAGE_SPLIT", "ENVIRONMENTAL_DAMAGE"  );
+					Blizzard_CombatLog_MenuHelper ( checked, "PARTY_KILL", "UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES", "DAMAGE_SPLIT", "ENVIRONMENTAL_DAMAGE"  );
 				end;
 				menuList = {
 					[1] = {
@@ -1177,10 +1182,10 @@ do
 					};
 					[2] = {
 						text = "Deaths";
-						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "UNIT_DIED", "UNIT_DESTROYED"); end;
+						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES"); end;
 						keepShownOnClick = true;
 						func = function ( self, arg1, arg2, checked )
-							Blizzard_CombatLog_MenuHelper ( checked, "UNIT_DIED", "UNIT_DESTROYED" );
+							Blizzard_CombatLog_MenuHelper ( checked, "UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES" );
 						end;
 					};
 					[3] = {
@@ -1508,7 +1513,7 @@ end
 do
 	function Blizzard_CombatLog_CreateUnitMenu(unitName, unitGUID, special)
 		local displayName = unitName;
-		if ( (unitGUID == UnitGUID("player")) and (getglobal("COMBAT_LOG_UNIT_YOU_ENABLED") == "1") ) then
+		if ( (unitGUID == UnitGUID("player")) and (_G["COMBAT_LOG_UNIT_YOU_ENABLED"] == "1") ) then
 			displayName = UNIT_YOU;
 		end
 		local unitMenu = {
@@ -1963,7 +1968,8 @@ local function CombatLog_String_DamageResultString( resisted, blocked, absorbed,
 	-- Result String formatting
 	local useOverhealing = overhealing and overhealing > 0;
 	local useOverkill = overkill and overkill > 0;
-	if ( resisted or blocked or absorbed or critical or glancing or crushing or useOverhealing or useOverkill) then
+	local useAbsorbed = absorbed and absorbed > 0;
+	if ( resisted or blocked or critical or glancing or crushing or useOverhealing or useOverkill or useAbsorbed) then
 		resultStr = nil;
 		
 		if ( resisted ) then
@@ -1980,7 +1986,7 @@ local function CombatLog_String_DamageResultString( resisted, blocked, absorbed,
 				resultStr = format(TEXT_MODE_A_STRING_RESULT_BLOCK, blocked);
 			end
 		end
-		if ( absorbed ) then
+		if ( useAbsorbed ) then
 			if ( resultStr ) then
 				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_ABSORB, absorbed);
 			else
@@ -2341,7 +2347,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			valueEnabled = false;
 		elseif ( event == "SPELL_HEAL" or event == "SPELL_BUILDING_HEAL") then 
 			-- Did the heal crit?
-			amount, overhealing, critical = select(4, ...);
+			amount, overhealing, absorbed, critical = select(4, ...);
 			
 			-- Parse the result string
 			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
@@ -2411,7 +2417,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				amount = amount - overkill;
 			elseif ( event == "SPELL_PERIODIC_HEAL" ) then
 				-- Did the heal crit?
-				amount, overhealing, critical = select(4, ...);
+				amount, overhealing, absorbed, critical = select(4, ...);
 				
 				-- Parse the result string
 				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
@@ -2436,8 +2442,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				valueType = 2;
 
 				-- Result String
-				--resultStr = getglobal(textModeString .. "RESULT");
-				--resultStr = strreplace(resultStr,"$resultString", getglobal("ACTION_"..event.."_RESULT")); 
+				--resultStr = _G[textModeString .. "RESULT"];
+				--resultStr = strreplace(resultStr,"$resultString", _G["ACTION_"..event.."_RESULT"]); 
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2453,7 +2459,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				valueType = 2;
 
 				-- Result String
-				resultStr = _G["ACTION_SPELL_PERIODIC_LEECH_RESULT"]; --"($extraAmount $powerType Gained)"
+				resultStr = format(_G["ACTION_SPELL_PERIODIC_LEECH_RESULT"], nil, nil, nil, nil, nil, nil, nil, CombatLog_String_PowerType(powerType), nil, extraAmount) --"($extraAmount $powerType Gained)"
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2469,8 +2475,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				amount, powerType = select(4, ...);
 				
 				-- Parse the result string
-				--resultStr = getglobal(textModeString .. "RESULT");
-				--resultStr = strreplace(resultStr,"$resultString", getglobal("ACTION_"..event.."_RESULT")); 
+				--resultStr = _G[textModeString .. "RESULT"];
+				--resultStr = strreplace(resultStr,"$resultString", _G["ACTION_"..event.."_RESULT"]); 
 
 				if ( not resultStr ) then
 					resultEnabled = false
@@ -2545,7 +2551,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			valueType = 2;
 
 			-- Result String
-			resultStr = _G["ACTION_SPELL_LEECH_RESULT"];
+			resultStr = format(_G["ACTION_SPELL_LEECH_RESULT"], nil, nil, nil, nil, nil, nil, nil, CombatLog_String_PowerType(powerType), nil, extraAmount)
 
 			-- Disable appropriate sections
 			if ( not resultStr ) then
@@ -2794,7 +2800,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		resultEnabled = false;
 		sourceEnabled = false;
 		
-	elseif ( event == "UNIT_DIED" or event == "UNIT_DESTROYED" ) then
+	elseif ( event == "UNIT_DIED" or event == "UNIT_DESTROYED" or event == "UNIT_DISSIPATES" ) then
 		-- Swap Source with Dest
 		sourceName = destName;
 		sourceGUID = destGUID;
@@ -3655,7 +3661,7 @@ function Blizzard_CombatLog_Update_QuickButtons()
 
 	-- Hide remaining buttons
 	repeat
-		button = getglobal(baseName.."Button"..buttonIndex);
+		button = _G[baseName.."Button"..buttonIndex];
 		if ( button ) then
 			button:Hide();
 		end

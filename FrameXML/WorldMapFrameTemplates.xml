@@ -156,4 +156,28 @@
 			</OnMouseUp>
 		</Scripts>
 	</Frame>
+	<Frame name="WorldMapQuestPOITemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\GossipFrame\ActiveQuestIcon" setAllPoints="true" parentKey="icon"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				WorldMapQuestPOI_OnLoad(self);
+			</OnLoad>
+			<OnEnter>
+				WorldMapQuestPOI_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				WorldMapQuestPOI_OnLeave(self, motion);
+			</OnLeave>
+		</Scripts>
+	</Frame>
 </Ui>

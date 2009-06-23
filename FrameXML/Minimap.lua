@@ -1,4 +1,4 @@
-MINIMAPPING_TIMER = 5;
+MINIMAPPING_TIMER = 5.5;
 MINIMAPPING_FADE_TIMER = 0.5;
 
 MINIMAP_RECORDING_INDICATOR_ON = false;
@@ -113,10 +113,8 @@ function MinimapPing_OnUpdate(self, elapsed)
 	local timer = self.timer or 0;
 	if ( timer > 0 ) then
 		timer = timer - elapsed;
-		if ( timer <= 0 ) then
+		if ( not self.fadeOut and timer <= MINIMAPPING_FADE_TIMER ) then
 			MinimapPing_FadeOut();
-		else
-			Minimap_SetPing(Minimap:GetPingPosition());
 		end
 		local percentage = timer - floor(timer)
 		MinimapPingSpinner:SetRotation(percentage * math.pi/2);
@@ -124,14 +122,14 @@ function MinimapPing_OnUpdate(self, elapsed)
 		percentage = mod(timer, MINIMAPPING_TIMER/7);
 		MinimapPingExpander:SetHeight(MINIMAP_EXPANDER_MAXSIZE * (1 - percentage));
 		MinimapPingExpander:SetWidth(MINIMAP_EXPANDER_MAXSIZE * (1 - percentage));
-		
+
 		self.timer = timer;
-	elseif ( self.fadeOut ) then
+	end
+	if ( self.fadeOut ) then
 		local fadeOutTimer = self.fadeOutTimer - elapsed;
 
 		if ( fadeOutTimer > 0 ) then
-			-- Minimap_SetPing(Minimap:GetPingPosition());
-			MinimapPing:SetAlpha((255 * (fadeOutTimer/MINIMAPPING_FADE_TIMER)) / 255);
+			MinimapPing:SetAlpha(fadeOutTimer/MINIMAPPING_FADE_TIMER);
 		else
 			MinimapPing.fadeOut = nil;
 			MinimapPing:Hide();
@@ -239,7 +237,7 @@ function MinimapButton_OnMouseDown(self, button)
 	if ( self.isDown ) then
 		return;
 	end
-	local button = getglobal(self:GetName().."Icon");
+	local button = _G[self:GetName().."Icon"];
 	local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint();
 	button:SetPoint(point, relativeTo, relativePoint, offsetX+1, offsetY-1);
 	self.isDown = 1;
@@ -248,7 +246,7 @@ function MinimapButton_OnMouseUp(self)
 	if ( not self.isDown ) then
 		return;
 	end
-	local button = getglobal(self:GetName().."Icon");
+	local button = _G[self:GetName().."Icon"];
 	local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint();
 	button:SetPoint(point, relativeTo, relativePoint, offsetX-1, offsetY+1);
 	self.isDown = nil;

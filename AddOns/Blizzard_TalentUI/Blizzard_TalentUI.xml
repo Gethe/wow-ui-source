@@ -69,6 +69,17 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<Button name="PlayerTalentButtonTemplate" inherits="TalentButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
+				self:RegisterEvent("PREVIEW_PET_TALENT_POINTS_CHANGED");
+				self:RegisterEvent("PLAYER_TALENT_UPDATE");
+				self:RegisterEvent("PET_TALENT_UPDATE");
+			</OnLoad>
+		</Scripts>
+	</Button>
 
 	<Frame name="PlayerTalentFrame" enableMouse="true" toplevel="true" parent="UIParent" hidden="true">
 		<Size>
@@ -549,46 +560,46 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="PlayerTalentFrameTalent1" inherits="TalentButtonTemplate" id="1"/>
-							<Button name="PlayerTalentFrameTalent2" inherits="TalentButtonTemplate" id="2"/>
-							<Button name="PlayerTalentFrameTalent3" inherits="TalentButtonTemplate" id="3"/>
-							<Button name="PlayerTalentFrameTalent4" inherits="TalentButtonTemplate" id="4"/>
-							<Button name="PlayerTalentFrameTalent5" inherits="TalentButtonTemplate" id="5"/>
-							<Button name="PlayerTalentFrameTalent6" inherits="TalentButtonTemplate" id="6"/>
-							<Button name="PlayerTalentFrameTalent7" inherits="TalentButtonTemplate" id="7"/>
-							<Button name="PlayerTalentFrameTalent8" inherits="TalentButtonTemplate" id="8"/>
-							<Button name="PlayerTalentFrameTalent9" inherits="TalentButtonTemplate" id="9"/>
-							<Button name="PlayerTalentFrameTalent10" inherits="TalentButtonTemplate" id="10"/>
-							<Button name="PlayerTalentFrameTalent11" inherits="TalentButtonTemplate" id="11"/>
-							<Button name="PlayerTalentFrameTalent12" inherits="TalentButtonTemplate" id="12"/>
-							<Button name="PlayerTalentFrameTalent13" inherits="TalentButtonTemplate" id="13"/>
-							<Button name="PlayerTalentFrameTalent14" inherits="TalentButtonTemplate" id="14"/>
-							<Button name="PlayerTalentFrameTalent15" inherits="TalentButtonTemplate" id="15"/>
-							<Button name="PlayerTalentFrameTalent16" inherits="TalentButtonTemplate" id="16"/>
-							<Button name="PlayerTalentFrameTalent17" inherits="TalentButtonTemplate" id="17"/>
-							<Button name="PlayerTalentFrameTalent18" inherits="TalentButtonTemplate" id="18"/>
-							<Button name="PlayerTalentFrameTalent19" inherits="TalentButtonTemplate" id="19"/>
-							<Button name="PlayerTalentFrameTalent20" inherits="TalentButtonTemplate" id="20"/>
-							<Button name="PlayerTalentFrameTalent21" inherits="TalentButtonTemplate" id="21"/>
-							<Button name="PlayerTalentFrameTalent22" inherits="TalentButtonTemplate" id="22"/>
-							<Button name="PlayerTalentFrameTalent23" inherits="TalentButtonTemplate" id="23"/>
-							<Button name="PlayerTalentFrameTalent24" inherits="TalentButtonTemplate" id="24"/>
-							<Button name="PlayerTalentFrameTalent25" inherits="TalentButtonTemplate" id="25"/>
-							<Button name="PlayerTalentFrameTalent26" inherits="TalentButtonTemplate" id="26"/>
-							<Button name="PlayerTalentFrameTalent27" inherits="TalentButtonTemplate" id="27"/>
-							<Button name="PlayerTalentFrameTalent28" inherits="TalentButtonTemplate" id="28"/>
-							<Button name="PlayerTalentFrameTalent29" inherits="TalentButtonTemplate" id="29"/>
-							<Button name="PlayerTalentFrameTalent30" inherits="TalentButtonTemplate" id="30"/>
-							<Button name="PlayerTalentFrameTalent31" inherits="TalentButtonTemplate" id="31"/>
-							<Button name="PlayerTalentFrameTalent32" inherits="TalentButtonTemplate" id="32"/>
-							<Button name="PlayerTalentFrameTalent33" inherits="TalentButtonTemplate" id="33"/>
-							<Button name="PlayerTalentFrameTalent34" inherits="TalentButtonTemplate" id="34"/>
-							<Button name="PlayerTalentFrameTalent35" inherits="TalentButtonTemplate" id="35"/>
-							<Button name="PlayerTalentFrameTalent36" inherits="TalentButtonTemplate" id="36"/>
-							<Button name="PlayerTalentFrameTalent37" inherits="TalentButtonTemplate" id="37"/>
-							<Button name="PlayerTalentFrameTalent38" inherits="TalentButtonTemplate" id="38"/>
-							<Button name="PlayerTalentFrameTalent39" inherits="TalentButtonTemplate" id="39"/>
-							<Button name="PlayerTalentFrameTalent40" inherits="TalentButtonTemplate" id="40"/>
+							<Button name="PlayerTalentFrameTalent1" inherits="PlayerTalentButtonTemplate" id="1"/>
+							<Button name="PlayerTalentFrameTalent2" inherits="PlayerTalentButtonTemplate" id="2"/>
+							<Button name="PlayerTalentFrameTalent3" inherits="PlayerTalentButtonTemplate" id="3"/>
+							<Button name="PlayerTalentFrameTalent4" inherits="PlayerTalentButtonTemplate" id="4"/>
+							<Button name="PlayerTalentFrameTalent5" inherits="PlayerTalentButtonTemplate" id="5"/>
+							<Button name="PlayerTalentFrameTalent6" inherits="PlayerTalentButtonTemplate" id="6"/>
+							<Button name="PlayerTalentFrameTalent7" inherits="PlayerTalentButtonTemplate" id="7"/>
+							<Button name="PlayerTalentFrameTalent8" inherits="PlayerTalentButtonTemplate" id="8"/>
+							<Button name="PlayerTalentFrameTalent9" inherits="PlayerTalentButtonTemplate" id="9"/>
+							<Button name="PlayerTalentFrameTalent10" inherits="PlayerTalentButtonTemplate" id="10"/>
+							<Button name="PlayerTalentFrameTalent11" inherits="PlayerTalentButtonTemplate" id="11"/>
+							<Button name="PlayerTalentFrameTalent12" inherits="PlayerTalentButtonTemplate" id="12"/>
+							<Button name="PlayerTalentFrameTalent13" inherits="PlayerTalentButtonTemplate" id="13"/>
+							<Button name="PlayerTalentFrameTalent14" inherits="PlayerTalentButtonTemplate" id="14"/>
+							<Button name="PlayerTalentFrameTalent15" inherits="PlayerTalentButtonTemplate" id="15"/>
+							<Button name="PlayerTalentFrameTalent16" inherits="PlayerTalentButtonTemplate" id="16"/>
+							<Button name="PlayerTalentFrameTalent17" inherits="PlayerTalentButtonTemplate" id="17"/>
+							<Button name="PlayerTalentFrameTalent18" inherits="PlayerTalentButtonTemplate" id="18"/>
+							<Button name="PlayerTalentFrameTalent19" inherits="PlayerTalentButtonTemplate" id="19"/>
+							<Button name="PlayerTalentFrameTalent20" inherits="PlayerTalentButtonTemplate" id="20"/>
+							<Button name="PlayerTalentFrameTalent21" inherits="PlayerTalentButtonTemplate" id="21"/>
+							<Button name="PlayerTalentFrameTalent22" inherits="PlayerTalentButtonTemplate" id="22"/>
+							<Button name="PlayerTalentFrameTalent23" inherits="PlayerTalentButtonTemplate" id="23"/>
+							<Button name="PlayerTalentFrameTalent24" inherits="PlayerTalentButtonTemplate" id="24"/>
+							<Button name="PlayerTalentFrameTalent25" inherits="PlayerTalentButtonTemplate" id="25"/>
+							<Button name="PlayerTalentFrameTalent26" inherits="PlayerTalentButtonTemplate" id="26"/>
+							<Button name="PlayerTalentFrameTalent27" inherits="PlayerTalentButtonTemplate" id="27"/>
+							<Button name="PlayerTalentFrameTalent28" inherits="PlayerTalentButtonTemplate" id="28"/>
+							<Button name="PlayerTalentFrameTalent29" inherits="PlayerTalentButtonTemplate" id="29"/>
+							<Button name="PlayerTalentFrameTalent30" inherits="PlayerTalentButtonTemplate" id="30"/>
+							<Button name="PlayerTalentFrameTalent31" inherits="PlayerTalentButtonTemplate" id="31"/>
+							<Button name="PlayerTalentFrameTalent32" inherits="PlayerTalentButtonTemplate" id="32"/>
+							<Button name="PlayerTalentFrameTalent33" inherits="PlayerTalentButtonTemplate" id="33"/>
+							<Button name="PlayerTalentFrameTalent34" inherits="PlayerTalentButtonTemplate" id="34"/>
+							<Button name="PlayerTalentFrameTalent35" inherits="PlayerTalentButtonTemplate" id="35"/>
+							<Button name="PlayerTalentFrameTalent36" inherits="PlayerTalentButtonTemplate" id="36"/>
+							<Button name="PlayerTalentFrameTalent37" inherits="PlayerTalentButtonTemplate" id="37"/>
+							<Button name="PlayerTalentFrameTalent38" inherits="PlayerTalentButtonTemplate" id="38"/>
+							<Button name="PlayerTalentFrameTalent39" inherits="PlayerTalentButtonTemplate" id="39"/>
+							<Button name="PlayerTalentFrameTalent40" inherits="PlayerTalentButtonTemplate" id="40"/>
 
 							<Frame name="PlayerTalentFrameArrowFrame" setAllPoints="true">
 								<Layers>

@@ -922,7 +922,7 @@
 				<Scripts>
 					<OnLoad>
 						PanelTemplates_TabResize(self, 0);
-						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
 					</OnLoad>
 					<OnClick>
@@ -944,7 +944,7 @@
 				<Scripts>
 					<OnLoad>
 						PanelTemplates_TabResize(self, 0);
-						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
 					</OnLoad>
 					<OnClick>
@@ -966,7 +966,7 @@
 				<Scripts>
 					<OnLoad>
 						PanelTemplates_TabResize(self, 0);
-						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 						self:SetFrameLevel(PetPaperDollFrameCompanionFrame:GetFrameLevel()+1);
 					</OnLoad>
 					<OnClick>

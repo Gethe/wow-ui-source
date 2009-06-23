@@ -33,8 +33,10 @@
 				self:RegisterEvent("BAG_UPDATE");
 				self.isBag = 1;
 				self.UpdateTooltip = BagSlotButton_OnEnter;
-				getglobal(self:GetName().."NormalTexture"):SetWidth(50);
-				getglobal(self:GetName().."NormalTexture"):SetHeight(50);
+				_G[self:GetName().."NormalTexture"]:SetWidth(50);
+				_G[self:GetName().."NormalTexture"]:SetHeight(50);
+				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
+				self.maxDisplayCount = 999;
 			</OnLoad>
 			<OnEvent>
 				if ( event == "BAG_UPDATE" ) then

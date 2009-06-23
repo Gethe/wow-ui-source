@@ -10,17 +10,26 @@ end
 
 function HybridScrollFrame_OnValueChanged (self, value)
 	HybridScrollFrame_SetOffset(self, value);
+	HybridScrollFrame_UpdateButtonStates(self, value);
+end
+	
+function HybridScrollFrame_UpdateButtonStates(self, currValue)
+	if ( not currValue ) then
+		currValue = self.scrollBar:GetValue();
+	end
 	
 	self.scrollUp:Enable();
 	self.scrollDown:Enable();
 
 	local minVal, maxVal = self.scrollBar:GetMinMaxValues();
-	if ( value >= maxVal ) then		
+	if ( currValue >= maxVal ) then
+		self.scrollBar.thumbTexture:Show();
 		if ( self.scrollDown ) then
 			self.scrollDown:Disable()
 		end
 	end
-	if ( value <= minVal ) then
+	if ( currValue <= minVal ) then
+		self.scrollBar.thumbTexture:Show();
 		if ( self.scrollUp ) then
 			self.scrollUp:Disable();
 		end
@@ -81,10 +90,19 @@ function HybridScrollFrame_Update (self, numElements, totalHeight, displayedHeig
 		else
 			self.scrollBar:SetMinMaxValues(0, range)
 		end
+		self.scrollBar:Enable();
+		HybridScrollFrame_UpdateButtonStates(self);
 		self.scrollBar:Show();
 	elseif ( self.scrollBar ) then
 		self.scrollBar:SetValue(0);
-		self.scrollBar:Hide();
+		if ( self.scrollBar.doNotHide ) then
+			self.scrollBar:Disable();
+			self.scrollUp:Disable();
+			self.scrollDown:Disable();
+			self.scrollBar.thumbTexture:Hide();
+		else
+			self.scrollBar:Hide();
+		end
 	end
 	
 	self.numElements = numElements;

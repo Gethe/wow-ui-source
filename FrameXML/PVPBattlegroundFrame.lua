@@ -1,20 +1,20 @@
-NUM_BATTLEGROUNDS = 5;
 NUM_DISPLAYED_BATTLEGROUNDS = 5;
 NUM_DISPLAYED_BATTLEGROUND_INSTANCES = 5;
-NO_OFFSET = 0;	--So that when new BGs are added, it is easier to find places to update to add a scroll bar
 
 function PVPBattleground_UpdateBattlegrounds()
 	local frame;
 	local localizedName, canEnter, isHoliday, minlevel;
-	local tempString;
-	local BGindex;
+	local tempString, BGindex, isBig;
 	local currentFrameNum = 1;
-	for i=1,NUM_BATTLEGROUNDS do
+	
+	local offset = FauxScrollFrame_GetOffset(PVPBattlegroundFrameTypeScrollFrame);
+	for i=1,GetNumBattlegroundTypes() do
 		frame = _G["BattlegroundType"..currentFrameNum];
 		if ( not frame ) then	--We have filled up all of our open spaces.
 			break;
 		end
-		BGindex = i+NO_OFFSET
+		
+		BGindex = i+offset
 		localizedName, canEnter, isHoliday, minlevel = GetBattlegroundInfo(BGindex);
 		tempString = localizedName;
 		if ( localizedName and canEnter ) then
@@ -43,6 +43,19 @@ function PVPBattleground_UpdateBattlegrounds()
 		end
 	end
 	
+	if ( currentFrameNum <= NUM_DISPLAYED_BATTLEGROUNDS ) then
+		isBig = true;	--Espand the highlight to cover where the scroll bar usually is.
+	end
+	
+	for i=1,NUM_DISPLAYED_BATTLEGROUNDS do
+		frame = _G["BattlegroundType"..i];
+		if ( isBig ) then
+			frame:SetWidth(315);
+		else
+			frame:SetWidth(295);
+		end
+	end
+	
 	for i=currentFrameNum,NUM_DISPLAYED_BATTLEGROUNDS do
 		frame = _G["BattlegroundType"..i];
 		frame:Hide();
@@ -57,6 +70,7 @@ function PVPBattleground_UpdateBattlegrounds()
 	end
 	
 	PVPBattlegroundFrame_UpdateGroupAvailable();
+	FauxScrollFrame_Update(PVPBattlegroundFrameTypeScrollFrame, currentFrameNum, NUM_DISPLAYED_BATTLEGROUNDS, 16);
 end
 
 function PVPBattleground_UpdateInstances(BGindex)
@@ -122,7 +136,7 @@ function PVPBattleground_UpdateInstances(BGindex)
 	end
 	
 	PVPBattleground_UpdateInstancesStatus();
-	FauxScrollFrame_Update(PVPBattlegroundFrameInstanceScrollFrame, numInstanceChoices, 5, 16);
+	FauxScrollFrame_Update(PVPBattlegroundFrameInstanceScrollFrame, numInstanceChoices, NUM_DISPLAYED_BATTLEGROUND_INSTANCES, 16);
 end
 
 function PVPBattleground_UpdateInstancesStatus()
@@ -161,10 +175,11 @@ function PVPBattleground_ResetInstances()
 end
 
 function PVPBattlegroundButton_OnClick(self)
-	local id = self:GetID()
+	local offset = FauxScrollFrame_GetOffset(PVPBattlegroundFrameTypeScrollFrame);
+	local id = self:GetID() + offset;
 
 	for i=1,NUM_DISPLAYED_BATTLEGROUNDS do
-		if ( id == i ) then
+		if ( id == i + offset ) then
 			_G["BattlegroundType"..i]:LockHighlight();
 		else
 			_G["BattlegroundType"..i]:UnlockHighlight();
@@ -221,6 +236,7 @@ end
 
 function PVPBattlegroundFrame_OnLoad(self)
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_SHOW");
+	self:RegisterEvent("NPC_PVPQUEUE_ANYWHERE");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -234,18 +250,23 @@ function PVPBattlegroundFrame_OnLoad(self)
 end
 
 function PVPBattlegroundFrame_OnEvent(self, event, ...)
-	if ( event == "PVPQUEUE_ANYWHERE_SHOW" ) then
+	if ( event == "PVPQUEUE_ANYWHERE_SHOW" or event == "NPC_PVPQUEUE_ANYWHERE") then
 		self.currentData = true;
 		PVPBattleground_UpdateBattlegrounds();
 		if ( self.selectedBG ) then
 			PVPBattleground_UpdateInstances(PVPBattlegroundFrame.selectedBG);
+		end
+		if ( event == "NPC_PVPQUEUE_ANYWHERE" ) then
+			ShowUIPanel(PVPParentFrame);
+			PVPFrame_SetJustBG(true);
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		PVPBattleground_UpdateInstancesStatus();
 	elseif ( event == "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE" or event == "PLAYER_ENTERING_WORLD" ) then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		
-		PVPBattleground_UpdateBattlegrounds();	--We may be changing brackets, so we don't want someone to see an outdated version of the data.
+		FauxScrollFrame_SetOffset(PVPBattlegroundFrameTypeScrollFrame, 0);
+		FauxScrollFrame_OnVerticalScroll(PVPBattlegroundFrameTypeScrollFrame, 0, 16, PVPBattleground_UpdateBattlegrounds); --We may be changing brackets, so we don't want someone to see an outdated version of the data.
 		if ( self.selectedBG ) then
 			PVPBattleground_ResetInstances();
 		end
@@ -260,12 +281,18 @@ function PVPBattlegroundFrame_OnShow(self)
 	RequestBattlegroundInstanceInfo(self.selectedBG or 1);
 end
 
+function PVPBattlegroundFrame_OnHide(self)
+	CloseBattlefield();
+end
+
 function PVPBattlegroundFrame_UpdateVisible()
-	for i=1, NUM_BATTLEGROUNDS do
+	for i=1, GetNumBattlegroundTypes() do
 		local _, canEnter = GetBattlegroundInfo(i);
 		if ( canEnter ) then
-			PVPParentFrameTab1:Show();
-			PVPParentFrameTab2:Show();
+			if ( not PVPFrame_IsJustBG() ) then
+				PVPParentFrameTab1:Show();
+				PVPParentFrameTab2:Show();
+			end
 			return;
 		end
 	end

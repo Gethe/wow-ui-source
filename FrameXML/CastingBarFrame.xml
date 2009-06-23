@@ -9,6 +9,30 @@
 				</Texture>		
 			</Layer>
 			<Layer level="ARTWORK">
+				<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="-5" y="28"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="28"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 				<FontString name="$parentText" inherits="GameFontHighlight">
 					<Size>
 						<AbsDimension x="185" y="16"/>
@@ -21,18 +45,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border">
-					<Size>
-						<AbsDimension x="256" y="64"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="28"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
 				<Texture name="$parentIcon" hidden="true">
 					<Size>
 						<AbsDimension x="16" y="16"/>
@@ -71,7 +83,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				CastingBarFrame_OnLoad(self, "player", true);
+				CastingBarFrame_OnLoad(self, "player", true, false);
 			</OnLoad>
 			<OnEvent>
 				CastingBarFrame_OnEvent(self, event, ...);

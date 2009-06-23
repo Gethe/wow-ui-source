@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 30100
+## Interface: 30200
 GlobalStrings.lua
 Constants.lua
 Fonts.xml
@@ -30,6 +30,7 @@ CharacterFrameTemplates.xml
 TextStatusBar.lua
 TextStatusBar.xml
 UIErrorsFrame.xml
+AutoComplete.xml
 StaticPopup.xml
 Sound.lua
 OptionsFrameTemplates.xml
@@ -94,6 +95,7 @@ FriendsFrame.xml
 RaidFrame.xml
 ChannelFrame.xml
 PetActionBarFrame.xml
+MultiCastActionBarFrame.xml
 BonusActionBarFrame.xml
 MainMenuBarBagButtons.xml
 WorldMapFrame.xml
@@ -130,6 +132,7 @@ EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml
 VehicleMenuBar.xml
+AlternatePowerBar.xml
 AnimationSystem.lua
 
 ## add new modules above here

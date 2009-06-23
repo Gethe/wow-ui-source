@@ -24,7 +24,7 @@ function ReputationFrame_OnLoad(self)
 	-- Initialize max player level
 	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetAccountExpansionLevel()];
 	--[[for i=1, NUM_FACTIONS_DISPLAYED, 1 do
-		getglobal("ReputationBar"..i.."FactionStanding"):SetPoint("CENTER",getglobal("ReputationBar"..i.."ReputationBar"));
+		_G["ReputationBar"..i.."FactionStanding"]:SetPoint("CENTER",_G["ReputationBar"..i.."ReputationBar"]);
 	end
 	--]]
 end
@@ -43,13 +43,13 @@ end
 
 function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a binary table of type isHeader, isChild
 	local factionRowName = factionRow:GetName()
-	local factionBar = getglobal(factionRowName.."ReputationBar");
-	local factionTitle = getglobal(factionRowName.."FactionName");
-	local factionButton = getglobal(factionRowName.."ExpandOrCollapseButton");
-	local factionStanding = getglobal(factionRowName.."ReputationBarFactionStanding");
-	local factionBackground = getglobal(factionRowName.."Background");
-	local factionLeftTexture = getglobal(factionRowName.."ReputationBarLeftTexture");
-	local factionRightTexture = getglobal(factionRowName.."ReputationBarRightTexture");
+	local factionBar = _G[factionRowName.."ReputationBar"];
+	local factionTitle = _G[factionRowName.."FactionName"];
+	local factionButton = _G[factionRowName.."ExpandOrCollapseButton"];
+	local factionStanding = _G[factionRowName.."ReputationBarFactionStanding"];
+	local factionBackground = _G[factionRowName.."Background"];
+	local factionLeftTexture = _G[factionRowName.."ReputationBarLeftTexture"];
+	local factionRightTexture = _G[factionRowName.."ReputationBarRightTexture"];
 	factionLeftTexture:SetWidth(62);
 	factionRightTexture:SetWidth(42);
 	factionBar:SetPoint("RIGHT", factionRow, "RIGHT", 0, 0);
@@ -146,14 +146,14 @@ function ReputationFrame_Update()
 	local previousBigTextureRows2 = 0;
 	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
 		factionIndex = factionOffset + i;
-		factionRow = getglobal("ReputationBar"..i);
-		factionBar = getglobal("ReputationBar"..i.."ReputationBar");
-		factionTitle = getglobal("ReputationBar"..i.."FactionName");
-		factionButton = getglobal("ReputationBar"..i.."ExpandOrCollapseButton");
-		factionLeftLine = getglobal("ReputationBar"..i.."LeftLine");
-		factionBottomLine = getglobal("ReputationBar"..i.."BottomLine");
-		factionStanding = getglobal("ReputationBar"..i.."ReputationBarFactionStanding");
-		factionBackground = getglobal("ReputationBar"..i.."Background");
+		factionRow = _G["ReputationBar"..i];
+		factionBar = _G["ReputationBar"..i.."ReputationBar"];
+		factionTitle = _G["ReputationBar"..i.."FactionName"];
+		factionButton = _G["ReputationBar"..i.."ExpandOrCollapseButton"];
+		factionLeftLine = _G["ReputationBar"..i.."LeftLine"];
+		factionBottomLine = _G["ReputationBar"..i.."BottomLine"];
+		factionStanding = _G["ReputationBar"..i.."ReputationBarFactionStanding"];
+		factionBackground = _G["ReputationBar"..i.."Background"];
 		if ( factionIndex <= numFactions ) then
 			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild = GetFactionInfo(factionIndex);
 			factionTitle:SetText(name);
@@ -219,11 +219,11 @@ function ReputationFrame_Update()
 
 			-- Update details if this is the selected faction
 			if ( atWarWith ) then
-				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight1"):Show();
-				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight2"):Show();
+				_G["ReputationBar"..i.."ReputationBarAtWarHighlight1"]:Show();
+				_G["ReputationBar"..i.."ReputationBarAtWarHighlight2"]:Show();
 			else
-				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight1"):Hide();
-				getglobal("ReputationBar"..i.."ReputationBarAtWarHighlight2"):Hide();
+				_G["ReputationBar"..i.."ReputationBarAtWarHighlight1"]:Hide();
+				_G["ReputationBar"..i.."ReputationBarAtWarHighlight2"]:Hide();
 			end
 			if ( factionIndex == GetSelectedFaction() ) then
 				if ( ReputationDetailFrame:IsShown() ) then
@@ -258,12 +258,12 @@ function ReputationFrame_Update()
 					else
 						ReputationDetailMainScreenCheckBox:SetChecked(nil);
 					end
-					getglobal("ReputationBar"..i.."ReputationBarHighlight1"):Show();
-					getglobal("ReputationBar"..i.."ReputationBarHighlight2"):Show();
+					_G["ReputationBar"..i.."ReputationBarHighlight1"]:Show();
+					_G["ReputationBar"..i.."ReputationBarHighlight2"]:Show();
 				end
 			else
-				getglobal("ReputationBar"..i.."ReputationBarHighlight1"):Hide();
-				getglobal("ReputationBar"..i.."ReputationBarHighlight2"):Hide();
+				_G["ReputationBar"..i.."ReputationBarHighlight1"]:Hide();
+				_G["ReputationBar"..i.."ReputationBarHighlight2"]:Hide();
 			end
 		else
 			factionRow:Hide();

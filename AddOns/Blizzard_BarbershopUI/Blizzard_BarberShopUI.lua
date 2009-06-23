@@ -3,6 +3,10 @@ function BarberShop_OnLoad(self)
 	BarberShop_UpdateFacialHairCustomization();
 	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 	self:RegisterEvent("BARBER_SHOP_SUCCESS");
+	
+	if ( CanAlterSkin() ) then
+		BarberShop_ToFourAttributeFormat();
+	end
 end
 
 function BarberShop_OnShow(self)
@@ -42,8 +46,7 @@ end
 
 function BarberShop_UpdateCost()
 	MoneyFrame_Update(BarberShopFrameMoneyFrame:GetName(), GetBarberShopTotalCost());
-	
-	if ( ( select(4, GetBarberShopStyleInfo(1)) and select(4, GetBarberShopStyleInfo(2)) and select(4, GetBarberShopStyleInfo(3))) ) then
+	if ( ( select(4, GetBarberShopStyleInfo(1)) and select(4, GetBarberShopStyleInfo(2)) and select(4, GetBarberShopStyleInfo(3)) and select(4, GetBarberShopStyleInfo(4))) ) then
 		BarberShopFrameOkayButton:Disable();
 		BarberShopFrameResetButton:Disable();
 	else
@@ -60,6 +63,7 @@ end
 
 function BarberShop_Update(self)
 	BarberShop_UpdateCost();
+	BarberShop_UpdateSelector(BarberShopFrameSelector4);
 	BarberShop_UpdateSelector(BarberShopFrameSelector3);
 	BarberShop_UpdateSelector(BarberShopFrameSelector2);
 	BarberShop_UpdateSelector(BarberShopFrameSelector1);
@@ -94,4 +98,13 @@ function BarberShop_ResetLabelColors()
 	BarberShop_SetLabelColor(BarberShopFrameSelector1Category, 1);
 	BarberShop_SetLabelColor(BarberShopFrameSelector2Category, 1);
 	BarberShop_SetLabelColor(BarberShopFrameSelector3Category, 1);
+	BarberShop_SetLabelColor(BarberShopFrameSelector4Category, 1);
+end
+
+function BarberShop_ToFourAttributeFormat()
+	BarberShopFrameSelector2:SetPoint("TOPLEFT", BarberShopFrameSelector1, "BOTTOMLEFT", 0, 3);
+	BarberShopFrameSelector3:SetPoint("TOPLEFT", BarberShopFrameSelector2, "BOTTOMLEFT", 0, 3);
+	BarberShopFrameSelector4:Show();
+	BarberShopFrameMoneyFrame:SetPoint("TOP", BarberShopFrameSelector4, "BOTTOM", 7, -7);
+	BarberShopFrameOkayButton:SetPoint("RIGHT", BarberShopFrameSelector4, "BOTTOM", -2, -36);
 end

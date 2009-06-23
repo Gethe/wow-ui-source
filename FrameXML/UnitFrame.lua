@@ -159,7 +159,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 	end
 	local unitFrame = manaBar:GetParent();
 	local powerType, powerToken, altR, altG, altB = UnitPowerType(manaBar.unit);
-	local prefix = getglobal(powerToken);
+	local prefix = _G[powerToken];
 	local info = PowerBarColor[powerToken];
 	if ( info ) then
 		if ( not manaBar.lockColor ) then
@@ -188,7 +188,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 	if ( manaBar.unit ~= "pet" or powerToken == "HAPPINESS" ) then
 	    if ( unitFrame:GetName() == "PlayerFrame" ) then
 		    manaBar.tooltipTitle = prefix;
-		    manaBar.tooltipText = getglobal("NEWBIE_TOOLTIP_MANABAR_"..powerType);
+		    manaBar.tooltipText = _G["NEWBIE_TOOLTIP_MANABAR_"..powerType];
 	    else
 		    manaBar.tooltipTitle = nil;
 		    manaBar.tooltipText = nil;

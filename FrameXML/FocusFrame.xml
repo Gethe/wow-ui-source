@@ -327,8 +327,8 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.text = getglobal(self:GetName().."Value");
-						self.bg = getglobal(self:GetName().."BG");
+						self.text = _G[self:GetName().."Value"];
+						self.bg = _G[self:GetName().."BG"];
 					</OnLoad>
 				</Scripts>
 			</Frame>

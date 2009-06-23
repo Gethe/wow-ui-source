@@ -8,7 +8,7 @@
 		</Size>
 		<Scripts>
 			<OnLoad>
-				local fontName, fontHeight, fontFlags = getglobal("DropDownList1Button1NormalText"):GetFont();
+				local fontName, fontHeight, fontFlags = _G["DropDownList1Button1NormalText"]:GetFont();
 				UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = fontHeight;
 			</OnLoad>
 		</Scripts>

@@ -146,7 +146,7 @@ function TargetFrame_CheckLevel (self)
 		TargetLevelText:SetText(targetLevel);
 		-- Color level number
 		if ( UnitCanAttack("player", "target") ) then
-			local color = GetDifficultyColor(targetLevel);
+			local color = GetQuestDifficultyColor(targetLevel);
 			TargetLevelText:SetVertexColor(color.r, color.g, color.b);
 		else
 			TargetLevelText:SetVertexColor(1.0, 0.82, 0.0);
@@ -691,6 +691,14 @@ function SetTargetSpellbarAspect()
 		frameBorder:ClearAllPoints();
 		frameBorder:SetPoint("TOP", TargetFrameSpellBar, "TOP", 0, 20);
 	end
+	
+	local frameBorderShield = _G[targetFrameSpellBarName.."BorderShield"];
+	if ( frameBorderShield ) then
+		frameBorderShield:SetWidth(197);
+		frameBorderShield:SetHeight(49);
+		frameBorderShield:ClearAllPoints();
+		frameBorderShield:SetPoint("TOP", TargetFrameSpellBar, "TOP", -5, 20);
+	end
 
 	local frameFlash = _G[targetFrameSpellBarName.."Flash"];
 	if ( frameFlash ) then
@@ -707,7 +715,7 @@ function Target_Spellbar_OnLoad (self)
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 	
-	CastingBarFrame_OnLoad(self, "target", false);
+	CastingBarFrame_OnLoad(self, "target", false, true);
 
 	local name = self:GetName();
 

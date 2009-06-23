@@ -101,7 +101,7 @@ function ChannelFrame_Join_OnClick()
 		local selected = GetSelectedDisplayChannel();
 		local button;
 		if ( selected ) then
-			button = getglobal("ChannelButton"..selected);
+			button = _G["ChannelButton"..selected];
 		end
 		if ( button and button.global ) then
 			JoinPermanentChannel(button.channel, nil, nil, 1);
@@ -158,11 +158,11 @@ function ChannelList_Update()
 	local name, header, collapsed, channelNumber, active, count, category, voiceEnabled, voiceActive;
 	local channelCount = GetNumDisplayChannels();
 	for i=1, MAX_CHANNEL_BUTTONS, 1 do
-		button = getglobal("ChannelButton"..i);
-		buttonName = getglobal("ChannelButton"..i.."Text");
-		buttonLines = getglobal("ChannelButton"..i.."NormalTexture");
-		buttonCollapsed =  getglobal("ChannelButton"..i.."Collapsed");
-		buttonSpeaker = getglobal("ChannelButton"..i.."SpeakerFrame");
+		button = _G["ChannelButton"..i];
+		buttonName = _G["ChannelButton"..i.."Text"];
+		buttonLines = _G["ChannelButton"..i.."NormalTexture"];
+		buttonCollapsed =  _G["ChannelButton"..i.."Collapsed"];
+		buttonSpeaker = _G["ChannelButton"..i.."SpeakerFrame"];
 		if ( i <= channelCount) then
 			name, header, collapsed, channelNumber, count, active, category, voiceEnabled, voiceActive = GetChannelDisplayInfo(i);
 			if ( IsVoiceChatEnabled() ) then
@@ -264,7 +264,7 @@ function ChannelList_Update()
 end
 
 function ChannelList_CountUpdate(id, count)
-	local button = getglobal("ChannelButton"..id);
+	local button = _G["ChannelButton"..id];
 	local name, header, collapsed, channelNumber, count, active, category, voiceEnabled, voiceActive = GetChannelDisplayInfo(id);
 	if ( category == "CHANNEL_CATEGORY_GROUP" ) then
 		if ( count ) then
@@ -310,14 +310,14 @@ function ChannelRoster_SetScroll()
 	end
 	
 	for i=1, MAX_CHANNEL_MEMBER_BUTTONS do
-		getglobal("ChannelMemberButton"..i):SetWidth(buttonWidth);
+		_G["ChannelMemberButton"..i]:SetWidth(buttonWidth);
 	end
 end
 function ChannelList_UpdateVoice(id, enabled, active)
-	local speaker = getglobal("ChannelButton"..id.."SpeakerFrame");
-	local speakerIcon =  getglobal("ChannelButton"..id.."SpeakerFrameOn");
-	local speakerFlash = getglobal("ChannelButton"..id.."SpeakerFrameFlash");
-	local button = getglobal("ChannelButton" .. id);
+	local speaker = _G["ChannelButton"..id.."SpeakerFrame"];
+	local speakerIcon =  _G["ChannelButton"..id.."SpeakerFrameOn"];
+	local speakerFlash = _G["ChannelButton"..id.."SpeakerFrameFlash"];
+	local button = _G["ChannelButton" .. id];
 	
 	if ( enabled ) then
 		button.voiceEnabled = true;
@@ -387,7 +387,7 @@ function ChannelList_UpdateHighlight(id)
 	local button;
 	local channelCount = GetNumDisplayChannels();
 	for i=1, MAX_CHANNEL_BUTTONS, 1 do
-		button = getglobal("ChannelButton"..i);
+		button = _G["ChannelButton"..i];
 		if ( i <= channelCount ) then
 			if ( i == id ) then
 				button:LockHighlight();
@@ -524,7 +524,7 @@ function ChannelList_ShowDropdown(id)
 	local name, header, collapsed, channelNumber, count, active, category, voice, voiceActive;
 	name, header, collapsed, channelNumber, count, active, category, voice, voiceActive = GetChannelDisplayInfo(id);
 	HideDropDownMenu(1);
-	local button = getglobal("ChannelButton"..id);
+	local button = _G["ChannelButton"..id];
 	ChannelListDropDown.global = button.global;
 	ChannelListDropDown.group = button.group;
 	ChannelListDropDown.custom = button.custom;
@@ -620,13 +620,13 @@ function ChannelRoster_Update(id)
 	local rosterIndex;
 	for i=1, MAX_CHANNEL_MEMBER_BUTTONS do
 		rosterIndex = rosterOffset + i;
-		button = getglobal("ChannelMemberButton"..i);
+		button = _G["ChannelMemberButton"..i];
 		if ( rosterIndex <= count ) then
-			buttonName = getglobal("ChannelMemberButton"..i.."Name");
-			buttonRank =  getglobal("ChannelMemberButton"..i.."Rank");
-			buttonRankTexture =  getglobal("ChannelMemberButton"..i.."RankTexture");
-			buttonVoice = getglobal("ChannelMemberButton"..i.."SpeakerFrame");
-			buttonVoiceMuted = getglobal("ChannelMemberButton"..i.."SpeakerFrameMuted");
+			buttonName = _G["ChannelMemberButton"..i.."Name"];
+			buttonRank =  _G["ChannelMemberButton"..i.."Rank"];
+			buttonRankTexture =  _G["ChannelMemberButton"..i.."RankTexture"];
+			buttonVoice = _G["ChannelMemberButton"..i.."SpeakerFrame"];
+			buttonVoiceMuted = _G["ChannelMemberButton"..i.."SpeakerFrameMuted"];
 			name, owner, moderator, muted, active, enabled = GetChannelRosterInfo(id, rosterIndex);
 			buttonName:SetText(name);
 			button.name = name;
@@ -658,10 +658,10 @@ function ChannelRoster_Update(id)
 end
 
 function ChannelRoster_UpdateVoice(id, enabled, active, muted)
-	local speaker = getglobal("ChannelMemberButton"..id.."SpeakerFrame");
-	local speakerIcon =  getglobal("ChannelMemberButton"..id.."SpeakerFrameOn");
-	local speakerFlash = getglobal("ChannelMemberButton"..id.."SpeakerFrameFlash");
-	local speakerMuted = getglobal("ChannelMemberButton"..id.."SpeakerFrameMuted");
+	local speaker = _G["ChannelMemberButton"..id.."SpeakerFrame"];
+	local speakerIcon =  _G["ChannelMemberButton"..id.."SpeakerFrameOn"];
+	local speakerFlash = _G["ChannelMemberButton"..id.."SpeakerFrameFlash"];
+	local speakerMuted = _G["ChannelMemberButton"..id.."SpeakerFrameMuted"];
 
 	if ( enabled ) then
 		if ( active ) then
@@ -775,7 +775,7 @@ function ChannelPullout_OnUpdate (self, elapsed)
 					UIFrameFadeIn(ChannelPulloutTab, CHANNELPULLOUT_TAB_FADE_TIME, ChannelPulloutTab.oldAlpha, DEFAULT_CHANNELPULLOUT_TAB_ALPHA);
 					local frame;
 					for _, name in next, CHANNELPULLOUT_FADEFRAMES do
-						frame = getglobal(name);
+						frame = _G[name];
 						if ( frame:IsShown() ) then
 							UIFrameFadeIn(frame, CHANNELPULLOUT_TAB_FADE_TIME, self.oldAlpha, DEFAULT_CHANNELPULLOUT_ALPHA);
 						end
@@ -803,7 +803,7 @@ function ChannelPullout_OnUpdate (self, elapsed)
 			UIFrameFadeOut(ChannelPulloutTab, CHANNELPULLOUT_TAB_FADE_TIME, DEFAULT_CHANNELPULLOUT_TAB_ALPHA, ChannelPulloutTab.oldAlpha);
 			local frame;
 			for _, name in next, CHANNELPULLOUT_FADEFRAMES do
-				frame = getglobal(name)
+				frame = _G[name];
 				if ( frame:IsShown() ) then
 					UIFrameFadeOut(frame, CHANNELPULLOUT_TAB_FADE_TIME, DEFAULT_CHANNELPULLOUT_ALPHA, self.oldAlpha);
 				end
@@ -947,12 +947,12 @@ function ChannelPulloutRoster_OnLoad (self)
 	self:RegisterEvent("VOICE_CHANNEL_STATUS_UPDATE");
 	self:SetScript("OnEvent", ChannelPulloutRoster_OnEvent);
 	self.members = {};
-	self.scroll = getglobal(self:GetName() .. "Scroll");
+	self.scroll = _G[self:GetName() .. "Scroll"];
 	if ( self.scroll ) then
-		self.upBtn = getglobal(self.scroll:GetName() .. "UpBtn");
-		self.downBtn = getglobal(self.scroll:GetName() .. "DownBtn");
-		self.topBtn = getglobal(self.scroll:GetName() .. "TopBtn");
-		self.bottomBtn = getglobal(self.scroll:GetName() .. "BottomBtn");
+		self.upBtn = _G[self.scroll:GetName() .. "UpBtn"];
+		self.downBtn = _G[self.scroll:GetName() .. "DownBtn"];
+		self.topBtn = _G[self.scroll:GetName() .. "TopBtn"];
+		self.bottomBtn = _G[self.scroll:GetName() .. "BottomBtn"];
 	end
 end
 
@@ -1154,9 +1154,9 @@ end
 
 function ChannelPulloutRosterButton_OnEvent (button, event, arg1)
 	if ( event == "VOICE_PLATE_START" and arg1 == button.name:GetText() and CHANNELPULLOUT_OPTIONS.name == ChannelPulloutRoster_GetActiveSession() ) then
-		UIFrameFlash(getglobal(button:GetName().."SpeakerFlash"), 0.35, 0.35, -1);
+		UIFrameFlash(_G[button:GetName().."SpeakerFlash"], 0.35, 0.35, -1);
 	elseif ( arg1 == button.name:GetText() ) then
-		UIFrameFlashStop(getglobal(button:GetName().."SpeakerFlash"));
+		UIFrameFlashStop(_G[button:GetName().."SpeakerFlash"]);
 	end
 end
 
@@ -1179,19 +1179,19 @@ function ChannelPulloutRoster_DrawButton (button, data)
 	end
 	
 	if ( data[sessionActive] ) then			
-		ChannelFrame_Desaturate(getglobal(button.speaker:GetName().."On"), nil, 1, 1, 1, 0.75);
-		ChannelFrame_Desaturate(getglobal(button.speaker:GetName().."Flash"), nil, 1, 1, 1, 0.75);
-		getglobal(button.speaker:GetName().."Muted"):SetVertexColor(1, 1, 1, 1);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."On"], nil, 1, 1, 1, 0.75);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."Flash"], nil, 1, 1, 1, 0.75);
+		_G[button.speaker:GetName().."Muted"]:SetVertexColor(1, 1, 1, 1);
 	else
-		ChannelFrame_Desaturate(getglobal(button.speaker:GetName().."On"), 1, nil, nil, nil, 0.25);
-		ChannelFrame_Desaturate(getglobal(button.speaker:GetName().."Flash"), 1, nil, nil, nil, 0.25);
-		getglobal(button.speaker:GetName().."Muted"):SetVertexColor(1, 1, 1, .35);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."On"], 1, nil, nil, nil, 0.25);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."Flash"], 1, nil, nil, nil, 0.25);
+		_G[button.speaker:GetName().."Muted"]:SetVertexColor(1, 1, 1, .35);
 	end
 	
 	if ( data[muted] or data[squelched] ) then	
-		getglobal(button.speaker:GetName().."Muted"):Show();
+		_G[button.speaker:GetName().."Muted"]:Show();
 	else
-		getglobal(button.speaker:GetName().."Muted"):Hide();
+		_G[button.speaker:GetName().."Muted"]:Hide();
 	end
 	
 	button:Show();

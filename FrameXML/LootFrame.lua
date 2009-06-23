@@ -32,7 +32,7 @@ function LootFrame_OnEvent(self, event, ...)
 		end
 		local slot = arg1 - ((self.page - 1) * numLootToShow);
 		if ( (slot > 0) and (slot < (numLootToShow + 1)) ) then
-			local button = getglobal("LootButton"..slot);
+			local button = _G["LootButton"..slot];
 			if ( button ) then
 				button:Hide();
 			end
@@ -42,7 +42,7 @@ function LootFrame_OnEvent(self, event, ...)
 		local allButtonsHidden = 1;
 
 		for index = 1, LOOTFRAME_NUMBUTTONS do
-			button = getglobal("LootButton"..index);
+			button = _G["LootButton"..index];
 			if ( button:IsShown() ) then
 				allButtonsHidden = nil;
 			end
@@ -73,14 +73,14 @@ function LootFrame_Update()
 	local texture, item, quantity, quality, locked;
 	local button, countString, color;
 	for index = 1, LOOTFRAME_NUMBUTTONS do
-		button = getglobal("LootButton"..index);
+		button = _G["LootButton"..index];
 		local slot = (numLootToShow * (LootFrame.page - 1)) + index;
 		if ( slot <= numLootItems ) then	
 			if ( (LootSlotIsItem(slot) or LootSlotIsCoin(slot)) and index <= numLootToShow ) then
 				texture, item, quantity, quality, locked = GetLootSlotInfo(slot);
 				color = ITEM_QUALITY_COLORS[quality];
-				getglobal("LootButton"..index.."IconTexture"):SetTexture(texture);
-				local text = getglobal("LootButton"..index.."Text");
+				_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
+				local text = _G["LootButton"..index.."Text"];
 				text:SetText(item);
 				if( locked ) then
 					SetItemButtonNameFrameVertexColor(button, 1.0, 0, 0);
@@ -92,7 +92,7 @@ function LootFrame_Update()
 					SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
 				end
 				text:SetVertexColor(color.r, color.g, color.b);
-				countString = getglobal("LootButton"..index.."Count");
+				countString = _G["LootButton"..index.."Count"];
 				if ( quantity > 1 ) then
 					countString:SetText(quantity);
 					countString:Show();
@@ -186,7 +186,7 @@ function LootButton_OnClick(self, button)
 	LootFrame.selectedLootButton = self:GetName();
 	LootFrame.selectedSlot = self.slot;
 	LootFrame.selectedQuality = self.quality;
-	LootFrame.selectedItemName = getglobal(self:GetName().."Text"):GetText();
+	LootFrame.selectedItemName = _G[self:GetName().."Text"]:GetText();
 
 	LootSlot(self.slot);
 end
@@ -283,11 +283,11 @@ end
 function GroupLootFrame_OpenNewFrame(id, rollTime)
 	local frame;
 	for i=1, NUM_GROUP_LOOT_FRAMES do
-		frame = getglobal("GroupLootFrame"..i);
+		frame = _G["GroupLootFrame"..i];
 		if ( not frame:IsShown() ) then
 			frame.rollID = id;
 			frame.rollTime = rollTime;
-			getglobal("GroupLootFrame"..i.."Timer"):SetMinMaxValues(0, rollTime);
+			_G["GroupLootFrame"..i.."Timer"]:SetMinMaxValues(0, rollTime);
 			frame:Show();
 			return;
 		end
@@ -299,19 +299,25 @@ function GroupLootFrame_OnShow(self)
 	
 	if ( bindOnPickUp ) then
 		self:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border", tile = true, tileSize = 32, edgeSize = 32, insets = { left = 11, right = 12, top = 12, bottom = 11 } } );
-		getglobal(self:GetName().."Corner"):SetTexture("Interface\\DialogFrame\\UI-DialogBox-Gold-Corner");
-		getglobal(self:GetName().."Decoration"):Show();
+		_G[self:GetName().."Corner"]:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Gold-Corner");
+		_G[self:GetName().."Decoration"]:Show();
 	else 
 		self:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", tile = true, tileSize = 32, edgeSize = 32, insets = { left = 11, right = 12, top = 12, bottom = 11 } } );
-		getglobal(self:GetName().."Corner"):SetTexture("Interface\\DialogFrame\\UI-DialogBox-Corner");
-		getglobal(self:GetName().."Decoration"):Hide();
+		_G[self:GetName().."Corner"]:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Corner");
+		_G[self:GetName().."Decoration"]:Hide();
 	end
 	
 	local id = self:GetID();
-	getglobal("GroupLootFrame"..id.."IconFrameIcon"):SetTexture(texture);
-	getglobal("GroupLootFrame"..id.."Name"):SetText(name);
+	_G["GroupLootFrame"..id.."IconFrameIcon"]:SetTexture(texture);
+	_G["GroupLootFrame"..id.."Name"]:SetText(name);
 	local color = ITEM_QUALITY_COLORS[quality];
-	getglobal("GroupLootFrame"..id.."Name"):SetVertexColor(color.r, color.g, color.b);
+	_G["GroupLootFrame"..id.."Name"]:SetVertexColor(color.r, color.g, color.b);
+	if ( count > 1 ) then
+		_G["GroupLootFrame"..id.."IconFrameCount"]:SetText(count);
+		_G["GroupLootFrame"..id.."IconFrameCount"]:Show();
+	else
+		_G["GroupLootFrame"..id.."IconFrameCount"]:Hide();
+	end
 end
 
 function GroupLootFrame_OnHide (self)

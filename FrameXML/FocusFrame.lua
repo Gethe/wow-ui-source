@@ -248,14 +248,14 @@ end
 
 
 function SetFocusSpellbarAspect()
-	local frameText = getglobal(FocusFrameSpellBar:GetName().."Text");
+	local frameText = _G[FocusFrameSpellBar:GetName().."Text"];
 	if ( frameText ) then
 		frameText:SetFontObject(SystemFont_Shadow_Small);
 		frameText:ClearAllPoints();
 		frameText:SetPoint("TOP", FocusFrameSpellBar, "TOP", 0, 4);
 	end
 
-	local frameBorder = getglobal(FocusFrameSpellBar:GetName().."Border");
+	local frameBorder = _G[FocusFrameSpellBar:GetName().."Border"];
 	if ( frameBorder ) then
 		frameBorder:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
 		frameBorder:SetWidth(177);
@@ -264,7 +264,7 @@ function SetFocusSpellbarAspect()
 		frameBorder:SetPoint("TOP", FocusFrameSpellBar, "TOP", 0, 20);
 	end
 
-	local frameFlash = getglobal(FocusFrameSpellBar:GetName().."Flash");
+	local frameFlash = _G[FocusFrameSpellBar:GetName().."Flash"];
 	if ( frameFlash ) then
 		frameFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
 		frameFlash:SetWidth(177);
@@ -279,16 +279,16 @@ function Focus_Spellbar_OnLoad (self)
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 	
-	CastingBarFrame_OnLoad(self, "focus", false);
+	CastingBarFrame_OnLoad(self, "focus", false, false);
 
-	local barIcon = getglobal(self:GetName().."Icon");
+	local barIcon = _G[self:GetName().."Icon"];
 	barIcon:Show();
 	barIcon:ClearAllPoints();
 	barIcon:SetPoint("RIGHT", self:GetName(), "LEFT", -5, 0);
 
 	SetFocusSpellbarAspect();
 	
-	getglobal(self:GetName().."Text"):SetWidth(130);
+	_G[self:GetName().."Text"]:SetWidth(130);
 	-- check to see if the castbar should be shown
 	if ( GetCVar("showTargetCastbar") == "0") then
 		self.showCastbar = false;	

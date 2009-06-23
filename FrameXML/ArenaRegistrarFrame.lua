@@ -114,7 +114,7 @@ function PVPBannerFrame_OnShow (self)
 		for k, v in pairs(value) do
 			value[k] = random(100) / 100;
 		end
-		getglobal("PVPBannerFrameStandard"..index):SetVertexColor(value.r, value.g, value.b);
+		_G["PVPBannerFrameStandard"..index]:SetVertexColor(value.r, value.g, value.b);
 	end
 
 	PVPBannerFrameStandardEmblemWatermark:SetAlpha(0.4);

@@ -73,19 +73,19 @@ function KeyBindingFrame_Update()
 	for i=1, KEY_BINDINGS_DISPLAYED, 1 do
 		keyOffset = FauxScrollFrame_GetOffset(KeyBindingFrameScrollFrame) + i;
 		if ( keyOffset <= numBindings) then
-			keyBindingButton1 = getglobal("KeyBindingFrameBinding"..i.."Key1Button");
-			keyBindingButton1NormalTexture = getglobal("KeyBindingFrameBinding"..i.."Key1ButtonNormalTexture");
-			keyBindingButton1PushedTexture = getglobal("KeyBindingFrameBinding"..i.."Key1ButtonPushedTexture");
-			keyBindingButton2NormalTexture = getglobal("KeyBindingFrameBinding"..i.."Key2ButtonNormalTexture");
-			keyBindingButton2PushedTexture = getglobal("KeyBindingFrameBinding"..i.."Key2ButtonPushedTexture");
-			keyBindingButton2 = getglobal("KeyBindingFrameBinding"..i.."Key2Button");
-			keyBindingDescription = getglobal("KeyBindingFrameBinding"..i.."Description");
+			keyBindingButton1 = _G["KeyBindingFrameBinding"..i.."Key1Button"];
+			keyBindingButton1NormalTexture = _G["KeyBindingFrameBinding"..i.."Key1ButtonNormalTexture"];
+			keyBindingButton1PushedTexture = _G["KeyBindingFrameBinding"..i.."Key1ButtonPushedTexture"];
+			keyBindingButton2NormalTexture = _G["KeyBindingFrameBinding"..i.."Key2ButtonNormalTexture"];
+			keyBindingButton2PushedTexture = _G["KeyBindingFrameBinding"..i.."Key2ButtonPushedTexture"];
+			keyBindingButton2 = _G["KeyBindingFrameBinding"..i.."Key2Button"];
+			keyBindingDescription = _G["KeyBindingFrameBinding"..i.."Description"];
 			-- Set binding text
 			commandName, binding1, binding2 = GetBinding(keyOffset, KeyBindingFrame.mode);
 			-- Handle header
-			local headerText = getglobal("KeyBindingFrameBinding"..i.."Header");
+			local headerText = _G["KeyBindingFrameBinding"..i.."Header"];
 			if ( strsub(commandName, 1, 6) == "HEADER" ) then
-				headerText:SetText(getglobal("BINDING_"..commandName));
+				headerText:SetText(_G["BINDING_"..commandName]);
 				headerText:Show();
 				keyBindingButton1:Hide();
 				keyBindingButton2:Hide();
@@ -123,10 +123,10 @@ function KeyBindingFrame_Update()
 						keyBindingButton2:LockHighlight();
 					end
 				end
-				getglobal("KeyBindingFrameBinding"..i):Show();
+				_G["KeyBindingFrameBinding"..i]:Show();
 			end
 		else
-			getglobal("KeyBindingFrameBinding"..i):Hide();
+			_G["KeyBindingFrameBinding"..i]:Hide();
 		end
 	end
 	
@@ -173,6 +173,26 @@ function KeyBindingFrame_OnKeyDown(self, keyOrButton)
 			keyPressed = "BUTTON4"
 		elseif ( keyOrButton == "Button5" ) then
 			keyPressed = "BUTTON5"
+		elseif ( keyPressed == "Button6" ) then
+			keyPressed = "BUTTON6"
+		elseif ( keyOrButton == "Button7" ) then
+			keyPressed = "BUTTON7"
+		elseif ( keyPressed == "Button8" ) then
+			keyPressed = "BUTTON8"
+		elseif ( keyOrButton == "Button9" ) then
+			keyPressed = "BUTTON9"
+		elseif ( keyPressed == "Button10" ) then
+			keyPressed = "BUTTON10"
+		elseif ( keyOrButton == "Button11" ) then
+			keyPressed = "BUTTON11"
+		elseif ( keyPressed == "Button12" ) then
+			keyPressed = "BUTTON12"
+		elseif ( keyOrButton == "Button13" ) then
+			keyPressed = "BUTTON13"
+		elseif ( keyPressed == "Button14" ) then
+			keyPressed = "BUTTON14"
+		elseif ( keyOrButton == "Button15" ) then
+			keyPressed = "BUTTON15"
 		end
 		if ( keyPressed == "BUTTON1" or keyPressed == "BUTTON2" ) then
 			return;

@@ -5,7 +5,7 @@
 
 
 -- 
--- Class Constants
+-- Class
 --
 CLASS_SORT_ORDER = {
 	"WARRIOR",
@@ -35,7 +35,7 @@ CLASS_ICON_TCOORDS = {
 };
 
 --
--- Spell Constants
+-- Spell
 --
 
 -- Power Types
@@ -58,7 +58,7 @@ SCHOOL_MASK_SHADOW	= 0x20;
 SCHOOL_MASK_ARCANE	= 0x40;
 
 -- 
--- Talent Constants
+-- Talent
 -- 
 TALENT_SORT_ORDER = {
 	"spec1",
@@ -69,13 +69,12 @@ TALENT_SORT_ORDER = {
 SHOW_TALENT_LEVEL = 10;
 
 --
--- Glyph Constants
+-- Glyph
 --
-
 SHOW_INSCRIPTION_LEVEL = 15;
 
 --
--- Achievement Constants
+-- Achievement
 --
 
 -- Criteria Types
@@ -93,7 +92,7 @@ ACHIEVEMENT_CRITERIA_HIDDEN				= 0x00000002;
 NUM_ACHIEVEMENT_CRITERIA_FLAGS			= 2;
 
 --
--- Inventory Constants
+-- Inventory
 --
 
 -- General item constants
@@ -156,15 +155,15 @@ NUM_BANKGENERIC_SLOTS = 28;
 NUM_BANKBAGSLOTS = 7;
 
 --
--- Equipment Set Constants
+-- Equipment Set
 --
-
 MAX_EQUIPMENT_SETS_PER_PLAYER = 10;
 EQUIPMENT_SET_EMPTY_SLOT = 0;
+EQUIPMENT_SET_IGNORED_SLOT = 1;
 EQUIPMENT_SET_ITEM_MISSING = -1;
 
 --
--- Combat Log Constants
+-- Combat Log
 -- 
 
 -- Affiliation
@@ -298,7 +297,6 @@ COMBATLOG_FILTER_EVERYTHING =	0xFFFFFFFF;
 --
 -- Calendar
 -- 
-
 CALENDAR_FIRST_WEEKDAY			= 1;		-- 1=SUN 2=MON 3=TUE 4=WED 5=THU 6=FRI 7=SAT
 
 -- Event Types
@@ -321,3 +319,65 @@ CALENDAR_INVITESTATUS_NOT_SIGNEDUP	= 8;
 -- Invite Types
 CALENDAR_INVITETYPE_NORMAL = 1;
 CALENDAR_INVITETYPE_SIGNUP = 2;
+
+--
+-- Difficulty
+--
+QuestDifficultyColors = {
+	["impossible"]		= { r = 1.00, g = 0.10, b = 0.10 };
+	["verydifficult"]	= { r = 1.00, g = 0.50, b = 0.25 };
+	["difficult"]		= { r = 1.00, g = 1.00, b = 0.00 };
+	["standard"]		= { r = 0.25, g = 0.75, b = 0.25 };
+	["trivial"]			= { r = 0.50, g = 0.50, b = 0.50 };
+	["header"]			= { r = 0.70, g = 0.70, b = 0.70 };
+};
+
+--
+-- WorldMap
+--
+NUM_WORLDMAP_DETAIL_TILES = 12;
+NUM_WORLDMAP_DETAIL_TILE_ROWS = 3;
+NUM_WORLDMAP_DETAIL_TILE_COLS = 4;
+
+--
+-- Totems
+--
+
+MAX_TOTEMS = 4;
+
+FIRE_TOTEM_SLOT = 1;
+EARTH_TOTEM_SLOT = 2;
+WATER_TOTEM_SLOT = 3;
+AIR_TOTEM_SLOT = 4;
+
+TOTEM_PRIORITIES = {
+	EARTH_TOTEM_SLOT,
+	FIRE_TOTEM_SLOT,
+	WATER_TOTEM_SLOT,
+	AIR_TOTEM_SLOT,
+};
+
+TOTEM_MULTI_CAST_SUMMON_SPELLS = {
+	66842,
+	66843,
+	66844,
+};
+
+TOTEM_MULTI_CAST_RECALL_SPELLS = {
+	36936,
+};
+
+--
+-- GM Ticket
+--
+
+GMTICKET_QUEUE_STATUS_ENABLED = 1;
+GMTICKET_QUEUE_STATUS_DISABLED = -1;
+
+GMTICKET_ASSIGNEDTOGM_STATUS_NOT_ASSIGNED = 0;	-- ticket is not currently assigned to a gm
+GMTICKET_ASSIGNEDTOGM_STATUS_ASSIGNED = 1;		-- ticket is assigned to a normal gm
+GMTICKET_ASSIGNEDTOGM_STATUS_ESCALATED = 2;		-- ticket is in the escalation queue
+
+GMTICKET_OPENEDBYGM_STATUS_NOT_OPENED = 0;		-- ticket has never been opened by a gm
+GMTICKET_OPENEDBYGM_STATUS_OPENED = 1;			-- ticket has been opened by a gm
+

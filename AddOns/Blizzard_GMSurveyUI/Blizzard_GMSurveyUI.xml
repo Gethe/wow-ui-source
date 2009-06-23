@@ -727,7 +727,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						TicketStatusFrame.hasGMSurvey = nil;
+						TicketStatusFrame.hasGMSurvey = false;
 						TicketStatusFrame:Hide();
 						HideUIPanel(GMSurveyFrame);
 					</OnClick>
@@ -746,7 +746,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						TicketStatusFrame.hasGMSurvey = nil;
+						TicketStatusFrame.hasGMSurvey = false;
 						TicketStatusFrame:Hide();
 						HideUIPanel(GMSurveyFrame);
 					</OnClick>

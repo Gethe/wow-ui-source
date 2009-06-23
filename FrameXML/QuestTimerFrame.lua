@@ -22,11 +22,11 @@ function QuestTimerFrame_Update(self, ...)
 	self.updating = 1;
 	self.numTimers = select("#", ...);
 	for i=1, self.numTimers, 1 do
-		getglobal("QuestTimer"..i.."Text"):SetText(SecondsToTime(select(i, ...)));
-		getglobal("QuestTimer"..i):Show();
+		_G["QuestTimer"..i.."Text"]:SetText(SecondsToTime(select(i, ...)));
+		_G["QuestTimer"..i]:Show();
 	end
 	for i=self.numTimers + 1, MAX_QUESTS, 1 do
-		getglobal("QuestTimer"..i):Hide();
+		_G["QuestTimer"..i]:Hide();
 	end
 	if ( self.numTimers > 0 ) then
 		self:SetHeight(45 + (16 * self.numTimers));

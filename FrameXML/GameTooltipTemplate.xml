@@ -246,7 +246,7 @@
 				GameTooltip_SetDefaultAnchor(self, UIParent);
 			</OnTooltipSetDefaultAnchor>
 			<OnTooltipAddMoney>
-				SetTooltipMoney(self, cost);
+				GameTooltip_OnTooltipAddMoney(self, cost, maxcost);
 			</OnTooltipAddMoney>
 			<OnTooltipCleared>
 				GameTooltip_ClearMoney(self);

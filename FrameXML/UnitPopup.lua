@@ -47,6 +47,12 @@ UnitPopupButtons["DUNGEON_DIFFICULTY1"] = { text = DUNGEON_DIFFICULTY1, dist = 0
 UnitPopupButtons["DUNGEON_DIFFICULTY2"] = { text = DUNGEON_DIFFICULTY2, dist = 0 };
 --UnitPopupButtons["DUNGEON_DIFFICULTY3"] = { text = DUNGEON_DIFFICULTY3, dist = 0 };
 
+UnitPopupButtons["RAID_DIFFICULTY"] = { text = RAID_DIFFICULTY, dist = 0,  nested = 1};
+UnitPopupButtons["RAID_DIFFICULTY1"] = { text = RAID_DIFFICULTY1, dist = 0 };
+UnitPopupButtons["RAID_DIFFICULTY2"] = { text = RAID_DIFFICULTY2, dist = 0 };
+UnitPopupButtons["RAID_DIFFICULTY3"] = { text = RAID_DIFFICULTY3, dist = 0 };
+UnitPopupButtons["RAID_DIFFICULTY4"] = { text = RAID_DIFFICULTY4, dist = 0 };
+
 UnitPopupButtons["PVP_FLAG"] = { text = PVP_FLAG, dist = 0, nested = 1};
 UnitPopupButtons["PVP_ENABLE"] = { text = ENABLE, dist = 0, checkable = 1 };
 UnitPopupButtons["PVP_DISABLE"] = { text = DISABLE, dist = 0, checkable = 1 };
@@ -113,7 +119,7 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "DUNGEON_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "LEAVE", "CANCEL" };
+UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "LEAVE", "CANCEL" };
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_ABANDON", "PET_DISMISS", "CANCEL" };
 UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "LOOT_PROMOTE", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
 UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
@@ -134,6 +140,7 @@ UnitPopupMenus["LOOT_METHOD"] = { "FREE_FOR_ALL", "ROUND_ROBIN", "MASTER_LOOTER"
 UnitPopupMenus["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" };
 UnitPopupMenus["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"};
 UnitPopupMenus["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2" };
+UnitPopupMenus["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "RAID_DIFFICULTY4" };
 
 UnitPopupShown = {};
 UnitPopupShown[1] = {};
@@ -195,7 +202,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	dropdownMenu.selectedLootMethod = UnitLootMethod[GetLootMethod()].text;
 	UnitPopupButtons["LOOT_METHOD"].text = dropdownMenu.selectedLootMethod;
 	UnitPopupButtons["LOOT_METHOD"].tooltipText = UnitLootMethod[GetLootMethod()].tooltipText;
-	dropdownMenu.selectedLootThreshold = getglobal("ITEM_QUALITY"..GetLootThreshold().."_DESC");
+	dropdownMenu.selectedLootThreshold = _G["ITEM_QUALITY"..GetLootThreshold().."_DESC"];
 	UnitPopupButtons["LOOT_THRESHOLD"].text = dropdownMenu.selectedLootThreshold;
 	-- This allows player to view loot settings if he's not the leader
 	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
@@ -250,7 +257,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					info.checked = 1;
 				end
 			elseif ( strsub(value, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(value) > 18)) then
-				local dungeonDifficulty = GetCurrentDungeonDifficulty();
+				local dungeonDifficulty = GetDungeonDifficulty();
 				if ( dungeonDifficulty == index ) then
 					info.checked = 1;
 				end
@@ -266,12 +273,23 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 				if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 					info.disabled = 1;	
 				end					
-
-			-- Adds (Default) to the difficulty string.  Removed per request.
-			--[[	local defaultDungeonDifficullty = GetDefaultDungeonDifficulty();
-				if ( defaultDungeonDifficullty == index ) then
-					info.text = info.text.." ("..DEFAULT..")";
-				end   ]]
+			elseif ( strsub(value, 1, 15) == "RAID_DIFFICULTY" and (strlen(value) > 15)) then
+				local dungeonDifficulty = GetRaidDifficulty();
+				if ( dungeonDifficulty == index ) then
+					info.checked = 1;
+				end
+				local inParty = 0;
+				if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then
+					inParty = 1;
+				end
+				local isLeader = 0;
+				if ( IsPartyLeader() ) then
+					isLeader = 1;
+				end
+				local inInstance, instanceType = IsInInstance();
+				if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+					info.disabled = 1;	
+				end					
 			elseif ( value == "PVP_ENABLE" ) then
 				if ( GetPVPDesired() == 1 ) then
 					info.checked = 1;
@@ -294,7 +312,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 			info.func = UnitPopup_OnClick;
 			-- Setup newbie tooltips
 			info.tooltipTitle = UnitPopupButtons[value].text;
-			info.tooltipText = getglobal("NEWBIE_TOOLTIP_UNIT_"..value);
+			info.tooltipText = _G["NEWBIE_TOOLTIP_UNIT_"..value];
 			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 		end
 		return;			
@@ -365,7 +383,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 			
 			-- Setup newbie tooltips
 			info.tooltipTitle = UnitPopupButtons[value].text;
-			tooltipText = getglobal("NEWBIE_TOOLTIP_UNIT_"..value);
+			tooltipText = _G["NEWBIE_TOOLTIP_UNIT_"..value];
 			if ( not tooltipText ) then
 				tooltipText = UnitPopupButtons[value].tooltipText;
 			end
@@ -566,7 +584,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "DUNGEON_DIFFICULTY" ) then
-			if ( UnitLevel("player") < 65 and GetCurrentDungeonDifficulty() == 1 ) then
+			if ( UnitLevel("player") < 65 and GetDungeonDifficulty() == 1 ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "RAID_DIFFICULTY" ) then
+			if ( UnitLevel("player") < 65 and GetRaidDifficulty() == 1 ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "MUTE" ) then
@@ -961,7 +983,10 @@ function UnitPopup_OnUpdate (elapsed)
 					elseif ( ( strsub(value, 1, 18) == "DUNGEON_DIFFICULTY" ) and ( strlen(value) > 18 ) ) then
 						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 							enable = 0;	
-							
+						end			
+					elseif ( ( strsub(value, 1, 15) == "RAID_DIFFICULTY" ) and ( strlen(value) > 15 ) ) then
+						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+							enable = 0;	
 						end			
 					elseif ( value == "RESET_INSTANCES" ) then
 						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
@@ -1110,11 +1135,10 @@ function UnitPopup_OnClick (self)
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( strsub(button, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(button) > 18) ) then
 		local dungeonDifficulty = tonumber( strsub(button,19,19) );
-		if ( inParty == 1 and (isLeader == 1 or isAssistant == 1) ) then
-			SetDungeonDifficulty(dungeonDifficulty,1,1);
-		else
-			SetDungeonDifficulty(dungeonDifficulty,1,0);
-		end
+		SetDungeonDifficulty(dungeonDifficulty);
+	elseif ( strsub(button, 1, 15) == "RAID_DIFFICULTY" and (strlen(button) > 15) ) then
+		local raidDifficulty = tonumber( strsub(button,16,16) );
+		SetRaidDifficulty(raidDifficulty);
 	elseif ( button == "LOOT_PROMOTE" ) then
 		SetLootMethod("master", name, 1);
 	elseif ( button == "PVP_ENABLE" ) then

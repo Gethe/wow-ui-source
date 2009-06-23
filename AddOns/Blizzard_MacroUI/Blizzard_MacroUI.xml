@@ -14,7 +14,21 @@
 			</OnDragStart>
 		</Scripts>
 	</CheckButton>
-	<CheckButton name="MacroPopupButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
+	<CheckButton name="MacroPopupButtonTemplate" inherits="SimplePopupButtonTemplate" virtual="true">
+		<NormalTexture name="$parentIcon" nonBlocking="true">
+			<Size>
+				<AbsDimension x="36" y="36"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 		<Scripts>
 			<OnClick>
 				MacroPopupButton_OnClick(self, button, down);
@@ -349,7 +363,7 @@
 				<Scripts>
 					<OnLoad>
 						PanelTemplates_TabResize(self, -15);
-						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 					</OnLoad>
 					<OnClick>
 						PanelTemplates_SetTab(MacroFrame, self:GetID());
@@ -371,7 +385,7 @@
 				<Scripts>
 					<OnLoad>
 						self:SetFormattedText(CHARACTER_SPECIFIC_MACROS, UnitName("player"));
-						getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 						PanelTemplates_TabResize(self, -15, nil, 150);
 					</OnLoad>
 					<OnClick>

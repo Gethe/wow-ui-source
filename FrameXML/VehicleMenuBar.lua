@@ -628,7 +628,7 @@ function VehicleMenuBar_SetSkin(skinName, pitchVisible)
 	
 	for _, framedata in ipairs(skinTable) do
 		if ( bit.band((framedata.pitchHidden or 0),(pitchVisible or 0)+1) == 0 ) then	--0 = never hide. 1 = hide when no pitch slider 2 = hide when pitch slider
-			frame = getglobal("VehicleMenuBarArtFrame"..framedata.layer..frameCount[framedata.layer]);
+			frame = _G["VehicleMenuBarArtFrame"..framedata.layer..frameCount[framedata.layer]];
 			if ( not frame ) then
 				error("Not enough vehicle art frames of type "..framedata.layer);
 			end
@@ -648,7 +648,7 @@ function VehicleMenuBar_SetSkin(skinName, pitchVisible)
 	
 	for framename, framedata in pairs(skinTable) do	--For buttons
 		if ( type(framename) == "string" and framename ~= "Overall") then
-			frame = getglobal("VehicleMenuBar"..framename)
+			frame = _G["VehicleMenuBar"..framename]
 			
 			if ( framedata.height ) then
 				frame:SetHeight(framedata.height);
@@ -754,16 +754,16 @@ end
 function VehicleMenuBar_ReleaseSkins()
 	VehicleMenuBar.currSkin = nil;
 	for i=1, VEHICLE_MAX_BACKGROUND do
-		getglobal("VehicleMenuBarArtFrameBACKGROUND"..i):SetTexture(nil);
+		_G["VehicleMenuBarArtFrameBACKGROUND"..i]:SetTexture(nil);
 	end
 	for i=1, VEHICLE_MAX_BORDER do
-		getglobal("VehicleMenuBarArtFrameBORDER"..i):SetTexture(nil);
+		_G["VehicleMenuBarArtFrameBORDER"..i]:SetTexture(nil);
 	end
 	for i=1, VEHICLE_MAX_ARTWORK do
-		getglobal("VehicleMenuBarArtFrameARTWORK"..i):SetTexture(nil);
+		_G["VehicleMenuBarArtFrameARTWORK"..i]:SetTexture(nil);
 	end
 	for i=1, VEHICLE_MAX_OVERLAY do
-		getglobal("VehicleMenuBarArtFrameOVERLAY"..i):SetTexture(nil);
+		_G["VehicleMenuBarArtFrameOVERLAY"..i]:SetTexture(nil);
 	end
 	
 	VehicleMenuBarPitchUpButton:GetNormalTexture():SetTexture(nil);
@@ -780,10 +780,10 @@ end
 function VehicleMenuBar_UpdateActionBars()
 	local frame;
 	for i=1, VEHICLE_MAX_ACTIONBUTTONS do
-		frame = getglobal("VehicleMenuBarActionButton"..i);
+		frame = _G["VehicleMenuBarActionButton"..i];
 		frame:GetNormalTexture():SetHeight(105);
 		frame:GetNormalTexture():SetWidth(105);
-		frame = getglobal("VehicleMenuBarActionButton"..i.."HotKey");
+		frame = _G["VehicleMenuBarActionButton"..i.."HotKey"];
 		frame:SetPoint("TOPLEFT", -20, -4);
 		frame.SetPoint = function() end;	
 	end
@@ -942,6 +942,51 @@ local SeatIndicatorSkinsData = {
 			yPos = -78,
 		},
 	},
+	["UlduarDemolisher"] = {
+		Overall = {
+			height = 128,
+			width = 128,
+			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher",
+		},
+		[1] = {
+			xPos = -49,
+			yPos = -55,
+		},
+		[2] = {
+			xPos = -26,
+			yPos = -21,
+		},
+	},
+	["UlduarSiegeEngine"] = {
+		Overall = {
+			height = 128,
+			width = 128,
+			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine",
+		},
+		[1] = {
+			xPos = -52,
+			yPos = -5,
+		},
+		[4] = {
+			xPos = -51,
+			yPos = -60,
+		},
+	},
+	["UlduarMotorcycle"] = {
+		Overall = {
+			height = 128,
+			width = 128,
+			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Motorcycle",
+		},
+		[1] = {
+			xPos = -51,
+			yPos = -75,
+		},
+		[2] = {
+			xPos = -30,
+			yPos = -78,
+		},
+	},
 }
 
 function VehicleSeatIndicator_SetUpVehicle(vehicleName)
@@ -1076,10 +1121,10 @@ function VehicleSeatIndicatorButton_OnEnter(self)
 		return;
 	end
 	
-	local controlType, occupantName = UnitVehicleSeatInfo("player", self:GetID());
+	local controlType, occupantName, serverName, ejectable, canSwitchSeats = UnitVehicleSeatInfo("player", self:GetID());
 	local highlight = _G[self:GetName().."Highlight"]
 	
-	if ( not UnitInVehicle("player") ) then
+	if ( not UnitUsingVehicle("player") ) then	--UnitUsingVehicle also returns true when we are transitioning between seats in a vehicle.
 		highlight:Hide();
 		if ( occupantName ) then
 			GameTooltip_SetDefaultAnchor(GameTooltip, self);
@@ -1089,7 +1134,15 @@ function VehicleSeatIndicatorButton_OnEnter(self)
 		return;
 	end
 	
-	if ( controlType == "None" ) then
+	if ( not canSwitchSeats or not CanSwitchVehicleSeat() ) then
+		highlight:Hide();
+		SetCursor(nil);
+		if ( occupantName ) then
+			GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(occupantName);
+		end
+	elseif ( controlType == "None" ) then
 		if ( occupantName ) then
 			highlight:Hide();
 			GameTooltip_SetDefaultAnchor(GameTooltip, self);

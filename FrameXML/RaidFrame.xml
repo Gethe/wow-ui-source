@@ -284,20 +284,20 @@
 							<OnScrollRangeChanged function="ScrollFrame_OnScrollRangeChanged"/>
 							<!--  The code to disable the ScrollDownButton is pretty hacked, but it works -->
 							<OnVerticalScroll>
-								local scrollbar = getglobal(self:GetName().."ScrollBar");
+								local scrollbar = _G[self:GetName().."ScrollBar"];
 								scrollbar:SetValue(offset);
 								local min;
 								local max;
 								min, max = scrollbar:GetMinMaxValues();
 								if ( offset == 0 ) then
-									getglobal(scrollbar:GetName().."ScrollUpButton"):Disable();
+									_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
 								else
-									getglobal(scrollbar:GetName().."ScrollUpButton"):Enable();
+									_G[scrollbar:GetName().."ScrollUpButton"]:Enable();
 								end
 								if ((scrollbar:GetValue() - max) == 0) then
-									getglobal(scrollbar:GetName().."ScrollDownButton"):Disable();
+									_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
 								else
-									getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
+									_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
 								end
 							</OnVerticalScroll>
 							<OnMouseWheel function="ScrollFrameTemplate_OnMouseWheel"/>

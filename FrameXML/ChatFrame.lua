@@ -1947,6 +1947,12 @@ SlashCmdList["DISMOUNT"] = function(msg)
 	end
 end
 
+SlashCmdList["LEAVEVEHICLE"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		VehicleExit();
+	end
+end
+
 SlashCmdList["RESETCHAT"] = function(msg)
 	FCF_ResetAllWindows();
 end
@@ -2035,9 +2041,12 @@ SlashCmdList["EQUIP_SET"] = function(msg)
 end
 
 SlashCmdList["USE_TALENT_SPEC"] = function(msg)
-	local group = tonumber(SecureCmdOptionParse(msg));
+	local group = SecureCmdOptionParse(msg);
 	if ( group ) then
-		SetActiveTalentGroup(group);
+		local groupNumber = tonumber(group);
+		if ( groupNumber ) then
+			SetActiveTalentGroup(groupNumber);
+		end
 	end
 end
 
@@ -2050,6 +2059,29 @@ end
 SlashCmdList["UI_ERRORS_ON"] = function(msg)
 	UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE");
 	SetCVar("Sound_EnableSFX", "1");
+end
+
+SlashCmdList["FRAMESTACK"] = function(msg)
+	UIParentLoadAddOn("Blizzard_DebugTools");
+	if(msg == tostring(true)) then
+		FrameStackTooltip_Toggle(true);
+	else
+		FrameStackTooltip_Toggle();
+	end
+end
+
+SlashCmdList["EVENTTRACE"] = function(msg)
+	UIParentLoadAddOn("Blizzard_DebugTools");
+	EventTraceFrame_HandleSlashCmd(msg);
+end
+
+SlashCmdList["DUMP"] = function(msg)
+	UIParentLoadAddOn("Blizzard_DebugTools");
+	DevTools_DumpCommand(msg);
+end
+
+SlashCmdList["RELOAD"] = function(msg)
+	ConsoleExec("reloadui");
 end
 
 -- ChatFrame functions
@@ -2345,25 +2377,43 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		return true;
 	end
 end
+
+function GetColoredName(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12)
+	if ( arg12 ~= "" and GetCVarBool("colorChatNamesByClass") ) then
+		local localizedClass, englishClass, localizedRace, englishRace, sex = GetPlayerInfoByGUID(arg12)
+		
+		if ( englishClass ) then
+			local classColorTable = RAID_CLASS_COLORS[englishClass];
+			if ( not classColorTable ) then
+				return arg2;
+			end
+			return string.format("\124cff%.2x%.2x%.2x", classColorTable.r*255, classColorTable.g*255, classColorTable.b*255)..arg2.."\124r"
+		end
+	end
 	
+	return arg2;
+end
+
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
-		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = ...;
+		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 = ...;
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
 
 		local filter = false;
 		if ( chatFilters[event] ) then
-			local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11;
+			local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12;
 			for _, filterFunc in next, chatFilters[event] do
-				filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11 = filterFunc(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
+				filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12 = filterFunc(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 				if ( filter ) then
 					return true;
 				elseif ( newarg1 ) then
-					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11;
+					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 = newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12;
 				end
 			end
 		end
+		
+		local coloredName = GetColoredName(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 		
 		local channelLength = strlen(arg4);
 		if ( (strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER")) ) then
@@ -2485,15 +2535,15 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= self.defaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (strlen(arg2) > 0) ) then
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
+					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..coloredName.."]".."|h");
 				else
 					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag..arg2);
 				end
 			else
 				if ( showLink and (strlen(arg2) > 0) and (type ~= "EMOTE") ) then
-					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h");
+					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..coloredName.."]".."|h");
 				elseif ( showLink and (strlen(arg2) > 0) and (type == "EMOTE") ) then
-					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..arg2.."|h");
+					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..coloredName.."|h");
 				else
 					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
 				end
@@ -3070,6 +3120,9 @@ function ChatEdit_SendText(editBox, addHistory)
 end
 
 function ChatEdit_OnEnterPressed(self)
+	if(AutoCompleteEditBox_OnEnterPressed(self)) then
+		return;
+	end
 	ChatEdit_SendText(self, 1);
 
 	local type = self:GetAttribute("chatType");
@@ -3081,9 +3134,11 @@ function ChatEdit_OnEnterPressed(self)
 end
 
 function ChatEdit_OnEscapePressed(editBox)
-	editBox:SetAttribute("chatType", editBox:GetAttribute("stickyType"));
-	editBox:SetText("");
-	editBox:Hide();
+	if ( not AutoCompleteEditBox_OnEscapePressed(editBox) ) then
+		editBox:SetAttribute("chatType", editBox:GetAttribute("stickyType"));
+		editBox:SetText("");
+		editBox:Hide();
+	end
 end
 
 function ChatEdit_OnSpacePressed(self)
@@ -3196,18 +3251,33 @@ function ChatEdit_SecureTabPressed(self)
 end
 
 function ChatEdit_OnTabPressed(self)
-	if ( securecall("ChatEdit_CustomTabPressed") ) then
-		return;
+	if ( not AutoCompleteEditBox_OnTabPressed(self) ) then
+		if ( securecall("ChatEdit_CustomTabPressed") ) then
+			return;
+		end
+		ChatEdit_SecureTabPressed(self);
 	end
-	ChatEdit_SecureTabPressed(self);
 end
 
-function ChatEdit_OnTextChanged(self)
+function ChatEdit_OnTextChanged(self, userInput)
 	if ( not self.ignoreTextChange ) then
 		self.tabCompleteIndex = 1;
 		self.tabCompleteText = nil;
 	end
 	self.ignoreTextChange = nil;
+	local regex = "^(([^%s]+)%s+)([^%s]+)"
+	local full, command, target = strmatch(self:GetText(), regex);
+	if ( not target or (strsub(target, 1, 1) == "|") ) then
+		AutoComplete_HideIfAttachedTo(self);
+		return;
+	end
+	
+	if ( userInput ) then
+		self.autoCompleteRegex = regex;
+		self.autoCompleteFormatRegex = "%2$s%1$s"
+		self.autoCompleteXOffset = 35;
+		AutoComplete_Update(self, target, self:GetCursorPosition() - strlen(command) - 1);
+	end
 end
 
 function ChatEdit_OnTextSet(self)
@@ -3221,28 +3291,33 @@ function ChatEdit_OnInputLanguageChanged(self)
 end
 
 local function processChatType(editBox, msg, index, send)
+	editBox.autoCompleteParams = AUTOCOMPLETE_LIST[index];
 -- this is a special function for "ChatEdit_HandleChatType"
-	if ( index == "WHISPER" ) then
-		ChatEdit_ExtractTellTarget(editBox, msg);
-	elseif ( index == "REPLY" ) then
-		local lastTell = ChatEdit_GetLastTellTarget();
-		if ( lastTell ~= "" ) then
-			editBox:SetAttribute("chatType", "WHISPER");
-			editBox:SetAttribute("tellTarget", lastTell);
+	if ( ChatTypeInfo[index] ) then
+		if ( index == "WHISPER" ) then
+			ChatEdit_ExtractTellTarget(editBox, msg);
+		elseif ( index == "REPLY" ) then
+			local lastTell = ChatEdit_GetLastTellTarget();
+			if ( lastTell ~= "" ) then
+				editBox:SetAttribute("chatType", "WHISPER");
+				editBox:SetAttribute("tellTarget", lastTell);
+				editBox:SetText(msg);
+				ChatEdit_UpdateHeader(editBox);
+			else
+				if ( send == 1 ) then
+					ChatEdit_OnEscapePressed(editBox);
+				end
+			end
+		elseif (index == "CHANNEL") then
+			ChatEdit_ExtractChannel(editBox, msg);
+		else
+			editBox:SetAttribute("chatType", index);
 			editBox:SetText(msg);
 			ChatEdit_UpdateHeader(editBox);
-		else
-			if ( send == 1 ) then
-				ChatEdit_OnEscapePressed(editBox);
-			end
 		end
-	elseif (index == "CHANNEL") then
-		ChatEdit_ExtractChannel(editBox, msg);
-	else
-		editBox:SetAttribute("chatType", index);
-		editBox:SetText(msg);
-		ChatEdit_UpdateHeader(editBox);
+		return true;
 	end
+	return false;
 end
 
 function ChatEdit_HandleChatType(editBox, msg, command, send)
@@ -3261,8 +3336,33 @@ function ChatEdit_HandleChatType(editBox, msg, command, send)
 	else
 		-- first check the hash table
 		if ( hash_ChatTypeInfoList[command] ) then
-			processChatType(editBox, msg, hash_ChatTypeInfoList[command], send);
-			return true;
+			return processChatType(editBox, msg, hash_ChatTypeInfoList[command], send);
+		end
+		for index, value in pairs(SecureCmdList) do
+			local i = 1;
+			local cmdString = _G["SLASH_"..index..i];
+			while ( cmdString ) do
+				cmdString = strupper(cmdString);
+				if ( cmdString == command ) then
+					hash_ChatTypeInfoList[command] = index;
+					return processChatType(editBox, msg, index, send);
+				end
+				i = i + 1;
+				cmdString = _G["SLASH_"..index..i];
+			end
+		end
+		for index, value in pairs(SlashCmdList) do
+			local i = 1;
+			local cmdString = _G["SLASH_"..index..i];
+			while ( cmdString ) do
+				cmdString = strupper(cmdString);
+				if ( cmdString == command ) then
+					hash_ChatTypeInfoList[command] = index;
+					return processChatType(editBox, msg, index, send);
+				end
+				i = i + 1;
+				cmdString = _G["SLASH_"..index..i];
+			end
 		end
 		for index, value in pairs(ChatTypeInfo) do
 			local i = 1;
@@ -3271,8 +3371,7 @@ function ChatEdit_HandleChatType(editBox, msg, command, send)
 				cmdString = strupper(cmdString);
 				if ( cmdString == command ) then
 					hash_ChatTypeInfoList[command] = index;	-- add to hash table
-					processChatType(editBox, msg, index, send);
-					return true;
+					return processChatType(editBox, msg, index, send);
 				end
 				i = i + 1;
 				cmdString = _G["SLASH_"..index..i];

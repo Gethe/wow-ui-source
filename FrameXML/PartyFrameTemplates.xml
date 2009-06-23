@@ -211,11 +211,11 @@
 				local id = self:GetParent():GetID();
 				local prefix = "PartyMemberFrame"..id.."PetFrame";
 				local unit = "partypet"..id;
-				UnitFrame_Initialize(self, unit,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
-					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"),
-				       nil, nil, getglobal(prefix.."Flash"));
-				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
-				getglobal(prefix.."Name"):Hide();
+				UnitFrame_Initialize(self, unit,  _G[prefix.."Name"], _G[prefix.."Portrait"],
+					   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"],
+				       nil, nil, _G[prefix.."Flash"]);
+				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
+				_G[prefix.."Name"]:Hide();
 				SecureUnitButton_OnLoad(self, unit);
 			</OnLoad>
 			<OnShow>
@@ -564,13 +564,13 @@
 				local id = self:GetID();
 				self.debuffCountdown = 0; 
 				self.numDebuffs = 0;
-				self.noTextPrefix = 1;
+				self.noTextPrefix = true;
 				local prefix = "PartyMemberFrame"..id;
-				UnitFrame_Initialize(self, "party"..id,  getglobal(prefix.."Name"), getglobal(prefix.."Portrait"),
-					   getglobal(prefix.."HealthBar"), getglobal(prefix.."HealthBarText"), 
-					   getglobal(prefix.."ManaBar"), getglobal(prefix.."ManaBarText"),
-				       getglobal(prefix.."Flash"));
-				SetTextStatusBarTextZeroText(getglobal(prefix.."HealthBar"), DEAD);
+				UnitFrame_Initialize(self, "party"..id,  _G[prefix.."Name"], _G[prefix.."Portrait"],
+					   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
+					   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"],
+				       _G[prefix.."Flash"]);
+				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 				PartyMemberFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>

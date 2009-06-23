@@ -122,9 +122,9 @@
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								getglobal(self:GetName().."Icon"):SetTexture("Interface\\Icons\\Spell_Shadow_Teleport");
+								_G[self:GetName().."Icon"]:SetTexture("Interface\\Icons\\Spell_Shadow_Teleport");
 								self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-								local normalTexture = getglobal(self:GetName().."NormalTexture");
+								local normalTexture = _G[self:GetName().."NormalTexture"];
 								normalTexture:SetWidth(40);
 								normalTexture:SetHeight(40);
 							</OnLoad>
@@ -884,7 +884,7 @@
 							<OnLoad>
 								PanelTemplates_SelectTab(self);
 								PanelTemplates_TabResize(self, 0);
-								getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+								_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -1183,7 +1183,7 @@
 							<OnLoad>
 								PanelTemplates_SelectTab(self);
 								PanelTemplates_TabResize(self, 0);
-								getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+								_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -1535,7 +1535,7 @@
 							<OnLoad>
 								PanelTemplates_SelectTab(self);
 								PanelTemplates_TabResize(self, 0);
-								getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+								_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 							</OnLoad>
 						</Scripts>
 					</Button>

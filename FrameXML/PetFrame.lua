@@ -3,6 +3,7 @@
 --PET_FLASH_OFF_TIME = 0.5;
 
 function PetFrame_OnLoad (self)
+	self.noTextPrefix = true;
 	UnitFrame_Initialize(self, "pet", PetName, PetPortrait,
 						 PetFrameHealthBar, PetFrameHealthBarText, 
 						 PetFrameManaBar, PetFrameManaBarText,
@@ -28,7 +29,7 @@ function PetFrame_OnLoad (self)
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
 	
 	local _, class = UnitClass("player");
-	if ( class == "DEATHKNIGHT" ) then
+	if ( class == "DEATHKNIGHT"  or class == "DRUID" ) then	--Death Knights need the Pet frame moved down for their Runes and Druids need it moved down for the secondary power bar.
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
 	elseif ( class == "SHAMAN" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
@@ -155,7 +156,7 @@ function PetFrame_SetHappiness ()
 	elseif ( happiness == 3 ) then
 		PetFrameHappinessTexture:SetTexCoord(0, 0.1875, 0, 0.359375);
 	end
-	PetFrameHappiness.tooltip = getglobal("PET_HAPPINESS"..happiness);
+	PetFrameHappiness.tooltip = _G["PET_HAPPINESS"..happiness];
 	PetFrameHappiness.tooltipDamage = format(PET_DAMAGE_PERCENTAGE, damagePercentage);
 end
 
@@ -178,7 +179,7 @@ function PetFrameDropDown_Initialize ()
 end
 
 function PetCastingBarFrame_OnLoad (self)
-	CastingBarFrame_OnLoad(self, "pet", false);
+	CastingBarFrame_OnLoad(self, "pet", false, false);
 
 	self:RegisterEvent("UNIT_PET");
 

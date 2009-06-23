@@ -82,6 +82,10 @@ function InspectFrame_OnHide(self)
 
 	-- Clear the player being inspected
 	ClearInspectPlayer();
+
+	-- in the InspectTalentFrame_Update function, a default talent tab is selected smartly if there is no tab selected
+	-- it actually ends up feeling natural to have this behavior happen every time the frame is shown
+	PanelTemplates_SetTab(InspectTalentFrame, nil);
 end
 
 function InspectFrame_OnUpdate(self)
@@ -91,8 +95,8 @@ function InspectFrame_OnUpdate(self)
 end		
 
 function InspectSwitchTabs(newID)
-	local newFrame = getglobal(INSPECTFRAME_SUBFRAMES[newID]);
-	local oldFrame = getglobal(INSPECTFRAME_SUBFRAMES[PanelTemplates_GetSelectedTab(InspectFrame)]);
+	local newFrame = _G[INSPECTFRAME_SUBFRAMES[newID]];
+	local oldFrame = _G[INSPECTFRAME_SUBFRAMES[PanelTemplates_GetSelectedTab(InspectFrame)]];
 	if ( newFrame ) then
 		if ( oldFrame ) then
 			oldFrame:Hide();

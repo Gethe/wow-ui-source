@@ -739,6 +739,7 @@ function FCF_OnUpdate(elapsed)
 	local showAllDockTabs = nil;
 	local hideAnyDockTabs = nil;
 	local xPos, yPos = GetCursorPosition();
+	local multiCastFlyoutShown, multiCastFlyoutOpenButtonShown;
 	for j=1, NUM_CHAT_WINDOWS do
 		chatFrameName = "ChatFrame"..j;
 		chatTabName = chatFrameName.."Tab";
@@ -773,9 +774,13 @@ function FCF_OnUpdate(elapsed)
 				activeFrame = chatFrame;
 			end
 
-			if ( MouseIsOver(activeFrame, activeYOffset, activeFrame:GetTop()-activeFrame:GetBottom(), -5, 5) or
+			multiCastFlyoutShown = MultiCastFlyoutFrame:IsShown();
+			multiCastFlyoutOpenButtonShown = MultiCastFlyoutFrameOpenButton:IsShown();
+			if ( (not multiCastFlyoutShown or (multiCastFlyoutShown and not MouseIsOver(MultiCastFlyoutFrame))) and 
+				(not multiCastFlyoutOpenButtonShown or (multiCastFlyoutOpenButtonShown and not MouseIsOver(MultiCastFlyoutFrameOpenButton))) and
+				(MouseIsOver(activeFrame, activeYOffset, activeFrame:GetTop()-activeFrame:GetBottom(), -5, 5) or
 				((MouseIsOver(chatFrame, yOffset, -10, -5, 5) and not chatFrame.isUninteractable)) or
-				chatFrame.resizing or activeFrame.resizing ) then
+				chatFrame.resizing or activeFrame.resizing) ) then
 				-- Try to show the tab
 
 				-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay

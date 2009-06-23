@@ -37,7 +37,7 @@ function InterfaceOptionsPanel_CheckButton_Update (checkButton)
 	end
 
 	if ( checkButton.uvar ) then
-		setglobal(checkButton.uvar, setting);
+		_G[checkButton.uvar] = setting;
 	end
 
 	if ( checkButton.dependentControls ) then
@@ -126,7 +126,6 @@ ControlsPanelOptions = {
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
 	autoLootDefault = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text = "AUTO_LOOT_KEY_TEXT", default = "NONE" },
-	equipmentManager = { text = "USE_EQUIPMENT_MANAGER" },	
 }
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...)
@@ -259,7 +258,7 @@ function InterfaceOptionsCombatPanelTOTDropDown_OnEvent (self, event, ...)
 		self.value = value;
 		self.oldValue = value;
 		self.tooltip = _G["OPTION_TOOLTIP_TARGETOFTARGET" .. value];
-		setglobal(self.uvar, value);
+		_G[self.uvar] = value;
 
 		UIDropDownMenu_SetWidth(self, 110);	
 		UIDropDownMenu_Initialize(self, InterfaceOptionsCombatPanelTOTDropDown_Initialize);
@@ -269,7 +268,7 @@ function InterfaceOptionsCombatPanelTOTDropDown_OnEvent (self, event, ...)
 			function (self, value)
 				self.value = value;
 				SetCVar(self.cvar, value);
-				setglobal(self.uvar, value);
+				_G[self.uvar] = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				self.tooltip = _G["OPTION_TOOLTIP_TARGETOFTARGET" .. value];
 			end
@@ -551,7 +550,7 @@ DisplayPanelOptions = {
 	movieSubtitle = { text = "CINEMATIC_SUBTITLES" },
 	threatShowNumeric = { text = "SHOW_NUMERIC_THREAT" },
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
-	previewTalents = { text = "PREVIEW_TALENT_CHANGES" },
+	showItemLevel = { text = "SHOW_ITEM_LEVEL" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -789,7 +788,7 @@ ObjectivesPanelOptions = {
 	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
 	advancedWatchFrame = { text = "ADVANCED_OBJECTIVES_TEXT" },
 	watchFrameIgnoreCursor = { text = "OBJECTIVES_IGNORE_CURSOR_TEXT" },
-	
+	showQuestObjectivesOnMap = { text = "SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT" },
 }
 
 function InterfaceOptionsObjectivesPanel_OnLoad (self)
@@ -1389,6 +1388,13 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
 	info.tooltipText = OPTION_TOOLTIP_CLICKCAMERA_NEVER;
 	UIDropDownMenu_AddButton(info);
 end
+
+-- [[ Features Panel ]] --
+
+FeaturesPanelOptions = {
+	equipmentManager = { text = "USE_EQUIPMENT_MANAGER" },
+	previewTalents = { text = "PREVIEW_TALENT_CHANGES" },
+}
 
 -- [[ Help Options Panel ]] --
 

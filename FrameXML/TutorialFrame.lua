@@ -15,8 +15,8 @@ end
 function TutorialFrame_Update(currentTutorial)
 	FlagTutorial(currentTutorial);
 	TutorialFrame.id = currentTutorial;
-	local title = getglobal("TUTORIAL_TITLE"..currentTutorial);
-	local text = getglobal("TUTORIAL"..currentTutorial);
+	local title = _G["TUTORIAL_TITLE"..currentTutorial];
+	local text = _G["TUTORIAL"..currentTutorial];
 	if ( title and text) then
 		TutorialFrameTitle:SetText(title);
 		TutorialFrameText:SetText(text);
@@ -35,7 +35,7 @@ function TutorialFrame_Update(currentTutorial)
 	local button;
 	LAST_TUTORIAL_BUTTON_SHOWN = nil;
 	for index, value in pairs(TUTORIALFRAME_QUEUE) do
-		button = getglobal(value[2]);
+		button = _G[value[2]];
 		if ( LAST_TUTORIAL_BUTTON_SHOWN and LAST_TUTORIAL_BUTTON_SHOWN ~= button ) then
 			button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN, "BOTTOM", 36, 0);
 		else
@@ -61,7 +61,7 @@ function TutorialFrame_NewTutorial(tutorialID)
 		button:SetPoint("BOTTOM", "TutorialFrameParent", "BOTTOM", 0, 0);
 	end
 	button.id = tutorialID;
-	button.tooltip = getglobal("TUTORIAL_TITLE"..tutorialID);
+	button.tooltip = _G["TUTORIAL_TITLE"..tutorialID];
 	LAST_TUTORIAL_BUTTON_SHOWN = button;
 	button:Show();
 	--UIFrameFlash(button, 0.75, 0.75, 10, 1);
@@ -71,7 +71,7 @@ end
 function TutorialFrame_GetAlertButton()
 	local button;
 	for i=1, MAX_TUTORIAL_ALERTS do
-		button = getglobal("TutorialFrameAlertButton"..i);
+		button = _G["TutorialFrameAlertButton"..i];
 		if ( not button.id) then
 			button:ClearAllPoints();
 			return button;
@@ -86,7 +86,7 @@ end
 function TutorialFrame_HideAllAlerts()
 	local button;
 	for i=1, MAX_TUTORIAL_ALERTS do
-		button = getglobal("TutorialFrameAlertButton"..i);
+		button = _G["TutorialFrameAlertButton"..i];
 		button.id = nil;
 		button.tooltip = nil;
 		button:ClearAllPoints();
@@ -100,7 +100,7 @@ end
 function TutorialFrame_CheckIntro()
 	local button
 	for i=1, MAX_TUTORIAL_ALERTS do
-		button = getglobal("TutorialFrameAlertButton"..i);
+		button = _G["TutorialFrameAlertButton"..i];
 		if ( button.id == 42 ) then
 			button:Click();
 			TutorialFrame:SetPoint("BOTTOM", "UIParent", "CENTER", 0, -90);

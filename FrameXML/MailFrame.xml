@@ -437,7 +437,7 @@
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
-										<AbsDimension x="6" y="230"/>
+										<AbsDimension x="6" y="232"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -453,6 +453,16 @@
 									</Offset>
 								</Anchor>
 							</Anchors>
+						</FontString>
+						<FontString name="InboxTooMuchMail" inherits="GameFontNormal" hidden="true" text="INBOX_TOO_MUCH_MAIL">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="6" y="205"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="0.1" b="0.1" a="1.0"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -791,7 +801,7 @@
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
-					<EditBox name="SendMailNameEditBox" letters="12" historyLines="0" autoFocus="false">
+					<EditBox name="SendMailNameEditBox" letters="12" historyLines="0" autoFocus="false" inherits="AutoCompleteEditBoxTemplate">
 						<Size>
 							<AbsDimension x="109" y="20"/>
 						</Size>
@@ -847,21 +857,32 @@
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnLoad>
+								self.autoCompleteParams = AUTOCOMPLETE_LIST.MAIL;
+							</OnLoad>
 							<OnTabPressed>
-								EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
-							</OnTabPressed>
-							<OnEditFocusLost function="EditBox_ClearHighlight"/>
-							<OnCharComposition function="PlayerNameAutocomplete"/>
-							<OnChar>
-								if ( not self:IsInIMECompositionMode() ) then
-									PlayerNameAutocomplete(self, text);
+								if ( not AutoCompleteEditBox_OnTabPressed(self) ) then
+									EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
 								end
-							</OnChar>
+							</OnTabPressed>
+							<OnEditFocusLost>
+								AutoCompleteEditBox_OnEditFocusLost(self);
+								EditBox_ClearHighlight(self)
+							</OnEditFocusLost>
 							<OnEnterPressed>
-								SendMailSubjectEditBox:SetFocus();
+								if ( not AutoCompleteEditBox_OnEnterPressed(self) ) then
+									SendMailSubjectEditBox:SetFocus();
+								end
 							</OnEnterPressed>
-							<OnEscapePressed function="EditBox_ClearFocus"/>
-							<OnTextChanged function="SendMailFrame_CanSend"/>
+							<OnEscapePressed>
+								if ( not AutoCompleteEditBox_OnEscapePressed(self) ) then
+									EditBox_ClearFocus(self);
+								end
+							</OnEscapePressed>
+							<OnTextChanged>
+								AutoCompleteEditBox_OnTextChanged(self, userInput);
+								SendMailFrame_CanSend(self);
+							</OnTextChanged>
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
@@ -1026,7 +1047,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										getglobal(self:GetName().."Text"):SetText(SEND_MONEY);
+										_G[self:GetName().."Text"]:SetText(SEND_MONEY);
 									</OnLoad>
 								</Scripts>
 							</CheckButton>
@@ -1040,7 +1061,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										getglobal(self:GetName().."Text"):SetText(COD);
+										_G[self:GetName().."Text"]:SetText(COD);
 									</OnLoad>
 								</Scripts>
 							</CheckButton>

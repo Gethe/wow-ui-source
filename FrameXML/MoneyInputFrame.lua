@@ -1,21 +1,21 @@
 
 function MoneyInputFrame_ResetMoney(moneyFrame)
-	getglobal(moneyFrame:GetName().."Gold"):SetText("");
-	getglobal(moneyFrame:GetName().."Silver"):SetText("");
-	getglobal(moneyFrame:GetName().."Copper"):SetText("");
+	_G[moneyFrame:GetName().."Gold"]:SetText("");
+	_G[moneyFrame:GetName().."Silver"]:SetText("");
+	_G[moneyFrame:GetName().."Copper"]:SetText("");
 end
 
 function MoneyInputFrame_ClearFocus(moneyFrame)
-	getglobal(moneyFrame:GetName().."Gold"):ClearFocus();
-	getglobal(moneyFrame:GetName().."Silver"):ClearFocus();
-	getglobal(moneyFrame:GetName().."Copper"):ClearFocus();
+	_G[moneyFrame:GetName().."Gold"]:ClearFocus();
+	_G[moneyFrame:GetName().."Silver"]:ClearFocus();
+	_G[moneyFrame:GetName().."Copper"]:ClearFocus();
 end
 
 function MoneyInputFrame_GetCopper(moneyFrame)
 	local totalCopper = 0;
-	local copper = getglobal(moneyFrame:GetName().."Copper"):GetText();
-	local silver = getglobal(moneyFrame:GetName().."Silver"):GetText();
-	local gold = getglobal(moneyFrame:GetName().."Gold"):GetText();
+	local copper = _G[moneyFrame:GetName().."Copper"]:GetText();
+	local silver = _G[moneyFrame:GetName().."Silver"]:GetText();
+	local gold = _G[moneyFrame:GetName().."Gold"]:GetText();
 	
 	if ( copper ~= "" ) then
 		totalCopper = totalCopper + copper;
@@ -30,9 +30,9 @@ function MoneyInputFrame_GetCopper(moneyFrame)
 end
 
 function MoneyInputFrame_SetTextColor(moneyFrame, r, g, b)
-	getglobal(moneyFrame:GetName().."Copper"):SetTextColor(r, g, b);
-	getglobal(moneyFrame:GetName().."Silver"):SetTextColor(r, g, b);
-	getglobal(moneyFrame:GetName().."Gold"):SetTextColor(r, g, b);
+	_G[moneyFrame:GetName().."Copper"]:SetTextColor(r, g, b);
+	_G[moneyFrame:GetName().."Silver"]:SetTextColor(r, g, b);
+	_G[moneyFrame:GetName().."Gold"]:SetTextColor(r, g, b);
 end
 
 function MoneyInputFrame_SetCopper(moneyFrame, money)
@@ -42,17 +42,17 @@ function MoneyInputFrame_SetCopper(moneyFrame, money)
 	local editbox = nil;
 
 	moneyFrame.expectChanges = 0;
-	editbox = getglobal(moneyFrame:GetName().."Copper");
+	editbox = _G[moneyFrame:GetName().."Copper"];
 	if ( editbox:GetNumber() ~= copper ) then
 		editbox:SetNumber(copper);
 		moneyFrame.expectChanges = moneyFrame.expectChanges + 1;
 	end
-	editbox = getglobal(moneyFrame:GetName().."Silver");
+	editbox = _G[moneyFrame:GetName().."Silver"];
 	if ( editbox:GetNumber() ~= silver ) then
 		editbox:SetNumber(silver);
 		moneyFrame.expectChanges = moneyFrame.expectChanges + 1;
 	end
-	editbox = getglobal(moneyFrame:GetName().."Gold");
+	editbox = _G[moneyFrame:GetName().."Gold"];
 	if ( editbox:GetNumber() ~= gold ) then
 		editbox:SetNumber(gold);
 		moneyFrame.expectChanges = moneyFrame.expectChanges + 1;
@@ -76,9 +76,9 @@ end
 function MoneyInputFrame_SetMode(frame, mode)
 	local frameName = frame:GetName();
 	if ( mode == "compact" ) then
-		getglobal(frameName.."Copper"):SetPoint("LEFT", frameName.."Silver", "RIGHT", 11, 0);
-		getglobal(frameName.."Silver"):SetPoint("LEFT", frameName.."Gold", "RIGHT", 22, 0);
-		getglobal(frameName.."Gold"):SetWidth(56);
+		_G[frameName.."Copper"]:SetPoint("LEFT", frameName.."Silver", "RIGHT", 11, 0);
+		_G[frameName.."Silver"]:SetPoint("LEFT", frameName.."Gold", "RIGHT", 22, 0);
+		_G[frameName.."Gold"]:SetWidth(56);
 	end
 end
 

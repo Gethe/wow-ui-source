@@ -312,7 +312,7 @@
 					</Anchor>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
+					<Layer level="ARTWORK">
 						<Texture name="$parentIcon">
 							<Size>
 								<AbsDimension x="34" y="34"/>
@@ -321,6 +321,17 @@
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>

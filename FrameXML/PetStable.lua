@@ -73,12 +73,13 @@ function PetStable_Update()
 	local numSlots = GetNumStableSlots();
 	local numPets = GetNumStablePets();
 
-	local button;
-	local background
+	local button, buttonName;
+	local background;
 	local icon, name, level, family, talent;
 	for i=1, NUM_PET_STABLE_SLOTS do
-		button = getglobal("PetStableStabledPet"..i);
-		background = getglobal("PetStableStabledPet"..i.."Background");
+		buttonName = "PetStableStabledPet"..i;
+		button = _G[buttonName];
+		background = _G[buttonName.."Background"];
 		icon, name, level, family, talent = GetStablePetInfo(i);
 		SetItemButtonTexture(button, icon);
 		if ( i <= GetNumStableSlots() ) then
@@ -86,7 +87,7 @@ function PetStable_Update()
 			button:Enable();
 			if ( icon ) then
 				button.tooltip = name;
-				button.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE,level).." "..family.."|n"..talent;
+				button.tooltipSubtext = format(STABLE_PET_INFO_TOOLTIP_TEXT, level, family, talent);
 			else
 				button.tooltip = EMPTY_STABLE_SLOT;
 				button.tooltipSubtext = "";
@@ -94,7 +95,7 @@ function PetStable_Update()
 			if ( i == selectedPet ) then
 				if ( icon ) then
 					button:SetChecked(1);
-					PetStableLevelText:SetText(name.." "..format(UNIT_LEVEL_TEMPLATE,level).." "..family.."|n"..talent);
+					PetStableLevelText:SetFormattedText(STABLE_PET_INFO_TEXT, name, level, family, talent);
 					SetPetStablePaperdoll(PetStableModel);
 					PetStablePetInfo.tooltip = format(PET_DIET_TEMPLATE, BuildListString(GetStablePetFoodTypes(i)));
 					if ( not PetStableModel:IsShown() ) then
@@ -129,7 +130,7 @@ function PetStable_Update()
 			level = UnitLevel("pet");
 			family = UnitCreatureFamily("pet") or "";
 			talent = GetPetTalentTree() or "";
-			PetStableLevelText:SetText(name.." "..format(UNIT_LEVEL_TEMPLATE, level).." "..family.."|n"..talent);
+			PetStableLevelText:SetFormattedText(STABLE_PET_INFO_TEXT, name, level, family, talent);
 			SetPetStablePaperdoll(PetStableModel);
 			if ( not PetStableModel:IsShown() ) then
 				PetStableModel:Show();
@@ -141,7 +142,7 @@ function PetStable_Update()
 			-- If pet doesn't exist it might be dismissed, so check stable slot 0 for current pet info
 			PetStableCurrentPet:SetChecked(1);
 			icon, name, level, family, talent = GetStablePetInfo(0);
-			PetStableLevelText:SetText(name.." "..format(UNIT_LEVEL_TEMPLATE,level).." "..family.."|n"..talent);
+			PetStableLevelText:SetFormattedText(STABLE_PET_INFO_TEXT, name, level, family, talent);
 			SetPetStablePaperdoll(PetStableModel);
 			if ( not PetStableModel:IsShown() ) then
 				PetStableModel:Show();
@@ -166,12 +167,12 @@ function PetStable_Update()
 		family = UnitCreatureFamily("pet") or "";
 		talent = GetPetTalentTree() or "";
 		PetStableCurrentPet.tooltip = name;
-		PetStableCurrentPet.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE, level).." "..family.."|n"..talent;
+		PetStableCurrentPet.tooltipSubtext = format(STABLE_PET_INFO_TOOLTIP_TEXT, level, family, talent);
 	elseif ( GetStablePetInfo(0) ) then
 		icon, name, level, family, talent = GetStablePetInfo(0);
 		SetItemButtonTexture(PetStableCurrentPet, icon);
 		PetStableCurrentPet.tooltip = name;
-		PetStableCurrentPet.tooltipSubtext = format(UNIT_LEVEL_TEMPLATE,level).." "..family.."|n"..talent;
+		PetStableCurrentPet.tooltipSubtext = format(STABLE_PET_INFO_TOOLTIP_TEXT, level, family, talent);
 	else
 		SetItemButtonTexture(PetStableCurrentPet, "");
 		PetStableCurrentPet.tooltip = EMPTY_STABLE_SLOT;
@@ -217,9 +218,9 @@ function PetStable_Update()
 end
 
 function PetStable_NoPetsAllowed()
-	local button
+	local button;
 	for i=1, NUM_PET_STABLE_SLOTS do
-		button = getglobal("PetStableStabledPet"..i);
+		button = _G["PetStableStabledPet"..i];
 		button.tooltip = EMPTY_STABLE_SLOT;
 		button:SetChecked(nil);
 	end

@@ -626,9 +626,9 @@ COMBAT_CONFIG_MESSAGETYPES_MISC = {
 	},
 	[4] = {
 		text = DEATHS,
-		type = {"UNIT_DIED", "UNIT_DESTROYED"};
-		checked = function () return HasMessageType("UNIT_DIED"); end;
-		func = function (self, checked) ToggleMessageType(checked, "UNIT_DIED"); end;
+		type = {"UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES"};
+		checked = function () return HasMessageType("UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES"); end;
+		func = function (self, checked) ToggleMessageType(checked, "UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES"); end;
 		tooltip = DEATHS_COMBATLOG_TOOLTIP,
 	},
 };
@@ -704,12 +704,12 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 	local text;
 	frame.checkBoxTable = checkBoxTable;
 	if ( title ) then
-		getglobal(frame:GetName().."Title"):SetText(title);
+		_G[frame:GetName().."Title"]:SetText(title);
 	end
 	for index, value in ipairs(checkBoxTable) do
 		--If no checkbox then create it
 		checkBoxName = checkBoxNameString..index;
-		checkBox = getglobal(checkBoxName);
+		checkBox = _G[checkBoxName];
 		if ( not checkBox ) then
 			checkBox = CreateFrame("Frame", checkBoxName, frame, checkBoxTemplate);
 		end
@@ -725,10 +725,10 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		if ( value.text ) then
 			text = value.text;
 		else
-			text = getglobal(value.type);
+			text = _G[value.type];
 		end
-		getglobal(checkBoxName.."CheckText"):SetText(text);
-		check = getglobal(checkBoxName.."Check");
+		_G[checkBoxName.."CheckText"]:SetText(text);
+		check = _G[checkBoxName.."Check"];
 		check.func = value.func;
 		check:SetID(index);
 		check.tooltip = value.tooltip;
@@ -758,7 +758,7 @@ function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplat
 	for index, value in ipairs(checkBoxTable) do
 		--If no checkbox then create it
 		checkBoxName = checkBoxNameString..index;
-		if ( not getglobal(checkBoxName) ) then
+		if ( not _G[checkBoxName] ) then
 			checkBox = CreateFrame("CheckButton", checkBoxName, frame, checkBoxTemplate);
 			if ( index > 1 ) then
 				if ( columns ) then
@@ -779,14 +779,14 @@ function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplat
 			if ( value.text ) then
 				text = value.text;
 			else
-				text = getglobal(value.type);
+				text = _G[value.type];
 			end
-			getglobal(checkBoxName.."Text"):SetText(text);
+			_G[checkBoxName.."Text"]:SetText(text);
 			if ( value.subTypes ) then
 				subCheckBoxNameString = checkBoxName.."_"; 
 				for k, v in ipairs(value.subTypes) do
 					subCheckBoxName = subCheckBoxNameString..k;
-					if ( not getglobal(subCheckBoxName) ) then
+					if ( not _G[subCheckBoxName] ) then
 						subCheckBox = CreateFrame("CheckButton", subCheckBoxName, checkBox, subCheckBoxTemplate);
 					end
 					if ( k > 1 ) then
@@ -803,9 +803,9 @@ function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplat
 					if ( v.text ) then
 						subText = v.text;
 					else
-						subText = getglobal(v.type);
+						subText = _G[v.type];
 					end
-					getglobal(subCheckBoxName.."Text"):SetText(subText);
+					_G[subCheckBoxName.."Text"]:SetText(subText);
 					count = count+0.6;
 				end
 				yOffset = -(22*ceil(#value.subTypes/numColumns) + 16);
@@ -836,12 +836,12 @@ function ChatConfig_CreateColorSwatches(frame, swatchTable, swatchTemplate, titl
 	local text;
 	frame.swatchTable = swatchTable;
 	if ( title ) then
-		getglobal(frame:GetName().."Title"):SetText(title);
+		_G[frame:GetName().."Title"]:SetText(title);
 	end
 	for index, value in ipairs(swatchTable) do
 		--If no checkbox then create it
 		swatchName = nameString..index;
-		if ( not getglobal(swatchName) ) then
+		if ( not _G[swatchName] ) then
 			swatch = CreateFrame("Frame", swatchName, frame, swatchTemplate);
 			if ( not width ) then
 				width = swatch:GetWidth();
@@ -855,9 +855,9 @@ function ChatConfig_CreateColorSwatches(frame, swatchTable, swatchTemplate, titl
 			if ( value.text ) then
 				text = value.text;
 			else
-				text = getglobal(value.type);
+				text = _G[value.type];
 			end
-			getglobal(swatchName.."Text"):SetText(text);
+			_G[swatchName.."Text"]:SetText(text);
 			count = count+1;
 		end
 	end
@@ -880,7 +880,7 @@ function ChatConfig_UpdateCheckboxes(frame)
 	local topnum, padding = 0, 8;
 	for index, value in ipairs(checkBoxTable) do
 		baseName = checkBoxNameString..index;
-		checkBox = getglobal(baseName.."Check");
+		checkBox = _G[baseName.."Check"];
 		if ( checkBox ) then
 			if ( not height ) then
 				height = checkBox:GetParent():GetHeight();
@@ -919,12 +919,12 @@ function ChatConfig_UpdateCheckboxes(frame)
 				end
 			end
 			if ( type(value.text) == "function" ) then	--Dynamic text, we should update it
-				getglobal(checkBoxNameString..index.."CheckText"):SetText(value.text());
+				_G[checkBoxNameString..index.."CheckText"]:SetText(value.text());
 			end
 			
-			colorSwatch = getglobal(baseName.."ColorSwatch");
+			colorSwatch = _G[baseName.."ColorSwatch"];
 			if ( colorSwatch ) then
-				getglobal(baseName.."ColorSwatchNormalTexture"):SetVertexColor(GetMessageTypeColor(value.type));
+				_G[baseName.."ColorSwatchNormalTexture"]:SetVertexColor(GetMessageTypeColor(value.type));
 				colorSwatch.type = value.type;
 			end
 		end
@@ -933,7 +933,7 @@ function ChatConfig_UpdateCheckboxes(frame)
 	-- Hide remaining checkboxes
 	local count = #checkBoxTable+1;
 	repeat
-		checkBox = getglobal(checkBoxNameString..count);
+		checkBox = _G[checkBoxNameString..count];
 		if ( checkBox ) then
 			checkBox:Hide();
 		end
@@ -951,9 +951,9 @@ function ChatConfig_UpdateSwatches(frame)
 	local checkBoxName, checkBox, baseName, colorSwatch;
 	for index, value in ipairs(table) do
 		baseName = nameString..index;
-		colorSwatch = getglobal(baseName.."ColorSwatch");
+		colorSwatch = _G[baseName.."ColorSwatch"];
 		if ( colorSwatch ) then
-			getglobal(baseName.."ColorSwatchNormalTexture"):SetVertexColor(GetChatUnitColor(value.type));
+			_G[baseName.."ColorSwatchNormalTexture"]:SetVertexColor(GetChatUnitColor(value.type));
 			colorSwatch.type = value.type;
 		end
 	end
@@ -973,7 +973,7 @@ function ChatConfig_UpdateTieredCheckboxes(frame, index)
 	local group = frame.checkBoxTable[index];
 	local groupChecked;
 	local baseName = frame:GetName().."CheckBox"..index;
-	local checkBox = getglobal(baseName);
+	local checkBox = _G[baseName];
 	if ( checkBox ) then
 		groupChecked = group.checked;
 		if ( type(groupChecked) == "function" ) then
@@ -1001,7 +1001,7 @@ function ChatConfig_UpdateTieredCheckboxes(frame, index)
 	local subCheckBox;
 	if ( group.subTypes ) then
 		for k, v in ipairs(group.subTypes) do
-			subCheckBox = getglobal(baseName.."_"..k);
+			subCheckBox = _G[baseName.."_"..k];
 			if ( type(v.checked) == "function" ) then
 				subCheckBox:SetChecked(v.checked());
 			else
@@ -1267,32 +1267,32 @@ end
 COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 	chatUnitColorSwatch = function() 
 			SetChatUnitColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetColorRGB());
-			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetColorRGB());
 			CombatConfig_Colorize_Update();
 		end;
 	chatUnitColorCancel = function() 
 			SetChatUnitColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPicker_GetPreviousValues());
-			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
 	spellColorSwatch = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell, ColorPickerFrame:GetColorRGB());
-			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetColorRGB());
 			CombatConfig_Colorize_Update();
 		end;
 	spellColorCancel = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell, ColorPicker_GetPreviousValues());
-			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
 	damageColorSwatch = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage, ColorPickerFrame:GetColorRGB());
-			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetColorRGB());
 			CombatConfig_Colorize_Update();
 		end;
 	damageColorCancel = function() 
 			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage, ColorPicker_GetPreviousValues());
-			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
 	messageTypeColorSwatch = function() 
@@ -1304,12 +1304,12 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			else
 				ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetColorRGB());
 			end
-			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPickerFrame:GetColorRGB());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetColorRGB());
 			CombatConfig_Colorize_Update();
 		end;
 	messageTypeColorCancel = function() 
 			ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPicker_GetPreviousValues());
-			getglobal(CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"):SetVertexColor(ColorPicker_GetPreviousValues());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
 }
@@ -1369,12 +1369,12 @@ function GetMessageTypeColor(messageType)
 end
 
 function GetChatUnitColor(type)
-	local color = CHATCONFIG_SELECTED_FILTER_COLORS.unitColoring[getglobal(type)];
+	local color = CHATCONFIG_SELECTED_FILTER_COLORS.unitColoring[_G[type]];
 	return color.r, color.g, color.b;
 end
 
 function SetChatUnitColor(type, r, g, b)
-	SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.unitColoring[getglobal(type)], r, g, b);
+	SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.unitColoring[_G[type]], r, g, b);
 end
 
 function GetSpellNameColor()
@@ -1409,11 +1409,11 @@ function ChatConfigCategory_OnClick(self)
 	self:UnlockHighlight();
 	for index, value in ipairs(CHAT_CONFIG_CATEGORIES) do
 		if ( self:GetID() == index ) then
-			getglobal(value):Show();
+			_G[value]:Show();
 			self:LockHighlight();
 		else
-			getglobal(value):Hide();
-			getglobal("ChatConfigCategoryFrameButton"..index):UnlockHighlight();
+			_G[value]:Hide();
+			_G["ChatConfigCategoryFrameButton"..index]:UnlockHighlight();
 		end
 	end
 end
@@ -1474,15 +1474,15 @@ function ChatConfigCombat_OnLoad()
 	local name, text;
 	for index, value in ipairs(COMBAT_CONFIG_TABS) do
 		name = tabName..index;
-		if ( not getglobal(name) ) then
+		if ( not _G[name] ) then
 			tab = CreateFrame("BUTTON", name, ChatConfigBackgroundFrame, "ChatConfigTabTemplate");
 			if ( index > 1 ) then
-				tab:SetPoint("BOTTOMLEFT", getglobal(tabName..(index-1)), "BOTTOMRIGHT", -1, 0);
+				tab:SetPoint("BOTTOMLEFT", _G[tabName..(index-1)], "BOTTOMRIGHT", -1, 0);
 			else
 				tab:SetPoint("BOTTOMLEFT", ChatConfigBackgroundFrame, "TOPLEFT", 2, -1);
 			end
 			
-			text = getglobal(name.."Text");
+			text = _G[name.."Text"];
 			text:SetText(value.text);
 			tab:SetID(index);
 			PanelTemplates_TabResize(tab, 0);
@@ -1497,10 +1497,10 @@ function ChatConfig_UpdateFilterList()
 	for i=1, COMBATLOG_FILTERS_TO_DISPLAY do
 		index = offset+i;
 		buttonName = "ChatConfigCombatSettingsFiltersButton"..i;
-		button = getglobal(buttonName);
+		button = _G[buttonName];
 		if ( index <= #Blizzard_CombatLog_Filters.filters ) then
 			text = Blizzard_CombatLog_Filters.filters[index].name;
-			getglobal(buttonName.."NormalText"):SetText(text);
+			_G[buttonName.."NormalText"]:SetText(text);
 			button.name = text;
 			button:Show();
 			if ( index == ChatConfigCombatSettingsFilters.selectedFilter ) then
@@ -1539,7 +1539,7 @@ function ChatConfig_UpdateCombatSettings()
 		ChatConfigCombatSettingsFiltersDeleteButton:Disable();
 		ChatConfig_UpdateCombatTabs(0);
 		for index, value in ipairs(COMBAT_CONFIG_TABS) do
-			getglobal(value.frame):Hide();
+			_G[value.frame]:Hide();
 		end
 		return;
 	elseif ( #Blizzard_CombatLog_Filters.filters == 1 ) then
@@ -1666,9 +1666,9 @@ end
 function ChatConfig_UpdateCombatTabs(selectedTabID)
 	local tab, text, frame;
 	for index, value in ipairs(COMBAT_CONFIG_TABS) do
-		tab = getglobal(CHAT_CONFIG_COMBAT_TAB_NAME..index);
-		text = getglobal(CHAT_CONFIG_COMBAT_TAB_NAME..index.."Text");
-		frame = getglobal(value.frame);
+		tab = _G[CHAT_CONFIG_COMBAT_TAB_NAME..index];
+		text = _G[CHAT_CONFIG_COMBAT_TAB_NAME..index.."Text"];
+		frame = _G[value.frame];
 		if ( (not Blizzard_CombatLog_Filters) or #Blizzard_CombatLog_Filters.filters == 0 ) then
 			tab:SetAlpha(0.75);
 			text:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
@@ -1687,13 +1687,13 @@ end
 
 function ChatConfig_ShowCombatTabs()
 	for index, _ in ipairs(COMBAT_CONFIG_TABS) do
-		getglobal(CHAT_CONFIG_COMBAT_TAB_NAME..index):Show();
+		_G[CHAT_CONFIG_COMBAT_TAB_NAME..index]:Show();
 	end
 end
 
 function ChatConfig_HideCombatTabs()
 	for index, _ in ipairs(COMBAT_CONFIG_TABS) do
-		getglobal(CHAT_CONFIG_COMBAT_TAB_NAME..index):Hide();
+		_G[CHAT_CONFIG_COMBAT_TAB_NAME..index]:Hide();
 	end
 end
 

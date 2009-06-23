@@ -1494,7 +1494,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="LFGParentTooltipTab1" frameStrata="TOOLTIP" hidden="true">
+			<Button name="LFGParentTooltipTab1" frameStrata="HIGH" hidden="true">
 				<Size>
 					<AbsDimension x="120" y="28"/>
 				</Size>
@@ -1536,7 +1536,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="LFGParentTooltipTab2" frameStrata="TOOLTIP" hidden="true">
+			<Button name="LFGParentTooltipTab2" frameStrata="HIGH" hidden="true">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="LFGParentFrameTab2" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -1566,7 +1566,6 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnEvent function="LFGParentFrame_OnEvent"/>
 			<OnShow>
 				UpdateMicroButtons();
-				SetPortraitTexture(LFGParentFrameIcon, "player");
 				PlaySound("igCharacterInfoOpen");
 			</OnShow>
 			<OnHide>

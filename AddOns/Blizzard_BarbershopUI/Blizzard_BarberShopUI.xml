@@ -125,6 +125,20 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Frame name="$parentSelector4" inherits="BarberShopSelectorTemplate" id="4" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelector3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Category"]:SetText(SKIN_COLOR);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentSelector3" relativePoint="BOTTOM">

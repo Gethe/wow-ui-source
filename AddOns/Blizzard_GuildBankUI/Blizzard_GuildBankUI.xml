@@ -988,7 +988,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self:SetWidth(getglobal(self:GetName().."Text"):GetWidth()+40);
+								self:SetWidth(_G[self:GetName().."Text"]:GetWidth()+40);
 							</OnLoad>
 							<OnClick>
 								if ( GuildBankTabInfoEditBox:GetText() ~= GuildBankTabInfoEditBox.text ) then

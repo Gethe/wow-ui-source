@@ -120,7 +120,7 @@ function AchievementFrame_ForceUpdate ()
 end
 
 function AchievementFrameBaseTab_OnClick (id)
-	PanelTemplates_Tab_OnClick(getglobal("AchievementFrameTab"..id), AchievementFrame);
+	PanelTemplates_Tab_OnClick(_G["AchievementFrameTab"..id], AchievementFrame);
 	
 	local isSummary = false
 	if ( id == 1 ) then
@@ -168,7 +168,7 @@ function AchievementFrameComparisonTab_OnClick (id)
 	
 	AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES);
 	AchievementFrameCategories_Update();
-	PanelTemplates_Tab_OnClick(getglobal("AchievementFrameTab"..id), AchievementFrame);
+	PanelTemplates_Tab_OnClick(_G["AchievementFrameTab"..id], AchievementFrame);
 	
 	achievementFunctions.updateFunc();
 end
@@ -185,7 +185,7 @@ ACHIEVEMENTFRAME_SUBFRAMES = {
 function AchievementFrame_ShowSubFrame(...)
 	local subFrame, show;
 	for _, name in next, ACHIEVEMENTFRAME_SUBFRAMES  do
-		subFrame = getglobal(name);
+		subFrame = _G[name];
 		show = false;
 		for i=1, select("#", ...) do
 			if ( subFrame ==  select(i, ...)) then
@@ -582,8 +582,8 @@ function AchievementCategoryButton_OnLoad (button)
 	
 	local buttonName = button:GetName();
 	
-	button.label = getglobal(buttonName .. "Label");
-	button.background = getglobal(buttonName.."Background");
+	button.label = _G[buttonName .. "Label"];
+	button.background = _G[buttonName.."Background"];
 end
 
 function AchievementCategoryButton_OnClick (button)
@@ -765,9 +765,9 @@ end
 
 function AchievementIcon_OnLoad (self)
 	local name = self:GetName();
-	self.bling = getglobal(name .. "Bling");
-	self.texture = getglobal(name .. "Texture");
-	self.frame = getglobal(name .. "Overlay");
+	self.bling = _G[name .. "Bling"];
+	self.texture = _G[name .. "Texture"];
+	self.frame = _G[name .. "Overlay"];
 	
 	self.Desaturate = AchievementIcon_Desaturate;
 	self.Saturate = AchievementIcon_Saturate;
@@ -785,8 +785,8 @@ end
 
 function AchievementShield_OnLoad (self)
 	local name = self:GetName();
-	self.icon = getglobal(name .. "Icon");
-	self.points = getglobal(name .. "Points");
+	self.icon = _G[name .. "Icon"];
+	self.points = _G[name .. "Points"];
 	
 	self.Desaturate = AchievementShield_Desaturate;
 	self.Saturate = AchievementShield_Saturate;
@@ -837,8 +837,8 @@ function AchievementButton_Collapse (self)
 	self.collapsed = true;
 	AchievementButton_UpdatePlusMinusTexture(self);
 	self:SetHeight(ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT);	
-	getglobal(self:GetName() .. "Background"):SetTexCoord(0, 1, 1-(ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT / 256), 1);
-	getglobal(self:GetName() .. "Glow"):SetTexCoord(0, 1, 0, ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT / 128);
+	_G[self:GetName() .. "Background"]:SetTexCoord(0, 1, 1-(ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT / 256), 1);
+	_G[self:GetName() .. "Glow"]:SetTexCoord(0, 1, 0, ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT / 128);
 	
 	if ( not self.tracked:GetChecked() ) then
 		self.tracked:Hide();
@@ -853,16 +853,16 @@ function AchievementButton_Expand (self, height)
 	self.collapsed = nil;
 	AchievementButton_UpdatePlusMinusTexture(self);
 	self:SetHeight(height);
-	getglobal(self:GetName() .. "Background"):SetTexCoord(0, 1, max(0, 1-(height / 256)), 1);
-	getglobal(self:GetName() .. "Glow"):SetTexCoord(0, 1, 0, (height+5) / 128);
+	_G[self:GetName() .. "Background"]:SetTexCoord(0, 1, max(0, 1-(height / 256)), 1);
+	_G[self:GetName() .. "Glow"]:SetTexCoord(0, 1, 0, (height+5) / 128);
 end
 
 function AchievementButton_Saturate (self)
 	local name = self:GetName();
 	self.saturated = true;	
-	getglobal(name .. "TitleBackground"):SetTexCoord(0, 0.9765625, 0, 0.3125);
-	getglobal(name .. "Background"):SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
-	getglobal(name .. "Glow"):SetVertexColor(1.0, 1.0, 1.0);
+	_G[name .. "TitleBackground"]:SetTexCoord(0, 0.9765625, 0, 0.3125);
+	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
+	_G[name .. "Glow"]:SetVertexColor(1.0, 1.0, 1.0);
 	self.icon:Saturate();
 	self.shield:Saturate();
 	self.shield.points:SetVertexColor(1, 1, 1);
@@ -877,9 +877,9 @@ end
 function AchievementButton_Desaturate (self)
 	local name = self:GetName();
 	self.saturated = nil;
-	getglobal(name .. "TitleBackground"):SetTexCoord(0, 0.9765625, 0.34375, 0.65625);
-	getglobal(name .. "Background"):SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
-	getglobal(name .. "Glow"):SetVertexColor(.22, .17, .13);
+	_G[name .. "TitleBackground"]:SetTexCoord(0, 0.9765625, 0.34375, 0.65625);
+	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
+	_G[name .. "Glow"]:SetVertexColor(.22, .17, .13);
 	self.icon:Desaturate();
 	self.shield:Desaturate();
 	self.shield.points:SetVertexColor(.65, .65, .65);
@@ -894,19 +894,19 @@ end
 function AchievementButton_OnLoad (self)
 	local name = self:GetName();
 	
-	self.label = getglobal(name .. "Label");
-	self.description = getglobal(name .. "Description");
-	self.hiddenDescription = getglobal(name .. "HiddenDescription");
-	self.reward = getglobal(name .. "Reward");
-	self.rewardBackground = getglobal(name.."RewardBackground");
-	self.icon = getglobal(name .. "Icon");
-	self.shield = getglobal(name .. "Shield");
-	self.objectives = getglobal(name .. "Objectives");
-	self.highlight = getglobal(name .. "Highlight");
-	self.dateCompleted = getglobal(name .. "DateCompleted")
-	self.tracked = getglobal(name .. "Tracked");
-	self.check = getglobal(name .. "Check");
-	self.plusMinus = getglobal(name .. "PlusMinus");
+	self.label = _G[name .. "Label"];
+	self.description = _G[name .. "Description"];
+	self.hiddenDescription = _G[name .. "HiddenDescription"];
+	self.reward = _G[name .. "Reward"];
+	self.rewardBackground = _G[name.."RewardBackground"];
+	self.icon = _G[name .. "Icon"];
+	self.shield = _G[name .. "Shield"];
+	self.objectives = _G[name .. "Objectives"];
+	self.highlight = _G[name .. "Highlight"];
+	self.dateCompleted = _G[name .. "DateCompleted"]
+	self.tracked = _G[name .. "Tracked"];
+	self.check = _G[name .. "Check"];
+	self.plusMinus = _G[name .. "PlusMinus"];
 	
 	self.dateCompleted:ClearAllPoints();
 	self.dateCompleted:SetPoint("TOP", self.shield, "BOTTOM", -3, 6);
@@ -1297,7 +1297,7 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 		
 		miniAchievement:Show();
 		miniAchievement:SetParent(objectivesFrame);
-		getglobal(miniAchievement:GetName() .. "Icon"):SetTexture(iconpath);
+		_G[miniAchievement:GetName() .. "Icon"]:SetTexture(iconpath);
 		if ( index == 1 ) then
 			miniAchievement:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", -4, -4);
 		elseif ( index == 7 ) then
@@ -1753,13 +1753,13 @@ end
 
 function AchievementStatButton_OnLoad(self, parentFrame)
 	local name = self:GetName();
-	self.background = getglobal(name.."BG");
-	self.left = getglobal(name.."HeaderLeft");
-	self.middle = getglobal(name.."HeaderMiddle");
-	self.right = getglobal(name.."HeaderRight");
-	self.text = getglobal(name.."Text");
-	self.title = getglobal(name.."Title");
-	self.value = getglobal(name.."Value");
+	self.background = _G[name.."BG"];
+	self.left = _G[name.."HeaderLeft"];
+	self.middle = _G[name.."HeaderMiddle"];
+	self.right = _G[name.."HeaderRight"];
+	self.text = _G[name.."Text"];
+	self.title = _G[name.."Title"];
+	self.value = _G[name.."Value"];
 	self.value:SetVertexColor(1, 0.97, 0.6);
 	parentFrame.buttons = parentFrame.buttons or {};
 	tinsert(parentFrame.buttons, self);
@@ -1812,7 +1812,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 				button:SetPoint("TOPLEFT",AchievementFrameSummaryAchievementsHeader, "BOTTOMLEFT", 18, 2 );
 				button:SetPoint("TOPRIGHT",AchievementFrameSummaryAchievementsHeader, "BOTTOMRIGHT", -18, 2 );
 			else
-				anchorTo = getglobal("AchievementFrameSummaryAchievement"..i-1);
+				anchorTo = _G["AchievementFrameSummaryAchievement"..i-1];
 				button:SetPoint("TOPLEFT",anchorTo, "BOTTOMLEFT", 0, 3 );
 				button:SetPoint("TOPRIGHT",anchorTo, "BOTTOMRIGHT", 0, 3 );
 			end
@@ -1898,7 +1898,7 @@ end
 
 function AchievementFrameSummaryAchievement_OnLoad(self)
 	AchievementComparisonPlayerButton_OnLoad(self);
-	self.highlight = getglobal(self:GetName().."Highlight");
+	self.highlight = _G[self:GetName().."Highlight"];
 	AchievementFrameSummaryAchievements.buttons = AchievementFrameSummaryAchievements.buttons or {};
 	tinsert(AchievementFrameSummaryAchievements.buttons, self);
 	self:Saturate();
@@ -1948,10 +1948,10 @@ function AchievementFrameSummaryCategory_OnLoad (self)
 	self:SetMinMaxValues(0, 100);
 	self:SetValue(0);
 	local name = self:GetName();
-	self.text = getglobal(name .. "Text");
+	self.text = _G[name .. "Text"];
 	
 	local categoryName = GetCategoryInfo(self:GetID());
-	getglobal(name .. "Label"):SetText(categoryName);
+	_G[name .. "Label"]:SetText(categoryName);
 end
 
 function AchievementFrame_GetCategoryTotalNumAchievements (id, showAll)
@@ -2376,7 +2376,7 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 		local player = button.player;
 		local friend = button.friend;
 		
-		local friendCompleted, friendMonth, friendDay, friendYear = GetAchievementComparisonInfo(id, 1);
+		local friendCompleted, friendMonth, friendDay, friendYear = GetAchievementComparisonInfo(id);
 		player.label:SetText(name);		
 	
 		player.description:SetText(description);
@@ -2494,20 +2494,20 @@ end
 
 function AchievementFrameComparisonStat_OnLoad (self)
 	local name = self:GetName();
-	self.background = getglobal(name.."BG");
-	self.left = getglobal(name.."HeaderLeft");
-	self.middle = getglobal(name.."HeaderMiddle");
-	self.right = getglobal(name.."HeaderRight");
-	self.left2 = getglobal(name.."HeaderLeft2");
-	self.middle2 = getglobal(name.."HeaderMiddle2");
-	self.right2 = getglobal(name.."HeaderRight2");
-	self.text = getglobal(name.."Text");
-	self.title = getglobal(name.."Title");
-	self.value = getglobal(name.."Value");
+	self.background = _G[name.."BG"];
+	self.left = _G[name.."HeaderLeft"];
+	self.middle = _G[name.."HeaderMiddle"];
+	self.right = _G[name.."HeaderRight"];
+	self.left2 = _G[name.."HeaderLeft2"];
+	self.middle2 = _G[name.."HeaderMiddle2"];
+	self.right2 = _G[name.."HeaderRight2"];
+	self.text = _G[name.."Text"];
+	self.title = _G[name.."Title"];
+	self.value = _G[name.."Value"];
 	self.value:SetVertexColor(1, 0.97, 0.6);
-	self.friendValue = getglobal(name.."ComparisonValue");
+	self.friendValue = _G[name.."ComparisonValue"];
 	self.friendValue:SetVertexColor(1, 0.97, 0.6);
-	self.mouseover = getglobal(name.. "Mouseover");
+	self.mouseover = _G[name.. "Mouseover"];
 end
 
 function AchievementFrameComparisonStats_SetStat (button, category, index, colorIndex, isSummary)
@@ -2619,9 +2619,9 @@ end
 
 function AchievementComparisonPlayerButton_Saturate (self)
 	local name = self:GetName();
-	getglobal(name .. "TitleBackground"):SetTexCoord(0, 0.9765625, 0, 0.3125);
-	getglobal(name .. "Background"):SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
-	getglobal(name .. "Glow"):SetVertexColor(1.0, 1.0, 1.0);
+	_G[name .. "TitleBackground"]:SetTexCoord(0, 0.9765625, 0, 0.3125);
+	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
+	_G[name .. "Glow"]:SetVertexColor(1.0, 1.0, 1.0);
 	self.icon:Saturate();
 	self.shield:Saturate();
 	self.shield.points:SetVertexColor(1, 1, 1);
@@ -2633,9 +2633,9 @@ end
 
 function AchievementComparisonPlayerButton_Desaturate (self)
 	local name = self:GetName();
-	getglobal(name .. "TitleBackground"):SetTexCoord(0, 0.9765625, 0.34375, 0.65625);
-	getglobal(name .. "Background"):SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
-	getglobal(name .. "Glow"):SetVertexColor(.22, .17, .13);
+	_G[name .. "TitleBackground"]:SetTexCoord(0, 0.9765625, 0.34375, 0.65625);
+	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
+	_G[name .. "Glow"]:SetVertexColor(.22, .17, .13);
 	self.icon:Desaturate();
 	self.shield:Desaturate();
 	self.shield.points:SetVertexColor(.65, .65, .65);
@@ -2648,12 +2648,12 @@ end
 function AchievementComparisonPlayerButton_OnLoad (self)
 	local name = self:GetName();
 	
-	self.label = getglobal(name .. "Label");
-	self.description = getglobal(name .. "Description");
-	self.icon = getglobal(name .. "Icon");
-	self.shield = getglobal(name .. "Shield");
-	self.dateCompleted = getglobal(name .. "DateCompleted");
-	self.titleBar = getglobal(name .. "TitleBackground");
+	self.label = _G[name .. "Label"];
+	self.description = _G[name .. "Description"];
+	self.icon = _G[name .. "Icon"];
+	self.shield = _G[name .. "Shield"];
+	self.dateCompleted = _G[name .. "DateCompleted"];
+	self.titleBar = _G[name .. "TitleBackground"];
 	
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 	self.Saturate = AchievementComparisonPlayerButton_Saturate;
@@ -2667,9 +2667,9 @@ end
 
 function AchievementComparisonFriendButton_Saturate (self)
 	local name = self:GetName();
-	getglobal(name .. "TitleBackground"):SetTexCoord(0.3, 0.575, 0, 0.3125);
-	getglobal(name .. "Background"):SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
-	getglobal(name .. "Glow"):SetVertexColor(1.0, 1.0, 1.0);
+	_G[name .. "TitleBackground"]:SetTexCoord(0.3, 0.575, 0, 0.3125);
+	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
+	_G[name .. "Glow"]:SetVertexColor(1.0, 1.0, 1.0);
 	self.icon:Saturate();
 	self.shield:Saturate();
 	self.shield.points:SetVertexColor(1, 1, 1);
@@ -2679,9 +2679,9 @@ end
 
 function AchievementComparisonFriendButton_Desaturate (self)
 	local name = self:GetName();
-	getglobal(name .. "TitleBackground"):SetTexCoord(0.3, 0.575, 0.34375, 0.65625);
-	getglobal(name .. "Background"):SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
-	getglobal(name .. "Glow"):SetVertexColor(.22, .17, .13);
+	_G[name .. "TitleBackground"]:SetTexCoord(0.3, 0.575, 0.34375, 0.65625);
+	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
+	_G[name .. "Glow"]:SetVertexColor(.22, .17, .13);
 	self.icon:Desaturate();
 	self.shield:Desaturate();
 	self.shield.points:SetVertexColor(.65, .65, .65);
@@ -2692,9 +2692,9 @@ end
 function AchievementComparisonFriendButton_OnLoad (self)
 	local name = self:GetName();
 	
-	self.status = getglobal(name .. "Status");
-	self.icon = getglobal(name .. "Icon");
-	self.shield = getglobal(name .. "Shield");
+	self.status = _G[name .. "Status"];
+	self.icon = _G[name .. "Icon"];
+	self.shield = _G[name .. "Shield"];
 	
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 	self.Saturate = AchievementComparisonFriendButton_Saturate;
@@ -2785,14 +2785,14 @@ ACHIEVEMENT_TEXTURES_TO_LOAD = {
 
 function AchievementFrame_ClearTextures()
 	for k, v in pairs(ACHIEVEMENT_TEXTURES_TO_LOAD) do
-		getglobal(v.name):SetTexture(nil);
+		_G[v.name]:SetTexture(nil);
 	end
 end
 
 function AchievementFrame_LoadTextures()
 	for k, v in pairs(ACHIEVEMENT_TEXTURES_TO_LOAD) do
 		if ( v.file ) then
-			getglobal(v.name):SetTexture(v.file);
+			_G[v.name]:SetTexture(v.file);
 		end
 	end
 end

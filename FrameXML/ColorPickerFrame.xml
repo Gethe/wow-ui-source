@@ -220,7 +220,7 @@
 			<TexCoords left="0.25" right="1.0" top="0" bottom="0.875"/>
 		</ColorValueThumbTexture>
 	</ColorSelect>
-	<Frame name="OpacityFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+	<Frame name="OpacityFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" clampedToScreen="true">
 		<Size>
 			<AbsDimension x="80" y="180"/>
 		</Size>

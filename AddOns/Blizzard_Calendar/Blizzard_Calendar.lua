@@ -1583,8 +1583,6 @@ end
 function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton, firstHolidayIndex)
 	local dayButtonName = dayButton:GetName();
 
-	-- turn date background on if there is an event on this day
-	-- NOTE: leave this commented out until we get all our event textures!
 --	local dateBackground = _G[dayButtonName.."DateFrameBackground"];
 --	if ( dayButton.numViewableEvents > 0 ) then
 --		dateBackground:Show();
@@ -1633,10 +1631,12 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 	local overlayTex = _G[dayButtonName.."OverlayFrameTexture"];
 	if ( firstHolidayIndex ) then
 		-- for now, the overlay texture is the first holiday's sequence texture
-		local title, hour, minute, calendarType, sequenceType, eventType, texture =
-			CalendarGetDayEvent(monthOffset, day, firstHolidayIndex);
-		if ( sequenceType and sequenceType ~= "" ) then
-			-- don't set an overlay texture for textures with no sequence type
+		local title, hour, minute, calendarType, sequenceType, eventType, texture,
+			modStatus, inviteStatus, invitedBy, difficulty, inviteType,
+			sequenceIndex, numSequenceDays = CalendarGetDayEvent(monthOffset, day, firstHolidayIndex);
+--		local sequenceIndex, numSequenceDays, sequenceType = CalendarGetDayEventSequenceInfo(monthOffset, day, firstHolidayIndex);
+		if ( numSequenceDays > 2 ) then
+			-- by art/design request, we're not going to show sequence textures if the sequence only lasts up to 2 days
 			overlayTex:SetTexture();
 			if ( CALENDAR_USE_SEQUENCE_FOR_OVERLAY_TEXTURE ) then
 				texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
@@ -3210,7 +3210,7 @@ function CalendarViewEventInviteListScrollFrame_Update()
 	local buttons = CalendarViewEventInviteListScrollFrame.buttons;
 	local numInvites = CalendarEventGetNumInvites();
 	local numButtons = #buttons;
-	local totalHeight = numInvites * buttons[1]:GetHeight();
+	local buttonHeight = buttons[1]:GetHeight();
 
 	CalendarViewEventFrame.myInviteIndex = nil;
 
@@ -3309,9 +3309,10 @@ function CalendarViewEventInviteListScrollFrame_Update()
 			button.inviteIndex = nil;
 			button:Hide();
 		end
-		displayedHeight = displayedHeight + button:GetHeight();
+		displayedHeight = displayedHeight + buttonHeight;
 	end
 	CalendarClassButtonContainer_Show(CalendarViewEventFrame);
+	local totalHeight = numInvites * buttonHeight;
 	HybridScrollFrame_Update(CalendarViewEventInviteListScrollFrame, numInvites, totalHeight, displayedHeight);
 end
 
@@ -3977,7 +3978,7 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 	local buttons = CalendarCreateEventInviteListScrollFrame.buttons;
 	local numInvites = CalendarEventGetNumInvites();
 	local numButtons = #buttons;
-	local totalHeight = numInvites * buttons[1]:GetHeight();
+	local buttonHeight = buttons[1]:GetHeight();
 
 	local selectedInviteIndex = CalendarEventGetSelectedInvite();
 	if ( selectedInviteIndex <= 0 ) then
@@ -4084,10 +4085,10 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 			button.inviteIndex = nil;
 			button:Hide();
 		end
-		displayedHeight = displayedHeight + button:GetHeight();
+		displayedHeight = displayedHeight + buttonHeight;
 	end
-
 	CalendarClassButtonContainer_Show(CalendarCreateEventFrame);
+	local totalHeight = numInvites * buttonHeight;
 	HybridScrollFrame_Update(CalendarCreateEventInviteListScrollFrame, numInvites, totalHeight, displayedHeight);
 end
 
@@ -4267,17 +4268,20 @@ function CalendarInviteStatusContextMenu_SetStatusOption(self)
 end
 
 function CalendarCreateEventInviteEdit_OnEnterPressed(self)
-	local text = strtrim(self:GetText());
-	local trimmedText = strtrim(text);
-	if ( trimmedText == "" or trimmedText == CALENDAR_PLAYER_NAME ) then
-		self:ClearFocus();
-	elseif ( CalendarCanSendInvite() ) then
-		CalendarEventInvite(text);
-		self:SetText("");
+	if ( not AutoCompleteEditBox_OnEnterPressed(self) ) then
+		local text = strtrim(self:GetText());
+		local trimmedText = strtrim(text);
+		if ( trimmedText == "" or trimmedText == CALENDAR_PLAYER_NAME ) then
+			self:ClearFocus();
+		elseif ( CalendarCanSendInvite() ) then
+			CalendarEventInvite(text);
+			self:SetText("");
+		end
 	end
 end
 
 function CalendarCreateEventInviteEdit_OnEditFocusLost(self)
+	AutoCompleteEditBox_OnEditFocusLost(self);
 	self:HighlightText(0, 0);
 	local trimmedText = strtrim(self:GetText());
 	if ( trimmedText == "" ) then
@@ -4751,11 +4755,14 @@ function CalendarEventPickerScrollFrame_Update()
 	-- now fill in the buttons starting from the already-offset event index
 	local buttons = CalendarEventPickerScrollFrame.buttons;
 	local numButtons = #buttons;
+	local buttonHeight = buttons[1]:GetHeight();
+	local displayedHeight = 0;
+
 	local numEvents = CalendarGetNumDayEvents(monthOffset, day);
+
 	local button, buttonName, buttonIcon, buttonTitle, buttonTime;
 	local texturePath, tcoords;
 	local eventColor;
-	local displayedHeight = 0;
 	local i = 1;
 	while ( i <= numButtons and eventIndex <= numEvents ) do
 		local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy, difficulty =
@@ -4816,7 +4823,7 @@ function CalendarEventPickerScrollFrame_Update()
 				button:Hide();
 			end
 			i = i + 1;
-			displayedHeight = displayedHeight + button:GetHeight();
+			displayedHeight = displayedHeight + buttonHeight;
 		end
 		eventIndex = eventIndex + 1;
 	end
@@ -4827,8 +4834,7 @@ function CalendarEventPickerScrollFrame_Update()
 		button:Hide();
 		i = i + 1;
 	end
-
-	local totalHeight = numViewableEvents * buttons[1]:GetHeight();
+	local totalHeight = numViewableEvents * buttonHeight;
 	HybridScrollFrame_Update(CalendarEventPickerScrollFrame, numViewableEvents, totalHeight, displayedHeight);
 end
 
@@ -5019,14 +5025,14 @@ end
 function CalendarTexturePickerScrollFrame_Update()
 	local buttons = CalendarTexturePickerScrollFrame.buttons;
 	local numButtons = #buttons;
-	local numTextures = #CalendarEventTextureCache;
-	local totalHeight = numTextures * buttons[1]:GetHeight();
+	local buttonHeight = buttons[1]:GetHeight();
+	local displayedHeight = 0;
 
 	local button, buttonName, buttonIcon, buttonTitle;
 	local eventTex, textureIndex;
 	local selectedTextureIndex = CalendarTexturePickerFrame.selectedTextureIndex;
 	local eventType = CalendarTexturePickerFrame.eventType;
-	local displayedHeight = 0;
+	local numTextures = #CalendarEventTextureCache;
 	local offset = HybridScrollFrame_GetOffset(CalendarTexturePickerScrollFrame);
 	for i = 1, numButtons do
 		button = buttons[i];
@@ -5096,8 +5102,9 @@ function CalendarTexturePickerScrollFrame_Update()
 			button.textureIndex = nil;
 			button:Hide();
 		end
-		displayedHeight = displayedHeight + button:GetHeight();
+		displayedHeight = displayedHeight + buttonHeight;
 	end
+	local totalHeight = numTextures * buttonHeight;
 	HybridScrollFrame_Update(CalendarTexturePickerScrollFrame, numTextures, totalHeight, displayedHeight);
 end
 

@@ -34,9 +34,9 @@ runeMapping = {
 function RuneButton_OnLoad (self)
 	RuneFrame_AddRune(RuneFrame, self);
 	
-	self.rune = getglobal(self:GetName().."Rune");
-	self.fill = getglobal(self:GetName().."Fill");
-	self.shine = getglobal(self:GetName().."ShineTexture");
+	self.rune = _G[self:GetName().."Rune"];
+	self.fill = _G[self:GetName().."Fill"];
+	self.shine = _G[self:GetName().."ShineTexture"];
 	RuneButton_Update(self);
 end
 
@@ -45,7 +45,7 @@ function RuneButton_OnUpdate (self, elapsed)
 	--local RUNE_HEIGHT = 18;
 	--local MIN_RUNE_ALPHA = .4
 	
-	local cooldown = getglobal(self:GetName().."Cooldown");
+	local cooldown = _G[self:GetName().."Cooldown"];
 	local start, duration, runeReady = GetRuneCooldown(self:GetID());
 	
 	local displayCooldown = (runeReady and 0) or 1;

@@ -10,13 +10,13 @@ function SetItemButtonCount(button, count)
 
 	button.count = count;
 	if ( count > 1 or (button.isBag and count > 0) ) then
-		if ( count > 1999 ) then
+		if ( count > (button.maxDisplayCount or 9999) ) then
 			count = "*";
 		end
-		getglobal(button:GetName().."Count"):SetText(count);
-		getglobal(button:GetName().."Count"):Show();
+		_G[button:GetName().."Count"]:SetText(count);
+		_G[button:GetName().."Count"]:Show();
 	else
-		getglobal(button:GetName().."Count"):Hide();
+		_G[button:GetName().."Count"]:Hide();
 	end
 end
 
@@ -31,10 +31,10 @@ function SetItemButtonStock(button, numInStock)
 
 	button.numInStock = numInStock;
 	if ( numInStock > 0 ) then
-		getglobal(button:GetName().."Stock"):SetFormattedText(MERCHANT_STOCK, numInStock);
-		getglobal(button:GetName().."Stock"):Show();
+		_G[button:GetName().."Stock"]:SetFormattedText(MERCHANT_STOCK, numInStock);
+		_G[button:GetName().."Stock"]:Show();
 	else
-		getglobal(button:GetName().."Stock"):Hide();
+		_G[button:GetName().."Stock"]:Hide();
 	end
 end
 
@@ -43,11 +43,11 @@ function SetItemButtonTexture(button, texture)
 		return;
 	end
 	if ( texture ) then
-		getglobal(button:GetName().."IconTexture"):Show();
+		_G[button:GetName().."IconTexture"]:Show();
 	else
-		getglobal(button:GetName().."IconTexture"):Hide();
+		_G[button:GetName().."IconTexture"]:Hide();
 	end
-	getglobal(button:GetName().."IconTexture"):SetTexture(texture);
+	_G[button:GetName().."IconTexture"]:SetTexture(texture);
 end
 
 function SetItemButtonTextureVertexColor(button, r, g, b)
@@ -55,14 +55,14 @@ function SetItemButtonTextureVertexColor(button, r, g, b)
 		return;
 	end
 	
-	getglobal(button:GetName().."IconTexture"):SetVertexColor(r, g, b);
+	_G[button:GetName().."IconTexture"]:SetVertexColor(r, g, b);
 end
 
 function SetItemButtonDesaturated(button, desaturated, r, g, b)
 	if ( not button ) then
 		return;
 	end
-	local icon = getglobal(button:GetName().."IconTexture");
+	local icon = _G[button:GetName().."IconTexture"];
 	if ( not icon ) then
 		return;
 	end
@@ -86,7 +86,7 @@ function SetItemButtonNormalTextureVertexColor(button, r, g, b)
 		return;
 	end
 	
-	getglobal(button:GetName().."NormalTexture"):SetVertexColor(r, g, b);
+	_G[button:GetName().."NormalTexture"]:SetVertexColor(r, g, b);
 end
 
 function SetItemButtonNameFrameVertexColor(button, r, g, b)
@@ -94,7 +94,7 @@ function SetItemButtonNameFrameVertexColor(button, r, g, b)
 		return;
 	end
 	
-	getglobal(button:GetName().."NameFrame"):SetVertexColor(r, g, b);
+	_G[button:GetName().."NameFrame"]:SetVertexColor(r, g, b);
 end
 
 function SetItemButtonSlotVertexColor(button, r, g, b)
@@ -102,7 +102,7 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 		return;
 	end
 	
-	getglobal(button:GetName().."SlotTexture"):SetVertexColor(r, g, b);
+	_G[button:GetName().."SlotTexture"]:SetVertexColor(r, g, b);
 end
 
 function HandleModifiedItemClick(link)
