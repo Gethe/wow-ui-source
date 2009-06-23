@@ -23,12 +23,8 @@ h2. General
 * The Argent Tournament Expands
 ** All new Argent Crusader daily quests and rewards have been added for players with the Crusader title. Rewards include a new Argent Crusader banner and tabard (which can port players to the tournament grounds), a mounted squire (can periodically run bank, mail or vendor errands for the player), a paladin-exclusive Argent Crusader Charger mount, and new heirloom items.
 ** All new Silver Covenant and Sunreaver daily quests and rewards have been added for players exalted with these factions. Rewards include tabards, new ground and flying mounts, and a new pet.
-** Just when you thought you had seen the last of the Black Knight, he makes his astonishing return to the tournament. Wait, didnt you kill him?
+** Just when you thought you had seen the last of the Black Knight, he makes his astonishing return to the tournament. Wait, didn't you kill him?
 * New druid art for cat and bear forms has been added. There are now five unique color schemes for each form and faction. Changing hair color (night elves) or skin tone (tauren) via the barbershop will change the look of one's cat and bear forms.
-* Portals from Orgrimmar and Stormwind have been added leading players to the Stair of Destiny at the Dark Portal. Once there, players can access a flight path directly from the Stair of Destiny to Shattrath.
-* A new zeppelin docking ramp has been added to Thunder Bluff allowing Horde players easier transport to and from Orgrimmar.
-* The local Postal Service has grown tired of walking so far each day to collect mail and has decided to install a large number of new mailboxes to Stormwind, Undercity, Darnassus and Orgrimmar.
-* Northrend Children's Week has arrived in Dalaran! Players can find out more by visiting the Eventide District.
 * Copied Test Realm characters will no longer be copied with their achievement history in order to better facilitate the character copy process.
 
 h2. PvP
@@ -127,8 +123,10 @@ h2. Classes: General
 h2. Death Knights
 
 * Due to significant talent changes, all death knight talents will be reset for players.
-* Blood Strike: The bonus damage this ability receives from diseases on the target has been increased to 50% per disease.
+* Blood Plague: Damage done increased by 15%.
+* Blood Strike: The bonus damage this ability receives from diseases on the target has been increased to 25% per disease.
 * Chains of Ice: Now reduces movement by 95% instead of 100%. The main effect of this change will be that targets of Chains of Ice will not have to re-issue a movement command to continue moving.
+* Frost Fever: Damage done increased by 15%.
 * Frost Presence: 10% bonus health reduced to 6% bonus stamina.
 * Frost Strike: This ability can now be dodged, parried, or blocked. Weapon damage bonus reduced to 55%, down from 60%.
 * Icebound Fortitude: Cooldown increased to 2 minutes.
@@ -277,7 +275,7 @@ h4. Subtlety
 
 * Shadow Dance: Cooldown reduced to 1 minute. Now lasts 6 seconds, down from 10 seconds.
 
-h2. Shaman
+h2. Shamans
 
 * A customizable totem bar will now be available for shamans allowing the storing of 4 different totems. These totems can be placed on the ground at once in one global cooldown for the combined mana cost of all 4 totems.
 * All Shocks now have a default range of 25 yards, up from 20 yards.
@@ -339,13 +337,22 @@ h2. User Interface
 * Character names can now be colorized according to class in the chat frame through an interface option in the Development settings.
 * Casting bars under a target's portrait will now indicate whether or not the cast can be interrupted.
 * Druids will now be able to see their mana bars when shape-shifted.
-* The framerate for those with Shadow Effects enabled under the Ultra Video settings has been improved.
+* The frame rate for those with Shadow Effects enabled under the Ultra Video settings has been improved.
 * Item Comparisons: Holding the shift key while hovering over an item will now display the stat differences with the item currently equipped in the relevant slot.
 * Macros and scripts will no longer be able to target totems by name.
 * Quest creatures and objects will now show on the player's world map.
 * The quest log is now double-paned for more easily viewing quest information.
 * Vendor prices will now be listed on items whether or not players are at a vendor.
 * For additional notes on Lua and XML changes please visit the UI & Macros forum.
+
+h2. World Environment
+
+* Northrend Children's Week has arrived in Dalaran! Players can find out more by visiting the Eventide District.
+* Portal areas in all major cities now offer a portal to the Blasted Lands near the Dark Portal.
+* Once crossing through the Dark Portal, players can access a flight path directly from the Stair of Destiny to Shattrath.
+* A new zeppelin docking ramp has been added to Thunder Bluff allowing Horde players easier transport to and from Orgrimmar.
+* The local Postal Service has grown tired of walking so far each day to collect mail and has decided to install a large number of new mailboxes to Stormwind, Undercity, Darnassus and Orgrimmar.
+* Matias in Darnassus has finally earned himself enough money from your repair bills that he was able to buy himself an anvil.
 
 h2. Quests
 
@@ -474,7 +481,7 @@ h2. Dungeons and Raids
 
 h3. The Nexus: The Oculus & The Eye of Eternity
 
-* Vehicles (drakes) used in these instances now scale with item level.
+* Drakes used by players in these instances will now scale in health and damage according to the rider's average item level.
 
 h3. Ulduar
 
@@ -504,4 +511,3 @@ h3. Priest
 h3. Shamans
 
 * Fixed a bug where Frostbrand Weapon (Rank 9) was not scaling properly with a shaman's spell power.
-
