@@ -5,12 +5,12 @@ h1. World of Warcraft PTR Patch 3.2.0
 
 h2. General
 
-* Construction of the Crusaders' Coliseum is complete. Testing not yet available. New raid Normal and Heroic modes for the Crusaders' Coliseum can be toggled using the Dungeon Difficulty setting. This applies to 10 and 25-player versions. 10-player (Normal), 25-player (Normal), 10-player (Heroic) and 25-player (Heroic) all share separate raid lockout timers.
+* Construction of the Crusaders' Coliseum is complete. Testing not yet available. New raid normal and Heroic modes for the Crusaders' Coliseum can be toggled using the Dungeon Difficulty setting. This applies to 10 and 25-player versions. 10-player (normal), 25-player (normal), 10-player (Heroic) and 25-player (Heroic) all share separate raid lockout timers.
 ** Trial of the Champion
-*** 5-player (Normal and Heroic mode) dungeon.
+*** 5-player (normal and Heroic mode) dungeon.
 *** Daily quest added to the Heroic daily dungeon quest giver.
 ** Trial of the Crusader
-*** 10 and 25-player (Normal mode) raid dungeon.
+*** 10 and 25-player (normal mode) raid dungeon.
 ** Trial of the Grand Crusader
 *** 10 and 25-player (Heroic mode) raid dungeon.
 *** Crusaders' Tribute: Active on Heroic difficulty only, the tribute system will limit players on the number of attempts the raid is allotted each week. Additional rewards can be earned depending on the number of attempts left in the tribute run each week when the final boss is defeated.
@@ -220,7 +220,7 @@ h2. Paladins
 * Hand of Reckoning: Redesigned. Now does damage only when the target does not currently have the caster targeted, but damage done increased to 50% of attack power, occurring after the taunt effect is applied.
 * Judgement of Light: Now heals for 2% of the attacker's maximum health instead of a variable amount based on the spell power and attack power of the judging paladin.
 * Lay on Hands: The buff from this ability now reduces the physical damage taken by the target by 10/20% instead of increasing the target's armor.
-* Righteous Fury: No longer has a duration or mana cost, remaining until cancelled or death. Also cancelled when a Paladin activates a different talent specialization.
+* Righteous Fury: No longer has a duration, remaining until cancelled or death. Also cancelled when a Paladin activates a different talent specialization.
 * Sacred Shield: When a paladin casts Flash of Light on a target with this buff, they also now place a heal-over-time effect on the target, healing that target for 100% of the Flash of Light amount over 12 seconds.
 * Seal of Blood: This ability has been removed.
 * Seal of the Martyr: This ability has been removed.
@@ -333,6 +333,13 @@ h4. Fury
 
 h2. User Interface
 
+* Quest creatures and objects will now show on the player's world map.
+* A skull graphic will be placed on the map in the general area where players can find creatures they must kill for a quest.
+* A skull graphic with red eyes will be placed on the map in the general area where creatures can be found that must be killed in order to collect quest objects.
+* A gear/cogwheel graphic will be placed on the map in the general area where players must loot quest objects found in the world.
+* A chat bubble graphic will be placed on the map in the general area where players must interact with a specific NPC for a quest.
+* A yellow question mark graphic will show on the map to provide the location of a NPC whose quest the player has completed.
+* The quest log is now double-paned for more easily viewing quest information. The list of all quests a player has will show in one pane, while the quest details of any highlighted quest will display in the next.
 * Character name auto-completion for the chat frame, pop-ups, and mail interface can be enabled through an interface option in the Development settings.
 * Character names can now be colorized according to class in the chat frame through an interface option in the Development settings.
 * Casting bars under a target's portrait will now indicate whether or not the cast can be interrupted.
@@ -340,8 +347,6 @@ h2. User Interface
 * The frame rate for those with Shadow Effects enabled under the Ultra Video settings has been improved.
 * Item Comparisons: Holding the shift key while hovering over an item will now display the stat differences with the item currently equipped in the relevant slot.
 * Macros and scripts will no longer be able to target totems by name.
-* Quest creatures and objects will now show on the player's world map.
-* The quest log is now double-paned for more easily viewing quest information.
 * Vendor prices will now be listed on items whether or not players are at a vendor.
 * For additional notes on Lua and XML changes please visit the UI & Macros forum.
 
@@ -351,8 +356,8 @@ h2. World Environment
 * Portal areas in all major cities now offer a portal to the Blasted Lands near the Dark Portal.
 * Once crossing through the Dark Portal, players can access a flight path directly from the Stair of Destiny to Shattrath.
 * A new zeppelin docking ramp has been added to Thunder Bluff allowing Horde players easier transport to and from Orgrimmar.
-* The local Postal Service has grown tired of walking so far each day to collect mail and has decided to install a large number of new mailboxes to Stormwind, Undercity, Darnassus and Orgrimmar.
-* Matias in Darnassus has finally earned himself enough money from your repair bills that he was able to buy himself an anvil.
+* The local Postal Service has grown tired of walking so far each day to collect mail and has decided to install a large number of new mailboxes in Stormwind, Undercity, Darnassus and Orgrimmar.
+* Mathiel in Darnassus has finally earned himself enough money from your repair bills that he was able to buy himself an anvil.
 
 h2. Quests
 
@@ -414,7 +419,7 @@ h3. Herbalism
 
 h3. Inscription
 
-* Added a new Glyph of Claw for young feral druids who haven't yet obtained Mangle. Inscribers can learn this glyph from the trainer.
+* Added a new Glyph of Claw for young feral druids who haven't yet obtained Mangle. Scribes can learn this glyph from the trainer.
 * Master's Inscriptions increased.
 
 h3. Jewelcrafting
@@ -477,7 +482,7 @@ h4. Warlocks
 
 h2. Dungeons and Raids
 
-* 25-player raids will no longer be referred to as heroic versions of a raid, as there is a new distinction between normal and heroic modes for both 10 and 25 player versions of the Crusaders' Coliseum.
+* 25-player raids will no longer be referred to as Heroic versions of a raid, as there is a new distinction between normal and Heroic modes for both 10 and 25 player versions of the Crusaders' Coliseum.
 
 h3. The Nexus: The Oculus & The Eye of Eternity
 
