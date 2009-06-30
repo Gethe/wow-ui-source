@@ -22,8 +22,6 @@
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="RIGHT"/>
 				</Anchors>
-				<NormalTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
-				<HighlightTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
 				<Scripts>
 					<OnLoad>
 						PaperDollFrameItemPopoutButton_OnLoad(self);
@@ -32,6 +30,8 @@
 						PaperDollFrameItemPopoutButton_OnClick(self);
 					</OnClick>
 				</Scripts>
+				<NormalTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
+				<HighlightTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
 			</Button>
 		</Frames>
         <Scripts>
@@ -109,6 +109,16 @@
 	</CheckButton>
 	
 	<CheckButton name="GearSetPopupButtonTemplate" inherits="SimplePopupButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				local name = self:GetName();
+				self.icon = _G[name .. "Icon"];
+				self.name = _G[name .. "Name"];
+			</OnLoad>
+			<OnClick>
+				GearSetPopupButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
 		<NormalTexture name="$parentIcon" nonBlocking="true">
 			<Size>
 				<AbsDimension x="36" y="36"/>
@@ -123,16 +133,6 @@
 		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-		<Scripts>
-			<OnLoad>
-				local name = self:GetName();
-				self.icon = _G[name .. "Icon"];
-				self.name = _G[name .. "Name"];
-			</OnLoad>
-			<OnClick>
-				GearSetPopupButton_OnClick(self, button, down);
-			</OnClick>
-		</Scripts>
 	</CheckButton>	
 	
     <Frame name="StatFrameTemplate" virtual="true">

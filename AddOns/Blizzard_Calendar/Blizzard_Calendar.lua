@@ -405,37 +405,50 @@ local CALENDAR_WEEKDAY_NAMES = {
 local CALENDAR_EVENTCOLOR_MODERATOR = {r=0.54, g=0.75, b=1.0};
 
 local CALENDAR_INVITESTATUS_INFO = {
+	["UNKNOWN"] = {
+		name		= UNKNOWN,
+		color		= NORMAL_FONT_COLOR,
+		colorCode	= NORMAL_FONT_COLOR_CODE,
+	},
 	[CALENDAR_INVITESTATUS_CONFIRMED] = {
 		name		= CALENDAR_STATUS_CONFIRMED,
 		color		= GREEN_FONT_COLOR,
+		colorCode	= GREEN_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_ACCEPTED] = {
 		name		= CALENDAR_STATUS_ACCEPTED,
 		color		= GREEN_FONT_COLOR,
+		colorCode	= GREEN_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_DECLINED] = {
 		name		= CALENDAR_STATUS_DECLINED,
 		color		= RED_FONT_COLOR,
+		colorCode	= RED_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_OUT] = {
 		name		= CALENDAR_STATUS_OUT,
 		color		= RED_FONT_COLOR,
+		colorCode	= RED_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_STANDBY] = {
 		name		= CALENDAR_STATUS_STANDBY,
 		color		= GREEN_FONT_COLOR,
+		colorCode	= GREEN_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_INVITED] = {
 		name		= CALENDAR_STATUS_INVITED,
 		color		= NORMAL_FONT_COLOR,
+		colorCode	= NORMAL_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_SIGNEDUP] = {
 		name		= CALENDAR_STATUS_SIGNEDUP,
 		color		= GREEN_FONT_COLOR,
+		colorCode	= GREEN_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_NOT_SIGNEDUP] = {
-		name		= UNKNOWN,					-- this shouldn't be displayed
+		name		= CALENDAR_STATUS_NOT_SIGNEDUP,
 		color		= NORMAL_FONT_COLOR,
+		colorCode	= NORMAL_FONT_COLOR_CODE,
 	},
 };
 
@@ -899,6 +912,10 @@ local function _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatu
 	end
 	-- default to normal color
 	return NORMAL_FONT_COLOR;
+end
+
+local function _CalendarFrame_SafeGetInviteStatusInfo(inviteStatus)
+	return CALENDAR_INVITESTATUS_INFO[inviteStatus] or CALENDAR_INVITESTATUS_INFO["UNKNOWN"];
 end
 
 local function _CalendarFrame_ResetClassData()
@@ -2421,10 +2438,12 @@ function CalendarDayButton_OnEnter(self)
 					end
 				else
 					if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
-						if ( inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP ) then
-							text = CALENDAR_SIGNEDUP_FOR_GUILDEVENT;
+						local inviteStatusInfo = _CalendarFrame_SafeGetInviteStatusInfo(inviteStatus);
+						if ( inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP or
+							 inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP ) then
+							text = inviteStatusInfo.name;
 						else
-							text = CALENDAR_NOT_SIGNEDUP_FOR_GUILDEVENT;
+							text = format(CALENDAR_SIGNEDUP_FOR_GUILDEVENT_WITH_STATUS, inviteStatusInfo.name);
 						end
 					else
 						if ( calendarType == "GUILD_ANNOUNCEMENT" ) then
@@ -3264,19 +3283,10 @@ function CalendarViewEventInviteListScrollFrame_Update()
 			buttonClass:SetText(_CalendarFrame_SafeGetName(className));
 			buttonClass:SetTextColor(classColor.r, classColor.g, classColor.b);
 			-- setup status
-			local inviteStatusInfo = CALENDAR_INVITESTATUS_INFO[inviteStatus];
-			local inviteStatusName;
-			local inviteStatusColor;
-			if ( inviteStatusInfo ) then
-				inviteStatusName = inviteStatusInfo.name;
-				inviteStatusColor = inviteStatusInfo.color;
-			else
-				inviteStatusName = UNKNOWN;
-				inviteStatusColor = NORMAL_FONT_COLOR;
-			end
 			local buttonStatus = _G[buttonName.."Status"];
-			buttonStatus:SetText(inviteStatusName);
-			buttonStatus:SetTextColor(inviteStatusColor.r, inviteStatusColor.g, inviteStatusColor.b);
+			local inviteStatusInfo = _CalendarFrame_SafeGetInviteStatusInfo(inviteStatus);
+			buttonStatus:SetText(inviteStatusInfo.name);
+			buttonStatus:SetTextColor(inviteStatusInfo.color.r, inviteStatusInfo.color.g, inviteStatusInfo.color.b);
 
 			-- fixup anchors
 			if ( CalendarViewEventInviteList.partyMode ) then
@@ -4035,19 +4045,10 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 			buttonClass:SetText(_CalendarFrame_SafeGetName(className));
 			buttonClass:SetTextColor(classColor.r, classColor.g, classColor.b);
 			-- setup status
-			local inviteStatusInfo = CALENDAR_INVITESTATUS_INFO[inviteStatus];
-			local inviteStatusName;
-			local inviteStatusColor;
-			if ( inviteStatusInfo ) then
-				inviteStatusName = inviteStatusInfo.name;
-				inviteStatusColor = inviteStatusInfo.color;
-			else
-				inviteStatusName = UNKNOWN;
-				inviteStatusColor = NORMAL_FONT_COLOR;
-			end
 			local buttonStatus = _G[buttonName.."Status"];
-			buttonStatus:SetText(inviteStatusName);
-			buttonStatus:SetTextColor(inviteStatusColor.r, inviteStatusColor.g, inviteStatusColor.b);
+			local inviteStatusInfo = _CalendarFrame_SafeGetInviteStatusInfo(inviteStatus);
+			buttonStatus:SetText(inviteStatusInfo.name);
+			buttonStatus:SetTextColor(inviteStatusInfo.color.r, inviteStatusInfo.color.g, inviteStatusInfo.color.b);
 
 			-- fixup anchors
 			if ( CalendarCreateEventInviteList.partyMode ) then

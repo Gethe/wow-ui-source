@@ -49,6 +49,11 @@
 			</OnClick>
 		</Scripts>
 	</Button>
+	<Button name="HelpFrameViewResponseButtonTemplate" inherits="GameMenuButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad function="HelpFrameViewResponseButton_OnLoad"/>
+		</Scripts>
+	</Button>
 	<Frame name="HelpFrameDividerTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="577" y="19"/>
@@ -89,6 +94,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
 	<Frame name="HelpFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size>
 			<AbsDimension x="640" y="512"/>
@@ -616,7 +622,7 @@
 							</Layer>
 						</Layers>
 						<ScrollChild>
-							<EditBox name="HelpFrameOpenTicketText" multiLine="true" letters="500" autoFocus="false">
+							<EditBox name="HelpFrameOpenTicketEditBox" multiLine="true" letters="500" autoFocus="false">
 								<Size>
 									<AbsDimension x="541" y="357"/>
 								</Size>
@@ -635,7 +641,7 @@
 							</EditBox>
 						</ScrollChild>
 					</ScrollFrame>
-					<Button name="HelpFrameOpenTicketCancel" inherits="HelpFrameCancelButtonTemplate">
+					<Button name="HelpFrameOpenTicketCancel" inherits="HelpFrameCancelButtonTemplate" text="CANCEL">
 						<Scripts>
 							<OnClick function="HelpFrameOpenTicketCancel_OnClick"/>
 						</Scripts>
@@ -650,6 +656,181 @@
 						</Anchors>
 						<Scripts>
 							<OnClick function="HelpFrameOpenTicketSubmit_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<!-- View Response Frame -->
+			<Frame name="HelpFrameViewResponse" setAllPoints="true" hidden="true">
+				<Frames>
+					<ScrollFrame name="HelpFrameViewResponseIssueScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size x="540" y="155"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="20" y="-54"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="31"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset x="-2" y="5"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="0.12109375"/>
+								</Texture>
+								<Texture name="$parentScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="31"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset x="-2" y="-2"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0.29296875" bottom="0.4140625"/>
+								</Texture>
+								<Texture name="$parentScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="60"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentScrollBarTop" relativePoint="BOTTOM">
+											<Offset x="0" y="0"/>
+										</Anchor>
+										<Anchor point="BOTTOM" relativeTo="$parentScrollBarBottom" relativePoint="TOP">
+											<Offset x="0" y="0"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<ScrollChild>
+							<Frame name="$parentScrollChild">
+								<Size x="540" y="155"/>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="HelpFrameViewResponseIssueHeader" inherits="ChatFontNormal" text="GM_RESPONSE_ISSUE_HEADER">
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset x="0" y="-3"/>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="HelpFrameViewResponseIssueBody" inherits="ChatFontNormal" nonspacewrap="true" justifyH="LEFT">
+											<Size x="524" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="HelpFrameViewResponseIssueHeader" relativePoint="BOTTOMLEFT">
+													<Offset x="10" y="-8"/>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+					<Frame name="$parentDivider" inherits="HelpFrameDividerTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="HelpFrameViewResponseIssueScrollFrame" relativePoint="BOTTOMLEFT">
+								<Offset x="-8" y="6"/>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<ScrollFrame name="HelpFrameViewResponseMessageScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size x="540" y="247"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="HelpFrameViewResponseDivider" relativePoint="BOTTOMLEFT">
+								<Offset x="8" y="5"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="31"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset x="-2" y="5"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="0.12109375"/>
+								</Texture>
+								<Texture name="$parentScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="31"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset x="-2" y="-2"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0.29296875" bottom="0.4140625"/>
+								</Texture>
+								<Texture name="$parentScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="60"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentScrollBarTop" relativePoint="BOTTOM">
+											<Offset x="0" y="0"/>
+										</Anchor>
+										<Anchor point="BOTTOM" relativeTo="$parentScrollBarBottom" relativePoint="TOP">
+											<Offset x="0" y="0"/>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<ScrollChild>
+							<Frame name="$parentScrollChild">
+								<Size x="540" y="245"/>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="HelpFrameViewResponseMessageHeader" inherits="ChatFontNormal" text="GM_RESPONSE_MESSAGE_HEADER">
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset x="0" y="-3"/>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="HelpFrameViewResponseMessageBody" inherits="ChatFontNormal" nonspacewrap="true" justifyH="LEFT">
+											<Size x="524" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="HelpFrameViewResponseMessageHeader" relativePoint="BOTTOMLEFT">
+													<Offset x="10" y="-8"/>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
+					<Button name="HelpFrameViewResponseMoreHelp" inherits="HelpFrameViewResponseButtonTemplate" text="GM_RESPONSE_MORE_HELP">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset x="12" y="21"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="HelpFrameViewResponseMoreHelp_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentIssueResolved" inherits="HelpFrameViewResponseButtonTemplate" text="GM_RESPONSE_RESOLVE">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="HelpFrameViewResponseMoreHelp" relativePoint="RIGHT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="HelpFrameViewResponseIssueResolved_OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>

@@ -1033,6 +1033,7 @@
 						PVPBattlegroundFrame:Show();
 						PanelTemplates_Tab_OnClick(self, PVPParentFrame);
 						PlaySound("igCharacterInfoTab");
+						PVPBattlegroundFrameGroupJoinButton:SetFrameLevel(self:GetFrameLevel() + 1);
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>

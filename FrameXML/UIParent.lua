@@ -149,6 +149,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("REPLACE_ENCHANT");
 	self:RegisterEvent("TRADE_REPLACE_ENCHANT");
 	self:RegisterEvent("END_REFUND");
+	self:RegisterEvent("END_BOUND_TRADEABLE");
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:RegisterEvent("MACRO_ACTION_BLOCKED");
 	self:RegisterEvent("ADDON_ACTION_BLOCKED");
@@ -450,7 +451,9 @@ function ToggleHelpFrame()
 	else
 		StaticPopup_Hide("HELP_TICKET");
 		StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
-		ShowUIPanel(HelpFrame);
+		StaticPopup_Hide("GM_RESPONSE_NEED_MORE_HELP");
+		StaticPopup_Hide("GM_RESPONSE_RESOLVE_CONFIRM");
+		StaticPopup_Hide("GM_RESPONSE_CANT_OPEN_TICKET");
 		HelpFrame_ShowFrame(HELPFRAME_START_PAGE);
 	end
 end
@@ -786,11 +789,19 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		return;
 	end
+	if ( event == "END_BOUND_TRADEABLE" ) then
+		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE");
+		if(dialog) then
+			dialog.data = arg1;
+		end
+		return;
+	end
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		StaticPopup_Hide("BIND_ENCHANT");
 		StaticPopup_Hide("REPLACE_ENCHANT");
 		StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
 		StaticPopup_Hide("END_REFUND");
+		StaticPopup_Hide("END_BOUND_TRADEABLE");
 		return;
 	end
 	if ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
@@ -1185,7 +1196,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["CONTAINER_OFFSET_Y"] = {baseY = true, yOffset = 10, bottomEither = actionBarOffset, reputation = 1, isVar = "yAxis"};
 	["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 210, bottomRight = actionBarOffset, reputation = 1, isVar = "yAxis"};
 	["PETACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = actionBarOffset, justBottomRightAndShapeshift = actionBarOffset, reputation = 1, maxLevel = 1, isVar = "yAxis"};
-	["MULTICASTACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, isVar = "yAxis"};
+	["MULTICASTACTIONBAR_YPOS"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, isVar = "yAxis"};
 };
 
 -- If any Var entries in UIPARENT_MANAGED_FRAME_POSITIONS are used exclusively by addons, they should be declared here and not in one of the addon's files.
@@ -1823,7 +1834,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	-- if the shapeshift bar is shown then hide the multi-cast bar
 	-- we'll have to figure out what we should do in this case if it ever really becomes a problem
 	if ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) then
-		MultiCastActionBarFrame:Hide();
+		HideMultiCastActionBar();
 	end
 
 	-- If petactionbar is already shown, set its point in addition to changing its y target

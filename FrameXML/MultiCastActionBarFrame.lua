@@ -1,8 +1,8 @@
 
 -- globals
 MULTICASTACTIONBAR_SLIDETIME = 0.09;
-MULTICASTACTIONBAR_YPOS = 98;
-MULTICASTACTIONBAR_XPOS = 0;
+MULTICASTACTIONBAR_YPOS = 0;
+MULTICASTACTIONBAR_XPOS = 30;
 NUM_MULTI_CAST_PAGES = 3;
 NUM_MULTI_CAST_BUTTONS_PER_PAGE = 4;		-- NOTE: must match MAX_TOTEMS!!!
 
@@ -239,23 +239,23 @@ function MultiCastActionBarFrame_OnUpdate(self, elapsed)
 		self.completed = false;
 		if ( self.mode == "show" ) then
 			yPos = (self.slideTimer/self.timeToSlide) * MULTICASTACTIONBAR_YPOS;
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", MULTICASTACTIONBAR_XPOS, yPos);
+			self:SetPoint("BOTTOMLEFT", self:GetParent(), "TOPLEFT", MULTICASTACTIONBAR_XPOS, yPos);
 			self.state = "showing";
 			self:Show();
 		elseif ( self.mode == "hide" ) then
 			yPos = (1 - (self.slideTimer/self.timeToSlide)) * MULTICASTACTIONBAR_YPOS;
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", MULTICASTACTIONBAR_XPOS, yPos);
+			self:SetPoint("BOTTOMLEFT", self:GetParent(), "TOPLEFT", MULTICASTACTIONBAR_XPOS, yPos);
 			self.state = "hiding";
 		end
 		self.slideTimer = self.slideTimer + elapsed;
 	else
 		self.completed = true;
 		if ( self.mode == "show" ) then
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", MULTICASTACTIONBAR_XPOS, MULTICASTACTIONBAR_YPOS);
+			self:SetPoint("BOTTOMLEFT", self:GetParent(), "TOPLEFT", MULTICASTACTIONBAR_XPOS, MULTICASTACTIONBAR_YPOS);
 			self.state = "top";
 			--Move the chat frame and edit box up a bit
 		elseif ( self.mode == "hide" ) then
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", MULTICASTACTIONBAR_XPOS, 0);
+			self:SetPoint("BOTTOMLEFT", self:GetParent(), "TOPLEFT", MULTICASTACTIONBAR_XPOS, 0);
 			self.state = "bottom";
 			self:Hide();
 			--Move the chat frame and edit box back down to original position
@@ -451,14 +451,13 @@ function MultiCastActionButton_OnEvent(self, event, ...)
 end
 
 function MultiCastActionButton_OnShow(self)
-	if ( self:GetID() == 0 ) then
+	if ( not self.slotButton ) then
 		self:Hide();
 	end
 end
 
 function MultiCastActionButton_OnEnter(self)
 	ActionButton_SetTooltip(self);
-
 	MultiCastSlotButton_OnEnter(self.slotButton);
 end
 
@@ -945,7 +944,7 @@ function MultiCastSummonSpellButton_Update(self)
 
 		-- reanchor the first slot button take make room for this button
 		local width = self:GetWidth();
-		local xOffset = width + 8 + 36;
+		local xOffset = width + 8 + 3;
 		local page;
 		for i = 1, NUM_MULTI_CAST_PAGES do
 			page = _G["MultiCastActionPage"..i];
@@ -963,7 +962,7 @@ function MultiCastSummonSpellButton_Update(self)
 		end
 
 		-- reanchor the first slot button take the place of this button
-		local xOffset = 36;
+		local xOffset = 3;
 		local page;
 		for i = 1, NUM_MULTI_CAST_PAGES do
 			page = _G["MultiCastActionPage"..i];

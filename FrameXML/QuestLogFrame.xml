@@ -361,6 +361,9 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnUpdate function="QuestLogDetailScrollFrame_OnUpdate"/>
+				</Scripts>
 				<ScrollChild>
 					<Frame name="QuestLogDetailScrollChildFrame">
 						<Size>
@@ -719,9 +722,6 @@
 						</Frames>
 					</Frame>
 				</ScrollChild>
-				<Scripts>
-					<OnUpdate function="QuestLogDetailScrollFrame_OnUpdate"/>
-				</Scripts>
 			</ScrollFrame>
 			<Frame name="QuestLogMapFrame" alpha="0.5" hidden="true">
 				<Size>

@@ -345,7 +345,7 @@ function ReputationWatchBar_Update(newLevel)
 		
 		-- If the player is max level then replace the xp bar with the watched reputation, otherwise stack the reputation watch bar on top of the xp bar
 		ReputationWatchStatusBar:SetFrameLevel(MainMenuBarArtFrame:GetFrameLevel()-1);
-		if ( newLevel < MAX_PLAYER_LEVEL ) then
+		if ( newLevel < MAX_PLAYER_LEVEL and not IsXPUserDisabled() ) then
 			-- Reconfigure reputation bar
 			ReputationWatchStatusBar:SetHeight(8);
 			ReputationWatchBar:ClearAllPoints();
@@ -396,15 +396,15 @@ function ReputationWatchBar_Update(newLevel)
 			visibilityChanged = 1;
 		end
 		ReputationWatchBar:Hide();
-		if ( newLevel == MAX_PLAYER_LEVEL ) then
+		if ( newLevel < MAX_PLAYER_LEVEL and not IsXPUserDisabled() ) then
+			MainMenuExpBar:Show();
+			MainMenuExpBar.pauseUpdates = nil;
+			MainMenuBarMaxLevelBar:Hide();
+		else
 			MainMenuExpBar:Hide();
 			MainMenuExpBar.pauseUpdates = true;
 			MainMenuBarMaxLevelBar:Show();
 			ExhaustionTick:Hide();
-		else
-			MainMenuExpBar:Show();
-			MainMenuExpBar.pauseUpdates = nil;
-			MainMenuBarMaxLevelBar:Hide();
 		end
 	end
 	if ( visibilityChanged ) then

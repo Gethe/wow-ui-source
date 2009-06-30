@@ -118,19 +118,19 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-          <Texture name="$parentPortrait" file="Interface\BattlefieldFrame\UI-Battlefield-Icon">
-              <Size>
-                  <AbsDimension x="60" y="60"/>
-              </Size>
-              <Anchors>
-                  <Anchor point="TOPLEFT">
-                      <Offset>
-                          <AbsDimension x="7" y="-6"/>
-                      </Offset>
-                  </Anchor>
-              </Anchors>
-          </Texture>
-      </Layer>
+				<Texture name="$parentPortrait" file="Interface\BattlefieldFrame\UI-Battlefield-Icon">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER">
 				<Texture file="Interface\BattlefieldFrame\UI-Battlefield-TopLeft">
 					<Size>
@@ -175,9 +175,9 @@
 				</FontString>
 				<FontString name="$parentNameHeader" inherits="GameFontHighlight" text="BATTLEGROUND">
 					<Anchors>
-						<Anchor point="TOP">
+						<Anchor point="TOPLEFT" relativeTo="BattlefieldFrame" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-55"/>
+								<AbsDimension x="70" y="-55"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -210,9 +210,9 @@
 				</Texture>
 				<FontString name="$parentNameHeader2" inherits="GameFontHighlight" text="BATTLEGROUND_INSTANCE">
 					<Anchors>
-						<Anchor point="TOP">
+						<Anchor point="TOPLEFT" relativeTo="BattlefieldFrame" relativePoint="TOPLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-170"/>
+								<AbsDimension x="70" y="-172"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -220,6 +220,54 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="WintergraspTimer" allowMouseover="true">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="PVPBattlegroundFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-40" y="-55"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormal" parentKey="frameText" justifyH="RIGHT" spacing="4">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-3" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self.tooltipActive = false;
+					</OnShow>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 5, 40);
+						GameTooltip:SetText("Wintergrasp Tooltip");
+						self.tooltipActive = true;
+					</OnEnter>
+					<OnLeave>
+						self.tooltipActive = false;
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnUpdate>
+						PVPBattleground_WintergraspTimerUpdate(self);
+					</OnUpdate>
+				</Scripts>
+				<NormalTexture file="Interface\PVPFrame\Icons\PVP-WintergraspTimerIcon">
+					<TexCoords left="0" right="1" top="1" bottom="0.5"/>
+				</NormalTexture>
+				<DisabledTexture file="Interface\PVPFrame\Icons\PVP-WintergraspTimerIcon">
+					<TexCoords left="0" right="1" top="0.5" bottom="0"/>
+				</DisabledTexture>
+			</Button>
 			<Button name="BattlegroundType1" inherits="PVPBattlegroundButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="PVPBattlegroundFrame">

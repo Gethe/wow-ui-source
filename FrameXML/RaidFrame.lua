@@ -3,7 +3,6 @@ MAX_RAID_MEMBERS = 40;
 NUM_RAID_GROUPS = 8;
 MEMBERS_PER_RAID_GROUP = 5;
 MAX_RAID_INFOS = 20;
-MAX_RAID_INFOS_DISPLAYED = 4;
 
 function RaidFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_LOGIN");
@@ -56,7 +55,7 @@ function RaidFrame_OnEvent(self, event, ...)
 		else
 			RaidFrameRaidInfoButton:Disable();
 		end
-		RaidInfoFrame_Update();
+		RaidInfoFrame_Update(true);
 	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "VOICE_STATUS_UPDATE" ) then
 		RaidFrame_Update();
 	end
@@ -94,70 +93,140 @@ function RaidOptionsFrame_UpdatePartyFrames()
 end
 
 -- Populates Raid Info Data
-function RaidInfoFrame_Update()
+function RaidInfoFrame_Update(scrollToSelected)
+	RaidInfoFrame_UpdateSelectedIndex();
+	
+	local scrollFrame = RaidInfoScrollFrame;
 	local savedInstances = GetNumSavedInstances();
-	local instanceName, instanceID, instanceReset, instanceDifficulty, extend, width;
-	local frameName, frameNameText, frameID, frameReset;
-	if ( savedInstances > 0 ) then
-		if ( savedInstances > MAX_RAID_INFOS_DISPLAYED ) then
-			width = 210;
-			RaidInfoScrollFrameTop:Show();
-			RaidInfoScrollFrameBottom:Show();
-			RaidInfoScrollFrameScrollBar:Show();
-			RaidInfoFrame.scrolling = 1;
-		else
-			width = 235;
-			RaidInfoScrollFrameTop:Hide();
-			RaidInfoScrollFrameBottom:Hide();
-			RaidInfoScrollFrameScrollBar:Hide();
-			RaidInfoFrame.scrolling = nil;
-		end
-		for i=1, MAX_RAID_INFOS do
-			local frame = _G["RaidInfoInstance"..i];
-			if ( i <=  savedInstances) then
-				instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended = GetSavedInstanceInfo(i);
-				 
-				if ( not frame ) then
-					local name =  "RaidInfoInstance"..i;
-					frame = CreateFrame("FRAME", name, RaidInfoScrollChildFrame, "RaidInfoInstanceTemplate");
-					frame:SetPoint("TOPLEFT", "RaidInfoInstance"..i-1, "BOTTOMLEFT", 0, 5);
-				end
-
-				frameName = _G["RaidInfoInstance"..i.."Name"];
-				frameNameText = _G["RaidInfoInstance"..i.."NameText"];
-				frameID = _G["RaidInfoInstance"..i.."ID"];
-				frameReset = _G["RaidInfoInstance"..i.."Reset"];
-
-				if ( instanceDifficulty > 1 ) then
-					frameNameText:SetFormattedText(DUNGEON_NAME_WITH_DIFFICULTY, instanceName, _G["DUNGEON_DIFFICULTY"..instanceDifficulty]);
-				else
-					frameNameText:SetText(instanceName);
-				end
-
-				frameID:SetText(instanceID);
-
-				if ( extended ) then
-					frameReset:SetFormattedText(RAID_INSTANCE_EXPIRES_EXTENDED, SecondsToTime(instanceReset, nil, nil, 3));
-				elseif ( locked ) then
-					frameReset:SetFormattedText(RAID_INSTANCE_EXPIRES, SecondsToTime(instanceReset, nil, nil, 3));
-				else
-					frameReset:SetFormattedText(RAID_INSTANCE_EXPIRES_EXPIRED);
-					frameNameText:SetText("|cff808080"..frameNameText:GetText().."|r");
-				end
-
-				if ( RaidInfoFrame.scrolling ) then
-					frameName:SetWidth(170);
-				else
-					frameName:SetWidth(180);
-				end
-				frame:SetWidth(width);
-				frame:Show();
-			else
-				if ( frame ) then
-					frame:Hide();
-				end
+	local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid;
+	local frameName, frameNameText, frameID, frameReset, width;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local buttons = scrollFrame.buttons;
+	local numButtons = #buttons;
+	local buttonHeight = buttons[1]:GetHeight();
+	
+	if ( scrollToSelected == true and RaidInfoFrame.selectedIndex ) then --Using == true in case the HybridScrollFrame .update is changed to pass in the parent.
+		local button = buttons[RaidInfoFrame.selectedIndex - offset]
+		if ( not button or (button:GetTop() > scrollFrame:GetTop()) or (button:GetBottom() < scrollFrame:GetBottom()) ) then
+			local scrollFrame = RaidInfoScrollFrame;
+			local buttonHeight = scrollFrame.buttons[1]:GetHeight();
+			local scrollValue = min(((RaidInfoFrame.selectedIndex - 1) * buttonHeight), scrollFrame.range)
+			if ( scrollValue ~= scrollFrame.scrollBar:GetValue() ) then
+				scrollFrame.scrollBar:SetValue(scrollValue);
 			end
-			
 		end
 	end
+	
+	offset = HybridScrollFrame_GetOffset(scrollFrame);	--May have changed in the previous section to move selected parts into view.
+	
+	local mouseIsOverScrollFrame = scrollFrame:IsVisible() and MouseIsOver(scrollFrame);
+	
+	for i=1, numButtons do
+		local frame = buttons[i];
+		local index = i + offset;
+		
+		if ( index <=  savedInstances) then
+			instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid = GetSavedInstanceInfo(index);
+			
+			frame.instanceID = instanceID;
+			frame.longInstanceID = string.format("%x%x", instanceIDMostSig, instanceID);
+			frame:SetID(index);
+			
+			if ( RaidInfoFrame.selectedRaidID == frame.longInstanceID ) then
+				frame:LockHighlight();
+			else
+				frame:UnlockHighlight();
+			end
+			
+			if ( isRaid ) then
+				frame.difficulty:SetText(_G["RAID_DIFFICULTY"..instanceDifficulty]);
+			else
+				frame.difficulty:SetText(_G["DUNGEON_DIFFICULTY"..instanceDifficulty]);
+			end
+			
+			if ( extended or locked ) then
+				frame.reset:SetText(SecondsToTime(instanceReset, true, nil, 3));
+				frame.name:SetText(instanceName);
+			else
+				frame.reset:SetFormattedText("|cff808080%s|r", RAID_INSTANCE_EXPIRES_EXPIRED);
+				frame.name:SetFormattedText("|cff808080%s|r", instanceName);
+			end
+			
+			if ( extended ) then
+				frame.extended:Show();
+			else
+				frame.extended:Hide();
+			end
+			
+			frame:Show();
+			
+			if ( mouseIsOverScrollFrame and MouseIsOver(frame) ) then
+				RaidInfoInstance_OnEnter(frame);
+			end
+		else
+			frame:Hide();
+		end	
+	end
+	HybridScrollFrame_Update(scrollFrame, savedInstances, savedInstances * buttonHeight, scrollFrame:GetHeight());
+end
+
+function RaidInfoScrollFrame_OnLoad(self)
+	HybridScrollFrame_OnLoad(self);
+	self.update = RaidInfoFrame_Update;
+	HybridScrollFrame_CreateButtons(self, "RaidInfoInstanceTemplate");
+end
+
+--Makes the button look likes it's being pressed
+function RaidInfoInstance_OnMouseDown(self)
+	self.name:SetPoint("TOPLEFT", 7, -12);
+	self.reset:SetPoint("TOPRIGHT", 2, -13);
+end
+
+function RaidInfoInstance_OnMouseUp(self)
+	self.name:SetPoint("TOPLEFT", 5, -10);
+	self.reset:SetPoint("TOPRIGHT", 0, -11);
+end
+
+function RaidInfoInstance_OnClick(self)
+	RaidInfoFrame.selectedRaidID = self.longInstanceID;
+	RaidInfoFrame_Update();
+end
+
+function RaidInfoInstance_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(self.name:GetText());
+	GameTooltip:AddLine(self.difficulty:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	GameTooltip:AddLine(format(INSTANCE_ID, self.instanceID), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	GameTooltip:Show();
+end
+
+function RaidInfoFrame_UpdateSelectedIndex()
+	local savedInstances = GetNumSavedInstances();
+	for index=1, savedInstances do
+		instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid = GetSavedInstanceInfo(index);
+		if ( format("%x%x", instanceIDMostSig, instanceID) == RaidInfoFrame.selectedRaidID ) then
+			RaidInfoFrame.selectedIndex = index;
+			RaidInfoExtendButton:Enable();
+			if ( extended ) then
+				RaidInfoExtendButton.doExtend = false;
+				RaidInfoExtendButton:SetText(UNEXTEND_RAID_LOCK);
+			else
+				RaidInfoExtendButton.doExtend = true;
+				if ( locked ) then
+					RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
+				else
+					RaidInfoExtendButton:SetText(REACTIVATE_RAID_LOCK);
+				end
+			end
+			return;
+		end
+	end
+	RaidInfoFrame.selectedIndex = nil;
+	RaidInfoExtendButton:Disable();
+end
+
+function RaidInfoExtendButton_OnClick(self)
+	SetSavedInstanceExtend(RaidInfoFrame.selectedIndex, self.doExtend);
+	RequestRaidInfo();
+	RaidInfoFrame_Update();
 end

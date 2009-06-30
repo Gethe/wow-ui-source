@@ -384,6 +384,10 @@
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentTitleButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitleBG"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleBG"/>
+				</Anchors>
 				<Frames>
 					<Frame name="$parentHighlight" setAllPoints="true" hidden="true">
 						<Layers>
@@ -395,10 +399,6 @@
 						</Layers>
 					</Frame>
 				</Frames>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTitleBG"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleBG"/>
-				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self:RegisterForClicks("RightButtonUp");

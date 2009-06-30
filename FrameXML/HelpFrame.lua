@@ -14,6 +14,8 @@ local helpFrames = {
 	["Stuck"]			= "HelpFrameStuck",
 	["ReportIssue"]		= "HelpFrameReportIssue",
 	["OpenTicket"]		= "HelpFrameOpenTicket",
+	["GMResponse"]		= "HelpFrameViewResponse",
+	["NeedMoreHelp"]	= "HelpFrameOpenTicket",
 	["Welcome"]			= "HelpFrameWelcome",
 	["KBase"]			= "KnowledgeBaseFrame",
 };
@@ -35,9 +37,9 @@ local frameStack = { };
 local refreshTime;
 local ticketQueueActive = true;
 
-local haveTicket = false;
-local haveResponse = false;
-local needResponse = true;
+local haveTicket = false;		-- true if the server tells us we have an open ticket
+local haveResponse = false;		-- true if we got a GM response to a previous ticket
+local needResponse = true;		-- true if we want a GM to contact us when we open a new ticket
 
 
 --
@@ -45,6 +47,7 @@ local needResponse = true;
 --
 
 function HelpFrame_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_GM_STATUS");
 	self:RegisterEvent("UPDATE_TICKET");
 	self:RegisterEvent("GMSURVEY_DISPLAY");
@@ -70,7 +73,9 @@ function HelpFrame_OnHide(self)
 end
 
 function HelpFrame_OnEvent(self, event, ...)
-	if ( event ==  "UPDATE_GM_STATUS" ) then
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		GetGMTicket();
+	elseif ( event ==  "UPDATE_GM_STATUS" ) then
 		local status = ...;
 		if ( status == GMTICKET_QUEUE_STATUS_ENABLED ) then
 			ticketQueueActive = true;
@@ -97,7 +102,7 @@ function HelpFrame_OnEvent(self, event, ...)
 		if ( category ) then
 			-- Has an open ticket
 			TicketStatusTitleText:SetText(TICKET_STATUS);
-			HelpFrameOpenTicketText:SetText(ticketDescription);
+			HelpFrameOpenTicketEditBox:SetText(ticketDescription);
 			-- Setup estimated wait time
 			--[[
 			ticketAge - days
@@ -144,7 +149,6 @@ function HelpFrame_OnEvent(self, event, ...)
 			haveResponse = false;
 			haveTicket = true;
 			HelpFrameOpenTicketSubmit:SetText(EDIT_TICKET);
-			HelpFrameOpenTicketCancel:SetText(EXIT);
 			HelpFrameOpenTicketLabel:SetText(HELPFRAME_OPENTICKET_EDITTEXT);
 
 			-- hide the buttons that open a ticket and show the buttons that edit a ticket
@@ -155,10 +159,9 @@ function HelpFrame_OnEvent(self, event, ...)
 			KnowledgeBaseFrameOpenTicketCancel:Show();
 		else
 			-- the player does not have a ticket
-			HelpFrameOpenTicketText:SetText("");
+			HelpFrameOpenTicketEditBox:SetText("");
 			haveTicket = false;
 			HelpFrameOpenTicketSubmit:SetText(SUBMIT);
-			HelpFrameOpenTicketCancel:SetText(CANCEL);
 			HelpFrameOpenTicketLabel:SetText(HELPFRAME_OPENTICKET_TEXT);
 
 			-- hide the buttons that edit a ticket and show the buttons that open a ticket
@@ -169,33 +172,66 @@ function HelpFrame_OnEvent(self, event, ...)
 			KnowledgeBaseFrameOpenTicketCancel:Hide();
 		end
 	elseif ( event == "GMRESPONSE_RECEIVED" ) then
-		local ticketClosed, ticketDescription, response = ...;
-		TicketStatusTitleText:SetText(GM_RESPONSE_ALERT);
+		local ticketDescription, response = ...;
+
 		haveResponse = true;
-		-- i know this is a little confusing, but having a response basically implies that you can't make a *new* ticket
-		-- until you deal with the response...maybe it should be called haveNewTicket but that would probably be even
-		-- more confusing
+		-- i know this is a little confusing since you can have a ticket while you have a response, but having a response
+		-- basically implies that you can't make a *new* ticket until you deal with the response...maybe it should be
+		-- called haveNewTicket but that would probably be even more confusing
 		haveTicket = false;
+
+		TicketStatusTitleText:SetText(GM_RESPONSE_ALERT);
+		TicketStatusTime:SetText("");
+		TicketStatusTime:Hide();
+
+		local descriptionSuffix = "\n";
+		HelpFrameViewResponseIssueBody:SetText(ticketDescription..descriptionSuffix);
+		local responseSuffix = "\n";
+		HelpFrameViewResponseMessageBody:SetText(response..responseSuffix);
+
+		-- clear out the open ticket edit box...the original design called for filling in the edit box with the ticketDescription in case
+		-- the player wanted to create a follow-up ticket, but creating a new ticket with your old ticket's text felt strange so I opted
+		-- to just clear out the text instead
+		HelpFrameOpenTicketEditBox:SetText("");
+		HelpFrameOpenTicketSubmit:SetText(SUBMIT);
+		HelpFrameOpenTicketLabel:SetText(HELPFRAME_OPENTICKET_FOLLOWUPTEXT);
 	end
 end
 
 function HelpFrame_ShowFrame(key)
+	local frameName = helpFrames[key];
+	local frame = _G[frameName];
+	if ( not frame ) then
+		return;
+	end
+
 	-- Close previously opened frame
 	if ( openFrame ) then
+		if ( frame == openFrame ) then
+			-- the requested frame is the same as the open frame...do nothing
+			return;
+		end
 		openFrame:Hide();
 		tinsert(frameStack, openFrame);
 	end
 
-	if ( key == "OpenTicket" and not HelpFrame_IsGMTicketQueueActive() ) then
-		-- Petition queue is down and we're trying to go to the OpenTicket frame...show a dialog instead
-		HideUIPanel(HelpFrame);
-		StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
-		return;
+	if ( key == "OpenTicket" ) then
+		if ( not HelpFrame_IsGMTicketQueueActive() ) then
+			-- Petition queue is down and we're trying to go to the OpenTicket frame, show a dialog instead
+			HideUIPanel(HelpFrame);
+			StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
+			return;
+		end
+		if ( haveResponse ) then
+			-- if we have a response that hasn't been dealt with and the player is trying to open a new ticket,
+			-- give them a warning dialog instead
+			HideUIPanel(HelpFrame);
+			StaticPopup_Show("GM_RESPONSE_CANT_OPEN_TICKET");
+			return;
+		end
 	end
 
-	-- If key is in the helpFrames table, use its value as the frame to show, otherwise default to OpenTicket
-	local frameName = helpFrames[key] or helpFrames["OpenTicket"];
-	local frame = _G[frameName];
+	ShowUIPanel(HelpFrame);
 	frame:Show();
 	openFrame = frame;
 end
@@ -270,13 +306,47 @@ function HelpFrameOpenTicketCancel_OnClick()
 end
 
 function HelpFrameOpenTicketSubmit_OnClick()
-	if ( haveTicket ) then
-		UpdateGMTicket(HelpFrameOpenTicketText:GetText());
-		HideUIPanel(HelpFrame);
+	if ( haveResponse ) then
+		GMResponseNeedMoreHelp(HelpFrameOpenTicketEditBox:GetText());
 	else
-		NewGMTicket(HelpFrameOpenTicketText:GetText(), needResponse);
-		HideUIPanel(HelpFrame);
+		if ( haveTicket ) then
+			UpdateGMTicket(HelpFrameOpenTicketEditBox:GetText());
+		else
+			NewGMTicket(HelpFrameOpenTicketEditBox:GetText(), needResponse);
+		end
 	end
+	HideUIPanel(HelpFrame);
+end
+
+
+--
+-- HelpFrameViewResponseButton
+--
+
+function HelpFrameViewResponseButton_OnLoad(self)
+	local width = self:GetWidth() - 20;
+	local deltaWidth = self:GetTextWidth() - width;
+	if ( deltaWidth > 0 ) then
+		self:SetWidth(width + deltaWidth + 40);
+	end
+end
+
+
+--
+-- HelpFrameViewResponseMoreHelp
+--
+
+function HelpFrameViewResponseMoreHelp_OnClick(self)
+	StaticPopup_Show("GM_RESPONSE_NEED_MORE_HELP");
+end
+
+
+--
+-- HelpFrameViewResponseIssueResolved
+--
+
+function HelpFrameViewResponseIssueResolved_OnClick(self)
+	StaticPopup_Show("GM_RESPONSE_RESOLVE_CONFIRM");
 end
 
 
@@ -286,17 +356,21 @@ end
 
 function TicketStatusFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_TICKET");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("GMRESPONSE_RECEIVED");
 end
 
 function TicketStatusFrame_OnEvent(self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		GetGMTicket();
-	elseif ( event == "UPDATE_TICKET" ) then
+	if ( event == "UPDATE_TICKET" ) then
 		local category = ...;
 		if ( category and (not GMChatStatusFrame or not GMChatStatusFrame:IsShown()) ) then
 			self:Show();
 			refreshTime = GMTICKET_CHECK_INTERVAL;
+		else
+			self:Hide();
+		end
+	elseif ( event == "GMRESPONSE_RECEIVED" ) then
+		if ( not GMChatStatusFrame or not GMChatStatusFrame:IsShown() ) then
+			self:Show();
 		else
 			self:Hide();
 		end
@@ -348,13 +422,21 @@ function TicketStatusFrameButton_OnClick(self)
 		GMSurveyFrame_LoadUI();
 		ShowUIPanel(GMSurveyFrame);
 		TicketStatusFrame:Hide();
-	elseif ( haveResponse ) then
-		-- show response frame
 	elseif ( StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") ) then
 		StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
 	elseif ( StaticPopup_Visible("HELP_TICKET") ) then
 		StaticPopup_Hide("HELP_TICKET");
+	elseif ( StaticPopup_Visible("GM_RESPONSE_NEED_MORE_HELP") ) then
+		StaticPopup_Hide("GM_RESPONSE_NEED_MORE_HELP");
+	elseif ( StaticPopup_Visible("GM_RESPONSE_RESOLVE_CONFIRM") ) then
+		StaticPopup_Hide("GM_RESPONSE_RESOLVE_CONFIRM");
+	elseif ( StaticPopup_Visible("GM_RESPONSE_CANT_OPEN_TICKET") ) then
+		StaticPopup_Hide("GM_RESPONSE_CANT_OPEN_TICKET");
 	elseif ( not HelpFrame:IsShown() and not KnowledgeBaseFrame:IsShown() ) then
-		StaticPopup_Show("HELP_TICKET");
+		if ( haveResponse ) then
+			HelpFrame_ShowFrame("GMResponse");
+		elseif ( haveTicket ) then
+			StaticPopup_Show("HELP_TICKET");
+		end
 	end
 end

@@ -1192,18 +1192,11 @@ function UpdateQuestMapPOI()
 						y = -y * WorldMapDetailFrame:GetHeight();
 						POIFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x, y);
 						if(icon == QUEST_ICON_TURN_IN) then
-							POIFrame.icon:SetTexture("Interface\\WorldMap\\QuestionMark_Gold_64"); 
 							POIFrame.text = TURN_IN_QUEST;
-						elseif(icon == QUEST_ICON_KILL) then
-							POIFrame.icon:SetTexture("Interface\\WorldMap\\Skull_64Grey"); 
+						else
 							POIFrame.text = text;
-						elseif(icon == QUEST_ICON_KILL_COLLECT) then
-							POIFrame.icon:SetTexture("Interface\\WorldMap\\Skull_64"); 
-							POIFrame.text = text;
-						elseif(icon == QUEST_ICON_INTERACT) then
-							POIFrame.icon:SetTexture("Interface\\WorldMap\\TreasureChest_64"); 
-							POIFrame.text = text;
-						end
+						end					
+						POIFrame.icon:SetTexture(QuestIconTextures[icon]); 
 						POIFrame:Show();
 						POIFrame.questName = questName;
 						index = index + 1;	-- save for later

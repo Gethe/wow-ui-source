@@ -309,3 +309,18 @@ function PVPBattlegroundFrame_UpdateGroupAvailable()
 		PVPBattlegroundFrameGroupJoinButton:Disable();
 	end
 end
+
+function PVPBattleground_WintergraspTimerUpdate(self)
+	local nextBattleTime = GetWintergraspWaitTime();
+	WintergraspTimer.frameText:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, true));
+	if ( CanQueueForWintergrasp() ) then
+		self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CAN_QUEUE;
+		self:Enable();
+	else
+		self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CANNOT_QUEUE;
+		self:Disable();
+	end
+	if ( self.tooltipActive ) then
+		GameTooltip:SetText(self.tooltip);
+	end
+end

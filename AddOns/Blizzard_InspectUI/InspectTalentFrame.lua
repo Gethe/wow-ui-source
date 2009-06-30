@@ -1,6 +1,16 @@
 
 local talentSpecInfoCache = {};
 
+function InspectTalentFrameTalent_OnClick(self, button)
+	if ( IsModifiedClick("CHATLINK") ) then
+		local link = GetTalentLink(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(),
+			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+		if ( link ) then
+			ChatEdit_InsertLink(link);
+		end
+	end
+end
+
 function InspectTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
 		GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
@@ -81,6 +91,7 @@ function InspectTalentFrame_OnLoad(self)
 	for i = 1, MAX_NUM_TALENTS do
 		button = _G["InspectTalentFrameTalent"..i];
 		if ( button ) then
+			button:SetScript("OnClick",	InspectTalentFrameTalent_OnClick);
 			button:SetScript("OnEvent", InspectTalentFrameTalent_OnEvent);
 			button:SetScript("OnEnter", InspectTalentFrameTalent_OnEnter);
 		end

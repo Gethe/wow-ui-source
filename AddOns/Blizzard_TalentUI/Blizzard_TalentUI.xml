@@ -241,6 +241,9 @@
 				<Scripts>
 					<OnLoad function="PlayerTalentFrameActivateButton_OnLoad"/>
 					<OnClick function="PlayerTalentFrameActivateButton_OnClick"/>
+					<OnShow function="PlayerTalentFrameActivateButton_OnShow"/>
+					<OnHide function="PlayerTalentFrameActivateButton_OnHide"/>
+					<OnEvent function="PlayerTalentFrameActivateButton_OnEvent"/>
 				</Scripts>
 			</Button>
 			<Frame name="PlayerTalentFramePointsBar">

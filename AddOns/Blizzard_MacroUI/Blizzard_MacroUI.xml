@@ -15,6 +15,11 @@
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="MacroPopupButtonTemplate" inherits="SimplePopupButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				MacroPopupButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
 		<NormalTexture name="$parentIcon" nonBlocking="true">
 			<Size>
 				<AbsDimension x="36" y="36"/>
@@ -29,11 +34,6 @@
 		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-		<Scripts>
-			<OnClick>
-				MacroPopupButton_OnClick(self, button, down);
-			</OnClick>
-		</Scripts>
 	</CheckButton>
 	<Frame name="MacroFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>

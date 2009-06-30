@@ -56,8 +56,8 @@ function SetItemRef(link, text, button)
 				end
 				if ( ChatFrameEditBox:IsVisible() ) then
 					ChatFrameEditBox:Insert(name);
-				elseif ( HelpFrameOpenTicketText:IsVisible() ) then
-					HelpFrameOpenTicketText:Insert(name);
+				elseif ( HelpFrameOpenTicketEditBox:IsVisible() ) then
+					HelpFrameOpenTicketEditBox:Insert(name);
 				else
 					SendWho(WHO_TAG_NAME..name);					
 				end

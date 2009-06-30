@@ -79,22 +79,12 @@ function EventTraceFrame_OnEvent (self, event, ...)
 			hours = hours % 1000;
 			self.times[nextIndex] = string.format("%.2d:%.2d:%06.3f", hours, minutes, seconds);
 
-			local n = select("#", ...);
-			if ( n <= 8 ) then
-				self.args[1][nextIndex], self.args[2][nextIndex], self.args[3][nextIndex], 
-				self.args[4][nextIndex], self.args[5][nextIndex], self.args[6][nextIndex], 
-				self.args[7][nextIndex], self.args[8][nextIndex] = ...;
-			elseif ( n <= 16 ) then
-				self.args[1][nextIndex], self.args[2][nextIndex], self.args[3][nextIndex], 
-				self.args[4][nextIndex], self.args[5][nextIndex], self.args[6][nextIndex], 
-				self.args[7][nextIndex], self.args[8][nextIndex], self.args[9][nextIndex],
-				self.args[10][nextIndex], self.args[11][nextIndex], self.args[12][nextIndex],
-				self.args[13][nextIndex], self.args[14][nextIndex], self.args[15][nextIndex],
-				self.args[16][nextIndex] = ...;
-			else
-				for k, v in ipairs({...}) do
-					self.args[k][nextIndex] = v;
+			local numArgs = select("#", ...);
+			for i=1, numArgs do
+				if ( not self.args[i] ) then
+					self.args[i] = {};
 				end
+				self.args[i][nextIndex] = select(i, ...);
 			end
 			
 			if ( self.eventsToCapture ) then

@@ -155,7 +155,7 @@ function HybridScrollFrame_SetOffset (self, offset)
 			scrollHeight = math.abs(offset - largeButtonTop);		
 		end
 	else	
-		element = offset / buttonHeight
+		element = offset / buttonHeight;
 		overflow = element - math.floor(element);
 		scrollHeight = overflow * buttonHeight;
 	end

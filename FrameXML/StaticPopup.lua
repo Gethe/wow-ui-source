@@ -479,6 +479,13 @@ StaticPopupDialogs["BFMGR_CONFIRM_WORLD_PVP_QUEUED"] = {
 	whileDead = 1,
 };
 
+StaticPopupDialogs["BFMGR_CONFIRM_WORLD_PVP_QUEUED_WARMUP"] = {
+	text = WORLD_PVP_QUEUED_WARMUP,
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+};
+
 StaticPopupDialogs["BFMGR_DENY_WORLD_PVP_QUEUED"] = {
 	text = WORLD_PVP_FAIL,
 	button1 = OKAY,
@@ -488,6 +495,22 @@ StaticPopupDialogs["BFMGR_DENY_WORLD_PVP_QUEUED"] = {
 
 StaticPopupDialogs["BFMGR_INVITED_TO_QUEUE"] = {
 	text = WORLD_PVP_INVITED,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		BattlefieldMgrQueueInviteResponse(1,1);
+	end,
+	OnCancel = function(self, data)
+		BattlefieldMgrQueueInviteResponse(1,0);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+	multiple = 1
+};
+
+StaticPopupDialogs["BFMGR_INVITED_TO_QUEUE_WARMUP"] = {
+	text = WORLD_PVP_INVITED_WARMUP;
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
@@ -520,6 +543,14 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 
 StaticPopupDialogs["BFMGR_EJECT_PENDING"] = {
 	text = WORLD_PVP_PENDING,
+	button1 = OKAY,
+	showAlert = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["BFMGR_PLAYER_EXITED_BATTLE"] = {
+	text = WORLD_PVP_EXITED_BATTLE,
 	button1 = OKAY,
 	showAlert = 1,
 	timeout = 0,
@@ -946,15 +977,14 @@ StaticPopupDialogs["HELP_TICKET_ABANDON_CONFIRM"] = {
 	end,
 	timeout = 0,
 	whileDead = 1,
-	hideOnEscape = 1
-}
+	hideOnEscape = 1,
+};
 StaticPopupDialogs["HELP_TICKET"] = {
 	text = HELP_TICKET_EDIT_ABANDON,
 	button1 = HELP_TICKET_EDIT,
 	button2 = HELP_TICKET_ABANDON,
 	OnAccept = function(self)
 		if ( HelpFrame_IsGMTicketQueueActive() ) then
-			ShowUIPanel(HelpFrame);
 			HelpFrame_ShowFrame("OpenTicket");
 		else
 			HideUIPanel(HelpFrame);
@@ -967,8 +997,50 @@ StaticPopupDialogs["HELP_TICKET"] = {
 		dialogFrame.data = currentFrame;
 	end,
 	timeout = 0,
-	whileDead = 1
-}
+	whileDead = 1,
+	closeButton = 1,
+};
+StaticPopupDialogs["GM_RESPONSE_NEED_MORE_HELP"] = {
+	text = GM_RESPONSE_POPUP_NEED_MORE_HELP_WARNING,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		HelpFrame_ShowFrame("NeedMoreHelp");
+	end,
+	OnCancel = function(self)
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+StaticPopupDialogs["GM_RESPONSE_RESOLVE_CONFIRM"] = {
+	text = GM_RESPONSE_POPUP_RESOLVE_CONFIRM,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		GMResponseResolve();
+		HideUIPanel(HelpFrame);
+	end,
+	OnCancel = function(self)
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+StaticPopupDialogs["GM_RESPONSE_CANT_OPEN_TICKET"] = {
+	text = GM_RESPONSE_POPUP_CANT_OPEN_TICKET,
+	button1 = GM_RESPONSE_POPUP_VIEW_RESPONSE,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		HelpFrame_ShowFrame("GMResponse");
+	end,
+	OnCancel = function(self)
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+};
 StaticPopupDialogs["PETRENAMECONFIRM"] = {
 	text = PET_RENAME_CONFIRMATION,
 	button1 = YES,
@@ -982,8 +1054,8 @@ StaticPopupDialogs["PETRENAMECONFIRM"] = {
 		end
 	end,
 	timeout = 0,
-	hideOnEscape = 1
-}
+	hideOnEscape = 1,
+};
 StaticPopupDialogs["DEATH"] = {
 	text = DEATH_RELEASE_TIMER,
 	button1 = DEATH_RELEASE,
@@ -2202,6 +2274,18 @@ StaticPopupDialogs["END_REFUND"] = {
 	showAlert = 1,
 	hideOnEscape = 1,
 };
+StaticPopupDialogs["END_BOUND_TRADEABLE"] = {
+	text = END_BOUND_TRADEABLE,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		EndBoundTradeable(self.data);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+};
 StaticPopupDialogs["INSTANCE_BOOT"] = {
 	text = INSTANCE_BOOT_TIMER,
 	OnShow = function(self)
@@ -2224,15 +2308,15 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 	button1 = ACCEPT,
 	button2 = INSTANCE_LEAVE,
 	OnShow = function(self)
-		local lockTimeleft = GetInstanceLockTimeRemaining();
+		local lockTimeleft, isPreviousInstance = GetInstanceLockTimeRemaining();
 		if ( lockTimeleft <= 0 ) then
 			self:Hide();
 			return;
 		end
 		self.lockTimeleft = lockTimeleft;
+		self.isPreviousInstance = isPreviousInstance;
 
-		local name, type, difficulty = GetInstanceInfo();
-		self.name, self.difficulty = name, difficulty;
+		self.name, self.type, self.difficulty = GetInstanceInfo();
 	end,
 	OnUpdate = function(self, elapsed)
 		local lockTimeleft = self.lockTimeleft - elapsed;
@@ -2248,8 +2332,13 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 
 		local text = _G[self:GetName().."Text"];
 		local name = NORMAL_FONT_COLOR_CODE..(self.name or "")..FONT_COLOR_CODE_CLOSE;
-		local difficulty = NORMAL_FONT_COLOR_CODE..((self.difficulty > 0 and _G["DUNGEON_DIFFICULTY"..self.difficulty]) or "")..FONT_COLOR_CODE_CLOSE;
-		text:SetFormattedText(INSTANCE_LOCK_TIMER, name, difficulty, SecondsToTime(ceil(lockTimeleft), nil, 1));
+		local difficulty;
+		if ( self.difficulty > 0 ) then
+			difficulty = NORMAL_FONT_COLOR_CODE..format(INSTANCE_DIFFICULTY_FORMAT, (_G[(self.type == "raid" and "RAID_DIFFICULTY" or "DUNGEON_DIFFICULTY")..self.difficulty]))..FONT_COLOR_CODE_CLOSE;
+		else
+			difficulty = "";
+		end
+		text:SetFormattedText((self.isPreviousInstance and INSTANCE_LOCK_TIMER_PREVIOUSLY_SAVED or INSTANCE_LOCK_TIMER), name, difficulty, SecondsToTime(ceil(lockTimeleft), nil, 1));
 		StaticPopup_Resize(self, "INSTANCE_LOCK");
 	end,
 	OnAccept = function(self)
@@ -2564,15 +2653,20 @@ function StaticPopup_FindVisible(which, data)
 end
 
 function StaticPopup_Resize(dialog, which)
+	local info = StaticPopupDialogs[which];
+	if ( not info ) then
+		return nil;
+	end
+
 	local text = _G[dialog:GetName().."Text"];
 	local editBox = _G[dialog:GetName().."EditBox"];
 	local button1 = _G[dialog:GetName().."Button1"];
 	
 	local width = 320;
 	dialog:SetWidth(320);
-	if ( StaticPopupDialogs[which].button3 ) then
+	if ( info.button3 ) then
 		width = 440;
-	elseif (StaticPopupDialogs[which].hasWideEditBox or StaticPopupDialogs[which].showAlert) then
+	elseif (info.hasWideEditBox or info.showAlert) then
 		-- Widen
 		width = 420;
 	elseif ( which == "HELP_TICKET" ) then
@@ -2580,16 +2674,16 @@ function StaticPopup_Resize(dialog, which)
 	end
 	dialog:SetWidth(width);
 	
-	if ( StaticPopupDialogs[which].hasEditBox ) then
-		if ( StaticPopupDialogs[which].hasWideEditBox  ) then
+	if ( info.hasEditBox ) then
+		if ( info.hasWideEditBox  ) then
 		
 		end
 		dialog:SetHeight(16 + text:GetHeight() + 8 + editBox:GetHeight() + 8 + button1:GetHeight() + 16);
-	elseif ( StaticPopupDialogs[which].hasMoneyFrame ) then
+	elseif ( info.hasMoneyFrame ) then
 		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 32);
-	elseif ( StaticPopupDialogs[which].hasMoneyInputFrame ) then
+	elseif ( info.hasMoneyInputFrame ) then
 		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 38);
-	elseif ( StaticPopupDialogs[which].hasItemFrame ) then
+	elseif ( info.hasItemFrame ) then
 		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 80);
 	else
 		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 16);
@@ -2674,8 +2768,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	-- Find an open dialog of the requested type
 	dialog = StaticPopup_FindVisible(which, data);
 	if ( dialog ) then
-		if ( not StaticPopupDialogs[which].noCancelOnReuse ) then
-			local OnCancel = StaticPopupDialogs[which].OnCancel;
+		if ( not info.noCancelOnReuse ) then
+			local OnCancel = info.OnCancel;
 			if ( OnCancel ) then
 				OnCancel(dialog, dialog.data, "override");
 			end
@@ -2685,8 +2779,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	if ( not dialog ) then
 		-- Find a free dialog
 		local index = 1;
-		if ( StaticPopupDialogs[which].preferredIndex ) then
-			index = StaticPopupDialogs[which].preferredIndex;
+		if ( info.preferredIndex ) then
+			index = info.preferredIndex;
 		end
 		for i = index, STATICPOPUP_NUMDIALOGS do
 			local frame = _G["StaticPopup"..i];
@@ -2697,8 +2791,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		end
 
 		--If dialog not found and there's a preferredIndex then try to find an available frame before the preferredIndex
-		if ( not dialog and StaticPopupDialogs[which].preferredIndex ) then
-			for i = 1, StaticPopupDialogs[which].preferredIndex do
+		if ( not dialog and info.preferredIndex ) then
+			for i = 1, info.preferredIndex do
 				local frame = _G["StaticPopup"..i];
 				if ( not frame:IsShown() ) then
 					dialog = frame;
@@ -2731,14 +2825,12 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
 	elseif ( which == "BILLING_NAG" ) then
-		text:SetFormattedText(StaticPopupDialogs[which].text, text_arg1, MINUTES);
+		text:SetFormattedText(info.text, text_arg1, MINUTES);
 	else
-		text:SetFormattedText(StaticPopupDialogs[which].text, text_arg1, text_arg2);
+		text:SetFormattedText(info.text, text_arg1, text_arg2);
 	end
 
-	-- If is any of the guild message popups
-	local wideEditBox = _G[dialog:GetName().."WideEditBox"];
-	local editBox = _G[dialog:GetName().."EditBox"];
+	-- Show or hide the alert icon
 	local alertIcon = _G[dialog:GetName().."AlertIcon"];
 	if ( info.showAlert ) then
 		alertIcon:Show();
@@ -2746,34 +2838,36 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		alertIcon:Hide();	
 	end
 
-	-- If is the ticket edit dialog then show the close button
-	if ( which == "HELP_TICKET" ) then
+	-- Show or hide the close button
+	if ( info.closeButton ) then
 		_G[dialog:GetName().."CloseButton"]:Show();
 	else
 		_G[dialog:GetName().."CloseButton"]:Hide();
 	end
 
 	-- Set the editbox of the dialog
-	if ( StaticPopupDialogs[which].hasEditBox ) then
-		if ( StaticPopupDialogs[which].hasWideEditBox ) then
+	local wideEditBox = _G[dialog:GetName().."WideEditBox"];
+	local editBox = _G[dialog:GetName().."EditBox"];
+	if ( info.hasEditBox ) then
+		if ( info.hasWideEditBox ) then
 			wideEditBox:Show();
 			editBox:Hide();
 
-			if ( StaticPopupDialogs[which].maxLetters ) then
-				wideEditBox:SetMaxLetters(StaticPopupDialogs[which].maxLetters);
+			if ( info.maxLetters ) then
+				wideEditBox:SetMaxLetters(info.maxLetters);
 			end
-			if ( StaticPopupDialogs[which].maxBytes ) then
-				wideEditBox:SetMaxBytes(StaticPopupDialogs[which].maxBytes);
+			if ( info.maxBytes ) then
+				wideEditBox:SetMaxBytes(info.maxBytes);
 			end
 		else
 			wideEditBox:Hide();
 			editBox:Show();
 
-			if ( StaticPopupDialogs[which].maxLetters ) then
-				editBox:SetMaxLetters(StaticPopupDialogs[which].maxLetters);
+			if ( info.maxLetters ) then
+				editBox:SetMaxLetters(info.maxLetters);
 			end
-			if ( StaticPopupDialogs[which].maxBytes ) then
-				editBox:SetMaxBytes(StaticPopupDialogs[which].maxBytes);
+			if ( info.maxBytes ) then
+				editBox:SetMaxBytes(info.maxBytes);
 			end
 		end
 	else
@@ -2782,14 +2876,14 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	end
 
 	-- Show or hide money frame
-	if ( StaticPopupDialogs[which].hasMoneyFrame ) then
+	if ( info.hasMoneyFrame ) then
 		_G[dialog:GetName().."MoneyFrame"]:Show();
 		_G[dialog:GetName().."MoneyInputFrame"]:Hide();
-	elseif ( StaticPopupDialogs[which].hasMoneyInputFrame ) then
+	elseif ( info.hasMoneyInputFrame ) then
 		_G[dialog:GetName().."MoneyInputFrame"]:Show();
 		_G[dialog:GetName().."MoneyFrame"]:Hide();
 		-- Set OnEnterPress for money input frames
-		if ( StaticPopupDialogs[which].EditBoxOnEnterPressed ) then
+		if ( info.EditBoxOnEnterPressed ) then
 			_G[dialog:GetName().."MoneyInputFrameGold"]:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
 			_G[dialog:GetName().."MoneyInputFrameSilver"]:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
 			_G[dialog:GetName().."MoneyInputFrameCopper"]:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
@@ -2804,7 +2898,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	end
 
 	-- Show or hide item button
-	if ( StaticPopupDialogs[which].hasItemFrame ) then
+	if ( info.hasItemFrame ) then
 		_G[dialog:GetName().."ItemFrame"]:Show();
 		if ( data and type(data) == "table" ) then
 			_G[dialog:GetName().."ItemFrame"].link = data.link
@@ -2827,23 +2921,23 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	local button1 = _G[dialog:GetName().."Button1"];
 	local button2 = _G[dialog:GetName().."Button2"];
 	local button3 = _G[dialog:GetName().."Button3"];
-	if ( StaticPopupDialogs[which].button3 and ( not StaticPopupDialogs[which].DisplayButton3 or StaticPopupDialogs[which].DisplayButton3() ) ) then
+	if ( info.button3 and ( not info.DisplayButton3 or info.DisplayButton3() ) ) then
 		button1:ClearAllPoints();
 		button2:ClearAllPoints();
 		button3:ClearAllPoints();
-		if ( StaticPopupDialogs[which].hasEditBox ) then
+		if ( info.hasEditBox ) then
 			button1:SetPoint("TOPRIGHT", editBox, "BOTTOM", -72, -8);
 			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-		elseif ( StaticPopupDialogs[which].hasMoneyFrame ) then
+		elseif ( info.hasMoneyFrame ) then
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -24);
 			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-		elseif ( StaticPopupDialogs[which].hasMoneyInputFrame ) then
+		elseif ( info.hasMoneyInputFrame ) then
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -30);
 			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-		elseif ( StaticPopupDialogs[which].hasItemFrame ) then
+		elseif ( info.hasItemFrame ) then
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -70);
 			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
@@ -2852,8 +2946,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
 		end
-		button2:SetText(StaticPopupDialogs[which].button2);
-		button3:SetText(StaticPopupDialogs[which].button3);
+		button2:SetText(info.button2);
+		button3:SetText(info.button3);
 		local width = button2:GetTextWidth();
 		if ( width > 110 ) then
 			button2:SetWidth(width + 20);
@@ -2871,27 +2965,27 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		end
 		button3:Enable();
 		button3:Show();
-	elseif ( StaticPopupDialogs[which].button2 and
-	   ( not StaticPopupDialogs[which].DisplayButton2 or StaticPopupDialogs[which].DisplayButton2() ) ) then
+	elseif ( info.button2 and
+	   ( not info.DisplayButton2 or info.DisplayButton2() ) ) then
 		button1:ClearAllPoints();
 		button2:ClearAllPoints();
-		if ( StaticPopupDialogs[which].hasEditBox ) then
+		if ( info.hasEditBox ) then
 			button1:SetPoint("TOPRIGHT", editBox, "BOTTOM", -6, -8);
 			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-		elseif ( StaticPopupDialogs[which].hasMoneyFrame ) then
+		elseif ( info.hasMoneyFrame ) then
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -24);
 			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-		elseif ( StaticPopupDialogs[which].hasMoneyInputFrame ) then
+		elseif ( info.hasMoneyInputFrame ) then
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -30);
 			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-		elseif ( StaticPopupDialogs[which].hasItemFrame ) then
+		elseif ( info.hasItemFrame ) then
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -70);
 			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 		else
 			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -8);
 			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 		end
-		button2:SetText(StaticPopupDialogs[which].button2);
+		button2:SetText(info.button2);
 		local width = button2:GetTextWidth();
 		if ( width > 110 ) then
 			button2:SetWidth(width + 20);
@@ -2907,8 +3001,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		button2:Hide();
 		button3:Hide();
 	end
-	if ( StaticPopupDialogs[which].button1 ) then
-		button1:SetText(StaticPopupDialogs[which].button1);
+	if ( info.button1 ) then
+		button1:SetText(info.button1);
 		local width = button1:GetTextWidth();
 		if ( width > 120 ) then
 			button1:SetWidth(width + 20);
@@ -2923,35 +3017,35 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 
 	-- Set the miscellaneous variables for the dialog
 	dialog.which = which;
-	dialog.timeleft = StaticPopupDialogs[which].timeout;
-	dialog.hideOnEscape = StaticPopupDialogs[which].hideOnEscape;
-	dialog.enterClicksFirstButton = StaticPopupDialogs[which].enterClicksFirstButton;
+	dialog.timeleft = info.timeout;
+	dialog.hideOnEscape = info.hideOnEscape;
+	dialog.enterClicksFirstButton = info.enterClicksFirstButton;
 	-- Clear out data
 	dialog.data = nil;
 
-	if ( StaticPopupDialogs[which].StartDelay ) then
-		dialog.startDelay = StaticPopupDialogs[which].StartDelay();
+	if ( info.StartDelay ) then
+		dialog.startDelay = info.StartDelay();
 		button1:Disable();
 	else
 		dialog.startDelay = nil;
 		button1:Enable();
 	end
 
-	editBox.autoCompleteParams = StaticPopupDialogs[which].autoCompleteParams;
-	wideEditBox.autoCompleteParams = StaticPopupDialogs[which].autoCompleteParams;
+	editBox.autoCompleteParams = info.autoCompleteParams;
+	wideEditBox.autoCompleteParams = info.autoCompleteParams;
 	
-	editBox.autoCompleteRegex = StaticPopupDialogs[which].autoCompleteRegex;
-	wideEditBox.autoCompleteRegex = StaticPopupDialogs[which].autoCompleteRegex;
+	editBox.autoCompleteRegex = info.autoCompleteRegex;
+	wideEditBox.autoCompleteRegex = info.autoCompleteRegex;
 	
-	editBox.autoCompleteFormatRegex = StaticPopupDialogs[which].autoCompleteFormatRegex;
-	wideEditBox.autoCompleteFormatRegex = StaticPopupDialogs[which].autoCompleteFormatRegex;
+	editBox.autoCompleteFormatRegex = info.autoCompleteFormatRegex;
+	wideEditBox.autoCompleteFormatRegex = info.autoCompleteFormatRegex;
 	
 	-- Finally size and show the dialog
 	dialog:Show();
 	StaticPopup_Resize(dialog, which);
 
-	if ( StaticPopupDialogs[which].sound ) then
-		PlaySound(StaticPopupDialogs[which].sound);
+	if ( info.sound ) then
+		PlaySound(info.sound);
 	end
 
 	return dialog;
@@ -3134,25 +3228,30 @@ function StaticPopup_OnClick(dialog, index)
 		return;
 	end
 	local which = dialog.which;
-	local dontHide = nil;
+	local info = StaticPopupDialogs[which];
+	if ( not info ) then
+		return nil;
+	end
+	local hide = true;
 	if ( index == 1 ) then
-		local OnAccept = StaticPopupDialogs[dialog.which].OnAccept;
+		local OnAccept = info.OnAccept;
 		if ( OnAccept ) then
-			dontHide = OnAccept(dialog, dialog.data, dialog.data2);
+			hide = not OnAccept(dialog, dialog.data, dialog.data2);
 		end
 	elseif ( index == 3 ) then
-		local OnAlt = StaticPopupDialogs[dialog.which].OnAlt;
+		local OnAlt = info.OnAlt;
 		if ( OnAlt ) then
 			OnAlt(dialog, dialog.data, "clicked");
 		end
 	else
-		local OnCancel = StaticPopupDialogs[dialog.which].OnCancel;
+		local OnCancel = info.OnCancel;
 		if ( OnCancel ) then
 			OnCancel(dialog, dialog.data, "clicked");
 		end
 	end
 
-	if ( not dontHide and (which == dialog.which) ) then
+	if ( hide and (which == dialog.which) ) then
+		-- can dialog.which change inside one of the On* functions???
 		dialog:Hide();
 	end
 end

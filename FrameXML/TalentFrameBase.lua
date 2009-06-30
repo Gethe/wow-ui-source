@@ -586,7 +586,8 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 			if ( displayPointsSpent > highPointsSpent ) then
 				highPointsSpent = displayPointsSpent;
 				highPointsSpentIndex = i;
-			elseif ( displayPointsSpent < lowPointsSpent ) then
+			end
+			if ( displayPointsSpent < lowPointsSpent ) then
 				lowPointsSpent = displayPointsSpent;
 				lowPointsSpentIndex = i;
 			end

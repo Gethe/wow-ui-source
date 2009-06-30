@@ -2014,7 +2014,9 @@ end
 
 function PaperDollFrameItemFlyout_DisplayButton (button, paperDollItemSlot)
 	local location = button.location;
-	if ( not location ) then debugbreak() return; end
+	if ( not location ) then
+		return;
+	end
 	if ( location >= PDFITEMFLYOUT_FIRST_SPECIAL_LOCATION ) then
 		PaperDollFrameItemFlyout_DisplaySpecialButton(button, paperDollItemSlot);
 		return;

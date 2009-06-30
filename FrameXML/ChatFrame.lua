@@ -829,6 +829,59 @@ function QueryCastSequence(sequence)
 	return index, item, spell;
 end
 
+
+local CastRandomManager;
+local CastRandomTable = {};
+
+local function CastRandomManager_OnEvent(self, event, ...)
+	local unit, name, rank = ...;
+
+	if ( not name ) then
+		-- This was a server-side only spell affecting the player somehow, don't do anything with cast sequencing, just bail.
+		return;
+	end
+
+	if ( unit == "player" ) then
+		name, rank = strlower(name), strlower(rank);
+		local nameplus = name.."()";
+		local fullname = name.."("..rank..")";
+		for sequence, entry in pairs(CastRandomTable) do
+			if ( entry.pending and entry.value ) then
+				local entryName = strlower(entry.value);
+				if ( entryName == name or entryName == nameplus or entryName == fullname ) then
+					entry.pending = nil;
+					if ( event == "UNIT_SPELLCAST_SUCCEEDED" ) then
+						entry.value = nil;
+					end
+				end
+			end
+		end
+	end
+end
+
+local function ExecuteCastRandom(actions)
+	if ( not CastRandomManager ) then
+		CastRandomManager = CreateFrame("Frame");
+		CastRandomManager:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+		CastRandomManager:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+		CastRandomManager:RegisterEvent("UNIT_SPELLCAST_FAILED");
+		CastRandomManager:RegisterEvent("UNIT_SPELLCAST_FAILED_QUIET");
+		CastRandomManager:SetScript("OnEvent", CastRandomManager_OnEvent);
+	end
+
+	local entry = CastRandomTable[actions];
+	if ( not entry ) then
+		entry = {};
+		CreateCanonicalActions(entry, strsplit(",", actions));
+		CastRandomTable[actions] = entry;
+	end
+	if ( not entry.value ) then
+		entry.value = strtrim(GetRandomArgument(strsplit(",", actions)));
+	end
+	entry.pending = true;
+	return entry.value;
+end
+
 function GetRandomArgument(...)
 	return (select(random(select("#", ...)), ...));
 end
@@ -915,7 +968,7 @@ SecureCmdList["USE"] = SecureCmdList["CAST"];
 SecureCmdList["CASTRANDOM"] = function(msg)
     local actions, target = SecureCmdOptionParse(msg);
 	if ( actions ) then
-		local action = strtrim(GetRandomArgument(strsplit(",", actions)));
+		local action = ExecuteCastRandom(actions);
 		local name, bag, slot = SecureCmdItemParse(action);
 		if ( slot or GetItemInfo(name) ) then
 			SecureCmdUseItem(name, bag, slot, target);
@@ -2096,6 +2149,7 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("NEW_TITLE_EARNED");
 	self:RegisterEvent("OLD_TITLE_LOST");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -2257,7 +2311,6 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 	
 	local arg1, arg2, arg3, arg4 = ...;
 	if ( event == "UPDATE_CHAT_COLOR" ) then
-		local arg1, arg2, arg3, arg4 = ...
 		local info = ChatTypeInfo[strupper(arg1)];
 		if ( info ) then
 			info.r = arg2;
@@ -2281,6 +2334,18 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 			CHAT_SHOW_ICONS = true;
 		else
 			CHAT_SHOW_ICONS = false;
+		end
+		return true;
+	elseif ( event == "UPDATE_CHAT_COLOR_NAME_BY_CLASS" ) then
+		local info = ChatTypeInfo[strupper(arg1)];
+		if ( info ) then
+			info.colorNameByClass = arg2;
+			if ( strupper(arg1) == "WHISPER" ) then
+				info = ChatTypeInfo["REPLY"];
+				if ( info ) then
+					info.colorNameByClass = arg2;
+				end
+			end
 		end
 		return true;
 	end
@@ -2378,8 +2443,17 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 	end
 end
 
-function GetColoredName(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12)
-	if ( arg12 ~= "" and GetCVarBool("colorChatNamesByClass") ) then
+function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12)
+	local chatType = strsub(event, 10);
+	if ( strsub(chatType, 1, 7) == "WHISPER" ) then
+		chatType = "WHISPER";
+	end
+	if ( strsub(chatType, 1, 7) == "CHANNEL" ) then
+		chatType = "CHANNEL"..arg8;
+	end
+	local info = ChatTypeInfo[chatType];
+	
+	if ( info and info.colorNameByClass and arg12 ~= "" ) then
 		local localizedClass, englishClass, localizedRace, englishRace, sex = GetPlayerInfoByGUID(arg12)
 		
 		if ( englishClass ) then
@@ -2413,7 +2487,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 		end
 		
-		local coloredName = GetColoredName(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+		local coloredName = GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 		
 		local channelLength = strlen(arg4);
 		if ( (strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER")) ) then
@@ -2455,9 +2529,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif ( strsub(type,1,10) == "BG_SYSTEM_" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,11) == "ACHIEVEMENT" ) then
-			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
+			self:AddMessage(format(arg1, "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h"), info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
-			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
+			self:AddMessage(format(arg1, "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h"), info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
 			self:AddMessage(format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "FILTERED" ) then

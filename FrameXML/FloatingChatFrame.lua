@@ -739,6 +739,7 @@ function FCF_OnUpdate(elapsed)
 	local showAllDockTabs = nil;
 	local hideAnyDockTabs = nil;
 	local xPos, yPos = GetCursorPosition();
+	local helpFrameShown;
 	local multiCastFlyoutShown, multiCastFlyoutOpenButtonShown;
 	for j=1, NUM_CHAT_WINDOWS do
 		chatFrameName = "ChatFrame"..j;
@@ -774,9 +775,11 @@ function FCF_OnUpdate(elapsed)
 				activeFrame = chatFrame;
 			end
 
+			helpFrameShown = HelpFrame:IsShown();
 			multiCastFlyoutShown = MultiCastFlyoutFrame:IsShown();
 			multiCastFlyoutOpenButtonShown = MultiCastFlyoutFrameOpenButton:IsShown();
-			if ( (not multiCastFlyoutShown or (multiCastFlyoutShown and not MouseIsOver(MultiCastFlyoutFrame))) and 
+			if ( (not helpFrameShown or (helpFrameShown and not MouseIsOver(HelpFrame))) and
+				(not multiCastFlyoutShown or (multiCastFlyoutShown and not MouseIsOver(MultiCastFlyoutFrame))) and 
 				(not multiCastFlyoutOpenButtonShown or (multiCastFlyoutOpenButtonShown and not MouseIsOver(MultiCastFlyoutFrameOpenButton))) and
 				(MouseIsOver(activeFrame, activeYOffset, activeFrame:GetTop()-activeFrame:GetBottom(), -5, 5) or
 				((MouseIsOver(chatFrame, yOffset, -10, -5, 5) and not chatFrame.isUninteractable)) or

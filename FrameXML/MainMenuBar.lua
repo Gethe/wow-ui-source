@@ -144,6 +144,8 @@ function MainMenuBarVehicleLeaveButton_Update()
 			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessButton2, "RIGHT", 30, 0);
 		elseif ( GetNumShapeshiftForms() > 0 ) then
 			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", "ShapeshiftButton"..GetNumShapeshiftForms(), "RIGHT", 30, 0);
+		elseif ( HasMultiCastActionBar() ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", MultiCastActionBarFrame, "RIGHT", 30, 0);
 		else
 			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessBarFrame, "LEFT", 10, 0);
 		end
@@ -329,8 +331,8 @@ function ExhaustionTick_OnEvent(self, event, ...)
 			end
 		end
 
-		-- Hide exhaustion tick if player is max level and the reputation watch bar is shown
-		if ( UnitLevel("player") == MAX_PLAYER_LEVEL and ReputationWatchBar:IsShown() ) then
+		-- Hide exhaustion tick if player is max level or XP is turned off
+		if ( UnitLevel("player") == MAX_PLAYER_LEVEL or IsXPUserDisabled() ) then
 			ExhaustionTick:Hide();
 		end
 	end
@@ -347,7 +349,7 @@ function ExhaustionTick_OnEvent(self, event, ...)
 		end
 
 	end
-	if ( ReputationWatchBar:IsShown() and not MainMenuExpBar:IsShown() ) then
+	if ( not MainMenuExpBar:IsShown() ) then
 		ExhaustionTick:Hide();
 	end
 end

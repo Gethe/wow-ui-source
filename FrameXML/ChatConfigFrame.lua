@@ -11,38 +11,6 @@ CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = nil;
 MAX_COMBATLOG_FILTERS = 20;
 
 --Chat options
-CHAT_CONFIG_CHAT_RIGHT = {
-	[1] = {
-		type = "PARTY",
-		checked = function () return IsListeningForMessageType("PARTY"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY"); end;
-	},
-	[2] = {
-		type = "RAID",
-		checked = function () return IsListeningForMessageType("RAID"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID"); end;
-	},
-	[3] = {
-		type = "RAID_LEADER",
-		checked = function () return IsListeningForMessageType("RAID_LEADER"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_LEADER"); end;
-	},
-	[4] = {
-		type = "RAID_WARNING",
-		checked = function () return IsListeningForMessageType("RAID_WARNING"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
-	},
-	[5] = {
-		type = "BATTLEGROUND",
-		checked = function () return IsListeningForMessageType("BATTLEGROUND"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND"); end;
-	},
-	[6] = {
-		type = "BATTLEGROUND_LEADER",
-		checked = function () return IsListeningForMessageType("BATTLEGROUND_LEADER"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND_LEADER"); end;
-	}
-};
 
 CHAT_CONFIG_CHAT_LEFT = {
 	[1] = {
@@ -78,9 +46,44 @@ CHAT_CONFIG_CHAT_LEFT = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD_ACHIEVEMENT"); end;
 	},
 	[7] = {
+	type = "ACHIEVEMENT",
+	checked = function () return IsListeningForMessageType("ACHIEVEMENT"); end;
+	func = function (self, checked) ToggleChatMessageGroup(checked, "ACHIEVEMENT"); end;
+	},
+	[8] = {
 		type = "WHISPER",
 		checked = function () return IsListeningForMessageType("WHISPER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "WHISPER"); end;
+	},
+	[9] = {
+		type = "PARTY",
+		checked = function () return IsListeningForMessageType("PARTY"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY"); end;
+	},
+	[10] = {
+		type = "RAID",
+		checked = function () return IsListeningForMessageType("RAID"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID"); end;
+	},
+	[11] = {
+		type = "RAID_LEADER",
+		checked = function () return IsListeningForMessageType("RAID_LEADER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_LEADER"); end;
+	},
+	[12] = {
+		type = "RAID_WARNING",
+		checked = function () return IsListeningForMessageType("RAID_WARNING"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
+	},
+	[13] = {
+		type = "BATTLEGROUND",
+		checked = function () return IsListeningForMessageType("BATTLEGROUND"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND"); end;
+	},
+	[14] = {
+		type = "BATTLEGROUND_LEADER",
+		checked = function () return IsListeningForMessageType("BATTLEGROUND_LEADER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND_LEADER"); end;
 	}
 };
 
@@ -226,11 +229,6 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		type = "CHANNEL",
 		checked = function () return IsListeningForMessageType("CHANNEL"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "CHANNEL"); end;
-	},
-	[7] = {
-		type = "ACHIEVEMENT",
-		checked = function () return IsListeningForMessageType("ACHIEVEMENT"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "ACHIEVEMENT"); end;
 	},
 }
 
@@ -675,12 +673,11 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		end
 		
 		-- Chat Settings
-		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigCheckBoxWithSwatchTemplate", PLAYER_MESSAGES);
-		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsRight, CHAT_CONFIG_CHAT_RIGHT, "ChatConfigCheckBoxWithSwatchTemplate");
-		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsCreatureLeft, CHAT_CONFIG_CHAT_CREATURE_LEFT, "ChatConfigCheckBoxWithSwatchTemplate", CREATURE_MESSAGES);
+		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigCheckBoxWithSwatchAndClassColorTemplate", PLAYER_MESSAGES);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckBoxWithSwatchTemplate", COMBAT);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckBoxWithSwatchTemplate", PVP);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsSystem, CHAT_CONFIG_OTHER_SYSTEM, "ChatConfigCheckBoxWithSwatchTemplate", OTHER);
+		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCreature, CHAT_CONFIG_CHAT_CREATURE_LEFT, "ChatConfigCheckBoxWithSwatchTemplate", CREATURE_MESSAGES);
 
 		-- CombatLog Settings
 		ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneBy, COMBAT_CONFIG_MESSAGESOURCES_BY, "ChatConfigCheckBoxTemplate", DONE_BY);
@@ -727,6 +724,7 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		else
 			text = _G[value.type];
 		end
+		checkBox.type = value.type;
 		_G[checkBoxName.."CheckText"]:SetText(text);
 		check = _G[checkBoxName.."Check"];
 		check.func = value.func;
@@ -926,6 +924,12 @@ function ChatConfig_UpdateCheckboxes(frame)
 			if ( colorSwatch ) then
 				_G[baseName.."ColorSwatchNormalTexture"]:SetVertexColor(GetMessageTypeColor(value.type));
 				colorSwatch.type = value.type;
+			end
+			
+			--Color class names
+			local colorClasses = _G[baseName.."ColorClasses"];
+			if ( colorClasses ) then
+				colorClasses:SetChecked(IsClassColoringMessageType(value.type));
 			end
 		end
 		frame:SetHeight( topnum * height + padding );
@@ -1148,6 +1152,21 @@ function ToggleChatMessageGroup(checked, group)
 	end
 end
 
+function ColorClassesCheckBox_OnClick(self, checked)
+	ToggleChatColorNamesByClassGroup(checked, self:GetParent().type);
+end
+
+function ToggleChatColorNamesByClassGroup(checked, group)
+	local info = ChatTypeGroup[group];
+	if ( info ) then
+		for key, value in pairs(info) do
+			SetChatColorNameByClass(strsub(value, 10), checked);	--strsub gets rid of CHAT_MSG_
+		end
+	else
+		SetChatColorNameByClass(group, checked);
+	end
+end
+
 function ToggleChatChannel(checked, channel)
 	if ( checked ) then
 		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
@@ -1262,6 +1281,22 @@ function IsListeningForMessageType(messageType)
 		end
 	end
 	return false;
+end
+
+function IsClassColoringMessageType(messageType)
+	local groupInfo = ChatTypeGroup[messageType];
+	if ( groupInfo ) then
+		for key, value in pairs(groupInfo) do	--If any of the sub-categories color by name, we'll consider the entire thing as colored by name.
+			local info = ChatTypeInfo[strsub(value, 10)];
+			if ( info and info.colorNameByClass ) then	--strsub gets rid of CHAT_MSG_
+				return true;
+			end
+		end
+		return false;
+	else
+		local info = ChatTypeInfo[messageType];
+		return info and info.colorNameByClass;
+	end
 end
 
 COMBATCONFIG_COLORPICKER_FUNCTIONS = {
@@ -1572,8 +1607,6 @@ end
 
 function ChatConfig_UpdateChatSettings()
 	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
-	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsRight);
-	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsCreatureLeft);
 	-- Only do this if the ChannelSettings table has been created. It gets created OnShow()
 	if ( ChatConfigChannelSettingsLeft.checkBoxTable ) then
 		ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
@@ -1581,6 +1614,7 @@ function ChatConfig_UpdateChatSettings()
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCombat);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
+	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCreature);
 end
 
 function UsesGUID(direction)

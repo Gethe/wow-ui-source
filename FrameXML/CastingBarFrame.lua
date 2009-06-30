@@ -73,7 +73,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 	local barBorder = _G[selfName.."Border"];
 	local barBorderShield = _G[selfName.."BorderShield"];
 	if ( event == "UNIT_SPELLCAST_START" ) then
-		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID, interrupt = UnitCastingInfo(unit);
+		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			self:Hide();
 			return;
@@ -99,7 +99,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		self.castID = castID;
 		self.channeling = nil;
 		self.fadeOut = nil;
-		if ( self.showShield and not interrupt ) then
+		if ( self.showShield and notInterruptible ) then
 			barBorderShield:Show();
 			barBorder:Hide();
 		else
@@ -181,7 +181,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 			end
 		end
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" ) then
-		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, interrupt = UnitChannelInfo(unit);
+		local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, notInterruptible = UnitChannelInfo(unit);
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			-- if there is no name, there is no bar
 			self:Hide();
@@ -207,7 +207,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		self.casting = nil;
 		self.channeling = 1;
 		self.fadeOut = nil;
-		if ( self.showShield and not interrupt ) then
+		if ( self.showShield and notInterruptible ) then
 			barBorderShield:Show();
 			barBorder:Hide();
 		else

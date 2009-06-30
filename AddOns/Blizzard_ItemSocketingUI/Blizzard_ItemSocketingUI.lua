@@ -35,8 +35,11 @@ end
 function ItemSocketingFrame_Update()
 	ItemSocketingFrame.destroyingGem = nil;
 	ItemSocketingFrame.itemIsRefundable = nil;
+	ItemSocketingFrame.itemIsBoundTradeable = nil;
 	if(GetSocketItemRefundable()) then
 		ItemSocketingFrame.itemIsRefundable = true;
+	elseif(GetSocketItemBoundTradeable()) then
+		ItemSocketingFrame.itemIsBoundTradeable = true;
 	end
 
 	local numSockets = GetNumSockets();

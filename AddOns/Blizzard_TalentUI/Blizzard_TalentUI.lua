@@ -253,8 +253,8 @@ function PlayerTalentFrame_OnLoad(self)
 	for i = 1, MAX_NUM_TALENTS do
 		button = _G["PlayerTalentFrameTalent"..i];
 		if ( button ) then
-			button:SetScript("OnEvent", PlayerTalentFrameTalent_OnEvent);
 			button:SetScript("OnClick", PlayerTalentFrameTalent_OnClick);
+			button:SetScript("OnEvent", PlayerTalentFrameTalent_OnEvent);
 			button:SetScript("OnEnter", PlayerTalentFrameTalent_OnEnter);
 		end
 	end
@@ -525,6 +525,31 @@ function PlayerTalentFrameActivateButton_OnClick(self)
 		local talentGroup = specs[selectedSpec].talentGroup;
 		if ( talentGroup ) then
 			SetActiveTalentGroup(talentGroup);
+		end
+	end
+end
+
+function PlayerTalentFrameActivateButton_OnShow(self)
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+	PlayerTalentFrameActivateButton_Update();
+end
+
+function PlayerTalentFrameActivateButton_OnHide(self)
+	self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
+end
+
+function PlayerTalentFrameActivateButton_OnEvent(self, event, ...)
+	PlayerTalentFrameActivateButton_Update();
+end
+
+function PlayerTalentFrameActivateButton_Update()
+	local spec = selectedSpec and specs[selectedSpec];
+	if ( spec and PlayerTalentFrameActivateButton:IsShown() ) then
+		-- if the activation spell is being cast currently, disable the activate button
+		if ( IsCurrentSpell(TALENT_ACTIVATION_SPELLS[spec.talentGroup]) ) then
+			PlayerTalentFrameActivateButton:Disable();
+		else
+			PlayerTalentFrameActivateButton:Enable();
 		end
 	end
 end

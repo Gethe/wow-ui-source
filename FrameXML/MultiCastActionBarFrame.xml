@@ -142,7 +142,7 @@
 
 	<Frame name="MultiCastActionBarFrame" parent="MainMenuBar" enableMouse="true" hidden="true">
 		<Size>
-			<AbsDimension x="240" y="43"/>
+			<AbsDimension x="230" y="38"/>
 		</Size>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBar" relativePoint="TOPLEFT">
@@ -238,7 +238,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="36" y="3"/>
+							<AbsDimension x="3" y="3"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
