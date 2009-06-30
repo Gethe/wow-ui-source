@@ -103,6 +103,8 @@ h3. Emblem System Changes
 * The Heroic dungeon daily quest will now reward 2 Emblems of Triumph and the normal daily dungeon quest will reward 1 Emblem of Triumph.
 * The existing achievements to collect 1, 25, 50, etc. Emblems of Heroism, Valor, and Conquest have been converted to Feats of Strength since Heroism and Valor Emblems are no longer attainable.
 * New achievements have been added to collect various amounts of any combination of emblems.
+* Item Buy Back Feature Revised
+* The Item Buy Back time will now expire if the player enchants or sockets an item. Players will see a confirmation dialog box now when they attempt to enchant or add gems to an item giving them a last chance to reconsider.
 
 h3. Mounts
 
@@ -113,6 +115,10 @@ h3. Mounts
 * Artisan Riding (Skill 300): Faction discounts now apply (Honor Hold or Valiance Expedition for Alliance; Thrallmar or Warsong Offensive for Horde).
 * In order to further equalize the number of purchasable mounts available to each race, a new 60% speed ground mount has been added for night elves, and a new 100% speed ground mount has been added for the undead.
 * Flying over Dalaran and Wintergrasp is now possible so long as players keep a healthy distance above the ground.
+
+h3. New Dungeon Loot Feature
+
+* Players will now be able to trade soulbound items with other raid or group members that were eligible for the loot. This system will work like the Item Buy Back system and allow 2 hours for players to trade an item after it has been looted. Players who choose to enchant or add gems to the item will get one last confirmation before losing the ability to trade the item.
 
 h2. Classes: General
 
@@ -135,6 +141,7 @@ h3. Talents
 
 h4. Blood
 
+* Bloody Strikes: This talent now provides 5/10/15% increased damage to Blood Strike instead of 15/30/45%.
 * Dancing Rune Weapon: This ability now has a fixed duration of 12 seconds (which can still be modified by its glyph) and a fixed cost of 60 runic power.
 * Veteran of the Third War: Stamina bonus reduced to 1/2/3%.
 
@@ -151,7 +158,7 @@ h4. Unholy
 * Desolation: New talent. This talent is in the position formerly occupied by Desecration. It causes Blood Strikes to increase all damage the death knight deals by 1/2/3/4/5% for 12 seconds.
 * Scourge Strike: Weapon damage bonus reduced to 40%, down from 45%. Damage increased by 10% per disease on the target, down from 11%.
 * Summon Gargoyle: The gargoyle now flies lower to the ground, making it susceptible to melee attacks. This ability now has a fixed duration of 30 seconds and a fixed cost of 60 runic power.
-* Unholy Blight: This talent has been redesigned. It no longer deals damage to nearby targets. Instead, when you deal damage with Death Coil, the target will take periodic damage for 10 seconds equal to 30% of the damage done by Death Coil. This damage accumulates in the same way as Ignite and Deep Wounds.
+* Unholy Blight: This talent has been redesigned. It no longer deals damage to nearby targets. Instead, when you deal damage with Death Coil, the target will take periodic damage for 10 seconds equal to 20% of the damage done by Death Coil. This damage accumulates in the same way as Ignite and Deep Wounds.
 
 h2. Druids
 
@@ -182,7 +189,7 @@ h4. Restoration
 h2. Hunters
 
 * Aspect of the Cheetah: Can now be learned at level 16.
-* Deterrence now has a new visual spell effect.
+* Deterrence: This ability now allows the hunter to parry spells and attacks from behind as well as in front. Now has a new visual spell effect.
 * The time that traps will exist in the world after being put down has been reduced to 30 seconds, down from 1 minute.
 * Traps now have separate 30-second cooldown categories: Fire (Immolation Trap, Explosive Trap and Black Arrow), Frost (Freezing Trap, Frost Trap) and Nature (Snake Trap). A hunter can have one trap of each category placed at one time.
 
@@ -210,7 +217,7 @@ h3. Talents
 
 h4. Fire
 
-* Empowered Fire: In addition to its existing effects, this talent now also grants a 33/67/100% chance to regain 1% of base mana each time the Ignite talent deals damage.
+* Empowered Fire: In addition to its existing effects, this talent now also grants a 33/67/100% chance to regain 2% of base mana each time the Ignite talent deals damage.
 
 h2. Paladins
 
@@ -218,13 +225,14 @@ h2. Paladins
 * Charger: Can now be learned at level 40.
 * Exorcism: Now has a 1.5 second cast time, but can once again be used on players.
 * Hand of Reckoning: Redesigned. Now does damage only when the target does not currently have the caster targeted, but damage done increased to 50% of attack power, occurring after the taunt effect is applied.
+* Judgements: Some of these attacks were considered ranged and some melee. They are all now considered melee attacks that can't be dodged, parried or blocked.
 * Judgement of Light: Now heals for 2% of the attacker's maximum health instead of a variable amount based on the spell power and attack power of the judging paladin.
 * Lay on Hands: The buff from this ability now reduces the physical damage taken by the target by 10/20% instead of increasing the target's armor.
 * Righteous Fury: No longer has a duration, remaining until cancelled or death. Also cancelled when a Paladin activates a different talent specialization.
 * Sacred Shield: When a paladin casts Flash of Light on a target with this buff, they also now place a heal-over-time effect on the target, healing that target for 100% of the Flash of Light amount over 12 seconds.
 * Seal of Blood: This ability has been removed.
 * Seal of the Martyr: This ability has been removed.
-* Seal of Vengeance and Seal of Corruption: These seals have been redesigned to deal substantially more damage. Now, once a paladin has 5 copies of the debuff from these seals on his or her target, on each swing the paladin will deal 33% weapon damage as Holy, with critical strikes dealing double damage.
+* Seal of Vengeance and Seal of Corruption: These seals have been redesigned to deal substantially more damage. Now, once a paladin has 5 copies of the debuff from these seals on his or her target, on each swing the paladin will deal 33% weapon damage as Holy, with critical strikes dealing double damage. In addition, the damage-over-time effect is now considered a melee attack instead of a spell attack.
 * Shield of Righteousness: Now deals 100% of shield block value as damage instead of 130%.
 * Warhorse: Can now be learned at level 20.
 
@@ -238,12 +246,12 @@ h4. Holy
 
 h4. Protection
 
-* Ardent Defender: Redesigned. Currently, any damage taken by the paladin while at 35% health or below is reduced. Instead, any attack that would reduce the paladin to 35% health or below has its damage reduced. In addition, once every 2 minutes an attack that would have killed the paladin will fail to kill, and instead set the paladin's health to 10/20/30% of maximum.
+* Ardent Defender: Redesigned. Any damage that takes the paladin below 35% health or below is reduced. This reduction applies only to the portion that pushes the paladin below 35% health (example: a paladin at 50% health takes a 40% hit; the first 15% hits as normal while the next 25% is reduced). In addition, once every 2 minutes an attack that would have killed the paladin will fail to kill, and instead set the paladin's health to 10/20/30% of maximum.
 
 h4. Retribution
 
 * Art of War: Now only applies to melee critical hits, but will make your next Flash of Light or Exorcism instant.
-* Crusader Strike: Damage reduced to 75% weapon damage to match the new 4-second cooldown.
+* Crusader Strike: Damage reduced to 75% weapon damage to match the new 4-second cooldown. Mana cost reduced to 5% of base mana.
 * Seal of Command: Redesigned. This seal now deals 36% weapon damage on every swing, and deals substantially less judgement damage.
 * Vindication: Redesigned. Now lowers target attack power, is consistent and does not stack with Demoralizing Shout.
 
@@ -330,6 +338,12 @@ h3. Talents
 h4. Fury
 
 * Armored to the Teeth: This talent now provides 1/2/3 attack power per 108 armor, up from per 180 armor.
+* Bloodsurge: Notification that Slam has become instant now appears in floating combat text.
+
+h4. Protection
+
+* Devastate: Weapon damage increased to 60% and bonus per Sunder Armor on the target increased by 20%.
+* Shield Specialization: Now provides 5 rage on a block, dodge or parry instead of 2 rage on a block.
 
 h2. User Interface
 
@@ -344,11 +358,15 @@ h2. User Interface
 * Character names can now be colorized according to class in the chat frame through an interface option in the Development settings.
 * Casting bars under a target's portrait will now indicate whether or not the cast can be interrupted.
 * Druids will now be able to see their mana bars when shape-shifted.
-* The frame rate for those with Shadow Effects enabled under the Ultra Video settings has been improved.
 * Item Comparisons: Holding the shift key while hovering over an item will now display the stat differences with the item currently equipped in the relevant slot.
+* Item Level: A new option has been added under Display in the Interface Options to show the item level on item tooltips.
 * Macros and scripts will no longer be able to target totems by name.
 * Vendor prices will now be listed on items whether or not players are at a vendor.
 * For additional notes on Lua and XML changes please visit the UI & Macros forum.
+
+h2. Graphics
+
+* The frame rate for those with Shadow Effects enabled under the Ultra Video settings has been improved.
 
 h2. World Environment
 
@@ -393,20 +411,25 @@ h3. Enchanting
 
 h3. Engineering
 
-* Added a schematic for a Goblin Welding Beam that can heal friendly mechanical units.
+* Added a new Mind Amplification Dish attachment for helmets, allowing engineers to control other humanoid targets. Some restrictions apply: does not work in Arenas, dish sometimes reverses targets, unable to stack with other stat-improving head enchantments and makes your helmet look... stylish?
+* Added a schematic for a Goblin Welding Beam that can heal friendly mechanical or vehicle units.
 * Alarm-o-Bot functionality changed. Materials required reduced.
 * Box of Bombs no longer requires an anvil.
-* Doubled the duration on Nitro Boosts.
+* The Cobalt Frag Bomb now incapacitates enemies within a 3-yard radius. A short cast time was added, but they are usable while moving. This change applies to any Cobalt Frag Bombs already created. The existing recipe now makes 3 at a time.
+* Engineers can now learn to create a portable Wormhole Generator for Northrend. The Wormhole allows them to travel to different locations in Northrend, although the locations are sometimes in dangerous places.
 * Increased benefits from Hyperspeed Accelerators, Hand-Mounted Pyro Rocket and Reticulated Armor Webbing glove modifications.
-* Increased the passive bonus provided by Springy Arachnoweave, Flexweave Underlay and Nitro Boosts.
+* Increased the passive bonuses provided by Springy Arachnoweave, Flexweave Underlay and Nitro Boosts.
 * Increased siege damage caused by Saronite Bombs and the Global Thermal Sapper Charge.
-* The Ultrasafe Bullet Machine and Saronite Arrow Maker schematics have been simplified to create a full stack of the appropriate ammunition. No longer requires an anvil. Reduced the materials required to make this ammunition.
 * Mote Extractor now has innate tracking for gas clouds while it is in your inventory. Tracking of gas clouds has been removed from goggles.
+* A new repair bot has been added, and his name is Jeeves. He is the ultimate gentleman robot butler, able to perform all the mundane tasks of repairing, selling and buying junk for your entire raid. Additionally, he can open bank boxes for skilled engineers (350+). Jeeves is not destroyed when used, but due to pressing engagements, can only be summoned once an hour. The schematic for this handsome robot was said to be hidden within the parts of another robot - hoping to be found by an engineer one day.
+* Nitro Boosts: Now have a 5-second duration.
 * Potion Injectors now increase the amount gained by 25% when used by engineers. Quantity produced by recipes for Runic Healing and Mana Injectors has been increased.
-* Significantly reduced the cooldown on MOLL-E.
-* Spynocular belt enchantment changed to a Brassbolt Rebreather, allowing engineers to breathe underwater.
-* Transporter devices are no longer classified as trinkets and can be used directly from your inventory.
 * Reduced the materials needed to create all engineering Dragonlings, and reduced their cooldowns, although they still cannot be used in Arenas.
+* Significantly reduced the cooldown on MOLL-E.
+* The Spynocular belt attachment has been changed to a Frag Belt. The Frag Belt periodically produces a Cobalt Frag Bomb that can be used from the belt every 10 minutes (never runs out!).
+* A Steam-Powered Auctioneer has been added to the Dalaran Like Clockwork engineering shop, allowing access to one's faction Auction House. The Steam-Powered Auctioneer was programmed with a superiority chip, and will only interact with Grand Master engineers.
+* Transporter devices are no longer classified as trinkets and can be used directly from your inventory.
+* The Ultrasafe Bullet Machine and Saronite Arrow Maker schematics have been simplified to create a full stack of the appropriate ammunition. No longer requires an anvil. Reduced the materials required to make this ammunition.
 
 h3. Fishing
 
@@ -435,7 +458,7 @@ h3. Jewelcrafting
 
 h3. Leatherworking
 
-* Added recipe for Heavy Knothide Leather to Leatherworking trainers (rather than a vendor recipe). Changed several recipes to use Heavy Knothide Leather instead of regular Leather.
+* Added recipe for Heavy Knothide Leather to leatherworking trainers (rather than a vendor recipe). Changed several recipes to use Heavy Knothide Leather instead of regular Leather.
 * Fur Lining values increased.
 
 h3. Mining
@@ -500,7 +523,11 @@ h2. Bug Fixes
 * Randomly generated uncommon (green) and rare (blue) quality items in Wrath of the Lich King had stat values that were lower than intended. All Wrath of the Lich King uncommon and rare items with random suffixes ("of the Bear") have had their stat values increased significantly.
 * The leatherworking item Guardian Gloves is now correctly marked as uncommon quality.
 
-h3. Hunter
+h3. Death Knights
+
+* Rune of Razorice: Corrected a bug where this applied to frost damage done by others.
+
+h3. Hunters
 
 * All ranks of Sonic Blast now properly have an 80 Focus cost.
 * Black Arrow Ranks 5 and 6 training costs have been lowered significantly.
@@ -508,7 +535,7 @@ h3. Hunter
 * The tooltip for Improved Tracking has been slightly re-written to indicate that it only works on the hunter, and works on melee damage as well.
 * T.N.T. (Rank 3): Now indicates that the talent works with Black Arrow.
 
-h3. Priest
+h3. Priests
 
 * The heal from Glyph of Power Word: Shield can now cause Divine Aegis.
 * Mana Burn: Fixed a bug where Mana Burn did not cause fear effects to break when the fear victim had an absorb shield on.
