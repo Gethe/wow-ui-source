@@ -5,35 +5,52 @@ h1. World of Warcraft PTR Patch 3.2.0
 
 h2. General
 
+* New druid art for Cat Form and Bear Form has been added. There are now five unique color schemes for each form and faction. Changing hair color (night elves) or skin tone (tauren) via the barbershop will change the look of one's cat and bear forms.
+* Copied Test Realm characters will no longer be copied with their achievement history in order to better facilitate the character copy process.
+
+h3. Crusaders' Coliseum
+
 * Construction of the Crusaders' Coliseum is complete. New raid normal and Heroic modes for the Crusaders' Coliseum can be toggled using the Dungeon Difficulty setting. This applies to 10 and 25-player versions. 10-player (normal), 25-player (normal), 10-player (Heroic) and 25-player (Heroic) all share separate raid lockout timers.
-** Trial of the Champion
-*** 5-player (normal and Heroic mode) dungeon.
-*** Daily quest added to the Heroic daily dungeon quest giver.
-** Trial of the Crusader
-*** 10 and 25-player (normal mode) raid dungeon.
-** Trial of the Grand Crusader
-*** 10 and 25-player (Heroic mode) raid dungeon.
-*** Crusaders' Tribute: Active on Heroic difficulty only, the tribute system will limit players on the number of attempts the raid is allotted each week. Additional rewards can be earned depending on the number of attempts left in the tribute run each week when the final boss is defeated.
-** Isle of Conquest, the new 40 vs. 40-player siege-style battleground is now available for testing.
-*** Two level brackets are available: 71-79 and 80.
-*** Defend the walls of your keep and protect your general by killing enemy players and destroying their siege vehicles.
-*** Capture the Docks, Airship Hangar, or Siege Workshop for access to destructive siege vehicles or strategic attacks on your enemy's base.
-*** Capture the Oil Derrick or Cobalt Mine for their resources to garner reinforcements and a steady flow of bonus honor.
-*** To claim victory, bust through the enemy's keep walls (or find other ways to get inside) and kill their general, or obliterate your opponents until their reinforcements are depleted.
-* The Argent Tournament Expands
+
+h4. Trial of the Champion
+
+* 5-player (normal and Heroic mode) dungeon.
+* Daily quest added to the Heroic daily dungeon quest giver.
+
+h4. Trial of the Crusader
+
+* 10 and 25-player (normal mode) raid dungeon.
+
+h4. Trial of the Grand Crusader
+
+* 10 and 25-player (Heroic mode) raid dungeon.
+* Crusaders' Tribute: Active on Heroic difficulty only, the tribute system will limit players on the number of attempts the raid is allotted each week. Additional rewards can be earned depending on the number of attempts left in the tribute run each week when the final boss is defeated.
+
+h3. Isle of Conquest, the new 40 vs. 40-player siege-style battleground is now available for testing.
+
+* Two level brackets are available: 71-79 and 80.
+* Defend the walls of your keep and protect your general by killing enemy players and destroying their siege vehicles.
+* Capture the Docks, Airship Hangar, or Siege Workshop for access to destructive siege vehicles or strategic attacks on your enemy's base.
+* Capture the Oil Derrick or Cobalt Mine for their resources to garner reinforcements and a steady flow of bonus honor.
+* To claim victory, bust through the enemy's keep walls (or find other ways to get inside) and kill their general, or obliterate your opponents until their reinforcements are depleted.
+
+h3. The Argent Tournament Expands
+
 ** All new Argent Crusader daily quests and rewards have been added for players with the Crusader title. Rewards include a new Argent Crusader banner and tabard (which can port players to the tournament grounds), a mounted squire (can periodically run bank, mail or vendor errands for the player), a paladin-exclusive Argent Crusader Charger mount, and new heirloom items.
 ** All new Silver Covenant and Sunreaver daily quests and rewards have been added for players exalted with these factions. Rewards include tabards, new ground and flying mounts, and a new pet.
 ** Just when you thought you had seen the last of the Black Knight, he makes his astonishing return to the tournament. Wait, didn't you kill him?
-* New druid art for Cat Form and Bear Form has been added. There are now five unique color schemes for each form and faction. Changing hair color (night elves) or skin tone (tauren) via the barbershop will change the look of one's cat and bear forms.
-* Copied Test Realm characters will no longer be copied with their achievement history in order to better facilitate the character copy process.
+
+h3. New Dungeon Loot Feature
+
+* Players will now be able to trade soulbound items with other raid or group members that were eligible for the loot. This system will work like the Item Buy Back system and allow 2 hours for players to trade an item after it has been looted. Players who choose to enchant or add gems to the item will get one last confirmation before losing the ability to trade the item.
 
 h2. PvP
 
 h3. Arenas
 
-* The newest season of Arena gear can only be purchased if you meet the requirements with your 3 or 5-player team rating. Rating requirements from 2-player teams can still be used to purchase the previous season of gear.
+* Beginning with season 7, players will no longer have access to the newest season's weapons or shoulder armor and will not qualify for the Gladiator title/rewards with ratings from the 2v2 bracket alone. Ratings obtained through 3v3 and 5v5 game play will be required for these rewards, while the rest of the newest season's items will remain available to players in all brackets (standard rating restrictions still apply).
 
-h4.  Dalaran Sewers
+h4. Dalaran Sewers
 
 * The entire Arena has increased in size by 25%.
 * Mounts can now be used in this Arena.
@@ -89,11 +106,11 @@ h2. Dungeons and Raids
 
 h3. Dungeon and Raid ID Extensions
 
-* In order to allow for parties and raids to progress through instances at their own pace, players can now extend a dungeon or raid ID on an individual basis.
+* In order to allow for parties and raids to progress through instances at their own pace, players can now extend an instance ID on an individual basis.
 * Existing or recently expired IDs can be extended via the Social tab under Raid by clicking on Raid Info.
-* The ID of any instance to which a player is saved can be extended. Doing so will extend the lockout period by the same amount of time as the original lockout (i.e. extending an Ulduar raid ID will add 7 days, a Heroic: Halls of Lightning dungeon ID will add 24 hours, and a Zul'Gurub raid ID will add 3 days to the lockout time).
+* The ID of any instance to which a player is saved can be extended. Doing so will extend the instance lock period by the same amount of time as the original lock (i.e. extending an Ulduar instance ID will add 7 days, a Heroic: Halls of Lightning instance ID will add 24 hours, and a Zul'Gurub instance ID will add 3 days to the instance lock time).
 * An ID can be extended more than once.
-* An extension can be reversed on an individual basis provided the player does not do anything in the instance during the extended lockout period that would save that player to the instance.
+* An extension can be reversed on an individual basis provided the player does not do anything in the instance during the extended instance lock period that would save that player to the instance.
 * 25-player raids will no longer be referred to as Heroic versions of a raid, as there is a new distinction between normal and Heroic modes for both 10 and 25 player versions of the Crusaders' Coliseum.
 
 h3. The Nexus: The Oculus & The Eye of Eternity
@@ -116,8 +133,10 @@ h2. Items: General
 * Agility: The amount of agility required per percentage of dodge has been increased by 15%. This change required recalibrating the amount of dodge a player has with 0 agility by a slight amount as well, so all players will see their dodge percentage vary a small amount.
 * Block Value: The amount of bonus block value on all items has been doubled. This does not affect the base block value on shields or block value derived from strength.
 * On-Use Block Value Items: All items and set bonuses that trigger temporary increases to block value have been modified. Instead of increasing their block value amount by 100% like other items, they have all had their effect durations doubled. This applies to Glyph of Deflection, Gnomeregan Autoblocker, Coren's Lucky Coin, Lavanthor's Talisman, Libram of Obstruction, Tome of the Lightbringer, Libram of the Sacred Shield, the tier-8 paladin Shield of Righteousness bonus, the tier-5 paladin Holy Shield bonus, and the tier-5 warrior Shield Block bonus.
+* Dodge Rating: The amount of dodge rating required per percentage of dodge has been increased by 15%. This is before diminishing returns. Combined with other changes, this makes dodge rating and parry rating equally potent before diminishing returns apply.
 * Mana Regeneration: All items that provide "X mana per five seconds" have had the amount of mana they regenerate increased by approximately 25%.
-* Resilience: No longer reduces the amount of damage done by damage-over-time spells, but instead reduces the amount of all damage done by players by the same proportion. The other effects of resilience (reducing critical chance, critical damage and mana drain effects) have not changed.
+* Parry Rating: The amount of parry rating required per percentage of parry has been reduced by 8%. This is before diminishing returns. Combined with other changes, this makes dodge rating and parry rating equally potent before diminishing returns apply. Parry still diminishes more quickly than dodge.
+* Resilience: No longer reduces the amount of damage done by damage-over-time spells, but instead reduces the amount of all damage done by players by the same proportion. In addition, the amount of resilience needed to reduce critical strike chance, critical strike damage and overall damage has been increased by 15%.
 
 h3. Emblem System Changes
 
@@ -138,10 +157,6 @@ h3. Mounts
 * Artisan Riding (Skill 300): Faction discounts now apply (Honor Hold or Valiance Expedition for Alliance; Thrallmar or Warsong Offensive for Horde).
 * In order to further equalize the number of purchasable mounts available to each race, a new 60% speed ground mount has been added for night elves, and a new 100% speed ground mount has been added for the undead.
 * Flying over Dalaran and Wintergrasp is now possible so long as players keep a healthy distance above the ground.
-
-h3. New Dungeon Loot Feature
-
-* Players will now be able to trade soulbound items with other raid or group members that were eligible for the loot. This system will work like the Item Buy Back system and allow 2 hours for players to trade an item after it has been looted. Players who choose to enchant or add gems to the item will get one last confirmation before losing the ability to trade the item.
 
 h2. Classes: General
 
@@ -170,7 +185,7 @@ h4. Blood
 
 h4. Frost
 
-* Blood of the North: Reduced to a 3-point talent. Increases Blood Strike and Frost Strike damage by 5/10/15%. There is now a 33/66/100% chance whenever you hit with Blood Strike or Pestilence that the Blood Rune will become a Death Rune when it activates.
+* Blood of the North: Reduced to a 3-point talent. Increases Blood Strike and Frost Strike damage by 3/6/10%. There is now a 33/66/100% chance whenever you hit with Blood Strike or Pestilence that the Blood Rune will become a Death Rune when it activates.
 * Lichborne: Duration reduced to 10 seconds, and cooldown reduced to 2 minutes.
 * Threat of Thassarian: New 3-point talent. When dual-wielding, your Death Strikes, Obliterates, Plague Strikes, Blood Strikes and Frost Strikes have a 30/60/100% chance to also deal damage with your off-hand weapon. Off-hand strikes are roughly one half the effect of the original strike.
 * Toughness: This talent now grants 2/4/6/8/10% armor instead of 3/6/9/12/15%, placing it in line with similar abilities of other classes.
@@ -194,6 +209,7 @@ h2. Druids
 * Rip: Ranks 8 and 9 base points and points per combo point reduced by about 6%. Scaling from attack power unchanged.
 * Savage Defense: The animation for gaining this buff will no longer make the bear stand upright
 * Shred: Ranks 8 and 9 base points reduced by about 10%. Scaling from attack power unchanged.
+* Swift Flight Form: Druids who have acquired a mount able to go 310% flight speed will now also go that speed while in this form.
 * Swipe (Cat): Percent of weapon damage done reduced from 260% to 250%.
 * Travel Form: Can now be learned at level 16.
 
@@ -220,6 +236,8 @@ h2. Hunters
 * Aspect of the Cheetah: Can now be learned at level 16.
 * Deterrence: This ability now allows the hunter to parry spells and attacks from behind as well as in front. Now has a new visual spell effect.
 * The time that traps will exist in the world after being put down has been reduced to 30 seconds, down from 1 minute.
+* Frost Trap: Will no longer "fizzle" on targets immune to snare effects, however Lock and Load will not succeed when using Frost Trap if the target is immune to snare effects.
+* Snake Trap: The Mind-numbing Poison effect has been reduced to a 30% increase in casting time, down from 50% to match similar effects.
 * Traps now have separate 30-second cooldown categories: Fire (Immolation Trap, Explosive Trap and Black Arrow), Frost (Freezing Trap, Frost Trap) and Nature (Snake Trap). A hunter can have one trap of each category placed at one time.
 
 h3. Talents
@@ -242,6 +260,7 @@ h2. Mages
 * Arcane Blast: Mana cost reduced by 12%.
 * Frost Bolt, Cone of Cold, Frost Ward, Ice Armor, Frost Armor, Frost Nova, Ice Lance, and Ice Barrier: The mana cost on these spells has been reduced by approximately 15%.
 * Invisibility: Can no longer be interrupted by a hostile action or damage done during the 3-second Fade time, however an invisible mage can still be stunned or silenced.
+* Mirror Image: Images will no longer trigger the death sound when their time expires.
 
 h3. Talents
 
@@ -268,7 +287,7 @@ h2. Paladins
 * Seal of Blood: This ability has been removed.
 * Seal of the Martyr: This ability has been removed.
 * Seal of Vengeance and Seal of Corruption: These seals have been redesigned to deal substantially more damage. Now, once a paladin has 5 copies of the debuff from these seals on his or her target, on each swing the paladin will deal 33% weapon damage as Holy, with critical strikes dealing double damage. In addition, the damage-over-time effect is now considered a melee attack instead of a spell attack.
-* Shield of Righteousness: Now deals 100% of shield block value as damage instead of 130%.
+* Shield of Righteousness: Now deals 100% of shield block value as damage instead of 130%. In addition, the benefit from additional block value this ability gains is now subject to diminishing returns. Diminishing returns occur once block value exceeds 30 times the player's level and caps the maximum damage benefit from shield block value at 34.5 times the player's level.
 * Warhorse: Can now be learned at level 20.
 
 h3. Talents
@@ -332,12 +351,15 @@ h2. Shamans
 * All Shocks now have a default range of 25 yards, up from 20 yards.
 * Base health increased by approximately 7% to correct for shamans having lower health than other classes.
 * Chain Heal: Jump distance increased by 25% to 12.5 yards. In addition, the amount of healing now decreases by 40% as it jumps to each new target, instead of 50%.
+* Earth Shock: Redesigned. This spell no longer interrupts spell casting, but rather reduces melee attack speed by 10% for 8 seconds (exclusive with similar effects such as Thunder Clap).
 * Ghost Wolf: Can now be learned at level 16. While in this form, snaring effects may not bring the shaman below base normal run speed.
+* Wind Shock: Has been renamed Wind Shear and no longer shares a cooldown with Flame, Frost or Earth Shock.
 
 h3. Talents
 
 h4. Enhancement
 
+* Maelstrom Weapon: Now also has a chance to reduce the cast time of Hex.
 * Shamanistic Rage: Cooldown is now 1 minute, down from 2 minutes. Successful melee attacks now have a chance to generate mana equal to 15% of the shaman's attack power, down from 30%.
 
 h4. Restoration
@@ -379,7 +401,7 @@ h2. Warriors
 
 * Bloodrage: This ability now generates 20 rage initially, and 10 rage over the next 10 seconds. The health cost is unchanged.
 * Execute: This ability now never costs more than a total of 30 rage. The tooltip for Sudden Death has been revised to remove reference to that maximum, since the ability now behaves that way even when untalented.
-* Shield Block: Shield Slam no longer benefits from the increased block value granted by this ability. However, while Shield Block is active, Shield Slam generates 100% additional threat.
+* Shield Slam: The benefit from additional block value this ability gains is now subject to diminishing returns. Diminishing returns occur once block value exceeds 30 times the player's level and caps the maximum damage benefit from shield block value at 34.5 times the player's level.
 
 h3. Talents
 
@@ -465,6 +487,7 @@ h3. Engineering
 * Box of Bombs no longer requires an anvil.
 * The Cobalt Frag Bomb now incapacitates enemies within a 3-yard radius. A short cast time was added, but they are usable while moving. This change applies to any Cobalt Frag Bombs already created. The existing recipe now makes 3 at a time.
 * Engineers can now learn to create a portable Wormhole Generator for Northrend. The Wormhole allows them to travel to different locations in Northrend, although the locations are sometimes in dangerous places.
+* Flying Machine: The level requirement needed to learn how to build and use this machine has been reduced to level 60, down from level 70, and the engineering skill level reduced to 300, down from 350. Material costs reduced.
 * Gnomish Engineers and Goblin Engineers can now switch profession specializations for a fee.
 * Increased benefits from Hyperspeed Accelerators, Hand-Mounted Pyro Rocket and Reticulated Armor Webbing glove modifications.
 * Increased the passive bonuses provided by Springy Arachnoweave, Flexweave Underlay and Nitro Boosts.
@@ -529,6 +552,8 @@ h2. Items
 * Idol of the Corruptor: The agility buff from this idol is now exclusive with the agility buff from Idol of Terror.
 * Mage Tier-7 2-Piece Bonus: Now grants 25% additional mana from mana gems, down from 40%.
 * Non-Combat Pets: 8 new pets have been added (not including Argent Tournament rewards). Raptor Hatchlings can be found on rare and elite raptors throughout the game world. In addition, an Obsidian Raptor Hatchling can be purchased from Breanni in Dalaran.
+* Tome of Cold Weather Flying: New heirloom item. Players who have reached level 80 can now purchase this book for 1,000 gold from Hira Snowdawn, the Cold Weather Flying Trainer in Dalaran. Similar to other heirloom items, this item can be mailed to other characters of the same realm, account and faction. The book is consumed when read training the character in Cold Weather Flying. Requires level 68.
+* Val'anyr, Hammer of Ancient Kings: This item's stats and level have been increased to match the power level of healer weapons coming from the Coliseum 25-person normal difficulty instance. In addition, each time Val'anyr is equipped, Blessing of Ancient Kings will be placed on a 45-second cooldown before it can occur.
 
 h3. Glyphs
 
@@ -589,3 +614,6 @@ h3. Priests
 h3. Shamans
 
 * Fixed a bug where Frostbrand Weapon (Rank 9) was not scaling properly with a shaman's spell power.
+
+h3. Warlocks
+* The visual for Demonic Circle should now despawn when the warlock dies or when the warlock otherwise loses the aura that allows transport to the circle.
