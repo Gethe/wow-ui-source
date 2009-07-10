@@ -5,7 +5,7 @@ h1. World of Warcraft PTR Patch 3.2.0
 
 h2. General
 
-* Construction of the Crusaders' Coliseum is complete. Testing not yet available. New raid normal and Heroic modes for the Crusaders' Coliseum can be toggled using the Dungeon Difficulty setting. This applies to 10 and 25-player versions. 10-player (normal), 25-player (normal), 10-player (Heroic) and 25-player (Heroic) all share separate raid lockout timers.
+* Construction of the Crusaders' Coliseum is complete. New raid normal and Heroic modes for the Crusaders' Coliseum can be toggled using the Dungeon Difficulty setting. This applies to 10 and 25-player versions. 10-player (normal), 25-player (normal), 10-player (Heroic) and 25-player (Heroic) all share separate raid lockout timers.
 ** Trial of the Champion
 *** 5-player (normal and Heroic mode) dungeon.
 *** Daily quest added to the Heroic daily dungeon quest giver.
@@ -24,7 +24,7 @@ h2. General
 ** All new Argent Crusader daily quests and rewards have been added for players with the Crusader title. Rewards include a new Argent Crusader banner and tabard (which can port players to the tournament grounds), a mounted squire (can periodically run bank, mail or vendor errands for the player), a paladin-exclusive Argent Crusader Charger mount, and new heirloom items.
 ** All new Silver Covenant and Sunreaver daily quests and rewards have been added for players exalted with these factions. Rewards include tabards, new ground and flying mounts, and a new pet.
 ** Just when you thought you had seen the last of the Black Knight, he makes his astonishing return to the tournament. Wait, didn't you kill him?
-* New druid art for cat and bear forms has been added. There are now five unique color schemes for each form and faction. Changing hair color (night elves) or skin tone (tauren) via the barbershop will change the look of one's cat and bear forms.
+* New druid art for Cat Form and Bear Form has been added. There are now five unique color schemes for each form and faction. Changing hair color (night elves) or skin tone (tauren) via the barbershop will change the look of one's cat and bear forms.
 * Copied Test Realm characters will no longer be copied with their achievement history in order to better facilitate the character copy process.
 
 h2. PvP
@@ -83,6 +83,28 @@ h4. Wintergrasp
 * Trying to enter Wintergrasp during an active battle for which you have not been chosen will teleport you out. Please note that, as you are now able to fly over Wintergrasp, you will only be teleported out if you try to land and join the battle.
 * Level 80 players get higher priority in the queue than lower level players. In addition, a random selection of queued players will be taken from both the Battlemasters and the zone itself.
 * The queue will accept up to 100 players from each faction, resulting in a maximum battle of 200 players at a time.
+* Wintergrasp factories can no longer be damaged or destroyed.
+
+h2. Dungeons and Raids
+
+h3. Dungeon and Raid ID Extensions
+
+* In order to allow for parties and raids to progress through instances at their own pace, players can now extend a dungeon or raid ID on an individual basis.
+* Existing or recently expired IDs can be extended via the Social tab under Raid by clicking on Raid Info.
+* The ID of any instance to which a player is saved can be extended. Doing so will extend the lockout period by the same amount of time as the original lockout (i.e. extending an Ulduar raid ID will add 7 days, a Heroic: Halls of Lightning dungeon ID will add 24 hours, and a Zul'Gurub raid ID will add 3 days to the lockout time).
+* An ID can be extended more than once.
+* An extension can be reversed on an individual basis provided the player does not do anything in the instance during the extended lockout period that would save that player to the instance.
+* 25-player raids will no longer be referred to as Heroic versions of a raid, as there is a new distinction between normal and Heroic modes for both 10 and 25 player versions of the Crusaders' Coliseum.
+
+h3. The Nexus: The Oculus & The Eye of Eternity
+
+* Drakes used by players in these instances will now scale in health and damage according to the rider's average item level.
+
+h3. Ulduar
+
+* Players can now use Blink, Shadowstep, and Demonic Teleport while participating in the illusion events in the Yogg-Saron encounter.
+* Ominous Clouds in the Yogg-Saron encounter are now more vocal about touching players.
+* Winter Jormungars will no longer put everyone in the zone in combat when they emerge from a Snow Mound. Additionally, Snow Mounds will now disappear when all their jormungars have emerged.
 
 h2. Races: General
 
@@ -91,6 +113,7 @@ h2. Races: General
 
 h2. Items: General
 
+* Agility: The amount of agility required per percentage of dodge has been increased by 15%. This change required recalibrating the amount of dodge a player has with 0 agility by a slight amount as well, so all players will see their dodge percentage vary a small amount.
 * Block Value: The amount of bonus block value on all items has been doubled. This does not affect the base block value on shields or block value derived from strength.
 * On-Use Block Value Items: All items and set bonuses that trigger temporary increases to block value have been modified. Instead of increasing their block value amount by 100% like other items, they have all had their effect durations doubled. This applies to Glyph of Deflection, Gnomeregan Autoblocker, Coren's Lucky Coin, Lavanthor's Talisman, Libram of Obstruction, Tome of the Lightbringer, Libram of the Sacred Shield, the tier-8 paladin Shield of Righteousness bonus, the tier-5 paladin Holy Shield bonus, and the tier-5 warrior Shield Block bonus.
 * Mana Regeneration: All items that provide "X mana per five seconds" have had the amount of mana they regenerate increased by approximately 25%.
@@ -162,6 +185,7 @@ h4. Unholy
 
 h2. Druids
 
+* Enrage: This Bear Form ability now generates 20 rage initially, and 10 rage over the next 10 seconds. The armor penalty is unchanged.
 * Flight Form: Can now be learned at level 60. Flight speed increased to 150%.
 * Innervate: Duration reduced to 10 seconds, and cooldown reduced to 3 minutes. This means each use of Innervate will give half as much mana as before, but it will be available twice as often.
 * Lifebloom: The final heal that occurs when this spell blooms has been reduced by 20% on the base and on the spell power coefficient.
@@ -180,6 +204,11 @@ h4. Balance
 * Balance of Power: Now reduces all spell damage taken by 3/6%, rather than reducing the chance to be hit by spells by 2/4%.
 * Eclipse: The Starfire and Wrath buffs from this talent are now on separate 30-second cooldowns. In addition, it is not possible to have both buffs active simultaneously.
 * Owlkin Frenzy: Now also restores 2% base mana every 2 seconds for the duration (10 seconds) in addition to its current effects.
+
+h4. Feral Combat
+
+* King of the Jungle: This talent now reduces the mana cost of Bear Form, Cat Form, and Dire Bear Form by 20/40/60%.
+* Primal Tenacity: This talent no longer reduces the mana cost of Bear Form, Cat Form, and Dire Bear Form.
 
 h4. Restoration
 
@@ -206,18 +235,24 @@ h4. Survival
 
 h3. Pets
 
-* Roar of Sacrifice: Redesigned. This ability can now be used on any friendly target to make that target immune to critical strikes, but the Hunter pet takes 20% of all damage taken by that friendly target. Cooldown increased to 2 minutes.
+* Roar of Sacrifice: Redesigned. This ability can now be used on any friendly target to make that target immune to critical strikes, but the hunter pet takes 20% of all damage taken by that friendly target. Cooldown is now 1 minute, up from 30 seconds.
 
 h2. Mages
 
 * Arcane Blast: Mana cost reduced by 12%.
-* Invisibility: Can no longer be interrupted by a hostile action or damage done during the 3-second fade time, however an invisible mage can still be stunned or silenced.
+* Frost Bolt, Cone of Cold, Frost Ward, Ice Armor, Frost Armor, Frost Nova, Ice Lance, and Ice Barrier: The mana cost on these spells has been reduced by approximately 15%.
+* Invisibility: Can no longer be interrupted by a hostile action or damage done during the 3-second Fade time, however an invisible mage can still be stunned or silenced.
 
 h3. Talents
 
 h4. Fire
 
 * Empowered Fire: In addition to its existing effects, this talent now also grants a 33/67/100% chance to regain 2% of base mana each time the Ignite talent deals damage.
+
+h4. Frost
+
+* Empowered Frostbolt: Instead of increasing critical strike chance by 2/4%, this talent now reduces the cast time of Frostbolt by 0.1/0.2 seconds.
+* Permafrost: In addition to its existing effects, this talent now also causes the mage's Chill effects to reduce healing received by the victim by 7/13/20%.
 
 h2. Paladins
 
@@ -246,11 +281,12 @@ h4. Holy
 
 h4. Protection
 
-* Ardent Defender: Redesigned. Any damage that takes the paladin below 35% health or below is reduced. This reduction applies only to the portion that pushes the paladin below 35% health (example: a paladin at 50% health takes a 40% hit; the first 15% hits as normal while the next 25% is reduced). In addition, once every 2 minutes an attack that would have killed the paladin will fail to kill, and instead set the paladin's health to 10/20/30% of maximum.
+* Ardent Defender: Redesigned. Any damage that takes the paladin below 35% health is reduced. This reduction applies only to the portion that pushes the paladin below 35% health (example: a paladin at 50% health takes a 40% hit; the first 15% hits as normal while the next 25% is reduced). In addition, once every 2 minutes an attack that would have killed the paladin will fail to kill, and instead heal the paladin for up to 10/20/30% of maximum health depending on the paladin's defense rating (example: a paladin with defense equal to only 5 times his or her level will receive no healing from the talent, while a paladin who is immune to critical strikes from boss creatures through defense will receive the maximum amount).
+* Guarded by the Light: This talent will no longer cause Divine Plea's duration to be refreshed by using Judgement of Wisdom, Judgement of Justice, or Judgement of Light.
 
 h4. Retribution
 
-* Art of War: Now only applies to melee critical hits, but will make your next Flash of Light or Exorcism instant.
+* Art of War: Now only applies to melee critical hits, but will make your next Flash of Light or Exorcism instant. In addition, this talent now provides notification in the floating combat text when it activates.
 * Crusader Strike: Damage reduced to 75% weapon damage to match the new 4-second cooldown. Mana cost reduced to 5% of base mana.
 * Seal of Command: Redesigned. This seal now deals 36% weapon damage on every swing, and deals substantially less judgement damage.
 * Vindication: Redesigned. Now lowers target attack power, is consistent and does not stack with Demoralizing Shout.
@@ -258,6 +294,7 @@ h4. Retribution
 h2. Priests
 
 * Prayer of Healing: The percentage of spell power this spell gains in healing (per target) has been reduced from 80.7% to 52.6%.
+* Psychic Horror: This spell no longer has an invisible missile, so there is no travel time before the spell takes effect.
 
 h3. Talents
 
@@ -268,6 +305,12 @@ h4. Discipline
 h4. Holy
 
 * Inspiration: The buff from this ability now reduces the physical damage taken by the target by 3/7/10% instead of increasing the target's armor.
+
+h4. Shadow
+
+* Dispersion: Cooldown reduced to 2 minutes, down from 3 minutes.
+* Improved Mind Blast: Redesigned. Now, in addition to reducing the cooldown of your Mind Blast spell by .5/1/1.5/2/2.5 seconds, while in Shadowform your Mind Blast also has a 20/40/60/80/100% chance to reduce all healing done to the target by 20% for 10 seconds.
+* Vampiric Touch: The amount of damage done when this spell is dispelled has been doubled.
 
 h2. Rogues
 
@@ -288,7 +331,7 @@ h2. Shamans
 * A customizable totem bar will now be available for shamans allowing the storing of 4 different totems. These totems can be placed on the ground at once in one global cooldown for the combined mana cost of all 4 totems.
 * All Shocks now have a default range of 25 yards, up from 20 yards.
 * Base health increased by approximately 7% to correct for shamans having lower health than other classes.
-* Chain Heal: Jump distance increased to 10 yards. In addition, the amount of healing now decreases by 40% as it jumps to each new target, instead of 50%.
+* Chain Heal: Jump distance increased by 25% to 12.5 yards. In addition, the amount of healing now decreases by 40% as it jumps to each new target, instead of 50%.
 * Ghost Wolf: Can now be learned at level 16. While in this form, snaring effects may not bring the shaman below base normal run speed.
 
 h3. Talents
@@ -314,6 +357,7 @@ h2. Warlocks
 * Banish: Effect will now be cancelled if Banish is recast on a banished target.
 * Dreadsteed: Can now be learned at level 40.
 * Felsteed: Can now be learned at level 20.
+* Shadowflame: The angle of the cone effect on this ability was inadvertently very small, making it difficult to use. Its cone is now the same size as similar spells, such as Cone of Cold.
 * Soulshatter cooldown reduced to 3 minutes, down from 5 minutes
 
 h3. Talents
@@ -332,6 +376,10 @@ h4. Destruction
 * Fire and Brimstone: Reduced to 2/4/6/8/10% increased damage from Incinerate and Chaos Bolt on targets afflicted with Immolate, down from 3/6/9/12/15%.
 
 h2. Warriors
+
+* Bloodrage: This ability now generates 20 rage initially, and 10 rage over the next 10 seconds. The health cost is unchanged.
+* Execute: This ability now never costs more than a total of 30 rage. The tooltip for Sudden Death has been revised to remove reference to that maximum, since the ability now behaves that way even when untalented.
+* Shield Block: Shield Slam no longer benefits from the increased block value granted by this ability. However, while Shield Block is active, Shield Slam generates 100% additional threat.
 
 h3. Talents
 
@@ -411,12 +459,13 @@ h3. Enchanting
 
 h3. Engineering
 
-* Added a new Mind Amplification Dish attachment for helmets, allowing engineers to control other humanoid targets. Some restrictions apply: does not work in Arenas, dish sometimes reverses targets, unable to stack with other stat-improving head enchantments and makes your helmet look... stylish?
+* Added a new Mind Amplification Dish attachment for helmets, allowing engineers to control other humanoid targets. Some restrictions apply: does not work in Arenas, dish sometimes reverses targets, unable to stack with other stat-improving head enchantments and makes your helmet look... stylish? This attachment provides a passive bonus of 45 stamina.
 * Added a schematic for a Goblin Welding Beam that can heal friendly mechanical or vehicle units.
 * Alarm-o-Bot functionality changed. Materials required reduced.
 * Box of Bombs no longer requires an anvil.
 * The Cobalt Frag Bomb now incapacitates enemies within a 3-yard radius. A short cast time was added, but they are usable while moving. This change applies to any Cobalt Frag Bombs already created. The existing recipe now makes 3 at a time.
 * Engineers can now learn to create a portable Wormhole Generator for Northrend. The Wormhole allows them to travel to different locations in Northrend, although the locations are sometimes in dangerous places.
+* Gnomish Engineers and Goblin Engineers can now switch profession specializations for a fee.
 * Increased benefits from Hyperspeed Accelerators, Hand-Mounted Pyro Rocket and Reticulated Armor Webbing glove modifications.
 * Increased the passive bonuses provided by Springy Arachnoweave, Flexweave Underlay and Nitro Boosts.
 * Increased siege damage caused by Saronite Bombs and the Global Thermal Sapper Charge.
@@ -426,10 +475,11 @@ h3. Engineering
 * Potion Injectors now increase the amount gained by 25% when used by engineers. Quantity produced by recipes for Runic Healing and Mana Injectors has been increased.
 * Reduced the materials needed to create all engineering Dragonlings, and reduced their cooldowns, although they still cannot be used in Arenas.
 * Significantly reduced the cooldown on MOLL-E.
-* The Spynocular belt attachment has been changed to a Frag Belt. The Frag Belt periodically produces a Cobalt Frag Bomb that can be used from the belt every 10 minutes (never runs out!).
+* The Spynocular belt attachment has been changed to a Frag Belt. The Frag Belt periodically produces a Cobalt Frag Bomb that can be used from the belt every 6 minutes (never runs out!).
 * A Steam-Powered Auctioneer has been added to the Dalaran Like Clockwork engineering shop, allowing access to one's faction Auction House. The Steam-Powered Auctioneer was programmed with a superiority chip, and will only interact with Grand Master engineers.
 * Transporter devices are no longer classified as trinkets and can be used directly from your inventory.
 * The Ultrasafe Bullet Machine and Saronite Arrow Maker schematics have been simplified to create a full stack of the appropriate ammunition. No longer requires an anvil. Reduced the materials required to make this ammunition.
+* World Enlarger: Cooldown reduced to 15 minutes, down from 1 hour.
 
 h3. Fishing
 
@@ -477,6 +527,7 @@ h2. Items
 
 * Feral Druid PvP Gloves (seasons 3 and 4): Maim bonus changed from the interrupt bonus used in The Burning Crusade Arena seasons to the cost reduction used in Wrath of the Lich King Arena seasons.
 * Idol of the Corruptor: The agility buff from this idol is now exclusive with the agility buff from Idol of Terror.
+* Mage Tier-7 2-Piece Bonus: Now grants 25% additional mana from mana gems, down from 40%.
 * Non-Combat Pets: 8 new pets have been added (not including Argent Tournament rewards). Raptor Hatchlings can be found on rare and elite raptors throughout the game world. In addition, an Obsidian Raptor Hatchling can be purchased from Breanni in Dalaran.
 
 h3. Glyphs
@@ -491,6 +542,7 @@ h4. Druids
 
 h4. Paladins
 
+* Glyph of Righteous Defense: Now also increases the chance for Hand of Reckoning to hit.
 * Glyph of Seal of Command: Redesigned to cause the Paladin to gain 8% of base mana each time the paladin judges Command.
 * Glyph of Seal of Blood: Changed to Glyph of Holy Wrath, which reduces its cooldown by 15 seconds.
 
@@ -499,23 +551,13 @@ h4. Rogues
 * Glyph of Shadow Dance: Now increases the duration of Shadow Dance by 2 seconds, down from 4 seconds.
 * Glyph of Tricks of the Trade: Now increases the duration of the damage bonus effect instead of increasing the damage bonus.
 
+h2, Shamans
+
+* Glyph of Healing Wave: The amount of healing the shaman receives is now based on the entire healing amount, including over-healing.
+
 h4. Warlocks
 
 * Glyph of Lifetap: Duration of the buff from this glyph increased to 40 seconds.
-
-h2. Dungeons and Raids
-
-* 25-player raids will no longer be referred to as Heroic versions of a raid, as there is a new distinction between normal and Heroic modes for both 10 and 25 player versions of the Crusaders' Coliseum.
-
-h3. The Nexus: The Oculus & The Eye of Eternity
-
-* Drakes used by players in these instances will now scale in health and damage according to the rider's average item level.
-
-h3. Ulduar
-
-* Players can now use Blink, Shadowstep, and Demonic Teleport while participating in the illusion events in the Yogg-Saron encounter.
-* Ominous Clouds in the Yogg-Saron encounter are now more vocal about touching players.
-* Winter Jormungars will no longer put everyone in the zone in combat when they emerge from a Snow Mound. Additionally, Snow Mounds will now disappear when all their jormungars have emerged.
 
 h2. Bug Fixes
 
@@ -526,6 +568,10 @@ h2. Bug Fixes
 h3. Death Knights
 
 * Rune of Razorice: Corrected a bug where this applied to frost damage done by others.
+
+h3. Druids
+
+* Druids should no longer be removed from a form after using any engineered bombs.
 
 h3. Hunters
 
