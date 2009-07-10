@@ -167,7 +167,7 @@ function RaidInfoFrame_Update(scrollToSelected)
 			frame:Hide();
 		end	
 	end
-	HybridScrollFrame_Update(scrollFrame, savedInstances, savedInstances * buttonHeight, scrollFrame:GetHeight());
+	HybridScrollFrame_Update(scrollFrame, savedInstances * buttonHeight, scrollFrame:GetHeight());
 end
 
 function RaidInfoScrollFrame_OnLoad(self)
@@ -203,7 +203,7 @@ end
 function RaidInfoFrame_UpdateSelectedIndex()
 	local savedInstances = GetNumSavedInstances();
 	for index=1, savedInstances do
-		instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid = GetSavedInstanceInfo(index);
+		local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid = GetSavedInstanceInfo(index);
 		if ( format("%x%x", instanceIDMostSig, instanceID) == RaidInfoFrame.selectedRaidID ) then
 			RaidInfoFrame.selectedIndex = index;
 			RaidInfoExtendButton:Enable();

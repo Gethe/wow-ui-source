@@ -570,7 +570,9 @@
 										self:RegisterEvent("MEETINGSTONE_CHANGED");
 										self:SetFrameLevel(self:GetFrameLevel()+1)
 									</OnLoad>
-									<OnClick function="ToggleLFGParentFrame"/>
+									<OnClick>
+										ToggleLFGParentFrame();	--We don't use a direct function= in order to avoid having the first parameter be 'self'
+									</OnClick>
 									<OnEvent>
 										if ( event == "MEETINGSTONE_CHANGED" ) then
 											if ( IsInLFGQueue() ) then

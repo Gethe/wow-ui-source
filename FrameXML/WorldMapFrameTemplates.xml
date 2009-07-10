@@ -158,7 +158,7 @@
 	</Frame>
 	<Frame name="WorldMapQuestPOITemplate" hidden="true" virtual="true">
 		<Size>
-			<AbsDimension x="24" y="24"/>
+			<AbsDimension x="22" y="22"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>

@@ -39,8 +39,8 @@ VideoOptionsFrame.xml
 VideoOptionsPanels.xml
 AudioOptionsFrame.xml
 AudioOptionsPanels.xml
-UIOptionsFrame.xml
-UIOptionsPanels.xml
+InterfaceOptionsFrame.xml
+InterfaceOptionsPanels.xml
 AlertFrames.xml
 MirrorTimer.xml
 CoinPickupFrame.xml

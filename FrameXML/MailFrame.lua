@@ -935,8 +935,10 @@ function SendMailFrame_CanSend()
 		checksRequired = 4;
 		-- COD must be less than 10000 gold
 		if ( MoneyInputFrame_GetCopper(SendMailMoney) > MAX_COD_AMOUNT*COPPER_PER_GOLD ) then
-			SendMailErrorText:Show();
-			SendMailErrorCoin:Show();
+			if ( ENABLE_COLORBLIND_MODE ~= "1" ) then
+				SendMailErrorCoin:Show();
+			end
+			SendMailErrorText:Show();			
 		else
 			SendMailErrorText:Hide();
 			SendMailErrorCoin:Hide();

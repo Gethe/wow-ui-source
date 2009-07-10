@@ -326,13 +326,12 @@ function ScrollingEdit_OnCursorChanged(self, x, y, w, h)
 	self.handleCursorChange = true;
 end
 
--- Declaring local variables in OnUpdate code makes the GC cry.
 -- NOTE: If your edit box never shows partial lines of text, then this function will not work when you use
 -- your mouse to move the edit cursor. You need the edit box to cut lines of text so that you can use your
 -- mouse to highlight those partially-seen lines; otherwise you won't be able to use the mouse to move the
 -- cursor above or below the current scroll area of the edit box.
-local height, range, scroll, size, cursorOffset;
 function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
+local height, range, scroll, size, cursorOffset;
 	if ( self.handleCursorChange ) then
 		if ( not scrollFrame ) then
 			scrollFrame = self:GetParent();

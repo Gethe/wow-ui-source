@@ -69,7 +69,7 @@ function KeyBindingFrame_Update()
 	local keyOffset;
 	local keyBindingButton1, keyBindingButton2, commandName, binding1, binding2;
 	local keyBindingName, keyBindingDescription;
-	local keyBindingButton1NormalTexture, keyBindingButton1PushedTexture;
+	local keyBindingButton1NormalTexture, keyBindingButton1PushedTexture, keyBindingButton2NormalTexture, keyBindingButton2PushedTexture;
 	for i=1, KEY_BINDINGS_DISPLAYED, 1 do
 		keyOffset = FauxScrollFrame_GetOffset(KeyBindingFrameScrollFrame) + i;
 		if ( keyOffset <= numBindings) then

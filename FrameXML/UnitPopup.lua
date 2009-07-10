@@ -1127,12 +1127,10 @@ function UnitPopup_OnClick (self)
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "OPT_OUT_LOOT_ENABLE" ) then
 		SetOptOutOfLoot(1);
-		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
-		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
+		CloseDropDownMenus()
 	elseif ( button == "OPT_OUT_LOOT_DISABLE" ) then
 		SetOptOutOfLoot(nil);
-		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
-		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
+		CloseDropDownMenus();
 	elseif ( strsub(button, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(button) > 18) ) then
 		local dungeonDifficulty = tonumber( strsub(button,19,19) );
 		SetDungeonDifficulty(dungeonDifficulty);

@@ -453,7 +453,7 @@ function ToggleHelpFrame()
 		StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
 		StaticPopup_Hide("GM_RESPONSE_NEED_MORE_HELP");
 		StaticPopup_Hide("GM_RESPONSE_RESOLVE_CONFIRM");
-		StaticPopup_Hide("GM_RESPONSE_CANT_OPEN_TICKET");
+		StaticPopup_Hide("GM_RESPONSE_MUST_RESOLVE_RESPONSE");
 		HelpFrame_ShowFrame(HELPFRAME_START_PAGE);
 	end
 end

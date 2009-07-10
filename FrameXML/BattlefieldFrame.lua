@@ -69,15 +69,21 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 			StaticPopup_Show("BFMGR_DENY_WORLD_PVP_QUEUED", "Wintergrasp", nil, arg1);
 		end
 	elseif ( event == "BATTLEFIELD_MGR_EJECT_PENDING" ) then
-		local battleID = ...;
+		local battleID, remote = ...;
+		if(remote) then
+			local dialog = StaticPopup_Show("BFMGR_EJECT_PENDING_REMOTE", "Wintergrasp", nil, arg1);
+		else
 		local dialog = StaticPopup_Show("BFMGR_EJECT_PENDING", "Wintergrasp", nil, arg1);
+		end
 	elseif ( event == "BATTLEFIELD_MGR_EJECTED" ) then
-		local battleID, playerExited, relocated, battleActive = ...;
+		local battleID, playerExited, relocated, battleActive, lowLevel = ...;
 		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
 		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
 		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		if(playerExited and battleActive and not relocated) then
+		if(lowLevel) then
+			local dialog = StaticPopup_Show("BFMGR_PLAYER_LOW_LEVEL", "Wintergrasp", nil, arg1);
+		elseif (playerExited and battleActive and not relocated) then
 			local dialog = StaticPopup_Show("BFMGR_PLAYER_EXITED_BATTLE", "Wintergrasp", nil, arg1);
 		end
 	elseif ( event == "BATTLEFIELD_MGR_QUEUE_INVITE" ) then

@@ -355,7 +355,7 @@ function AchievementFrameCategories_Update ()
 		end
 	end
 	
-	HybridScrollFrame_Update(scrollFrame, numCategories, totalHeight, displayedHeight);
+	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 	
 	return displayCategories;
 end
@@ -536,6 +536,16 @@ function AchievementFrameCategories_SelectButton (button)
 	achievementFunctions.updateFunc();
 end
 
+function AchievementFrameAchievements_OnShow()
+	if ( achievementFunctions.selectedCategory == FEAT_OF_STRENGTH_ID ) then
+		AchievementFrameFilterDropDown:Hide();
+		AchievementFrameHeaderRightDDLInset:Hide();
+	else
+		AchievementFrameFilterDropDown:Show();
+		AchievementFrameHeaderRightDDLInset:Show();	
+	end
+end
+
 function AchievementFrameCategories_ClearSelection ()
 	local buttons = AchievementFrameCategoriesContainer.buttons;
 	for _, button in next, buttons do
@@ -633,7 +643,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		local selection = AchievementFrameAchievements.selection;
 		AchievementFrameAchievements_ForceUpdate();
 		if ( AchievementFrameAchievementsContainer:IsShown() and selection == achievementID ) then
-			AchievementFrame_SelectAchievement(selection);
+			AchievementFrame_SelectAchievement(selection, true);
 		end
 		AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
 
@@ -705,7 +715,7 @@ function AchievementFrameAchievements_Update ()
 	local totalHeight = numAchievements * ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
 	totalHeight = totalHeight + (extraHeight - ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT);
 	
-	HybridScrollFrame_Update(scrollFrame, numAchievements, totalHeight, displayedHeight);
+	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 
 	if ( selection ) then
 		AchievementFrameAchievements.selection = selection;
@@ -1140,7 +1150,7 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementButton_ResetProgressBars();
 		AchievementButton_ResetMiniAchievements();
 		AchievementButton_ResetMetas();
-		AchievementObjectives_DisplayCriteria(objectives, id);
+		AchievementObjectives_DisplayCriteria(objectives, id, button.reward:IsShown());
 		if ( objectives:GetHeight() > 0 ) then
 			objectives:SetPoint("TOP", "$parentDescription", "BOTTOM", 0, -8);
 			objectives:SetPoint("LEFT", "$parentIcon", "RIGHT", -5, -25);
@@ -1395,7 +1405,7 @@ function AchievementFrame_SetFilter(value)
 	end
 end
 
-function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
+function AchievementObjectives_DisplayCriteria (objectivesFrame, id, hasReward)
 	if ( not id ) then
 		return;
 	end
@@ -1495,7 +1505,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			criteria:ClearAllPoints();
 			if ( textStrings == 1 ) then
 				if ( numCriteria == 1 ) then
-					criteria:SetPoint("TOP", objectivesFrame, "TOP", 0, 0);
+					criteria:SetPoint("TOP", objectivesFrame, "TOP", -14, 0);
 				else
 					criteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 0, 0);
 				end
@@ -1539,7 +1549,13 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 
 	if ( textStrings > 0 and progressBars > 0 ) then
 		-- If we have text criteria and progressBar criteria, display the progressBar criteria first and position the textStrings under them.
-		criteriaTable[1]:SetPoint("TOP", progressBarTable[progressBars], "BOTTOM", 0, -4);
+		criteriaTable[1]:ClearAllPoints();
+		if ( textStrings == 1 ) then
+			criteriaTable[1]:SetPoint("TOP", progressBarTable[progressBars], "BOTTOM", -14, -4);
+		else
+			criteriaTable[1]:SetPoint("TOP", progressBarTable[progressBars], "BOTTOM", 0, -4);
+			criteriaTable[1]:SetPoint("LEFT", objectivesFrame, "LEFT", 0, 0);
+		end		
 	elseif ( textStrings > 1 ) then
 		-- Figure out if we can make multiple columns worth of criteria instead of one long one
 		local numColumns = floor(ACHIEVEMENTUI_MAXCONTENTWIDTH/maxCriteriaWidth);
@@ -1565,8 +1581,13 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			numRows = ceil(numRows/numColumns);
 		end
 	end
-	
-	objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT);
+
+	if ( metas == 2 and hasReward ) then
+		-- fix for meta icons being too close to reward display
+		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT + 6);
+	else
+		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT);
+	end
 	objectivesFrame.mode = ACHIEVEMENTMODE_CRITERIA;
 end
 
@@ -1664,7 +1685,7 @@ function AchievementFrameStats_Update ()
 			button:Hide();
 		end
 	end
-	HybridScrollFrame_Update(scrollFrame, statCount, totalHeight, displayedHeight);
+	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
 
 function AchievementFrameStats_SetStat(button, category, index, colorIndex, isSummary)
@@ -1989,8 +2010,8 @@ function AchievementFrameSummaryCategory_OnHide (self)
 	self:UnregisterEvent("ACHIEVEMENT_EARNED");
 end
 
-function AchievementFrame_SelectAchievement(id)
-	if ( not AchievementFrame:IsShown() ) then
+function AchievementFrame_SelectAchievement(id, forceSelect)
+	if ( not AchievementFrame:IsShown() and not forceSelect ) then
 		return;
 	end
 	
@@ -2348,7 +2369,7 @@ function AchievementFrameComparison_Update ()
 		AchievementFrameComparison_DisplayAchievement(buttons[i], category, achievementIndex);
 	end
 	
-	HybridScrollFrame_Update(scrollFrame, numAchievements, buttonHeight*numAchievements, buttonHeight*numButtons);
+	HybridScrollFrame_Update(scrollFrame, buttonHeight*numAchievements, buttonHeight*numButtons);
 end
 
 ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT1 = GameFontNormal;
@@ -2489,7 +2510,7 @@ function AchievementFrameComparison_UpdateStats ()
 		end
 		displayedHeight = displayedHeight+button:GetHeight();
 	end
-	HybridScrollFrame_Update(scrollFrame, statCount, totalHeight, displayedHeight);
+	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
 
 function AchievementFrameComparisonStat_OnLoad (self)

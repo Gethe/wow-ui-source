@@ -624,7 +624,7 @@ function SpellBook_GetCurrentPage()
 	return currentPage, maxPages;
 end
 
-maxShines = 1;
+local maxShines = 1;
 shineGet = {}
 function SpellBook_GetAutoCastShine ()
 	local shine = shineGet[1];

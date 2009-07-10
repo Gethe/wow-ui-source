@@ -76,7 +76,7 @@ function HybridScrollFrameScrollButton_OnClick (self, button, down)
 	end
 end
 
-function HybridScrollFrame_Update (self, numElements, totalHeight, displayedHeight)
+function HybridScrollFrame_Update (self, totalHeight, displayedHeight)
 	local range = totalHeight - self:GetHeight();
 	if ( range > 0 and self.scrollBar ) then
 		local minVal, maxVal = self.scrollBar:GetMinMaxValues();
@@ -105,7 +105,6 @@ function HybridScrollFrame_Update (self, numElements, totalHeight, displayedHeig
 		end
 	end
 	
-	self.numElements = numElements;
 	self.range = range;
 	self.scrollChild:SetHeight(displayedHeight);
 	self:UpdateScrollChildRect();

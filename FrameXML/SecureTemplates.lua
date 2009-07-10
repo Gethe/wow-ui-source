@@ -286,11 +286,23 @@ SECURE_ACTIONS.pet =
             CastPetAction(action, unit);
         end
     end;
+   
+SECURE_ACTIONS.multispell = 
+    function (self, unit, button)
+        local action = ActionButton_CalculateAction(self, button);
+        local spell = SecureButton_GetModifiedAttribute(self, "spell", button);
+        if ( action and spell ) then
+            SetMultiCastSpell(action, tonumber(spell) or spell);
+        end
+    end;
 
 SECURE_ACTIONS.spell =
     function (self, unit, button)
         local spell = SecureButton_GetModifiedAttribute(self, "spell", button);
-        if ( spell ) then
+        local spellID = tonumber(spell);
+        if ( spellID) then
+            CastSpellByID(spellID, unit);
+        elseif ( spell ) then
             CastSpellByName(spell, unit);
         end
     end;

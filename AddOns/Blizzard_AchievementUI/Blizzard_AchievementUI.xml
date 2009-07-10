@@ -2405,6 +2405,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						AchievementFrameFilterDropDown:Hide();
 						AchievementFrameHeaderRightDDLInset:Hide();
 					</OnHide>
+					<OnShow function="AchievementFrameAchievements_OnShow"/>
 				</Scripts>
 				<Frames>
 					<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">

@@ -106,6 +106,9 @@ PDFITEMFLYOUT_IGNORESLOT_LOCATION = 0xFFFFFFFE;
 PDFITEMFLYOUT_UNIGNORESLOT_LOCATION = 0xFFFFFFFD;
 PDFITEMFLYOUT_FIRST_SPECIAL_LOCATION = PDFITEMFLYOUT_UNIGNORESLOT_LOCATION
 
+PLAYER_DISPLAYED_TITLES = 6;
+PLAYER_TITLE_HEIGHT = 16;
+
 local VERTICAL_FLYOUTS = { [16] = true, [17] = true, [18] = true }
 
 local itemSlotButtons = {};
@@ -169,7 +172,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 		end
 		PaperDollFrame_UpdateStats(self);
 	elseif ( event == "KNOWN_TITLES_UPDATE" ) then
-		PlayerTitleDropDown:Show();
+		PlayerTitleFrame_UpdateTitles();		
 	end
 	
 	if ( not self:IsVisible() ) then
@@ -334,7 +337,8 @@ function PaperDollFrame_SetRating(statFrame, ratingIndex)
 	elseif ( ratingIndex == CR_BLOCK ) then
 		statFrame.tooltip2 = format(CR_PARRY_TOOLTIP, ratingBonus);
 	elseif ( ratingIndex == CR_HIT_SPELL ) then
-		statFrame.tooltip2 = format(CR_HIT_SPELL_TOOLTIP, UnitLevel("player"), ratingBonus, GetSpellPenetration(), GetSpellPenetration());
+		local spellPenetration = GetSpellPenetration();
+		statFrame.tooltip2 = format(CR_HIT_SPELL_TOOLTIP, UnitLevel("player"), ratingBonus, spellPenetration, spellPenetration);
 	elseif ( ratingIndex == CR_CRIT_SPELL ) then
 		local holySchool = 2;
 		local minCrit = GetSpellCritChance(holySchool);
@@ -1090,22 +1094,13 @@ function PaperDollFrame_OnShow (self)
 	else
 		CharacterAmmoSlot:Show();
 	end
-	if ( not PlayerTitleDropDown.titleCount or PlayerTitleDropDown.titleCount >= 1 ) then
-		PlayerTitleDropDown:Show();
-	else
-		PlayerTitleDropDown:Hide();		
+	if ( not PlayerTitlePickerScrollFrame.titles ) then
+		PlayerTitleFrame_UpdateTitles();	
 	end
-	if ( GetCurrentTitle() == 0 ) then
-		UIDropDownMenu_SetText(PlayerTitleDropDown, PAPERDOLL_SELECT_TITLE);	
-	elseif ( GetCurrentTitle() == -1 ) then
-		UIDropDownMenu_SetText(PlayerTitleDropDown, NONE);	
-	else
-		UIDropDownMenu_SetText(PlayerTitleDropDown, GetTitleName(GetCurrentTitle()));	
-	end
-	
 end
  
 function PaperDollFrame_OnHide (self)
+	PlayerTitlePickerFrame:Hide();
 	GearManagerDialog:Hide();
 end
 
@@ -1586,62 +1581,6 @@ function PlayerStatFrameRightDropDown_OnClick (self)
 	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
 	SetCVar("playerStatRightDropdown", self.value);
 	UpdatePaperdollStats("PlayerStatFrameRight", self.value);
-end
-
--- Player title dropdown functions
-function PlayerTitleDropDown_OnLoad (self)
-	UIDropDownMenu_Initialize(self, PlayerTitleDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(self, GetCurrentTitle());
-	UIDropDownMenu_SetWidth(self, 160);
-	UIDropDownMenu_JustifyText(self, "LEFT");
-	PlayerTitleDropDownLeft:SetHeight(50);
-	PlayerTitleDropDownMiddle:SetHeight(50);
-	PlayerTitleDropDownRight:SetHeight(50);
-	PlayerTitleDropDownButton:SetPoint("TOPRIGHT", PlayerTitleDropDownRight, "TOPRIGHT", -16, -12);
-end
-
-function PlayerTitleDropDown_Initialize()
-	local titleCount = 0;
-	-- Setup buttons
-	local info = UIDropDownMenu_CreateInfo();
-	local checked;
-	local currentTitle = GetCurrentTitle();
-	local titleName;
-	for i=1, GetNumTitles() do
-		-- Changed to base 0 for simplicity, change when the opportunity arrises.
-		if ( IsTitleKnown(i) ~= 0 ) then
-			if ( i == currentTitle ) then
-				checked = 1;
-			else
-				checked = nil;
-			end
-			titleCount = titleCount + 1;
-			titleName = GetTitleName(i);
-			info.text = titleName;
-			info.func = PlayerTitleDropDown_OnClick;
-			info.value = i;
-			info.checked = checked;
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-	-- Add none button
-	if ( currentTitle == 0 or currentTitle == -1 ) then
-		checked = 1;
-	else
-		checked = nil;
-	end
-	info.text = NONE;
-	info.func = PlayerTitleDropDown_OnClick;
-	info.value = -1;
-	info.checked = checked;
-	UIDropDownMenu_AddButton(info);
-
-	PlayerTitleDropDown.titleCount = titleCount;
-end
-
-function PlayerTitleDropDown_OnClick (self)
-	UIDropDownMenu_SetSelectedValue(PlayerTitleDropDown, self.value);
-	SetCurrentTitle(self.value);
 end
 
 function PaperDollFrame_UpdateStats()
@@ -2304,6 +2243,12 @@ function GearManagerDialog_Update ()
 			button:SetChecked(false);
 		end
 	end
+
+	if ( dialog.selectedSet ) then
+		GearManagerDialogDeleteSet:Enable();
+	else
+		GearManagerDialogDeleteSet:Disable();
+	end
 	
 	for i = numSets + 1, MAX_EQUIPMENT_SETS_PER_PLAYER do
 		button = buttons[i];
@@ -2328,7 +2273,7 @@ function GearManagerDialogDeleteSet_OnClick (self)
 end
 
 function GearManagerDialogSaveSet_OnClick (self)
-	local popup = GearManagerDialogPopup
+	local popup = GearManagerDialogPopup;
 	local selectedSet = GearManagerDialog.selectedSet;
 	if ( selectedSet ) then
 		popup.selectedTexture = selectedSet.icon:GetTexture();
@@ -2409,7 +2354,39 @@ function GearManagerDialogPopup_OnLoad (self)
 	end
 end
 
+local _equippedItems = {};
+local _numItems;
+
 function GearManagerDialogPopup_OnShow (self)
+	PlaySound("igCharacterInfoOpen");
+	--[[ 
+	When we first press "save", we want to make sure any selected equipment set shows up in the list, so that
+	the user can just make his changes and press Okay to overwrite.
+	To do this, we need to find the current set (by icon) and move the offset of the GearManagerDialogPopup
+	to display it. Issue ID: 171220
+	]]
+	RefreshEquipmentSetIconInfo();
+	local popup = GearManagerDialogPopup;
+	local numIcons = GetNumMacroIcons() + _numItems;
+	local texture
+	if(popup.selectedTexture) then
+		local index = 1;
+		local foundIndex = nil;
+		for index=1, numIcons do
+			texture, _ = GetEquipmentSetIconInfo(index);
+			if ( texture == popup.selectedTexture ) then
+				foundIndex = index;
+				break;
+			end
+		end
+		if (foundIndex) then
+			-- now make it so we always display at least NUM_GEARSET_ICON_ROWS of data
+			local offsetnumIcons = floor((numIcons-1)/NUM_GEARSET_ICONS_PER_ROW);
+			local offset = floor((foundIndex-1) / NUM_GEARSET_ICONS_PER_ROW);
+			offset = offset + min((NUM_GEARSET_ICON_ROWS-1), offsetnumIcons-offset) - (NUM_GEARSET_ICON_ROWS-1);
+			FauxScrollFrame_OnVerticalScroll(GearManagerDialogPopupScrollFrame, offset*GEARSET_ICON_ROW_HEIGHT, GEARSET_ICON_ROW_HEIGHT, nil);
+		end
+	end
 	GearManagerDialogPopup_Update();
 end
 
@@ -2422,8 +2399,6 @@ function GearManagerDialogPopup_OnHide (self)
 	GearManagerDialogPopupEditBox:SetText("");
 end
 
-local _equippedItems = {};
-local _numItems;
 function RefreshEquipmentSetIconInfo ()
 	_numItems = 0;
 	for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
@@ -2505,8 +2480,12 @@ function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 	
 	if ( GetEquipmentSetInfoByName(popup.name) ) then	
 		local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name);
-		dialog.data = popup.name;
-		dialog.selectedIcon = iconIndex;
+		if ( dialog ) then
+			dialog.data = popup.name;
+			dialog.selectedIcon = iconIndex;
+		else
+			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+		end
 		return;
 	elseif ( GetNumEquipmentSets() >= MAX_EQUIPMENT_SETS_PER_PLAYER ) then
 		UIErrorsFrame:AddMessage(EQUIPMENT_SETS_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
@@ -2531,4 +2510,119 @@ function GearSetPopupButton_OnClick (self, button)
 	GearManagerDialogPopupOkay_Update();
 end
 
+function PlayerTitlePickerScrollFrame_OnLoad(self)
+	PlayerTitlePickerFrame:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
+	PlayerTitlePickerScrollFrame:SetHeight(PLAYER_DISPLAYED_TITLES * PLAYER_TITLE_HEIGHT);
+	HybridScrollFrame_OnLoad(self);
+	self.update = PlayerTitlePickerScrollFrame_Update;	
+	HybridScrollFrame_CreateButtons(self, "PlayerTitleButtonTemplate");
+end
 
+function PlayerTitlePickerScrollFrame_Update()
+	local buttons = PlayerTitlePickerScrollFrame.buttons;
+	local playerTitles = PlayerTitleFrame.titles;
+	local numButtons = #buttons;
+	local scrollOffset = HybridScrollFrame_GetOffset(PlayerTitlePickerScrollFrame);	
+	local playerTitle;
+	for i = 1, numButtons do
+		playerTitle = playerTitles[i + scrollOffset];
+		if ( playerTitle ) then
+			buttons[i].text:SetText(playerTitle.name);
+			buttons[i].titleId = playerTitle.id;
+			if ( PlayerTitleFrame.selected == playerTitle.id ) then
+				buttons[i].check:Show();
+			else
+				buttons[i].check:Hide();
+			end
+		end
+	end
+end
+
+local function PlayerTitleSort(a, b) return a.name < b.name; end 
+
+function PlayerTitleFrame_UpdateTitles()
+	local playerTitles = { };
+	local currentTitle = GetCurrentTitle();		
+	local titleCount = 1;
+	local buttons = PlayerTitlePickerScrollFrame.buttons;
+	local fontstringText = buttons[1].text;
+	local fontstringWidth;			
+	local maxWidth = 0;
+	PlayerTitleFrame.selected = -1;
+	playerTitles[1] = { };
+	-- reserving space for None so it doesn't get sorted out of the top position
+	playerTitles[1].name = "       ";
+	playerTitles[1].id = -1;		
+	for i = 1, GetNumTitles() do
+		if ( IsTitleKnown(i) ~= 0 ) then		
+			titleCount = titleCount + 1;
+			playerTitles[titleCount] = playerTitles[titleCount] or { };
+			playerTitles[titleCount].name = strtrim(GetTitleName(i));
+			playerTitles[titleCount].id = i;
+			if ( i == currentTitle ) then
+				PlayerTitleFrame.selected = i;
+			end					
+			fontstringText:SetText(playerTitles[titleCount].name);
+			fontstringWidth = fontstringText:GetWidth();
+			if ( fontstringWidth > maxWidth ) then
+				maxWidth = fontstringWidth;
+			end
+		end
+	end
+	if ( titleCount < 2 ) then
+		PlayerTitleFrame:Hide();
+		PlayerTitlePickerFrame:Hide();
+	else
+		PlayerTitleFrame:Show()
+		if ( currentTitle == 0 ) then
+			PlayerTitleFrameText:SetText(PAPERDOLL_SELECT_TITLE);
+		elseif ( currentTitle == -1 ) then
+			PlayerTitleFrameText:SetText(NONE);	
+		else
+			PlayerTitleFrameText:SetText(GetTitleName(currentTitle));
+		end					
+		table.sort(playerTitles, PlayerTitleSort);
+		playerTitles[1].name = NONE;
+		PlayerTitleFrame.titles = playerTitles;	
+	
+		maxWidth = maxWidth + 10;				
+		for i = 1, #buttons do
+			buttons[i]:SetWidth(maxWidth);
+		end
+		PlayerTitlePickerScrollFrame:SetWidth(maxWidth + 34);
+		PlayerTitlePickerScrollFrameScrollChild:SetWidth(maxWidth + 34);		
+		if ( titleCount <= PLAYER_DISPLAYED_TITLES ) then	
+			PlayerTitlePickerFrame:SetWidth(maxWidth + 56);
+			PlayerTitlePickerFrame:SetHeight(titleCount * PLAYER_TITLE_HEIGHT + 26);
+			-- adding 1 due to possible rounding errors in HybridScrollFrame
+			PlayerTitlePickerScrollFrame:SetHeight(titleCount * PLAYER_TITLE_HEIGHT + 1);
+		else				
+			PlayerTitlePickerFrame:SetWidth(maxWidth + 76);
+			PlayerTitlePickerFrame:SetHeight(PLAYER_TITLE_HEIGHT * PLAYER_DISPLAYED_TITLES + 26);
+			-- adding 1 due to possible rounding errors in HybridScrollFrame
+			PlayerTitlePickerScrollFrame:SetHeight(PLAYER_TITLE_HEIGHT * PLAYER_DISPLAYED_TITLES + 1);
+		end		
+		HybridScrollFrame_CreateButtons(PlayerTitlePickerScrollFrame, "PlayerTitleButtonTemplate");
+		HybridScrollFrame_Update(PlayerTitlePickerScrollFrame, titleCount * PLAYER_TITLE_HEIGHT, PlayerTitlePickerScrollFrame:GetHeight());		
+		PlayerTitlePickerScrollFrame_Update();
+	end	
+end
+
+function PlayerTitlePickerFrame_Toggle()	
+	if ( PlayerTitlePickerFrame:IsShown() ) then
+		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlayerTitlePickerFrame:Hide();	
+	else		
+		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlayerTitlePickerFrame:Show();
+		PlayerTitlePickerScrollFrame_Update();	
+	end
+end
+
+function PlayerTitleButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOff");
+	PlayerTitleFrame.selected = self.titleId;
+	SetCurrentTitle(self.titleId);
+	PlayerTitleFrameText:SetText(self.text:GetText());
+	PlayerTitlePickerFrame:Hide();	
+end

@@ -1149,14 +1149,8 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 			end
 
 			if ( itemButton ) then
-				line = WatchFrame_GetQuestLine();
-				line:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 0, -WATCHFRAMELINES_FONTSPACING);
-				itemButton:SetPoint("TOPRIGHT", line, "TOPLEFT", 0, 0);
 				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", min(frameWidth - WATCHFRAME_ITEM_WIDTH, itemButton.maxStringWidth + 8), -WATCHFRAMELINES_FONTSPACING);
 				itemButton:Show();
-			end
-
-			if ( itemButton ) then
 				maxWidth = max(questWidth + WATCHFRAME_ITEM_WIDTH, maxWidth);
 			else
 				maxWidth = max(questWidth, maxWidth);

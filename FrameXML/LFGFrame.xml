@@ -869,6 +869,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("UChatScrollButton");
 								InviteUnit(LFMFrame.selectedName);
 							</OnClick>
 						</Scripts>
@@ -886,6 +887,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("UChatScrollButton");
 								ChatFrame_SendTell(LFMFrame.selectedName);
 							</OnClick>
 						</Scripts>

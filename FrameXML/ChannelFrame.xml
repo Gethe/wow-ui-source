@@ -1229,7 +1229,10 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick function="ChannelPullout_ToggleDisplay"/>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOff");
+						ChannelPullout_ToggleDisplay(self);
+					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface/BUTTONS/UI-Panel-MinimizeButton-Up"/>
 				<PushedTexture file="Interface/BUTTONS/UI-Panel-MinimizeButton-Down"/>

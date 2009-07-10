@@ -137,6 +137,7 @@ function LFMFrame_OnEvent(self, event, ...)
 		LFMFrame_UpdateDropDowns();
 		LFMFrame_Update();
 	elseif ( event == "MEETINGSTONE_CHANGED" ) then
+		LFMFrame_UpdateEye();
 		LFMFrame_Update();
 	elseif ( event == "UPDATE_LFG_LIST" ) then
 		LFMFrame_CacheAndUpdate();
@@ -422,18 +423,7 @@ function LFMFrame_UpdateDropDowns()
 		else
 			UIDropDownMenu_ClearAll(LFMFrameNameDropDown);
 		end
-		if ( queued ) then
-			LFMEye:Show();
-		else
-			LFMEye:Hide();
-		end
-		
 	elseif ( (GetRealNumPartyMembers() == 0) or IsRealPartyLeader() or not LFGFrame.loaded) then
-		if ( queued and lfmStatus ) then
-			LFMEye:Show();
-		else
-			LFMEye:Hide();
-		end
 		UIDropDownMenu_Initialize(LFMFrameNameDropDown, LFMFrameNameDropDown_Initialize);
 		if ( lfmName ~= 0 ) then
 			if ( not lfgStatus ) then
@@ -445,12 +435,23 @@ function LFMFrame_UpdateDropDowns()
 			end
 		end
 	else
-		LFMEye:Hide();
 		if ( UIDropDownMenu_GetSelectedID(LFMFrameTypeDropDown) == 1 ) then
 			UIDropDownMenu_ClearAll(LFMFrameNameDropDown);
 		end
 	end
+	
+	LFMFrame_UpdateEye();
+	
 	LFGFrame.loaded = 1;
+end
+
+function LFMFrame_UpdateEye()
+	local _, _, _, _, _, _, _, _, _, queued, _, lfmStatus = GetLookingForGroup();
+	if ( queued and lfmStatus ) then
+		LFMEye:Show();
+	else
+		LFMEye:Hide();
+	end
 end
 
 function LFMFrame_OnUpdate(self, elapsed)
@@ -548,7 +549,7 @@ function LFMButton_OnEnter(self)
 	end
 	
 	if ( numPartyMembers <= 0 ) then
-		GameTooltip:AddLine("\n"..format("%s:", ROLES))
+		GameTooltip:AddLine("\n"..LFG_TOOLTIP_ROLES)
 		if ( self.willBeDPS ) then
 			GameTooltip:AddLine(DAMAGER);
 			GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0.25, 0.5, 0, 1);
@@ -627,6 +628,7 @@ function LFMNameButton_OnClick(self)
 	if ( not RealPartyIsFull() ) then
 		SetLookingForMore(UIDropDownMenu_GetSelectedID(LFMFrameTypeDropDown), UIDropDownMenu_GetSelectedID(LFMFrameNameDropDown));
 	end
+	LFMFrame.selectedName = nil;
 	SendLFGQuery();
 	LFMFrame_UpdateDropDowns();
 	LFMFrame_CacheAndUpdate();
@@ -987,8 +989,15 @@ function LFGFrameRoleCheckButton_OnClick(self, button)
 		PlaySound("igMainMenuOptionCheckBoxOff");
 		
 		local _, _, _, _, _, _, _, _, _, _, lfgStatus = GetLookingForGroup();
-		if ( (not lfgStatus) or LFGFrame_AreRolesChosen() ) then
+		local rolesChosen = LFGFrame_AreRolesChosen();
+		if ( (not lfgStatus) or rolesChosen ) then
 			LFGFrame_UpdateRolesChosen();
+			if ( not rolesChosen and UIDROPDOWNMENU_OPEN_MENU ) then
+				local initFunction = UIDROPDOWNMENU_OPEN_MENU.initialize;
+				if ( initFunction == LFGFrameNameDropDown1_Initialize or initFunction == LFGFrameNameDropDown2_Initialize or initFunction == LFGFrameNameDropDown3_Initialize ) then
+					HideDropDownMenu(1);
+				end
+			end
 		else
 			StaticPopup_Show("CONFIRM_LFG_REMOVE_LAST_ROLE");
 		end

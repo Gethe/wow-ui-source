@@ -264,13 +264,22 @@ function SetFocusSpellbarAspect()
 		frameBorder:SetPoint("TOP", FocusFrameSpellBar, "TOP", 0, 20);
 	end
 
+	local frameBorderShield = _G[FocusFrameSpellBar:GetName().."BorderShield"];
+	if ( frameBorderShield ) then
+		--frameBorderShield:SetTexture("Interface\\CastingBar\\UI-CastingBar-Small-FocusShield");
+		frameBorderShield:SetWidth(177);
+		frameBorderShield:SetHeight(49);
+		frameBorderShield:ClearAllPoints();
+		frameBorderShield:SetPoint("TOP", FocusFrameSpellBar, "TOP", -6, 20);
+	end
+	
 	local frameFlash = _G[FocusFrameSpellBar:GetName().."Flash"];
 	if ( frameFlash ) then
 		frameFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
 		frameFlash:SetWidth(177);
 		frameFlash:SetHeight(49);
 		frameFlash:ClearAllPoints();
-		frameFlash:SetPoint("TOP", FocusFrameSpellBar, "TOP", 0, 20);
+		frameFlash:SetPoint("TOP", FocusFrameSpellBar, "TOP", -2, 20);
 	end
 end
 
@@ -287,6 +296,7 @@ function Focus_Spellbar_OnLoad (self)
 	barIcon:SetPoint("RIGHT", self:GetName(), "LEFT", -5, 0);
 
 	SetFocusSpellbarAspect();
+	self.showShield = true;
 	
 	_G[self:GetName().."Text"]:SetWidth(130);
 	-- check to see if the castbar should be shown

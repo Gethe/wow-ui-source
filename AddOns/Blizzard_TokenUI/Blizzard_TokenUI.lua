@@ -150,7 +150,7 @@ function TokenFrame_Update()
 	local totalHeight = numTokenTypes * (button:GetHeight()+TOKEN_BUTTON_OFFSET);
 	local displayedHeight = #buttons * (button:GetHeight()+TOKEN_BUTTON_OFFSET);
 
-	HybridScrollFrame_Update(scrollFrame, numTokenTypes, totalHeight, displayedHeight);
+	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 	
 	if ( numTokenTypes == 0 ) then
 		CharacterFrameTab5:Hide();

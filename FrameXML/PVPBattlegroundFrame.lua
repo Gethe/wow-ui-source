@@ -312,7 +312,13 @@ end
 
 function PVPBattleground_WintergraspTimerUpdate(self)
 	local nextBattleTime = GetWintergraspWaitTime();
-	WintergraspTimer.frameText:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, true));
+	if ( nextBattleTime and nextBattleTime > 60 ) then
+		WintergraspTimer.frameText:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, true));
+	elseif ( nextBattleTime and nextBattleTime > 0 ) then
+		WintergraspTimer.frameText:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, false));
+	else
+		WintergraspTimer.frameText:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, WINTERGRASP_IN_PROGRESS);
+	end
 	if ( CanQueueForWintergrasp() ) then
 		self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CAN_QUEUE;
 		self:Enable();

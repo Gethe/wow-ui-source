@@ -353,7 +353,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="$parentTitle" inherits="GameFontNormal" text="OBJECTIVES_LABEL">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="OBJECTIVES_TRACKER_LABEL">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="12" y="-8"/>

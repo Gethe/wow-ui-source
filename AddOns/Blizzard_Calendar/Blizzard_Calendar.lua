@@ -3323,7 +3323,7 @@ function CalendarViewEventInviteListScrollFrame_Update()
 	end
 	CalendarClassButtonContainer_Show(CalendarViewEventFrame);
 	local totalHeight = numInvites * buttonHeight;
-	HybridScrollFrame_Update(CalendarViewEventInviteListScrollFrame, numInvites, totalHeight, displayedHeight);
+	HybridScrollFrame_Update(CalendarViewEventInviteListScrollFrame, totalHeight, displayedHeight);
 end
 
 function CalendarViewEventFrame_SetSelectedInvite(inviteButton)
@@ -4090,7 +4090,7 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 	end
 	CalendarClassButtonContainer_Show(CalendarCreateEventFrame);
 	local totalHeight = numInvites * buttonHeight;
-	HybridScrollFrame_Update(CalendarCreateEventInviteListScrollFrame, numInvites, totalHeight, displayedHeight);
+	HybridScrollFrame_Update(CalendarCreateEventInviteListScrollFrame, totalHeight, displayedHeight);
 end
 
 function CalendarCreateEventFrame_SetSelectedInvite(inviteButton)
@@ -4836,7 +4836,7 @@ function CalendarEventPickerScrollFrame_Update()
 		i = i + 1;
 	end
 	local totalHeight = numViewableEvents * buttonHeight;
-	HybridScrollFrame_Update(CalendarEventPickerScrollFrame, numViewableEvents, totalHeight, displayedHeight);
+	HybridScrollFrame_Update(CalendarEventPickerScrollFrame, totalHeight, displayedHeight);
 end
 
 function CalendarEventPickerCloseButton_OnClick()
@@ -5106,7 +5106,7 @@ function CalendarTexturePickerScrollFrame_Update()
 		displayedHeight = displayedHeight + buttonHeight;
 	end
 	local totalHeight = numTextures * buttonHeight;
-	HybridScrollFrame_Update(CalendarTexturePickerScrollFrame, numTextures, totalHeight, displayedHeight);
+	HybridScrollFrame_Update(CalendarTexturePickerScrollFrame, totalHeight, displayedHeight);
 end
 
 function CalendarTexturePickerAcceptButton_OnClick(self)

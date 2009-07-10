@@ -16,15 +16,31 @@ local QUEST_ICON_INTERACT		= 2;
 local QUEST_ICON_TURN_IN		= 3;
 local QUEST_ICON_CHAT			= 4;
 local QUEST_ICON_X_MARK			= 5;
+local QUEST_ICON_BIG_SKULL		= 6;
+local QUEST_ICON_BIG_SKULL_GEAR	= 7;
 
-local QuestIconTextures = {};
-QuestIconTextures[QUEST_ICON_KILL]			= "Interface\\WorldMap\\Skull_64"
-QuestIconTextures[QUEST_ICON_KILL_COLLECT]	= "Interface\\WorldMap\\GlowSkull_64"
-QuestIconTextures[QUEST_ICON_INTERACT]		= "Interface\\WorldMap\\Gear_64"
-QuestIconTextures[QUEST_ICON_TURN_IN]		= "Interface\\WorldMap\\QuestionMark_Gold_64"
-QuestIconTextures[QUEST_ICON_CHAT]			= "Interface\\WorldMap\\ChatBubble_64"
-QuestIconTextures[QUEST_ICON_X_MARK]		= "Interface\\WorldMap\\X_Mark_64"
 
+QUEST_ICON_TEXTURES = {};
+QUEST_ICON_TEXTURES[QUEST_ICON_KILL]				= "Interface\\WorldMap\\Skull_64"
+QUEST_ICON_TEXTURES[QUEST_ICON_KILL_COLLECT]		= "Interface\\WorldMap\\GlowSkull_64"
+QUEST_ICON_TEXTURES[QUEST_ICON_INTERACT]			= "Interface\\WorldMap\\Gear_64"
+QUEST_ICON_TEXTURES[QUEST_ICON_TURN_IN]				= "Interface\\WorldMap\\QuestionMark_Gold_64"
+QUEST_ICON_TEXTURES[QUEST_ICON_CHAT]				= "Interface\\WorldMap\\ChatBubble_64"
+QUEST_ICON_TEXTURES[QUEST_ICON_X_MARK]				= "Interface\\WorldMap\\X_Mark_64"
+QUEST_ICON_TEXTURES[QUEST_ICON_BIG_SKULL]			= "Interface\\WorldMap\\3DSkull_64"
+QUEST_ICON_TEXTURES[QUEST_ICON_BIG_SKULL_GEAR]		= "Interface\\WorldMap\\SkullGear_64"
+
+QUEST_ICON_FRAME_LEVELS = {};
+QUEST_ICON_FRAME_LEVELS[QUEST_ICON_KILL]				= 20;
+QUEST_ICON_FRAME_LEVELS[QUEST_ICON_KILL_COLLECT]		= 20;
+QUEST_ICON_FRAME_LEVELS[QUEST_ICON_INTERACT]			= 20;
+QUEST_ICON_FRAME_LEVELS[QUEST_ICON_TURN_IN]				= 30;
+QUEST_ICON_FRAME_LEVELS[QUEST_ICON_CHAT]				= 20;
+QUEST_ICON_FRAME_LEVELS[QUEST_ICON_X_MARK]				= 20;
+QUEST_ICON_FRAME_LEVELS[QUEST_ICON_BIG_SKULL]			= 10;
+QUEST_ICON_FRAME_LEVELS[QUEST_ICON_BIG_SKULL_GEAR]		= 10;
+
+local QuestIconTextureLevels
 
 BAD_BOY_UNITS = {};
 BAD_BOY_COUNT = 0;
@@ -100,7 +116,7 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapLevelDropDown_Update();
 
 	-- PlayerArrowEffectFrame is created in code: CWorldMap::CreatePlayerArrowFrame()
-	PlayerArrowEffectFrame:SetFrameLevel(WorldMapParty1:GetFrameLevel() + 1);
+	PlayerArrowEffectFrame:SetFrameLevel(9001);	--It's over nine thousand!!!!!
 	PlayerArrowEffectFrame:SetAlpha(0.65);
 end
 
@@ -1172,36 +1188,59 @@ function WorldMapUnitDropDown_ReportAll_OnClick()
 	end
 end
 
+local distanceTooClose, distanceTooCloseSquared;
 function UpdateQuestMapPOI()
 	local index = 1;
 	if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
-		for i=1, MAX_QUESTS do
-			local numPOI = QuestMapUpdateQuest(i);
-			if(numPOI) then
-				local questName = QuestMapGetQuestName(i);
-				for j=1, numPOI do
-					local mapID, x, y, icon, text = QuestMapGetPOIInfoForQuest(i, j);
-					if(mapID and x and y and icon) then
-						if ( not QUEST_MAP_POI[index] ) then
-							local mapPOIName = "QuestMapPOI"..index;
-							QUEST_MAP_POI[index] = CreateFrame("FRAME", mapPOIName, WorldMapButton, "WorldMapQuestPOITemplate");
+		local numPOI = QuestMapUpdateAllQuests();
+		for i=1, numPOI do
+			local numQuests = QuestMapGetNumQuestsForPOI(i);
+			local questName, text;
+			local firstTurnInIndex;
+			questName, text = QuestMapGetQuestInfo(i, 1);
+			local mapID, x, y, icon = QuestMapGetPOIInfo(i);
+			if(mapID and x and y and icon) then
+				if ( not QUEST_MAP_POI[index] ) then
+					local mapPOIName = "QuestMapPOI"..index;
+					QUEST_MAP_POI[index] = CreateFrame("FRAME", mapPOIName, WorldMapButton, "WorldMapQuestPOITemplate");
+					distanceTooClose = QUEST_MAP_POI[index]:GetHeight()*0.75;	--Yes, sqrt(2) would be more accurate, but even if they don't overlap, having the two icons so close doesn't look good.
+					distanceTooCloseSquared = distanceTooClose^2;	--Cache it
+				end
+				QUEST_MAP_POI[index].POIIndex = i;
+				local POIFrame = QUEST_MAP_POI[index];
+				x = x * WorldMapDetailFrame:GetWidth();
+				y = -y * WorldMapDetailFrame:GetHeight();
+				--Some information to avoid the appearance of heavy wizardry: Question completion points should always be after objective points.
+				--We are choosing to push away the completion points because the accuracy is not as important (they appear on the minimap once you get close enough)
+				if ( firstTurnInIndex or text == TURN_IN_QUEST ) then
+					if ( not firstTurnInIndex ) then
+						firstTurnInIndex = index;
+					end
+					--We only compare the turn-in points with non turn-in points.
+					for j=1, (firstTurnInIndex - 1) do
+						local otherFrame = QUEST_MAP_POI[j];
+						local vectorX, vectorY = (x - otherFrame.x), (y - otherFrame.y);
+						local vectorMagSquared = vectorX^2 + vectorY^2;
+						if ( vectorMagSquared < distanceTooCloseSquared ) then
+							if ( vectorMagSquared < 1 ) then	--We don't want to have 1.#INF appear anywhere here. If they're at exactly the same spot (or close enough)...
+								y = otherFrame.y + distanceTooClose;	--Move it straight up. Direction is arbitrary, but it requires little work.
+							else
+								--Get the amount we need to move the object
+								local ratio = distanceTooClose/sqrt(vectorMagSquared);
+								x = otherFrame.x + vectorX*ratio;
+								y = otherFrame.y + vectorY*ratio;
+								break;	--This saves checks. Once we've moved it once, we shouldn't have to move it again. If we do, the threshold for combining POI is not high enough.
+							end
 						end
-					
-						local POIFrame = QUEST_MAP_POI[index];
-						x = x * WorldMapDetailFrame:GetWidth();
-						y = -y * WorldMapDetailFrame:GetHeight();
-						POIFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x, y);
-						if(icon == QUEST_ICON_TURN_IN) then
-							POIFrame.text = TURN_IN_QUEST;
-						else
-							POIFrame.text = text;
-						end					
-						POIFrame.icon:SetTexture(QuestIconTextures[icon]); 
-						POIFrame:Show();
-						POIFrame.questName = questName;
-						index = index + 1;	-- save for later
 					end
 				end
+				POIFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x, y);
+				POIFrame.x, POIFrame.y = x, y;	--Save these off so that when we try to access them to avoid collisions, we don't have to call to C.
+				POIFrame.icon:SetTexture(QUEST_ICON_TEXTURES[icon]);
+				-- Could store these in difference arrays, but this is fine for 1st pass...
+				POIFrame:SetFrameLevel(QUEST_ICON_FRAME_LEVELS[icon]);
+				POIFrame:Show();
+				index = index + 1;	-- save for later
 			end
 		end
 	end
@@ -1209,10 +1248,15 @@ function UpdateQuestMapPOI()
 	for i=index, #QUEST_MAP_POI do
 		QUEST_MAP_POI[i]:Hide();
 	end
+	local tooltipOwner = WorldMapTooltip:GetOwner();
+	if ( tooltipOwner and tooltipOwner.isQuestMarker ) then
+		WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
+	end
 end
 
 function WorldMapQuestPOI_OnLoad(self)
 	self:SetFrameLevel(self:GetFrameLevel() + 1);
+	self.isQuestMarker = true;
 end
 
 function WorldMapQuestPOI_UpdateTooltip(tooltip)
@@ -1226,14 +1270,21 @@ function WorldMapQuestPOI_UpdateTooltip(tooltip)
 				tooltip:AddLine(" ");
 				overSomething = true;
 			end
-			if ( lastQuestName ~= POIFrame.questName ) then	--We can do this because the objectives of a single quest are always grouped together.
-				lastQuestName = POIFrame.questName;
-				tooltip:AddLine(lastQuestName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			local POIIndex = POIFrame.POIIndex;
+			local numPOI = QuestMapGetNumQuestsForPOI(POIIndex);	--Yes, calling a bunch of C functions OnUpdate = fail. But the map is open, so we're not doing much else (and a lower framerate with the map isn't noticable)
+			for j=1, numPOI do
+				local questName, text = QuestMapGetQuestInfo(POIIndex, j);
+				if ( questName ~= lastQuestName ) then
+					lastQuestName = questName;
+					tooltip:AddLine(questName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				end
+				tooltip:AddLine(" - "..text, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			end
-			tooltip:AddLine(" - "..POIFrame.text, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		end
 	end
-	if ( not overSomething ) then
+	if ( overSomething ) then
+		tooltip:Show();
+	else
 		tooltip:Hide();
 	end
 end
@@ -1241,10 +1292,8 @@ function WorldMapQuestPOI_OnEnter(self, motion)
 	GameTooltip_SetDefaultAnchor(WorldMapTooltip, self);
 	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
-	WorldMapTooltip:Show();
 end
 
---[[function WorldMapQuestPOI_OnLeave(self, motion)
-	WorldMapTooltip:Hide();
-end]]
-WorldMapQuestPOI_OnLeave = WorldMapQuestPOI_OnEnter;
+function WorldMapQuestPOI_OnLeave(self, motion)
+	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
+end

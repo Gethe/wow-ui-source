@@ -261,7 +261,7 @@ function QuestLog_OnEvent(self, event, ...)
 	if ( event == "QUEST_LOG_UPDATE" or event == "UPDATE_FACTION" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") ) then
 		QuestLog_Update();
 		WatchFrame_Update();
-		if ( QuestLogDetailFrame:IsVisible() ) then
+		if ( QuestLogDetailScrollFrame:IsVisible() ) then
 			QuestLog_UpdateQuestDetails(false);
 			QuestLog_UpdateMap();
 		end
@@ -489,7 +489,7 @@ function QuestLog_Update()
 		end
 		displayedHeight = displayedHeight + buttonHeight;
 	end
-	HybridScrollFrame_Update(QuestLogScrollFrame, numEntries, numEntries * buttonHeight, displayedHeight);
+	HybridScrollFrame_Update(QuestLogScrollFrame, numEntries * buttonHeight, displayedHeight);
 
 	-- update the control panel
 	QuestLogControlPanel_UpdateState();

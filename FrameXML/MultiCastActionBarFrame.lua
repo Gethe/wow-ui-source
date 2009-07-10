@@ -414,7 +414,7 @@ function MultiCastSlotButton_Update(self, slot)
 		self:Hide();
 	else
 		-- fixup textures
-		tcoords = SLOT_OVERLAY_TCOORDS[slot];
+		local tcoords = SLOT_OVERLAY_TCOORDS[slot];
 		self.overlay:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 		tcoords = SLOT_EMPTY_TCOORDS[slot];
 		self.background:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
@@ -543,15 +543,25 @@ end
 
 function MultiCastFlyoutButton_SetTooltip(self)
 	if ( self.spellId ) then
-		if ( GetCVarBool("UberTooltips") ) then
-			GameTooltip_SetDefaultAnchor(GameTooltip, self);
-		else
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		end
-		if ( GameTooltip:SetSpellByID(self.spellId, false, true) ) then
-			self.UpdateTooltip = MultiCastFlyoutButton_SetTooltip;
-		else
+		if ( self.spellId == 0 ) then
+			if ( GetCVarBool("UberTooltips") ) then
+				GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			else
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			end
+			GameTooltip:SetText(MULTI_CAST_TOOLTIP_NO_TOTEM, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			self.UpdateTooltip = nil;
+		else
+			if ( GetCVarBool("UberTooltips") ) then
+				GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			else
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			end
+			if ( GameTooltip:SetSpellByID(self.spellId, false, true) ) then
+				self.UpdateTooltip = MultiCastFlyoutButton_SetTooltip;
+			else
+				self.UpdateTooltip = nil;
+			end
 		end
 	end
 end
@@ -617,8 +627,9 @@ function MultiCastFlyoutFrame_ToggleFlyout(self, type, parent)
 		local midtcoords;
 		local closetcoords;
 		if ( type == "slot" ) then
-			if ( MultiCastFlyoutFrame_LoadSlotSpells(self, GetMultiCastTotemSpells(parent:GetID())) ) then
-				local slot = _ComputeMultiCastSlot(parent:GetID());
+			local actionId = parent:GetID();
+			local slot = _ComputeMultiCastSlot(actionId);
+			if ( MultiCastFlyoutFrame_LoadSlotSpells(self, slot, GetMultiCastTotemSpells(actionId)) ) then
 				toptcoords = FLYOUT_TOP_TCOORDS[slot];
 				midtcoords = FLYOUT_MIDDLE_TCOORDS[slot];
 				closetcoords = FLYOUT_DOWN_BUTTON_TCOORDS[slot];
@@ -694,6 +705,7 @@ function MultiCastFlyoutFrame_LoadPageSpells(self)
 			button.spellId = spellId;
 			name, rank, icon = GetSpellInfo(spellId);
 			button.icon:SetTexture(icon);
+			button.icon:SetTexCoord(0.0, 1.0, 0.0, 1.0);
 
 			button:Show();
 
@@ -710,11 +722,13 @@ function MultiCastFlyoutFrame_LoadPageSpells(self)
 	return true;
 end
 
-function MultiCastFlyoutFrame_LoadSlotSpells(self, ...)
+function MultiCastFlyoutFrame_LoadSlotSpells(self, slot, ...)
 	local numSpells = select("#", ...);
 	if ( numSpells == 0 ) then
 		return false;
 	end
+	-- add one to numSpells to represent the "none" slot
+	numSpells = numSpells + 1;
 
 	self.buttons = self.buttons or {};
 	local buttons = self.buttons;
@@ -725,6 +739,8 @@ function MultiCastFlyoutFrame_LoadSlotSpells(self, ...)
 	local button;
 	local spellId;
 	local name, rank, icon;
+	local tcoords;
+	local tcoordLeft, tcoordRight, tcoordTop, tcoordBottom;
 	for i = 1, numSpells do
 		-- create the button
 		if ( i <= numButtons ) then
@@ -750,10 +766,20 @@ function MultiCastFlyoutFrame_LoadSlotSpells(self, ...)
 		totalHeight = totalHeight + button:GetHeight();
 
 		-- setup the button
-		spellId = select(i, ...);
+		if ( i == 1 ) then
+			-- the first button clears your slot
+			spellId = 0;
+			icon = "Interface\\Buttons\\UI-TotemBar";
+			tcoords = SLOT_EMPTY_TCOORDS[slot];
+			tcoordLeft, tcoordRight, tcoordTop, tcoordBottom = tcoords.left, tcoords.right, tcoords.top, tcoords.bottom;
+		else
+			spellId = select(i - 1, ...);
+			name, rank, icon = GetSpellInfo(spellId);
+			tcoordLeft, tcoordRight, tcoordTop, tcoordBottom = 0.0, 1.0, 0.0, 1.0;
+		end
 		button.spellId = spellId;
-		name, rank, icon = GetSpellInfo(spellId);
 		button.icon:SetTexture(icon);
+		button.icon:SetTexCoord(tcoordLeft, tcoordRight, tcoordTop, tcoordBottom);
 
 		button:Show();
 	end

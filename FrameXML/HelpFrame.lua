@@ -155,8 +155,8 @@ function HelpFrame_OnEvent(self, event, ...)
 			KnowledgeBaseFrameGMTalk:Hide();
 			KnowledgeBaseFrameReportIssue:Hide();
 			HelpFrameStuckOpenTicket:Hide();
-			KnowledgeBaseFrameOpenTicketEdit:Show();
-			KnowledgeBaseFrameOpenTicketCancel:Show();
+			KnowledgeBaseFrameEditTicket:Show();
+			KnowledgeBaseFrameAbandonTicket:Show();
 		else
 			-- the player does not have a ticket
 			HelpFrameOpenTicketEditBox:SetText("");
@@ -168,8 +168,8 @@ function HelpFrame_OnEvent(self, event, ...)
 			KnowledgeBaseFrameGMTalk:Show();
 			KnowledgeBaseFrameReportIssue:Show();
 			HelpFrameStuckOpenTicket:Show();
-			KnowledgeBaseFrameOpenTicketEdit:Hide();
-			KnowledgeBaseFrameOpenTicketCancel:Hide();
+			KnowledgeBaseFrameEditTicket:Hide();
+			KnowledgeBaseFrameAbandonTicket:Hide();
 		end
 	elseif ( event == "GMRESPONSE_RECEIVED" ) then
 		local ticketDescription, response = ...;
@@ -195,6 +195,15 @@ function HelpFrame_OnEvent(self, event, ...)
 		HelpFrameOpenTicketEditBox:SetText("");
 		HelpFrameOpenTicketSubmit:SetText(SUBMIT);
 		HelpFrameOpenTicketLabel:SetText(HELPFRAME_OPENTICKET_FOLLOWUPTEXT);
+
+		-- hide the buttons that edit a ticket and show the buttons that open a ticket
+		-- the player shouldn't be able to edit or open a ticket while a response is up, but they will at least be able to view
+		-- the information on the various help pages this way
+		KnowledgeBaseFrameGMTalk:Show();
+		KnowledgeBaseFrameReportIssue:Show();
+		HelpFrameStuckOpenTicket:Show();
+		KnowledgeBaseFrameEditTicket:Hide();
+		KnowledgeBaseFrameAbandonTicket:Hide();
 	end
 end
 
@@ -226,7 +235,7 @@ function HelpFrame_ShowFrame(key)
 			-- if we have a response that hasn't been dealt with and the player is trying to open a new ticket,
 			-- give them a warning dialog instead
 			HideUIPanel(HelpFrame);
-			StaticPopup_Show("GM_RESPONSE_CANT_OPEN_TICKET");
+			StaticPopup_Show("GM_RESPONSE_MUST_RESOLVE_RESPONSE");
 			return;
 		end
 	end

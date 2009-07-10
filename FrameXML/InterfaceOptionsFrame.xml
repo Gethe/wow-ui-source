@@ -1,0 +1,288 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="InterfaceOptionsFrame.lua"/>
+
+	<!-- Interface Options Frame Templates -->
+
+	<Button name="InterfaceOptionsListButtonTemplate" inherits="OptionsListButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				OptionsListButton_OnLoad(self, InterfaceOptionsListButton_ToggleSubCategories);
+			</OnLoad>
+			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
+				InterfaceOptionsListButton_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Frame name="InterfaceOptionsFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
+		<Size>
+			<AbsDimension x="648" y="520"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="11" top="12" bottom="10"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="300" y="68"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="UIOPTIONS_MENU">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+<!--
+			<Button name="$parentApply" inherits="UIPanelButtonTemplate" text="APPLY">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						InterfaceOptionsFrameOkay_OnClick(self, true);
+					</OnClick>
+				</Scripts>
+			</Button>
+-->
+			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<!--
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentApply" relativePoint="BOTTOMLEFT"/>
+					-->
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InterfaceOptionsFrameCancel_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InterfaceOptionsFrameOkay_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentDefaults" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InterfaceOptionsFrameDefaults_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentCategories" inherits="OptionsFrameListTemplate">
+				<Size>
+					<AbsDimension x="175" y="429"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.labelText = CATEGORY;
+						OptionsList_OnLoad(self, "InterfaceOptionsListButtonTemplate");
+						self.update = InterfaceCategoryList_Update;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentAddOns" inherits="OptionsFrameListTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="175" y="429"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.labelText = ADDONS
+						OptionsList_OnLoad(self, "InterfaceOptionsListButtonTemplate");
+						self.update = InterfaceAddOnsList_Update;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentPanelContainer">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="16" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentCategories" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="16" y="1"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="-22" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(.6, .6, .6, 1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentTab1" inherits="OptionsFrameTabButtonTemplate" text="GAME" id="1" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentCategories" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igCharacterInfoTab");
+						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
+						PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
+						InterfaceOptionsFrame_TabOnClick();
+					</OnClick>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTabSpacer" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer">	
+							<Size>
+								<AbsDimension x="85" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="-6"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="RIGHT" relativeTo="InterfaceOptionsFrameCategoriesTopRight" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button name="$parentTab2" inherits="OptionsFrameTabButtonTemplate" text="ADDONS" id="2" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igCharacterInfoTab");
+						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
+						PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
+						InterfaceOptionsFrame_TabOnClick();
+					</OnClick>
+				</Scripts>				
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTabSpacer1" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer" hidden="true">	
+							<Size>
+								<AbsDimension x="64" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-6"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="LEFT" relativeTo="InterfaceOptionsFrameAddOnsTopLeft" relativePoint="RIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTabSpacer2" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer" hidden="true">	
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-9" y="-6"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="RIGHT" relativeTo="InterfaceOptionsFrameAddOnsTopRight" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>				
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow function="InterfaceOptionsFrame_OnShow"/>
+			<OnHide function="InterfaceOptionsFrame_OnHide"/>
+			<OnLoad function="InterfaceOptionsFrame_OnLoad"/>
+			<OnEvent function="InterfaceOptionsFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

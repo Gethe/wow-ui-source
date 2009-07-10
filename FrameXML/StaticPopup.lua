@@ -12,6 +12,7 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_EQUIPMENT_SET"] = {
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
+	whileDead = 1,
 }
 
 StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
@@ -23,6 +24,7 @@ StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
+	whileDead = 1,
 }
 
 StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
@@ -549,8 +551,24 @@ StaticPopupDialogs["BFMGR_EJECT_PENDING"] = {
 	whileDead = 1,
 };
 
+StaticPopupDialogs["BFMGR_EJECT_PENDING_REMOTE"] = {
+	text = WORLD_PVP_PENDING_REMOTE,
+	button1 = OKAY,
+	showAlert = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
 StaticPopupDialogs["BFMGR_PLAYER_EXITED_BATTLE"] = {
 	text = WORLD_PVP_EXITED_BATTLE,
+	button1 = OKAY,
+	showAlert = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["BFMGR_PLAYER_LOW_LEVEL"] = {
+	text = WORLD_PVP_LOW_LEVEL,
 	button1 = OKAY,
 	showAlert = 1,
 	timeout = 0,
@@ -975,6 +993,9 @@ StaticPopupDialogs["HELP_TICKET_ABANDON_CONFIRM"] = {
 	end,
 	OnCancel = function(self, prevFrame)
 	end,
+	OnShow = function(self)
+		HideUIPanel(HelpFrame);
+	end,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1,
@@ -1027,14 +1048,17 @@ StaticPopupDialogs["GM_RESPONSE_RESOLVE_CONFIRM"] = {
 	whileDead = 1,
 	hideOnEscape = 1,
 };
-StaticPopupDialogs["GM_RESPONSE_CANT_OPEN_TICKET"] = {
-	text = GM_RESPONSE_POPUP_CANT_OPEN_TICKET,
+StaticPopupDialogs["GM_RESPONSE_MUST_RESOLVE_RESPONSE"] = {
+	text = GM_RESPONSE_POPUP_MUST_RESOLVE_RESPONSE,
 	button1 = GM_RESPONSE_POPUP_VIEW_RESPONSE,
 	button2 = CANCEL,
 	OnAccept = function(self)
 		HelpFrame_ShowFrame("GMResponse");
 	end,
 	OnCancel = function(self)
+	end,
+	OnShow = function(self)
+		HideUIPanel(HelpFrame);
 	end,
 	timeout = 0,
 	whileDead = 1,

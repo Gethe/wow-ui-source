@@ -84,6 +84,7 @@ end
 
 function AutoComplete_Update(parent, text, cursorPosition)
 	local self = AutoCompleteBox;
+	local attachPoint;
 	if ( not parent.autoCompleteParams ) then
 		return;
 	end

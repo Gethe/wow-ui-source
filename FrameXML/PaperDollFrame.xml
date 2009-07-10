@@ -84,8 +84,40 @@
 				PaperDollFrameItemFlyoutButton_OnClick(self, button, down);
 			</OnClick>
 		</Scripts>
-	</Button>
-	
+	</Button>	
+	<Button name="PlayerTitleButtonTemplate" virtual="true">			
+		<Size x="240" y="16"/>
+		<Anchors>
+			<Anchor point="RIGHT">
+				<Offset x="-4" y="0"/>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" parentKey="check" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="8" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>			
+			</Layer>
+		</Layers>
+		<ButtonText name="$parentTitleText" inherits="GameFontHighlightSmallLeft" justifyH="LEFT" parentKey="text">
+					<Anchors>
+			<Anchor point="LEFT" relativeTo="$parentCheck" relativePoint="RIGHT">
+				<Offset x="3" y="0"/>
+			</Anchor>
+					</Anchors>
+		</ButtonText>		
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>	
+		<Scripts>
+			<OnClick>	
+				PlayerTitleButton_OnClick(self);
+			</OnClick>
+		</Scripts>		
+	</Button>		
 	<CheckButton name="GearSetButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -274,7 +306,10 @@
             </Layer>
         </Layers>
         <Frames>
-            <Frame name="PlayerTitleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Frame name="PlayerTitleFrame">
+				<Size>
+					<AbsDimension x="210" y="32"/>
+				</Size>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
 						<Offset>
@@ -282,14 +317,146 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad function="PlayerTitleDropDown_OnLoad"/>
-					<OnShow>
-						UIDropDownMenu_Initialize(self, PlayerTitleDropDown_Initialize);
-						UIDropDownMenu_SetSelectedValue(self,GetCurrentTitle());
-					</OnShow>
-				</Scripts>
-			</Frame>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+							<Size>
+								<AbsDimension x="25" y="50"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="17"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+							<Size>
+								<AbsDimension x="160" y="50"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+							<Size>
+								<AbsDimension x="25" y="50"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
+						</Texture>
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="140" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft">
+									<Offset>
+										<AbsDimension x="27" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentButton">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parentRight">
+								<Offset>
+									<AbsDimension x="-16" y="-12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlayerTitlePickerFrame_Toggle();								
+							</OnClick>
+						</Scripts>
+						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</NormalTexture>
+						<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</PushedTexture>
+						<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</HighlightTexture>
+					</Button>
+				</Frames>
+			</Frame>	
+			<Frame name="PlayerTitlePickerFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerTitleFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="8" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>				
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>				
+				<Frames>
+					<ScrollFrame name="PlayerTitlePickerScrollFrame" inherits="HybridScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="100" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate" parentKey="scrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+										<Offset x="0" y="-13"/>
+									</Anchor>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+										<Offset x="0" y="14"/>
+									</Anchor>
+								</Anchors>
+							</Slider>
+						</Frames>
+						<Scripts>
+							<OnLoad function="PlayerTitlePickerScrollFrame_OnLoad"/>
+						</Scripts>
+					</ScrollFrame>
+				</Frames>
+			</Frame>			
 			<PlayerModel name="CharacterModelFrame">
                 <Size>
                     <AbsDimension x="233" y="215"/>
@@ -1020,7 +1187,7 @@
 				<HighlightTexture file="Interface\Buttons\UI-MicroButton-Hilight" alphaMode="ADD">
 					<TexCoords left="0" right="1" top="0.390625" bottom="0.96875"/>
 				</HighlightTexture>
-			</Button>			
+			</Button>				
 		</Frames>
         <Scripts>
             <OnLoad function="PaperDollFrame_OnLoad"/>
@@ -1274,7 +1441,10 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick function="GearManagerDialogPopupCancel_OnClick"/>
+							<OnClick>
+								GearManagerDialogPopupCancel_OnClick(self, button, pushed);
+								PlaySound("gsTitleOptionOK");
+							</OnClick>
 						</Scripts>
 					</Button>					
 					<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
@@ -1285,7 +1455,10 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick function="GearManagerDialogPopupOkay_OnClick"/>
+							<OnClick>
+								GearManagerDialogPopupOkay_OnClick(self, button, pushed);
+								PlaySound("gsTitleOptionOK");
+							</OnClick>
 						</Scripts>
 					</Button>
 				</Frames>

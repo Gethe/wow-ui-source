@@ -99,12 +99,14 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		self.castID = castID;
 		self.channeling = nil;
 		self.fadeOut = nil;
-		if ( self.showShield and notInterruptible ) then
-			barBorderShield:Show();
-			barBorder:Hide();
-		else
-			barBorderShield:Hide();
-			barBorder:Show();
+		if ( barBorderShield and barBorder ) then
+			if ( self.showShield and notInterruptible ) then
+				barBorderShield:Show();
+				barBorder:Hide();
+			else
+				barBorderShield:Hide();
+				barBorder:Show();
+			end
 		end
 		if ( self.showCastbar ) then
 			self:Show();
@@ -207,12 +209,14 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		self.casting = nil;
 		self.channeling = 1;
 		self.fadeOut = nil;
-		if ( self.showShield and notInterruptible ) then
-			barBorderShield:Show();
-			barBorder:Hide();
-		else
-			barBorderShield:Hide();
-			barBorder:Show();
+		if ( barBorderShield and barBorder ) then
+			if ( self.showShield and notInterruptible ) then
+				barBorderShield:Show();
+				barBorder:Hide();
+			else
+				barBorderShield:Hide();
+				barBorder:Show();
+			end
 		end
 		if ( self.showCastbar ) then
 			self:Show();
@@ -231,11 +235,15 @@ function CastingBarFrame_OnEvent (self, event, ...)
 			self:SetValue(self.value);
 		end
 	elseif ( self.showShield and event == "UNIT_SPELLCAST_INTERRUPTIBLE" ) then
-			barBorderShield:Hide();
-			barBorder:Show();
+			if ( barBorderShield and barBorder ) then
+				barBorderShield:Hide();
+				barBorder:Show();
+			end
 	elseif ( self.showShield and event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" ) then
-			barBorderShield:Show();
-			barBorder:Hide();
+			if ( barBorderShield and barBorder ) then
+				barBorderShield:Show();
+				barBorder:Hide();
+			end
 	end
 end
 
