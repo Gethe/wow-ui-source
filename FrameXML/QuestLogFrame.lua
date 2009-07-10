@@ -295,6 +295,7 @@ function QuestLog_OnShow(self)
 	UpdateMicroButtons();
 	PlaySound("igQuestLogOpen");
 	QuestLogControlPanel_UpdatePosition();
+	QuestLogShowMapPOI_UpdatePosition();
 	QuestLog_SetSelection(GetQuestLogSelection());
 	QuestLog_Update();
 	
@@ -304,6 +305,7 @@ end
 function QuestLog_OnHide(self)
 	UpdateMicroButtons();
 	PlaySound("igQuestLogClose");
+	QuestLogShowMapPOI_UpdatePosition();
 	QuestLogControlPanel_UpdatePosition();
 	
 	QuestLogDetailFrame_DetachFromQuestLog();
@@ -327,9 +329,11 @@ function QuestLog_Update()
 		HideUIPanel(QuestLogDetailFrame);
 		QuestLogDetailFrame.timeLeft = nil;
 		EmptyQuestLogFrame:Show();
+		QuestLogFrameShowMapButton:Hide();
 		QuestLog_SetSelection(0);
 	else
 		EmptyQuestLogFrame:Hide();
+		QuestLogFrameShowMapButton:Show();
 	end
 
 	-- Update Quest Count
@@ -901,12 +905,14 @@ end
 
 function QuestLogDetailFrame_OnShow(self)
 	QuestLogControlPanel_UpdatePosition();
+	QuestLogShowMapPOI_UpdatePosition();
 	QuestLog_UpdateQuestDetails();
 end
 
 function QuestLogDetailFrame_OnHide(self)
 	-- this function effectively deselects the selected quest
 	QuestLogControlPanel_UpdatePosition();
+	QuestLogShowMapPOI_UpdatePosition();
 end
 
 function QuestLogDetailScrollFrame_OnUpdate(self, elapsed)
@@ -987,3 +993,16 @@ function QuestLogControlPanel_UpdateState()
 	end
 end
 
+function QuestLogShowMapPOI_UpdatePosition()
+	local parent;
+	if ( QuestLogFrame:IsShown() ) then
+		parent = QuestLogFrame;
+	elseif ( QuestLogDetailFrame:IsShown() ) then
+		parent = QuestLogDetailFrame;
+	end
+	
+	if ( parent ) then
+		QuestLogFrameShowMapButton:SetParent(parent);
+		QuestLogFrameShowMapButton:SetPoint("TOPRIGHT", -25, -30);
+	end
+end

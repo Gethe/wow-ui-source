@@ -279,8 +279,8 @@ function AuctionFrame_Show()
 		FauxScrollFrame_SetOffset(AuctionsScrollFrame,0);
 		GetOwnerAuctionItems(AuctionFrameAuctions.page)
 
-		BrowsePrevPageButton.isEnabled = nil;
-		BrowseNextPageButton.isEnabled = nil;
+		BrowsePrevPageButton.isEnabled = false;
+		BrowseNextPageButton.isEnabled = false;
 		
 		if ( not AuctionFrame:IsShown() ) then
 			CloseAuctionHouse();
@@ -858,20 +858,8 @@ function AuctionFrameBrowse_Update()
 	-- Update scrollFrame
 	-- If more than one page of auctions show the next and prev arrows when the scrollframe is scrolled all the way down
 	if ( totalAuctions > NUM_AUCTION_ITEMS_PER_PAGE ) then
-		if ( AuctionFrameBrowse.page == 0 ) then
---			BrowsePrevPageButton:Disable();
-			BrowsePrevPageButton.isEnabled = nil;
-		else
---			BrowsePrevPageButton:Enable();
-			BrowsePrevPageButton.isEnabled = 1;
-		end
-		if ( AuctionFrameBrowse.page == (ceil(totalAuctions/NUM_AUCTION_ITEMS_PER_PAGE) - 1) ) then
---			BrowseNextPageButton:Disable();
-			BrowseNextPageButton.isEnabled = nil;
-		else
---			BrowseNextPageButton:Enable();
-			BrowseNextPageButton.isEnabled = 1;
-		end
+		BrowsePrevPageButton.isEnabled = (AuctionFrameBrowse.page ~= 0);
+		BrowseNextPageButton.isEnabled = (AuctionFrameBrowse.page ~= (ceil(totalAuctions/NUM_AUCTION_ITEMS_PER_PAGE) - 1));
 		if ( isLastSlotEmpty ) then
 			BrowseSearchCountText:Show();
 			local itemsMin = AuctionFrameBrowse.page * NUM_AUCTION_ITEMS_PER_PAGE + 1;
@@ -884,8 +872,8 @@ function AuctionFrameBrowse_Update()
 		-- Artifically inflate the number of results so the scrollbar scrolls one extra row
 		numBatchAuctions = numBatchAuctions + 1;
 	else
-		BrowsePrevPageButton:Disable();
-		BrowseNextPageButton:Disable();
+		BrowsePrevPageButton.isEnabled = false;
+		BrowseNextPageButton.isEnabled = false;
 		BrowseSearchCountText:Hide();
 	end
 	FauxScrollFrame_Update(BrowseScrollFrame, numBatchAuctions, NUM_BROWSE_TO_DISPLAY, AUCTIONS_BUTTON_HEIGHT);

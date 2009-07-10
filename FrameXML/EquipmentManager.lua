@@ -265,7 +265,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 	if ( not player and not bank and not bags ) then -- Invalid location
 		return;
 	end
-		
+
 	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3, _;
 	if ( not bags ) then -- and (player or bank) 
 		id = GetInventoryItemID("player", slot);

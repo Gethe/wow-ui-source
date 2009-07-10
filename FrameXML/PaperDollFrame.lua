@@ -2203,11 +2203,9 @@ function GearManagerDialog_OnEvent (self, event, ...)
 		end		
 	elseif ( event == "EQUIPMENT_SWAP_FINISHED" ) then
 		local completed, setName = ...;
-		
 		if ( completed ) then
 			self.selectedSetName = setName;
 			GearManagerDialog_Update();
-			
 			if ( self:IsShown() ) then
 				PaperDollFrame_ClearIgnoredSlots();
 				PaperDollFrame_IgnoreSlotsForSet(setName);
@@ -2243,11 +2241,12 @@ function GearManagerDialog_Update ()
 			button:SetChecked(false);
 		end
 	end
-
 	if ( dialog.selectedSet ) then
 		GearManagerDialogDeleteSet:Enable();
+		GearManagerDialogEquipSet:Enable();
 	else
 		GearManagerDialogDeleteSet:Disable();
+		GearManagerDialogEquipSet:Disable();
 	end
 	
 	for i = numSets + 1, MAX_EQUIPMENT_SETS_PER_PLAYER do
@@ -2257,6 +2256,9 @@ function GearManagerDialog_Update ()
 		button.name = nil;
 		button.text:SetText("");		
 		button.icon:SetTexture("");
+	end
+	if(GearManagerDialogPopup:IsShown()) then
+		RecalculateGearManagerDialogPopup();		--Scroll so that the texture appears and Save is enabled
 	end
 end
 
@@ -2274,15 +2276,6 @@ end
 
 function GearManagerDialogSaveSet_OnClick (self)
 	local popup = GearManagerDialogPopup;
-	local selectedSet = GearManagerDialog.selectedSet;
-	if ( selectedSet ) then
-		popup.selectedTexture = selectedSet.icon:GetTexture();
-		
-		local editBox = GearManagerDialogPopupEditBox;
-		editBox:SetText(selectedSet.name);
-		editBox:HighlightText(0);
-	end
-	
 	local wasShown = popup:IsShown();
 	popup:Show();
 	if ( wasShown ) then	--If the dialog was already shown, the OnShow script will not run and the icon will not be updated (Bug 169523)
@@ -2290,30 +2283,28 @@ function GearManagerDialogSaveSet_OnClick (self)
 	end
 end
 
+function GearManagerDialogEquipSet_OnClick (self)
+	local selectedSet = GearManagerDialog.selectedSet;
+	if ( selectedSet ) then
+		local name = selectedSet.name;
+		if ( name and name ~= "" ) then
+			PlaySound("igCharacterInfoTab");			-- inappropriately named, but a good sound.
+			EquipmentManager_EquipSet(name);
+		end
+	end
+end
+
 function GearSetButton_OnClick (self)
+	--[[
+	Select the new gear set
+	]]
 	if ( self.name and self.name ~= "" ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");		-- inappropriately named, but a good sound.
 		local dialog = GearManagerDialog;
-		if ( EquipmentSetContainsLockedItems(self.name) or UnitOnTaxi("player") or UnitCastingInfo("player") ) then
-			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
-			for i, button in pairs(dialog.buttons) do
-				button:SetChecked(0);
-			end
-			dialog.selectedSet = nil
-			return;
-		end
-		
-		dialog.selectedSet = self;
-		for i, button in pairs(dialog.buttons) do
-			if ( button ~= self ) then
-				button:SetChecked(0);
-			end
-		end
-		
-		EquipmentManager_EquipSet(self.name);
-		
-		self:SetChecked(1);
+		dialog.selectedSetName = self.name;
+		GearManagerDialog_Update();						--change selection, enable one equip button, disable rest.
 	else
-		self:SetChecked(0);
+		self:SetChecked(false);
 	end
 end
 
@@ -2352,75 +2343,129 @@ function GearManagerDialogPopup_OnLoad (self)
 		end
 		tinsert(self.buttons, button);
 	end
+
+	self.SetSelection = function(self, fTexture, Value)
+		if(fTexture) then
+			self.selectedTexture = Value;
+			self.selectedIcon = nil;
+		else
+			self.selectedTexture = nil;
+			self.selectedIcon = Value;
+		end
+	end
 end
 
 local _equippedItems = {};
 local _numItems;
+local _specialIcon;
+local _TotalItems;
 
 function GearManagerDialogPopup_OnShow (self)
 	PlaySound("igCharacterInfoOpen");
+	RecalculateGearManagerDialogPopup();
+	GearManagerDialogSaveSet:Disable();
+end
+
+function GearManagerDialogPopup_OnHide (self)
+	local popup = GearManagerDialogPopup;
+	popup.name = nil;
+	popup:SetSelection(true, nil);
+	GearManagerDialogPopupEditBox:SetText("");
+	GearManagerDialogSaveSet:Enable();
+end
+
+function RecalculateGearManagerDialogPopup()
+	local popup = GearManagerDialogPopup;
+	local selectedSet = GearManagerDialog.selectedSet;
+	if ( selectedSet ) then
+		popup:SetSelection(true, selectedSet.icon:GetTexture());
+		local editBox = GearManagerDialogPopupEditBox;
+		editBox:SetText(selectedSet.name);
+		editBox:HighlightText(0);
+	end
 	--[[ 
+	Scroll and ensure that any selected equipment shows up in the list.
 	When we first press "save", we want to make sure any selected equipment set shows up in the list, so that
 	the user can just make his changes and press Okay to overwrite.
 	To do this, we need to find the current set (by icon) and move the offset of the GearManagerDialogPopup
 	to display it. Issue ID: 171220
 	]]
 	RefreshEquipmentSetIconInfo();
-	local popup = GearManagerDialogPopup;
-	local numIcons = GetNumMacroIcons() + _numItems;
-	local texture
+	_TotalItems = GetNumMacroIcons() + _numItems;
+	_specialIcon = nil;
+	local texture;
 	if(popup.selectedTexture) then
 		local index = 1;
 		local foundIndex = nil;
-		for index=1, numIcons do
+		for index=1, _TotalItems do
 			texture, _ = GetEquipmentSetIconInfo(index);
 			if ( texture == popup.selectedTexture ) then
 				foundIndex = index;
 				break;
 			end
 		end
-		if (foundIndex) then
-			-- now make it so we always display at least NUM_GEARSET_ICON_ROWS of data
-			local offsetnumIcons = floor((numIcons-1)/NUM_GEARSET_ICONS_PER_ROW);
-			local offset = floor((foundIndex-1) / NUM_GEARSET_ICONS_PER_ROW);
-			offset = offset + min((NUM_GEARSET_ICON_ROWS-1), offsetnumIcons-offset) - (NUM_GEARSET_ICON_ROWS-1);
-			FauxScrollFrame_OnVerticalScroll(GearManagerDialogPopupScrollFrame, offset*GEARSET_ICON_ROW_HEIGHT, GEARSET_ICON_ROW_HEIGHT, nil);
+		if (foundIndex == nil) then
+			_specialIcon = popup.selectedTexture;
+			_TotalItems = _TotalItems + 1;
+			foundIndex = _TotalItems;
+		else
+			_specialIcon = nil;
 		end
+		-- now make it so we always display at least NUM_GEARSET_ICON_ROWS of data
+		local offsetnumIcons = floor((_TotalItems-1)/NUM_GEARSET_ICONS_PER_ROW);
+		local offset = floor((foundIndex-1) / NUM_GEARSET_ICONS_PER_ROW);
+		offset = offset + min((NUM_GEARSET_ICON_ROWS-1), offsetnumIcons-offset) - (NUM_GEARSET_ICON_ROWS-1);
+		if(foundIndex<=NUM_GEARSET_ICONS_SHOWN) then
+			offset = 0;			--Equipment all shows at the same place.
+		end
+		FauxScrollFrame_OnVerticalScroll(GearManagerDialogPopupScrollFrame, offset*GEARSET_ICON_ROW_HEIGHT, GEARSET_ICON_ROW_HEIGHT, nil);
 	end
 	GearManagerDialogPopup_Update();
 end
 
-function GearManagerDialogPopup_OnHide (self)
-	local popup = GearManagerDialogPopup;
-	popup.name = nil;
-	popup.selectedIcon = nil;
-	popup.selectedTexture = nil;
-	
-	GearManagerDialogPopupEditBox:SetText("");
-end
-
+--[[
+RefreshEquipmentSetIconInfo() counts how many uniquely textured inventory items the player has equipped. 
+]]
 function RefreshEquipmentSetIconInfo ()
 	_numItems = 0;
 	for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
-		if ( GetInventoryItemTexture("player", i) ) then
-			_equippedItems[i] = true;
+		_equippedItems[i] = GetInventoryItemTexture("player", i);
+		if(_equippedItems[i]) then
 			_numItems = _numItems + 1;
-		else
-			_equippedItems[i] = nil;
+			--[[
+			Currently checks all for duplicates, even though only rings, trinkets, and weapons may be duplicated. 
+			This version is clean and maintainable.
+			]]
+			for j=INVSLOT_FIRST_EQUIPPED, (i-1) do
+				if(_equippedItems[i] == _equippedItems[j]) then
+					_equippedItems[i] = nil;
+					_numItems = _numItems - 1;
+					break;
+				end
+			end
 		end
 	end
 end
 
+
+--[[ 
+GetEquipmentSetIconInfo(index) determines the texture and real index of a regular index
+	Input: 	index = index into a list of equipped items follows by the macro items. Only tricky part is the equipped items list keeps changing.
+	Output: the associated texture for the item, and a index relative to the join point between the lists, i.e. negative for the equipped items
+			and positive from the equipped items for the macro items//
+]]
 function GetEquipmentSetIconInfo(index)
 	for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
 		if (_equippedItems[i]) then
 			index = index - 1;
 			if ( index == 0 ) then
-				return GetInventoryItemTexture("player", i), -i;
+				return _equippedItems[i], -i;
 			end
 		end
 	end
-
+	if(index>GetNumMacroIcons()) then
+		return _specialIcon, index;
+	end
 	return GetMacroIconInfo(index), index;
 end
 
@@ -2429,37 +2474,35 @@ function GearManagerDialogPopup_Update ()
 
 	local popup = GearManagerDialogPopup;
 	local buttons = popup.buttons;
-	local numIcons = GetNumMacroIcons() + _numItems;
 	local offset = FauxScrollFrame_GetOffset(GearManagerDialogPopupScrollFrame) or 0;
-		
 	local button;	
 	-- Icon list
 	local texture, index, button, realIndex;
 	for i=1, NUM_GEARSET_ICONS_SHOWN do
 		local button = buttons[i];
 		index = (offset * NUM_GEARSET_ICONS_PER_ROW) + i;
-		texture, realIndex = GetEquipmentSetIconInfo(index);
-		if ( index <= numIcons ) then
+		if ( index <= _TotalItems ) then
+			texture, _ = GetEquipmentSetIconInfo(index);
+			-- button.name:SetText(index); --dcw
 			button.icon:SetTexture(texture);
 			button:Show();
+			if ( index == popup.selectedIcon ) then
+				button:SetChecked(1);
+			elseif ( texture == popup.selectedTexture ) then
+				button:SetChecked(1);
+				popup:SetSelection(false, index);
+			else
+				button:SetChecked(nil);
+			end
 		else
 			button.icon:SetTexture("");
 			button:Hide();
 		end
 		
-		if ( index == popup.selectedIcon ) then
- 			button:SetChecked(1);
-		elseif ( texture == popup.selectedTexture ) then
-			button:SetChecked(1);
-			popup.selectedIcon = index;
-			popup.selectedTexture = nil;
-		else
-			button:SetChecked(nil);
-		end
 	end
 	
 	-- Scrollbar stuff
-	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(numIcons / NUM_GEARSET_ICONS_PER_ROW) , NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
+	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(_TotalItems / NUM_GEARSET_ICONS_PER_ROW) , NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
 end
 
 function GearManagerDialogPopupOkay_Update ()
@@ -2505,7 +2548,6 @@ function GearSetPopupButton_OnClick (self, button)
 	local offset = FauxScrollFrame_GetOffset(GearManagerDialogPopupScrollFrame) or 0;
 	popup.selectedIcon = (offset * NUM_GEARSET_ICONS_PER_ROW) + self:GetID();
  	popup.selectedTexture = nil;
-	
 	GearManagerDialogPopup_Update();
 	GearManagerDialogPopupOkay_Update();
 end

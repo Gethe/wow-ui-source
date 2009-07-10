@@ -3,8 +3,8 @@ local talentSpecInfoCache = {};
 
 function InspectTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local link = GetTalentLink(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(),
-			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+		local link = GetTalentLink(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
+			InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end

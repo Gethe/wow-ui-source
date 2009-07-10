@@ -972,6 +972,58 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="QuestLogFrameShowMapButton">
+				<Size>
+					<AbsDimension x="48" y="48"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-25" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\QuestFrame\UI-QuestMap_Button" parentKey="texture">
+							<Size>
+								<AbsDimension x="48" y="48"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.125" right="0.875" top="0.0625" bottom="0.4375"/>
+						</Texture>
+						<FontString name="$parentText" inherits="GameFontNormal" text="SHOW_MAP" parentKey="text">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentTexture" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetWidth(self.text:GetWidth() + self.texture:GetWidth());
+					</OnLoad>
+					<OnClick>
+						table.wipe(QuestsToShowAdditionalSpotsFor);
+						QuestsToShowAdditionalSpotsFor[select(9, GetQuestLogTitle(QuestLogFrame.selectedIndex))] = true;
+						WorldMapFrame.showOnHide = self:GetParent();
+						ShowUIPanel(WorldMapFrame);
+						self.texture:SetTexCoord(0.125, 0.875, 0.0625, 0.4375);
+					</OnClick>
+					<OnMouseDown>
+						self.texture:SetTexCoord(0.125, 0.875, 0.5625, 0.9375);
+					</OnMouseDown>
+					<OnMouseUp>
+						self.texture:SetTexCoord(0.125, 0.875, 0.0625, 0.4375);
+					</OnMouseUp>
+				</Scripts>
+			</Button>
 			<Frame name="EmptyQuestLogFrame" hidden="true">
 				<Size>
 					<AbsDimension x="302" y="356"/>

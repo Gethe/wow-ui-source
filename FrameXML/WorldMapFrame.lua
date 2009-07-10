@@ -73,6 +73,7 @@ VEHICLE_TEXTURES["Airship Alliance"] = {
 };
 
 QUEST_MAP_POI = {};
+QUEST_MAP_ADDITIONAL_POI = {};
 
 WORLDMAP_DEBUG_ICON_INFO = {};
 WORLDMAP_DEBUG_ICON_INFO[1] = { size =  6, r = 0.0, g = 1.0, b = 0.0 };
@@ -135,6 +136,11 @@ function WorldMapFrame_OnHide(self)
 	UpdateMicroButtons();
 	PlaySound("igQuestLogClose");
 	WorldMap_ClearTextures();
+	QuestPOIButtonManager:FreeAllFrames();
+	if ( self.showOnHide ) then
+		ShowUIPanel(self.showOnHide);
+		self.showOnHide = nil;
+	end
 end
 
 function WorldMapFrame_OnEvent(self, event, ...)
@@ -148,6 +154,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			WorldMapContinentsDropDown_Update();
 			WorldMapZoneDropDown_Update();
 			WorldMapLevelDropDown_Update();
+			QuestPOIButtonManager:FreeAllFrames();
 		end
 	elseif ( event == "CLOSE_WORLD_MAP" ) then
 		HideUIPanel(self);
@@ -1188,26 +1195,28 @@ function WorldMapUnitDropDown_ReportAll_OnClick()
 	end
 end
 
+local numPOIFrames;
 local distanceTooClose, distanceTooCloseSquared;
+
+QuestsToShowAdditionalSpotsFor = {};
+
 function UpdateQuestMapPOI()
 	local index = 1;
 	if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
 		local numPOI = QuestMapUpdateAllQuests();
+		local firstTurnInIndex;
 		for i=1, numPOI do
 			local numQuests = QuestMapGetNumQuestsForPOI(i);
-			local questName, text;
-			local firstTurnInIndex;
-			questName, text = QuestMapGetQuestInfo(i, 1);
+			local questName, text, poiID, questID = QuestMapGetQuestInfo(i, 1);
 			local mapID, x, y, icon = QuestMapGetPOIInfo(i);
-			if(mapID and x and y and icon) then
-				if ( not QUEST_MAP_POI[index] ) then
-					local mapPOIName = "QuestMapPOI"..index;
-					QUEST_MAP_POI[index] = CreateFrame("FRAME", mapPOIName, WorldMapButton, "WorldMapQuestPOITemplate");
-					distanceTooClose = QUEST_MAP_POI[index]:GetHeight()*0.75;	--Yes, sqrt(2) would be more accurate, but even if they don't overlap, having the two icons so close doesn't look good.
+			if ( mapID and x and y and icon ) then
+				local POIFrame = QuestPOIButtonManager:GetFrameForPOI(poiID);
+				QUEST_MAP_POI[index] = POIFrame;
+				if ( not distanceTooClose ) then
+					distanceTooClose = POIFrame:GetHeight()*0.75;	--Yes, sqrt(2) would be more accurate, but it doesn't look as good.
 					distanceTooCloseSquared = distanceTooClose^2;	--Cache it
 				end
-				QUEST_MAP_POI[index].POIIndex = i;
-				local POIFrame = QUEST_MAP_POI[index];
+				POIFrame.POIIndex = i;
 				x = x * WorldMapDetailFrame:GetWidth();
 				y = -y * WorldMapDetailFrame:GetHeight();
 				--Some information to avoid the appearance of heavy wizardry: Question completion points should always be after objective points.
@@ -1237,58 +1246,136 @@ function UpdateQuestMapPOI()
 				POIFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x, y);
 				POIFrame.x, POIFrame.y = x, y;	--Save these off so that when we try to access them to avoid collisions, we don't have to call to C.
 				POIFrame.icon:SetTexture(QUEST_ICON_TEXTURES[icon]);
-				-- Could store these in difference arrays, but this is fine for 1st pass...
+				WorldMapQuestPOI_UpdateTexture(POIFrame);
 				POIFrame:SetFrameLevel(QUEST_ICON_FRAME_LEVELS[icon]);
 				POIFrame:Show();
 				index = index + 1;	-- save for later
 			end
 		end
+		numPOIFrames = index - 1;
+		-- hide the unused map POI
+		QuestPOIButtonManager:HideUnusedFrames()
+	
+		index = 1;
+		for questID, isActive in pairs(QuestsToShowAdditionalSpotsFor) do
+			if ( isActive ) then
+				local numAdditionalPOI = QuestMapUpdateMouseOverPOI(questID);
+				for i = 1, numAdditionalPOI do
+					local mapID, x, y, icon, questName, objectiveText = QuestMapGetMouseOverPOIInfo(questID, i);
+					if ( mapID and x and y and icon ) then
+						if ( not QUEST_MAP_ADDITIONAL_POI[index] ) then
+							QUEST_MAP_ADDITIONAL_POI[index] = CreateFrame("BUTTON", nil, WorldMapButton, "WorldMapQuestAdditionalPOITemplate");
+						end
+						local POIFrame = QUEST_MAP_ADDITIONAL_POI[index];
+						POIFrame.questID = questID;
+						POIFrame.POIIndex = i;
+						
+						x = x * WorldMapDetailFrame:GetWidth();
+						y = -y * WorldMapDetailFrame:GetHeight();
+						
+						POIFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x, y);
+						POIFrame.x, POIFrame.y = x, y;	--Save these off so that when we try to access them to avoid collisions, we don't have to call to C.
+						POIFrame.icon:SetTexture(QUEST_ICON_TEXTURES[icon]);
+						WorldMapQuestPOI_UpdateTexture(POIFrame);
+						POIFrame:SetFrameLevel(5);
+						POIFrame:Show();
+						index = index + 1;	-- save for later
+					end
+				end
+			end
+		end
+		for i = index, #QUEST_MAP_ADDITIONAL_POI do
+			QUEST_MAP_ADDITIONAL_POI[i]:Hide();
+		end
 	end
-	-- hide the unused map POI
-	for i=index, #QUEST_MAP_POI do
-		QUEST_MAP_POI[i]:Hide();
-	end
+
 	local tooltipOwner = WorldMapTooltip:GetOwner();
-	if ( tooltipOwner and tooltipOwner.isQuestMarker ) then
+	if ( tooltipOwner and (tooltipOwner.isQuestMarker or tooltipOwner.isAdditionalQuestMarker) ) then
 		WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
 	end
 end
 
 function WorldMapQuestPOI_OnLoad(self)
-	self:SetFrameLevel(self:GetFrameLevel() + 1);
 	self.isQuestMarker = true;
 end
 
+function WorldMapAdditionalQuestPOI_OnLoad(self)
+	self.isAdditionalQuestMarker = true;
+end
+
 function WorldMapQuestPOI_UpdateTooltip(tooltip)
-	tooltip:ClearLines();
-	local lastQuestName, overSomething;
-	for i=1, #QUEST_MAP_POI do
+	QuestPOITooltipManager:Clear();
+	for i=1, numPOIFrames do
 		local POIFrame = QUEST_MAP_POI[i];
 		if ( POIFrame:IsShown() and MouseIsOver(POIFrame) ) then
-			if ( not overSomething ) then
-				tooltip:AddLine(QUEST_OBJECTIVES);
-				tooltip:AddLine(" ");
-				overSomething = true;
-			end
 			local POIIndex = POIFrame.POIIndex;
 			local numPOI = QuestMapGetNumQuestsForPOI(POIIndex);	--Yes, calling a bunch of C functions OnUpdate = fail. But the map is open, so we're not doing much else (and a lower framerate with the map isn't noticable)
 			for j=1, numPOI do
 				local questName, text = QuestMapGetQuestInfo(POIIndex, j);
-				if ( questName ~= lastQuestName ) then
-					lastQuestName = questName;
-					tooltip:AddLine(questName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				end
-				tooltip:AddLine(" - "..text, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				QuestPOITooltipManager:AddObjective(questName, text);
 			end
 		end
 	end
+	local lastQuestID;
+	for i=1, #QUEST_MAP_ADDITIONAL_POI do
+		local POIFrame = QUEST_MAP_ADDITIONAL_POI[i];
+		if ( POIFrame:IsShown() and MouseIsOver(POIFrame) ) then
+			if ( lastQuestID ~= POIFrame.questID ) then
+				QuestMapUpdateMouseOverPOI(POIFrame.questID);
+				lastQuestID = POIFrame.questID;
+			end
+			local mapID, x, y, icon, questName, objectiveText = QuestMapGetMouseOverPOIInfo(POIFrame.questID, POIFrame.POIIndex);
+			QuestPOITooltipManager:AddObjective(questName, objectiveText)
+		end
+	end
+	local overSomething = QuestPOITooltipManager:PopulateTooltip(tooltip);
 	if ( overSomething ) then
+		local mouseover = GetMouseFocus();
+		if ( mouseover and mouseover.isQuestMarker and WorldMapQuestPOI_HasAdditionalLocations(mouseover) ) then
+			tooltip:AddLine(" ");
+			if ( WorldMapQuestPOI_IsButtonActivated(mouseover) ) then
+				tooltip:AddLine(CLICK_TO_REMOVE_ADDITIONAL_QUEST_LOCATIONS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+			else
+				tooltip:AddLine(CLICK_FOR_ADDITIONAL_QUEST_LOCATIONS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+			end
+		elseif ( mouseover and mouseover.isAdditionalQuestMarker ) then
+			tooltip:AddLine(" ");
+			tooltip:AddLine(CLICK_TO_REMOVE_ADDITIONAL_QUEST_LOCATIONS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+		end
 		tooltip:Show();
 	else
 		tooltip:Hide();
 	end
 end
+
+function WorldMapQuestPOI_UpdateTexture(self)
+	local top, left = 0, 0;
+	if ( self.isQuestMarker and WorldMapQuestPOI_IsButtonActivated(self) ) then
+		self.fuzziness:Show();
+	elseif ( self.isAdditionalQuestMarker ) then
+		self.fuzziness:Show();
+	else
+		self.fuzziness:Hide();
+	end
+	
+	if ( (self.isQuestMarker and WorldMapQuestPOI_IsButtonActivated(self)) or
+		(GetMouseFocus() == self and (WorldMapQuestPOI_HasAdditionalLocations(self) or self.isAdditionalQuestMarker)) ) then
+		left = left + 0.5;
+	end
+	if ( self.isAdditionalQuestMarker ) then
+		top = top + 0.5;
+	end
+	self.icon:SetTexCoord(left, left + 0.5, top, top + 0.5);
+end
+
 function WorldMapQuestPOI_OnEnter(self, motion)
+	GameTooltip_SetDefaultAnchor(WorldMapTooltip, self);
+	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
+	WorldMapQuestPOI_UpdateTexture(self);
+end
+
+function WorldMapAdditionalQuestPOI_OnEnter(self, motion)
 	GameTooltip_SetDefaultAnchor(WorldMapTooltip, self);
 	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
@@ -1296,4 +1383,154 @@ end
 
 function WorldMapQuestPOI_OnLeave(self, motion)
 	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
+	WorldMapQuestPOI_UpdateTexture(self);
+end
+
+function WorldMapAdditionalQuestPOI_OnLeave(self, motion)
+	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
+end
+
+function WorldMapQuestPOI_OnClick(self)
+	if ( WorldMapQuestPOI_IsButtonActivated(self) ) then
+		table.wipe(QuestsToShowAdditionalSpotsFor);
+	else
+		if ( WorldMapQuestPOI_HasAdditionalLocations(self) ) then
+			table.wipe(QuestsToShowAdditionalSpotsFor);
+			for i = 1, QuestMapGetNumQuestsForPOI(self.POIIndex) do
+				local questName, text, poiID, questID = QuestMapGetQuestInfo(self.POIIndex, i);
+				QuestsToShowAdditionalSpotsFor[questID] = true;
+			end
+		end
+	end
+end
+
+function WorldMapAdditionalQuestPOI_OnClick(self)
+	table.wipe(QuestsToShowAdditionalSpotsFor);
+end
+
+function WorldMapQuestPOI_IsButtonActivated(self)
+	for i = 1, QuestMapGetNumQuestsForPOI(self.POIIndex) do
+		local questName, text, poiID, questID = QuestMapGetQuestInfo(self.POIIndex, i);
+		if ( QuestsToShowAdditionalSpotsFor[questID] ) then
+			return true;
+		end
+	end
+	return false;
+end
+
+function WorldMapQuestPOI_HasAdditionalLocations(self)
+	if ( self.isQuestMarker ) then
+		for i = 1, QuestMapGetNumQuestsForPOI(self.POIIndex) do
+			local questName, text, poiID, questID = QuestMapGetQuestInfo(self.POIIndex, i);
+			if ( QuestMapUpdateMouseOverPOI(questID) > 0 ) then
+				return true;
+			end
+		end
+		return false;
+	end
+end
+
+function WorldMapQuestPOIPulser_OnUpdate(self, elapsed)
+	local alpha = self.min + (self.max - self.min)*self:GetSmoothProgress();
+	
+	for i = 1, numPOIFrames do
+		QUEST_MAP_POI[i].fuzziness:SetAlpha(alpha);
+	end
+	
+	for i = 1, #QUEST_MAP_ADDITIONAL_POI do
+		QUEST_MAP_ADDITIONAL_POI[i].fuzziness:SetAlpha(alpha);
+	end
+end
+----------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------Quest POI Button Manager----------------------------------------------------
+-- So, here's the deal.  We need quest POI icons to be buttons. But because they are currently being updated OnUpdate, we 	--
+-- have to be concerned about the button moving in the middle of a click (OnMouseDown occurs for one button, but			--
+-- OnMouseUp occurs for another button. The solution is to ensure that the button of a particular point remains consistent	--
+-- across frames. When the map is closed, however, we can free all buttons to reuse.									--
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+QuestPOIButtonManager = {};
+
+QuestPOIButtonManager.unusedFrames = {};
+QuestPOIButtonManager.frameMapping = {};
+
+QuestPOIButtonManager.iteratorHelper = {};
+
+function QuestPOIButtonManager:FreeAllFrames()
+	for _, frame in pairs(self.frameMapping) do
+		tinsert(self.unusedFrames, frame);
+	end
+	table.wipe(self.frameMapping);
+end
+
+function QuestPOIButtonManager:HideUnusedFrames()
+	for _, frame in pairs(self.unusedFrames) do
+		frame:Hide();
+	end
+end
+
+function QuestPOIButtonManager:GetFrameForPOI(poiID)
+	local relevantTable = self.frameMapping;
+	
+	if ( relevantTable[poiID] ) then
+		return relevantTable[poiID];
+	end
+	
+	if ( self.unusedFrames[1] ) then
+		relevantTable[poiID] = tremove(self.unusedFrames, #self.unusedFrames);
+		return relevantTable[poiID];
+	end
+	local frame = CreateFrame("BUTTON", nil, WorldMapButton, "WorldMapQuestPOITemplate");
+	relevantTable[poiID] = frame;
+	return frame;
+end
+
+----------------------------------------------------------------------------
+-----------------------Quest POI Tooltip Manager----------------------
+----------------------------------------------------------------------------
+QuestPOITooltipManager = {};
+QuestPOITooltipManager.unusedTables = {};
+QuestPOITooltipManager.list = {};
+
+function QuestPOITooltipManager:AddObjective(questName, objectiveText)
+	for _, questTable in pairs(self.list) do
+		if ( questTable.questName == questName ) then
+			for i=1, questTable.numObjectives do
+				if ( questTable[i] == objectiveText ) then
+					return;
+				end
+			end
+			questTable.numObjectives = questTable.numObjectives + 1;
+			questTable[questTable.numObjectives] = objectiveText;
+			return;
+		end
+	end
+	local questTable = tremove(self.unusedTables, #self.unusedTables) or {};
+	questTable.questName = questName;
+	questTable.numObjectives = 1;
+	questTable[1] = objectiveText;
+	tinsert(self.list, questTable);
+end
+
+function QuestPOITooltipManager:Clear()
+	while ( self.list[1] ) do
+		self.unusedTables[#self.unusedTables + 1] = tremove(self.list, #self.list);
+	end
+end
+
+function QuestPOITooltipManager:PopulateTooltip(tooltip)
+	if ( self.list[1] ) then
+		tooltip:ClearLines();
+		tooltip:AddLine(QUEST_OBJECTIVES);
+		tooltip:AddLine(" ");
+		for _, questTable in ipairs(self.list) do
+			tooltip:AddLine(questTable.questName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			for i=1, questTable.numObjectives do
+				tooltip:AddLine(" - "..questTable[i], HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			end
+		end
+		return true;
+	else
+		return false;
+	end
 end

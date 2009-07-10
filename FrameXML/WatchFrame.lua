@@ -120,10 +120,9 @@ end
 function WatchFrameLinkButtonTemplate_OnLeftClick (self)
 	CloseDropDownMenus();
 	if ( self.type == "QUEST" ) then
-		-- if you don't call ExpandQuestHeader(0) prior to calling GetQuestIndexForWatch, you may get a strange index since all
-		-- of the quests in collapsed headers get pushed to the end of the quest list
-		ExpandQuestHeader(0);
-		QuestLog_OpenToQuest(GetQuestIndexForWatch(self.index));
+		ExpandQuestHeader( GetQuestSortIndex( GetQuestIndexForWatch(self.index) ) );
+		-- you have to call GetQuestIndexForWatch again because ExpandQuestHeader will sort the indices
+		QuestLog_OpenToQuest( GetQuestIndexForWatch(self.index) );
 		return;
 	elseif ( self.type == "ACHIEVEMENT" ) then
 		if ( not AchievementFrame ) then
@@ -132,8 +131,14 @@ function WatchFrameLinkButtonTemplate_OnLeftClick (self)
 	
 		if ( not AchievementFrame:IsShown() ) then
 			AchievementFrame_ToggleAchievementFrame();
-		end
-		AchievementFrame_SelectAchievement(self.index);
+			AchievementFrame_SelectAchievement(self.index);
+		else
+			if ( AchievementFrameAchievements.selection ~= self.index ) then
+				AchievementFrame_SelectAchievement(self.index);
+			else
+				AchievementFrame_ToggleAchievementFrame();
+			end
+		end		
 		return;
 	end		
 end
@@ -224,11 +229,11 @@ end
 function WatchFrame_ToggleIgnoreCursor ()
 	local WatchFrame = WatchFrame;
 	if ( WATCHFRAME_IGNORECURSOR == "1" ) then
-		WatchFrameTitleButton:Disable();
+		WatchFrameTitleButton:Hide();
 		WatchFrameCollapseExpandButton:Disable();
 		WatchFrame_Lock(WatchFrame);
 	else
-		WatchFrameTitleButton:Enable();
+		WatchFrameTitleButton:Show();
 		WatchFrameCollapseExpandButton:Enable();
 	end
 end
@@ -1056,7 +1061,8 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 		if ( questIndex ) then
 			local heightNeeded = WatchFrame_GetHeightNeededForQuest(questIndex);
 			if ( heightNeeded > maxHeight + (initialOffset - heightUsed) ) then
-				return heightUsed, maxWidth; -- We ran out of space to draw quests, stop.
+				-- We ran out of space to draw quests, stop.
+				break;
 			else
 				heightUsed = heightUsed + heightNeeded;
 			end
@@ -1104,6 +1110,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				itemButton:SetID(questIndex);
 				SetItemButtonTexture(itemButton, item);
 				SetItemButtonCount(itemButton, charges);
+				itemButton.charges = charges;
 				WatchFrameItem_UpdateCooldown(itemButton);
 				itemButton.rangeTimer = -1;
 				line.text.clear = true;
@@ -1207,9 +1214,8 @@ function WatchFrameLines_RemoveUpdateFunction (func)
 end
 
 function WatchFrame_OpenQuestLog (button, arg1, arg2, checked)
-	-- if you don't call ExpandQuestHeader(0) prior to calling GetQuestIndexForWatch, you may get a strange index since all
-	-- of the quests in collapsed headers get pushed to the end of the quest list
-	ExpandQuestHeader(0);
+	ExpandQuestHeader(GetQuestIndexForWatch(arg1));
+	-- you have to call GetQuestIndexForWatch again because ExpandQuestHeader will sort the indices
 	QuestLog_OpenToQuest(GetQuestIndexForWatch(arg1));
 end
 
@@ -1237,18 +1243,24 @@ end
 function WatchFrame_StopTrackingQuest (button, arg1, arg2, checked)
 	RemoveQuestWatch(GetQuestIndexForWatch(arg1));
 	WatchFrame_Update();
+	QuestLog_Update();
 end
 
 function WatchFrame_OpenAchievementFrame (button, arg1, arg2, checked)
 	if ( not AchievementFrame ) then
 		AchievementFrame_LoadUI();
 	end
-	
+
 	if ( not AchievementFrame:IsShown() ) then
 		AchievementFrame_ToggleAchievementFrame();
-	end
-	
-	AchievementFrame_SelectAchievement(arg1);
+		AchievementFrame_SelectAchievement(arg1);
+	else
+		if ( AchievementFrameAchievements.selection ~= arg1 ) then
+			AchievementFrame_SelectAchievement(arg1);
+		else
+			AchievementFrame_ToggleAchievementFrame();
+		end
+	end	
 end
 
 function WatchFrame_StopTrackingAchievement (button, arg1, arg2, checked)
@@ -1420,7 +1432,8 @@ function WatchFrameItem_OnUpdate (self, elapsed)
 	if ( rangeTimer ) then
 		rangeTimer = rangeTimer - elapsed;
 		if ( rangeTimer <= 0 ) then
-			if ( not GetQuestLogSpecialItemInfo(self:GetID()) ) then
+			local link, item, charges = GetQuestLogSpecialItemInfo(self:GetID());
+			if ( not charges or charges ~= self.charges ) then
 				WatchFrame_Update();
 				return;
 			end

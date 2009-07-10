@@ -132,44 +132,7 @@ function BlizzardOptionsPanel_CheckButton_SetNewValue (checkButton)
 		end
 	end
 end
---[[
-function BlizzardOptionsPanel_CheckButton_OnClick (checkButton)
-	local setting = "0";
-	if ( checkButton:GetChecked() ) then
-		if ( not checkButton.invert ) then
-			setting = "1"
-		end
-	elseif ( checkButton.invert ) then
-		setting = "1"
-	end
 
-	checkButton.value = setting;
-
-	if ( checkButton.cvar ) then
-		BlizzardOptionsPanel_SetCVarSafe(checkButton.cvar, setting, checkButton.event);
-	end
-
-	if ( checkButton.uvar ) then
-		_G[checkButton.uvar] = setting;
-	end
-
-	if ( checkButton.dependentControls ) then
-		if ( checkButton:GetChecked() ) then
-			for _, control in SecureNext, checkButton.dependentControls do
-				control:Enable();
-			end
-		else
-			for _, control in SecureNext, checkButton.dependentControls do
-				control:Disable();
-			end
-		end
-	end
-
-	if ( checkButton.setFunc ) then
-		checkButton.setFunc(checkButton.value);
-	end
-end
---]]
 function BlizzardOptionsPanel_CheckButton_Refresh (checkButton)
 	local value;
 

@@ -962,6 +962,9 @@ function AchievementButton_OnClick (self, ignoreModifiers)
 	AchievementButton_DisplayAchievement(self, achievementFunctions.selectedCategory, self.index, self.id);
 	HybridScrollFrame_ExpandButton(AchievementFrameAchievementsContainer, ((self.index - 1) * ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT), self:GetHeight());
 	AchievementFrameAchievements_Update();
+	if ( not ignoreModifiers ) then
+		AchievementFrameAchievements_AdjustSelection();
+	end
 end
 
 function AchievementButton_ToggleTracking (id)
@@ -2132,6 +2135,61 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 			else
 				HybridScrollFrame_OnMouseWheel(AchievementFrameAchievementsContainer, -1);
 			end			
+		end
+	end
+end
+
+function AchievementFrameAchievements_FindSelection()
+	local _, maxVal = AchievementFrameAchievementsContainerScrollBar:GetMinMaxValues();
+	local scrollHeight = AchievementFrameAchievementsContainer:GetHeight();
+	local newHeight = 0;
+	AchievementFrameAchievementsContainerScrollBar:SetValue(0);	
+	while ( not shown ) do
+		for _, button in next, AchievementFrameAchievementsContainer.buttons do
+			if ( button.selected ) then
+				newHeight = AchievementFrameAchievementsContainerScrollBar:GetValue() + AchievementFrameAchievementsContainer:GetTop() - button:GetTop();
+				newHeight = min(newHeight, maxVal);
+				AchievementFrameAchievementsContainerScrollBar:SetValue(newHeight);					
+				return;
+			end
+		end		
+		if ( AchievementFrameAchievementsContainerScrollBar:GetValue() == maxVal ) then		
+			return;
+		else
+			newHeight = newHeight + scrollHeight;
+			newHeight = min(newHeight, maxVal);
+			AchievementFrameAchievementsContainerScrollBar:SetValue(newHeight);
+		end
+	end
+end
+
+function AchievementFrameAchievements_AdjustSelection()
+	local selectedButton;	
+	-- check if selection is visible
+	for _, button in next, AchievementFrameAchievementsContainer.buttons do
+		if ( button.selected ) then
+			selectedButton = button;
+			break;
+		end
+	end	
+	
+	if ( not selectedButton ) then
+		AchievementFrameAchievements_FindSelection();
+	else
+		local newHeight;
+		if ( selectedButton:GetTop() > AchievementFrameAchievementsContainer:GetTop() ) then
+			newHeight = AchievementFrameAchievementsContainerScrollBar:GetValue() + AchievementFrameAchievementsContainer:GetTop() - selectedButton:GetTop();
+		elseif ( selectedButton:GetBottom() < AchievementFrameAchievementsContainer:GetBottom() ) then
+			if ( selectedButton:GetHeight() > AchievementFrameAchievementsContainer:GetHeight() ) then
+				newHeight = AchievementFrameAchievementsContainerScrollBar:GetValue() + AchievementFrameAchievementsContainer:GetTop() - selectedButton:GetTop();
+			else
+				newHeight = AchievementFrameAchievementsContainerScrollBar:GetValue() + AchievementFrameAchievementsContainer:GetBottom() - selectedButton:GetBottom();
+			end
+		end
+		if ( newHeight ) then
+			local _, maxVal = AchievementFrameAchievementsContainerScrollBar:GetMinMaxValues();
+			newHeight = min(newHeight, maxVal);
+			AchievementFrameAchievementsContainerScrollBar:SetValue(newHeight);					
 		end
 	end
 end

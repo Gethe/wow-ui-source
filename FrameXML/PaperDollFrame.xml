@@ -1258,8 +1258,8 @@
 			<Frame name="SetContainer">
 			
 			</Frame>
-			<Button name="$parentDeleteSet" text="DELETE" inherits="UIPanelButtonGrayTemplate">
-				<Size x="96" y="22"/>
+			<Button name="$parentDeleteSet" text="DELETE" inherits="UIPanelButtonTemplate">
+				<Size x="78" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset x="11" y="12"/>
@@ -1269,8 +1269,19 @@
 					<OnClick function="GearManagerDialogDeleteSet_OnClick"/>
 				</Scripts>
 			</Button>
+			<Button name="$parentEquipSet" text="EQUIPSET_EQUIP" inherits="UIPanelButtonTemplate">
+				<Size x="78" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="93" y="12"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GearManagerDialogEquipSet_OnClick"/>
+				</Scripts>
+			</Button>
 			<Button name="$parentSaveSet" text="SAVE" inherits="UIPanelButtonTemplate">
-				<Size x="96" y="22"/>
+				<Size x="78" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset x="-8" y="12"/>

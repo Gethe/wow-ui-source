@@ -511,6 +511,20 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<FontString name="MapFramerateLabel" hidden="true" inherits="SystemFont_Shadow_Med1" text="FRAMERATE_LABEL">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="64"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="MapFramerateText" hidden="true" inherits="SystemFont_Shadow_Med1">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MapFramerateLabel" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -715,6 +729,24 @@
 						</HighlightTexture>
 					</Button>
 				</Frames>
+				<Animations>
+					<AnimationGroup name="$parentPulser" looping="BOUNCE">
+						<Animation duration="2.0">
+							<Scripts>
+								<OnLoad>
+									self.min = 0.15;
+									self.max = 0.35;
+								</OnLoad>
+								<OnUpdate function="WorldMapQuestPOIPulser_OnUpdate"/>
+							</Scripts>
+						</Animation>
+						<Scripts>
+							<OnLoad>
+								self:Play();
+							</OnLoad>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
 				<Scripts>
 					<OnLoad>
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");

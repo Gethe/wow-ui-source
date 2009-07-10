@@ -387,6 +387,7 @@
 				<xs:attribute name="outline" type="OUTLINETYPE" default="NONE"/>
 				<xs:attribute name="monochrome" type="xs:boolean" default="false"/>
 				<xs:attribute name="nonspacewrap" type="xs:boolean" default="false"/>
+				<xs:attribute name="wordwrap" type="xs:boolean" default="true"/>
 				<xs:attribute name="justifyV" type="JUSTIFYVTYPE" default="MIDDLE"/>
 				<xs:attribute name="justifyH" type="JUSTIFYHTYPE" default="CENTER"/>
 				<xs:attribute name="maxLines" type="xs:unsignedInt" default="0"/>

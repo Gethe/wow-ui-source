@@ -811,7 +811,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						MacroPopupFrame_CancelEdit()
+						MacroPopupFrame_CancelEdit();
 						PlaySound("gsTitleOptionOK");
 					</OnClick>
 				</Scripts>

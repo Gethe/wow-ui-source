@@ -278,11 +278,7 @@ end
 
 function PetActionButton_OnClick (self, button)
 	if ( button == "LeftButton" ) then
-		if ( IsPetAttackActive(self:GetID()) ) then
-			PetStopAttack();
-		else
-			CastPetAction(self:GetID());
-		end
+		CastPetAction(self:GetID());
 	else
 		TogglePetAutocast(self:GetID());
 	end
