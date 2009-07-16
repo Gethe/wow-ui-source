@@ -294,7 +294,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 end
 
 function EquipmentManager_EquipSet (name)
-	if ( EquipmentSetContainsLockedItems(name) or UnitOnTaxi("player") or UnitCastingInfo("player") ) then
+	if ( EquipmentSetContainsLockedItems(name) or UnitCastingInfo("player") ) then
 		UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end

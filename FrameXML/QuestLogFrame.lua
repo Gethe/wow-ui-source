@@ -267,7 +267,6 @@ function QuestLog_OnEvent(self, event, ...)
 		end
 	elseif ( event == "QUEST_ACCEPTED" ) then
 		if ( AUTO_QUEST_WATCH == "1" and 
-			 GetNumQuestLeaderBoards(arg1) > 0 and 
 			 GetNumQuestWatches() < MAX_WATCHABLE_QUESTS and 
 			 WatchFrame_GetRemainingSpace() >= WatchFrame_GetHeightNeededForQuest(arg1) ) then
 			AddQuestWatch(arg1);
@@ -323,19 +322,27 @@ function QuestLog_OnUpdate(self, elapsed)
 	end
 end
 
+function QuestLog_UpdateMapButton()
+	if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" and GetNumQuestLogEntries() ~= 0 ) then
+		QuestLogFrameShowMapButton:Show();
+	else
+		QuestLogFrameShowMapButton:Hide();
+	end
+end
+
 function QuestLog_Update()
 	local numEntries, numQuests = GetNumQuestLogEntries();
 	if ( numEntries == 0 ) then
 		HideUIPanel(QuestLogDetailFrame);
 		QuestLogDetailFrame.timeLeft = nil;
 		EmptyQuestLogFrame:Show();
-		QuestLogFrameShowMapButton:Hide();
 		QuestLog_SetSelection(0);
 	else
 		EmptyQuestLogFrame:Hide();
-		QuestLogFrameShowMapButton:Show();
 	end
 
+	QuestLog_UpdateMapButton();
+	
 	-- Update Quest Count
 	QuestLog_UpdateQuestCount(numQuests);
 
@@ -724,6 +731,8 @@ end
 
 function QuestLog_SetSelection(questIndex)
 	SelectQuestLogEntry(questIndex);
+	StaticPopup_Hide("ABANDON_QUEST");
+	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
 	SetAbandonQuest();
 
 	QuestLogControlPanel_UpdateState();

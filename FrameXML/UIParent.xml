@@ -10,6 +10,25 @@
 			<Attribute name="RIGHT_OFFSET" type="number" value="768"/>	<!-- Do not modify, updated by UpdateUIPanelPositions() -->
 			<Attribute name="RIGHT_OFFSET_BUFFER" type="number" value="80"/>
 		</Attributes>
+		<Animations>
+			<AnimationGroup name="AutoCompleteInfoDelayer">
+				<Animation duration="15.0" order="1"> <!--We need the guild roster to be able to use guildy's names. But we don't want to request it on login when we're requesting everything else from the server, so we'll wait a bit-->
+					<Scripts>
+						<OnFinished>
+							if ( IsInGuild() ) then
+								GuildRoster();
+							end
+						</OnFinished>
+					</Scripts>
+				</Animation>
+				<!--If you add another animation to this group, make sure that the order is also 1 so that they get played simultaneously.-->
+				<Scripts>
+					<OnLoad>
+						self:Play();
+					</OnLoad>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<!-- Register here for any events you want to monitor globally -->
 			<OnLoad>

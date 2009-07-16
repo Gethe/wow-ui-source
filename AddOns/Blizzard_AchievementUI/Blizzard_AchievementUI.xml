@@ -605,7 +605,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentLabel" text="This is a Category" inherits="GameFontNormalLeftBottom">
+				<FontString name="$parentLabel" text="This is a Category" inherits="GameFontNormalLeftBottom" wordwrap="false">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT">
 							<Offset x="16" y="4"/> 

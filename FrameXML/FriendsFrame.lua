@@ -830,6 +830,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 		WhoList_Update();
 		FriendsFrame_Update();
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		GuildInfoFrame.cachedText = nil;
 		if ( GuildFrame:IsShown() ) then
 			local arg1 = ...;
 			if ( arg1 ) then

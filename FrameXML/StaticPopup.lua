@@ -138,15 +138,17 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	button2 = NO,
 	OnAccept = function()
 		local currentHonor, maxHonor = GetHonorCurrency();
-		if ( MerchantFrame.honorPoints and (MerchantFrame.honorPoints + currentHonor > maxHonor) ) then
+		local currentArenaPoints, maxArenaPoints = GetArenaCurrency();
+		local overflowHonor = MerchantFrame.honorPoints and ( MerchantFrame.honorPoints + currentHonor > maxHonor );
+		local overflowArena = MerchantFrame.arenaPoints and ( MerchantFrame.arenaPoints + currentArenaPoints > maxArenaPoints );
+		if ( overflowHonor and overflowArena ) then
+			StaticPopup_Show("CONFIRM_REFUND_MAX_HONOR_AND_ARENA", (MerchantFrame.honorPoints + currentHonor - maxHonor), (MerchantFrame.arenaPoints + currentArenaPoints - maxArenaPoints) )
+		elseif ( overflowHonor ) then
 			StaticPopup_Show("CONFIRM_REFUND_MAX_HONOR", (MerchantFrame.honorPoints + currentHonor - maxHonor) )
+		elseif ( overflowArena ) then
+			StaticPopup_Show("CONFIRM_REFUND_MAX_ARENA_POINTS", (MerchantFrame.arenaPoints + currentArenaPoints - maxArenaPoints))
 		else
-			local currentArenaPoints, maxArenaPoints = GetArenaCurrency();
-			if ( MerchantFrame.arenaPoints and (MerchantFrame.arenaPoints + currentArenaPoints > maxArenaPoints) ) then
-				StaticPopup_Show("CONFIRM_REFUND_MAX_ARENA_POINTS", (MerchantFrame.arenaPoints + currentArenaPoints - maxArenaPoints))
-			else
-				ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
-			end
+			ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		end
 		StackSplitFrame:Hide();
 	end,
@@ -206,6 +208,26 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_ARENA_POINTS"] = {
 	hideOnEscape = 1,
 }
 
+StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR_AND_ARENA"] = {
+	text = CONFIRM_REFUND_MAX_HONOR_AND_ARENA,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		StackSplitFrame:Hide();
+	end,
+	OnCancel = function()
+		ClearCursor();
+	end,
+	OnShow = function()
+	
+	end,
+	OnHide = function()
+		MerchantFrame.refundItem = nil;
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+}
 
 StaticPopupDialogs["CONFIRM_HIGH_COST_ITEM"] = {
 	text = CONFIRM_HIGH_COST_ITEM,
@@ -2340,7 +2362,8 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		self.lockTimeleft = lockTimeleft;
 		self.isPreviousInstance = isPreviousInstance;
 
-		self.name, self.type, self.difficulty = GetInstanceInfo();
+		local type, difficulty;
+		self.name, type, difficulty, self.difficultyName = GetInstanceInfo();
 	end,
 	OnUpdate = function(self, elapsed)
 		local lockTimeleft = self.lockTimeleft - elapsed;
@@ -2354,20 +2377,24 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		end
 		self.lockTimeleft = lockTimeleft;
 
-		local text = _G[self:GetName().."Text"];
-		local name = NORMAL_FONT_COLOR_CODE..(self.name or "")..FONT_COLOR_CODE_CLOSE;
-		local difficulty;
-		if ( self.difficulty > 0 ) then
-			difficulty = NORMAL_FONT_COLOR_CODE..format(INSTANCE_DIFFICULTY_FORMAT, (_G[(self.type == "raid" and "RAID_DIFFICULTY" or "DUNGEON_DIFFICULTY")..self.difficulty]))..FONT_COLOR_CODE_CLOSE;
+		-- combine the name with the difficulty name if there is a difficulty name
+		local name = self.name or "";
+		if ( self.difficultyName == "" ) then
+			name = NORMAL_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
 		else
-			difficulty = "";
+			name = NORMAL_FONT_COLOR_CODE..format(DUNGEON_NAME_WITH_DIFFICULTY, name, self.difficultyName)..FONT_COLOR_CODE_CLOSE;
 		end
-		text:SetFormattedText((self.isPreviousInstance and INSTANCE_LOCK_TIMER_PREVIOUSLY_SAVED or INSTANCE_LOCK_TIMER), name, difficulty, SecondsToTime(ceil(lockTimeleft), nil, 1));
+
+		-- set the text using the combined name
+		local text = _G[self:GetName().."Text"];
+		text:SetFormattedText((self.isPreviousInstance and INSTANCE_LOCK_TIMER_PREVIOUSLY_SAVED or INSTANCE_LOCK_TIMER), name, SecondsToTime(ceil(lockTimeleft), nil, 1));
+
+		-- make sure the dialog fits the text
 		StaticPopup_Resize(self, "INSTANCE_LOCK");
 	end,
 	OnAccept = function(self)
 		RespondInstanceLock(true);
-		self.name, self.difficulty = nil, nil;
+		self.name, self.difficultyName = nil, nil;
 		self.lockTimeleft = nil;
 	end,
 	OnCancel = function(self, data, reason)
@@ -2376,7 +2403,7 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 			return;
 		end
 		RespondInstanceLock(false);
-		self.name, self.difficulty = nil, nil;
+		self.name, self.difficultyName = nil, nil;
 		self.lockTimeleft = nil;
 	end,
 	timeout = 0,

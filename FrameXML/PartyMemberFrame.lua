@@ -562,7 +562,7 @@ end
 function PartyMemberFrame_UpdateStatusBarText ()
 	local lockText = nil;
 	if ( SHOW_PARTY_TEXT == "1" ) then
-		lockText = 1;	
+		lockText = 1;
 	end
 	for i=1, MAX_PARTY_MEMBERS do
 		_G["PartyMemberFrame"..i.."HealthBar"].forceShow = lockText;

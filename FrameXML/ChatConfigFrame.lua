@@ -9,6 +9,7 @@ CHATCONFIG_SELECTED_FILTER_COLORS = nil;
 CHATCONFIG_SELECTED_FILTER_SETTINGS = nil;
 CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = nil;
 MAX_COMBATLOG_FILTERS = 20;
+CHATCONFIG_CHANNELS_MAXWIDTH = 145;
 
 --Chat options
 
@@ -699,6 +700,8 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 	local width, height;
 	local padding = 8;
 	local text;
+	local checkBoxFontString;
+	
 	frame.checkBoxTable = checkBoxTable;
 	if ( title ) then
 		_G[frame:GetName().."Title"]:SetText(title);
@@ -725,11 +728,20 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 			text = _G[value.type];
 		end
 		checkBox.type = value.type;
-		_G[checkBoxName.."CheckText"]:SetText(text);
+		checkBoxFontString = _G[checkBoxName.."CheckText"];
+		checkBoxFontString:SetText(text);
 		check = _G[checkBoxName.."Check"];
 		check.func = value.func;
 		check:SetID(index);
 		check.tooltip = value.tooltip;
+		if ( value.maxWidth ) then
+			checkBoxFontString:SetWidth(0);
+			if ( checkBoxFontString:GetWidth() > value.maxWidth ) then
+				checkBoxFontString:SetWidth(value.maxWidth);
+				check.tooltip = text;
+				check.tooltipStyle = 0;
+			end
+		end
 	end
 	--Set Parent frame dimensions
 	if ( #checkBoxTable > 0 ) then
@@ -1486,6 +1498,7 @@ function CreateChatChannelList(self, ...)
 		CHAT_CONFIG_CHANNEL_LIST[count].text = channelID.."."..channel;
 		CHAT_CONFIG_CHANNEL_LIST[count].channelName = channel;
 		CHAT_CONFIG_CHANNEL_LIST[count].type = tag;
+		CHAT_CONFIG_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
 		CHAT_CONFIG_CHANNEL_LIST[count].checked = checked;
 		CHAT_CONFIG_CHANNEL_LIST[count].func = function (self, checked) 
 							ToggleChatChannel(checked, CHAT_CONFIG_CHANNEL_LIST[self:GetID()].channelName); 

@@ -66,6 +66,7 @@ function PetActionBarFrame_IsAboveShapeshift(ignoreShowing)
 		(not MultiBarBottomLeft:IsShown() and MultiBarBottomRight:IsShown()) and
 		(ignoreShowing or (PetActionBarFrame and PetActionBarFrame:IsShown())))
 end
+
 function PetActionBarFrame_OnUpdate(self, elapsed)
 	local yPos;
 	if ( self.slideTimer and (self.slideTimer < self.timeToSlide) ) then

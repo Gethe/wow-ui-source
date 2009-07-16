@@ -229,10 +229,10 @@ function WorldMapFrame_Update()
 	--WorldMapHighlight:Hide();
 
 	-- Enable/Disable zoom out button
-	if ( (GetCurrentMapContinent() == WORLDMAP_COSMIC_ID) and (GetCurrentMapDungeonLevel() <= 0) ) then
-		WorldMapZoomOutButton:Disable();
-	else
+	if ( IsZoomOutAvailable() ) then
 		WorldMapZoomOutButton:Enable();
+	else
+		WorldMapZoomOutButton:Disable();
 	end
 
 	-- Setup the POI's
@@ -590,7 +590,7 @@ function WorldMapZoomOutButton_OnClick()
 	elseif ( GetCurrentMapDungeonLevel() > 0 ) then
 		ZoomOut();
 	elseif ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
-		return;
+		ZoomOut();
 	elseif ( GetCurrentMapContinent() == WORLDMAP_OUTLAND_ID ) then
 		SetMapZoom(WORLDMAP_COSMIC_ID);
 	else
@@ -1195,7 +1195,7 @@ function WorldMapUnitDropDown_ReportAll_OnClick()
 	end
 end
 
-local numPOIFrames;
+local numPOIFrames = 0;
 local distanceTooClose, distanceTooCloseSquared;
 
 QuestsToShowAdditionalSpotsFor = {};
@@ -1205,6 +1205,8 @@ function UpdateQuestMapPOI()
 	if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
 		local numPOI = QuestMapUpdateAllQuests();
 		local firstTurnInIndex;
+		QuestPOIButtonManager:ClearRequestedFrames();
+		
 		for i=1, numPOI do
 			local numQuests = QuestMapGetNumQuestsForPOI(i);
 			local questName, text, poiID, questID = QuestMapGetQuestInfo(i, 1);
@@ -1261,7 +1263,7 @@ function UpdateQuestMapPOI()
 			if ( isActive ) then
 				local numAdditionalPOI = QuestMapUpdateMouseOverPOI(questID);
 				for i = 1, numAdditionalPOI do
-					local mapID, x, y, icon, questName, objectiveText = QuestMapGetMouseOverPOIInfo(questID, i);
+					local numObjectives, mapID, x, y, icon, questName = QuestMapGetMouseOverInfoByIndex(i);
 					if ( mapID and x and y and icon ) then
 						if ( not QUEST_MAP_ADDITIONAL_POI[index] ) then
 							QUEST_MAP_ADDITIONAL_POI[index] = CreateFrame("BUTTON", nil, WorldMapButton, "WorldMapQuestAdditionalPOITemplate");
@@ -1285,6 +1287,11 @@ function UpdateQuestMapPOI()
 			end
 		end
 		for i = index, #QUEST_MAP_ADDITIONAL_POI do
+			QUEST_MAP_ADDITIONAL_POI[i]:Hide();
+		end
+	else
+		QuestPOIButtonManager:HideUnusedFrames();
+		for i = 1, #QUEST_MAP_ADDITIONAL_POI do
 			QUEST_MAP_ADDITIONAL_POI[i]:Hide();
 		end
 	end
@@ -1311,8 +1318,8 @@ function WorldMapQuestPOI_UpdateTooltip(tooltip)
 			local POIIndex = POIFrame.POIIndex;
 			local numPOI = QuestMapGetNumQuestsForPOI(POIIndex);	--Yes, calling a bunch of C functions OnUpdate = fail. But the map is open, so we're not doing much else (and a lower framerate with the map isn't noticable)
 			for j=1, numPOI do
-				local questName, text = QuestMapGetQuestInfo(POIIndex, j);
-				QuestPOITooltipManager:AddObjective(questName, text);
+				local questName, text, poiID, questID = QuestMapGetQuestInfo(POIIndex, j);
+				QuestPOITooltipManager:AddObjective(questID, questName, text);
 			end
 		end
 	end
@@ -1324,8 +1331,11 @@ function WorldMapQuestPOI_UpdateTooltip(tooltip)
 				QuestMapUpdateMouseOverPOI(POIFrame.questID);
 				lastQuestID = POIFrame.questID;
 			end
-			local mapID, x, y, icon, questName, objectiveText = QuestMapGetMouseOverPOIInfo(POIFrame.questID, POIFrame.POIIndex);
-			QuestPOITooltipManager:AddObjective(questName, objectiveText)
+			local numObjectives, mapID, x, y, icon, questName = QuestMapGetMouseOverInfoByIndex(POIFrame.POIIndex);
+			for j=1, numObjectives do
+				local objectiveText = QuestMapGetMouseOverPOIInfo(POIFrame.POIIndex, j);
+				QuestPOITooltipManager:AddObjective(POIFrame.questID, questName, objectiveText)
+			end
 		end
 	end
 	local overSomething = QuestPOITooltipManager:PopulateTooltip(tooltip);
@@ -1441,6 +1451,19 @@ function WorldMapQuestPOIPulser_OnUpdate(self, elapsed)
 		QUEST_MAP_ADDITIONAL_POI[i].fuzziness:SetAlpha(alpha);
 	end
 end
+
+function WorldMap_OpenToQuest(questID, frameToShowOnClose)
+	table.wipe(QuestsToShowAdditionalSpotsFor);
+	QuestsToShowAdditionalSpotsFor[questID] = true;
+	WorldMapFrame.showOnHide = frameToShowOnClose;
+	ShowUIPanel(WorldMapFrame);
+	
+	local mapID = GetQuestWorldMapAreaID(questID);
+	if ( mapID ~= 0 ) then
+		SetMapByID(mapID);
+	end
+end
+
 ----------------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------Quest POI Button Manager----------------------------------------------------
 -- So, here's the deal.  We need quest POI icons to be buttons. But because they are currently being updated OnUpdate, we 	--
@@ -1453,23 +1476,36 @@ QuestPOIButtonManager = {};
 
 QuestPOIButtonManager.unusedFrames = {};
 QuestPOIButtonManager.frameMapping = {};
+QuestPOIButtonManager.requestedFrames = {};
 
 QuestPOIButtonManager.iteratorHelper = {};
+
+function QuestPOIButtonManager:ClearRequestedFrames()
+	table.wipe(self.requestedFrames);
+end
 
 function QuestPOIButtonManager:FreeAllFrames()
 	for _, frame in pairs(self.frameMapping) do
 		tinsert(self.unusedFrames, frame);
 	end
 	table.wipe(self.frameMapping);
+	table.wipe(self.requestedFrames);
 end
 
 function QuestPOIButtonManager:HideUnusedFrames()
 	for _, frame in pairs(self.unusedFrames) do
 		frame:Hide();
 	end
+	for poiID, frame in pairs(self.frameMapping) do
+		if ( not self.requestedFrames[poiID] ) then
+			frame:Hide();
+		end
+	end
 end
 
 function QuestPOIButtonManager:GetFrameForPOI(poiID)
+	self.requestedFrames[poiID] = true;
+	
 	local relevantTable = self.frameMapping;
 	
 	if ( relevantTable[poiID] ) then
@@ -1492,9 +1528,9 @@ QuestPOITooltipManager = {};
 QuestPOITooltipManager.unusedTables = {};
 QuestPOITooltipManager.list = {};
 
-function QuestPOITooltipManager:AddObjective(questName, objectiveText)
+function QuestPOITooltipManager:AddObjective(questID, questName, objectiveText)
 	for _, questTable in pairs(self.list) do
-		if ( questTable.questName == questName ) then
+		if ( questTable.questID == questID ) then
 			for i=1, questTable.numObjectives do
 				if ( questTable[i] == objectiveText ) then
 					return;
@@ -1506,6 +1542,7 @@ function QuestPOITooltipManager:AddObjective(questName, objectiveText)
 		end
 	end
 	local questTable = tremove(self.unusedTables, #self.unusedTables) or {};
+	questTable.questID = questID;
 	questTable.questName = questName;
 	questTable.numObjectives = 1;
 	questTable[1] = objectiveText;

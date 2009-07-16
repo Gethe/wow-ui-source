@@ -103,14 +103,14 @@
 		<Size x="29" y="30"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT" text="RANGE_INDICATOR">
+				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="LEFT" text="RANGE_INDICATOR">
 					<Size>
-						<AbsDimension x="36" y="10"/>
+						<AbsDimension x="29" y="10"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
+						<Anchor point="TOPRIGHT">
 							<Offset>
-								<AbsDimension x="-2" y="-2"/>
+								<AbsDimension x="16" y="-2"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -219,6 +219,26 @@
 					</Anchor>
 				</Anchors>
 			</StatusBar>
+			<Button name="$parentMapButton" parentKey="mapButton">
+				<Size x="14" y="14"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT">
+						<Offset x="3" y="-2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WorldMap_OpenToQuest(self.questID);
+					</OnClick>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface/QuestFrame/UI-QuestTracker-MapButton">
+					<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
+				</NormalTexture>
+				<HighlightTexture name="$parentHighlightTexture" alphaMode="ADD" file="Interface/Buttons/ButtonHilight-Square"/>
+				<PushedTexture name="$parentPushedTexture" file="Interface/QuestFrame/UI-QuestTracker-MapButton">
+					<TexCoords left="0.0" right="0.5" top="0.5" bottom="1.0"/>
+				</PushedTexture>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>

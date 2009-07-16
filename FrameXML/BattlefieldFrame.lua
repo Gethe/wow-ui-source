@@ -8,6 +8,7 @@ BATTLEFIELD_TIMER_DELAY = 3;
 BATTLEFIELD_MAP_WIDTH = 320;
 BATTLEFIELD_MAP_HEIGHT = 213;
 MAX_BATTLEFIELD_QUEUES = 3;
+MAX_WORLD_PVP_QUEUES = 1;
 CURRENT_BATTLEFIELD_QUEUES = {};
 PREVIOUS_BATTLEFIELD_QUEUES = {};
 
@@ -27,6 +28,7 @@ function BattlefieldFrame_OnLoad (self)
 	self:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE");
 	self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
 	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
+	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
 		
 	BattlefieldFrame.timerDelay = 0;
 end
@@ -68,6 +70,8 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 		else
 			StaticPopup_Show("BFMGR_DENY_WORLD_PVP_QUEUED", "Wintergrasp", nil, arg1);
 		end
+		BattlefieldFrame_UpdateStatus(false);
+		BattlefieldFrame_Update();
 	elseif ( event == "BATTLEFIELD_MGR_EJECT_PENDING" ) then
 		local battleID, remote = ...;
 		if(remote) then
@@ -75,6 +79,8 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 		else
 		local dialog = StaticPopup_Show("BFMGR_EJECT_PENDING", "Wintergrasp", nil, arg1);
 		end
+		BattlefieldFrame_UpdateStatus(false);
+		BattlefieldFrame_Update();
 	elseif ( event == "BATTLEFIELD_MGR_EJECTED" ) then
 		local battleID, playerExited, relocated, battleActive, lowLevel = ...;
 		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
@@ -86,6 +92,8 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 		elseif (playerExited and battleActive and not relocated) then
 			local dialog = StaticPopup_Show("BFMGR_PLAYER_EXITED_BATTLE", "Wintergrasp", nil, arg1);
 		end
+		BattlefieldFrame_UpdateStatus(false);
+		BattlefieldFrame_Update();
 	elseif ( event == "BATTLEFIELD_MGR_QUEUE_INVITE" ) then
 		local battleID, warmup = ...;
 		if(warmup) then
@@ -94,10 +102,21 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 			local dialog = StaticPopup_Show("BFMGR_INVITED_TO_QUEUE", "Wintergrasp", nil, arg1);
 		end
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
+		BattlefieldFrame_UpdateStatus(false);
+		BattlefieldFrame_Update();
 	elseif ( event == "BATTLEFIELD_MGR_ENTRY_INVITE" ) then
 		local battleID = ...;
 		local dialog = StaticPopup_Show("BFMGR_INVITED_TO_ENTER", "Wintergrasp", nil, arg1);
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
+		BattlefieldFrame_UpdateStatus(false);
+		BattlefieldFrame_Update();
+	elseif ( event == "BATTLEFIELD_MGR_ENTERED" ) then
+		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
+		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
+		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
+		StaticPopup_Hide("BFMGR_EJECT_PENDING");
+		BattlefieldFrame_UpdateStatus(false);
+		BattlefieldFrame_Update();
 	end
 	
 	if ( event == "PARTY_LEADER_CHANGED" ) then
@@ -181,7 +200,7 @@ function BattlefieldTimerFrame_OnUpdate(self, elapsed)
 end
 
 function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
-	local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch;
+	local status, mapName, instanceID, queueID, levelRangeMin, levelRangeMax, teamSize, registeredMatch;
 	local numberQueues = 0;
 	local waitTime, timeInQueue;
 	local tooltip;
@@ -301,6 +320,27 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 			end
 		end
 	end
+	
+	for i=1, MAX_WORLD_PVP_QUEUES do
+		status, mapName, queueID = GetWorldPVPQueueStatus(i);
+		if ( status ~= "none" ) then
+			numberQueues = numberQueues + 1;
+		end
+		if ( status == "queued" or status == "confirm" ) then
+			if ( status == "queued" ) then
+				tooltip = format(BATTLEFIELD_IN_QUEUE_SIMPLE, mapName);
+			elseif ( status == "confirm" ) then
+				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM_SIMPLE, mapName);
+			end
+			
+			if ( MiniMapBattlefieldFrame.tooltip ) then
+				MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..tooltip;
+			else
+				MiniMapBattlefieldFrame.tooltip = tooltip;
+			end
+		end
+	end
+	
 	-- See if should add right click message
 	if ( MiniMapBattlefieldFrame.tooltip and showRightClickText ) then
 		MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n"..RIGHT_CLICK_MESSAGE;
@@ -462,26 +502,12 @@ end
 
 function MiniMapBattlefieldDropDown_Initialize()
 	local info;
-	local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch;
+	local status, mapName, instanceID, queueID, levelRangeMin, levelRangeMax, teamSize, registeredMatch;
 	local numQueued = 0;
 	local numShown = 0;
 	
-	if ( CanHearthAndResurrectFromArea() ) then
-		numShown = numShown + 1;
-		info = UIDropDownMenu_CreateInfo();
-		info.text = GetRealZoneText();
-		info.isTitle = 1;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-
-		info = UIDropDownMenu_CreateInfo();
-		info.text = format(LEAVE_ZONE, GetRealZoneText());			
-		
-		info.func = HearthAndResurrectFromArea;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-	end
-		
+	local shownHearthAndRes;
+	
 	for i=1, MAX_BATTLEFIELD_QUEUES do
 		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(i);
 
@@ -514,6 +540,16 @@ function MiniMapBattlefieldDropDown_Initialize()
 			info.notCheckable = 1;
 			UIDropDownMenu_AddButton(info);			
 
+			if ( CanHearthAndResurrectFromArea() and not shownHearthAndRes and GetRealZoneText() == mapName ) then
+				info = UIDropDownMenu_CreateInfo();
+				info.text = format(LEAVE_ZONE, GetRealZoneText());			
+				
+				info.func = HearthAndResurrectFromArea;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+				shownHearthAndRes = true;
+			end
+			
 			if ( status == "queued" ) then
 
 				if ( teamSize == 0 ) then
@@ -577,6 +613,86 @@ function MiniMapBattlefieldDropDown_Initialize()
 
 		end
 	end
+	
+	for i=1, MAX_WORLD_PVP_QUEUES do
+		status, mapName, queueID = GetWorldPVPQueueStatus(i);
+
+		-- Inserts a spacer if it's not the first option... to make it look nice.
+		if ( status ~= "none" ) then
+			numShown = numShown + 1;
+			if ( numShown > 1 ) then
+				info = UIDropDownMenu_CreateInfo();
+				info.isTitle = 1;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+			end
+		end
+		
+		if ( status == "queued" or status == "confirm" ) then
+			numQueued = numQueued + 1;
+			-- Add a spacer if there were dropdown items before this
+			
+			info = UIDropDownMenu_CreateInfo();
+			info.text = mapName;
+			info.isTitle = 1;
+			info.notCheckable = 1;
+			UIDropDownMenu_AddButton(info);			
+			
+			if ( CanHearthAndResurrectFromArea() and not shownHearthAndRes and GetRealZoneText() == mapName ) then
+				info = UIDropDownMenu_CreateInfo();
+				info.text = format(LEAVE_ZONE, GetRealZoneText());			
+				
+				info.func = HearthAndResurrectFromArea;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+				shownHearthAndRes = true;
+			end
+			
+			if ( status == "queued" ) then
+			
+				info = UIDropDownMenu_CreateInfo();
+				info.text = LEAVE_QUEUE;
+				info.func = function (self, ...) BattlefieldMgrExitRequest(...) end;
+				info.arg1 = queueID;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+				
+			elseif ( status == "confirm" ) then
+			
+				info = UIDropDownMenu_CreateInfo();
+				info.text = ENTER_BATTLE;
+				info.func = function (self, ...) BattlefieldMgrEntryInviteResponse(...) end;
+				info.arg1 = queueID;
+				info.arg2 = 1;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+				
+				info = UIDropDownMenu_CreateInfo();
+				info.text = LEAVE_QUEUE;
+				info.func = function (self, ...) BattlefieldMgrEntryInviteResponse(...) end;
+				info.arg1 = i;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+			end
+		end
+	end
+	
+	if ( CanHearthAndResurrectFromArea() and not shownHearthAndRes ) then
+		numShown = numShown + 1;
+		info = UIDropDownMenu_CreateInfo();
+		info.text = GetRealZoneText();
+		info.isTitle = 1;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+
+		info = UIDropDownMenu_CreateInfo();
+		info.text = format(LEAVE_ZONE, GetRealZoneText());			
+		
+		info.func = HearthAndResurrectFromArea;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+	end
+
 end
 
 function BattlegroundShineFadeIn()

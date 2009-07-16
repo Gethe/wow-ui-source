@@ -751,6 +751,7 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		UpdateTalentButton();
 	end
 end
+
 function VehicleMenuBar_ReleaseSkins()
 	VehicleMenuBar.currSkin = nil;
 	for i=1, VEHICLE_MAX_BACKGROUND do

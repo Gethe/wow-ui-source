@@ -154,7 +154,7 @@
 			<OnEnter>
 				if (self.tooltip) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, (self.tooltipStyle or 1));
 				end
 			</OnEnter>
 			<OnLeave>
@@ -173,7 +173,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlight">
+				<FontString name="$parentText" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>

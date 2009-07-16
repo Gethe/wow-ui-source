@@ -1030,6 +1030,10 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showQuestObjectivesOnMap";
 						self.uvar = "SHOW_QUEST_OBJECTIVES_ON_MAP";
+						self.setFunc = function()
+							QuestLog_UpdateMapButton();
+							WatchFrame_Update();	--We need to decide whether to show map buttons
+						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -2891,6 +2895,9 @@
 						self.setFunc = function(value) if ( value == "1" ) then GearManagerToggleButton:Show() else GearManagerToggleButton:Hide() end end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
+					<OnHide>
+						CanUseEquipmentSets();
+					</OnHide>
 				</Scripts>
 			</CheckButton>	
 			<CheckButton name="$parentPreviewTalentChanges" inherits="InterfaceOptionsCheckButtonTemplate">

@@ -3724,7 +3724,8 @@
 								self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 							</OnLoad>
 							<OnShow>
-								local guildInfoText = GetGuildInfoText();
+								-- If the player made a change GetGuildInfoText returns the old value until the next GUILD_ROSTER_UPDATE, so a cached value is used in the interim
+								local guildInfoText = GuildInfoFrame.cachedText or GetGuildInfoText();
 								if ( not guildInfoText ) then
 									guildInfoText = "";
 								end
@@ -3767,6 +3768,7 @@
 						<Scripts>
 							<OnClick>
 								SetGuildInfoText(GuildInfoEditBox:GetText());
+								GuildInfoFrame.cachedText = GuildInfoEditBox:GetText();
 								GuildRoster();
 								GuildInfoFrame:Hide();
 							</OnClick>

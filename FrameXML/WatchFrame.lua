@@ -24,6 +24,7 @@ WATCHFRAME_TYPE_OFFSET = 5;
 WATCHFRAME_QUEST_OFFSET = 10;
 
 WATCHFRAME_ITEM_WIDTH = 33;
+WATCHFRAME_MAP_BUTTON_WIDTH = 17;
 
 WATCHFRAMELINES_FONTSPACING = 0;
 WATCHFRAMELINES_FONTHEIGHT = 0;
@@ -232,6 +233,8 @@ function WatchFrame_ToggleIgnoreCursor ()
 		WatchFrameTitleButton:Hide();
 		WatchFrameCollapseExpandButton:Disable();
 		WatchFrame_Lock(WatchFrame);
+		-- WATCHFRAME_IGNORECURSOR is set after WatchFrame is loaded so we need to set the right alpha if the mouse is over a disabled WatchFrame upon loading
+		WatchFrame:SetAlpha(1 - WatchFrame.baseAlpha);
 	else
 		WatchFrameTitleButton:Show();
 		WatchFrameCollapseExpandButton:Enable();
@@ -397,6 +400,8 @@ function WatchFrame_Collapse (self)
 	WatchFrameMouseover:SetPoint("BOTTOMRIGHT", WatchFrameCollapsedBorderRight, "BOTTOMRIGHT");
 	WatchFrameDialogBG:Hide();
 	WatchFrame_UpdateStateCVar();
+	WatchFrameRightResizeThumb:Hide();
+	WatchFrameLeftResizeThumb:Hide();
 end
 
 function WatchFrame_Expand (self)
@@ -414,6 +419,10 @@ function WatchFrame_Expand (self)
 	WatchFrameDialogBG:Show();
 	WatchFrame_Update(self);
 	WatchFrame_UpdateStateCVar();
+	if ( not self.locked ) then
+		WatchFrameRightResizeThumb:Show();
+		WatchFrameLeftResizeThumb:Show();
+	end
 end
 
 function WatchFrame_ShowOpacityFrameBaseAlpha ()
@@ -431,7 +440,7 @@ function WatchFrame_SetBaseAlpha (alpha)
 	watchFrame.baseAlpha = alpha;
 	alpha = 1 - alpha;
 	if ( not MouseIsOver(watchFrame) or OpacityFrame:IsShown() ) then -- We should be setting the current opacity
-		WatchFrame:SetAlpha(alpha)	
+		WatchFrame:SetAlpha(alpha);
 	end
 end
 
@@ -1054,10 +1063,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	
 	local numQuestWatches = GetNumQuestWatches();
 	local numObjectives;
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily;
+	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID;
 	for i = 1, numQuestWatches do
 		questIndex = GetQuestIndexForWatch(i);
-		title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(questIndex);
+		title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
 		if ( questIndex ) then
 			local heightNeeded = WatchFrame_GetHeightNeededForQuest(questIndex);
 			if ( heightNeeded > maxHeight + (initialOffset - heightUsed) ) then
@@ -1094,6 +1103,17 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				linkButton.index = i; -- We want the Watch index, we'll get the quest index later with GetQuestIndexForWatch(i);
 				linkButton:Show();
 			end
+			
+			if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
+				line.mapButton:Show();
+				line.mapButton.questID = questID;
+				line.text:ClearAllPoints();
+				line.text:SetPoint("TOPLEFT");
+				local lineWidth = line:GetWidth();
+				if ( line.text:GetWidth() > lineWidth ) then
+					line.text:SetWidth(lineWidth);
+				end
+			end
 
 			local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
 			local questWidth = 0;
@@ -1113,8 +1133,11 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				itemButton.charges = charges;
 				WatchFrameItem_UpdateCooldown(itemButton);
 				itemButton.rangeTimer = -1;
-				line.text.clear = true;
-				line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
+				if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
+					line.text:SetPoint("RIGHT", itemButton, "LEFT", -13 - line.mapButton:GetWidth(), 0);
+				else
+					line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
+				end
 				iconHeightLeft = WATCHFRAME_QUEST_WITH_ITEM_HEIGHT - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING; -- We've already displayed a line for this
 				itemButton.maxStringWidth = stringWidth;
 			end
@@ -1138,8 +1161,11 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				line:Show();
 				stringWidth = line.text:GetStringWidth();
 				if ( iconHeightLeft > 0 ) then
-					line.text.clear = true;
-					line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
+					if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
+						line.text:SetPoint("RIGHT", itemButton, "LEFT", -13 - line.mapButton:GetWidth(), 0);
+					else
+						line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
+					end
 					itemButton.maxStringWidth = max(stringWidth, itemButton.maxStringWidth)
 				end
 				questWidth = max(stringWidth, questWidth);
@@ -1159,6 +1185,8 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", min(frameWidth - WATCHFRAME_ITEM_WIDTH, itemButton.maxStringWidth + 8), -WATCHFRAMELINES_FONTSPACING);
 				itemButton:Show();
 				maxWidth = max(questWidth + WATCHFRAME_ITEM_WIDTH, maxWidth);
+			elseif ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
+				maxWidth = max(questWidth + WATCHFRAME_MAP_BUTTON_WIDTH, maxWidth);
 			else
 				maxWidth = max(questWidth, maxWidth);
 			end
@@ -1246,6 +1274,12 @@ function WatchFrame_StopTrackingQuest (button, arg1, arg2, checked)
 	QuestLog_Update();
 end
 
+function WatchFrame_OpenMapToQuest (button, arg1)
+	local index = GetQuestIndexForWatch(arg1);
+	local questID = select(9, GetQuestLogTitle(index));
+	WorldMap_OpenToQuest(questID);
+end
+
 function WatchFrame_OpenAchievementFrame (button, arg1, arg2, checked)
 	if ( not AchievementFrame ) then
 		AchievementFrame_LoadUI();
@@ -1324,11 +1358,14 @@ function WatchFrameDropDown_Initialize (self)
 			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		end
 		
-		info.text = ABANDON_QUEST;
-		info.func = WatchFrame_AbandonQuest;
-		info.arg1 = self.index;
-		info.checked = false;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+		if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
+			info.text = OBJECTIVES_SHOW_QUEST_MAP;
+			info.func = WatchFrame_OpenMapToQuest;
+			test = self
+			info.arg1 = self.index;
+			info.checked = false;
+			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+		end
 	elseif ( self.type == "ACHIEVEMENT" ) then
 		local _, achievementName, _, completed, _, _, _, _, _, icon = GetAchievementInfo(self.index);
 		local info = UIDropDownMenu_CreateInfo();
@@ -1382,16 +1419,15 @@ end
 
 local function WatchFrameLineTemplate_Reset (self)
 	self:ClearAllPoints();
-	if ( self.text.clear ) then
-		self.text.clear = nil;
-		self.text:ClearAllPoints();
-		self.text:SetPoint("TOPLEFT");
-		self.text:SetPoint("BOTTOMRIGHT");
-	end
+	self.text:SetWidth(0);
+	self.text:ClearAllPoints();
+	self.text:SetPoint("TOPLEFT");
+	self.text:SetPoint("BOTTOMRIGHT");
 	self.text:SetText("");
 	self.text:SetTextColor(1, 1, 1);
 	self.text:Show();
 	self.statusBar:Hide();
+	self.mapButton:Hide();
 	self:SetHeight(WATCHFRAME_LINEHEIGHT);
 	self.criteriaID = nil;
 end

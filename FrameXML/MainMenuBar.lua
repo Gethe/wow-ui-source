@@ -137,6 +137,16 @@ function MainMenuBar_ToPlayerArt(self)
 	VehicleMenuBar_ReleaseSkins();
 end
 
+function MainMenuBarVehicleLeaveButton_OnLoad(self)
+	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
+	self:RegisterEvent("UPDATE_MULTI_CAST_ACTIONBAR");
+	self:RegisterEvent("VEHICLE_UPDATE");
+end
+
+function MainMenuBarVehicleLeaveButton_OnEvent(self, event, ...)
+	MainMenuBarVehicleLeaveButton_Update();
+end
+
 function MainMenuBarVehicleLeaveButton_Update()
 	if ( CanExitVehicle() ) then
 		MainMenuBarVehicleLeaveButton:ClearAllPoints();
@@ -155,9 +165,8 @@ function MainMenuBarVehicleLeaveButton_Update()
 		MainMenuBarVehicleLeaveButton:Hide();
 		ShowPetActionBar(true);
 	end
-	
+
 	UIParent_ManageFramePositions();
-		
 end
 
 function MainMenuBar_OnLoad(self)

@@ -213,11 +213,6 @@ function PossessBar_OnEvent (self, event, ...)
 		else
 			HideBonusActionBar();
 		end
-	elseif ( event == "UNIT_AURA" ) then
-		local unit = ...;
-		if ( unit == "player" ) then
-			PossessBar_UpdateState();
-		end
 	end
 end
 
@@ -226,13 +221,11 @@ function PossessBar_Update (override)
 		if ( IsPossessBarVisible() ) then
 			PossessBarFrame:Show();
 			ShapeshiftBarFrame:Hide();
-			MainMenuBarVehicleLeaveButton_Update()
 			ShowPetActionBar(true);
 		else
 			PossessBarFrame:Hide();
 			if(GetNumShapeshiftForms() > 0) then
 				ShapeshiftBarFrame:Show();
-				MainMenuBarVehicleLeaveButton_Update()
 				ShowPetActionBar(true);
 			end
 		end

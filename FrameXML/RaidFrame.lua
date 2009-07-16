@@ -98,7 +98,7 @@ function RaidInfoFrame_Update(scrollToSelected)
 	
 	local scrollFrame = RaidInfoScrollFrame;
 	local savedInstances = GetNumSavedInstances();
-	local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid;
+	local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName;
 	local frameName, frameNameText, frameID, frameReset, width;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
@@ -116,34 +116,30 @@ function RaidInfoFrame_Update(scrollToSelected)
 			end
 		end
 	end
-	
+
 	offset = HybridScrollFrame_GetOffset(scrollFrame);	--May have changed in the previous section to move selected parts into view.
-	
+
 	local mouseIsOverScrollFrame = scrollFrame:IsVisible() and MouseIsOver(scrollFrame);
-	
+
 	for i=1, numButtons do
 		local frame = buttons[i];
 		local index = i + offset;
-		
+
 		if ( index <=  savedInstances) then
-			instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid = GetSavedInstanceInfo(index);
-			
+			instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(index);
+
 			frame.instanceID = instanceID;
 			frame.longInstanceID = string.format("%x%x", instanceIDMostSig, instanceID);
 			frame:SetID(index);
-			
+
 			if ( RaidInfoFrame.selectedRaidID == frame.longInstanceID ) then
 				frame:LockHighlight();
 			else
 				frame:UnlockHighlight();
 			end
-			
-			if ( isRaid ) then
-				frame.difficulty:SetText(_G["RAID_DIFFICULTY"..instanceDifficulty]);
-			else
-				frame.difficulty:SetText(_G["DUNGEON_DIFFICULTY"..instanceDifficulty]);
-			end
-			
+
+			frame.difficulty:SetText(difficultyName);
+
 			if ( extended or locked ) then
 				frame.reset:SetText(SecondsToTime(instanceReset, true, nil, 3));
 				frame.name:SetText(instanceName);
@@ -203,7 +199,7 @@ end
 function RaidInfoFrame_UpdateSelectedIndex()
 	local savedInstances = GetNumSavedInstances();
 	for index=1, savedInstances do
-		local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid = GetSavedInstanceInfo(index);
+		local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig = GetSavedInstanceInfo(index);
 		if ( format("%x%x", instanceIDMostSig, instanceID) == RaidInfoFrame.selectedRaidID ) then
 			RaidInfoFrame.selectedIndex = index;
 			RaidInfoExtendButton:Enable();
