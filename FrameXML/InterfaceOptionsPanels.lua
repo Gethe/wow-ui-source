@@ -788,7 +788,6 @@ ObjectivesPanelOptions = {
 	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
 	advancedWatchFrame = { text = "ADVANCED_OBJECTIVES_TEXT" },
 	watchFrameIgnoreCursor = { text = "OBJECTIVES_IGNORE_CURSOR_TEXT" },
-	showQuestObjectivesOnMap = { text = "SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT" },
 }
 
 function InterfaceOptionsObjectivesPanel_OnLoad (self)

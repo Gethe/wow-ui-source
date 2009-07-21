@@ -407,6 +407,11 @@ function ReputationWatchBar_Update(newLevel)
 			ExhaustionTick:Hide();
 		end
 	end
+	
+	-- update the xp bar
+	TextStatusBar_UpdateTextString(MainMenuExpBar);
+	MainMenuExpBar_Update();
+	
 	if ( visibilityChanged ) then
 		UIParent_ManageFramePositions();
 		updateContainerFrameAnchors();

@@ -228,7 +228,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						WorldMap_OpenToQuest(self.questID);
+						--WorldMap_OpenToQuest(self.questID);
 					</OnClick>
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface/QuestFrame/UI-QuestTracker-MapButton">

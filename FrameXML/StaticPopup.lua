@@ -2377,15 +2377,7 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		end
 		self.lockTimeleft = lockTimeleft;
 
-		-- combine the name with the difficulty name if there is a difficulty name
-		local name = self.name or "";
-		if ( self.difficultyName == "" ) then
-			name = NORMAL_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
-		else
-			name = NORMAL_FONT_COLOR_CODE..format(DUNGEON_NAME_WITH_DIFFICULTY, name, self.difficultyName)..FONT_COLOR_CODE_CLOSE;
-		end
-
-		-- set the text using the combined name
+		local name = GetDungeonNameWithDifficulty(self.name, self.difficultyName);
 		local text = _G[self:GetName().."Text"];
 		text:SetFormattedText((self.isPreviousInstance and INSTANCE_LOCK_TIMER_PREVIOUSLY_SAVED or INSTANCE_LOCK_TIMER), name, SecondsToTime(ceil(lockTimeleft), nil, 1));
 

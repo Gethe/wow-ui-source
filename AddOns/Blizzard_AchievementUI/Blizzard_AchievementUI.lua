@@ -807,6 +807,7 @@ end
 ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT = 20;
 ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT = 84;
 ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT = 15;
+ACHIEVEMENTBUTTON_METAROWHEIGHT = 14;
 ACHIEVEMENTBUTTON_MAXHEIGHT = 232;
 ACHIEVEMENTBUTTON_TEXTUREHEIGHT = 128;
 
@@ -1006,7 +1007,7 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 	else
 		button:Show();
 	end
-		
+
 	button.index = achievement;
 	button.element = true;
 	
@@ -1135,7 +1136,7 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 			end
 			height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 		else
-			objectives:SetPoint("TOP", 0, -50);
+			objectives:SetPoint("TOP", "$parentDescription", "BOTTOM", 0, -8);
 			height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 		end
 	elseif ( completed and GetPreviousAchievement(id) ) then
@@ -1145,7 +1146,7 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementButton_ResetMiniAchievements();
 		AchievementButton_ResetMetas();
 		AchievementObjectives_DisplayProgressiveAchievement(objectives, id);
-		objectives:SetPoint("TOP", 0, -50);
+		objectives:SetPoint("TOP", "$parentDescription", "BOTTOM", 0, -8);
 		height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 	else
 		objectives:SetHeight(0);	
@@ -1153,7 +1154,7 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementButton_ResetProgressBars();
 		AchievementButton_ResetMiniAchievements();
 		AchievementButton_ResetMetas();
-		AchievementObjectives_DisplayCriteria(objectives, id, button.reward:IsShown());
+		AchievementObjectives_DisplayCriteria(objectives, id);
 		if ( objectives:GetHeight() > 0 ) then
 			objectives:SetPoint("TOP", "$parentDescription", "BOTTOM", 0, -8);
 			objectives:SetPoint("LEFT", "$parentIcon", "RIGHT", -5, -25);
@@ -1165,6 +1166,9 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 	if ( height ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT ) then		
 		local descriptionHeight = button.description:GetHeight();
 		height = height + descriptionHeight - ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT;
+		if ( button.reward:IsShown() ) then
+			height = height + 4;
+		end		
 	end
 	
 	objectives.id = id;
@@ -1408,7 +1412,7 @@ function AchievementFrame_SetFilter(value)
 	end
 end
 
-function AchievementObjectives_DisplayCriteria (objectivesFrame, id, hasReward)
+function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	if ( not id ) then
 		return;
 	end
@@ -1585,9 +1589,8 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, hasReward)
 		end
 	end
 
-	if ( metas == 2 and hasReward ) then
-		-- fix for meta icons being too close to reward display
-		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT + 6);
+	if ( metas > 0 ) then
+		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_METAROWHEIGHT + 10);
 	else
 		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT);
 	end

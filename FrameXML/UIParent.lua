@@ -3287,6 +3287,16 @@ function GetQuestDifficultyColor(level)
 	end
 end
 
+function GetDungeonNameWithDifficulty(name, difficultyName)
+	name = name or "";
+	if ( difficultyName == "" ) then
+		name = NORMAL_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
+	else
+		name = NORMAL_FONT_COLOR_CODE..format(DUNGEON_NAME_WITH_DIFFICULTY, name, difficultyName)..FONT_COLOR_CODE_CLOSE;
+	end
+	return name;
+end
+
 
 -- Animated shine stuff --
 

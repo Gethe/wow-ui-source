@@ -24,7 +24,7 @@ WATCHFRAME_TYPE_OFFSET = 5;
 WATCHFRAME_QUEST_OFFSET = 10;
 
 WATCHFRAME_ITEM_WIDTH = 33;
-WATCHFRAME_MAP_BUTTON_WIDTH = 17;
+WATCHFRAME_MAP_BUTTON_WIDTH = 22;
 
 WATCHFRAMELINES_FONTSPACING = 0;
 WATCHFRAMELINES_FONTHEIGHT = 0;
@@ -229,7 +229,7 @@ end
 
 function WatchFrame_ToggleIgnoreCursor ()
 	local WatchFrame = WatchFrame;
-	if ( WATCHFRAME_IGNORECURSOR == "1" ) then
+	if ( WATCHFRAME_IGNORECURSOR == "1" or WatchFrame.simpleMode ) then
 		WatchFrameTitleButton:Hide();
 		WatchFrameCollapseExpandButton:Disable();
 		WatchFrame_Lock(WatchFrame);
@@ -1133,9 +1133,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				itemButton.charges = charges;
 				WatchFrameItem_UpdateCooldown(itemButton);
 				itemButton.rangeTimer = -1;
-				if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
-					line.text:SetPoint("RIGHT", itemButton, "LEFT", -13 - line.mapButton:GetWidth(), 0);
-				else
+				if ( SHOW_QUEST_OBJECTIVES_ON_MAP ~= "1" ) then
 					line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
 				end
 				iconHeightLeft = WATCHFRAME_QUEST_WITH_ITEM_HEIGHT - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING; -- We've already displayed a line for this
@@ -1162,7 +1160,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				stringWidth = line.text:GetStringWidth();
 				if ( iconHeightLeft > 0 ) then
 					if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
-						line.text:SetPoint("RIGHT", itemButton, "LEFT", -13 - line.mapButton:GetWidth(), 0);
+						line.text:SetPoint("RIGHT", itemButton, "LEFT", -WATCHFRAME_MAP_BUTTON_WIDTH, 0);
 					else
 						line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
 					end
@@ -1181,15 +1179,21 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				questTitle.text:SetTextColor(0.75, 0.61, 0);
 			end
 
-			if ( itemButton ) then
-				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", min(frameWidth - WATCHFRAME_ITEM_WIDTH, itemButton.maxStringWidth + 8), -WATCHFRAMELINES_FONTSPACING);
-				itemButton:Show();
-				maxWidth = max(questWidth + WATCHFRAME_ITEM_WIDTH, maxWidth);
-			elseif ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
-				maxWidth = max(questWidth + WATCHFRAME_MAP_BUTTON_WIDTH, maxWidth);
-			else
-				maxWidth = max(questWidth, maxWidth);
+			local itemButtonXOffset = 8;
+			if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
+				questWidth = questWidth + WATCHFRAME_MAP_BUTTON_WIDTH;
+				itemButtonXOffset = itemButtonXOffset + WATCHFRAME_MAP_BUTTON_WIDTH;
 			end
+			if ( itemButton ) then
+				questWidth = questWidth + WATCHFRAME_ITEM_WIDTH;
+				itemButtonXOffset = min(frameWidth - WATCHFRAME_ITEM_WIDTH, itemButton.maxStringWidth + itemButtonXOffset);
+				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", itemButtonXOffset, -WATCHFRAMELINES_FONTSPACING);
+				itemButton:Show();
+				if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" and (questTitle.text:GetWidth() + WATCHFRAME_MAP_BUTTON_WIDTH) > itemButtonXOffset ) then
+					questTitle.text:SetPoint("RIGHT", itemButton, "LEFT", -WATCHFRAME_MAP_BUTTON_WIDTH, 0);
+				end
+			end
+			maxWidth = max(questWidth, maxWidth);
 		end
 	end
 

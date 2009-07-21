@@ -1016,28 +1016,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsObjectivesPanelAdvancedWatchFrame, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentShowQuestObjectivesOnMap" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentIgnoreCursor" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-8" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "showQuestObjectivesOnMap";
-						self.uvar = "SHOW_QUEST_OBJECTIVES_ON_MAP";
-						self.setFunc = function()
-							QuestLog_UpdateMapButton();
-							WatchFrame_Update();	--We need to decide whether to show map buttons
-						end
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>			
+			</CheckButton>		
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsObjectivesPanel_OnLoad"/>

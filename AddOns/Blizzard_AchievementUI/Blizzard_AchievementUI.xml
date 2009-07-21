@@ -404,7 +404,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					GameTooltip:AddDoubleLine(self.name, self.date, nil, nil, nil, .5, .5, .5);
 				end
 				if ( self.desc ) then
-					GameTooltip:AddLine(self.desc, 1, 1, 1);
+					GameTooltip:AddLine(self.desc, 1, 1, 1, 1);
 				end
 				if ( self.numCriteria ) then
 					for i = 1, self.numCriteria do
@@ -509,7 +509,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</HighlightTexture>
 	</Button>
 	
-	<!-- Looking for AchievementProgressBarTemplate? It's in QuestLogFrame.xml, since tracking needs it!, -->
+	<!-- Looking for AchievementProgressBarTemplate? It's in WatchFrame.xml, since tracking needs it!, -->
 
 	<StatusBar name="AchievementHeaderStatusBarTemplate" virtual="true">
 		<Anchors>

@@ -584,7 +584,7 @@ local CALENDAR_CALENDARTYPE_COLORS = {
 --	["GUILD_EVENT"]			= ,
 	["SYSTEM"]				= {r=1.0, g=1.0, b=0.6},
 	["HOLIDAY"]				= HIGHLIGHT_FONT_COLOR,
-	["RAID_LOCKOUT"]		= NORMAL_FONT_COLOR,
+	["RAID_LOCKOUT"]		= HIGHLIGHT_FONT_COLOR,
 	["RAID_RESET"]			= HIGHLIGHT_FONT_COLOR,
 };
 
@@ -1511,8 +1511,9 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 		eventButtonText1 = _G[eventButtonName.."Text1"];
 		eventButtonText2 = _G[eventButtonName.."Text2"];
 
-		local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy, difficulty =
-			CalendarGetDayEvent(monthOffset, day, eventIndex);
+		local title, hour, minute, calendarType, sequenceType, eventType, texture,
+			modStatus, inviteStatus, invitedBy, difficulty, inviteType,
+			sequenceIndex, numSequenceDays, difficultyName = CalendarGetDayEvent(monthOffset, day, eventIndex);
 		if ( title and sequenceType ~= "ONGOING" ) then
 			-- set the event button if the sequence type is not ongoing
 
@@ -1531,9 +1532,7 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 				eventButtonText1:Show();
 			elseif ( calendarType == "RAID_LOCKOUT" or calendarType == "RAID_RESET" ) then
 				eventButtonText2:Hide();
-				if ( difficulty > 1 ) then
-					title = format(DUNGEON_NAME_WITH_DIFFICULTY, title, _G["DUNGEON_DIFFICULTY"..difficulty]);
-				end
+				title = GetDungeonNameWithDifficulty(title, difficultyName);
 				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
 				eventButtonText1:ClearAllPoints();
 				eventButtonText1:SetAllPoints(eventButton);
@@ -2398,7 +2397,8 @@ function CalendarDayButton_OnEnter(self)
 	local numShownEvents = 0;
 	for i = 1, numEvents do
 		local title, hour, minute, calendarType, sequenceType, eventType, texture,
-			modStatus, inviteStatus, invitedBy, difficulty, inviteType = CalendarGetDayEvent(monthOffset, day, i);
+			modStatus, inviteStatus, invitedBy, difficulty, inviteType,
+			sequenceIndex, numSequenceDays, difficultyName = CalendarGetDayEvent(monthOffset, day, i);
 		if ( title and sequenceType ~= "ONGOING" ) then
 			if ( numShownEvents == 0 ) then
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -2415,9 +2415,7 @@ function CalendarDayButton_OnEnter(self)
 			eventTime = GameTime_GetFormattedTime(hour, minute, true);
 			eventColor = _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus);
 			if ( calendarType == "RAID_RESET" or calendarType == "RAID_LOCKOUT" ) then
-				if ( difficulty > 1 ) then
-					title = format(DUNGEON_NAME_WITH_DIFFICULTY, title, _G["DUNGEON_DIFFICULTY"..difficulty]);
-				end
+				title = GetDungeonNameWithDifficulty(title, difficultyName);
 			end
 			GameTooltip:AddDoubleLine(
 				format(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title),
@@ -2725,10 +2723,8 @@ function CalendarViewRaidFrame_OnHide(self)
 end
 
 function CalendarViewRaidFrame_Update()
-	local name, calendarType, raidID, hour, minute, difficulty = CalendarGetRaidInfo(CalendarGetEventIndex());
-	if ( difficulty > 1 ) then
-		name = format(DUNGEON_NAME_WITH_DIFFICULTY, name, _G["DUNGEON_DIFFICULTY"..difficulty]);
-	end
+	local name, calendarType, raidID, hour, minute, difficulty, difficultyName = CalendarGetRaidInfo(CalendarGetEventIndex());
+	name = GetDungeonNameWithDifficulty(name, difficultyName);
 	CalendarTitleFrame_SetText(CalendarViewRaidTitleFrame, name);
 	if ( calendarType == "RAID_LOCKOUT" ) then
 		CalendarViewRaidDescription:SetFormattedText(CALENDAR_RAID_LOCKOUT_DESCRIPTION, name, GameTime_GetFormattedTime(hour, minute, true));
@@ -4766,8 +4762,9 @@ function CalendarEventPickerScrollFrame_Update()
 	local eventColor;
 	local i = 1;
 	while ( i <= numButtons and eventIndex <= numEvents ) do
-		local title, hour, minute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy, difficulty =
-			CalendarGetDayEvent(monthOffset, day, eventIndex);
+		local title, hour, minute, calendarType, sequenceType, eventType, texture,
+			modStatus, inviteStatus, invitedBy, difficulty, inviteType,
+			sequenceIndex, numSequenceDays, difficultyName = CalendarGetDayEvent(monthOffset, day, eventIndex);
 		if ( sequenceType ~= "ONGOING" ) then
 			-- pretend like ongoing events aren't even in the event list
 			button = buttons[i];
@@ -4797,8 +4794,8 @@ function CalendarEventPickerScrollFrame_Update()
 					buttonTime:Hide();
 					buttonTitle:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT");
 				else
-					if ( calendarType == "RAID_RESET" or calendarType == "RAID_LOCKOUT" and difficulty > 1 ) then
-						title = format(DUNGEON_NAME_WITH_DIFFICULTY, title, _G["DUNGEON_DIFFICULTY"..difficulty]);
+					if ( calendarType == "RAID_RESET" or calendarType == "RAID_LOCKOUT" ) then
+						title = GetDungeonNameWithDifficulty(title, difficultyName);
 					end
 					buttonTime:SetText(GameTime_GetFormattedTime(hour, minute, true));
 					buttonTime:Show();
