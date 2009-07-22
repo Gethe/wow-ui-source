@@ -361,7 +361,7 @@ h2. Shamans
 * A customizable totem bar will now be available for shamans allowing the storing of 4 different totems. These totems can be placed on the ground at once in one global cooldown for the combined mana cost of all 4 totems. The naming scheme of the spells to summon the different totem sets has been changed to make it less confusing for players:
 ** Call of Fire (Totem Bar 1, the first one gained at level 30) is now named Call of the Elements.
 ** Call of Water (Totem Bar 2) is now named Call of the Ancestors.
-** Call of Fire (Totem Bar 3) is now named Call of the Spirits.
+** Call of Air (Totem Bar 3) is now named Call of the Spirits.
 ** Call of Earth (the spell to recall all summoned totems) is now named Totemic Recall.
 * All Shocks now have a default range of 25 yards, up from 20 yards.
 * Base health increased by approximately 7% to correct for shamans having lower health than other classes.
@@ -415,7 +415,9 @@ h4. Destruction
 
 h2. Warriors
 
+* Battle Shout: Radius increased to 30 yards.
 * Bloodrage: This ability now generates 20 rage initially, and 10 rage over the next 10 seconds. The health cost is unchanged.
+* Commanding Shout: Radius increased to 30 yards.
 * Execute: This ability now never costs more than a total of 30 rage. The tooltip for Sudden Death has been revised to remove reference to that maximum, since the ability now behaves that way even when untalented.
 * Shield Slam: The benefit from additional block value this ability gains is now subject to diminishing returns. Diminishing returns occur once block value exceeds 30 times the player's level and caps the maximum damage benefit from shield block value at 34.5 times the player's level.
 
@@ -428,17 +430,11 @@ h4. Fury
 
 h4. Protection
 
-* Devastate: Weapon damage and bonus per Sunder Armor on the target increased by 100%.
+* Devastate: Weapon damage and bonus per Sunder Armor on the target increased by 100%. This ability now requires a shield to be equipped.
 * Shield Specialization: Now provides 5 rage on a block, dodge or parry instead of 2 rage on a block.
 
 h2. User Interface
 
-* Quest creatures and objects will now show on the player's world map.
-* A skull graphic will be placed on the map in the general area where players can find creatures they must kill for a quest.
-* A skull graphic with red eyes will be placed on the map in the general area where creatures can be found that must be killed in order to collect quest objects.
-* A gear/cogwheel graphic will be placed on the map in the general area where players must loot quest objects found in the world.
-* A chat bubble graphic will be placed on the map in the general area where players must interact with a specific NPC for a quest.
-* A yellow question mark graphic will show on the map to provide the location of a NPC whose quest the player has completed.
 * The quest log is now double-paned for more easily viewing quest information. The list of all quests a player has will show in one pane, while the quest details of any highlighted quest will display in the next.
 * Character name auto-completion for the chat frame, pop-ups, and mail interface can be enabled through an interface option in the Development settings.
 * Character names can now be colorized according to class in the chat frame through an interface option in the Development settings.
@@ -733,7 +729,7 @@ h3. Items
 * Saronite Bomb: This item will no longer cause threat against nearby targets just outside the targeting circle.
 * Scrolls: Scrolls which grant agility, intellect, spirit, strength, or stamina will now report an error message and no longer consume and waste the scroll when the target has a more powerful buff to that stat.
 * Sif's Remembrance: Sound and animation added to trinket effect.
-* Sigil of Arthritic Binding: The bonus damage from this relic is now added after diseases have increased damage by a percentage, instead of after.
+* Sigil of Arthritic Binding: The bonus damage from this relic is now added after diseases have increased damage by a percentage, instead of before.
 * Trinkets: Various trinkets which did not work properly with channeled area-of-effect spells will now work with those spells. This includes (but is not limited to) Illustration of the Dragon Soul, Darkmoon Card: Greatness, and Egg of Mortal Essence.
 * Warrior PvP Glove Bonus: Tooltip reworded slightly.
 * Wintergrasp Commendation: No longer useable when player is already at the maximum honor allowed.
@@ -747,7 +743,7 @@ h4. Glyphs
 * Glyph of Freezing Trap: The effect from this glyph will now log properly.
 * Glyph of Healing Wave: The heal from this glyph will no longer benefit twice from the Purification talent.
 * Glyph of Overpower: Fixed a bug where sometimes parries would not trigger the glyph. In addition, this glyph will now only make Overpower available for 6 seconds after a parry, instead of indefinitely.
-* Glyph of Power World: Shield: The heal from this glyph can now cause Divine Aegis.
+* Glyph of Power Word: Shield: The heal from this glyph can now cause Divine Aegis.
 * Glyph of Shadow: This glyph can now be triggered by critical strikes from periodic damage.
 * Glyph of Shocking: Fixed tooltip error on Macintosh game client.
 * Glyph of Shadowflame: The effect from this glyph will now work properly when multiple Warlocks use Shadowflame on the target.
@@ -759,5 +755,5 @@ h3. Professions
 
 h3. Events
 
-* Hallow's End: Putting out fires for this event will no longer trigger effects from items, talents, and set bonuses.
+* Hallow's End: Putting out fires for this event will no longer trigger effects from items, talents and set bonuses.
 * Noblegarden: Loot windows will no longer periodically close while the looting player is transformed into a rabbit.
