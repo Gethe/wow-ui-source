@@ -30,8 +30,8 @@ h3. Isle of Conquest, the new 40 vs. 40-player siege-style battleground is now a
 
 * Two level brackets are available: 71-79 and 80.
 * Defend the walls of your keep and protect your general by killing enemy players and destroying their siege vehicles.
-* Capture the Docks, Airship Hangar, or Siege Workshop for access to destructive siege vehicles or strategic attacks on your enemy's base.
-* Capture the Oil Derrick or Cobalt Mine for their resources to garner reinforcements and a steady flow of bonus honor.
+* Capture the Docks, Gunship Hangar, or Siege Workshop for access to destructive siege vehicles or strategic attacks on your enemy's base.
+* Capture the Refinery or Quarry for their resources to garner reinforcements, a steady flow of bonus honor and a 15% increase to siege vehicle damage for each of these capture points your team controls.
 * To claim victory, bust through the enemy's keep walls (or find other ways to get inside) and kill their general, or obliterate your opponents until their reinforcements are depleted.
 
 h3. The Argent Tournament Expands
@@ -97,13 +97,14 @@ h4. Warsong Gulch
 h4. Wintergrasp
 
 * Against the Odds: This achievement has been removed and converted to a Feat of Strength.
+* Industrial Warfare: This achievement has been removed.
 * To provide players with a more transparent notification of when Wintergrasp battles occur, as well as better control zone population and stability, several changes have been made.
 * Players now have the option to queue for Wintergrasp from a Wintergrasp Battlemaster in any capital city or by simply entering the Wintergrasp zone.
 * Queuing will begin 15 minutes before each battle. If chosen, you will automatically be teleported to the zone. Any players in the zone who have not been chosen from the queue will be teleported out when the battle begins.
 * The queue system remains active for the entire battle. As soon as a player leaves, a new one will be chosen from the queue.
 * Trying to enter Wintergrasp during an active battle for which you have not been chosen will teleport you out. Please note that, as you are now able to fly over Wintergrasp, you will only be teleported out if you try to land and join the battle.
 * Level 80 players get higher priority in the queue than lower level players. In addition, a random selection of queued players will be taken from both the Battlemasters and the zone itself.
-* The queue will accept up to 100 players from each faction, resulting in a maximum battle of 200 players at a time.
+* The queue will accept up to 120 players from each faction, resulting in a maximum battle of 240 players at a time.
 * Wintergrasp factories can no longer be damaged or destroyed.
 
 h2. Dungeons and Raids
@@ -177,7 +178,6 @@ h2. Death Knights
 
 * Due to significant talent changes, all death knight talents will be reset for players.
 * Blood Plague: Damage done increased by 15%.
-* Blood Strike: The bonus damage this ability receives from diseases on the target has been increased to 25% per disease.
 * Chains of Ice: Now reduces movement by 95% instead of 100%. The main effect of this change will be that targets of Chains of Ice will not have to re-issue a movement command to continue moving.
 * Frost Fever: Damage done increased by 15%.
 * Frost Presence: 10% bonus health reduced to 6% bonus stamina.
@@ -411,7 +411,6 @@ h4. Destruction
 
 * Empowered Imp: The warlock's critical hit chance is increased to 100%, up from 20% for the next spell cast after the Imp critically hits a target.
 * Fire and Brimstone: Reduced to 2/4/6/8/10% increased damage from Incinerate and Chaos Bolt on targets afflicted with Immolate, down from 3/6/9/12/15%.
-* Improved Shadow Bolt: Redesigned slightly. Instead of a 100% chance to apply a 1/2/3/4/5% critical strike increase on the target, it now has a 20/40/60/80/100% chance to apply a 5% critical strike increase.
 
 h2. Warriors
 
@@ -452,7 +451,7 @@ h2. Graphics
 
 h2. World Environment
 
-* Northrend Children's Week has arrived in Dalaran! Players can find out more by visiting the Eventide District.
+* Wolvar and Gorloc orphans have arrived in Dalaran and need your help! Players can find out more by visiting the Eventide District (completing the quests being offered for this event will not count toward any Children's Week achievements). Players have a limited amount of time to care for these orphans before they take their leave. They will then return again for the regularly-scheduled Children's Week next year.
 * Portal areas in all major cities now offer a portal to the Blasted Lands near the Dark Portal.
 * Once crossing through the Dark Portal, players can access a flight path directly from the Stair of Destiny to Shattrath.
 * A new zeppelin docking ramp has been added to Thunder Bluff allowing Horde players easier transport to and from Orgrimmar.
@@ -503,7 +502,6 @@ h3. Engineering
 * Gnomish Engineers and Goblin Engineers can now switch profession specializations for a fee.
 * Increased benefits from Hyperspeed Accelerators, Hand-Mounted Pyro Rocket and Reticulated Armor Webbing glove modifications.
 * Increased the passive bonuses provided by Springy Arachnoweave, Flexweave Underlay and Nitro Boosts.
-* Increased siege damage caused by Saronite Bombs and the Global Thermal Sapper Charge.
 * Mote Extractor now has innate tracking for gas clouds while it is in your inventory. Tracking of gas clouds has been removed from goggles.
 * A new repair bot has been added, and his name is Jeeves. He is the ultimate gentleman robot butler, able to perform all the mundane tasks of repairing, selling and buying junk for your entire raid. Additionally, he can open bank boxes for skilled engineers (350+). Jeeves is not destroyed when used, but due to pressing engagements, can only be summoned once an hour. The schematic for this handsome robot was said to be hidden within the parts of another robot - hoping to be found by an engineer one day.
 * Nitro Boosts: Now have a 5-second duration.
@@ -639,7 +637,7 @@ h3. Hunters
 h3. Mages
 
 * Arcane Instability: Tooltip reworded to clarify design intent.
-* Burning Determination: Some Silence and Interrupt effects that did not trigger this talent will now trigger it properly, including Bash, Hammer of Justice, Shield of the Templar, Garrote and Gag Order.
+* Burning Determination: Some Silence and Interrupt effects that did not trigger this talent will now trigger it properly, including Shield of the Templar, Garrote and Gag Order.
 * Combustion: Fire spell misses will no longer trigger this talent.
 * Conjure Refreshment: Rank 1 food will no longer overwrite the drink buff from rank 2 food.
 * Fireball: Periodic damage from this spell can no longer trigger Combustion.
@@ -671,7 +669,6 @@ h3. Priests
 * Divine Aegis: This talent will now work properly if the priest moves out of range of his or her target as the effect is resolving.
 * Divine Hymn: This spell now works correctly with the trinket Illustration of the Dragon Soul. Mana Burn: Fixed a bug where Mana Burn did not cause fear effects to break when the fear victim had an absorb shield on.
 * Mass Dispel: This spell now triggers some types of trinkets it did not trigger before (such as Flow of Knowledge).
-* Mind Flay: This spell will now work correctly with [target=focus] macros.
 * Pain Suppression: No longer can be cast while under the effects of Incapacitate or Cyclone.
 
 h3. Rogues
@@ -697,6 +694,7 @@ h3. Warlocks
 * Demonic Circle: The visual for this spell should now despawn when the warlock dies or when the warlock otherwise loses the aura that allows transport to the circle.
 * Immolate and Unstable Affliction: All ranks of these two spells will now overwrite each other.
 * Improved Imp: Each time an Imp is summoned it will recast Blood Pact (if autocast is on), forcing it to benefit from this talent, even if the Imp was not summoned at the time the talent was learned.
+* Improved Shadow Bolt: Redesigned slightly. Instead of a 100% chance to apply a 1/2/3/4/5% critical strike increase on the target, it now has a 20/40/60/80/100% chance to apply a 5% critical strike increase.
 
 h3. Warriors
 
