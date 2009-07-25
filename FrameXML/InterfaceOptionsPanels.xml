@@ -899,7 +899,7 @@
 	<Frame name="InterfaceOptionsObjectivesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="OBJECTIVES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentTitle" text="OBJECTIVES_TRACKER_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>

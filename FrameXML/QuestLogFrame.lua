@@ -291,6 +291,9 @@ function QuestLog_OnEvent(self, event, ...)
 end
 
 function QuestLog_OnShow(self)
+	if ( QuestLogDetailFrame:IsShown() ) then
+		HideUIPanel(QuestLogDetailFrame);
+	end
 	UpdateMicroButtons();
 	PlaySound("igQuestLogOpen");
 	QuestLogControlPanel_UpdatePosition();

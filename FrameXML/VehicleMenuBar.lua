@@ -825,7 +825,8 @@ end
 
 function VehicleMenuBarPitch_OnClick(self)
 	local _, mouseY = GetCursorPosition();
-	local pitch = (mouseY - self:GetBottom() - 8)/(self:GetHeight()-20);
+	local selfScale = self:GetEffectiveScale();
+	local pitch = (mouseY - (self:GetBottom()*selfScale) - 8)/((self:GetHeight()*selfScale)-20);
 	VehicleAimRequestNormAngle(pitch);
 end
 

@@ -791,7 +791,7 @@ ObjectivesPanelOptions = {
 }
 
 function InterfaceOptionsObjectivesPanel_OnLoad (self)
-	self.name = OBJECTIVES_LABEL;
+	self.name = OBJECTIVES_TRACKER_LABEL;
 	self.options = ObjectivesPanelOptions;
 	InterfaceOptionsPanel_OnLoad(self);
 	

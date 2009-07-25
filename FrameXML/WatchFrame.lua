@@ -1310,7 +1310,7 @@ function WatchFrame_StopTrackingAchievement (button, arg1, arg2, checked)
 end
 
 function WatchFrame_OpenToObjectivesCategory (button, arg1, arg2, checked)
-	InterfaceOptionsFrame_OpenToCategory(OBJECTIVES_LABEL);
+	InterfaceOptionsFrame_OpenToCategory(OBJECTIVES_TRACKER_LABEL);
 end
 
 function WatchFrameDropDown_OnHide ()

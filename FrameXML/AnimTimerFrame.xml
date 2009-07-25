@@ -1,0 +1,37 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!--
+		This frame is just a container for people to use animations as timers with no visual representation. 
+		Why not just put an Animations tag under UIParent? Because we don't want the initialization of these timer animations to 
+		cascade down to every other frame in the game (the animation system does that in order to allow child frames to animate 
+		with their parents).
+	-->
+	<Frame name="AnimTimerFrame">
+		<Animations>
+			<AnimationGroup name="AnimTimerFrameCountdownAnimGroup">
+				<!-- if you have logic that you want to fire once after a countdown, then add an animation to the end of this group -->
+				<Animation name="AutoCompleteInfoDelayer" duration="15.0" order="1">
+					<!--
+						We need the guild roster to be able to use guildies' names. But we don't want to request it on login when we're requesting everything
+						else from the server, so we'll wait a bit.
+					-->
+					<Scripts>
+						<OnFinished>
+							if ( IsInGuild() ) then
+								GuildRoster();
+							end
+						</OnFinished>
+					</Scripts>
+				</Animation>
+				<!-- if you add another anim to this group, make sure the order is 1 so that it gets fired simultaneously with the other anims -->
+				<Scripts>
+					<OnLoad>
+						self:Play();
+					</OnLoad>
+				</Scripts>
+			</AnimationGroup>
+			<!-- if you have logic that you want to fire periodically, then you should create a looping AnimationGroup with your logic in the OnLoop script -->
+			<!-- if you have logic that you want to fire constantly, then you should create a looping AnimationGroup with your logic in the OnUpdate script -->
+		</Animations>
+	</Frame>
+</Ui>

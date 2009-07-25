@@ -10,6 +10,7 @@ Localization.xml
 BasicControls.xml
 WorldFrame.xml
 UIParent.xml
+AnimTimerFrame.xml
 MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
