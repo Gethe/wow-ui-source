@@ -171,7 +171,7 @@ function WorldMapFrame_OnUpdate(self)
 	RequestBattlefieldPositions();
 
 	local nextBattleTime = GetWintergraspWaitTime();
-	if ( nextBattleTime and (GetCurrentMapAreaID() == WORLDMAP_WINTERGRASP_ID) ) then
+	if ( nextBattleTime and (GetCurrentMapAreaID() == WORLDMAP_WINTERGRASP_ID) and not IsInInstance()) then
 		local battleSec = mod(nextBattleTime, 60);
 		local battleMin = mod(floor(nextBattleTime / 60), 60);
 		local battleHour = floor(nextBattleTime / 3600);

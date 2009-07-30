@@ -277,6 +277,11 @@ function PVPBattlegroundFrame_OnEvent(self, event, ...)
 end
 
 function PVPBattlegroundFrame_OnShow(self)
+	if ( IsInInstance() ) then
+		WintergraspTimer:Hide();
+	else
+		WintergraspTimer:Show();
+	end
 	PVPBattleground_UpdateBattlegrounds();
 	RequestBattlegroundInstanceInfo(self.selectedBG or 1);
 end
@@ -311,6 +316,7 @@ function PVPBattlegroundFrame_UpdateGroupAvailable()
 end
 
 function PVPBattleground_WintergraspTimerUpdate(self)
+	
 	local nextBattleTime = GetWintergraspWaitTime();
 	if ( nextBattleTime and nextBattleTime > 60 ) then
 		WintergraspTimer.frameText:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, true));
