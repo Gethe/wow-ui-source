@@ -96,9 +96,16 @@ end
 
 function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
 	if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
-		local questLink = GetQuestLink(GetQuestIndexForWatch(self.index));
-		if ( questLink ) then
-			ChatEdit_InsertLink(questLink);
+		if ( self.type == "QUEST" ) then
+			local questLink = GetQuestLink(GetQuestIndexForWatch(self.index));
+			if ( questLink ) then
+				ChatEdit_InsertLink(questLink);
+			end
+		elseif ( self.type == "ACHIEVEMENT" ) then
+			local achievementLink = GetAchievementLink(self.index);
+			if ( achievementLink ) then
+				ChatEdit_InsertLink(achievementLink);
+			end
 		end
 	elseif ( button ~= "RightButton" ) then
 		WatchFrameLinkButtonTemplate_OnLeftClick(self);
