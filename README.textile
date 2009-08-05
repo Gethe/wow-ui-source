@@ -116,8 +116,16 @@ h3. Dungeon and Raid ID Extensions
 * The ID of any instance to which a player is saved can be extended. Doing so will extend the instance lock period by the same amount of time as the original lock (i.e. extending an Ulduar instance ID will add 7 days, a Heroic: Halls of Lightning instance ID will add 24 hours, and a Zul'Gurub instance ID will add 3 days to the instance lock time).
 * An ID can be extended more than once.
 * An extension can be reversed on an individual basis provided the player does not do anything in the instance during the extended instance lock period that would save that player to the instance.
-* 25-player raids will no longer be referred to as Heroic versions of a raid, as there is a new distinction between normal and Heroic modes for both 10 and 25 player versions of the Crusaders' Coliseum.
 
+h3. Emblem System Changes
+
+* Both the 10 and 25-player instances of the Crusaders' Coliseum drop a new Emblem of Triumph.
+* Any dungeons that previously dropped Emblems of Heroism or Valor, such as Naxxramas or Heroic Halls of Stone, will now drop Emblems of Conquest instead. Emblems of Conquest can still be converted to Valor or Heroism.
+* The Heroic dungeon daily quest will now reward 2 Emblems of Triumph and the normal daily dungeon quest will reward 1 Emblem of Conquest.
+* The existing achievements to collect 1, 25, 50, etc. Emblems of Heroism, Valor, and Conquest have been converted to Feats of Strength since Heroism and Valor Emblems are no longer attainable.
+* New achievements have been added to collect various amounts of any combination of emblems.
+
+* 25-player raids will no longer be referred to as Heroic versions of a raid, as there is a new distinction between normal and Heroic modes for both 10 and 25 player versions of the Crusaders' Coliseum.
 h3. The Nexus: The Oculus & The Eye of Eternity
 
 * Drakes used by players in these instances will now scale in health and damage according to the rider's average item level.
@@ -147,14 +155,8 @@ h2. Items: General
 * Parry Rating: The amount of parry rating required per percentage of parry has been reduced by 8%. This is before diminishing returns. Combined with other changes, this makes dodge rating and parry rating equally potent before diminishing returns apply. Parry still diminishes more quickly than dodge.
 * Resilience: No longer reduces the amount of damage done by damage-over-time spells, but instead reduces the amount of all damage done by players by the same proportion. In addition, the amount of resilience needed to reduce critical strike chance, critical strike damage and overall damage has been increased by 15%.
 
-h3. Emblem System Changes
+h3. Item Buy Back Feature Revised
 
-* Both the 10 and 25-player instances of the Crusaders' Coliseum drop a new Emblem of Triumph.
-* Any dungeons that previously dropped Emblems of Heroism or Valor, such as Naxxramas or Heroic Halls of Stone, will now drop Emblems of Conquest instead. Emblems of Conquest can still be converted to Valor or Heroism.
-* The Heroic dungeon daily quest will now reward 2 Emblems of Triumph and the normal daily dungeon quest will reward 1 Emblem of Triumph.
-* The existing achievements to collect 1, 25, 50, etc. Emblems of Heroism, Valor, and Conquest have been converted to Feats of Strength since Heroism and Valor Emblems are no longer attainable.
-* New achievements have been added to collect various amounts of any combination of emblems.
-* Item Buy Back Feature Revised
 * The Item Buy Back time will now expire if the player enchants or sockets an item. Players will see a confirmation dialog box now when they attempt to enchant or add gems to an item giving them a last chance to reconsider.
 * Items with Triggered Effects: These items generally have cooldowns on how often they can be triggered. Those cooldowns are now triggered each time the item is equipped (example: A trinket has a 45-second cooldown on an effect triggered by player attacks; when a player equips that item, the effect will be unable to be triggered for the first 45 seconds it is worn).
 
@@ -297,7 +299,7 @@ h2. Paladins
 * Sacred Shield: When a paladin casts Flash of Light on a target with this buff, they also now place a heal-over-time effect on the target, healing that target for 100% of the Flash of Light amount over 12 seconds.
 * Seal of Blood: This ability has been removed.
 * Seal of the Martyr: This ability has been removed.
-* Seal of Vengeance and Seal of Corruption: These seals have been redesigned to deal substantially more damage. Now, once a paladin has 5 copies of the debuff from these seals on his or her target, on each swing the paladin will deal 33% weapon damage as Holy, with critical strikes dealing double damage. In addition, the damage-over-time effect is now considered a melee attack instead of a spell attack.
+* Seal of Vengeance and Seal of Corruption: These seals have been redesigned to deal substantially more damage. Now, once a paladin has 5 copies of the debuff from these seals on his or her target, on each swing the paladin will deal 33% weapon damage as Holy, with critical strikes dealing double damage. In addition, the damage-over-time effect is now considered a melee attack instead of a spell attack and the effects from these seals can only be triggered by auto-attacks and Hammer of the Righteous.
 * Shield of Righteousness: Now deals 100% of shield block value as damage instead of 130%. In addition, the benefit from additional block value this ability gains is now subject to diminishing returns. Diminishing returns occur once block value exceeds 30 times the player's level and caps the maximum damage benefit from shield block value at 34.5 times the player's level.
 * Warhorse: Can now be learned at level 20.
 
@@ -437,11 +439,12 @@ h2. User Interface
 * The quest log is now double-paned for more easily viewing quest information. The list of all quests a player has will show in one pane, while the quest details of any highlighted quest will display in the next.
 * Character name auto-completion for the chat frame, pop-ups, and mail interface can be enabled through an interface option in the Development settings.
 * Character names can now be colorized according to class in the chat frame through an interface option in the Development settings.
-* Casting bars under a target's portrait will now indicate whether or not the cast can be interrupted.
+* Casting bars under the target frame, focus frame, and nameplates will now display as shielded if the cast cannot be interrupted.
 * Druids will now be able to see their mana bars when shape-shifted.
 * Item Comparisons: Holding the shift key while hovering over an item will now display the stat differences with the item currently equipped in the relevant slot.
 * Item Level: A new option has been added under Display in the Interface Options to show the item level on item tooltips.
 * Macros and scripts will no longer be able to target totems by name.
+* New Feature Icons: Options recently added to any of the options menus will now display a yellow exclamation point next to them to indicate that they are new features.
 * Vendor prices will now be listed on items whether or not players are at a vendor.
 * For additional notes on Lua and XML changes please visit the UI & Macros forum.
 
