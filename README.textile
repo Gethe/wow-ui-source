@@ -1,12 +1,19 @@
-h1. World of Warcraft PTR Patch 3.2.0
+h1. World of Warcraft Client Patch 3.2.0 (08-04-2009)
 
 * The latest test realm patch notes can always be found at http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html
 * The latest patch notes can always be found at http://www.worldofwarcraft.com/patchnotes/
 
+h2. Call of the Crusade
+
+Since the opening of the Argent Tournament in northeastern Icecrown, adventurers have journeyed from across Azeroth and beyond to prove their worth in the heart of the Lich King's domain. Under thundering skies the tournament's participants hone the arts of war and face off in bone-shattering jousting matches to earn the right to be called champions. Yet these heroes have yet to face the greatest challenge of all: the Crusaders' Coliseum. Formidable Horde and Alliance champions, ferocious beasts, and Scourge lieutenants are just some of the opponents awaiting adventurers in this gladiatorial arena. Few will survive the coliseum's perils, but the Argent Crusade is confident that the worthy heroes who do emerge victorious will be ready to join the offensive against Icecrown Citadel and end the Lich King's reign of terror.
+
+h2. Isle of Conquest
+
+Off the coast of Northrend, Horde and Alliance forces are locked in an epic struggle for a tiny island rich in resources. Known as the Isle of Conquest, this rocky battleground's proximity to Icecrown makes it a highly prized base in the war against the Lich King. Both factions have deployed devastating weapons to drive each other from this strategic location. Day and night the ground trembles under lumbering siege vehicles while monstrous airships pummel enemy positions with fiery cannons. The bloody conflict spreads to every corner of the island as new heroes arrive to aid their factions. It remains to be seen whose banner will wave triumphantly over the Isle of Conquest and at what cost victory will be achieved.
+
 h2. General
 
 * New druid art for Cat Form and Bear Form has been added. There are now five unique color schemes for each form and faction. Changing hair color (night elves) or skin tone (tauren) via the barbershop will change the look of one's cat and bear forms.
-* Copied Test Realm characters will no longer be copied with their achievement history in order to better facilitate the character copy process.
 
 h3. Crusaders' Coliseum
 
@@ -26,8 +33,9 @@ h4. Trial of the Grand Crusader
 * 10 and 25-player (Heroic mode) raid dungeon.
 * Crusaders' Tribute: Active on Heroic difficulty only, the tribute system will limit players on the number of attempts the raid is allotted each week. Additional rewards can be earned depending on the number of attempts left in the tribute run each week when the final boss is defeated.
 
-h3. Isle of Conquest, the new 40 vs. 40-player siege-style battleground is now available for testing.
+h3. Isle of Conquest
 
+* Head to the new 40 vs. 40-player siege-style Battleground, the Isle of Conquest, to vie for control of a strategic location with a host of resources sought by the Horde and Alliance.
 * Two level brackets are available: 71-79 and 80.
 * Defend the walls of your keep and protect your general by killing enemy players and destroying their siege vehicles.
 * Capture the Docks, Gunship Hangar, or Siege Workshop for access to destructive siege vehicles or strategic attacks on your enemy's base.
@@ -36,8 +44,8 @@ h3. Isle of Conquest, the new 40 vs. 40-player siege-style battleground is now a
 
 h3. The Argent Tournament Expands
 
-* All new Argent Crusader daily quests and rewards have been added for players with the Crusader title. Rewards include a new Argent Crusader banner and tabard (which can port players to the tournament grounds), a mounted squire (can periodically run bank, mail or vendor errands for the player), a paladin-exclusive Argent Crusader Charger mount, and new heirloom items.
-* All new Silver Covenant and Sunreaver daily quests and rewards have been added for players exalted with these factions. Rewards include tabards, new ground and flying mounts, and a new pet.
+* All new Argent Crusader daily quests and rewards have been added for players with the Crusader title. Rewards include a new Argent Crusader banner and tabard (which can port players to the tournament grounds), a mounted squire (can periodically run bank, mail or vendor errands for the player), a paladin-exclusive Argent Crusader Charger mount and new heirloom items.
+* All new Silver Covenant and Sunreaver daily quests and rewards have been added for players exalted with these factions. Rewards include tabards, new ground and flying mounts and a new pet.
 * Just when you thought you had seen the last of the Black Knight, he makes his astonishing return to the tournament. Wait, didn't you kill him?
 
 h3. New Dungeon Loot Feature
@@ -67,14 +75,16 @@ h4. Ruins of Lordaeron
 
 h3. Battlegrounds
 
-* Battleground experience has arrived!
-** Players will now be awarded experience for completing objectives and actions that yield honor in Battlegrounds (honorable kills not included).
-** Players who do not wish to gain experience through PvP can visit Behsten in Stormwind or Slahtz in Orgrimmar - both located near the Battlemasters in either city - and turn off all experience accumulation for the cost of 10 gold.
-** Disabling experience gains will prevent a player from gaining experience through any means available in the game.
-** Players with experience gains turned off who compete in Battlegrounds will face off only against other players with experience gains turned off.
-** Behsten and Slahtz can reinstate experience gains for players, for a 10 gold fee of course. Any experience that would've been accumulated if experience gains were enabled cannot be recovered.
 * Battlemasters in major cities affiliated with specific Battlegrounds have been replaced with a Battlemaster for each faction that will allow players to queue for any Battleground. Battlemasters for specific Battlegrounds will still be seen around the cities during corresponding Battleground holiday weekends.
 * When standing at a capture point that you control, you will gain a buff called Honorable Defender. This buff grants +50% honor gained from kills. This currently affects Arathi Basin, Eye of the Storm and Isle of Conquest.
+
+h4. Battleground experience has arrived!
+
+* Players will now be awarded experience for completing objectives and actions that yield honor in Battlegrounds (honorable kills not included).
+* Players who do not wish to gain experience through PvP can visit Behsten in Stormwind or Slahtz in Orgrimmar - both located near the Battlemasters in either city - and turn off all experience accumulation for the cost of 10 gold.
+* Disabling experience gains will prevent a player from gaining experience through any means available in the game.
+* Players with experience gains turned off who compete in Battlegrounds will face off only against other players with experience gains turned off.
+* Behsten and Slahtz can reinstate experience gains for players, for a 10 gold fee of course. Any experience that would've been accumulated if experience gains were enabled cannot be recovered.
 
 h4.  Arathi Basin
 
@@ -122,10 +132,9 @@ h3. Emblem System Changes
 * Both the 10 and 25-player instances of the Crusaders' Coliseum drop a new Emblem of Triumph.
 * Any dungeons that previously dropped Emblems of Heroism or Valor, such as Naxxramas or Heroic Halls of Stone, will now drop Emblems of Conquest instead. Emblems of Conquest can still be converted to Valor or Heroism.
 * The Heroic dungeon daily quest will now reward 2 Emblems of Triumph and the normal daily dungeon quest will reward 1 Emblem of Conquest.
-* The existing achievements to collect 1, 25, 50, etc. Emblems of Heroism, Valor, and Conquest have been converted to Feats of Strength since Heroism and Valor Emblems are no longer attainable.
 * New achievements have been added to collect various amounts of any combination of emblems.
-
 * 25-player raids will no longer be referred to as Heroic versions of a raid, as there is a new distinction between normal and Heroic modes for both 10 and 25 player versions of the Crusaders' Coliseum.
+
 h3. The Nexus: The Oculus & The Eye of Eternity
 
 * Drakes used by players in these instances will now scale in health and damage according to the rider's average item level.
@@ -299,7 +308,7 @@ h2. Paladins
 * Sacred Shield: When a paladin casts Flash of Light on a target with this buff, they also now place a heal-over-time effect on the target, healing that target for 100% of the Flash of Light amount over 12 seconds.
 * Seal of Blood: This ability has been removed.
 * Seal of the Martyr: This ability has been removed.
-* Seal of Vengeance and Seal of Corruption: These seals have been redesigned to deal substantially more damage. Now, once a paladin has 5 copies of the debuff from these seals on his or her target, on each swing the paladin will deal 33% weapon damage as Holy, with critical strikes dealing double damage. In addition, the damage-over-time effect is now considered a melee attack instead of a spell attack and the effects from these seals can only be triggered by auto-attacks and Hammer of the Righteous.
+* Seal of Vengeance and Seal of Corruption: These seals have been redesigned. Only auto-attacks and Hammer of the Righteous can place the debuff on the paladin's current target(s). However, while the seal is active, each melee swing or ability (excluding judgements) that lands on the target will deal a percentage of weapon damage as Holy damage to the target. This damage maxes out at 33% weapon damage with 5 applications of the debuff and scales upward evenly based on how many applications of the debuff are active. This Holy damage deals double-damage critical strikes. In addition, the damage-over-time debuff is now considered a melee attack for the purposes of determining its chance to hit, miss, be dodged or parried.
 * Shield of Righteousness: Now deals 100% of shield block value as damage instead of 130%. In addition, the benefit from additional block value this ability gains is now subject to diminishing returns. Diminishing returns occur once block value exceeds 30 times the player's level and caps the maximum damage benefit from shield block value at 34.5 times the player's level.
 * Warhorse: Can now be learned at level 20.
 
@@ -360,11 +369,7 @@ h4. Subtlety
 
 h2. Shamans
 
-* A customizable totem bar will now be available for shamans allowing the storing of 4 different totems. These totems can be placed on the ground at once in one global cooldown for the combined mana cost of all 4 totems. The naming scheme of the spells to summon the different totem sets has been changed to make it less confusing for players:
-** Call of Fire (Totem Bar 1, the first one gained at level 30) is now named Call of the Elements.
-** Call of Water (Totem Bar 2) is now named Call of the Ancestors.
-** Call of Air (Totem Bar 3) is now named Call of the Spirits.
-** Call of Earth (the spell to recall all summoned totems) is now named Totemic Recall.
+* A customizable totem bar will now be available for shamans allowing the storing of 4 different totems. These totems can be placed on the ground at once in one global cooldown for the combined mana cost of all 4 totems.
 * All Shocks now have a default range of 25 yards, up from 20 yards.
 * Base health increased by approximately 7% to correct for shamans having lower health than other classes.
 * Chain Heal: Jump distance increased by 25% to 12.5 yards. In addition, the amount of healing now decreases by 40% as it jumps to each new target, instead of 50%.
@@ -437,9 +442,9 @@ h4. Protection
 h2. User Interface
 
 * The quest log is now double-paned for more easily viewing quest information. The list of all quests a player has will show in one pane, while the quest details of any highlighted quest will display in the next.
-* Character name auto-completion for the chat frame, pop-ups, and mail interface can be enabled through an interface option in the Development settings.
-* Character names can now be colorized according to class in the chat frame through an interface option in the Development settings.
-* Casting bars under the target frame, focus frame, and nameplates will now display as shielded if the cast cannot be interrupted.
+* Character name auto-completion for the chat frame, pop-ups, and mail interface is now active
+* Character names can now be colorized according to class in the chat frame. This feature can be enabled through the chat settings by right-clicking on a chat window.
+* Casting bars under the target frame, focus frame and nameplates will now display as shielded if the cast cannot be interrupted.
 * Druids will now be able to see their mana bars when shape-shifted.
 * Item Comparisons: Holding the shift key while hovering over an item will now display the stat differences with the item currently equipped in the relevant slot.
 * Item Level: A new option has been added under Display in the Interface Options to show the item level on item tooltips.
@@ -533,7 +538,7 @@ h3. Inscription
 
 h3. Jewelcrafting
 
-* Dragon's Eye gems stat bonuses increased.
+* Dragon's Eye gems stat bonuses increased. In addition, these gems are no longer prismatic and must be matched to the appropriate colored socket to activate an item's socket bonus.
 * New recipes have been added for cutting epic gems and can be purchased using Dalaran Jewelcrafter's tokens.
 * Icy Prism now has a chance of yielding an epic gem.
 * Raw epic gems can be obtained via the following means:
@@ -550,6 +555,7 @@ h3. Leatherworking
 h3. Mining
 
 * Toughness (Rank 6) provides more stamina.
+* In addition to the normal requirements, mining deposits in Northrend now require a minimum character level of 65 to mine.
 
 h3. Skinning
 
@@ -758,3 +764,7 @@ h3. Events
 
 * Hallow's End: Putting out fires for this event will no longer trigger effects from items, talents and set bonuses.
 * Noblegarden: Loot windows will no longer periodically close while the looting player is transformed into a rabbit.
+
+h3. Technical
+
+* There is a known UI rendering issue with the Intel 965 Mobile Express chipset drivers on Windows Vista prior to version 7.15.10.1559 (December 2008). Please contact your laptop manufacturer for an updated driver if you are experiencing difficulties. In case of continued problems, add the following lines to the Config.wtf file as a workaround: SET fixedFunction "1".
