@@ -111,7 +111,7 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentText" inherits="GameFontHighlightSmall">
 					<Size>
-						<AbsDimension x="85" y="24"/>
+						<AbsDimension x="75" y="24"/>
 					</Size>
 				</FontString>
 			</Layer>

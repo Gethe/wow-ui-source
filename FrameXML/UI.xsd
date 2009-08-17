@@ -219,6 +219,7 @@
 				<xs:element name="PostClick" type="ScriptType"/>
 				<xs:element name="OnDoubleClick" type="ScriptType"/>
 				<xs:element name="OnValueChanged" type="ScriptType"/>
+				<xs:element name="OnMinMaxChanged" type="ScriptType"/>				
 				<xs:element name="OnUpdateModel" type="ScriptType"/>
 				<xs:element name="OnAnimFinished" type="ScriptType"/>
 				<xs:element name="OnEnterPressed" type="ScriptType"/>
@@ -323,6 +324,7 @@
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
 		<xs:attribute name="setAllPoints" type="xs:boolean" default="false"/>
 		<xs:attribute name="hidden" type="xs:boolean" default="false"/>
+		<xs:attribute name="parentKey" type="xs:string"/>
 	</xs:complexType>
 	<xs:element name="LayoutFrame" type="LayoutFrameType"/>
 	<xs:complexType name="BackdropType">
@@ -359,7 +361,6 @@
 				<xs:attribute name="file" type="xs:string"/>
 				<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
 				<xs:attribute name="nonBlocking" type="xs:boolean" default="false"/>
-				<xs:attribute name="parentKey" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -392,7 +393,6 @@
 				<xs:attribute name="justifyH" type="JUSTIFYHTYPE" default="CENTER"/>
 				<xs:attribute name="maxLines" type="xs:unsignedInt" default="0"/>
 				<xs:attribute name="indented" type="xs:boolean" default="false"/>
-				<xs:attribute name="parentKey" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -455,9 +455,7 @@
 				<xs:attribute name="enableKeyboard" type="xs:boolean" default="false"/>
 				<xs:attribute name="clampedToScreen" type="xs:boolean" default="false"/>
 				<xs:attribute name="protected" type="xs:boolean" default="false"/>
-				<xs:attribute name="jumpNavigateEnabled" type="xs:boolean"/>
-				<xs:attribute name="jumpNavigateStart" type="xs:boolean" default="false"/>
-				<xs:attribute name="parentKey" type="xs:string"/>
+				<xs:attribute name="depth" type="xs:float" default="0.0"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -795,6 +793,12 @@
 			<xs:enumeration value="OUT_IN"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="ANIMCURVETYPE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="NONE"/>
+			<xs:enumeration value="SMOOTH"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="AnimOrderType">
 		<xs:restriction base="xs:int">
 			<xs:minInclusive value="1"/>
@@ -810,6 +814,19 @@
 				<xs:element name="OnStop" type="ScriptType"/>
 				<xs:element name="OnUpdate" type="ScriptType"/>
 				<xs:element name="OnFinished" type="ScriptType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AnimGroupScriptsType">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="OnLoad" type="ScriptType"/>
+				<xs:element name="OnPlay" type="ScriptType"/>
+				<xs:element name="OnPause" type="ScriptType"/>
+				<xs:element name="OnStop" type="ScriptType"/>
+				<xs:element name="OnUpdate" type="ScriptType"/>
+				<xs:element name="OnFinished" type="ScriptType"/>
+				<xs:element name="OnLoop" type="ScriptType"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -876,11 +893,34 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Alpha" type="AlphaType" substitutionGroup="Animation"/>
+	<xs:complexType name="ControlPointType">
+		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="offsetX" type="xs:float" default="0.0"/>
+		<xs:attribute name="offsetY" type="xs:float" default="0.0"/>
+	</xs:complexType>
+	<xs:element name="ControlPoint" type="ControlPointType"/>
+	<xs:complexType name="PathType">
+		<xs:complexContent>
+			<xs:extension base="AnimationType">
+				<xs:sequence>
+					<xs:element name="ControlPoints" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element ref="ControlPointType" minOccurs="0" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="curve" type="ANIMCURVETYPE" default="NONE"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Path" type="PathType" substitutionGroup="Animation"/>
 	<xs:complexType name="AnimationGroupType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
 				<xs:element ref="Animation"/>
-				<xs:element name="Scripts" type="AnimScriptsType"/>
+				<xs:element name="Scripts" type="AnimGroupScriptsType"/>
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>
@@ -888,6 +928,8 @@
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
 		<xs:attribute name="looping" type="ANIMLOOPTYPE" default="NONE"/>
 		<xs:attribute name="parentKey" type="xs:string"/>
+		<xs:attribute name="initialOffsetX" type="xs:float" default="0.0"/>
+		<xs:attribute name="initialOffsetY" type="xs:float" default="0.0"/>
 	</xs:complexType>
 	<xs:element name="AnimationGroup" type="AnimationGroupType"/>
 </xs:schema>

@@ -184,7 +184,7 @@
 			<Button name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
 			<Button name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
 
-			<Button name="$parentPortraitButton" jumpNavigateEnabled="false">
+			<Button name="$parentPortraitButton">
 				<Size>
 					<AbsDimension x="40" y="40"/>
 				</Size>

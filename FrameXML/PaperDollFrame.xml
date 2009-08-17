@@ -1391,7 +1391,7 @@
 						</Scripts>
 					</ScrollFrame>				
 					<EditBox name="$parentEditBox" letters="16" historyLines="0" autoFocus="true">
-						<Size x="200" y="20"/>
+						<Size x="182" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset x="29" y="-35"/>

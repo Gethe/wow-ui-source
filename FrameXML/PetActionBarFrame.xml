@@ -64,6 +64,9 @@
 			<OnLeave>
 				PetActionButton_OnLeave(self, motion);
 			</OnLeave>
+			<OnUpdate>
+				PetActionButton_OnUpdate(self, elapsed);
+			</OnUpdate>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
 			<Size>

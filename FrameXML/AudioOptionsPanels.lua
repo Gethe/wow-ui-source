@@ -518,7 +518,7 @@ function AudioOptionsVoicePanelKeyBindingButton_BindButton (self)
 
 		local currentbinding = GetBindingByKey(PUSH_TO_TALK_BUTTON);
 		if ( currentbinding ) then
-			 UIErrorsFrame:AddMessage( format(ALREADY_BOUND, GetBindingText(currentbinding, "BINDING_NAME_")), 1.0, 1.0, 0, 1, 10) 
+			 UIErrorsFrame:AddMessage(format(ALREADY_BOUND, GetBindingText(currentbinding, "BINDING_NAME_")), 1.0, 1.0, 0.0, 1.0);
 		end
 
 		AudioOptionsVoicePanelBindingOutputText:SetText(PTT_BOUND);

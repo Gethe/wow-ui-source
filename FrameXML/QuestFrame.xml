@@ -83,7 +83,7 @@
 							<OnClick function="QuestRewardCancelButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="QuestFrameCompleteQuestButton" inherits="UIPanelButtonTemplate" text="COMPLETE_QUEST" jumpNavigateStart="true">
+					<Button name="QuestFrameCompleteQuestButton" inherits="UIPanelButtonTemplate" text="COMPLETE_QUEST">
 						<Size>
 							<AbsDimension x="120" y="22"/>
 						</Size>
@@ -311,7 +311,7 @@
 							<OnClick function="QuestGoodbyeButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="QuestFrameCompleteButton" inherits="UIPanelButtonTemplate" text="CONTINUE" jumpNavigateStart="true">
+					<Button name="QuestFrameCompleteButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
 						<Size>
 							<AbsDimension x="120" y="22"/>
 						</Size>
@@ -487,7 +487,7 @@
 							<OnClick function="QuestDetailDeclineButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="QuestFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" jumpNavigateStart="true">
+					<Button name="QuestFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 						<Size>
 							<AbsDimension x="77" y="22"/>
 						</Size>

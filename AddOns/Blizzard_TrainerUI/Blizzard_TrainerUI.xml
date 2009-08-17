@@ -467,7 +467,7 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button name="ClassTrainerTrainButton" inherits="UIPanelButtonTemplate" text="TRAIN" jumpNavigateStart="true">
+			<Button name="ClassTrainerTrainButton" inherits="UIPanelButtonTemplate" text="TRAIN">
 				<Size>
 					<AbsDimension x="80" y="22"/>
 				</Size>

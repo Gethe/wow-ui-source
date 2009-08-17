@@ -150,6 +150,7 @@ function SecureButton_GetModifiedUnit(self, button)
 			unit = unit .. unitsuffix;
 			-- map raid1pet to raidpet1
 			unit = gsub(unit, "^([^%d]+)([%d]+)[pP][eE][tT]", "%1pet%2");
+			unit = gsub(unit, "^[pP][lL][aA][yY][eE][rR][pP][eE][tT]", "pet");
 		end
 		
 		local noPet, hadPet = unit:gsub("[pP][eE][tT](%d)", "%1");

@@ -216,7 +216,7 @@ end
 
 function AutoCompleteEditBox_OnTextChanged(self, userInput)
 	if ( userInput ) then
-		AutoComplete_Update(self, self:GetText(), self:GetCursorPosition());
+		AutoComplete_Update(self, self:GetText(), self:GetUTF8CursorPosition());
 	end
 end
 

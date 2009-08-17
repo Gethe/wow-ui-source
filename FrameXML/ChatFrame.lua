@@ -3339,7 +3339,7 @@ function ChatEdit_OnTextChanged(self, userInput)
 		self.tabCompleteText = nil;
 	end
 	self.ignoreTextChange = nil;
-	local regex = "^(([^%s]+)%s+)([^%s]+)"
+	local regex = "^((/[^%s]+)%s+)([^%s]+)"
 	local full, command, target = strmatch(self:GetText(), regex);
 	if ( not target or (strsub(target, 1, 1) == "|") ) then
 		AutoComplete_HideIfAttachedTo(self);
@@ -3350,7 +3350,7 @@ function ChatEdit_OnTextChanged(self, userInput)
 		self.autoCompleteRegex = regex;
 		self.autoCompleteFormatRegex = "%2$s%1$s"
 		self.autoCompleteXOffset = 35;
-		AutoComplete_Update(self, target, self:GetCursorPosition() - strlen(command) - 1);
+		AutoComplete_Update(self, target, self:GetUTF8CursorPosition() - strlenutf8(command) - 1);
 	end
 end
 
@@ -3452,6 +3452,8 @@ function ChatEdit_HandleChatType(editBox, msg, command, send)
 			end
 		end
 	end
+	--This isn't one we found in our list, so we're not going to autocomplete.
+	editBox.autoCompleteParams = nil;
 	return false;
 end
 

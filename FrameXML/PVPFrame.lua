@@ -1,5 +1,6 @@
 MAX_ARENA_TEAMS = 3;
 MAX_ARENA_TEAM_MEMBERS = 10;
+MAX_ARENA_TEAM_NAME_WIDTH = 310;
 
 function PVPFrame_OnLoad(self)
 	PVPFrameLine1:SetAlpha(0.3);
@@ -269,7 +270,13 @@ function PVPTeamDetails_Update(id)
 	PVPTeamDetailsSize:SetFormattedText(PVP_TEAMSIZE, teamSize, teamSize);
 	PVPTeamDetailsRank:SetText(teamRank);
 	PVPTeamDetailsRating:SetText(teamRating);
-
+	
+	-- Tidy up team name display if it's too long - mostly for CN
+	PVPTeamDetailsName:SetWidth(0);
+	if ( PVPTeamDetailsName:GetWidth() > MAX_ARENA_TEAM_NAME_WIDTH ) then
+		PVPTeamDetailsName:SetWidth(MAX_ARENA_TEAM_NAME_WIDTH);
+	end
+	
 	-- Display General Team Data
 	if ( PVPTeamDetails.season ) then
 		PVPTeamDetailsFrameColumnHeader3.sortType = "seasonplayed";

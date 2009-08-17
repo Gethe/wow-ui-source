@@ -124,10 +124,10 @@ function ArenaEnemyFrame_OnLoad(self)
 	
 	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyDropDown_Initialize, "MENU");
 	
-	local showmenu = function()
-		ToggleDropDownMenu(1, nil, _G["ArenaEnemyFrame"..self:GetID().."DropDown"], self:GetName(), 47, 15);
+	local setfocus = function()
+		FocusUnit("arena"..self:GetID());
 	end
-	SecureUnitButton_OnLoad(self, "arena"..self:GetID(), showmenu);
+	SecureUnitButton_OnLoad(self, "arena"..self:GetID(), setfocus);
 	
 	local id = self:GetID();
 	if ( UnitClass("arena"..id) and (not UnitExists("arena"..id))) then	--It is possible for the unit itself to no longer exist on the client, but some of the information to remain (after reloading the UI)
@@ -259,10 +259,10 @@ function ArenaEnemyPetFrame_OnLoad(self)
 	
 	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyPetDropDown_Initialize, "MENU");
 	
-	local showmenu = function()
-		ToggleDropDownMenu(1, nil, _G["ArenaEnemyFrame"..self:GetID().."PetFrameDropDown"], self:GetName(), 47, 15);
+	local setfocus = function()
+		FocusUnit("arenapet"..self:GetID());
 	end
-	SecureUnitButton_OnLoad(self, "arenapet"..self:GetID(), showmenu);
+	SecureUnitButton_OnLoad(self, "arenapet"..self:GetID(), setfocus);
 end
 
 function ArenaEnemyPetFrame_OnEvent(self, event, ...)

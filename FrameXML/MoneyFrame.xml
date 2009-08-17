@@ -5,7 +5,7 @@
 			<AbsDimension x="192" y="28"/>
 		</Size>
 		<Frames>
-			<Button name="$parentCopperButton" jumpNavigateEnabled="false">
+			<Button name="$parentCopperButton">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -46,7 +46,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentSilverButton" jumpNavigateEnabled="false">
+			<Button name="$parentSilverButton">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -87,7 +87,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentGoldButton" jumpNavigateEnabled="false">
+			<Button name="$parentGoldButton">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -152,7 +152,7 @@
 			<AbsDimension x="128" y="13"/>
 		</Size>
 		<Frames>
-			<Button name="$parentCopperButton" jumpNavigateEnabled="false">
+			<Button name="$parentCopperButton">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -193,7 +193,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentSilverButton" jumpNavigateEnabled="false">
+			<Button name="$parentSilverButton">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -234,7 +234,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentGoldButton" jumpNavigateEnabled="false">
+			<Button name="$parentGoldButton">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -294,7 +294,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Button name="SmallDenominationTemplate" jumpNavigateEnabled="false" virtual="true">
+	<Button name="SmallDenominationTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="32" y="13"/>
 		</Size>

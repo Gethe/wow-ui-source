@@ -2431,6 +2431,25 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentFullSizeFocusFrame" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentArenaEnemyPets" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-16" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "fullSizeFocusFrame";
+						self.setFunc = function (value)
+							FocusFrame_SetFullSize(value == "1");
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>

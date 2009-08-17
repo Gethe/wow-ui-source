@@ -117,8 +117,18 @@ function PetActionBar_Update (self)
 		petActionButton.isToken = isToken;
 		petActionButton.tooltipSubtext = subtext;
 		if ( isActive ) then
+			if ( IsPetAttackAction(i) ) then
+				PetActionButton_StartFlash(petActionButton);
+				-- the checked texture looks a little confusing at full alpha (looks like you have an extra ability selected)
+				petActionButton:GetCheckedTexture():SetAlpha(0.5);
+			else
+				petActionButton:GetCheckedTexture():SetAlpha(1.0);
+			end
 			petActionButton:SetChecked(1);
 		else
+			if ( IsPetAttackAction(i) ) then
+				PetActionButton_StopFlash(petActionButton);
+			end
 			petActionButton:SetChecked(0);
 		end
 		if ( autoCastAllowed ) then
@@ -332,6 +342,44 @@ end
 
 function PetActionButton_OnLeave ()
 	GameTooltip:Hide();
+end
+
+function PetActionButton_OnUpdate (self, elapsed)
+	if ( PetActionButton_IsFlashing(self) ) then
+		local flashtime = self.flashtime;
+		flashtime = flashtime - elapsed;
+
+		if ( flashtime <= 0 ) then
+			local overtime = -flashtime;
+			if ( overtime >= ATTACK_BUTTON_FLASH_TIME ) then
+				overtime = 0;
+			end
+			flashtime = ATTACK_BUTTON_FLASH_TIME - overtime;
+
+			local flashTexture = _G[self:GetName().."Flash"];
+			if ( flashTexture:IsShown() ) then
+				flashTexture:Hide();
+			else
+				flashTexture:Show();
+			end
+		end
+		
+		self.flashtime = flashtime;
+	end
+end
+
+function PetActionButton_StartFlash (self)
+	self.flashing = true;
+	self.flashtime = 0;
+end
+
+function PetActionButton_StopFlash (self)
+	self.flashing = false;
+	_G[self:GetName().."Flash"]:Hide();
+end
+
+function PetActionButton_IsFlashing (self)
+	return self.flashing;
 end
 
 function PetActionButton_SetHotkeys (self)

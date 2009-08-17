@@ -199,6 +199,7 @@
 								TextStatusBar_UpdateTextString(self);
 								ShowTextStatusBarText(self);
 							</OnEnter>
+							<OnMinMaxChanged function="TextStatusBar_OnValueChanged"/>
 							<OnLeave function="HideTextStatusBarText"/>
 						</Scripts>
 						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>

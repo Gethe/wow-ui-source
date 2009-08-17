@@ -39,7 +39,7 @@ UIPanelWindows["PetitionFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["HelpFrame"] =			{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["GossipFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["MailFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0 };
+UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["PetStableFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["WorldStateScoreFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
@@ -1833,7 +1833,10 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	-- HACK: we have too many bars in this game now...
 	-- if the shapeshift bar is shown then hide the multi-cast bar
 	-- we'll have to figure out what we should do in this case if it ever really becomes a problem
-	if ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) then
+	-- HACK 2: if the possession bar is shown then hide the multi-cast bar
+	-- yeah, way too many bars...
+	if ( ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) or
+		 ( PossessBarFrame and PossessBarFrame:IsShown() ) ) then
 		HideMultiCastActionBar();
 	end
 

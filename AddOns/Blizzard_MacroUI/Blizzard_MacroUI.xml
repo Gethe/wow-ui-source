@@ -543,7 +543,7 @@
 		<Frames>
 			<EditBox name="MacroPopupEditBox" letters="16" historyLines="0">
 				<Size>
-					<AbsDimension x="200" y="20"/>
+					<AbsDimension x="182" y="20"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">

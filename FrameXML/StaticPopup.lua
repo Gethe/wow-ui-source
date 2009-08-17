@@ -553,6 +553,9 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 	text = WORLD_PVP_ENTER,
 	button1 = ACCEPT,
 	button2 = CANCEL,
+	OnShow = function(self)
+		_, _, _, self.timeleft = GetWorldPVPQueueStatus(1);
+	end,	
 	OnAccept = function(self, data)
 		BattlefieldMgrEntryInviteResponse(1,1);
 	end,
@@ -2863,6 +2866,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		 (which == "INSTANCE_BOOT") or
 		 (which == "INSTANCE_LOCK") or
 		 (which == "CONFIRM_SUMMON") or
+		 (which == "BFMGR_INVITED_TO_ENTER") or
 		 (which == "AREA_SPIRIT_HEAL") ) then
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
@@ -3124,6 +3128,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "DUEL_OUTOFBOUNDS") or
 			 (which == "INSTANCE_BOOT") or
 			 (which == "CONFIRM_SUMMON") or
+			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL")) then
 			local text = _G[dialog:GetName().."Text"];
 			local hasText = nil;

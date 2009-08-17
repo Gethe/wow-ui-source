@@ -244,7 +244,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentResizeTopLeft" jumpNavigateEnabled="false">
+			<Button name="$parentResizeTopLeft">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -280,7 +280,7 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeTopRight" jumpNavigateEnabled="false">
+			<Button name="$parentResizeTopRight">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -316,7 +316,7 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeBottomLeft" jumpNavigateEnabled="false">
+			<Button name="$parentResizeBottomLeft">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -352,7 +352,7 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeBottomRight" jumpNavigateEnabled="false">
+			<Button name="$parentResizeBottomRight">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -388,7 +388,7 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeTop" jumpNavigateEnabled="false">
+			<Button name="$parentResizeTop">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -430,7 +430,7 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeBottom" jumpNavigateEnabled="false">
+			<Button name="$parentResizeBottom">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -472,7 +472,7 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeLeft" jumpNavigateEnabled="false">
+			<Button name="$parentResizeLeft">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -514,7 +514,7 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeRight" jumpNavigateEnabled="false">
+			<Button name="$parentResizeRight">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>

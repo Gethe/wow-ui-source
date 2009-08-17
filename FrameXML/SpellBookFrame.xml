@@ -373,7 +373,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<CheckButton name="ShowAllSpellRanksCheckBox" inherits="OptionsSmallCheckButtonTemplate" jumpNavigateEnabled="false">
+			<CheckButton name="ShowAllSpellRanksCheckBox" inherits="OptionsSmallCheckButtonTemplate">
 				<Size>
 					<AbsDimension x="26" y="26"/>
 				</Size>

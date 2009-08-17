@@ -315,24 +315,32 @@ function PVPBattlegroundFrame_UpdateGroupAvailable()
 	end
 end
 
-function PVPBattleground_WintergraspTimerUpdate(self)
-	
+function WintergraspTimer_OnLoad(self)
+	self.canQueue = false;
+	self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CANNOT_QUEUE;
+	self.texture:SetTexCoord(0.0, 1.0, 0.0, 0.5);
+end
+
+function WintergraspTimer_OnUpdate(self, elapsed)
 	local nextBattleTime = GetWintergraspWaitTime();
 	if ( nextBattleTime and nextBattleTime > 60 ) then
-		WintergraspTimer.frameText:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, true));
+		self.text:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, true));
 	elseif ( nextBattleTime and nextBattleTime > 0 ) then
-		WintergraspTimer.frameText:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, false));
+		self.text:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, false));
 	else
-		WintergraspTimer.frameText:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, WINTERGRASP_IN_PROGRESS);
+		self.text:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, WINTERGRASP_IN_PROGRESS);
 	end
-	if ( CanQueueForWintergrasp() ) then
-		self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CAN_QUEUE;
-		self:Enable();
-	else
-		self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CANNOT_QUEUE;
-		self:Disable();
-	end
-	if ( self.tooltipActive ) then
-		GameTooltip:SetText(self.tooltip);
+
+	local canQueue = CanQueueForWintergrasp();
+	if ( self.canQueue ~= canQueue ) then
+		-- simple safeguard so we're not doing a bunch of unnecessary work for each OnUpdate
+		if ( canQueue ) then
+			self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CAN_QUEUE;
+			self.texture:SetTexCoord(0.0, 1.0, 0.5, 1.0);
+		else
+			self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CANNOT_QUEUE;
+			self.texture:SetTexCoord(0.0, 1.0, 0.0, 0.5);
+		end
+		self.canQueue = canQueue;
 	end
 end

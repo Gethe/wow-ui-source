@@ -83,7 +83,7 @@
 					</Layer>
 				</Layers>
 			</CheckButton>
-			<Button name="TutorialFrameOkayButton" jumpNavigateStart="true">
+			<Button name="TutorialFrameOkayButton">
 				<Size>
 					<AbsDimension x="76" y="21"/>
 				</Size>

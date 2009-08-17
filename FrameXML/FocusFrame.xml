@@ -1,7 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="FocusFrame.lua"/>
-	<Frame name="FocusDebuffFrameTemplate" inherits="PartyDebuffFrameTemplate" virtual="true" hidden="true">
+	<Frame name="FocusDebuffFrameTemplate" inherits="TargetDebuffFrameTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="15" y="15"/>
+		</Size>
 		<Scripts>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
@@ -88,9 +91,6 @@
 			<Frame name="FocusFrameTextureFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="FocusFrameTexture" file="Interface\TargetingFrame\UI-FocusTargetingFrame.tga">
-							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-						</Texture>
 						<FontString name="FocusName" inherits="GameFontNormalSmall">
 							<Size>
 								<AbsDimension x="90" y="10"/>
@@ -138,6 +138,24 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame name="FocusFrameTextureFrameSmall" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="FocusFrameTexture" file="Interface\TargetingFrame\UI-FocusTargetingFrame.tga">
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="FocusFrameTextureFrameFullSize" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-FocusFrame-Large">
+							<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame name="FocusFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 				<Size>
 					<AbsDimension x="10" y="10"/>
@@ -166,6 +184,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						hooksecurefunc(FocusFrameHealthBarText, "SetWidth", debugbreak)
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
 						self.cvar = "targetStatusText";

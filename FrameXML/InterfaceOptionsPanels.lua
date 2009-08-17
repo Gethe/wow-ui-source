@@ -1149,6 +1149,7 @@ UnitFramePanelOptions = {
 	showArenaEnemyFrames = { text = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
 	showArenaEnemyCastbar = { text = "SHOW_ARENA_ENEMY_CASTBAR_TEXT" },
 	showArenaEnemyPets = { text = "SHOW_ARENA_ENEMY_PETS_TEXT" },
+	fullSizeFocusFrame = { text = "FULL_SIZE_FOCUS_FRAME_TEXT" },
 }
 
 function BlizzardOptionsPanel_UpdateRaidPullouts ()

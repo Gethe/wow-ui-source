@@ -106,7 +106,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="REPUTATION">
+			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="REPUTATION_ABBR">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
                         <Offset>
@@ -122,7 +122,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-			<Button name="CharacterFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="SKILLS">
+			<Button name="CharacterFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="SKILLS_ABBR">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="CharacterFrameTab3" relativePoint="RIGHT">
                         <Offset>

@@ -1688,7 +1688,6 @@ function CalendarFrame_SetSelectedDay(dayButton)
 end
 
 function CalendarFrame_SetToday(dayButton)
-	dayButton:SetJumpNavigateStart(true);
 	--CalendarTodayTexture:SetParent(dayButton);
 	--CalendarTodayTexture:ClearAllPoints();
 	--CalendarTodayTexture:SetPoint("CENTER", anchor, "CENTER");
