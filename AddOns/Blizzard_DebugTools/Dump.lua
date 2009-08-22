@@ -365,6 +365,7 @@ function DevTools_Dump(value, startKey)
 end
 
 function DevTools_DumpCommand(msg, editBox)
+    forceinsecure();
     if (string_match(msg,"^[A-Za-z_][A-Za-z0-9_]*$")) then
         WriteMessage("Dump: " .. msg);
         local val = getglobal(msg);
