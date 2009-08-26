@@ -1,8 +1,8 @@
 h1. World of Warcraft PTR Patch 3.2.2
 
-The latest test realm patch notes can always be found at: "http://www.wow-europe.com/en/patchnotes/":http://www.wow-europe.com/en/patchnotes/
+The latest test realm patch notes can always be found at http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html
 
-The latest patch notes can always be found at: "http://www.wow-europe.com/en/info/underdev/testrealm.html":http://www.wow-europe.com/en/info/underdev/testrealm.html
+The latest patch notes can always be found at http://www.worldofwarcraft.com/patchnotes/
 
 h2. General
 
@@ -14,6 +14,12 @@ After years of lurking in her lair battling the many brave adventurers who trave
 * Adjustments have been made to the encounter to keep it fit for modern raiding, but the fundamental experience of fighting the Brood Mother will remain, as will the horror of the Deep Breaths!
 * Some classic items Onyxia offered level 60 players will have their stats adjusted appropriately for level 80 players.
 * Brood of Onyxia, a very rare 310%-speed mount modeled after Onyxia herself will be available for the luckiest of challengers.
+
+h2. PvP
+
+h3. Battlegrounds
+
+* Players level 11 and higher will always see a daily Battleground quest, as the quest giver will only offer daily quests for a Battleground in which a player is eligible to participate according to level bracket (i.e. players levels 11-20 will always be offered a Warsong Gulch daily quest, while players levels 11-50 will be offered either an Arathi Basin or a Warsong Gulch daily quest, etc.).
 
 h2. Death Knights
 
@@ -28,7 +34,7 @@ h3. Talents
 h4. Balance
 
 * Moonkin Form: This form now also reduces the damage the druid takes while stunned by 15%.
-* Typhoon: The knockback distance from this spell has been increased to match Thunderstorm.
+* Typhoon: The knockback distance from this spell has been increased to match Thunderstorm and the range of the ability has been reduced to 10 yards.
 
 h4. Feral Combat
 
@@ -36,7 +42,7 @@ h4. Feral Combat
 
 h2. Mages
 
-* Arcane Blast: The buff from using this ability now stacks up to 4 times instead of 3, and each application increases mana cost by 130% instead of 200%.
+* Arcane Blast: The buff from using this ability now stacks up to 4 times instead of 3, and each application increases mana cost by 175% instead of 200%. In addition, the duration of the buff has been reduced to 6 seconds.
 
 h3. Talents
 
@@ -52,18 +58,24 @@ h3. Talents
 
 h4. Protection
 
+* Blessing of Sanctuary: This blessing now grants 10% strength in addition to its current effects. Also, the strength and stamina bonuses from this blessing will no longer be lost when Blessing of Kings is removed.
 * Judgements of the Just: The reduction in cooldown to Hammer of Justice provided by this talent has been reduced to 5/10 seconds instead of 10/20 seconds.
 * Touched by the Light: This talent now provides 20/40/60% of the paladin’s strength as spell power instead of 10/20/30% of the paladin’s stamina.
 
 h4. Retribution
 
-* Seal of Command: This ability now chains to strike up to 2 additional targets when it is triggered by an attack.
+* Seal of Command: This ability now chains to strike up to 2 additional targets when it is triggered by an attack that can only strike a single target.
 
 h2. Rogues
 
+* Envenom’s scaling has been increased from 7% to 9% of attack power per combo point.
 * Fan of Knives: The damage done by this ability has been reduced by 30%.
 
 h3. Talents
+
+h4. Assassination
+
+* Master Poisoner: Now also provides a 33/66/100% chance of preventing Envenom from consuming Deadly Poison.
 
 h4. Combat
 
@@ -73,6 +85,14 @@ h4. Subtlety
 
 * Honor Among Thieves: A 1-second cooldown is now enforced on how often a rogue can gain combo points from his party via this talent.
 
+h2. Warriors
+
+h3. Talents
+
+h4. Arms
+
+* Sword Specialization: Now has a 2/4/6/8/10% chance to proc an extra attack, up from 1/2/3/4/5%.
+
 h2. Dungeons & Raids
 
 h3. Shadowfang Keep
@@ -81,17 +101,31 @@ h3. Shadowfang Keep
 
 h2. Items
 
+* Druid Tier-8 Healer 4-Piece Set Bonus: The amount of healing this set bonus grants on the initial cast of Rejuvenation has been reduced by 50%. In addition, this set bonus no longer has strange interactions with Harold’s Rejuvenating Broach.
+* Libram of Obstruction: The buff to block value from this relic is now exclusive with the buff to block value from Libram of the Sacred Shield; it is impossible to have both buffs at once.
+* Libram of the Sacred Shield: The block value buff from this relic has been increased to match its item level.
+
 h3. Glyphs
 
 * Glyph of Mind Flay: This glyph no longer reduces the magnitude of the movement reduction on the Mind Flay victim.
+* Glyph of Typhoon: This glyph now increases the range on Typhoon by 20 yards in addition to its current effects.
 
 h2. User Interface
 
 * The size of the Focus Frame can now be adjusted via the Interface Options menu.
-* For additional notes on Lua and XML changes please visit the US UI & Macros Forum: "http://forums.worldofwarcraft.com/board.html?sid=1&amp;forumId=11114":http://forums.worldofwarcraft.com/board.html?sid=1&amp;forumId=11114
+* For additional notes on Lua and XML changes please visit the UI & Macros Forum: http://forums.worldofwarcraft.com/board.html?sid=1&amp;forumId=11114
 
 h2. Bug Fixes
 
+* Arcane Missiles: Ranks 12 and 13 will now properly cause players to enter combat.
 * Balance of Power: Misleading tooltip reworded. The tooltip previously reported an incorrect value for the increased chance to hit with spells. The actual benefit of the talent is unchanged.
+* Demonic Circle: This ability now correctly removes the snaring component of Frostfire Bolt.
 * Divine Aegis: Ranks 1 and 2 now work with Holy Nova.
+* Hand of Freedom: This ability now correctly removes the snaring component of Infected Wounds and Frostfire Bolt.
+* Hunter Tier-9 2-Piece Bonus: Critical damage from Serpent Sting will now work properly with the Mortal Shots and Expose Weakness talents.
+* Master’;s Call: This ability now correctly removes the snaring component of Infected Wounds, Frostfire Bolt, and Slow.
+* Mote of Flame: Corrected typo in tooltip.
+* Shard of Flame: Corrected typo in tooltip.
 * Trap Mastery: Tooltip now states the correct amount of snakes summoned.
+* Val’anyr, Hammer of The Ancient Kings: This item’s special bonus now works properly with Prayer of Mending and the heal-over-time effect triggered by Flash of Light cast on Sacred Shield targets.
+* Vanish: This ability now correctly removes the snaring component of Frostfire Bolt.
