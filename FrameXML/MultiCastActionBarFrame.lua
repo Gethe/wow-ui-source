@@ -395,12 +395,13 @@ function MultiCastSlotButton_OnEnter(self)
 	if ( MultiCastFlyoutFrame.parent ~= self ) then
 		MultiCastFlyoutFrameOpenButton_Show(MultiCastFlyoutFrameOpenButton, "slot", self);
 	end
-
+--[[
 	self:RegisterEvent("MODIFIER_STATE_CHANGED");
 	if ( IsModifiedClick("SHOWMULTICASTFLYOUT") ) then
 		local slot = self:GetID();
 		MultiCastFlyoutFrame_ToggleFlyout(MultiCastFlyoutFrame, "slot", self);
 	end
+--]]
 end
 
 function MultiCastSlotButton_OnLeave(self)
@@ -443,11 +444,6 @@ end
 
 function MultiCastActionButton_OnEvent(self, event, ...)
 	ActionButton_OnEvent(self, event, ...);
-	if ( event == "MODIFIER_STATE_CHANGED" ) then
-		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and MouseIsOver(self) ) then
-			MultiCastActionButton_OnEnter(self);
-		end
-	end
 end
 
 function MultiCastActionButton_OnShow(self)
@@ -457,8 +453,8 @@ function MultiCastActionButton_OnShow(self)
 end
 
 function MultiCastActionButton_OnEnter(self)
-	ActionButton_SetTooltip(self);
 	MultiCastSlotButton_OnEnter(self.slotButton);
+	ActionButton_SetTooltip(self);
 end
 
 function MultiCastActionButton_OnLeave(self)
@@ -911,12 +907,13 @@ end
 
 function MultiCastSummonSpellButton_OnEvent(self, event, ...)
 	MultiCastSpellButton_OnEvent(self, event, ...);
-
+--[[
 	if ( event == "MODIFIER_STATE_CHANGED" ) then
 		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and MouseIsOver(self) ) then
 			MultiCastSummonSpellButton_OnEnter(self);
 		end
 	end
+--]]
 end
 
 function MultiCastSummonSpellButton_OnClick(self)
@@ -929,11 +926,12 @@ function MultiCastSummonSpellButton_OnEnter(self)
 	if ( MultiCastFlyoutFrame.parent ~= self ) then
 		MultiCastFlyoutFrameOpenButton_Show(MultiCastFlyoutFrameOpenButton, "page", self);
 	end
-
+--[[
 	self:RegisterEvent("MODIFIER_STATE_CHANGED");
 	if ( IsModifiedClick("SHOWMULTICASTFLYOUT") ) then
 		MultiCastFlyoutFrame_ToggleFlyout(MultiCastFlyoutFrame, "page", self);
 	end
+--]]
 end
 
 function MultiCastSummonSpellButton_OnLeave(self)

@@ -6,6 +6,7 @@
 			<OnTabPressed function="AutoCompleteEditBox_OnTabPressed"/>
 			<OnEnterPressed function="AutoCompleteEditBox_OnEnterPressed"/>
 			<OnTextChanged function="AutoCompleteEditBox_OnTextChanged"/>
+			<OnChar function="AutoCompleteEditBox_OnChar"/>
 			<OnEditFocusLost function="AutoCompleteEditBox_OnEditFocusLost"/>
 			<OnEscapePressed function="AutoCompleteEditBox_OnEscapePressed"/>
 		</Scripts>
@@ -44,6 +45,17 @@
 				<AbsInset left="5" right="5" top="5" bottom="5"/>
 			</BackgroundInsets>
 		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="AutoCompleteInstructions" inherits="GameFontDisableSmall" text="PRESS_TAB">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset x="15" y="10"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Button name="AutoCompleteButton1" inherits="AutoCompleteButtonTemplate">
 				<Anchors>

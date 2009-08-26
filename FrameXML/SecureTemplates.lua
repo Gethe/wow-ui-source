@@ -479,12 +479,21 @@ function SecureActionButton_OnClick(self, button, down)
     -- Perform the requested action!
     if ( actionType ) then
         -- Re TODO: GMA call allows generic click handler snippets; it's second to prevent values set on the frame from suppressing it
-        local handler = SECURE_ACTIONS[actionType] or
-            SecureButton_GetModifiedAttribute(self, "_"..actionType, button) or
-            rawget(self, actionType);
-
+       local atRisk = false;
+        local handler = SECURE_ACTIONS[actionType]
+        if not handler then
+            atRisk = true; -- user-provided function, be careful
+            handler = SecureButton_GetModifiedAttribute(self, "_"..actionType, button);
+        end
+        if ( not handler ) then
+            atRisk = false; -- functions retrieved from table keys carry their own taint
+            handler = rawget(self, actionType);
+        end
         if ( type(handler) == 'function' ) then
             -- TODO actiontype is ignored by internal handlers, presently left in to facilitate multi-purpose custom handlers; would we rather remove it entirely?
+            if atRisk then 
+                forceinsecure();
+            end
             handler(self, unit, button, actionType);
 
         elseif ( type(handler) == 'string' ) then

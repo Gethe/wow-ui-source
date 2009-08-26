@@ -859,6 +859,7 @@
 						<Scripts>
 							<OnLoad>
 								self.autoCompleteParams = AUTOCOMPLETE_LIST.MAIL;
+								self.addHighlightedText = true;
 							</OnLoad>
 							<OnTabPressed>
 								if ( not AutoCompleteEditBox_OnTabPressed(self) ) then

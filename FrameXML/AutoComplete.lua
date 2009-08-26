@@ -80,6 +80,8 @@ function AutoComplete_OnLoad(self)
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	
 	self.maxHeight = AUTOCOMPLETE_MAX_BUTTONS * AutoCompleteButton1:GetHeight();
+	
+	AutoCompleteInstructions:SetText("|cffbbbbbb"..PRESS_TAB.."|r");
 end
 
 function AutoComplete_Update(parent, text, cursorPosition)
@@ -163,11 +165,12 @@ function AutoComplete_UpdateResults(self, ...)
 		_G["AutoCompleteButton"..i]:Hide();
 	end
 	if ( numReturns > 0 ) then
-		self:SetHeight(numReturns*AutoCompleteButton1:GetHeight()+20);
-		self:SetWidth(maxWidth);
 		if ( not self:IsShown() ) then
 			AutoComplete_SetSelectedIndex(self, 0);
 		end
+		maxWidth = max(maxWidth, AutoCompleteInstructions:GetStringWidth()+30);
+		self:SetHeight(numReturns*AutoCompleteButton1:GetHeight()+35);
+		self:SetWidth(maxWidth);
 		self:Show();
 	else
 		self:Hide();
@@ -220,6 +223,33 @@ function AutoCompleteEditBox_OnTextChanged(self, userInput)
 	end
 end
 
+function AutoCompleteEditBox_AddHighlightedText(editBox, text)
+	if ( not editBox.autoCompleteParams ) then
+		return;
+	end
+	local editBoxText = editBox:GetText();
+	local utf8Position = editBox:GetUTF8CursorPosition();
+	local nameToShow = GetAutoCompleteResults(text, editBox.autoCompleteParams.include, editBox.autoCompleteParams.exclude, 1, utf8Position);
+	if ( nameToShow ) then
+		--We're going to be setting the text programatically which will clear the userInput flag on the editBox. So we want to manually update the dropdown before we change the text.
+		AutoComplete_Update(editBox, editBoxText, utf8Position);
+		
+		local newText = string.gsub(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX,
+			string.format(editBox.autoCompleteFormatRegex or AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, gsub(nameToShow, " ", ""),
+				string.match(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX)),
+				1)
+		editBox:SetText(newText);
+		editBox:HighlightText(strlen(editBoxText), strlen(newText));	--This won't work if there is more after the name, but we aren't enabling this for normal chat (yet). Please fix me when we do.
+		editBox:SetCursorPosition(strlen(editBoxText));
+	end
+end
+
+function AutoCompleteEditBox_OnChar(self)
+	if (self.addHighlightedText and self:GetUTF8CursorPosition() == strlenutf8(self:GetText())) then
+		AutoCompleteEditBox_AddHighlightedText(self, self:GetText());
+	end
+end
+
 function AutoCompleteEditBox_OnEditFocusLost(self)
 	AutoComplete_HideIfAttachedTo(self);
 end
@@ -244,5 +274,7 @@ function AutoCompleteButton_OnClick(self)
 			string.match(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX)),
 			1)
 	editBox:SetText(newText);
+	--When we change the text, we move to the end, so we'll be consistent and move to the end if we don't change it as well.
+	editBox:SetCursorPosition(strlen(newText));
 	autoComplete:Hide();
 end

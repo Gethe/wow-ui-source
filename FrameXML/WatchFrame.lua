@@ -108,7 +108,7 @@ function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
 			end
 		end
 	elseif ( button ~= "RightButton" ) then
-		WatchFrameLinkButtonTemplate_OnLeftClick(self);
+		WatchFrameLinkButtonTemplate_OnLeftClick(self, button);
 	else
 		local dropDown = WatchFrameDropDown;
 		if ( WatchFrame.lastLinkButton ~= self ) then
@@ -125,19 +125,25 @@ function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
 	end
 end
 
-function WatchFrameLinkButtonTemplate_OnLeftClick (self)
+function WatchFrameLinkButtonTemplate_OnLeftClick (self, button)
 	CloseDropDownMenus();
 	if ( self.type == "QUEST" ) then
-		ExpandQuestHeader( GetQuestSortIndex( GetQuestIndexForWatch(self.index) ) );
-		-- you have to call GetQuestIndexForWatch again because ExpandQuestHeader will sort the indices
-		QuestLog_OpenToQuest( GetQuestIndexForWatch(self.index) );
+		if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
+			WatchFrame_StopTrackingQuest( button, self.index);
+		else
+			ExpandQuestHeader( GetQuestSortIndex( GetQuestIndexForWatch(self.index) ) );
+			-- you have to call GetQuestIndexForWatch again because ExpandQuestHeader will sort the indices
+			QuestLog_OpenToQuest( GetQuestIndexForWatch(self.index) );
+		end
 		return;
 	elseif ( self.type == "ACHIEVEMENT" ) then
 		if ( not AchievementFrame ) then
 			AchievementFrame_LoadUI();
 		end
 	
-		if ( not AchievementFrame:IsShown() ) then
+		if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
+			WatchFrame_StopTrackingAchievement(button, self.index);
+		elseif ( not AchievementFrame:IsShown() ) then
 			AchievementFrame_ToggleAchievementFrame();
 			AchievementFrame_SelectAchievement(self.index);
 		else

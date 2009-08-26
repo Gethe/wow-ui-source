@@ -184,7 +184,6 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						hooksecurefunc(FocusFrameHealthBarText, "SetWidth", debugbreak)
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
 						self.cvar = "targetStatusText";

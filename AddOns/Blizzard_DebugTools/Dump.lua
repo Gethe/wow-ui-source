@@ -368,7 +368,7 @@ function DevTools_DumpCommand(msg, editBox)
     forceinsecure();
     if (string_match(msg,"^[A-Za-z_][A-Za-z0-9_]*$")) then
         WriteMessage("Dump: " .. msg);
-        local val = getglobal(msg);
+        local val = _G[msg];
         local tmp = {};
         if (val == nil) then
             local key = string_format(FORMATS.tableKeyAssignPrefix,

@@ -554,7 +554,7 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnShow = function(self)
-		_, _, _, self.timeleft = GetWorldPVPQueueStatus(1);
+		self.timeleft = select(4, GetWorldPVPQueueStatus(1));
 	end,	
 	OnAccept = function(self, data)
 		BattlefieldMgrEntryInviteResponse(1,1);
@@ -2311,6 +2311,24 @@ StaticPopupDialogs["TRADE_REPLACE_ENCHANT"] = {
 	showAlert = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["TRADE_POTENTIAL_BIND_ENCHANT"] = {
+	text = TRADE_POTENTIAL_BIND_ENCHANT,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnShow = function(self)
+		TradeFrameTradeButton:Disable();
+	end,
+	OnHide = function(self)
+		TradeFrameTradeButton_SetToEnabledState();
+	end,
+	OnCancel = function(self)
+		ClickTradeButton(TRADE_ENCHANT_SLOT, true);
+	end,
+	timeout = 0,
+	showAlert = 1,
+	hideOnEscape = 1,
+	noCancelOnReuse = 1
+};
 StaticPopupDialogs["END_REFUND"] = {
 	text = END_REFUND,
 	button1 = OKAY,
@@ -3086,6 +3104,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	
 	editBox.autoCompleteFormatRegex = info.autoCompleteFormatRegex;
 	wideEditBox.autoCompleteFormatRegex = info.autoCompleteFormatRegex;
+	
+	editBox.addHighlightedText = true;
+	wideEditBox.autoCompleteFormatRegex = true;
 	
 	-- Finally size and show the dialog
 	dialog:Show();
