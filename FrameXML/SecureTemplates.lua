@@ -112,6 +112,38 @@ function SecureButton_GetButtonSuffix(button)
 		return "14";
 	elseif ( button == "Button15" ) then
 		return "15";
+	elseif ( button == "Button16" ) then
+		return "16";
+	elseif ( button == "Button17" ) then
+		return "17";
+	elseif ( button == "Button18" ) then
+		return "18";    
+	elseif ( button == "Button19" ) then
+		return "19";
+	elseif ( button == "Button20" ) then
+		return "20";
+	elseif ( button == "Button21" ) then
+		return "21";
+	elseif ( button == "Button22" ) then
+		return "22";
+	elseif ( button == "Button23" ) then
+		return "23";
+	elseif ( button == "Button24" ) then
+		return "24";
+	elseif ( button == "Button25" ) then
+		return "25";
+	elseif ( button == "Button26" ) then
+		return "26";
+	elseif ( button == "Button27" ) then
+		return "27";
+	elseif ( button == "Button28" ) then
+		return "28";    
+	elseif ( button == "Button29" ) then
+		return "29";
+	elseif ( button == "Button30" ) then
+		return "30";
+	elseif ( button == "Button31" ) then
+		return "31";
 	elseif ( button and button ~= "" ) then
         return "-" .. tostring(button);
     end

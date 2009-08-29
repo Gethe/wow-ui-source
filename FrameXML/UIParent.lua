@@ -218,6 +218,9 @@ function UIParent_OnLoad(self)
 
 	--Events for GMChatUI
 	self:RegisterEvent("CHAT_MSG_WHISPER");
+	
+	-- Events for WoW Mouse
+	self:RegisterEvent("WOW_MOUSE_NOT_FOUND");
 end
 
 
@@ -1138,6 +1141,10 @@ function UIParent_OnEvent(self, event, ...)
 	
 	if ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI
 		GMChatFrame_LoadUI(event, ...);
+	end
+	
+	if ( event == "WOW_MOUSE_NOT_FOUND" ) then
+		StaticPopup_Show("WOW_MOUSE_NOT_FOUND");
 	end
 end
 
@@ -3041,6 +3048,38 @@ function GetBindingText(name, prefix, returnAbbr)
 		tempName = "BUTTON14";
 	elseif ( tempName == "Button15" ) then
 		tempName = "BUTTON15";
+	elseif ( tempName == "Button16" ) then
+		tempName = "BUTTON16";
+	elseif ( tempName == "Button17" ) then
+		tempName = "BUTTON17";
+	elseif ( tempName == "Button18" ) then
+		tempName = "BUTTON18";
+	elseif ( tempName == "Button19" ) then
+		tempName = "BUTTON19";
+	elseif ( tempName == "Button20" ) then
+		tempName = "BUTTON20";
+	elseif ( tempName == "Button21" ) then
+		tempName = "BUTTON21";
+	elseif ( tempName == "Button22" ) then
+		tempName = "BUTTON22";
+	elseif ( tempName == "Button23" ) then
+		tempName = "BUTTON23";
+	elseif ( tempName == "Button24" ) then
+		tempName = "BUTTON24";
+	elseif ( tempName == "Button25" ) then
+		tempName = "BUTTON25";
+	elseif ( tempName == "Button26" ) then
+		tempName = "BUTTON26";
+	elseif ( tempName == "Button27" ) then
+		tempName = "BUTTON27";
+	elseif ( tempName == "Button28" ) then
+		tempName = "BUTTON28";
+	elseif ( tempName == "Button29" ) then
+		tempName = "BUTTON29";
+	elseif ( tempName == "Button30" ) then
+		tempName = "BUTTON30";
+	elseif ( tempName == "Button31" ) then
+		tempName = "BUTTON31";
 	end
 
 	local localizedName = nil;
@@ -3108,6 +3147,38 @@ function GetBindingFromClick(input)
 		fullInput = fullInput.."BUTTON14";
 	elseif ( input == "Button15" ) then
 		fullInput = fullInput.."BUTTON15";
+	elseif ( input == "Button16" ) then
+		fullInput = fullInput.."BUTTON16";
+	elseif ( input == "Button17" ) then
+		fullInput = fullInput.."BUTTON17";
+	elseif ( input == "Button18" ) then
+		fullInput = fullInput.."BUTTON18";
+	elseif ( input == "Button19" ) then
+		fullInput = fullInput.."BUTTON19";
+	elseif ( input == "Button20" ) then
+		fullInput = fullInput.."BUTTON20";
+	elseif ( input == "Button21" ) then
+		fullInput = fullInput.."BUTTON21";
+	elseif ( input == "Button22" ) then
+		fullInput = fullInput.."BUTTON22";
+	elseif ( input == "Button23" ) then
+		fullInput = fullInput.."BUTTON23";
+	elseif ( input == "Button24" ) then
+		fullInput = fullInput.."BUTTON24";
+	elseif ( input == "Button25" ) then
+		fullInput = fullInput.."BUTTON25";
+	elseif ( input == "Button26" ) then
+		fullInput = fullInput.."BUTTON26";
+	elseif ( input == "Button27" ) then
+		fullInput = fullInput.."BUTTON27";
+	elseif ( input == "Button28" ) then
+		fullInput = fullInput.."BUTTON28";
+	elseif ( input == "Button29" ) then
+		fullInput = fullInput.."BUTTON29";
+	elseif ( input == "Button30" ) then
+		fullInput = fullInput.."BUTTON30";
+	elseif ( input == "Button31" ) then
+		fullInput = fullInput.."BUTTON31";
 	else
 		fullInput = fullInput..input;
 	end

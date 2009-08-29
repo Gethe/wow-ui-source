@@ -8,7 +8,7 @@ h2. General
 
 h3. The Brood Mother Returns
 
-After years of lurking in her lair battling the many brave adventurers who travelled from afar to challenge her, Onyxia returns to commemorate World of Warcraft’s five-year anniversary.
+After years of lurking in her lair battling the many brave adventurers who travelled from afar to challenge her, Onyxia returns to commemorate World of Warcraft's five-year anniversary.
 
 * Onyxia has been scaled to offer new challenges to level 80 players and is now available for testing in 10- and 25- player modes.
 * Adjustments have been made to the encounter to keep it fit for modern raiding, but the fundamental experience of fighting the Brood Mother will remain, as will the horror of the Deep Breaths!
@@ -38,7 +38,7 @@ h4. Balance
 
 h4. Feral Combat
 
-* Predatory Strikes: This talent now also causes the druid’s finishing moves to provide a 7/13/20% chance per combo point to make the next Nature spell with a cast time below 10 seconds instant cast.
+* Predatory Strikes: This talent now also causes the druid's finishing moves to provide a 7/13/20% chance per combo point to make the next Nature spell with a cast time below 10 seconds instant cast.
 
 h2. Mages
 
@@ -60,7 +60,7 @@ h4. Protection
 
 * Blessing of Sanctuary: This blessing now grants 10% strength in addition to its current effects. Also, the strength and stamina bonuses from this blessing will no longer be lost when Blessing of Kings is removed.
 * Judgements of the Just: The reduction in cooldown to Hammer of Justice provided by this talent has been reduced to 5/10 seconds instead of 10/20 seconds.
-* Touched by the Light: This talent now provides 20/40/60% of the paladin’s strength as spell power instead of 10/20/30% of the paladin’s stamina.
+* Touched by the Light: This talent now provides 20/40/60% of the paladin's strength as spell power instead of 10/20/30% of the paladin's stamina.
 
 h4. Retribution
 
@@ -68,7 +68,7 @@ h4. Retribution
 
 h2. Rogues
 
-* Envenom’s scaling has been increased from 7% to 9% of attack power per combo point.
+* Envenom's scaling has been increased from 7% to 9% of attack power per combo point.
 * Fan of Knives: The damage done by this ability has been reduced by 30%.
 
 h3. Talents
@@ -101,7 +101,7 @@ h3. Shadowfang Keep
 
 h2. Items
 
-* Druid Tier-8 Healer 4-Piece Set Bonus: The amount of healing this set bonus grants on the initial cast of Rejuvenation has been reduced by 50%. In addition, this set bonus no longer has strange interactions with Harold’s Rejuvenating Broach.
+* Druid Tier-8 Healer 4-Piece Set Bonus: The amount of healing this set bonus grants on the initial cast of Rejuvenation has been reduced by 50%. In addition, this set bonus no longer has strange interactions with Harold's Rejuvenating Broach.
 * Libram of Obstruction: The buff to block value from this relic is now exclusive with the buff to block value from Libram of the Sacred Shield; it is impossible to have both buffs at once.
 * Libram of the Sacred Shield: The block value buff from this relic has been increased to match its item level.
 
@@ -113,7 +113,7 @@ h3. Glyphs
 h2. User Interface
 
 * The size of the Focus Frame can now be adjusted via the Interface Options menu.
-* For additional notes on Lua and XML changes please visit the UI & Macros Forum: http://forums.worldofwarcraft.com/board.html?sid=1&amp;forumId=11114
+* For additional notes on Lua and XML changes please visit the "UI & Macros Forum":http://forums.worldofwarcraft.com/board.html?sid=1&amp;forumId=11114
 
 h2. Bug Fixes
 
@@ -123,9 +123,9 @@ h2. Bug Fixes
 * Divine Aegis: Ranks 1 and 2 now work with Holy Nova.
 * Hand of Freedom: This ability now correctly removes the snaring component of Infected Wounds and Frostfire Bolt.
 * Hunter Tier-9 2-Piece Bonus: Critical damage from Serpent Sting will now work properly with the Mortal Shots and Expose Weakness talents.
-* Master’;s Call: This ability now correctly removes the snaring component of Infected Wounds, Frostfire Bolt, and Slow.
+* Master's Call: This ability now correctly removes the snaring component of Infected Wounds, Frostfire Bolt, and Slow.
 * Mote of Flame: Corrected typo in tooltip.
 * Shard of Flame: Corrected typo in tooltip.
 * Trap Mastery: Tooltip now states the correct amount of snakes summoned.
-* Val’anyr, Hammer of The Ancient Kings: This item’s special bonus now works properly with Prayer of Mending and the heal-over-time effect triggered by Flash of Light cast on Sacred Shield targets.
+* Val'anyr, Hammer of The Ancient Kings: This item's special bonus now works properly with Prayer of Mending and the heal-over-time effect triggered by Flash of Light cast on Sacred Shield targets.
 * Vanish: This ability now correctly removes the snaring component of Frostfire Bolt.

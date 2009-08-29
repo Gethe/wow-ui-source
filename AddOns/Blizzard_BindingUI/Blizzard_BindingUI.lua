@@ -193,6 +193,38 @@ function KeyBindingFrame_OnKeyDown(self, keyOrButton)
 			keyPressed = "BUTTON14"
 		elseif ( keyOrButton == "Button15" ) then
 			keyPressed = "BUTTON15"
+		elseif ( keyPressed == "Button16" ) then
+			keyPressed = "BUTTON16"
+		elseif ( keyOrButton == "Button17" ) then
+			keyPressed = "BUTTON17"
+		elseif ( keyPressed == "Button18" ) then
+			keyPressed = "BUTTON18"
+		elseif ( keyOrButton == "Button19" ) then
+			keyPressed = "BUTTON19"
+		elseif ( keyPressed == "Button20" ) then
+			keyPressed = "BUTTON20"
+		elseif ( keyOrButton == "Button21" ) then
+			keyPressed = "BUTTON21"
+		elseif ( keyPressed == "Button22" ) then
+			keyPressed = "BUTTON22"
+		elseif ( keyOrButton == "Button23" ) then
+			keyPressed = "BUTTON23"
+		elseif ( keyPressed == "Button24" ) then
+			keyPressed = "BUTTON24"
+		elseif ( keyOrButton == "Button25" ) then
+			keyPressed = "BUTTON25"
+		elseif ( keyPressed == "Button26" ) then
+			keyPressed = "BUTTON26"
+		elseif ( keyOrButton == "Button27" ) then
+			keyPressed = "BUTTON27"
+		elseif ( keyPressed == "Button28" ) then
+			keyPressed = "BUTTON28"
+		elseif ( keyOrButton == "Button29" ) then
+			keyPressed = "BUTTON29"
+		elseif ( keyPressed == "Button30" ) then
+			keyPressed = "BUTTON30"
+		elseif ( keyOrButton == "Button31" ) then
+			keyPressed = "BUTTON31"
 		end
 		if ( keyPressed == "BUTTON1" or keyPressed == "BUTTON2" ) then
 			return;

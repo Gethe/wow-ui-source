@@ -2701,6 +2701,19 @@ StaticPopupDialogs["ADVANCED_WATCHFRAME_OPTION_ENABLE_INTERRUPT"] = {
 	hideOnEscape = 1
 };
 	
+StaticPopupDialogs["WOW_MOUSE_NOT_FOUND"] = {
+	text = WOW_MOUSE_NOT_FOUND,
+	button1 = OKAY,
+	OnAccept = function(self)
+		if ( InterfaceOptionsFrame:IsShown() ) then
+			InterfaceOptionsMousePanelWoWMouse:SetChecked(nil);
+		end
+	end,
+	timeout = 0,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];

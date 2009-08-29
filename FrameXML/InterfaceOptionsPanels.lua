@@ -1294,6 +1294,7 @@ end
 
 MousePanelOptions = {
 	mouseInvertPitch = { text = "INVERT_MOUSE" },
+	enableWoWMouse = { text = "WOW_MOUSE" },
 	autointeract = { text = "CLICK_TO_MOVE" },
 	mouseSpeed = { text = "MOUSE_SENSITIVITY", minValue = 0.5, maxValue = 1.5, valueStep = 0.05 },
 	cameraYawMoveSpeed = { text = "MOUSE_LOOK_SPEED", minValue = 90, maxValue = 270, valueStep = 10 },
