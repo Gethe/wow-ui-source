@@ -12,6 +12,18 @@
 				</Texture>		
 			</Layer>
 			<Layer level="ARTWORK">
+				<Texture name="$parentBorderShield" file="Interface\CastingBar\UI-CastingBar-Arena-Shield" hidden="true">
+					<Size>
+						<AbsDimension x="42" y="42"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="-25" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 				<FontString name="$parentText" inherits="GameFontHighlightSmall">
 					<Size>
 						<AbsDimension x="80" y="16"/>
@@ -62,7 +74,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				CastingBarFrame_OnLoad(self, "arena"..self:GetParent():GetID(), false);
+				CastingBarFrame_OnLoad(self, "arena"..self:GetParent():GetID(), false, true);
 				_G[self:GetName().."Icon"]:Show();
 			</OnLoad>
 			<OnEvent>

@@ -481,13 +481,19 @@ StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	text = CONFIRM_BATTLEFIELD_ENTRY,
 	button1 = ENTER_BATTLE,
-	button2 = HIDE,
+	button2 = MINIMIZE,
+	button3 = LEAVE_QUEUE,
 	OnAccept = function(self, data)
 		if ( not AcceptBattlefieldPort(data, 1) ) then
 			return 1;
 		end
 		if( StaticPopup_Visible( "DEATH" ) ) then
 			StaticPopup_Hide( "DEATH" );
+		end
+	end,
+	OnAlt = function(self, data)
+		if ( not AcceptBattlefieldPort(data, 0) ) then	--Actually declines the battlefield port.
+			return 1;
 		end
 	end,
 	timeout = 0,
