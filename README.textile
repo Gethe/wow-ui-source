@@ -1,4 +1,4 @@
-h1. World of Warcraft PTR Patch 3.2.2
+h1. World of Warcraft Client Patch 3.2.2
 
 The latest test realm patch notes can always be found at http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html
 
@@ -12,7 +12,7 @@ h3. The Brood Mother Returns
 
 After years of lurking in her lair battling the many brave adventurers who travelled from afar to challenge her, Onyxia returns stronger than before to commemorate World of Warcraft's five-year anniversary.
 
-* Onyxia has been scaled to offer new challenges to level 80 players and is now available for testing in 10- and 25-player modes.
+* Onyxia has been scaled to offer new challenges to level 80 players in 10- and 25-player modes.
 * Adjusted for modern raiding, but with the fundamental experience of fighting the Brood Mother still in effect, including the horrors of her Deep Breaths!
 * Onyxia will now drop level 80 item versions of some classic loot items from the level 60 encounter.
 * Brood of Onyxia, a very rare 310%-speed mount modeled after Onyxia herself will be available for the luckiest of challengers.
