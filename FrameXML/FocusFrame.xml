@@ -149,7 +149,7 @@
 			</Frame>
 			<Frame name="FocusFrameTextureFrameFullSize" setAllPoints="true" hidden="true">
 				<Layers>
-					<Layer level="BORDER">
+					<Layer level="BACKGROUND">
 						<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-FocusFrame-Large">
 							<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
 						</Texture>

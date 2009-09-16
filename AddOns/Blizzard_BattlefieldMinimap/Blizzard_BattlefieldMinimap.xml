@@ -121,10 +121,10 @@
 			if ( BattlefieldMinimapOptions.locked ) then
 				return;
 			end
-			BattlefieldMinimap:StartMoving();
+			BattlefieldMinimapTab:StartMoving();
 		</OnDragStart>
 		<OnDragStop>
-			BattlefieldMinimap:StopMovingOrSizing();
+			BattlefieldMinimapTab:StopMovingOrSizing();
 		</OnDragStop>
 	</Scripts>
 	<ButtonText name="$parentText" text="BATTLEFIELD_MINIMAP">

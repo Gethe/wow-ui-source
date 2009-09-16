@@ -17,6 +17,8 @@ LAST_ITEM_COUNT = 0;
 LAST_ITEM_START_BID = 0;
 LAST_ITEM_BUYOUT = 0;
 
+local BROWSE_PARAM_INDEX_PAGE = 7;
+
 AuctionSort = { };
 
 -- owner sorts
@@ -484,18 +486,51 @@ function AuctionFrame_OnClickSortColumn(sortTable, sortColumn)
 	end
 end
 
-function AuctionFrameBrowse_Search(page)
-	-- If there's a page argument then use that page in the query, otherwise set the page to 0
-	if ( not page ) then
+local prevBrowseParams;
+local function AuctionFrameBrowse_SearchHelper(...)
+	local text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity = ...;
+
+	if ( not prevBrowseParams ) then
+		-- if we are doing a search for the first time then create the browse param cache
+		prevBrowseParams = { };
+	else
+		-- if we have already done a browse then see if any of the params have changed (except for the page number)
+		local param;
+		for i = 1, select('#', ...) do
+			if ( i ~= BROWSE_PARAM_INDEX_PAGE and select(i, ...) ~= prevBrowseParams[i] ) then
+				-- if we detect a change then we want to reset the page number back to the first page
+				page = 0;
+				AuctionFrameBrowse.page = page;
+				break;
+			end
+		end
+	end
+
+	QueryAuctionItems(text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity);
+
+	-- store this query's params so we can compare them with the next set of params we get
+	for i = 1, select('#', ...) do
+		if ( i == BROWSE_PARAM_INDEX_PAGE ) then
+			prevBrowseParams[i] = page;
+		else
+			prevBrowseParams[i] = select(i, ...);
+		end
+	end
+end
+
+function AuctionFrameBrowse_Search()
+	if ( not AuctionFrameBrowse.page ) then
 		AuctionFrameBrowse.page = 0;
 	end
-	QueryAuctionItems(BrowseName:GetText(), BrowseMinLevel:GetText(), BrowseMaxLevel:GetText(), AuctionFrameBrowse.selectedInvtypeIndex, AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown));
+
+	AuctionFrameBrowse_SearchHelper(BrowseName:GetText(), BrowseMinLevel:GetText(), BrowseMaxLevel:GetText(), AuctionFrameBrowse.selectedInvtypeIndex, AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown));
+
 	-- Start "searching" messaging
 	AuctionFrameBrowse.isSearching = 1;
 end
 
 function BrowseSearchButton_OnUpdate(self, elapsed)
-	if (CanSendAuctionQuery("list")) then
+	if ( CanSendAuctionQuery("list") ) then
 		self:Enable();
 		if ( BrowsePrevPageButton.isEnabled ) then
 			BrowsePrevPageButton:Enable();
@@ -732,9 +767,7 @@ function AuctionFrameBrowse_Update()
 			if ( not name ) then	--Bug  145328
 				button:Hide();
 				-- If the last button is empty then set isLastSlotEmpty var
-				if ( i == NUM_BROWSE_TO_DISPLAY ) then
-					isLastSlotEmpty = 1;
-				end
+				isLastSlotEmpty = (i == NUM_BROWSE_TO_DISPLAY);
 			end
 			duration = GetAuctionItemTimeLeft("list", offset + i);
 
@@ -927,9 +960,7 @@ function AuctionFrameBid_Update()
 		if ( index > numBatchAuctions ) then
 			button:Hide();
 			-- If the last button is empty then set isLastSlotEmpty var
-			if ( i == NUM_BIDS_TO_DISPLAY ) then
-				isLastSlotEmpty = 1;
-			end
+			isLastSlotEmpty = (i == NUM_BIDS_TO_DISPLAY);
 		else
 			button:Show();
 			buttonName = "BidButton"..i;
@@ -1117,9 +1148,7 @@ function AuctionFrameAuctions_Update()
 		if ( index > (numBatchAuctions + (NUM_AUCTION_ITEMS_PER_PAGE * AuctionFrameAuctions.page)) ) then
 			auction:Hide();
 			-- If the last button is empty then set isLastSlotEmpty var
-			if ( i == NUM_AUCTIONS_TO_DISPLAY ) then
-				isLastSlotEmpty = 1;
-			end
+			isLastSlotEmpty = (i == NUM_AUCTIONS_TO_DISPLAY);
 		else
 			auction:Show();
 			

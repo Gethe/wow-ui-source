@@ -481,8 +481,7 @@ StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	text = CONFIRM_BATTLEFIELD_ENTRY,
 	button1 = ENTER_BATTLE,
-	button2 = MINIMIZE,
-	button3 = LEAVE_QUEUE,
+	button2 = LEAVE_QUEUE,
 	OnAccept = function(self, data)
 		if ( not AcceptBattlefieldPort(data, 1) ) then
 			return 1;
@@ -491,7 +490,7 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 			StaticPopup_Hide( "DEATH" );
 		end
 	end,
-	OnAlt = function(self, data)
+	OnCancel = function(self, data)
 		if ( not AcceptBattlefieldPort(data, 0) ) then	--Actually declines the battlefield port.
 			return 1;
 		end
@@ -499,7 +498,9 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1,
-	multiple = 1
+	multiple = 1,
+	closeButton = 1,
+	closeButtonIsHide = 1,
 };
 
 StaticPopupDialogs["BFMGR_CONFIRM_WORLD_PVP_QUEUED"] = {
@@ -2710,9 +2711,10 @@ StaticPopupDialogs["ADVANCED_WATCHFRAME_OPTION_ENABLE_INTERRUPT"] = {
 StaticPopupDialogs["WOW_MOUSE_NOT_FOUND"] = {
 	text = WOW_MOUSE_NOT_FOUND,
 	button1 = OKAY,
-	OnAccept = function(self)
+	OnHide = function(self)
+		SetCVar("enableWoWMouse", "0");	
 		if ( InterfaceOptionsFrame:IsShown() ) then
-			InterfaceOptionsMousePanelWoWMouse:SetChecked(nil);
+			InterfaceOptionsMousePanelWoWMouse:Click();
 		end
 	end,
 	timeout = 0,
@@ -2749,7 +2751,7 @@ function StaticPopup_Resize(dialog, which)
 	dialog:SetWidth(320);
 	if ( info.button3 ) then
 		width = 440;
-	elseif (info.hasWideEditBox or info.showAlert) then
+	elseif (info.hasWideEditBox or info.showAlert or info.closeButton) then
 		-- Widen
 		width = 420;
 	elseif ( which == "HELP_TICKET" ) then
@@ -2924,7 +2926,17 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 
 	-- Show or hide the close button
 	if ( info.closeButton ) then
-		_G[dialog:GetName().."CloseButton"]:Show();
+		local closeButton = _G[dialog:GetName().."CloseButton"];
+		if ( info.closeButtonIsHide ) then
+			closeButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-HideButton-Up");
+			closeButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-HideButton-Down");
+			closeButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-HideButton-Highlight");
+		else
+			closeButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up");
+			closeButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down");
+			closeButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight");
+		end
+		closeButton:Show();
 	else
 		_G[dialog:GetName().."CloseButton"]:Hide();
 	end

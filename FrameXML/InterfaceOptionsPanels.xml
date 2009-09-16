@@ -2791,8 +2791,12 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnClick>
+						InterfaceOptionsPanel_CheckButton_OnClick(self);
 						if ( self:GetChecked() ) then
-							DetectWowMouse();
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							DetectWowMouse();							
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
 						end
 					</OnClick>
 				</Scripts>

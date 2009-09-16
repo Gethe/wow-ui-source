@@ -1978,9 +1978,10 @@ SlashCmdList["READYCHECK"] = function(msg)
 	end
 end
 
+--[[All of this information is obtainable through the armory now.
 SlashCmdList["SAVEGUILDROSTER"] = function(msg)
 	SaveGuildRoster();
-end
+end]]
 
 SlashCmdList["LOOKINGFORGROUP"] = function(msg)
 	ToggleLFGParentFrame(1);

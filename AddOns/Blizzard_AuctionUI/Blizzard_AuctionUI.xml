@@ -772,7 +772,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick function="AuctionFrameBrowse_Search"/>
+							<OnClick>
+								AuctionFrameBrowse_Search();
+							</OnClick>
 							<OnUpdate function="BrowseSearchButton_OnUpdate"/>
 						</Scripts>
 					</Button>
@@ -805,7 +807,7 @@
 								AuctionFrameBrowse.page = AuctionFrameBrowse.page - 1;
 								self:Disable();
 								BrowseScrollFrameScrollBar:SetValue(0);
-								AuctionFrameBrowse_Search(AuctionFrameBrowse.page);
+								AuctionFrameBrowse_Search();
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -842,7 +844,7 @@
 								AuctionFrameBrowse.page = AuctionFrameBrowse.page + 1;
 								self:Disable();
 								BrowseScrollFrameScrollBar:SetValue(0);
-								AuctionFrameBrowse_Search(AuctionFrameBrowse.page);
+								AuctionFrameBrowse_Search();
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
