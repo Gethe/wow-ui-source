@@ -729,6 +729,7 @@
 						</HighlightTexture>
 					</Button>
 				</Frames>
+<!-- This animation blanks the wall display in Wintergrasp. Remove for now, revisit later.
 				<Animations>
 					<AnimationGroup name="$parentPulser" looping="BOUNCE">
 						<Animation duration="2.0">
@@ -747,6 +748,7 @@
 						</Scripts>
 					</AnimationGroup>
 				</Animations>
+-->
 				<Scripts>
 					<OnLoad>
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");

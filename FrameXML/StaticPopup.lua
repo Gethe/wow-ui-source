@@ -498,6 +498,7 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1,
+	noCancelOnEscape = 1,
 	multiple = 1,
 	closeButton = 1,
 	closeButtonIsHide = 1,
@@ -3404,7 +3405,8 @@ function StaticPopup_EscapePressed()
 		local frame = _G["StaticPopup"..index];
 		if( frame:IsShown() and frame.hideOnEscape ) then 
 			local OnCancel = StaticPopupDialogs[frame.which].OnCancel;
-			if ( OnCancel ) then
+			local noCancelOnEscape = StaticPopupDialogs[frame.which].noCancelOnEscape;
+			if ( OnCancel and not noCancelOnEscape) then
 				OnCancel(frame, frame.data, "clicked");
 			end
 			frame:Hide();
