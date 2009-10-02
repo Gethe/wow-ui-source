@@ -1,4 +1,4 @@
-h1. World of Warcraft Client Patch 3.2.2 (09-22-2009)
+h1. World of Warcraft PTR Patch 3.3.0
 
 The latest test realm patch notes can always be found at http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html
 
@@ -6,285 +6,145 @@ The latest patch notes can always be found at http://www.worldofwarcraft.com/pat
 
 h2. General
 
-* Armor Penetration Rating: The amount of armor penetration gained per point of this rating has been reduced by 12%.
+* Dazed: Creatures attacking a player from behind can no longer cause players level 1-5 to be dazed, and have a reduced chance to cause players level 6-10 to be dazed.
 
-h3. The Brood Mother Returns
+h3. Icecrown Citadel
 
-After years of lurking in her lair battling the many brave adventurers who travelled from afar to challenge her, Onyxia returns stronger than before to commemorate World of Warcraft's five-year anniversary.
+* The Forge of Souls, the first wing of the 5-player dungeon, is currently available for testing.
+* Additional Icecrown Citadel dungeon and raid content will be made available in future test builds.
 
-* Onyxia has been scaled to offer new challenges to level 80 players in 10- and 25-player modes.
-* Adjusted for modern raiding, but with the fundamental experience of fighting the Brood Mother still in effect, including the horrors of her Deep Breaths!
-* Onyxia will now drop level 80 item versions of some classic loot items from the level 60 encounter.
-* Brood of Onyxia, a very rare 310%-speed mount modeled after Onyxia herself will be available for the luckiest of challengers.
+h2. Classes: General
 
-h2. PvP
+* Default Equipment: Starting weapons are now more uniform. Rogues now start with a pair of daggers equipped. All other classes except shamans start with a 2-handed weapon equipped and the required skill already known. Shamans start with a 1-handed weapon and a shield, as they benefit more from the shield than they would from a 2-handed weapon.
+* Glancing Blows: The mage, warlock, and priest classes no longer have an increased chance for their melee attacks to be glancing blows; and the damage penalty due to their glancing blows is the same as for other classes.
+* Health and Mana Regeneration: These regeneration rates have been increased by up to 200% for low level characters. As a player's level increases, the regeneration rates gradually reduce, returning to normal rates at level 15.
+* Spell Mana Costs: These costs have been reduced for almost all lower level spell ranks. In general, if a spell decreased in cost with a higher level rank in patch 3.2.0, that spell now has the decreased cost at all ranks. In addition, spells learned before level 20 with reduced cast times and/or durations have even further reduced mana costs, proportionate to their reduction in cast time or damage.
 
-h3. Battlegrounds
+h2. Races: General
 
-* Players level 11 and higher will now always see a daily Battleground quest, as the quest giver will only offer daily quests for a Battleground in which a player is eligible to participate according to level bracket (i.e. players levels 11-20 will always be offered a Warsong Gulch daily quest, while players levels 11-50 will be offered either an Arathi Basin or a Warsong Gulch daily quest, etc.).
+* Racial Attribute Bonuses: These bonuses have been recalibrated to even out the amount of starting health on the various races. All races start with a standardized level of stamina, except for orcs, dwarves, and tauren who now start with 1 extra point of stamina. For each class, bonuses and penalties to all attributes have been adjusted so that each race has an equal attribute total.
 
 h2. Death Knights
 
-* Frost Presence: The damage reduction granted by this ability has been increased from 5% to 8%.
-
-h3. Pets
-
-* Gnaw: This death knight ghoul ability now has a 1-minute cooldown.
+* Rune of the Stoneskin Gargoyle: There is now a 1-handed version of this rune in addition to the current 2-handed rune.
 
 h3. Talents
-
-h4. Blood
-
-* Heart Strike: Secondary targets of Heart Strike now take half as much damage.
-* Subversion: Now also increases the critical strike chance of Scourge Strike by 3/6/9%.
-* Vampiric Blood: Cooldown reduced to 1 minute and duration reduced to 10 seconds.
-
-h4. Frost
-
-* Threat of Thassarian now also causes Rune Strike to use both weapons when dual-wielding.
-* Unbreakable Armor: Cooldown reduced to 1 minute and changed back to granting 25% additional armor while active instead of flat damage reduction based on armor. The amount of strength granted has been reduced to 10%.
 
 h4. Unholy
 
-* Bone Shield: This ability now has 3 charges instead of 4. Cooldown reduced to 1 minute.
-* Dirge: This talent no longer grants additional runic power from using Obliterate.
+* Night of the Dead: Now reduces the damage your pet takes from area-of-effect damage by 45/90%, but no longer applies to area-of-effect damage caused by other players.
 
 h2. Druids
 
-h3. Talents
+h3. Pets
 
-h4. Balance
-
-* Moonkin Form: This form now also reduces the damage the druid takes while stunned by 15%.
-* Typhoon: The daze duration has been increased from 3 seconds to 6 seconds.
-
-h4. Feral Combat
-
-* Infected Wounds: The debuff generated by this talent no longer stacks and instead causes the full effect with a single application.
-* Predatory Strikes: This talent now also causes the druid's finishing moves to provide a 7/13/20% chance per combo point to make the next Nature spell with a cast time below 10 seconds instant cast.
+* Avoidance (passive): Now reduces the damage your pets take from area-of-effect damage by 90%, but no longer applies to area-of-effect damage caused by other players.
 
 h2. Hunters
+
+* Misdirection: Redesigned. Instead of having finite charges, it now begins a 4-second timer when the hunter using Misdirection performs a threat-generating attack, during which all threat generated by the hunter goes to the friendly target. In addition, multiple hunters can now misdirect threat to the same friendly target simultaneously.
 
 h3. Talents
 
 h4. Beast Mastery
 
-* The Beast Within: The duration of this talent has been reduced to 10 seconds. In addition, hunters with this talent will do 10% additional damage at all times.
-* Bestial Wrath: The duration of this talent has been reduced to 10 seconds.
+* Intimidation: If the hunter's pet is in melee range of its target, the stun from Intimidation will now be applied immediately instead of on the pet's next swing or attack.
+
+h3. Pets
+
+* Avoidance: Now reduces the damage your pet takes from area-of-effect damage by 30/60/90%, but no longer applies to area-of-effect damage caused by other players.
 
 h2. Mages
-
-* Arcane Blast: The buff from using this ability now stacks up to 4 times instead of 3, and each application increases mana cost by 175% instead of 200%. In addition, the duration of the buff has been reduced to 6 seconds.
-* Arcane Missiles: Casting this spell while both Missile Barrage and Clearcasting are active will cause only Missile Barrage to be consumed.
 
 h3. Talents
 
 h4. Arcane
 
-* Missile Barrage: The effect from triggering this talent now removes the mana cost of Arcane Missiles. In addition, the chance for Arcane Blast to trigger this talent is now 8/16/24/32/40%. All other listed spells continue to have a 4/8/12/16/20% chance to trigger it. This talent no longer has a chance to be triggered when spells miss.
+* Arcane Empowerment: This talent now also grants 1/2/3% increased damage done by the mage's party or raid for 10 seconds after the mage gets a critical strike with Arcane Explosion, Arcane Missiles, Arcane Barrage, or Arcane Blast. This effect is exclusive with Ferocious Inspiration and Sanctified Retribution.
 
-h4. Fire
+h3. Pets
 
-* Combustion: This talent now also increases the critical strike damage bonus of Fire spells by 50% while it is active. In addition, Living Bomb periodic ticks will no longer interact with the count or the charges on the talent.
-
-h2. Paladins
-
-* Righteous Fury: The bonus threat from Holy spells caused by this talent has been reduced from 90% to 80%.
-* Seal of Corruption and Seal of Vengeance: These seals will now only use the debuff stacks generated by the attacking paladin to determine the damage done by the seal and by the judgement.
-
-h3. Talents
-
-h4. Protection
-
-* Ardent Defender: This talent now reduces damage taken below 35% health by 7/13/20% instead of 10/20/30%.
-* Blessing of Sanctuary: This blessing now grants 10% strength in addition to its current effects. Also, the strength and stamina bonuses from this blessing will no longer be lost when Blessing of Kings is removed.
-* Judgements of the Just: The reduction in cooldown to Hammer of Justice provided by this talent has been reduced to 5/10 seconds instead of 10/20 seconds.
-* Touched by the Light: This talent now provides 20/40/60% of the paladin's strength as spell power instead of 10/20/30% of the paladin's stamina.
-
-h4. Retribution
-
-* Seal of Command: This ability now chains to strike up to 2 additional targets when it is triggered by an attack that can only strike a single target.
+* Avoidance (passive): Now reduces the damage your pets take from area-of-effect damage by 90%, but no longer applies to area-of-effect damage caused by other players.
 
 h2. Priests
 
-h3. Talents
+h3. Pet
 
-h4. Shadow
-
-* Improved Spirit Tap: Mind Flay periodic critical strikes now have a 50% chance to trigger this talent.
-* Twisted Faith now grants spell power equal to 4/8/12/16/20% of spirit, up from 2/4/6/8/10%.
+* Avoidance (passive): Now reduces the damage your pet takes from area-of-effect damage by 90%, but no longer applies to area-of-effect damage caused by other players.
 
 h2. Rogues
 
-* Envenom's scaling has been increased from 7% to 9% of attack power per combo point.
-* Fan of Knives: The damage done by this ability has been reduced by 30%.
-
-h3. Talents
-
-h4. Assassination
-
-* Master Poisoner: No longer increases the Deadly Poison application rate following a successful Envenom and instead now provides a 33/66/100% chance of preventing Envenom from consuming Deadly Poison.
-
-h4. Combat
-
-* Throwing Specialization: This talent no longer causes Fan of Knives to interrupt spellcasting.
-
-h4. Subtlety
-
-* Honor Among Thieves: A 1-second cooldown is now enforced on how often a rogue can gain combo points from his party via this talent.
+* Dual Wield: Rogues now know this ability upon logging into the game at level 1.
+* Stealth: This ability no longer has multiple ranks. While active, the single rank of this ability (available at level 1) allows rogues to move at 70% movement speed.
+* Vanish: For the first second after this ability is used, neither Vanish nor Stealth can be broken by taking damage or being the victim of a hostile spell or ability.
 
 h2. Shamans
 
-* Cleansing Totem: No longer pulses instantly when dropped.
-* Flame Shock: The duration of all ranks has been increased by 6 seconds.
-* Lava Burst: This ability no longer ever consumes a Flame Shock debuff off of the target.
+* Fire Nova Totem: This totem has been replaced with a new spell, Fire Nova, which is available at the same ranks as the old Fire Nova Totem. Existing characters will automatically learn this new spell in place of the totem. With a Fire Totem active, shamans will be able to use Fire Nova (fire magic) to emit the same area-of-effect damage as the old Fire Nova Totem from the active Fire Totem, not consuming the totem in the process. Fire Nova will activate a 1.5-second global cooldown when used and has a 10-second spell cooldown. The caster must be within 30 yards of the totem to use this ability, but does not need to be within line of sight of the totem.
 
 h3. Talents
 
 h4. Elemental Combat
 
-* Shamanism: Your Lightning Bolt and Chain Lightning spells gain an additional 3/6/9/12/15% and your Lava Burst gains an additional 4/8/12/16/20% of your bonus damage effects.
+* Improved Fire Nova Totem: Renamed Improved Fire Nova. This talent now provides an additional 10/20% damage to the spell and reduces the cooldown by 2/4 seconds.
 
-h4. Enhancement
+h2. Warlocks
 
-* Earthen Power: No longer causes Earthbind to pulse a persistent snare immunity aura. It does still remove snares from allies as an instant pulse, but there is no lingering immunity. Earthen Power now also brings Earth Shock's melee attack speed reduction up to -15%/-20% (with 1 or 2 points in it, respectively).
+h3. Pets
+
+* Avoidance (passive): Now reduces the damage your pets take from area-of-effect damage by 90%, but no longer applies to area-of-effect damage caused by other players.
+* Summon Imp: This ability is now available from the trainer for level 1 warlocks and no longer requires a quest to learn.
 
 h2. Warriors
 
+* Victory Rush: This ability is now trainable at level 6.
+
 h3. Talents
-
-h4. Arms
-
-* Sword Specialization: Now has a 2/4/6/8/10% chance to proc an extra attack, up from 1/2/3/4/5%.
 
 h4. Protection
 
-* Critical Block: This talent now grants a 20/40/60% chance to block double the normal amount instead of 10/20/30%.
-
-h2. Dungeons & Raids
-
-h3. Shadowfang Keep
-
-* Wailing Guardsman: Screams of the Past will no longer have multiple applications on a target. Recast time has been increased.
-
-h3. Ulduar
-
-* Increased the cooldown on Immortal Guardians' Drain Life ability in the Yogg-Saron encounter.
-
-h2. Achievements
-
-* The Achievement "Iron, Dwarf Medium Rare (25 player)" now requires 25 kills, down from 50.
-* The Frostwolf Howler and Stormpike Battle Charger Achievements will now be awarded when a player learns the respective mount spells.
-
-h2. Professions
-
-* The blacksmiths of Orgrimmar grew tired of running to the rear of the city to craft items and have installed a new anvil & forge at the General Store in the Valley of Strength.
-
-h3. Engineering
-
-* The Mind Amplification Dish no longer changes the appearance of your helmet.
-
-h3. Inscription
-
-* Added a recipe for Runescroll of Fortitude. This item grants a stamina buff equal to the highest rank of Power Word: Fortitude (untalented) to all players in the raid. The effect of this runescroll is exclusive with other stamina scrolls and Power Word: Fortitude.
-
-h3. Leatherworking
-
-* Added a recipe for Drums of Forgotten Kings. These drums increase all stats by 8% for all players in a raid. The effect of these drums is exclusive with Blessing of Kings.
-* Added a recipe for Drums of the Wild. These drums grant a buff equal to the highest rank of Mark of the Wild (untalented) to all players in a raid. The effect of these drums is exclusive with Mark of the Wild.
-
-h2. Items
-
-* The Black Heart: This item's animation has been changed and no longer resembles Hand of Protection.
-* Death Knight Tier-9 Tanking 4-Piece Set Bonus: Now decreases the cooldown on Vampiric Blood, Unbreakable Armor, and Bone Shield by 10 seconds instead of 20.
-* Druid Tier-8 Healer 4-Piece Set Bonus: The amount of healing this set bonus grants on the initial cast of Rejuvenation has been reduced by 50%. In addition, this set bonus no longer has strange interactions with Harold's Rejuvenating Broach.
-* Libram of Obstruction: The buff to block value from this relic is now exclusive with the buff to block value from Libram of the Sacred Shield; it is impossible to have both buffs at once.
-* Libram of the Sacred Shield: The block value buff from this relic has been increased to match its item level.
-* Relics: All buffs provided by relics (idols, librams, totems and sigils) now share an exclusive category such that gaining a buff from one of these items will remove all other buffs gained from items in this category.
-* Totem of Quaking Earth: Attack power value increased to 400.
-
-h3. Glyphs
-
-* Glyph of Bone Shield: This glyph now grants 1 additional charge instead of 2.
-* Glyph of Flame Shock: Redesigned. This glyph now makes Flame Shock periodic damage able to be critical strikes.
-* Glyph of Mind Flay: This glyph no longer reduces the magnitude of the movement reduction on the Mind Flay victim.
-* Glyph of Scourge Strike: Redesigned. This glyph now causes Scourge Strike to extend the duration of Frost Fever and Blood Plague by 3 seconds each time Scourge Strike is used on a target, up to a maximum of 9 seconds.
-* Glyph of Typhoon: This glyph now increases the range on Typhoon by 10 yards in addition to its current effects.
-* Glyph of Unbreakable Armor: Now increases the armor gained from Unbreakable Armor by 20%.
-* Glyph of Vampiric Blood: The glyph now increases the duration of Vampiric Blood by 5 seconds instead of 10.
+* Damage Shield: This ability will no longer trigger any chance-on-hit effects from the warrior or the opponent it damages.
 
 h2. User Interface
 
-* The size of the Focus Frame can now be adjusted via the Interface Options menu.
 * For additional notes on Lua and XML changes please visit the "UI & Macros forum":http://forums.worldofwarcraft.com/board.html?sid=1&amp;forumId=11114
 
-h3. Battleground Queuing
+h3. Quest Tracking Feature
 
-* Players may now only queue for no more than two Battlegrounds at a time.
-* The dialog box for entering a Battleground match has been changed to reflect the following options: "Enter Battle," "Leave Queue," and "Minimize."
-* The time a player has to enter a battle when selected has been reduced to 40 seconds when not already in a Battleground and 20 seconds when in a Battleground.
-* Players already in a Battleground can now choose "Enter Battle" for a new Battleground under any circumstance (i.e. while dead, in combat, falling, etc.).
-* A new Battleground will not launch until the maximum number of players on each side are in the queue (i.e. 40 players per side for Alterac Valley).
+* This system is currently under development and is not fully functional.
 
-h3. Mail System Auto-Complete Feature
+h3. Looking For Group System
 
-* The inline auto-complete feature for the mail system has been added back into the game. The mail system will now have both the pre- and post-3.2.0 auto-complete features available.
-* Added a label to notify players that the Tab key will allow players to navigate through the character names listed via the auto-complete feature.
+* This feature is undergoing several improvements and is not available for testing at this time.
+
+h2. Graphics
+
+* A new feature has been added to the D3D graphics engine to improve texture management (particularly for Windows XP users). This is currently enabled by default on the public test realms. For more information please visit our Test Realm forum.
+
+h2. Professions
+
+h3. Enchanting
+
+* Black Magic: This enchantment now sometimes increases haste rating for the caster rather than inflicting the caster's target with a damage-over-time effect. It is also now triggered by landing any harmful spell rather than inflicting damage with a spell.
+
+h2. Items
+
+h3. Glyphs
+
+h4. Death Knights
+
+* Glyph of Icy Touch: Instead of granting additional runic power, this glyph now causes Frost Fever to deal 20% additional damage.
+
+h4. Shamans
+
+* Glyph of Fire Nova Totem: Renamed Glyph of Fire Nova. This glyph now reduces the cooldown of Fire Nova by 3 seconds.
 
 h2. Bug Fixes
 
-* Coliseum Trinkets: Some spells that should have triggered these trinkets will now trigger them (such as Holy Nova and Fel Armor).
-* Death Knight Tier-9 DPS 4-Piece Set Bonus: Now grants the correct chance for disease damage ticks to be critical strikes.
-* Heirloom items which grant 10% experience bonuses will now apply these bonuses to Battleground experience gains.
-* Hunter Tier-9 2-Piece Set Bonus: Critical damage from Serpent Sting will now work properly with the Mortal Shots and Expose Weakness talents.
-* Lightweave Embroidery: This tailoring item enhancement will no longer trigger from the periodic healing granted by the warlock spell Fel Armor.
-* Mote of Flame: Corrected a typo in the tooltip.
-* Paladin Tier-9 DPS 2-Piece Set Bonus: Now grants the correct chance for Righteous Vengeance ticks to be critical strikes.
-* Shard of Flame: Corrected a typo in the tooltip.
-* Val'anyr, Hammer of The Ancient Kings: Healing from Prayer of Mending now triggers the shield from this item. In addition, a bug was corrected which would cause the shield points to be overwritten rather than stack up as intended.
+h3. Druids
 
-h3. Death Knight
+* Rejuvenation: Rank 15 of this spell was providing a 15-second duration. It has been correctly reduced to 12 seconds.
 
-* Rune of Razorice: The frost vulnerability granted by this enchantment will now increase the damage done by Frost Fever as intended.
+h3, Mages
 
-h3. Druid
-
-* Balance of Power: Misleading tooltip reworded. The tooltip previously reported an incorrect value for the increased chance to hit with spells. The actual benefit of the talent is unchanged.
-
-h3. Hunter
-
-* Master's Call: This ability now correctly removes the snaring component of Infected Wounds, Frostfire Bolt, and Slow.
-* Trap Mastery's (Survival) tooltip now states the correct amount of snakes summoned.
-
-h3. Mage
-
-* Arcane Missiles: Ranks 12 and 13 will now properly cause players to enter combat.
-
-h3. Paladin
-
-* Hand of Freedom: This ability now correctly removes the snaring component of Infected Wounds and Frostfire Bolt.
-
-h3. Priest
-
-* Divine Aegis: Ranks 1 and 2 will now work with Holy Nova.
-* Glyph of Power Word: Shield now correctly uses the Priest's spell critical chance instead of the target's.
-
-h3. Rogue
-
-* Vanish: This ability now correctly removes the snaring component of Frostfire Bolt.
-* Honor Among Thieves: This talent will now work properly again if two rogues with different ranks of the talent are in the same party.
-
-h3. Shaman
-
-* Grounding Totem will now properly protect against the Death Grip spell.
-* Lava Burst can no longer deal critical damage to targets who are immune to critical strikes (due to, e.g. Roar of Sacrifice, Blessed Resilience).
-* Lightning Shield: This spell will no longer set off some trinkets when it is cast.
-* Stoneclaw Totem's pulses will no longer break stealth on nearby hostile units.
-* Thunderstorm and Shamanistic Rage can no longer be used while Frozen, Cycloned, Sapped, or Incapacitated.
-
-h3. Warlock
-
-* Demonic Circle: This ability now correctly removes the snaring component of Frostfire Bolt.
-* Fel Armor: This spell was unable to set off trinkets and other effects. That has been corrected.
-* When using Shadowbolt or Incinerate while having Backlash and Backdraft active, only Backlash will now be properly consumed.
-
+* Flame Strike: Some ranks of this spell had an incorrect cast time of 3 seconds. All ranks now share a 2-second cast time.
