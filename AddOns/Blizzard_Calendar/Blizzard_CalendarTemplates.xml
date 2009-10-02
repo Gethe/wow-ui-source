@@ -473,6 +473,27 @@
 	</Button>
 
 	<!-- Calendar View Event Templates -->
+	<Button name="CalendarViewEventRSVPButtonTemplate" inherits="CalendarEventButtonTemplate" virtual="true">
+		<Size x="128" y="22"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentFlashTexture" parentKey="flashTexture" alphaMode="ADD" file="Interface\Buttons\UI-Panel-Button-Glow">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="-11" y="7"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="11" y="-7"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate function="CalendarViewEventRSVPButton_OnUpdate"/>
+		</Scripts>
+	</Button>
 	<Button name="CalendarViewEventInviteListButtonTemplate" inherits="CalendarEventInviteListButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>

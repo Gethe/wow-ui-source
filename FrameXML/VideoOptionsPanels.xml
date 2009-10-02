@@ -6,6 +6,20 @@
 	<Script file="OptionsPanelTemplates.lua"/>
 	<Script file="VideoOptionsPanels.lua"/>
 
+	<CheckButton name="VideoOptionsSmallCheckButtonTemplate" inherits="OptionsSmallCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				end
+				BlizzardOptionsPanel_CheckButton_OnClick(self);			
+				VideoOptionsFrameApply:Enable();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	
 	<!-- Resolution Panel -->
 
 	<Frame name="VideoOptionsResolutionPanel" hidden="false" parent="VideoOptionsFramePanelContainer">
@@ -133,7 +147,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<CheckButton name="$parentUseUIScale" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentUseUIScale" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMultiSampleDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="16" y="-2"/>
@@ -168,10 +182,11 @@
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
+						VideoOptionsFrameApply:Enable();
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
-			<CheckButton name="$parentVSync" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentVSync" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRefreshDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="16" y="-8"/>
@@ -186,7 +201,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<CheckButton name="$parentTripleBuffer" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentTripleBuffer" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentVSync" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -204,7 +219,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentHardwareCursor" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentHardwareCursor" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTripleBuffer" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -221,7 +236,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentFixInputLag" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentFixInputLag" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursor" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -238,7 +253,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentWindowed" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentWindowed" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentVSync" relativePoint="RIGHT">
 						<Offset x="164" y="0"/>
@@ -254,7 +269,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
-			<CheckButton name="$parentMaximized" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentMaximized" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentWindowed" relativePoint="BOTTOMLEFT">
 						<Offset x="16" y="-4"/>
@@ -270,7 +285,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
-			<CheckButton name="$parentDisableResize" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentDisableResize" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMaximized" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-4"/>
@@ -340,6 +355,7 @@
 							end
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
+						VideoOptionsFrameApply:Enable();
 					</OnClick>
 				</Scripts>
 			</CheckButton>		
@@ -370,6 +386,7 @@
 						if ( self:GetParent():IsShown() ) then
 							SetGamma(value);
 						end
+						VideoOptionsFrameApply:Enable();
 					</OnValueChanged>
 				</Scripts>
 			</Slider>	
@@ -757,7 +774,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>	
-			<CheckButton name="$parentSpecularLighting" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentSpecularLighting" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShaders" relativePoint="TOPLEFT">
 						<Offset x="12" y="-8"/>
@@ -772,7 +789,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
-			<CheckButton name="$parentFullScreenGlow" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentFullScreenGlow" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSpecularLighting" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-8"/>
@@ -787,7 +804,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
-			<CheckButton name="$parentDeathEffect" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentDeathEffect" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShaders">
 						<Offset x="180" y="-8"/>
@@ -802,7 +819,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentProjectedTextures" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentProjectedTextures" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDeathEffect" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-8"/>
@@ -856,7 +873,7 @@
 			</OnLoad>
 		</Scripts>	
 		<Frames>		
-			<CheckButton name="$parentEnabled" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentEnabled" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOP">
 						<Offset x="-125" y="-92"/>
@@ -871,7 +888,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentHardwareCursor" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentHardwareCursor" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentEnabled" relativePoint="RIGHT">
 						<Offset>
@@ -911,7 +928,8 @@
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = self:GetValue();
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetValue())
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetValue());
+						VideoOptionsFrameApply:Enable();
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
@@ -938,7 +956,8 @@
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = self:GetValue();
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetValue())
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetValue());
+						VideoOptionsFrameApply:Enable();
 					</OnValueChanged>
 				</Scripts>
 			</Slider>		

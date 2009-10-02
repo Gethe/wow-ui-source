@@ -182,18 +182,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentZoneDescription" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP" text="BATTLEGROUND_LORETEXT_1">
-					<Size>
-						<AbsDimension x="293" y="115"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="30" y="-290"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentDivider" file="Interface\BattlefieldFrame\UI-Battlefield-Bar">
@@ -220,6 +208,105 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<ScrollFrame name="$parentZoneDescriptionScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="293" y="120"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="25" y="-285"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="scrollBarBackground">
+							<Size>
+								<AbsDimension x="25" y="84"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="5"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.7"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtTop">
+							<Size>
+								<AbsDimension x="30" y="84"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-3" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.46875" top="0.0" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtBottom">
+							<Size>
+								<AbsDimension x="30" y="84"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-3" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.53125" right="1.0" top="0.34375" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ScrollChild>
+					<Frame name="$parentChildFrame">
+						<Size>
+							<AbsDimension x="1" y="1"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="PVPBattlegroundFrameZoneDescriptionText" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP" text="BATTLEGROUND_LORETEXT_1">
+									<Size>
+										<AbsDimension x="285" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="5" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</ScrollChild>
+				<Scripts>
+					<OnLoad>
+						self.scrollBarHideable = true;
+						ScrollFrame_OnLoad(self);
+						ScrollFrame_OnScrollRangeChanged(self);
+						local scrollBar = _G[self:GetName().."ScrollBar"];
+						self.scrollBarBackground:SetParent(scrollBar);
+						self.scrollBarArtTop:SetParent(scrollBar);
+						self.scrollBarArtBottom:SetParent(scrollBar);
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
 			<Frame name="WintergraspTimer" enableMouse="true">
 				<Size>
 					<AbsDimension x="32" y="32"/>
@@ -363,7 +450,7 @@
 					</Anchor>
 					<Anchor point="BOTTOMRIGHT" relativeTo="BattlegroundType5">
 						<Offset>
-							<AbsDimension x="0" y="-2"/>
+							<AbsDimension x="0" y="-3"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -380,7 +467,7 @@
 									</Offset>
 								</Anchor>
 							</Anchors>
-							<TexCoords left="0" right="0.46875" top="0.0" bottom="1.0"/>
+							<TexCoords left="0" right="0.46875" top="0.0" bottom="0.65625"/>
 						</Texture>
 						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 							<Size>
@@ -393,7 +480,7 @@
 									</Offset>
 								</Anchor>
 							</Anchors>
-							<TexCoords left="0.53125" right="1.0" top="0.0" bottom="1.0"/>
+							<TexCoords left="0.53125" right="1.0" top="0.34375" bottom="1.0"/>
 						</Texture>
 					</Layer>
 				</Layers>

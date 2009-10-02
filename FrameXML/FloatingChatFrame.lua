@@ -720,7 +720,7 @@ function FCF_OnUpdate(elapsed)
 			end
 			
 			dockRegion = _G[value:GetName().."TabDockRegion"];
-			if ( MouseIsOver(dockRegion) and MOVING_CHATFRAME ~= DEFAULT_CHAT_FRAME and not InterfaceOptionsFrame:IsShown() ) then
+			if ( dockRegion:IsMouseOver() and MOVING_CHATFRAME ~= DEFAULT_CHAT_FRAME and not InterfaceOptionsFrame:IsShown() ) then
 				dockRegion:Show();
 			else
 				dockRegion:Hide();
@@ -778,11 +778,11 @@ function FCF_OnUpdate(elapsed)
 			helpFrameShown = HelpFrame:IsShown();
 			multiCastFlyoutShown = MultiCastFlyoutFrame:IsShown();
 			multiCastFlyoutOpenButtonShown = MultiCastFlyoutFrameOpenButton:IsShown();
-			if ( (not helpFrameShown or (helpFrameShown and not MouseIsOver(HelpFrame))) and
-				(not multiCastFlyoutShown or (multiCastFlyoutShown and not MouseIsOver(MultiCastFlyoutFrame))) and 
-				(not multiCastFlyoutOpenButtonShown or (multiCastFlyoutOpenButtonShown and not MouseIsOver(MultiCastFlyoutFrameOpenButton))) and
-				(MouseIsOver(activeFrame, activeYOffset, activeFrame:GetTop()-activeFrame:GetBottom(), -5, 5) or
-				((MouseIsOver(chatFrame, yOffset, -10, -5, 5) and not chatFrame.isUninteractable)) or
+			if ( (not helpFrameShown or (helpFrameShown and not HelpFrame:IsMouseOver())) and
+				(not multiCastFlyoutShown or (multiCastFlyoutShown and not MultiCastFlyoutFrame:IsMouseOver())) and 
+				(not multiCastFlyoutOpenButtonShown or (multiCastFlyoutOpenButtonShown and not MultiCastFlyoutFrameOpenButton:IsMouseOver())) and
+				(activeFrame:IsMouseOver(activeYOffset, activeFrame:GetTop()-activeFrame:GetBottom(), -5, 5) or
+				((chatFrame:IsMouseOver(yOffset, -10, -5, 5) and not chatFrame.isUninteractable)) or
 				chatFrame.resizing or activeFrame.resizing) ) then
 				-- Try to show the tab
 

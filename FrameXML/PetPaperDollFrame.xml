@@ -788,7 +788,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="CompanionButton3" relativePoint="RIGHT">
 								<Offset>
-									<AbsDimension x="4" y="0"/>
+									<AbsDimension x="5" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -806,7 +806,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="CompanionButton5" relativePoint="RIGHT">
 								<Offset>
-									<AbsDimension x="4" y="0"/>
+									<AbsDimension x="5" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -842,7 +842,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="CompanionButton9" relativePoint="RIGHT">
 								<Offset>
-									<AbsDimension x="4" y="0"/>
+									<AbsDimension x="5" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -860,7 +860,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="CompanionButton11" relativePoint="RIGHT">
 								<Offset>
-									<AbsDimension x="4" y="0"/>
+									<AbsDimension x="5" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

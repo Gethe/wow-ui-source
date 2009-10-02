@@ -844,6 +844,9 @@ function FriendsFrame_OnEvent(self, event, ...)
 		if ( FriendsFrame:IsVisible() ) then
 			InGuildCheck();
 		end
+		if ( not IsInGuild() ) then
+			GuildControlPopupFrame.initialized = false;
+		end
 	elseif ( event == "GUILD_MOTD") then
 		CURRENT_GUILD_MOTD = ...;
 		GuildFrameNotesText:SetText(CURRENT_GUILD_MOTD);
@@ -1458,8 +1461,8 @@ function GuildEventLog_Update()
 	local numEvents = GetNumGuildEvents();
 	local type, player1, player2, rank, year, month, day, hour;
 	local msg;
-	GuildEventMessageFrame:Clear();
-	for i=1, numEvents do
+	local buffer = "";
+	for i=numEvents, 1, -1 do
 		type, player1, player2, rank, year, month, day, hour = GetGuildEventInfo(i);
 		if ( not player1 ) then
 			player1 = UNKNOWN;
@@ -1481,16 +1484,10 @@ function GuildEventLog_Update()
 			msg = format(GUILDEVENT_TYPE_QUIT, player1);
 		end
 		if ( msg ) then
-			GuildEventMessageFrame:AddMessage( msg.."|cff009999   "..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)) );
+			buffer = buffer..msg.."|cff009999   "..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r|n";
 		end
 	end
-	FauxScrollFrame_Update(GuildEventLogScrollFrame, numEvents, MAX_EVENTS_SHOWN, GUILDEVENT_TRANSACTION_HEIGHT );
-end
-
-function GuildEventLogScroll()
-	local offset = FauxScrollFrame_GetOffset(GuildEventLogScrollFrame);
-	GuildEventMessageFrame:SetScrollOffset(offset);
-	FauxScrollFrame_Update(GuildEventLogScrollFrame, GetNumGuildEvents(), MAX_EVENTS_SHOWN, GUILDEVENT_TRANSACTION_HEIGHT );
+	GuildEventMessage:SetText(buffer);
 end
 
 GUILDFRAME_POPUPS = {

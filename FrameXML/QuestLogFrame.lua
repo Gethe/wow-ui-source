@@ -361,6 +361,10 @@ function QuestLog_Update()
 		questLogSelection = GetQuestLogSelection();
 	end
 	QuestLogFrame.selectedIndex = questLogSelection;
+    
+    --The counts may have changed with SetNearestValidSelection expanding quest headers.
+    --Bug ID 170644
+    numEntries, numQuests = GetNumQuestLogEntries();
 
 	-- hide the details if we don't have a selected quest
 	if ( not haveSelection ) then
@@ -537,137 +541,10 @@ function QuestLog_UpdateQuestCount(numQuests)
 end
 
 function QuestLog_UpdateQuestDetails(resetScrollBar)
-	local questIndex = GetQuestLogSelection();
-	local questTitle = GetQuestLogTitle(questIndex);
-	if ( not questTitle ) then
-		questTitle = "";
-	end
-	if ( IsCurrentQuestFailed() ) then
-		questTitle = questTitle.." - ("..FAILED..")";
-	end
-	QuestLogQuestTitle:SetText(questTitle);
-
-	local questDescription;
-	local questObjectives;
-	questDescription, questObjectives = GetQuestLogQuestText();
-	QuestLogObjectivesText:SetText(questObjectives);
-
-	local timeLeft = GetQuestLogTimeLeft();
-	QuestLogDetailFrame.timeLeft = timeLeft;
-	if ( timeLeft ) then
-		QuestLogTimerText:Show();
-		QuestLogTimerText:SetText(TIME_REMAINING.." "..SecondsToTime(timeLeft));
-		QuestLogObjective1:SetPoint("TOPLEFT", "QuestLogTimerText", "BOTTOMLEFT", 0, -10);
-	else
-		QuestLogTimerText:Hide();
-		QuestLogObjective1:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
-	end
-
-	-- Show Quest Watch if track quest is checked
-	local numObjectives = GetNumQuestLeaderBoards();
-	local objective;
-	local text, type, finished;
-	for i=1, numObjectives do
-		objective = _G["QuestLogObjective"..i];
-		text, type, finished = GetQuestLogLeaderBoard(i);
-		if ( not text or strlen(text) == 0 ) then
-			text = type;
-		end
-		if ( finished ) then
-			objective:SetTextColor(0.2, 0.2, 0.2);
-			text = text.." ("..COMPLETE..")";
-		else
-			objective:SetTextColor(0, 0, 0);
-		end
-		objective:SetText(text);
-		objective:Show();
-		QuestFrame_SetAsLastShown(objective, QuestLogSpacerFrame);
-	end
-	for i=numObjectives + 1, MAX_OBJECTIVES do
-		_G["QuestLogObjective"..i]:Hide();
-	end
-
-	-- If there's money required then anchor and display it
-	local requiredMoney = GetQuestLogRequiredMoney();
-	if ( requiredMoney > 0 ) then
-		if ( numObjectives > 0 ) then
-			QuestLogRequiredMoneyText:SetPoint("TOPLEFT", "QuestLogObjective"..numObjectives, "BOTTOMLEFT", 0, -4);
-		else
-			QuestLogRequiredMoneyText:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
-		end
-
-		MoneyFrame_Update("QuestLogRequiredMoneyFrame", requiredMoney);
-
-		if ( requiredMoney > GetMoney() ) then
-			-- Not enough money
-			QuestLogRequiredMoneyText:SetTextColor(0, 0, 0);
-			SetMoneyFrameColor("QuestLogRequiredMoneyFrame", "red");
-		else
-			QuestLogRequiredMoneyText:SetTextColor(0.2, 0.2, 0.2);
-			SetMoneyFrameColor("QuestLogRequiredMoneyFrame", "white");
-		end
-		QuestLogRequiredMoneyText:Show();
-		QuestLogRequiredMoneyFrame:Show();
-	else
-		QuestLogRequiredMoneyText:Hide();
-		QuestLogRequiredMoneyFrame:Hide();
-	end
-
-	local groupNum = GetQuestLogGroupNum();
-	if ( groupNum > 0 ) then
-		local suggestedGroupString = format(QUEST_SUGGESTED_GROUP_NUM, groupNum);
-		QuestLogSuggestedGroupNum:SetText(suggestedGroupString);
-		QuestLogSuggestedGroupNum:Show();
-		QuestLogSuggestedGroupNum:ClearAllPoints();
-		if ( requiredMoney > 0 ) then
-			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogRequiredMoneyText", "BOTTOMLEFT", 0, -4);
-		elseif ( numObjectives > 0 ) then
-			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogObjective"..numObjectives, "BOTTOMLEFT", 0, -4);
-		elseif ( questTimer ) then
-			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogTimerText", "BOTTOMLEFT", 0, -10);
-		else
-			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
-		end
-	else
-		QuestLogSuggestedGroupNum:Hide();
-	end
-
-	if ( groupNum > 0 ) then
-		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogSuggestedGroupNum", "BOTTOMLEFT", 0, -10);
-	elseif ( requiredMoney > 0 ) then
-		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogRequiredMoneyText", "BOTTOMLEFT", 0, -10);
-	elseif ( numObjectives > 0 ) then
-		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogObjective"..numObjectives, "BOTTOMLEFT", 0, -10);
-	else
-		if ( questTimer ) then
-			QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogTimerText", "BOTTOMLEFT", 0, -10);
-		else
-			QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
-		end
-	end
-	if ( questDescription ) then
-		QuestLogQuestDescription:SetText(questDescription);
-		QuestFrame_SetAsLastShown(QuestLogQuestDescription, QuestLogSpacerFrame);
-	end
-	local numRewards = GetNumQuestLogRewards();
-	local numChoices = GetNumQuestLogChoices();
-	local money = GetQuestLogRewardMoney();
-	local honor = GetQuestLogRewardHonor();
-	local talents = GetQuestLogRewardTalents();
-	local playerTitle = GetQuestLogRewardTitle();
-
-	if ( playerTitle or (numRewards + numChoices + money + honor + talents) > 0 ) then
-		QuestLogRewardTitleText:Show();
-		QuestFrame_SetAsLastShown(QuestLogRewardTitleText, QuestLogSpacerFrame);
-	else
-		QuestLogRewardTitleText:Hide();
-	end
-
-	QuestFrameItems_Update("QuestLog");
+	QuestInfo_Display(QUEST_TEMPLATE_LOG, QuestLogDetailScrollChildFrame)
 	if ( resetScrollBar ) then
 		QuestLogDetailScrollFrameScrollBar:SetValue(0);
-	end
-	
+	end	
 	QuestLogDetailScrollFrame:Show();
 end
 
@@ -897,7 +774,7 @@ function QuestLog_OpenToQuest(questIndex)
 	if ( questIndex < 1 or questIndex > numEntries ) then
 		return;
 	end
-
+	HideUIPanel(QuestFrame);
 	QuestLog_SetSelection(questIndex);
 end
 
@@ -925,13 +802,6 @@ function QuestLogDetailFrame_OnHide(self)
 	-- this function effectively deselects the selected quest
 	QuestLogControlPanel_UpdatePosition();
 	QuestLogShowMapPOI_UpdatePosition();
-end
-
-function QuestLogDetailScrollFrame_OnUpdate(self, elapsed)
-	if ( self.timeLeft ) then
-		self.timeLeft = max(self.timeLeft - elapsed, 0);
-		QuestLogTimerText:SetText(TIME_REMAINING.." "..SecondsToTime(self.timeLeft));
-	end
 end
 
 function QuestLogDetailFrame_AttachToQuestLog()

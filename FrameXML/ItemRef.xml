@@ -56,7 +56,7 @@
 				end
 			</OnLoad>
 			<OnTooltipSetItem>
-				if ( IsModifiedClick("COMPAREITEMS") and MouseIsOver(self)) then
+				if ( IsModifiedClick("COMPAREITEMS") and self:IsMouseOver()) then
 					GameTooltip_ShowCompareItem(self, 1);
 					self.comparing = true;
 				end

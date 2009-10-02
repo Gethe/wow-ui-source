@@ -139,7 +139,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<TaxiRouteFrame name="TaxiRouteMap">
+			<Frame name="TaxiRouteMap">
 				<Size>
 					<AbsDimension x="316" y="352"/>
 				</Size>
@@ -150,7 +150,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</TaxiRouteFrame>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="TaxiFrame_OnLoad"/>

@@ -549,6 +549,7 @@ DisplayPanelOptions = {
 	showClock = { text = "SHOW_CLOCK" },
 	movieSubtitle = { text = "CINEMATIC_SUBTITLES" },
 	threatShowNumeric = { text = "SHOW_NUMERIC_THREAT" },
+	threatPlaySounds = { text = "PLAY_AGGRO_SOUNDS" },
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	showItemLevel = { text = "SHOW_ITEM_LEVEL" },
 }

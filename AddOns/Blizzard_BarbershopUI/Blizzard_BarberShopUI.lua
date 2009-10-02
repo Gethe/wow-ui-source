@@ -46,7 +46,8 @@ end
 
 function BarberShop_UpdateCost()
 	MoneyFrame_Update(BarberShopFrameMoneyFrame:GetName(), GetBarberShopTotalCost());
-	if ( ( select(4, GetBarberShopStyleInfo(1)) and select(4, GetBarberShopStyleInfo(2)) and select(4, GetBarberShopStyleInfo(3)) and select(4, GetBarberShopStyleInfo(4))) ) then
+	-- The 4th return from GetBarberShopStyleInfo is whether the selected style is the active character style
+	if ( select(4, GetBarberShopStyleInfo(1)) and select(4, GetBarberShopStyleInfo(2)) and select(4, GetBarberShopStyleInfo(3)) and ( not BarberShopFrameSelector4:IsShown() or select(4, GetBarberShopStyleInfo(4)) ) ) then
 		BarberShopFrameOkayButton:Disable();
 		BarberShopFrameResetButton:Disable();
 	else

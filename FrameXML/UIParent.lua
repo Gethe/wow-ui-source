@@ -221,6 +221,9 @@ function UIParent_OnLoad(self)
 	
 	-- Events for WoW Mouse
 	self:RegisterEvent("WOW_MOUSE_NOT_FOUND");
+	
+	-- Events for talent wipes
+	self:RegisterEvent("TALENTS_INVOLUNTARILY_RESET");
 end
 
 
@@ -408,43 +411,45 @@ function ToggleCalendar()
 end
 
 function ToggleLFGParentFrame(tab)
-	local hideLFGParent;
-	if ( LFGParentFrame:IsShown() and tab == LFGParentFrame.selectedTab and LFGParentFrameTab1:IsShown() ) then
-		hideLFGParent = 1;
-	end
-	if ( LFGParentFrame:IsShown() and not tab ) then
-		hideLFGParent = 1;
-	end
+--	local hideLFGParent;
+--	if ( LFGParentFrame:IsShown() and tab == LFGParentFrame.selectedTab and LFGParentFrameTab1:IsShown() ) then
+--		hideLFGParent = 1;
+--	end
+--	if ( LFGParentFrame:IsShown() and not tab ) then
+--		hideLFGParent = 1;
+--	end
 
-	if ( hideLFGParent ) then
-		HideUIPanel(LFGParentFrame);
-	else
-		ShowUIPanel(LFGParentFrame);
+--	if ( hideLFGParent ) then
+--		HideUIPanel(LFGParentFrame);
+--	else
+--		ShowUIPanel(LFGParentFrame);
 		-- Decide which subframe to show
-		if ( not LFGParentFrame_UpdateTabs() ) then
-			local _, _, _, _, _, _, _, _, _, queued, lfgStatus, lfmStatus = GetLookingForGroup();
-			if ( lfmStatus or lfgStatus or tab ) then
-				if ( tab ) then
-					if ( tab == 1 ) then
-						LFGParentFrameTab1_OnClick();
-					elseif ( tab == 2 ) then
-						LFGParentFrameTab2_OnClick();
-					end
-				else
-					if ( lfgStatus ) then
-						LFGParentFrameTab1_OnClick();
-					else
-						LFGParentFrameTab2_OnClick();
-					end
-				end
-			else
-				LFGFrame:Hide();
-				LFMFrame:Hide();
-				LFGParentFrameTab1:Hide();
-				LFGParentFrameTab2:Hide();
-			end
-		end
-	end
+--		if ( not LFGParentFrame_UpdateTabs() ) then
+--			local lfm, joined, queued = GetLFGInfoServer();
+--			local lfgStatus = (not lfm) and joined;
+--			local lfmStatus = lfm and joined;
+--			if ( lfmStatus or lfgStatus or tab ) then
+--				if ( tab ) then
+--					if ( tab == 1 ) then
+--						LFGParentFrameTab1_OnClick();
+--					elseif ( tab == 2 ) then
+--						LFGParentFrameTab2_OnClick();
+--					end
+--				else
+--					if ( lfgStatus ) then
+--						LFGParentFrameTab1_OnClick();
+--					else
+--						LFGParentFrameTab2_OnClick();
+--					end
+--				end
+--			else
+--				LFGFrame:Hide();
+--				LFMFrame:Hide();
+--				LFGParentFrameTab1:Hide();
+--				LFGParentFrameTab2:Hide();
+--			end
+--		end
+--	end
 	UpdateMicroButtons();
 end
 
@@ -1145,6 +1150,14 @@ function UIParent_OnEvent(self, event, ...)
 	
 	if ( event == "WOW_MOUSE_NOT_FOUND" ) then
 		StaticPopup_Show("WOW_MOUSE_NOT_FOUND");
+	end
+	
+	if ( event == "TALENTS_INVOLUNTARILY_RESET" ) then
+		if ( arg1 ) then
+			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET_PET");
+		else
+			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET");
+		end
 	end
 end
 
@@ -2755,36 +2768,8 @@ function CopyTable(settings)
 	return copy;
 end
 
-function MouseIsOver(frame, topOffset, bottomOffset, leftOffset, rightOffset)
-	local x, y = GetCursorPosition();
-	x = x / frame:GetEffectiveScale();
-	y = y / frame:GetEffectiveScale();
-
-	local left = frame:GetLeft();
-	local right = frame:GetRight();
-	local top = frame:GetTop();
-	local bottom = frame:GetBottom();
-	if ( not topOffset ) then
-		topOffset = 0;
-		bottomOffset = 0;
-		leftOffset = 0;
-		rightOffset = 0;
-	end
-	
-	-- Hack to fix a symptom not the real issue
-	if ( not left ) then
-		return;
-	end
-
-	left = left + leftOffset;
-	right = right + rightOffset;
-	top = top + topOffset;
-	bottom = bottom + bottomOffset;
-	if ( (x > left and x < right) and (y > bottom and y < top) ) then
-		return 1;
-	else
-		return nil;
-	end
+function MouseIsOver(region, topOffset, bottomOffset, leftOffset, rightOffset)
+	return region:IsMouseOver(topOffset, bottomOffset, leftOffset, rightOffset);
 end
 
 -- Wrapper for the desaturation function

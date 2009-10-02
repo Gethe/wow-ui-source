@@ -859,168 +859,49 @@ function VehicleMenuBarStatusBars_ShowTooltip(self)
 end
 
 ----------Seat Indicator--------------
-local MAX_VEHICLE_INDICATOR_BUTTONS = 4;
-local SeatIndicatorSkinsData = {
-	["Demolisher"] = {
-		Overall = {
-			height = 128,
-			width = 128,
-			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher",
-		},
-		[1] = {
-			xPos = -49,
-			yPos = -55,
-		},
-		[2] = {
-			xPos = -26,
-			yPos = -21,
-		},
-		[3] = {
-			xPos = -73,
-			yPos = -21,
-		},
-	},
-	["Bomber"] = {
-		Overall = {
-			height = 128,
-			width = 128,
-			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Bomber",
-		},
-		[1] = {
-			xPos = -52,
-			yPos = -30,
-		},
-		[2] = {
-			xPos = -52,
-			yPos = -60,
-		},
-	},
-	["SiegeEngine"] = {
-		Overall = {
-			height = 128,
-			width = 128,
-			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine",
-		},
-		[1] = {
-			xPos = -52,
-			yPos = -5,
-		},
-		[2] = {
-			xPos = -27,
-			yPos = -87,
-		},
-		[3] = {
-			xPos = -76,
-			yPos = -87,
-		},
-		[4] = {
-			xPos = -51,
-			yPos = -60,
-		},
-	},
-	["Mammoth"] = {
-		Overall = {
-			height = 128,
-			width = 128,
-			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Mammoth",
-		},
-		[1] = {
-			xPos = -75,
-			yPos = -84,
-		},
-		[2] = {
-			xPos = -30,
-			yPos = -84,
-		},
-	},
-	["Motorcycle"] = {
-		Overall = {
-			height = 128,
-			width = 128,
-			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Motorcycle",
-		},
-		[1] = {
-			xPos = -30,
-			yPos = -78,
-		},
-	},
-	["UlduarDemolisher"] = {
-		Overall = {
-			height = 128,
-			width = 128,
-			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Demolisher",
-		},
-		[1] = {
-			xPos = -49,
-			yPos = -55,
-		},
-		[2] = {
-			xPos = -26,
-			yPos = -21,
-		},
-	},
-	["UlduarSiegeEngine"] = {
-		Overall = {
-			height = 128,
-			width = 128,
-			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-SiegeEngine",
-		},
-		[1] = {
-			xPos = -52,
-			yPos = -5,
-		},
-		[4] = {
-			xPos = -51,
-			yPos = -60,
-		},
-	},
-	["UlduarMotorcycle"] = {
-		Overall = {
-			height = 128,
-			width = 128,
-			background = "Interface\\Vehicles\\SeatIndicator\\Vehicle-Motorcycle",
-		},
-		[1] = {
-			xPos = -51,
-			yPos = -75,
-		},
-		[2] = {
-			xPos = -30,
-			yPos = -78,
-		},
-	},
-}
-
-function VehicleSeatIndicator_SetUpVehicle(vehicleName)
-	if ( vehicleName == VehicleSeatIndicator.currSkin ) then
+local numVehicleIndicatorButtons = 0;
+function VehicleSeatIndicator_SetUpVehicle(vehicleIndicatorID)
+	if ( vehicleIndicatorID == VehicleSeatIndicator.currSkin ) then
 		return;
 	end
 	
-	local vehicleData = SeatIndicatorSkinsData[vehicleName];
-	
-	if ( not vehicleData ) then
+	if ( vehicleIndicatorID == 0 ) then
 		VehicleSeatIndicator_UnloadTextures();
 		return;
 	end
 	
-	VehicleSeatIndicator.currSkin = vehicleName;
+	local backgroundTexture, numSeatIndicators = GetVehicleUIIndicator(vehicleIndicatorID);
 	
-	VehicleSeatIndicator:SetHeight(vehicleData.Overall.height);
-	VehicleSeatIndicator:SetWidth(vehicleData.Overall.width);
+	VehicleSeatIndicator.currSkin = vehicleIndicatorID;
 	
-	VehicleSeatIndicatorBackgroundTexture:SetTexture(vehicleData.Overall.background);
+	VehicleSeatIndicatorBackgroundTexture:SetTexture(backgroundTexture);
 	
-	for i=1, MAX_VEHICLE_INDICATOR_BUTTONS do
-		local seatData = vehicleData[i];
-		local button = _G["VehicleSeatIndicatorButton"..i];
-		
-		if ( seatData ) then
-			button:SetPoint("TOPRIGHT", (seatData.xPos or 0), (seatData.yPos or 0));
-			button:Show()
+	local totalHeight = VehicleSeatIndicatorBackgroundTexture:GetFileHeight();
+	local totalWidth = VehicleSeatIndicatorBackgroundTexture:GetFileWidth();
+	VehicleSeatIndicator:SetHeight(totalHeight);
+	VehicleSeatIndicator:SetWidth(totalWidth);
+	
+	for i=1, numSeatIndicators do
+		local button;
+		if ( i > numVehicleIndicatorButtons ) then
+			button = CreateFrame("Button", "VehicleSeatIndicatorButton"..i, VehicleSeatIndicator, "VehicleSeatIndicatorButtonTemplate");
+			button:SetID(i)
+			numVehicleIndicatorButtons = i;
 		else
-			button:Hide();
+			button = _G["VehicleSeatIndicatorButton"..i];
 		end
+		
+		local virtualSeatIndex, xOffset, yOffset = GetVehicleUIIndicatorSeat(vehicleIndicatorID, i);
+		
+		button.virtualID = virtualSeatIndex;
+		button:SetPoint("CENTER", button:GetParent(), "TOPLEFT", xOffset*totalWidth, -yOffset*totalHeight);
+		button:Show();
 	end	
+	
+	for i=numSeatIndicators+1, numVehicleIndicatorButtons do
+		local button = _G["VehicleSeatIndicatorButton"..i];
+		button:Hide();
+	end
 	
 	VehicleSeatIndicator:Show();
 	DurabilityFrame_SetAlerts();
@@ -1086,31 +967,33 @@ function VehicleSeatIndicator_Update()
 	if ( not VehicleSeatIndicator.currSkin ) then
 		return;
 	end
-	for i=1, MAX_VEHICLE_INDICATOR_BUTTONS do
-		local controlType, occupantName = UnitVehicleSeatInfo("player", i);
+	for i=1, numVehicleIndicatorButtons do
 		local button = _G["VehicleSeatIndicatorButton"..i];
-		if ( occupantName ) then
-			button.occupantName = occupantName;
-			if ( occupantName == UnitName("player") ) then
-				_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Show();
-				_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Hide();
-				if ( not VehicleSeatIndicator.hasPulsedPlayer ) then
-					SeatIndicator_Pulse(_G["VehicleSeatIndicatorButton"..i.."PulseTexture"], true);
-					VehicleSeatIndicator.hasPulsedPlayer = true;
+		if ( button:IsShown() ) then
+			local controlType, occupantName = UnitVehicleSeatInfo("player", button.virtualID);
+			if ( occupantName ) then
+				button.occupantName = occupantName;
+				if ( occupantName == UnitName("player") ) then
+					_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Show();
+					_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Hide();
+					if ( not VehicleSeatIndicator.hasPulsedPlayer ) then
+						SeatIndicator_Pulse(_G["VehicleSeatIndicatorButton"..i.."PulseTexture"], true);
+						VehicleSeatIndicator.hasPulsedPlayer = true;
+					end
+				else
+					_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Hide();
+					_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Show();
 				end
 			else
 				_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Hide();
-				_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Show();
+				_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Hide();
 			end
-		else
-			_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Hide();
-			_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Hide();
 		end
 	end
 end
 
 function VehicleSeatIndicatorButton_OnClick(self, button)
-	local seatIndex = self:GetID();
+	local seatIndex = self.virtualID;
 	if ( button == "RightButton" and CanEjectPassengerFromSeat(seatIndex)) then
 		ToggleDropDownMenu(1, seatIndex, VehicleSeatIndicatorDropDown, self:GetName(), 0, -5);
 	else
@@ -1123,7 +1006,7 @@ function VehicleSeatIndicatorButton_OnEnter(self)
 		return;
 	end
 	
-	local controlType, occupantName, serverName, ejectable, canSwitchSeats = UnitVehicleSeatInfo("player", self:GetID());
+	local controlType, occupantName, serverName, ejectable, canSwitchSeats = UnitVehicleSeatInfo("player", self.virtualID);
 	local highlight = _G[self:GetName().."Highlight"]
 	
 	if ( not UnitUsingVehicle("player") ) then	--UnitUsingVehicle also returns true when we are transitioning between seats in a vehicle.

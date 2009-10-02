@@ -4244,18 +4244,7 @@
 							</BackgroundInsets>
 						</Backdrop>
 						<Frames>
-							<ScrollingMessageFrame name="GuildEventMessageFrame" insertMode="TOP" maxLines="200" fade="false">
-								<Size>
-									<AbsDimension x="345" y="350"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="GuildEventFrame" relativePoint="TOPLEFT">
-										<Offset x="8" y="-8"/>
-									</Anchor>
-								</Anchors>
-								<FontString inherits="ChatFontNormal" justifyH="LEFT"/>
-							</ScrollingMessageFrame>
-							<ScrollFrame name="GuildEventLogScrollFrame" inherits="FauxScrollFrameTemplate">
+							<ScrollFrame name="GuildEventLogScrollFrame" inherits="UIPanelScrollFrameTemplate">
 								<Size>
 									<AbsDimension x="340" y="359"/>
 								</Size>
@@ -4264,11 +4253,25 @@
 										<Offset x="-28" y="-6"/>
 									</Anchor>
 								</Anchors>
-								<Scripts>
-									<OnVerticalScroll>
-										FauxScrollFrame_OnVerticalScroll(self, offset, GUILDEVENT_TRANSACTION_HEIGHT, GuildEventLogScroll)
-									</OnVerticalScroll>
-								</Scripts>
+								<ScrollChild>
+									<Frame name="GuildEventLogScrollChildFrame">
+										<Size>
+											<AbsDimension x="340" y="359"/>
+										</Size>	
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="GuildEventMessage" inherits="ChatFontNormal" justifyH="LEFT">
+													<Size>
+														<AbsDimension x="340" y="0"/>
+													</Size>										
+													<Anchors>
+														<Anchor point="TOPLEFT" />
+													</Anchors>
+												</FontString>									
+											</Layer>
+										</Layers>
+									</Frame>
+								</ScrollChild>
 							</ScrollFrame>
 						</Frames>
 						<Scripts>
@@ -4321,7 +4324,6 @@
 					</OnLoad>
 					<OnEvent>
 						GuildEventLog_Update();
-						GuildEventLogScroll();
 					</OnEvent>
 					<OnShow function="QueryGuildEventLog"/>
 				</Scripts>

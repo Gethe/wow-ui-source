@@ -5,6 +5,8 @@ MONEY_ICON_WIDTH_SMALL = 13;
 MONEY_BUTTON_SPACING = -4;
 MONEY_BUTTON_SPACING_SMALL = -4;
 
+MONEY_TEXT_VADJUST = 0;
+
 COPPER_PER_SILVER = 100;
 SILVER_PER_GOLD = 100;
 COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
@@ -229,7 +231,7 @@ end
 -- Update the money shown in a money frame
 function MoneyFrame_UpdateMoney(moneyFrame)
 	assert(moneyFrame);
-	
+
 	if ( moneyFrame.info ) then
 		local money = moneyFrame.info.UpdateFunc(moneyFrame);
 		if ( money ) then
@@ -286,14 +288,15 @@ function MoneyFrame_Update(frameName, money)
 
 	-- Set values for each denomination
 	if ( ENABLE_COLORBLIND_MODE == "1" ) then
-		if ( not frame.colorblind ) then
+		if ( not frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
 			frame.colorblind = true;
+			frame.vadjust = MONEY_TEXT_VADJUST;
 			goldButton:SetNormalTexture("");
 			silverButton:SetNormalTexture("");
 			copperButton:SetNormalTexture("");
-			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT");
-			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT");
-			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT");
+			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
+			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
+			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
 		end
 		goldButton:SetText(gold .. GOLD_AMOUNT_SYMBOL);
 		goldButton:SetWidth(goldButton:GetTextWidth());
@@ -305,17 +308,18 @@ function MoneyFrame_Update(frameName, money)
 		copperButton:SetWidth(copperButton:GetTextWidth());
 		copperButton:Show();
 	else
-		if ( frame.colorblind ) then
+		if ( frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
 			frame.colorblind = nil;
+			frame.vadjust = MONEY_TEXT_VADJUST;
 			local texture = CreateMoneyButtonNormalTexture(goldButton, iconWidth);
 			texture:SetTexCoord(0, 0.25, 0, 1);
 			texture = CreateMoneyButtonNormalTexture(silverButton, iconWidth);
 			texture:SetTexCoord(0.25, 0.5, 0, 1);
 			texture = CreateMoneyButtonNormalTexture(copperButton, iconWidth);
 			texture:SetTexCoord(0.5, 0.75, 0, 1);
-			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT", -iconWidth, 0);
-			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", -iconWidth, 0);
-			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", -iconWidth, 0);
+			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
+			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
+			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
 		end
 		goldButton:SetText(gold);
 		goldButton:SetWidth(goldButton:GetTextWidth() + iconWidth);

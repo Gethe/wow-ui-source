@@ -690,7 +690,7 @@ function PlayerTalentFrameTab_OnClick(self)
 end
 
 function PlayerTalentFrameTab_OnEnter(self)
-	if ( self.textWidth and self.textWidth > self:GetTextWidth() ) then
+	if ( self.textWidth and self.textWidth > self:GetFontString():GetWidth() ) then	--We're ellipsizing.
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOM");
 		GameTooltip:SetText(self:GetText());
 	end

@@ -171,23 +171,6 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="QuestRewardItemTemplate" inherits="QuestItemTemplate" virtual="true">
-		<Scripts>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					if ( self.rewardType == "spell" ) then
-						if ( IsModifiedClick("CHATLINK") ) then
-							ChatEdit_InsertLink(GetQuestSpellLink());
-						end
-					else
-						HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
-					end
-				else
-					QuestRewardItem_OnClick(self);
-				end
-			</OnClick>
-		</Scripts>
-	</Button>
 	<Button name="QuestTitleButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="300" y="16"/>
@@ -232,7 +215,7 @@
 		<Size x="500" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentHonorReceiveText" inherits="QuestFont" text="BONUS_HONOR">
+				<FontString name="$parentReceiveText" inherits="QuestFont" text="BONUS_HONOR">
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
@@ -243,14 +226,14 @@
 				</FontString>
 				<FontString name="$parentPoints" inherits="NumberFontNormalLarge" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentHonorReceiveText" relativePoint="RIGHT">
+						<Anchor point="LEFT" relativeTo="$parentReceiveText" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="42" y="0"/>
+								<AbsDimension x="15" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentIcon">
+				<Texture name="$parentIcon" parentKey="icon">
 					<Size>
 						<AbsDimension x="32" y="32"/>
 					</Size>
@@ -264,31 +247,79 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad>
+				local factionGroup = UnitFactionGroup("player");
+				if ( factionGroup ) then
+					self.icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+					self.icon:Show();
+				else
+					self.icon:Hide();
+				end				
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="QuestArenaPointsFrameTemplate" virtual="true">
+		<Size x="500" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentReceiveText" inherits="QuestFont" text="BONUS_ARENA_POINTS">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentPoints" inherits="NumberFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentReceiveText" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="15" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentIcon" file="Interface\PVPFrame\PVP-ArenaPoints-Icon">
+					<Size>
+						<AbsDimension x="17" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
    <Frame name="QuestTalentFrameTemplate" virtual="true">
-     <Size x="500" y="20"/>
-     <Layers>
-       <Layer level="BACKGROUND">
-         <FontString name="$parentTalentReceiveText" inherits="QuestFont" text="BONUS_TALENTS">
-           <Anchors>
-             <Anchor point="LEFT">
-               <Offset>
-                 <AbsDimension x="0" y="0"/>
-               </Offset>
-             </Anchor>
-           </Anchors>
-         </FontString>
-         <FontString name="$parentPoints" inherits="NumberFontNormalLarge" justifyH="LEFT">
-           <Anchors>
-             <Anchor point="LEFT" relativeTo="$parentTalentReceiveText" relativePoint="RIGHT">
-               <Offset>
-                 <AbsDimension x="42" y="0"/>
-               </Offset>
-             </Anchor>
-           </Anchors>
-         </FontString>
-       </Layer>
-     </Layers>
+		<Size x="500" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentReceiveText" inherits="QuestFont" text="BONUS_TALENTS">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentPoints" inherits="NumberFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentReceiveText" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="15" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
    </Frame>
    <Frame name="QuestPlayerTitleFrameTemplate" virtual="true">
 		<Size x="500" y="40"/>

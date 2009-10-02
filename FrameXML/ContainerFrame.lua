@@ -371,6 +371,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			bgTextureMiddle:Hide();
 			bgTextureMiddle2:Hide();
 			bgTextureBottom:Hide();
+			_G[name.."MoneyFrame"]:Hide();
 		else
 			bgTexture1Slot:Hide();
 			bgTextureTop:Show();

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+..\FrameXML\UI.xsd">
 	<Script file="LFGFrame.lua"/>
 	<Button name="LFMFrameColumnHeaderTemplate" inherits="WhoFrameColumnHeaderTemplate" virtual="true">
 		<Scripts>
@@ -259,7 +259,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="12" y="-6"/>
+								<AbsDimension x="11" y="-5"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1553,7 +1553,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						local _, _, _, _, _, _, _, _, _, _, lfgStatus = GetLookingForGroup();
+						local lfm, joined, queued = GetLFGInfoServer();
+						local lfgStatus = (not lfm) and joined;
+					
 						if( (GetRealNumPartyMembers() == 0) and (GetRealNumRaidMembers() == 0) and (not lfgStatus) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 							GameTooltip:SetText(LFM_DISABLED_LFG_TOOLTIP, nil, nil, nil, nil, 1);

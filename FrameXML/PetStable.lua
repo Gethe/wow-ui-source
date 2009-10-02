@@ -32,6 +32,7 @@ function PetStable_OnEvent(self, event, ...)
 		SetPetStablePaperdoll(PetStableModel);
 	elseif ( event == "PET_STABLE_CLOSED" ) then
 		HideUIPanel(self);
+		StaticPopup_Hide("CONFIRM_BUY_STABLE_SLOT");
 	end
 end
 

@@ -84,7 +84,10 @@ end
 
 -- Disable the LFG tab if the player is in a party
 function LFGParentFrame_UpdateTabs()
-	local _, _, _, _, _, _, _, _, _, _, lfgStatus, lfmStatus = GetLookingForGroup();
+	local lfm, joined = GetLFGInfoServer();
+	local lfgStatus = (not lfm) and joined;
+	local lfmStatus = lfm and joined;
+
 	if ( IsRealPartyLeader() or IsRealRaidLeader() or (GetRealNumPartyMembers() > 0) or (GetRealNumRaidMembers() > 0) or lfmStatus ) then
 		LFGParentFrameTab2_OnClick();
 		PanelTemplates_DisableTab(LFGParentFrame, 1);
@@ -408,15 +411,20 @@ end
 
 function LFMFrame_UpdateDropDowns()
 	-- Update the search dropdowns
-	local _, _, _, _, _, _, lfmType, lfmName, _, queued, lfgStatus, lfmStatus = GetLookingForGroup();
+
+	local lfmServer, joinedServer, autoServer, _, _, slotCountServer = GetLFGInfoServer();
+	local lfmStatus = lfm and joined;
+	local lfgStatus = (not lfm) and joined;
+	
 	-- Set LFM settings
 	-- Set the LFM Type DropDown
 	UIDropDownMenu_Initialize(LFMFrameTypeDropDown, LFMFrameTypeDropDown_Initialize);
 	if ( (IsRealPartyLeader() and AutoAddMembersCheckButton:GetChecked() and AutoAddMembersCheckButton:IsEnabled()) or not LFGFrame.loaded ) then
-		SetLFMTypeCriteria(lfmType);
+		--SetLFMTypeCriteria(lfmType);
 	end
 	if ( lfmStatus and IsRealPartyLeader()) then
 		-- Set the LFM Name DropDown
+		lfmType, lfmName = GetLFGDungeonServer(1);
 		UIDropDownMenu_Initialize(LFMFrameNameDropDown, LFMFrameNameDropDown_Initialize);
 		if ( lfmType ~= 1 ) then
 			UIDropDownMenu_SetSelectedID(LFMFrameNameDropDown, lfmName);
@@ -425,12 +433,11 @@ function LFMFrame_UpdateDropDowns()
 		end
 	elseif ( (GetRealNumPartyMembers() == 0) or IsRealPartyLeader() or not LFGFrame.loaded) then
 		UIDropDownMenu_Initialize(LFMFrameNameDropDown, LFMFrameNameDropDown_Initialize);
-		if ( lfmName ~= 0 ) then
-			if ( not lfgStatus ) then
+		if ( not lfgStatus ) then
+			lfmType, lfmName = GetLFGDungeonLocal(1);
+			if ( lfmName ~= 0 ) then
 				UIDropDownMenu_SetSelectedID(LFMFrameNameDropDown, lfmName);
-			end
-		else
-			if ( not lfgStatus ) then
+			else
 				UIDropDownMenu_ClearAll(LFMFrameNameDropDown);
 			end
 		end
@@ -446,8 +453,8 @@ function LFMFrame_UpdateDropDowns()
 end
 
 function LFMFrame_UpdateEye()
-	local _, _, _, _, _, _, _, _, _, queued, _, lfmStatus = GetLookingForGroup();
-	if ( queued and lfmStatus ) then
+	local lfm, joined, auto = GetLFGInfoServer();
+	if ( lfm and joined and auto ) then
 		LFMEye:Show();
 	else
 		LFMEye:Hide();
@@ -461,7 +468,11 @@ function LFMFrame_OnUpdate(self, elapsed)
 		LFMFrame.refreshTimer = 0;
 
 		--If your party is full you can't autoadd
-		local _, _, _, _, _, _, _, _, _, queued, lfgStatus, lfmStatus = GetLookingForGroup();
+		local lfm, joined, auto = GetLFGInfoServer();
+		local lfgStatus = (not lfm) and joined;
+		local lfmStatus = lfm and joined;
+		local queued = auto;
+		
 		if ( (queued and lfgStatus) or RealPartyIsFull() or (not IsRealPartyLeader()) or (not IsRealRaidLeader()) or not LFMFrame_CanAutoAdd() ) then
 			LFMFrame_DisableAutoAdd();
 		else
@@ -595,12 +606,12 @@ function SetLFMTypeCriteria(id)
 	if ((id ~= UIDropDownMenu_GetSelectedID(LFMFrameTypeDropDown)) and UIDropDownMenu_GetSelectedID(LFMFrameNameDropDown)) then
 		UIDropDownMenu_ClearAll(LFMFrameNameDropDown);
 	end
-	SetLFMType(id);
-	UIDropDownMenu_SetSelectedID(LFMFrameTypeDropDown, id);
-	if ( id == 1 ) then
-		ClearLookingForMore();		
-		LFMFrame.doUpdate = 1;
-	end
+	--SetLFMType(id);
+	--UIDropDownMenu_SetSelectedID(LFMFrameTypeDropDown, id);
+	--if ( id == 1 ) then
+	--	ClearLookingForMore();		
+	--	LFMFrame.doUpdate = 1;
+	--end
 end
 
 -- Entryname Dropdown stuff
@@ -703,7 +714,10 @@ function LFGFrame_OnUpdate(self, elapsed)
 	--Upate the state of autojoin
 	--If your party is full you can't autojoin
 	if ( LFGFrame.refreshTimer >= LFG_REFRESH_UPDATE_THROTTLE ) then
-		local _, _, _, _, _, _, _, _, _, queued, lfgStatus, lfmStatus = GetLookingForGroup();
+		local lfm, joined, queued = GetLFGInfoServer();
+		local lfgStatus = (not lfm) and joined;
+		local lfmStatus = lfm and joined;
+
 		local canAutoJoin = (LFGFrameTypeDropDown1.canAutoJoin or LFGFrameTypeDropDown2.canAutoJoin or LFGFrameTypeDropDown3.canAutoJoin);
 		if ( ((queued and lfmStatus) or RealPartyIsFull()) or not canAutoJoin ) then
 			LFGFrame_DisableAutoJoin();
@@ -717,7 +731,22 @@ function LFGFrame_OnUpdate(self, elapsed)
 end
 
 function LFGFrame_Update()
-	local type1, name1, type2, name2, type3, name3, lfmType, lfmName, comment, queued, lfgStatus, lfmStatus = GetLookingForGroup();
+
+	local lfm, joined, queued = GetLFGInfoServer();
+	local type1, name1, type2, name2, type3, name3;
+	local lfgStatus = (not lfm) and joined;
+	local lfmStatus = lfm and joined;
+
+	if (joined) then
+		type1, name1 = GetLFGDungeonServer(1);
+		type2, name2 = GetLFGDungeonServer(2);
+		type3, name3 = GetLFGDungeonServer(3);
+	else
+		type1, name1 = GetLFGDungeonLocal(1);
+		type2, name2 = GetLFGDungeonLocal(2);
+		type3, name3 = GetLFGDungeonLocal(3);
+	end
+
 	-- Set LFG settings
 	if ( type1 ) then
 		if ( type1 ~= LFG_TYPE_NONE_ID or (UIDropDownMenu_GetSelectedName(LFGFrameNameDropDown1)) or (not LFGFrameTypeDropDown1Text:GetText()) ) then
@@ -755,8 +784,20 @@ function LFGFrame_Update()
 end
 
 function LFGFrame_UpdateDropDowns()	
-	local _, _, type2, _, type3 = GetLookingForGroup();
-	
+	local lfm, joined, queued = GetLFGInfoServer();
+	local type1, name1, type2, name2, type3, name3;
+
+	if (joined) then
+		type1, name1 = GetLFGDungeonServer(1);
+		type2, name2 = GetLFGDungeonServer(2);
+		type3, name3 = GetLFGDungeonServer(3);
+	else
+		type1, name1 = GetLFGDungeonLocal(1);
+		type2, name2 = GetLFGDungeonLocal(2);
+		type3, name3 = GetLFGDungeonLocal(3);
+	end
+
+
 	-- If a type is selected then enable the name dropdown
 	if ( UIDropDownMenu_GetSelectedID(LFGFrameTypeDropDown1) ~= 0 ) then
 		UIDropDownMenu_EnableDropDown(LFGFrameNameDropDown1);
@@ -987,14 +1028,17 @@ function LFGFrameRoleCheckButton_OnClick(self, button)
 		LFGFrame_UpdateRolesChosen();
 	else
 		PlaySound("igMainMenuOptionCheckBoxOff");
-		
-		local _, _, _, _, _, _, _, _, _, _, lfgStatus = GetLookingForGroup();
+
+		local lfm, joined, queued = GetLFGInfoServer();
+		local lfgStatus = (not lfm) and joined;
+
 		local rolesChosen = LFGFrame_AreRolesChosen();
 		if ( (not lfgStatus) or rolesChosen ) then
 			LFGFrame_UpdateRolesChosen();
 			if ( not rolesChosen and UIDROPDOWNMENU_OPEN_MENU ) then
 				local initFunction = UIDROPDOWNMENU_OPEN_MENU.initialize;
-				if ( initFunction == LFGFrameNameDropDown1_Initialize or initFunction == LFGFrameNameDropDown2_Initialize or initFunction == LFGFrameNameDropDown3_Initialize ) then
+				if ( initFunction == LFGFrameNameDropDown1_Initialize or initFunction == LFGFrameNameDropDown2_Initialize or initFunction == LFGFrameNameDropDown3_Initialize or
+					initFunction == LFGFrameTypeDropDown_Initialize) then
 					HideDropDownMenu(1);
 				end
 			end

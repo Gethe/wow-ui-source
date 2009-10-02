@@ -367,25 +367,6 @@ local CombatLog_Object_IsA = CombatLog_Object_IsA
 local CombatLogQuickButtonFrame, CombatLogQuickButtonFrameProgressBar, CombatLogQuickButtonFrameTexture
 _G.CombatLogQuickButtonFrame = CreateFrame("Frame", "CombatLogQuickButtonFrame", UIParent)
 
--- For debugging, remove for final commit
-local function debug(...)
-	local a,b,c,d,e,f,g,h,i,j,k = ...
-	if select("#", ...) == 1 then
-		b, a = a, "%s"		
-	end
-	ChatFrame1:AddMessage(a:format(
-		tostring(b),
-		tostring(c),
-		tostring(d),
-		tostring(e),
-		tostring(f),
-		tostring(g),
-		tostring(i),
-		tostring(j),
-		tostring(k)
-	))
-end
-
 local Blizzard_CombatLog_Update_QuickButtons
 local Blizzard_CombatLog_Filters
 local Blizzard_CombatLog_CurrentSettings
@@ -2730,18 +2711,25 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			
 			amount = amount - overkill;
 		elseif ( event == "RANGE_MISSED" ) then 
-			-- Damage standard
-			missType = select(4, ...);
+			spellName = ACTION_RANGED;
+
+			-- Miss type
+			missType, amountMissed = select(4,...);
 
 			-- Result String
-			resultStr = _G["ACTION_RANGE_MISSED_"..missType];
-			
+			if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
+				resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
+			else
+				resultStr = _G["ACTION_RANGE_MISSED_"..missType];
+			end
+
 			-- Miss Type
 			if ( settings.fullText and missType ) then
 				event = format("%s_%s", event, missType);
 			end
 
 			-- Disable appropriate sections
+			nameIsNotSpell = true;
 			valueEnabled = false;
 			resultEnabled = true;
 		end
@@ -3147,7 +3135,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		end
 		if ( abilityColor ) then
 			abilityColor = CombatLog_Color_FloatToText(abilityColor);
-			spellNameStr = format("|c%s%s|r", abilityColor, spellName);
+			if ( itemId ) then
+				spellNameStr = spellName;
+			else
+				spellNameStr = format("|c%s%s|r", abilityColor, spellName);
+			end
 		end
 	end
 
@@ -3204,8 +3196,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		end
 
 		-- Spell name braces
-		if ( spellName and settings.spellBraces ) then 
-			spellNameStr = format(TEXT_MODE_A_STRING_BRACE_SPELL, braceColor, spellNameStr, braceColor);
+		if ( spellName and settings.spellBraces ) then
+			if ( not itemId ) then
+				spellNameStr = format(TEXT_MODE_A_STRING_BRACE_SPELL, braceColor, spellNameStr, braceColor);
+			end
 		end
 		if ( extraSpellName and settings.spellBraces ) then 
 			extraSpellNameStr = format(TEXT_MODE_A_STRING_BRACE_SPELL, braceColor, extraSpellNameStr, braceColor);
@@ -3237,7 +3231,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			spellString = format(TEXT_MODE_A_STRING_SPELL, spellId, originalEvent, spellNameStr, spellId);
 		end
 	end
-
+	
 	if ( actionString ) then
 		actionString = format(TEXT_MODE_A_STRING_ACTION, originalEvent, actionStr);
 	end
@@ -3482,12 +3476,15 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	COMBATLOG:SetScript("OnShow", function(self)
 		CombatLogQuickButtonFrame_Custom:Show()
 		--Blizzard_CombatLog_AdjustCombatLogHeight()
+		COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
+		Blizzard_CombatLog_QuickButton_OnClick(Blizzard_CombatLog_Filters.currentFilter)
 		return show and show(self)
 	end)
 
 	COMBATLOG:SetScript("OnHide", function(self)
 		CombatLogQuickButtonFrame_Custom:Hide()
 		-- Blizzard_CombatLog_AdjustCombatLogHeight()
+		COMBATLOG:UnregisterEvent("COMBAT_LOG_EVENT");
 		return hide and hide(self)
 	end)	
 end

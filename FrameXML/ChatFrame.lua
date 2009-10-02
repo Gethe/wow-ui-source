@@ -536,7 +536,8 @@ EMOTE448_TOKEN = "CROSSARMS"
 EMOTE449_TOKEN = "LOOK"
 EMOTE450_TOKEN = "OBJECT"
 EMOTE451_TOKEN = "SWEAT"
-local MAXEMOTEINDEX = 451;
+EMOTE452_TOKEN = "YW"
+local MAXEMOTEINDEX = 452;
 
 
 ICON_LIST = {
@@ -1740,7 +1741,19 @@ SlashCmdList["TEAM_DISBAND"] = function(msg)
 			if ( team ) then
 				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
 				if ( teamsizeID ) then
-					ArenaTeamDisband(teamsizeID);
+					local teamName, teamSize = GetArenaTeam(teamsizeID);
+					for i = 1, teamSize * 2 do
+						name, rank = GetArenaTeamRosterInfo(teamsizeID, i);
+						if ( rank == 0 ) then
+							if ( name == UnitName("player") ) then
+								local dialog = StaticPopup_Show("CONFIRM_TEAM_DISBAND", teamName);
+								if ( dialog ) then
+									dialog.data = teamsizeID;
+								end
+							end
+							break;
+						end
+					end
 				end
 				return;
 			end
@@ -2091,6 +2104,13 @@ SlashCmdList["EQUIP_SET"] = function(msg)
 	local set = SecureCmdOptionParse(msg);
 	if ( set and set ~= "" ) then
 		EquipmentManager_EquipSet(set);
+	end
+end
+
+SlashCmdList["SET_TITLE"] = function(msg)
+	local name = SecureCmdOptionParse(msg);
+	if ( name and name ~= "") then
+		SetTitleByName(name);
 	end
 end
 
@@ -2520,7 +2540,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 		end
 
-		if ( type == "SYSTEM" or type == "TEXT_EMOTE" or type == "SKILL" or type == "LOOT" or type == "MONEY" or
+		if ( type == "SYSTEM" or type == "SKILL" or type == "LOOT" or type == "MONEY" or
 		     type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,7) == "COMBAT_" ) then
@@ -2615,12 +2635,16 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag..arg2);
 				end
 			else
-				if ( showLink and (strlen(arg2) > 0) and (type ~= "EMOTE") ) then
-					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..coloredName.."]".."|h");
-				elseif ( showLink and (strlen(arg2) > 0) and (type == "EMOTE") ) then
-					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..coloredName.."|h");
-				else
+				if ( not showLink or strlen(arg2) == 0 ) then
 					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
+				else
+					if ( type == "EMOTE" ) then
+						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..coloredName.."|h");
+					elseif ( type == "TEXT_EMOTE") then
+						body = string.gsub(arg1, arg2, pflag.."|Hplayer:"..arg2..":"..arg11.."|h"..coloredName.."|h", 1);
+					else
+						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag.."|Hplayer:"..arg2..":"..arg11.."|h".."["..coloredName.."]".."|h");
+					end
 				end
 			end
 

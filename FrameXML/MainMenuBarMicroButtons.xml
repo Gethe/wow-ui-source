@@ -56,11 +56,10 @@
 			<OnMouseUp>
 				if ( self.down ) then
 					self.down = nil;
-					if ( MouseIsOver(self) ) then
+					if ( self:IsMouseOver() ) then
 						ToggleCharacter("PaperDollFrame");
-					else
-						UpdateMicroButtons();
 					end
+					UpdateMicroButtons();
 					return;
 				end
 				if ( self:GetButtonState() == "NORMAL" ) then
@@ -238,11 +237,10 @@
 			<OnMouseUp>
 				if ( self.down ) then
 					self.down = nil;
-					if ( MouseIsOver(self) ) then
+					if ( self:IsMouseOver() ) then
 						TogglePVPFrame();
-					else
-						UpdateMicroButtons();
 					end
+					UpdateMicroButtons();
 					return;
 				end
 				if ( self:GetButtonState() == "NORMAL" ) then
@@ -273,9 +271,11 @@
 				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnEvent>
+<!--
 			<OnClick>
 				ToggleLFGParentFrame();
 			</OnClick>
+-->
 		</Scripts>
 	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
@@ -362,7 +362,7 @@
 			<OnMouseUp>
 				if ( self.down ) then
 					self.down = nil;
-					if ( MouseIsOver(self) ) then
+					if ( self:IsMouseOver() ) then
 						if ( not GameMenuFrame:IsShown() ) then
 							if ( VideoOptionsFrame:IsShown() ) then
 								VideoOptionsFrameCancel:Click();
@@ -380,9 +380,8 @@
 							HideUIPanel(GameMenuFrame);
 							MainMenuMicroButton_SetNormal();
 						end
-					else
-						UpdateMicroButtons();
 					end
+					UpdateMicroButtons();
 					return;
 				end
 				if ( self:GetButtonState() == "NORMAL" ) then

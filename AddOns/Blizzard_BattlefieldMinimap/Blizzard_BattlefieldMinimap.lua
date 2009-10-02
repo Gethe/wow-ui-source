@@ -419,7 +419,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 	end
 
 	-- Fadein tab if mouse is over
-	if ( MouseIsOver(BattlefieldMinimap, 45, -10, -5, 5) ) then
+	if ( BattlefieldMinimap:IsMouseOver(45, -10, -5, 5) ) then
 		local xPos, yPos = GetCursorPosition();
 		-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 		if ( BattlefieldMinimap.hover ) then
@@ -561,7 +561,7 @@ function BattlefieldMinimapUnit_OnEnter(self, motion)
 	-- Check party
 	for i=1, MAX_PARTY_MEMBERS do
 		unitButton = _G["BattlefieldMinimapParty"..i];
-		if ( unitButton:IsVisible() and MouseIsOver(unitButton) ) then
+		if ( unitButton:IsVisible() and unitButton:IsMouseOver() ) then
 			if ( PlayerIsPVPInactive(unitButton.unit) ) then
 				tooltipText = tooltipText..newLineString..format(PLAYER_IS_PVP_AFK, UnitName(unitButton.unit));
 			else
@@ -573,7 +573,7 @@ function BattlefieldMinimapUnit_OnEnter(self, motion)
 	--Check Raid
 	for i=1, MAX_RAID_MEMBERS do
 		unitButton = _G["BattlefieldMinimapRaid"..i];
-		if ( unitButton:IsVisible() and MouseIsOver(unitButton) ) then
+		if ( unitButton:IsVisible() and unitButton:IsMouseOver() ) then
 			-- Handle players not in your raid or party, but on your team
 			if ( unitButton.name ) then
 				if ( PlayerIsPVPInactive(unitButton.name) ) then

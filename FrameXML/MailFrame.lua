@@ -31,6 +31,7 @@ function MailFrame_OnLoad(self)
 	self:RegisterEvent("MAIL_SEND_INFO_UPDATE");
 	self:RegisterEvent("MAIL_SEND_SUCCESS");
 	self:RegisterEvent("MAIL_FAILED");
+	self:RegisterEvent("MAIL_SUCCESS");	
 	self:RegisterEvent("CLOSE_INBOX_ITEM");
 	-- Set previous and next fields
 	MoneyInputFrame_SetPreviousFocus(SendMailMoney, SendMailBodyEditBox);
@@ -68,6 +69,11 @@ function MailFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "MAIL_FAILED" ) then
 		SendMailMailButton:Enable();
+	elseif ( event == "MAIL_SUCCESS" ) then
+		SendMailMailButton:Enable();
+		if ( InboxNextPageButton:IsEnabled() ~= 0 ) then
+			InboxGetMoreMail();
+		end
 	elseif ( event == "MAIL_CLOSED" ) then
 		HideUIPanel(MailFrame);
 	elseif ( (event == "CLOSE_INBOX_ITEM") ) then
@@ -118,6 +124,17 @@ function InboxFrame_Update()
 	local index = ((InboxFrame.pageNum - 1) * INBOXITEMS_TO_DISPLAY) + 1;
 	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity;
 	local icon, button, expireTime, senderText, subjectText, buttonIcon;
+	
+	if ( totalItems > numItems ) then
+		if ( not InboxFrame.maxShownMails ) then
+			InboxFrame.maxShownMails = numItems;
+		end
+		InboxFrame.overflowMails = totalItems - numItems;
+		InboxFrame.shownMails = numItems;
+	else
+		InboxFrame.overflowMails = nil;
+	end
+	
 	for i=1, INBOXITEMS_TO_DISPLAY do
 		if ( index <= numItems ) then
 			-- Setup mail item
@@ -281,13 +298,22 @@ end
 function InboxNextPage()
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	InboxFrame.pageNum = InboxFrame.pageNum + 1;
+	InboxGetMoreMail();	
 	InboxFrame_Update();
 end
 
 function InboxPrevPage()
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	InboxFrame.pageNum = InboxFrame.pageNum - 1;
+	InboxGetMoreMail();	
 	InboxFrame_Update();
+end
+
+function InboxGetMoreMail()
+	-- get more mails if there is an overflow and less than max are being shown
+	if ( InboxFrame.overflowMails and InboxFrame.shownMails < InboxFrame.maxShownMails ) then
+		CheckInbox();
+	end
 end
 
 -- Open Mail functions

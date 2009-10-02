@@ -111,10 +111,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentButton1" inherits="VehicleSeatIndicatorButtonTemplate" id="1"/>
-			<Button name="$parentButton2" inherits="VehicleSeatIndicatorButtonTemplate" id="2"/>
-			<Button name="$parentButton3" inherits="VehicleSeatIndicatorButtonTemplate" id="3"/>
-			<Button name="$parentButton4" inherits="VehicleSeatIndicatorButtonTemplate" id="4"/>
 			<Frame name="VehicleSeatIndicatorDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
 		</Frames>
 		<Scripts>

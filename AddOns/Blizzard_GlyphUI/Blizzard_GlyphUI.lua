@@ -192,7 +192,7 @@ function GlyphFrameGlyph_OnUpdate (self, elapsed)
 		self.background:SetTexCoord(GLYPH_SLOTS[id].left, GLYPH_SLOTS[id].right, GLYPH_SLOTS[id].top, GLYPH_SLOTS[id].bottom);
 		
 		local highlight = false;
-		if ( not MouseIsOver(self) ) then
+		if ( not self:IsMouseOver() ) then
 			self.highlight:Show();
 			highlight = true;
 		end

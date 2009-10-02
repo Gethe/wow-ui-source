@@ -758,7 +758,7 @@ end
 
 function ChannelPullout_OnUpdate (self, elapsed)
 	local ChannelPulloutTab = ChannelPulloutTab;
-	if ( MouseIsOver(self, 45, -10, -5, 5) ) then
+	if ( self:IsMouseOver(45, -10, -5, 5) ) then
 		local xPos, yPos = GetCursorPosition();
 		-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 		if ( self.hover ) then

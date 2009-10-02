@@ -230,7 +230,7 @@ function PaperDollFrame_SetStat(statFrame, statIndex)
 	local negBuff;
 	stat, effectiveStat, posBuff, negBuff = UnitStat("player", statIndex);
 	local statName = _G["SPELL_STAT"..statIndex.."_NAME"];
-	label:SetText(statName..":");
+	label:SetText(format(STAT_FORMAT, statName));
 	
 	-- Set the tooltip text
 	local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, statName).." ";
@@ -318,7 +318,7 @@ function PaperDollFrame_SetRating(statFrame, ratingIndex)
 	local label = _G[statFrame:GetName().."Label"];
 	local text = _G[statFrame:GetName().."StatText"];
 	local statName = _G["COMBAT_RATING_NAME"..ratingIndex];
-	label:SetText(statName..":");
+	label:SetText(format(STAT_FORMAT, statName));
 	local rating = GetCombatRating(ratingIndex);
 	local ratingBonus = GetCombatRatingBonus(ratingIndex);
 	text:SetText(rating);
@@ -426,7 +426,7 @@ function PaperDollFrame_SetArmor(statFrame, unit)
 		unit = "player";
 	end
 	local base, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
-	_G[statFrame:GetName().."Label"]:SetText(ARMOR_COLON);
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
 	local text = _G[statFrame:GetName().."StatText"];
 
 	PaperDollFormatStat(ARMOR, base, posBuff, negBuff, statFrame, text);
@@ -455,7 +455,7 @@ function PaperDollFrame_SetDefense(statFrame, unit)
 	elseif ( modifier < 0 ) then
 		negBuff = modifier;
 	end
-	_G[statFrame:GetName().."Label"]:SetText(DEFENSE_COLON);
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, DEFENSE));
 	local text = _G[statFrame:GetName().."StatText"];
 
 	PaperDollFormatStat(DEFENSE, base, posBuff, negBuff, statFrame, text);
@@ -526,7 +526,7 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 	if ( not unit ) then
 		unit = "player";
 	end
-	_G[statFrame:GetName().."Label"]:SetText(DAMAGE_COLON);
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, DAMAGE));
 	local text = _G[statFrame:GetName().."StatText"];
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
 	
@@ -650,7 +650,7 @@ function PaperDollFrame_SetAttackPower(statFrame, unit)
 	if ( not unit ) then
 		unit = "player";
 	end	
-	_G[statFrame:GetName().."Label"]:SetText(ATTACK_POWER_COLON);
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ATTACK_POWER));
 	local text = _G[statFrame:GetName().."StatText"];
 	local base, posBuff, negBuff = UnitAttackPower(unit);
 
@@ -665,7 +665,7 @@ function PaperDollFrame_SetAttackBothHands(statFrame, unit)
 	end
 	local mainHandAttackBase, mainHandAttackMod, offHandAttackBase, offHandAttackMod = UnitAttackBothHands(unit);
 
-	_G[statFrame:GetName().."Label"]:SetText(COMBAT_RATING_NAME1..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, COMBAT_RATING_NAME1));
 	local text = _G[statFrame:GetName().."StatText"];
 
 	if( mainHandAttackMod == 0 ) then
@@ -729,7 +729,7 @@ function PaperDollFrame_SetRangedAttack(statFrame, unit)
 
 	local hasRelic = UnitHasRelicSlot(unit);
 	local rangedAttackBase, rangedAttackMod = UnitRangedAttack(unit);
-	_G[statFrame:GetName().."Label"]:SetText(COMBAT_RATING_NAME1..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, COMBAT_RATING_NAME1));
 	local text = _G[statFrame:GetName().."StatText"];
 
 	-- If no ranged texture then set stats to n/a
@@ -772,7 +772,7 @@ function PaperDollFrame_SetRangedDamage(statFrame, unit)
 	elseif ( unit == "pet" ) then
 		return;
 	end
-	_G[statFrame:GetName().."Label"]:SetText(DAMAGE_COLON);
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, DAMAGE));
 	local text = _G[statFrame:GetName().."StatText"];
 
 	-- If no ranged attack then set to n/a
@@ -889,7 +889,7 @@ function PaperDollFrame_SetRangedAttackPower(statFrame, unit)
 	if ( not unit ) then
 		unit = "player";
 	end	
-	_G[statFrame:GetName().."Label"]:SetText(ATTACK_POWER_COLON);
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ATTACK_POWER));
 	local text = _G[statFrame:GetName().."StatText"];
 	local base, posBuff, negBuff = UnitRangedAttackPower(unit);
 
@@ -910,7 +910,7 @@ function PaperDollFrame_SetRangedAttackPower(statFrame, unit)
 end
 
 function PaperDollFrame_SetSpellBonusDamage(statFrame)
-	_G[statFrame:GetName().."Label"]:SetText(BONUS_DAMAGE..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, BONUS_DAMAGE));
 	local text = _G[statFrame:GetName().."StatText"];
 	local holySchool = 2;
 	-- Start at 2 to skip physical damage
@@ -929,7 +929,7 @@ function PaperDollFrame_SetSpellBonusDamage(statFrame)
 end
 
 function PaperDollFrame_SetSpellCritChance(statFrame)
-	_G[statFrame:GetName().."Label"]:SetText(SPELL_CRIT_CHANCE..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, SPELL_CRIT_CHANCE));
 	local text = _G[statFrame:GetName().."StatText"];
 	local holySchool = 2;
 	-- Start at 2 to skip physical damage
@@ -951,7 +951,7 @@ function PaperDollFrame_SetSpellCritChance(statFrame)
 end
 
 function PaperDollFrame_SetMeleeCritChance(statFrame)
-	_G[statFrame:GetName().."Label"]:SetText(MELEE_CRIT_CHANCE..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, MELEE_CRIT_CHANCE));
 	local text = _G[statFrame:GetName().."StatText"];
 	local critChance = GetCritChance();-- + GetCritChanceFromAgility();
 	critChance = format("%.2f%%", critChance);
@@ -961,7 +961,7 @@ function PaperDollFrame_SetMeleeCritChance(statFrame)
 end
 
 function PaperDollFrame_SetRangedCritChance(statFrame)
-	_G[statFrame:GetName().."Label"]:SetText(RANGED_CRIT_CHANCE..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, RANGED_CRIT_CHANCE));
 	local text = _G[statFrame:GetName().."StatText"];
 	local critChance = GetRangedCritChance();-- + GetCritChanceFromAgility();
 	critChance = format("%.2f%%", critChance);
@@ -971,7 +971,7 @@ function PaperDollFrame_SetRangedCritChance(statFrame)
 end
 
 function PaperDollFrame_SetSpellBonusHealing(statFrame)
-	_G[statFrame:GetName().."Label"]:SetText(BONUS_HEALING..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, BONUS_HEALING));
 	local text = _G[statFrame:GetName().."StatText"];
 	local bonusHealing = GetSpellBonusHealing();
 	text:SetText(bonusHealing);
@@ -981,7 +981,7 @@ function PaperDollFrame_SetSpellBonusHealing(statFrame)
 end
 
 function PaperDollFrame_SetSpellPenetration(statFrame)
-	_G[statFrame:GetName().."Label"]:SetText(SPELL_PENETRATION..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, SPELL_PENETRATION));
 	local text = _G[statFrame:GetName().."StatText"];
 	text:SetText(GetSpellPenetration());
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE ..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, SPELL_PENETRATION).. FONT_COLOR_CODE_CLOSE;
@@ -990,7 +990,7 @@ function PaperDollFrame_SetSpellPenetration(statFrame)
 end
 
 function PaperDollFrame_SetSpellHaste(statFrame)
-	_G[statFrame:GetName().."Label"]:SetText(SPELL_HASTE..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, SPELL_HASTE));
 	local text = _G[statFrame:GetName().."StatText"];
 	text:SetText(GetCombatRating(CR_HASTE_SPELL));
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. SPELL_HASTE .. FONT_COLOR_CODE_CLOSE;
@@ -999,7 +999,7 @@ function PaperDollFrame_SetSpellHaste(statFrame)
 end
 
 function PaperDollFrame_SetManaRegen(statFrame)
-	_G[statFrame:GetName().."Label"]:SetText(MANA_REGEN..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, MANA_REGEN));
 	local text = _G[statFrame:GetName().."StatText"];
 	if ( not UnitHasMana("player") ) then
 		text:SetText(NOT_APPLICABLE);
@@ -1221,7 +1221,7 @@ function PaperDollItemSlotButton_OnEvent (self, event, ...)
 	elseif ( event == "UPDATE_INVENTORY_ALERTS" ) then
 		PaperDollItemSlotButton_Update(self);
 	elseif ( event == "MODIFIER_STATE_CHANGED" ) then
-		if ( IsModifiedClick("SHOWITEMFLYOUT") and MouseIsOver(self) ) then
+		if ( IsModifiedClick("SHOWITEMFLYOUT") and self:IsMouseOver() ) then
 			PaperDollItemSlotButton_OnEnter(self);
 		end
 	end
@@ -1462,16 +1462,16 @@ function CharacterDamageFrame_OnEnter (self)
 	else
 		GameTooltip:SetText(INVTYPE_WEAPONMAINHAND, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	end
-	GameTooltip:AddDoubleLine(ATTACK_SPEED_COLON, format("%.2f", self.attackSpeed), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	GameTooltip:AddDoubleLine(DAMAGE_COLON, self.damage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	GameTooltip:AddDoubleLine(DAMAGE_PER_SECOND, format("%.1f", self.dps), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	GameTooltip:AddDoubleLine(format(STAT_FORMAT, ATTACK_SPEED_SECONDS), format("%.2f", self.attackSpeed), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	GameTooltip:AddDoubleLine(format(STAT_FORMAT, DAMAGE), self.damage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	GameTooltip:AddDoubleLine(format(STAT_FORMAT, DAMAGE_PER_SECOND), format("%.1f", self.dps), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	-- Check for offhand weapon
 	if ( self.offhandAttackSpeed ) then
 		GameTooltip:AddLine("\n");
 		GameTooltip:AddLine(INVTYPE_WEAPONOFFHAND, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		GameTooltip:AddDoubleLine(ATTACK_SPEED_COLON, format("%.2f", self.offhandAttackSpeed), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		GameTooltip:AddDoubleLine(DAMAGE_COLON, self.offhandDamage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		GameTooltip:AddDoubleLine(DAMAGE_PER_SECOND, format("%.1f", self.offhandDps), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GameTooltip:AddDoubleLine(format(STAT_FORMAT, ATTACK_SPEED_SECONDS), format("%.2f", self.offhandAttackSpeed), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GameTooltip:AddDoubleLine(format(STAT_FORMAT, DAMAGE), self.offhandDamage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GameTooltip:AddDoubleLine(format(STAT_FORMAT, DAMAGE_PER_SECOND), format("%.1f", self.offhandDps), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 	GameTooltip:Show();
 end
@@ -1482,9 +1482,9 @@ function CharacterRangedDamageFrame_OnEnter (self)
 	end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(INVTYPE_RANGED, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	GameTooltip:AddDoubleLine(ATTACK_SPEED_COLON, format("%.2f", self.attackSpeed), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	GameTooltip:AddDoubleLine(DAMAGE_COLON, self.damage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	GameTooltip:AddDoubleLine(DAMAGE_PER_SECOND, format("%.1f", self.dps), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	GameTooltip:AddDoubleLine(format(STAT_FORMAT, ATTACK_SPEED_SECONDS), format("%.2f", self.attackSpeed), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	GameTooltip:AddDoubleLine(format(STAT_FORMAT, DAMAGE), self.damage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	GameTooltip:AddDoubleLine(format(STAT_FORMAT, DAMAGE_PER_SECOND), format("%.1f", self.dps), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	GameTooltip:Show();
 end
 
@@ -1589,7 +1589,7 @@ function PaperDollFrame_UpdateStats()
 end
 
 function PaperDollFrame_SetLabelAndText(statFrame, label, text, isPercentage)
-	_G[statFrame:GetName().."Label"]:SetText(label..":");
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, label));
 	if ( isPercentage ) then
 		text = format("%.2f%%", text);
 	end
@@ -1716,7 +1716,7 @@ function PaperDollFrameItemFlyout_OnUpdate (self, elapsed)
 
 		if ( button and button.popoutButton.flyoutLocked ) then
 			PaperDollItemSlotButton_UpdateFlyout(button);
-		elseif ( button and MouseIsOver(button) ) then
+		elseif ( button and button:IsMouseOver() ) then
 			PaperDollItemSlotButton_OnEnter(button);
 		else
 			PaperDollFrameItemFlyout_Hide();
@@ -1978,7 +1978,7 @@ function PaperDollFrameItemFlyout_DisplayButton (button, paperDollItemSlot)
 		CooldownFrame_SetTimer(button.cooldown, start, duration, enable);
 
 		button.UpdateTooltip = function () GameTooltip:SetOwner(PaperDollFrameItemFlyoutButtons, "ANCHOR_RIGHT", 6, -PaperDollFrameItemFlyoutButtons:GetHeight() - 6); setTooltip(); end;
-		if ( MouseIsOver(button) ) then
+		if ( button:IsMouseOver() ) then
 			button.UpdateTooltip();
 		end
 	else
@@ -2040,7 +2040,7 @@ function PaperDollFrameItemFlyout_DisplaySpecialButton (button, paperDollItemSlo
 		SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
 		SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);	
 	end
-	if ( MouseIsOver(button) and button.UpdateTooltip ) then
+	if ( button:IsMouseOver() and button.UpdateTooltip ) then
 		button.UpdateTooltip();
 	end
 end
@@ -2668,3 +2668,17 @@ function PlayerTitleButton_OnClick(self)
 	PlayerTitleFrameText:SetText(self.text:GetText());
 	PlayerTitlePickerFrame:Hide();	
 end
+
+function SetTitleByName(name)
+	name = strlower(name);
+	for i = 1, GetNumTitles() do
+		if ( IsTitleKnown(i) ~= 0 ) then
+			local title = strlower(strtrim(GetTitleName(i)));
+			if(title:find(name) == 1) then
+				SetCurrentTitle(i);
+				return;
+			end
+		end
+	end
+end
+

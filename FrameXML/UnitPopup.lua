@@ -696,7 +696,8 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( strsub(value, 1, 12)  == "RAID_TARGET_" ) then
-			if ( (inParty == 0) or ((isLeader == 0) and (isAssistant == 0)) ) then
+			-- Task #30755. Let any party member mark targets
+			if ( (inParty == 0) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 			if ( not (dropdownMenu.which == "SELF") ) then

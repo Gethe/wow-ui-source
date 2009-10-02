@@ -3,7 +3,7 @@ NUM_DISPLAYED_BATTLEGROUND_INSTANCES = 5;
 
 function PVPBattleground_UpdateBattlegrounds()
 	local frame;
-	local localizedName, canEnter, isHoliday, minlevel;
+	local localizedName, canEnter, isHoliday;
 	local tempString, BGindex, isBig;
 	local currentFrameNum = 1;
 	
@@ -15,7 +15,7 @@ function PVPBattleground_UpdateBattlegrounds()
 		end
 		
 		BGindex = i+offset
-		localizedName, canEnter, isHoliday, minlevel = GetBattlegroundInfo(BGindex);
+		localizedName, canEnter, isHoliday = GetBattlegroundInfo(BGindex);
 		tempString = localizedName;
 		if ( localizedName and canEnter ) then
 			frame.disabled = false;
@@ -61,8 +61,11 @@ function PVPBattleground_UpdateBattlegrounds()
 		frame:Hide();
 	end
 	
-	local mapName, mapDescription, minLevel, maxLevel, mapFull, levelMax, maxGroup = GetBattlefieldInfo();
-	PVPBattlegroundFrameZoneDescription:SetText(mapDescription);
+	local mapName, mapDescription, maxGroup = GetBattlefieldInfo();
+	if ( mapDescription ~= PVPBattlegroundFrameZoneDescriptionText:GetText() ) then
+		PVPBattlegroundFrameZoneDescriptionText:SetText(mapDescription);
+		PVPBattlegroundFrameZoneDescriptionScrollFrame:SetVerticalScroll(0);
+	end
 	if ( maxGroup and maxGroup == 5 ) then
 		PVPBattlegroundFrameGroupJoinButton:SetText(JOIN_AS_PARTY);
 	else

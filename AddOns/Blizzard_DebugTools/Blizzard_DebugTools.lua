@@ -200,7 +200,7 @@ function EventTraceFrame_Update ()
 						button:GetHighlightTexture():SetVertexColor(.8, .8, 1, .15);
 						button:UnlockHighlight();
 					end
-					if ( MouseIsOver(button) ) then
+					if ( button:IsMouseOver() ) then
 						EventTraceFrameEvent_OnEnter(button);
 					end
 				end
@@ -385,7 +385,7 @@ function ScriptErrorsFrame_OnShow (self)
 end
 
 function ScriptErrorsFrame_OnError (message, keepHidden)
-	local stack = debugstack(2);
+	local stack = debugstack(DEBUGLOCALS_LEVEL);
 	
 	local messageStack = message..stack; -- Fix me later
 	

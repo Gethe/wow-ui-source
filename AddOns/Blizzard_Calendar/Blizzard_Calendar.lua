@@ -140,8 +140,10 @@ local CALENDAR_CREATEEVENTFRAME_DEFAULT_AUTOAPPROVE		= nil;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_LOCK			= nil;
 
 -- ViewEventFrame constants
-local CALENDAR_VIEWEVENTFRAME_PULSE_SEC			= 0.7;
-local CALENDAR_VIEWEVENTFRAME_OOPULSE_SEC		= 1.0 / (2.0*CALENDAR_VIEWEVENTFRAME_PULSE_SEC);	-- mul by 2 so the pulse constant counts for half a flash
+local CALENDAR_VIEWEVENTFRAME_EVENT_RSVPBUTTON_WIDTH		= 128;
+local CALENDAR_VIEWEVENTFRAME_GUILDEVENT_RSVPBUTTON_WIDTH	= 94;
+local CALENDAR_VIEWEVENTFRAME_EVENT_INVITELIST_HEIGHT		= 230;
+local CALENDAR_VIEWEVENTFRAME_GUILDEVENT_INVITELIST_HEIGHT	= 250;
 
 -- dark flags
 local DARKFLAG_PREVMONTH			= 0x0001;
@@ -408,47 +410,52 @@ local CALENDAR_INVITESTATUS_INFO = {
 	["UNKNOWN"] = {
 		name		= UNKNOWN,
 		color		= NORMAL_FONT_COLOR,
-		colorCode	= NORMAL_FONT_COLOR_CODE,
+--		colorCode	= NORMAL_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_CONFIRMED] = {
 		name		= CALENDAR_STATUS_CONFIRMED,
 		color		= GREEN_FONT_COLOR,
-		colorCode	= GREEN_FONT_COLOR_CODE,
+--		colorCode	= GREEN_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_ACCEPTED] = {
 		name		= CALENDAR_STATUS_ACCEPTED,
 		color		= GREEN_FONT_COLOR,
-		colorCode	= GREEN_FONT_COLOR_CODE,
+--		colorCode	= GREEN_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_DECLINED] = {
 		name		= CALENDAR_STATUS_DECLINED,
 		color		= RED_FONT_COLOR,
-		colorCode	= RED_FONT_COLOR_CODE,
+--		colorCode	= RED_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_OUT] = {
 		name		= CALENDAR_STATUS_OUT,
 		color		= RED_FONT_COLOR,
-		colorCode	= RED_FONT_COLOR_CODE,
+--		colorCode	= RED_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_STANDBY] = {
 		name		= CALENDAR_STATUS_STANDBY,
-		color		= GREEN_FONT_COLOR,
-		colorCode	= GREEN_FONT_COLOR_CODE,
+		color		= ORANGE_FONT_COLOR,
+--		colorCode	= ORANGE_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_INVITED] = {
 		name		= CALENDAR_STATUS_INVITED,
 		color		= NORMAL_FONT_COLOR,
-		colorCode	= NORMAL_FONT_COLOR_CODE,
+--		colorCode	= NORMAL_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_SIGNEDUP] = {
 		name		= CALENDAR_STATUS_SIGNEDUP,
 		color		= GREEN_FONT_COLOR,
-		colorCode	= GREEN_FONT_COLOR_CODE,
+--		colorCode	= GREEN_FONT_COLOR_CODE,
 	},
 	[CALENDAR_INVITESTATUS_NOT_SIGNEDUP] = {
 		name		= CALENDAR_STATUS_NOT_SIGNEDUP,
 		color		= NORMAL_FONT_COLOR,
-		colorCode	= NORMAL_FONT_COLOR_CODE,
+--		colorCode	= NORMAL_FONT_COLOR_CODE,
+	},
+	[CALENDAR_INVITESTATUS_TENTATIVE] = {
+		name		= CALENDAR_STATUS_TENTATIVE,
+		color		= ORANGE_FONT_COLOR,
+--		colorCode	= ORANGE_FONT_COLOR_CODE,
 	},
 };
 
@@ -582,7 +589,7 @@ local CALENDAR_CALENDARTYPE_COLORS = {
 --	["PLAYER"]				= ,
 --	["GUILD_ANNOUNCEMENT"]	= ,
 --	["GUILD_EVENT"]			= ,
-	["SYSTEM"]				= {r=1.0, g=1.0, b=0.6},
+	["SYSTEM"]				= YELLOW_FONT_COLOR,
 	["HOLIDAY"]				= HIGHLIGHT_FONT_COLOR,
 	["RAID_LOCKOUT"]		= HIGHLIGHT_FONT_COLOR,
 	["RAID_RESET"]			= HIGHLIGHT_FONT_COLOR,
@@ -681,6 +688,7 @@ do
 				[CALENDAR_INVITESTATUS_STANDBY]		= 0,
 				[CALENDAR_INVITESTATUS_SIGNEDUP]	= 0,
 				[CALENDAR_INVITESTATUS_NOT_SIGNEDUP]	= 0,
+				[CALENDAR_INVITESTATUS_TENTATIVE]	= 0,
 			},
 		};
 	end
@@ -783,7 +791,8 @@ local function _CalendarFrame_CanInviteeRSVP(inviteStatus)
 		inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or
 		inviteStatus == CALENDAR_INVITESTATUS_DECLINED or
 		inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP or
-		inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP;
+		inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP or
+		inviteStatus == CALENDAR_INVITESTATUS_TENTATIVE;
 end
 
 local function _CalendarFrame_IsSignUpEvent(calendarType, inviteType)
@@ -2050,16 +2059,16 @@ end
 
 -- CalendarDayContextMenu
 
-function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
-	UIMenu_Initialize(menu);
+function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
+	UIMenu_Initialize(self);
 
 	-- unlock old highlights
 	CalendarDayContextMenu_UnlockHighlights();
 
 	-- record the new day and event buttons
-	menu.dayButton = dayButton;
-	menu.eventButton = eventButton;
-	menu.flags = flags;
+	self.dayButton = dayButton;
+	self.eventButton = eventButton;
+	self.flags = flags;
 
 	local day = dayButton.day;
 	local monthOffset = dayButton.monthOffset;
@@ -2078,16 +2087,16 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 	local needSpacer = false;
 	if ( showDay ) then
 		-- add guild selections if the player has a guild
-		UIMenu_AddButton(menu, CALENDAR_CREATE_EVENT, nil, CalendarDayContextMenu_CreateEvent);
+		UIMenu_AddButton(self, CALENDAR_CREATE_EVENT, nil, CalendarDayContextMenu_CreateEvent);
 		if ( CanEditGuildEvent() ) then
---			UIMenu_AddButton(menu, CALENDAR_CREATE_GUILDWIDE_EVENT, nil, CalendarDayContextMenu_CreateGuildWideEvent);
-			UIMenu_AddButton(menu, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
-			UIMenu_AddButton(menu, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
+--			UIMenu_AddButton(self, CALENDAR_CREATE_GUILDWIDE_EVENT, nil, CalendarDayContextMenu_CreateGuildWideEvent);
+			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
+			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
 		end
 --[[
 		-- add arena team selection if the player has an arena team
 		if ( IsInArenaTeam() ) then
-			--UIMenu_AddButton(menu, CALENDAR_CREATE_ARENATEAM_EVENT, nil, nil, "CalendarArenaTeamContextMenu");
+			--UIMenu_AddButton(self, CALENDAR_CREATE_ARENATEAM_EVENT, nil, nil, "CalendarArenaTeamContextMenu");
 		end
 --]]
 		needSpacer = true;
@@ -2102,40 +2111,23 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 			if ( CalendarContextEventCanEdit(monthOffset, day, eventIndex) ) then
 				-- spacer
 				if ( needSpacer ) then
-					UIMenu_AddButton(menu, "");
+					UIMenu_AddButton(self, "");
 				end
 				-- copy
-				UIMenu_AddButton(menu, CALENDAR_COPY_EVENT, nil, CalendarDayContextMenu_CopyEvent);
+				UIMenu_AddButton(self, CALENDAR_COPY_EVENT, nil, CalendarDayContextMenu_CopyEvent);
 				-- paste
 				if ( canPaste ) then
-					UIMenu_AddButton(menu, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
+					UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
 				end
 				-- delete
-				UIMenu_AddButton(menu, CALENDAR_DELETE_EVENT, nil, CalendarDayContextMenu_DeleteEvent);
-				-- report spam
-				if ( CalendarContextEventCanComplain(monthOffset, day, eventIndex) ) then
-					UIMenu_AddButton(menu, "");
-					UIMenu_AddButton(menu, REPORT_SPAM, nil, CalendarDayContextMenu_ReportSpam);
-				end
+				UIMenu_AddButton(self, CALENDAR_DELETE_EVENT, nil, CalendarDayContextMenu_DeleteEvent);
 				needSpacer = true;
 			elseif ( canPaste ) then
 				if ( needSpacer ) then
-					UIMenu_AddButton(menu, "");
+					UIMenu_AddButton(self, "");
 				end
 				-- paste
-				UIMenu_AddButton(menu, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
-				-- report spam
-				if ( CalendarContextEventCanComplain(monthOffset, day, eventIndex) ) then
-					UIMenu_AddButton(menu, "");
-					UIMenu_AddButton(menu, REPORT_SPAM, nil, CalendarDayContextMenu_ReportSpam);
-				end
-				needSpacer = true;
-			elseif ( CalendarContextEventCanComplain(monthOffset, day, eventIndex) ) then
-				if ( needSpacer ) then
-					UIMenu_AddButton(menu, "");
-				end
-				-- report spam
-				UIMenu_AddButton(menu, REPORT_SPAM, nil, CalendarDayContextMenu_ReportSpam);
+				UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
 				needSpacer = true;
 			end
 			if ( calendarType ~= "GUILD_ANNOUNCEMENT" ) then
@@ -2145,27 +2137,31 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 						if ( inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
 							-- sign up
 							if ( needSpacer ) then
-								UIMenu_AddButton(menu, "");
+								UIMenu_AddButton(self, "");
 							end
-							UIMenu_AddButton(menu, CALENDAR_SIGNUP, nil, CalendarDayContextMenu_SignUp);
+							UIMenu_AddButton(self, CALENDAR_SIGNUP, nil, CalendarDayContextMenu_SignUp);
 						else
 							-- cancel sign up
 							if ( needSpacer ) then
-								UIMenu_AddButton(menu, "");
+								UIMenu_AddButton(self, "");
 							end
-							UIMenu_AddButton(menu, CALENDAR_REMOVE_SIGNUP, nil, CalendarDayContextMenu_RemoveInvite);
+							UIMenu_AddButton(self, CALENDAR_REMOVE_SIGNUP, nil, CalendarDayContextMenu_RemoveInvite);
 						end
 					else
 						if ( needSpacer ) then
-							UIMenu_AddButton(menu, "");
+							UIMenu_AddButton(self, "");
 						end
 						-- accept invitation
 						if ( inviteStatus ~= CALENDAR_INVITESTATUS_ACCEPTED ) then
-							UIMenu_AddButton(menu, CALENDAR_ACCEPT_INVITATION, nil, CalendarDayContextMenu_AcceptInvite);
+							UIMenu_AddButton(self, CALENDAR_ACCEPT_INVITATION, nil, CalendarDayContextMenu_AcceptInvite);
+						end
+						-- tentative invitation
+						if ( inviteStatus ~= CALENDAR_INVITESTATUS_TENTATIVE ) then
+							UIMenu_AddButton(self, CALENDAR_TENTATIVE_INVITATION, nil, CalendarDayContextMenu_TentativeInvite);
 						end
 						-- decline invitation
 						if ( inviteStatus ~= CALENDAR_INVITESTATUS_DECLINED ) then
-							UIMenu_AddButton(menu, CALENDAR_DECLINE_INVITATION, nil, CalendarDayContextMenu_DeclineInvite);
+							UIMenu_AddButton(self, CALENDAR_DECLINE_INVITATION, nil, CalendarDayContextMenu_DeclineInvite);
 						end
 					end
 					needSpacer = false;
@@ -2173,28 +2169,37 @@ function CalendarDayContextMenu_Initialize(menu, flags, dayButton, eventButton)
 				if ( _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType, inviteStatus) ) then
 					-- spacer
 					if ( needSpacer ) then
-						UIMenu_AddButton(menu, "");
+						UIMenu_AddButton(self, "");
 					end
 					-- remove event
-					UIMenu_AddButton(menu, CALENDAR_REMOVE_INVITATION, nil, CalendarDayContextMenu_RemoveInvite);
+					UIMenu_AddButton(self, CALENDAR_REMOVE_INVITATION, nil, CalendarDayContextMenu_RemoveInvite);
+					needSpacer = true;
 				end
+			end
+			if ( CalendarContextEventCanComplain(monthOffset, day, eventIndex) ) then
+				if ( needSpacer ) then
+					UIMenu_AddButton(self, "");
+				end
+				-- report spam
+				UIMenu_AddButton(self, REPORT_SPAM, nil, CalendarDayContextMenu_ReportSpam);
+				needSpacer = true;
 			end
 		elseif ( canPaste ) then
 			-- add paste if we have a clipboard
 			if ( needSpacer ) then
-				UIMenu_AddButton(menu, "");
+				UIMenu_AddButton(self, "");
 			end
-			UIMenu_AddButton(menu, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
+			UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
 		end
 	elseif ( canPaste ) then
 		-- add paste if we have a clipboard
 		if ( needSpacer ) then
-			UIMenu_AddButton(menu, "");
+			UIMenu_AddButton(self, "");
 		end
-		UIMenu_AddButton(menu, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
+		UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
 	end
 
-	if ( UIMenu_FinishInitializing(menu) ) then
+	if ( UIMenu_FinishInitializing(self) ) then
 		-- lock new highlights
 		if ( dayButton ) then
 			dayButton:LockHighlight();
@@ -2304,6 +2309,10 @@ end
 
 function CalendarDayContextMenu_AcceptInvite()
 	CalendarContextInviteAvailable();
+end
+
+function CalendarDayContextMenu_TentativeInvite()
+	CalendarContextInviteTentative();
 end
 
 function CalendarDayContextMenu_DeclineInvite()
@@ -2964,8 +2973,6 @@ function CalendarViewEventFrame_OnLoad(self)
 	self.update = CalendarViewEventFrame_Update;
 	self.selectedInvite = nil;
 	self.myInviteIndex = nil;
-	self.flashValue = 1.0
-	self.flashTimer = 0.0;
 
 	self.defaultHeight = self:GetHeight();
 end
@@ -2988,8 +2995,12 @@ function CalendarViewEventFrame_OnEvent(self, event, ...)
 			else
 				-- RSVP'ing to the event can induce an invite list update, so we
 				-- need to do an RSVP update
-				CalendarViewEventRSVP_Update();
-				CalendarViewEventInviteList_Update();
+				local title, description, creator, eventType, repeatOption, maxSize, textureIndex,
+					weekday, month, day, year, hour, minute,
+					lockoutWeekday, lockoutMonth, lockoutDay, lockoutYear, lockoutHour, lockoutMinute,
+					locked, autoApprove, pendingInvite, inviteStatus, inviteType, calendarType = CalendarGetEventInfo();
+				CalendarViewEventRSVP_Update(month, day, year, pendingInvite, inviteStatus, inviteType, calendarType);
+				CalendarViewEventInviteList_Update(inviteType, calendarType);
 			end
 		elseif ( event == "CALENDAR_CLOSE_EVENT" ) then
 			CalendarFrame_HideEventFrame(CalendarViewEventFrame);
@@ -3014,16 +3025,6 @@ function CalendarViewEventFrame_OnHide(self)
 	--CalendarDayEventButton_Click();
 end
 
-function CalendarViewEventFrame_OnUpdate(self, elapsed)
-	local flashIndex = TWOPI * self.flashTimer * CALENDAR_VIEWEVENTFRAME_OOPULSE_SEC;
-	self.flashValue = max(0.0, 0.5 + 0.5*cos(flashIndex));
-	if ( flashIndex >= TWOPI ) then
-		self.flashTimer = 0.0;
-	else
-		self.flashTimer = self.flashTimer + elapsed;
-	end
-end
-
 function CalendarViewEventFrame_Update()
 	local title, description, creator, eventType, repeatOption, maxSize, textureIndex,
 		weekday, month, day, year, hour, minute,
@@ -3038,7 +3039,7 @@ function CalendarViewEventFrame_Update()
 	-- record the invite type
 	CalendarViewEventFrame.inviteType = inviteType;
 	-- reset the flash timer to reinforce the visual feedback that the player is switching between events
-	CalendarViewEventFrame.flashTimer = 0.0;
+	CalendarViewEventFlashTimer:Stop();
 	-- set the icon
 	CalendarViewEventIcon:SetTexture();
 	local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
@@ -3104,15 +3105,17 @@ function CalendarViewEventFrame_Update()
 		if ( locked ) then
 			-- event locked...you cannot respond to the event
 			CalendarViewEventAcceptButton:Disable();
+			CalendarViewEventTentativeButton:Disable();
 			CalendarViewEventDeclineButton:Disable();
 			CalendarViewEventAcceptButtonFlashTexture:Hide();
+			CalendarViewEventTentativeButtonFlashTexture:Hide();
 			CalendarViewEventDeclineButtonFlashTexture:Hide()
 			CalendarViewEventFrame:SetScript("OnUpdate", nil);
 		else
-			CalendarViewEventRSVP_Update();
+			CalendarViewEventRSVP_Update(month, day, year, pendingInvite, inviteStatus, inviteType, calendarType);
 		end
 
-		CalendarViewEventInviteList_Update();
+		CalendarViewEventInviteList_Update(inviteType, calendarType);
 	end
 	CalendarEventFrameBlocker_Update();
 end
@@ -3123,8 +3126,18 @@ function CalendarViewEventDescriptionScrollFrame_OnLoad(self)
 end
 
 function CalendarViewEventRSVPButton_OnUpdate(self)
-	local name = self:GetName();
-	_G[name.."FlashTexture"]:SetAlpha(CalendarViewEventFrame.flashValue);
+	self.flashTexture:SetAlpha(CalendarViewEventFlashTimer:GetSmoothProgress());
+end
+
+function CalendarViewEventAcceptButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
+		GameTooltip:SetText(CALENDAR_TOOLTIP_SIGNUPBUTTON, nil, nil, nil, nil, 1);
+	else
+		GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, 1);
+	end
+	GameTooltip:Show();
+	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_AVAILABLEBUTTON, 1);
 end
 
 function CalendarViewEventAcceptButton_OnClick(self)
@@ -3135,51 +3148,93 @@ function CalendarViewEventAcceptButton_OnClick(self)
 	end
 end
 
+function CalendarViewEventTentativeButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(CALENDAR_TOOLTIP_TENTATIVEBUTTON, nil, nil, nil, nil, 1);
+	GameTooltip:Show();
+	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_TENTATIVEBUTTON, 1);
+end
+
+function CalendarViewEventTentativeButton_OnClick(self)
+	CalendarEventTentative();
+end
+
+function CalendarViewEventDeclineButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(CALENDAR_TOOLTIP_DECLINEBUTTON, nil, nil, nil, nil, 1);
+	GameTooltip:Show();
+	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_DECLINEBUTTON, 1);
+end
+
 function CalendarViewEventDeclineButton_OnClick(self)
 	CalendarEventDecline();
+end
+
+function CalendarViewEventRemoveButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
+		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVESIGNUPBUTTON, nil, nil, nil, nil, 1);
+	else
+		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, 1);
+	end
+	GameTooltip:Show();
+	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_REMOVEBUTTON, 1);
 end
 
 function CalendarViewEventRemoveButton_OnClick(self)
 	CalendarRemoveEvent();
 end
 
-function CalendarViewEventRSVP_Update()
-	local title, description, creator, eventType, repeatOption, maxSize, textureIndex,
-		weekday, month, day, year, hour, minute,
-		lockoutWeekday, lockoutMonth, lockoutDay, lockoutYear, lockoutHour, lockoutMinute,
-		locked, autoApprove, pendingInvite, inviteStatus, inviteType, calendarType = CalendarGetEventInfo();
-
+function CalendarViewEventRSVP_Update(month, day, year, pendingInvite, inviteStatus, inviteType, calendarType)
 	-- record the invite type
 	CalendarViewEventFrame.inviteType = inviteType;
 
 	local isTodayOrLater = _CalendarFrame_IsTodayOrLater(month, day, year);
 	if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
-		-- set the accept and remove buttons to sign up mode
+		-- set buttons to sign up mode
 		CalendarViewEventAcceptButton:SetText(CALENDAR_SIGNUP);
-		CalendarViewEventAcceptButton:SetPoint("TOPLEFT", CalendarViewEventAcceptButton:GetParent(), "TOPLEFT", 54, 0);
+		CalendarViewEventAcceptButton:ClearAllPoints();
+		CalendarViewEventAcceptButton:SetPoint("TOPLEFT", CalendarViewEventTentativeButton:GetParent(), "TOPLEFT", 14, 0);
+		CalendarViewEventAcceptButton:SetWidth(CALENDAR_VIEWEVENTFRAME_GUILDEVENT_RSVPBUTTON_WIDTH);
 		CalendarViewEventAcceptButtonFlashTexture:Hide();
-		CalendarViewEventRemoveButton:SetPoint("TOPRIGHT", CalendarViewEventRemoveButton:GetParent(), "TOPRIGHT", -54, 0);
+		CalendarViewEventTentativeButton:ClearAllPoints();
+		CalendarViewEventTentativeButton:SetPoint("TOP", CalendarViewEventTentativeButton:GetParent(), "TOP", 0, 0);
+		CalendarViewEventTentativeButton:SetWidth(CALENDAR_VIEWEVENTFRAME_GUILDEVENT_RSVPBUTTON_WIDTH);
+		CalendarViewEventTentativeButtonFlashTexture:Hide();
+		CalendarViewEventRemoveButton:ClearAllPoints();
+		CalendarViewEventRemoveButton:SetWidth(CALENDAR_VIEWEVENTFRAME_GUILDEVENT_RSVPBUTTON_WIDTH);
+		CalendarViewEventRemoveButton:SetPoint("TOPRIGHT", CalendarViewEventRemoveButton:GetParent(), "TOPRIGHT", -14, 0);
 		CalendarViewEventDeclineButton:Hide();
 		-- update shown buttons
 		if ( isTodayOrLater ) then
 			if ( inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
 				CalendarViewEventAcceptButton:Enable();
+				CalendarViewEventTentativeButton:Enable();
 				CalendarViewEventRemoveButton:Disable();
 			else
 				CalendarViewEventAcceptButton:Disable();
+				CalendarViewEventTentativeButton:Disable();
 				CalendarViewEventRemoveButton:Enable();
 			end
 		else
 			CalendarViewEventAcceptButton:Disable();
+			CalendarViewEventTentativeButton:Disable();
 			CalendarViewEventRemoveButton:Disable();
 		end
 		CalendarViewEventFrame:SetScript("OnUpdate", nil);
 	else
-		-- set the accept and remove buttons to normal mode
+		-- set buttons to normal mode
+		CalendarViewEventAcceptButton:ClearAllPoints();
+		CalendarViewEventAcceptButton:SetPoint("TOPRIGHT", CalendarViewEventTentativeButton:GetParent(), "TOP", -10, 4);
+		CalendarViewEventAcceptButton:SetWidth(CALENDAR_VIEWEVENTFRAME_EVENT_RSVPBUTTON_WIDTH);
 		CalendarViewEventAcceptButton:SetText(ACCEPT);
-		CalendarViewEventAcceptButton:SetPoint("TOPLEFT", CalendarViewEventAcceptButton:GetParent(), "TOPLEFT", 14, 0);
+		CalendarViewEventTentativeButton:ClearAllPoints();
+		CalendarViewEventTentativeButton:SetPoint("TOPLEFT", CalendarViewEventTentativeButton:GetParent(), "TOP", 10, 4);
+		CalendarViewEventTentativeButton:SetWidth(CALENDAR_VIEWEVENTFRAME_EVENT_RSVPBUTTON_WIDTH);
 		CalendarViewEventDeclineButton:Show();
-		CalendarViewEventRemoveButton:SetPoint("TOPRIGHT", CalendarViewEventRemoveButton:GetParent(), "TOPRIGHT", -14, 0);
+		CalendarViewEventRemoveButton:ClearAllPoints();
+		CalendarViewEventRemoveButton:SetPoint("TOPLEFT", CalendarViewEventRemoveButton:GetParent(), "TOP", 10, -26);
+		CalendarViewEventRemoveButton:SetWidth(CALENDAR_VIEWEVENTFRAME_EVENT_RSVPBUTTON_WIDTH);
 		-- update shown buttons
 		local canRSVP = _CalendarFrame_CanInviteeRSVP(inviteStatus);
 		if ( isTodayOrLater and canRSVP ) then
@@ -3188,6 +3243,11 @@ function CalendarViewEventRSVP_Update()
 			else
 				CalendarViewEventAcceptButton:Disable();
 			end
+			if ( inviteStatus ~= CALENDAR_INVITESTATUS_TENTATIVE ) then
+				CalendarViewEventTentativeButton:Enable();
+			else
+				CalendarViewEventTentativeButton:Disable();
+			end
 			if ( inviteStatus ~= CALENDAR_INVITESTATUS_DECLINED ) then
 				CalendarViewEventDeclineButton:Enable();
 			else
@@ -3195,25 +3255,41 @@ function CalendarViewEventRSVP_Update()
 			end
 			if ( pendingInvite ) then
 				CalendarViewEventAcceptButtonFlashTexture:Show();
+				CalendarViewEventTentativeButtonFlashTexture:Show();
 				CalendarViewEventDeclineButtonFlashTexture:Show()
 			else
 				CalendarViewEventAcceptButtonFlashTexture:Hide();
+				CalendarViewEventTentativeButtonFlashTexture:Hide();
 				CalendarViewEventDeclineButtonFlashTexture:Hide()
 			end
-			CalendarViewEventFrame:SetScript("OnUpdate", CalendarViewEventFrame_OnUpdate);
+			CalendarViewEventFlashTimer:Play();
 		else
 			CalendarViewEventAcceptButton:Disable();
+			CalendarViewEventTentativeButton:Disable();
 			CalendarViewEventDeclineButton:Disable();
 			CalendarViewEventAcceptButtonFlashTexture:Hide();
+			CalendarViewEventTentativeButtonFlashTexture:Hide();
 			CalendarViewEventDeclineButtonFlashTexture:Hide()
-			CalendarViewEventFrame:SetScript("OnUpdate", nil);
+			CalendarViewEventFlashTimer:Stop();
 		end
 	end
 end
 
-function CalendarViewEventInviteList_Update()
+function CalendarViewEventInviteList_Update(inviteType, calendarType)
 --	CalendarViewEventInviteList.partyMode = GetRealNumPartyMembers() > 0 or GetRealNumRaidMembers() > 0;
 	CalendarViewEventInviteList.partyMode = false;
+
+	if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
+		-- expand the event list so there is not so much empty space around the buttons
+		CalendarViewEventDivider:SetPoint("TOPLEFT", CalendarViewEventDivider:GetParent(), "TOPLEFT", 10, -30);
+		CalendarViewEventInviteList:SetPoint("TOP", CalendarViewEventInviteList:GetParent(), "TOP", 0, -60);
+		CalendarViewEventInviteList:SetHeight(CALENDAR_VIEWEVENTFRAME_GUILDEVENT_INVITELIST_HEIGHT);
+	else
+		-- shrink the event list to make room for the buttons
+		CalendarViewEventDivider:SetPoint("TOPLEFT", CalendarViewEventDivider:GetParent(), "TOPLEFT", 10, -50);
+		CalendarViewEventInviteList:SetPoint("TOP", CalendarViewEventInviteList:GetParent(), "TOP", 0, -80);
+		CalendarViewEventInviteList:SetHeight(CALENDAR_VIEWEVENTFRAME_EVENT_INVITELIST_HEIGHT);
+	end
 
 	CalendarViewEventInviteListScrollFrame_Update();
 	CalendarEventInviteList_AnchorSortButtons(CalendarViewEventInviteList);
@@ -3302,13 +3378,6 @@ function CalendarViewEventInviteListScrollFrame_Update()
 				button:UnlockHighlight();
 			end
 
-			if ( inviteIsMine ) then
-				-- we need to know which invite belongs to the player because this is the only invite that
-				-- gets context menu options
-				-- MFS NOTE: uncomment this line to show the context menu for your own invite
-				--CalendarViewEventFrame.myInviteIndex = inviteIndex;
-			end
-
 			button:Show();
 		else
 			button.inviteIndex = nil;
@@ -3355,22 +3424,22 @@ function CalendarViewEventInviteListButton_Click(button)
 	CalendarViewEventFrame_SetSelectedInvite(button);
 end
 
-function CalendarViewEventInviteContextMenu_Initialize(menu, inviteButton)
-	UIMenu_Initialize(menu);
+function CalendarViewEventInviteContextMenu_Initialize(self, inviteButton)
+	UIMenu_Initialize(self);
 
 	-- unlock old highlights
 	CalendarInviteContextMenu_UnlockHighlights();
 
 	-- record the invite button
-	menu.inviteButton = inviteButton;
+	self.inviteButton = inviteButton;
 
 	-- set invite status submenu
-	UIMenu_AddButton(menu, CALENDAR_SET_INVITE_STATUS, nil, nil, "CalendarInviteStatusContextMenu");
+	UIMenu_AddButton(self, CALENDAR_SET_INVITE_STATUS, nil, nil, "CalendarInviteStatusContextMenu");
 
 	-- lock new highlights
 	inviteButton:LockHighlight();
 
-	UIMenu_FinishInitializing(menu);
+	return UIMenu_FinishInitializing(self);
 end
 
 
@@ -4120,14 +4189,14 @@ function CalendarCreateEventInviteListButton_Click(button)
 	CalendarCreateEventFrame_SetSelectedInvite(button);
 end
 
-function CalendarCreateEventInviteContextMenu_Initialize(menu, inviteButton)
-	UIMenu_Initialize(menu);
+function CalendarCreateEventInviteContextMenu_Initialize(self, inviteButton)
+	UIMenu_Initialize(self);
 
 	-- unlock old highlights
 	CalendarInviteContextMenu_UnlockHighlights();
 
 	-- record the invite button
-	menu.inviteButton = inviteButton;
+	self.inviteButton = inviteButton;
 
 	local inviteIndex = inviteButton.inviteIndex;
 	local name, _, _, _, _, modStatus = CalendarEventGetInvite(inviteIndex);
@@ -4135,41 +4204,41 @@ function CalendarCreateEventInviteContextMenu_Initialize(menu, inviteButton)
 	local needSpacer = false;
 	if ( modStatus ~= "CREATOR" ) then
 		-- remove invite
-		UIMenu_AddButton(menu, REMOVE, nil, CalendarInviteContextMenu_RemoveInvite);
+		UIMenu_AddButton(self, REMOVE, nil, CalendarInviteContextMenu_RemoveInvite);
 		-- spacer
-		--UIMenu_AddButton(menu, "");
+		--UIMenu_AddButton(self, "");
 		if ( modStatus == "MODERATOR" ) then
 			-- clear moderator status
-			UIMenu_AddButton(menu, CALENDAR_INVITELIST_CLEARMODERATOR, nil, CalendarInviteContextMenu_ClearModerator);
+			UIMenu_AddButton(self, CALENDAR_INVITELIST_CLEARMODERATOR, nil, CalendarInviteContextMenu_ClearModerator);
 		else
 			-- set moderator status
-			UIMenu_AddButton(menu, CALENDAR_INVITELIST_SETMODERATOR, nil, CalendarInviteContextMenu_SetModerator);
+			UIMenu_AddButton(self, CALENDAR_INVITELIST_SETMODERATOR, nil, CalendarInviteContextMenu_SetModerator);
 		end
 	end
 	if ( CalendarCreateEventFrame.mode == "edit" ) then
 		if ( needSpacer ) then
-			UIMenu_AddButton(menu);
+			UIMenu_AddButton(self);
 		end
 		-- set invite status submenu
-		UIMenu_AddButton(menu, CALENDAR_INVITELIST_SETINVITESTATUS, nil, nil, "CalendarInviteStatusContextMenu");
+		UIMenu_AddButton(self, CALENDAR_INVITELIST_SETINVITESTATUS, nil, nil, "CalendarInviteStatusContextMenu");
 		needSpacer = true;
 	end
 
 	if ( not UnitIsUnit("player", name) and (not UnitInParty(name) or not UnitInRaid(name)) ) then
 		-- spacer
 		if ( needSpacer ) then
-			UIMenu_AddButton(menu, "");
+			UIMenu_AddButton(self, "");
 		end
 		UIMenu_AddButton(
-			menu,											-- menu
+			self,											-- self
 			CALENDAR_INVITELIST_INVITETORAID,				-- text
 			nil,											-- shortcut
 			CalendarInviteContextMenu_InviteToGroup,		-- func
-			nil,											-- nested menu name
+			nil,											-- nested self name
 			name);											-- value
 	end
 
-	if ( UIMenu_FinishInitializing(menu) ) then
+	if ( UIMenu_FinishInitializing(self) ) then
 		-- lock new highlights
 		inviteButton:LockHighlight();
 		return true;
@@ -4215,46 +4284,35 @@ function CalendarInviteStatusContextMenu_OnLoad(self)
 end
 
 function CalendarInviteStatusContextMenu_OnShow(self)
-	CalendarInviteStatusContextMenu_Initialize(self);
+	CalendarInviteStatusContextMenu_Initialize(self, CalendarEventGetStatusOptions(CalendarContextMenu.inviteButton.inviteIndex));
 end
 
 function CalendarInviteStatusContextMenu_OnEvent(self, event, ...)
 	if ( event == "CALENDAR_UPDATE_EVENT" ) then
 		if ( self:IsShown() ) then
-			CalendarInviteStatusContextMenu_Initialize(self);
+			CalendarInviteStatusContextMenu_Initialize(self, CalendarEventGetStatusOptions(CalendarContextMenu.inviteButton.inviteIndex));
 		end
 	end
 end
 
-function CalendarInviteStatusContextMenu_Initialize(menu)
-	UIMenu_Initialize(CalendarInviteStatusContextMenu);
+function CalendarInviteStatusContextMenu_Initialize(self, ...)
+	UIMenu_Initialize(self);
 
-	local _, _, _, _, inviteStatus, _, _, inviteType = CalendarEventGetInvite(CalendarContextMenu.inviteButton.inviteIndex);
-	local calendarType = CalendarEventGetCalendarType();
-	local isGuildEvent = calendarType == "GUILD_EVENT";
-
-	for i, info in ipairs(CALENDAR_INVITESTATUS_INFO) do
-		if ( i ~= inviteStatus and									-- an invite can never be changed to the current status
-			 i ~= CALENDAR_INVITESTATUS_INVITED and					-- an invite can never be changed to one of these statuses
-			 i ~= CALENDAR_INVITESTATUS_SIGNEDUP and
-			 i ~= CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
-			if ( not isGuildEvent or								-- if this is not a guild event then this status is ok otherwise...
-				 inviteType ~= CALENDAR_INVITETYPE_SIGNUP or		-- if this is not a SIGNUP invite type then this status is ok otherwise...
-				 (i ~= CALENDAR_INVITESTATUS_ACCEPTED and			-- the invite cannot be changed to one of these statuses
-				  i ~= CALENDAR_INVITESTATUS_DECLINED) ) then
-				UIMenu_AddButton(
-					menu,													-- menu
-					info.name,												-- text
-					nil,													-- shortcut
-					CalendarInviteStatusContextMenu_SetStatusOption,		-- func
-					nil,													-- nested
-					i														-- value
-				);
-			end
-		end
+	local statusIndex, statusName;
+	for i = 1, select("#", ...), 2 do
+		statusIndex = select(i, ...);
+		statusName = select(i + 1, ...);
+		UIMenu_AddButton(
+			self,													-- self
+			statusName,												-- text
+			nil,													-- shortcut
+			CalendarInviteStatusContextMenu_SetStatusOption,		-- func
+			nil,													-- nested
+			statusIndex												-- value
+		);
 	end
 
-	return UIMenu_FinishInitializing(CalendarInviteStatusContextMenu);
+	return UIMenu_FinishInitializing(self);
 end
 
 function CalendarInviteStatusContextMenu_SetStatusOption(self)

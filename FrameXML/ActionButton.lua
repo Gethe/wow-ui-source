@@ -185,6 +185,7 @@ function ActionButton_Update (self)
 			self:RegisterEvent("UNIT_EXITED_VEHICLE");
 			self:RegisterEvent("COMPANION_UPDATE");
 			self:RegisterEvent("UNIT_INVENTORY_CHANGED");
+			self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 			self.eventsRegistered = true;
 		end
 
@@ -212,6 +213,7 @@ function ActionButton_Update (self)
 			self:UnregisterEvent("UNIT_EXITED_VEHICLE");
 			self:UnregisterEvent("COMPANION_UPDATE");
 			self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
+			self:UnregisterEvent("LEARNED_SPELL_IN_TAB");
 			self.eventsRegistered = nil;
 		end
 
@@ -348,11 +350,9 @@ end
 
 function ActionButton_OnEvent (self, event, ...)
 	local arg1 = ...;
-	if ( event == "UNIT_INVENTORY_CHANGED" ) then
-		if ( arg1 == "player" ) then
-			if ( GameTooltip:GetOwner() == self ) then
-				ActionButton_SetTooltip(self);
-			end
+	if ((event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") or event == "LEARNED_SPELL_IN_TAB") then
+		if ( GameTooltip:GetOwner() == self ) then
+			ActionButton_SetTooltip(self);
 		end
 	end
 	if ( event == "ACTIONBAR_SLOT_CHANGED" ) then

@@ -120,6 +120,11 @@ function GuildBankFrame_OnEvent(self, event, ...)
 		GuildBankFrame_UpdateTabs();
 		GuildBankFrame_Update();
 	elseif ( event == "GUILDBANK_UPDATE_TABS" or event == "GUILD_ROSTER_UPDATE" ) then
+		if ( event == "GUILD_ROSTER_UPDATE" and not select(1, ...) and GuildBankFrame.noViewableTabs and GuildBankFrame.mode == "bank" ) then
+			-- if rank changed while at the bank tab and not having any viewable tabs, query for new item data 
+			QueryGuildBankTab(GetCurrentGuildBankTab());
+		end
+		
 		GuildBankFrame_SelectAvailableTab();
 		
 		if ( GuildBankFrameBuyInfo:IsShown() ) then

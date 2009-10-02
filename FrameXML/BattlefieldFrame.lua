@@ -384,7 +384,7 @@ function BattlefieldFrame_Update()
 	local playerLevel = UnitLevel("player");
 	local button, buttonStatus;
 	local instanceID;
-	local mapName, mapDescription, minLevel, maxLevel, mapFull, levelMax, maxGroup = GetBattlefieldInfo();
+	local mapName, mapDescription, maxGroup = GetBattlefieldInfo();
 	
 	if ( not mapName ) then
 		return;

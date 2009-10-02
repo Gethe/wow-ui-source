@@ -106,6 +106,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnShow>
+				self:RegisterEvent("DISPLAY_SIZE_CHANGED");			
+			</OnShow>
 			<OnLoad>
 				self:RegisterEvent("TUTORIAL_TRIGGER");
 				self:RegisterEvent("CINEMATIC_STOP");
@@ -117,6 +120,8 @@
 					TutorialFrame_NewTutorial(arg1);
 				elseif ( event == "CINEMATIC_STOP" ) then
 					TutorialFrame_CheckIntro();
+				elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
+					TutorialFrame_Update(TutorialFrame.id);
 				end
 			</OnEvent>
 		</Scripts>
@@ -144,11 +149,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				TutorialFrame:Show();
-				self:ClearAllPoints();
-				self:Hide();
-				TutorialFrame_Update(self.id);
-				self.id = nil;
+				TutorialFrame_AlertButton_OnClick(self);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\TutorialFrame\TutorialFrameAlert">

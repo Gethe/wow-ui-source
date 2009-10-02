@@ -385,7 +385,7 @@ end
 
 function MultiCastSlotButton_OnEvent(self, event, ...)
 	if ( event == "MODIFIER_STATE_CHANGED" ) then
-		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and MouseIsOver(self) ) then
+		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and self:IsMouseOver() ) then
 			MultiCastSlotButton_OnEnter(self);
 		end
 	end
@@ -444,6 +444,11 @@ end
 
 function MultiCastActionButton_OnEvent(self, event, ...)
 	ActionButton_OnEvent(self, event, ...);
+	if ( event == "MODIFIER_STATE_CHANGED" ) then
+		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and self:IsMouseOver() ) then
+			MultiCastActionButton_OnEnter(self);
+		end
+	end
 end
 
 function MultiCastActionButton_OnShow(self)
@@ -581,7 +586,7 @@ end
 
 function MultiCastFlyoutFrame_OnLeave(self)
 --[[
-	if ( not MouseIsOver(self) ) then
+	if ( not self:IsMouseOver() ) then
 		self.closeCountdownSec = MULTI_CAST_FLYOUT_CLOSE_SEC;
 	end
 --]]
@@ -603,9 +608,9 @@ function MultiCastFlyoutFrame_OnUpdate(self, elapsed)
 end
 
 function MultiCastFlyoutFrame_Hide(self, forceHide)
-	if ( forceHide or not MouseIsOver(self) ) then
+	if ( forceHide or not self:IsMouseOver() ) then
 		if ( self.parent ) then
-			if ( MouseIsOver(self.parent) ) then
+			if ( self.parent:IsMouseOver() ) then
 				MultiCastFlyoutFrameOpenButton_Show(MultiCastFlyoutFrameOpenButton, self.type, self.parent);
 			else
 				self.parent:UnregisterEvent("MODIFIER_STATE_CHANGED");
@@ -830,7 +835,7 @@ function MultiCastFlyoutFrameOpenButton_Show(self, type, parent)
 end
 
 function MultiCastFlyoutFrameOpenButton_Hide(self, force)
-	if ( force or (not MouseIsOver(self) and not MouseIsOver(self.parent)) ) then
+	if ( force or (not self:IsMouseOver() and not self.parent:IsMouseOver()) ) then
 		self.type = nil;
 		self:Hide();
 	end
@@ -909,7 +914,7 @@ function MultiCastSummonSpellButton_OnEvent(self, event, ...)
 	MultiCastSpellButton_OnEvent(self, event, ...);
 --[[
 	if ( event == "MODIFIER_STATE_CHANGED" ) then
-		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and MouseIsOver(self) ) then
+		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and self:IsMouseOver() ) then
 			MultiCastSummonSpellButton_OnEnter(self);
 		end
 	end

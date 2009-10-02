@@ -151,6 +151,23 @@ function MacroFrame_SelectMacro(id)
 	MacroFrame.selectedMacro = id;
 end
 
+function MacroFrame_DeleteMacro()
+	local selectedMacro = MacroFrame.selectedMacro;
+	DeleteMacro(selectedMacro);
+	-- the order of the return values (account macros, character macros) matches up with the IDs of the tabs
+	local numMacros = select(PanelTemplates_GetSelectedTab(MacroFrame), GetNumMacros());
+	if ( selectedMacro > numMacros + MacroFrame.macroBase) then
+		selectedMacro = selectedMacro - 1;
+	end
+	if ( selectedMacro <= MacroFrame.macroBase ) then
+		MacroFrame.selectedMacro = nil;
+	else
+		MacroFrame.selectedMacro = selectedMacro;
+	end
+	MacroFrame_Update();
+	MacroFrameText:ClearFocus();
+end
+
 function MacroNewButton_OnClick(self, button)
 	MacroFrame_SaveMacro();
 	MacroPopupFrame.mode = "new";

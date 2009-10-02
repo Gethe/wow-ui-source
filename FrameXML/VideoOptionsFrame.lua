@@ -10,10 +10,12 @@ end
 
 function VideoOptionsFrame_SetAllToDefaults ()
 	OptionsFrame_SetAllToDefaults(VideoOptionsFrame);
+	VideoOptionsFrameApply:Disable();
 end
 
 function VideoOptionsFrame_SetCurrentToDefaults ()
 	OptionsFrame_SetCurrentToDefaults(VideoOptionsFrame);
+	VideoOptionsFrameApply:Disable();
 end
 
 function VideoOptionsFrame_OnLoad (self)

@@ -249,6 +249,7 @@ function WatchFrame_ToggleIgnoreCursor ()
 		-- WATCHFRAME_IGNORECURSOR is set after WatchFrame is loaded so we need to set the right alpha if the mouse is over a disabled WatchFrame upon loading
 		WatchFrame:SetAlpha(1 - WatchFrame.baseAlpha);
 	else
+		WatchFrame_Lock(WatchFrame);
 		WatchFrameTitleButton:Show();
 		WatchFrameCollapseExpandButton:Enable();
 	end
@@ -338,7 +339,7 @@ function WatchFrame_OnEvent (self, event, ...)
 end
 
 function WatchFrame_OnUpdate (self, elapsed)
-	if ( not self.collapsed and (WATCHFRAME_IGNORECURSOR == "1" or not MouseIsOver(WatchFrameMouseover) and not self.moving and not self.sizing and not (self.dropDownOpen and WatchFrameDropDown.type == "CONFIG")) ) then
+	if ( not self.collapsed and (WATCHFRAME_IGNORECURSOR == "1" or not WatchFrameMouseover:IsMouseOver() and not self.moving and not self.sizing and not (self.dropDownOpen and WatchFrameDropDown.type == "CONFIG")) ) then
 		if ( self.timeEntered ) then		
 			self.timeEntered = nil;
 			self.fadeIn = nil;
@@ -452,7 +453,7 @@ function WatchFrame_SetBaseAlpha (alpha)
 	SetCVar("watchFrameBaseAlpha", alpha);
 	watchFrame.baseAlpha = alpha;
 	alpha = 1 - alpha;
-	if ( not MouseIsOver(watchFrame) or OpacityFrame:IsShown() ) then -- We should be setting the current opacity
+	if ( not watchFrame:IsMouseOver() or OpacityFrame:IsShown() ) then -- We should be setting the current opacity
 		WatchFrame:SetAlpha(alpha);
 	end
 end
@@ -1367,7 +1368,7 @@ function WatchFrameDropDown_Initialize (self)
 		info.checked = false;
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		
-		if ( GetQuestLogPushable(GetQuestIndexForWatch(self.index)) ) then
+		if ( GetQuestLogPushable(GetQuestIndexForWatch(self.index)) and ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 1 ) ) then
 			info.text = SHARE_QUEST;
 			info.func = WatchFrame_ShareQuest;
 			info.arg1 = self.index;

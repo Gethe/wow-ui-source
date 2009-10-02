@@ -112,7 +112,7 @@
 				self.mouseoverLock = true;
 			</OnEnter>
 			<OnLeave>
-				if ( MouseIsOver(self) ) then
+				if ( self:IsMouseOver() ) then
 					return;
 				end
 				

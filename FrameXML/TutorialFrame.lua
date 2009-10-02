@@ -2,13 +2,17 @@ MAX_TUTORIAL_ALERTS = 10;
 TUTORIALFRAME_QUEUE = { };
 LAST_TUTORIAL_BUTTON_SHOWN = nil;
 
-function TutorialFrame_OnHide()
+function TutorialFrame_OnHide(self)
 	PlaySound("igMainMenuClose");
 	if ( not TutorialFrameCheckButton:GetChecked() ) then
 		ClearTutorials();
 		-- Hide all tutorial buttons
 		TutorialFrame_HideAllAlerts();
 		return;
+	end
+	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
+	if ( getn(TUTORIALFRAME_QUEUE) > 0 ) then
+		TutorialFrame_AlertButton_OnClick( TUTORIALFRAME_QUEUE[1][2] );
 	end
 end
 
@@ -35,7 +39,7 @@ function TutorialFrame_Update(currentTutorial)
 	local button;
 	LAST_TUTORIAL_BUTTON_SHOWN = nil;
 	for index, value in pairs(TUTORIALFRAME_QUEUE) do
-		button = _G[value[2]];
+		button = value[2];
 		if ( LAST_TUTORIAL_BUTTON_SHOWN and LAST_TUTORIAL_BUTTON_SHOWN ~= button ) then
 			button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN, "BOTTOM", 36, 0);
 		else
@@ -46,13 +50,19 @@ function TutorialFrame_Update(currentTutorial)
 end
 
 function TutorialFrame_NewTutorial(tutorialID)
+	if ( not TutorialFrame:IsShown() ) then
+		TutorialFrame:Show();
+		TutorialFrame_Update(tutorialID);
+		return;
+	end
+
 	-- Get tutorial button
 	local button = TutorialFrame_GetAlertButton();
 	-- Not enough tutorial buttons, not sure how to handle this right now
 	if ( not button ) then
 		return;
 	end
-	tinsert(TUTORIALFRAME_QUEUE, {tutorialID, button:GetName()});
+	tinsert(TUTORIALFRAME_QUEUE, {tutorialID, button});
 
 	if ( LAST_TUTORIAL_BUTTON_SHOWN and LAST_TUTORIAL_BUTTON_SHOWN ~= button ) then
 		button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN, "BOTTOM", 36, 0);
@@ -107,4 +117,12 @@ function TutorialFrame_CheckIntro()
 			return;
 		end
 	end
+end
+
+function TutorialFrame_AlertButton_OnClick(self)
+	TutorialFrame:Show();
+	self:ClearAllPoints();
+	self:Hide();
+	TutorialFrame_Update(self.id);
+	self.id = nil;
 end

@@ -255,7 +255,7 @@ StaticPopupDialogs["CONFIRM_COMPLETE_EXPENSIVE_QUEST"] = {
 	button1 = COMPLETE_QUEST,
 	button2 = CANCEL,
 	OnAccept = function()
-		GetQuestReward(QuestFrameRewardPanel.itemChoice);
+		GetQuestReward(QuestInfoFrame.itemChoice);
 		PlaySound("igQuestListComplete");
 	end,
 	OnCancel = function() 
@@ -263,11 +263,11 @@ StaticPopupDialogs["CONFIRM_COMPLETE_EXPENSIVE_QUEST"] = {
 		PlaySound("igQuestCancel");
 	end,
 	OnShow = function()
-		QuestFrameCompleteQuestButton:Disable();
-		QuestFrameCancelButton:Disable();
+		QuestInfoFrame.acceptButton:Disable();
+		QuestInfoFrame.cancelButton:Disable();
 	end,
 	OnHide = function()
-		QuestFrameCancelButton:Enable();
+		QuestInfoFrame.cancelButton:Enable();
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -1136,6 +1136,9 @@ StaticPopupDialogs["DEATH"] = {
 			DEFAULT_CHAT_FRAME:AddMessage(ARENA_SPECTATOR, info.r, info.g, info.b, info.id);
 		end
 		RepopMe();
+		if ( CannotBeResurrected() ) then
+			return 1
+		end
 	end,
 	OnCancel = function(self, data, reason)
 		if ( reason == "override" ) then
@@ -1149,6 +1152,9 @@ StaticPopupDialogs["DEATH"] = {
 				UseSoulstone();
 			else
 				RepopMe();
+			end
+			if ( CannotBeResurrected() ) then
+				return 1
 			end
 		end
 	end,
@@ -2662,7 +2668,13 @@ StaticPopupDialogs["SET_LFGNOTE"] = {
 	end,
 	OnShow = function(self)
 		--Sets the text to the 7th return from GetGuildRosterInfo(GetGuildRosterSelection());
-		self.wideEditBox:SetText(select(9, GetLookingForGroup()));
+
+		local lfm, joined, queued, _, _, lfgComment = GetLFGInfoServer();
+		if (not joined) then
+			_, _, _, lfgComment = GetLFGInfoLocal();
+		end
+
+		self.wideEditBox:SetText(lfgComment);
 		self.wideEditBox:SetFocus();
 	end,
 	OnHide = function(self)
@@ -2708,7 +2720,6 @@ StaticPopupDialogs["ADVANCED_WATCHFRAME_OPTION_ENABLE_INTERRUPT"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
-	
 StaticPopupDialogs["WOW_MOUSE_NOT_FOUND"] = {
 	text = WOW_MOUSE_NOT_FOUND,
 	button1 = OKAY,
@@ -2722,6 +2733,47 @@ StaticPopupDialogs["WOW_MOUSE_NOT_FOUND"] = {
 	whileDead = 1,
 	showAlert = 1,
 	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_DISBAND"] = {
+	text = CONFIRM_TEAM_DISBAND,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self)
+		ArenaTeamDisband(self.data);
+	end,
+	OnCancel = function (self)
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["CONFIRM_BUY_STABLE_SLOT"] = {
+	text = CONFIRM_BUY_STABLE_SLOT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		BuyStableSlot();
+	end,
+	OnShow = function(self)
+		MoneyFrame_Update(self.moneyFrame, GetNextStableSlotCost());
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	hasMoneyFrame = 1,
+};
+
+StaticPopupDialogs["TALENTS_INVOLUNTARILY_RESET"] = {
+	text = TALENTS_INVOLUNTARILY_RESET,
+	button1 = OKAY,
+	timeout = 0,
+};
+
+StaticPopupDialogs["TALENTS_INVOLUNTARILY_RESET_PET"] = {
+	text = TALENTS_INVOLUNTARILY_RESET_PET,
+	button1 = OKAY,
+	timeout = 0,
 };
 
 function StaticPopup_FindVisible(which, data)
@@ -2748,8 +2800,8 @@ function StaticPopup_Resize(dialog, which)
 	local editBox = _G[dialog:GetName().."EditBox"];
 	local button1 = _G[dialog:GetName().."Button1"];
 	
+	local maxHeightSoFar, maxWidthSoFar = (dialog.maxHeightSoFar or 0), (dialog.maxWidthSoFar or 0);
 	local width = 320;
-	dialog:SetWidth(320);
 	if ( info.button3 ) then
 		width = 440;
 	elseif (info.hasWideEditBox or info.showAlert or info.closeButton) then
@@ -2758,21 +2810,29 @@ function StaticPopup_Resize(dialog, which)
 	elseif ( which == "HELP_TICKET" ) then
 		width = 350;
 	end
-	dialog:SetWidth(width);
+	if ( width > maxWidthSoFar )  then
+		dialog:SetWidth(width);
+		dialog.maxWidthSoFar = width;
+	end
 	
+	local height = 16 + text:GetHeight() + 8 + button1:GetHeight();
 	if ( info.hasEditBox ) then
 		if ( info.hasWideEditBox  ) then
 		
 		end
-		dialog:SetHeight(16 + text:GetHeight() + 8 + editBox:GetHeight() + 8 + button1:GetHeight() + 16);
+		height = height + 8 + editBox:GetHeight() + 16;
 	elseif ( info.hasMoneyFrame ) then
-		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 32);
+		height = height + 32;
 	elseif ( info.hasMoneyInputFrame ) then
-		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 38);
+		height = height + 38;
 	elseif ( info.hasItemFrame ) then
-		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 80);
+		height = height + 80;
 	else
-		dialog:SetHeight(16 + text:GetHeight() + 8 + button1:GetHeight() + 16);
+		height = height + 16;
+	end
+	if ( height > maxHeightSoFar ) then
+		dialog:SetHeight(height);
+		dialog.maxHeightSoFar = height;
 	end
 end
 
@@ -2894,6 +2954,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		return nil;
 	end
 
+	dialog.maxHeightSoFar, dialog.maxWidthSoFar = 0, 0;
 	-- Set the text of the dialog
 	local text = _G[dialog:GetName().."Text"];
 	if ( (which == "DEATH") or
@@ -3022,27 +3083,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		button1:ClearAllPoints();
 		button2:ClearAllPoints();
 		button3:ClearAllPoints();
-		if ( info.hasEditBox ) then
-			button1:SetPoint("TOPRIGHT", editBox, "BOTTOM", -72, -8);
-			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-		elseif ( info.hasMoneyFrame ) then
-			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -24);
-			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-		elseif ( info.hasMoneyInputFrame ) then
-			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -30);
-			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-		elseif ( info.hasItemFrame ) then
-			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -70);
-			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-		else
-			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -72, -8);
-			button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-			button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-		end
+		button1:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
+		button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
+		button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
 		button2:SetText(info.button2);
 		button3:SetText(info.button3);
 		local width = button2:GetTextWidth();
@@ -3066,22 +3109,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	   ( not info.DisplayButton2 or info.DisplayButton2() ) ) then
 		button1:ClearAllPoints();
 		button2:ClearAllPoints();
-		if ( info.hasEditBox ) then
-			button1:SetPoint("TOPRIGHT", editBox, "BOTTOM", -6, -8);
-			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-		elseif ( info.hasMoneyFrame ) then
-			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -24);
-			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-		elseif ( info.hasMoneyInputFrame ) then
-			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -30);
-			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-		elseif ( info.hasItemFrame ) then
-			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -70);
-			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-		else
-			button1:SetPoint("TOPRIGHT", text, "BOTTOM", -6, -8);
-			button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-		end
+		button1:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
+		button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
 		button2:SetText(info.button2);
 		local width = button2:GetTextWidth();
 		if ( width > 110 ) then
@@ -3094,7 +3123,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		button3:Hide();
 	else
 		button1:ClearAllPoints();
-		button1:SetPoint("TOP", text, "BOTTOM", 0, -8);
+		button1:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 16);
 		button2:Hide();
 		button3:Hide();
 	end
@@ -3347,7 +3376,7 @@ function StaticPopup_OnClick(dialog, index)
 	else
 		local OnCancel = info.OnCancel;
 		if ( OnCancel ) then
-			OnCancel(dialog, dialog.data, "clicked");
+			hide = not OnCancel(dialog, dialog.data, "clicked");
 		end
 	end
 

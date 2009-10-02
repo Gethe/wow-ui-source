@@ -18,9 +18,13 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						self:Disable();
+					</OnShow>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						VideoOptionsFrameOkay_OnClick(self, button, true);
+						self:Disable();
 					</OnClick>
 				</Scripts>
 			</Button>

@@ -288,8 +288,13 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 		_G[scrollbar:GetName().."ScrollDownButton"]:Show();
 		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
 		_G[self:GetName().."ScrollBar"]:Show();
-		_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
 		_G[scrollbar:GetName().."ThumbTexture"]:Show();
+		-- The 0.005 is to account for precision errors
+		if ( yrange - value > 0.005 ) then
+			_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
+		else
+			_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
+		end
 	end
 	
 	-- Hide/show scrollframe borders

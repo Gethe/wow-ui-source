@@ -108,9 +108,7 @@
 		<Scripts>
 			<OnLoad function="ReadyCheckFrame_OnLoad"/>
 			<OnEvent function="ReadyCheckFrame_OnEvent"/>
-			<OnHide>
-				ReadyCheckFrame_OnHide(self);
-			</OnHide>
+			<OnHide function="ReadyCheckFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

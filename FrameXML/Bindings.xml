@@ -490,7 +490,7 @@
 -->
 	<Binding name="TARGETSELF">
 		if ( UnitIsUnit("player", "target") ) then
-			TargetUnit("pet");
+			TargetUnit("pet", 1);
 		else
 			TargetUnit("player");
 		end
@@ -589,6 +589,9 @@
 	<Binding name="ATTACKTARGET">
 		AttackTarget();
 	</Binding>
+  <Binding name="STARTATTACK">
+    StartAttack();
+  </Binding>
 	<Binding name="PETATTACK">
 		PetAttack();
 	</Binding>

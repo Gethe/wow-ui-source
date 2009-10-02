@@ -55,7 +55,7 @@ function HybridScrollFrameScrollButton_OnUpdate (self, elapsed)
 	if ( self.timeSinceLast >= ( self.updateInterval or 0.08 ) ) then
 		if ( not IsMouseButtonDown("LeftButton") ) then
 			self:SetScript("OnUpdate", nil);
-		elseif ( MouseIsOver(self) ) then
+		elseif ( self:IsMouseOver() ) then
 			local parent = self.parent or self:GetParent():GetParent();
 			HybridScrollFrame_OnMouseWheel (parent, self.direction, (self.stepSize or parent.buttonHeight/3));
 			self.timeSinceLast = 0;

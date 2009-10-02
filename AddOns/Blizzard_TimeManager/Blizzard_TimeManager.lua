@@ -688,12 +688,12 @@ end
 
 function StopwatchFrame_OnUpdate(self)
 	if ( self.prevMouseIsOver ) then
-		if ( not MouseIsOver(self) ) then
+		if ( not self:IsMouseOver() ) then
 			UIFrameFadeOut(StopwatchTabFrame, CHAT_FRAME_FADE_TIME);
 			self.prevMouseIsOver = false;
 		end
 	else
-		if ( MouseIsOver(self) ) then
+		if ( self:IsMouseOver() ) then
 			UIFrameFadeIn(StopwatchTabFrame, CHAT_FRAME_FADE_TIME);
 			self.prevMouseIsOver = true;
 		end

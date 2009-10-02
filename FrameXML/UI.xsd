@@ -480,6 +480,7 @@
 					</xs:choice>
 				</xs:sequence>
 				<xs:attribute name="text" type="xs:string"/>
+				<xs:attribute name="registerForClicks" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -554,6 +555,7 @@
 				<xs:attribute name="historyLines" type="xs:int" default="0"/>
 				<xs:attribute name="autoFocus" type="xs:boolean" default="true"/>
 				<xs:attribute name="ignoreArrows" type="xs:boolean" default="false"/>
+				<xs:attribute name="countInvisibleLetters" type="xs:boolean" default="false"/>								
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

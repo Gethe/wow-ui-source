@@ -69,11 +69,11 @@ function UpdateMicroButtons()
 		SocialsMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( LFGParentFrame:IsShown() ) then
-		LFGMicroButton:SetButtonState("PUSHED", 1);
-	else
-		LFGMicroButton:SetButtonState("NORMAL");
-	end
+--	if ( LFGParentFrame:IsShown() ) then
+--		LFGMicroButton:SetButtonState("PUSHED", 1);
+--	else
+--		LFGMicroButton:SetButtonState("NORMAL");
+--	end
 
 	if ( HelpFrame:IsShown() ) then
 		HelpMicroButton:SetButtonState("PUSHED", 1);
@@ -106,12 +106,12 @@ function AchievementMicroButton_Update()
 end
 
 function CharacterMicroButton_OnLoad(self)
-	SetPortraitTexture(MicroButtonPortrait, "player");
 	self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
 	self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
 	self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
 	self.newbieText = NEWBIE_TOOLTIP_CHARACTER;
 end
@@ -123,6 +123,8 @@ function CharacterMicroButton_OnEvent(self, event, ...)
 			SetPortraitTexture(MicroButtonPortrait, unit);
 		end
 		return;
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		SetPortraitTexture(MicroButtonPortrait, "player");
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
 	end

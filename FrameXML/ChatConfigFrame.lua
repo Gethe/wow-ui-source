@@ -1355,7 +1355,14 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			CombatConfig_Colorize_Update();
 		end;
 	messageTypeColorCancel = function() 
-			ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPicker_GetPreviousValues());
+			local messageTypes = ColorPickerFrame.extraInfo;
+			if ( messageTypes ) then
+				for index, value in pairs(messageTypes) do
+					ChangeChatColor(FCF_StripChatMsg(value), ColorPicker_GetPreviousValues());
+				end
+			else	
+				ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPicker_GetPreviousValues());
+			end
 			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;

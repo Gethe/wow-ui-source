@@ -348,7 +348,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick function="BuyStableSlot"/>
+					<OnClick>
+						StaticPopup_Show("CONFIRM_BUY_STABLE_SLOT");
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Frame name="PetStableMoneyFrame" inherits="SmallMoneyFrameTemplate">

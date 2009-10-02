@@ -101,7 +101,7 @@
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(MicroButtonTooltipText(PET, "TOGGLECHARACTER3"), 1.0,1.0,1.0 );
+						GameTooltip:SetText(MicroButtonTooltipText(PETS, "TOGGLECHARACTER3"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>

@@ -847,6 +847,11 @@
 						<Offset x="0" y="-170"/>
 					</Anchor>
 				</Anchors>
+				<Animations>
+					<AnimationGroup looping="BOUNCE">
+						<Animation name="CalendarViewEventFlashTimer" duration="0.7" smoothing="OUT"/>
+					</AnimationGroup>
+				</Animations>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture name="CalendarViewEventDivider" file="Interface\DialogFrame\UI-DialogBox-Divider">
@@ -861,93 +866,35 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="CalendarViewEventAcceptButton" inherits="CalendarEventButtonTemplate" text="ACCEPT">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="14" y="0"/>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="CalendarViewEventAcceptButtonFlashTexture" alphaMode="ADD" file="Interface\Buttons\UI-Panel-Button-Glow">
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="-7" y="7"/>
-										</Anchor>
-										<Anchor point="BOTTOMRIGHT">
-											<Offset x="7" y="-7"/>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
-								</Texture>
-							</Layer>
-						</Layers>
+					<Button name="CalendarViewEventAcceptButton" inherits="CalendarViewEventRSVPButtonTemplate" text="ACCEPT">
 						<Scripts>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-								if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
-									GameTooltip:SetText(CALENDAR_TOOLTIP_SIGNUPBUTTON, nil, nil, nil, nil, 1);
-								else
-									GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, 1);
-								end
-								GameTooltip:Show();
-								--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_AVAILABLEBUTTON, 1);
-							</OnEnter>
+							<OnEnter function="CalendarViewEventAcceptButton_OnEnter"/>
 							<OnLeave function="GameTooltip_Hide"/>
-							<OnUpdate function="CalendarViewEventRSVPButton_OnUpdate"/>
 							<OnClick function="CalendarViewEventAcceptButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="CalendarViewEventDeclineButton" inherits="CalendarEventButtonTemplate" text="DECLINE">
+					<Button name="CalendarViewEventTentativeButton" inherits="CalendarViewEventRSVPButtonTemplate" text="CALENDAR_VIEW_EVENT_TENTATIVE">
+						<Scripts>
+							<OnEnter function="CalendarViewEventTentativeButton_OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnClick function="CalendarViewEventTentativeButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="CalendarViewEventDeclineButton" inherits="CalendarViewEventRSVPButtonTemplate" text="DECLINE">
 						<Anchors>
-							<Anchor point="TOP">
-								<Offset x="0" y="0"/>
+							<Anchor point="TOPRIGHT" relativePoint="TOP">
+								<Offset x="-10" y="-26"/>
 							</Anchor>
 						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="CalendarViewEventDeclineButtonFlashTexture" alphaMode="ADD" file="Interface\Buttons\UI-Panel-Button-Glow">
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="-7" y="7"/>
-										</Anchor>
-										<Anchor point="BOTTOMRIGHT">
-											<Offset x="7" y="-7"/>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
-								</Texture>
-							</Layer>
-						</Layers>
 						<Scripts>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-								GameTooltip:SetText(CALENDAR_TOOLTIP_DECLINEBUTTON, nil, nil, nil, nil, 1);
-								GameTooltip:Show();
-								--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_DECLINEBUTTON, 1);
-							</OnEnter>
+							<OnEnter function="CalendarViewEventDeclineButton_OnEnter"/>
 							<OnLeave function="GameTooltip_Hide"/>
-							<OnUpdate function="CalendarViewEventRSVPButton_OnUpdate"/>
 							<OnClick function="CalendarViewEventDeclineButton_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button name="CalendarViewEventRemoveButton" inherits="CalendarEventButtonTemplate" text="CALENDAR_VIEW_EVENT_REMOVE">
-						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset x="-14" y="0"/>
-							</Anchor>
-						</Anchors>
 						<Scripts>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-								if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
-									GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVESIGNUPBUTTON, nil, nil, nil, nil, 1);
-								else
-									GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, 1);
-								end
-								GameTooltip:Show();
-								--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_REMOVEBUTTON, 1);
-							</OnEnter>
+							<OnEnter function="CalendarViewEventRemoveButton_OnEnter"/>
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick function="CalendarViewEventRemoveButton_OnClick"/>
 						</Scripts>

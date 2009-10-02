@@ -437,7 +437,7 @@ function AchievementFrameCategories_UpdateTooltip()
 	end
 	
 	for _, button in next, AchievementFrameCategoriesContainer.buttons do
-		if ( MouseIsOver(button) and button.showTooltipFunc ) then
+		if ( button:IsMouseOver() and button.showTooltipFunc ) then
 			button:showTooltipFunc();
 			break;
 		end
@@ -653,6 +653,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 			local button = AchievementFrameAchievementsObjectives:GetParent();
 			AchievementFrameAchievementsObjectives.id = nil;
 			AchievementButton_DisplayObjectives(button, id, button.completed);
+			AchievementFrameAchievements_Update();
 		else
 			AchievementFrameAchievementsObjectives.id = nil; -- Force redraw
 		end
@@ -747,7 +748,7 @@ function AchievementFrameAchievements_ClearSelection ()
 	AchievementButton_ResetObjectives();
 	for _, button in next, AchievementFrameAchievements.buttons do
 		button:Collapse();
-		if ( not MouseIsOver(button) ) then
+		if ( not button:IsMouseOver() ) then
 			button.highlight:Hide();
 		end
 		button.selected = nil;
@@ -950,7 +951,7 @@ function AchievementButton_OnClick (self, ignoreModifiers)
 	end
 
 	if ( self.selected ) then
-		if ( not MouseIsOver(self) ) then
+		if ( not self:IsMouseOver() ) then
 			self.highlight:Hide();
 		end
 		AchievementFrameAchievements_ClearSelection()
@@ -1097,7 +1098,7 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		end
 	elseif ( button.selected ) then
 		button.selected = nil;
-		if ( not MouseIsOver(button) ) then
+		if ( not button:IsMouseOver() ) then
 			button.highlight:Hide();
 		end
 		button:Collapse();

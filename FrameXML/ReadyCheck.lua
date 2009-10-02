@@ -4,42 +4,39 @@ READY_CHECK_NOT_READY_TEXTURE = "Interface\\RaidFrame\\ReadyCheck-NotReady";
 READY_CHECK_AFK_TEXTURE = "Interface\\RaidFrame\\ReadyCheck-NotReady";
 
 
+--
+-- ReadyCheckFrame
+--
+
 function ShowReadyCheck(initiator, timeLeft)
-	ReadyCheckFrame:Show();
 	ReadyCheckFrame.initiator = initiator;
-	if ( UnitIsUnit("player", initiator) ) then
-		ReadyCheckFrame:SetScript("OnUpdate", ReadyCheckFrame_OnUpdateInitiator);
-		ReadyCheckListenerFrame:Hide();
-	else
-		ReadyCheckFrame:SetScript("OnUpdate", nil);
-		SetPortraitTexture(ReadyCheckPortrait, initiator);
-		ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE, initiator);
-		ReadyCheckListenerFrame:Show();
+	if ( initiator ) then
+		ReadyCheckFrame:Show();
+		if ( UnitIsUnit("player", initiator) ) then
+			ReadyCheckListenerFrame:Hide();
+		else
+			SetPortraitTexture(ReadyCheckPortrait, initiator);
+			ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE, initiator);
+			ReadyCheckListenerFrame:Show();
+		end
 	end
 end
 
 function ReadyCheckFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_FINISHED");
-	self:RegisterEvent("RAID_ROSTER_UPDATE");
 end
 
 function ReadyCheckFrame_OnEvent(self, event, ...)
 	if ( event == "READY_CHECK" ) then
 		ShowReadyCheck(...);
 	elseif ( event == "READY_CHECK_FINISHED" ) then
-		if ( self.initiator ) then
-			if ( not UnitIsUnit("player", self.initiator) ) then
-				local info = ChatTypeInfo["SYSTEM"];
-				DEFAULT_CHAT_FRAME:AddMessage(READY_CHECK_YOU_WERE_AFK, info.r, info.g, info.b, info.id);
-				ReadyCheckListenerFrame:Hide();
-			end
-			self:Hide();
+		local preempted = ...;
+		if ( not preempted and self.initiator and not UnitIsUnit("player", self.initiator) ) then
+			local info = ChatTypeInfo["SYSTEM"];
+			DEFAULT_CHAT_FRAME:AddMessage(READY_CHECK_YOU_WERE_AFK, info.r, info.g, info.b, info.id);
 		end
-	elseif ( event == "RAID_ROSTER_UPDATE" ) then
-		if ( GetNumRaidMembers() == 0 ) then
-			self:Hide();
-		end
+		self:Hide();
 	end
 end
 
@@ -47,11 +44,10 @@ function ReadyCheckFrame_OnHide(self)
 	self.initiator = nil;
 end
 
-function ReadyCheckFrame_OnUpdateInitiator(self, elapsed)
-	-- This OnUpdate gets called for the ready check initiator, so we can keep checking to see
-	-- if the ready check times out. This will also finish the ready check if the time is up.
-	CheckReadyCheckTime();
-end
+
+--
+-- ReadyCheck unit frame functions
+--
 
 function ReadyCheck_Start(readyCheckFrame)
 	readyCheckFrame:SetScript("OnUpdate", nil);
@@ -110,6 +106,7 @@ function ReadyCheck_OnUpdate(readyCheckFrame, elapsed)
 			if ( readyCheckFrame.onFinishFunc ) then
 				readyCheckFrame.onFinishFunc(readyCheckFrame.onFinishFuncArg);
 				readyCheckFrame.onFinishFunc = nil;
+				readyCheckFrame.onFinishFuncArg = nil;
 			end
 		end
 	end

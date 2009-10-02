@@ -633,14 +633,3 @@ function TradeSkillFrame_PlaytimeUpdate()
 		end
 	end
 end
-
-------------Debug - waiting for hardcoded func------------
-
-function TradeSkillCreatesItem(index)
-	local link = GetTradeSkillItemLink(index)
-	if ( string.sub(link,13,17) == "item:" ) then
-		return true
-	else
-		return false
-	end
-end

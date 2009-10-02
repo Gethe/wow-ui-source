@@ -119,7 +119,7 @@ function RaidInfoFrame_Update(scrollToSelected)
 
 	offset = HybridScrollFrame_GetOffset(scrollFrame);	--May have changed in the previous section to move selected parts into view.
 
-	local mouseIsOverScrollFrame = scrollFrame:IsVisible() and MouseIsOver(scrollFrame);
+	local mouseIsOverScrollFrame = scrollFrame:IsVisible() and scrollFrame:IsMouseOver();
 
 	for i=1, numButtons do
 		local frame = buttons[i];
@@ -156,7 +156,7 @@ function RaidInfoFrame_Update(scrollToSelected)
 			
 			frame:Show();
 			
-			if ( mouseIsOverScrollFrame and MouseIsOver(frame) ) then
+			if ( mouseIsOverScrollFrame and frame:IsMouseOver() ) then
 				RaidInfoInstance_OnEnter(frame);
 			end
 		else

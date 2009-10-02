@@ -275,7 +275,7 @@
 			</OnDragStop>
 			<OnEnter>
 				RaidGroupButton_OnEnter(self);
-				if ( MouseIsOver(RaidFrame) ) then
+				if ( RaidFrame:IsMouseOver() ) then
 					GameTooltip:AddLine("\n");
 					if ( IsRaidLeader() or IsRaidOfficer() ) then
 						GameTooltip:AddLine(TOOLTIP_RAID_SHIFT_TIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);

@@ -286,7 +286,7 @@
 					</Anchor>
 				</Anchors>
 				<ScrollChild>
-					<EditBox name="MacroFrameText" multiLine="true" letters="255" autoFocus="false">
+					<EditBox name="MacroFrameText" multiLine="true" letters="255" autoFocus="false" countInvisibleLetters="true">
 						<Size>
 							<AbsDimension x="286" y="85"/>
 						</Size>
@@ -410,10 +410,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						DeleteMacro(MacroFrame.selectedMacro);
-						MacroFrame_OnLoad();
-						MacroFrame_Update();
-						MacroFrameText:ClearFocus();
+						MacroFrame_DeleteMacro();
 					</OnClick>
 				</Scripts>
 			</Button>

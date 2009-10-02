@@ -236,6 +236,7 @@ function VideoOptionsResolutionPanelResolutionDropDown_OnClick(self)
 	else
 		dropdown.newValue = value;
 	end
+	VideoOptionsFrameApply:Enable();
 end
 
 function VideoOptionsResolutionPanelRefreshDropDown_OnLoad(self)
@@ -307,6 +308,7 @@ function VideoOptionsResolutionPanelRefreshDropDown_OnClick(self)
 	else
 		dropdown.newValue = value;
 	end
+	VideoOptionsFrameApply:Enable();
 end
 
 function VideoOptionsResolutionPanelMultiSampleDropDown_OnLoad(self)
@@ -372,6 +374,7 @@ function VideoOptionsResolutionPanelMultiSampleDropDown_OnClick(self)
 	else
 		dropdown.newValue = value;
 	end
+	VideoOptionsFrameApply:Enable();
 end
 
 
@@ -531,8 +534,10 @@ function VideoOptionsEffectsPanelSlider_OnValueChanged (self, value)
 	self.newValue = value;
 	if(self:GetParent():IsVisible()) then
 		VideoOptionsEffectsPanel_UpdateVideoQuality();
+		VideoOptionsFrameApply:Enable();
 	end
 end
+
 function VideoOptionsEffectsPanel_FixupQualityLevels ()
 	-- set the lowest and highest
 	for quality, controls in ipairs(GraphicsQualityLevels) do
