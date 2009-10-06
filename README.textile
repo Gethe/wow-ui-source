@@ -10,7 +10,7 @@ h2. General
 
 h3. Icecrown Citadel
 
-* The Forge of Souls, the first wing of the 5-player dungeon, is currently available for testing.
+* The Pit of Saron in the 5-player dungeon is currently available for testing.
 * Additional Icecrown Citadel dungeon and raid content will be made available in future test builds.
 
 h2. Classes: General
