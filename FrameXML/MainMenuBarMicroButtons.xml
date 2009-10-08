@@ -253,7 +253,7 @@
 			</OnMouseUp>
 		</Scripts>
 	</Button>
-	<Button name="LFGMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="PVPMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -271,16 +271,14 @@
 				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnEvent>
-<!--
 			<OnClick>
-				ToggleLFGParentFrame();
+				--ToggleLFDParentFrame();
 			</OnClick>
--->
 		</Scripts>
 	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="LFGMicroButton" relativePoint="BOTTOMRIGHT">
+			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-3" y="0"/>
 				</Offset>

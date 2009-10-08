@@ -320,7 +320,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="StaticPopup1" inherits="StaticPopupTemplate" parent="UIParent">
+	<Frame name="StaticPopup1" inherits="StaticPopupTemplate" parent="UIParent" id="1">
 		<Anchors>
 			<Anchor point="TOP">
 				<Offset>
@@ -329,17 +329,17 @@
 			</Anchor>
 		</Anchors>
 	</Frame>
-	<Frame name="StaticPopup2" inherits="StaticPopupTemplate" parent="UIParent">
+	<Frame name="StaticPopup2" inherits="StaticPopupTemplate" parent="UIParent" id="2">
 		<Anchors>
 			<Anchor point="TOP" relativeTo="StaticPopup1" relativePoint="BOTTOM"/>
 		</Anchors>
 	</Frame>
-	<Frame name="StaticPopup3" inherits="StaticPopupTemplate" parent="UIParent">
+	<Frame name="StaticPopup3" inherits="StaticPopupTemplate" parent="UIParent" id="3">
 		<Anchors>
 			<Anchor point="TOP" relativeTo="StaticPopup2" relativePoint="BOTTOM"/>
 		</Anchors>
 	</Frame>
-	<Frame name="StaticPopup4" inherits="StaticPopupTemplate" parent="UIParent">
+	<Frame name="StaticPopup4" inherits="StaticPopupTemplate" parent="UIParent" id="4">
 		<Anchors>
 			<Anchor point="TOP" relativeTo="StaticPopup3" relativePoint="BOTTOM"/>
 		</Anchors>

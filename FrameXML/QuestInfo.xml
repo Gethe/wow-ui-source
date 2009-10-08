@@ -184,7 +184,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-
+	
 	<Frame name="QuestInfoTimerFrame" hidden="true">
 		<Size>
 			<AbsDimension x="1" y="1"/>
@@ -390,6 +390,118 @@
 					<OnLoad function="RaiseFrameLevel"/>
 				</Scripts>
 			</Frame>
+			<Frame name="QuestInfoReputationsFrame" hidden="true">					
+				<Size>
+					<AbsDimension x="285" y="100"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>						
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="QuestInfoReputationText" inherits="QuestFont" justifyH="LEFT" text="REWARD_REPUTATION_TEXT">
+							<Size>
+								<AbsDimension x="285" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>					
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="QuestInfoReputation1" inherits="QuestReputationTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestInfoReputationText" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="QuestInfoReputation2" inherits="QuestReputationTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestInfoReputation1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>			
+					</Frame>
+					<Frame name="QuestInfoReputation3" inherits="QuestReputationTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestInfoReputation2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>			
+					</Frame>
+					<Frame name="QuestInfoReputation4" inherits="QuestReputationTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestInfoReputation3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>			
+					</Frame>
+					<Frame name="QuestInfoReputation5" inherits="QuestReputationTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestInfoReputation4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>			
+					</Frame>
+					<Frame name="QuestInfoReputation6" inherits="QuestReputationTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestInfoReputation5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>			
+					</Frame>
+					<Frame name="QuestInfoReputation7" inherits="QuestReputationTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestInfoReputation6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>			
+					</Frame>
+					<Frame name="QuestInfoReputation8" inherits="QuestReputationTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestInfoReputation7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>			
+					</Frame>
+					<Frame name="QuestInfoReputation9" inherits="QuestReputationTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestInfoReputation8" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>			
+					</Frame>
+					<Frame name="QuestInfoReputation10" inherits="QuestReputationTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestInfoReputation9" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>			
+					</Frame>					
+				</Frames>
+			</Frame>			
 		</Frames>
 	</Frame>
 	

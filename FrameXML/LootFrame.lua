@@ -5,6 +5,7 @@ MASTER_LOOT_THREHOLD = 4;
 function LootFrame_OnLoad(self)
 	self:RegisterEvent("LOOT_OPENED");
 	self:RegisterEvent("LOOT_SLOT_CLEARED");
+	self:RegisterEvent("LOOT_SLOT_CHANGED");
 	self:RegisterEvent("LOOT_CLOSED");
 	self:RegisterEvent("OPEN_MASTER_LOOT_LIST");
 	self:RegisterEvent("UPDATE_MASTER_LOOT_LIST");
@@ -51,6 +52,25 @@ function LootFrame_OnEvent(self, event, ...)
 			LootFrame_PageDown();
 		end
 		return;
+	elseif ( event == "LOOT_SLOT_CHANGED" ) then
+		local arg1 = ...;
+		
+		if ( not self:IsShown() ) then
+			return;
+		end
+
+		local numLootToShow = LOOTFRAME_NUMBUTTONS;
+		if ( self.numLootItems > LOOTFRAME_NUMBUTTONS ) then
+			numLootToShow = numLootToShow - 1;
+		end
+		local slot = arg1 - ((self.page - 1) * numLootToShow);
+		if ( (slot > 0) and (slot < (numLootToShow + 1)) ) then
+			local button = _G["LootButton"..slot];
+			if ( button ) then
+				LootFrame_UpdateButton(slot);
+			end
+		end
+		print(slot);
 	elseif ( event == "LOOT_CLOSED" ) then
 		StaticPopup_Hide("LOOT_BIND");
 		HideUIPanel(self);
@@ -63,22 +83,20 @@ function LootFrame_OnEvent(self, event, ...)
 	end
 end
 
-function LootFrame_Update()
+function LootFrame_UpdateButton(index)
 	local numLootItems = LootFrame.numLootItems;
 	--Logic to determine how many items to show per page
 	local numLootToShow = LOOTFRAME_NUMBUTTONS;
 	if ( numLootItems > LOOTFRAME_NUMBUTTONS ) then
 		numLootToShow = numLootToShow - 1;
 	end
-	local texture, item, quantity, quality, locked;
-	local button, countString, color;
-	for index = 1, LOOTFRAME_NUMBUTTONS do
-		button = _G["LootButton"..index];
+	
+	local button = _G["LootButton"..index];
 		local slot = (numLootToShow * (LootFrame.page - 1)) + index;
 		if ( slot <= numLootItems ) then	
 			if ( (LootSlotIsItem(slot) or LootSlotIsCoin(slot)) and index <= numLootToShow ) then
-				texture, item, quantity, quality, locked = GetLootSlotInfo(slot);
-				color = ITEM_QUALITY_COLORS[quality];
+				local texture, item, quantity, quality, locked = GetLootSlotInfo(slot);
+				local color = ITEM_QUALITY_COLORS[quality];
 				_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
 				local text = _G["LootButton"..index.."Text"];
 				text:SetText(item);
@@ -92,7 +110,7 @@ function LootFrame_Update()
 					SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
 				end
 				text:SetVertexColor(color.r, color.g, color.b);
-				countString = _G["LootButton"..index.."Count"];
+				local countString = _G["LootButton"..index.."Count"];
 				if ( quantity > 1 ) then
 					countString:SetText(quantity);
 					countString:Show();
@@ -108,6 +126,11 @@ function LootFrame_Update()
 		else
 			button:Hide();
 		end
+end
+
+function LootFrame_Update()
+	for index = 1, LOOTFRAME_NUMBUTTONS do
+		LootFrame_UpdateButton(index);
 	end
 	if ( LootFrame.page == 1 ) then
 		LootFrameUpButton:Hide();
@@ -116,7 +139,7 @@ function LootFrame_Update()
 		LootFrameUpButton:Show();
 		LootFramePrev:Show();
 	end
-	if ( LootFrame.page == ceil(LootFrame.numLootItems / numLootToShow) or LootFrame.numLootItems == 0 ) then
+	if ( LootFrame.page == ceil(LootFrame.numLootItems / LOOTFRAME_NUMBUTTONS) or LootFrame.numLootItems == 0 ) then
 		LootFrameDownButton:Hide();
 		LootFrameNext:Hide();
 	else
@@ -294,8 +317,18 @@ function GroupLootFrame_OpenNewFrame(id, rollTime)
 	end
 end
 
+function GroupLootFrame_EnableLootButton(button)
+	button:Enable();
+	SetDesaturation(button:GetNormalTexture(), false);
+end
+
+function GroupLootFrame_DisableLootButton(button)
+	button:Disable();
+	SetDesaturation(button:GetNormalTexture(), true);
+end
+
 function GroupLootFrame_OnShow(self)
-	local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(self.rollID);
+	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(self.rollID);
 	
 	if ( bindOnPickUp ) then
 		self:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border", tile = true, tileSize = 32, edgeSize = 32, insets = { left = 11, right = 12, top = 12, bottom = 11 } } );
@@ -317,6 +350,22 @@ function GroupLootFrame_OnShow(self)
 		_G["GroupLootFrame"..id.."IconFrameCount"]:Show();
 	else
 		_G["GroupLootFrame"..id.."IconFrameCount"]:Hide();
+	end
+	
+	if ( canNeed ) then
+		GroupLootFrame_EnableLootButton(self.needButton);
+	else
+		GroupLootFrame_DisableLootButton(self.needButton);
+	end
+	if ( canGreed) then
+		GroupLootFrame_EnableLootButton(self.greedButton);
+	else
+		GroupLootFrame_DisableLootButton(self.greedButton);
+	end
+	if ( canDisenchant) then
+		GroupLootFrame_EnableLootButton(self.disenchantButton);
+	else
+		GroupLootFrame_DisableLootButton(self.disenchantButton);
 	end
 end
 

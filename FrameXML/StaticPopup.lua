@@ -1,3 +1,5 @@
+StaticPopup_DisplayedFrames = { };
+
 STATICPOPUP_NUMDIALOGS = 4;
 
 StaticPopupDialogs = { };
@@ -3170,7 +3172,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	wideEditBox.autoCompleteFormatRegex = true;
 	
 	-- Finally size and show the dialog
+	StaticPopup_SetUpPosition(dialog);
 	dialog:Show();
+	
 	StaticPopup_Resize(dialog, which);
 
 	if ( info.sound ) then
@@ -3343,6 +3347,8 @@ end
 function StaticPopup_OnHide(self)
 	PlaySound("igMainMenuClose");
 
+	StaticPopup_CollapseTable();
+	
 	local dialog = StaticPopupDialogs[self.which];
 	local OnHide = dialog.OnHide;
 	if ( OnHide ) then
@@ -3444,3 +3450,46 @@ function StaticPopup_EscapePressed()
 	end
 	return closed;
 end
+
+function StaticPopup_SetUpPosition(dialog)
+	if ( not tContains(StaticPopup_DisplayedFrames, dialog) ) then
+		local lastFrame = StaticPopup_DisplayedFrames[#StaticPopup_DisplayedFrames];
+		if ( lastFrame ) then	
+			dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0);
+		else
+			dialog:SetPoint("TOP", UIParent, "TOP", 0, -133);
+		end
+		tinsert(StaticPopup_DisplayedFrames, dialog);
+	end
+end
+
+function StaticPopup_CollapseTable()
+	local displayedFrames = StaticPopup_DisplayedFrames;
+	local index = #displayedFrames;
+	while ( ( index >= 1 ) and ( not displayedFrames[index]:IsShown() ) ) do
+		tremove(displayedFrames, index);
+		index = index - 1;
+	end
+end
+
+function StaticPopupSpecial_Show(frame)
+	StaticPopup_SetUpPosition(frame);
+	frame:Show();
+end
+
+function StaticPopupSpecial_Hide(frame)
+	frame:Hide();
+	StaticPopup_CollapseTable();
+end
+
+--Used to figure out if we can resize a frame
+function StaticPopup_IsLastDisplayedFrame(frame)
+	for i=#StaticPopup_DisplayedFrames, 1, -1 do
+		local popup = StaticPopup_DisplayedFrames[i];
+		if ( popup:IsShown() ) then
+			return frame == popup
+		end
+	end
+	return false;
+end
+

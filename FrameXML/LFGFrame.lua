@@ -4,21 +4,6 @@ ROLE_ENABLED = true;
 LFMCOLUMN1TYPE_INDIVIDUAL = false;
 LFMCOLUMN1TYPE_GROUP = true;
 
-NUM_ROLES = 3;
-local classRoles = {
---	CLASS = { DPS, TANK, HEALER },
-	DRUID = {		ROLE_ENABLED,	ROLE_ENABLED,	ROLE_ENABLED,	},
-	PALADIN = {		ROLE_ENABLED,	ROLE_ENABLED,	ROLE_ENABLED,	},
-	ROGUE = {		ROLE_ENABLED,	ROLE_DISABLED,	ROLE_DISABLED,	},
-	PRIEST = {		ROLE_ENABLED,	ROLE_DISABLED,	ROLE_ENABLED,	},
-	WARRIOR = {		ROLE_ENABLED,	ROLE_ENABLED,	ROLE_DISABLED,	},
-	HUNTER = {		ROLE_ENABLED,	ROLE_DISABLED,	ROLE_DISABLED,	},
-	MAGE = {		ROLE_ENABLED,	ROLE_DISABLED,	ROLE_DISABLED,	},
-	WARLOCK = {		ROLE_ENABLED,	ROLE_DISABLED,	ROLE_DISABLED,	},
-	SHAMAN = {		ROLE_ENABLED,	ROLE_DISABLED,	ROLE_ENABLED,	},
-	DEATHKNIGHT = {	ROLE_ENABLED,	ROLE_ENABLED,	ROLE_DISABLED,	},
-}
-
 LFGS_TO_DISPLAY = 15;
 LFM_BUTTONHEIGHT = 16
 NUM_LFG_CRITERIA = 3;
@@ -31,6 +16,27 @@ LFG_DISABLED_DROPDOWN_NAMES[1] = {};
 LFG_DISABLED_DROPDOWN_NAMES[2] = {};
 LFG_DISABLED_DROPDOWN_NAMES[3] = {};
 LFG_TYPE_NONE_ID = 1;
+
+--Functions for valid roles
+NUM_ROLES = 3;
+local validRoles = {
+	--{ TANK, HEALER, DAMAGE },
+	GetAvailableRoles();
+}
+
+--roleIndex here works according to the display order (DPS = 1, Tank = 2, Healing = 3)
+function IsRoleAvailable(roleIndex)
+	if ( roleIndex == 1 ) then
+		return validRoles[3];
+	elseif ( roleIndex == 2 ) then
+		return validRoles[1];
+	elseif ( roleIndex == 3 ) then
+		return validRoles[2];
+	else
+		error("Invalid role index");
+		return false;
+	end
+end
 
 ----------------------------- LFG Parent Functions -----------------------------
 function LFGParentFrame_OnLoad(self)
@@ -1004,12 +1010,11 @@ function LFGFrameClearAllButton_OnClick()
 end
 
 function LFGFrame_UpdateRoles()
-	local _, englishClass = UnitClass("player");
 	local frame, label, roleStatus;
 	for i=1,NUM_ROLES do
 		frame = _G["LFGFrameRoleButton"..i];
 		label = _G["LFGFrameRoleButton"..i.."Label"];
-		roleStatus = classRoles[englishClass][i];
+		roleStatus = IsRoleAvailable(i);
 		if ( roleStatus == ROLE_DISABLED ) then
 			frame:SetChecked(false);
 			frame:Disable();

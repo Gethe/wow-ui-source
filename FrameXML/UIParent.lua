@@ -45,6 +45,7 @@ UIPanelWindows["WorldStateScoreFrame"] =	{ area = "center",	pushable = 0,	whileD
 UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
 UIPanelWindows["MinigameFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["LFGParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["LFDParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["ArenaFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["ChatConfigFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["PVPParentFrame"] =			{ area = "left",	pushable = 0,	whileDead = 1 };
@@ -451,6 +452,14 @@ function ToggleLFGParentFrame(tab)
 --		end
 --	end
 	UpdateMicroButtons();
+end
+
+function ToggleLFDParentFrame()
+	if ( LFDParentFrame:IsShown() ) then
+		HideUIPanel(LFDParentFrame);
+	else
+		ShowUIPanel(LFDParentFrame);
+	end
 end
 
 function ToggleHelpFrame()
@@ -1894,18 +1903,27 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		
 	end
 
+	-- Boss frames
+	if ( Boss1TargetFrame ) then
+		-- need to multiply because boss frames are scaled down and 1.3 worked the best with 0, 1, or 2 right action bars
+		Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY + 20);
+	end
+	
 	-- Setup durability offset
 	if ( DurabilityFrame ) then
 		local durabilityOffset = 0;
 		if ( DurabilityShield:IsShown() or DurabilityOffWeapon:IsShown() or DurabilityRanged:IsShown() ) then
 			durabilityOffset = 20;
 		end
+		if ( Boss1TargetFrame and Boss1TargetFrame:IsShown() ) then
+			durabilityOffset = durabilityOffset + 135;
+		end
 		DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X-durabilityOffset, anchorY);
 		if ( DurabilityFrame:IsShown() ) then
 			anchorY = anchorY - DurabilityFrame:GetHeight();
 		end
 	end
-
+	
 	if ( ArenaEnemyFrames ) then
 		ArenaEnemyFrames:ClearAllPoints();
 		ArenaEnemyFrames:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
@@ -3524,4 +3542,10 @@ end
 
 function ConsolePrint(...)
 	ConsoleAddMessage(strjoin(" ", tostringall(...)));
+end
+
+function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridWidth, gridHeight)
+	local widthPerGrid = gridWidth/textureWidth;
+	local heightPerGrid = gridHeight/textureHeight;
+	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
 end

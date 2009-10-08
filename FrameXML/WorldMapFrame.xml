@@ -418,7 +418,7 @@
 				</Anchors>				
 				<Scripts>
 					<OnClick>
-						WorldMap_SizeDown();
+						WorldMap_ToggleSize();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\WorldMap\UI-Panel-SmallerButton-Up"/>
@@ -438,7 +438,7 @@
 				</Anchors>				
 				<Scripts>
 					<OnClick>
-						WorldMap_SizeUp();
+						WorldMap_ToggleSize();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\WorldMap\UI-Panel-BiggerButton-Up"/>

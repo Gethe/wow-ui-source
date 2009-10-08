@@ -57,6 +57,23 @@
 			</OnClick>
 		</Scripts>
 	</Button>
+	<Button name="LootRollButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<Scripts>
+				<OnClick>
+					RollOnLoot(self:GetParent().rollID, self:GetID());
+				</OnClick>
+				<OnEnter>
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.label);
+				</OnEnter>
+				<OnLeave>
+					GameTooltip:Hide();
+				</OnLeave>
+			</Scripts>
+		</Button>
 	<Frame name="LootFrame" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="256" y="256"/>
@@ -359,7 +376,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentPassButton" inherits="UIPanelCloseButton">
+			<Button name="$parentPassButton" inherits="UIPanelCloseButton" parentKey="passButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentCorner" relativePoint="TOPRIGHT">
 						<Offset>
@@ -380,10 +397,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="$parentRollButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+			<Button name="$parentRollButton" inherits="LootRollButtonTemplate" parentKey="needButton" id="1">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
@@ -392,25 +406,15 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						RollOnLoot(self:GetParent().rollID, 1);
-					</OnClick>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(NEED);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLoad>
+						self.label = NEED;
+					</OnLoad>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
 				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Dice-Highlight" alphaMode="ADD"/>
 				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Dice-Down"/>
 			</Button>
-			<Button name="$parentGreedButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+			<Button name="$parentGreedButton" inherits="LootRollButtonTemplate" parentKey="greedButton" id="2">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentRollButton" relativePoint="BOTTOM">
 						<Offset>
@@ -419,20 +423,30 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						RollOnLoot(self:GetParent().rollID, 2);
-					</OnClick>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(GREED);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLoad>
+						self.label = GREED;
+					</OnLoad>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Coin-Up"/>
 				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Coin-Highlight" alphaMode="ADD"/>
 				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Coin-Down"/>
+			</Button>
+			<Button name="$parentDisenchantButton" inherits="LootRollButtonTemplate" parentKey="disenchantButton" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentGreedButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.label = ROLL_DISENCHANT;
+					</OnLoad>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\inv_enchant_disenchant"/>
+				<HighlightTexture file="Interface\Icons\inv_enchant_disenchant" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Icons\inv_enchant_disenchant"/>
 			</Button>
 			<StatusBar name="$parentTimer" drawLayer="BACKGROUND" minValue="0" maxValue="60000" defaultValue="0">
 				<Size>

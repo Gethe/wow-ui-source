@@ -321,6 +321,31 @@
 			</Layer>
 		</Layers>
    </Frame>
+   <Frame name="QuestReputationTemplate" virtual="true">
+		<Size x="280" y="15"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentFaction" inherits="QuestFont">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentAmount" inherits="NumberFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentFaction" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="15" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+   </Frame>   
    <Frame name="QuestPlayerTitleFrameTemplate" virtual="true">
 		<Size x="500" y="40"/>
 		<Layers>

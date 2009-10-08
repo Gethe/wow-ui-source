@@ -706,7 +706,7 @@ local MicroButtons = {
 	QuestLogMicroButton,
 	SocialsMicroButton,
 	PVPMicroButton,
-	LFGMicroButton,
+	LFDMicroButton,
 	MainMenuMicroButton,
 	HelpMicroButton,
 	}

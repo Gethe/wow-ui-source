@@ -409,6 +409,12 @@ local framesToDuplicate = {
 	["FrameManaBar"] = dimsAndAnchors,
 	["FrameNumericalThreat"] = dimsAndAnchors,
 }
+-- temp fixes to focus frame
+TargetPortrait = TargetFramePortrait;
+TargetFrameManaBarText = TargetFrameTextureFrameManaBarText;
+TargetFrameHealthBarText = TargetFrameTextureFrameHealthBarText;
+TargetRaidTargetIcon = TargetFrameTextureFrameRaidTargetIcon;
+TargetName = TargetFrameTextureFrameName;
 
 function FocusFrame_SetFullSize(fullSize)
 	if ( fullSize and not FocusFrame.fullSize) then	--It copies the TargetFrame. That way we don't have to explicitly maintain a bunch of alternate coordinates.

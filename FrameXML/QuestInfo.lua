@@ -1,3 +1,5 @@
+MAX_REPUTATIONS = 10;
+
 function QuestInfoFadingFrame_OnUpdate(self, elapsed)
 	if ( self.fading ) then
 		self.fadingProgress = self.fadingProgress + (elapsed * QUEST_DESCRIPTION_GRADIENT_CPS);
@@ -60,6 +62,10 @@ function QuestInfo_Display(template, parentFrame, acceptButton, cancelButton, ma
 		QuestInfoHonorFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoArenaPointsFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoTalentFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+		QuestInfoReputationText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+		for i = 1, MAX_REPUTATIONS do
+			_G["QuestInfoReputation"..i.."Faction"]:SetTextColor(textColor[1], textColor[2], textColor[3]);
+		end
 	end
 	
 	for i = 1, #elementsTable, 3 do
@@ -134,6 +140,38 @@ function QuestInfo_ShowObjectives()
 	else
 		QuestInfoObjectivesFrame:Hide();
 		return nil;
+	end
+end
+
+function QuestInfo_DoReputations(anchor)
+	local numReputations = GetNumQuestLogRewardFactions();
+	local factionName, amount, factionId, isHeader;
+	local index = 0;
+	for i = 1, numReputations do		
+		factionId, amount = GetQuestLogRewardFactionInfo(i);
+		factionName, _, _, _, _, _, _, _, isHeader, _, hasRep = GetFactionInfoByID(factionId);
+		if ( factionName and ( not isHeader or hasRep ) ) then
+			index = index + 1;
+			amount = floor(amount / 100);
+			if ( amount < 0 ) then
+				amount = "|cffff4400"..amount.."|r";
+			end
+			_G["QuestInfoReputation"..index.."Faction"]:SetText(format(REWARD_REPUTATION, factionName));
+			_G["QuestInfoReputation"..index.."Amount"]:SetText(amount);
+			_G["QuestInfoReputation"..index]:Show();
+		end
+	end
+	if ( index > 0 ) then
+		for i = index + 1, MAX_REPUTATIONS do
+			_G["QuestInfoReputation"..i]:Hide();
+		end
+		QuestInfoReputationsFrame:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -5);
+		QuestInfoReputationsFrame:SetHeight(index * 17 + QuestInfoReputationText:GetHeight() + 4);
+		QuestInfoReputationsFrame:Show();
+		return QuestInfoReputationsFrame;
+	else
+		QuestInfoReputationsFrame:Hide();
+		return anchor;
 	end
 end
 
@@ -232,7 +270,7 @@ function QuestInfo_ShowRewards()
 	local arenaPoints;
 	local talents;
 	local playerTitle;
-	
+
 	if ( QuestInfoFrame.questLog ) then
 		numQuestRewards = GetNumQuestLogRewards();
 		numQuestChoices = GetNumQuestLogChoices();
@@ -244,6 +282,7 @@ function QuestInfo_ShowRewards()
 		arenaPoints = GetQuestLogRewardArenaPoints();
 		talents = GetQuestLogRewardTalents();
 		playerTitle = GetQuestLogRewardTitle();
+		ProcessQuestLogRewardFactions();
 	else
 		numQuestRewards = GetNumQuestRewards();
 		numQuestChoices = GetNumQuestChoices();
@@ -256,10 +295,10 @@ function QuestInfo_ShowRewards()
 		talents = GetRewardTalents();
 		playerTitle = GetRewardTitle();
 	end
-
+	local numReputations = GetNumQuestLogRewardFactions();
 	local totalRewards = numQuestRewards + numQuestChoices + numQuestSpellRewards;
 	
-	if ( totalRewards == 0 and money == 0 and honor == 0 and arenaPoints == 0 and talents == 0 and not playerTitle ) then
+	if ( totalRewards == 0 and money == 0 and honor == 0 and arenaPoints == 0 and talents == 0 and numReputations == 0 and not playerTitle ) then
 		QuestInfoRewardsFrame:Hide();
 		return nil;
 	end
@@ -274,6 +313,7 @@ function QuestInfo_ShowRewards()
 	QuestInfoArenaPointsFrame:Hide();	
 	QuestInfoTalentFrame:Hide();
 	QuestInfoPlayerTitleFrame:Hide();	
+	QuestInfoReputationsFrame:Hide();
 	
 	local questItem, name, texture, isTradeskillSpell, isSpellLearned, quality, isUsable, numItems;
 	local rewardsCount = 0;
@@ -371,7 +411,7 @@ function QuestInfo_ShowRewards()
 	end
 	
 	-- Setup mandatory rewards
-	if ( numQuestRewards > 0 or money > 0 or honor > 0 or arenaPoints > 0 or talents > 0 or playerTitle ) then
+	if ( numQuestRewards > 0 or money > 0 or honor > 0 or arenaPoints > 0 or talents > 0 or numReputations > 0 or playerTitle ) then
 		questItemReceiveText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 3, -5);
 		questItemReceiveText:Show();		
 		lastFrame = questItemReceiveText;
@@ -388,6 +428,8 @@ function QuestInfo_ShowRewards()
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoTalentFrame", talents, "Points", lastFrame);
 		-- Title reward
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoPlayerTitleFrame", playerTitle, "Title", lastFrame);
+		-- Rep rewards
+		lastFrame = QuestInfo_DoReputations(lastFrame);
 		-- Item rewards
 		local index;
 		local baseIndex = rewardsCount;

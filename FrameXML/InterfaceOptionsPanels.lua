@@ -1496,3 +1496,11 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createIn
 		end
 	end
 end
+
+
+-- [[ Production Options Panel ]] --
+
+ProductionPanelOptions = {
+	nameplateAllowOverlap = { text = "Allow Nameplates to Overlap" },
+	nameplateEnemyTotems = { text = "Display Nameplates for Enemy Totems" },
+}

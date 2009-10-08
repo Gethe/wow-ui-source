@@ -125,9 +125,15 @@ function WorldMapFrame_OnLoad(self)
 	PlayerArrowEffectFrame:SetFrameLevel(9001);	--It's over nine thousand!!!!!
 	PlayerArrowEffectFrame:SetAlpha(0.65);
 
+	-- Ensure proper order
+	WorldMapDetailFrame:SetFrameLevel(1);
+	WorldMapBlobFrame:SetFrameLevel(2);
+	WorldMapButton:SetFrameLevel(3)
+	
 	WorldMapDetailFrame:SetScale(0.691);
 	WorldMapBlobFrame:SetScale(0.691);
-	WorldMapButton:SetScale(0.691);	
+	WorldMapButton:SetScale(0.691);
+	WorldMapFrame.scale = 0.691;
 	WorldMapQuestDetailScrollChildFrame:SetScale(0.9);
 	WorldMapQuestRewardScrollChildFrame:SetScale(0.9);
 	WorldMapQuestScrollFrame.numQuests = 0;	
@@ -171,6 +177,9 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			WorldMapContinentsDropDown_Update();
 			WorldMapZoneDropDown_Update();
 			WorldMapLevelDropDown_Update();
+			if ( not WorldMapFrame.sizedDown ) then
+				WorldMap_AdjustMapSize();
+			end
 			QuestPOIButtonManager:FreeAllFrames();
 		end
 	elseif ( event == "CLOSE_WORLD_MAP" ) then
@@ -183,6 +192,36 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		WorldMapFrame_UpdateQuests();
+	end
+end
+
+function WorldMap_AdjustMapSize()
+	if ( GetCurrentMapZone() == 0 ) then
+		if ( not WorldMapFrame.continentView ) then
+			WorldMapFrame.continentView = true;
+			WorldMapDetailFrame:SetScale(1.0);
+			WorldMapBlobFrame:SetScale(1.0);
+			WorldMapButton:SetScale(1.0);
+			WorldMapFrame.scale = 1;
+			WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -502, -69);
+			WorldMapQuestDetailScrollFrame:Hide();
+			WorldMapQuestRewardScrollFrame:Hide();
+			WorldMapQuestScrollFrame:Hide();
+			WorldMapQuestShowObjectives:Hide();
+		end
+	else
+		if ( WorldMapFrame.continentView ) then
+			WorldMapFrame.continentView = nil;
+			WorldMapDetailFrame:SetScale(0.691);
+			WorldMapBlobFrame:SetScale(0.691);
+			WorldMapButton:SetScale(0.691);
+			WorldMapFrame.scale = 0.691;
+			WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -726, -99);
+			WorldMapQuestDetailScrollFrame:Show();
+			WorldMapQuestRewardScrollFrame:Show();
+			WorldMapQuestScrollFrame:Show();
+			WorldMapQuestShowObjectives:Show();
+		end
 	end
 end
 
@@ -768,11 +807,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	else
 		playerX = playerX * WorldMapDetailFrame:GetWidth();
 		playerY = -playerY * WorldMapDetailFrame:GetHeight();
-		local playerScale = 0.691;
-		if ( WorldMapFrame.sizedDown ) then
-			playerScale = 0.572;
-		end
-		PositionWorldMapArrowFrame("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX * playerScale, playerY * playerScale);
+		PositionWorldMapArrowFrame("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX * WorldMapFrame.scale, playerY * WorldMapFrame.scale);
 		ShowWorldMapArrowFrame(1);
 
 		-- Position clear button to detect mouseovers
@@ -1502,13 +1537,20 @@ function WorldMap_OpenToQuest(questID, frameToShowOnClose)
 end
 
 function WorldMap_ToggleSize()
+	local continentID;
+	local mapID = GetCurrentMapAreaID() - 1;
+	if ( mapID < 0 ) then
+		continentID = GetCurrentMapContinent();
+	end
+	-- close the frame first so the UI panel system can do its thing	
+	ToggleFrame(WorldMapFrame);
+	-- apply magic
 	if ( WorldMapFrame.sizedDown ) then
 		WorldMapFrame.sizedDown = nil;
+		WorldMapFrame.scale = 0.691;
 		-- adjust main frame
 		WorldMapFrame:SetWidth(0);
 		WorldMapFrame:SetHeight(0);
-		--WorldMapFrame:SetPoint("TOPLEFT", 0, -104);	  	
-		--WorldMapFrame:SetScale(0.9);
 		WorldMapFrame:ClearAllPoints();
 		WorldMapFrame:SetAllPoints();
 		UIPanelWindows["WorldMapFrame"].area = "full";
@@ -1538,8 +1580,6 @@ function WorldMap_ToggleSize()
 		WorldMapZoneDropDown:Show();
 		WorldMapContinentDropDown:Show();
 		WorldMapLevelDropDown:Show();
-		--WorldMapLevelUpButton:Hide();
-		--WorldMapLevelDownButton:Hide();
 		WorldMapQuestDetailScrollFrame:Show();
 		WorldMapQuestRewardScrollFrame:Show();		
 		WorldMapFrameSizeDownButton:Show();
@@ -1553,6 +1593,7 @@ function WorldMap_ToggleSize()
 		WorldMapFrameTitle:SetPoint("TOP", 0, -6);		
 	else
 		WorldMapFrame.sizedDown = true;
+		WorldMapFrame.scale = 0.573;
 		-- adjust main frame
 		WorldMapFrame:SetWidth(876);
 		WorldMapFrame:SetHeight(437);
@@ -1597,28 +1638,21 @@ function WorldMap_ToggleSize()
 		-- tiny adjustments
 		WorldMapFrameCloseButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, 4, 5);
 		WorldMapFrameSizeDownButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, -18, 5);
-		WorldMapFrameTitle:SetPoint("TOP", 0, -5);		
+		WorldMapFrameTitle:SetPoint("TOP", 0, -5);
+		-- quest list should always show in mini mode
+		if ( WorldMapFrame.continentView ) then
+			WorldMapQuestScrollFrame:Show();
+			WorldMapQuestShowObjectives:Show();
+		end
 	end
-end
-
-function WorldMap_SizeDown()
-	-- close the frame first so the UI panel system can do its thing
-	ToggleFrame(WorldMapFrame);
-	-- apply magic
-	WorldMap_ToggleSize();
 	-- reopen the frame
 	ToggleFrame(WorldMapFrame);
-	WorldMapFrame_UpdateQuests();
-end
-
-function WorldMap_SizeUp()
-	-- close the frame first so the UI panel system can do its thing
-	ToggleFrame(WorldMapFrame);
-	-- apply magic
-	WorldMap_ToggleSize();
-	-- reopen the frame
-	ToggleFrame(WorldMapFrame);
-	WorldMapFrame_UpdateQuests();
+	if ( continentID ) then
+		SetMapZoom(continentID);
+	else
+		SetMapByID(mapID);
+	end
+	WorldMapFrame_UpdateQuests();	
 end
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
