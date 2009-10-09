@@ -7,22 +7,34 @@ The latest patch notes can always be found at http://www.worldofwarcraft.com/pat
 h2. General
 
 * Dazed: Creatures attacking a player from behind can no longer cause players level 1-5 to be dazed, and have a reduced chance to cause players level 6-10 to be dazed.
+* The existing /welcome emote now greets/welcomes targets (character says "hello"), while the new /yw is for saying "you're welcome."
+* Many of the tail sweeps with knockback effects will no longer hit players' pets.
 
 h3. Icecrown Citadel
 
-* The Pit of Saron in the 5-player dungeon is currently available for testing.
-* Additional Icecrown Citadel dungeon and raid content will be made available in future test builds.
+* The Forge of Souls and Pit of Saron in the 5-player dungeon are currently available for testing.
+* Additional Icecrown Citadel dungeon and raid content will be made available in future test builds. For more information and testing schedules please visit our Test Realm forum.
 
 h2. Classes: General
 
+* Area-of-Effect Damage Caps: We've redesigned the way area damage is capped when hitting many targets. Instead of a hard cap on total damage done, the game now caps the total damage done at a value equal to the damage the spell would do if it hit 10 targets. In other words, if a spell does 1000 damage to each target, it would hit up to 10 targets for 1000 each, but with more than 10 targets, each target would take 1000 damage divided by the number of targets. 20 targets would be hit for 500 damage each in that example.
 * Default Equipment: Starting weapons are now more uniform. Rogues now start with a pair of daggers equipped. All other classes except shamans start with a 2-handed weapon equipped and the required skill already known. Shamans start with a 1-handed weapon and a shield, as they benefit more from the shield than they would from a 2-handed weapon.
 * Glancing Blows: The mage, warlock, and priest classes no longer have an increased chance for their melee attacks to be glancing blows; and the damage penalty due to their glancing blows is the same as for other classes.
 * Health and Mana Regeneration: These regeneration rates have been increased by up to 200% for low level characters. As a player's level increases, the regeneration rates gradually reduce, returning to normal rates at level 15.
+* Pet Resilience: All player pets now get 100% of their master's resilience.
 * Spell Mana Costs: These costs have been reduced for almost all lower level spell ranks. In general, if a spell decreased in cost with a higher level rank in patch 3.2.0, that spell now has the decreased cost at all ranks. In addition, spells learned before level 20 with reduced cast times and/or durations have even further reduced mana costs, proportionate to their reduction in cast time or damage.
+* Taunt Diminishing Returns: We've revised the system for diminishing returns on Taunt so that creatures do not become immune to Taunt until after 5 Taunts have landed. The duration of the Taunt effect will be reduced by 35% instead of 50% for each taunt landed. In addition, most creatures in the world will not be affected by Taunt diminishing returns at all. Creatures will only have Taunt diminishing returns if they have been specifically flagged for that behavior based on the design of a given encounter.
 
 h2. Races: General
 
+* Orc and troll shamans now have their own unique totem art.
 * Racial Attribute Bonuses: These bonuses have been recalibrated to even out the amount of starting health on the various races. All races start with a standardized level of stamina, except for orcs, dwarves, and tauren who now start with 1 extra point of stamina. For each class, bonuses and penalties to all attributes have been adjusted so that each race has an equal attribute total.
+
+h2. PvP
+
+h3. Battlegrounds
+
+* Battleground Experience: Battleground experience gained is now based on the level of the player gaining experience, rather than the highest possible player level in that Battleground.
 
 h2. Death Knights
 
@@ -33,8 +45,13 @@ h3. Talents
 h4. Unholy
 
 * Night of the Dead: Now reduces the damage your pet takes from area-of-effect damage by 45/90%, but no longer applies to area-of-effect damage caused by other players.
+* Scourge Strike: Redesigned. The base ability now deals 50% weapon damage plus an additional amount as physical damage. However, for each disease the death knight has on the target, the target will take additional shadow damage equal to 25% of the physical damage done.
+* Unholy Blight: This talent now deals only 10% of Death Coil damage as a damage-over-time effect on the target.
 
 h2. Druids
+
+* Prowl: This ability no longer has multiple ranks and penalizes movement speed by 30%.
+* Rejuvenation: Rank 15 of this spell was providing a 15-second duration. It has been correctly reduced to 12 seconds.
 
 h3. Pets
 
@@ -42,6 +59,8 @@ h3. Pets
 
 h2. Hunters
 
+* Call Stabled Pet: Cooldown reduced from 30 minutes to 5 minutes.
+* Deterrence: Now also increases the chance for ranged attacks to miss the hunter by 100% while under its effect.
 * Misdirection: Redesigned. Instead of having finite charges, it now begins a 4-second timer when the hunter using Misdirection performs a threat-generating attack, during which all threat generated by the hunter goes to the friendly target. In addition, multiple hunters can now misdirect threat to the same friendly target simultaneously.
 
 h3. Talents
@@ -52,7 +71,14 @@ h4. Beast Mastery
 
 h3. Pets
 
-* Avoidance: Now reduces the damage your pet takes from area-of-effect damage by 30/60/90%, but no longer applies to area-of-effect damage caused by other players.
+* Avoidance: This talent has been replaced by Culling the Herd. Hunter pets now innately take 90% less damage from area-of-effect abilities like all other class pets. This does not apply to area-of-effect damage caused by other players.
+* Cower: Redesigned. This ability no longer affects threat, and instead reduces damage taken by the pet by 40% for 6 seconds with a 45-second cooldown. While cowering, the pet's movement speed is 50% of normal speed. Cower now only has a single rank and is available at pet level 20.
+* Culling the Herd: This pet talent has replaced the Avoidance talent in the pet trees (Hunter pets now gain that benefit automatically without expenditure of talent points). Culling the Herd increases pet and hunter damage by 1/2/3% for 10 seconds each time the pet deals a critical strike with Claw, Bite, or Smack.
+* Demoralizing Screech: The attack power reduction from this ability has been increased by 40%, equaling the maximum possible attack power reduction from the abilities of other classes.
+* Improved Cower: Redesigned. This ability now reduces the movement penalty of Cower by 50%/100%.
+* Venom Web Spray: Range increased from 20 yards to 30 yards.
+* Web: Range increased from 20 yards to 30 yards.
+* Wolverine Bite: This talent is now enabled when the pet lands a critical strike rather than from the target dodging the pet's attacks. In addition, this talent no longer has a prerequisite.
 
 h2. Mages
 
@@ -66,7 +92,22 @@ h3. Pets
 
 * Avoidance (passive): Now reduces the damage your pets take from area-of-effect damage by 90%, but no longer applies to area-of-effect damage caused by other players.
 
+h2. Paladins
+
+h3. Talents
+
+h4. Protection
+
+* Divine Guardian: This talent no longer increases the amount of damage transferred to the paladin from Divine Sacrifice. Instead it causes all raid and party members to take 10/20% reduced damage while Divine Sacrifice is active.
+* Divine Sacrifice: Redesigned. The effect of Divine Sacrifice is now party-only and the maximum damage which can be transferred is now limited to 40% of the paladin's health multiplied by the number of party members. In addition, the damage transferred to the paladin is now reduced by 50% before being applied to the paladin. Finally, the bug which allowed Divine Sacrifice to sometimes persist despite reaching its maximum damage has been fixed. Divine Sacrifice will now cancel as soon as its maximum damage value is exceeded in all cases.
+
 h2. Priests
+
+h3. Talents
+
+h4. Shadow
+
+* Mind Flay: The range of this ability has been increased to 30 yards, up from 20.
 
 h3. Pet
 
@@ -76,7 +117,7 @@ h2. Rogues
 
 * Dual Wield: Rogues now know this ability upon logging into the game at level 1.
 * Stealth: This ability no longer has multiple ranks. While active, the single rank of this ability (available at level 1) allows rogues to move at 70% movement speed.
-* Vanish: For the first second after this ability is used, neither Vanish nor Stealth can be broken by taking damage or being the victim of a hostile spell or ability.
+* Vanish: For the first half second after this ability is used, neither Vanish nor Stealth can be broken by taking damage or being the victim of a hostile spell or ability.
 
 h2. Shamans
 
@@ -90,9 +131,26 @@ h4. Elemental Combat
 
 h2. Warlocks
 
+h3. Talents
+
+h4. Affliction
+
+* Improved Felhunter: This talent now also reduces the cooldown on the felhunter's Shadow Bite ability by 2/4 seconds.
+
+h4. Demonology
+
+* Decimation: Redesigned. When Shadowbolt, Incinerate or Soul Fire hit a target that is at or below 35% health, the cast time of Soul Fire is reduced by 30/60% for 8 seconds. Soul Fires cast under the effect of Decimation cost no shards.
+* Demonic Pact: This talent now also increases the warlock's spell damage by 1/2/3/4/5%.
+
+h4. Destruction
+
+* Conflagrate: Redesigned. This talent now consumes an Immolate or Shadowflame effect on the enemy target to instantly deal damage equal to 9 seconds of Immolate or 8 seconds of Shadowflame, and causes additional damage over 3 seconds equal to 3 seconds of Immolate or 2 seconds of Shadowflame.
+
 h3. Pets
 
 * Avoidance (passive): Now reduces the damage your pets take from area-of-effect damage by 90%, but no longer applies to area-of-effect damage caused by other players.
+* Doomguard/Infernal: These pets now innately have Avoidance like all other warlock pets.
+* Shadow Bite: This pet ability now does 15% increased damage for each of the warlock's damage-over-time effects on the target.
 * Summon Imp: This ability is now available from the trainer for level 1 warlocks and no longer requires a quest to learn.
 
 h2. Warriors
@@ -125,9 +183,26 @@ h2. Professions
 
 h3. Enchanting
 
-* Black Magic: This enchantment now sometimes increases haste rating for the caster rather than inflicting the caster's target with a damage-over-time effect. It is also now triggered by landing any harmful spell rather than inflicting damage with a spell.
+* Enchant Weapon - Black Magic: This enchantment now sometimes increases haste rating for the caster rather than inflicting the caster's target with a damage-over-time effect. It is also now triggered by landing any harmful spell rather than inflicting damage with a spell.
+* Enchant Weapon - Unholy: This enchantment now inflicts Shadow damage in addition to its original effect.
+
+h3. First Aid
+
+* The training costs for most bandages have been reduced.
+
+h3. Mining
+
+* Enchanted Thorium: This ability now uses the Mining skill and is learned from trainers at a skill level of 250.
+
+h2. Quests
+
+* Weekly raid quests are now available from Archmage Lan'dalock in Dalaran. Every Tuesday at 3 AM the Council of Six will choose a different strategic target that must die from either: The Obsidian Sanctum, Naxxramas, The Eye of Eternity, Ulduar, Trial of the Crusader, or Icecrown Citadel.
+* For the various Icecrown Bomber quests at Aldur'thar: The Desolation Gate, players can now choose to eject from their bomber seats mid-run. If you do so, a rescue vehicle will transport your character back to the safety of your infra-green platform.
+* Azure Drakes and Dragons will now attack back when attacked by characters not riding Wyrmrest Defenders.
 
 h2. Items
+
+* Death Knight Tier-9 4-Piece Bonus: This set bonus no longer grants Frost Fever a chance to be a critical strike. It still grants that possibility to Blood Plague.
 
 h3. Glyphs
 
@@ -141,10 +216,33 @@ h4. Shamans
 
 h2. Bug Fixes
 
-h3. Druids
+h3. Items
 
-* Rejuvenation: Rank 15 of this spell was providing a 15-second duration. It has been correctly reduced to 12 seconds.
+* Glyph of Immolation Trap: Now properly increases damage by 100%.
 
-h3, Mages
+h3. Classes
+
+h4. Druids
+
+* Infected Wounds: This ability is no longer considered to be in the magical defense category; therefore spell hit no longer applies to its activation.
+* Nature's Grace: The tooltip now correctly indicates that it will not be activated from periodic spell critical strikes.
+
+h4. Hunters
+
+* Concussive Barrage: This ability is no longer subject to spell reflects.
+* Point of No Escape: This ability no longer stacks and now only functions for the hunter.
+
+h4. Mages
 
 * Flame Strike: Some ranks of this spell had an incorrect cast time of 3 seconds. All ranks now share a 2-second cast time.
+
+h4. Priests
+
+* Inspiration: The tooltip now correctly indicates that it also functions with Prayer of Mending.
+* Mind Flay: The rank 1 tooltip has been corrected to indicate the accurate damage and snare effect.
+
+h4. Warlocks
+
+* Curse of the Elements: Rank 4 has been increased to 11%, up from 10%.
+* Drain Soul: This spell now deals 4 times the normal damage for all ranks. Previously it was only ranks 6 and above.
+* Suffering (Voidwalker): Ranks 5-8 had the incorrect taunt radius of 5 yards and have all been adjusted to a 10-yard radius.
