@@ -530,7 +530,7 @@
 									</Button>
 								</Frames>
 							</Frame>
-							<Button name="MiniMapMeetingStoneFrame" hidden="true" inherits="MiniMapButtonTemplate">
+							<!--Button name="MiniMapLFGFrame" hidden="true" inherits="MiniMapButtonTemplate">
 								<Size>
 									<AbsDimension x="33" y="33"/>
 								</Size>
@@ -543,7 +543,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
-										<Texture name="MiniMapMeetingStoneBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+										<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 											<Size>
 												<AbsDimension x="52" y="52"/>
 											</Size>
@@ -564,29 +564,42 @@
 											<Anchor point="CENTER"/>
 										</Anchors>
 									</Frame>
+									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate">
+										<Scripts>
+											<OnLoad>
+												self.point = "TOPRIGHT";
+												self.relativeTo = self:GetParent();
+												self.relativePoint = "BOTTOMLEFT";
+												self.xOffset = 5;
+												self.yOffset = 10;
+												UIDropDownMenu_Initialize(self, MiniMapLFGFrameDropDown_Update, "MENU");
+											</OnLoad>
+										</Scripts>
+									</Frame>
 								</Frames>
 								<Scripts>
 									<OnLoad>
-										self:RegisterEvent("MEETINGSTONE_CHANGED");
+										self:RegisterEvent("LFG_UPDATE");
+										self:RegisterEvent("PLAYER_ENTERING_WORLD");
+										self:RegisterEvent("LFG_ROLE_CHECK_UPDATE");
+										self:RegisterEvent("LFG_PROPOSAL_UPDATE");
+										self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 										self:SetFrameLevel(self:GetFrameLevel()+1)
 									</OnLoad>
-									<OnClick>
-										ToggleLFGParentFrame();	--We don't use a direct function= in order to avoid having the first parameter be 'self'
-									</OnClick>
+									<OnClick function="MiniMapLFGFrame_OnClick"/>
 									<OnEvent>
-										if ( event == "MEETINGSTONE_CHANGED" ) then
-											if ( IsInLFGQueue() ) then
-												MiniMapMeetingStoneFrame:Show();
+											local mode, submode = MiniMapLFGFrame_GetMode();
+											if ( mode ) then
+												MiniMapLFGFrame:Show();
 											else
-												MiniMapMeetingStoneFrame:Hide();
+												MiniMapLFGFrame:Hide();
 											end
-										end
 									</OnEvent>
-									<OnEnter function="MiniMapMeetingStoneFrame_OnEnter"/>
-									<OnLeave function="GameTooltip_Hide"/>
+									<OnEnter function="MiniMapLFGFrame_OnEnter"/>
+									<OnLeave function="MiniMapLFGFrame_OnLeave"/>
 								</Scripts>						
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-							</Button>	
+							</Button-->	
 							<Button name="MinimapZoomIn">
 								<Size>
 									<AbsDimension x="32" y="32"/>

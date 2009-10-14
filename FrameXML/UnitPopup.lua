@@ -520,7 +520,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNINVITE" ) then
-			if ( (inParty == 0) or (isLeader == 0) or (instanceType == "pvp") or (instanceType == "arena") ) then
+			if ( (inParty == 0) or (isLeader == 0 and not IsPartyLFG()) or (instanceType == "pvp") or (instanceType == "arena") ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LEAVE" ) then
@@ -936,7 +936,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( value == "UNINVITE" ) then
-						if ( inParty == 0 or isLeader == 0 ) then
+						if ( inParty == 0 or (isLeader == 0 and not IsPartyLFG()) ) then
 							enable = 0;
 						end
 					elseif ( value == "PROMOTE" ) then

@@ -156,7 +156,46 @@
 			</OnMouseUp>
 		</Scripts>
 	</Frame>
-	<Button name="WorldMapQuestPOITemplate" hidden="true" virtual="true">
+	<Button name="WorldMapQuestPOITemplate" hidden="true" virtual="true">					
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>						
+		<Layers>
+			<Layer level="BACKGROUND">		
+				<Texture name="$parentIconBackground" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" parentKey="circle">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>			
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.879" right="1" top="0.879" bottom="1" />
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIconNumber" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" parentKey="number">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>			
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>	
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="WorldMapQuestPOI_OnClick" />
+		</Scripts>
+	</Button>	
+	<Button name="zzOLDWorldMapQuestPOITemplate" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="22" y="22"/>
 		</Size>
@@ -273,54 +312,17 @@
 							</Offset>						
 						</Anchor>
 					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8" />
+					<Color r="1" g="1" b="1" />
 				</Fontstring>				
 			</Layer>
 		</Layers>		
 		<Scripts>
-			<OnEnter>
-				if ( WorldMapQuestScrollChildFrame.selected == self ) then
-					return;
-				end
-				WorldMapQuestHighlightedFrame:SetPoint("TOPLEFT", self, "TOPLEFT");
-				WorldMapQuestHighlightedFrame:SetHeight(self:GetHeight());
-				WorldMapQuestHighlightedFrame:Show();
-			</OnEnter>
-			<OnLeave>
-				if ( WorldMapQuestScrollChildFrame.selected == self ) then
-					return;
-				end
-				WorldMapQuestHighlightedFrame:Hide();
-			</OnLeave>
+			<OnEnter function="WorldMapQuestFrame_OnEnter" />
+			<OnLeave function="WorldMapQuestFrame_OnLeave" />
 			<OnMouseDown>
 				self.details:SetPoint("TOPLEFT", 35, -9);
 			</OnMouseDown>
-			<OnMouseUp>		
-				self.details:SetPoint("TOPLEFT", 34, -8);
-				if ( self:IsMouseOver() ) then
-					if ( WorldMapQuestScrollChildFrame.selected == self ) then
-						WorldMapQuestScrollChildFrame.selected = nil;
-						WorldMapQuestHighlightedFrame:SetPoint("TOPLEFT", self, "TOPLEFT");
-						WorldMapQuestHighlightedFrame:SetHeight(self:GetHeight());
-						WorldMapQuestHighlightedFrame:Show();
-						WorldMapQuestSelectedFrame:Hide();					
-					else
-						WorldMapQuestScrollChildFrame.selected = self;
-						WorldMapQuestSelectedFrame:SetPoint("TOPLEFT", self, "TOPLEFT");
-						WorldMapQuestSelectedFrame:SetHeight(self:GetHeight());
-						WorldMapQuestSelectedFrame:Show();					
-						WorldMapQuestHighlightedFrame:Hide();
-					end
-					if ( not WorldMapFrame.sizedDown ) then
-						-- load quest
-						SelectQuestLogEntry(self.questId);
-						QuestInfo_Display(QUEST_TEMPLATE_MAP1, WorldMapQuestDetailScrollChildFrame);
-						WorldMapQuestDetailScrollFrameScrollBar:SetValue(0);
-						QuestInfo_Display(QUEST_TEMPLATE_MAP2, WorldMapQuestRewardScrollChildFrame);
-						WorldMapQuestRewardScrollFrameScrollBar:SetValue(0);
-					end
-				end
-			</OnMouseUp>
+			<OnMouseUp function="WorldMapQuestFrame_OnMouseUp" />
 		</Scripts>
 	</Frame>
 </Ui>

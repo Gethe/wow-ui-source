@@ -259,6 +259,17 @@ function ScrollFrame_OnLoad(self)
 	scrollbar:SetMinMaxValues(0, 0);
 	scrollbar:SetValue(0);
 	self.offset = 0;
+	
+	if ( self.scrollBarHideable ) then
+		_G[self:GetName().."ScrollBar"]:Hide();
+		_G[scrollbar:GetName().."ScrollDownButton"]:Hide();
+		_G[scrollbar:GetName().."ScrollUpButton"]:Hide();
+	else
+		_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
+		_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
+		_G[scrollbar:GetName().."ScrollDownButton"]:Show();
+		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
+	end
 end
 
 function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)

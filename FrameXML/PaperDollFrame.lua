@@ -132,6 +132,7 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
 	self:RegisterEvent("KNOWN_TITLES_UPDATE");
+	self:RegisterEvent("UNIT_NAME_UPDATE");
 end
 
 function PaperDoll_IsEquippedSlot (slot)
@@ -171,7 +172,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 			end
 		end
 		PaperDollFrame_UpdateStats(self);
-	elseif ( event == "KNOWN_TITLES_UPDATE" ) then
+	elseif ( event == "KNOWN_TITLES_UPDATE" or (event == "UNIT_NAME_UPDATE" and unit == "player")) then
 		PlayerTitleFrame_UpdateTitles();		
 	end
 	
@@ -2676,9 +2677,10 @@ function SetTitleByName(name)
 			local title = strlower(strtrim(GetTitleName(i)));
 			if(title:find(name) == 1) then
 				SetCurrentTitle(i);
-				return;
+				return true;
 			end
 		end
 	end
+	return false;
 end
 

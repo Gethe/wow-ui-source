@@ -206,32 +206,95 @@ end
 function Minimap_ZoomOut()
 	MinimapZoomOut:Click();
 end
-
-function MiniMapMeetingStoneFrame_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	MiniMapMeetingStoneFrame_FormatTooltip(GetLFGStatusText());
+--[[
+function MiniMapLFGFrame_GetMode()
+	local proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers = GetLFGProposal();
+	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
+	local roleCheckInProgress, slots, members = GetLFGRoleUpdate();
+	
+	if ( proposalExists and not hasResponded ) then
+		return "proposal", "unaccepted";
+	elseif ( proposalExists ) then
+		return "proposal", "accepted";
+	elseif ( queued ) then
+		if ( inParty and not IsPartyLeader() ) then
+			return "queued", "unempowered";
+		else
+			return "queued", "empowered";
+		end
+	elseif ( roleCheckInProgress ) then
+		return "rolecheck";
+	elseif ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
+		return "lfgparty";
+	end
 end
 
-function MiniMapMeetingStoneFrame_FormatTooltip(...)
-	local text;
-	-- If looking for more
-	if ( select(1, ...) ) then
-		GameTooltip:SetText(LFM_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		text = select(3, ...);
+function MiniMapLFGFrameDropDown_Update()
+	local info = UIDropDownMenu_CreateInfo();
+	
+	local mode, submode = MiniMapLFGFrame_GetMode();
+
+	--This one can appear in addition to others, so we won't just check the mode.
+	if ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
+		info.text = TELEPORT_TO_DUNGEON;
+		info.func = LFGTeleport;
+		UIDropDownMenu_AddButton(info);
+	end
+	
+	if ( mode == "proposal" and submode == "unaccepted" ) then
+		info.text = ENTER_DUNGEON;
+		info.func = AcceptProposal;
+		UIDropDownMenu_AddButton(info);
+		
+		info.text = LEAVE_QUEUE;
+		info.func = RejectProposal;
+		UIDropDownMenu_AddButton(info);
+	elseif ( mode == "queued" ) then
+		info.text = LEAVE_QUEUE;
+		info.func = LeaveLFG;
+		info.disabled = (submode == "unempowered");
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function MiniMapLFGFrame_OnClick(self, button)
+	if ( button == "RightButton" ) then
+		--Display dropdown
+		ToggleDropDownMenu(1, nil, MiniMapLFGFrameDropDown, "MiniMapLFGFrame", 0, -5);
 	else
-		-- Otherwise looking for group
-		GameTooltip:SetText(LFG_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		local numCriteria = select(2, ...)+2;
-		text = "";
-		for i=3, numCriteria do
-			if ( select(i, ...) ~= "" ) then
-				text = text..select(i, ...).."\n";
-			end
+		local mode, submode = MiniMapLFGFrame_GetMode();
+		if ( mode == "proposal" ) then
+			StaticPopupSpecial_Show(LFDDungeonReadyPopup);
+		else
+			ToggleLFDParentFrame();
 		end
 	end
-	GameTooltip:AddLine(text);
-	GameTooltip:Show();
 end
+
+function MiniMapLFGFrame_OnEnter(self)
+	local mode, submode = MiniMapLFGFrame_GetMode();
+	if ( mode == "queued" ) then
+		LFDSearchStatus:Show();
+	elseif ( mode == "proposal" ) then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		GameTooltip:AddLine(DUNGEON_GROUP_FOUND_TOOLTIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(CLICK_HERE_FOR_MORE_INFO, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+		GameTooltip:Show();
+	elseif ( mode == "rolecheck" ) then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		GameTooltip:AddLine(ROLE_CHECK_IN_PROGRESS_TOOLTIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+		GameTooltip:Show();
+	end
+end
+
+function MiniMapLFGFrame_OnLeave(self)
+	GameTooltip:Hide();
+	LFDSearchStatus:Hide();
+end
+]]
 
 function MinimapButton_OnMouseDown(self, button)
 	if ( self.isDown ) then

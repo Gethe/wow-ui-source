@@ -456,3 +456,8 @@ GMTICKET_ASSIGNEDTOGM_STATUS_ESCALATED = 2;		-- ticket is in the escalation queu
 GMTICKET_OPENEDBYGM_STATUS_NOT_OPENED = 0;		-- ticket has never been opened by a gm
 GMTICKET_OPENEDBYGM_STATUS_OPENED = 1;			-- ticket has been opened by a gm
 
+
+-- indicies for adding lights ModelFFX:Add*Light
+LIGHT_LIVE  = 0;
+LIGHT_GHOST = 1;
+

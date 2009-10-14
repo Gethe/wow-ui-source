@@ -23,6 +23,7 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PET_BAR_SHOWGRID");
 	self:RegisterEvent("PET_BAR_HIDEGRID");
 	self:RegisterEvent("PET_BAR_HIDE");
+	self:RegisterEvent("PET_BAR_UPDATE_USABLE");
 	self.showgrid = 0;
 	PetActionBar_Update(self);
 	if ( PetHasActionBar() ) then
@@ -43,7 +44,7 @@ function PetActionBar_OnEvent (self, event, ...)
 			UnlockPetActionBar();
 			HidePetActionBar();
 		end
-	elseif ( event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" ) then
+	elseif ( event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" or event == "PET_BAR_UPDATE_USABLE" ) then
 		PetActionBar_Update(self);
 	elseif ( (event == "UNIT_FLAGS") or (event == "UNIT_AURA") ) then
 		if ( arg1 == "pet" ) then

@@ -2778,6 +2778,21 @@ StaticPopupDialogs["TALENTS_INVOLUNTARILY_RESET_PET"] = {
 	timeout = 0,
 };
 
+StaticPopupDialogs["VOTE_BOOT_PLAYER"] = {
+	text = VOTE_BOOT_PLAYER,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		SetLFGBootVote(true);
+	end,
+	OnCancel = function(self)
+		SetLFGBootVote(false);
+	end,
+	showAlert = true,
+	noCancelOnReuse = 1,
+	timeout = 0,
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then

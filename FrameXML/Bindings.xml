@@ -690,7 +690,7 @@
 		ToggleFriendsFrame(5);
 	</Binding>
 	<Binding name="TOGGLELFGPARENT">
-		ToggleLFGParentFrame();
+		--ToggleLFDParentFrame();
 	</Binding>
 	<Binding name="TOGGLELFGTAB">
 		ToggleLFGParentFrame(1);

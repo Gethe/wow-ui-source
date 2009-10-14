@@ -421,8 +421,8 @@
 						WorldMap_ToggleSize();
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\WorldMap\UI-Panel-SmallerButton-Up"/>
-				<PushedTexture file="Interface\WorldMap\UI-Panel-SmallerButton-Down"/>
+				<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-SmallerButton-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="WorldMapFrameSizeUpButton" hidden="true">
@@ -441,8 +441,8 @@
 						WorldMap_ToggleSize();
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\WorldMap\UI-Panel-BiggerButton-Up"/>
-				<PushedTexture file="Interface\WorldMap\UI-Panel-BiggerButton-Down"/>
+				<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Frame name="WorldMapDetailFrame" hidden="false">
@@ -603,6 +603,14 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="WorldMapBlobFrameTexture" setAllPoints="true" />
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="WorldMapBlobFrame_OnLoad" />
+				</Scripts>
 			</Frame>
 			<Button name="WorldMapButton">
 				<Size>
@@ -833,6 +841,18 @@
 					<OnUpdate function="WorldMapButton_OnUpdate"/>
 				</Scripts>
 			</Button>
+			<Frame name="WorldMapPOIFrame">
+				<Size>
+					<AbsDimension x="1002" y="668"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
 			<ScrollFrame name="WorldMapQuestScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="283" y="670"/>

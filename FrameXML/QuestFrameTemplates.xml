@@ -82,61 +82,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Button name="QuestItemTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="147" y="41"/>
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentIconTexture">
-					<Size>
-						<AbsDimension x="39" y="39"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
-					<Size>
-						<AbsDimension x="128" y="64"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-10" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="90" y="36"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNameFrame">
-							<Offset>
-								<AbsDimension x="15" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture">
-							<Offset>
-								<AbsDimension x="-1" y="1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+	<Button name="QuestItemTemplate" inherits="LargeItemButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
 				self.hasItem = 1;

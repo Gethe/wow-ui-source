@@ -2110,7 +2110,9 @@ end
 SlashCmdList["SET_TITLE"] = function(msg)
 	local name = SecureCmdOptionParse(msg);
 	if ( name and name ~= "") then
-		SetTitleByName(name);
+		if(not SetTitleByName(name)) then
+			UIErrorsFrame:AddMessage(TITLE_DOESNT_EXIST, 1.0, 0.1, 0.1, 1.0);
+		end
 	end
 end
 
