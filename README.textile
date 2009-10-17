@@ -9,6 +9,8 @@ h2. General
 * Dazed: Creatures attacking a player from behind can no longer cause players level 1-5 to be dazed, and have a reduced chance to cause players level 6-10 to be dazed.
 * The existing /welcome emote now greets/welcomes targets (character says "hello"), while the new /yw is for saying "you're welcome."
 * Many of the tail sweeps with knockback effects will no longer hit players' pets.
+* Level 1 characters no longer start with food or water in their inventory.
+* Attack is now called Auto Attack. The tooltip has been changed to reflect that the player will continue automatically attacking a target.
 
 h3. Icecrown Citadel
 
@@ -18,6 +20,7 @@ h3. Icecrown Citadel
 h2. Classes: General
 
 * Area-of-Effect Damage Caps: We've redesigned the way area damage is capped when hitting many targets. Instead of a hard cap on total damage done, the game now caps the total damage done at a value equal to the damage the spell would do if it hit 10 targets. In other words, if a spell does 1000 damage to each target, it would hit up to 10 targets for 1000 each, but with more than 10 targets, each target would take 1000 damage divided by the number of targets. 20 targets would be hit for 500 damage each in that example.
+* Attack: Level 1 druids, mages, priests, and warlocks will no longer start with the Attack button placed on their action bars by default.
 * Default Equipment: Starting weapons are now more uniform. Rogues now start with a pair of daggers equipped. All other classes except shamans start with a 2-handed weapon equipped and the required skill already known. Shamans start with a 1-handed weapon and a shield, as they benefit more from the shield than they would from a 2-handed weapon.
 * Glancing Blows: The mage, warlock, and priest classes no longer have an increased chance for their melee attacks to be glancing blows; and the damage penalty due to their glancing blows is the same as for other classes.
 * Health and Mana Regeneration: These regeneration rates have been increased by up to 200% for low level characters. As a player's level increases, the regeneration rates gradually reduce, returning to normal rates at level 15.
@@ -52,7 +55,7 @@ h2. Druids
 
 * Prowl: This ability no longer has multiple ranks and penalizes movement speed by 30%.
 * Rebirth: The cooldown on this spell has been lowered from 20 minutes down to 10 minutes. Cannot be used in Arenas.
-* Rejuvenation: Rank 15 of this spell was providing a 15-second duration. It has been correctly reduced to 12 seconds.
+* Rejuvenation: The base duration on all ranks of this spell is now 15 seconds.
 
 h3. Talents
 
@@ -83,6 +86,7 @@ h3. Pets
 * Culling the Herd: This pet talent has replaced the Avoidance talent in the pet trees (Hunter pets now gain that benefit automatically without expenditure of talent points). Culling the Herd increases pet and hunter damage by 1/2/3% for 10 seconds each time the pet deals a critical strike with Claw, Bite, or Smack.
 * Demoralizing Screech: The attack power reduction from this ability has been increased by 40%, equaling the maximum possible attack power reduction from the abilities of other classes.
 * Improved Cower: Redesigned. This ability now reduces the movement penalty of Cower by 50%/100%.
+* Pet Leveling: Hunter pets now need only 5% of the experience a player needs to level, down from 10%.
 * Venom Web Spray: Range increased from 20 yards to 30 yards.
 * Web: Range increased from 20 yards to 30 yards.
 * Wolverine Bite: This talent is now enabled when the pet lands a critical strike rather than from the target dodging the pet's attacks. In addition, this talent no longer has a prerequisite.
@@ -97,11 +101,20 @@ h4. Arcane
 
 h4. Fire
 
+* Blast Wave: The mana cost of this talent has been significantly reduced.
+* Burning Determination: The duration of interrupt immunity granted by this talent is now 20 seconds.
+* Dragon's Breath: The mana cost of this talent has been significantly reduced.
+* Firestarter: When this talent is triggered, it makes the next Flamestrike cost no mana in addition to being instant.
 * Improved Scorch: The debuff from this talent no longer stacks, and instead can apply the full effect from a single cast of Scorch.
+
+h4. Frost
+
+* Frozen Core: This talent now also causes Ice Lance critical strikes to reduce the cast time of the mage's next Frostbolt or Frostfire Bolt by 0.4/0.7/1 seconds.
 
 h3. Pets
 
 * Avoidance (passive): Now reduces the damage your pets take from area-of-effect damage by 90%, but no longer applies to area-of-effect damage caused by other players.
+* Water Elemental: Waterbolt mana cost reduced by 80%.
 
 h2. Paladins
 
@@ -123,7 +136,7 @@ h4. Shadow
 * Improved Devouring Plague: This spell now deals 10/20/30% of its total periodic effect instantly, up from 5/10/15%.
 * Mind Flay: The range of this ability has been increased to 30 yards, up from 20.
 * Shadowform: This talent also now causes Devouring Plague, Shadow Word: Pain, and Vampiric Touch to benefit from haste. Both the period length and the duration of these spells will be reduced by haste. In addition, the mana cost has been reduced from 32% to 13% of base mana.
-* Vampiric Embrace: This ability is now provides a 30-minute buff that cannot be dispelled, instead of a target debuff.
+* Vampiric Embrace: This talent now provides a 30-minute buff that cannot be dispelled, instead of a target debuff and only generates healing for single-target shadow damage spells.
 
 h3. Pet
 
@@ -138,13 +151,21 @@ h2. Rogues
 h2. Shamans
 
 * Fire Nova Totem: This totem has been replaced with a new spell, Fire Nova, which is available at the same ranks as the old Fire Nova Totem. Existing characters will automatically learn this new spell in place of the totem. With a Fire Totem active, shamans will be able to use Fire Nova (fire magic) to emit the same area-of-effect damage as the old Fire Nova Totem from the active Fire Totem, not consuming the totem in the process. Fire Nova will activate a 1.5-second global cooldown when used and has a 10-second spell cooldown. The caster must be within 30 yards of the totem to use this ability, but does not need to be within line of sight of the totem.
-* Reincarnation: The cooldown on this spell has been lowered from 60 minutes down to 50 minutes (Improved Reincarnation will continue to lower the cooldown by 10/20 minutes).
+* Reincarnation: The cooldown on this spell has been lowered from 60 minutes down to 30 minutes.
 
 h3. Talents
 
 h4. Elemental Combat
 
 * Improved Fire Nova Totem: Renamed Improved Fire Nova. This talent now provides an additional 10/20% damage to the spell and reduces the cooldown by 2/4 seconds.
+
+h4. Enhancement
+
+* Earth's Grasp: This talent now also reduces the cooldown of the Stoneclaw and Earthbind totems by 15/30%.
+
+h4. Restoration
+
+* Improved Reincarnation: This talent now reduces the cooldown of Reincarnation by 7/15 minutes, down from 10/20 minutes. Reincarnation cannot be used in Arenas.
 
 h2. Warlocks
 
@@ -155,6 +176,7 @@ h3. Talents
 h4. Affliction
 
 * Improved Felhunter: This talent now also reduces the cooldown on the felhunter's Shadow Bite ability by 2/4 seconds.
+* Pandemic: This talent now also increases the critical strike damage bonus of the felhunter's Shadow Bite spell by 100%.
 
 h4. Demonology
 
@@ -165,6 +187,7 @@ h4. Demonology
 h4. Destruction
 
 * Conflagrate: Redesigned. This talent now consumes an Immolate or Shadowflame effect on the enemy target to instantly deal damage equal to 9 seconds of Immolate or 8 seconds of Shadowflame, and causes additional damage over 3 seconds equal to 3 seconds of Immolate or 2 seconds of Shadowflame.
+* Ruin: This talent now also increases the critical strike damage bonus of the imp's Firebolt spell by 100%.
 
 h3. Pets
 
@@ -186,7 +209,7 @@ h4. Protection
 h2. User Interface
 
 * Non spell-based tracking now persists through logout.
-* Any party member may mark raid targets.
+* Any party member may mark targets (this does not apply to raid groups).
 * Users will be warned when their talents are reset due to a new patch.
 * "/Settitle" command has been added.
 * Instant quest text is on by default.
@@ -207,14 +230,15 @@ h3. Looking For Group System
 
 * This feature is undergoing several improvements and is not available for testing at this time.
 
-h3. Character and Creature Nameplates
+h3. Unit Nameplates
 
-* The range at which players can see nameplates has been significantly expanded.
-* Players can no longer see nameplates through objects which block line of sight.
-** As long as you are able to peer through the doorway of a room, you will see nameplates of characters and creatures in that room.
-** Pillars and bridges in Arenas will not hide friendly or enemy nameplates.
-* Totem nameplates can be toggled off under "PRODUCTION" settings via "Interface Options" on the test realms.
-* Instead of nameplates for large groups of players or creatures trying to sort themselves, they will now overlap. This functionality can be toggled off under "PRODUCTION" settings via "Interface Options" on the test realms.
+* The range at which players can see unit nameplates has been increased by 40 yards.
+* Unit nameplates are now subject to line-of-sight limitations in certain situations (this does not pertain to objects like Arena pillars or bridges).
+* Players can now adjust select unit nameplate display settings listed below under Interface Options via the "Names" tab.
+** Friendly/enemy pet nameplates can be toggled.
+** Enemy totem nameplates can be toggled (friendly totem nameplates are never displayed).
+** Players can choose whether or not unit nameplates overlap.
+* Unit nameplates for critters are never displayed.
 
 h3. Macro Changes
 
@@ -254,6 +278,21 @@ h2. Quests
 * Weekly raid quests are now available from Archmage Lan'dalock in Dalaran. Every Tuesday at 3 AM the Council of Six will choose a different strategic target that must die from either: The Obsidian Sanctum, Naxxramas, The Eye of Eternity, Ulduar, Trial of the Crusader, or Icecrown Citadel.
 * For the various Icecrown Bomber quests at Aldur'thar: The Desolation Gate, players can now choose to eject from their bomber seats mid-run. If you do so, a rescue vehicle will transport your character back to the safety of your infra-green platform.
 * Azure Drakes and Dragons will now attack back when attacked by characters not riding Wyrmrest Defenders.
+* Brittle Revenants, quest creatures fought for the Sons of Hodir daily quest "Hot and Cold," no longer cast Shield Slam.
+
+h2. Reputation
+
+* The following reputations have been sped up by roughly 30%:
+** Argent Crusade
+** Alliance Vanguard
+** Horde Expedition
+** Kirin Tor
+** Knights of the Ebon Blade
+** Sons of Hodir
+** Wyrmrest Accord
+* Sons of Hodir quests now give more reputation overall.
+* Top-level helm and shoulder faction-related enchants are now available as Bind-on-Account items that do not require any faction to use once purchased (they still require the appropriate faction level to purchase).
+* Reputation commendations can now be purchased for 1 Emblem of Triumph each.
 
 h2. Items
 
@@ -265,9 +304,33 @@ h4. Death Knights
 
 * Glyph of Icy Touch: Instead of granting additional runic power, this glyph now causes Frost Fever to deal 20% additional damage.
 
+h4. Druids
+
+* Glyph of Rapid Rejuvenation: This glyph allows for the druid's haste to reduce the time between the periodic healing effects of Rejuvenation.
+
+h4. Mages
+
+* Glyph of Improved Scorch: Renamed Glyph of Scorch. This glyph now increases the damage of Scorch by 20%.
+* Glyph of Eternal Water: This glyph allows for a summoned Water Elemental to last indefinitely, but it can no longer cast Freeze.
+
+h4. Priests
+
+* Glyph of Mind Flay: This glyph now increases the damage done by Mind Flay by 10% when the target is afflicted with Shadow Word: Pain.
+* Glyph of Shadow Word: Pain: The periodic damage ticks of Shadow Word: Pain now restore 1% of the priest's base mana with this glyph.
+* Glyph of Shadow: While in Shadowform, this glyph causes non-periodic spell critical strikes to increase spell power by 30%, up from 10%, of the priest's total spirit for 10 seconds.
+
 h4. Shamans
 
 * Glyph of Fire Nova Totem: Renamed Glyph of Fire Nova. This glyph now reduces the cooldown of Fire Nova by 3 seconds.
+
+h4. Warlocks
+
+* Glyph of Life Tap: The effect of this glyph now has a chance of activating when Dark Pact is used.
+* Glyph of Quick Decay: This glyph allows for the warlock's haste to reduce the time between periodic damage effects of Corruption.
+
+h4. Warriors
+
+* Glyph of Victory Rush: This glyph now increases the critical strike chance of Victory Rush by 70%, regardless of the percentage of the target's remaining health.
 
 h2. Bug Fixes
 
