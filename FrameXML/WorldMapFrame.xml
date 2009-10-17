@@ -417,9 +417,7 @@
 					</Anchor>
 				</Anchors>				
 				<Scripts>
-					<OnClick>
-						WorldMap_ToggleSize();
-					</OnClick>
+					<OnClick function="WorldMapFrameSizeDownButton_OnClick" />
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-SmallerButton-Down"/>
@@ -437,9 +435,7 @@
 					</Anchor>
 				</Anchors>				
 				<Scripts>
-					<OnClick>
-						WorldMap_ToggleSize();
-					</OnClick>
+					<OnClick function="WorldMapFrameSizeDownButton_OnClick" />
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
@@ -852,6 +848,34 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentHighlight" file="Interface\WorldMap\UI-QuestPoi-IconGlow.tga" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="50" y="50"/>
+							</Size>										
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>								
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMouseOverHighlight" file="Interface\WorldMap\UI-QuestPoi-IconGlow.tga" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="50" y="50"/>
+							</Size>										
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>								
+								</Anchor>
+							</Anchors>
+						</Texture>						
+					</Layer>
+				</Layers>
 			</Frame>
 			<ScrollFrame name="WorldMapQuestScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
@@ -993,7 +1017,6 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-
 			<ScrollFrame name="WorldMapQuestDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="313" y="199"/>
@@ -1016,7 +1039,6 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-
 			<ScrollFrame name="WorldMapQuestRewardScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="313" y="199"/>
@@ -1038,8 +1060,7 @@
 						</Anchors>
 					</Frame>
 				</ScrollChild>
-			</ScrollFrame>
-			
+			</ScrollFrame>			
 			<CheckButton name="WorldMapQuestShowObjectives" inherits="OptionsSmallCheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
@@ -1052,12 +1073,15 @@
 				<Scripts>
 					<OnLoad>
 						self:SetScale(0.9);
-						_G[self:GetName().."Text"]:SetText("Show Quest Objectives");
+						_G[self:GetName().."Text"]:SetText(SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT);
 					</OnLoad>
-					<OnClick function="WorldMapQuestShowObjectives_OnClick"/>
+					<OnClick>
+						SetCVar("questPOI", self:GetChecked());
+						WorldMapQuestShowObjectives_Toggle();
+					</OnClick>
 					<OnEnter>
 						WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
-						WorldMapTooltip:SetText("[PH] ...", nil, nil, nil, nil, 1);
+						WorldMapTooltip:SetText(OPTION_TOOLTIP_SHOW_QUEST_OBJECTIVES_ON_MAP, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
 						WorldMapTooltip:Hide();

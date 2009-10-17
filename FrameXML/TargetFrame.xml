@@ -175,12 +175,12 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Button name="TargetFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" parent="UIParent" inherits="SecureUnitButtonTemplate" virtual="true">
+	<Button name="TargetFrameTemplate" frameStrata="LOW" toplevel="true" parent="UIParent" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="232" y="100"/>
 		</Size>	
 		<HitRectInsets>
-			<AbsInset left="0" right="8" top="10" bottom="20"/>
+			<AbsInset left="0" right="40" top="10" bottom="20"/>
 		</HitRectInsets>	
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -644,13 +644,43 @@
 				self.showThreat = true;
 				self.showPortrait = true;
 				self.showClassification = true;
+				self.showAuraCount = true;
 				TargetFrame_OnLoad(self, "target", TargetFrameDropDown_Initialize);
-				TargetFrame_CreateSpellbar(self);
+				TargetFrame_CreateSpellbar(self, "PLAYER_TARGET_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "targettarget");
+				self:RegisterEvent("PLAYER_TARGET_CHANGED");
 			</OnLoad>
 		</Scripts>
 	</Button>
-		
+	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate">
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="250" y="-240"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self.noTextPrefix = true;
+				self.showLevel = true;
+				self.showPVP = true;
+				self.showLeader = true;
+				self.showThreat = true;
+				self.showPortrait = true;
+				self.showClassification = true;
+				self.showAuraCount = true;
+				TargetFrame_OnLoad(self, "focus", FocusFrameDropDown_Initialize);
+				TargetFrame_CreateSpellbar(self, "PLAYER_FOCUS_CHANGED");
+				TargetFrame_CreateTargetofTarget(self, "focus-target");
+				self:RegisterEvent("PLAYER_FOCUS_CHANGED");
+				self:RegisterEvent("VARIABLES_LOADED");
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart function="FocusFrame_OnDragStart"/>
+			<OnDragStop function="FocusFrame_OnDragStop"/>			
+		</Scripts>
+	</Button>		
 	<Button name="Boss1TargetFrame" inherits="TargetFrameTemplate">
 		<Anchors>
 			<Anchor point="TOPRIGHT">

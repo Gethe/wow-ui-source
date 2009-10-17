@@ -959,6 +959,12 @@ NamePanelOptions = {
 	UnitNameFriendlyPetName = { text = "UNIT_NAME_FRIENDLY_PETS" },
 	UnitNameFriendlyCreationName = { text = "UNIT_NAME_FRIENDLY_CREATIONS" },
 	UnitNameCompanionName = { text = "UNIT_NAME_COMPANIONS" },
+	nameplateShowEnemies = { text = "UNIT_NAMEPLATES_SHOW_ENEMIES" },
+	nameplateShowFriends = { text = "UNIT_NAMEPLATES_SHOW_FRIENDS" },
+	nameplateEnemyTotems = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_TOTEMS" },
+	nameplateShowEnemyPets = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_PETS" },
+	nameplateShowFriendPets = { text = "UNIT_NAMEPLATES_SHOW_FRIENDLY_PETS" },
+	nameplateAllowOverlap = { text = "UNIT_NAMEPLATES_ALLOW_OVERLAP" },
 }
 
 -- [[ Combat Text Options Panel ]] --
@@ -1413,7 +1419,6 @@ function InterfaceOptionsHelpPanel_SetTutorials (value)
 		ResetTutorials();
 	elseif ( value == "0" and TutorialsEnabled() ) then
 		ClearTutorials();
-		TutorialFrame_HideAllAlerts();
 	end
 end
 
@@ -1496,11 +1501,3 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createIn
 		end
 	end
 end
-
-
--- [[ Production Options Panel ]] --
-
-ProductionPanelOptions = {
-	nameplateAllowOverlap = { text = "Allow Nameplates to Overlap" },
-	nameplateEnemyTotems = { text = "Display Nameplates for Enemy Totems" },
-}

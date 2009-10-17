@@ -71,7 +71,6 @@ ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
 TargetFrame.xml
-FocusFrame.xml
 TotemFrame.xml
 PetFrame.xml
 StatsFrame.xml

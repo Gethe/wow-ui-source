@@ -1666,6 +1666,129 @@
 					</CheckButton>		
 				</Frames>
 			</Frame>
+			<Frame name="$parentUnitNameplates">
+				<Size>
+					<AbsDimension x="135" y="75"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitles" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitle" text="UNIT_NAMEPLATES" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>	
+					<CheckButton name="$parentEnemies" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-18"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowEnemies";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentEnemyTotems" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemies" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateEnemyTotems";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentEnemyPets" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemyTotems" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowEnemyPets";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentFriends" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemies" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="195" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowFriends";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentFriendlyPets" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriends" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowFriendPets";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAllowOverlap" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemyPets" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-16" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateAllowOverlap";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -2461,7 +2584,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "fullSizeFocusFrame";
 						self.setFunc = function (value)
-							FocusFrame_SetFullSize(value == "1");
+							FocusFrame_SetSmallSize(value ~= "1", true);
 						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
@@ -3117,7 +3240,6 @@
 					<OnClick>
 						PlaySound("gsTitleOptionOK");
 						ResetTutorials();
-						TutorialFrame_HideAllAlerts();
 						TutorialFrameCheckButton:SetChecked(1);
 						--Check the show tutorials option
 						local tutorialsCheckButton = _G[self:GetParent():GetName() .. "Tutorials"];
@@ -3234,82 +3356,6 @@
 				self.name = LANGUAGES_LABEL;
 				self.options = LanguagesPanelOptions;
 				InterfaceOptionsLanguagesPanel_OnLoad(self);			
-			</OnLoad>
-		</Scripts>		
-	</Frame>
-
-	<!-- Production -->
-
-	<Frame name="InterfaceOptionsProductionPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="PRODUCTION" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="16" y="-16"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSubText" text="Production Test Options" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
-					<Size>
-						<AbsDimension y="32" x="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-8"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-32" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton name="$parentNameplateAllowOverlap" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-2" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "nameplateAllowOverlap";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentNameplateEnemyTotems" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentNameplateAllowOverlap" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "nameplateEnemyTotems";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.name = "PRODCTION";
-				self.options = ProductionPanelOptions;
-				InterfaceOptionsPanel_OnLoad(self);			
 			</OnLoad>
 		</Scripts>		
 	</Frame>

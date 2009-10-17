@@ -3,7 +3,7 @@
 	<Script file="TutorialFrame.lua"/>
 	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" frameStrata="HIGH" hidden="true">
 		<Size>
-			<AbsDimension x="230" y="128"/>
+			<AbsDimension x="364" y="332"/>
 		</Size>
 		<Anchors>
 			<Anchor point="BOTTOM">
@@ -12,41 +12,31 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<TitleRegion setAllPoints="true"/>
-		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="5" top="3" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
+				<Texture file="Interface\TutorialFrame\UI-HELP-FRAME-POPUP">
+					<TexCoords left="0.0" right="0.7109375" top="0" bottom="0.6484375"/>
+				</Texture>
 				<FontString name="TutorialFrameTitle" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
-					<Size>
-						<AbsDimension x="210" y="0"/>
-					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
+						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="10" y="-9"/>
+								<AbsDimension x="0" y="-15"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
-				<FontString name="TutorialFrameText" inherits="GameFontNormal" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="210" y="0"/>
-					</Size>
+				<FontString name="TutorialFrameText" inherits="GameFontNormal" justifyH="LEFT" justifyV="BOTTOM">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TutorialFrameTitle" relativePoint="BOTTOMLEFT">
+						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-2"/>
+								<AbsDimension x="30" y="-100"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-15" y="40"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -62,20 +52,17 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="5" y="5"/>
+							<AbsDimension x="20" y="5"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="TutorialFrameCheckboxText" inherits="GameFontNormalSmall" text="ENABLE_TUTORIAL_TEXT">
-							<Size>
-								<AbsDimension x="0" y="0"/>
-							</Size>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT">
 									<Offset>
-										<AbsDimension x="0" y="0"/>
+										<AbsDimension x="0" y="2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -90,7 +77,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-7" y="7"/>
+							<AbsDimension x="-10" y="7"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -126,14 +113,14 @@
 			</OnEvent>
 		</Scripts>
 	</Frame>
-	<Button name="TutorialFrameAlertButtonTemplate" parent="UIParent" hidden="true" virtual="true">
+	<Button name="TutorialFrameAlertButton" toplevel="true" parent="UIParent" hidden="true">
 		<Size>
-			<AbsDimension x="34" y="42"/>
+			<AbsDimension x="115" y="70"/>
 		</Size>
 		<Anchors>
 			<Anchor point="BOTTOM">
 				<Offset>
-					<AbsDimension x="0" y="50"/>
+					<AbsDimension x="0" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -152,46 +139,24 @@
 				TutorialFrame_AlertButton_OnClick(self);
 			</OnClick>
 		</Scripts>
-		<NormalTexture file="Interface\TutorialFrame\TutorialFrameAlert">
+		<NormalTexture file="Interface\TutorialFrame\UI-HELP-ALERT">
 			<Size>
 				<AbsDimension x="34" y="42"/>
 			</Size>
-			<TexCoords left="0" right="0.53125" top="0" bottom="0.6875"/>
+			<TexCoords left="0.0078125" right="0.90625" top="0.0078125" bottom="0.5546875"/>
 		</NormalTexture>
-		<HighlightTexture file="Interface\TutorialFrame\TutorialFrameAlert" alphaMode="ADD">
+		<HighlightTexture file="Interface\TutorialFrame\UI-HELP-ALERT" alphaMode="ADD">
 			<Size>
-				<AbsDimension x="23" y="42"/>
+				<AbsDimension x="52" y="52"/>
 			</Size>
 			<Anchors>
 				<Anchor point="CENTER">
 					<Offset>
-						<AbsDimension x="-1" y="0"/>
+						<AbsDimension x="6" y="4"/>
 					</Offset>
 				</Anchor>
 			</Anchors>
-			<TexCoords left="0.578125" right="0.9375" top="0" bottom="0.6875"/>
+			<TexCoords left="0.0078125" right="0.4140625" top="0.578125" bottom="0.9765625"/>
 		</HighlightTexture>
 	</Button>
-	<Frame name="TutorialFrameParent" toplevel="true" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="10" y="10"/>
-		</Size>
-		<Anchors>
-			<Anchor point="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="55"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-	</Frame>
-	<Button name="TutorialFrameAlertButton1" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
-	<Button name="TutorialFrameAlertButton2" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
-	<Button name="TutorialFrameAlertButton3" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
-	<Button name="TutorialFrameAlertButton4" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
-	<Button name="TutorialFrameAlertButton5" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
-	<Button name="TutorialFrameAlertButton6" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
-	<Button name="TutorialFrameAlertButton7" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
-	<Button name="TutorialFrameAlertButton8" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
-	<Button name="TutorialFrameAlertButton9" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
-	<Button name="TutorialFrameAlertButton10" parent="UIParent" hidden="true" inherits="TutorialFrameAlertButtonTemplate"/>
 </Ui>

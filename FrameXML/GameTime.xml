@@ -3,12 +3,12 @@
 	<Script file="GameTime.lua"/>
 	<Button name="GameTimeFrame" parent="Minimap">
 		<Size>
-			<AbsDimension x="50" y="50"/>
+			<AbsDimension x="40" y="40"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPRIGHT">
 				<Offset>
-					<AbsDimension x="21" y="2"/>
+					<AbsDimension x="20" y="-17"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -22,7 +22,7 @@
 				-->
 				<Texture name="GameTimeTexture" file="Interface\Minimap\UI-TOD-Indicator" hidden="true"/>
 				<Texture name="GameTimeCalendarInvitesTexture" file="Interface\Calendar\EventNotification" hidden="true">
-					<Size x="35" y="40"/>
+					<Size x="28" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset x="0" y="1"/>
@@ -32,7 +32,7 @@
 				</Texture>
 				<Texture name="GameTimeCalendarInvitesGlow" file="Interface\Calendar\EventNotificationGlow" hidden="true" alphaMode="ADD">
 					<Size>
-						<AbsDimension x="60" y="60"/>
+						<AbsDimension x="48" y="48"/>
 					</Size>
 					<Anchors>
 						<Anchor point="CENTER">
@@ -62,7 +62,7 @@
 			<Anchors>
 				<Anchor point="CENTER">
 					<Offset>
-						<AbsDimension x="0" y="0"/>
+						<AbsDimension x="-1" y="-1"/>
 					</Offset>
 				</Anchor>
 			</Anchors>

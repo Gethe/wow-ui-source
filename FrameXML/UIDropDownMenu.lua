@@ -128,6 +128,7 @@ info.func = [function()]  --  The function that is called when you click the but
 info.checked = [nil, true, function]  --  Check the button if true or function returns true
 info.isTitle = [nil, true]  --  If it's a title the button is disabled and the font color is set to yellow
 info.disabled = [nil, true]  --  Disable the button and show an invisible button that still traps the mouseover event so menu doesn't time out
+info.tooltipWhileDisabled = [nil, 1] -- Show the tooltip, even when the button is disabled.
 info.hasArrow = [nil, true]  --  Show the expand arrow for multilevel menus
 info.hasColorSwatch = [nil, true]  --  Show color swatch or not, for color selection
 info.r = [1 - 255]  --  Red color value of the color swatch
@@ -145,6 +146,7 @@ info.owner = [Frame]  --  Dropdown frame that "owns" the current dropdownlist
 info.keepShownOnClick = [nil, 1]  --  Don't hide the dropdownlist after a button is clicked
 info.tooltipTitle = [nil, STRING] -- Title of the tooltip shown on mouseover
 info.tooltipText = [nil, STRING] -- Text of the tooltip shown on mouseover
+info.tooltipOnButton = [nil, 1] -- Show the tooltip attached to the button instead of as a Newbie tooltip.
 info.justifyH = [nil, "CENTER"] -- Justify button text
 info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
@@ -322,6 +324,8 @@ function UIDropDownMenu_AddButton(info, level)
 	button.hasColorSwatch = info.hasColorSwatch;
 	button.notCheckable = info.notCheckable;
 	button.menuList = info.menuList;
+	button.tooltipWhileDisabled = info.tooltipWhileDisabled;
+	button.tooltipOnButton = info.tooltipOnButton;
 
 	if ( info.value ) then
 		button.value = info.value;

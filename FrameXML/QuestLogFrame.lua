@@ -334,6 +334,10 @@ function QuestLog_UpdateMapButton()
 end
 
 function QuestLog_Update()
+	if ( not QuestLogFrame:IsShown() ) then
+		return;
+	end
+	
 	local numEntries, numQuests = GetNumQuestLogEntries();
 	if ( numEntries == 0 ) then
 		HideUIPanel(QuestLogDetailFrame);

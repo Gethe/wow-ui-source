@@ -698,7 +698,8 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( strsub(value, 1, 12)  == "RAID_TARGET_" ) then
 			-- Task #30755. Let any party member mark targets
-			if ( (inParty == 0) ) then
+			-- Task 34355 - But only raid leaders can mark targets.
+			if ( (inParty == 0) or ((inRaid == 1) and (isLeader == 0) and (isAssistant == 0)) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 			if ( not (dropdownMenu.which == "SELF") ) then

@@ -14,29 +14,6 @@ function MinimapPing_OnLoad(self)
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 end
 
-function ToggleMinimap()
-	if(Minimap:IsShown()) then
-		PlaySound("igMiniMapClose");
-		Minimap:Hide();
-	else
-		PlaySound("igMiniMapOpen");
-		Minimap:Show();
-	end
-	UpdateUIPanelPositions();
-end
-
-function Minimap_OnShow (self)
-	MinimapToggleButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Up");
-	MinimapToggleButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Down");
-	MinimapToggleButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Disabled");
-end
-
-function Minimap_OnHide (self)
-	MinimapToggleButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Up");
-	MinimapToggleButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Down");
-	MinimapToggleButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Disabled");
-end
-
 function Minimap_Update()
 	MinimapZoneText:SetText(GetMinimapZoneText());
 
@@ -206,33 +183,11 @@ end
 function Minimap_ZoomOut()
 	MinimapZoomOut:Click();
 end
---[[
-function MiniMapLFGFrame_GetMode()
-	local proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers = GetLFGProposal();
-	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
-	local roleCheckInProgress, slots, members = GetLFGRoleUpdate();
-	
-	if ( proposalExists and not hasResponded ) then
-		return "proposal", "unaccepted";
-	elseif ( proposalExists ) then
-		return "proposal", "accepted";
-	elseif ( queued ) then
-		if ( inParty and not IsPartyLeader() ) then
-			return "queued", "unempowered";
-		else
-			return "queued", "empowered";
-		end
-	elseif ( roleCheckInProgress ) then
-		return "rolecheck";
-	elseif ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
-		return "lfgparty";
-	end
-end
 
 function MiniMapLFGFrameDropDown_Update()
 	local info = UIDropDownMenu_CreateInfo();
 	
-	local mode, submode = MiniMapLFGFrame_GetMode();
+	local mode, submode = GetLFDMode();
 
 	--This one can appear in addition to others, so we won't just check the mode.
 	if ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
@@ -258,21 +213,19 @@ function MiniMapLFGFrameDropDown_Update()
 end
 
 function MiniMapLFGFrame_OnClick(self, button)
-	if ( button == "RightButton" ) then
+	local mode, submode = GetLFDMode();
+	if ( button == "RightButton" or mode == "lfgparty" ) then
 		--Display dropdown
 		ToggleDropDownMenu(1, nil, MiniMapLFGFrameDropDown, "MiniMapLFGFrame", 0, -5);
-	else
-		local mode, submode = MiniMapLFGFrame_GetMode();
-		if ( mode == "proposal" ) then
-			StaticPopupSpecial_Show(LFDDungeonReadyPopup);
-		else
-			ToggleLFDParentFrame();
-		end
+	elseif ( mode == "proposal" ) then
+		StaticPopupSpecial_Show(LFDDungeonReadyPopup);
+	elseif ( mode == "queued" or mode == "rolecheck" ) then
+		--ToggleLFDParentFrame();
 	end
 end
 
 function MiniMapLFGFrame_OnEnter(self)
-	local mode, submode = MiniMapLFGFrame_GetMode();
+	local mode, submode = GetLFDMode();
 	if ( mode == "queued" ) then
 		LFDSearchStatus:Show();
 	elseif ( mode == "proposal" ) then
@@ -287,6 +240,11 @@ function MiniMapLFGFrame_OnEnter(self)
 		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
 		GameTooltip:AddLine(ROLE_CHECK_IN_PROGRESS_TOOLTIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 		GameTooltip:Show();
+	elseif ( mode == "lfgparty" ) then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		GameTooltip:AddLine(YOU_ARE_IN_DUNGEON_GROUP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+		GameTooltip:Show();
 	end
 end
 
@@ -294,7 +252,27 @@ function MiniMapLFGFrame_OnLeave(self)
 	GameTooltip:Hide();
 	LFDSearchStatus:Hide();
 end
-]]
+
+function MiniMapLFGFrame_FormatTooltip(...)
+	local text;
+	-- If looking for more
+	if ( select(1, ...) ) then
+		GameTooltip:SetText(LFM_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		text = select(3, ...);
+	else
+		-- Otherwise looking for group
+		GameTooltip:SetText(LFG_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		local numCriteria = select(2, ...)+2;
+		text = "";
+		for i=3, numCriteria do
+			if ( select(i, ...) ~= "" ) then
+				text = text..select(i, ...).."\n";
+			end
+		end
+	end
+	GameTooltip:AddLine(text);
+	GameTooltip:Show();
+end
 
 function MinimapButton_OnMouseDown(self, button)
 	if ( self.isDown ) then
@@ -431,4 +409,20 @@ end
 
 function MiniMapTrackingShineFadeOut()
 	UIFrameFadeOut(MiniMapTrackingButtonShine, 0.5);
+end
+						
+function MiniMapInstanceDifficulty_OnEvent(self)
+	local _, instanceType, difficulty, _, maxPlayers = GetInstanceInfo();	
+	if ( ( instanceType == "party" or instanceType == "raid" ) and not ( difficulty == 1 and maxPlayers == 5 ) ) then
+		local yAdj = 0;
+		if ( difficulty == 1 ) then
+			yAdj = 0.5;
+		end		
+		MiniMapInstanceDifficultyTexture:SetTexCoord(0.05078125, 0.1953125, 0.0703125 + yAdj, 0.4140625 + yAdj);
+		MiniMapInstanceDifficultyText:SetText(maxPlayers);
+		MiniMapInstanceDifficultyText:SetPoint("CENTER", -1, -7 + yAdj * 24);
+		self:Show();
+	else
+		self:Hide();
+	end
 end

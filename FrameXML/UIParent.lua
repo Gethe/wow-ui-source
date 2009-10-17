@@ -1208,7 +1208,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["MultiBarRight"] = {baseY = 98, reputation = 1, anchorTo = "UIParent", point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT"};
 	["VoiceChatTalkers"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, reputation = 1};
 	["GroupLootFrame1"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
-	["TutorialFrameParent"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, reputation = 1};
+	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, reputation = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
 	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 20, bottomLeft = actionBarOffset-20, justBottomRightAndShapeshift = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
@@ -1812,9 +1812,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 	
 	if ( IsVoiceChatEnabled() and VoiceChatTalkers and not VoiceChatTalkers:IsUserPlaced() and VoiceChatTalkers:IsShown() ) then
-		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameParent"].baseX = 75;
+		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameAlertButton"].baseX = 75;
 	else
-		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameParent"].baseX = nil;
+		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameAlertButton"].baseX = nil;
 	end
 	
 	
@@ -3548,4 +3548,7 @@ function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridW
 	local widthPerGrid = gridWidth/textureWidth;
 	local heightPerGrid = gridHeight/textureHeight;
 	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
+end
+
+function GetLFDMode()
 end

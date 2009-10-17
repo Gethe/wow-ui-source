@@ -15,6 +15,9 @@ QUEST_ICON_PIXEL_SIZE = 32;
 QUEST_NUMERIC_ICONS_PER_ROW = 8;
 QUESTFRAME_MINHEIGHT = 34;
 QUESTFRAME_PADDING = 15;
+WORLDMAP_RATIO_MINI = 0.573;
+WORLDMAP_RATIO_SMALL = 0.691;
+WORLDMAP_RATIO_FULL = 1.0;
 
 local QUEST_ICON_KILL			= 0;
 local QUEST_ICON_KILL_COLLECT	= 1;
@@ -97,6 +100,8 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("QUEST_POI_UPDATE");
 	
 	self.poiHighlight = nil;
 	self.areaName = nil;
@@ -133,14 +138,15 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapButton:SetFrameLevel(3);
 	WorldMapPOIFrame:SetFrameLevel(4);
 	
-	WorldMapDetailFrame:SetScale(0.691);
-	WorldMapBlobFrame:SetScale(0.691);
-	WorldMapButton:SetScale(0.691);
-	WorldMapPOIFrame:SetScale(0.691);
-	WorldMapFrame.scale = 0.691;
+	WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_SMALL);
+	WorldMapBlobFrame:SetScale(WORLDMAP_RATIO_SMALL);
+	WorldMapButton:SetScale(WORLDMAP_RATIO_SMALL);
+	WorldMapPOIFrame:SetScale(WORLDMAP_RATIO_SMALL);
+	WorldMapFrame.scale = WORLDMAP_RATIO_SMALL;
 	WorldMapQuestDetailScrollChildFrame:SetScale(0.9);
 	WorldMapQuestRewardScrollChildFrame:SetScale(0.9);
-	WorldMapQuestScrollFrame.numQuests = 0;	
+	WorldMapFrame.numQuests = 0;
+	WorldMapFrame.showObjectives = WorldMapQuestShowObjectives:GetChecked();
 end
 
 function WorldMapFrame_OnShow(self)
@@ -155,14 +161,16 @@ function WorldMapFrame_OnShow(self)
 	CloseDropDownMenus();
 	WorldMapFrame_PingPlayerPosition();	
 	WorldMapFrame_UpdateUnits("WorldMapRaid", "WorldMapParty");
-	WorldMapFrame_UpdateQuests();
+	if ( WorldMapFrame.showObjectives ) then
+		WorldMapFrame_UpdateQuests();
+	end
+	WorldMapFrame_AdjustMapAndQuestList();
 end
 
 function WorldMapFrame_OnHide(self)
 	UpdateMicroButtons();
 	PlaySound("igQuestLogClose");
 	WorldMap_ClearTextures();
-	QuestPOIButtonManager:FreeAllFrames();
 	if ( self.showOnHide ) then
 		ShowUIPanel(self.showOnHide);
 		self.showOnHide = nil;
@@ -181,54 +189,74 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			WorldMapContinentsDropDown_Update();
 			WorldMapZoneDropDown_Update();
 			WorldMapLevelDropDown_Update();
-			WorldMapFrame_UpdateQuests();
-			if ( not WorldMapFrame.sizedDown ) then
-				WorldMap_AdjustMapSize();
-			end
-			QuestPOIButtonManager:FreeAllFrames();
+			if ( WorldMapFrame.showObjectives ) then
+				WorldMapFrame_UpdateQuests();
+			end			
+			WorldMapFrame_AdjustMapAndQuestList();
 		end
 	elseif ( event == "CLOSE_WORLD_MAP" ) then
 		HideUIPanel(self);
 	elseif ( event == "VARIABLES_LOADED" ) then
 		WorldMapZoneMinimapDropDown_Update();
+		self.sizedDown = GetCVarBool("miniWorldMap");
+		if ( self.sizedDown ) then
+			WorldMap_ToggleSizeDown()
+		end
+		WorldMapQuestShowObjectives:SetChecked(GetCVarBool("questPOI"));
+		WorldMapQuestShowObjectives_Toggle();
 	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
 		if ( self:IsShown() ) then
 			WorldMapFrame_UpdateUnits("WorldMapRaid", "WorldMapParty");
 		end
-	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
+	elseif ( event == "DISPLAY_SIZE_CHANGED" and self:IsShown() ) then
+		if ( WorldMapFrame.showObjectives ) then
+			WorldMapFrame_UpdateQuests();
+		end
+	elseif ( ( event == "QUEST_LOG_UPDATE" or event == "QUEST_POI_UPDATE" ) and self:IsShown() ) then
 		WorldMapFrame_UpdateQuests();
+		WorldMapFrame_AdjustMapAndQuestList();
 	end
 end
 
-function WorldMap_AdjustMapSize()
-	if ( WorldMapQuestScrollFrame.numQuests == 0 ) then
-		if ( not WorldMapFrame.bigMap ) then
-			WorldMapFrame.bigMap = true;
-			WorldMapDetailFrame:SetScale(1.0);
-			WorldMapBlobFrame:SetScale(1.0);
-			WorldMapButton:SetScale(1.0);
-			WorldMapPOIFrame:SetScale(1.0);
-			WorldMapFrame.scale = 1;
-			WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -502, -69);
-			WorldMapQuestDetailScrollFrame:Hide();
-			WorldMapQuestRewardScrollFrame:Hide();
+function WorldMapFrame_AdjustMapAndQuestList()
+	if ( WorldMapFrame.sizedDown ) then
+		if ( WorldMapFrame.showObjectives and WorldMapFrame.numQuests > 0 ) then
+			-- show quests
+			WorldMapQuestScrollFrame:Show();
+		else
+			-- hide quests
 			WorldMapQuestScrollFrame:Hide();
-			WorldMapQuestShowObjectives:Hide();
 		end
 	else
-		if ( WorldMapFrame.bigMap ) then
-			WorldMapFrame.bigMap = nil;
-			WorldMapDetailFrame:SetScale(0.691);
-			WorldMapBlobFrame:SetScale(0.691);
-			WorldMapButton:SetScale(0.691);
-			WorldMapPOIFrame:SetScale(0.691);
-			WorldMapFrame.scale = 0.691;
-			WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -726, -99);
-			WorldMapQuestDetailScrollFrame:Show();
-			WorldMapQuestRewardScrollFrame:Show();
-			WorldMapQuestScrollFrame:Show();
-			WorldMapQuestShowObjectives:Show();
-		end
+		if ( WorldMapFrame.showObjectives and WorldMapFrame.numQuests > 0 ) then
+			-- small map
+			if ( WorldMapFrame.bigMap ) then
+				WorldMapFrame.bigMap = nil;
+				WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_SMALL);
+				WorldMapButton:SetScale(WORLDMAP_RATIO_SMALL);
+				WorldMapFrame.scale = WORLDMAP_RATIO_SMALL;
+				WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -726, -99);
+				WorldMapQuestDetailScrollFrame:Show();
+				WorldMapQuestRewardScrollFrame:Show();
+				WorldMapQuestScrollFrame:Show();
+				WorldMapBlobFrame:Show();
+				WorldMapPOIFrame:Show();				
+			end			
+		else
+			-- big map
+			if ( not WorldMapFrame.bigMap ) then
+				WorldMapFrame.bigMap = true;
+				WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_FULL);
+				WorldMapButton:SetScale(WORLDMAP_RATIO_FULL);
+				WorldMapFrame.scale = 1;
+				WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -502, -69);
+				WorldMapQuestDetailScrollFrame:Hide();
+				WorldMapQuestRewardScrollFrame:Hide();
+				WorldMapQuestScrollFrame:Hide();
+				WorldMapBlobFrame:Hide();
+				WorldMapPOIFrame:Hide();
+			end		
+		end	
 	end
 end
 
@@ -982,8 +1010,6 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			MAP_VEHICLES[i]:Hide();
 		end
 	end	
-
-	UpdateQuestMapPOI();
 end
 
 function WorldMapFrame_PingPlayerPosition()
@@ -1274,276 +1300,7 @@ function WorldMapUnitDropDown_ReportAll_OnClick()
 	end
 end
 
-local numPOIFrames = 0;
-local distanceTooClose, distanceTooCloseSquared;
-
-QuestsToShowAdditionalSpotsFor = {};
-
-function UpdateQuestMapPOI()
-	local index = 1;
-	if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
-		local numPOI = QuestMapUpdateAllQuests();
-		local firstTurnInIndex;
-		QuestPOIButtonManager:ClearRequestedFrames();
-		
-		for i=1, numPOI do
-			local numQuests = QuestMapGetNumQuestsForPOI(i);
-			local questName, text, poiID, questID = QuestMapGetQuestInfo(i, 1);
-			local mapID, x, y, icon = QuestMapGetPOIInfo(i);
-			if ( mapID and x and y and icon ) then
-				local POIFrame = QuestPOIButtonManager:GetFrameForPOI(poiID);
-				QUEST_MAP_POI[index] = POIFrame;
-				if ( not distanceTooClose ) then
-					distanceTooClose = POIFrame:GetHeight()*0.75;	--Yes, sqrt(2) would be more accurate, but it doesn't look as good.
-					distanceTooCloseSquared = distanceTooClose^2;	--Cache it
-				end
-				POIFrame.POIIndex = i;
-				x = x * WorldMapDetailFrame:GetWidth();
-				y = -y * WorldMapDetailFrame:GetHeight();
-				--Some information to avoid the appearance of heavy wizardry: Question completion points should always be after objective points.
-				--We are choosing to push away the completion points because the accuracy is not as important (they appear on the minimap once you get close enough)
-				if ( firstTurnInIndex or text == TURN_IN_QUEST ) then
-					if ( not firstTurnInIndex ) then
-						firstTurnInIndex = index;
-					end
-					--We only compare the turn-in points with non turn-in points.
-					for j=1, (firstTurnInIndex - 1) do
-						local otherFrame = QUEST_MAP_POI[j];
-						local vectorX, vectorY = (x - otherFrame.x), (y - otherFrame.y);
-						local vectorMagSquared = vectorX^2 + vectorY^2;
-						if ( vectorMagSquared < distanceTooCloseSquared ) then
-							if ( vectorMagSquared < 1 ) then	--We don't want to have 1.#INF appear anywhere here. If they're at exactly the same spot (or close enough)...
-								y = otherFrame.y + distanceTooClose;	--Move it straight up. Direction is arbitrary, but it requires little work.
-							else
-								--Get the amount we need to move the object
-								local ratio = distanceTooClose/sqrt(vectorMagSquared);
-								x = otherFrame.x + vectorX*ratio;
-								y = otherFrame.y + vectorY*ratio;
-								break;	--This saves checks. Once we've moved it once, we shouldn't have to move it again. If we do, the threshold for combining POI is not high enough.
-							end
-						end
-					end
-				end
-				POIFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x, y);
-				POIFrame.x, POIFrame.y = x, y;	--Save these off so that when we try to access them to avoid collisions, we don't have to call to C.
-				POIFrame.icon:SetTexture(QUEST_ICON_TEXTURES[icon]);
-				WorldMapQuestPOI_UpdateTexture(POIFrame);
-				POIFrame:SetFrameLevel(QUEST_ICON_FRAME_LEVELS[icon]);
-				POIFrame:Show();
-				index = index + 1;	-- save for later
-			end
-		end
-		numPOIFrames = index - 1;
-		-- hide the unused map POI
-		QuestPOIButtonManager:HideUnusedFrames()
-	
-		index = 1;
-		for questID, isActive in pairs(QuestsToShowAdditionalSpotsFor) do
-			if ( isActive ) then
-				local numAdditionalPOI = QuestMapUpdateMouseOverPOI(questID);
-				for i = 1, numAdditionalPOI do
-					local numObjectives, mapID, x, y, icon, questName = QuestMapGetMouseOverInfoByIndex(i);
-					if ( mapID and x and y and icon ) then
-						if ( not QUEST_MAP_ADDITIONAL_POI[index] ) then
-							QUEST_MAP_ADDITIONAL_POI[index] = CreateFrame("BUTTON", nil, WorldMapButton, "WorldMapQuestAdditionalPOITemplate");
-						end
-						local POIFrame = QUEST_MAP_ADDITIONAL_POI[index];
-						POIFrame.questID = questID;
-						POIFrame.POIIndex = i;
-						
-						x = x * WorldMapDetailFrame:GetWidth();
-						y = -y * WorldMapDetailFrame:GetHeight();
-						
-						POIFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x, y);
-						POIFrame.x, POIFrame.y = x, y;	--Save these off so that when we try to access them to avoid collisions, we don't have to call to C.
-						POIFrame.icon:SetTexture(QUEST_ICON_TEXTURES[icon]);
-						WorldMapQuestPOI_UpdateTexture(POIFrame);
-						POIFrame:SetFrameLevel(5);
-						POIFrame:Show();
-						index = index + 1;	-- save for later
-					end
-				end
-			end
-		end
-		for i = index, #QUEST_MAP_ADDITIONAL_POI do
-			QUEST_MAP_ADDITIONAL_POI[i]:Hide();
-		end
-	else
-		QuestPOIButtonManager:HideUnusedFrames();
-		for i = 1, #QUEST_MAP_ADDITIONAL_POI do
-			QUEST_MAP_ADDITIONAL_POI[i]:Hide();
-		end
-	end
-
-	local tooltipOwner = WorldMapTooltip:GetOwner();
-	if ( tooltipOwner and (tooltipOwner.isQuestMarker or tooltipOwner.isAdditionalQuestMarker) ) then
-		WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
-	end
-end
-
-function WorldMapQuestPOI_OnLoad(self)
-	self.isQuestMarker = true;
-end
-
-function WorldMapAdditionalQuestPOI_OnLoad(self)
-	self.isAdditionalQuestMarker = true;
-end
-
-function WorldMapQuestPOI_UpdateTooltip(tooltip)
-	QuestPOITooltipManager:Clear();
-	for i=1, numPOIFrames do
-		local POIFrame = QUEST_MAP_POI[i];
-		if ( POIFrame:IsShown() and POIFrame:IsMouseOver() ) then
-			local POIIndex = POIFrame.POIIndex;
-			local numPOI = QuestMapGetNumQuestsForPOI(POIIndex);	--Yes, calling a bunch of C functions OnUpdate = fail. But the map is open, so we're not doing much else (and a lower framerate with the map isn't noticable)
-			for j=1, numPOI do
-				local questName, text, poiID, questID = QuestMapGetQuestInfo(POIIndex, j);
-				QuestPOITooltipManager:AddObjective(questID, questName, text);
-			end
-		end
-	end
-	local lastQuestID;
-	for i=1, #QUEST_MAP_ADDITIONAL_POI do
-		local POIFrame = QUEST_MAP_ADDITIONAL_POI[i];
-		if ( POIFrame:IsShown() and POIFrame:IsMouseOver() ) then
-			if ( lastQuestID ~= POIFrame.questID ) then
-				QuestMapUpdateMouseOverPOI(POIFrame.questID);
-				lastQuestID = POIFrame.questID;
-			end
-			local numObjectives, mapID, x, y, icon, questName = QuestMapGetMouseOverInfoByIndex(POIFrame.POIIndex);
-			for j=1, numObjectives do
-				local objectiveText = QuestMapGetMouseOverPOIInfo(POIFrame.POIIndex, j);
-				QuestPOITooltipManager:AddObjective(POIFrame.questID, questName, objectiveText)
-			end
-		end
-	end
-	local overSomething = QuestPOITooltipManager:PopulateTooltip(tooltip);
-	if ( overSomething ) then
-		local mouseover = GetMouseFocus();
-		if ( mouseover and mouseover.isQuestMarker and WorldMapQuestPOI_HasAdditionalLocations(mouseover) ) then
-			tooltip:AddLine(" ");
-			if ( WorldMapQuestPOI_IsButtonActivated(mouseover) ) then
-				tooltip:AddLine(CLICK_TO_REMOVE_ADDITIONAL_QUEST_LOCATIONS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-			else
-				tooltip:AddLine(CLICK_FOR_ADDITIONAL_QUEST_LOCATIONS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-			end
-		elseif ( mouseover and mouseover.isAdditionalQuestMarker ) then
-			tooltip:AddLine(" ");
-			tooltip:AddLine(CLICK_TO_REMOVE_ADDITIONAL_QUEST_LOCATIONS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-		end
-		tooltip:Show();
-	else
-		tooltip:Hide();
-	end
-end
-
-function WorldMapQuestPOI_UpdateTexture(self)
-	local top, left = 0, 0;
-	if ( self.isQuestMarker and WorldMapQuestPOI_IsButtonActivated(self) ) then
-		self.fuzziness:Show();
-	elseif ( self.isAdditionalQuestMarker ) then
-		self.fuzziness:Show();
-	else
-		self.fuzziness:Hide();
-	end
-	
-	if ( (self.isQuestMarker and WorldMapQuestPOI_IsButtonActivated(self)) or
-		(GetMouseFocus() == self and (WorldMapQuestPOI_HasAdditionalLocations(self) or self.isAdditionalQuestMarker)) ) then
-		left = left + 0.5;
-	end
-	if ( self.isAdditionalQuestMarker ) then
-		top = top + 0.5;
-	end
-	self.icon:SetTexCoord(left, left + 0.5, top, top + 0.5);
-end
-
-function WorldMapQuestPOI_OnEnter(self, motion)
-	GameTooltip_SetDefaultAnchor(WorldMapTooltip, self);
-	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
-	WorldMapQuestPOI_UpdateTexture(self);
-end
-
-function WorldMapAdditionalQuestPOI_OnEnter(self, motion)
-	GameTooltip_SetDefaultAnchor(WorldMapTooltip, self);
-	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
-end
-
-function WorldMapQuestPOI_OnLeave(self, motion)
-	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
-	WorldMapQuestPOI_UpdateTexture(self);
-end
-
-function WorldMapAdditionalQuestPOI_OnLeave(self, motion)
-	WorldMapQuestPOI_UpdateTooltip(WorldMapTooltip);
-end
-
-function WorldMapQuestPOI_OnClick(self)
-	if ( WorldMapQuestPOI_IsButtonActivated(self) ) then
-		table.wipe(QuestsToShowAdditionalSpotsFor);
-	else
-		if ( WorldMapQuestPOI_HasAdditionalLocations(self) ) then
-			table.wipe(QuestsToShowAdditionalSpotsFor);
-			for i = 1, QuestMapGetNumQuestsForPOI(self.POIIndex) do
-				local questName, text, poiID, questID = QuestMapGetQuestInfo(self.POIIndex, i);
-				QuestsToShowAdditionalSpotsFor[questID] = true;
-			end
-		end
-	end
-end
-
-function WorldMapAdditionalQuestPOI_OnClick(self)
-	table.wipe(QuestsToShowAdditionalSpotsFor);
-end
-
-function WorldMapQuestPOI_IsButtonActivated(self)
-	for i = 1, QuestMapGetNumQuestsForPOI(self.POIIndex) do
-		local questName, text, poiID, questID = QuestMapGetQuestInfo(self.POIIndex, i);
-		if ( QuestsToShowAdditionalSpotsFor[questID] ) then
-			return true;
-		end
-	end
-	return false;
-end
-
-function WorldMapQuestPOI_HasAdditionalLocations(self)
-	if ( self.isQuestMarker ) then
-		for i = 1, QuestMapGetNumQuestsForPOI(self.POIIndex) do
-			local questName, text, poiID, questID = QuestMapGetQuestInfo(self.POIIndex, i);
-			if ( QuestMapUpdateMouseOverPOI(questID) > 0 ) then
-				return true;
-			end
-		end
-		return false;
-	end
-end
-
-function WorldMapQuestPOIPulser_OnUpdate(self, elapsed)
-	local alpha = self.min + (self.max - self.min)*self:GetSmoothProgress();
-	
-	for i = 1, numPOIFrames do
-		QUEST_MAP_POI[i].fuzziness:SetAlpha(alpha);
-	end
-	
-	for i = 1, #QUEST_MAP_ADDITIONAL_POI do
-		QUEST_MAP_ADDITIONAL_POI[i].fuzziness:SetAlpha(alpha);
-	end
-end
-
-function WorldMap_OpenToQuest(questID, frameToShowOnClose)
-	table.wipe(QuestsToShowAdditionalSpotsFor);
-	QuestsToShowAdditionalSpotsFor[questID] = true;
-	WorldMapFrame.showOnHide = frameToShowOnClose;
-	ShowUIPanel(WorldMapFrame);
-	
-	local mapID = GetQuestWorldMapAreaID(questID);
-	if ( mapID ~= 0 ) then
-		SetMapByID(mapID);
-	end
-end
-
-function WorldMap_ToggleSize()
+function WorldMapFrameSizeDownButton_OnClick()
 	local continentID;
 	local mapID = GetCurrentMapAreaID() - 1;
 	if ( mapID < 0 ) then
@@ -1554,105 +1311,12 @@ function WorldMap_ToggleSize()
 	-- apply magic
 	if ( WorldMapFrame.sizedDown ) then
 		WorldMapFrame.sizedDown = nil;
-		WorldMapFrame.scale = 0.691;
-		-- adjust main frame
-		WorldMapFrame:SetWidth(0);
-		WorldMapFrame:SetHeight(0);
-		WorldMapFrame:ClearAllPoints();
-		WorldMapFrame:SetAllPoints();
-		UIPanelWindows["WorldMapFrame"].area = "full";
-		WorldMapFrame:SetAttribute("UIPanelLayout-defined", false);
-		WorldMapFrame:EnableMouse(true);
-		WorldMapFrame:EnableKeyboard(true);
-		-- adjust map frames
-		WorldMapPositioningGuide:ClearAllPoints();
-		WorldMapPositioningGuide:SetPoint("CENTER");		
-		WorldMapDetailFrame:SetScale(0.691);
-		WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -726, -99);
-		WorldMapBlobFrame:SetScale(0.691);
-		WorldMapButton:SetScale(0.691);
-		WorldMapPOIFrame:SetScale(0.691);
-		-- adjust quest frames
-		WorldMapQuestScrollFrame:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPRIGHT", 6, 0)
-		WorldMapQuestScrollFrame:SetHeight(670);
-		WorldMapQuestScrollFrame:SetWidth(283);
-		for i = 1, WorldMapQuestScrollFrame.numQuests do
-			_G["WorldMapQuestFrame"..i].details:SetWidth(240);
-		end
-		WorldMapQuestSelectedFrame:SetWidth(281);
-		WorldMapQuestHighlightedFrame:SetWidth(281);
-		-- show big window elements
-		BlackoutWorld:Show();
-		WorldMapZoneMinimapDropDown:Show();
-		WorldMapZoomOutButton:Show();
-		WorldMapZoneDropDown:Show();
-		WorldMapContinentDropDown:Show();
-		WorldMapLevelDropDown:Show();
-		WorldMapQuestDetailScrollFrame:Show();
-		WorldMapQuestRewardScrollFrame:Show();		
-		WorldMapFrameSizeDownButton:Show();
-		-- hide small window elements
-		WorldMapFrameMiniBorderLeft:Hide();
-		WorldMapFrameMiniBorderRight:Hide();		
-		WorldMapFrameSizeUpButton:Hide();
-		-- tiny adjustments
-		WorldMapFrameCloseButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, 4, 4);
-		WorldMapFrameSizeDownButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, -16, 4);
-		WorldMapFrameTitle:SetPoint("TOP", 0, -6);		
+		SetCVar("miniWorldMap", 0);
+		WorldMap_ToggleSizeUp();
 	else
 		WorldMapFrame.sizedDown = true;
-		WorldMapFrame.scale = 0.573;
-		-- adjust main frame
-		WorldMapFrame:SetWidth(876);
-		WorldMapFrame:SetHeight(437);
-		--WorldMapFrame:SetPoint("TOPLEFT", 10, -94);	  	
-		WorldMapFrame:SetScale(0.9);
-		UIPanelWindows["WorldMapFrame"].area = "doublewide";
-		WorldMapFrame:SetAttribute("UIPanelLayout-defined", false);
-		WorldMapFrame:EnableMouse(false);
-		WorldMapFrame:EnableKeyboard(false);
-		-- adjust map frames
-		WorldMapPositioningGuide:ClearAllPoints();
-		WorldMapPositioningGuide:SetAllPoints();		
-		WorldMapDetailFrame:SetScale(0.573);
-		WorldMapDetailFrame:SetPoint("TOPLEFT", 20, -42);
-		WorldMapBlobFrame:SetScale(0.573);
-		WorldMapButton:SetScale(0.573);
-		WorldMapPOIFrame:SetScale(0.573);
-		-- adjust quest frames
-		WorldMapQuestScrollFrame:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPRIGHT", 4, -1)
-		WorldMapQuestScrollFrame:SetHeight(384);
-		WorldMapQuestScrollFrame:SetWidth(254);
-		for i = 1, WorldMapQuestScrollFrame.numQuests do
-			_G["WorldMapQuestFrame"..i].details:SetWidth(210);
-		end
-		WorldMapQuestSelectedFrame:SetWidth(252);
-		WorldMapQuestHighlightedFrame:SetWidth(252);
-		-- hide big window elements
-		BlackoutWorld:Hide();
-		WorldMapZoneMinimapDropDown:Hide();
-		WorldMapZoomOutButton:Hide();
-		WorldMapZoneDropDown:Hide();
-		WorldMapContinentDropDown:Hide();
-		WorldMapLevelDropDown:Hide();
-		WorldMapLevelUpButton:Hide();
-		WorldMapLevelDownButton:Hide();
-		WorldMapQuestDetailScrollFrame:Hide();
-		WorldMapQuestRewardScrollFrame:Hide();		
-		WorldMapFrameSizeDownButton:Hide();
-		-- show small window elements
-		WorldMapFrameMiniBorderLeft:Show();
-		WorldMapFrameMiniBorderRight:Show();		
-		WorldMapFrameSizeUpButton:Show();
-		-- tiny adjustments
-		WorldMapFrameCloseButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, 4, 5);
-		WorldMapFrameSizeDownButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, -18, 5);
-		WorldMapFrameTitle:SetPoint("TOP", 0, -5);
-		-- quest list should always show in mini mode
-		if ( WorldMapFrame.bigMap ) then
-			WorldMapQuestScrollFrame:Show();
-			WorldMapQuestShowObjectives:Show();
-		end
+		SetCVar("miniWorldMap", 1);
+		WorldMap_ToggleSizeDown();
 	end
 	-- reopen the frame
 	ToggleFrame(WorldMapFrame);
@@ -1664,129 +1328,131 @@ function WorldMap_ToggleSize()
 	WorldMapFrame_UpdateQuests();	
 end
 
-----------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------Quest POI Button Manager----------------------------------------------------
--- So, here's the deal.  We need quest POI icons to be buttons. But because they are currently being updated OnUpdate, we 	--
--- have to be concerned about the button moving in the middle of a click (OnMouseDown occurs for one button, but			--
--- OnMouseUp occurs for another button. The solution is to ensure that the button of a particular point remains consistent	--
--- across frames. When the map is closed, however, we can free all buttons to reuse.									--
-----------------------------------------------------------------------------------------------------------------------------------------------
-
-QuestPOIButtonManager = {};
-
-QuestPOIButtonManager.unusedFrames = {};
-QuestPOIButtonManager.frameMapping = {};
-QuestPOIButtonManager.requestedFrames = {};
-
-QuestPOIButtonManager.iteratorHelper = {};
-
-function QuestPOIButtonManager:ClearRequestedFrames()
-	table.wipe(self.requestedFrames);
+function WorldMap_ToggleSizeUp()
+	WorldMapFrame.scale = WORLDMAP_RATIO_SMALL;
+	-- adjust main frame
+	WorldMapFrame:SetWidth(0);
+	WorldMapFrame:SetHeight(0);
+	WorldMapFrame:ClearAllPoints();
+	WorldMapFrame:SetAllPoints();
+	UIPanelWindows["WorldMapFrame"].area = "full";
+	WorldMapFrame:SetAttribute("UIPanelLayout-defined", false);
+	WorldMapFrame:EnableMouse(true);
+	WorldMapFrame:EnableKeyboard(true);
+	-- adjust map frames
+	WorldMapPositioningGuide:ClearAllPoints();
+	WorldMapPositioningGuide:SetPoint("CENTER");		
+	WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_SMALL);
+	WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -726, -99);
+	WorldMapBlobFrame:SetScale(WORLDMAP_RATIO_SMALL);
+	WorldMapButton:SetScale(WORLDMAP_RATIO_SMALL);
+	WorldMapPOIFrame:SetScale(WORLDMAP_RATIO_SMALL);
+	-- adjust quest frames
+	WorldMapQuestScrollFrame:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPRIGHT", 6, 0)
+	WorldMapQuestScrollFrame:SetHeight(670);
+	WorldMapQuestScrollFrame:SetWidth(283);
+	for i = 1, WorldMapFrame.numQuests do
+		_G["WorldMapQuestFrame"..i].details:SetWidth(240);
+	end
+	WorldMapQuestSelectedFrame:SetWidth(281);
+	WorldMapQuestHighlightedFrame:SetWidth(281);
+	-- show big window elements
+	BlackoutWorld:Show();
+	WorldMapZoneMinimapDropDown:Show();
+	WorldMapZoomOutButton:Show();
+	WorldMapZoneDropDown:Show();
+	WorldMapContinentDropDown:Show();
+	WorldMapLevelDropDown:Show();
+	WorldMapQuestDetailScrollFrame:Show();
+	WorldMapQuestRewardScrollFrame:Show();		
+	WorldMapFrameSizeDownButton:Show();
+	-- hide small window elements
+	WorldMapFrameMiniBorderLeft:Hide();
+	WorldMapFrameMiniBorderRight:Hide();		
+	WorldMapFrameSizeUpButton:Hide();
+	-- tiny adjustments
+	WorldMapFrameCloseButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, 4, 4);
+	WorldMapFrameSizeDownButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, -16, 4);
+	WorldMapFrameTitle:SetPoint("TOP", 0, -6);
 end
 
-function QuestPOIButtonManager:FreeAllFrames()
-	for _, frame in pairs(self.frameMapping) do
-		tinsert(self.unusedFrames, frame);
+function WorldMap_ToggleSizeDown()
+	WorldMapFrame.scale = WORLDMAP_RATIO_MINI;
+	WorldMapFrame.bigMap = nil;
+	-- adjust main frame
+	WorldMapFrame:SetWidth(876);
+	WorldMapFrame:SetHeight(437);
+	--WorldMapFrame:SetPoint("TOPLEFT", 10, -94);	  	
+	WorldMapFrame:SetScale(0.9);
+	UIPanelWindows["WorldMapFrame"].area = "doublewide";
+	WorldMapFrame:SetAttribute("UIPanelLayout-defined", false);
+	WorldMapFrame:EnableMouse(false);
+	WorldMapFrame:EnableKeyboard(false);
+	-- adjust map frames
+	WorldMapPositioningGuide:ClearAllPoints();
+	WorldMapPositioningGuide:SetAllPoints();		
+	WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_MINI);
+	WorldMapDetailFrame:SetPoint("TOPLEFT", 20, -42);
+	WorldMapBlobFrame:SetScale(WORLDMAP_RATIO_MINI);
+	WorldMapButton:SetScale(WORLDMAP_RATIO_MINI);
+	WorldMapPOIFrame:SetScale(WORLDMAP_RATIO_MINI);
+	-- adjust quest frames
+	WorldMapQuestScrollFrame:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPRIGHT", 4, -1)
+	WorldMapQuestScrollFrame:SetHeight(384);
+	WorldMapQuestScrollFrame:SetWidth(254);
+	for i = 1, WorldMapFrame.numQuests do
+		_G["WorldMapQuestFrame"..i].details:SetWidth(204);
 	end
-	table.wipe(self.frameMapping);
-	table.wipe(self.requestedFrames);
-end
-
-function QuestPOIButtonManager:HideUnusedFrames()
-	for _, frame in pairs(self.unusedFrames) do
-		frame:Hide();
-	end
-	for poiID, frame in pairs(self.frameMapping) do
-		if ( not self.requestedFrames[poiID] ) then
-			frame:Hide();
-		end
-	end
-end
-
-function QuestPOIButtonManager:GetFrameForPOI(poiID)
-	self.requestedFrames[poiID] = true;
-	
-	local relevantTable = self.frameMapping;
-	
-	if ( relevantTable[poiID] ) then
-		return relevantTable[poiID];
-	end
-	
-	if ( self.unusedFrames[1] ) then
-		relevantTable[poiID] = tremove(self.unusedFrames, #self.unusedFrames);
-		return relevantTable[poiID];
-	end
-	local frame = CreateFrame("BUTTON", nil, WorldMapButton, "WorldMapQuestPOITemplate");
-	relevantTable[poiID] = frame;
-	return frame;
-end
-
-----------------------------------------------------------------------------
------------------------Quest POI Tooltip Manager----------------------
-----------------------------------------------------------------------------
-QuestPOITooltipManager = {};
-QuestPOITooltipManager.unusedTables = {};
-QuestPOITooltipManager.list = {};
-
-function QuestPOITooltipManager:AddObjective(questID, questName, objectiveText)
-	for _, questTable in pairs(self.list) do
-		if ( questTable.questID == questID ) then
-			for i=1, questTable.numObjectives do
-				if ( questTable[i] == objectiveText ) then
-					return;
-				end
-			end
-			questTable.numObjectives = questTable.numObjectives + 1;
-			questTable[questTable.numObjectives] = objectiveText;
-			return;
-		end
-	end
-	local questTable = tremove(self.unusedTables, #self.unusedTables) or {};
-	questTable.questID = questID;
-	questTable.questName = questName;
-	questTable.numObjectives = 1;
-	questTable[1] = objectiveText;
-	tinsert(self.list, questTable);
-end
-
-function QuestPOITooltipManager:Clear()
-	while ( self.list[1] ) do
-		self.unusedTables[#self.unusedTables + 1] = tremove(self.list, #self.list);
+	WorldMapQuestSelectedFrame:SetWidth(252);
+	WorldMapQuestHighlightedFrame:SetWidth(252);
+	-- hide big window elements
+	BlackoutWorld:Hide();
+	WorldMapZoneMinimapDropDown:Hide();
+	WorldMapZoomOutButton:Hide();
+	WorldMapZoneDropDown:Hide();
+	WorldMapContinentDropDown:Hide();
+	WorldMapLevelDropDown:Hide();
+	WorldMapLevelUpButton:Hide();
+	WorldMapLevelDownButton:Hide();
+	WorldMapQuestDetailScrollFrame:Hide();
+	WorldMapQuestRewardScrollFrame:Hide();		
+	WorldMapFrameSizeDownButton:Hide();
+	-- show small window elements
+	WorldMapFrameMiniBorderLeft:Show();
+	WorldMapFrameMiniBorderRight:Show();		
+	WorldMapFrameSizeUpButton:Show();
+	-- tiny adjustments
+	WorldMapFrameCloseButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, 4, 5);
+	WorldMapFrameSizeDownButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, -18, 5);
+	WorldMapFrameTitle:SetPoint("TOP", 0, -5);
+	-- quest list should always show in mini mode
+	if ( WorldMapFrame.bigMap ) then
+		WorldMapQuestScrollFrame:Show();
+		WorldMapQuestShowObjectives:Show();
 	end
 end
 
-function QuestPOITooltipManager:PopulateTooltip(tooltip)
-	if ( self.list[1] ) then
-		tooltip:ClearLines();
-		tooltip:AddLine(QUEST_OBJECTIVES);
-		tooltip:AddLine(" ");
-		for _, questTable in ipairs(self.list) do
-			tooltip:AddLine(questTable.questName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			for i=1, questTable.numObjectives do
-				tooltip:AddLine(" - "..questTable[i], HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			end
-		end
-		return true;
+function WorldMapQuestShowObjectives_Toggle()
+	if ( WorldMapQuestShowObjectives:GetChecked() ) then
+		WorldMapFrame.showObjectives = true;
+		WorldMapBlobFrame:Show();
+		WorldMapPOIFrame:Show();		
 	else
-		return false;
+		WorldMapFrame.showObjectives = nil;
+		WorldMapBlobFrame:Hide();
+		WorldMapPOIFrame:Hide();
 	end
-end
-
-function WorldMapQuestShowObjectives_OnClick(self)
 end
 
 function WorldMapFrame_UpdateQuests()
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily;
-
-	
-	local numEntries, numQuests = GetNumQuestLogEntries();
 	local questId, questLogIndex;
 	local questFrame;
 	local lastFrame;
 	local questCount = 0;
 	local questText;
 	local numObjectives;
-	
+
 	numEntries = QuestMapUpdateAllQuests();
 	QuestPOIUpdateIcons();
 	-- populate quest frames
@@ -1830,23 +1496,26 @@ function WorldMapFrame_UpdateQuests()
 			lastFrame = questFrame;
 		end
 	end
+	local currentSelection = WorldMapQuestScrollChildFrame.selected;
 	for i = questCount + 1, MAX_NUM_QUESTS do
 		questFrame = _G["WorldMapQuestFrame"..i];
 		if ( not questFrame ) then
 			break;
 		end
 		questFrame:Hide();
+		if ( questFrame == currentSelection ) then
+			WorldMapQuestScrollChildFrame.selected = nil;
+		end
 		QuestPOIDrawBlob(questFrame.questId, 0);
 		_G["WorldMapQuestPOI"..i]:Hide();
 	end
 	if ( questCount > 0 ) then
 		WorldMapFrame_SelectQuest(WorldMapQuestScrollChildFrame.selected);
 	else
-		WorldMapQuestScrollChildFrame.selected = nil;
-		WorldMapQuestSelectedFrame:Hide();
+		WorldMapPOIFrameHighlight:Hide();
 	end
 	QuestPOIUpdateTexture(WorldMapBlobFrameTexture);
-	WorldMapQuestScrollFrame.numQuests = questCount;
+	WorldMapFrame.numQuests = questCount;
 end
 
 function WorldMapFrame_SelectQuest(questFrame)
@@ -1857,6 +1526,10 @@ function WorldMapFrame_SelectQuest(questFrame)
 	WorldMapQuestSelectedFrame:SetPoint("TOPLEFT", questFrame, "TOPLEFT");
 	WorldMapQuestSelectedFrame:SetHeight(questFrame:GetHeight());
 	WorldMapQuestSelectedFrame:Show();
+	-- highlight
+	WorldMapPOIFrameHighlight:SetPoint("CENTER", _G["WorldMapQuestPOI"..questFrame.index]);
+	WorldMapPOIFrameHighlight:Show();
+	WorldMapPOIFrameMouseOverHighlight:Hide();
 	-- only display quest info if worldmap frame is embiggened
 	if ( not WorldMapFrame.sizedDown ) then
 		SelectQuestLogEntry(questFrame.questLogIndex);
@@ -1885,9 +1558,11 @@ function WorldMapFrame_DisplayQuestPOI(questFrame, posX, posY)
 	end
 	-- position frame
 	local _, posX, posY = QuestPOIGetIconInfo(questFrame.questId);
-	posX = posX * WorldMapDetailFrame:GetWidth();
-	posY = -posY * WorldMapDetailFrame:GetHeight();
-	frame:SetPoint("CENTER", "WorldMapBlobFrame", "TOPLEFT", posX, posY);
+	if ( posX and posY ) then
+		posX = posX * WorldMapDetailFrame:GetWidth();
+		posY = -posY * WorldMapDetailFrame:GetHeight();
+		frame:SetPoint("CENTER", "WorldMapBlobFrame", "TOPLEFT", posX, posY);
+	end
 	frame.quest = questFrame;
 	frame:Show();	
 end
@@ -1928,6 +1603,8 @@ function WorldMapQuestFrame_OnEnter(self)
 		QuestPOIDrawBlob(self.questId, 1);
 		QuestPOIUpdateTexture(WorldMapBlobFrameTexture);
 	end
+	WorldMapPOIFrameMouseOverHighlight:SetPoint("CENTER", _G["WorldMapQuestPOI"..self.index]);
+	WorldMapPOIFrameMouseOverHighlight:Show();
 end
 
 function WorldMapQuestFrame_OnLeave(self)
@@ -1938,7 +1615,8 @@ function WorldMapQuestFrame_OnLeave(self)
 	if ( not self.completed ) then
 		QuestPOIDrawBlob(self.questId, 0);
 		QuestPOIUpdateTexture(WorldMapBlobFrameTexture);
-	end	
+	end
+	WorldMapPOIFrameMouseOverHighlight:Hide();
 end
 
 function WorldMapQuestFrame_OnMouseUp(self)

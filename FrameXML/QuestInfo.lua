@@ -62,10 +62,7 @@ function QuestInfo_Display(template, parentFrame, acceptButton, cancelButton, ma
 		QuestInfoHonorFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoArenaPointsFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoTalentFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
-		QuestInfoReputationText:SetTextColor(textColor[1], textColor[2], textColor[3]);
-		for i = 1, MAX_REPUTATIONS do
-			_G["QuestInfoReputation"..i.."Faction"]:SetTextColor(textColor[1], textColor[2], textColor[3]);
-		end
+		QuestInfoXPFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 	end
 	
 	for i = 1, #elementsTable, 3 do
@@ -269,6 +266,7 @@ function QuestInfo_ShowRewards()
 	local honor;
 	local arenaPoints;
 	local talents;
+	local xp;
 	local playerTitle;
 
 	if ( QuestInfoFrame.questLog ) then
@@ -281,6 +279,7 @@ function QuestInfo_ShowRewards()
 		honor = GetQuestLogRewardHonor();
 		arenaPoints = GetQuestLogRewardArenaPoints();
 		talents = GetQuestLogRewardTalents();
+		xp = GetQuestLogRewardXP();
 		playerTitle = GetQuestLogRewardTitle();
 		ProcessQuestLogRewardFactions();
 	else
@@ -293,12 +292,12 @@ function QuestInfo_ShowRewards()
 		honor = GetRewardHonor();
 		arenaPoints = GetRewardArenaPoints();
 		talents = GetRewardTalents();
+		xp = GetRewardXP();
 		playerTitle = GetRewardTitle();
 	end
-	local numReputations = GetNumQuestLogRewardFactions();
 	local totalRewards = numQuestRewards + numQuestChoices + numQuestSpellRewards;
 	
-	if ( totalRewards == 0 and money == 0 and honor == 0 and arenaPoints == 0 and talents == 0 and numReputations == 0 and not playerTitle ) then
+	if ( totalRewards == 0 and money == 0 and honor == 0 and arenaPoints == 0 and talents == 0 and xp == 0 and not playerTitle ) then
 		QuestInfoRewardsFrame:Hide();
 		return nil;
 	end
@@ -312,8 +311,8 @@ function QuestInfo_ShowRewards()
 	QuestInfoHonorFrame:Hide();
 	QuestInfoArenaPointsFrame:Hide();	
 	QuestInfoTalentFrame:Hide();
+	QuestInfoXPFrame:Hide();
 	QuestInfoPlayerTitleFrame:Hide();	
-	QuestInfoReputationsFrame:Hide();
 	
 	local questItem, name, texture, isTradeskillSpell, isSpellLearned, quality, isUsable, numItems;
 	local rewardsCount = 0;
@@ -411,7 +410,7 @@ function QuestInfo_ShowRewards()
 	end
 	
 	-- Setup mandatory rewards
-	if ( numQuestRewards > 0 or money > 0 or honor > 0 or arenaPoints > 0 or talents > 0 or numReputations > 0 or playerTitle ) then
+	if ( numQuestRewards > 0 or money > 0 or honor > 0 or arenaPoints > 0 or talents > 0 or xp > 0 or playerTitle ) then
 		questItemReceiveText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 3, -5);
 		questItemReceiveText:Show();		
 		lastFrame = questItemReceiveText;
@@ -419,7 +418,9 @@ function QuestInfo_ShowRewards()
 		if ( money > 0 ) then
 			MoneyFrame_Update("QuestInfoMoneyFrame", money);
 			QuestInfoMoneyFrame:Show();
-		end		
+		end
+		-- XP rewards
+		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoXPFrame", xp, "Points", lastFrame);		
 		-- Honor rewards
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoHonorFrame", honor, "Points", lastFrame);
 		-- Arena point rewards
@@ -428,8 +429,6 @@ function QuestInfo_ShowRewards()
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoTalentFrame", talents, "Points", lastFrame);
 		-- Title reward
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoPlayerTitleFrame", playerTitle, "Title", lastFrame);
-		-- Rep rewards
-		lastFrame = QuestInfo_DoReputations(lastFrame);
 		-- Item rewards
 		local index;
 		local baseIndex = rewardsCount;

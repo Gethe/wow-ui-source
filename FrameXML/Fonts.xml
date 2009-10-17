@@ -23,6 +23,11 @@
 			<AbsValue val="10"/>
 		</FontHeight>
 	</Font>
+	<Font name="SystemFont_Outline" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>	
 	<Font name="SystemFont_Shadow_Small" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<Shadow>
 			<Offset>
@@ -66,6 +71,17 @@
 			<AbsValue val="13"/>
 		</FontHeight>
 	</Font>
+	<Font name="SystemFont_Shadow_Med2" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>	
 	<Font name="SystemFont_Med3" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<FontHeight>
 			<AbsValue val="14"/>

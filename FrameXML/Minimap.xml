@@ -57,12 +57,12 @@
 		<Frames>
 			<Button name="MinimapZoneTextButton">
 				<Size>
-					<AbsDimension x="128" y="12"/>
+					<AbsDimension x="150" y="12"/>
 				</Size>
 				<Anchors>
 					<Anchor point="CENTER">
 						<Offset>
-							<AbsDimension x="-3" y="83"/>
+							<AbsDimension x="7" y="83"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -70,7 +70,7 @@
 					<Layer level="BACKGROUND">
 						<FontString name="MinimapZoneText" inherits="GameFontNormal" nonspacewrap="true">
 							<Size>
-								<AbsDimension x="128" y="12"/>
+								<AbsDimension x="150" y="12"/>
 							</Size>
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="TOP">
@@ -92,29 +92,6 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="MinimapToggleButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="-13"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="ToggleMinimap"/>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, MINIMAP_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_MINIMAPTOGGLE, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-CollapseButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-CollapseButton-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-Panel-CollapseButton-Disabled"/>
-				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight"/>
-			</Button>
 			<Minimap name="Minimap" enableMouse="true" minimapPlayerModel="Interface\Minimap\MinimapArrow.mdx" minimapArrowModel="Interface\Minimap\Rotating-MinimapArrow.mdl">
 				<Size>
 					<AbsDimension x="140" y="140"/>
@@ -134,7 +111,7 @@
 						<Anchors>
 							<Anchor point="TOPRIGHT">
 								<Offset>
-									<AbsDimension x="21" y="-38"/>
+									<AbsDimension x="21" y="-53"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -379,9 +356,9 @@
 									<AbsDimension x="33" y="33"/>
 								</Size>
 								<Anchors>
-									<Anchor point="TOPLEFT">
+									<Anchor point="TOPRIGHT">
 										<Offset>
-											<AbsDimension x="33" y="-4"/>
+											<AbsDimension x="-21" y="-1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -432,16 +409,16 @@
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 							</Button>
 							<Frame name="MiniMapTracking">
-								<Size x="38" y="38"/>
+								<Size x="32" y="32"/>
 								<Anchors>
 									<Anchor point="TOPLEFT">
-										<Offset x="11" y="-26"/>
+										<Offset x="13" y="-40"/>
 									</Anchor>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<Texture name="$parentBackground" file="Interface\Minimap\UI-Minimap-Background">
-											<Size x="30" y="30"/>
+											<Size x="25" y="25"/>
 											<Anchors>
 												<Anchor point="TOPLEFT">
 													<Offset x="2" y="-4"/>
@@ -452,7 +429,7 @@
 									</Layer>
 									<Layer level="ARTWORK">
 										<Texture name="$parentIcon">
-											<Size x="24" y="24"/>
+											<Size x="20" y="20"/>
 											<Anchors>
 												<Anchor point="TOPLEFT">
 													<Offset x="6" y="-6"/>
@@ -477,14 +454,14 @@
 										</Scripts>
 									</Frame>
 									<Button name="$parentButton">
-										<Size x="38" y="38"/>
+										<Size x="32" y="32"/>
 										<Anchors>
 											<Anchor point="TOPLEFT"/>
 										</Anchors>
 										<Layers>
 											<Layer level="BORDER">
 												<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
-													<Size x="64" y="64"/>
+													<Size x="54" y="54"/>
 													<Anchors>
 														<Anchor point="TOPLEFT"/>
 													</Anchors>
@@ -492,7 +469,7 @@
 											</Layer>
 											<Layer level="OVERLAY">
 												<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
-													<Size x="32" y="32"/>
+													<Size x="27" y="27"/>
 													<Anchors>
 														<Anchor point="TOPLEFT">
 															<Offset x="2" y="-2"/>
@@ -530,14 +507,14 @@
 									</Button>
 								</Frames>
 							</Frame>
-							<!--Button name="MiniMapLFGFrame" hidden="true" inherits="MiniMapButtonTemplate">
+							<Button name="MiniMapLFGFrame" hidden="true" inherits="MiniMapButtonTemplate">
 								<Size>
 									<AbsDimension x="33" y="33"/>
 								</Size>
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="MiniMapTracking" relativePoint="BOTTOMRIGHT">
+									<Anchor point="TOPLEFT">
 										<Offset>
-											<AbsDimension x="-1" y="-1"/>
+											<AbsDimension x="25" y="-100"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -588,7 +565,7 @@
 									</OnLoad>
 									<OnClick function="MiniMapLFGFrame_OnClick"/>
 									<OnEvent>
-											local mode, submode = MiniMapLFGFrame_GetMode();
+											local mode, submode = GetLFDMode();
 											if ( mode ) then
 												MiniMapLFGFrame:Show();
 											else
@@ -599,15 +576,18 @@
 									<OnLeave function="MiniMapLFGFrame_OnLeave"/>
 								</Scripts>						
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-							</Button-->	
+							</Button>	
 							<Button name="MinimapZoomIn">
 								<Size>
 									<AbsDimension x="32" y="32"/>
 								</Size>
+								<HitRectInsets>
+									<AbsInset left="4" right="4" top="2" bottom="6"/>
+								</HitRectInsets>								
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="77" y="-13"/>
+											<AbsDimension x="73" y="-17"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -630,10 +610,13 @@
 								<Size>
 									<AbsDimension x="32" y="32"/>
 								</Size>
+								<HitRectInsets>
+									<AbsInset left="4" right="4" top="2" bottom="6"/>
+								</HitRectInsets>								
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="51" y="-41"/>
+											<AbsDimension x="51" y="-39"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -657,9 +640,9 @@
 									<AbsDimension x="33" y="33"/>
 								</Size>
 								<Anchors>
-									<Anchor point="RIGHT">
+									<Anchor point="LEFT">
 										<Offset>
-											<AbsDimension x="5" y="12"/>
+											<AbsDimension x="14" y="7"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -723,11 +706,43 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow function="Minimap_OnShow"/>
-					<OnHide function="Minimap_OnHide"/>
 					<OnMouseUp function="Minimap_OnClick"/>
 				</Scripts>
 			</Minimap>
+			<Frame name="MiniMapInstanceDifficulty" hidden="true">
+				<Size>
+					<AbsDimension x="38" y="46"/>
+				</Size>			
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\Minimap\UI-DungeonDifficulty-Button">
+							<TexCoords left="0.05078125" right="0.1953125" top="0.0703125" bottom="0.4140625"/>
+						</Texture>
+						<Fontstring name="$parentText" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-1" y="-7"/>
+									</Offset>
+								</Anchor>
+							</Anchors>						
+						</Fontstring>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="MiniMapInstanceDifficulty_OnEvent" />
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -737,6 +752,7 @@
 				self:RegisterEvent("ZONE_CHANGED_INDOORS");
 				self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 				Minimap_UpdateRotationSetting();
+				MiniMapInstanceDifficulty:SetFrameLevel(self:GetFrameLevel() + 10);
 			</OnLoad>
 			<OnEvent function="Minimap_Update"/>
 		</Scripts>

@@ -116,14 +116,29 @@
 					<OnEnter>
 						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
 						CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
+						local parent = self:GetParent();
+						if ( parent.tooltipTitle and parent.tooltipWhileDisabled) then
+							if ( parent.tooltipOnButton ) then
+								GameTooltip:SetOwner(parent, "ANCHOR_RIGHT");
+								GameTooltip:AddLine(parent.tooltipTitle, 1.0, 1.0, 1.0);
+								GameTooltip:AddLine(parent.tooltipText);
+								GameTooltip:Show();
+							else
+								GameTooltip_AddNewbieTip(parent, parent.tooltipTitle, 1.0, 1.0, 1.0, parent.tooltipText, 1);
+							end
+						end
 					</OnEnter>
 					<OnLeave>
 						UIDropDownMenu_StartCounting(self:GetParent():GetParent());
+						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(2);
+			</OnLoad>
 			<OnClick>
 				UIDropDownMenuButton_OnClick(self, button, down);
 			</OnClick>
@@ -140,7 +155,14 @@
 				_G[self:GetName().."Highlight"]:Show();
 				UIDropDownMenu_StopCounting(self:GetParent());
 				if ( self.tooltipTitle ) then
-					GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+					if ( self.tooltipOnButton ) then
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:AddLine(self.tooltipTitle);
+						GameTooltip:AddLine(self.tooltipText);
+						GameTooltip:Show();
+					else
+						GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+					end
 				end
 			</OnEnter>
 			<OnLeave>
@@ -163,9 +185,9 @@
 	<Button name="UIDropDownListTemplate" hidden="true" frameStrata="DIALOG" enableMouse="true" virtual="true">
 		<Frames>
 			<Frame name="$parentBackdrop" setAllPoints="true">
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
+						<AbsInset left="11" right="12" top="12" bottom="9"/>
 					</BackgroundInsets>
 					<TileSize>
 						<AbsValue val="32"/>
@@ -184,7 +206,7 @@
 						<AbsValue val="16"/>
 					</TileSize>
 					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
+						<AbsInset left="5" right="5" top="5" bottom="4"/>
 					</BackgroundInsets>
 				</Backdrop>
 				<Scripts>

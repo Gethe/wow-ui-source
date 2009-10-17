@@ -72,6 +72,25 @@
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
 			</CheckButton>
+			<Frame name="$parentLockedIndicator" parentKey="lockedIndicator">
+				<Size>
+					<AbsDimension x="12" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parentEnableButton" relativePoint="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface/LFGFrame/UI-LFG-ICON-LOCK" setAllPoints="true">
+							<TexCoords left="0" right="0.71875" top="0" bottom="0.875"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="LFDQueueFrameDungeonLockedIndicator_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 			<Button name="$parentExpandOrCollapseButton" parentKey="expandOrCollapseButton">
 				<Size>
 					<AbsDimension x="13" y="13"/>
@@ -154,9 +173,7 @@
 							LFDFrameRoleCheckButton_OnClick(self);
 						end
 					</OnClick>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -211,9 +228,7 @@
 		</Layers>
 		<Scripts>
 			<OnEnter function="LFDDungeonReadyDialogReward_OnEnter"/>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
 	<Frame name="LFDDungeonReadyStatusPlayerTemplate" virtual="true">
@@ -260,6 +275,28 @@
 			<AbsDimension x="25" y="25"/>
 		</Size>
 	</Texture>
+	<Button name="LFDRandomDungeonLootTemplate" inherits="LargeItemButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.hasItem = 1;
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetLFGDungeonReward(LFDQueueFrame.type, self:GetID());
+				CursorUpdate(self);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnClick>
+				HandleModifiedItemClick(GetLFGDungeonRewardLink(LFDQueueFrame.type, self:GetID()));
+			</OnClick>
+		</Scripts>
+	</Button>
 	<Frame name="LFDDungeonReadyPopup" hidden="true">
 		<Size>
 			<AbsDimension x="306" y="193"/>
@@ -397,24 +434,6 @@
 									</Offset>
 								</Anchor>
 							</Anchors>
-							<TexCoords left="0.0" right="0.5742" top="0.0" bottom="0.9218"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="$parentBackgroundFilter" parentKey="backgroundFilter" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBackground" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<Color r="0" b="0" g="0" a="0.55"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -596,9 +615,7 @@
 						</Layers>
 						<Scripts>
 							<OnEnter function="LFDDungeonReadyDialogInstanceInfo_OnEnter"/>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
 					<Frame name="$parentRewardsFrame">
@@ -614,7 +631,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString inherits="GameFontNormalSmall" justifyH="CENTER" text="LFD_REWARDS">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="CENTER" text="LFD_REWARDS">
 									<Anchors>
 										<Anchor point="BOTTOM"/>
 									</Anchors>
@@ -630,9 +647,24 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("LFG_UPDATE_RANDOM_INFO")
+			</OnLoad>
+			<OnEvent>
+				if ( event == "LFG_UPDATE_RANDOM_INFO" ) then
+					--The rewards may have changed.
+					if ( self:IsShown() ) then
+						LFDDungeonReadyPopup_Update();
+					end
+				end
+			</OnEvent>
 			<OnShow>
 				LFDDungeonReadyPopup_Update();
 			</OnShow>
+			<OnHide>
+				self.closeIn = nil;
+				self:SetScript("OnUpdate", nil);
+			</OnHide>
 		</Scripts>
 	</Frame>
 	<Frame name="LFDRoleCheckPopup" hidden="true">
@@ -664,7 +696,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentRoleButtonTank" inherits="LFDFrameRoleCheckButtonTemplate" id="1">
+			<Button name="$parentRoleButtonTank" inherits="LFDFrameRoleCheckButtonTemplate" id="2">
 				<Size>
 					<AbsDimension x="70" y="70"/>
 				</Size>
@@ -681,7 +713,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonHealer" inherits="LFDFrameRoleCheckButtonTemplate" id="2">
+			<Button name="$parentRoleButtonHealer" inherits="LFDFrameRoleCheckButtonTemplate" id="3">
 				<Size>
 					<AbsDimension x="70" y="70"/>
 				</Size>
@@ -698,7 +730,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonDPS" inherits="LFDFrameRoleCheckButtonTemplate" id="3">
+			<Button name="$parentRoleButtonDPS" inherits="LFDFrameRoleCheckButtonTemplate" id="1">
 				<Size>
 					<AbsDimension x="70" y="70"/>
 				</Size>
@@ -752,9 +784,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter function="LFDRoleCheckPopupDescription_OnEnter"/>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -1002,7 +1032,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentRoleButtonTank" inherits="LFDFrameRoleCheckButtonTemplate" id="1">
+					<Button name="$parentRoleButtonTank" inherits="LFDFrameRoleCheckButtonTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1017,7 +1047,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonHealer" inherits="LFDFrameRoleCheckButtonTemplate" id="2">
+					<Button name="$parentRoleButtonHealer" inherits="LFDFrameRoleCheckButtonTemplate" id="3">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
 								<Offset>
@@ -1032,7 +1062,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonDPS" inherits="LFDFrameRoleCheckButtonTemplate" id="3">
+					<Button name="$parentRoleButtonDPS" inherits="LFDFrameRoleCheckButtonTemplate" id="1">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
 								<Offset>
@@ -1071,7 +1101,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="181" y="-125"/>
+									<AbsDimension x="131" y="-125"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1079,12 +1109,12 @@
 							<Layer level="OVERLAY">
 								<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="CHOOSE_YOUR_DUNGEON">
 									<Size>
-										<AbsDimension x="156" y="24"/>
+										<AbsDimension x="115" y="24"/>
 									</Size>
 									<Anchors>
 										<Anchor point="RIGHT" relativePoint="LEFT">
 											<Offset>
-												<AbsDimension x="-5" y="2"/>
+												<AbsDimension x="0" y="2"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -1249,7 +1279,7 @@
 											</Layer>
 										</Layers>
 										<Frames>
-											<Frame name="$parentItem1" inherits="LargeItemButtonTemplate" id="1">
+											<Button name="$parentItem1" inherits="LFDRandomDungeonLootTemplate" id="1">
 												<Anchors>
 													<Anchor point="TOPLEFT" relativeTo="$parentRewardsDescription" relativePoint="BOTTOMLEFT">
 														<Offset>
@@ -1257,7 +1287,7 @@
 														</Offset>
 													</Anchor>
 												</Anchors>
-											</Frame>
+											</Button>
 											<Frame name="$parentMoneyFrame" inherits="MoneyFrameTemplate" parentKey="moneyFrame">
 												<Anchors>
 													<Anchor point="LEFT" relativeTo="$parentMoneyLabel" relativePoint="RIGHT">
@@ -1500,7 +1530,7 @@
 										FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFDQueueFrameSpecificList_Update);
 									</OnVerticalScroll>
 									<OnShow>
-										LFDQueueFrameSpecificList_Update();
+										LFDQueueFrame_Update();
 									</OnShow>
 								</Scripts>
 							</ScrollFrame>
@@ -1519,8 +1549,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
-								if ( queued ) then
+								local mode, subMode = GetLFDMode();
+								if ( mode == "queued" or mode == "rolecheck" ) then
 									LeaveLFG();
 								else
 									LFDQueueFrame_Join();
@@ -1547,11 +1577,11 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnLoad function="LFDQueueFrame_OnLoad"/>
-					<OnEvent function="LFDQueueFrame_OnEvent"/>
 					<OnShow>
 						UpdateMicroButtons();
 						PlaySound("igCharacterInfoOpen");
+						RequestLFDPlayerLockInfo();
+						RequestLFDPartyLockInfo();
 					</OnShow>
 					<OnHide>
 						UpdateMicroButtons();
