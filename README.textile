@@ -11,6 +11,7 @@ h2. General
 * Many of the tail sweeps with knockback effects will no longer hit players' pets.
 * Level 1 characters no longer start with food or water in their inventory.
 * Attack is now called Auto Attack. The tooltip has been changed to reflect that the player will continue automatically attacking a target.
+* Quel'Delar Quest Chain: The Battered Hilt, the item needed to start this quest line, can now be purchased from all glyph vendors on the public test realms.
 
 h3. Icecrown Citadel
 
@@ -38,6 +39,14 @@ h2. PvP
 h3. Battlegrounds
 
 * Battleground Experience: Battleground experience gained is now based on the level of the player gaining experience, rather than the highest possible player level in that Battleground.
+* The achievements to get exalted with the Warsong Gulch, Arathi Basin, and Alterac Valley factions have been removed from their respective Master of meta-achievements. Special titles will be offered to those who reach exalted with these factions.
+
+h4. Wintergrasp
+
+* You must now have the following ranks to build or pilot siege vehicles:
+** Rank 1: Build/pilot Catapults.
+** Rank 2: Build/pilot Demolishers.
+** Rank 3: Build/pilot Siege Engines.
 
 h2. Death Knights
 
@@ -109,6 +118,7 @@ h4. Fire
 
 h4. Frost
 
+* Deep Freeze: This spell now deals a large amount of damage to targets permanently immune to stuns.
 * Frozen Core: This talent now also causes Ice Lance critical strikes to reduce the cast time of the mage's next Frostbolt or Frostfire Bolt by 0.4/0.7/1 seconds.
 
 h3. Pets
@@ -127,7 +137,7 @@ h4. Protection
 
 h2. Priests
 
-* Power Word: Shield; This spell can now be cast on non-raid/party friendly targets.
+* Power Word: Shield: This spell can now be cast on non-raid/party friendly targets.
 
 h3. Talents
 
@@ -176,17 +186,17 @@ h3. Talents
 h4. Affliction
 
 * Improved Felhunter: This talent now also reduces the cooldown on the felhunter's Shadow Bite ability by 2/4 seconds.
-* Pandemic: This talent now also increases the critical strike damage bonus of the felhunter's Shadow Bite spell by 100%.
+* Shadow Mastery: This talent now also increases the damage done by the felhunter's Shadow Bite ability by 3/6/9/12/15%.
 
 h4. Demonology
 
 * Decimation: Redesigned. When Shadowbolt, Incinerate or Soul Fire hit a target that is at or below 35% health, the cast time of Soul Fire is reduced by 20/40% for 8 seconds. Soul Fires cast under the effect of Decimation cost no shards.
 * Demonic Pact: This talent now also increases the warlock's spell damage by 1/2/3/4/5%.
-* Molten Core: Redesigned. Shadow spells and damage-over-time effects have a 12% chance to increase the damage done by Incinerate by 5/10/15% and Soul Fire by 4/7/10% for 12 seconds. In addition, Molten Core now has a new spell effect.
+* Molten Core: Redesigned. This talent now increases the duration of Immolate by 3/6/9 seconds and provides a 4/8/12% chance to gain the Molten Core effect when Corruption deals damage. The Molten Core effect empowers the next 3 Incinerate or Soul Fire spells cast within 15 seconds (Incinerate: increases damage done by 6/12/18% and reduces cast time by 10/20/30%; Soul Fire: increases damage done by 6/12/18% and increases critical strike chance by 5/10/15%).
 
 h4. Destruction
 
-* Conflagrate: Redesigned. This talent now consumes an Immolate or Shadowflame effect on the enemy target to instantly deal damage equal to 9 seconds of Immolate or 8 seconds of Shadowflame, and causes additional damage over 3 seconds equal to 3 seconds of Immolate or 2 seconds of Shadowflame.
+* Conflagrate: Redesigned. This talent now consumes an Immolate or Shadowflame effect on the enemy target to instantly deal damage equal to 9 seconds of Immolate or 8 seconds of Shadowflame, and causes additional damage over 3 seconds equal to 3 seconds of Immolate or 2 seconds of Shadowflame. In addition, the periodic damage of Conflagrate is capable of critically striking the afflicted target.
 * Ruin: This talent now also increases the critical strike damage bonus of the imp's Firebolt spell by 100%.
 
 h3. Pets
@@ -233,7 +243,7 @@ h3. Looking For Group System
 h3. Unit Nameplates
 
 * The range at which players can see unit nameplates has been increased by 40 yards.
-* Unit nameplates are now subject to line-of-sight limitations in certain situations (this does not pertain to objects like Arena pillars or bridges).
+* Unit nameplates are now subject to line-of-sightlimitations in certain situations (this does not pertain to objects like Arena pillars or bridges).
 * Players can now adjust select unit nameplate display settings listed below under Interface Options via the "Names" tab.
 ** Friendly/enemy pet nameplates can be toggled.
 ** Enemy totem nameplates can be toggled (friendly totem nameplates are never displayed).
@@ -282,6 +292,7 @@ h2. Quests
 
 h2. Reputation
 
+* Gaining reputation with the Ashen Verdict in Icecrown Citadel will grant players access to upgradeable rings from Ormus the Penitent. Players can switch between the type of ring (melee/caster/tank/healer) at any point in the upgrade path for 200g.
 * The following reputations have been sped up by roughly 30%:
 ** Argent Crusade
 ** Alliance Vanguard
@@ -297,6 +308,7 @@ h2. Reputation
 h2. Items
 
 * Death Knight Tier-9 4-Piece Bonus: This set bonus no longer grants Frost Fever a chance to be a critical strike. It still grants that possibility to Blood Plague.
+* Hatchlings: Leaping, Darting, Razormaw, and Ravasaur Hatchlings no longer drop from their associated rare creatures. Instead, there are now rare nests that spawn which contain these hatchlings. For example, the Leaping Hatchling can now be found in Takk's Nest rather than as a drop from Takk the Leaper.
 
 h3. Glyphs
 
