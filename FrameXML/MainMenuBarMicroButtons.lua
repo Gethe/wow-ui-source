@@ -69,11 +69,11 @@ function UpdateMicroButtons()
 		SocialsMicroButton:SetButtonState("NORMAL");
 	end
 
-	--if ( LFDParentFrame:IsShown() ) then
-	--	LFDMicroButton:SetButtonState("PUSHED", 1);
-	--else
-	--	LFDMicroButton:SetButtonState("NORMAL");
-	--end
+	if ( LFDParentFrame:IsShown() ) then
+		LFDMicroButton:SetButtonState("PUSHED", 1);
+	else
+		LFDMicroButton:SetButtonState("NORMAL");
+	end
 
 	if ( HelpFrame:IsShown() ) then
 		HelpMicroButton:SetButtonState("PUSHED", 1);

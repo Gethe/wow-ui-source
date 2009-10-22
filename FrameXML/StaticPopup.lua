@@ -2711,17 +2711,6 @@ StaticPopupDialogs["SIMPLE_CHAT_OPTION_ENABLE_INTERRUPT"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["ADVANCED_WATCHFRAME_OPTION_ENABLE_INTERRUPT"] = {
-	text = ADVANCED_WATCHFRAME_OPTION_ENABLE_INTERRUPT,
-	button1 = YES,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		InterfaceOptionsObjectivesPanelAdvancedWatchFrame_ConfirmUncheck();
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1
-};
 StaticPopupDialogs["WOW_MOUSE_NOT_FOUND"] = {
 	text = WOW_MOUSE_NOT_FOUND,
 	button1 = OKAY,
@@ -3164,7 +3153,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	dialog.hideOnEscape = info.hideOnEscape;
 	dialog.enterClicksFirstButton = info.enterClicksFirstButton;
 	-- Clear out data
-	dialog.data = nil;
+	dialog.data = data;
 
 	if ( info.StartDelay ) then
 		dialog.startDelay = info.StartDelay();

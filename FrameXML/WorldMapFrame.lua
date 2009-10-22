@@ -1474,7 +1474,7 @@ function WorldMapFrame_UpdateQuests()
 			questFrame.completed = isComplete;
 			-- display map POI and turn off blob
 			WorldMapFrame_DisplayQuestPOI(questFrame);
-			QuestPOIDrawBlob(questFrame.questId, 0);
+			WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, false);
 			-- set quest text
 			questText = "|cffffd100"..title.."|r|n";
 					--questText = "|cffbf9b00"..title.."|r|n";
@@ -1506,7 +1506,7 @@ function WorldMapFrame_UpdateQuests()
 		if ( questFrame == currentSelection ) then
 			WorldMapQuestScrollChildFrame.selected = nil;
 		end
-		QuestPOIDrawBlob(questFrame.questId, 0);
+		WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, false);
 		_G["WorldMapQuestPOI"..i]:Hide();
 	end
 	if ( questCount > 0 ) then
@@ -1514,7 +1514,6 @@ function WorldMapFrame_UpdateQuests()
 	else
 		WorldMapPOIFrameHighlight:Hide();
 	end
-	QuestPOIUpdateTexture(WorldMapBlobFrameTexture);
 	WorldMapFrame.numQuests = questCount;
 end
 
@@ -1539,9 +1538,9 @@ function WorldMapFrame_SelectQuest(questFrame)
 		WorldMapQuestRewardScrollFrameScrollBar:SetValue(0);
 	end	
 	if ( questFrame.completed ) then
-		QuestPOIDrawBlob(questFrame.questId, 0);
+		WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, false);
 	else
-		QuestPOIDrawBlob(questFrame.questId, 1);
+		WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, true);
 	end
 end
 
@@ -1600,8 +1599,7 @@ function WorldMapQuestFrame_OnEnter(self)
 	WorldMapQuestHighlightedFrame:SetHeight(self:GetHeight());
 	WorldMapQuestHighlightedFrame:Show();
 	if ( not self.completed ) then
-		QuestPOIDrawBlob(self.questId, 1);
-		QuestPOIUpdateTexture(WorldMapBlobFrameTexture);
+		WorldMapBlobFrame:DrawQuestBlob(self.questId, true);
 	end
 	WorldMapPOIFrameMouseOverHighlight:SetPoint("CENTER", _G["WorldMapQuestPOI"..self.index]);
 	WorldMapPOIFrameMouseOverHighlight:Show();
@@ -1613,8 +1611,7 @@ function WorldMapQuestFrame_OnLeave(self)
 	end
 	WorldMapQuestHighlightedFrame:Hide();
 	if ( not self.completed ) then
-		QuestPOIDrawBlob(self.questId, 0);
-		QuestPOIUpdateTexture(WorldMapBlobFrameTexture);
+		WorldMapBlobFrame:DrawQuestBlob(self.questId, false);
 	end
 	WorldMapPOIFrameMouseOverHighlight:Hide();
 end
@@ -1623,26 +1620,24 @@ function WorldMapQuestFrame_OnMouseUp(self)
 	self.details:SetPoint("TOPLEFT", 34, -8);
 	if ( self:IsMouseOver() and WorldMapQuestScrollChildFrame.selected ~= self ) then
 		if ( WorldMapQuestScrollChildFrame.selected ) then
-			QuestPOIDrawBlob(WorldMapQuestScrollChildFrame.selected.questId, 0);
+			WorldMapBlobFrame:DrawQuestBlob(WorldMapQuestScrollChildFrame.selected.questId, false);
 		end
 		WorldMapQuestHighlightedFrame:Hide();		
 		WorldMapFrame_SelectQuest(self);
-		QuestPOIUpdateTexture(WorldMapBlobFrameTexture);
 	end
 end
 
 function WorldMapQuestPOI_OnClick(self)
 	if ( self.quest ~= WorldMapQuestScrollChildFrame.selected ) then
-		QuestPOIDrawBlob(WorldMapQuestScrollChildFrame.selected.questId, 0);
+		WorldMapBlobFrame:DrawQuestBlob(WorldMapQuestScrollChildFrame.selected.questId, false);
 		WorldMapFrame_SelectQuest(self.quest);
-		QuestPOIUpdateTexture(WorldMapBlobFrameTexture);
 	end
 end
 
 function WorldMapBlobFrame_OnLoad(self)
-	QuestPOISetFillTexture("Interface\\WorldMap\\UI-QuestBlob-Inside");
-	QuestPOISetBorderTexture("Interface\\WorldMap\\UI-QuestBlob-Outside");
-	--QuestPOISetFillAlpha(192); 0 to 255
-	--QuestPOISetBorderAlpha(128); 0 to 255
-	--QuestPOISetBorderScalar(1.0f); 0.0 to 10.0f
+	self:SetFillTexture("Interface\\WorldMap\\UI-QuestBlob-Inside");
+	self:SetBorderTexture("Interface\\WorldMap\\UI-QuestBlob-Outside");
+	self:SetFillAlpha(128);
+	self:SetBorderAlpha(128);
+	self:SetBorderScalar(1.0);
 end

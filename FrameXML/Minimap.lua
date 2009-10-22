@@ -220,7 +220,7 @@ function MiniMapLFGFrame_OnClick(self, button)
 	elseif ( mode == "proposal" ) then
 		StaticPopupSpecial_Show(LFDDungeonReadyPopup);
 	elseif ( mode == "queued" or mode == "rolecheck" ) then
-		--ToggleLFDParentFrame();
+		ToggleLFDParentFrame();
 	end
 end
 

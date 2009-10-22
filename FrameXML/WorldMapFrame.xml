@@ -588,17 +588,10 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="WorldMapBlobFrame">
+			<QuestPOIFrame name="WorldMapBlobFrame" setAllPoints="true" parent="WorldMapDetailFrame">
 				<Size>
 					<AbsDimension x="1002" y="668"/>
 				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="WorldMapBlobFrameTexture" setAllPoints="true" />
@@ -607,7 +600,7 @@
 				<Scripts>
 					<OnLoad function="WorldMapBlobFrame_OnLoad" />
 				</Scripts>
-			</Frame>
+			</QuestPOIFrame>
 			<Button name="WorldMapButton">
 				<Size>
 					<AbsDimension x="1002" y="668"/>

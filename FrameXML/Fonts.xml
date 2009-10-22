@@ -114,6 +114,11 @@
 			<AbsValue val="16"/>
 		</FontHeight>
 	</Font>
+	<Font name="SystemFont_Huge1" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="20"/>
+		</FontHeight>
+	</Font>
 	<Font name="SystemFont_Shadow_Huge1" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<Shadow>
 			<Offset>

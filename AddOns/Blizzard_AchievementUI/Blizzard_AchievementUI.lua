@@ -979,10 +979,7 @@ function AchievementButton_ToggleTracking (id)
 	
 	local count = GetNumTrackedAchievements();
 	
-	if ( WatchFrame_GetRemainingSpace() < WatchFrame_GetHeightNeededForAchievement(id) ) then
-		UIErrorsFrame:AddMessage(OBJECTIVES_WATCH_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
-		return
-	elseif ( count >= WATCHFRAME_MAXACHIEVEMENTS ) then
+	if ( count >= WATCHFRAME_MAXACHIEVEMENTS ) then
 		UIErrorsFrame:AddMessage(format(ACHIEVEMENT_WATCH_TOO_MANY, WATCHFRAME_MAXACHIEVEMENTS), 1.0, 0.1, 0.1, 1.0);
 		return;
 	end

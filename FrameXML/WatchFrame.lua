@@ -1,53 +1,37 @@
 -- Who watches the WatchFrame...?
 
-WATCHFRAME_FADEDELAY = .5;
-WATCHFRAME_FADETIME = .15;
-WATCHFRAME_HOVERALPHA = 1;
-
-WATCHFRAME_BORDERHEIGHT = 38;
-
-WATCHFRAME_MINIMUMWIDTH = 220;
-WATCHFRAME_COLLAPSEDWIDTH = 178;
+WATCHFRAME_COLLAPSEDWIDTH = 0;		-- set in WatchFrame_OnLoad
 WATCHFRAME_LASTWIDTH = 0;
-MAX_LONG_CRITERIA_WIDTH = 260;
-RegisterForSave("WATCHFRAME_LASTWIDTH");
-
-WATCHFRAME_MINIMUMHEIGHT = 128;
-
 WATCHFRAME_LINEHEIGHT = 16;
-WATCHFRAME_LINEHEIGHT_PROGRESSBAR = 28;
-WATCHFRAME_ICONXOFFSET = 24;
-WATCHFRAME_QUESTTIMER_HEIGHT = 37;
-WATCHFRAME_QUEST_WITH_ITEM_HEIGHT = 28;
-WATCHFRAME_INITIAL_OFFSET = 0;
-WATCHFRAME_TYPE_OFFSET = 5;
-WATCHFRAME_QUEST_OFFSET = 10;
+WATCHFRAME_MAXLINEWIDTH = 204;
+WATCHFRAME_MULTIPLE_LINEHEIGHT = 29;
 
-WATCHFRAME_ITEM_WIDTH = 33;
-WATCHFRAME_MAP_BUTTON_WIDTH = 22;
+local DASH_NONE = 0;
+local DASH_SHOW = 1;
+local DASH_HIDE = 2;
+local IS_HEADER = true;
+
+WATCHFRAME_INITIAL_OFFSET = 0;
+WATCHFRAME_TYPE_OFFSET = 10;
+WATCHFRAME_QUEST_OFFSET = 10;
 
 WATCHFRAMELINES_FONTSPACING = 0;
 WATCHFRAMELINES_FONTHEIGHT = 0;
-WATCHFRAMELINES_YOFFSET = 42;
-WATCHFRAMELINES_XOFFSET = 24;
 
 WATCHFRAME_MAXQUESTS = 10;
 WATCHFRAME_MAXACHIEVEMENTS = 10;
-
 WATCHFRAME_CRITERIA_PER_ACHIEVEMENT = 5;
 
 WATCHFRAME_NUM_TIMERS = 0;
 WATCHFRAME_NUM_ITEMS = 0;
 
 WATCHFRAME_OBJECTIVEHANDLERS = {};
-
 WATCHFRAME_TIMEDCRITERIA = {};
-
 WATCHFRAME_TIMERLINES = {};
 WATCHFRAME_ACHIEVEMENTLINES = {};
 WATCHFRAME_QUESTLINES = {};
-
 WATCHFRAME_LINKBUTTONS = {};
+local WATCHFRAME_WATCHFRAME_SETLINES = { };	-- buffer to hold lines for a quest/achievement that will be displayed only if there is room
 
 WATCHFRAME_FLAGS = { ["locked"] = 0x01, ["collapsed"] = 0x02 }
 
@@ -114,14 +98,11 @@ function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
 		if ( WatchFrame.lastLinkButton ~= self ) then
 			CloseDropDownMenus();
 		end
-
 		dropDown.type = self.type;
 		dropDown.index = self.index;
-		UIFrameFadeOut(WatchFrameLines, WATCHFRAME_FADETIME, WatchFrameLines:GetAlpha(), .5);
 		WatchFrame.dropDownOpen = true;
 		WatchFrame.lastLinkButton = self;
 		ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3)
---		self:Disable();
 	end
 end
 
@@ -140,7 +121,6 @@ function WatchFrameLinkButtonTemplate_OnLeftClick (self, button)
 		if ( not AchievementFrame ) then
 			AchievementFrame_LoadUI();
 		end
-	
 		if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
 			WatchFrame_StopTrackingAchievement(button, self.index);
 		elseif ( not AchievementFrame:IsShown() ) then
@@ -211,59 +191,18 @@ local function WatchFrame_ReleaseUnusedQuestLines ()
 	end
 end
 
-function WatchFrame_ToggleSimpleWatch ()
-	local WatchFrame = WatchFrame; -- local references are faster
-	if ( ADVANCED_WATCH_FRAME == "0" ) then
-		WatchFrame.simpleMode = true;
-		WatchFrame:SetUserPlaced(false);
-		WatchFrame_SetBaseAlpha(1);
-		WatchFrame:SetAlpha(0);
-		WatchFrame_Expand(WatchFrame);
-		WatchFrame_Lock(WatchFrame);
-		WatchFrameTitleButton:Hide();
-		WatchFrameCollapseExpandButton:Hide();
-		WatchFrame_Update();
-		UIParent_ManageFramePositions();
-		WatchFrame:SetScript("OnUpdate", nil);
-	elseif ( WatchFrame.simpleMode ) then -- We were at simple mode in some point, we need to undo some stuff...
-		WatchFrame.simpleMode = nil;
-		WatchFrame:SetUserPlaced(true);
-		WatchFrame_Unlock(WatchFrame);
-		WatchFrameTitleButton:Show();
-		WatchFrameCollapseExpandButton:Show();
-		WatchFrame_Update();
-		WatchFrame:SetScript("OnUpdate", WatchFrame_OnUpdate);
-		WatchFrame_ToggleIgnoreCursor(); -- Update cursor settings
-	end
-	if ( ArenaEnemyFrames_UpdateWatchFrame ) then
-		ArenaEnemyFrames_UpdateWatchFrame();
-	end
-end
-
-function WatchFrame_ToggleIgnoreCursor ()
-	local WatchFrame = WatchFrame;
-	if ( WATCHFRAME_IGNORECURSOR == "1" or WatchFrame.simpleMode ) then
-		WatchFrameTitleButton:Hide();
-		WatchFrameCollapseExpandButton:Disable();
-		WatchFrame_Lock(WatchFrame);
-		-- WATCHFRAME_IGNORECURSOR is set after WatchFrame is loaded so we need to set the right alpha if the mouse is over a disabled WatchFrame upon loading
-		WatchFrame:SetAlpha(1 - WatchFrame.baseAlpha);
-	else
-		WatchFrame_Lock(WatchFrame);
-		WatchFrameTitleButton:Show();
-		WatchFrameCollapseExpandButton:Enable();
-	end
-end
-
 function WatchFrame_OnLoad (self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
 	self:RegisterEvent("ITEM_PUSH");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
 	watchFrameTestLine = self.lineCache:GetFrame();
+	WATCHFRAME_COLLAPSEDWIDTH = WatchFrameTitle:GetWidth() + 50;
+	WatchFrameLines:SetWidth(WATCHFRAME_MAXLINEWIDTH);
 	local _, fontHeight = watchFrameTestLine.text:GetFont();
 	WATCHFRAMELINES_FONTHEIGHT = fontHeight;
 	WATCHFRAMELINES_FONTSPACING = (WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTHEIGHT) / 2
@@ -274,40 +213,7 @@ end
 
 function WatchFrame_OnEvent (self, event, ...)
 	if ( event == "VARIABLES_LOADED" ) then
-		if ( not GetCVarBool("advancedWatchFrame") ) then
-			return;
-		end
-			
-		-- Setup window appearance and behaviors		
-		self.baseAlpha = tonumber(GetCVar("watchFrameBaseAlpha"));		
-		WatchFrame_SetBaseAlpha(self.baseAlpha);
-		
-		WatchFrame:SetUserPlaced(true);
-		
-		local flags = tonumber(GetCVar("watchFrameState"));
-		for value, bitflag in next, WATCHFRAME_FLAGS do
-			if ( bit.band(flags, bitflag) == bitflag ) then
-				self[value] = true;
-			end
-		end
-
-		local lastWidth = WATCHFRAME_LASTWIDTH;
-		if ( self.collapsed ) then
-			WatchFrame_Collapse(self);
-		end
-		WATCHFRAME_LASTWIDTH = lastWidth;
-		
-		if ( self.locked ) then
-			WatchFrame_Lock(self);
-		end
-		
-		local midPoint = self:GetLeft() + (self:GetRight() - self:GetLeft())/2;
-		local uiParentMidPoint = (UIParent:GetRight() - UIParent:GetLeft())/2;
-		if ( midPoint <= uiParentMidPoint ) then
-			self.keepLeft = true;
-		end
-		
-		WatchFrame_Update(self);
+		-- cvar handling to come
 	elseif ( event == "QUEST_LOG_UPDATE" and not self.updating ) then -- May as well check here too and save some time
 		WatchFrame_Update(self);
 		if ( self.collapsed ) then
@@ -335,69 +241,14 @@ function WatchFrame_OnEvent (self, event, ...)
 		WatchFrame_Update();
 	elseif ( event == "ITEM_PUSH" ) then
 		WatchFrame_Update();
+	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
+		WatchFrame_OnSizeChanged(self);
 	end
 end
 
-function WatchFrame_OnUpdate (self, elapsed)
-	if ( not self.collapsed and (WATCHFRAME_IGNORECURSOR == "1" or not WatchFrameMouseover:IsMouseOver() and not self.moving and not self.sizing and not (self.dropDownOpen and WatchFrameDropDown.type == "CONFIG")) ) then
-		if ( self.timeEntered ) then		
-			self.timeEntered = nil;
-			self.fadeIn = nil;
-			self.timeLeft = GetTime();
-		elseif ( self.timeLeft and self.timeLeft + WATCHFRAME_FADEDELAY <= GetTime() ) then
-			self.timeLeft = nil;
-			UIFrameFadeOut(WatchFrame, WATCHFRAME_FADETIME, WatchFrame:GetAlpha(), 1 - self.baseAlpha);
-		end			
-	elseif ( not self.timeEntered ) then
-		self.timeEntered = GetTime();
-		self.timeLeft = nil;
-	elseif ( self.timeEntered and self.timeEntered + WATCHFRAME_FADEDELAY <= GetTime() ) then
-		if ( not self.fadeIn ) then 
-			UIFrameFadeIn(WatchFrame, WATCHFRAME_FADETIME, WatchFrame:GetAlpha(), WATCHFRAME_HOVERALPHA);
-			self.fadeIn = true;
-		end
-	end
-	
-	if ( self.moving ) then
-		local midPoint = self:GetLeft() + (self:GetRight() - self:GetLeft())/2;
-		local uiParentMidPoint = (UIParent:GetRight() - UIParent:GetLeft())/2;
-		if ( not self.keepLeft and midPoint <= uiParentMidPoint - 5 ) then
-			self.keepLeft = true;
-			WatchFrame_Update(self);
-		elseif ( self.keepLeft and midPoint >= uiParentMidPoint + 5 ) then
-			self.keepLeft = nil;
-			WatchFrame_Update(self);
-		end
-	end
-end
-
-function WatchFrame_ToggleLock ()
-	local watchFrame = WatchFrame;
-	if ( watchFrame.locked ) then
-		WatchFrame_Unlock(watchFrame);
-	else
-		WatchFrame_Lock(watchFrame);
-	end
-end
-
-function WatchFrame_Lock (self)
-	self.locked = true;
-	WatchFrameRightResizeThumb:Hide();
-	WatchFrameLeftResizeThumb:Hide();
-	if ( WATCHFRAME_IGNORECURSOR ~= "1" ) then
-		WatchFrameTitleButton:RegisterForDrag("");
-	end
-	WatchFrame_UpdateStateCVar();
-end
-
-function WatchFrame_Unlock (self)
-	self.locked = false;
-	WatchFrameRightResizeThumb:Show();
-	WatchFrameLeftResizeThumb:Show();
-	if ( WATCHFRAME_IGNORECURSOR ~= "1" ) then
-		WatchFrameTitleButton:RegisterForDrag("LeftButton");
-	end
-	WatchFrame_UpdateStateCVar();
+function WatchFrame_OnSizeChanged(self)
+	WatchFrame_ClearDisplay();
+	WatchFrame_Update(self)	
 end
 
 function WatchFrame_Collapse (self)
@@ -406,79 +257,25 @@ function WatchFrame_Collapse (self)
 	self:SetWidth(WATCHFRAME_COLLAPSEDWIDTH);
 	WatchFrameLines:Hide();
 	local button = WatchFrameCollapseExpandButton;
-	button:SetNormalTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Up");
-	button:SetPushedTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Down");
-	button:SetDisabledTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Disabled");	
-	self:DisableDrawLayer("BORDER");
-	self:EnableDrawLayer("ARTWORK");
-	WatchFrameMouseover:SetPoint("BOTTOMRIGHT", WatchFrameCollapsedBorderRight, "BOTTOMRIGHT");
-	WatchFrameDialogBG:Hide();
+	local texture = button:GetNormalTexture();
+	texture:SetTexCoord(0, 0.5, 0, 0.5);
+	texture = button:GetPushedTexture();	
+	texture:SetTexCoord(0.5, 1, 0, 0.5);
 	WatchFrame_UpdateStateCVar();
-	WatchFrameRightResizeThumb:Hide();
-	WatchFrameLeftResizeThumb:Hide();
 end
 
 function WatchFrame_Expand (self)
 	self.collapsed = nil;
-	self:SetWidth(max(WATCHFRAME_LASTWIDTH, WATCHFRAME_MINIMUMWIDTH));
+	self:SetWidth(WATCHFRAME_LASTWIDTH);
 	WATCHFRAME_LASTWIDTH = 0;
 	WatchFrameLines:Show();
 	local button = WatchFrameCollapseExpandButton;
-	button:SetNormalTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Up");
-	button:SetPushedTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Down");
-	button:SetDisabledTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Disabled");
-	self:EnableDrawLayer("BORDER");
-	self:DisableDrawLayer("ARTWORK");
-	WatchFrameMouseover:SetPoint("BOTTOMRIGHT", WatchFrame, "BOTTOMRIGHT");
-	WatchFrameDialogBG:Show();
+	local texture = button:GetNormalTexture();
+	texture:SetTexCoord(0, 0.5, 0.5, 1);
+	texture = button:GetPushedTexture();
+	texture:SetTexCoord(0.5, 1, 0.5, 1);
 	WatchFrame_Update(self);
 	WatchFrame_UpdateStateCVar();
-	if ( not self.locked ) then
-		WatchFrameRightResizeThumb:Show();
-		WatchFrameLeftResizeThumb:Show();
-	end
-end
-
-function WatchFrame_ShowOpacityFrameBaseAlpha ()
-	OpacityFrame:ClearAllPoints();
-	OpacityFrame:SetPoint("TOPRIGHT", "WatchFrame", "TOPLEFT", 0, 7);
-	OpacityFrame.opacityFunc = WatchFrame_SetBaseAlpha;
-	OpacityFrame:Show();
-	OpacityFrameSlider:SetValue(WatchFrame.baseAlpha);
-end
-
-function WatchFrame_SetBaseAlpha (alpha)
-	local watchFrame = WatchFrame;
-	alpha = alpha or OpacityFrameSlider:GetValue() or 0;
-	SetCVar("watchFrameBaseAlpha", alpha);
-	watchFrame.baseAlpha = alpha;
-	alpha = 1 - alpha;
-	if ( not watchFrame:IsMouseOver() or OpacityFrame:IsShown() ) then -- We should be setting the current opacity
-		WatchFrame:SetAlpha(alpha);
-	end
-end
-
-function WatchFrameTitleButton_OnClick (self, button, down)
-	local watchFrame = WatchFrame;
-	local dropDown = WatchFrameDropDown;
-	if ( watchFrame.dropDownOpen and dropDown.type == "CONFIG" ) then
-		dropDown.type = nil;
-		CloseDropDownMenus();
-		return;
-	end
-	
-	CloseDropDownMenus();
-	dropDown.type = "CONFIG";
-	watchFrame.dropDownOpen = true;
-	if ( WatchFrameLines:IsShown() ) then
-		UIFrameFadeOut(WatchFrameLines, WATCHFRAME_FADETIME, WatchFrameLines:GetAlpha(), .5);
-	end
-	ToggleDropDownMenu(1, nil, dropDown, self:GetName(), 0, 0);
-end
-
-function WatchFrame_OnSizeChanged (self, width, height)
-	WatchFrame_ClearDisplay();
-	WatchFrame_Update(self)
 end
 
 function GetTimerTextColor (duration, elapsed)
@@ -495,15 +292,6 @@ function GetTimerTextColor (duration, elapsed)
 		local greenOffset = percentageLeft / START_PERCENTAGE_RED; -- Fade to red by eliminating green
 		return 1, greenOffset, 0;
 	end
-end
-
-function WatchFrame_GetRemainingSpace ()	
-	local watchFrame = WatchFrame;
-	if ( WATCHFRAME_NUM_TIMERS == 0 ) then
-		return watchFrame:GetTop() - watchFrame:GetBottom() - WATCHFRAMELINES_YOFFSET - WATCHFRAME_QUESTTIMER_HEIGHT - math.abs(watchFrame.nextOffset);
-	end
-	
-	return (watchFrame:GetTop() - watchFrame:GetBottom() - WATCHFRAMELINES_YOFFSET) - math.abs(watchFrame.nextOffset);
 end
 
 function WatchFrame_ClearDisplay ()
@@ -532,13 +320,7 @@ function WatchFrame_Update (self)
 	local lineFrame = WatchFrameLines;
 	local maxHeight = (WatchFrame:GetTop() - WatchFrame:GetBottom()); -- Can't use lineFrame:GetHeight() because it could be an invalid rectangle (width of 0)
 	
-	local maxFrameWidth;
-	if ( self.simpleMode ) then
-		maxFrameWidth = 1024; -- Effectively meaningless number
-	else
-		maxFrameWidth = self:GetWidth() - WATCHFRAMELINES_XOFFSET;
-	end
-	
+	local maxFrameWidth = WATCHFRAME_MAXLINEWIDTH;
 	local maxWidth = 0;
 	local maxLineWidth;
 	
@@ -552,33 +334,19 @@ function WatchFrame_Update (self)
 			totalOffset = totalOffset - WATCHFRAME_TYPE_OFFSET - pixelsUsed;
 		end
 	end
+	--disabled for now, might make it an option
+	--lineFrame:SetWidth(min(maxWidth, maxFrameWidth));
+	
+	if ( totalOffset < WATCHFRAME_INITIAL_OFFSET ) then
+		WatchFrameTitle:Show();
+		WatchFrameCollapseExpandButton:Show();		
+	else
+		WatchFrameTitle:Hide();
+		WatchFrameCollapseExpandButton:Hide();
+	end
 	
 	WatchFrame_ReleaseUnusedLinkButtons();
 	
-	if ( self.simpleMode or not self.keepLeft ) then -- Keep right
-		if ( not lineFrame.keepRight ) then
-			lineFrame.keepRight = true;
-			lineFrame.keepLeft = nil;
-			lineFrame:ClearAllPoints();
-			lineFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -12, -30);
-			lineFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -12, 12);
-		end
-		lineFrame:SetWidth(min(maxWidth, maxFrameWidth));
-	elseif ( self.keepLeft ) then
-		if ( not lineFrame.keepLeft ) then
-			lineFrame.keepRight = nil;
-			lineFrame.keepLeft = true;
-			lineFrame:ClearAllPoints();
-			lineFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 14, -30);
-			lineFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -12, 12);
-		end
-	end
-	
-	if ( WATCHFRAME_NUM_TIMERS == 0 ) then
-		self:SetMinResize(WATCHFRAME_MINIMUMWIDTH, max(WATCHFRAME_MINIMUMHEIGHT, -totalOffset + WATCHFRAME_QUESTTIMER_HEIGHT + WATCHFRAMELINES_YOFFSET))
-	else
-		self:SetMinResize(WATCHFRAME_MINIMUMWIDTH, max(WATCHFRAME_MINIMUMHEIGHT, -totalOffset + WATCHFRAMELINES_YOFFSET));
-	end
 	self.updating = nil;
 	self.nextOffset = totalOffset;
 end
@@ -718,77 +486,6 @@ function WatchFrame_HandleDisplayTrackedAchievements (lineFrame, initialOffset, 
 	return WatchFrame_DisplayTrackedAchievements(lineFrame, initialOffset, maxHeight, frameWidth, GetTrackedAchievements());
 end
 
-function WatchFrame_GetHeightNeededForAchievement (achievementID)
-	local _, name, _, completed, _, _, _, description = GetAchievementInfo(achievementID);
-	if ( completed ) then
-		return 0; -- Completed achievements can't be tracked, right?
-	end
-	
-	local heightUsed = WATCHFRAME_LINEHEIGHT; -- Achievement title + icon
-	
-	if ( GetNumTrackedAchievements() > 1 ) then
-		heightUsed = heightUsed + WATCHFRAME_QUEST_OFFSET;
-	end
-	
-	local lineHeight = WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTSPACING;
-	
-	local numCriteria = GetAchievementNumCriteria(achievementID);
-	if ( numCriteria == 0 ) then
-		local frameWidth = WatchFrame:GetWidth() - WATCHFRAMELINES_XOFFSET;
-		watchFrameTestLine.text:SetText(name);
-		local maxWidth = watchFrameTestLine.text:GetStringWidth();
-		
-		watchFrameTestLine.text:SetText(" - ");
-		local dashWidth = watchFrameTestLine.text:GetStringWidth();
-		
-		watchFrameTestLine.text:SetText(description);
-		local stringWidth = watchFrameTestLine.text:GetStringWidth();
-		local desiredWidth = math.ceil(stringWidth + dashWidth); -- This is how long we want the line to be with no wrapping
-			
-		if ( desiredWidth > maxWidth ) then
-			maxWidth = min(desiredWidth, frameWidth);
-		end
-		
-		local linesNeeded = math.ceil(stringWidth / (maxWidth - dashWidth));
-		heightUsed = heightUsed + (WATCHFRAMELINES_FONTHEIGHT * linesNeeded);
-		
-		for criteriaID, timedCriteria in next, WATCHFRAME_TIMEDCRITERIA do
-			if ( timedCriteria.achievementID == achievementID ) then
-				heightUsed = heightUsed + lineHeight;
-			end
-		end
-		
-		return heightUsed;
-	end
-	
-	local criteriaDisplayed = 0;
-	for i = 1, numCriteria do
-		local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID = GetAchievementCriteriaInfo(achievementID, i);
-		if ( criteriaCompleted ) then
-			-- Do nothing
-		elseif ( criteriaDisplayed > WATCHFRAME_CRITERIA_PER_ACHIEVEMENT ) then
-			return heightUsed;
-		elseif ( criteriaDisplayed == WATCHFRAME_CRITERIA_PER_ACHIEVEMENT ) then
-			heightUsed = heightUsed + lineHeight;
-			return heightUsed;
-		elseif ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
-			if ( WATCHFRAME_TIMEDCRITERIA[criteriaID] ) then
-				heightUsed = heightUsed + lineHeight;
-			end
-			heightUsed = heightUsed + WATCHFRAME_LINEHEIGHT_PROGRESSBAR;
-			criteriaDisplayed = criteriaDisplayed + 2;
-		else
-			if ( WATCHFRAME_TIMEDCRITERIA[criteriaID] ) then
-				heightUsed = heightUsed + lineHeight;
-			end
-			heightUsed = heightUsed + lineHeight;
-			criteriaDisplayed = criteriaDisplayed + 1;
-		end
-	end
-		
-	return heightUsed;
-end
-
 function WatchFrame_UpdateTimedAchievements (elapsed)
 	local numAchievementLines = #WATCHFRAME_ACHIEVEMENTLINES
 	local timeNow, timeLeft;
@@ -815,214 +512,161 @@ function WatchFrame_UpdateTimedAchievements (elapsed)
 	end
 end
 
+function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash)
+	-- anchor
+	if ( anchor ) then
+		line:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, verticalOffset);
+		line:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, verticalOffset);
+	end
+	-- text
+	line.text:SetText(text);
+	if ( isHeader ) then
+		line.text:SetTextColor(0.75, 0.61, 0);
+	else
+		--this should be the default, set in WatchFrameLineTemplate_Reset
+	end
+	-- dash
+	if ( dash == DASH_SHOW ) then
+		line.dash:SetText(QUEST_DASH);
+	elseif ( dash == DASH_HIDE ) then
+		line.dash:SetText(QUEST_DASH);
+		line.dash:Hide();
+	end
+	-- multiple lines
+	if ( line.text:GetStringWidth() > WATCHFRAME_MAXLINEWIDTH - line.dash:GetWidth() ) then
+		line:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
+	end
+	
+	tinsert(WATCHFRAME_SETLINES, line);
+end
+
 function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHeight, frameWidth, ...)
 	local _; -- Doing this here thanks to IBLJerry!
-	local self = WatchFrame;
 	local numTrackedAchievements = select("#", ...);
-	
-	WatchFrame_ResetAchievementLines();
-	
-	local lineCache = WatchFrame.lineCache;
-	local maxWidth = 0;
-	local heightUsed = 0;
-	local heightNeeded = 0;
-	
-	local achievementID;
-	local achievementName, completed, description, icon;
-	
 	local line;
 	local achievementTitle;
 	local previousLine;
-	local nextXOffset = 0;
 	local linkButton;
-		
+	
 	local numCriteria, criteriaDisplayed;
+	local achievementID, achievementName, completed, description, icon;
 	local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, achievementCategory;
+	local displayOnlyArena = ArenaEnemyFrames and ArenaEnemyFrames:IsShown();
 
-	local displayOnlyArena = (not WatchFrame:IsUserPlaced()) and ArenaEnemyFrames and ArenaEnemyFrames:IsShown();
+	local lineWidth = 0;
+	local maxWidth = 0;
+	local heightUsed = 0;
+	local topEdge = 0;
+	
+	WatchFrame_ResetAchievementLines();
+	
 	for i = 1, numTrackedAchievements do
+		linesToShow = { };
+		WATCHFRAME_SETLINES = table.wipe(WATCHFRAME_SETLINES or { });
 		achievementID = select(i, ...);
 		achievementCategory = GetAchievementCategory(achievementID);
-		if ( (not displayOnlyArena) or achievementCategory == WATCHFRAME_ACHIEVEMENT_ARENA_CATEGORY ) then
-			_, achievementName, _, completed, _, _, _, description, _, icon = GetAchievementInfo(achievementID);
-			
-			local heightNeeded = WatchFrame_GetHeightNeededForAchievement(achievementID);
-			if ( heightNeeded > maxHeight + (initialOffset - heightUsed) ) then
-				return heightUsed, maxWidth; -- We ran out of space to draw achievements, stop.
-			else
-				heightUsed = heightUsed + heightNeeded;
-			end
-			
+		_, achievementName, _, completed, _, _, _, description, _, icon = GetAchievementInfo(achievementID);
+		if ( not completed and (not displayOnlyArena) or achievementCategory == WATCHFRAME_ACHIEVEMENT_ARENA_CATEGORY ) then			
+			-- achievement name
 			line = WatchFrame_GetAchievementLine();
 			achievementTitle = line;
-			line.text:SetText(achievementName);
-			if ( completed ) then
-				line.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			else
-				line.text:SetTextColor(0.75, 0.61, 0);
-			end
-			line:Show()
-			local lineWidth = line.text:GetStringWidth() + WATCHFRAME_ICONXOFFSET
-			maxWidth = max(maxWidth, lineWidth)
-			if ( previousLine ) then -- If this isn't the first displayed title, our position is relative to the last displayed line.
-				local yOffset = 0;
-				if ( previousLine.statusBar:IsShown() ) then
-					yOffset = -5
-				end
-				
-				line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset - WATCHFRAME_QUEST_OFFSET);
-				line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset - WATCHFRAME_QUEST_OFFSET);
-			else
+			WatchFrame_SetLine(line, previousLine, -WATCHFRAME_QUEST_OFFSET, IS_HEADER, achievementName, DASH_NONE);
+			if ( not previousLine ) then
 				line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
 				line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
+				topEdge = line:GetTop();
 			end
-			if ( not self.disableButtons ) then
-				linkButton = WatchFrame_GetLinkButton();
-				linkButton:SetPoint("TOPLEFT", line.text);
-				linkButton:SetPoint("BOTTOMLEFT", line.text);
-				linkButton:SetWidth(lineWidth + WATCHFRAME_ICONXOFFSET);
-				linkButton.type = "ACHIEVEMENT"
-				linkButton.index = achievementID;
-				linkButton:Show();
-			end
-			nextXOffset = 0;
 			previousLine = line;
+			-- criteria
 			numCriteria = GetAchievementNumCriteria(achievementID);
 			if ( numCriteria > 0 ) then
 				criteriaDisplayed = 0;
 				for j = 1, numCriteria do
+					local dash = DASH_SHOW;		-- default since most will have this
 					criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID = GetAchievementCriteriaInfo(achievementID, j);
 					if ( criteriaCompleted or ( criteriaDisplayed > WATCHFRAME_CRITERIA_PER_ACHIEVEMENT and not criteriaCompleted ) ) then
-						-- Don't do anything
+						-- Do not display this one
+						criteriaString = nil;
+						dash = DASH_NONE;
 					elseif ( criteriaDisplayed == WATCHFRAME_CRITERIA_PER_ACHIEVEMENT ) then
 						-- We ran out of space to display incomplete criteria >_<
-						line = WatchFrame_GetAchievementLine();
-						line.text:SetText(" - ");
-						local dashWidth = line.text:GetStringWidth();
-						nextXOffset = nextXOffset + dashWidth -- Offset as if there were a dash
-						line.text:SetText("...");
-						line.text:SetTextColor(0.8, 0.8, 0.8);
-						line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, 3);
-						line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, 3);
-						line:Show();
-						maxWidth = max(maxWidth, line.text:GetStringWidth()); -- I can't imagine this happening anytime soon really
-						criteriaDisplayed = criteriaDisplayed + 1;
-						previousLine = line;
-						nextXOffset = -dashWidth;
+						criteriaString = "...";
+						dash = DASH_HIDE;
 					else
 						if ( WATCHFRAME_TIMEDCRITERIA[criteriaID] ) then
+							-- not sure what this is for
 							local timedCriteria = WATCHFRAME_TIMEDCRITERIA[criteriaID]
 							line = WatchFrame_GetAchievementLine();
 							line.criteriaID = criteriaID;
 							line.duration = timedCriteria.duration;
 							line.startTime = timedCriteria.startTime;
-							
-							local yOffset = WATCHFRAMELINES_FONTSPACING;
-							if ( previousLine.statusBar:IsShown() ) then
-								yOffset = yOffset - 5;
-							end
-							line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
-							line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
-							line:Show()
-							criteriaDisplayed = criteriaDisplayed + 1;
+							WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, "<???>", DASH_NONE);
 							previousLine = line;
-							nextXOffset = 0;
+							criteriaDisplayed = criteriaDisplayed + 1;
 							WatchFrameLines_AddUpdateFunction(WatchFrame_UpdateTimedAchievements);
 						end
 						if ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
-							line = WatchFrame_GetAchievementLine();
-							line.statusBar:Show();
-							line.statusBar:GetStatusBarTexture():SetVertexColor(0, 0.6, 0, 1);
-							line.statusBar:SetMinMaxValues(0, totalQuantity);
-							line.statusBar:SetValue(quantity);
-							line.statusBar.text:SetText(quantityString);
-							
-							local yOffset = -5;
-							if ( previousLine.statusBar:IsShown() ) then
-								yOffset = -10;
-							end
-							
-							line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
-							line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);					
-							line:Show();
-							maxWidth = max(maxWidth, 200);
-							criteriaDisplayed = criteriaDisplayed + 2;
-							nextXOffset = 0;
-							previousLine = line;
+							-- progress bar
+							criteriaString = quantityString;
 						else
-							line = WatchFrame_GetAchievementLine();
-							line.text:SetText(" - " .. criteriaString);
-							line.text:SetTextColor(0.8, 0.8, 0.8);
-							local yOffset = WATCHFRAMELINES_FONTSPACING;
-							if ( previousLine.statusBar:IsShown() ) then
-								yOffset = yOffset - 5;
-							end
-							
-							line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
-							line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
-							line:Show();
-							maxWidth = max(maxWidth, line.text:GetStringWidth());
-							criteriaDisplayed = criteriaDisplayed + 1;
-							nextXOffset = 0;
-							previousLine = line;
+							-- regular criteria
+							-- no need to do anything, criteriaString and dash are already set				
 						end
+					end
+					-- set up the line
+					if ( criteriaString ) then
+						line = WatchFrame_GetAchievementLine();
+						WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, dash);
+						previousLine = line;
+						criteriaDisplayed = criteriaDisplayed + 1;
 					end
 				end
 			else
-				local dash = WatchFrame_GetAchievementLine();
-				dash.text:SetText(" - ");
-				dash.text:SetTextColor(0.8, 0.8, 0.8);
-				local yOffset = WATCHFRAMELINES_FONTSPACING;
-				if ( previousLine.statusBar:IsShown() ) then
-					yOffset = yOffset - 5;
-				end
-				
-				local dashWidth = dash.text:GetStringWidth();
-				
-				dash:SetWidth(dashWidth);
-				dash:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
-				dash:Show();
-				
-				line = WatchFrame_GetAchievementLine();
-				line.text:SetText(description);
-				line.text:SetTextColor(0.8, 0.8, 0.8);
-				
-				local stringWidth = line.text:GetStringWidth();
-				local desiredWidth = math.ceil(stringWidth + dashWidth); -- This is how long we want the line to be with no wrapping
-				
-				if ( desiredWidth > maxWidth ) then
-					maxWidth = min(desiredWidth, MAX_LONG_CRITERIA_WIDTH);
-				end
-				
-				local linesNeeded = math.ceil(stringWidth / (maxWidth - dashWidth));
-				
-				line:SetPoint("TOPLEFT", dash, "TOPRIGHT");
-				line:SetPoint("TOPRIGHT", previousLine, "TOPRIGHT", 0, yOffset);
-				line:SetHeight((WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTSPACING) + (WATCHFRAMELINES_FONTHEIGHT * (linesNeeded - 1)));
-				line:Show();
-				
-				nextXOffset = -dashWidth;
-				previousLine = line;	
-				
+				-- single criteria type of achievement
+				line = WatchFrame_GetAchievementLine();				
+				WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, description, DASH_SHOW);
+				previousLine = line;				
 				for criteriaID, timedCriteria in next, WATCHFRAME_TIMEDCRITERIA do
 					if ( timedCriteria.achievementID == achievementID ) then
+						-- not sure what this is for
 						line = WatchFrame_GetAchievementLine();
 						line.criteriaID = criteriaID;
 						line.duration = timedCriteria.duration;
 						line.startTime = timedCriteria.startTime;
-						
-						local yOffset = WATCHFRAMELINES_FONTSPACING;
-						if ( previousLine.statusBar:IsShown() ) then
-							yOffset = yOffset - 5;
-						end
-						line:SetPoint("TOPRIGHT", previousLine, "BOTTOMRIGHT", 0, yOffset);
-						line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT", nextXOffset, yOffset);
-						line:Show()
+						WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, "<???>", DASH_NONE)
 						previousLine = line;
-						nextXOffset = 0;
 						WatchFrameLines_AddUpdateFunction(WatchFrame_UpdateTimedAchievements);
 					end
-				end					
+				end				
+			end
+
+			-- stop processing if there's no room to fit the achievement
+			local previousBottom = previousLine:GetBottom();
+			if ( previousBottom and previousBottom < WatchFrame:GetBottom() ) then				
+				achievementLineIndex = achievementLineIndex - #WATCHFRAME_SETLINES;
+				table.wipe(WATCHFRAME_SETLINES);
+			else
+				-- turn on all lines
+				for _, line in pairs(WATCHFRAME_SETLINES) do
+					line:Show();
+					lineWidth = line.text:GetWidth() + line.dash:GetWidth();
+					maxWidth = max(maxWidth, lineWidth);					
+				end
+				-- turn on link button
+				linkButton = WatchFrame_GetLinkButton();
+				linkButton:SetPoint("TOPLEFT", achievementTitle.text);
+				linkButton:SetPoint("BOTTOMLEFT", achievementTitle.text);
+				linkButton:SetWidth(achievementTitle.text:GetStringWidth());
+				linkButton.type = "ACHIEVEMENT";
+				linkButton.index = achievementID;
+				linkButton.lines = WATCHFRAME_SETLINES;				
+				linkButton:Show();
+				
+				if ( previousBottom ) then
+					heightUsed = topEdge - previousBottom;
+				else
+					heightUsed = 1;
+				end
 			end
 		end
 	end
@@ -1032,105 +676,71 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 	return heightUsed, maxWidth;
 end
 
-function WatchFrame_GetHeightNeededForQuest (questIndex)
-	local numObjectives = GetNumQuestLeaderBoards(questIndex);
-
---	if ( numObjectives == 0 ) then
---		return 0;
---	else		
-		local height = (WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTSPACING) * (numObjectives + 1); -- +1 for the title line
-		if ( GetQuestLogSpecialItemInfo(questIndex) ) then
-			height = max(height, WATCHFRAME_QUEST_WITH_ITEM_HEIGHT);
-		end
-				
-		local numWatches = GetNumQuestWatches();
-		if ( numWatches > 1 ) then
-			height = height + WATCHFRAME_QUEST_OFFSET;
-		end
-		
-		return height;
---	end
-end
-
 function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, frameWidth)
 	local _;
-	local self = WatchFrame;
-	local text, finished;
 	local questTitle;
-	local watchItemIndex = 0;
-	local questIndex;
-	local objectivesCompleted;
-
-	WatchFrame_ResetQuestLines();
-	
+	local questIndex;	
 	local line;
 	local lastLine;
-	local HIGHLIGHT_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
-	local NORMAL_FONT_COLOR = NORMAL_FONT_COLOR;
 	local linkButton;
+	local watchItemIndex = 0;
 	
-	local heightNeeded = 0;
-	local heightUsed = 0;
-	local maxWidth = 0;
-	
-	local iconHeightLeft = 0;
-	
+	local text, finished;	
 	local numQuestWatches = GetNumQuestWatches();
 	local numObjectives;
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID;
+
+	local maxWidth = 0;
+	local lineWidth = 0;
+	local heightUsed = 0;	
+	local topEdge = 0;
+	
+	WatchFrame_ResetQuestLines();
+
 	for i = 1, numQuestWatches do
+		WATCHFRAME_SETLINES = table.wipe(WATCHFRAME_SETLINES or { });
 		questIndex = GetQuestIndexForWatch(i);
 		title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
 		if ( questIndex ) then
-			local heightNeeded = WatchFrame_GetHeightNeededForQuest(questIndex);
-			if ( heightNeeded > maxHeight + (initialOffset - heightUsed) ) then
-				-- We ran out of space to draw quests, stop.
-				break;
-			else
-				heightUsed = heightUsed + heightNeeded;
-			end
-
 			line = WatchFrame_GetQuestLine();
 			questTitle = line;
-			line.text:SetText(title);
-			line:Show();
+			WatchFrame_SetLine(line, lastLine, -WATCHFRAME_QUEST_OFFSET, IS_HEADER, title, DASH_NONE);
 			if ( not lastLine ) then -- First line
 				line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
 				line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
-			else
-				local yOffset = 0;
-				if ( iconHeightLeft > 0 ) then
-					yOffset = -iconHeightLeft;
-				end
-				
-				line:SetPoint("TOPRIGHT", lastLine, "BOTTOMRIGHT", 0, yOffset - WATCHFRAME_QUEST_OFFSET);
-				line:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, yOffset - WATCHFRAME_QUEST_OFFSET);
+				topEdge = line:GetTop();
 			end
-			iconHeightLeft = 0;
-			local stringWidth = line.text:GetStringWidth();
-			if ( not self.disableButtons ) then
-				linkButton = WatchFrame_GetLinkButton();
-				linkButton:SetPoint("TOPLEFT", line);
-				linkButton:SetPoint("BOTTOMLEFT", line);
-				linkButton:SetPoint("RIGHT", line.text);
-				linkButton.type = "QUEST"
-				linkButton.index = i; -- We want the Watch index, we'll get the quest index later with GetQuestIndexForWatch(i);
-				linkButton:Show();
-			end
+			lastLine = line;
 			
-			if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
-				line.mapButton:Show();
-				line.mapButton.questID = questID;
-				line.text:ClearAllPoints();
-				line.text:SetPoint("TOPLEFT");
-				local lineWidth = line:GetWidth();
-				if ( line.text:GetWidth() > lineWidth ) then
-					line.text:SetWidth(lineWidth);
+			if ( isComplete ) then
+				line = WatchFrame_GetQuestLine();
+				WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW);
+				lastLine = line;
+			else
+				numObjectives = GetNumQuestLeaderBoards(questIndex);
+				for j = 1, numObjectives do
+					text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
+					if ( not finished ) then
+						text = WatchFrame_ReverseQuestObjective(text);
+						line = WatchFrame_GetQuestLine();
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW);
+						lastLine = line;
+					end
 				end
 			end
 
+			-- stop processing if there's no room to fit the quest
+			local lastBottom = lastLine:GetBottom();
+			if ( lastBottom and lastBottom < WatchFrame:GetBottom() ) then
+				questLineIndex = questLineIndex - #WATCHFRAME_SETLINES;
+				table.wipe(WATCHFRAME_SETLINES);
+				break;
+			end
+			
+			-- NOTE: we're missing something to display required money for a quest...that should probably be added at some point
+
+			-- turn on quest item
 			local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
-			local questWidth = 0;
 			local itemButton;
 			if ( item ) then
 				watchItemIndex = watchItemIndex + 1;
@@ -1147,67 +757,29 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				itemButton.charges = charges;
 				WatchFrameItem_UpdateCooldown(itemButton);
 				itemButton.rangeTimer = -1;
-				if ( SHOW_QUEST_OBJECTIVES_ON_MAP ~= "1" ) then
-					line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
-				end
-				iconHeightLeft = WATCHFRAME_QUEST_WITH_ITEM_HEIGHT - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING; -- We've already displayed a line for this
-				itemButton.maxStringWidth = stringWidth;
-			end
-			questWidth = max(stringWidth, questWidth);
-
-			lastLine = line;
-			objectivesCompleted = 0;
-			numObjectives = GetNumQuestLeaderBoards(questIndex);
-			for j = 1, numObjectives do
-				text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
-				line = WatchFrame_GetQuestLine();
-				line.text:SetText(" - " .. text);
-				if ( finished ) then
-					line.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-					objectivesCompleted = objectivesCompleted + 1;
-				else
-					line.text:SetTextColor(0.8, 0.8, 0.8);
-				end
-				line:SetPoint("TOPRIGHT", lastLine, "BOTTOMRIGHT", 0, WATCHFRAMELINES_FONTSPACING);
-				line:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT", 0, WATCHFRAMELINES_FONTSPACING);
+				itemButton:SetPoint("TOPRIGHT", questTitle, "TOPLEFT", -4, -WATCHFRAMELINES_FONTSPACING);
+			end			
+			-- turn on all lines
+			for _, line in pairs(WATCHFRAME_SETLINES) do
 				line:Show();
-				stringWidth = line.text:GetStringWidth();
-				if ( iconHeightLeft > 0 ) then
-					if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
-						line.text:SetPoint("RIGHT", itemButton, "LEFT", -WATCHFRAME_MAP_BUTTON_WIDTH, 0);
-					else
-						line.text:SetPoint("RIGHT", itemButton, "LEFT", -4, 0);
-					end
-					itemButton.maxStringWidth = max(stringWidth, itemButton.maxStringWidth)
-				end
-				questWidth = max(stringWidth, questWidth);
-				lastLine = line;
-				iconHeightLeft = iconHeightLeft - WATCHFRAMELINES_FONTHEIGHT - WATCHFRAMELINES_FONTSPACING;
+				lineWidth = line.text:GetWidth() + line.dash:GetWidth();
+				maxWidth = max(maxWidth, lineWidth);
 			end
-
-			-- NOTE: we're missing something to display required money for a quest...that should probably be added at some point
-
-			if ( isComplete ) then
-				questTitle.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			-- turn on link button
+			linkButton = WatchFrame_GetLinkButton();
+			linkButton:SetPoint("TOPLEFT", questTitle);
+			linkButton:SetPoint("BOTTOMLEFT", questTitle);
+			linkButton:SetPoint("RIGHT", questTitle.text);
+			linkButton.type = "QUEST"
+			linkButton.index = i; -- We want the Watch index, we'll get the quest index later with GetQuestIndexForWatch(i);
+			linkButton.lines = WATCHFRAME_SETLINES;			
+			linkButton:Show();				
+			
+			if ( lastBottom ) then
+				heightUsed = topEdge - lastLine:GetBottom();
 			else
-				questTitle.text:SetTextColor(0.75, 0.61, 0);
+				heightUsed = 1;
 			end
-
-			local itemButtonXOffset = 8;
-			if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
-				questWidth = questWidth + WATCHFRAME_MAP_BUTTON_WIDTH;
-				itemButtonXOffset = itemButtonXOffset + WATCHFRAME_MAP_BUTTON_WIDTH;
-			end
-			if ( itemButton ) then
-				questWidth = questWidth + WATCHFRAME_ITEM_WIDTH;
-				itemButtonXOffset = min(frameWidth - WATCHFRAME_ITEM_WIDTH, itemButton.maxStringWidth + itemButtonXOffset);
-				itemButton:SetPoint("TOPLEFT", questTitle, "TOPLEFT", itemButtonXOffset, -WATCHFRAMELINES_FONTSPACING);
-				itemButton:Show();
-				if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" and (questTitle.text:GetWidth() + WATCHFRAME_MAP_BUTTON_WIDTH) > itemButtonXOffset ) then
-					questTitle.text:SetPoint("RIGHT", itemButton, "LEFT", -WATCHFRAME_MAP_BUTTON_WIDTH, 0);
-				end
-			end
-			maxWidth = max(questWidth, maxWidth);
 		end
 	end
 
@@ -1323,15 +895,7 @@ function WatchFrame_StopTrackingAchievement (button, arg1, arg2, checked)
 	end
 end
 
-function WatchFrame_OpenToObjectivesCategory (button, arg1, arg2, checked)
-	InterfaceOptionsFrame_OpenToCategory(OBJECTIVES_TRACKER_LABEL);
-end
-
 function WatchFrameDropDown_OnHide ()
-	if ( WatchFrameLines:IsShown() ) then 
-		UIFrameFadeIn(WatchFrameLines, WATCHFRAME_FADETIME, WatchFrameLines:GetAlpha(), 1); 
-	end 
-	
 	WatchFrame.dropDownOpen = nil; 
 	
 	if ( WatchFrame.lastLinkButton ) then 
@@ -1376,6 +940,7 @@ function WatchFrameDropDown_Initialize (self)
 			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		end
 		
+		--[[
 		if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
 			info.text = OBJECTIVES_SHOW_QUEST_MAP;
 			info.func = WatchFrame_OpenMapToQuest;
@@ -1384,6 +949,7 @@ function WatchFrameDropDown_Initialize (self)
 			info.checked = false;
 			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		end
+		]]--
 	elseif ( self.type == "ACHIEVEMENT" ) then
 		local _, achievementName, _, completed, _, _, _, _, _, icon = GetAchievementInfo(self.index);
 		local info = UIDropDownMenu_CreateInfo();
@@ -1406,21 +972,6 @@ function WatchFrameDropDown_Initialize (self)
 		info.arg1 = self.index;
 		info.checked = false;
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	elseif ( self.type == "CONFIG" ) then
-		local info = UIDropDownMenu_CreateInfo();
-		
-		info.text = ((WatchFrame.locked and UNLOCK_WINDOW) or LOCK_WINDOW);
-		info.func = WatchFrame_ToggleLock;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-		
-		info.text = CHANGE_OPACITY
-		info.func = WatchFrame_ShowOpacityFrameBaseAlpha;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-		
-		info.text = SETTINGS;
-		info.func = WatchFrame_OpenToObjectivesCategory;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
 end
 
@@ -1438,22 +989,17 @@ end
 local function WatchFrameLineTemplate_Reset (self)
 	self:ClearAllPoints();
 	self.text:SetWidth(0);
-	self.text:ClearAllPoints();
-	self.text:SetPoint("TOPLEFT");
-	self.text:SetPoint("BOTTOMRIGHT");
 	self.text:SetText("");
-	self.text:SetTextColor(1, 1, 1);
+	self.text:SetTextColor(0.8, 0.8, 0.8);
 	self.text:Show();
-	self.statusBar:Hide();
-	self.mapButton:Hide();
+	self.dash:SetText(nil);
+	self.dash:Show();
 	self:SetHeight(WATCHFRAME_LINEHEIGHT);
 	self.criteriaID = nil;
 end
 
 function WatchFrameLineTemplate_OnLoad (self)
 	local name = self:GetName();
-	self.text = _G[name .. "Text"];
-	self.statusBar = _G[name .. "StatusBar"];
 	self.Reset = WatchFrameLineTemplate_Reset;
 end
 
@@ -1520,7 +1066,7 @@ function WatchFrameItem_OnHide (self)
 end
 
 function WatchFrameItem_OnEnter (self)
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetQuestLogSpecialItem(self:GetID());
 end
 		
@@ -1533,5 +1079,35 @@ function WatchFrameItem_OnClick (self, button, down)
 		end
 	else
 		UseQuestLogSpecialItem(questIndex);
+	end
+end
+
+function WatchFrame_ReverseQuestObjective(text)
+	local _, _, arg1, arg2 = string.find(text, "(.*):%s(.*)");
+	if ( arg1 and arg2 ) then
+		return arg2.." "..arg1;
+	else
+		return text;
+	end
+end
+
+function WatchFrameLinkButtonTemplate_Highlight(self, onEnter)
+	for index, line in pairs(self.lines) do
+		if ( index == 1 ) then
+			-- header
+			if ( onEnter ) then
+				line.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			else
+				line.text:SetTextColor(0.75, 0.61, 0);
+			end
+		else
+			if ( onEnter ) then
+				line.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				line.dash:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			else
+				line.text:SetTextColor(0.8, 0.8, 0.8);
+				line.dash:SetTextColor(0.8, 0.8, 0.8);
+			end
+		end
 	end
 end

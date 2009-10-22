@@ -2,103 +2,120 @@
 ..\FrameXML\UI.xsd">
 	<Script file="TutorialFrame.lua"/>
 	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" frameStrata="HIGH" hidden="true">
-		<Size>
-			<AbsDimension x="364" y="332"/>
-		</Size>
 		<Anchors>
-			<Anchor point="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="100"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" x="0" y="100"/>
 		</Anchors>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture file="Interface\TutorialFrame\UI-HELP-FRAME-POPUP">
-					<TexCoords left="0.0" right="0.7109375" top="0" bottom="0.6484375"/>
-				</Texture>
-				<FontString name="TutorialFrameTitle" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground">
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-15"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" parent="$parentTop" relativePoint="TOPLEFT" x="15" y="-35"/>
+						<Anchor point="BOTTOMRIGHT" parent="$parentBottom" relativePoint="BOTTOMRIGHT" x="-5" y="5"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentTop" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="364" y="80"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.0019531" right="0.7109375" top="0.1953125" bottom="0.3496094"/>
+				</Texture>
+				<Texture name="$parentBottom" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="356" y="15"/>
+					<TexCoords left="0.0019531" right="0.6953125" top="0.3554688" bottom="0.3828125"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentMouseLeftClick" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="76" y="101"/>
+					<TexCoords left="0.0019531" right="0.1484375" top="0.5898438" bottom="0.7851563"/>
+				</Texture>
+				<Texture name="$parentMouseRightClick" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="76" y="101"/>
+					<TexCoords left="0.0019531" right="0.1484375" top="0.3886719" bottom="0.5839844"/>
+				</Texture>
+				<Texture name="$parentMouseBothClick" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="76" y="101"/>
+					<TexCoords left="0.0019531" right="0.1484375" top="0.7910156" bottom="0.9863281"/>
+				</Texture>
+				<Texture name="$parentMouseWheel" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="76" y="101"/>
+					<TexCoords left="0.1542969" right="0.3007813" top="0.3886719" bottom="0.5839844"/>
+				</Texture>
+				<Texture name="$parentArrowUp" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="68" y="89"/>
+					<TexCoords left="0.3066406" right="0.4375000" top="0.3886719" bottom="0.5605469"/>
+				</Texture>
+				<Texture name="$parentArrowDown" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="68" y="89"/>
+					<TexCoords left="0.3066406" right="0.4375000" top="0.5605469" bottom="0.3886719"/>
+				</Texture>
+				<Texture name="$parentArrowCurveRight" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="68" y="89"/>
+					<TexCoords left="0.3066406" right="0.4335938" top="0.5664063" bottom="0.7226563"/>
+				</Texture>
+				<Texture name="$parentArrowCurveLeft" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="68" y="89"/>
+					<TexCoords left="0.4335938" right="0.3066406" top="0.5664063" bottom="0.7226563"/>
+				</Texture>
+				<FontString name="$parentTitle" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
-				<FontString name="TutorialFrameText" inherits="GameFontNormal" justifyH="LEFT" justifyV="BOTTOM">
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" justifyV="BOTTOM">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="30" y="-100"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-15" y="40"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="30" y="-100"/>
+						<Anchor point="BOTTOMRIGHT" x="-15" y="40"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="1.0"/>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="TutorialFrameCheckButton" checked="true" inherits="UICheckButtonTemplate">
-				<Size>
-					<AbsDimension x="24" y="24"/>
-				</Size>
+			<Frame name="$parentCallOut" frameStrata="TOOLTIP" hidden="true">
+				<Backdrop edgeFile="UI-TutorialFrame-CalloutGlow" alphaMode="ADD">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+ 				<Animations>
+					<AnimationGroup looping="BOUNCE">
+						<Alpha name="$parentPulser" change="-.7" duration=".75"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<CheckButton name="$parentCheckButton" checked="true" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="20" y="5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="20" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="TutorialFrameCheckboxText" inherits="GameFontNormalSmall" text="ENABLE_TUTORIAL_TEXT">
+						<FontString name="$parentCheckboxText" inherits="GameFontNormalSmall" text="ENABLE_TUTORIAL_TEXT">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="2"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 			</CheckButton>
-			<Button name="TutorialFrameOkayButton">
-				<Size>
-					<AbsDimension x="76" y="21"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-10" y="7"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="HideParentPanel"/>
-				</Scripts>
-				<NormalTexture inherits="DialogButtonNormalTexture"/>
-				<PushedTexture inherits="DialogButtonPushedTexture"/>
-				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
-				<ButtonText text="OKAY"/>
-				<NormalFont style="GameFontNormalSmall"/>
-				<HighlightFont style="GameFontHighlightSmall"/>
-			</Button>
+            <Button inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="4" y="-8"/>
+                </Anchors>
+            </Button>
 		</Frames>
 		<Scripts>
 			<OnShow>
 				self:RegisterEvent("DISPLAY_SIZE_CHANGED");			
 			</OnShow>
 			<OnLoad>
-				self:RegisterEvent("TUTORIAL_TRIGGER");
-				self:RegisterEvent("CINEMATIC_STOP");
+				TutorialFrame_OnLoad(self);
 			</OnLoad>
 			<OnHide function="TutorialFrame_OnHide"/>
 			<OnEvent>
@@ -114,15 +131,9 @@
 		</Scripts>
 	</Frame>
 	<Button name="TutorialFrameAlertButton" toplevel="true" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="115" y="70"/>
-		</Size>
+		<Size x="116" y="71"/>
 		<Anchors>
-			<Anchor point="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" x="0" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -136,27 +147,18 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				TutorialFrame_AlertButton_OnClick(self);
+				TutorialFrame_AlertButton_OnClick(self.id);
 			</OnClick>
 		</Scripts>
-		<NormalTexture file="Interface\TutorialFrame\UI-HELP-ALERT">
-			<Size>
-				<AbsDimension x="34" y="42"/>
-			</Size>
-			<TexCoords left="0.0078125" right="0.90625" top="0.0078125" bottom="0.5546875"/>
+		<NormalTexture file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+			<TexCoords left="0.7167969" right="0.9414063" top="0.1953125" bottom="0.3320313"/>
 		</NormalTexture>
-		<HighlightTexture file="Interface\TutorialFrame\UI-HELP-ALERT" alphaMode="ADD">
-			<Size>
-				<AbsDimension x="52" y="52"/>
-			</Size>
+		<HighlightTexture file="Interface\TutorialFrame\UI-TUTORIAL-FRAME" alphaMode="ADD">
+			<Size x="50" y="50"/>
 			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="6" y="4"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="CENTER" x="2" y="4"/>
 			</Anchors>
-			<TexCoords left="0.0078125" right="0.4140625" top="0.578125" bottom="0.9765625"/>
+			<TexCoords left="0.3066406" right="0.4023438" top="0.7285156" bottom="0.8242188"/>
 		</HighlightTexture>
 	</Button>
 </Ui>

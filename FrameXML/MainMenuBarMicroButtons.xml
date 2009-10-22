@@ -272,7 +272,7 @@
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnEvent>
 			<OnClick>
-				--ToggleLFDParentFrame();
+				ToggleLFDParentFrame();
 			</OnClick>
 		</Scripts>
 	</Button>

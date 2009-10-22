@@ -807,10 +807,7 @@ function UIParent_OnEvent(self, event, ...)
 		return;
 	end
 	if ( event == "END_BOUND_TRADEABLE" ) then
-		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE");
-		if(dialog) then
-			dialog.data = arg1;
-		end
+		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 		return;
 	end
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
@@ -1933,12 +1930,22 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	if ( not WatchFrame:IsUserPlaced() and ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
 		WatchFrame:ClearAllPoints();
 		WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
-		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 	elseif ( not WatchFrame:IsUserPlaced() ) then -- We're using Simple Quest Tracking, automagically size and position!
 		WatchFrame:ClearAllPoints();
+		-- move up if only the minimap cluster is above, move down a little otherwise
+		if ( anchorY == 0 ) then
+			anchorY = 20;
+		else
+			anchorY = anchorY - 10;
+		end
 		WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 		-- OnSizeChanged for WatchFrame handles its redraw
+	end
+	
+	if ( SIMPLE_CHAT == "1" ) then
+		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, ChatFrame2:GetTop());
+	else
+		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 	end
 	
 	-- Update chat dock since the dock could have moved
@@ -3551,4 +3558,23 @@ function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridW
 end
 
 function GetLFDMode()
+	local proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers = GetLFGProposal();
+	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
+	local roleCheckInProgress, slots, members = GetLFGRoleUpdate();
+	
+	if ( proposalExists and not hasResponded ) then
+		return "proposal", "unaccepted";
+	elseif ( proposalExists ) then
+		return "proposal", "accepted";
+	elseif ( queued ) then
+		if ( inParty and not IsPartyLeader() ) then
+			return "queued", "unempowered";
+		else
+			return "queued", "empowered";
+		end
+	elseif ( roleCheckInProgress ) then
+		return "rolecheck";
+	elseif ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
+		return "lfgparty";
+	end
 end

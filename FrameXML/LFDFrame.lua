@@ -14,6 +14,8 @@ LFD_PROPOSAL_FAILED_CLOSE_TIME = 5;
 
 LFD_NUM_ROLES = 3;
 
+LFD_MAX_SHOWN_LEVEL_DIFF = 15;
+
 local NUM_STATISTIC_TYPES = 4;
 
 local hasSetUp = false;
@@ -24,10 +26,12 @@ LFD_RETURN_VALUES = {
 	typeID = 2,
 	minLevel = 3,
 	maxLevel = 4,
-	expansionLevel = 5,
-	groupID = 6,
-	texture = 7,
-	difficulty = 8,
+	minRecLevel = 5,	--Minimum recommended level
+	maxRecLevel = 6,	--Maximum recommended level
+	expansionLevel = 7,
+	groupID = 8,
+	texture = 9,
+	difficulty = 10,
 }
 
 LFD_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g. attunements)
@@ -38,6 +42,10 @@ LFD_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	"GEAR_TOO_HIGH",
 	"RAID_LOCKED",
 }
+
+-------------------------------------
+-----------LFD Frame--------------
+-------------------------------------
 
 --General functions
 function LFDFrame_OnLoad(self)
@@ -135,14 +143,22 @@ function LFDQueueFrame_DisableRoleButton(button)
 	button:Disable();
 	SetDesaturation(button:GetNormalTexture(), true);
 	button.cover:Show();
+	button.checkButton:Hide();
 	button.checkButton:Disable();
+	if ( button.background ) then
+		button.background:Hide();
+	end
 end
 
 function LFDQueueFrame_EnableRoleButton(button)
 	button:Enable();
 	SetDesaturation(button:GetNormalTexture(), false);
 	button.cover:Hide();
+	button.checkButton:Show();
 	button.checkButton:Enable();
+	if ( button.background ) then
+		button.background:Show();
+	end
 end
 
 function LFDQueueFrame_UpdateAvailableRoles()
@@ -315,7 +331,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 			button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-UP");
 		end
 	else
-		local name, minLevel, maxLevel = info[LFD_RETURN_VALUES.name], info[LFD_RETURN_VALUES.minLevel], info[LFD_RETURN_VALUES.maxLevel];
+		local name, minRecLevel, maxRecLevel = info[LFD_RETURN_VALUES.name], info[LFD_RETURN_VALUES.minRecLevel], info[LFD_RETURN_VALUES.maxRecLevel];
 		
 		button.instanceName:SetText(name);
 		button.instanceName:SetPoint("RIGHT", button.level, "LEFT", -10, 0);
@@ -323,10 +339,10 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.heroicIcon:Hide();
 		button.instanceName:SetPoint("LEFT", 40, 0);
 			
-		if ( minLevel == maxLevel ) then
-			button.level:SetText(format(LFD_LEVEL_FORMAT_SINGLE, minLevel));
+		if ( minRecLevel == maxRecLevel ) then
+			button.level:SetText(format(LFD_LEVEL_FORMAT_SINGLE, minRecLevel));
 		else
-			button.level:SetText(format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel));
+			button.level:SetText(format(LFD_LEVEL_FORMAT_RANGE, minRecLevel, maxRecLevel));
 		end
 		button.level:Show();
 		
@@ -334,7 +350,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 			button.instanceName:SetFontObject(QuestDifficulty_Header);
 			button.level:SetFontObject(QuestDifficulty_Header);
 		else
-			local difficultyColor = GetQuestDifficultyColor((minLevel + maxLevel)/2)
+			local difficultyColor = GetQuestDifficultyColor((minRecLevel + maxRecLevel)/2)
 			button.instanceName:SetFontObject(difficultyColor.font);
 			button.level:SetFontObject(difficultyColor.font);
 		end
@@ -413,7 +429,7 @@ function LFDList_SetHeaderCollapsed(headerID, isCollapsed)
 end
 
 function LFDQueueFrame_QueueForInstanceIfEnabled(queueID)
-	if ( not LFDIsIDHeader(queueID) and LFDEnabledList[queueID] ) then
+	if ( not LFDIsIDHeader(queueID) and LFDEnabledList[queueID] and not LFDLockList[queueID] ) then
 		local info = LFDGetDungeonInfoByID(queueID);
 		SetLFGDungeon(info[LFD_RETURN_VALUES.typeID], queueID);
 		return true;
@@ -583,7 +599,11 @@ function LFDDungeonReadyPopup_Update()
 end
 
 function LFDDungeonReadyDialog_UpdateRewards(dungeonID)
-	local doneToday, moneyAmount, experienceGained, numRewards = GetLFGDungeonRewards(dungeonID);
+	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
+	
+	local numRandoms = 4 - GetNumPartyMembers();
+	local moneyAmount = moneyBase + moneyVar * numRandoms;
+	local experienceGained = experienceBase + experienceVar * numRandoms;
 	
 	local rewardsOffset = 0;
 	--DEBUG FIXME
@@ -639,7 +659,11 @@ function LFDDungeonReadyDialogReward_OnEnter(self, dungeonID)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( self.rewardID == 0 ) then
 		GameTooltip:AddLine(REWARD_ITEMS_ONLY);
-		local doneToday, moneyAmount, experienceGained, numRewards = GetLFGDungeonRewards(LFDDungeonReadyPopup.dungeonID);
+		local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(LFDDungeonReadyPopup.dungeonID);
+		local numRandoms = 4 - GetNumPartyMembers();
+		local moneyAmount = moneyBase + moneyVar * numRandoms;
+		local experienceGained = experienceBase + experienceVar * numRandoms;
+		
 		if ( experienceGained > 0 ) then
 			GameTooltip:AddLine(string.format(GAIN_EXPERIENCE, experienceGained));
 		end
@@ -706,7 +730,7 @@ function LFDQueueFrameTypeDropDown_OnLoad(self)
 end
 
 local function isRandomDungeonDisplayable(id)
-	local name, typeID, minLevel, maxLevel, expansionLevel = GetLFGDungeonInfo(id);
+	local name, typeID, minLevel, maxLevel, _, _, expansionLevel = GetLFGDungeonInfo(id);
 	local myLevel = UnitLevel("player");
 	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
 end
@@ -721,7 +745,7 @@ function LFDQueueFrameTypeDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 	
 	for i=1, GetNumRandomDungeons() do
-		local id, name, typeID, minLevel, maxLevel, expansionLevel = GetLFGRandomDungeonInfo(i);
+		local id, name = GetLFGRandomDungeonInfo(i);
 		local isAvailable = IsLFGDungeonJoinable(id);
 		if ( isRandomDungeonDisplayable(id) ) then
 			if ( isAvailable ) then		
@@ -806,12 +830,21 @@ function LFDQueueFrameRandom_UpdateFrame()
 	local lastFrame;
 	local dungeonID = LFDQueueFrame.type;
 	
-	if ( not dungeonID ) then	--We haven't gotten info on available dungoens yet.
+	if ( not dungeonID ) then	--We haven't gotten info on available dungeons yet.
 		return;
 	end
 	--DEBUG FIXME
-	local doneToday, moneyAmount, experienceGained, numRewards = GetLFGDungeonRewards(dungeonID);
+	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
+	local numRandoms = 4 - GetNumPartyMembers();
+	local moneyAmount = moneyBase + moneyVar * numRandoms;
+	local experienceGained = experienceBase + experienceVar * numRandoms;
 	
+	if ( doneToday ) then
+		parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION2);
+	else
+		parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION1);
+	end
+		
 	for i=1, numRewards do
 		local frame = _G[parentName.."Item"..i];
 		if ( not frame ) then
@@ -1079,7 +1112,8 @@ function LFDList_DefaultFilterFunction(dungeonID)
 	local sufficientExpansion = EXPANSION_LEVEL >= info[LFD_RETURN_VALUES.expansionLevel];
 	local level = UnitLevel("player");
 	local sufficientLevel = level >= info[LFD_RETURN_VALUES.minLevel] and level <= info[LFD_RETURN_VALUES.maxLevel];
-	return hasHeader and sufficientExpansion and sufficientLevel;
+	return (hasHeader and sufficientExpansion and sufficientLevel) and
+		( level - LFD_MAX_SHOWN_LEVEL_DIFF <= info[LFD_RETURN_VALUES.maxRecLevel] or (LFDLockList and not LFDLockList[dungeonID]));	--If the server tells us we can join, who are we to complain?
 end
 
 LFD_CURRENT_FILTER = LFDList_DefaultFilterFunction

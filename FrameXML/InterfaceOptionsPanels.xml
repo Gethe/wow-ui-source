@@ -994,46 +994,6 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentAdvancedWatchFrame" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAutoQuestProgress" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						--If you change this, be sure to change the interrupt function in UIOptionsPanels.lua
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "advancedWatchFrame";
-						self.uvar = "ADVANCED_WATCH_FRAME";
-						self.interruptUncheck = InterfaceOptionsObjectivesPanelAdvancedWatchFrame_UncheckInterrupt;
-						self.setFunc = function() WatchFrame_ToggleSimpleWatch() end
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>	
-			<CheckButton name="$parentIgnoreCursor" inherits="InterfaceOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAdvancedWatchFrame" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="8" y="-4"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "watchFrameIgnoreCursor";
-						self.uvar = "WATCHFRAME_IGNORECURSOR";
-						self.setFunc = function() WatchFrame_ToggleIgnoreCursor() end
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsObjectivesPanelAdvancedWatchFrame, self);
-					</OnLoad>
-				</Scripts>
-			</CheckButton>		
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsObjectivesPanel_OnLoad"/>

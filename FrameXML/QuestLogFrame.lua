@@ -102,22 +102,14 @@ local function _QuestLog_ToggleQuestWatch(questIndex)
 		RemoveQuestWatch(questIndex);
 		WatchFrame_Update();
 	else
-		-- Set an error message if trying to show too many quests
-		if ( (not WatchFrame:IsUserPlaced()) and ArenaEnemyFrames and ArenaEnemyFrames:IsShown() ) then
-			UIErrorsFrame:AddMessage(OBJECTIVES_WATCH_QUESTS_ARENA, 1.0, 0.1, 0.1, 1.0);
-			return;
-		elseif ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then -- Check this first though it's less likely, otherwise they could make the frame bigger and be disappointed
+		if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then -- Check this first though it's less likely, otherwise they could make the frame bigger and be disappointed
 			UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
-			return;
-		elseif ( WatchFrame_GetRemainingSpace() < WatchFrame_GetHeightNeededForQuest(questIndex) ) then
-			UIErrorsFrame:AddMessage(OBJECTIVES_WATCH_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
 			return;
 		end
 		AddQuestWatch(questIndex);
 		WatchFrame_Update();
 	end
 end
-
 
 -- 
 -- QuestLogTitleButton
@@ -266,9 +258,7 @@ function QuestLog_OnEvent(self, event, ...)
 			QuestLog_UpdateMap();
 		end
 	elseif ( event == "QUEST_ACCEPTED" ) then
-		if ( AUTO_QUEST_WATCH == "1" and 
-			 GetNumQuestWatches() < MAX_WATCHABLE_QUESTS and 
-			 WatchFrame_GetRemainingSpace() >= WatchFrame_GetHeightNeededForQuest(arg1) ) then
+		if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 			AddQuestWatch(arg1);
 			QuestLog_Update();
 			WatchFrame_Update();
@@ -276,8 +266,7 @@ function QuestLog_OnEvent(self, event, ...)
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
 		if ( AUTO_QUEST_PROGRESS == "1" and 
 			 GetNumQuestLeaderBoards(arg1) > 0 and 
-			 GetNumQuestWatches() < MAX_WATCHABLE_QUESTS and 
-			 WatchFrame_GetRemainingSpace() >= WatchFrame_GetHeightNeededForQuest(arg1) ) then
+			 GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 			AddQuestWatch(arg1,MAX_QUEST_WATCH_TIME);
 			QuestLog_Update();
 			WatchFrame_Update();

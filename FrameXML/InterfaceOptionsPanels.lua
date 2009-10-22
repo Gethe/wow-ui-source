@@ -787,8 +787,6 @@ ObjectivesPanelOptions = {
 	questFadingDisable = { text = "SHOW_QUEST_FADING_TEXT" },
 	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT" },
 	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
-	advancedWatchFrame = { text = "ADVANCED_OBJECTIVES_TEXT" },
-	watchFrameIgnoreCursor = { text = "OBJECTIVES_IGNORE_CURSOR_TEXT" },
 }
 
 function InterfaceOptionsObjectivesPanel_OnLoad (self)
@@ -801,24 +799,6 @@ end
 
 function InterfaceOptionsObjectivesPanel_OnEvent (self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
-	
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		local control = InterfaceOptionsObjectivesPanelAdvancedWatchFrame;
-		control.setFunc(GetCVar(control.cvar));
-		
-		control = InterfaceOptionsObjectivesPanelIgnoreCursor;
-		control.setFunc(GetCVar(control.cvar));
-	end
-end
-
-function InterfaceOptionsObjectivesPanelAdvancedWatchFrame_UncheckInterrupt(self)
-	StaticPopup_Show("ADVANCED_WATCHFRAME_OPTION_ENABLE_INTERRUPT");
-end
-
-function InterfaceOptionsObjectivesPanelAdvancedWatchFrame_ConfirmUncheck()
-	local checkButton = InterfaceOptionsObjectivesPanelAdvancedWatchFrame;
-	checkButton:SetChecked(false);
-	InterfaceOptionsPanel_CheckButton_Update(checkButton);
 end
 
 -- [[ Social Options Panel ]] --
@@ -851,6 +831,7 @@ function InterfaceOptionsSocialPanel_OnLoad (self)
 		else
 			SIMPLE_CHAT = "0";
 			FCF_Set_NormalChat();
+			UIParent_ManageFramePositions();
 		end
 	end
 

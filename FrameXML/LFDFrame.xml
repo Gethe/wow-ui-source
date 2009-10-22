@@ -145,7 +145,7 @@
 		</Size>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
+				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.7" hidden="true">
 					<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
 				</Texture>
 			</Layer>
@@ -200,6 +200,20 @@
 			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
+	</Button>
+	<Button name="LFDQueueFrameRoleCheckButtonTemplate" inherits="LFDFrameRoleCheckButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\LFGFrame\UI-LFG-ICONS-ROLEBACKGROUNDS" alpha="0.3" parentKey="background">
+					<Size>
+						<AbsDimension x="80" y="80"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Button>
 	<Frame name="LFDDungeonReadyRewardTemplate" virtual="true">
 		<Size>
@@ -962,10 +976,10 @@
 		</Scripts>
 	</Frame>
 	<Frame name="LFDParentFrame" toplevel="true" hidden="true" enableMouse="true" parent="UIParent">
-		<Size x="384" y="512"/>
+		<Size x="355" y="440"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="LFDParentFrameIcon" file="Interface\LFGFrame\UI-LFG-PORTRAIT">
+				<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFG-PORTRAIT">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -984,7 +998,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-27" y="-8"/>
+							<AbsDimension x="2" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -999,7 +1013,7 @@
 							<Anchors>
 								<Anchor point="LEFT">
 									<Offset>
-										<AbsDimension x="21" y="-28"/>
+										<AbsDimension x="21" y="-64"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1022,9 +1036,9 @@
 					<Layer level="ARTWORK">
 						<FontString name="$parentTitleText" inherits="GameFontNormal" text="LOOKING_FOR_DUNGEON">
 							<Anchors>
-								<Anchor point="CENTER">
+								<Anchor point="TOP">
 									<Offset>
-										<AbsDimension x="6" y="232"/>
+										<AbsDimension x="12" y="-17"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1032,7 +1046,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentRoleButtonTank" inherits="LFDFrameRoleCheckButtonTemplate" id="2">
+					<Button name="$parentRoleButtonTank" inherits="LFDQueueFrameRoleCheckButtonTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1043,11 +1057,13 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+								self.background:SetTexCoord(75/256, 150/256, 0, 75/128);
+								self.background:SetAlpha(0.6);
 								self.setRoleImmediately = true;
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonHealer" inherits="LFDFrameRoleCheckButtonTemplate" id="3">
+					<Button name="$parentRoleButtonHealer" inherits="LFDQueueFrameRoleCheckButtonTemplate" id="3">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
 								<Offset>
@@ -1058,11 +1074,13 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+								self.background:SetTexCoord(0/256, 75/256, 0, 75/128);
+								self.background:SetAlpha(0.4);
 								self.setRoleImmediately = true;
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonDPS" inherits="LFDFrameRoleCheckButtonTemplate" id="1">
+					<Button name="$parentRoleButtonDPS" inherits="LFDQueueFrameRoleCheckButtonTemplate" id="1">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
 								<Offset>
@@ -1073,6 +1091,8 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGE"));
+								self.background:SetTexCoord(150/256, 225/256, 0, 75/128);
+								self.background:SetAlpha(0.6);
 								self.setRoleImmediately = true;
 							</OnLoad>
 						</Scripts>
@@ -1135,7 +1155,7 @@
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="-63" y="102"/>
+											<AbsDimension x="-34" y="30"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -1543,7 +1563,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="18" y="78"/>
+									<AbsDimension x="18" y="6"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1565,7 +1585,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="-36" y="78"/>
+									<AbsDimension x="-7" y="6"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
