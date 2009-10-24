@@ -16,7 +16,7 @@
 					</Anchors>
 					<Color r="1" g="1" b="1" a="0.6"/>
 				</Texture>
-				<FontString name="$parentDuration" inherits="GameFontNormalSmall">
+				<FontString name="$parentDuration" inherits="GameFontNormalSmall" parentKey="duration">
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent">
 							<Offset x="0" y="5"/>

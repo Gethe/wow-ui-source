@@ -70,7 +70,6 @@ function LootFrame_OnEvent(self, event, ...)
 				LootFrame_UpdateButton(slot);
 			end
 		end
-		print(slot);
 	elseif ( event == "LOOT_CLOSED" ) then
 		StaticPopup_Hide("LOOT_BIND");
 		HideUIPanel(self);

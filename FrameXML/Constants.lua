@@ -461,3 +461,6 @@ GMTICKET_OPENEDBYGM_STATUS_OPENED = 1;			-- ticket has been opened by a gm
 LIGHT_LIVE  = 0;
 LIGHT_GHOST = 1;
 
+-- general constant translation table
+STATIC_CONSTANTS = {}
+RegisterStaticConstants(STATIC_CONSTANTS);

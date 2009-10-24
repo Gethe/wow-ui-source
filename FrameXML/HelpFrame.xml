@@ -37,12 +37,13 @@
 	<Button name="HelpFrameCancelButtonTemplate" inherits="GameMenuButtonTemplate" text="CANCEL" virtual="true">
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT">
-				<Offset x="-53" y="21"/>
+				<Offset x="-58" y="26"/>
 			</Anchor>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
 				self:SetWidth(self:GetTextWidth() + 40);
+				self:SetHeight(self:GetTextHeight() + 20);
 			</OnLoad>
 			<OnClick>
 				HelpFrame_PopFrame();
@@ -97,7 +98,7 @@
 
 	<Frame name="HelpFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size>
-			<AbsDimension x="640" y="512"/>
+			<AbsDimension x="640" y="532"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER">
@@ -141,10 +142,53 @@
 				</Texture>
 				<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
 					<Size>
+						<AbsDimension x="256" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.00" right="1.00000" top="0.0" bottom="0.078125"/>
+				</Texture>
+				<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
+					<Size>
+						<AbsDimension x="256" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.00" right="1.00000" top="0.0" bottom="0.078125"/>
+				</Texture>
+				<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.00" right="1.00000" top="0.0" bottom="0.078125"/>
+				</Texture>
+				<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
+					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</Texture>
 				<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
@@ -463,6 +507,167 @@
 				</Frames>
 				<Scripts>
 					<OnShow function="HelpFrameReportIssue_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Frame name="HelpFrameLag" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="HELPFRAME_LAG_TITLE" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="550" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="25" y="-65"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_LAG_TEXT1" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="550" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentLoot" inherits="UIPanelButtonTemplate2" text="BUTTON_LAG_LOOT">
+						<Size>
+							<AbsDimension x="320" y="30"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentText1" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.tooltipText = BUTTON_LAG_LOOT_TOOLTIP;
+								self.newbieText = BUTTON_LAG_LOOT_NEWBIE;
+							</OnLoad>
+							<OnClick>
+								HelpReportLag("Loot");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentAuctionHouse" inherits="UIPanelButtonTemplate2" text="BUTTON_LAG_AUCTIONHOUSE">
+						<Size>
+							<AbsDimension x="320" y="30"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentLoot" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.tooltipText = BUTTON_LAG_AUCTIONHOUSE_TOOLTIP;
+								self.newbieText = BUTTON_LAG_AUCTIONHOUSE_NEWBIE;
+							</OnLoad>
+							<OnClick>
+								HelpReportLag("AuctionHouse");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentMail" inherits="UIPanelButtonTemplate2" text="BUTTON_LAG_MAIL">
+						<Size>
+							<AbsDimension x="320" y="30"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentAuctionHouse" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.tooltipText = BUTTON_LAG_MAIL_TOOLTIP;
+								self.newbieText = BUTTON_LAG_MAIL_NEWBIE;
+							</OnLoad>
+							<OnClick>
+								HelpReportLag("Mail");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentChat" inherits="UIPanelButtonTemplate2" text="BUTTON_LAG_CHAT">
+						<Size>
+							<AbsDimension x="320" y="30"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentMail" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.tooltipText = BUTTON_LAG_CHAT_TOOLTIP;
+								self.newbieText = BUTTON_LAG_CHAT_NEWBIE;
+							</OnLoad>
+							<OnClick>
+								HelpReportLag("Chat");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentMovement" inherits="UIPanelButtonTemplate2" text="BUTTON_LAG_MOVEMENT">
+						<Size>
+							<AbsDimension x="320" y="30"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentChat" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.tooltipText = BUTTON_LAG_MOVEMENT_TOOLTIP;
+								self.newbieText = BUTTON_LAG_MOVEMENT_NEWBIE;
+							</OnLoad>
+							<OnClick>
+								HelpReportLag("Movement");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentSpell" inherits="UIPanelButtonTemplate2" text="BUTTON_LAG_SPELL">
+						<Size>
+							<AbsDimension x="320" y="30"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentMovement" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.tooltipText = BUTTON_LAG_SPELL_TOOLTIP;
+								self.newbieText = BUTTON_LAG_SPELL_NEWBIE;
+							</OnLoad>
+							<OnClick>
+								HelpReportLag("Spell");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
+				</Frames>
+				<Scripts>
 				</Scripts>
 			</Frame>
 			<!-- Stuck Frame -->

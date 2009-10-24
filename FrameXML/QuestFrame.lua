@@ -291,6 +291,11 @@ function QuestFrame_OnHide()
 		QuestFrame.dialog:Hide();
 		QuestFrame.dialog = nil;
 	end
+	if ( QuestFrame.autoQuest ) then
+		QuestFrameDetailPanelBotRight:SetTexture("Interface\\QuestFrame\\UI-QuestGreeting-BotRight");
+		QuestFrameDeclineButton:Show();
+		QuestFrame.autoQuest = nil;
+	end
 	CloseQuest();
 	PlaySound("igQuestListClose");
 end
@@ -308,6 +313,11 @@ function QuestFrameDetailPanel_OnShow()
 	QuestFrameRewardPanel:Hide();
 	QuestFrameProgressPanel:Hide();
 	QuestFrameGreetingPanel:Hide();
+	if ( QuestGetAutoAccept() ) then
+		QuestFrameDetailPanelBotRight:SetTexture("Interface\\QuestFrame\\UI-QuestGreeting-BotRight-blank");
+		QuestFrameDeclineButton:Hide();
+		QuestFrame.autoQuest = true;
+	end		
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
 	QuestInfo_Display(QUEST_TEMPLATE_DETAIL1, QuestDetailScrollChildFrame, QuestFrameAcceptButton, nil, material);
@@ -319,7 +329,11 @@ function QuestDetailAcceptButton_OnClick()
 	if ( QuestFlagsPVP() ) then
 		QuestFrame.dialog = StaticPopup_Show("CONFIRM_ACCEPT_PVP_QUEST");
 	else
-		AcceptQuest();
+		if ( QuestFrame.autoQuest ) then
+			HideUIPanel(QuestFrame);
+		else
+			AcceptQuest();		
+		end
 	end
 end
 

@@ -18,6 +18,7 @@ local helpFrames = {
 	["NeedMoreHelp"]	= "HelpFrameOpenTicket",
 	["Welcome"]			= "HelpFrameWelcome",
 	["KBase"]			= "KnowledgeBaseFrame",
+	["Lag"]				= "HelpFrameLag",
 };
 -- openFrame is the current help frame that a player has opened.
 local openFrame;
@@ -449,3 +450,10 @@ function TicketStatusFrameButton_OnClick(self)
 		end
 	end
 end
+
+function HelpReportLag(kind)
+	HideUIPanel(HelpFrame);
+	GMReportLag(STATIC_CONSTANTS[kind]);
+	StaticPopup_Show("LAG_SUCCESS");
+end
+

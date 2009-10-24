@@ -731,6 +731,7 @@ end
 function InterfaceOptionsDisplayPanelAggroWarningDisplay_Initialize()
 	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelAggroWarningDisplay);
 	local info = UIDropDownMenu_CreateInfo();
+	info.tooltipOnButton = 1;
 
 	info.text = ALWAYS;
 	info.func = InterfaceOptionsDisplayPanelAggroWarningDisplay_OnClick;
@@ -931,20 +932,28 @@ end
 NamePanelOptions = {
 	UnitNameOwn = { text = "UNIT_NAME_OWN" },
 	UnitNameNPC = { text = "UNIT_NAME_NPC" },
+	UnitNameNonCombatCreatureName = { text = "UNIT_NAME_NONCOMBAT_CREATURE" },
 	UnitNamePlayerGuild = { text = "UNIT_NAME_GUILD" },
 	UnitNamePlayerPVPTitle = { text = "UNIT_NAME_PLAYER_TITLE" },
-	UnitNameEnemyPlayerName = { text = "UNIT_NAME_ENEMY" },
-	UnitNameEnemyPetName = { text = "UNIT_NAME_ENEMY_PETS" },
-	UnitNameEnemyCreationName = { text = "UNIT_NAME_ENEMY_CREATIONS" },
+	
 	UnitNameFriendlyPlayerName = { text = "UNIT_NAME_FRIENDLY" },
 	UnitNameFriendlyPetName = { text = "UNIT_NAME_FRIENDLY_PETS" },
-	UnitNameFriendlyCreationName = { text = "UNIT_NAME_FRIENDLY_CREATIONS" },
-	UnitNameCompanionName = { text = "UNIT_NAME_COMPANIONS" },
-	nameplateShowEnemies = { text = "UNIT_NAMEPLATES_SHOW_ENEMIES" },
+	UnitNameFriendlyGuardianName = { text = "UNIT_NAME_FRIENDLY_GUARDIANS" },
+	UnitNameFriendlyTotemName = { text = "UNIT_NAME_FRIENDLY_TOTEMS" },
+	
+	UnitNameEnemyPlayerName = { text = "UNIT_NAME_ENEMY" },
+	UnitNameEnemyPetName = { text = "UNIT_NAME_ENEMY_PETS" },
+	UnitNameEnemyGuardianName = { text = "UNIT_NAME_ENEMY_GUARDIANS" },
+	UnitNameEnemyTotemName = { text = "UNIT_NAME_ENEMY_TOTEMS" },
+	
 	nameplateShowFriends = { text = "UNIT_NAMEPLATES_SHOW_FRIENDS" },
-	nameplateEnemyTotems = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_TOTEMS" },
+	nameplateShowFriendlyPets = { text = "UNIT_NAMEPLATES_SHOW_FRIENDLY_PETS" },
+	nameplateShowFriendlyGuardians = { text = "UNIT_NAMEPLATES_SHOW_FRIENDLY_GUARDIANS" },
+	nameplateShowFriendlyTotems = { text = "UNIT_NAMEPLATES_SHOW_FRIENDLY_TOTEMS" },
+	nameplateShowEnemies = { text = "UNIT_NAMEPLATES_SHOW_ENEMIES" },
 	nameplateShowEnemyPets = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_PETS" },
-	nameplateShowFriendPets = { text = "UNIT_NAMEPLATES_SHOW_FRIENDLY_PETS" },
+	nameplateShowEnemyGuardians = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_GUARDIANS" },
+	nameplateShowEnemyTotems = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_TOTEMS" },
 	nameplateAllowOverlap = { text = "UNIT_NAMEPLATES_ALLOW_OVERLAP" },
 }
 
@@ -1240,6 +1249,7 @@ end
 function InterfaceOptionsCameraPanelStyleDropDown_Initialize(self)
 	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
+	info.tooltipOnButton = 1;
 
 	info.text = CAMERA_SMART;
 	info.func = InterfaceOptionsCameraPanelStyleDropDown_OnClick;

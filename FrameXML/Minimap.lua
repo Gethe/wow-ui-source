@@ -253,27 +253,6 @@ function MiniMapLFGFrame_OnLeave(self)
 	LFDSearchStatus:Hide();
 end
 
-function MiniMapLFGFrame_FormatTooltip(...)
-	local text;
-	-- If looking for more
-	if ( select(1, ...) ) then
-		GameTooltip:SetText(LFM_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		text = select(3, ...);
-	else
-		-- Otherwise looking for group
-		GameTooltip:SetText(LFG_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		local numCriteria = select(2, ...)+2;
-		text = "";
-		for i=3, numCriteria do
-			if ( select(i, ...) ~= "" ) then
-				text = text..select(i, ...).."\n";
-			end
-		end
-	end
-	GameTooltip:AddLine(text);
-	GameTooltip:Show();
-end
-
 function MinimapButton_OnMouseDown(self, button)
 	if ( self.isDown ) then
 		return;

@@ -1996,12 +1996,8 @@ SlashCmdList["SAVEGUILDROSTER"] = function(msg)
 	SaveGuildRoster();
 end]]
 
-SlashCmdList["LOOKINGFORGROUP"] = function(msg)
-	ToggleLFGParentFrame(1);
-end
-
-SlashCmdList["LOOKINGFORMORE"] = function(msg)
-	ToggleLFGParentFrame(2);
+SlashCmdList["DUNGEONS"] = function(msg)
+	ToggleLFDParentFrame();
 end
 
 SlashCmdList["BENCHMARK"] = function(msg)

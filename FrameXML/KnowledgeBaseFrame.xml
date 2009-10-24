@@ -636,7 +636,7 @@
 				</Layers>
 			</Frame>
 
-			<Button name="KnowledgeBaseFrameGMTalk" inherits="GameMenuButtonTemplate" text="KBASE_GMTALK">
+			<Button name="KnowledgeBaseFrameReportIssue" inherits="GameMenuButtonTemplate" text="KBASE_REPORTISSUE">
 				<Size x="150" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
@@ -647,14 +647,14 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HelpFrame_ShowFrame("GMTalk");
+						HelpFrame_ShowFrame("ReportIssue");
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="KnowledgeBaseFrameReportIssue" inherits="GameMenuButtonTemplate" text="KBASE_REPORTISSUE">
+			<Button name="KnowledgeBaseFrameGMTalk" inherits="GameMenuButtonTemplate" text="KBASE_GMTALK">
 				<Size x="150" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="KnowledgeBaseFrameGMTalk" relativePoint="RIGHT">
+					<Anchor point="BOTTOM" relativeTo="KnowledgeBaseFrameReportIssue" relativePoint="TOP">
 						<Offset>
 							<AbsDimension x="0" y="0"/>
 						</Offset>
@@ -662,7 +662,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HelpFrame_ShowFrame("ReportIssue");
+						HelpFrame_ShowFrame("GMTalk");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -678,6 +678,22 @@
 				<Scripts>
 					<OnClick>
 						HelpFrame_ShowFrame("Stuck");
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="KnowledgeBaseFrameLag" inherits="GameMenuButtonTemplate" text="KBASE_LAG">
+				<Size x="150" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="KnowledgeBaseFrameGMTalk" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HelpFrame_ShowFrame("Lag");
 					</OnClick>
 				</Scripts>
 			</Button>

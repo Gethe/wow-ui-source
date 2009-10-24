@@ -123,8 +123,9 @@ PVPFrame.xml
 PVPBattlegroundFrame.xml
 ArenaFrame.xml
 ArenaRegistrarFrame.xml
-##LFGFrame.xml
+LFGFrame.xml
 LFDFrame.xml
+LFRFrame.xml
 MovieRecordingProgress.xml
 MacOptionsFrame.xml
 RatingMenuFrame.xml

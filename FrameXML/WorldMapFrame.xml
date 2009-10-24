@@ -599,7 +599,8 @@
 				</Layers>
 				<Scripts>
 					<OnLoad function="WorldMapBlobFrame_OnLoad" />
-				</Scripts>
+					<OnUpdate function="WorldMapBlobFrame_OnUpdate"/>
+        </Scripts>
 			</QuestPOIFrame>
 			<Button name="WorldMapButton">
 				<Size>

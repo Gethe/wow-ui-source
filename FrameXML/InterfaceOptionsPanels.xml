@@ -1418,7 +1418,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="-2" y="-8"/>
+							<AbsDimension x="-2" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1434,7 +1434,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1446,27 +1446,27 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<CheckButton name="$parentCompanions" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentNonCombatCreature" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentNPCNames" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "UnitNameCompanionName";
+						self.cvar = "UnitNameNonCombatCreatureName";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
 			<CheckButton name="$parentGuilds" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentCompanions" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="TOPLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="195" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1482,7 +1482,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentGuilds" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1496,12 +1496,12 @@
 			</CheckButton>		
 			<Frame name="$parentFriendly">
 				<Size>
-					<AbsDimension x="135" y="75"/>
+					<AbsDimension x="135" y="110"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
+					<Anchor point="TOPLEFT" relativeTo="$parentNonCombatCreature" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="-35" y="-8"/>
+							<AbsDimension x="0" y="-5"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1522,11 +1522,11 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
-					<CheckButton name="$parentPetsMinions" inherits="InterfaceOptionsCheckButtonTemplate">
+					<CheckButton name="$parentPets" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentPlayerNames" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="16" y="-8"/>
+									<AbsDimension x="10" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1535,26 +1535,38 @@
 								self.type = CONTROLTYPE_CHECKBOX;
 								self.cvar = "UnitNameFriendlyPetName";
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
-								<!-- No longer a dependent control -->
-								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelFriendlyPlayerNames, self); -->
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
-					<CheckButton name="$parentCreations" inherits="InterfaceOptionsCheckButtonTemplate">
+					<CheckButton name="$parentGuardians" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPetsMinions" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="$parentPets" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="-8"/>
+									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "UnitNameFriendlyCreationName";
+								self.cvar = "UnitNameFriendlyGuardianName";
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
-								<!-- No longer a dependent control -->
-								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelFriendlyPlayerNames, self); -->
+							</OnLoad>
+						</Scripts>
+					</CheckButton>		
+					<CheckButton name="$parentTotems" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentGuardians" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameFriendlyTotemName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1562,12 +1574,12 @@
 			</Frame>
 			<Frame name="$parentEnemy">
 				<Size>
-					<AbsDimension x="135" y="75"/>
+					<AbsDimension x="135" y="110"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentFriendly" relativePoint="BOTTOMRIGHT">
+					<Anchor point="TOPLEFT" relativeTo="$parentFriendly" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="-27"/>
+							<AbsDimension x="60" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1588,11 +1600,11 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
-					<CheckButton name="$parentPetsMinions" inherits="InterfaceOptionsCheckButtonTemplate">
+					<CheckButton name="$parentPets" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentPlayerNames" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="16" y="-8"/>
+									<AbsDimension x="10" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1601,26 +1613,38 @@
 								self.type = CONTROLTYPE_CHECKBOX;
 								self.cvar = "UnitNameEnemyPetName";
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
-								<!-- No longer a dependent control -->
-								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelEnemyPlayerNames, self); -->
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
-					<CheckButton name="$parentCreations" inherits="InterfaceOptionsCheckButtonTemplate">
+					<CheckButton name="$parentGuardians" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPetsMinions" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="$parentPets" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="-8"/>
+									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "UnitNameEnemyCreationName";
+								self.cvar = "UnitNameEnemyGuardianName";
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
-								<!-- No longer a dependent control -->
-								<!-- BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelEnemyPlayerNames, self); -->
+							</OnLoad>
+						</Scripts>
+					</CheckButton>		
+					<CheckButton name="$parentTotems" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentGuardians" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameEnemyTotemName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
@@ -1631,9 +1655,9 @@
 					<AbsDimension x="135" y="75"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTitles" relativePoint="TOPLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentFriendly" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-60"/>
+							<AbsDimension x="0" y="-2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1651,59 +1675,27 @@
 					</Layer>
 				</Layers>
 				<Frames>	
-					<CheckButton name="$parentEnemies" inherits="InterfaceOptionsCheckButtonTemplate">
+					<CheckButton name="$parentAllowOverlap" inherits="InterfaceOptionsCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="TOPLEFT">
+							<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="-18"/>
+									<AbsDimension x="0" y="-5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "nameplateShowEnemies";
-								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="$parentEnemyTotems" inherits="InterfaceOptionsCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentEnemies" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="16" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "nameplateEnemyTotems";
-								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="$parentEnemyPets" inherits="InterfaceOptionsCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentEnemyTotems" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "nameplateShowEnemyPets";
+								self.cvar = "nameplateAllowOverlap";
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="$parentFriends" inherits="InterfaceOptionsCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentEnemies" relativePoint="TOPLEFT">
+							<Anchor point="TOPLEFT" relativeTo="$parentAllowOverlap" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="195" y="0"/>
+									<AbsDimension x="0" y="-5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1715,35 +1707,122 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentFriendlyPets" inherits="InterfaceOptionsCheckButtonTemplate">
+					<CheckButton name="$parentFriendlyPets" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentFriends" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="16" y="-8"/>
+									<AbsDimension x="10" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "nameplateShowFriendPets";
+								self.cvar = "nameplateShowFriendlyPets";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelUnitNameplatesFriends, self);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentFriendlyGuardians" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriendlyPets" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowFriendlyGuardians";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelUnitNameplatesFriends, self);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentFriendlyTotems" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriendlyGuardians" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowFriendlyTotems";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelUnitNameplatesFriends, self);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentEnemies" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriends" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="195" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowEnemies";
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentAllowOverlap" inherits="InterfaceOptionsCheckButtonTemplate">
+					<CheckButton name="$parentEnemyPets" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentEnemyPets" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemies" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="-16" y="-8"/>
+									<AbsDimension x="10" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "nameplateAllowOverlap";
+								self.cvar = "nameplateShowEnemyPets";
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelUnitNameplatesEnemies, self);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentEnemyGuardians" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemyPets" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowEnemyGuardians";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelUnitNameplatesEnemies, self);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentEnemyTotems" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemyGuardians" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								debugprint(self:GetName())
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowEnemyTotems";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelUnitNameplatesEnemies, self);
 							</OnLoad>
 						</Scripts>
 					</CheckButton>

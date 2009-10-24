@@ -157,7 +157,7 @@
 				if ( self.tooltipTitle ) then
 					if ( self.tooltipOnButton ) then
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(self.tooltipTitle);
+						GameTooltip:AddLine(self.tooltipTitle, 1.0, 1.0, 1.0);
 						GameTooltip:AddLine(self.tooltipText);
 						GameTooltip:Show();
 					else

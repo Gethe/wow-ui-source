@@ -1462,6 +1462,8 @@ function GuildEventLog_Update()
 	local type, player1, player2, rank, year, month, day, hour;
 	local msg;
 	local buffer = "";
+	local max = GuildEventMessage:GetFieldSize()
+	local length = 0;
 	for i=numEvents, 1, -1 do
 		type, player1, player2, rank, year, month, day, hour = GetGuildEventInfo(i);
 		if ( not player1 ) then
@@ -1484,7 +1486,13 @@ function GuildEventLog_Update()
 			msg = format(GUILDEVENT_TYPE_QUIT, player1);
 		end
 		if ( msg ) then
-			buffer = buffer..msg.."|cff009999   "..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r|n";
+			msg = msg.."|cff009999   "..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r|n";
+			length = length + msg:len();
+			if(length>max) then
+				i=0
+			else
+				buffer = buffer..msg
+			end
 		end
 	end
 	GuildEventMessage:SetText(buffer);

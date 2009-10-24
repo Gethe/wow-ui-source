@@ -139,7 +139,6 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapPOIFrame:SetFrameLevel(4);
 	
 	WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_SMALL);
-	WorldMapBlobFrame:SetScale(WORLDMAP_RATIO_SMALL);
 	WorldMapButton:SetScale(WORLDMAP_RATIO_SMALL);
 	WorldMapPOIFrame:SetScale(WORLDMAP_RATIO_SMALL);
 	WorldMapFrame.scale = WORLDMAP_RATIO_SMALL;
@@ -1344,7 +1343,6 @@ function WorldMap_ToggleSizeUp()
 	WorldMapPositioningGuide:SetPoint("CENTER");		
 	WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_SMALL);
 	WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -726, -99);
-	WorldMapBlobFrame:SetScale(WORLDMAP_RATIO_SMALL);
 	WorldMapButton:SetScale(WORLDMAP_RATIO_SMALL);
 	WorldMapPOIFrame:SetScale(WORLDMAP_RATIO_SMALL);
 	-- adjust quest frames
@@ -1393,7 +1391,6 @@ function WorldMap_ToggleSizeDown()
 	WorldMapPositioningGuide:SetAllPoints();		
 	WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_MINI);
 	WorldMapDetailFrame:SetPoint("TOPLEFT", 20, -42);
-	WorldMapBlobFrame:SetScale(WORLDMAP_RATIO_MINI);
 	WorldMapButton:SetScale(WORLDMAP_RATIO_MINI);
 	WorldMapPOIFrame:SetScale(WORLDMAP_RATIO_MINI);
 	-- adjust quest frames
@@ -1637,7 +1634,32 @@ end
 function WorldMapBlobFrame_OnLoad(self)
 	self:SetFillTexture("Interface\\WorldMap\\UI-QuestBlob-Inside");
 	self:SetBorderTexture("Interface\\WorldMap\\UI-QuestBlob-Outside");
-	self:SetFillAlpha(128);
+	self:SetFillAlpha(64);
 	self:SetBorderAlpha(128);
 	self:SetBorderScalar(1.0);
+end
+
+function WorldMapBlobFrame_OnUpdate(self)
+
+	local x, y = GetCursorPosition();
+	x = x / self:GetEffectiveScale();
+	y = y / self:GetEffectiveScale();
+
+	local centerX, centerY = self:GetCenter();
+	local width = self:GetWidth();
+	local height = self:GetHeight();
+	local adjustedY = (centerY + (height/2) - y) / height;
+	local adjustedX = (x - (centerX - (width/2))) / width;
+	local questLogIndex, numObjectives = self:UpdateMouseOverTooltip(adjustedX, adjustedY);
+
+--[[ TEST CODE FOR LEADERBOARD/TOOLTIP!!!
+	if(numObjectives) then
+		local questText;
+		for j = 1, numObjectives do
+			text, _, finished = GetQuestLogLeaderBoard(j, questLogIndex);
+			if(text) then
+			end
+		end
+	end
+--]]
 end

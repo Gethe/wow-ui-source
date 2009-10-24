@@ -264,11 +264,11 @@
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "LFG");
-				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnLoad>
 			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnEvent>
 			<OnClick>

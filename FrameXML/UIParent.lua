@@ -46,6 +46,7 @@ UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
 UIPanelWindows["MinigameFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["LFGParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["LFDParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["LFRParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["ArenaFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["ChatConfigFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["PVPParentFrame"] =			{ area = "left",	pushable = 0,	whileDead = 1 };
@@ -459,6 +460,14 @@ function ToggleLFDParentFrame()
 		HideUIPanel(LFDParentFrame);
 	else
 		ShowUIPanel(LFDParentFrame);
+	end
+end
+
+function ToggleLFRParentFrame()
+	if ( LFRParentFrame:IsShown() ) then
+		HideUIPanel(LFRParentFrame);
+	else
+		ShowUIPanel(LFRParentFrame);
 	end
 end
 

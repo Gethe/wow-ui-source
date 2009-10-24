@@ -33,7 +33,7 @@
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight" name="$parentBotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>

@@ -2642,21 +2642,6 @@ StaticPopupDialogs["CONFIRM_COMBAT_FILTER_DEFAULTS"] = {
 	exclusive = 1,
 	hideOnEscape = 1
 };
-StaticPopupDialogs["CONFIRM_LFG_REMOVE_LAST_ROLE"] = {
-	text = CONFIRM_LFG_REMOVE_LAST_ROLE,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		LFGFrameClearAllButton_OnClick();
-		LFGFrame_UpdateRolesChosen();
-	end,
-	OnCancel = function(self)
-		LFGFrame_UpdateRoleBoxes();
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
 
 StaticPopupDialogs["SET_LFGNOTE"] = {
 	text = SET_COMMENT_LABEL,
@@ -2779,6 +2764,12 @@ StaticPopupDialogs["VOTE_BOOT_PLAYER"] = {
 	end,
 	showAlert = true,
 	noCancelOnReuse = 1,
+	timeout = 0,
+}
+
+StaticPopupDialogs["LAG_SUCCESS"] = {
+	text = HELPFRAME_REPORTLAG_TEXT1,
+	button1 = OKAY,
 	timeout = 0,
 }
 
@@ -3461,7 +3452,7 @@ function StaticPopup_SetUpPosition(dialog)
 		if ( lastFrame ) then	
 			dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0);
 		else
-			dialog:SetPoint("TOP", UIParent, "TOP", 0, -133);
+			dialog:SetPoint("TOP", UIParent, "TOP", 0, -135);
 		end
 		tinsert(StaticPopup_DisplayedFrames, dialog);
 	end

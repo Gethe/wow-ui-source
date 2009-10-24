@@ -6,7 +6,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon" nonBlocking="true"/>
-				<FontString name="$parentCount" inherits="NumberFontNormal">
+				<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT">
 							<Offset>
@@ -15,7 +15,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentDuration" inherits="GameFontNormalSmall" hidden="true">
+				<FontString name="$parentDuration" inherits="GameFontNormalSmall" hidden="true" parentKey="duration">
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" />
 					</Anchors>
@@ -25,16 +25,12 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+				GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
 				GameTooltip:SetUnitAura(PlayerFrame.unit, self:GetID(), self.filter);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
-			<OnShow>
-				if ( self.namePrefix ) then
-					AuraButton_Update(self.namePrefix, self:GetID(), self.filter);
-				end
-			</OnShow>
 		</Scripts>
 	</Button>
 	<Button name="BuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
@@ -152,6 +148,74 @@
 		</Frames>
 		<Scripts>
 			<OnUpdate function="TemporaryEnchantFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="ConsolidatedBuffs" parent="UIParent" inherits="AuraButtonTemplate" hidden="true">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-180" y="-13"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad function="ConsolidatedBuffs_OnLoad" />
+			<OnUpdate function="ConsolidatedBuffs_OnUpdate" />
+			<OnEnter function="ConsolidatedBuffs_OnEnter" />
+			<OnHide function="ConsolidatedBuffs_OnHide" />			
+		</Scripts>
+	</Button>
+	<Frame name="ConsolidatedBuffsTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" />
+		</Anchors>	
+		<Size>
+			<AbsDimension x="60" y="60"/>
+		</Size>	
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Frame name="ConsolidatedBuffsContainer">
+				<Size>
+					<AbsDimension x="60" y="60"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="16" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>			
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				ConsolidatedBuffsContainer:SetScale(0.66);
+			</OnLoad>
+			<OnEnter>
+				self.mousedOver = true;
+			</OnEnter>
+			<OnUpdate>
+				if ( self.mousedOver and not ConsolidatedBuffs.mousedOver and not self:IsMouseOver() ) then
+					self.mousedOver = nil;
+					self:Hide();
+				end
+			</OnUpdate>
+			<OnHide>
+				self.mousedOver = nil;
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -1,220 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LFDFrame.lua"/>
-	<Frame name="LFDFrameDungeonChoiceTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="295" y="16"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentHeroicIcon" file="Interface/LFGFrame/UI-LFG-ICON-HEROIC" parentKey="heroicIcon">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.0" right="0.5" top="0" bottom="0.5"/>
-				</Texture>
-				<FontString name="$parentInstanceLevel" inherits="GameFontNormal" justifyH="LEFT" parentKey="level">
-					<Size>
-						<AbsDimension x="60" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentInstanceName" inherits="GameFontNormal" justifyH="LEFT" parentKey="instanceName">
-					<Size>
-						<AbsDimension x="0" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="RIGHT" relativeTo="$parentInstanceLevel" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="-10" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>					
-		<Frames>
-			<CheckButton name="$parentEnableButton" parentKey="enableButton">
-				<Size>
-					<AbsDimension x="20" y="20"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="20" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="LFDQueueFrameDungeonChoiceEnableButton_OnClick"/>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
-			</CheckButton>
-			<Frame name="$parentLockedIndicator" parentKey="lockedIndicator">
-				<Size>
-					<AbsDimension x="12" y="14"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parentEnableButton" relativePoint="CENTER"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface/LFGFrame/UI-LFG-ICON-LOCK" setAllPoints="true">
-							<TexCoords left="0" right="0.71875" top="0" bottom="0.875"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter function="LFDQueueFrameDungeonLockedIndicator_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
-			<Button name="$parentExpandOrCollapseButton" parentKey="expandOrCollapseButton">
-				<Size>
-					<AbsDimension x="13" y="13"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="3" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<HitRectInsets>
-					<AbsInset left="1" right="-4" top="-2" bottom="-2"/>
-				</HitRectInsets>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						LFDList_SetHeaderCollapsed(parent.id, not parent.isCollapsed);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="3" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</NormalTexture>
-				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="3" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</HighlightTexture>
-			</Button>
-		</Frames>
-	</Frame>
-		
-	<Button name="LFDFrameRoleCheckButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="48" y="48"/>
-		</Size>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.7" hidden="true">
-					<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton parentKey="checkButton">
-				<Size>
-					<AbsDimension x="24" y="24"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-5" y="-5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
-						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
-						end
-						if ( self:GetParent().setRoleImmediately ) then
-							LFDFrameRoleCheckButton_OnClick(self);
-						end
-					</OnClick>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
-			</CheckButton>
-		</Frames>
+	<Frame name="LFDFrameDungeonChoiceTemplate" inherits="LFGSpecificChoiceTemplate" virtual="true">
 		<Scripts>
-			<OnEnter>
-				<!--Warning: The Leader button overrides this.-->
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, 1);
-				LFDFrameRoleCheckButton_OnEnter(self);
-			</OnEnter>
-			<OnClick>
-				if ( self.checkButton:IsEnabled() == 1 ) then
-					self.checkButton:Click();
-				end
-			</OnClick>
-			<OnLeave>
-				GameTooltip:Hide();
-				self.checkButton:UnlockHighlight();
-			</OnLeave>
+			<OnLoad>
+				self.enableButton:SetScript("OnClick", LFDQueueFrameDungeonChoiceEnableButton_OnClick);
+				self.lockedIndicator:SetScript("OnEnter", LFDQueueFrameDungeonLockedIndicator_OnEnter);
+				self.expandOrCollapseButton:SetScript("OnClick", LFDQueueFrameExpandOrCollapseButton_OnClick);
+			</OnLoad>
 		</Scripts>
-		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
-	</Button>
-	<Button name="LFDQueueFrameRoleCheckButtonTemplate" inherits="LFDFrameRoleCheckButtonTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\LFGFrame\UI-LFG-ICONS-ROLEBACKGROUNDS" alpha="0.3" parentKey="background">
-					<Size>
-						<AbsDimension x="80" y="80"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Button>
+	</Frame>
 	<Frame name="LFDDungeonReadyRewardTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="40" y="40"/>
@@ -710,7 +505,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentRoleButtonTank" inherits="LFDFrameRoleCheckButtonTemplate" id="2">
+			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" id="2">
 				<Size>
 					<AbsDimension x="70" y="70"/>
 				</Size>
@@ -727,7 +522,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonHealer" inherits="LFDFrameRoleCheckButtonTemplate" id="3">
+			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" id="3">
 				<Size>
 					<AbsDimension x="70" y="70"/>
 				</Size>
@@ -744,7 +539,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonDPS" inherits="LFDFrameRoleCheckButtonTemplate" id="1">
+			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" id="1">
 				<Size>
 					<AbsDimension x="70" y="70"/>
 				</Size>
@@ -1046,7 +841,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentRoleButtonTank" inherits="LFDQueueFrameRoleCheckButtonTemplate" id="2">
+					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1057,13 +852,13 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
-								self.background:SetTexCoord(75/256, 150/256, 0, 75/128);
+								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("TANK"));
 								self.background:SetAlpha(0.6);
-								self.setRoleImmediately = true;
+								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonHealer" inherits="LFDQueueFrameRoleCheckButtonTemplate" id="3">
+					<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonWithBackgroundTemplate" id="3">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
 								<Offset>
@@ -1074,13 +869,13 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
-								self.background:SetTexCoord(0/256, 75/256, 0, 75/128);
+								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("HEALER"));
 								self.background:SetAlpha(0.4);
-								self.setRoleImmediately = true;
+								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonDPS" inherits="LFDQueueFrameRoleCheckButtonTemplate" id="1">
+					<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonWithBackgroundTemplate" id="1">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
 								<Offset>
@@ -1091,13 +886,13 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGE"));
-								self.background:SetTexCoord(150/256, 225/256, 0, 75/128);
+								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGE"));
 								self.background:SetAlpha(0.6);
-								self.setRoleImmediately = true;
+								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonLeader" inherits="LFDFrameRoleCheckButtonTemplate" id="4">
+					<Button name="$parentRoleButtonLeader" inherits="LFGRoleButtonTemplate" id="4">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonDPS" relativePoint="RIGHT">
 								<Offset>
@@ -1108,7 +903,7 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("LEADER"));
-								self.setRoleImmediately = true;
+								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 							</OnLoad>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1556,7 +1351,7 @@
 							</ScrollFrame>
 						</Frames>
 					</Frame>
-					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="FIND_GROUP">
+					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="FIND_DUNGEON">
 						<Size>
 							<AbsDimension x="115" y="22"/>
 						</Size>

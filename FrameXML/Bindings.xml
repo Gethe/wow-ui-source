@@ -689,14 +689,8 @@
 	<Binding name="TOGGLERAIDTAB">
 		ToggleFriendsFrame(5);
 	</Binding>
-	<Binding name="TOGGLELFGPARENT">
+	<Binding name="TOGGLELFGPARENT"> <!--Keeping the name as the old LFG so that people's bindings aren't reset -->
 		ToggleLFDParentFrame();
-	</Binding>
-	<Binding name="TOGGLELFGTAB">
-		ToggleLFGParentFrame(1);
-	</Binding>
-	<Binding name="TOGGLELFMTAB">
-		ToggleLFGParentFrame(2);
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES">
 		ToggleWorldStateScoreFrame();

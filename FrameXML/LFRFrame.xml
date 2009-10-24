@@ -1,0 +1,408 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="LFRFrame.lua"/>
+	
+	<Frame name="LFRFrameDungeonChoiceTemplate" inherits="LFGSpecificChoiceTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.enableButton:SetScript("OnClick", LFRQueueFrameDungeonChoiceEnableButton_OnClick);
+				self.lockedIndicator:SetScript("OnEnter", LFDQueueFrameDungeonLockedIndicator_OnEnter);
+				self.expandOrCollapseButton:SetScript("OnClick", LFRQueueFrameExpandOrCollapseButton_OnClick);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="LFRParentFrame" toplevel="true" hidden="true" enableMouse="true" parent="UIParent">
+		<Size x="355" y="440"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFG-PORTRAIT">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="11" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button inherits="UIPanelCloseButton" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="LFRQueueFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLayout" file="Interface\LFGFrame\UI-LFR-FRAME-MAIN">
+							<Size>
+								<AbsDimension x="512" y="512"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitleText" inherits="GameFontNormal" text="LOOKING_FOR_RAID">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="12" y="-18"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="82" y="-60"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("TANK"));
+								self.background:SetAlpha(0.6);
+								self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonWithBackgroundTemplate" id="3">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="45" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("HEALER"));
+								self.background:SetAlpha(0.4);
+								self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonWithBackgroundTemplate" id="1">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="43" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGE"));
+								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGE"));
+								self.background:SetAlpha(0.6);
+								self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="$parentCommentScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="290" y="62"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="31" y="74"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentExplanation" inherits="GameFontDisable" justifyH="LEFT" justifyV="TOP" setAllPoints="true" text="TYPE_LFR_COMMENT_HERE"/>
+							</Layer>
+						</Layers>
+						<ScrollChild>
+							<EditBox name="LFRQueueFrameComment" multiLine="true" letters="255" autoFocus="false" countInvisibleLetters="true">
+								<Size>
+									<AbsDimension x="290" y="62"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										--self:SetText(TYPE_LFR_COMMENT_HERE);
+									</OnLoad>
+									<OnTextChanged>
+										self.setTime = 10;	--We'll send the change if the player hasn't done anything in 10 secs
+									</OnTextChanged>
+									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+									<OnUpdate function="LFRQueueFrameComment_OnUpdate"/>
+									<OnEditFocusGained>
+										LFRQueueFrameCommentScrollFrameExplanation:Hide();
+									</OnEditFocusGained>
+									<OnEditFocusLost>
+										if ( strtrim(self:GetText()) == "" ) then
+											LFRQueueFrameCommentScrollFrameExplanation:Show();
+										else
+											SetLFGComment(self:GetText());
+										end
+									</OnEditFocusLost>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
+									<OnEnterPressed function="EditBox_ClearFocus"/>
+								</Scripts>
+								<FontString inherits="GameFontHighlight"/>
+							</EditBox>
+						</ScrollChild>
+					</ScrollFrame>
+					<Button name="LFRQueueFrameCommentTextButton">
+						<Size>
+							<AbsDimension x="290" y="62"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentCommentScrollFrame" relativePoint="TOPLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								LFRQueueFrameComment:SetFocus();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame name="$parentSpecific" setAllPoints="true">
+						<Frames>
+							<Frame name="$parentListButton1" inherits="LFRFrameDungeonChoiceTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="25" y="-132"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton2" inherits="LFRFrameDungeonChoiceTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton3" inherits="LFRFrameDungeonChoiceTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton2" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton4" inherits="LFRFrameDungeonChoiceTemplate" id="4">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton3" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton5" inherits="LFRFrameDungeonChoiceTemplate" id="5">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton4" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton6" inherits="LFRFrameDungeonChoiceTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton5" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton7" inherits="LFRFrameDungeonChoiceTemplate" id="7">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton6" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton8" inherits="LFRFrameDungeonChoiceTemplate" id="8">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton7" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton9" inherits="LFRFrameDungeonChoiceTemplate" id="9">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton8" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton10" inherits="LFRFrameDungeonChoiceTemplate" id="10">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton9" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton11" inherits="LFRFrameDungeonChoiceTemplate" id="11">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton10" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton12" inherits="LFRFrameDungeonChoiceTemplate" id="12">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton11" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton13" inherits="LFRFrameDungeonChoiceTemplate" id="13">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton12" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentListButton14" inherits="LFRFrameDungeonChoiceTemplate" id="14">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton13" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="2"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$parentListButton14" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="1" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture name="$parentScrollBackgroundTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+											<Size>
+												<AbsDimension x="31" y="200"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+													<Offset>
+														<AbsDimension x="-2" y="5"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+											<TexCoords left="0" right="0.484375" top="0" bottom="0.78125"/>
+										</Texture>
+										<Texture name="$parentScrollBackgroundBottomRight" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+											<Size>
+												<AbsDimension x="31" y="106"/>
+											</Size>
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="-2" y="-2"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+											<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnVerticalScroll>
+										FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFRQueueFrameSpecificList_Update);
+									</OnVerticalScroll>
+									<OnShow>
+										LFRQueueFrame_Update();
+									</OnShow>
+								</Scripts>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="LIST">
+						<Size>
+							<AbsDimension x="115" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="18" y="6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								local mode, subMode = GetLFDMode();
+								if ( mode == "queued" or mode == "rolecheck" ) then
+									LeaveLFG();
+								else
+									LFRQueueFrame_Join();
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						PlaySound("igCharacterInfoOpen");
+						RequestLFDPlayerLockInfo();
+						RequestLFDPartyLockInfo();
+					</OnShow>
+					<OnHide>
+						PlaySound("igCharacterInfoClose");
+					</OnHide>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LFDFrame_OnLoad"/>
+			<OnEvent function="LFDFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

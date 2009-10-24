@@ -9,8 +9,8 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground">
 					<Anchors>
-						<Anchor point="TOPLEFT" parent="$parentTop" relativePoint="TOPLEFT" x="15" y="-35"/>
-						<Anchor point="BOTTOMRIGHT" parent="$parentBottom" relativePoint="BOTTOMRIGHT" x="-5" y="5"/>
+						<Anchor point="TOPLEFT" parent="$parentTop" relativePoint="TOPLEFT" x="13" y="-35"/>
+						<Anchor point="BOTTOMRIGHT" parent="$parentBottom" relativePoint="BOTTOMRIGHT" x="-3" y="5"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="1"/>
 				</Texture>
@@ -63,22 +63,29 @@
 				</Texture>
 				<FontString name="$parentTitle" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-15"/>
+						<Anchor point="TOP" x="15" y="-17"/>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
-				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" justifyV="BOTTOM">
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" justifyV="CENTER">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="30" y="-100"/>
 						<Anchor point="BOTTOMRIGHT" x="-15" y="40"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="1.0"/>
 				</FontString>
+				<Texture name="TutorialTextBorder" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentText" x="0" y="0"/>
+					</Anchors>
+					<Color r="1.0" g="0" b="0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentCallOut" frameStrata="TOOLTIP" hidden="true">
-				<Backdrop edgeFile="UI-TutorialFrame-CalloutGlow" alphaMode="ADD">
+				<Backdrop edgeFile="Interface\TutorialFrame\UI-TutorialFrame-CalloutGlow" alphaMode="ADD">
 					<EdgeSize>
 						<AbsValue val="16"/>
 					</EdgeSize>
@@ -147,7 +154,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				TutorialFrame_AlertButton_OnClick(self.id);
+				TutorialFrame_AlertButton_OnClick(self);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
